@@ -7,11 +7,11 @@ namespace starsky.Interfaces
     public interface IUpdate
     {
 
-        IEnumerable<string> GetAll();
+        //IEnumerable<string> GetAll();
 
         FileIndexItem Add(FileIndexItem updateStatusContent);
 
-        IEnumerable<string> AddOrUpdateList(IEnumerable<string> updateStatusContent);
+        IEnumerable<string> AddList(IEnumerable<string> updateStatusContent);
 
         IEnumerable<string> SyncFiles();
 

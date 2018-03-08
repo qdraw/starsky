@@ -43,11 +43,10 @@ namespace starsky.Controllers
             return Json(item);
         }
 
-        public IActionResult GetAll()
-        {
-            return Json(_updateStatusContent.GetAll());
-
-        }
+        //public IActionResult GetAll()
+        //{
+        //    return Json(_updateStatusContent.GetAll());
+        //}
 
         public IActionResult Contact()
         {

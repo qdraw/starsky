@@ -27,24 +27,23 @@ namespace starsky.Services
             throw new NotImplementedException();
         }
 
-        //public IEnumerable<FileIndexItem> GetAll()
-        //{
-        //    return _context.FileIndex.OrderBy(r => r.FileName);
-        //}
-
-        public IEnumerable<string> GetAll()
+        public IEnumerable<FileIndexItem> GetAll()
         {
-            var dbItems = _context.FileIndex.OrderBy(r => r.FileName);
-
-            return dbItems.Select(item => item.FilePath).ToList();
+            return _context.FileIndex.OrderBy(r => r.FileName);
         }
+
+        //public IEnumerable<string> GetAll()
+        //{
+        //    var dbItems = _context.FileIndex.OrderBy(r => r.FileName);
+        //    return dbItems.Select(item => item.FilePath).ToList();
+        //}
 
         public IEnumerable<string> RemoveOldFilesByFileList(IEnumerable<string> shortFileList)
         {
             var newFileList = new List<string>();
             foreach (var item in shortFileList)
             {
-                if (_pathToFull(item) == null)
+                if (Files.PathToFull(item) == null)
                 {
                     var firstOrDefault = _context.FileIndex.FirstOrDefault(r => r.FilePath == item);
                     if (firstOrDefault != null)
@@ -65,15 +64,21 @@ namespace starsky.Services
         {
             var localList = Files.GetFiles();
             var dbList = GetAll();
-            dbList = RemoveOldFilesByFileList(dbList);
-            var output = localList.Except(dbList);
-            var inputStats = output.ToList();
-            AddOrUpdateList(inputStats);
 
-            return inputStats;
+            //new HashSet<string>(localList).SetEquals(B)
+
+
+            var output = localList.Except(dbList);
+
+
+            //var inputStats = output.ToList();
+
+            //AddList(inputStats);
+
+            return null;
         }
 
-    public FileIndexItem Add(FileIndexItem updateStatusContent)
+        public FileIndexItem Add(FileIndexItem updateStatusContent)
         {
             _context.FileIndex.Add(updateStatusContent);
             _context.SaveChanges();
@@ -94,29 +99,9 @@ namespace starsky.Services
             }
         }
 
-        private static string _pathToUnixStyle(string filepath)
-        {
-            filepath = filepath.Replace(AppSettingsProvider.BasePath, "");
 
-            if (Path.DirectorySeparatorChar.ToString() == "\\")
-            {
-                filepath = filepath.Replace("\\", "/");
-            }
-            return filepath;
-        }
 
-        private static string _pathToFull(string shortPath)
-        {
-            var filepath = AppSettingsProvider.BasePath + shortPath;
-            if (Path.DirectorySeparatorChar.ToString() == "\\")
-            {
-                filepath = filepath.Replace("\\", "/");
-            }
-
-            return File.Exists(filepath) ? filepath : null;
-        }
-
-        public IEnumerable<string> AddOrUpdateList(IEnumerable<string> inputStats)
+        public IEnumerable<string> AddList(IEnumerable<string> inputStats)
         {
             var addOrUpdateList = inputStats.ToList();
             foreach (var item in addOrUpdateList)
@@ -136,7 +121,7 @@ namespace starsky.Services
                 {
                     var newItem = new FileIndexItem();
                     newItem.FileName = Path.GetFileName(item);
-                    newItem.FilePath = _pathToUnixStyle(item);
+                    newItem.FilePath = Files.PathToUnixStyle(item);
 
                     _context.FileIndex.Add(newItem);
                     _context.SaveChanges();
@@ -582,7 +567,6 @@ public EventsOfficeHoursModel ParseEvents(List<ChannelEvent> channelEvents, Date
 }
 
 */
-
     }
 
 

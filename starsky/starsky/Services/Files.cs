@@ -24,7 +24,7 @@ namespace starsky.Services
             }
         }
 
-        public static IEnumerable<string> GetFiles()
+        public static IEnumerable<FileIndexItem> GetFiles()
         {
             var path = AppSettingsProvider.BasePath;
 
@@ -59,12 +59,64 @@ namespace starsky.Services
                     {
                         if (files[i].Contains(".jpg"))
                         {
-                            //Console.WriteLine(files[i]);
-                            yield return files[i];
+                            var fileItem = new FileIndexItem
+                            {
+                                FilePath = files[i],
+                                FileName = Path.GetFileName(files[i]),
+                                FileHash = CalcHashCode(files[i])
+                            };
+                            yield return fileItem;
                         }
                     }
                 }
             }
+        }
+
+        public static string CalcHashCode(string filename)
+        {
+            FileStream stream = new FileStream(
+                filename,
+                System.IO.FileMode.Open,
+                System.IO.FileAccess.Read,
+                System.IO.FileShare.ReadWrite);
+
+            try
+            {
+                return CalcHashCode(stream);
+            }
+            finally
+            {
+                stream.Close();
+            }
+        }
+
+        public static string CalcHashCode(FileStream file)
+        {
+            MD5CryptoServiceProvider md5Provider = new MD5CryptoServiceProvider();
+            Byte[] hash = md5Provider.ComputeHash(file);
+            return Convert.ToBase64String(hash);
+        }
+
+        public static string PathToUnixStyle(string filepath)
+        {
+            filepath = filepath.Replace(AppSettingsProvider.BasePath, "");
+
+            if (Path.DirectorySeparatorChar.ToString() == "\\")
+            {
+                filepath = filepath.Replace("\\", "/");
+            }
+            return filepath;
+        }
+
+        public static string PathToFull(string shortPath)
+        {
+            var filepath = AppSettingsProvider.BasePath + shortPath;
+            if (Path.DirectorySeparatorChar.ToString() == "\\")
+            {
+                filepath = filepath.Replace("\\", "/");
+            }
+
+            return File.Exists(filepath) ? filepath : null;
         }
     }
 }

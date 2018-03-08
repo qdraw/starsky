@@ -36,10 +36,10 @@ namespace starskyCli
         private readonly ApplicationDbContext _context;
         private readonly SqlUpdateStatus _sqlStatus;
 
-        public IEnumerable<string> GetAll()
-        {
-           return _sqlStatus.GetAll();
-        }
+        //public IEnumerable<string> GetAll()
+        //{
+        //   return _sqlStatus.GetAll();
+        //}
 
         public IEnumerable<string> SyncFiles()
         {
