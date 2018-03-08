@@ -71,6 +71,7 @@ namespace starsky
             }
 
             AppSettingsProvider.BasePath = _getBasePath();
+            AppSettingsProvider.DbConnectionString = GetConnectionString();
 
             app.UseStaticFiles();
 

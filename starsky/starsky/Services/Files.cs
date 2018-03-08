@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Rewrite.Internal.ApacheModRewrite;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +13,16 @@ namespace starsky.Services
 {
     public class Files
     {
+        public string CheckMd5(string filename)
+        {
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = File.OpenRead(filename))
+                {
+                    return Encoding.Default.GetString(md5.ComputeHash(stream));
+                }
+            }
+        }
 
         public static IEnumerable<string> GetFiles()
         {
@@ -45,7 +57,11 @@ namespace starsky.Services
                 {
                     for (int i = 0; i < files.Length; i++)
                     {
-                        yield return files[i];
+                        if (files[i].Contains(".jpg"))
+                        {
+                            //Console.WriteLine(files[i]);
+                            yield return files[i];
+                        }
                     }
                 }
             }

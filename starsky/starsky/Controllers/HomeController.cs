@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
 using starsky.Models;
-using starsky.Services;
 
 namespace starsky.Controllers
 {
@@ -30,9 +29,9 @@ namespace starsky.Controllers
             return View();
         }
 
-        public IActionResult GetFiles()
+        public IActionResult SyncFiles()
         {
-            return Json( Files.GetFiles());
+            return Json(_updateStatusContent.SyncFiles());
         }
 
         public IActionResult Update()

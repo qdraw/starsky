@@ -7,9 +7,15 @@ namespace starsky.Interfaces
     public interface IUpdate
     {
 
-        IEnumerable<FileIndexItem> GetAll();
+        IEnumerable<string> GetAll();
 
         FileIndexItem Add(FileIndexItem updateStatusContent);
+
+        IEnumerable<string> AddOrUpdateList(IEnumerable<string> updateStatusContent);
+
+        IEnumerable<string> SyncFiles();
+
+        
 
 
         //UpdateStatus Update(UpdateStatus updateStatusContent);

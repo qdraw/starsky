@@ -17,7 +17,5 @@ namespace starsky.Models
         [Column(Order = 1)]
         public string FileName { get; set; }
 
-
-
     }
 }

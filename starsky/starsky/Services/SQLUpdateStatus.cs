@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using starsky.Interfaces;
@@ -26,16 +27,123 @@ namespace starsky.Services
             throw new NotImplementedException();
         }
 
-        public IEnumerable<FileIndexItem> GetAll()
+        //public IEnumerable<FileIndexItem> GetAll()
+        //{
+        //    return _context.FileIndex.OrderBy(r => r.FileName);
+        //}
+
+        public IEnumerable<string> GetAll()
         {
-            return _context.FileIndex.OrderBy(r => r.FileName);
+            var dbItems = _context.FileIndex.OrderBy(r => r.FileName);
+
+            return dbItems.Select(item => item.FilePath).ToList();
         }
 
-        public FileIndexItem Add(FileIndexItem updateStatusContent)
+        public IEnumerable<string> RemoveOldFilesByFileList(IEnumerable<string> shortFileList)
+        {
+            var newFileList = new List<string>();
+            foreach (var item in shortFileList)
+            {
+                if (_pathToFull(item) == null)
+                {
+                    var firstOrDefault = _context.FileIndex.FirstOrDefault(r => r.FilePath == item);
+                    if (firstOrDefault != null)
+                    {
+                        _context.Remove(firstOrDefault);
+                    }
+                }
+                else
+                {
+                    newFileList.Add(item);
+                }
+            }
+
+            return newFileList;
+        }
+
+        public IEnumerable<string> SyncFiles()
+        {
+            var localList = Files.GetFiles();
+            var dbList = GetAll();
+            dbList = RemoveOldFilesByFileList(dbList);
+            var output = localList.Except(dbList);
+            var inputStats = output.ToList();
+            AddOrUpdateList(inputStats);
+
+            return inputStats;
+        }
+
+    public FileIndexItem Add(FileIndexItem updateStatusContent)
         {
             _context.FileIndex.Add(updateStatusContent);
             _context.SaveChanges();
             return updateStatusContent;
+        }
+
+
+
+        public bool IfInDatabase(string filePath)
+        {
+            var count = _context.FileIndex.Count(r => r.FilePath == filePath);
+            switch (count)
+            {
+                case 0:
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
+        private static string _pathToUnixStyle(string filepath)
+        {
+            filepath = filepath.Replace(AppSettingsProvider.BasePath, "");
+
+            if (Path.DirectorySeparatorChar.ToString() == "\\")
+            {
+                filepath = filepath.Replace("\\", "/");
+            }
+            return filepath;
+        }
+
+        private static string _pathToFull(string shortPath)
+        {
+            var filepath = AppSettingsProvider.BasePath + shortPath;
+            if (Path.DirectorySeparatorChar.ToString() == "\\")
+            {
+                filepath = filepath.Replace("\\", "/");
+            }
+
+            return File.Exists(filepath) ? filepath : null;
+        }
+
+        public IEnumerable<string> AddOrUpdateList(IEnumerable<string> inputStats)
+        {
+            var addOrUpdateList = inputStats.ToList();
+            foreach (var item in addOrUpdateList)
+            {
+                if (IfInDatabase(item))
+                {
+
+                    //var item = GetWatsonStatsUser(inputStats.UserId);
+                    //item.UserId = inputStats.UserId;
+                    //item.LastActivity = inputStats.LastActivity;
+                    //item.RequestTemperatureSettings = inputStats.RequestTemperatureSettings;
+                    //_context.Attach(item).State = EntityState.Modified;
+                    //_context.SaveChanges();
+
+                }
+                else
+                {
+                    var newItem = new FileIndexItem();
+                    newItem.FileName = Path.GetFileName(item);
+                    newItem.FilePath = _pathToUnixStyle(item);
+
+                    _context.FileIndex.Add(newItem);
+                    _context.SaveChanges();
+                }
+            }
+
+            return inputStats;
         }
 
         //public IEnumerable<SqlBotDataEntities> GetAll()
@@ -136,17 +244,7 @@ namespace starsky.Services
         //    return value;
         //}
 
-        //public bool IsUserHappinessStatsInDatabase(string GebruikersID)
-        //{
-        //    var count = _context.HappinessStats.Count(r => r.GebruikersID == GebruikersID);
-        //    switch (count)
-        //    {
-        //        case 0:
-        //            return false;
-        //        default:
-        //            return true;
-        //    }
-        //}
+
 
         //public HappinessStats GetHappinessStatsUser(string gebruikersID)
         //{
@@ -200,37 +298,7 @@ namespace starsky.Services
         //}
 
 
-        //public WatsonStats AddOrUpdateWatsonStats(WatsonStats inputStats)
-        //{
 
-        //    if (IsUserWatsonStatsInDatabase(inputStats.UserId))
-        //    {
-
-        //        var item = GetWatsonStatsUser(inputStats.UserId);
-
-        //        item.UserId = inputStats.UserId;
-        //        item.LastActivity = inputStats.LastActivity;
-        //        if (!item.LoggedIn)
-        //        {
-        //            item.LoggedIn = inputStats.LoggedIn;
-        //        }
-        //        item.RequestTemperatureSettings = inputStats.RequestTemperatureSettings;
-
-        //        _context.Attach(item).State = EntityState.Modified;
-        //        _context.SaveChanges();
-
-        //        return item;
-
-        //    }
-        //    else
-        //    {
-
-        //        inputStats.FirstActivity = inputStats.LastActivity;
-        //        _context.WatsonStats.Add(inputStats);
-        //        _context.SaveChanges();
-        //        return inputStats;
-        //    }
-        //}
 
         //public WatsonStatsViewModel GetWatsonStats() { 
         //    var model = new WatsonStatsViewModel();
