@@ -17,11 +17,12 @@ namespace starsky.Models
         [Column(Order = 1)]
         public string FileName { get; set; }
 
-        [Column(Order = 3)]
         public string FileHash { get; set; }
 
         public string Tags { get; set; }
 
+        public DateTime DateTime { get; set; }
 
+        public DateTime AddToDatabase { get; set; }
     }
 }

@@ -27,9 +27,9 @@ namespace starsky.Services
             throw new NotImplementedException();
         }
 
-        public IEnumerable<FileIndexItem> GetAll()
+        public List<FileIndexItem> GetAll()
         {
-            return _context.FileIndex.OrderBy(r => r.FileName);
+            return _context.FileIndex.OrderBy(r => r.FileName).ToList();
         }
 
         //public IEnumerable<string> GetAll()
@@ -60,76 +60,127 @@ namespace starsky.Services
             return newFileList;
         }
 
+
+     
+
+
         public IEnumerable<string> SyncFiles()
         {
-            var localList = Files.GetFiles();
-            var dbList = GetAll();
+            var localFileList = Files.GetFiles().ToList();
+            var databaseFileList = GetAll();
 
-            //new HashSet<string>(localList).SetEquals(B)
+            
+            // Check for updated files based on hash
+            var localFileListFileHash = localFileList.OrderBy(r => r.FileHash).Select(item => item.FileHash).ToList();
+            var databaseFileListFileHash = databaseFileList.OrderBy(r => r.FileHash).Select(item => item.FileHash).ToList();
+
+            IEnumerable<string> differenceFileHash = databaseFileListFileHash.Except(localFileListFileHash);
+
+            foreach (var item in differenceFileHash)
+            {
+                var ditem = databaseFileList.FirstOrDefault(p => p.FileHash == item);
+                databaseFileList.Remove(ditem);
+                RemoveItem(ditem);
+            }
 
 
-            var output = localList.Except(dbList);
+
+            localFileList.ForEach(item =>
+            {
+                var dbMatchFirst = _context.FileIndex
+                    .FirstOrDefault(p => p.FilePath == Files.PathToUnixStyle(item.FilePath)
+                                         && p.FileHash == item.FileHash);
+
+                if (dbMatchFirst == null)
+                {
+                    item.AddToDatabase = DateTime.Now;
+                    item.FilePath = Files.PathToUnixStyle(item.FilePath);
+                    AddItem(item);
+                    databaseFileList.Add(item);
+                }
+
+            });
+
+            //Check fileName Difference
+            var localFileListFileName = localFileList.OrderBy(r => r.FileName).Select(item => Files.PathToUnixStyle(item.FilePath)).ToList();
+            var databaseFileListFileName = databaseFileList.OrderBy(r => r.FileName).Select(item => item.FilePath).ToList();
+
+            IEnumerable<string> differenceFileNames = databaseFileListFileName.Except(localFileListFileName);
+
+            foreach (var item in differenceFileNames)
+            {
+                var ditem = databaseFileList.FirstOrDefault(p => p.FilePath == item);
+                databaseFileList.Remove(ditem);
+                RemoveItem(ditem);
+            }
 
 
-            //var inputStats = output.ToList();
-
-            //AddList(inputStats);
 
             return null;
         }
 
-        public FileIndexItem Add(FileIndexItem updateStatusContent)
+        public FileIndexItem AddItem(FileIndexItem updateStatusContent)
         {
             _context.FileIndex.Add(updateStatusContent);
             _context.SaveChanges();
             return updateStatusContent;
         }
 
-
-
-        public bool IfInDatabase(string filePath)
+        public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
         {
-            var count = _context.FileIndex.Count(r => r.FilePath == filePath);
-            switch (count)
-            {
-                case 0:
-                    return false;
-                default:
-                    return true;
-            }
+            _context.FileIndex.Remove(updateStatusContent);
+            _context.SaveChanges();
+            return updateStatusContent;
         }
 
 
 
-        public IEnumerable<string> AddList(IEnumerable<string> inputStats)
-        {
-            var addOrUpdateList = inputStats.ToList();
-            foreach (var item in addOrUpdateList)
-            {
-                if (IfInDatabase(item))
-                {
+        //public bool IfInDatabase(string filePath)
+        //{
+        //    var count = _context.FileIndex.Count(r => r.FilePath == filePath);
+        //    switch (count)
+        //    {
+        //        case 0:
+        //            return false;
+        //        default:
+        //            return true;
+        //    }
+        //}
 
-                    //var item = GetWatsonStatsUser(inputStats.UserId);
-                    //item.UserId = inputStats.UserId;
-                    //item.LastActivity = inputStats.LastActivity;
-                    //item.RequestTemperatureSettings = inputStats.RequestTemperatureSettings;
-                    //_context.Attach(item).State = EntityState.Modified;
-                    //_context.SaveChanges();
 
-                }
-                else
-                {
-                    var newItem = new FileIndexItem();
-                    newItem.FileName = Path.GetFileName(item);
-                    newItem.FilePath = Files.PathToUnixStyle(item);
 
-                    _context.FileIndex.Add(newItem);
-                    _context.SaveChanges();
-                }
-            }
 
-            return inputStats;
-        }
+
+
+        //public IEnumerable<string> AddList(IEnumerable<string> inputStats)
+        //{
+        //    var addOrUpdateList = inputStats.ToList();
+        //    foreach (var item in addOrUpdateList)
+        //    {
+        //        if (IfInDatabase(item))
+        //        {
+
+        //            //var item = GetWatsonStatsUser(inputStats.UserId);
+        //            //item.UserId = inputStats.UserId;
+        //            //item.LastActivity = inputStats.LastActivity;
+        //            //item.RequestTemperatureSettings = inputStats.RequestTemperatureSettings;
+        //            //_context.Attach(item).State = EntityState.Modified;
+        //            //_context.SaveChanges();
+
+        //        }
+        //        else
+        //        {
+        //            var newItem = new FileIndexItem();
+        //            newItem.FileName = Path.GetFileName(item);
+        //            newItem.FilePath = Files.PathToUnixStyle(item);
+
+        //            _context.FileIndex.Add(newItem);
+        //            _context.SaveChanges();
+        //        }
+        //    }
+
+        //    return inputStats;
+        //}
 
         //public IEnumerable<SqlBotDataEntities> GetAll()
         //{

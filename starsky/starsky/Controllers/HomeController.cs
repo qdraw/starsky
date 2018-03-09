@@ -39,7 +39,7 @@ namespace starsky.Controllers
             var item = new FileIndexItem();
             item.FileName = "item";
             item.FilePath = "i";
-            _updateStatusContent.Add(item);
+            _updateStatusContent.AddItem(item);
             return Json(item);
         }
 

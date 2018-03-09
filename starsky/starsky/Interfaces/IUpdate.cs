@@ -9,9 +9,9 @@ namespace starsky.Interfaces
 
         //IEnumerable<string> GetAll();
 
-        FileIndexItem Add(FileIndexItem updateStatusContent);
+        FileIndexItem AddItem(FileIndexItem updateStatusContent);
 
-        IEnumerable<string> AddList(IEnumerable<string> updateStatusContent);
+        //IEnumerable<string> AddList(IEnumerable<string> updateStatusContent);
 
         IEnumerable<string> SyncFiles();
 

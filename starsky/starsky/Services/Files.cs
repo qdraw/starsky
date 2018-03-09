@@ -92,6 +92,13 @@ namespace starsky.Services
 
         public static string CalcHashCode(FileStream file)
         {
+            //using (var stream = new BufferedStream(file, 1200000))
+            //{
+            //    SHA256Managed sha = new SHA256Managed();
+            //    byte[] checksum = sha.ComputeHash(stream);
+            //    return BitConverter.ToString(checksum).Replace("-", String.Empty).ToLower();
+            //}
+
             MD5CryptoServiceProvider md5Provider = new MD5CryptoServiceProvider();
             Byte[] hash = md5Provider.ComputeHash(file);
             return Convert.ToBase64String(hash);
