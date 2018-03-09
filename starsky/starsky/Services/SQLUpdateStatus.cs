@@ -66,10 +66,12 @@ namespace starsky.Services
 
         public IEnumerable<string> SyncFiles()
         {
+
+            Files.ReadExifFromFile(Files.GetFiles().FirstOrDefault());
+
             var localFileList = Files.GetFiles().ToList();
             var databaseFileList = GetAll();
 
-            
             // Check for updated files based on hash
             var localFileListFileHash = localFileList.OrderBy(r => r.FileHash).Select(item => item.FileHash).ToList();
             var databaseFileListFileHash = databaseFileList.OrderBy(r => r.FileHash).Select(item => item.FileHash).ToList();
@@ -94,6 +96,8 @@ namespace starsky.Services
                 if (dbMatchFirst == null)
                 {
                     item.AddToDatabase = DateTime.Now;
+                    item = Files.ReadExifFromFile(item);
+
                     item.FilePath = Files.PathToUnixStyle(item.FilePath);
                     AddItem(item);
                     databaseFileList.Add(item);

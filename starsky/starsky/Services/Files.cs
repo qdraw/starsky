@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -8,6 +9,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Rewrite.Internal.ApacheModRewrite;
 using Microsoft.Extensions.Configuration;
 using starsky.Models;
+
+using MetadataExtractor;
 
 namespace starsky.Services
 {
@@ -24,6 +27,42 @@ namespace starsky.Services
             }
         }
 
+        public static FileIndexItem ReadExifFromFile(FileIndexItem item)
+        {
+
+            var allExifItems = ImageMetadataReader.ReadMetadata(item.FilePath);
+
+            foreach (var exifItem in allExifItems)
+            {
+
+                //Console.WriteLine(exifItem);
+
+                var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Keywords");
+                if (tCounts >= 1)
+                {
+                    item.Tags = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "IPTC" && p.Name == "Keywords")?.Description;
+                }
+
+                var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized");
+                if (dtCounts >= 1)
+                {
+                    //foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
+
+                    var dateString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized")?.Description;
+
+                    //2018:01:01 11:29:36
+                    string pattern = "yyyy:MM:dd hh:mm:ss";
+                    CultureInfo provider = CultureInfo.InvariantCulture;
+                    DateTime.TryParseExact(dateString, pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTime);
+                    item.DateTime = itemDateTime;
+                }
+
+            }
+
+            return item;
+        }
+
+
         public static IEnumerable<FileIndexItem> GetFiles()
         {
             var path = AppSettingsProvider.BasePath;
@@ -35,7 +74,7 @@ namespace starsky.Services
                 path = queue.Dequeue();
                 try
                 {
-                    foreach (string subDir in Directory.GetDirectories(path))
+                    foreach (string subDir in System.IO.Directory.GetDirectories(path))
                     {
                         queue.Enqueue(subDir);
                     }
@@ -47,7 +86,7 @@ namespace starsky.Services
                 string[] files = null;
                 try
                 {
-                    files = Directory.GetFiles(path);
+                    files = System.IO.Directory.GetFiles(path);
                 }
                 catch (Exception ex)
                 {
@@ -57,7 +96,7 @@ namespace starsky.Services
                 {
                     for (int i = 0; i < files.Length; i++)
                     {
-                        if (files[i].Contains(".jpg"))
+                        if (files[i].ToLower().EndsWith("jpg"))
                         {
                             var fileItem = new FileIndexItem
                             {
