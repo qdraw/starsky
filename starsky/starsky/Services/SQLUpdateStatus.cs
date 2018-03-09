@@ -1,13 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using starsky.Interfaces;
 using starsky.Models;
-using Microsoft.Rest.Azure;
 using starsky.Data;
 
 
@@ -66,8 +61,6 @@ namespace starsky.Services
 
         public IEnumerable<string> SyncFiles()
         {
-
-            Files.ReadExifFromFile(Files.GetFiles().FirstOrDefault());
 
             var localFileList = Files.GetFiles().ToList();
             var databaseFileList = GetAll();

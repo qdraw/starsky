@@ -21,8 +21,8 @@ namespace starskyCli
             //AppSettingsProvider.BasePath = Startup._getBasePath();
             //AppSettingsProvider.DbConnectionString = Startup.GetConnectionString();
 
-            AppSettingsProvider.BasePath = "Z:\\data\\isight\\2018";
-            AppSettingsProvider.DbConnectionString = "Data Source=../starsky/data.db";
+            //AppSettingsProvider.BasePath = "Z:\\data\\isight\\2018";
+            //AppSettingsProvider.DbConnectionString = "Data Source=../starsky/data.db";
 
 
             builder.UseSqlite(AppSettingsProvider.DbConnectionString);
