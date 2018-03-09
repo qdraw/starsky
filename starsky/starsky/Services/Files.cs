@@ -102,7 +102,8 @@ namespace starsky.Services
                             {
                                 FilePath = files[i],
                                 FileName = Path.GetFileName(files[i]),
-                                FileHash = CalcHashCode(files[i])
+                                FileHash = CalcHashCode(files[i]),
+                                Folder = PathToUnixStyle(Path.GetDirectoryName(files[i]))
                             };
                             yield return fileItem;
                         }

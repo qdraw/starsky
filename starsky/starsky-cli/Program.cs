@@ -13,7 +13,7 @@ namespace starskyCli
         {
             ConfigRead.SetAppSettingsProvider();
 
-            new SyncDatabase().SyncFiles();
+            new SyncDatabase().SyncFiles("/2018/");
             Console.WriteLine("Done!");
         }
 

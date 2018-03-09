@@ -18,7 +18,8 @@ namespace starsky.Services
 
             try
             {
-                string text = System.IO.File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "/appsettings.json");
+                Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json");
+                string text = System.IO.File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json");
 
                 JObject obj = JObject.Parse(text);
 

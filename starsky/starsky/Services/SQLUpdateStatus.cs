@@ -55,8 +55,22 @@ namespace starsky.Services
             return newFileList;
         }
 
+        public IEnumerable<FileIndexItem> GetFolder(string subPath = "/")
+        {
+            var path = AppSettingsProvider.BasePath + Files.PathToSys(subPath);
 
-     
+
+            foreach (var item in _context.FileIndex)
+            {
+                var q = System.IO.Directory.GetDirectories(path + item.FilePath);
+            }
+
+            return _context.FileIndex.Where(
+                p => p.FilePath == "/"
+            ).OrderBy(r => r.FileName);
+        }
+
+
 
 
         public IEnumerable<string> SyncFiles(string subPath = "")
@@ -67,7 +81,8 @@ namespace starsky.Services
 
             // Check for updated files based on hash
             var localFileListFileHash = localFileList.OrderBy(r => r.FileHash).Select(item => item.FileHash).ToList();
-            var databaseFileListFileHash = databaseFileList.OrderBy(r => r.FileHash).Select(item => item.FileHash).ToList();
+            var databaseFileListFileHash =
+                databaseFileList.OrderBy(r => r.FileHash).Select(item => item.FileHash).ToList();
 
             IEnumerable<string> differenceFileHash = databaseFileListFileHash.Except(localFileListFileHash);
 
@@ -99,8 +114,10 @@ namespace starsky.Services
             });
 
             //Check fileName Difference
-            var localFileListFileName = localFileList.OrderBy(r => r.FileName).Select(item => Files.PathToUnixStyle(item.FilePath)).ToList();
-            var databaseFileListFileName = databaseFileList.OrderBy(r => r.FileName).Select(item => item.FilePath).ToList();
+            var localFileListFileName = localFileList.OrderBy(r => r.FileName)
+                .Select(item => Files.PathToUnixStyle(item.FilePath)).ToList();
+            var databaseFileListFileName =
+                databaseFileList.OrderBy(r => r.FileName).Select(item => item.FilePath).ToList();
 
             IEnumerable<string> differenceFileNames = databaseFileListFileName.Except(localFileListFileName);
 
@@ -130,9 +147,10 @@ namespace starsky.Services
             return updateStatusContent;
         }
 
+    }
+}
 
-
-        //public bool IfInDatabase(string filePath)
+//public bool IfInDatabase(string filePath)
         //{
         //    var count = _context.FileIndex.Count(r => r.FilePath == filePath);
         //    switch (count)
@@ -615,7 +633,7 @@ public EventsOfficeHoursModel ParseEvents(List<ChannelEvent> channelEvents, Date
 }
 
 */
-    }
+
 
 
 
@@ -639,4 +657,3 @@ public EventsOfficeHoursModel ParseEvents(List<ChannelEvent> channelEvents, Date
 
 
 
-}

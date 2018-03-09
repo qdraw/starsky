@@ -7,7 +7,12 @@ namespace starsky.Interfaces
     public interface IUpdate
     {
 
-        //IEnumerable<string> GetAll();
+        //IEnumerable<string> GetAll(string subPath = "");
+        List<FileIndexItem> GetAll(string subPath = "");
+
+        IEnumerable<FileIndexItem> GetFolder(string subPath = "/");
+
+
 
         FileIndexItem AddItem(FileIndexItem updateStatusContent);
 
