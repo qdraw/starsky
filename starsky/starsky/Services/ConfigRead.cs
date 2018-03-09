@@ -14,28 +14,33 @@ namespace starsky.Services
         {
             string basePath;
             string defaultConnection;
+            string databaseType;
 
             try
             {
-                string text = System.IO.File.ReadAllText("../starsky/appsettings.json");
+                string text = System.IO.File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "/appsettings.json");
 
                 JObject obj = JObject.Parse(text);
 
                 basePath = (string)obj["ConnectionStrings"]["STARSKY_BASEPATH"];
                 defaultConnection = (string)obj["ConnectionStrings"]["DefaultConnection"];
-
+                databaseType = (string)obj["ConnectionStrings"]["DatabaseType"];
             }
             catch (FileNotFoundException e)
             {
                 basePath = null;
                 defaultConnection = null;
+                databaseType = null;
             }
 
-            if (basePath != null || defaultConnection != null)
+            if (basePath != null || defaultConnection != null || databaseType != null)
             {
                 AppSettingsProvider.BasePath = basePath;
                 AppSettingsProvider.DbConnectionString = defaultConnection;
-                AppSettingsProvider.DbConnectionString = "Data Source=../starsky/data.db";
+                AppSettingsProvider.DatabaseType = databaseType == "mysql" ? AppSettingsProvider.DatabaseTypeList.Mysql : AppSettingsProvider.DatabaseTypeList.Sqlite;
+
+
+                //AppSettingsProvider.DbConnectionString = "Data Source=../starsky/data.db";
 
                 //new SettingsCli().BasePath = basePath;
                 //new SettingsCli().DefaultConnection = defaultConnection;

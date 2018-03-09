@@ -24,44 +24,22 @@ namespace starsky
 
         private readonly IConfiguration _configuration;
 
-        private string GetConnectionString()
-        {
-            var connectionString = Environment.GetEnvironmentVariable("STARSKY_SQL");
-
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                Console.WriteLine(">> connectionString from .json file");
-
-                connectionString = _configuration.GetConnectionString("DefaultConnection");
-            }
-            return connectionString;
-        }
-
-        private string _getBasePath()
-        {
-            var connectionString = Environment.GetEnvironmentVariable("STARSKY_BASEPATH");
-
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                connectionString = _configuration.GetConnectionString("STARSKY_BASEPATH");
-            }
-            return connectionString;
-        }
-
-        private AppSettingsProvider.DatabaseTypeList _getDbType()
-        {
-            var databaseType = Environment.GetEnvironmentVariable("DatabaseType");
-            return AppSettingsProvider.DatabaseType = databaseType;
-        }
-
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            ConfigRead.SetAppSettingsProvider();
 
-            var item = _getDbType();
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(GetConnectionString()));
-            //services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(GetConnectionString()));
+            if (AppSettingsProvider.DatabaseType == AppSettingsProvider.DatabaseTypeList.Mysql)
+            {
+                services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(AppSettingsProvider.DbConnectionString));
+            }
+            else
+            {
+                services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(AppSettingsProvider.DbConnectionString));
+
+            }
+
             services.AddScoped<IUpdate, SqlUpdateStatus>();
             services.AddMvc();
         }
@@ -78,9 +56,6 @@ namespace starsky
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
-            AppSettingsProvider.BasePath = _getBasePath();
-            //AppSettingsProvider.DbConnectionString = GetConnectionString();
 
             app.UseStaticFiles();
 

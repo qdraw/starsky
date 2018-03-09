@@ -24,9 +24,20 @@ namespace starskyCli
             //AppSettingsProvider.BasePath = "Z:\\data\\isight\\2018";
             //AppSettingsProvider.DbConnectionString = "Data Source=../starsky/data.db";
 
+
+            if (AppSettingsProvider.DatabaseType == AppSettingsProvider.DatabaseTypeList.Mysql)
+            {
+                builder.UseMySql(AppSettingsProvider.DbConnectionString);
+            }
+            else
+            {
+                builder.UseSqlite(AppSettingsProvider.DbConnectionString);
+            }
+
+            Console.WriteLine(AppSettingsProvider.DbConnectionString);
             //builder.UseMySql(AppSettingsProvider.DbConnectionString);
 
-            builder.UseSqlite(AppSettingsProvider.DbConnectionString);
+            //builder.UseSqlite(AppSettingsProvider.DbConnectionString);
             //builder.UseInMemoryDatabase();
             var _options = builder.Options;
 
