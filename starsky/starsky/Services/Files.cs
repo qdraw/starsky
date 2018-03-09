@@ -63,9 +63,9 @@ namespace starsky.Services
         }
 
 
-        public static IEnumerable<FileIndexItem> GetFiles()
+        public static IEnumerable<FileIndexItem> GetFiles(string subPath = "")
         {
-            var path = AppSettingsProvider.BasePath;
+            var path = AppSettingsProvider.BasePath + PathToSys(subPath);
 
             Queue<string> queue = new Queue<string>();
             queue.Enqueue(path);
@@ -147,20 +147,25 @@ namespace starsky.Services
         {
             filepath = filepath.Replace(AppSettingsProvider.BasePath, "");
 
+            filepath = PathToSys(filepath);
+
+            return filepath;
+        }
+
+        public static string PathToSys(string subPath)
+        {
             if (Path.DirectorySeparatorChar.ToString() == "\\")
             {
-                filepath = filepath.Replace("\\", "/");
+                subPath = subPath.Replace("\\", "/");
             }
-            return filepath;
+            return subPath;
         }
 
         public static string PathToFull(string shortPath)
         {
             var filepath = AppSettingsProvider.BasePath + shortPath;
-            if (Path.DirectorySeparatorChar.ToString() == "\\")
-            {
-                filepath = filepath.Replace("\\", "/");
-            }
+
+            filepath = PathToSys(filepath);
 
             return File.Exists(filepath) ? filepath : null;
         }

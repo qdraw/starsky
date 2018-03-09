@@ -48,11 +48,20 @@ namespace starsky
             return connectionString;
         }
 
+        private AppSettingsProvider.DatabaseTypeList _getDbType()
+        {
+            var databaseType = Environment.GetEnvironmentVariable("DatabaseType");
+            return AppSettingsProvider.DatabaseType = databaseType;
+        }
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            var item = _getDbType();
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(GetConnectionString()));
+            //services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(GetConnectionString()));
             services.AddScoped<IUpdate, SqlUpdateStatus>();
             services.AddMvc();
         }

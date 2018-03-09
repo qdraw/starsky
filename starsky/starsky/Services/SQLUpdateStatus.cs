@@ -22,9 +22,9 @@ namespace starsky.Services
             throw new NotImplementedException();
         }
 
-        public List<FileIndexItem> GetAll()
+        public List<FileIndexItem> GetAll(string subPath = "")
         {
-            return _context.FileIndex.OrderBy(r => r.FileName).ToList();
+            return _context.FileIndex.Where(p => p.FilePath.Contains(subPath)).OrderBy(r => r.FileName).ToList();
         }
 
         //public IEnumerable<string> GetAll()
@@ -59,11 +59,11 @@ namespace starsky.Services
      
 
 
-        public IEnumerable<string> SyncFiles()
+        public IEnumerable<string> SyncFiles(string subPath = "")
         {
 
-            var localFileList = Files.GetFiles().ToList();
-            var databaseFileList = GetAll();
+            var localFileList = Files.GetFiles(subPath).ToList();
+            var databaseFileList = GetAll(subPath);
 
             // Check for updated files based on hash
             var localFileListFileHash = localFileList.OrderBy(r => r.FileHash).Select(item => item.FileHash).ToList();

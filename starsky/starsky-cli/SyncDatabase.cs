@@ -24,6 +24,7 @@ namespace starskyCli
             //AppSettingsProvider.BasePath = "Z:\\data\\isight\\2018";
             //AppSettingsProvider.DbConnectionString = "Data Source=../starsky/data.db";
 
+            //builder.UseMySql(AppSettingsProvider.DbConnectionString);
 
             builder.UseSqlite(AppSettingsProvider.DbConnectionString);
             //builder.UseInMemoryDatabase();
@@ -41,9 +42,9 @@ namespace starskyCli
         //   return _sqlStatus.GetAll();
         //}
 
-        public IEnumerable<string> SyncFiles()
+        public IEnumerable<string> SyncFiles(string subPath = "")
         {
-            return _sqlStatus.SyncFiles();
+            return _sqlStatus.SyncFiles(subPath);
         }
 
     }

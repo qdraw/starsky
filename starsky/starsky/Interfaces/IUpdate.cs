@@ -13,7 +13,7 @@ namespace starsky.Interfaces
 
         //IEnumerable<string> AddList(IEnumerable<string> updateStatusContent);
 
-        IEnumerable<string> SyncFiles();
+        IEnumerable<string> SyncFiles(string subPath = "");
 
         
 
