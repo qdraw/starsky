@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Data;
@@ -55,19 +56,67 @@ namespace starsky.Services
             return newFileList;
         }
 
-        public IEnumerable<FileIndexItem> GetFolder(string subPath = "/")
+        public IEnumerable<string> GetFolder(string subPath = "/")
         {
-            var path = AppSettingsProvider.BasePath + Files.PathToSys(subPath);
 
+            var childItemsInFolder = _context.FileIndex.Where(
+                p => p.Folder.Contains(subPath)
+            );
 
-            foreach (var item in _context.FileIndex)
+            var allSubFolders = childItemsInFolder.GroupBy(x => x.Folder, (key, group) => group.First());
+
+            var directChildFolders = new List<string>();
+            foreach (var item in allSubFolders)
             {
-                var q = System.IO.Directory.GetDirectories(path + item.FilePath);
+                if (IsChildFolder(item.Folder, subPath))
+                {
+                    directChildFolders.Add(item.Folder);
+                }
+            }
+            
+            return directChildFolders;
+        }
+
+        public bool IsChildFolder(string item,string subPath)
+        {
+
+
+            var itemSearch = Regex.Replace(item, @"^(" + subPath + @")", "", RegexOptions.IgnoreCase);
+            //var itemSearch = item.Substring(1, item.Length - 1);
+
+            var i = itemSearch.Split('/').Length;
+            if (i == 1 && subPath.Length == 1 || i == 2 && subPath.Length >= 2)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
 
+
+        }
+
+
+
+
+        public IEnumerable<FileIndexItem> GetFilesInFolder(string subPath = "/")
+        {
+            subPath = SubPathSlashRemove(subPath);
+
             return _context.FileIndex.Where(
-                p => p.FilePath == "/"
-            ).OrderBy(r => r.FileName);
+                p => p.Folder == subPath
+            ).OrderBy(r => r.FileName).AsEnumerable();
+        }
+
+        public string SubPathSlashRemove(string subPath = "/")
+        {
+            if (subPath.Substring(subPath.Length - 1, 1) == "/" && subPath != "/")
+            {
+                subPath = subPath.Substring(0, subPath.Length - 1);
+            }
+
+            return subPath;
         }
 
 

@@ -27,7 +27,7 @@ namespace starsky.Services
                 defaultConnection = (string)obj["ConnectionStrings"]["DefaultConnection"];
                 databaseType = (string)obj["ConnectionStrings"]["DatabaseType"];
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
                 basePath = null;
                 defaultConnection = null;

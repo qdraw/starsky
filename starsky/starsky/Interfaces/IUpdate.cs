@@ -10,7 +10,8 @@ namespace starsky.Interfaces
         //IEnumerable<string> GetAll(string subPath = "");
         List<FileIndexItem> GetAll(string subPath = "");
 
-        IEnumerable<FileIndexItem> GetFolder(string subPath = "/");
+        IEnumerable<String> GetFolder(string subPath = "/");
+        IEnumerable<FileIndexItem> GetFilesInFolder(string subPath = "/");
 
 
 

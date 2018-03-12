@@ -43,9 +43,16 @@ namespace starsky.Controllers
             return Json(item);
         }
 
-        public IActionResult GetAll(string p = "/")
+        public IActionResult GetFolder(string p = "/")
         {
             var i = _updateStatusContent.GetFolder(p);
+
+            return Json(i);
+        }
+
+        public IActionResult GetFilesInFolder(string p = "/")
+        {
+            var i = _updateStatusContent.GetFilesInFolder(p);
 
             return Json(i);
         }
