@@ -59,6 +59,7 @@ namespace starsky.Services
 
         public IEnumerable<string> GetChildFolders(string subPath = "/")
         {
+            subPath = SubPathSlashRemove(subPath);
 
             var childItemsInFolder = _context.FileIndex.Where(
                 p => p.Folder.Contains(subPath)
@@ -69,29 +70,57 @@ namespace starsky.Services
             var directChildFolders = new List<string>();
             foreach (var item in allSubFolders)
             {
-                if (IsChildFolder(item.Folder, subPath))
+                if (GetChildFolders(item.Folder, subPath) != null)
                 {
-                    directChildFolders.Add(item.Folder);
+                    directChildFolders.Add(GetChildFolders(item.Folder, subPath));
                 }
+
+                //if (IsChildFolder(item.Folder, subPath))
+                //{
+                //    directChildFolders.Add(item.Folder);
+                //}
             }
-            
+
+
             return directChildFolders;
         }
 
-        public bool IsChildFolder(string item,string subPath)
+        public string GetChildFolders(string item, string subPath)
         {
+            
             var itemSearch = Regex.Replace(item, @"^(" + subPath + @")", "", RegexOptions.IgnoreCase);
-            //var itemSearch = item.Substring(1, item.Length - 1);
+            itemSearch = SubPathSlashRemove(itemSearch);
 
-            var i = itemSearch.Split('/').Length;
-            if (i == 1 && subPath.Length == 1 || i == 2 && subPath.Length >= 2)
+            var slashesList = itemSearch.Split('/');
+
+            if (slashesList.Length >= 1 && itemSearch != "")
             {
-                return true;
+                if (subPath != "/")
+                {
+                    var childFolder = subPath + "/" + slashesList[0];
+                    return childFolder;
+                }
+                else
+                {
+                    var childFolder = slashesList[0];
+                    return childFolder;
+                }
+
             }
-            else
-            {
-                return false;
-            }
+
+            return null;
+
+            //if (slashesList.Length == 1 && subPath.Length == 1 || slashesList.Length == 2 && subPath.Length >= 2)
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    Console.WriteLine(slashesList[0]);
+            //    Console.WriteLine();
+
+            //    return false;
+            //}
         }
 
 
@@ -160,10 +189,10 @@ namespace starsky.Services
         public IEnumerable<FileIndexItem> GetFilesInFolder(string subPath = "/")
         {
             subPath = SubPathSlashRemove(subPath);
-
-            return _context.FileIndex.Where(
+            var content = _context.FileIndex.Where(
                 p => p.Folder == subPath
             ).OrderBy(r => r.FileName).AsEnumerable();
+            return content;
         }
 
 
@@ -172,10 +201,19 @@ namespace starsky.Services
 
         public string SubPathSlashRemove(string subPath = "/")
         {
+            if (string.IsNullOrEmpty(subPath)) return subPath;
+
             if (subPath.Substring(subPath.Length - 1, 1) == "/" && subPath != "/")
             {
                 subPath = subPath.Substring(0, subPath.Length - 1);
             }
+
+            if (subPath.Substring(0, 1) == "/" && subPath != "/")
+            {
+                subPath = subPath.Substring(1, subPath.Length - 1);
+            }
+
+
 
             return subPath;
         }

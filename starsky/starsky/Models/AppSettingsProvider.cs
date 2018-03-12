@@ -11,11 +11,15 @@ namespace starsky.Models
         public static string BasePath { get; set; }
 
         public static DatabaseTypeList DatabaseType { get; set; }
+        public static string ThumbnailTempFolder { get; set; }
+
+
         public enum DatabaseTypeList
         {
             Mysql = 1,
             Sqlite = 2
         }
 
+        
     }
 }

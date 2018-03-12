@@ -15,6 +15,7 @@ namespace starsky.Services
             string basePath;
             string defaultConnection;
             string databaseType;
+            string thumbnailTempFolder;
 
             try
             {
@@ -26,20 +27,22 @@ namespace starsky.Services
                 basePath = (string)obj["ConnectionStrings"]["STARSKY_BASEPATH"];
                 defaultConnection = (string)obj["ConnectionStrings"]["DefaultConnection"];
                 databaseType = (string)obj["ConnectionStrings"]["DatabaseType"];
+                thumbnailTempFolder = (string)obj["ConnectionStrings"]["ThumbnailTempFolder"];
             }
             catch (FileNotFoundException)
             {
                 basePath = null;
                 defaultConnection = null;
                 databaseType = null;
+                thumbnailTempFolder = null;
             }
 
-            if (basePath != null || defaultConnection != null || databaseType != null)
+            if (basePath != null || defaultConnection != null || databaseType != null || thumbnailTempFolder != null)
             {
                 AppSettingsProvider.BasePath = basePath;
                 AppSettingsProvider.DbConnectionString = defaultConnection;
                 AppSettingsProvider.DatabaseType = databaseType == "mysql" ? AppSettingsProvider.DatabaseTypeList.Mysql : AppSettingsProvider.DatabaseTypeList.Sqlite;
-
+                AppSettingsProvider.ThumbnailTempFolder = thumbnailTempFolder;
 
                 //AppSettingsProvider.DbConnectionString = "Data Source=../starsky/data.db";
 
@@ -50,7 +53,7 @@ namespace starsky.Services
             }
             else
             {
-                throw new System.ArgumentException("BasePath or ConnectionStrings not readed");
+                throw new System.ArgumentException("BasePath or ConnectionStrings or ThumbnailTempFolder not readed");
             }
 
         }
