@@ -14,10 +14,10 @@ namespace starsky.Controllers
             _updateStatusContent = updateStatusContent;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string f = "/")
         {
-
-            return View();
+            var model = _updateStatusContent.GetObjectItems(f);
+            return View(model);
         }
 
         public IActionResult About()
@@ -45,7 +45,7 @@ namespace starsky.Controllers
 
         public IActionResult GetFolder(string p = "/")
         {
-            var i = _updateStatusContent.GetFolder(p);
+            var i = _updateStatusContent.GetChildFolders(p);
 
             return Json(i);
         }

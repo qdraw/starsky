@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Data;
+using starsky.ViewModels;
 
 
 namespace starsky.Services
@@ -56,7 +57,7 @@ namespace starsky.Services
             return newFileList;
         }
 
-        public IEnumerable<string> GetFolder(string subPath = "/")
+        public IEnumerable<string> GetChildFolders(string subPath = "/")
         {
 
             var childItemsInFolder = _context.FileIndex.Where(
@@ -79,8 +80,6 @@ namespace starsky.Services
 
         public bool IsChildFolder(string item,string subPath)
         {
-
-
             var itemSearch = Regex.Replace(item, @"^(" + subPath + @")", "", RegexOptions.IgnoreCase);
             //var itemSearch = item.Substring(1, item.Length - 1);
 
@@ -93,11 +92,69 @@ namespace starsky.Services
             {
                 return false;
             }
-
-
         }
 
 
+        public IEnumerable<ObjectItem> GetItem(string path = "")
+        {
+            var countDirectResults = _context.FileIndex.Count(p => p.FilePath == path);
+
+            if (countDirectResults == 1)
+            {
+                var query = _context.FileIndex.Where(p => p.FilePath == path)?.FirstOrDefault();
+
+
+                var itemResultsList = new List<ObjectItem>();
+                var itemResult = new ObjectItem
+                {
+                    FilePath = query?.FilePath,
+                    FileName = query?.FileName,
+                    Tags = query?.Tags
+                };
+
+                itemResultsList.Add(itemResult);
+                return itemResultsList;
+            }
+
+            return null;
+        }
+
+
+
+        public IEnumerable<ObjectItem> GetObjectItems(string subPath = "/")
+        {
+            var directItem = GetItem(subPath);
+            if (directItem != null)
+            {
+                return directItem;
+            }
+            var files = GetFilesInFolder(subPath);
+            var folders = GetChildFolders(subPath);
+            var items = new List<ObjectItem>();
+
+            foreach (var file in files)
+            {
+                var item = new ObjectItem();
+
+                item.IsFolder = false;
+                item.FilePath = file.FilePath;
+                item.FileName = file.FileName;
+                item.Tags = file.Tags;
+
+                items.Add(item);
+            }
+
+            foreach (var folder in folders)
+            {
+                var item = new ObjectItem();
+                item.IsFolder = true;
+                item.FilePath = folder;
+                items.Add(item);
+            }
+
+            return new List<ObjectItem>(items.OrderBy(p => p.FilePath));
+
+        }
 
 
         public IEnumerable<FileIndexItem> GetFilesInFolder(string subPath = "/")
@@ -108,6 +165,10 @@ namespace starsky.Services
                 p => p.Folder == subPath
             ).OrderBy(r => r.FileName).AsEnumerable();
         }
+
+
+
+
 
         public string SubPathSlashRemove(string subPath = "/")
         {

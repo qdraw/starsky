@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using starsky.Models;
+using starsky.ViewModels;
 
 namespace starsky.Interfaces
 {
@@ -10,8 +11,10 @@ namespace starsky.Interfaces
         //IEnumerable<string> GetAll(string subPath = "");
         List<FileIndexItem> GetAll(string subPath = "");
 
-        IEnumerable<String> GetFolder(string subPath = "/");
+        IEnumerable<string> GetChildFolders(string subPath = "/");
         IEnumerable<FileIndexItem> GetFilesInFolder(string subPath = "/");
+
+        IEnumerable<ObjectItem> GetObjectItems(string subPath = "/");
 
 
 
