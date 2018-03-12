@@ -221,6 +221,8 @@ namespace starsky.Services
             var databaseFileListFileHash =
                 databaseFileList.OrderBy(r => r.FileHash).Select(item => item.FileHash).ToList();
 
+            Console.Write(".");
+
             IEnumerable<string> differenceFileHash = databaseFileListFileHash.Except(localFileListFileHash);
 
             foreach (var item in differenceFileHash)
@@ -228,8 +230,8 @@ namespace starsky.Services
                 var ditem = databaseFileList.FirstOrDefault(p => p.FileHash == item);
                 databaseFileList.Remove(ditem);
                 RemoveItem(ditem);
+                Console.Write("^");
             }
-
 
 
             localFileList.ForEach(item =>
@@ -238,6 +240,7 @@ namespace starsky.Services
                 var dbMatchFirst = _context.FileIndex
                     .FirstOrDefault(p => p.FilePath == Files.PathToUnixStyle(localItem.FilePath)
                                          && p.FileHash == localItem.FileHash);
+                Console.Write("_");
 
                 if (dbMatchFirst == null)
                 {
@@ -246,7 +249,7 @@ namespace starsky.Services
 
                     item.FilePath = Files.PathToUnixStyle(item.FilePath);
                     AddItem(item);
-                    Thumbnail.CreateThumb(item);
+                    //item = Thumbnail.CreateThumb(item);
                     databaseFileList.Add(item);
                 }
 
@@ -262,12 +265,12 @@ namespace starsky.Services
 
             foreach (var item in differenceFileNames)
             {
+                Console.Write("*");
+
                 var ditem = databaseFileList.FirstOrDefault(p => p.FilePath == item);
                 databaseFileList.Remove(ditem);
                 RemoveItem(ditem);
             }
-
-
 
             return null;
         }
