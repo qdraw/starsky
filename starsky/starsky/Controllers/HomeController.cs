@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
 using starsky.Models;
+using starsky.Services;
 
 namespace starsky.Controllers
 {
@@ -17,15 +19,30 @@ namespace starsky.Controllers
         public IActionResult Index(string f = "/")
         {
             var model = _updateStatusContent.GetObjectItems(f);
+            var firstItem = model.FirstOrDefault();
+
+            if (firstItem != null && !firstItem.IsFolder && model.Count() == 1)
+            {
+                return View("SingleItem", firstItem);
+            }
             return View(model);
+        }
+
+        public IActionResult Thumbnail(string f)
+        {
+            var path = _updateStatusContent.GetItemByHash(f);
+            //path = Files.PathToFull(path);
+            if (path == null) return BadRequest();
+
+            path = AppSettingsProvider.ThumbnailTempFolder + f + ".jpg";
+
+            var image = System.IO.File.OpenRead(path);
+            return File(image, "image/jpeg");
         }
 
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
-
-
-
             return View();
         }
 
@@ -34,14 +51,14 @@ namespace starsky.Controllers
             return Json(_updateStatusContent.SyncFiles());
         }
 
-        public IActionResult Update()
-        {
-            var item = new FileIndexItem();
-            item.FileName = "item";
-            item.FilePath = "i";
-            _updateStatusContent.AddItem(item);
-            return Json(item);
-        }
+        //public IActionResult Update()
+        //{
+        //    var item = new FileIndexItem();
+        //    item.FileName = "item";
+        //    item.FilePath = "i";
+        //    _updateStatusContent.AddItem(item);
+        //    return Json(item);
+        //}
 
         public IActionResult GetFolder(string p = "/")
         {
@@ -57,12 +74,6 @@ namespace starsky.Controllers
             return Json(i);
         }
 
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
 
         public IActionResult Error()
         {

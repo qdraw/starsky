@@ -4,23 +4,28 @@
     ViewData["Title"] = "Home Page";
 }
 
-
-<table>
+<div class="wrapper">
     @foreach (var item in Model)
     {
-    <tr>
-        @if(@item.IsFolder) {
-            <th>-</th>
-            <th> <a asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">@item.FilePath</a> </th>
-        }
-        else {
-            <th>@item.FileName &nbsp;&nbsp;  -  &nbsp;&nbsp; </th>
-            <th> @item.FilePath &nbsp;&nbsp;  -  &nbsp;&nbsp;  </th>
-            <th> @item.Tags</th>
 
-        }
+        <a class="halfitem" asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
+            <div class="caption">
+                <h3>@item.FileName</h3>
+                <p>@item.Tags</p>
+
+            </div>
+
+            @if (!@item.IsFolder)
+            {
+                <img src="@Url.Action("Thumbnail", "Home", new {f = item.FileHash})" alt="" />
+            }
+            else
+            {
+                <img src="" alt="" />
+            }
+        </a>
+ }
+</div>
 
 
-    </tr>
-    }
-    </table>
+

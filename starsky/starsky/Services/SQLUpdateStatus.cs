@@ -35,27 +35,27 @@ namespace starsky.Services
         //    return dbItems.Select(item => item.FilePath).ToList();
         //}
 
-        public IEnumerable<string> RemoveOldFilesByFileList(IEnumerable<string> shortFileList)
-        {
-            var newFileList = new List<string>();
-            foreach (var item in shortFileList)
-            {
-                if (Files.PathToFull(item) == null)
-                {
-                    var firstOrDefault = _context.FileIndex.FirstOrDefault(r => r.FilePath == item);
-                    if (firstOrDefault != null)
-                    {
-                        _context.Remove(firstOrDefault);
-                    }
-                }
-                else
-                {
-                    newFileList.Add(item);
-                }
-            }
+        //public IEnumerable<string> RemoveOldFilesByFileList(IEnumerable<string> shortFileList)
+        //{
+        //    var newFileList = new List<string>();
+        //    foreach (var item in shortFileList)
+        //    {
+        //        if (Files.PathToFull(item) == null)
+        //        {
+        //            var firstOrDefault = _context.FileIndex.FirstOrDefault(r => r.FilePath == item);
+        //            if (firstOrDefault != null)
+        //            {
+        //                _context.Remove(firstOrDefault);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            newFileList.Add(item);
+        //        }
+        //    }
 
-            return newFileList;
-        }
+        //    return newFileList;
+        //}
 
         public IEnumerable<string> GetChildFolders(string subPath = "/")
         {
@@ -105,6 +105,10 @@ namespace starsky.Services
 
         }
 
+        public string GetItemByHash(string path) { 
+            var query = _context.FileIndex.FirstOrDefault(p => p.FileHash == path);
+            return query?.FilePath;
+        }
 
         public IEnumerable<ObjectItem> GetItem(string path = "")
         {
@@ -120,6 +124,7 @@ namespace starsky.Services
             {
                 FilePath = query?.FilePath,
                 FileName = query?.FileName,
+                FileHash = query?.FileHash,
                 Tags = query?.Tags
             };
 
@@ -148,6 +153,7 @@ namespace starsky.Services
                 item.IsFolder = false;
                 item.FilePath = file.FilePath;
                 item.FileName = file.FileName;
+                item.FileHash = file.FileHash;
                 item.Tags = file.Tags;
 
                 items.Add(item);
@@ -158,6 +164,7 @@ namespace starsky.Services
                 var item = new ObjectItem();
                 item.IsFolder = true;
                 item.FilePath = folder;
+                item.FileName = folder;
                 items.Add(item);
             }
 
@@ -239,6 +246,7 @@ namespace starsky.Services
 
                     item.FilePath = Files.PathToUnixStyle(item.FilePath);
                     AddItem(item);
+                    Thumbnail.CreateThumb(item);
                     databaseFileList.Add(item);
                 }
 

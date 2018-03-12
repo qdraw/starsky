@@ -15,6 +15,7 @@ namespace starsky.ViewModels
 
         public string Tags { get; set; }
 
+        public string FileHash { get; set; }
 
     }
 }

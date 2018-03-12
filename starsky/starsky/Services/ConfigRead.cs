@@ -35,6 +35,12 @@ namespace starsky.Services
                 defaultConnection = (string)obj["ConnectionStrings"]["DefaultConnection"];
                 databaseType = (string)obj["ConnectionStrings"]["DatabaseType"];
                 thumbnailTempFolder = (string)obj["ConnectionStrings"]["ThumbnailTempFolder"];
+
+                // Add backSlash to configuration
+                if (thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1, 1) != Path.DirectorySeparatorChar.ToString())
+                {
+                    thumbnailTempFolder += Path.DirectorySeparatorChar.ToString();
+                }
             }
             catch (FileNotFoundException)
             {

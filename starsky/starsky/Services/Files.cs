@@ -141,7 +141,14 @@ namespace starsky.Services
 
             MD5CryptoServiceProvider md5Provider = new MD5CryptoServiceProvider();
             Byte[] hash = md5Provider.ComputeHash(file);
-            return Convert.ToBase64String(hash);
+            var stringHash = Convert.ToBase64String(hash);
+
+            stringHash = stringHash.Replace("/", "_");
+            stringHash = stringHash.Replace("\\", "_");
+            stringHash = stringHash.Replace("==", "");
+
+            return stringHash;
+
         }
 
         public static string PathToUnixStyle(string filepath)

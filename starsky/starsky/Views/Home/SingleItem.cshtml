@@ -1,0 +1,10 @@
+﻿@model starsky.ViewModels.ObjectItem
+@{
+    ViewData["Title"] = @Model.FileName;
+}
+<h2>@ViewData["Title"]</h2>
+<h3>@Model.Tags</h3>
+
+
+<img src="@Url.Action("Thumbnail", "Home", new { f = @Model.FileHash })" />
+
