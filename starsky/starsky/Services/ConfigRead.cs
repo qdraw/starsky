@@ -25,6 +25,13 @@ namespace starsky.Services
                 JObject obj = JObject.Parse(text);
 
                 basePath = (string)obj["ConnectionStrings"]["STARSKY_BASEPATH"];
+
+                // Add backSlash to configuration
+                if (basePath.Substring(basePath.Length - 1, 1) != Path.DirectorySeparatorChar.ToString())
+                {
+                    basePath += Path.DirectorySeparatorChar.ToString();
+                }
+
                 defaultConnection = (string)obj["ConnectionStrings"]["DefaultConnection"];
                 databaseType = (string)obj["ConnectionStrings"]["DatabaseType"];
                 thumbnailTempFolder = (string)obj["ConnectionStrings"]["ThumbnailTempFolder"];

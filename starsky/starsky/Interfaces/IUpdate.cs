@@ -16,8 +16,6 @@ namespace starsky.Interfaces
 
         IEnumerable<ObjectItem> GetObjectItems(string subPath = "/");
 
-
-
         FileIndexItem AddItem(FileIndexItem updateStatusContent);
 
         //IEnumerable<string> AddList(IEnumerable<string> updateStatusContent);
