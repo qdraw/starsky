@@ -112,24 +112,22 @@ namespace starsky.Services
         {
             var countDirectResults = _context.FileIndex.Count(p => p.FilePath == path);
 
-            if (countDirectResults == 1)
+            if (countDirectResults != 1) return null;
+
+            var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == path);
+
+
+            var itemResultsList = new List<ObjectItem>();
+            var itemResult = new ObjectItem
             {
-                var query = _context.FileIndex.Where(p => p.FilePath == path)?.FirstOrDefault();
+                FilePath = query?.FilePath,
+                FileName = query?.FileName,
+                Tags = query?.Tags
+            };
 
+            itemResultsList.Add(itemResult);
+            return itemResultsList;
 
-                var itemResultsList = new List<ObjectItem>();
-                var itemResult = new ObjectItem
-                {
-                    FilePath = query?.FilePath,
-                    FileName = query?.FileName,
-                    Tags = query?.Tags
-                };
-
-                itemResultsList.Add(itemResult);
-                return itemResultsList;
-            }
-
-            return null;
         }
 
 
@@ -229,9 +227,10 @@ namespace starsky.Services
 
             localFileList.ForEach(item =>
             {
+                var localItem = item;
                 var dbMatchFirst = _context.FileIndex
-                    .FirstOrDefault(p => p.FilePath == Files.PathToUnixStyle(item.FilePath)
-                                         && p.FileHash == item.FileHash);
+                    .FirstOrDefault(p => p.FilePath == Files.PathToUnixStyle(localItem.FilePath)
+                                         && p.FileHash == localItem.FileHash);
 
                 if (dbMatchFirst == null)
                 {
