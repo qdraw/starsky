@@ -67,18 +67,13 @@ namespace starsky.Services
 
             var allSubFolders = childItemsInFolder.GroupBy(x => x.Folder, (key, group) => group.First());
 
-            var directChildFolders = new List<string>();
+            var directChildFolders = new HashSet<string>();
             foreach (var item in allSubFolders)
             {
                 if (GetChildFolders(item.Folder, subPath) != null)
                 {
                     directChildFolders.Add(GetChildFolders(item.Folder, subPath));
                 }
-
-                //if (IsChildFolder(item.Folder, subPath))
-                //{
-                //    directChildFolders.Add(item.Folder);
-                //}
             }
 
 
@@ -110,17 +105,6 @@ namespace starsky.Services
 
             return null;
 
-            //if (slashesList.Length == 1 && subPath.Length == 1 || slashesList.Length == 2 && subPath.Length >= 2)
-            //{
-            //    return true;
-            //}
-            //else
-            //{
-            //    Console.WriteLine(slashesList[0]);
-            //    Console.WriteLine();
-
-            //    return false;
-            //}
         }
 
 
