@@ -37,7 +37,6 @@ namespace starsky.Controllers
                 return View("SingleItem", model);
             }
 
-
             return View(model);
         }
 

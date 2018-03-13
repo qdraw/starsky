@@ -18,6 +18,8 @@ namespace starsky.Services
                 var savePath = AppSettingsProvider.ThumbnailTempFolder + item.FileHash + ".jpg";
                 image.Save(savePath); // automatic encoder selected based on extension.
                 image.Dispose();
+                Console.Write("%");
+
             }
 
             return item;
@@ -26,14 +28,14 @@ namespace starsky.Services
         public static FileIndexItem CreateThumb(FileIndexItem item)
         {
             FileStream stream = new FileStream(
-                item.FilePath,
+                Files.PathToFull(item.FilePath),
                 System.IO.FileMode.Open,
                 System.IO.FileAccess.Read,
                 System.IO.FileShare.ReadWrite);
 
             try
             {
-                return CreateThumb(stream, item); ;
+                return CreateThumb(stream, item ); ;
             }
             finally
             {

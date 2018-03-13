@@ -58,6 +58,11 @@ namespace starskyCli
             return _sqlStatus.SyncFiles(subPath);
         }
 
+        public IEnumerable<FileIndexItem> GetAll(string subPath = "")
+        {
+            return _sqlStatus.GetAll(subPath);
+        }
+
     }
 
 }

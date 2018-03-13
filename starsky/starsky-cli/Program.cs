@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using starsky.Models;
 using starsky.Services;
 
@@ -14,7 +15,7 @@ namespace starskyCli
 
             for (int arg = 0; arg < args.Count; arg++)
             {
-                if ((args[arg] == "--subpath" || args[arg] == "-s") && (arg + 1) != args.Count)
+                if ((args[arg].ToLower() == "--subpath" || args[arg].ToLower() == "-s") && (arg + 1) != args.Count)
                 {
                     subpath = args[arg + 1];
                 }
@@ -23,20 +24,41 @@ namespace starskyCli
             return subpath;
         }
 
+        private static bool GetThumbnail(IReadOnlyList<string> args)
+        {
+            var isThumbnail = false;
+
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--thumbnail" || args[arg].ToLower() == "-t") && (arg + 1) != args.Count)
+                {
+                    bool.TryParse(args[arg + 1], out isThumbnail);
+                }
+            }
+
+            return isThumbnail;
+        }
+
 
         public static void Main(string[] args)
         {
             ConfigRead.SetAppSettingsProvider();
 
             new SyncDatabase().SyncFiles(GetSubpathFormArgs(args));
+            Console.WriteLine("Done SyncFiles!");
 
-            //var q = new FileIndexItem();
-            //q.FilePath = "/2018/01/20180101_130000_imc.jpg";
-            //q.FileHash = "LV57Mb1fOCYgkOhMmx1t6Q==";
-            //Thumbnail.CreateThumb(q);
+            if (!GetThumbnail(args)) return;
 
+            var allitems = new SyncDatabase().GetAll(GetSubpathFormArgs(args));
 
+            foreach (var value in allitems)
+            {
+                Thumbnail.CreateThumb(value);
+            }
             Console.WriteLine("Done!");
+
+
+
         }
 
     }
