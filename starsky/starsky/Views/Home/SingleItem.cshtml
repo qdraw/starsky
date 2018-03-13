@@ -1,10 +1,28 @@
-﻿@model starsky.ViewModels.ObjectItem
+﻿@using starsky.ViewModels
+@model IndexViewModel
+
 @{
-    ViewData["Title"] = @Model.FileName;
+    ViewData["Title"] = @Model.SingleItem.FileName;
 }
-<h2>@ViewData["Title"]</h2>
-<h3>@Model.Tags</h3>
+@*<h2>@ViewData["Title"]</h2>*@
+
+<h2>
+    @foreach (var item in Model.Breadcrumb)
+    {
+        var name = @item.Split("/")[item.Split("/").Length - 1];
+        if (name == "")
+        {
+            name = "Home";
+        }
+        <a asp-controller="Home" asp-action="Index" asp-route-f="@item">@name</a>
+        <span> &raquo;</span>
+    }
+    @Model.SingleItem.FileName
+</h2>
 
 
-<img src="@Url.Action("Thumbnail", "Home", new { f = @Model.FileHash })" />
+<h3>@Model.SingleItem.Tags</h3>
+
+
+<img src="@Url.Action("Thumbnail", "Home", new { f = @Model.SingleItem.FileHash })" />
 

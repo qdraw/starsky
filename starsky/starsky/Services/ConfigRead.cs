@@ -26,6 +26,8 @@ namespace starsky.Services
 
                 basePath = (string)obj["ConnectionStrings"]["STARSKY_BASEPATH"];
 
+                if (basePath == null) throw new FileNotFoundException("basePath==null");
+
                 // Add backSlash to configuration
                 if (basePath.Substring(basePath.Length - 1, 1) != Path.DirectorySeparatorChar.ToString())
                 {
@@ -35,6 +37,8 @@ namespace starsky.Services
                 defaultConnection = (string)obj["ConnectionStrings"]["DefaultConnection"];
                 databaseType = (string)obj["ConnectionStrings"]["DatabaseType"];
                 thumbnailTempFolder = (string)obj["ConnectionStrings"]["ThumbnailTempFolder"];
+
+                if (thumbnailTempFolder == null) throw new FileNotFoundException("thumbnailTempFolder==null");
 
                 // Add backSlash to configuration
                 if (thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1, 1) != Path.DirectorySeparatorChar.ToString())

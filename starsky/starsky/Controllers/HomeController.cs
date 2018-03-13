@@ -1,9 +1,14 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
+using starsky.ViewModels;
 
 namespace starsky.Controllers
 {
@@ -18,26 +23,100 @@ namespace starsky.Controllers
 
         public IActionResult Index(string f = "/")
         {
-            var model = _updateStatusContent.GetObjectItems(f);
-            var firstItem = model.FirstOrDefault();
+            var model = new IndexViewModel();
 
-            if (firstItem != null && !firstItem.IsFolder && model.Count() == 1)
+            model.ObjectItems = _updateStatusContent.GetObjectItems(f);
+            var firstItem = model?.ObjectItems?.FirstOrDefault();
+
+            model.Breadcrumb = BreadcrumbHelper(firstItem?.FilePath, firstItem?.FileName);
+
+            if (firstItem != null && !firstItem.IsFolder && model.ObjectItems.Count() == 1)
             {
-                return View("SingleItem", firstItem);
+                model.SingleItem = firstItem;
+
+                return View("SingleItem", model);
             }
+
+
             return View(model);
+        }
+
+        public List<string> BreadcrumbHelper(string filePath,string fileName)
+        {
+            var breadcrumb = new List<string>();
+            var filePathArray = filePath.Split("/");
+
+            var dir = 0;
+            while (dir < filePathArray.Length - 1)
+            {
+                if (string.IsNullOrEmpty(filePathArray[dir]))
+                {
+                    breadcrumb.Add("/");
+                }
+                else
+                {
+                    //var itemSearch = Regex.Replace(filePathArray[dir], @"(" + subPath + @")$", "", RegexOptions.IgnoreCase);
+
+                    var item = "";
+                    for (int i = 0; i <= dir; i++)
+                    {
+                        if (string.IsNullOrEmpty(filePathArray[i]))
+                        {
+                            item += "/";
+                        }
+                        else
+                        {
+                            item += filePathArray[i];
+                        }
+                    }
+                    breadcrumb.Add(item);
+
+                    //var item = "/";
+                    //breadcrumb.Add(item);
+                }
+                dir++;
+            }
+
+            //for (int dir = 0; dir < filePathArray.Length-1; dir++)
+            //{
+            //    if (!string.IsNullOrEmpty(filePathArray[dir]))
+            //    {
+            //        breadcrumb.Add("/");
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine(dir);
+            //        //var bread = "";
+            //        //for (int i = 0; i < dir+1; i++)
+            //        //{
+            //        //    bread += filePathArray[i];
+            //        //}
+            //        //breadcrumb.Add(bread);
+
+            //    }
+            //}
+
+            return breadcrumb;
         }
 
         public IActionResult Thumbnail(string f)
         {
             var path = _updateStatusContent.GetItemByHash(f);
             //path = Files.PathToFull(path);
-            if (path == null) return BadRequest();
+
+            if (path == null) return NotFound();
 
             path = AppSettingsProvider.ThumbnailTempFolder + f + ".jpg";
 
-            var image = System.IO.File.OpenRead(path);
-            return File(image, "image/jpeg");
+            if (!System.IO.File.Exists(path)) return NotFound();
+
+            using (FileStream fs = System.IO.File.OpenRead(path))
+            {
+                var result = File(fs, "image/jpeg");
+                //fs.Dispose();
+                return result;
+            }
+
         }
 
         public IActionResult About()

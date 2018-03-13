@@ -61,6 +61,11 @@ namespace starsky.Services
         {
             subPath = SubPathSlashRemove(subPath);
 
+            if (subPath == "/")
+            {
+                subPath = "";
+            }
+
             var childItemsInFolder = _context.FileIndex.Where(
                 p => p.Folder.Contains(subPath)
             );
@@ -249,7 +254,6 @@ namespace starsky.Services
 
                     item.FilePath = Files.PathToUnixStyle(item.FilePath);
                     AddItem(item);
-                    //item = Thumbnail.CreateThumb(item);
                     databaseFileList.Add(item);
                 }
 

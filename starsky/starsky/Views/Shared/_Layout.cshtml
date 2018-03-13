@@ -64,6 +64,12 @@
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
 
-    @RenderSection("Scripts", required: false)
+<script src="/js/lazyload.js"></script>
+<script type="text/javascript">
+    lazyload();
+</script>
+
+
+@RenderSection("Scripts", required: false)
 </body>
 </html>
