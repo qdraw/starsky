@@ -24,6 +24,7 @@ namespace starsky.Controllers
         public IActionResult Index(string f = "/")
         {
             var model = new IndexViewModel();
+            // No check for 404's
 
             model.ObjectItems = _updateStatusContent.GetObjectItems(f);
             var firstItem = model?.ObjectItems?.FirstOrDefault();
@@ -65,14 +66,14 @@ namespace starsky.Controllers
                     var item = "";
                     for (int i = 0; i <= dir; i++)
                     {
-                        if (string.IsNullOrEmpty(filePathArray[i]))
+                        if (!string.IsNullOrEmpty(filePathArray[i]))
                         {
-                            item += "/";
+                            item += "/" + filePathArray[i];
                         }
-                        else
-                        {
-                            item += "/" +filePathArray[i];
-                        }
+                        //else
+                        //{
+                        //    item += "/" +filePathArray[i];
+                        //}
                     }
                     breadcrumb.Add(item);
                 }
@@ -80,45 +81,38 @@ namespace starsky.Controllers
 
             }
 
-            //for (int dir = 0; dir < filePathArray.Length-1; dir++)
-            //{
-            //    if (!string.IsNullOrEmpty(filePathArray[dir]))
-            //    {
-            //        breadcrumb.Add("/");
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine(dir);
-            //        //var bread = "";
-            //        //for (int i = 0; i < dir+1; i++)
-            //        //{
-            //        //    bread += filePathArray[i];
-            //        //}
-            //        //breadcrumb.Add(bread);
-
-            //    }
-            //}
-
             return breadcrumb;
         }
 
         public IActionResult Thumbnail(string f)
         {
-            var path = _updateStatusContent.GetItemByHash(f);
-            //path = Files.PathToFull(path);
 
-            if (path == null) return NotFound();
+            var sourcePath = _updateStatusContent.GetItemByHash(f);
 
-            path = AppSettingsProvider.ThumbnailTempFolder + f + ".jpg";
+            if (sourcePath == null) return NotFound("not in index");
 
-            if (!System.IO.File.Exists(path)) return NotFound();
+            var thumbPath = AppSettingsProvider.ThumbnailTempFolder + f + ".jpg";
 
-            using (FileStream fs = System.IO.File.OpenRead(path))
+            if (!System.IO.File.Exists(thumbPath) && System.IO.File.Exists(Files.PathToFull(sourcePath)))
             {
-                var result = File(fs, "image/jpeg");
-                //fs.Dispose();
-                return result;
+                return NotFound("could regenerate thumb");
+            };
+
+            if (!System.IO.File.Exists(thumbPath))
+            {
+                return NotFound("in cache but not in thumbdb");
             }
+
+
+            FileStream fs = System.IO.File.OpenRead(thumbPath);
+            return File(fs, "image/jpeg");
+
+            //using (FileStream fs = System.IO.File.OpenRead(path))
+            //{
+            //    var result = File(fs, "image/jpeg");
+            //    //fs.Dispose();
+            //    return result;
+            //}
 
         }
 

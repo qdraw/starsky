@@ -27,6 +27,17 @@ namespace starsky.Services
 
         public static FileIndexItem CreateThumb(FileIndexItem item)
         {
+            if (!System.IO.Directory.Exists(AppSettingsProvider.ThumbnailTempFolder))
+            {
+                throw new FileNotFoundException("ThumbnailTempFolder not found "+ AppSettingsProvider.ThumbnailTempFolder);
+            }
+
+            if (System.IO.File.Exists(Files.PathToFull(item.FilePath)))
+            {
+                return null;
+            }
+
+
             FileStream stream = new FileStream(
                 Files.PathToFull(item.FilePath),
                 System.IO.FileMode.Open,

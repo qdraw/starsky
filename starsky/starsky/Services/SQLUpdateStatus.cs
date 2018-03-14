@@ -26,7 +26,10 @@ namespace starsky.Services
 
         public List<FileIndexItem> GetAll(string subPath = "")
         {
-            return _context.FileIndex.Where(p => p.FilePath.Contains(subPath)).OrderBy(r => r.FileName).ToList();
+            subPath = SubPathSlashRemove(subPath);
+            return _context.FileIndex.Where(p => p.Folder == subPath).OrderBy(r => r.FileName).ToList();
+
+            //return _context.FileIndex.Where(p => p.FilePath.Contains(subPath)).OrderBy(r => r.FileName).ToList();
         }
 
         //public IEnumerable<string> GetAll()
@@ -218,17 +221,22 @@ namespace starsky.Services
         public IEnumerable<string> SyncFiles(string subPath = "")
         {
 
+            subPath = SubPathSlashRemove(subPath);
+
             var localFileList = Files.GetFiles(subPath).ToList();
             var databaseFileList = GetAll(subPath);
 
-            // Check for updated files based on hash
-            var localFileListFileHash = localFileList.OrderBy(r => r.FileHash).Select(item => item.FileHash).ToList();
-            var databaseFileListFileHash =
-                databaseFileList.OrderBy(r => r.FileHash).Select(item => item.FileHash).ToList();
 
-            Console.Write(".");
+            // Check for updated files based on hash
+            var localFileListFileHash = localFileList.Select(item => item.FileHash).ToList();
+            var databaseFileListFileHash =
+                databaseFileList.Select(item => item.FileHash).ToList();
+
+            Console.Write(" . . ");
 
             IEnumerable<string> differenceFileHash = databaseFileListFileHash.Except(localFileListFileHash);
+
+            Console.Write(" .. ");
 
             foreach (var item in differenceFileHash)
             {
@@ -242,14 +250,16 @@ namespace starsky.Services
             localFileList.ForEach(item =>
             {
                 var localItem = item;
-                // todo: do i need to query here?
-                var dbMatchFirst = _context.FileIndex
+
+                var dbMatchFirst = databaseFileList
                     .FirstOrDefault(p => p.FilePath == Files.PathToUnixStyle(localItem.FilePath)
-                                         && p.FileHash == localItem.FileHash);
-                Console.Write("_");
+                    && p.FileHash == localItem.FileHash);
+
 
                 if (dbMatchFirst == null)
                 {
+                    Console.Write("_");
+
                     item.AddToDatabase = DateTime.Now;
                     item = Files.ReadExifFromFile(item);
 

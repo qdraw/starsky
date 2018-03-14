@@ -59,24 +59,25 @@ namespace starskyCli
         {
             ConfigRead.SetAppSettingsProvider();
 
+            var subpath = GetSubpathFormArgs(args);
+
             if (GetIndexMode(args))
             {
                 Console.WriteLine("Start indexing");
-                new SyncDatabase().SyncFiles(GetSubpathFormArgs(args));
+                new SyncDatabase().SyncFiles(subpath);
                 Console.WriteLine("Done SyncFiles!");
             }
 
 
             if (!GetThumbnail(args)) return;
 
-            var allitems = new SyncDatabase().GetAll(GetSubpathFormArgs(args));
+            var allitems = new SyncDatabase().GetAll(subpath);
 
             foreach (var value in allitems)
             {
                 Thumbnail.CreateThumb(value);
             }
             Console.WriteLine("Done!");
-
 
 
         }

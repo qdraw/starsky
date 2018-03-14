@@ -146,6 +146,7 @@ namespace starsky.Services
             stringHash = stringHash.Replace("/", "_");
             stringHash = stringHash.Replace("\\", "_");
             stringHash = stringHash.Replace("==", "");
+            stringHash = stringHash.Replace("+", "$");
 
             return stringHash;
 
