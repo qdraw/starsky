@@ -286,3 +286,6 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+
+**/osx.10.12-x64/*
+**/linux-arm/*

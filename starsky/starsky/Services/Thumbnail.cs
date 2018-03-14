@@ -13,11 +13,11 @@ namespace starsky.Services
             using (Image<Rgba32> image = Image.Load(Files.PathToFull(item.FilePath)))
             {
                 image.Mutate(x => x
-                    .Resize(900, 0)
+                    .Resize(1000, 0)
                 );
                 var savePath = AppSettingsProvider.ThumbnailTempFolder + item.FileHash + ".jpg";
                 image.Save(savePath); // automatic encoder selected based on extension.
-                image.Dispose();
+                //image.Dispose();
                 Console.Write("%");
 
             }

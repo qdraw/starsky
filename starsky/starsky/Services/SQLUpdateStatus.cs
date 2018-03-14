@@ -85,7 +85,7 @@ namespace starsky.Services
 
         public string GetChildFolders(string item, string subPath)
         {
-            
+
             var itemSearch = Regex.Replace(item, @"^(" + subPath + @")", "", RegexOptions.IgnoreCase);
             itemSearch = SubPathSlashRemove(itemSearch);
 
@@ -110,7 +110,7 @@ namespace starsky.Services
 
         }
 
-        public string GetItemByHash(string path) { 
+        public string GetItemByHash(string path) {
             var query = _context.FileIndex.FirstOrDefault(p => p.FileHash == path);
             return query?.FilePath;
         }
@@ -242,6 +242,7 @@ namespace starsky.Services
             localFileList.ForEach(item =>
             {
                 var localItem = item;
+                // todo: do i need to query here?
                 var dbMatchFirst = _context.FileIndex
                     .FirstOrDefault(p => p.FilePath == Files.PathToUnixStyle(localItem.FilePath)
                                          && p.FileHash == localItem.FileHash);
@@ -295,6 +296,3 @@ namespace starsky.Services
 
     }
 }
-
-
-
