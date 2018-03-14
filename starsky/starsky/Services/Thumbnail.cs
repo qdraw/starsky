@@ -12,11 +12,12 @@ namespace starsky.Services
         {
             using (Image<Rgba32> image = Image.Load(Files.PathToFull(item.FilePath)))
             {
+                image.Mutate(x => x.AutoOrient());
                 image.Mutate(x => x
                     .Resize(1000, 0)
                 );
-                var savePath = AppSettingsProvider.ThumbnailTempFolder + item.FileHash + ".jpg";
-                image.Save(savePath); // automatic encoder selected based on extension.
+                image.SaveAsJpeg(fs);
+                //image.Save(savePath); // automatic encoder selected based on extension.
                 //image.Dispose();
                 Console.Write("%");
 
@@ -32,17 +33,17 @@ namespace starsky.Services
                 throw new FileNotFoundException("ThumbnailTempFolder not found "+ AppSettingsProvider.ThumbnailTempFolder);
             }
 
-            if (System.IO.File.Exists(Files.PathToFull(item.FilePath)))
+            var thumbPath = AppSettingsProvider.ThumbnailTempFolder + item.FileHash + ".jpg";
+
+            if (System.IO.File.Exists(thumbPath))
             {
                 return null;
             }
 
 
             FileStream stream = new FileStream(
-                Files.PathToFull(item.FilePath),
-                System.IO.FileMode.Open,
-                System.IO.FileAccess.Read,
-                System.IO.FileShare.ReadWrite);
+                thumbPath,
+                System.IO.FileMode.Create);
 
             try
             {

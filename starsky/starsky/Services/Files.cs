@@ -5,11 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Rewrite.Internal.ApacheModRewrite;
-using Microsoft.Extensions.Configuration;
 using starsky.Models;
-
 using MetadataExtractor;
 
 namespace starsky.Services
@@ -50,10 +46,18 @@ namespace starsky.Services
 
                     var dateString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized")?.Description;
 
+                    // https://odedcoster.com/blog/2011/12/13/date-and-time-format-strings-in-net-understanding-format-strings/
                     //2018:01:01 11:29:36
-                    string pattern = "yyyy:MM:dd hh:mm:ss";
+                    string pattern = "yyyy:MM:dd HH:mm:ss";
                     CultureInfo provider = CultureInfo.InvariantCulture;
                     DateTime.TryParseExact(dateString, pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTime);
+
+                    if (itemDateTime.Year == 1 && itemDateTime.Month == 1)
+                    {
+                        dateString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Original")?.Description;
+                        DateTime.TryParseExact(dateString, pattern, provider, DateTimeStyles.AdjustToUniversal, out itemDateTime);
+                    }
+
                     item.DateTime = itemDateTime;
                 }
 

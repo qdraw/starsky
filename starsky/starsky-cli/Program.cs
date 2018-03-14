@@ -77,9 +77,15 @@ namespace starskyCli
 
         public static void Main(string[] args)
         {
+            ConfigRead.SetAppSettingsProvider();
 
             if (NeedHelp(args))
             {
+                Console.WriteLine("Settings:");
+                Console.WriteLine("Database Type "+ AppSettingsProvider.DatabaseType);
+                Console.WriteLine("BasePath " + AppSettingsProvider.BasePath);
+                Console.WriteLine("ThumbnailTempFolder " + AppSettingsProvider.ThumbnailTempFolder);
+                Console.WriteLine("");
                 Console.WriteLine("Starsky Help:");
                 Console.WriteLine("--help or -h == help (this window)");
                 Console.WriteLine("--subpath or -s == parameter: (string) ; path inside the index, default '/' ");
@@ -88,7 +94,6 @@ namespace starskyCli
                 return;
             }
 
-            ConfigRead.SetAppSettingsProvider();
 
             var subpath = GetSubpathFormArgs(args);
 
