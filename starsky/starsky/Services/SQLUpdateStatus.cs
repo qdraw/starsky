@@ -27,7 +27,11 @@ namespace starsky.Services
         public List<FileIndexItem> GetAll(string subPath = "")
         {
             subPath = SubPathSlashRemove(subPath);
-            return _context.FileIndex.Where(p => p.Folder == subPath).OrderBy(r => r.FileName).ToList();
+            return !string.IsNullOrEmpty(subPath) ?
+                _context.FileIndex.Where
+                    (p => p.Folder.Contains(subPath))
+                    .OrderBy(r => r.FileName).ToList() :
+                _context.FileIndex.OrderBy(r => r.FileName).ToList();
 
             //return _context.FileIndex.Where(p => p.FilePath.Contains(subPath)).OrderBy(r => r.FileName).ToList();
         }

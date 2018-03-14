@@ -113,7 +113,8 @@ namespace starskyCli
             {
                 Thumbnail.CreateThumb(value);
             }
-            Console.WriteLine("Done!");
+
+            Console.WriteLine("Done!" + allitems.Count() + " items");
 
 
         }

@@ -35,6 +35,15 @@ namespace starsky.Services
 
             var thumbPath = AppSettingsProvider.ThumbnailTempFolder + item.FileHash + ".jpg";
 
+            if (!System.IO.File.Exists(Files.PathToFull(item.FilePath)))
+            {
+                Console.WriteLine("File Not found: " + item.FilePath);
+                return null;
+            }
+
+                
+
+
             if (System.IO.File.Exists(thumbPath))
             {
                 return null;

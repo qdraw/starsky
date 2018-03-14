@@ -12,16 +12,16 @@ namespace starsky.Services
 {
     public class Files
     {
-        public string CheckMd5(string filename)
-        {
-            using (var md5 = MD5.Create())
-            {
-                using (var stream = File.OpenRead(filename))
-                {
-                    return Encoding.Default.GetString(md5.ComputeHash(stream));
-                }
-            }
-        }
+        //public string CheckMd5(string filename)
+        //{
+        //    using (var md5 = MD5.Create())
+        //    {
+        //        using (var stream = File.OpenRead(filename))
+        //        {
+        //            return Encoding.Default.GetString(md5.ComputeHash(stream));
+        //        }
+        //    }
+        //}
 
         public static FileIndexItem ReadExifFromFile(FileIndexItem item)
         {
@@ -150,7 +150,7 @@ namespace starsky.Services
             stringHash = stringHash.Replace("/", "_");
             stringHash = stringHash.Replace("\\", "_");
             stringHash = stringHash.Replace("==", "");
-            stringHash = stringHash.Replace("+", "$");
+            stringHash = stringHash.Replace("+", "0");
 
             return stringHash;
 

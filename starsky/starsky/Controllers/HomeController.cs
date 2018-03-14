@@ -116,15 +116,15 @@ namespace starsky.Controllers
 
         }
 
-        public IActionResult About()
+        public IActionResult Count(string f)
         {
-            ViewData["Message"] = "Your application description page.";
-            return View();
+            return Json(_updateStatusContent.GetAll(f).Count);
         }
 
         public IActionResult SyncFiles()
         {
-            return Json(_updateStatusContent.SyncFiles());
+            //_updateStatusContent.SyncFiles()
+            return Json("");
         }
 
         //public IActionResult Update()
