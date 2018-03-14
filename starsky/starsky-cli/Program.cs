@@ -9,6 +9,26 @@ namespace starskyCli
 {
     public class Program
     {
+        private static bool NeedHelp(IReadOnlyList<string> args)
+        {
+            var needHelp = false;
+
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--help" || args[arg].ToLower() == "-h") && (arg + 1) != args.Count)
+                {
+                    bool.TryParse(args[arg + 1], out needHelp);
+                }
+                if ((args[arg].ToLower() == "--help" || args[arg].ToLower() == "-h" ))
+                {
+                    needHelp = true;
+                }
+            }
+
+            return needHelp;
+        }
+
+
         private static string GetSubpathFormArgs(IReadOnlyList<string> args)
         {
             var subpath = "/";
@@ -57,6 +77,17 @@ namespace starskyCli
 
         public static void Main(string[] args)
         {
+
+            if (NeedHelp(args))
+            {
+                Console.WriteLine("Starsky Help:");
+                Console.WriteLine("--help or -h == help (this window)");
+                Console.WriteLine("--subpath or -s == parameter: (string) ; path inside the index, default '/' ");
+                Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
+                Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
+                return;
+            }
+
             ConfigRead.SetAppSettingsProvider();
 
             var subpath = GetSubpathFormArgs(args);
