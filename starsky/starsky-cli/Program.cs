@@ -24,6 +24,21 @@ namespace starskyCli
             return subpath;
         }
 
+        private static bool GetIndexMode(IReadOnlyList<string> args)
+        {
+            var isIndexMode = true;
+
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--index" || args[arg].ToLower() == "-i") && (arg + 1) != args.Count)
+                {
+                    bool.TryParse(args[arg + 1], out isIndexMode);
+                }
+            }
+
+            return isIndexMode;
+        }
+
         private static bool GetThumbnail(IReadOnlyList<string> args)
         {
             var isThumbnail = false;
@@ -44,8 +59,13 @@ namespace starskyCli
         {
             ConfigRead.SetAppSettingsProvider();
 
-            new SyncDatabase().SyncFiles(GetSubpathFormArgs(args));
-            Console.WriteLine("Done SyncFiles!");
+            if (GetIndexMode(args))
+            {
+                Console.WriteLine("Start indexing");
+                new SyncDatabase().SyncFiles(GetSubpathFormArgs(args));
+                Console.WriteLine("Done SyncFiles!");
+            }
+
 
             if (!GetThumbnail(args)) return;
 

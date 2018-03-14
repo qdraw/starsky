@@ -28,7 +28,7 @@ namespace starsky.Controllers
             model.ObjectItems = _updateStatusContent.GetObjectItems(f);
             var firstItem = model?.ObjectItems?.FirstOrDefault();
 
-            model.Breadcrumb = BreadcrumbHelper(firstItem?.FilePath, firstItem?.FileName);
+            model.Breadcrumb = BreadcrumbHelper(firstItem);
 
             if (firstItem != null && !firstItem.IsFolder && model.ObjectItems.Count() == 1)
             {
@@ -40,9 +40,16 @@ namespace starsky.Controllers
             return View(model);
         }
 
-        public List<string> BreadcrumbHelper(string filePath,string fileName)
+        public List<string> BreadcrumbHelper(ObjectItem firstItem)
         {
+            var filePath = firstItem?.FilePath;
+            if (filePath == null) return null;
+
             var breadcrumb = new List<string>();
+            if (filePath[0].ToString() != "/")
+            {
+                filePath = "/" + filePath;
+            }
             var filePathArray = filePath.Split("/");
 
             var dir = 0;
@@ -54,7 +61,6 @@ namespace starsky.Controllers
                 }
                 else
                 {
-                    //var itemSearch = Regex.Replace(filePathArray[dir], @"(" + subPath + @")$", "", RegexOptions.IgnoreCase);
 
                     var item = "";
                     for (int i = 0; i <= dir; i++)
@@ -65,15 +71,13 @@ namespace starsky.Controllers
                         }
                         else
                         {
-                            item += filePathArray[i];
+                            item += "/" +filePathArray[i];
                         }
                     }
                     breadcrumb.Add(item);
-
-                    //var item = "/";
-                    //breadcrumb.Add(item);
                 }
                 dir++;
+
             }
 
             //for (int dir = 0; dir < filePathArray.Length-1; dir++)
