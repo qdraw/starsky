@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
 using starsky.Models;
@@ -26,7 +28,14 @@ namespace starsky.Controllers
             var model = new IndexViewModel();
             // No check for 404's
 
-            model.ObjectItems = _updateStatusContent.GetObjectItems(f);
+            model.ObjectItems = _updateStatusContent.GetObjectItems(f).ToList();
+
+            if (!model.ObjectItems.Any())
+            {
+                Response.StatusCode = 404;
+                return View("Error");
+            }
+
             var firstItem = model?.ObjectItems?.FirstOrDefault();
 
             model.Breadcrumb = BreadcrumbHelper(firstItem);

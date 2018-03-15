@@ -22,6 +22,16 @@
 
 
 <h3>@Model.SingleItem.Tags</h3>
+<h4>
+    @if (@Model.SingleItem.RelativeObjects.PrevFilePath != null)
+    {
+        <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.SingleItem.RelativeObjects.PrevFilePath">Prev</a>
+    }
+    @if (@Model.SingleItem.RelativeObjects.NextFilePath != null)
+    {
+        <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.SingleItem.RelativeObjects.NextFilePath">Next</a>
+    }
+</h4>
 
 
 <img src="@Url.Action("Thumbnail", "Home", new { f = @Model.SingleItem.FileHash })" />

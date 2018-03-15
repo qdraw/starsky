@@ -32,37 +32,8 @@ namespace starsky.Services
                     (p => p.Folder.Contains(subPath))
                     .OrderBy(r => r.FileName).ToList() :
                 _context.FileIndex.OrderBy(r => r.FileName).ToList();
-
-            //return _context.FileIndex.Where(p => p.FilePath.Contains(subPath)).OrderBy(r => r.FileName).ToList();
         }
 
-        //public IEnumerable<string> GetAll()
-        //{
-        //    var dbItems = _context.FileIndex.OrderBy(r => r.FileName);
-        //    return dbItems.Select(item => item.FilePath).ToList();
-        //}
-
-        //public IEnumerable<string> RemoveOldFilesByFileList(IEnumerable<string> shortFileList)
-        //{
-        //    var newFileList = new List<string>();
-        //    foreach (var item in shortFileList)
-        //    {
-        //        if (Files.PathToFull(item) == null)
-        //        {
-        //            var firstOrDefault = _context.FileIndex.FirstOrDefault(r => r.FilePath == item);
-        //            if (firstOrDefault != null)
-        //            {
-        //                _context.Remove(firstOrDefault);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            newFileList.Add(item);
-        //        }
-        //    }
-
-        //    return newFileList;
-        //}
 
         public IEnumerable<string> GetChildFolders(string subPath = "/")
         {
@@ -82,18 +53,18 @@ namespace starsky.Services
             var directChildFolders = new HashSet<string>();
             foreach (var item in allSubFolders)
             {
-                if (GetChildFolders(item.Folder, subPath) != null)
+                if (_getChildFolderByPath(item.Folder, subPath) != null)
                 {
-                    directChildFolders.Add(GetChildFolders(item.Folder, subPath));
+                    directChildFolders.Add(_getChildFolderByPath(item.Folder, subPath));
                 }
             }
             return directChildFolders;
         }
 
-        public string GetChildFolders(string item, string subPath)
+        private string _getChildFolderByPath(string foldername, string subPath)
         {
 
-            var itemSearch = Regex.Replace(item, @"^(" + subPath + @")", "", RegexOptions.IgnoreCase);
+            var itemSearch = Regex.Replace(foldername, @"^(" + subPath + @")", "", RegexOptions.IgnoreCase);
             itemSearch = SubPathSlashRemove(itemSearch);
 
             var slashesList = itemSearch.Split('/');
@@ -122,6 +93,7 @@ namespace starsky.Services
             return query?.FilePath;
         }
 
+        // Name of item by path
         public IEnumerable<ObjectItem> GetItem(string path = "")
         {
             var countDirectResults = _context.FileIndex.Count(p => p.FilePath == path);
@@ -130,6 +102,7 @@ namespace starsky.Services
 
             var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == path);
 
+            var relativeObject = _getNextPrevInSubFolder(query?.Folder, path);
 
             var itemResultsList = new List<ObjectItem>();
             var itemResult = new ObjectItem
@@ -137,16 +110,36 @@ namespace starsky.Services
                 FilePath = query?.FilePath,
                 FileName = query?.FileName,
                 FileHash = query?.FileHash,
+                RelativeObjects = relativeObject,
                 Tags = query?.Tags
             };
 
             itemResultsList.Add(itemResult);
             return itemResultsList;
+        }
 
+
+        public RelativeObjects _getNextPrevInSubFolder(string parrentFolderPath, string fullImageFilePath)
+        {
+            var itemsInSubFolder = GetAll(parrentFolderPath).OrderBy(p => p.FileName).ToList();
+            var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == fullImageFilePath);
+
+            var relativeObject = new RelativeObjects();
+            if (photoIndexOfSubFolder != itemsInSubFolder.Count - 1)
+            {
+                relativeObject.NextFilePath = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FilePath;
+            }
+
+            if (photoIndexOfSubFolder != 0)
+            {
+                relativeObject.PrevFilePath = itemsInSubFolder[photoIndexOfSubFolder - 1]?.FilePath;
+            }
+            return relativeObject;
         }
 
 
 
+        // complete files and folders
         public IEnumerable<ObjectItem> GetObjectItems(string subPath = "/")
         {
             var directItem = GetItem(subPath);
@@ -184,7 +177,7 @@ namespace starsky.Services
 
         }
 
-
+        // List of files inside folder
         public IEnumerable<FileIndexItem> GetFilesInFolder(string subPath = "/")
         {
             subPath = SubPathSlashRemove(subPath);
@@ -213,9 +206,6 @@ namespace starsky.Services
             {
                 subPath = subPath.Substring(1, subPath.Length - 1);
             }
-
-
-
             return subPath;
         }
 

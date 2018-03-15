@@ -17,5 +17,7 @@ namespace starsky.ViewModels
 
         public string FileHash { get; set; }
 
+        public RelativeObjects RelativeObjects { get; set; }
+
     }
 }
