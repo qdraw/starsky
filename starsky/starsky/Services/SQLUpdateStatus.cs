@@ -24,23 +24,57 @@ namespace starsky.Services
             throw new NotImplementedException();
         }
 
-        public IEnumerable<ObjectItem> SearchObjectItem(string tag = "")
+        public IEnumerable<ObjectItem> SearchObjectItem(string tag = "", int pageNumber = 0)
         {
+            tag = tag.ToLower();
+
+            if (pageNumber < 0)
+            {
+                pageNumber = pageNumber * -1;
+            }
 
             var searchObjectItems = new List<ObjectItem>();
 
-            foreach (var file in _context.FileIndex.Where
-                (p => p.Tags.Contains(tag)).ToList())
+             var fileIndexQueryResults = _context.FileIndex.Where
+                (p => p.Tags.Contains(tag)).ToList();
+
+            var resultsInView = 50;
+
+            var startIndex = (pageNumber * resultsInView);
+
+            var endIndex = startIndex + resultsInView;
+            if (endIndex >= fileIndexQueryResults.Count)
             {
+                endIndex = fileIndexQueryResults.Count;
+            }
+
+            var i = startIndex;
+            while (i < endIndex)
+            {
+                Console.WriteLine(i);
+
                 var item = new ObjectItem();
                 item.IsFolder = false;
+                var file = fileIndexQueryResults[i];
                 item.FilePath = file.FilePath;
                 item.FileName = file.FileName;
                 item.FileHash = file.FileHash;
                 item.Tags = file.Tags;
-
                 searchObjectItems.Add(item);
+                i++;
             }
+
+            //foreach (var file in fileIndexQueryResults)
+            //{
+            //    var item = new ObjectItem();
+            //    item.IsFolder = false;
+            //    item.FilePath = file.FilePath;
+            //    item.FileName = file.FileName;
+            //    item.FileHash = file.FileHash;
+            //    item.Tags = file.Tags;
+
+            //    searchObjectItems.Add(item);
+            //}
 
             return searchObjectItems;
         }

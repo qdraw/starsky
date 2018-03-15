@@ -95,9 +95,13 @@ namespace starsky.Controllers
 
         [HttpGet]
         [HttpPost]
-        public IActionResult Search(string t)
+        public IActionResult Search(string t, int p = 0)
         {
-            var model = new IndexViewModel();
+            // t = tag name | p == pagenr.
+
+            var model = new SearchViewModel();
+            model.PageNumber =  p;
+            model.SearchQuery = t;
             model.Breadcrumb = new List<string>();
             model.Breadcrumb.Add("/");
             if (!string.IsNullOrEmpty(t))
@@ -105,8 +109,8 @@ namespace starsky.Controllers
                 model.Breadcrumb.Add(t);
             }
 
-            model.ObjectItems = _updateStatusContent.SearchObjectItem(t);
-            return View("Index", model);
+            model.ObjectItems = _updateStatusContent.SearchObjectItem(model.SearchQuery, model.PageNumber);
+            return View("Search", model);
         }
 
 

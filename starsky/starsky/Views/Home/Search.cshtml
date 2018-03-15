@@ -1,0 +1,52 @@
+﻿@using starsky.ViewModels
+@model SearchViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h2>
+    @foreach (var item in Model.Breadcrumb)
+    {
+        var name = @item.Split("/")[item.Split("/").Length - 1];
+        if (name == "")
+        {
+            name = "Home";
+        }
+    <a asp-controller="Home" asp-action="Search" asp-route-t="@item">@name</a>
+        if (item != Model.Breadcrumb[Model.Breadcrumb.Count-1])
+        {
+    <span> &raquo;</span>
+        }
+    }
+</h2>
+<div class="wrapper">
+    <form asp-controller="Home" asp-action="Search" method="post">
+        <input name="t" /><button type="submit">Zoek</button>
+    </form>
+</div>
+
+<div class="wrapper">
+    @foreach (var item in Model.ObjectItems)
+    {
+
+    <a class="halfitem" asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
+        <div class="caption">
+            <h3>@item.FileName</h3>
+            <p>@item.Tags</p>
+
+        </div>
+
+        @if (!@item.IsFolder)
+            {
+        <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Home", new {f = item.FileHash})" alt="" />
+            }
+            else
+            {
+        <img src="#" alt="" />
+            }
+    </a>
+    }
+</div>
+
+
+

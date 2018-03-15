@@ -18,7 +18,7 @@ namespace starsky.Interfaces
 
         string GetItemByHash(string path);
 
-        IEnumerable<ObjectItem> SearchObjectItem(string tag);
+        IEnumerable<ObjectItem> SearchObjectItem(string tag, int pageNumber);
 
         
 
