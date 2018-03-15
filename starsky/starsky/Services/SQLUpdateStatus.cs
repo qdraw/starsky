@@ -24,6 +24,28 @@ namespace starsky.Services
             throw new NotImplementedException();
         }
 
+        public IEnumerable<ObjectItem> SearchObjectItem(string tag = "")
+        {
+
+            var searchObjectItems = new List<ObjectItem>();
+
+            foreach (var file in _context.FileIndex.Where
+                (p => p.Tags.Contains(tag)).ToList())
+            {
+                var item = new ObjectItem();
+                item.IsFolder = false;
+                item.FilePath = file.FilePath;
+                item.FileName = file.FileName;
+                item.FileHash = file.FileHash;
+                item.Tags = file.Tags;
+
+                searchObjectItems.Add(item);
+            }
+
+            return searchObjectItems;
+        }
+
+
         public List<FileIndexItem> GetAll(string subPath = "")
         {
             subPath = SubPathSlashRemove(subPath);
@@ -298,5 +320,6 @@ namespace starsky.Services
             return updateStatusContent;
         }
 
+        
     }
 }

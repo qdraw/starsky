@@ -93,6 +93,25 @@ namespace starsky.Controllers
             return breadcrumb;
         }
 
+        [HttpGet]
+        [HttpPost]
+        public IActionResult Search(string t)
+        {
+            var model = new IndexViewModel();
+            model.Breadcrumb = new List<string>();
+            model.Breadcrumb.Add("/");
+            if (!string.IsNullOrEmpty(t))
+            {
+                model.Breadcrumb.Add(t);
+            }
+
+            model.ObjectItems = _updateStatusContent.SearchObjectItem(t);
+            return View("Index", model);
+        }
+
+
+
+
         public IActionResult Thumbnail(string f)
         {
 

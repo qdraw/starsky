@@ -18,6 +18,10 @@ namespace starsky.Interfaces
 
         string GetItemByHash(string path);
 
+        IEnumerable<ObjectItem> SearchObjectItem(string tag);
+
+        
+
         FileIndexItem AddItem(FileIndexItem updateStatusContent);
 
         //IEnumerable<string> AddList(IEnumerable<string> updateStatusContent);

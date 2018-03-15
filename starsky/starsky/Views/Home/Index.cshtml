@@ -5,20 +5,25 @@
 }
 
 <h2>
-@foreach (var item in Model.Breadcrumb)
-{
-    var name = @item.Split("/")[item.Split("/").Length - 1];
-    if (name == "")
+    @foreach (var item in Model.Breadcrumb)
     {
-        name = "Home";
+        var name = @item.Split("/")[item.Split("/").Length - 1];
+        if (name == "")
+        {
+            name = "Home";
+        }
+        <a asp-controller="Home" asp-action="Index" asp-route-f="@item">@name</a>
+        if (item != Model.Breadcrumb[Model.Breadcrumb.Count-1])
+        {
+            <span> &raquo;</span>
+        }
     }
-    <a asp-controller="Home" asp-action="Index" asp-route-f="@item">@name</a>
-    if (item != Model.Breadcrumb[Model.Breadcrumb.Count-1])
-    {
-        <span> &raquo;</span>
-    }
-}
 </h2>
+<div class="wrapper">
+    <form asp-controller="Home" asp-action="Search" method="post">
+        <input name="t" /><button type="submit">Zoek</button>
+    </form>
+</div>
 
 <div class="wrapper">
     @foreach (var item in Model.ObjectItems)
@@ -40,7 +45,7 @@
                 <img src="#" alt="" />
             }
         </a>
- }
+    }
 </div>
 
 
