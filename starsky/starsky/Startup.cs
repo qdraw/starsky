@@ -47,6 +47,8 @@ namespace starsky
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UsePathBase("/starsky");
+
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();
@@ -54,10 +56,13 @@ namespace starsky
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
 
+
+
             app.UseStaticFiles();
+
 
             app.UseMvc(routes =>
             {
@@ -65,6 +70,8 @@ namespace starsky
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+
         }
     }
 }
