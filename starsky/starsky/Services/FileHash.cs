@@ -43,7 +43,8 @@ namespace starsky.Services
 
             MD5CryptoServiceProvider md5Provider = new MD5CryptoServiceProvider();
             Byte[] hash = md5Provider.ComputeHash(file);
-            var stringHash = Convert.ToBase64String(hash);
+
+            var stringHash = Base32.Encode(hash);
 
             stringHash = stringHash.Replace("/", "_");
             stringHash = stringHash.Replace("\\", "_");
