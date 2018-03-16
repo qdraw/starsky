@@ -35,11 +35,8 @@ namespace starsky.Services
             return jpgFiles.ToArray();
         }
 
-
         
-
-
-
+        // Legacy Keep here
 
         public static IEnumerable<FileIndexItem> GetFilesRecrusive(string subPath = "")
         {

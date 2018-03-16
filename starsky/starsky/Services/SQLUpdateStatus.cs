@@ -86,9 +86,9 @@ namespace starsky.Services
             subPath = SubPathSlashRemove(subPath);
             return !string.IsNullOrEmpty(subPath) ?
                 _context.FileIndex.Where
-                    (p => p.ParentDirectory.Contains(subPath))
+                    (p => !p.IsDirectory && p.ParentDirectory.Contains(subPath))
                     .OrderBy(r => r.FileName).ToList() :
-                _context.FileIndex.OrderBy(r => r.FileName).ToList();
+                _context.FileIndex.Where(p => !p.IsDirectory).OrderBy(r => r.FileName).ToList();
         }
 
 
@@ -274,8 +274,49 @@ namespace starsky.Services
 
             var subFoldersFullPath = Files.GetAllFilesDirectory(subPath);
 
+
+
+            // Delete old folders from database
+            var subFoldersDbStyle = new List<string>();
+
+            var databaseFolderList = _context.FileIndex.Where(p => p.IsDirectory).ToList();
+            foreach (var foldersFullPath in subFoldersDbStyle)
+            {
+                subFoldersDbStyle.Add(FileIndexItem.FullPathToDatabaseStyle(foldersFullPath));
+            }
+
+            IEnumerable<string> differenceFolders = databaseFolderList.Select(item => item.FilePath).Except(subFoldersDbStyle);
+
+            // Remove items that are removed from file sytem
+            foreach (var item in differenceFolders)
+            {
+                var ditem = databaseFolderList.FirstOrDefault(p => p.FilePath == item && p.IsDirectory);
+                RemoveItem(ditem);
+                Console.Write("`");
+            }
+
+            subFoldersDbStyle = new List<string>();
+            databaseFolderList = new List<FileIndexItem>();
+
+
             foreach (var singleFolderFullPath in subFoldersFullPath)
             {
+
+                // Check if Directory is in database
+                var dbFolderMatchFirst = _context.FileIndex.FirstOrDefault(p =>
+                    p.IsDirectory && p.FilePath == FileIndexItem.FullPathToDatabaseStyle(singleFolderFullPath));
+                if (dbFolderMatchFirst == null)
+                {
+                    var folderItem = new FileIndexItem();
+                    folderItem.FilePath = FileIndexItem.FullPathToDatabaseStyle(singleFolderFullPath);
+                    folderItem.IsDirectory = true;
+                    AddItem(folderItem);
+                    // We dont need this localy
+                }
+                // end folder
+
+
+                // List all localy
                 var databaseFileList = GetAll(FileIndexItem.FullPathToDatabaseStyle(singleFolderFullPath));
 
                 string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath);
@@ -284,12 +325,13 @@ namespace starsky.Services
                 var databaseFileListFileHash =
                     databaseFileList.Select(item => item.FileHash).ToList();
 
+                // Compare to delete
                 IEnumerable<string> differenceFileHash = databaseFileListFileHash.Except(localFileListFileHash);
 
-                // Remove items that are removed from file sytem
+                // Remove items from database that are removed from file system
                 foreach (var item in differenceFileHash)
                 {
-                    var ditem = databaseFileList.FirstOrDefault(p => p.FileHash == item);
+                    var ditem = databaseFileList.FirstOrDefault(p => p.FileHash == item && !p.IsDirectory);
                     databaseFileList.Remove(ditem);
                     RemoveItem(ditem);
                     Console.Write("^");
@@ -311,6 +353,7 @@ namespace starsky.Services
                         databaseItem.FileHash = localFileListFileHash[i];
                         databaseItem.FileName = Path.GetFileName(filesInDirectoryFullPath[i]);
                         databaseItem.IsDirectory = false;
+                        databaseItem.ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(filesInDirectoryFullPath[i]));
                         databaseItem.FilePath = FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i]);
                         AddItem(databaseItem);
                         databaseFileList.Add(databaseItem);
