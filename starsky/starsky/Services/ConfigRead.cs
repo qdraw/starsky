@@ -28,10 +28,10 @@ namespace starsky.Services
 
                 if (basePath == null) throw new FileNotFoundException("basePath==null");
 
-                // Add backSlash to configuration
-                if (basePath.Substring(basePath.Length - 1, 1) != Path.DirectorySeparatorChar.ToString())
+                // remove latest back slash
+                if (basePath.Substring(basePath.Length - 1, 1) == Path.DirectorySeparatorChar.ToString())
                 {
-                    basePath += Path.DirectorySeparatorChar.ToString();
+                    basePath = basePath.Substring(0, basePath.Length - 1);
                 }
 
                 defaultConnection = (string)obj["ConnectionStrings"]["DefaultConnection"];

@@ -18,7 +18,7 @@ namespace starsky.Services
 
             var thumbPath = AppSettingsProvider.ThumbnailTempFolder + item.FileHash + ".jpg";
 
-            if (!System.IO.File.Exists(Files.PathToFull(item.FilePath)))
+            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(item.FilePath)))
             {
                 Console.WriteLine("File Not found: " + item.FilePath);
                 return;
@@ -32,7 +32,7 @@ namespace starsky.Services
             // resize the image and save it to the output stream
 
             using (var outputStream = new FileStream(thumbPath, FileMode.CreateNew))
-            using (var inputStream = File.OpenRead(Files.PathToFull(item.FilePath)))
+            using (var inputStream = File.OpenRead(FileIndexItem.DatabasePathToFilePath(item.FilePath)))
             using (var image = Image.Load(inputStream))
             {
                 image.Mutate(x => x.AutoOrient());

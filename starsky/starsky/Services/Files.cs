@@ -12,64 +12,38 @@ namespace starsky.Services
 {
     public class Files
     {
-        //public string CheckMd5(string filename)
-        //{
-        //    using (var md5 = MD5.Create())
-        //    {
-        //        using (var stream = File.OpenRead(filename))
-        //        {
-        //            return Encoding.Default.GetString(md5.ComputeHash(stream));
-        //        }
-        //    }
-        //}
-
-        public static FileIndexItem ReadExifFromFile(FileIndexItem item)
+        public static string[] GetAllFilesDirectory(string subPath = "")
         {
+            var path = FileIndexItem.DatabasePathToFilePath(subPath);
+            string[] folders = System.IO.Directory.GetDirectories(path, "*", System.IO.SearchOption.AllDirectories);
+            return folders;
+        }
 
-            var allExifItems = ImageMetadataReader.ReadMetadata(item.FilePath);
+        public static string[] GetFilesInDirectory(string folderFullPath)
+        {
+            string[] allFiles = System.IO.Directory.GetFiles(folderFullPath);
 
-            foreach (var exifItem in allExifItems)
+            var jpgFiles = new List<string>();
+            foreach (var file in allFiles)
             {
-
-                //Console.WriteLine(exifItem);
-
-                var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Keywords");
-                if (tCounts >= 1)
+                if (file.ToLower().EndsWith("jpg"))
                 {
-                    item.Tags = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "IPTC" && p.Name == "Keywords")?.Description.ToLower();
-                }
-
-                var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized");
-                if (dtCounts >= 1)
-                {
-                    //foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
-
-                    var dateString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized")?.Description;
-
-                    // https://odedcoster.com/blog/2011/12/13/date-and-time-format-strings-in-net-understanding-format-strings/
-                    //2018:01:01 11:29:36
-                    string pattern = "yyyy:MM:dd HH:mm:ss";
-                    CultureInfo provider = CultureInfo.InvariantCulture;
-                    DateTime.TryParseExact(dateString, pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTime);
-
-                    if (itemDateTime.Year == 1 && itemDateTime.Month == 1)
-                    {
-                        dateString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Original")?.Description;
-                        DateTime.TryParseExact(dateString, pattern, provider, DateTimeStyles.AdjustToUniversal, out itemDateTime);
-                    }
-
-                    item.DateTime = itemDateTime;
+                    jpgFiles.Add(file);
                 }
 
             }
-
-            return item;
+            return jpgFiles.ToArray();
         }
 
 
-        public static IEnumerable<FileIndexItem> GetFiles(string subPath = "")
+        
+
+
+
+
+        public static IEnumerable<FileIndexItem> GetFilesRecrusive(string subPath = "")
         {
-            var path = AppSettingsProvider.BasePath + PathToSys(subPath);
+            var path = FileIndexItem.DatabasePathToFilePath(subPath);
 
             Queue<string> queue = new Queue<string>();
             queue.Enqueue(path);
@@ -80,6 +54,7 @@ namespace starsky.Services
                 {
                     foreach (string subDir in System.IO.Directory.GetDirectories(path))
                     {
+                        Console.WriteLine(subDir);
                         queue.Enqueue(subDir);
                     }
                 }
@@ -106,8 +81,8 @@ namespace starsky.Services
                             {
                                 FilePath = files[i],
                                 FileName = Path.GetFileName(files[i]),
-                                FileHash = CalcHashCode(files[i]),
-                                Folder = PathToUnixStyle(Path.GetDirectoryName(files[i]))
+                                FileHash = FileHash.CalcHashCode(files[i]),
+                                //Folder = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(files[i]))
                             };
                             yield return fileItem;
                         }
@@ -116,71 +91,8 @@ namespace starsky.Services
             }
         }
 
-        public static string CalcHashCode(string filename)
-        {
-            FileStream stream = new FileStream(
-                filename,
-                System.IO.FileMode.Open,
-                System.IO.FileAccess.Read,
-                System.IO.FileShare.ReadWrite);
+        
 
-            try
-            {
-                return CalcHashCode(stream);
-            }
-            finally
-            {
-                stream.Close();
-            }
-        }
 
-        public static string CalcHashCode(FileStream file)
-        {
-            //using (var stream = new BufferedStream(file, 1200000))
-            //{
-            //    SHA256Managed sha = new SHA256Managed();
-            //    byte[] checksum = sha.ComputeHash(stream);
-            //    return BitConverter.ToString(checksum).Replace("-", String.Empty).ToLower();
-            //}
-
-            MD5CryptoServiceProvider md5Provider = new MD5CryptoServiceProvider();
-            Byte[] hash = md5Provider.ComputeHash(file);
-            var stringHash = Convert.ToBase64String(hash);
-
-            stringHash = stringHash.Replace("/", "_");
-            stringHash = stringHash.Replace("\\", "_");
-            stringHash = stringHash.Replace("==", "");
-            stringHash = stringHash.Replace("+", "0");
-
-            return stringHash;
-
-        }
-
-        public static string PathToUnixStyle(string filepath)
-        {
-            filepath = filepath.Replace(AppSettingsProvider.BasePath, "");
-
-            filepath = PathToSys(filepath);
-
-            return filepath;
-        }
-
-        public static string PathToSys(string subPath)
-        {
-            if (Path.DirectorySeparatorChar.ToString() == "\\")
-            {
-                subPath = subPath.Replace("\\", "/");
-            }
-            return subPath;
-        }
-
-        public static string PathToFull(string shortPath)
-        {
-            var filepath = AppSettingsProvider.BasePath + shortPath;
-
-            filepath = PathToSys(filepath);
-
-            return File.Exists(filepath) ? filepath : null;
-        }
     }
 }

@@ -9,6 +9,8 @@
     <Compile Remove="Migrations\20180308104506_initDatabaseKey.Designer.cs" />
     <Compile Remove="Migrations\20180308104642_initDatabaseKey.cs" />
     <Compile Remove="Migrations\20180308104642_initDatabaseKey.Designer.cs" />
+    <Compile Remove="Migrations\20180316113720_IsDirectoryAddDescriptionParentDrectory.cs" />
+    <Compile Remove="Migrations\20180316113720_IsDirectoryAddDescriptionParentDrectory.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,17 +8,17 @@ namespace starsky.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Folder",
-                table: "FileIndex",
-                nullable: true);
+            //migrationBuilder.AddColumn<string>(
+            //    name: "Folder",
+            //    table: "FileIndex",
+            //    nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Folder",
-                table: "FileIndex");
+            //migrationBuilder.DropColumn(
+            //    name: "Folder",
+            //    table: "FileIndex");
         }
     }
 }

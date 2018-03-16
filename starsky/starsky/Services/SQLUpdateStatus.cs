@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using starsky.Interfaces;
@@ -85,7 +86,7 @@ namespace starsky.Services
             subPath = SubPathSlashRemove(subPath);
             return !string.IsNullOrEmpty(subPath) ?
                 _context.FileIndex.Where
-                    (p => p.Folder.Contains(subPath))
+                    (p => p.ParentDirectory.Contains(subPath))
                     .OrderBy(r => r.FileName).ToList() :
                 _context.FileIndex.OrderBy(r => r.FileName).ToList();
         }
@@ -101,17 +102,17 @@ namespace starsky.Services
             }
 
             var childItemsInFolder = _context.FileIndex.Where(
-                p => p.Folder.Contains(subPath)
+                p => p.ParentDirectory.Contains(subPath)
             );
 
-            var allSubFolders = childItemsInFolder.GroupBy(x => x.Folder, (key, group) => group.First());
+            var allSubFolders = childItemsInFolder.GroupBy(x => x.ParentDirectory, (key, group) => group.First());
 
             var directChildFolders = new HashSet<string>();
             foreach (var item in allSubFolders)
             {
-                if (_getChildFolderByPath(item.Folder, subPath) != null)
+                if (_getChildFolderByPath(item.ParentDirectory, subPath) != null)
                 {
-                    directChildFolders.Add(_getChildFolderByPath(item.Folder, subPath));
+                    directChildFolders.Add(_getChildFolderByPath(item.ParentDirectory, subPath));
                 }
             }
             return directChildFolders;
@@ -158,7 +159,7 @@ namespace starsky.Services
 
             var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == path);
 
-            var relativeObject = _getNextPrevInSubFolder(query?.Folder, path);
+            var relativeObject = _getNextPrevInSubFolder(query?.ParentDirectory, path);
 
             var itemResultsList = new List<ObjectItem>();
             var itemResult = new ObjectItem
@@ -238,7 +239,7 @@ namespace starsky.Services
         {
             subPath = SubPathSlashRemove(subPath);
             var content = _context.FileIndex.Where(
-                p => p.Folder == subPath
+                p => p.ParentDirectory == subPath
             ).OrderBy(r => r.FileName).AsEnumerable();
             return content;
         }
@@ -271,74 +272,123 @@ namespace starsky.Services
         public IEnumerable<string> SyncFiles(string subPath = "")
         {
 
-            subPath = SubPathSlashRemove(subPath);
+            var subFoldersFullPath = Files.GetAllFilesDirectory(subPath);
 
-            var localFileList = Files.GetFiles(subPath).ToList();
-            var databaseFileList = GetAll(subPath);
-
-
-            // Check for updated files based on hash
-            var localFileListFileHash = localFileList.Select(item => item.FileHash).ToList();
-            var databaseFileListFileHash =
-                databaseFileList.Select(item => item.FileHash).ToList();
-
-            Console.Write(" . . ");
-
-            IEnumerable<string> differenceFileHash = databaseFileListFileHash.Except(localFileListFileHash);
-
-            Console.Write(" .. ");
-
-            foreach (var item in differenceFileHash)
+            foreach (var singleFolderFullPath in subFoldersFullPath)
             {
-                var ditem = databaseFileList.FirstOrDefault(p => p.FileHash == item);
-                databaseFileList.Remove(ditem);
-                RemoveItem(ditem);
-                Console.Write("^");
-            }
+                var databaseFileList = GetAll(FileIndexItem.FullPathToDatabaseStyle(singleFolderFullPath));
 
+                string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath);
+                var localFileListFileHash = FileHash.CalcHashCode(filesInDirectoryFullPath);
 
-            localFileList.ForEach(item =>
-            {
-                var localItem = item;
+                var databaseFileListFileHash =
+                    databaseFileList.Select(item => item.FileHash).ToList();
 
-                var dbMatchFirst = databaseFileList
-                    .FirstOrDefault(p => p.FilePath == Files.PathToUnixStyle(localItem.FilePath)
-                    && p.FileHash == localItem.FileHash);
+                IEnumerable<string> differenceFileHash = databaseFileListFileHash.Except(localFileListFileHash);
 
-
-                if (dbMatchFirst == null)
+                // Remove items that are removed from file sytem
+                foreach (var item in differenceFileHash)
                 {
-                    Console.Write("_");
-
-                    item.AddToDatabase = DateTime.Now;
-                    item = Files.ReadExifFromFile(item);
-
-                    item.FilePath = Files.PathToUnixStyle(item.FilePath);
-                    AddItem(item);
-                    databaseFileList.Add(item);
+                    var ditem = databaseFileList.FirstOrDefault(p => p.FileHash == item);
+                    databaseFileList.Remove(ditem);
+                    RemoveItem(ditem);
+                    Console.Write("^");
                 }
+                differenceFileHash = new List<string>();
 
-            });
+                // Add new items to database
 
-            //Check fileName Difference
-            var localFileListFileName = localFileList.OrderBy(r => r.FileName)
-                .Select(item => Files.PathToUnixStyle(item.FilePath)).ToList();
-            var databaseFileListFileName =
-                databaseFileList.OrderBy(r => r.FileName).Select(item => item.FilePath).ToList();
+                for (int i = 0; i < filesInDirectoryFullPath.Length; i++)
+                {
+                    var dbMatchFirst = databaseFileList
+                        .FirstOrDefault(p => p.FilePath == FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i])
+                                             && p.FileHash == localFileListFileHash[i]);
+                    if (dbMatchFirst == null)
+                    {
+                        Console.Write("_");
+                        var databaseItem = Exif.ReadExifFromFile(filesInDirectoryFullPath[i]);
+                        databaseItem.AddToDatabase = DateTime.Now;
+                        databaseItem.FileHash = localFileListFileHash[i];
+                        databaseItem.FileName = Path.GetFileName(filesInDirectoryFullPath[i]);
+                        databaseItem.IsDirectory = false;
+                        databaseItem.FilePath = FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i]);
+                        AddItem(databaseItem);
+                        databaseFileList.Add(databaseItem);
+                    }
+                }
+                
 
-            IEnumerable<string> differenceFileNames = databaseFileListFileName.Except(localFileListFileName);
-
-            foreach (var item in differenceFileNames)
-            {
-                Console.Write("*");
-
-                var ditem = databaseFileList.FirstOrDefault(p => p.FilePath == item);
-                databaseFileList.Remove(ditem);
-                RemoveItem(ditem);
             }
 
             return null;
         }
+
+
+        //var localFileList = Files.GetFiles(subPath).ToList();
+        //var databaseFileList = GetAll(subPath);
+
+
+        //// Check for updated files based on hash
+        //var localFileListFileHash = localFileList.Select(item => item.FileHash).ToList();
+        //var databaseFileListFileHash =
+        //    databaseFileList.Select(item => item.FileHash).ToList();
+
+        //Console.Write(" . . ");
+
+        //IEnumerable<string> differenceFileHash = databaseFileListFileHash.Except(localFileListFileHash);
+
+        //Console.Write(" .. ");
+
+        //foreach (var item in differenceFileHash)
+        //{
+        //    var ditem = databaseFileList.FirstOrDefault(p => p.FileHash == item);
+        //    databaseFileList.Remove(ditem);
+        //    RemoveItem(ditem);
+        //    Console.Write("^");
+        //}
+
+        // temp off
+        //localFileList.ForEach(item =>
+        //{
+        //    var localItem = item;
+
+        //    var dbMatchFirst = databaseFileList
+        //        .FirstOrDefault(p => p.FilePath == Files.PathToUnixStyle(localItem.FilePath)
+        //        && p.FileHash == localItem.FileHash);
+
+
+        //    if (dbMatchFirst == null)
+        //    {
+        //        Console.Write("_");
+
+        //        item.AddToDatabase = DateTime.Now;
+        //        item = Exif.ReadExifFromFile(item);
+
+        //        item.FilePath = item. Files.PathToUnixStyle(item.FilePath);
+        //        AddItem(item);
+        //        databaseFileList.Add(item);
+        //    }
+
+        //});
+
+        ////Check fileName Difference
+        //var localFileListFileName = localFileList.OrderBy(r => r.FileName)
+        //    .Select(item => Files.PathToUnixStyle(item.FilePath)).ToList();
+        //var databaseFileListFileName =
+        //    databaseFileList.OrderBy(r => r.FileName).Select(item => item.FilePath).ToList();
+
+        //IEnumerable<string> differenceFileNames = databaseFileListFileName.Except(localFileListFileName);
+
+        //foreach (var item in differenceFileNames)
+        //{
+        //    Console.Write("*");
+
+        //    var ditem = databaseFileList.FirstOrDefault(p => p.FilePath == item);
+        //    databaseFileList.Remove(ditem);
+        //    RemoveItem(ditem);
+        //}
+
+
 
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)
         {

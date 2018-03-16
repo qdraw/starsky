@@ -125,7 +125,7 @@ namespace starsky.Controllers
 
             var thumbPath = AppSettingsProvider.ThumbnailTempFolder + f + ".jpg";
 
-            if (!System.IO.File.Exists(thumbPath) && System.IO.File.Exists(Files.PathToFull(sourcePath)))
+            if (!System.IO.File.Exists(thumbPath) && System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(sourcePath)))
             {
                 return NotFound("could regenerate thumb");
             };
