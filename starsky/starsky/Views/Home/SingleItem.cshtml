@@ -1,8 +1,8 @@
 ﻿@using starsky.ViewModels
-@model IndexViewModel
+@model ObjectItem
 
 @{
-    ViewData["Title"] = @Model.SingleItem.FileName;
+    ViewData["Title"] = @Model.FileIndexItem.FileName;
 }
 @*<h2>@ViewData["Title"]</h2>*@
 
@@ -17,22 +17,24 @@
         <a asp-controller="Home" asp-action="Index" asp-route-f="@item">@name</a>
         <span> &raquo;</span>
     }
-    @Model.SingleItem.FileName
+    @Model.FileIndexItem.FileName
 </h2>
 
 
-<h3>@Model.SingleItem.Tags</h3>
+<h3>@Model.FileIndexItem.Tags</h3>
 <h4>
-    @if (@Model.SingleItem.RelativeObjects.PrevFilePath != null)
+
+    @if (@Model.RelativeObjects.PrevFilePath != null)
     {
-        <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.SingleItem.RelativeObjects.PrevFilePath">Prev</a>
+        <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Prev</a>
     }
-    @if (@Model.SingleItem.RelativeObjects.NextFilePath != null)
+    @if (@Model.RelativeObjects.NextFilePath != null)
     {
-        <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.SingleItem.RelativeObjects.NextFilePath">Next</a>
+        <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Next</a>
     }
+
 </h4>
 
 
-<img src="@Url.Action("Thumbnail", "Home", new { f = @Model.SingleItem.FileHash })" />
+<img src="@Url.Action("Thumbnail", "Home", new { f = @Model.FileIndexItem.FileHash })" />
 

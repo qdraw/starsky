@@ -6,7 +6,7 @@
 
 <h2>
 
-    @*@foreach (var item in Model.Breadcrumb)
+    @foreach (var item in Model.Breadcrumb)
     {
         var name = @item.Split("/")[item.Split("/").Length - 1];
         if (name == "")
@@ -18,7 +18,7 @@
         {
             <span> &raquo;</span>
         }
-    }*@
+    }
 </h2>
 <div class="wrapper">
     <form asp-controller="Home" asp-action="Search" method="post">

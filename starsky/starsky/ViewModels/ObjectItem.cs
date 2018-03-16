@@ -10,5 +10,6 @@ namespace starsky.ViewModels
     {
         public FileIndexItem FileIndexItem { get; set; }
         public RelativeObjects RelativeObjects { get; set; }
+        public List<string> Breadcrumb { get; set; }
     }
 }

@@ -26,70 +26,69 @@ namespace starsky.Controllers
         public IActionResult Index(string f = "/")
         {
             var model = new IndexViewModel {FileIndexItems = _updateStatusContent.DisplayFileFolders(f)};
-
+            var singleItem = _updateStatusContent.SingleItem(f);
+            
             if (!model.FileIndexItems.Any())
             {
-                Response.StatusCode = 404;
-                return View("Error");
+                if (singleItem?.FileIndexItem.FilePath == null)
+                {
+                    Response.StatusCode = 404;
+                    return View("Error");
+                }
             }
 
-            var firstItem = model?.FileIndexItems?.FirstOrDefault();
-
-            //model.Breadcrumb = BreadcrumbHelper(firstItem);
-
-            if (firstItem != null && !firstItem.IsDirectory && model.FileIndexItems.Count() == 1)
+            if (singleItem?.FileIndexItem.FilePath != null)
             {
-                return Json("single item");
-                //model.SingleItem = firstItem;
-
-                return View("SingleItem", model);
+                singleItem.Breadcrumb = BreadcrumbHelper(singleItem.FileIndexItem.FilePath);
+                return View("SingleItem", singleItem);
             }
+
+            model.Breadcrumb = BreadcrumbHelper(model.FileIndexItems?.FirstOrDefault().FilePath);
 
             return View(model);
         }
 
-        //public List<string> BreadcrumbHelper(ObjectItem firstItem)
-        //{
-        //    var filePath = firstItem?.FilePath;
-        //    if (filePath == null) return null;
+        public List<string> BreadcrumbHelper(string filePath)
+        {
+            if (filePath == null) return null;
 
-        //    var breadcrumb = new List<string>();
-        //    if (filePath[0].ToString() != "/")
-        //    {
-        //        filePath = "/" + filePath;
-        //    }
-        //    var filePathArray = filePath.Split("/");
+            var breadcrumb = new List<string>();
+            if (filePath[0].ToString() != "/")
+            {
+                filePath = "/" + filePath;
+            }
+            var filePathArray = filePath.Split("/");
 
-        //    var dir = 0;
-        //    while (dir < filePathArray.Length - 1)
-        //    {
-        //        if (string.IsNullOrEmpty(filePathArray[dir]))
-        //        {
-        //            breadcrumb.Add("/");
-        //        }
-        //        else
-        //        {
+            var dir = 0;
+            while (dir < filePathArray.Length - 1)
+            {
+                if (string.IsNullOrEmpty(filePathArray[dir]))
+                {
+                    breadcrumb.Add("/");
+                }
+                else
+                {
 
-        //            var item = "";
-        //            for (int i = 0; i <= dir; i++)
-        //            {
-        //                if (!string.IsNullOrEmpty(filePathArray[i]))
-        //                {
-        //                    item += "/" + filePathArray[i];
-        //                }
-        //                //else
-        //                //{
-        //                //    item += "/" +filePathArray[i];
-        //                //}
-        //            }
-        //            breadcrumb.Add(item);
-        //        }
-        //        dir++;
+                    var item = "";
+                    for (int i = 0; i <= dir; i++)
+                    {
+                        if (!string.IsNullOrEmpty(filePathArray[i]))
+                        {
+                            item += "/" + filePathArray[i];
+                        }
+                        //else
+                        //{
+                        //    item += "/" +filePathArray[i];
+                        //}
+                    }
+                    breadcrumb.Add(item);
+                }
+                dir++;
 
-        //    }
+            }
 
-        //    return breadcrumb;
-        //}
+            return breadcrumb;
+        }
 
         [HttpGet]
         [HttpPost]
@@ -107,7 +106,13 @@ namespace starsky.Controllers
                 model.Breadcrumb.Add(t);
             }
 
-            model.ObjectItems = _updateStatusContent.SearchObjectItem(model.SearchQuery, model.PageNumber);
+            if (string.IsNullOrWhiteSpace(t))
+            {
+                model.FileIndexItems = new List<FileIndexItem>();
+                return View("Search", model);
+            }
+
+            model.FileIndexItems = _updateStatusContent.SearchObjectItem(model.SearchQuery, model.PageNumber);
             return View("Search", model);
         }
 

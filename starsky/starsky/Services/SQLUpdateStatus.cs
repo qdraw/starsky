@@ -86,12 +86,8 @@ namespace starsky.Services
                 .OrderBy(r => r.FileName).ToList();
         }
 
-        //public string Get(int id)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
-        public IEnumerable<ObjectItem> SearchObjectItem(string tag = "", int pageNumber = 0)
+        public IEnumerable<FileIndexItem> SearchObjectItem(string tag = "", int pageNumber = 0)
         {
             tag = tag.ToLower();
 
@@ -100,7 +96,7 @@ namespace starsky.Services
                 pageNumber = pageNumber * -1;
             }
 
-            var searchObjectItems = new List<ObjectItem>();
+            var searchObjectItems = new List<FileIndexItem>();
 
             var fileIndexQueryResults = _context.FileIndex.Where
                (p => !p.IsDirectory && p.Tags.Contains(tag)).ToList();
@@ -118,30 +114,9 @@ namespace starsky.Services
             var i = startIndex;
             while (i < endIndex)
             {
-                Console.WriteLine(i);
-
-                //var item = new ObjectItem();
-                //item.IsFolder = false;
-                //var file = fileIndexQueryResults[i];
-                //item.FilePath = file.FilePath;
-                //item.FileName = file.FileName;
-                //item.FileHash = file.FileHash;
-                //item.Tags = file.Tags;
-                //searchObjectItems.Add(item);
+                searchObjectItems.Add(fileIndexQueryResults[i]);
                 i++;
             }
-
-            //foreach (var file in fileIndexQueryResults)
-            //{
-            //    var item = new ObjectItem();
-            //    item.IsFolder = false;
-            //    item.FilePath = file.FilePath;
-            //    item.FileName = file.FileName;
-            //    item.FileHash = file.FileHash;
-            //    item.Tags = file.Tags;
-
-            //    searchObjectItems.Add(item);
-            //}
 
             return searchObjectItems;
         }
@@ -161,48 +136,43 @@ namespace starsky.Services
         }
 
         //// Name of item by path
-        //public IEnumerable<ObjectItem> GetItem(string path = "")
-        //{
-        //    var countDirectResults = _context.FileIndex.Count(p => p.FilePath == path);
+        public ObjectItem SingleItem(string singleItemDbPath)
+        {
+            if (string.IsNullOrWhiteSpace(singleItemDbPath)) return null;
 
-        //    if (countDirectResults != 1) return null;
+            var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == singleItemDbPath && !p.IsDirectory);
 
-        //    var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == path);
+            if (query == null) return null;
 
-        //    var relativeObject = _getNextPrevInSubFolder(query?.ParentDirectory, path);
+            var relativeObject = _getNextPrevInSubFolder(query?.ParentDirectory, singleItemDbPath);
 
-        //    var itemResultsList = new List<ObjectItem>();
-        //    var itemResult = new ObjectItem
-        //    {
-        //        FilePath = query?.FilePath,
-        //        FileName = query?.FileName,
-        //        FileHash = query?.FileHash,
-        //        RelativeObjects = relativeObject,
-        //        Tags = query?.Tags
-        //    };
+            var itemResult = new ObjectItem
+            {
+                FileIndexItem = query,
+                RelativeObjects = relativeObject
+            };
 
-        //    itemResultsList.Add(itemResult);
-        //    return itemResultsList;
-        //}
+            return itemResult;
+        }
 
 
-        //public RelativeObjects _getNextPrevInSubFolder(string parrentFolderPath, string fullImageFilePath)
-        //{
-        //    var itemsInSubFolder = GetAll(parrentFolderPath).OrderBy(p => p.FileName).ToList();
-        //    var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == fullImageFilePath);
+        public RelativeObjects _getNextPrevInSubFolder(string parrentFolderPath, string fullImageFilePath)
+        {
+            var itemsInSubFolder = GetAllFiles(parrentFolderPath).OrderBy(p => p.FileName).ToList();
+            var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == fullImageFilePath);
 
-        //    var relativeObject = new RelativeObjects();
-        //    if (photoIndexOfSubFolder != itemsInSubFolder.Count - 1)
-        //    {
-        //        relativeObject.NextFilePath = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FilePath;
-        //    }
+            var relativeObject = new RelativeObjects();
+            if (photoIndexOfSubFolder != itemsInSubFolder.Count - 1)
+            {
+                relativeObject.NextFilePath = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FilePath;
+            }
 
-        //    if (photoIndexOfSubFolder != 0)
-        //    {
-        //        relativeObject.PrevFilePath = itemsInSubFolder[photoIndexOfSubFolder - 1]?.FilePath;
-        //    }
-        //    return relativeObject;
-        //}
+            if (photoIndexOfSubFolder != 0)
+            {
+                relativeObject.PrevFilePath = itemsInSubFolder[photoIndexOfSubFolder - 1]?.FilePath;
+            }
+            return relativeObject;
+        }
 
 
 
@@ -253,8 +223,9 @@ namespace starsky.Services
             // Add the subpath to the database  => later on dont delete this
             var subPathItem = new FileIndexItem()
             {
-                AddToDatabase = DateTime.Now,
+                AddToDatabase = DateTime.UtcNow,
                 FilePath = subPath,
+                FileName = subPath, // test
                 IsDirectory = true,
                 ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(
                     Path.GetDirectoryName(FileIndexItem.DatabasePathToFilePath(subPath)))
@@ -299,6 +270,8 @@ namespace starsky.Services
                     var folderItem = new FileIndexItem();
                     folderItem.FilePath = FileIndexItem.FullPathToDatabaseStyle(singleFolderFullPath);
                     folderItem.IsDirectory = true;
+                    folderItem.AddToDatabase = DateTime.UtcNow;
+                    folderItem.FileName = FileIndexItem.FullPathToDatabaseStyle(Path.GetFileName(singleFolderFullPath));
                     folderItem.ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(singleFolderFullPath));
                     AddItem(folderItem);
                     // We dont need this localy
@@ -339,7 +312,7 @@ namespace starsky.Services
                     {
                         Console.Write("_");
                         var databaseItem = Exif.ReadExifFromFile(filesInDirectoryFullPath[i]);
-                        databaseItem.AddToDatabase = DateTime.Now;
+                        databaseItem.AddToDatabase = DateTime.UtcNow;
                         databaseItem.FileHash = localFileListFileHash[i];
                         databaseItem.FileName = Path.GetFileName(filesInDirectoryFullPath[i]);
                         databaseItem.IsDirectory = false;

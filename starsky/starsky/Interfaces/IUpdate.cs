@@ -15,9 +15,11 @@ namespace starsky.Interfaces
 
         IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/");
 
+        ObjectItem SingleItem(string singleItemDbPath);
+
         //string GetItemByHash(string path);
 
-        IEnumerable<ObjectItem> SearchObjectItem(string tag = "", int pageNumber = 0);
+        IEnumerable<FileIndexItem> SearchObjectItem(string tag = "", int pageNumber = 0);
         string GetItemByHash(string fileHash);
 
 
