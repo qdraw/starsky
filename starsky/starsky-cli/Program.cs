@@ -107,15 +107,32 @@ namespace starskyCli
 
             if (!GetThumbnail(args)) return;
 
-            var allitems = new SyncDatabase().GetAll(subpath);
+            // Thumb
+            var subFoldersFullPath =  Files.GetAllFilesDirectory(subpath);
 
-            foreach (var value in allitems)
+            foreach (var singleFolderFullPath in subFoldersFullPath)
             {
-                Thumbnail.CreateThumb(value);
+                string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath);
+                var localFileListFileHash = FileHash.CalcHashCode(filesInDirectoryFullPath);
+
+                for (int i = 0; i < filesInDirectoryFullPath.Length; i++)
+                {
+                    var value = new FileIndexItem()
+                    {
+                        FilePath = FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i]),
+                        FileHash = localFileListFileHash[i]
+                    };
+                    Thumbnail.CreateThumb(value);
+                }
+
+                if (filesInDirectoryFullPath.Length >= 1)
+                {
+                    Console.WriteLine("~ " + filesInDirectoryFullPath.Length);
+                }
+
             }
 
-            Console.WriteLine("Done!" + allitems.Count() + " items");
-
+            Console.WriteLine("Done!");
 
         }
 

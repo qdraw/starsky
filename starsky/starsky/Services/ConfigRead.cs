@@ -45,6 +45,7 @@ namespace starsky.Services
                 {
                     thumbnailTempFolder += Path.DirectorySeparatorChar.ToString();
                 }
+
             }
             catch (FileNotFoundException)
             {
