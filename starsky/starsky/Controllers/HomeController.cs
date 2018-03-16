@@ -25,24 +25,22 @@ namespace starsky.Controllers
 
         public IActionResult Index(string f = "/")
         {
-            var model = new IndexViewModel();
-            // No check for 404's
+            var model = new IndexViewModel {FileIndexItems = _updateStatusContent.DisplayFileFolders(f)};
 
-            model.ObjectItems = _updateStatusContent.GetObjectItems(f).ToList();
-
-            if (!model.ObjectItems.Any())
+            if (!model.FileIndexItems.Any())
             {
                 Response.StatusCode = 404;
                 return View("Error");
             }
 
-            var firstItem = model?.ObjectItems?.FirstOrDefault();
+            var firstItem = model?.FileIndexItems?.FirstOrDefault();
 
-            model.Breadcrumb = BreadcrumbHelper(firstItem);
+            //model.Breadcrumb = BreadcrumbHelper(firstItem);
 
-            if (firstItem != null && !firstItem.IsFolder && model.ObjectItems.Count() == 1)
+            if (firstItem != null && !firstItem.IsDirectory && model.FileIndexItems.Count() == 1)
             {
-                model.SingleItem = firstItem;
+                return Json("single item");
+                //model.SingleItem = firstItem;
 
                 return View("SingleItem", model);
             }
@@ -50,48 +48,48 @@ namespace starsky.Controllers
             return View(model);
         }
 
-        public List<string> BreadcrumbHelper(ObjectItem firstItem)
-        {
-            var filePath = firstItem?.FilePath;
-            if (filePath == null) return null;
+        //public List<string> BreadcrumbHelper(ObjectItem firstItem)
+        //{
+        //    var filePath = firstItem?.FilePath;
+        //    if (filePath == null) return null;
 
-            var breadcrumb = new List<string>();
-            if (filePath[0].ToString() != "/")
-            {
-                filePath = "/" + filePath;
-            }
-            var filePathArray = filePath.Split("/");
+        //    var breadcrumb = new List<string>();
+        //    if (filePath[0].ToString() != "/")
+        //    {
+        //        filePath = "/" + filePath;
+        //    }
+        //    var filePathArray = filePath.Split("/");
 
-            var dir = 0;
-            while (dir < filePathArray.Length - 1)
-            {
-                if (string.IsNullOrEmpty(filePathArray[dir]))
-                {
-                    breadcrumb.Add("/");
-                }
-                else
-                {
+        //    var dir = 0;
+        //    while (dir < filePathArray.Length - 1)
+        //    {
+        //        if (string.IsNullOrEmpty(filePathArray[dir]))
+        //        {
+        //            breadcrumb.Add("/");
+        //        }
+        //        else
+        //        {
 
-                    var item = "";
-                    for (int i = 0; i <= dir; i++)
-                    {
-                        if (!string.IsNullOrEmpty(filePathArray[i]))
-                        {
-                            item += "/" + filePathArray[i];
-                        }
-                        //else
-                        //{
-                        //    item += "/" +filePathArray[i];
-                        //}
-                    }
-                    breadcrumb.Add(item);
-                }
-                dir++;
+        //            var item = "";
+        //            for (int i = 0; i <= dir; i++)
+        //            {
+        //                if (!string.IsNullOrEmpty(filePathArray[i]))
+        //                {
+        //                    item += "/" + filePathArray[i];
+        //                }
+        //                //else
+        //                //{
+        //                //    item += "/" +filePathArray[i];
+        //                //}
+        //            }
+        //            breadcrumb.Add(item);
+        //        }
+        //        dir++;
 
-            }
+        //    }
 
-            return breadcrumb;
-        }
+        //    return breadcrumb;
+        //}
 
         [HttpGet]
         [HttpPost]
@@ -150,7 +148,7 @@ namespace starsky.Controllers
 
         public IActionResult Count(string f)
         {
-            return Json(_updateStatusContent.GetAll(f).Count);
+            return Json(_updateStatusContent.GetAllFiles(f).Count);
         }
 
         public IActionResult SyncFiles()
@@ -170,17 +168,17 @@ namespace starsky.Controllers
 
         public IActionResult GetFolder(string p = "/")
         {
-            var i = _updateStatusContent.GetChildFolders(p);
+            var i = _updateStatusContent.DisplayFileFolders(p);
 
             return Json(i);
         }
 
-        public IActionResult GetFilesInFolder(string p = "/")
-        {
-            var i = _updateStatusContent.GetFilesInFolder(p);
+        //public IActionResult GetFilesInFolder(string p = "/")
+        //{
+        //    var i = _updateStatusContent.GetFilesInFolder(p);
 
-            return Json(i);
-        }
+        //    return Json(i);
+        //}
 
 
         public IActionResult Error()

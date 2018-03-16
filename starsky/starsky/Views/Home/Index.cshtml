@@ -5,7 +5,8 @@
 }
 
 <h2>
-    @foreach (var item in Model.Breadcrumb)
+
+    @*@foreach (var item in Model.Breadcrumb)
     {
         var name = @item.Split("/")[item.Split("/").Length - 1];
         if (name == "")
@@ -13,11 +14,11 @@
             name = "Home";
         }
         <a asp-controller="Home" asp-action="Index" asp-route-f="@item">@name</a>
-        if (item != Model.Breadcrumb[Model.Breadcrumb.Count-1])
+        if (item != Model.Breadcrumb[Model.Breadcrumb.Count - 1])
         {
             <span> &raquo;</span>
         }
-    }
+    }*@
 </h2>
 <div class="wrapper">
     <form asp-controller="Home" asp-action="Search" method="post">
@@ -26,7 +27,7 @@
 </div>
 
 <div class="wrapper">
-    @foreach (var item in Model.ObjectItems)
+    @foreach (var item in Model.FileIndexItems)
     {
 
         <a class="halfitem" asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
@@ -36,7 +37,7 @@
 
             </div>
 
-            @if (!@item.IsFolder)
+            @if (!@item.IsDirectory)
             {
                 <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Home", new {f = item.FileHash})" alt="" />
             }

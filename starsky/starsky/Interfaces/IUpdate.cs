@@ -9,24 +9,23 @@ namespace starsky.Interfaces
     {
 
         //IEnumerable<string> GetAll(string subPath = "");
-        List<FileIndexItem> GetAll(string subPath = "");
+        List<FileIndexItem> GetAllFiles(string subPath = "");
 
-        IEnumerable<string> GetChildFolders(string subPath = "/");
-        IEnumerable<FileIndexItem> GetFilesInFolder(string subPath = "/");
+        //IEnumerable<FileIndexItem> GetFilesInFolder(string subPath = "/");
 
-        IEnumerable<ObjectItem> GetObjectItems(string subPath = "/");
+        IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/");
 
-        string GetItemByHash(string path);
+        //string GetItemByHash(string path);
 
-        IEnumerable<ObjectItem> SearchObjectItem(string tag, int pageNumber);
+        IEnumerable<ObjectItem> SearchObjectItem(string tag = "", int pageNumber = 0);
+        string GetItemByHash(string fileHash);
 
-        
 
         FileIndexItem AddItem(FileIndexItem updateStatusContent);
 
         //IEnumerable<string> AddList(IEnumerable<string> updateStatusContent);
 
-        IEnumerable<string> SyncFiles(string subPath = "");
+        IEnumerable<string> SyncFiles(string subPath = "/");
 
         
 

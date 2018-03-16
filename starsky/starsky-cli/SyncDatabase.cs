@@ -60,7 +60,7 @@ namespace starskyCli
 
         public IEnumerable<FileIndexItem> GetAll(string subPath = "")
         {
-            return _sqlStatus.GetAll(subPath);
+            return _sqlStatus.GetAllFiles(subPath);
         }
 
     }

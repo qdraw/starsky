@@ -2,22 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using starsky.Models;
 
 namespace starsky.ViewModels
 {
     public class ObjectItem
     {
-        public bool IsFolder { get; set; }
-
-        public string FilePath { get; set; }
-
-        public string FileName { get; set; }
-
-        public string Tags { get; set; }
-
-        public string FileHash { get; set; }
-
+        public FileIndexItem FileIndexItem { get; set; }
         public RelativeObjects RelativeObjects { get; set; }
-
     }
 }
