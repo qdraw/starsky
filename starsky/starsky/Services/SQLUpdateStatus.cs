@@ -267,7 +267,7 @@ namespace starsky.Services
                     if (dbMatchFirst == null)
                     {
                         Console.Write("_");
-                        var databaseItem = Exif.ReadExifFromFile(filesInDirectoryFullPath[i]);
+                        var databaseItem = ExifRead.ReadExifFromFile(filesInDirectoryFullPath[i]);
                         databaseItem.AddToDatabase = DateTime.UtcNow;
                         databaseItem.FileHash = localFileListFileHash[i];
                         databaseItem.FileName = Path.GetFileName(filesInDirectoryFullPath[i]);

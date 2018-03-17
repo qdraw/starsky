@@ -12,6 +12,7 @@ namespace starsky.Models
 
         public static DatabaseTypeList DatabaseType { get; set; }
         public static string ThumbnailTempFolder { get; set; }
+        public static string ExifToolPath { get; set; }
 
 
         public enum DatabaseTypeList

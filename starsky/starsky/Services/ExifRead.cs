@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MetadataExtractor;
@@ -8,7 +9,7 @@ using starsky.Models;
 
 namespace starsky.Services
 {
-    public class Exif
+    public class ExifRead
     {
         public static FileIndexItem ReadExifFromFile(string fileFullPath)
         {
@@ -53,5 +54,61 @@ namespace starsky.Services
             return item;
         }
 
+        //public static string WriteExifFromFile(string fileFullPath)
+        //{
+        //    fileFullPath =
+        //        @"2E5NEHNAF2XSQCK4ZJCYMJGGBQ.jpg";
+
+        //    fileFullPath = "20180101_000337.jpg";
+
+        //    //var options = new ExifToolOptions(){ExifToolPath = "exiftool(-k).exe" };
+
+        //    //var et = new ExifTool(options);
+        //    //var tags = et.GetTags(fileFullPath);
+
+
+        //    //foreach (var tag in tags)
+        //    //{
+        //    //    Console.WriteLine(tag);
+        //    //}
+
+
+        //    //Console.WriteLine(tags);
+
+
+        //    //var adapter = new JpegMetadataAdapter(fileFullPath);
+        //    //Console.WriteLine(adapter.Metadata.Keywords);
+
+
+        //    ////using (var outputStream = new FileStream(thumbPath, FileMode.CreateNew))
+        //    //using (var inputStream = File.OpenRead(fileFullPath))
+        //    //{
+        //    //    var file = ImageFile.FromStream(inputStream);
+        //    //    foreach (ExifProperty item in file.Properties)
+        //    //    {
+        //    //        Console.WriteLine(item);
+        //    //    }
+        //    //}
+
+        //    try
+        //    {
+        //        // FileIndexItem.DatabasePathToFilePath(item.FilePath))
+        //        ImageFile file = ImageFile.FromFile(fileFullPath);
+        //        // Read metadata
+        //        foreach (ExifProperty item in file.Properties)
+        //        {
+        //            Console.WriteLine(item.Name + "~  " + item.Value);
+        //            // Do something with meta data
+        //        }
+
+        //    }
+        //    catch (System.ArgumentException e)
+        //    {
+        //        Console.WriteLine(e);
+        //    }
+        
+        //    return null;
+
+        //}
     }
 }

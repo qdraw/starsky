@@ -79,6 +79,9 @@ namespace starskyCli
         {
             ConfigRead.SetAppSettingsProvider();
 
+            var t = ExifTool.GetExitoolData("20180101_000337.jpg");
+            Console.WriteLine(t);
+
             if (NeedHelp(args))
             {
                 Console.WriteLine("Settings:");

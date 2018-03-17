@@ -16,6 +16,7 @@ namespace starsky.Services
             string defaultConnection;
             string databaseType;
             string thumbnailTempFolder;
+            string exifToolPath;
 
             try
             {
@@ -28,7 +29,7 @@ namespace starsky.Services
 
                 if (basePath == null) throw new FileNotFoundException("basePath==null");
 
-                // remove latest back slash
+                // remove latest backslash
                 if (basePath.Substring(basePath.Length - 1, 1) == Path.DirectorySeparatorChar.ToString())
                 {
                     basePath = basePath.Substring(0, basePath.Length - 1);
@@ -46,6 +47,19 @@ namespace starsky.Services
                     thumbnailTempFolder += Path.DirectorySeparatorChar.ToString();
                 }
 
+
+                exifToolPath = (string)obj["ConnectionStrings"]["ExifToolPath"];
+
+                if (exifToolPath == null) throw new FileNotFoundException("ExifToolPath==null");
+
+                // remove latest backslash
+                if (exifToolPath.Substring(exifToolPath.Length - 1, 1) == Path.DirectorySeparatorChar.ToString())
+                {
+                    exifToolPath = exifToolPath.Substring(0, exifToolPath.Length - 1);
+                }
+
+
+
             }
             catch (FileNotFoundException)
             {
@@ -53,14 +67,16 @@ namespace starsky.Services
                 defaultConnection = null;
                 databaseType = null;
                 thumbnailTempFolder = null;
+                exifToolPath = null;
             }
 
-            if (basePath != null || defaultConnection != null || databaseType != null || thumbnailTempFolder != null)
+            if (basePath != null)
             {
                 AppSettingsProvider.BasePath = basePath;
                 AppSettingsProvider.DbConnectionString = defaultConnection;
                 AppSettingsProvider.DatabaseType = databaseType == "mysql" ? AppSettingsProvider.DatabaseTypeList.Mysql : AppSettingsProvider.DatabaseTypeList.Sqlite;
                 AppSettingsProvider.ThumbnailTempFolder = thumbnailTempFolder;
+                AppSettingsProvider.ExifToolPath = exifToolPath;
 
                 //AppSettingsProvider.DbConnectionString = "Data Source=../starsky/data.db";
 

@@ -30,7 +30,6 @@ namespace starsky.Services
             }
 
             // resize the image and save it to the output stream
-
             using (var outputStream = new FileStream(thumbPath, FileMode.CreateNew))
             using (var inputStream = File.OpenRead(FileIndexItem.DatabasePathToFilePath(item.FilePath)))
             using (var image = Image.Load(inputStream))
