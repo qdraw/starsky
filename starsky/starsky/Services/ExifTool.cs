@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CliWrap;
-using CliWrap.Models;
 using Newtonsoft.Json;
 using starsky.Models;
 
@@ -12,19 +10,21 @@ namespace starsky.Services
     {
         private static string _baseCommmand(string options,string fullFilePath)
         {
-            fullFilePath = $"\"" + fullFilePath + $"\"";
-            options = " " + options + " " + fullFilePath;
-            Console.WriteLine(AppSettingsProvider.ExifToolPath + options);
+            //fullFilePath = $"\"" + fullFilePath + $"\"";
+            //options = " " + options + " " + fullFilePath;
+            //Console.WriteLine(AppSettingsProvider.ExifToolPath + options);
 
-            using (var cli = new Cli(AppSettingsProvider.ExifToolPath))
-            {
-                var input = new ExecutionInput(options);
-                var output = cli.Execute(input);
+            //using (var cli = new Cli(AppSettingsProvider.ExifToolPath))
+            //{
+            //    var input = new ExecutionInput(options);
+            //    var output = cli.Execute(input);
 
-                Console.WriteLine(output.StandardError);
+            //    Console.WriteLine(output.StandardError);
                 
-                return output.StandardOutput;
-            }
+            //    return output.StandardOutput;
+            //}
+
+            return null;
         }
 
         private static ExifToolModel _parseJson(string text) {
