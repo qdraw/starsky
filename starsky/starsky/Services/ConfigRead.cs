@@ -58,7 +58,10 @@ namespace starsky.Services
                     exifToolPath = exifToolPath.Substring(0, exifToolPath.Length - 1);
                 }
 
-
+                //if (!File.Exists(exifToolPath))
+                //{
+                //    throw new FileLoadException("ExifToolPath not found");
+                //}
 
             }
             catch (FileNotFoundException)
