@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
 using starsky.Models;
@@ -23,6 +20,7 @@ namespace starsky.Controllers
             _updateStatusContent = updateStatusContent;
         }
 
+        [HttpGet]
         public IActionResult Index(string f = "/")
         {
             var model = new IndexViewModel {FileIndexItems = _updateStatusContent.DisplayFileFolders(f)};
@@ -39,56 +37,55 @@ namespace starsky.Controllers
 
             if (singleItem?.FileIndexItem.FilePath != null)
             {
-                singleItem.Breadcrumb = BreadcrumbHelper(singleItem.FileIndexItem.FilePath);
+                singleItem.Breadcrumb = Breadcrumbs.BreadcrumbHelper(singleItem.FileIndexItem.FilePath);
                 return View("SingleItem", singleItem);
             }
 
-            model.Breadcrumb = BreadcrumbHelper(model.FileIndexItems?.FirstOrDefault().FilePath);
+            model.Breadcrumb = Breadcrumbs.BreadcrumbHelper(model.FileIndexItems?.FirstOrDefault().FilePath);
             model.SearchQuery = model.FileIndexItems?.FirstOrDefault().ParentDirectory.Split("/").LastOrDefault();
             return View(model);
         }
 
-        public List<string> BreadcrumbHelper(string filePath)
+        //[HttpPost]
+        public IActionResult Update(string f = "path", string t = "")
         {
-            if (filePath == null) return null;
+            var singleItem = _updateStatusContent.SingleItem(f);
+            if (singleItem == null) return NotFound("not in index");
+            if (string.IsNullOrWhiteSpace(t)) return BadRequest("tag label missing");
 
-            var breadcrumb = new List<string>();
-            if (filePath[0].ToString() != "/")
-            {
-                filePath = "/" + filePath;
-            }
-            var filePathArray = filePath.Split("/");
+            var oldHashCode = _updateStatusContent.SingleItem(f).FileIndexItem.FileHash;
 
-            var dir = 0;
-            while (dir < filePathArray.Length - 1)
-            {
-                if (string.IsNullOrEmpty(filePathArray[dir]))
-                {
-                    breadcrumb.Add("/");
-                }
-                else
-                {
+            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
+                return NotFound("source image missing " + FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
 
-                    var item = "";
-                    for (int i = 0; i <= dir; i++)
-                    {
-                        if (!string.IsNullOrEmpty(filePathArray[i]))
-                        {
-                            item += "/" + filePathArray[i];
-                        }
-                        //else
-                        //{
-                        //    item += "/" +filePathArray[i];
-                        //}
-                    }
-                    breadcrumb.Add(item);
-                }
-                dir++;
+            var exifToolResult = ExifTool.SetExifToolKeywords(t, FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            if (exifToolResult == null) return BadRequest();
 
-            }
+            var item = _updateStatusContent.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
 
-            return breadcrumb;
+            item.FileHash = FileHash.CalcHashCode(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            item.AddToDatabase = DateTime.Now;
+            item.Tags = exifToolResult;
+            _updateStatusContent.UpdateItem(item);
+
+            new Thumbnail().RenameThumb(oldHashCode, item.FileHash);
+
+            return RedirectToAction("Info", new { f = f, t = exifToolResult });
         }
+
+        public IActionResult Info(string f = "uniqueid", string t = "")
+        {
+            var singleItem = _updateStatusContent.SingleItem(f);
+            if (singleItem == null) return NotFound("not in index");
+            if (string.IsNullOrWhiteSpace(t)) return BadRequest("tag label missing");
+            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
+                return NotFound("source image missing " + FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+
+            var item = _updateStatusContent.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
+            return Json(item);
+        }
+
+
 
         [HttpPost]
         public IActionResult Search(string t)
@@ -99,6 +96,8 @@ namespace starsky.Controllers
         [HttpGet]
         public IActionResult Search(string t, int p = 0)
         {
+            if (p <= 0) p = p *-1;
+
             // t = tag name | p == pagenr.
 
             var model = new SearchViewModel();
@@ -157,40 +156,12 @@ namespace starsky.Controllers
 
         }
 
-        public IActionResult Count(string f)
-        {
-            return Json(_updateStatusContent.GetAllFiles(f).Count);
-        }
-
-        public IActionResult SyncFiles()
-        {
-            //_updateStatusContent.SyncFiles()
-            return Json("");
-        }
-
-        //public IActionResult Update()
-        //{
-        //    var item = new FileIndexItem();
-        //    item.FileName = "item";
-        //    item.FilePath = "i";
-        //    _updateStatusContent.AddItem(item);
-        //    return Json(item);
-        //}
-
         public IActionResult GetFolder(string p = "/")
         {
             var i = _updateStatusContent.DisplayFileFolders(p);
 
             return Json(i);
         }
-
-        //public IActionResult GetFilesInFolder(string p = "/")
-        //{
-        //    var i = _updateStatusContent.GetFilesInFolder(p);
-
-        //    return Json(i);
-        //}
-
 
         public IActionResult Error()
         {

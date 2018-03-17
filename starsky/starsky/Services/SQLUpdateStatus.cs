@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Data;
@@ -303,6 +304,13 @@ namespace starsky.Services
         //    databaseFileList.Remove(ditem);
         //    RemoveItem(ditem);
         //}
+
+        public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
+        {
+            _context.Attach(updateStatusContent).State = EntityState.Modified;
+            _context.SaveChanges();
+            return updateStatusContent;
+        }
 
 
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)

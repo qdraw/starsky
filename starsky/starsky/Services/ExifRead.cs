@@ -25,6 +25,10 @@ namespace starsky.Services
                 if (tCounts >= 1)
                 {
                     item.Tags = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "IPTC" && p.Name == "Keywords")?.Description.ToLower();
+                    if (!string.IsNullOrWhiteSpace(item.Tags))
+                    {
+                        item.Tags = item.Tags.Replace(";", ", ");
+                    }
                 }
 
                 var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized");

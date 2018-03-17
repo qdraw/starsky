@@ -2,12 +2,30 @@
 using System.IO;
 using starsky.Models;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Helpers;
 
 namespace starsky.Services
 {
-    public static class Thumbnail
+    public class Thumbnail
     {
+        public void RenameThumb(string oldHashCode, string newHashCode)
+        {
+            if (!System.IO.Directory.Exists(AppSettingsProvider.ThumbnailTempFolder))
+            {
+                throw new FileNotFoundException("ThumbnailTempFolder not found " + AppSettingsProvider.ThumbnailTempFolder);
+            }
+
+            var oldThumbPath = AppSettingsProvider.ThumbnailTempFolder + oldHashCode + ".jpg";
+            var newThumbPath = AppSettingsProvider.ThumbnailTempFolder + newHashCode + ".jpg";
+
+            if (!System.IO.File.Exists(oldThumbPath))
+            {
+                return;
+            }
+
+            System.IO.File.Move(oldThumbPath, newThumbPath);
+
+        }
+
 
         public static void CreateThumb(FileIndexItem item)
         {
@@ -40,34 +58,6 @@ namespace starsky.Services
                 );
                 image.SaveAsJpeg(outputStream);
             }
-
-
-            //FileStream stream = new FileStream(
-            //    thumbPath,
-            //    System.IO.FileMode.Create);
-
-
-            //using (Image<Rgba32> image = Image.Load(Files.PathToFull(item.FilePath)))
-            //{
-            //    image.Mutate(x => x.AutoOrient());
-            //    image.Mutate(x => x
-            //        .Resize(1000, 0)
-            //    );
-            //    image.SaveAsJpeg(stream);
-            //    image.Dispose();
-            //}
-
-
-            //try
-            //{
-            //    CreateThumb(stream, item);
-            //}
-            //finally
-            //{
-            //    stream.Close();
-            //    stream.Dispose();
-            //    Console.WriteLine("%");
-            //}
         }
 
     }

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using CliWrap;
 using CliWrap.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using starsky.Models;
 
 namespace starsky.Services
@@ -13,12 +12,16 @@ namespace starsky.Services
     {
         private static string _baseCommmand(string options,string fullFilePath)
         {
-            Console.WriteLine("eT: " +  AppSettingsProvider.ExifToolPath);
+            fullFilePath = $"\"" + fullFilePath + $"\"";
+            options = " " + options + " " + fullFilePath;
+            Console.WriteLine(AppSettingsProvider.ExifToolPath + options);
+
             using (var cli = new Cli(AppSettingsProvider.ExifToolPath))
             {
-                Console.WriteLine("options " + options);
-                var input = new ExecutionInput(options + " " + fullFilePath);
+                var input = new ExecutionInput(options);
                 var output = cli.Execute(input);
+
+                Console.WriteLine(output.StandardError);
                 
                 return output.StandardOutput;
             }
@@ -41,25 +44,74 @@ namespace starsky.Services
         }
 
 
-        public static ExifToolModel GetExitoolData(string filePathFull)
+        //public static ExifToolModel GetExitoolData(string filePathFull)
+        //{
+        //    return _parseJson(_baseCommmand("-Keywords -json", filePathFull));
+        //}
+
+        public static string ReadExifToolKeywords(string keyWords, string filePathFull)
         {
-            return _parseJson(_baseCommmand("-Keywords -json", filePathFull));
+            var model = _parseJson(_baseCommmand("-Keywords -json", filePathFull));
+            return _duplicateKeywordCheck(model.Keywords);
         }
 
 
-        public static ExifToolModel WriteExifToolKeywords(string keyWords, string filePathFull)
+
+
+        private static string _duplicateKeywordCheck(string keywords)
         {
-            var currentKeywords = _parseJson(_baseCommmand("-Keywords -json", filePathFull));
-            var stringArrayKeywords = currentKeywords.Keywords.Split(", ");
-            var hashSetKeywords = new HashSet<string>(currentKeywords.Keywords.Split(", "));
+            var hashSetKeywords = new HashSet<string>(keywords.Split(", "));
             var toBeAddedKeywords = string.Empty;
             foreach (var keyword in hashSetKeywords)
             {
-                toBeAddedKeywords += keyword + ", ";
+                if (!string.IsNullOrWhiteSpace(keyword) && keyword != hashSetKeywords.LastOrDefault())
+                {
+                    toBeAddedKeywords += keyword + ", ";
+                }
+
+                if (!string.IsNullOrWhiteSpace(keyword) && keyword == hashSetKeywords.LastOrDefault())
+                {
+                    toBeAddedKeywords += keyword;
+                }
             }
-       
-            return _parseJson(_baseCommmand(" -sep \", \" -Keywords=\"" + toBeAddedKeywords + "\" -json", filePathFull)); ;
+
+            return toBeAddedKeywords;
+
         }
+
+
+        public static string WriteExifToolKeywords(string keyWords, string filePathFull) // add or update
+        {
+            if (string.IsNullOrWhiteSpace(keyWords)) return null;
+
+            var currentKeywords = _parseJson(_baseCommmand("-Keywords -json", filePathFull));
+
+            var toBeAddedKeywords = _duplicateKeywordCheck(currentKeywords.Keywords + ", " + keyWords);
+
+            Console.WriteLine(toBeAddedKeywords);
+
+            _baseCommmand("-overwrite_original -sep \", \" -Keywords=\"" + toBeAddedKeywords + "\" -json ",
+                filePathFull);
+
+            return _parseJson(_baseCommmand("-Keywords -json", filePathFull)).Keywords;
+
+        }
+
+        // overwrite => keyword list
+        public static string SetExifToolKeywords(string keyWords, string filePathFull)
+        {
+            if (string.IsNullOrWhiteSpace(keyWords)) return null;
+
+            var toBeAddedKeywords = _duplicateKeywordCheck(keyWords);
+
+            _baseCommmand("-overwrite_original -sep \", \" -Keywords=\"" + toBeAddedKeywords + "\" -json ",
+                filePathFull);
+
+            return _parseJson(_baseCommmand("-Keywords -json", filePathFull)).Keywords;
+
+        }
+
+
 
 
 

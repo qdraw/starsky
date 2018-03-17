@@ -28,6 +28,7 @@ namespace starsky.Interfaces
 
 
         FileIndexItem AddItem(FileIndexItem updateStatusContent);
+        FileIndexItem UpdateItem(FileIndexItem updateStatusContent);
 
         //IEnumerable<string> AddList(IEnumerable<string> updateStatusContent);
 

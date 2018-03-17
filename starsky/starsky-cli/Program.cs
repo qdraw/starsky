@@ -79,10 +79,7 @@ namespace starskyCli
         {
             ConfigRead.SetAppSettingsProvider();
 
-            //ExifTool.WriteExifToolKeywords("test", "20180101_000337.jpg");
-
-            //var t = ExifTool.GetExitoolData("20180101_000337.jpg");
-            //Console.WriteLine(t);
+            //var q = ExifTool.WriteExifToolKeywords("test1", "20180101_000337.jpg");
 
             if (NeedHelp(args))
             {
