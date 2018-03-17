@@ -191,6 +191,17 @@ namespace starsky.Services
             return differenceFileNames;
         }
 
+        public IEnumerable<string> 
+            RemoveEmptyFolders(List<string> localSubFolderListDatabaseStyle, 
+            List<FileIndexItem> databaseSubFolderList)
+        {
+
+            // 1. Index all folders
+            // 2. Rename single folder
+            // 3. The files are keeped in the index
+            return null;
+        }
+
         public void AddFoldersToDatabase(List<string> localSubFolderDbStyle, List<FileIndexItem> databaseSubFolderList)
         {
             foreach (var singleFolderDbStyle in localSubFolderDbStyle)
@@ -198,7 +209,9 @@ namespace starsky.Services
 
                 // Check if Directory is in database
                 var dbFolderMatchFirst = _context.FileIndex.FirstOrDefault(p =>
-                    p.IsDirectory && p.FilePath == singleFolderDbStyle);
+                        p.IsDirectory && 
+                        p.FilePath == singleFolderDbStyle
+                    );
 
                 // Folders!!!!
                 if (dbFolderMatchFirst == null)
@@ -264,6 +277,7 @@ namespace starsky.Services
 
             // Sync for folders 
             RemoveOldFilePathItemsFromDatabase(localSubFolderDbStyle, databaseSubFolderList);
+            RemoveEmptyFolders(localSubFolderDbStyle, databaseSubFolderList);
             AddFoldersToDatabase(localSubFolderDbStyle, databaseSubFolderList);
 
 
