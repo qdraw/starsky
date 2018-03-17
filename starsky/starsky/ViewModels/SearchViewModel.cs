@@ -12,5 +12,6 @@ namespace starsky.ViewModels
         public List<string> Breadcrumb { get; set; }
         public string SearchQuery { get; set; }
         public int PageNumber { get; set; }
+        public int LastPageNumber { get; set; }
     }
 }

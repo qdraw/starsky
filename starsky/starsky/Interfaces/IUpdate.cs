@@ -17,9 +17,13 @@ namespace starsky.Interfaces
 
         ObjectItem SingleItem(string singleItemDbPath);
 
+
+
         //string GetItemByHash(string path);
 
         IEnumerable<FileIndexItem> SearchObjectItem(string tag = "", int pageNumber = 0);
+        int SearchLastPageNumber(string tag);
+
         string GetItemByHash(string fileHash);
 
 

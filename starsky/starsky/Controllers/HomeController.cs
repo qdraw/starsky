@@ -90,8 +90,13 @@ namespace starsky.Controllers
             return breadcrumb;
         }
 
-        [HttpGet]
         [HttpPost]
+        public IActionResult Search(string t)
+        {
+            return RedirectToAction("Search", new { t = t, p = 0  });
+        }
+
+        [HttpGet]
         public IActionResult Search(string t, int p = 0)
         {
             // t = tag name | p == pagenr.
@@ -112,6 +117,7 @@ namespace starsky.Controllers
                 return View("Search", model);
             }
 
+            model.LastPageNumber = _updateStatusContent.SearchLastPageNumber(t);
             model.FileIndexItems = _updateStatusContent.SearchObjectItem(model.SearchQuery, model.PageNumber);
             return View("Search", model);
         }

@@ -12,20 +12,44 @@
         {
             name = "Home";
         }
-    <a asp-controller="Home" asp-action="Search" asp-route-t="@item">@name</a>
-        if (item != Model.Breadcrumb[Model.Breadcrumb.Count-1])
+        if (name != "Home")
         {
-    <span> &raquo;</span>
+            <a asp-controller="Home" asp-action="Search" asp-route-t="@item">@name</a>
+        }
+        else
+        {
+            <a asp-controller="Home" asp-action="Index">@name</a>
+        }
+        if (item != Model.Breadcrumb[Model.Breadcrumb.Count - 1])
+        {
+            <span> &raquo;</span>
         }
     }
 </h2>
+
+<h4>
+    @if (Model.PageNumber >= 1)
+    {
+        var prevpage = @Model.PageNumber - 1;
+        <a asp-controller="Home" asp-action="Search" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Prev</a>
+    }
+
+    @if (Model.PageNumber < Model.LastPageNumber)
+    {
+        var nextpage = @Model.PageNumber + 1;
+        <a asp-controller="Home" asp-action="Search" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Next</a>
+    }
+</h4>
+
 <div class="wrapper">
     <form asp-controller="Home" asp-action="Search" method="post">
-        <input name="t" /><button type="submit">Zoek</button>
+        <input name="t"  value="@Model.SearchQuery"/><button type="submit">Zoek</button>
     </form>
 </div>
 
+
 <div class="wrapper">
+
     @foreach (var item in Model.FileIndexItems)
     {
         <a class="halfitem" asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">

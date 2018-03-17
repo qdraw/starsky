@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Data;
@@ -30,6 +29,7 @@ namespace starsky.Services
                 .OrderBy(r => r.FileName).ToList();
         }
 
+        private const int ResultsInView = 50;
 
         public IEnumerable<FileIndexItem> SearchObjectItem(string tag = "", int pageNumber = 0)
         {
@@ -45,11 +45,9 @@ namespace starsky.Services
             var fileIndexQueryResults = _context.FileIndex.Where
                (p => !p.IsDirectory && p.Tags.Contains(tag)).OrderByDescending(p => p.DateTime).ToList();
 
-            var resultsInView = 50;
+            var startIndex = (pageNumber * ResultsInView);
 
-            var startIndex = (pageNumber * resultsInView);
-
-            var endIndex = startIndex + resultsInView;
+            var endIndex = startIndex + ResultsInView;
             if (endIndex >= fileIndexQueryResults.Count)
             {
                 endIndex = fileIndexQueryResults.Count;
@@ -65,7 +63,21 @@ namespace starsky.Services
             return searchObjectItems;
         }
 
+        public int SearchLastPageNumber(string tag)
+        {
+            tag = tag.ToLower();
+            var fileIndexQueryCount = _context.FileIndex.Count
+                (p => !p.IsDirectory && p.Tags.Contains(tag));
 
+            var searchLastPageNumbers = (fileIndexQueryCount / ResultsInView) -1;
+
+            if (fileIndexQueryCount <= ResultsInView)
+            {
+                searchLastPageNumbers = 0;
+            }
+
+            return searchLastPageNumbers;
+        }
 
 
 
