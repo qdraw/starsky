@@ -44,7 +44,7 @@ namespace starsky.Controllers
             }
 
             model.Breadcrumb = BreadcrumbHelper(model.FileIndexItems?.FirstOrDefault().FilePath);
-
+            model.SearchQuery = model.FileIndexItems?.FirstOrDefault().ParentDirectory.Split("/").LastOrDefault();
             return View(model);
         }
 

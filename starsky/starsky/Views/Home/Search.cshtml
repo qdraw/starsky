@@ -1,7 +1,7 @@
 ﻿@using starsky.ViewModels
 @model SearchViewModel
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = Model.SearchQuery + " - Search";
 }
 
 <h2>
@@ -56,8 +56,8 @@
             <div class="caption">
                 <h3>@item.FileName</h3>
                 <p>@item.Tags</p>
-
             </div>
+            <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Home", new {f = item.FileHash})" alt="@item.Tags" />
         </a>
     }
 </div>

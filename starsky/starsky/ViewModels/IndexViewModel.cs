@@ -11,5 +11,6 @@ namespace starsky.ViewModels
         public IEnumerable<FileIndexItem> FileIndexItems { get; set; }
         public List<string> Breadcrumb { get; set; }
         public ObjectItem SingleItem { get; set; }
+        public string SearchQuery { get; set; }
     }
 }
