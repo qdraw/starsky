@@ -19,16 +19,21 @@ namespace starsky.Services
             return folders;
         }
 
-        public static string[] GetFilesInDirectory(string folderFullPath)
+        public static string[] GetFilesInDirectory(string path, bool dbStyle = true)
         {
-            string[] allFiles = System.IO.Directory.GetFiles(folderFullPath);
+            if (dbStyle)
+            {
+                path = FileIndexItem.DatabasePathToFilePath(path);
+            }
+
+            string[] allFiles = System.IO.Directory.GetFiles(path);
 
             var jpgFiles = new List<string>();
             foreach (var file in allFiles)
             {
                 if (file.ToLower().EndsWith("jpg"))
                 {
-                    jpgFiles.Add(file);
+                    jpgFiles.Add(dbStyle ? FileIndexItem.FullPathToDatabaseStyle(file) : file);
                 }
 
             }

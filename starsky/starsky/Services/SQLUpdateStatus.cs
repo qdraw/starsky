@@ -26,7 +26,7 @@ namespace starsky.Services
             subPath = SubPathSlashRemove(subPath);
 
             return _context.FileIndex.Where
-                    (p => !p.IsDirectory && p.ParentDirectory.Contains(subPath))
+                    (p => !p.IsDirectory && p.ParentDirectory == subPath) // used to be contains
                 .OrderBy(r => r.FileName).ToList();
         }
 
@@ -155,133 +155,249 @@ namespace starsky.Services
             return subPath;
         }
 
+        public List<string> RenameListItemsToDbStyle(List<string> localSubFolderList)
+        {
+            var localSubFolderListDatabaseStyle = new List<string>();
 
+            foreach (var item in localSubFolderList)
+            {
+                localSubFolderListDatabaseStyle.Add(FileIndexItem.FullPathToDatabaseStyle(item));
+            }
+
+            return localSubFolderListDatabaseStyle;
+        }
+
+        public IEnumerable<string> RemoveOldFilePathItemsFromDatabase(List<string> localSubFolderListDatabaseStyle, List<FileIndexItem> databaseSubFolderList)
+        {
+
+            //Check fileName Difference
+            var databaseFileListFileName =
+                databaseSubFolderList.OrderBy(r => r.FileName).Select(item => item.FilePath).ToList();
+
+            IEnumerable<string> differenceFileNames = databaseFileListFileName.Except(localSubFolderListDatabaseStyle);
+
+            Console.Write(differenceFileNames.Count() + " "  + databaseSubFolderList.Count);
+
+            // Delete removed items
+            foreach (var item in differenceFileNames)
+            {
+                Console.Write("*");
+
+                var ditem = databaseSubFolderList.FirstOrDefault(p => p.FilePath == item);
+                databaseSubFolderList.Remove(ditem);
+                RemoveItem(ditem);
+            }
+
+            return differenceFileNames;
+        }
+
+        public void AddFoldersToDatabase(List<string> localSubFolderDbStyle, List<FileIndexItem> databaseSubFolderList)
+        {
+            foreach (var singleFolderDbStyle in localSubFolderDbStyle)
+            {
+
+                // Check if Directory is in database
+                var dbFolderMatchFirst = _context.FileIndex.FirstOrDefault(p =>
+                    p.IsDirectory && p.FilePath == singleFolderDbStyle);
+
+                // Folders!!!!
+                if (dbFolderMatchFirst == null)
+                {
+                    var folderItem = new FileIndexItem();
+                    folderItem.FilePath = singleFolderDbStyle;
+                    folderItem.IsDirectory = true;
+                    folderItem.AddToDatabase = DateTime.UtcNow;
+                    folderItem.FileName = singleFolderDbStyle;
+                    folderItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault();
+                    AddItem(folderItem);
+                    // We dont need this localy
+                }
+
+                // end folder
+            }
+        }
+
+        public void AddPhotoToDatabase(List<string> localSubFolderDbStyle, List<FileIndexItem> databaseSubFolderList)
+        {
+            foreach (var singleFolderDbStyle in localSubFolderDbStyle)
+            {
+
+                // Check if Photo is in database
+                var dbFolderMatchFirst = _context.FileIndex.FirstOrDefault(
+                    p => 
+                        !p.IsDirectory && 
+                        p.FilePath == singleFolderDbStyle
+                    );
+
+                // Console.WriteLine(singleFolderDbStyle);
+
+                if (dbFolderMatchFirst == null)
+                {
+                    // photo
+                    Console.Write(".");
+                    var singleFilePath = FileIndexItem.DatabasePathToFilePath(singleFolderDbStyle);
+
+                    var databaseItem = ExifRead.ReadExifFromFile(singleFilePath);
+                    databaseItem.AddToDatabase = DateTime.UtcNow;
+                    databaseItem.FileHash = FileHash.CalcHashCode(singleFilePath);
+                    databaseItem.FileName = Path.GetFileName(singleFilePath);
+                    databaseItem.IsDirectory = false;
+                    databaseItem.ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(singleFilePath));
+                    databaseItem.FilePath = singleFolderDbStyle;
+                    AddItem(databaseItem);
+                    //databaseFileList.Add(databaseItem);
+                }
+
+                // end folder
+            }
+        }
 
 
         public IEnumerable<string> SyncFiles(string subPath = "")
         {
 
-            var subFoldersFullPath = Files.GetAllFilesDirectory(subPath).ToList();
+            var localSubFolderDbStyle = RenameListItemsToDbStyle(
+                Files.GetAllFilesDirectory(subPath).ToList()
+                );
+
+            var databaseSubFolderList = _context.FileIndex.Where(p => p.IsDirectory).ToList();
+
+            // Sync for folders 
+            RemoveOldFilePathItemsFromDatabase(localSubFolderDbStyle, databaseSubFolderList);
+            AddFoldersToDatabase(localSubFolderDbStyle, databaseSubFolderList);
 
 
+            Console.WriteLine(".");
 
-            // Delete old folders from database
-            var subFoldersDbStyle = new List<string>();
-
-            var databaseFolderList = _context.FileIndex.Where(p => p.IsDirectory).ToList();
-
-            foreach (var foldersFullPath in databaseFolderList)
+            foreach (var singleFolder in localSubFolderDbStyle)
             {
-                subFoldersDbStyle.Add(FileIndexItem.FullPathToDatabaseStyle(foldersFullPath.FilePath));
+                Console.Write(singleFolder + "  ");
+
+                var databaseFileList = GetAllFiles(singleFolder);
+                var localFarrayFilesDbStyle = Files.GetFilesInDirectory(singleFolder).ToList();
+
+                RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList);
+                AddPhotoToDatabase(localFarrayFilesDbStyle, databaseFileList);
+
+                Console.WriteLine("-");
             }
 
+            //// Delete old folders from database
+            //var subFoldersDbStyle = new List<string>();
 
 
-            // Add the subpath to the database  => later on dont delete this
-            var subPathItem = new FileIndexItem()
-            {
-                AddToDatabase = DateTime.UtcNow,
-                FilePath = subPath,
-                FileName = subPath, // test
-                IsDirectory = true,
-                ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(
-                    Path.GetDirectoryName(FileIndexItem.DatabasePathToFilePath(subPath)))
-            };
-            if (string.IsNullOrWhiteSpace(subPathItem.ParentDirectory))
-            {
-                subPathItem.ParentDirectory = "/";
-            }
-
-            var ditem1 = databaseFolderList.FirstOrDefault(p => p.FilePath == subPath && p.IsDirectory);
-            if (ditem1 == null)
-            {
-                AddItem(subPathItem);
-            }
-            // end
-
-            IEnumerable<string> differenceFolders = databaseFolderList.Select(item => item.FilePath).Except(subFoldersDbStyle);
-
-            // Remove items that are removed from file sytem
-            foreach (var item in differenceFolders)
-            {
-                var ditem = databaseFolderList.FirstOrDefault(p => p.FilePath == item && p.IsDirectory);
-                if (ditem?.FilePath == subPath) continue;
-                // dont remove the direct subpath
-                RemoveItem(ditem);
-                Console.Write("`");
-            }
-
-            subFoldersDbStyle = new List<string>();
+            //foreach (var foldersFullPath in databaseFolderList)
+            //{
+            //    subFoldersDbStyle.Add(FileIndexItem.FullPathToDatabaseStyle(foldersFullPath.FilePath));
+            //}
 
 
-            foreach (var singleFolderFullPath in subFoldersFullPath)
-            {
 
-                // Check if Directory is in database
-                var dbFolderMatchFirst = _context.FileIndex.FirstOrDefault(p =>
-                    p.IsDirectory && p.FilePath == FileIndexItem.FullPathToDatabaseStyle(singleFolderFullPath));
+            //// Add the subpath to the database  => later on dont delete this
+            //var subPathItem = new FileIndexItem()
+            //{
+            //    AddToDatabase = DateTime.UtcNow,
+            //    FilePath = subPath,
+            //    FileName = subPath, // test
+            //    IsDirectory = true,
+            //    ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(
+            //        Path.GetDirectoryName(FileIndexItem.DatabasePathToFilePath(subPath)))
+            //};
+            //if (string.IsNullOrWhiteSpace(subPathItem.ParentDirectory))
+            //{
+            //    subPathItem.ParentDirectory = "/";
+            //}
+
+            //var ditem1 = databaseFolderList.FirstOrDefault(p => p.FilePath == subPath && p.IsDirectory);
+            //if (ditem1 == null)
+            //{
+            //    AddItem(subPathItem);
+            //}
+            //// end
+
+            //IEnumerable<string> differenceFolders = databaseFolderList.Select(item => item.FilePath).Except(subFoldersDbStyle);
+
+            //// Remove items that are removed from file sytem
+            //foreach (var item in differenceFolders)
+            //{
+            //    var ditem = databaseFolderList.FirstOrDefault(p => p.FilePath == item && p.IsDirectory);
+            //    //if (ditem?.FilePath == subPath) continue;
+            //    // dont remove the direct subpath
+            //    RemoveItem(ditem);
+            //    Console.Write("`");
+            //}
+
+            //subFoldersDbStyle = new List<string>();
 
 
-                if (dbFolderMatchFirst == null)
-                {
-                    var folderItem = new FileIndexItem();
-                    folderItem.FilePath = FileIndexItem.FullPathToDatabaseStyle(singleFolderFullPath);
-                    folderItem.IsDirectory = true;
-                    folderItem.AddToDatabase = DateTime.UtcNow;
-                    folderItem.FileName = FileIndexItem.FullPathToDatabaseStyle(Path.GetFileName(singleFolderFullPath));
-                    folderItem.ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(singleFolderFullPath));
-                    AddItem(folderItem);
-                    // We dont need this localy
-                }
-                // end folder
-                
+            //foreach (var singleFolderFullPath in subFoldersFullPath)
+            //{
 
-                // List all localy
-                var databaseFileList = GetAllFiles(FileIndexItem.FullPathToDatabaseStyle(singleFolderFullPath));
+            //    // Check if Directory is in database
+            //    var dbFolderMatchFirst = _context.FileIndex.FirstOrDefault(p =>
+            //        p.IsDirectory && p.FilePath == FileIndexItem.FullPathToDatabaseStyle(singleFolderFullPath));
 
-                string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath);
-                var localFileListFileHash = FileHash.CalcHashCode(filesInDirectoryFullPath);
 
-                var databaseFileListFileHash =
-                    databaseFileList.Select(item => item.FileHash).ToList();
+            //    if (dbFolderMatchFirst == null)
+            //    {
+            //        var folderItem = new FileIndexItem();
+            //        folderItem.FilePath = FileIndexItem.FullPathToDatabaseStyle(singleFolderFullPath);
+            //        folderItem.IsDirectory = true;
+            //        folderItem.AddToDatabase = DateTime.UtcNow;
+            //        folderItem.FileName = FileIndexItem.FullPathToDatabaseStyle(Path.GetFileName(singleFolderFullPath));
+            //        folderItem.ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(singleFolderFullPath));
+            //        AddItem(folderItem);
+            //        // We dont need this localy
+            //    }
+            //    // end folder
 
-                // Compare to delete
-                IEnumerable<string> differenceFileHash = databaseFileListFileHash.Except(localFileListFileHash);
 
-                // Remove items from database that are removed from file system
-                foreach (var item in differenceFileHash)
-                {
-                    var ditem = databaseFileList.FirstOrDefault(p => p.FileHash == item && !p.IsDirectory);
-                    databaseFileList.Remove(ditem);
-                    RemoveItem(ditem);
-                    Console.Write("^");
-                }
-                differenceFileHash = new List<string>();
+            //    // List all localy
+            //    var databaseFileList = GetAllFiles(FileIndexItem.FullPathToDatabaseStyle(singleFolderFullPath));
 
-                // Add new items to database
+            //    string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath);
+            //    var localFileListFileHash = FileHash.CalcHashCode(filesInDirectoryFullPath);
 
-                for (int i = 0; i < filesInDirectoryFullPath.Length; i++)
-                {
-                    var dbMatchFirst = databaseFileList
-                        .FirstOrDefault(p => p.FilePath == FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i])
-                                             && p.FileHash == localFileListFileHash[i]);
-                    if (dbMatchFirst == null)
-                    {
-                        Console.Write("_");
-                        var databaseItem = ExifRead.ReadExifFromFile(filesInDirectoryFullPath[i]);
-                        databaseItem.AddToDatabase = DateTime.UtcNow;
-                        databaseItem.FileHash = localFileListFileHash[i];
-                        databaseItem.FileName = Path.GetFileName(filesInDirectoryFullPath[i]);
-                        databaseItem.IsDirectory = false;
-                        databaseItem.ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(filesInDirectoryFullPath[i]));
-                        databaseItem.FilePath = FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i]);
-                        AddItem(databaseItem);
-                        databaseFileList.Add(databaseItem);
-                    }
-                }
-                
+            //    var databaseFileListFileHash =
+            //        databaseFileList.Select(item => item.FileHash).ToList();
 
-            }
+            //    // Compare to delete
+            //    IEnumerable<string> differenceFileHash = databaseFileListFileHash.Except(localFileListFileHash);
+
+            //    // Remove items from database that are removed from file system
+            //    foreach (var item in differenceFileHash)
+            //    {
+            //        var ditem = databaseFileList.FirstOrDefault(p => p.FileHash == item && !p.IsDirectory);
+            //        databaseFileList.Remove(ditem);
+            //        RemoveItem(ditem);
+            //        Console.Write("^");
+            //    }
+            //    differenceFileHash = new List<string>();
+
+            //    // Add new items to database
+
+            //    for (int i = 0; i < filesInDirectoryFullPath.Length; i++)
+            //    {
+            //        var dbMatchFirst = databaseFileList
+            //            .FirstOrDefault(p => p.FilePath == FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i])
+            //                                 && p.FileHash == localFileListFileHash[i]);
+            //        if (dbMatchFirst == null)
+            //        {
+            //            Console.Write("_");
+            //            var databaseItem = ExifRead.ReadExifFromFile(filesInDirectoryFullPath[i]);
+            //            databaseItem.AddToDatabase = DateTime.UtcNow;
+            //            databaseItem.FileHash = localFileListFileHash[i];
+            //            databaseItem.FileName = Path.GetFileName(filesInDirectoryFullPath[i]);
+            //            databaseItem.IsDirectory = false;
+            //            databaseItem.ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(filesInDirectoryFullPath[i]));
+            //            databaseItem.FilePath = FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i]);
+            //            AddItem(databaseItem);
+            //            databaseFileList.Add(databaseItem);
+            //        }
+            //    }
+
+
+            //}
 
             return null;
         }
