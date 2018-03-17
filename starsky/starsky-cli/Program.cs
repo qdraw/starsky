@@ -127,7 +127,7 @@ namespace starskyCli
 
                 if (filesInDirectoryFullPath.Length >= 1)
                 {
-                    Console.WriteLine("~ " + filesInDirectoryFullPath.Length);
+                    Console.WriteLine("~ " + filesInDirectoryFullPath.Length + " ~ "+  FileIndexItem.FullPathToDatabaseStyle(singleFolderFullPath));
                 }
 
             }
