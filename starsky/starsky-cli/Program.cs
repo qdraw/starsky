@@ -114,7 +114,7 @@ namespace starskyCli
 
             foreach (var singleFolderFullPath in subFoldersFullPath)
             {
-                string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath);
+                string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath,false);
                 var localFileListFileHash = FileHash.CalcHashCode(filesInDirectoryFullPath);
 
                 for (int i = 0; i < filesInDirectoryFullPath.Length; i++)

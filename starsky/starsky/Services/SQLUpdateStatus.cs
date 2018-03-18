@@ -20,7 +20,7 @@ namespace starsky.Services
             _context = context;
         }
 
- 
+
         public List<FileIndexItem> GetAllFiles(string subPath = "/")
         {
             subPath = SubPathSlashRemove(subPath);
@@ -191,8 +191,8 @@ namespace starsky.Services
             return differenceFileNames;
         }
 
-        public IEnumerable<string> 
-            RemoveEmptyFolders(List<string> localSubFolderListDatabaseStyle, 
+        public IEnumerable<string>
+            RemoveEmptyFolders(List<string> localSubFolderListDatabaseStyle,
             List<FileIndexItem> databaseSubFolderList)
         {
 
@@ -209,7 +209,7 @@ namespace starsky.Services
 
                 // Check if Directory is in database
                 var dbFolderMatchFirst = _context.FileIndex.FirstOrDefault(p =>
-                        p.IsDirectory && 
+                        p.IsDirectory &&
                         p.FilePath == singleFolderDbStyle
                     );
 
@@ -237,8 +237,8 @@ namespace starsky.Services
 
                 // Check if Photo is in database
                 var dbFolderMatchFirst = _context.FileIndex.FirstOrDefault(
-                    p => 
-                        !p.IsDirectory && 
+                    p =>
+                        !p.IsDirectory &&
                         p.FilePath == singleFolderDbStyle
                     );
 
@@ -275,11 +275,12 @@ namespace starsky.Services
 
             var databaseSubFolderList = _context.FileIndex.Where(p => p.IsDirectory).ToList();
 
-            // Sync for folders 
+            // Sync for folders
             RemoveOldFilePathItemsFromDatabase(localSubFolderDbStyle, databaseSubFolderList);
             RemoveEmptyFolders(localSubFolderDbStyle, databaseSubFolderList);
             AddFoldersToDatabase(localSubFolderDbStyle, databaseSubFolderList);
 
+            // todo: missing support for /2018 folder
 
             Console.WriteLine(".");
 
@@ -457,6 +458,6 @@ namespace starsky.Services
             return updateStatusContent;
         }
 
-        
+
     }
 }
