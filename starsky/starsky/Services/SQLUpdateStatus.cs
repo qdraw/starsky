@@ -167,12 +167,20 @@ namespace starsky.Services
             return localSubFolderListDatabaseStyle;
         }
 
-        public IEnumerable<string> RemoveOldFilePathItemsFromDatabase(List<string> localSubFolderListDatabaseStyle, List<FileIndexItem> databaseSubFolderList)
+        public IEnumerable<string> RemoveOldFilePathItemsFromDatabase(
+            List<string> localSubFolderListDatabaseStyle, 
+            List<FileIndexItem> databaseSubFolderList,
+            string subpath
+            )
         {
 
             //Check fileName Difference
             var databaseFileListFileName =
-                databaseSubFolderList.OrderBy(r => r.FileName).Select(item => item.FilePath).ToList();
+                databaseSubFolderList.Where
+                    (p => p.FilePath.Contains(subpath))
+                    .OrderBy(r => r.FileName)
+                    .Select(item => item.FilePath)
+                    .ToList();
 
             IEnumerable<string> differenceFileNames = databaseFileListFileName.Except(localSubFolderListDatabaseStyle);
 
@@ -207,40 +215,40 @@ namespace starsky.Services
             return differenceFileNames;
         }
 
-        public IEnumerable<string>
-            RemoveEmptyFolders(string subPath)
-        {
+        //public IEnumerable<string>
+        //    RemoveEmptyFolders(string subPath)
+        //{
 
-            // 1. Index all folders
-            // 2. Rename single folder
-            // 3. The files are keeped in the index
+        //    // 1. Index all folders
+        //    // 2. Rename single folder
+        //    // 3. The files are keeped in the index
 
-            var allItemsInDb = _context.FileIndex.Where
-                (p => p.ParentDirectory.Contains(subPath))
-                .OrderBy(r => r.FileName).ToList();
+        //    var allItemsInDb = _context.FileIndex.Where
+        //        (p => p.ParentDirectory.Contains(subPath))
+        //        .OrderBy(r => r.FileName).ToList();
 
-            foreach (var dbItem in allItemsInDb)
-            {
-                if (!dbItem.IsDirectory)
-                {
-                    var res = allItemsInDb.Where(
-                        p =>
-                            p.IsDirectory &&
-                            p.FilePath == dbItem.ParentDirectory
-                    );
-                    if (!res.Any())
-                    {
-                        var c = res.Count();
-                        var q = dbItem.FilePath;
-                        var w = dbItem.IsDirectory;
-                        RemoveItem(dbItem);
-                    }
-                }
+        //    foreach (var dbItem in allItemsInDb)
+        //    {
+        //        if (!dbItem.IsDirectory)
+        //        {
+        //            var res = allItemsInDb.Where(
+        //                p =>
+        //                    p.IsDirectory &&
+        //                    p.FilePath == dbItem.ParentDirectory
+        //            );
+        //            if (!res.Any())
+        //            {
+        //                var c = res.Count();
+        //                var q = dbItem.FilePath;
+        //                var w = dbItem.IsDirectory;
+        //                RemoveItem(dbItem);
+        //            }
+        //        }
                
-            }
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         public void AddFoldersToDatabase(List<string> localSubFolderDbStyle, List<FileIndexItem> databaseSubFolderList)
         {
@@ -305,6 +313,28 @@ namespace starsky.Services
             }
         }
 
+        public void AddSubPathFolder(string subPath)
+        {
+            subPath = SubPathSlashRemove(subPath);
+
+            var listOfSubpaths = Breadcrumbs.BreadcrumbHelper(subPath);
+            listOfSubpaths.Add(subPath);
+
+            foreach (var itemSubpath in listOfSubpaths)
+            {
+                var countFolder = _context.FileIndex.Count(p => p.FilePath == itemSubpath);
+                if (countFolder == 0)
+                {
+                    var newItem = new FileIndexItem();
+                    newItem.FilePath = itemSubpath;
+                    newItem.IsDirectory = true;
+                    newItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(itemSubpath).LastOrDefault();
+                    newItem.FileName = itemSubpath.Split("/").LastOrDefault();
+                    AddItem(newItem);
+                }
+            }
+        }
+
 
         public IEnumerable<string> SyncFiles(string subPath = "")
         {
@@ -316,10 +346,8 @@ namespace starsky.Services
             var databaseSubFolderList = _context.FileIndex.Where(p => p.IsDirectory).ToList();
 
             // Sync for folders
-            RemoveOldFilePathItemsFromDatabase(localSubFolderDbStyle, databaseSubFolderList);
+            RemoveOldFilePathItemsFromDatabase(localSubFolderDbStyle, databaseSubFolderList,subPath);
             AddFoldersToDatabase(localSubFolderDbStyle, databaseSubFolderList);
-
-            // todo: missing support for /2018 folder
 
             Console.WriteLine(".");
 
@@ -330,10 +358,12 @@ namespace starsky.Services
                 var databaseFileList = GetAllFiles(singleFolder);
                 var localFarrayFilesDbStyle = Files.GetFilesInDirectory(singleFolder).ToList();
 
-                RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList);
+                RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList,subPath);
                 AddPhotoToDatabase(localFarrayFilesDbStyle, databaseFileList);
                 Console.WriteLine("-");
             }
+
+            AddSubPathFolder(subPath);
 
             //RemoveEmptyFolders(subPath);
 
