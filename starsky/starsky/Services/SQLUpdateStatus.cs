@@ -186,6 +186,22 @@ namespace starsky.Services
                 var ditem = databaseSubFolderList.FirstOrDefault(p => p.FilePath == item);
                 databaseSubFolderList.Remove(ditem);
                 RemoveItem(ditem);
+
+                // if directory remove parent elements 
+                // 1. Index all folders
+                // 2. Rename single folder
+                // 3. The files are keeped in the index
+                if (ditem?.IsDirectory == null) continue;
+                if (!ditem.IsDirectory) continue;
+
+                var orphanPictures =_context.FileIndex.Where(p => !p.IsDirectory && p.ParentDirectory == ditem.FilePath);
+                foreach (var orphanItem in orphanPictures)
+                {
+                    Console.Write("$");
+                    RemoveItem(orphanItem);
+                }
+
+
             }
 
             return differenceFileNames;
@@ -319,7 +335,7 @@ namespace starsky.Services
                 Console.WriteLine("-");
             }
 
-            RemoveEmptyFolders(subPath);
+            //RemoveEmptyFolders(subPath);
 
 
             //// Delete old folders from database
