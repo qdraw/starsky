@@ -28,7 +28,15 @@
     }
 </h2>
 
+<div class="wrapper">
+    <form asp-controller="Home" asp-action="Search" method="post" class="form-inline form-wrapper">
+          <input name="t" value="@Model.SearchQuery" class="form-control" autocomplete="off"/>
+        <button class="btn btn-default" type="submit">Zoek</button>
+    </form>
+</div>
+
 <h4>
+    &nbsp;
     @if (Model.PageNumber >= 1)
     {
         var prevpage = @Model.PageNumber - 1;
@@ -38,18 +46,9 @@
     @if (Model.PageNumber < Model.LastPageNumber)
     {
         var nextpage = @Model.PageNumber + 1;
-        <a asp-controller="Home" asp-action="Search" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Next</a>
+        <a class="next" asp-controller="Home" asp-action="Search" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Next</a>
     }
 </h4>
-
-<div class="wrapper">
-    <form asp-controller="Home" asp-action="Search" method="post" class="form-inline form-wrapper">
-          <input name="t" value="@Model.SearchQuery" class="form-control" autocomplete="off"/>
-        <button class="btn btn-default" type="submit">Zoek</button>
-    </form>
-
-</div>
-
 
 <div class="wrapper">
 
@@ -64,3 +63,18 @@
         </a>
     }
 </div>
+
+<h4>
+    &nbsp;
+    @if (Model.PageNumber >= 1)
+    {
+        var prevpage = @Model.PageNumber - 1;
+        <a asp-controller="Home" asp-action="Search" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Prev</a>
+    }
+
+    @if (Model.PageNumber < Model.LastPageNumber)
+    {
+        var nextpage = @Model.PageNumber + 1;
+        <a class="next" asp-controller="Home" asp-action="Search" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Next</a>
+    }
+</h4>
