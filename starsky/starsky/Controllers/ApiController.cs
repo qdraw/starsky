@@ -74,6 +74,7 @@ namespace starsky.Controllers
             var item = _updateStatusContent.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
 
             var getExiftool = ExifTool.ReadExifToolKeywords(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            if (item.Tags == null) item.Tags = string.Empty;
             if (item.Tags != getExiftool)
             {
                 Response.StatusCode = 205;
