@@ -61,9 +61,12 @@ namespace starsky.Services
             //text = text.Replace("\\\",\\\"", string.Empty); //-- \",\"
             text = text.Replace("\",\"", ", ");
 
-            Console.WriteLine(text);
+            var exifData = new ExifToolModel() {Keywords = ""};
+            if (text.Contains("Keywords"))
+            {
+                exifData = JsonConvert.DeserializeObject<ExifToolModel>(text);
+            }
 
-            ExifToolModel exifData = JsonConvert.DeserializeObject<ExifToolModel>(text);
             return exifData;
         }
 
