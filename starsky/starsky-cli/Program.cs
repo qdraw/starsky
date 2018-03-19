@@ -28,6 +28,21 @@ namespace starskyCli
             return needHelp;
         }
 
+        private static string GetPathFormArgs(IReadOnlyList<string> args)
+        {
+            var path = "";
+
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--path" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count)
+                {
+                    path = args[arg + 1];
+                }
+            }
+
+            var subpath = FileIndexItem.FullPathToDatabaseStyle(path);
+            return subpath;
+        }
 
         private static string GetSubpathFormArgs(IReadOnlyList<string> args)
         {
@@ -91,13 +106,23 @@ namespace starskyCli
                 Console.WriteLine("Starsky Help:");
                 Console.WriteLine("--help or -h == help (this window)");
                 Console.WriteLine("--subpath or -s == parameter: (string) ; path inside the index, default '/' ");
+                Console.WriteLine("--path or -p == parameter: (string) ; fullpath, search and replace first part of the filename '/' ");
                 Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
                 Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
                 return;
             }
 
+            // Using both options
+            var subpath = "/";
+            if (GetPathFormArgs(args).Length >= 1)
+            {
+                subpath = GetPathFormArgs(args);
+            }
+            else
+            {
+                subpath = GetSubpathFormArgs(args);
+            }
 
-            var subpath = GetSubpathFormArgs(args);
 
             if (GetIndexMode(args))
             {
