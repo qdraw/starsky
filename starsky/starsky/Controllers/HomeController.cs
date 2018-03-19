@@ -46,46 +46,6 @@ namespace starsky.Controllers
             return View(model);
         }
 
-        //[HttpPost]
-        public IActionResult Update(string f = "path", string t = "")
-        {
-            var singleItem = _updateStatusContent.SingleItem(f);
-            if (singleItem == null) return NotFound("not in index");
-            if (string.IsNullOrWhiteSpace(t)) return BadRequest("tag label missing");
-
-            var oldHashCode = _updateStatusContent.SingleItem(f).FileIndexItem.FileHash;
-
-            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
-                return NotFound("source image missing " + FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-
-            var exifToolResult = ExifTool.SetExifToolKeywords(t, FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-            if (exifToolResult == null) return BadRequest();
-
-            var item = _updateStatusContent.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
-
-            item.FileHash = FileHash.CalcHashCode(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-            item.AddToDatabase = DateTime.Now;
-            item.Tags = exifToolResult;
-            _updateStatusContent.UpdateItem(item);
-
-            new Thumbnail().RenameThumb(oldHashCode, item.FileHash);
-
-            return RedirectToAction("Info", new { f = f, t = exifToolResult });
-        }
-
-        public IActionResult Info(string f = "uniqueid", string t = "")
-        {
-            var singleItem = _updateStatusContent.SingleItem(f);
-            if (singleItem == null) return NotFound("not in index");
-            if (string.IsNullOrWhiteSpace(t)) return BadRequest("tag label missing");
-            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
-                return NotFound("source image missing " + FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-
-            var item = _updateStatusContent.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
-            return Json(item);
-        }
-
-
 
         [HttpPost]
         public IActionResult Search(string t)

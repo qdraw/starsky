@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
 using starsky.Models;
+using System.Runtime.InteropServices;
 
 namespace starsky.Services
 {
@@ -18,10 +19,20 @@ namespace starsky.Services
             fullFilePath = $"\"" + fullFilePath + $"\"";
             options = " " + options + " " + fullFilePath;
 
-            if (!File.Exists(AppSettingsProvider.ExifToolPath)) return null;
-            
+            Console.WriteLine(AppSettingsProvider.ExifToolPath);
+            Console.WriteLine(options);
 
-            var exifToolPath = $"\"" + AppSettingsProvider.ExifToolPath + $"\"";
+            if (!File.Exists(AppSettingsProvider.ExifToolPath)) return null;
+
+            Console.WriteLine("options");
+            Console.WriteLine(options);
+
+            var exifToolPath = AppSettingsProvider.ExifToolPath;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                exifToolPath = $"\"" + AppSettingsProvider.ExifToolPath + $"\"";
+            }
 
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.FileName = exifToolPath;
@@ -62,7 +73,7 @@ namespace starsky.Services
         //    return _parseJson(_baseCommmand("-Keywords -json", filePathFull));
         //}
 
-        public static string ReadExifToolKeywords(string keyWords, string filePathFull)
+        public static string ReadExifToolKeywords(string filePathFull)
         {
             var model = _parseJson(_baseCommmand("-Keywords -json", filePathFull));
             return _duplicateKeywordCheck(model.Keywords);
