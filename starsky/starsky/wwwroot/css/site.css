@@ -105,7 +105,7 @@ h2 {
 }
 @media screen and (max-width: 750px) {
 
-    .form-control {
+    .form-nav .form-control {
         width: 80vw!important;
     }
     .form-nav {
@@ -117,13 +117,19 @@ h2 {
     }
 }
 
-.form-wrapper input{
-    width: 70vw!important;
-}
 .form-wrapper {
+    width: 100%;
     margin-bottom: 15px;
 }
 
+.form-wrapper .form-control{
+    width: calc( 100% - 80px );
+    display: inline-block;
+}
+.form-wrapper .btn {
+    display: inline-block;
+    float: right;
+}
 @media screen and (max-width: 800px) and (min-height: 300px) and (max-height: 920px) {
     .wrapper .halfitem .caption {
         top: 35vh;
@@ -141,4 +147,8 @@ h2 {
 h4 .next {
     display: inline-block;
     float: right;
+}
+
+.main-image {
+    width: 100%;
 }

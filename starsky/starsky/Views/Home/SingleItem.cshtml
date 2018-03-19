@@ -27,7 +27,7 @@
     <form asp-controller="Api" asp-action="Update" method="post" class="form-inline form-wrapper" id="js-tag-update">
         <input name="f" value="@Model.FileIndexItem.FilePath" hidden />
         <input class="form-control" name="t" class="t" value="" autocomplete="off"/>
-        <button class="btn btn-default" type="submit" style="display:none;">Update tag</button>
+        <button class="btn btn-default" type="submit" style="">Update</button>
     </form>
 </div>
 
@@ -76,5 +76,4 @@
 
 </h4>
 
-
-<img src="@Url.Action("Thumbnail", "Home", new { f = @Model.FileIndexItem.FileHash })" />
+<img class="main-image" src="@Url.Action("Thumbnail", "Home", new { f = @Model.FileIndexItem.FileHash })" />
