@@ -79,7 +79,7 @@ namespace starskyCli
         {
             ConfigRead.SetAppSettingsProvider();
 
-            //var q = ExifTool.WriteExifToolKeywords("test1", "20180101_000337.jpg");
+            //var q = ExifTool.WriteExifToolKeywords("test1", "Z:\\data\\git\\starsky\\starsky\\starsky-cli\\bin\\Debug\\netcoreapp2.0\\20180101_000337.jpg");
 
             if (NeedHelp(args))
             {

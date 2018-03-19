@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using Newtonsoft.Json;
 using starsky.Models;
 
@@ -8,23 +12,32 @@ namespace starsky.Services
 {
     public class ExifTool
     {
+
         private static string _baseCommmand(string options,string fullFilePath)
         {
-            //fullFilePath = $"\"" + fullFilePath + $"\"";
-            //options = " " + options + " " + fullFilePath;
-            //Console.WriteLine(AppSettingsProvider.ExifToolPath + options);
+            fullFilePath = $"\"" + fullFilePath + $"\"";
+            options = " " + options + " " + fullFilePath;
 
-            //using (var cli = new Cli(AppSettingsProvider.ExifToolPath))
-            //{
-            //    var input = new ExecutionInput(options);
-            //    var output = cli.Execute(input);
+            if (!File.Exists(AppSettingsProvider.ExifToolPath)) return null;
+            
 
-            //    Console.WriteLine(output.StandardError);
-                
-            //    return output.StandardOutput;
-            //}
+            var exifToolPath = $"\"" + AppSettingsProvider.ExifToolPath + $"\"";
 
-            return null;
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = exifToolPath;
+            psi.UseShellExecute = false;
+            psi.RedirectStandardOutput = true;
+
+            psi.Arguments = options;
+            Process p = Process.Start(psi);
+            string strOutput = p.StandardOutput.ReadToEnd();
+            p.WaitForExit();
+            Console.WriteLine(strOutput);
+
+
+            Console.WriteLine(AppSettingsProvider.ExifToolPath + options);
+
+            return strOutput;
         }
 
         private static ExifToolModel _parseJson(string text) {

@@ -168,7 +168,7 @@ namespace starsky.Services
         }
 
         public List<FileIndexItem> RemoveOldFilePathItemsFromDatabase(
-            List<string> localSubFolderListDatabaseStyle, 
+            List<string> localSubFolderListDatabaseStyle,
             List<FileIndexItem> databaseSubFolderList,
             string subpath
             )
@@ -195,7 +195,7 @@ namespace starsky.Services
                 databaseSubFolderList.Remove(ditem);
                 RemoveItem(ditem);
 
-                // if directory remove parent elements 
+                // if directory remove parent elements
                 // 1. Index all folders
                 // 2. Rename single folder
                 // 3. The files are keeped in the index
@@ -244,7 +244,7 @@ namespace starsky.Services
         //                RemoveItem(dbItem);
         //            }
         //        }
-               
+
         //    }
 
         //    return null;
@@ -268,7 +268,7 @@ namespace starsky.Services
                     folderItem.FilePath = singleFolderDbStyle;
                     folderItem.IsDirectory = true;
                     folderItem.AddToDatabase = DateTime.UtcNow;
-                    folderItem.FileName = singleFolderDbStyle;
+                    folderItem.FileName = singleFolderDbStyle.Split("/").LastOrDefault();
                     folderItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault();
                     AddItem(folderItem);
                     // We dont need this localy
@@ -279,7 +279,7 @@ namespace starsky.Services
         }
 
         public void AddPhotoToDatabase(
-            List<string> localSubFolderDbStyle, 
+            List<string> localSubFolderDbStyle,
             List<FileIndexItem> databaseFileList
             )
         {
@@ -404,24 +404,6 @@ namespace starsky.Services
             return null;
         }
 
-        // Todo: do i need this:?
-
-        ////Check fileName Difference
-        //var localFileListFileName = localFileList.OrderBy(r => r.FileName)
-        //    .Select(item => Files.PathToUnixStyle(item.FilePath)).ToList();
-        //var databaseFileListFileName =
-        //    databaseFileList.OrderBy(r => r.FileName).Select(item => item.FilePath).ToList();
-
-        //IEnumerable<string> differenceFileNames = databaseFileListFileName.Except(localFileListFileName);
-
-        //foreach (var item in differenceFileNames)
-        //{
-        //    Console.Write("*");
-
-        //    var ditem = databaseFileList.FirstOrDefault(p => p.FilePath == item);
-        //    databaseFileList.Remove(ditem);
-        //    RemoveItem(ditem);
-        //}
 
         public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
         {
