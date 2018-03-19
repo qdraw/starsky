@@ -18,6 +18,9 @@ namespace starsky.Interfaces
         ObjectItem SingleItem(string singleItemDbPath);
 
 
+        FileIndexItem GetObjectByFilePath(string filePath);
+
+        FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
 
         //string GetItemByHash(string path);
 

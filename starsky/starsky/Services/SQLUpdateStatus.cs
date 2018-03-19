@@ -11,7 +11,7 @@ using starsky.ViewModels;
 
 namespace starsky.Services
 {
-    public class SqlUpdateStatus : IUpdate
+    public partial class SqlUpdateStatus : IUpdate
     {
         private readonly ApplicationDbContext _context;
 
@@ -84,7 +84,12 @@ namespace starsky.Services
 
 
 
-
+        public FileIndexItem GetObjectByFilePath(string filePath)
+        {
+            filePath = SubPathSlashRemove(filePath);
+            var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+            return query;
+        }
 
         public string GetItemByHash(string fileHash)
         {
@@ -373,10 +378,14 @@ namespace starsky.Services
 
         public IEnumerable<string> SyncFiles(string subPath = "")
         {
+            SyncDeleted(subPath);
+            SyncSingleFile(subPath);
 
+            // if folder: 
             var localSubFolderDbStyle = RenameListItemsToDbStyle(
                 Files.GetAllFilesDirectory(subPath).ToList()
-                );
+            );
+
 
             var databaseSubFolderList = _context.FileIndex.Where(p => p.IsDirectory).ToList();
 
@@ -385,6 +394,9 @@ namespace starsky.Services
             AddFoldersToDatabase(localSubFolderDbStyle, databaseSubFolderList);
 
             Console.WriteLine(".");
+
+            // Allow sync for direct folder
+            localSubFolderDbStyle.Add(subPath);
 
             foreach (var singleFolder in localSubFolderDbStyle)
             {

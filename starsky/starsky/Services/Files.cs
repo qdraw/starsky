@@ -12,15 +12,37 @@ namespace starsky.Services
 {
     public class Files
     {
+        public static FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath = "")
+        {
+            var fullPath = FileIndexItem.DatabasePathToFilePath(subPath);
+
+            if (!System.IO.Directory.Exists(fullPath) && System.IO.File.Exists(fullPath))
+            {
+                // file
+                return FolderOrFileModel.FolderOrFileTypeList.File;
+            }
+
+            if (!System.IO.File.Exists(fullPath) && System.IO.Directory.Exists(fullPath))
+            {
+                // Directory
+                return FolderOrFileModel.FolderOrFileTypeList.Folder;
+            }
+
+            return FolderOrFileModel.FolderOrFileTypeList.Deleted;
+        }
+
         public static string[] GetAllFilesDirectory(string subPath = "")
         {
             var path = FileIndexItem.DatabasePathToFilePath(subPath);
+            if (!System.IO.Directory.Exists(path)) return new List<string>().ToArray();
             string[] folders = System.IO.Directory.GetDirectories(path, "*", System.IO.SearchOption.AllDirectories);
             return folders;
         }
 
         public static string[] GetFilesInDirectory(string path, bool dbStyle = true)
         {
+            if (path == null) return null;
+
             if (dbStyle)
             {
                 path = FileIndexItem.DatabasePathToFilePath(path);
