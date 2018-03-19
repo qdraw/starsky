@@ -2,6 +2,7 @@
 @model SearchViewModel
 @{
     ViewData["Title"] = Model.SearchQuery + " - Search";
+    ViewData["SearchQuery"] = Model.SearchQuery;
 }
 
 <h2>
@@ -42,9 +43,11 @@
 </h4>
 
 <div class="wrapper">
-    <form asp-controller="Home" asp-action="Search" method="post">
-        <input name="t"  value="@Model.SearchQuery"/><button type="submit">Zoek</button>
+    <form asp-controller="Home" asp-action="Search" method="post" class="form-inline form-wrapper">
+          <input name="t" value="@Model.SearchQuery" class="form-control" autocomplete="off"/>
+        <button class="btn btn-default" type="submit">Zoek</button>
     </form>
+
 </div>
 
 
@@ -61,6 +64,3 @@
         </a>
     }
 </div>
-
-
-

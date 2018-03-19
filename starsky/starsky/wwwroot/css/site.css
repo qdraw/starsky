@@ -54,9 +54,18 @@
     transform-origin: center center;
     transition: .5s ease-in-out;
 }
+@media screen and (max-width: 767px) {
+    .wrapper .halfitem {
+        width: 100%;
+    }
+}
+h2 {
+    word-break: break-all;
+}
 .wrapper .halfitem h3 {
     padding: 0px;
     margin: 0px;
+    word-break: break-all;
 }
 .wrapper .halfitem img {
     display: block;
@@ -75,10 +84,10 @@
 .wrapper .halfitem .caption {
     padding-left: 3vw;
     position: absolute;
-    top: 45vh;
+    top: 40vh;
     width: calc(100%);
     padding-top: 4vh;
-    height: 11vh;
+    height: 20vh;
     background-color: rgba(0, 0, 0, 0.3);
     display: block;
     z-index: 4;
@@ -88,18 +97,48 @@
     .wrapper .halfitem .caption {
         top: 0vh;
         height: 60vh;
-    } 
+    }
+}
+
+.form-nav {
+    padding-top: 10px;
+}
+@media screen and (max-width: 750px) {
+
+    .form-control {
+        width: 80vw!important;
+    }
+    .form-nav {
+        width: 100%!important;
+    }
+    .form-nav,
+    .form-nav input {
+        display: inline-block!important;
+    }
+}
+
+.form-wrapper input{
+    width: 70vw!important;
+}
+.form-wrapper {
+    margin-bottom: 15px;
 }
 
 @media screen and (max-width: 800px) and (min-height: 300px) and (max-height: 920px) {
     .wrapper .halfitem .caption {
         top: 35vh;
         height: 21vh;
-    } }
+    }
+}
 
 @media screen and (max-height: 550px) and (max-width: 950px) {
     .wrapper .halfitem .caption {
-        top: 30vh;
-        height: 26vh;
-    } 
+        top: 35vh;
+        height: 25vh;
+    }
+}
+
+h4 .next {
+    display: inline-block;
+    float: right;
 }

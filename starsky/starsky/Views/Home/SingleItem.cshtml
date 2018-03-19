@@ -21,20 +21,60 @@
 </h2>
 
 
-<h3>@Model.FileIndexItem.Tags</h3>
-<h4>
+<h3>@Model.FileIndexItem.Tags &nbsp;</h3>
 
+<div class="wrapper">
+    <form asp-controller="Api" asp-action="Update" method="post" class="form-inline form-wrapper" id="js-tag-update">
+        <input name="f" value="@Model.FileIndexItem.FilePath" hidden />
+        <input class="form-control" name="t" class="t" value="" autocomplete="off"/>
+        <button class="btn btn-default" type="submit" style="display:none;">Update tag</button>
+    </form>
+</div>
+
+<script type="text/javascript">
+    function loadJSON(path, success, error)
+    {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function()
+        {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    if (success)
+                        success(JSON.parse(xhr.responseText));
+                } else {
+                    if (error)
+                        error(xhr);
+                }
+            }
+        };
+        xhr.open("GET", path, true);
+        xhr.send();
+    }
+
+    function updateElement(data) {
+        document.querySelector("#js-tag-update button").style.display = "inline-block";
+        document.querySelector('#js-tag-update .t').value = data.tags;
+    }
+    var url = "@Url.Action("Info", "Api", new { f = @Model.FileIndexItem.FilePath, t = "1" })";
+    url = url.replace("&amp;", "&");
+    loadJSON(url,
+        function(data) { updateElement(data); },
+        function(xhr) { console.error(xhr); }
+    );
+
+</script>
+<h4>
+    &nbsp;
     @if (@Model.RelativeObjects.PrevFilePath != null)
     {
         <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Prev</a>
     }
     @if (@Model.RelativeObjects.NextFilePath != null)
     {
-        <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Next</a>
+        <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Next</a>
     }
 
 </h4>
 
 
 <img src="@Url.Action("Thumbnail", "Home", new { f = @Model.FileIndexItem.FileHash })" />
-

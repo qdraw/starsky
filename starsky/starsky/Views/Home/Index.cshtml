@@ -20,11 +20,6 @@
         }
     }
 </h2>
-<div class="wrapper">
-    <form asp-controller="Home" asp-action="Search" method="post">
-        <input name="t" /><button type="submit">Zoek</button>
-    </form>
-</div>
 
 <div class="wrapper">
     @foreach (var item in Model.FileIndexItems)
@@ -34,7 +29,6 @@
             <div class="caption">
                 <h3>@item.FileName</h3>
                 <p>@item.Tags</p>
-
             </div>
 
             @if (!@item.IsDirectory)
@@ -49,5 +43,10 @@
     }
 </div>
 
-
-
+<script type="text/javascript">
+    var allItems =   document.querySelectorAll(".halfitem .caption h3");
+    for(var i = 0; i < allItems.length; i++) {
+        document.querySelectorAll(".halfitem .caption h3")[i].innerHTML = allItems[i].innerHTML.replace(".jpg","");
+    }
+    console.log();
+</script>

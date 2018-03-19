@@ -36,11 +36,12 @@ namespace starsky.Controllers
             return Json(model);
         }
 
-        //[HttpPost]
+        [HttpPost]
+        [HttpGet]
         public IActionResult Update(string f = "path", string t = "")
         {
             var singleItem = _updateStatusContent.SingleItem(f);
-            if (singleItem == null) return NotFound("not in index");
+            if (singleItem == null) return NotFound("not in index " +  f);
             if (string.IsNullOrWhiteSpace(t)) return BadRequest("tag label missing");
 
             var oldHashCode = _updateStatusContent.SingleItem(f).FileIndexItem.FileHash;
@@ -60,7 +61,7 @@ namespace starsky.Controllers
 
             new Thumbnail().RenameThumb(oldHashCode, item.FileHash);
 
-            return RedirectToAction("Info", new { f = f, t = exifToolResult });
+            return RedirectToAction("index","home", new { f = f, t = exifToolResult });
         }
 
         public IActionResult Info(string f = "uniqueid", string t = "")
