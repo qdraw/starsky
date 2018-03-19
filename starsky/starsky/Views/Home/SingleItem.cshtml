@@ -26,7 +26,7 @@
 <div class="wrapper">
     <form asp-controller="Api" asp-action="Update" method="post" class="form-inline form-wrapper" id="js-tag-update">
         <input name="f" value="@Model.FileIndexItem.FilePath" hidden />
-        <input class="form-control" name="t" class="t" value="" autocomplete="off"/>
+        <input class="form-control t" name="t" value="" autocomplete="off"  disabled="true"/>
         <button class="btn btn-default" type="submit" style="">Update</button>
     </form>
 </div>
@@ -54,6 +54,7 @@
     function updateElement(data) {
         document.querySelector("#js-tag-update button").style.display = "inline-block";
         document.querySelector('#js-tag-update .t').value = data.tags;
+        document.querySelector('#js-tag-update .t').disabled = false;
     }
     var url = "@Url.Action("Info", "Api", new { f = @Model.FileIndexItem.FilePath, t = "1" })";
     url = url.replace("&amp;", "&");
