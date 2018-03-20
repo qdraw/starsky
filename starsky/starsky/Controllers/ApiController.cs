@@ -86,6 +86,49 @@ namespace starsky.Controllers
         }
 
 
+        public IActionResult Thumbnail(string f, bool isSingleitem = false)
+        {
+
+            var sourcePath = _updateStatusContent.GetItemByHash(f);
+
+            if (sourcePath == null) return NotFound("not in index");
+
+            var thumbPath = AppSettingsProvider.ThumbnailTempFolder + f + ".jpg";
+
+            if (!System.IO.File.Exists(thumbPath) && System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(sourcePath)))
+            {
+                if (!isSingleitem)
+                {
+                    return NotFound("could regenerate thumb");
+                }
+
+                try
+                {
+                    var searchItem = new FileIndexItem();
+                    searchItem.FilePath = sourcePath;
+                    searchItem.FileHash = f;
+                    Services.Thumbnail.CreateThumb(searchItem);
+                }
+                catch (FileNotFoundException)
+                {
+                    return NotFound("Thumb base folder not found");
+
+                }
+
+            };
+
+            if (!System.IO.File.Exists(thumbPath))
+            {
+                return NotFound("in cache but not in thumbdb");
+            }
+
+
+            FileStream fs = System.IO.File.OpenRead(thumbPath);
+            return File(fs, "image/jpeg");
+
+        }
+
+
 
         public IActionResult Error()
         {

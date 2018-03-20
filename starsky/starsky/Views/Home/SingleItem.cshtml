@@ -27,7 +27,7 @@
     <form asp-controller="Api" asp-action="Update" method="post" class="form-inline form-wrapper" id="js-tag-update">
         <input name="f" value="@Model.FileIndexItem.FilePath" hidden />
         <input class="form-control t" name="t" value="" autocomplete="off"  disabled="true"/>
-        <button class="btn btn-default" type="submit" style="">Update</button>
+        <button class="btn btn-default" type="submit" style="display: none;">Update</button>
     </form>
 </div>
 
@@ -38,7 +38,7 @@
         xhr.onreadystatechange = function()
         {
             if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
+                if (xhr.status === 200 || xhr.status === 205) {
                     if (success)
                         success(JSON.parse(xhr.responseText));
                 } else {
@@ -77,4 +77,4 @@
 
 </h4>
 
-<img class="main-image" src="@Url.Action("Thumbnail", "Home", new { f = @Model.FileIndexItem.FileHash })" />
+<img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />

@@ -33,7 +33,7 @@
 
             @if (!@item.IsDirectory)
             {
-                <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Home", new {f = item.FileHash})" alt="" />
+                <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash})" alt="" />
             }
             else
             {

@@ -84,37 +84,7 @@ namespace starsky.Controllers
 
 
 
-        public IActionResult Thumbnail(string f)
-        {
-
-            var sourcePath = _updateStatusContent.GetItemByHash(f);
-
-            if (sourcePath == null) return NotFound("not in index");
-
-            var thumbPath = AppSettingsProvider.ThumbnailTempFolder + f + ".jpg";
-
-            if (!System.IO.File.Exists(thumbPath) && System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(sourcePath)))
-            {
-                return NotFound("could regenerate thumb");
-            };
-
-            if (!System.IO.File.Exists(thumbPath))
-            {
-                return NotFound("in cache but not in thumbdb");
-            }
-
-
-            FileStream fs = System.IO.File.OpenRead(thumbPath);
-            return File(fs, "image/jpeg");
-
-            //using (FileStream fs = System.IO.File.OpenRead(path))
-            //{
-            //    var result = File(fs, "image/jpeg");
-            //    //fs.Dispose();
-            //    return result;
-            //}
-
-        }
+        
 
         public IActionResult GetFolder(string p = "/")
         {
