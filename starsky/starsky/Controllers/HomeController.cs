@@ -82,9 +82,29 @@ namespace starsky.Controllers
         }
 
 
+        [HttpGet]
+        public IActionResult Trash(int p = 0)
+        {
+            if (p <= 0) p = p * -1;
+
+            // t = tag name | p == pagenr.
+
+            var model = new SearchViewModel();
+            model.PageNumber = p;
+            model.SearchQuery = "<delete>";
+            model.Breadcrumb = new List<string>();
+            model.Breadcrumb.Add("/");
+            model.Breadcrumb.Add("/Home/Trash");
+
+            model.LastPageNumber = _updateStatusContent.SearchLastPageNumber("<delete>");
+            model.FileIndexItems = _updateStatusContent.SearchObjectItem(model.SearchQuery, model.PageNumber);
+            return View("Trash", model);
+        }
 
 
-        
+
+
+
 
         public IActionResult GetFolder(string p = "/")
         {

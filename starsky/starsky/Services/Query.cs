@@ -46,7 +46,32 @@ namespace starsky.Services
         {
             subPath = SubPathSlashRemove(subPath);
 
-            return _context.FileIndex.Where(p => p.ParentDirectory == subPath).OrderBy(p => p.FileName).AsEnumerable();
+            var queryItems = _context.FileIndex
+                .Where(p => p.ParentDirectory == subPath)
+                .OrderBy(p => p.FileName).ToList();
+
+            if (!queryItems.Any())
+            {
+                return new List<FileIndexItem>();
+            }
+
+            // temp feature to hide deleted items
+            var displayItems = new List<FileIndexItem>();
+            foreach (var item in queryItems)
+            {
+                if (item.Tags == null)
+                {
+                    item.Tags = string.Empty;
+                }
+
+                if (!item.Tags.Contains("<delete>"))
+                {
+                    displayItems.Add(item);
+                }
+            }
+            // temp feature to hide deleted items
+
+            return displayItems;
         }
 
 
