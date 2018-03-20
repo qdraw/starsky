@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using starsky.Data;
-using starsky.Interfaces;
 using starsky.Models;
 
 namespace starsky.Services
 {
-    public partial class SqlUpdateStatus : IUpdate
+    public partial class Query
     {
+        // When input a direct file
+        //        => if this file is deleted on the file system 
+        //              => delete it from the database
+
         public void SyncDeleted(string subPath = "")
         {
             if (Files.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)

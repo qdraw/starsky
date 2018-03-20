@@ -40,7 +40,7 @@ namespace starsky
 
             }
 
-            services.AddScoped<IUpdate, SqlUpdateStatus>();
+            services.AddScoped<IUpdate, Query>();
             services.AddMvc();
         }
 

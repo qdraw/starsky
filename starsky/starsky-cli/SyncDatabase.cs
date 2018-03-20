@@ -42,25 +42,25 @@ namespace starskyCli
             var _options = builder.Options;
 
             _context = new ApplicationDbContext(_options);
-            _sqlStatus = new SqlUpdateStatus(_context);
+            _query = new Query(_context);
         }
 
         private readonly ApplicationDbContext _context;
-        private readonly SqlUpdateStatus _sqlStatus;
+        private readonly Query _query;
 
         //public IEnumerable<string> GetAll()
         //{
-        //   return _sqlStatus.GetAll();
+        //   return _query.GetAll();
         //}
 
         public IEnumerable<string> SyncFiles(string subPath = "")
         {
-            return _sqlStatus.SyncFiles(subPath);
+            return _query.SyncFiles(subPath);
         }
 
         public IEnumerable<FileIndexItem> GetAll(string subPath = "")
         {
-            return _sqlStatus.GetAllFiles(subPath);
+            return _query.GetAllFiles(subPath);
         }
 
     }

@@ -8,8 +8,12 @@ using starsky.Models;
 
 namespace starsky.Services
 {
-    public partial class SqlUpdateStatus : IUpdate
+    public partial class Query
     {
+        // When input a direct file
+        //        => if this file exist on the file system 
+        //              => check if the hash in the db is up to date
+
         public void SyncSingleFile(string subPath = "")
         {
             if (Files.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.File) // false == file

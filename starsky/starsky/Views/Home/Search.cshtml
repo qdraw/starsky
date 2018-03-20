@@ -59,7 +59,7 @@
                 <h3>@item.FileName</h3>
                 <p>@item.Tags</p>
             </div>
-            <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Home", new {f = item.FileHash})" alt="@item.Tags" />
+            <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash})" alt="@item.Tags" />
         </a>
     }
 </div>

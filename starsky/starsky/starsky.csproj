@@ -4,6 +4,15 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mac|AnyCPU' ">
+    <IntermediateOutputPath>obj\Mac</IntermediateOutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType></DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Mac</OutputPath>
+    <DefineConstants></DefineConstants>
+    <NoWarn></NoWarn>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Migrations\20180308104506_initDatabaseKey.cs" />
     <Compile Remove="Migrations\20180308104506_initDatabaseKey.Designer.cs" />
