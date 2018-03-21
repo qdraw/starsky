@@ -20,6 +20,8 @@ namespace starsky.Services
             {
                 
                 //Console.WriteLine(exifItem);
+                //foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
+
 
                 var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Keywords");
                 if (tCounts >= 1)
@@ -31,10 +33,22 @@ namespace starsky.Services
                     }
                 }
 
+                // Colour
+                var ratingCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"));
+                if (ratingCounts >= 1)
+                {
+                    var prefsTag = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"))?.Description;
+
+                    var prefsTagSplit = prefsTag.Split(":");
+
+                    var colorClassSting = prefsTagSplit[1];
+
+                    Console.WriteLine(" rating " + colorClassSting);
+                }
+
                 var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized");
                 if (dtCounts >= 1)
                 {
-                    //foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
 
                     var dateString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized")?.Description;
 

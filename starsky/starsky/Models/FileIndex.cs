@@ -32,6 +32,30 @@ namespace starsky.Models
 
         public DateTime AddToDatabase { get; set; }
 
+        // public Color ColorClass { get; set; }
+
+        public enum Color
+        {
+            None = 0, // donkergrijs Dark Grey
+            Trash = 1, // grijs - Grey
+            Extras = 2, // Blauw - blue
+            TypicalAlt = 3, // Turquoise
+            Typical = 4, // Groen - groen
+            SuperiorAlt = 5, //Geel - yellow
+            Superior = 6, // Oranje - orange
+            WinnerAlt = 7, // rood - Red -
+            Winner = 8 // Paars - purple
+        }
+
+         /*
+         0:1:0:-00001
+         0:2:0:-00001
+         0:3:0:-00001
+         0:4:0:-00001
+         0:5:0:-00001
+         0:7:0:-00001
+         0:8:0:-00001*/
+
 
         // From System full path => database relative path
         public string FullPathToDatabaseStyle() //PathToSys

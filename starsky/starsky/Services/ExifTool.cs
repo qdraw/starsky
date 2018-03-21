@@ -82,6 +82,7 @@ namespace starsky.Services
             return _duplicateKeywordCheck(model.Keywords);
         }
 
+        // exiftool -Prefs="Tagged:0 ColorClass:0 Rating:2 FrameNum:0"
 
 
 
