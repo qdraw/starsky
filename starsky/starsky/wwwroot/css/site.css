@@ -62,11 +62,17 @@
 h2 {
     word-break: break-all;
 }
-.wrapper .halfitem h3 {
-    padding: 0px;
-    margin: 0px;
-    word-break: break-all;
+
+p .addDeleteTag {
+    margin-top: 15px;
+    display: none;
 }
+
+    .wrapper .halfitem h3 {
+        padding: 0px;
+        margin: 0px;
+        word-break: break-all;
+    }
 .wrapper .halfitem img {
     display: block;
     width: 100%;

@@ -63,7 +63,7 @@ namespace starsky.Services
                     item.Tags = string.Empty;
                 }
 
-                if (!item.Tags.Contains("<delete>"))
+                if (!item.Tags.Contains("!delete!"))
                 {
                     displayItems.Add(item);
                 }

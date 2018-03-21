@@ -26,28 +26,30 @@
 <div class="wrapper">
     <form asp-controller="Api" asp-action="Update" method="post" class="form-inline form-wrapper" id="js-tag-update">
         <input name="f" value="@Model.FileIndexItem.FilePath" hidden />
-        <input class="form-control t" name="t" value="" autocomplete="off"  disabled="true"/>
+        <input class="form-control t" name="t" value="" autocomplete="off" disabled="true" />
         <button class="btn btn-default" type="submit" style="display: none;">Update</button>
     </form>
 </div>
 
 <script type="text/javascript">
-    function loadJSON(path, success, error)
+    function loadJSON(path, success, error, type)
     {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function()
         {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200 || xhr.status === 205) {
-                    if (success)
+                    if (success) {
+                        console.log(xhr.responseText);
                         success(JSON.parse(xhr.responseText));
+                    };
                 } else {
                     if (error)
                         error(xhr);
                 }
             }
         };
-        xhr.open("GET", path, true);
+        xhr.open(type, path, true);
         xhr.send();
     }
 
@@ -55,12 +57,31 @@
         document.querySelector("#js-tag-update button").style.display = "inline-block";
         document.querySelector('#js-tag-update .t').value = data.tags;
         document.querySelector('#js-tag-update .t').disabled = false;
+
+        if (document.querySelectorAll(".addDeleteTag").length >= 1 ) {
+            document.querySelector(".addDeleteTag").style.display = "inline-block";
+            if (data.tags.indexOf("!delete!") >= 0) {
+                document.querySelector(".addDeleteTag a").innerHTML = "Zet terug uit prullenmand";
+                document.querySelector("#js-tag-update button").style.display = "none";
+                document.querySelector('#js-tag-update .t').disabled = true;
+                document.querySelector(".addDeleteTag a").classList.remove("btn-danger");
+                document.querySelector(".addDeleteTag a").classList.add("btn-warning");
+
+            } else {
+                document.querySelector(".addDeleteTag a").innerHTML = "Verplaats naar prullenmand";
+                document.querySelector(".addDeleteTag a").classList.remove("btn-warning");
+                document.querySelector(".addDeleteTag a").classList.add("btn-danger");
+
+            }
+        }
+
     }
     var url = "@Url.Action("Info", "Api", new { f = @Model.FileIndexItem.FilePath, t = "1" })";
     url = url.replace("&amp;", "&");
     loadJSON(url,
         function(data) { updateElement(data); },
-        function(xhr) { console.error(xhr); }
+        function (xhr) { console.error(xhr); },
+        "GET"
     );
 
 </script>
@@ -78,3 +99,50 @@
 </h4>
 
 <img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
+
+
+@*<button type="button" class="btn btn-default">Default</button>
+    <button type="button" class="btn btn-primary">Primary</button>
+    <button type="button" class="btn btn-success">Success</button>
+    <button type="button" class="btn btn-info">Info</button>
+    <button type="button" class="btn btn-warning">Warning</button>
+    <button type="button" class="btn btn-danger">Danger</button>*@
+
+
+<div class="addDeleteTag">
+    <h4>Danger zone:</h4>
+    <a onClick="addDeleteTag()" class="btn-sm btn btn-danger"></a>
+    <a asp-controller="Search" asp-action="Trash" class="btn-sm btn-info">Bekijk prullenmand</a>
+
+</div>
+
+
+<script type="text/javascript">
+    function addDeleteTag() {
+        document.querySelector(".addDeleteTag").style.display = "none";
+
+        var queryItem = document.querySelector('#js-tag-update .t').value;
+
+        if (queryItem.length === 0) {
+            queryItem = "!delete!";
+        } else {
+            if (queryItem.indexOf("!delete!") >= 0) {
+                queryItem = queryItem.replace("!delete!","");
+            } else {
+                queryItem += ", !delete!";
+            }
+        }
+
+        var url = "@Url.Action("Update", "Api", new { f = @Model.FileIndexItem.FilePath, redirect = false })" + "&t=" + queryItem;;
+        if (queryItem.length === 0) {
+            url += "?";
+        }
+        url = url.replace("&amp;", "&");
+        loadJSON(url,
+            function (data) { updateElement(data) },
+            function (xhr) { console.error(xhr); },
+            "POST"
+        );
+    }
+
+</script>

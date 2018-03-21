@@ -38,10 +38,11 @@ namespace starsky.Controllers
 
         [HttpPost]
         [HttpGet]
-        public IActionResult Update(string f = "path", string t = "")
+        public IActionResult Update(string f = "path", string t = "", bool redirect = true)
         {
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index " +  f);
+
             if (string.IsNullOrWhiteSpace(t)) return BadRequest("tag label missing");
 
             var oldHashCode = _query.SingleItem(f).FileIndexItem.FileHash;
@@ -61,10 +62,15 @@ namespace starsky.Controllers
 
             new Thumbnail().RenameThumb(oldHashCode, item.FileHash);
 
-            return RedirectToAction("index","home", new { f = f, t = exifToolResult });
+            // for using the api
+            if (redirect)
+            {
+                return RedirectToAction("index", "home", new { f = f, t = exifToolResult });
+            }
+            return Json(item);
         }
 
-        public IActionResult Info(string f = "uniqueid", string t = "")
+        public IActionResult Info(string f = "dbStyleFilepath", string t = "")
         {
             if (f.Contains("?t=")) return NotFound("please use &t= instead of ?t=");
             var singleItem = _query.SingleItem(f);
@@ -82,13 +88,26 @@ namespace starsky.Controllers
             }
             item.Tags = getExiftool;
             return Json(item);
-
         }
 
+        [HttpDelete]
+        public IActionResult Delete(string f = "dbStyleFilepath")
+        {
+            var singleItem = _query.SingleItem(f);
+            if (singleItem == null) return NotFound("not in index");
+            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
+                return NotFound("source image missing " +
+                                FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            var item = _query.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
+
+            System.IO.File.Delete(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            _query.RemoveItem(item);
+
+            return Json(item);
+        }
 
         public IActionResult Thumbnail(string f, bool isSingleitem = false)
         {
-
             var sourcePath = _query.GetItemByHash(f);
 
             if (sourcePath == null) return NotFound("not in index");
@@ -122,13 +141,10 @@ namespace starsky.Controllers
                 return NotFound("in cache but not in thumbdb");
             }
 
-
             FileStream fs = System.IO.File.OpenRead(thumbPath);
             return File(fs, "image/jpeg");
 
         }
-
-
 
         public IActionResult Error()
         {
