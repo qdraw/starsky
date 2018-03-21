@@ -82,10 +82,10 @@ namespace starsky.Controllers
 
             var getExiftool = ExifTool.ReadExifToolKeywords(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             if (item.Tags == null) item.Tags = string.Empty;
-            if (item.Tags != getExiftool)
-            {
-                Response.StatusCode = 205;
-            }
+            //if (item.Tags != getExiftool)
+            //{
+            //    Response.StatusCode = 205;
+            //}
             item.Tags = getExiftool;
             return Json(item);
         }

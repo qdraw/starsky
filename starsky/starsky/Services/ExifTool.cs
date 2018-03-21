@@ -91,6 +91,7 @@ namespace starsky.Services
             var toBeAddedKeywords = string.Empty;
             foreach (var keyword in hashSetKeywords)
             {
+
                 if (!string.IsNullOrWhiteSpace(keyword) && keyword != hashSetKeywords.LastOrDefault())
                 {
                     toBeAddedKeywords += keyword + ", ";
@@ -100,7 +101,11 @@ namespace starsky.Services
                 {
                     toBeAddedKeywords += keyword;
                 }
+
             }
+
+            // Add everyting in lowercase
+            toBeAddedKeywords = toBeAddedKeywords.ToLower();
 
             return toBeAddedKeywords;
 

@@ -13,5 +13,17 @@ namespace starsky.ViewModels
         public string SearchQuery { get; set; }
         public int PageNumber { get; set; }
         public int LastPageNumber { get; set; }
+        public int SearchCount { get; set; }
+
+        private double _elapsedSeconds;
+
+        public double ElapsedSeconds
+        {
+            get { return _elapsedSeconds; }
+            set
+            {
+                _elapsedSeconds = value - value % 0.001;
+            }
+        }
     }
 }

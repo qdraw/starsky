@@ -10,5 +10,6 @@ namespace starsky.Interfaces
     {
         IEnumerable<FileIndexItem> SearchObjectItem(string tag = "", int pageNumber = 0);
         int SearchLastPageNumber(string tag);
+        int SearchCount(string tag = "");
     }
 }

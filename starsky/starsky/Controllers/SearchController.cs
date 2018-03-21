@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
 using starsky.Models;
@@ -24,12 +25,15 @@ namespace starsky.Controllers
         public IActionResult Index(string t, int p = 0)
         {
             if (p <= 0) p = p * -1;
+            Stopwatch stopWatch = Stopwatch.StartNew();
+
 
             // t = tag name | p == pagenr.
 
             var model = new SearchViewModel();
             model.PageNumber = p;
             model.SearchQuery = t;
+            model.SearchCount = _search.SearchCount(t);
             model.Breadcrumb = new List<string>();
             model.Breadcrumb.Add("/");
             if (!string.IsNullOrEmpty(t))
@@ -45,6 +49,9 @@ namespace starsky.Controllers
 
             model.LastPageNumber = _search.SearchLastPageNumber(t);
             model.FileIndexItems = _search.SearchObjectItem(model.SearchQuery, model.PageNumber);
+            stopWatch.Stop();
+            model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
+
             return View("Index", model);
         }
 

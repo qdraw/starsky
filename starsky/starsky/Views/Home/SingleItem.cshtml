@@ -100,7 +100,18 @@
 
 <img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
 
+<h4>
+    &nbsp;
+    @if (@Model.RelativeObjects.PrevFilePath != null)
+    {
+        <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Prev</a>
+    }
+    @if (@Model.RelativeObjects.NextFilePath != null)
+    {
+        <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Next</a>
+    }
 
+</h4>
 @*<button type="button" class="btn btn-default">Default</button>
     <button type="button" class="btn btn-primary">Primary</button>
     <button type="button" class="btn btn-success">Success</button>

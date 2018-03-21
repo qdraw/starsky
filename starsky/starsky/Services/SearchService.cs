@@ -17,11 +17,19 @@ namespace starsky.Services
 
         // The search feature on the website
 
-        private const int ResultsInView = 50;
+        private const int ResultsInView = 40;
+
+        public int SearchCount(string tag = "")
+        {
+            return _context.FileIndex.Count
+                (p => !p.IsDirectory && p.Tags.Contains(tag));
+        }
+
 
         public IEnumerable<FileIndexItem> SearchObjectItem(string tag = "", int pageNumber = 0)
         {
             tag = tag.ToLower();
+            tag = tag.Trim();
 
             if (pageNumber < 0)
             {
@@ -54,10 +62,14 @@ namespace starsky.Services
         public int SearchLastPageNumber(string tag)
         {
             tag = tag.ToLower();
+            tag = tag.Trim();
+
             var fileIndexQueryCount = _context.FileIndex.Count
                 (p => !p.IsDirectory && p.Tags.Contains(tag));
 
-            var searchLastPageNumbers = (fileIndexQueryCount / ResultsInView) - 1;
+            var searchLastPageNumbers = 
+                (_roundUp(fileIndexQueryCount) / ResultsInView) - 1;
+
 
             if (fileIndexQueryCount <= ResultsInView)
             {
@@ -67,6 +79,17 @@ namespace starsky.Services
             return searchLastPageNumbers;
         }
 
+        private int _roundUp(int toRound)
+        {
+            // 10 => ResultsInView
+            if (toRound % ResultsInView == 0) return toRound;
+            return (ResultsInView - toRound % ResultsInView) + toRound;
+        }
+
+        private int _RoundDown(int toRound)
+        {
+            return toRound - toRound % 10;
+        }
 
 
     }
