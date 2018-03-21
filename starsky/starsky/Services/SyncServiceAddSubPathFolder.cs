@@ -17,20 +17,24 @@ namespace starsky.Services
         // and all parrent paths are not included
         // this class does add those parent folders
 
-        public void AddSubPathFolder(string subPath)
+        public List<string> GetListOfSubpaths(string subPath)
         {
             subPath = _update.SubPathSlashRemove(subPath);
-
             var listOfSubpaths = Breadcrumbs.BreadcrumbHelper(subPath);
             listOfSubpaths.Add(subPath);
+            return listOfSubpaths;
+        }
 
-            foreach (var itemSubpath in listOfSubpaths)
+        public void AddSubPathFolder(string subPath)
+        {
+            foreach (var itemSubpath in GetListOfSubpaths(subPath))
             {
                 var countFolder = _context.FileIndex.Count(p => p.FilePath == itemSubpath);
                 if (countFolder == 0)
                 {
                     var newItem = new FileIndexItem();
                     newItem.FilePath = itemSubpath;
+                    newItem.AddToDatabase = DateTime.UtcNow;
                     newItem.IsDirectory = true;
                     if (itemSubpath != "/")
                     {

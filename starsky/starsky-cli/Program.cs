@@ -4,99 +4,19 @@ using System.IO;
 using System.Linq;
 using starsky.Models;
 using starsky.Services;
+using starskycli;
 
 namespace starskyCli
 {
     public class Program
     {
-        private static bool NeedHelp(IReadOnlyList<string> args)
-        {
-            var needHelp = false;
-
-            for (int arg = 0; arg < args.Count; arg++)
-            {
-                if ((args[arg].ToLower() == "--help" || args[arg].ToLower() == "-h") && (arg + 1) != args.Count)
-                {
-                    bool.TryParse(args[arg + 1], out needHelp);
-                }
-                if ((args[arg].ToLower() == "--help" || args[arg].ToLower() == "-h" ))
-                {
-                    needHelp = true;
-                }
-            }
-
-            return needHelp;
-        }
-
-        private static string GetPathFormArgs(IReadOnlyList<string> args)
-        {
-            var path = "";
-
-            for (int arg = 0; arg < args.Count; arg++)
-            {
-                if ((args[arg].ToLower() == "--path" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count)
-                {
-                    path = args[arg + 1];
-                }
-            }
-
-            var subpath = FileIndexItem.FullPathToDatabaseStyle(path);
-            return subpath;
-        }
-
-        private static string GetSubpathFormArgs(IReadOnlyList<string> args)
-        {
-            var subpath = "/";
-
-            for (int arg = 0; arg < args.Count; arg++)
-            {
-                if ((args[arg].ToLower() == "--subpath" || args[arg].ToLower() == "-s") && (arg + 1) != args.Count)
-                {
-                    subpath = args[arg + 1];
-                }
-            }
-
-            return subpath;
-        }
-
-        private static bool GetIndexMode(IReadOnlyList<string> args)
-        {
-            var isIndexMode = true;
-
-            for (int arg = 0; arg < args.Count; arg++)
-            {
-                if ((args[arg].ToLower() == "--index" || args[arg].ToLower() == "-i") && (arg + 1) != args.Count)
-                {
-                    bool.TryParse(args[arg + 1], out isIndexMode);
-                }
-            }
-
-            return isIndexMode;
-        }
-
-        private static bool GetThumbnail(IReadOnlyList<string> args)
-        {
-            var isThumbnail = false;
-
-            for (int arg = 0; arg < args.Count; arg++)
-            {
-                if ((args[arg].ToLower() == "--thumbnail" || args[arg].ToLower() == "-t") && (arg + 1) != args.Count)
-                {
-                    bool.TryParse(args[arg + 1], out isThumbnail);
-                }
-            }
-
-            return isThumbnail;
-        }
-
-
         public static void Main(string[] args)
         {
             ConfigRead.SetAppSettingsProvider();
 
             //var q = ExifTool.WriteExifToolKeywords("test1", "Z:\\data\\git\\starsky\\starsky\\starsky-cli\\bin\\Debug\\netcoreapp2.0\\20180101_000337.jpg");
 
-            if (NeedHelp(args))
+            if (ArgsHelper.NeedHelp(args))
             {
                 Console.WriteLine("Settings:");
                 Console.WriteLine("Database Type "+ AppSettingsProvider.DatabaseType);
@@ -114,17 +34,17 @@ namespace starskyCli
 
             // Using both options
             var subpath = "/";
-            if (GetPathFormArgs(args).Length >= 1)
+            if (ArgsHelper.GetPathFormArgs(args).Length >= 1)
             {
-                subpath = GetPathFormArgs(args);
+                subpath = ArgsHelper.GetPathFormArgs(args);
             }
             else
             {
-                subpath = GetSubpathFormArgs(args);
+                subpath = ArgsHelper.GetSubpathFormArgs(args);
             }
 
 
-            if (GetIndexMode(args))
+            if (ArgsHelper.GetIndexMode(args))
             {
                 Console.WriteLine("Start indexing");
                 new SyncDatabase().SyncFiles(subpath);
@@ -132,9 +52,9 @@ namespace starskyCli
             }
 
 
-            if (!GetThumbnail(args)) return;
+            if (!ArgsHelper.GetThumbnail(args)) return;
 
-            // Thumb
+            // Thumbnail check service
             var subFoldersFullPath =  Files.GetAllFilesDirectory(subpath);
 
             foreach (var singleFolderFullPath in subFoldersFullPath)
