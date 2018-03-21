@@ -42,7 +42,7 @@ namespace starsky.Services
                     databaseItem.ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(singleFilePath));
                     databaseItem.FilePath = singleFolderDbStyle;
 
-                    _update.AddItem(databaseItem);
+                    _query.AddItem(databaseItem);
                     databaseFileList.Add(databaseItem);
                 }
 

@@ -19,7 +19,7 @@ namespace starsky.Services
 
         public List<string> GetListOfSubpaths(string subPath)
         {
-            subPath = _update.SubPathSlashRemove(subPath);
+            subPath = _query.SubPathSlashRemove(subPath);
             var listOfSubpaths = Breadcrumbs.BreadcrumbHelper(subPath);
             listOfSubpaths.Add(subPath);
             return listOfSubpaths;
@@ -41,7 +41,7 @@ namespace starsky.Services
                         newItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(itemSubpath).LastOrDefault();
                     }
                     newItem.FileName = itemSubpath.Split("/").LastOrDefault();
-                    _update.AddItem(newItem);
+                    _query.AddItem(newItem);
                 }
             }
         }

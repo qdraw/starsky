@@ -10,12 +10,12 @@ namespace starsky.Services
     public partial class SyncService : ISync
     {
         private readonly ApplicationDbContext _context;
-        private readonly IUpdate _update;
+        private readonly IQuery _query;
 
-        public SyncService(ApplicationDbContext context, IUpdate update)
+        public SyncService(ApplicationDbContext context, IQuery query)
         {
             _context = context;
-            _update = update;
+            _query = query;
 
         }
         public IEnumerable<string> SyncFiles(string subPath = "")
@@ -44,7 +44,7 @@ namespace starsky.Services
             {
                 Console.Write(singleFolder + "  ");
 
-                var databaseFileList = _update.GetAllFiles(singleFolder);
+                var databaseFileList = _query.GetAllFiles(singleFolder);
                 var localFarrayFilesDbStyle = Files.GetFilesInDirectory(singleFolder).ToList();
 
                 databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);

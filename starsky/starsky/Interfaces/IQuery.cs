@@ -5,7 +5,7 @@ using starsky.ViewModels;
 
 namespace starsky.Interfaces
 {
-    public interface IUpdate
+    public interface IQuery
     {
 
         List<FileIndexItem> GetAllFiles(string subPath = "");

@@ -26,7 +26,7 @@ namespace starsky.Services
                     var localHash = FileHash.CalcHashCode(FileIndexItem.DatabasePathToFilePath(itemLocal));
                     if (localHash != dbItem.FileHash)
                     {
-                        _update.RemoveItem(dbItem);
+                        _query.RemoveItem(dbItem);
                         var updatedDatabaseItem = ExifRead.ReadExifFromFile(FileIndexItem.DatabasePathToFilePath(itemLocal));
                         updatedDatabaseItem.FilePath = dbItem.FilePath;
                         updatedDatabaseItem.FileHash = localHash;
@@ -34,7 +34,7 @@ namespace starsky.Services
                         updatedDatabaseItem.AddToDatabase = DateTime.Now;
                         updatedDatabaseItem.IsDirectory = false;
                         updatedDatabaseItem.ParentDirectory = dbItem.ParentDirectory;
-                        _update.AddItem(updatedDatabaseItem);
+                        _query.AddItem(updatedDatabaseItem);
                     }
                 }
 

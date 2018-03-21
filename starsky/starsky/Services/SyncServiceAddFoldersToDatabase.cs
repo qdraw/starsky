@@ -32,7 +32,7 @@ namespace starsky.Services
                     folderItem.AddToDatabase = DateTime.UtcNow;
                     folderItem.FileName = singleFolderDbStyle.Split("/").LastOrDefault();
                     folderItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault();
-                    _update.AddItem(folderItem);
+                    _query.AddItem(folderItem);
                     // We dont need this localy
                 }
 

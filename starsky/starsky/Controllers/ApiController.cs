@@ -13,11 +13,11 @@ namespace starsky.Controllers
 {
     public class ApiController : Controller
     {
-        private readonly IUpdate _updateStatusContent;
+        private readonly IQuery _query;
 
-        public ApiController(IUpdate updateStatusContent)
+        public ApiController(IQuery query)
         {
-            _updateStatusContent = updateStatusContent;
+            _query = query;
         }
 
         public IActionResult Env()
@@ -40,11 +40,11 @@ namespace starsky.Controllers
         [HttpGet]
         public IActionResult Update(string f = "path", string t = "")
         {
-            var singleItem = _updateStatusContent.SingleItem(f);
+            var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index " +  f);
             if (string.IsNullOrWhiteSpace(t)) return BadRequest("tag label missing");
 
-            var oldHashCode = _updateStatusContent.SingleItem(f).FileIndexItem.FileHash;
+            var oldHashCode = _query.SingleItem(f).FileIndexItem.FileHash;
 
             if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
                 return NotFound("source image missing " + FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
@@ -52,12 +52,12 @@ namespace starsky.Controllers
             var exifToolResult = ExifTool.SetExifToolKeywords(t, FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             if (exifToolResult == null) return BadRequest();
 
-            var item = _updateStatusContent.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
+            var item = _query.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
 
             item.FileHash = FileHash.CalcHashCode(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             item.AddToDatabase = DateTime.Now;
             item.Tags = exifToolResult;
-            _updateStatusContent.UpdateItem(item);
+            _query.UpdateItem(item);
 
             new Thumbnail().RenameThumb(oldHashCode, item.FileHash);
 
@@ -67,12 +67,12 @@ namespace starsky.Controllers
         public IActionResult Info(string f = "uniqueid", string t = "")
         {
             if (f.Contains("?t=")) return NotFound("please use &t= instead of ?t=");
-            var singleItem = _updateStatusContent.SingleItem(f);
+            var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index");
             if (string.IsNullOrWhiteSpace(t)) return BadRequest("tag label missing");
             if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
                 return NotFound("source image missing " + FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-            var item = _updateStatusContent.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
+            var item = _query.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
 
             var getExiftool = ExifTool.ReadExifToolKeywords(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             if (item.Tags == null) item.Tags = string.Empty;
@@ -89,7 +89,7 @@ namespace starsky.Controllers
         public IActionResult Thumbnail(string f, bool isSingleitem = false)
         {
 
-            var sourcePath = _updateStatusContent.GetItemByHash(f);
+            var sourcePath = _query.GetItemByHash(f);
 
             if (sourcePath == null) return NotFound("not in index");
 

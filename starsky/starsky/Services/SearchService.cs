@@ -9,13 +9,10 @@ namespace starsky.Services
     public class SearchService : ISearch
     {
         private readonly ApplicationDbContext _context;
-        private readonly IUpdate _update;
 
-        public SearchService(ApplicationDbContext context, IUpdate update)
+        public SearchService(ApplicationDbContext context)
         {
             _context = context;
-            _update = update;
-
         }
 
         // The search feature on the website

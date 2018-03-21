@@ -20,7 +20,7 @@ namespace starsky.Services
             {
                 // single file -- update or adding
                 var dbListWithOneFile = new List<FileIndexItem>();
-                var dbItem = _update.GetObjectByFilePath(subPath);
+                var dbItem = _query.GetObjectByFilePath(subPath);
                 if (dbItem != null)
                 {
                     dbListWithOneFile.Add(dbItem);

@@ -13,18 +13,18 @@ namespace starsky.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IUpdate _updateStatusContent;
+        private readonly IQuery _query;
 
-        public HomeController(IUpdate updateStatusContent)
+        public HomeController(IQuery query)
         {
-            _updateStatusContent = updateStatusContent;
+            _query = query;
         }
 
         [HttpGet]
         public IActionResult Index(string f = "/")
         {
-            var model = new IndexViewModel {FileIndexItems = _updateStatusContent.DisplayFileFolders(f)};
-            var singleItem = _updateStatusContent.SingleItem(f);
+            var model = new IndexViewModel {FileIndexItems = _query.DisplayFileFolders(f)};
+            var singleItem = _query.SingleItem(f);
             
             if (!model.FileIndexItems.Any())
             {
@@ -74,7 +74,7 @@ namespace starsky.Controllers
 
         public IActionResult GetFolder(string p = "/")
         {
-            var i = _updateStatusContent.DisplayFileFolders(p);
+            var i = _query.DisplayFileFolders(p);
 
             return Json(i);
         }

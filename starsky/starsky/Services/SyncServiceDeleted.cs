@@ -16,20 +16,20 @@ namespace starsky.Services
             if (Files.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
             {
                 // single file or folder deleting
-                var dbListWithOneFile = new List<FileIndexItem>();
-                var dbItem = _update.GetObjectByFilePath(subPath);
+                //var dbListWithOneFile = new List<FileIndexItem>();
+                var dbItem = _query.GetObjectByFilePath(subPath);
                 if (dbItem != null)
                 {
-                    _update.RemoveItem(dbItem);
+                    _query.RemoveItem(dbItem);
                     Console.WriteLine("File " + subPath +" not found and removed");
 
                     if (dbItem.IsDirectory == false) throw new FileNotFoundException();
-                    var toBeDeleted = _update.GetAllFiles(dbItem.FilePath);
+                    var toBeDeleted = _query.GetAllFiles(dbItem.FilePath);
 
                     foreach (var item in toBeDeleted)
                     {
                         Console.WriteLine("|");
-                        _update.RemoveItem(item);
+                        _query.RemoveItem(item);
                     }
                 }
 

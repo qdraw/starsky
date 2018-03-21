@@ -49,7 +49,7 @@ namespace starsky.Services
 
                 // Remove different item from list
                 databaseSubFolderList.Remove(ditem);
-                _update.RemoveItem(ditem);
+                _query.RemoveItem(ditem);
 
                 // If Directory check if it has orphan items
                 // If this feature does not exist, this problem exist:
@@ -65,7 +65,7 @@ namespace starsky.Services
                 foreach (var orphanItem in orphanPictures)
                 {
                     Console.Write("$");
-                    _update.RemoveItem(orphanItem);
+                    _query.RemoveItem(orphanItem);
                 }
 
 
