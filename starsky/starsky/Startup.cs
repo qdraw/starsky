@@ -37,7 +37,6 @@ namespace starsky
             else
             {
                 services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(AppSettingsProvider.DbConnectionString));
-
             }
 
             services.AddScoped<IQuery, Query>();
@@ -62,9 +61,8 @@ namespace starsky
             }
             else
             {
-                app.UseStatusCodePagesWithReExecute("/Home/Error");
+                app.UseStatusCodePagesWithReExecute("/Shared/Error");
             }
-
 
 
             app.UseStaticFiles();

@@ -45,6 +45,7 @@ namespace starsky.Services
                 Console.Write(singleFolder + "  ");
 
                 var databaseFileList = _query.GetAllFiles(singleFolder);
+                Console.WriteLine(databaseFileList);
                 var localFarrayFilesDbStyle = Files.GetFilesInDirectory(singleFolder).ToList();
 
                 databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);

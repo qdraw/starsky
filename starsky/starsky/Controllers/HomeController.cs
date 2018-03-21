@@ -46,8 +46,6 @@ namespace starsky.Controllers
             return View(model);
         }
 
-
-
         //[HttpGet]
         //public IActionResult Trash(int p = 0)
         //{
@@ -67,17 +65,6 @@ namespace starsky.Controllers
         //    return View("Trash", model);
         //}
 
-
-
-
-
-
-        public IActionResult GetFolder(string p = "/")
-        {
-            var i = _query.DisplayFileFolders(p);
-
-            return Json(i);
-        }
 
         public IActionResult Error()
         {
