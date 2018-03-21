@@ -12,13 +12,6 @@ namespace starsky.Services
         // Based on subpath, do a cached database query
         // Check differences in the database and local version
 
-        // If this class does not exist, this problem:
-        // if directory remove parent elements
-        // 1. Index all folders
-        // 2. Rename single folder
-        // 3. The files are keeped in the index
-        // RemoveOldFilePathItemsFromDatabase => remove this items from database
-
         public List<FileIndexItem> RemoveOldFilePathItemsFromDatabase(
             List<string> localSubFolderListDatabaseStyle,
             List<FileIndexItem> databaseSubFolderList,
@@ -41,13 +34,31 @@ namespace starsky.Services
             // Delete removed items
             foreach (var item in differenceFileNames)
             {
-                Console.Write("*");
 
                 var ditem = databaseSubFolderList.FirstOrDefault(p => p.FilePath == item);
+                if (ditem?.FilePath == null) continue;
+
+                // If the item is the subpath directory don't delete this one
+                // SyncServiceAddSubPathFolder => is adding the complete list of subpaths
+                if (GetListOfSubpaths(subpath).LastOrDefault() == ditem?.FilePath)
+                {
+                    continue;
+                }
+
+                Console.Write("*");
+
+                // Remove different item from list
                 databaseSubFolderList.Remove(ditem);
                 _update.RemoveItem(ditem);
 
-                if (ditem?.IsDirectory == null) continue;
+                // If Directory check if it has orphan items
+                // If this feature does not exist, this problem exist:
+                // if directory remove parent elements
+                // 1. Index all folders
+                // 2. Rename single folder
+                // 3. The files are keeped in the index
+                // RemoveOldFilePathItemsFromDatabase => remove this items from database
+
                 if (!ditem.IsDirectory) continue;
 
                 var orphanPictures = _context.FileIndex.Where(p => !p.IsDirectory && p.ParentDirectory == ditem.FilePath);
