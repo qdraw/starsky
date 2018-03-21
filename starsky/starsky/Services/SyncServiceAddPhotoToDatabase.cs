@@ -7,7 +7,7 @@ using starsky.Models;
 
 namespace starsky.Services
 {
-    public partial class Query
+    public partial class SyncService
     {
         // Add new photo to database 
         //  (if photo does not exist)
@@ -42,7 +42,7 @@ namespace starsky.Services
                     databaseItem.ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(singleFilePath));
                     databaseItem.FilePath = singleFolderDbStyle;
 
-                    AddItem(databaseItem);
+                    _update.AddItem(databaseItem);
                     databaseFileList.Add(databaseItem);
                 }
 

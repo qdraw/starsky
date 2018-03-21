@@ -5,31 +5,31 @@ using starsky.Models;
 
 namespace starsky.Services
 {
-    public partial class Query
+    public partial class SyncService
     {
         // When input a direct file
         //        => if this file is deleted on the file system 
         //              => delete it from the database
 
-        public void SyncDeleted(string subPath = "")
+        public void Deleted(string subPath = "")
         {
             if (Files.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
             {
                 // single file or folder deleting
                 var dbListWithOneFile = new List<FileIndexItem>();
-                var dbItem = GetObjectByFilePath(subPath);
+                var dbItem = _update.GetObjectByFilePath(subPath);
                 if (dbItem != null)
                 {
-                    RemoveItem(dbItem);
+                    _update.RemoveItem(dbItem);
                     Console.WriteLine("File " + subPath +" not found and removed");
 
                     if (dbItem.IsDirectory == false) throw new FileNotFoundException();
-                    var toBeDeleted = GetAllFiles(dbItem.FilePath);
+                    var toBeDeleted = _update.GetAllFiles(dbItem.FilePath);
 
                     foreach (var item in toBeDeleted)
                     {
                         Console.WriteLine("|");
-                        RemoveItem(item);
+                        _update.RemoveItem(item);
                     }
                 }
 

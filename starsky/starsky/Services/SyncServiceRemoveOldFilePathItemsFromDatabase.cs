@@ -6,7 +6,7 @@ using starsky.Models;
 
 namespace starsky.Services
 {
-    public partial class Query
+    public partial class SyncService
     {
         // Sync the database
         // Based on subpath, do a cached database query
@@ -45,7 +45,7 @@ namespace starsky.Services
 
                 var ditem = databaseSubFolderList.FirstOrDefault(p => p.FilePath == item);
                 databaseSubFolderList.Remove(ditem);
-                RemoveItem(ditem);
+                _update.RemoveItem(ditem);
 
                 if (ditem?.IsDirectory == null) continue;
                 if (!ditem.IsDirectory) continue;
@@ -54,7 +54,7 @@ namespace starsky.Services
                 foreach (var orphanItem in orphanPictures)
                 {
                     Console.Write("$");
-                    RemoveItem(orphanItem);
+                    _update.RemoveItem(orphanItem);
                 }
 
 

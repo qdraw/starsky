@@ -1,13 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using starsky.Data;
+using starsky.Interfaces;
 using starsky.Models;
 
 namespace starsky.Services
 {
-    public partial class Query
+    public class SearchService : ISearch
     {
-        
-       // The search feature on the website
+        private readonly ApplicationDbContext _context;
+        private readonly IUpdate _update;
+
+        public SearchService(ApplicationDbContext context, IUpdate update)
+        {
+            _context = context;
+            _update = update;
+
+        }
+
+        // The search feature on the website
 
         private const int ResultsInView = 50;
 

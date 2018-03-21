@@ -47,59 +47,25 @@ namespace starsky.Controllers
         }
 
 
-        [HttpPost]
-        public IActionResult Search(string t)
-        {
-            return RedirectToAction("Search", new { t = t, p = 0  });
-        }
 
-        [HttpGet]
-        public IActionResult Search(string t, int p = 0)
-        {
-            if (p <= 0) p = p *-1;
+        //[HttpGet]
+        //public IActionResult Trash(int p = 0)
+        //{
+        //    if (p <= 0) p = p * -1;
 
-            // t = tag name | p == pagenr.
+        //    // t = tag name | p == pagenr.
 
-            var model = new SearchViewModel();
-            model.PageNumber =  p;
-            model.SearchQuery = t;
-            model.Breadcrumb = new List<string>();
-            model.Breadcrumb.Add("/");
-            if (!string.IsNullOrEmpty(t))
-            {
-                model.Breadcrumb.Add(t);
-            }
+        //    var model = new SearchViewModel();
+        //    model.PageNumber = p;
+        //    model.SearchQuery = "<delete>";
+        //    model.Breadcrumb = new List<string>();
+        //    model.Breadcrumb.Add("/");
+        //    model.Breadcrumb.Add("/Home/Trash");
 
-            if (string.IsNullOrWhiteSpace(t))
-            {
-                model.FileIndexItems = new List<FileIndexItem>();
-                return View("Search", model);
-            }
-
-            model.LastPageNumber = _updateStatusContent.SearchLastPageNumber(t);
-            model.FileIndexItems = _updateStatusContent.SearchObjectItem(model.SearchQuery, model.PageNumber);
-            return View("Search", model);
-        }
-
-
-        [HttpGet]
-        public IActionResult Trash(int p = 0)
-        {
-            if (p <= 0) p = p * -1;
-
-            // t = tag name | p == pagenr.
-
-            var model = new SearchViewModel();
-            model.PageNumber = p;
-            model.SearchQuery = "<delete>";
-            model.Breadcrumb = new List<string>();
-            model.Breadcrumb.Add("/");
-            model.Breadcrumb.Add("/Home/Trash");
-
-            model.LastPageNumber = _updateStatusContent.SearchLastPageNumber("<delete>");
-            model.FileIndexItems = _updateStatusContent.SearchObjectItem(model.SearchQuery, model.PageNumber);
-            return View("Trash", model);
-        }
+        //    model.LastPageNumber = _updateStatusContent.SearchLastPageNumber("<delete>");
+        //    model.FileIndexItems = _updateStatusContent.SearchObjectItem(model.SearchQuery, model.PageNumber);
+        //    return View("Trash", model);
+        //}
 
 
 

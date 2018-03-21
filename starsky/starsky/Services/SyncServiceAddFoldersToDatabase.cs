@@ -6,7 +6,7 @@ using starsky.Models;
 
 namespace starsky.Services
 {
-    public partial class Query
+    public partial class SyncService
     {
         // For folders! only
         // If folder is not in database add folder element
@@ -32,7 +32,7 @@ namespace starsky.Services
                     folderItem.AddToDatabase = DateTime.UtcNow;
                     folderItem.FileName = singleFolderDbStyle.Split("/").LastOrDefault();
                     folderItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault();
-                    AddItem(folderItem);
+                    _update.AddItem(folderItem);
                     // We dont need this localy
                 }
 

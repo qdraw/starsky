@@ -29,7 +29,7 @@
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                     <li>
-                        <form asp-controller="Home" asp-action="Search" method="post" class="form-inline form-nav">
+                        <form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-nav">
                               <input name="t" class="form-control" value="@ViewData["SearchQuery"]" autocomplete="off"/>
                             <button class="btn btn-default" type="submit">Zoek</button>
                         </form>

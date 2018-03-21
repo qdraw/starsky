@@ -15,7 +15,7 @@
         }
         if (name != "Home")
         {
-            <a asp-controller="Home" asp-action="Search" asp-route-t="@item">@name</a>
+            <a asp-controller="Search" asp-action="Index" asp-route-t="@item">@name</a>
         }
         else
         {
@@ -29,7 +29,7 @@
 </h2>
 
 <div class="wrapper">
-    <form asp-controller="Home" asp-action="Search" method="post" class="form-inline form-wrapper">
+    <form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-wrapper">
           <input name="t" value="@Model.SearchQuery" class="form-control" autocomplete="off"/>
         <button class="btn btn-default" type="submit">Zoek</button>
     </form>
@@ -40,13 +40,13 @@
     @if (Model.PageNumber >= 1)
     {
         var prevpage = @Model.PageNumber - 1;
-        <a asp-controller="Home" asp-action="Search" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Prev</a>
+        <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Prev</a>
     }
 
     @if (Model.PageNumber < Model.LastPageNumber)
     {
         var nextpage = @Model.PageNumber + 1;
-        <a class="next" asp-controller="Home" asp-action="Search" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Next</a>
+        <a class="next" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Next</a>
     }
 </h4>
 
@@ -54,7 +54,7 @@
 
     @foreach (var item in Model.FileIndexItems)
     {
-        <a class="halfitem" asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
+        <a class="halfitem" asp-controller="Search" asp-action="Index" asp-route-f="@item.FilePath">
             <div class="caption">
                 <h3>@item.FileName</h3>
                 <p>@item.Tags</p>
@@ -69,12 +69,12 @@
     @if (Model.PageNumber >= 1)
     {
         var prevpage = @Model.PageNumber - 1;
-        <a asp-controller="Home" asp-action="Search" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Prev</a>
+        <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Prev</a>
     }
 
     @if (Model.PageNumber < Model.LastPageNumber)
     {
         var nextpage = @Model.PageNumber + 1;
-        <a class="next" asp-controller="Home" asp-action="Search" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Next</a>
+        <a class="next" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Next</a>
     }
 </h4>

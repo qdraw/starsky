@@ -8,19 +8,19 @@ using starsky.Models;
 
 namespace starsky.Services
 {
-    public partial class Query
+    public partial class SyncService
     {
         // When input a direct file
         //        => if this file exist on the file system 
         //              => check if the hash in the db is up to date
 
-        public void SyncSingleFile(string subPath = "")
+        public void SingleFile(string subPath = "")
         {
             if (Files.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.File) // false == file
             {
                 // single file -- update or adding
                 var dbListWithOneFile = new List<FileIndexItem>();
-                var dbItem = GetObjectByFilePath(subPath);
+                var dbItem = _update.GetObjectByFilePath(subPath);
                 if (dbItem != null)
                 {
                     dbListWithOneFile.Add(dbItem);

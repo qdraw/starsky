@@ -6,7 +6,7 @@ using starsky.Models;
 
 namespace starsky.Services
 {
-    public partial class Query
+    public partial class SyncService
     {
         // AddSubPathFolder
         //  root(/)
@@ -19,7 +19,7 @@ namespace starsky.Services
 
         public void AddSubPathFolder(string subPath)
         {
-            subPath = SubPathSlashRemove(subPath);
+            subPath = _update.SubPathSlashRemove(subPath);
 
             var listOfSubpaths = Breadcrumbs.BreadcrumbHelper(subPath);
             listOfSubpaths.Add(subPath);
@@ -37,7 +37,7 @@ namespace starsky.Services
                         newItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(itemSubpath).LastOrDefault();
                     }
                     newItem.FileName = itemSubpath.Split("/").LastOrDefault();
-                    AddItem(newItem);
+                    _update.AddItem(newItem);
                 }
             }
         }

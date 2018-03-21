@@ -41,6 +41,12 @@ namespace starsky
             }
 
             services.AddScoped<IUpdate, Query>();
+            services.AddScoped<ISync, SyncService>();
+
+            services.AddScoped<ISearch, SearchService>();
+
+            
+
             services.AddMvc();
         }
 

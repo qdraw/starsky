@@ -5,7 +5,7 @@ using starsky.Models;
 
 namespace starsky.Services
 {
-    public partial class Query
+    public partial class SyncService
     {
         // Loop thoug a local file list and 
         // checks if the filehash in the database is up to date
@@ -26,7 +26,7 @@ namespace starsky.Services
                     var localHash = FileHash.CalcHashCode(FileIndexItem.DatabasePathToFilePath(itemLocal));
                     if (localHash != dbItem.FileHash)
                     {
-                        RemoveItem(dbItem);
+                        _update.RemoveItem(dbItem);
                         var updatedDatabaseItem = ExifRead.ReadExifFromFile(FileIndexItem.DatabasePathToFilePath(itemLocal));
                         updatedDatabaseItem.FilePath = dbItem.FilePath;
                         updatedDatabaseItem.FileHash = localHash;
@@ -34,7 +34,7 @@ namespace starsky.Services
                         updatedDatabaseItem.AddToDatabase = DateTime.Now;
                         updatedDatabaseItem.IsDirectory = false;
                         updatedDatabaseItem.ParentDirectory = dbItem.ParentDirectory;
-                        AddItem(updatedDatabaseItem);
+                        _update.AddItem(updatedDatabaseItem);
                     }
                 }
 

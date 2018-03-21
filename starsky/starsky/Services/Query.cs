@@ -88,17 +88,7 @@ namespace starsky.Services
             return subPath;
         }
 
-        public List<string> RenameListItemsToDbStyle(List<string> localSubFolderList)
-        {
-            var localSubFolderListDatabaseStyle = new List<string>();
 
-            foreach (var item in localSubFolderList)
-            {
-                localSubFolderListDatabaseStyle.Add(FileIndexItem.FullPathToDatabaseStyle(item));
-            }
-
-            return localSubFolderListDatabaseStyle;
-        }
 
        
 
@@ -137,45 +127,7 @@ namespace starsky.Services
         //    return null;
         //}
 
-        public IEnumerable<string> SyncFiles(string subPath = "")
-        {
-            SyncDeleted(subPath);
-            SyncSingleFile(subPath);
-
-            // if folder: 
-            var localSubFolderDbStyle = RenameListItemsToDbStyle(
-                Files.GetAllFilesDirectory(subPath).ToList()
-            );
-
-
-            var databaseSubFolderList = _context.FileIndex.Where(p => p.IsDirectory).ToList();
-
-            // Sync for folders
-            RemoveOldFilePathItemsFromDatabase(localSubFolderDbStyle, databaseSubFolderList,subPath);
-            AddFoldersToDatabase(localSubFolderDbStyle, databaseSubFolderList);
-
-            Console.WriteLine(".");
-
-            // Allow sync for direct folder
-            localSubFolderDbStyle.Add(subPath);
-
-            foreach (var singleFolder in localSubFolderDbStyle)
-            {
-                Console.Write(singleFolder + "  ");
-
-                var databaseFileList = GetAllFiles(singleFolder);
-                var localFarrayFilesDbStyle = Files.GetFilesInDirectory(singleFolder).ToList();
-
-                databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);
-                CheckMd5Hash(localFarrayFilesDbStyle, databaseFileList);
-                AddPhotoToDatabase(localFarrayFilesDbStyle, databaseFileList);
-                Console.WriteLine("-");
-            }
-
-            AddSubPathFolder(subPath);
-
-            return null;
-        }
+      
 
 
         public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
@@ -184,6 +136,7 @@ namespace starsky.Services
             _context.SaveChanges();
             return updateStatusContent;
         }
+
 
 
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)
