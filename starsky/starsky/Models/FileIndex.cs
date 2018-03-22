@@ -43,28 +43,55 @@ namespace starsky.Models
                 case "0":
                     _colorClass = Color.None;
                     return _colorClass;
+                case "none":
+                    _colorClass = Color.None;
+                    return _colorClass;
                 case "1":
+                    _colorClass = Color.Trash;
+                    return _colorClass;
+                case "trash":
                     _colorClass = Color.Trash;
                     return _colorClass;
                 case "2":
                     _colorClass = Color.Extras;
                     return _colorClass;
+                case "extras":
+                    _colorClass = Color.Extras;
+                    return _colorClass;
                 case "3":
+                    _colorClass = Color.TypicalAlt;
+                    return _colorClass;
+                case "typicalalt":
                     _colorClass = Color.TypicalAlt;
                     return _colorClass;
                 case "4":
                     _colorClass = Color.Typical;
                     return _colorClass;
+                case "typical":
+                    _colorClass = Color.Typical;
+                    return _colorClass;
                 case "5":
+                    _colorClass = Color.SuperiorAlt;
+                    return _colorClass;
+                case "superioralt":
                     _colorClass = Color.SuperiorAlt;
                     return _colorClass;
                 case "6":
                     _colorClass = Color.Superior;
                     return _colorClass;
+                case "superior":
+                    _colorClass = Color.Superior;
+                    return _colorClass;
                 case "7":
                     _colorClass = Color.WinnerAlt;
                     return _colorClass;
+                case "winneralt":
+                    _colorClass = Color.WinnerAlt;
+                    return _colorClass;
                 case "8":
+                    _colorClass = Color.Winner;
+                    return _colorClass;
+                case "winner":
                     _colorClass = Color.Winner;
                     return _colorClass;
                 default:

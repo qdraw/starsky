@@ -26,7 +26,7 @@
 
 
 <div class="wrapper">
-    <form asp-controller="Api" asp-action="Update" method="post" class="form-inline form-wrapper" id="js-tag-update">
+    <form asp-controller="Api" asp-action="UpdateTag" method="post" class="form-inline form-wrapper" id="js-tag-update">
         <input name="f" value="@Model.FileIndexItem.FilePath" hidden />
         <input class="form-control t" name="t" value="@Model.FileIndexItem.Tags" autocomplete="off" disabled="true" />
         <button class="btn btn-default" type="submit" style="display: none;">Update</button>
@@ -73,7 +73,6 @@
                 document.querySelector(".addDeleteTag a").innerHTML = "Verplaats naar prullenmand";
                 document.querySelector(".addDeleteTag a").classList.remove("btn-warning");
                 document.querySelector(".addDeleteTag a").classList.add("btn-danger");
-
             }
         }
 
@@ -105,16 +104,16 @@
 <div class="add-colorclass">
 
     @{
-        var typesList = new List<string> {"winner", "winneralt", "superior", "superioralt", "extras", "trash", "none"};
+        var typesList = new List<string> {"winner", "winneralt", "superior", "superioralt", "typical", "typicalalt", "extras", "trash", "none"};
         foreach (var item in typesList)
         {
             if (@Model.FileIndexItem.ColorClass.ToString().ToLower() == item)
             {
-                <button type="button" class="btn @item on" onclick="this.classList.add('on')">@item</button>
+                <button type="button" class="btn @item on" onclick="updateColorClass(this)">@item</button>
             }
             else
             {
-                <button type="button" class="btn @item" onclick="this.classList.add('on')">@item</button>
+                <button type="button" class="btn @item" data-name="@item" onclick="updateColorClass(this)">@item</button>
             }
         }
     }
@@ -160,7 +159,7 @@
             }
         }
 
-        var url = "@Url.Action("Update", "Api", new { f = @Model.FileIndexItem.FilePath, redirect = false })" + "&t=" + queryItem;;
+        var url = "@Url.Action("UpdateTag", "Api", new { f = @Model.FileIndexItem.FilePath, redirect = false })" + "&t=" + queryItem;;
         if (queryItem.length === 0) {
             url += "?";
         }
@@ -170,6 +169,24 @@
             function (xhr) { console.error(xhr); },
             "POST"
         );
+    }
+
+</script>
+
+
+<script type="text/javascript">
+    function updateColorClass(those) {
+        var url = "@Url.Action("UpdateColorClass", "Api", new { f = @Model.FileIndexItem.FilePath})" + "&name=" + those.dataset.name;;
+
+        url = url.replace("&amp;", "&");
+        loadJSON(url,
+            function(data) {
+                
+                console.log(data);
+            },
+            function (xhr) { console.error(xhr); },
+            "POST"
+        );    
     }
 
 </script>

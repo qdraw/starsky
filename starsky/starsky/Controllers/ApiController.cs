@@ -46,7 +46,7 @@ namespace starsky.Controllers
 
         [HttpPost]
         [HttpGet]
-        public IActionResult Update(string f = "path", string t = "", bool redirect = true)
+        public IActionResult UpdateTag(string f = "path", string t = "", bool redirect = true)
         {
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index " +  f);
@@ -76,6 +76,21 @@ namespace starsky.Controllers
                 return RedirectToAction("index", "home", new { f = f, t = exifToolResult });
             }
             return Json(item);
+        }
+
+        [HttpPost]
+        [HttpGet]
+        public IActionResult UpdateColorClass(string f = "path", string name = "")
+        {
+            if (f.Contains("?name=")) return NotFound("please use &name= instead of ?name=");
+
+            var singleItem = _query.SingleItem(f);
+            singleItem.FileIndexItem.SetColorClass(name);
+            
+            if (singleItem.FileIndexItem.FilePath == null) return NotFound("not in index");
+            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
+                return NotFound("source image missing " + FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            return Json(singleItem.FileIndexItem);
         }
 
         public IActionResult Info(string f = "dbStyleFilepath", string t = "")
