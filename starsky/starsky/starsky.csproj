@@ -1,17 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
-
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mac|AnyCPU' ">
     <IntermediateOutputPath>obj\Mac</IntermediateOutputPath>
     <DebugSymbols>false</DebugSymbols>
-    <DebugType></DebugType>
+    <DebugType>
+    </DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Mac</OutputPath>
-    <DefineConstants></DefineConstants>
-    <NoWarn></NoWarn>
+    <DefineConstants>
+    </DefineConstants>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Migrations\20180308104506_initDatabaseKey.cs" />
@@ -21,19 +22,16 @@
     <Compile Remove="Migrations\20180316113720_IsDirectoryAddDescriptionParentDrectory.cs" />
     <Compile Remove="Migrations\20180316113720_IsDirectoryAddDescriptionParentDrectory.Designer.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="MetadataExtractor" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0002" />
   </ItemGroup>
-
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -42,5 +40,4 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
-
 </Project>

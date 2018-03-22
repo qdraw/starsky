@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
 using starsky.Models;
@@ -18,6 +19,15 @@ namespace starsky.Controllers
             _query = query;
         }
 
+        [HttpGet]
+        public IActionResult Folder(string f = "/")
+        {
+            var fileIndexItems = _query.DisplayFileFolders(f);
+            if (!fileIndexItems.Any()) NotFound("Folder not found");
+            return Json(fileIndexItems);
+        }
+        
+        [HttpGet]
         public IActionResult Env()
         {
             var model = new EnvViewModel
