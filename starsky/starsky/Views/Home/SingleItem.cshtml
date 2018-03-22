@@ -102,6 +102,25 @@
 
 <img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
 
+<div class="add-colorclass">
+
+    @{
+        var typesList = new List<string> {"winner", "winneralt", "superior", "superioralt", "extras", "trash", "none"};
+        foreach (var item in typesList)
+        {
+            if (@Model.FileIndexItem.ColorClass.ToString().ToLower() == item)
+            {
+                <button type="button" class="btn @item on" onclick="this.classList.add('on')">@item</button>
+            }
+            else
+            {
+                <button type="button" class="btn @item" onclick="this.classList.add('on')">@item</button>
+            }
+        }
+    }
+    
+</div>
+
 <h4>
     &nbsp;
     @if (@Model.RelativeObjects.PrevFilePath != null)
@@ -114,26 +133,6 @@
     }
 
 </h4>
-
-
-<div class="add-colorclass">
-
-@*@{*@
-@*    var typesList = new List<string> {"winner", "winneralt", "superior", "superioralt", "extras", "trash", "none"};*@
-@*    foreach (var item in typesList)*@
-@*    {*@
-@*        if (@Model.FileIndexItem.ColorClass.ToString().ToLower() == item)*@
-@*        {*@
-@*            <button type="button" class="btn @item on" onclick="this.classList.add('on')">@item</button>*@
-@*        }*@
-@*        else*@
-@*        {*@
-@*            <button type="button" class="btn @item" onclick="this.classList.add('on')">@item</button>*@
-@*        }*@
-@*    }*@
-@*}*@
-    
-</div>
 
 
 
