@@ -31,8 +31,53 @@ namespace starsky.Models
         public DateTime DateTime { get; set; }
 
         public DateTime AddToDatabase { get; set; }
+        
+        
+        private Color _colorClass;
 
-        // public Color ColorClass { get; set; }
+        public Color SetColorClass(string colorclassString = "0")
+        {
+
+            switch (colorclassString)
+            {
+                case "0":
+                    _colorClass = Color.None;
+                    return _colorClass;
+                case "1":
+                    _colorClass = Color.Trash;
+                    return _colorClass;
+                case "2":
+                    _colorClass = Color.Extras;
+                    return _colorClass;
+                case "3":
+                    _colorClass = Color.TypicalAlt;
+                    return _colorClass;
+                case "4":
+                    _colorClass = Color.Typical;
+                    return _colorClass;
+                case "5":
+                    _colorClass = Color.SuperiorAlt;
+                    return _colorClass;
+                case "6":
+                    _colorClass = Color.Superior;
+                    return _colorClass;
+                case "7":
+                    _colorClass = Color.WinnerAlt;
+                    return _colorClass;
+                case "8":
+                    _colorClass = Color.Winner;
+                    return _colorClass;
+                default:
+                    _colorClass = Color.None;
+                    return _colorClass;
+            }
+        }
+
+
+        public Color ColorClass { 
+            get => _colorClass;
+            set => _colorClass = value;
+        }
 
         public enum Color
         {
@@ -46,16 +91,6 @@ namespace starsky.Models
             WinnerAlt = 7, // rood - Red -
             Winner = 8 // Paars - purple
         }
-
-         /*
-         0:1:0:-00001
-         0:2:0:-00001
-         0:3:0:-00001
-         0:4:0:-00001
-         0:5:0:-00001
-         0:7:0:-00001
-         0:8:0:-00001*/
-
 
         // From System full path => database relative path
         public string FullPathToDatabaseStyle() //PathToSys

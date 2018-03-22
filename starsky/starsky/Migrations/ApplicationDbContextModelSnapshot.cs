@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using starsky.Data;
+using starsky.Models;
 using System;
 
 namespace starsky.Migrations
@@ -25,6 +26,8 @@ namespace starsky.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("AddToDatabase");
+
+                    b.Property<int>("ColorClass");
 
                     b.Property<DateTime>("DateTime");
 

@@ -9,12 +9,13 @@ using starsky.Models;
 
 namespace starsky.Services
 {
-    public class ExifRead
+    public static class ExifRead
     {
         public static FileIndexItem ReadExifFromFile(string fileFullPath)
         {
             var item = new FileIndexItem();
             var allExifItems = ImageMetadataReader.ReadMetadata(fileFullPath);
+            var colorClassSting = string.Empty;
 
             foreach (var exifItem in allExifItems)
             {
@@ -33,17 +34,21 @@ namespace starsky.Services
                     }
                 }
 
-                // Colour
+                // Colour Class => ratings
                 var ratingCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"));
                 if (ratingCounts >= 1)
                 {
                     var prefsTag = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"))?.Description;
 
-                    var prefsTagSplit = prefsTag.Split(":");
-
-                    var colorClassSting = prefsTagSplit[1];
-
-                    Console.WriteLine(" rating " + colorClassSting);
+                    //     0:1:0:-00001
+                    //     ~~~~~~
+                    //     0:8:0:-00001
+                    
+                    if (!string.IsNullOrWhiteSpace(prefsTag))
+                    {
+                        var prefsTagSplit = prefsTag.Split(":");
+                        colorClassSting = prefsTagSplit[1];     
+                    }
                 }
 
                 var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized");
@@ -68,7 +73,10 @@ namespace starsky.Services
                 }
 
             }
-
+            
+            item.SetColorClass(colorClassSting);
+            Console.WriteLine(item.ColorClass);
+            
             return item;
         }
 
