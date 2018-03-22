@@ -75,7 +75,6 @@ namespace starsky.Services
             }
             
             item.SetColorClass(colorClassSting);
-            Console.WriteLine(item.ColorClass);
             
             return item;
         }
