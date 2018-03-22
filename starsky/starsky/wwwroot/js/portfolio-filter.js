@@ -71,13 +71,13 @@ function writeFilterList (tags) {
         var filterarticle = document.querySelector("#portfolio-filter ul")
 
         if(tags.length >= 2){
-            // ALLES!!
+            // ALLES!! nu RESET
             var li_alles = document.createElement("li");
             var a_alles = document.createElement("a");
             var currentitem_alles = filterarticle.appendChild(li_alles).appendChild(a_alles);
-            currentitem_alles.innerHTML = "Alles";
-            currentitem_alles.className = "alles";
-            currentitem_alles.addEventListener("click", function(e){ var those = this; reset(); }, false);
+            currentitem_alles.innerHTML = "Reset";
+            currentitem_alles.className = "reset";
+            currentitem_alles.addEventListener("click", function(e){ var those = this; resetCheckBoxes();setVariable([]); constructURL(); }, false);
             // EINDE ALLES
 
             var newTags = [];
@@ -153,7 +153,7 @@ function createSlug(tagList) {
 // };
 //
 
-function reset() {
+function resetCheckBoxes() {
     var object = document.querySelector("#portfolio-filter ul").children;
     for (var i = 0; i < object.length; i++) {
 
@@ -287,7 +287,7 @@ function readVariable (those) {
 
         // reset all checkboxes to none;
         for (i = 0; i < window.subject.length; i++) {
-            reset();
+            resetCheckBoxes();
         }
 
         // set the selected checkboxes to active;
@@ -317,7 +317,7 @@ function constructURL() {
 
     if (history.pushState) { // for old browsers like: IE9/IE10
 
-        var url = "#subject=";
+        var url = "#colorclass=";
         for (var i = 0; i < selectedVar.length; i++) {
 
             if (i === selectedVar.length-1) {
@@ -353,7 +353,6 @@ function setVariable(hashList) {
         }
         
         var object = document.querySelector("#portfolio-data").children;
-        console.log(object)
 
         for (var i = 0; i < object.length; i++) {
 
@@ -381,18 +380,17 @@ function setVariable(hashList) {
 }
 
 function buildPage() {
-    var urlsubject = location.hash.replace("#subject=", "");
+    var urlsubject = location.hash.replace("#colorclass=", "");
     urlsubject = urlsubject.split(",");
 
     var object = document.querySelector("#portfolio-filter .tags").children;
-    console.log(urlsubject);
+    // console.log(urlsubject);
 
     for (var i = 0; i < object.length; i++) {
         object[i].children[0].classList.remove("active");
-        console.log()
     }
     
-    console.log(urlsubject);
+    // console.log(urlsubject);
 
     setVariable(urlsubject);
 
@@ -440,7 +438,5 @@ window.onhashchange = function() {
         }
     }
 };
-
-console.log("dskfnl");
 
 buildPage();

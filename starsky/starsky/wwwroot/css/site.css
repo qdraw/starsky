@@ -66,6 +66,10 @@
     cursor: pointer;
 }
 
+#portfolio-filter ul > li a.reset{
+    height: 40px;
+    padding-left: 10px;
+}
 
 #portfolio-filter .checkbox {
     float: left;
@@ -84,7 +88,6 @@
 
 #portfolio-filter .active .checkbox{
     background-image: url("../images/checkbox.svg");
-    background-color: red;
 }
 
 
@@ -111,9 +114,6 @@
     color: white;
 }
 
-.add-colorclass button:hover {
-    color: inherit;
-}
 
 .add-colorclass .superioralt,
 .wrapper .halfitem.TypicalAlt,
@@ -121,10 +121,6 @@
     color: black;
 }
 
-
-.add-colorclass .superioralt:hover {
-    color: black;
-}
 
 h2 {
     word-break: break-all;
@@ -184,6 +180,7 @@ h2 {
 .add-colorclass .none.on,
 #portfolio-filter ul > li > a#none.active {
     background-color: rgba(0, 0, 0, 1);
+    color: white;
     opacity: 1;
 }
 
@@ -257,7 +254,7 @@ h2 {
     background-color: rgba(0, 255, 255, 1);
     opacity: 1;
 }
-#portfolio-filter ul > li > a.typicalalt,
+#portfolio-filter ul > li > a#typicalalt,
 .wrapper .halfitem.TypicalAlt .caption {
     background-color: rgba(0, 255, 255, 0.3);
 }
@@ -266,6 +263,7 @@ h2 {
 #portfolio-filter ul > li > a#extras.active {
     background-color: rgba(0, 0, 255, 1);
     opacity: 1;
+    color: white;
 }
 .add-colorclass .extras,
 #portfolio-filter ul > li > a#extras,
