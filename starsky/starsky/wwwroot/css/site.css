@@ -89,8 +89,19 @@
 .wrapper .halfitem {
     color: white;
 }
+
+.add-colorclass button:hover {
+    color: inherit;
+}
+
+.add-colorclass .superioralt,
 .wrapper .halfitem.TypicalAlt,
 .wrapper .halfitem.SuperiorAlt {
+    color: black;
+}
+
+
+.add-colorclass .superioralt:hover {
     color: black;
 }
 
@@ -102,6 +113,14 @@ p .addDeleteTag {
     margin-top: 15px;
     display: none;
 }
+
+.add-colorclass {
+    color: white;
+}
+.add-colorclass button {
+    opacity: 0.7;
+}
+
 
 .wrapper .halfitem h3 {
     padding: 0px;
@@ -134,80 +153,113 @@ p .addDeleteTag {
     z-index: 4;
 }
 
+.add-colorclass .none,
 #portfolio-filter ul > li > a.none,
 .wrapper .halfitem.None .caption {
     background-color: rgba(0, 0, 0, 0.3);
 }
+
+.add-colorclass .none.on,
 #portfolio-filter ul > li > a.none.on {
     background-color: rgba(0, 0, 0, 1);
+    opacity: 1;
 }
 
+.add-colorclass .winner,
 #portfolio-filter ul > li > a.winner,
 .wrapper .halfitem.Winner .caption {
     background-color: rgba(255, 0, 255, 0.3);
 }
+.add-colorclass .winner.on,
 #portfolio-filter ul > li > a.winner.on {
     background-color: rgba(255, 0, 255, 1);
+    opacity: 1;
 }
 
+.add-colorclass .winneralt,
 #portfolio-filter ul > li > a.winneralt,
 .wrapper .halfitem.WinnerAlt .caption {
     background-color: rgba(255, 0, 2, 0.3);
 }
+
+.add-colorclass .winneralt.on,
 #portfolio-filter ul > li > a.winneralt.on {
     background-color: rgba(255, 0, 2, 1);
+    opacity: 1;
 }
 
+.add-colorclass .superior,
 #portfolio-filter ul > li > a.superior {
     background-color: rgba(255, 127, 1, 0.6);
 }
 
+.add-colorclass .superior.on,
 #portfolio-filter ul > li > a.superior.on {
     background-color: rgba(255, 127, 1, 1);
+    opacity: 1;
 }
 
 .wrapper .halfitem.Superior .caption {
     background-color: rgba(255, 127, 1, 0.3);
 }
 
+.add-colorclass .superioralt.on,
 #portfolio-filter ul > li > a.superioralt.on {
     color: #8447B2;
     background-color: rgba(255, 255, 83, 1);
+    opacity: 1;
 }
+
+.add-colorclass .superioralt,
 #portfolio-filter ul > li > a.superioralt,
 .wrapper .halfitem.SuperiorAlt .caption {
     background-color: rgba(255, 255, 83, 0.3);
 }
 
+.add-colorclass .typical.on,
 #portfolio-filter ul > li > a.typical.on {
     background-color: rgba(0, 255, 0, 1);
     color: #B23879;
+    opacity: 1;
 }
+
+.add-colorclass .typical,
 #portfolio-filter ul > li > a.typical,
 .wrapper .halfitem.Typical .caption {
     background-color: rgba(0, 255, 0, 0.3);
 }
+
+.add-colorclass .typical.on,
 #portfolio-filter ul > li > a.typicalalt.on {
     color: #B2582F;
     background-color: rgba(0, 255, 255, 1);
+    opacity: 1;
 }
 #portfolio-filter ul > li > a.typicalalt,
 .wrapper .halfitem.TypicalAlt .caption {
     background-color: rgba(0, 255, 255, 0.3);
 }
+
+.add-colorclass .extras.on,
 #portfolio-filter ul > li > a.extras.on {
     background-color: rgba(0, 0, 255, 1);
+    opacity: 1;
 }
+.add-colorclass .extras,
 #portfolio-filter ul > li > a.extras,
 .wrapper .halfitem.Extras .caption {
     background-color: rgba(0, 0, 255, 0.3);
 }
+
+.add-colorclass .trash.on,
 #portfolio-filter ul > li > a.trash.on {
     background-color: rgba(150, 150, 100, 1);
+    opacity: 1;
 }
 .wrapper .halfitem.Trash .caption {
     background-color: rgba(150, 150, 100, 0.3);
 }
+
 #portfolio-filter ul > li > a.off {
     opacity: 0.65;
 }
@@ -270,5 +322,12 @@ h4 .next {
 }
 
 .main-image {
-    width: 100%;
+    width: auto;
+    max-height: 80vh;
+}
+@media screen and (max-width: 800px) {
+    .main-image {
+        width: 100%;
+        max-height: unset;
+    }   
 }

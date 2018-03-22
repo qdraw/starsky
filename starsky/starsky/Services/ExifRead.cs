@@ -82,6 +82,7 @@ namespace starsky.Services
             catch (ImageProcessingException e)
             {
                 item.Tags = "ImageProcessingException";
+                Console.WriteLine(fileFullPath);
                 Console.WriteLine(e);
             }
             

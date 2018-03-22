@@ -61,69 +61,74 @@ function removeArrayDuplicate (array) {
 // Writing filter for portfolio page
 function writeFilterList (tags) {
 
-    if (document.querySelectorAll("#portfolio-data").length === 1 && document.querySelectorAll("#portfolio-filter").length === 1){
+    if (document.querySelectorAll("#portfolio-data").length === 1 && 
+        document.querySelectorAll("#portfolio-filter").length === 1)
+    {
         var ul = document.createElement("ul");
         ul.className = "tags";
         document.querySelector("#portfolio-filter").appendChild(ul);
 
         var filterarticle = document.querySelector("#portfolio-filter ul")
 
-        // ALLES!!
-        var li_alles = document.createElement("li");
-        var a_alles = document.createElement("a");
-        var currentitem_alles = filterarticle.appendChild(li_alles).appendChild(a_alles);
-        currentitem_alles.innerHTML = "Alles";
-        currentitem_alles.className = "alles";
-        currentitem_alles.href = "#";
-        // EINDE ALLES
+        console.log(tags);
+        if(tags.length >= 2){
+            // ALLES!!
+            var li_alles = document.createElement("li");
+            var a_alles = document.createElement("a");
+            var currentitem_alles = filterarticle.appendChild(li_alles).appendChild(a_alles);
+            currentitem_alles.innerHTML = "Alles";
+            currentitem_alles.className = "alles";
+            currentitem_alles.href = "#";
+            // EINDE ALLES
+
+            var newTags = [];
+            if(tags.indexOf("Winner") >= 0) {
+                newTags.push(tags[tags.indexOf("Winner")])
+            }
+
+            if(tags.indexOf("WinnerAlt") >= 0) {
+                newTags.push(tags[tags.indexOf("WinnerAlt")])
+            }
+
+            if(tags.indexOf("Superior") >= 0) {
+                newTags.push(tags[tags.indexOf("Superior")])
+            }
+
+            if(tags.indexOf("SuperiorAlt") >= 0) {
+                newTags.push(tags[tags.indexOf("SuperiorAlt")])
+            }
+
+            if(tags.indexOf("Typical") >= 0) {
+                newTags.push(tags[tags.indexOf("Typical")])
+            }
+
+            if(tags.indexOf("TypicalAlt") >= 0) {
+                newTags.push(tags[tags.indexOf("TypicalAlt")])
+            }
+
+            if(tags.indexOf("Extras") >= 0) {
+                newTags.push(tags[tags.indexOf("Extras")])
+            }
+            if(tags.indexOf("Trash") >= 0) {
+                newTags.push(tags[tags.indexOf("Trash")])
+            }
+
+            if(tags.indexOf("None") >= 0) {
+                newTags.push(tags[tags.indexOf("None")])
+            }
+
+
+            for (var i = 0; i < newTags.length; i++) {
+                var li = document.createElement("li");
+                var a = document.createElement("a");
+
+                var currentitem = filterarticle.appendChild(li).appendChild(a);
+                currentitem.href = "#" + newTags[i].toLowerCase().replace(/ /ig, "-");
+                currentitem.className = newTags[i].toLowerCase().replace(/ /ig, "-");
+                currentitem.innerHTML = newTags[i];
+            }
+        }
         
-        var newTags = [];
-        if(tags.indexOf("Winner") >= 1) {
-            newTags.push(tags[tags.indexOf("Winner")])
-        }
-        
-        if(tags.indexOf("WinnerAlt") >= 1) {
-            newTags.push(tags[tags.indexOf("WinnerAlt")])
-        }
-
-        if(tags.indexOf("Superior") >= 1) {
-            newTags.push(tags[tags.indexOf("Superior")])
-        }
-
-        if(tags.indexOf("SuperiorAlt") >= 1) {
-            newTags.push(tags[tags.indexOf("SuperiorAlt")])
-        }
-
-        if(tags.indexOf("Typical") >= 1) {
-            newTags.push(tags[tags.indexOf("Typical")])
-        }
-
-        if(tags.indexOf("TypicalAlt") >= 1) {
-            newTags.push(tags[tags.indexOf("TypicalAlt")])
-        }
-
-        if(tags.indexOf("Extras") >= 1) {
-            newTags.push(tags[tags.indexOf("Extras")])
-        }
-        if(tags.indexOf("Trash") >= 1) {
-            newTags.push(tags[tags.indexOf("Trash")])
-        }
-        
-        if(tags.indexOf("None") >= 1) {
-            newTags.push(tags[tags.indexOf("None")])
-        }
-        
-
-        for (var i = 0; i < newTags.length; i++) {
-            var li = document.createElement("li");
-            var a = document.createElement("a");
-
-            var currentitem = filterarticle.appendChild(li).appendChild(a);
-            currentitem.href = "#" + newTags[i].toLowerCase().replace(/ /ig, "-");
-            currentitem.className = newTags[i].toLowerCase().replace(/ /ig, "-");
-            currentitem.innerHTML = newTags[i];
-        }
-
         // for (var i = 0; i < tags.length; i++) {
         //     var li = document.createElement("li");
         //     var a = document.createElement("a");
@@ -155,7 +160,7 @@ window.onhashchange = function() {
 
 
 function filterPage() {
-    console.log("filterPage");
+
     function showLegenda() {
 
         function reset() {
@@ -177,9 +182,8 @@ function filterPage() {
             reset();
             document.querySelector("#portfolio-filter .alles").className = "alles on"
         }
-
-
     }
+    
     var hashword = "";
     linkTagList = createSlug(tagList);
 
@@ -202,15 +206,16 @@ function filterPage() {
         for (var i = 0; i < object.length; i++) {
             object[i].classList.remove("hide");
             object[i].classList.add("show");
-            // object[i].className = "halfitem show";
         }
-
     }
 }
 
 
 function hideElementsByTag(hashword) {
-    if (document.querySelectorAll("#portfolio-data").length === 1 && document.querySelectorAll("#portfolio-filter").length === 1){
+    if (document.querySelectorAll("#portfolio-data").length === 1 
+        && document.querySelectorAll("#portfolio-filter").length === 1)
+    {
+    
         var object = document.querySelector("#portfolio-data").children;
         for (var i = 0; i < object.length; i++) {
 

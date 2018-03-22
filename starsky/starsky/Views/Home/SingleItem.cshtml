@@ -1,5 +1,8 @@
-﻿@using Microsoft.AspNetCore.Mvc
+﻿@using System.Collections.Generic
+@using System.Security.Cryptography
+@using Microsoft.AspNetCore.Mvc
 @using starsky.ViewModels
+@using starsky.Models
 @model ObjectItem
 
 @{
@@ -7,7 +10,7 @@
 }
 @*<h2>@ViewData["Title"]</h2>*@
 
-<h2>
+<h3>
     @foreach (var item in Model.Breadcrumb)
     {
         var name = @item.Split("/")[item.Split("/").Length - 1];
@@ -19,15 +22,13 @@
         <span> &raquo;</span>
     }
     @Model.FileIndexItem.FileName
-</h2>
+</h3>
 
-
-<h3>@Model.FileIndexItem.Tags &nbsp;</h3>
 
 <div class="wrapper">
     <form asp-controller="Api" asp-action="Update" method="post" class="form-inline form-wrapper" id="js-tag-update">
         <input name="f" value="@Model.FileIndexItem.FilePath" hidden />
-        <input class="form-control t" name="t" value="" autocomplete="off" disabled="true" />
+        <input class="form-control t" name="t" value="@Model.FileIndexItem.Tags" autocomplete="off" disabled="true" />
         <button class="btn btn-default" type="submit" style="display: none;">Update</button>
     </form>
 </div>
@@ -113,12 +114,27 @@
     }
 
 </h4>
-@*<button type="button" class="btn btn-default">Default</button>
-    <button type="button" class="btn btn-primary">Primary</button>
-    <button type="button" class="btn btn-success">Success</button>
-    <button type="button" class="btn btn-info">Info</button>
-    <button type="button" class="btn btn-warning">Warning</button>
-    <button type="button" class="btn btn-danger">Danger</button>*@
+
+
+<div class="add-colorclass">
+
+@*@{*@
+@*    var typesList = new List<string> {"winner", "winneralt", "superior", "superioralt", "extras", "trash", "none"};*@
+@*    foreach (var item in typesList)*@
+@*    {*@
+@*        if (@Model.FileIndexItem.ColorClass.ToString().ToLower() == item)*@
+@*        {*@
+@*            <button type="button" class="btn @item on" onclick="this.classList.add('on')">@item</button>*@
+@*        }*@
+@*        else*@
+@*        {*@
+@*            <button type="button" class="btn @item" onclick="this.classList.add('on')">@item</button>*@
+@*        }*@
+@*    }*@
+@*}*@
+    
+</div>
+
 
 
 <div class="addDeleteTag">
