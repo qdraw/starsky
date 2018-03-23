@@ -27,9 +27,16 @@ function loadJSON(path, success, error, type)
 // Used in <div class="add-colorclass">
 function updateColorClass(those) {
     var url = updateApiBase + "&colorClass=" + those.dataset.colorclass;
-
+    
+    addUnloadWarning();
+    showPreloader();
+    console.log(those.dataset.colorclass)
+    updateColorClassButtons(those.dataset.colorclass);
+    
     loadJSON(url,
         function(data) {
+            hideUnloadWarning();
+            hidePreloader();
             updateColorClassButtons(data.colorClass);
         },
         function (xhr) { console.error(xhr); },
@@ -37,11 +44,23 @@ function updateColorClass(those) {
     );
 }
 
+function showPreloader() {
+    if (document.querySelectorAll(".preloader").length === 1){
+        document.querySelector(".preloader").style.display = "block";
+    }  
+}
+function hidePreloader() {
+    if (document.querySelectorAll(".preloader").length === 1){
+        document.querySelector(".preloader").style.display = "none";
+    }
+}
+
 function updateColorClassButtons(selectedIntColorClass) {
     if (document.querySelectorAll(".add-colorclass").length === 1) {
 
         for (var i = 0; i < document.querySelector(".add-colorclass").children.length; i++) {
 
+            selectedIntColorClass = parseInt(selectedIntColorClass);
             var datasetItem = parseInt(document.querySelector(".add-colorclass").children[i].dataset.colorclass);
             if (datasetItem === selectedIntColorClass) {
                 document.querySelector(".add-colorclass").children[i].classList.add("on");
@@ -75,13 +94,17 @@ function updateDeletedKeywordElement(data) {
                document.querySelector(".addDeleteTag a").classList.add("btn-danger");
            }
    }
-
 }
 
 
 if (document.querySelectorAll("#js-keywords-update").length === 1) {
    loadJSON(infoApiBase,
-       function(data) { updateDeletedKeywordElement(data); },
+       function(data) { 
+           
+           updateDeletedKeywordElement(data);
+           hidePreloader();
+
+       },
        function (xhr) { console.error(xhr); },
        "GET"
    );
@@ -110,10 +133,16 @@ function addDeleteTag() {
 }
 
 function queryKeywords(queryItem) {
+
+    addUnloadWarning();
+    showPreloader();
+    
     var url = updateApiBase + "&keywords=" + queryItem;
     loadJSON(url,
         function (data) {
-            updateDeletedKeywordElement(data)
+            hideUnloadWarning();
+            hidePreloader();
+            updateDeletedKeywordElement(data);
         },
         function (xhr) { console.error(xhr); },
         "POST"
@@ -126,5 +155,25 @@ function updateKeywords() {
         queryKeywords(keywords);
     } 
 }
+
+
+var formSubmitting = true;
+var addUnloadWarning = function() { formSubmitting = false; };
+var hideUnloadWarning = function() { formSubmitting = true; };
+
+window.onload = function() {
+    window.addEventListener("beforeunload", function (e) {
+        if (formSubmitting) {
+            return undefined;
+        }
+
+        var confirmationMessage = 'It looks like you have been editing something. '
+            + 'If you leave before saving, your changes will be lost.';
+
+        (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+        return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+    });
+};
+
 
 

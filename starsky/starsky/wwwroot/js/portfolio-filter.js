@@ -380,6 +380,11 @@ function setVariable(hashList) {
 }
 
 function buildPage() {
+    
+    if (document.querySelectorAll(".preloader").length === 1){
+        document.querySelector(".preloader").style.display = "none";
+    }
+    
     var urlsubject = location.hash.replace("#colorclass=", "");
     urlsubject = urlsubject.split(",");
 
@@ -390,8 +395,6 @@ function buildPage() {
         object[i].children[0].classList.remove("active");
     }
     
-    // console.log(urlsubject);
-
     setVariable(urlsubject);
 
     if (urlsubject.length >= 1 && urlsubject[0] !== ""){

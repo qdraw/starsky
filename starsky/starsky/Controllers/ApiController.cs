@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
 using starsky.Models;
@@ -57,8 +58,8 @@ namespace starsky.Controllers
                 return NotFound("source image missing " + FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
 
             var updateModel = new ExifToolModel();
+            
             if(keywords != null) {
-//                if (keywords == "?#?#?") keywords = string.Empty;
                 updateModel.Keywords = keywords;
             }
             
@@ -66,6 +67,7 @@ namespace starsky.Controllers
             singleItem.FileIndexItem.SetColorClass(colorClass);
             updateModel.ColorClass = singleItem.FileIndexItem.ColorClass;
 
+            // Run ExifTool updater
             var exifToolResults = ExifTool.Update(updateModel, FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
 
             // Update Database with results
@@ -74,6 +76,11 @@ namespace starsky.Controllers
             singleItem.FileIndexItem.Tags = exifToolResults.Keywords;
             singleItem.FileIndexItem.ColorClass = exifToolResults.ColorClass;
             _query.UpdateItem(singleItem.FileIndexItem);
+            
+            // Rename Thumbnail
+            new Thumbnail().RenameThumb(oldHashCode, singleItem.FileIndexItem.FileHash);
+            
+            Thread.Sleep(2000);
             
             return Json(exifToolResults);
         }

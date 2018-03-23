@@ -1,8 +1,5 @@
-﻿@using System.Collections.Generic
-@using System.Security.Cryptography
-@using Microsoft.AspNetCore.Mvc
+﻿@using Microsoft.AspNetCore.Mvc
 @using starsky.ViewModels
-@using starsky.Models
 @model DetailView
 
 @{
@@ -46,7 +43,7 @@
 
 </h4>
 
-<img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
+<img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = false })" />
 
 <div class="add-colorclass">
     @{
@@ -88,4 +85,9 @@
     var updateApiBase = "@Url.Action("Update", "Api", new { f = @Model.FileIndexItem.FilePath})";
     var infoApiBase = "@Url.Action("Info", "Api", new { f = @Model.FileIndexItem.FilePath})";
 </script>
+
+<div class="preloader">
+    <img src="images/preloader.svg" width="100px" height="100px">
+</div>
+
 <script type="text/javascript" src="js/detailview.js"></script>
