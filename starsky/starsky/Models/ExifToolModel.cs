@@ -14,7 +14,6 @@ namespace starsky.Models
             set { _colorClass = value; }
         }
 
-        private string _prefs;
         public string Prefs
         {
             get { return null; }

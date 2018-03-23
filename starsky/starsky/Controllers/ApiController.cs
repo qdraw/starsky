@@ -79,9 +79,7 @@ namespace starsky.Controllers
             
             // Rename Thumbnail
             new Thumbnail().RenameThumb(oldHashCode, singleItem.FileIndexItem.FileHash);
-            
-            Thread.Sleep(2000);
-            
+                        
             return Json(exifToolResults);
         }
 
