@@ -1,15 +1,87 @@
-﻿.preloader {
+﻿html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline; }
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, picture {
+    display: block; }
+
+body {
+    line-height: 1; }
+
+ol, ul {
+    list-style: none; }
+
+blockquote, q {
+    quotes: none; 
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none; }
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0; }
+
+em, i {
+    font-style: italic; }
+
+
+
+@font-face {
+    font-family: 'Gloriola Std';
+    font-style: normal;
+    font-weight: 100;
+    src: local("Gloriola Std Light"), local("Gloriola-Std-Light"), url(fonts/GloriolaStd-Light.woff2) format("woff2"), url(../fonts/GloriolaStd-Light.woff) format("woff");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
+
+@font-face {
+    font-family: 'Gloriola Std';
+    font-style: normal;
+    font-weight: 300;
+    src: local("Gloriola Std Medium"), local("Gloriola-Std-Medium"), url(../fonts/GloriolaStd-Medium.woff2) format("woff2"), url(../fonts/GloriolaStd-Medium.woff) format("woff");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
+
+@font-face {
+    font-family: 'Gloriola Std';
+    font-style: normal;
+    font-weight: 800;
+    src: local("Gloriola Std Bold"), local("Gloriola-Std-Bold"), url(../fonts/GloriolaStd-Bold.woff2) format("woff2"), url(../fonts/GloriolaStd-Bold.woff) format("woff");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
+
+html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; 
+    font-family: 'Gloriola Std', sans-serif;
+}
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
+.preloader {
     position:fixed;
     top:48%;
     left:48%;
     display: block;
-    /*    filter: invert(100%);
-        -webkit-filter: invert(100%);*/
-}
-
-body {
-    padding-top: 50px;
-    padding-bottom: 20px;
 }
 
 /* Wrapping element */
@@ -19,21 +91,7 @@ body {
     padding-right: 15px;
 }
 
-/* Carousel */
-.carousel-caption p {
-    font-size: 20px;
-    line-height: 1.4;
-}
 
-/* Make .svg files in the carousel display properly in older browsers */
-.carousel-inner .item img[src$=".svg"] {
-    width: 100%;
-}
-
-/* QR code generator */
-#qrCode {
-    margin: 15px;
-}
 
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
@@ -50,14 +108,10 @@ body {
     display: flex;
     flex-flow: row wrap;
 }
-
-#portfolio-filter ul {
-    margin-left: -40px;
+#portfolio-filter {
+    margin-bottom: 15px;
 }
-
 #portfolio-filter ul > li {
-    margin-top: 5px;
-    margin-bottom: 5px;
     display: inline-block;
     text-align: left; 
 }
@@ -66,13 +120,14 @@ body {
 #portfolio-filter ul > li > a {
     margin-right: 15px;
     border-radius: 3px;
+    margin-bottom: 13px;
     padding-right: 10px;
     background-color: #b0bec5;
     text-decoration: none;
     color: black;
     transition: background 1.1s ease-in-out, color .5s ease-in-out;
     display: inline-block;
-    line-height: 35px;
+    line-height: 40px;
     cursor: pointer;
 }
 
@@ -93,6 +148,7 @@ body {
     background-repeat: no-repeat;
     background-position: left center;
     display: inline-block;
+    margin-top: 8px;
     margin-right: 10px;
 }
 
@@ -163,7 +219,7 @@ h2 {
 .wrapper .halfitem img {
     display: block;
     width: 100%;
-    height: 60vh;
+    height: 45vh;
     object-fit: cover;
     object-position: center;
     /*font-family: 'object-fit: cover';*/
@@ -176,10 +232,10 @@ h2 {
 .wrapper .halfitem .caption {
     padding-left: 3vw;
     position: absolute;
-    top: 40vh;
+    top: 45vh;
     width: calc(100%);
     padding-top: 4vh;
-    height: 20vh;
+    height: 15vh;
     background-color: rgba(0, 0, 0, 0.3);
     display: block;
     z-index: 4;
@@ -306,14 +362,110 @@ h2 {
         height: 60vh;
     }
 }
+.navbar {
+    min-height: 50px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+}
+
+.navbar-nav > li > a {
+    display: inline-block;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    color: white;
+    text-decoration: none;
+    margin-right: 15px;
+}
+@media screen and (max-width: 390px) {
+    .navbar-nav > li > a {
+        letter-spacing: -0.5px;
+        margin-right: 15px;
+    }
+}
+.navbar-fixed-top {
+    top: 0;
+    border-width: 0 0 1px;
+    position: fixed;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+}
+
+.navbar-inverse {
+    background-color: #222;
+    border-color: #080808;
+}
+
+
+.form-control {
+    display: block;
+    width: 100%;
+    height: 30px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+.form-inline .form-control {
+    display: inline-block;
+    width: auto;
+    vertical-align: middle;
+}
+
+.btn {
+    display: inline-block;
+    padding: 4px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+.btn-default {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+
+.navbar-header {
+    float: left;
+}
+.navbar-nav > li {
+    float: left;
+}
+.nav > li {
+    display: inline-block;
+}
+
+
+.container {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
 
 .form-nav {
     padding-top: 10px;
 }
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 390px) {
 
     .form-nav .form-control {
-        width: 80vw!important;
+        width: 40vw!important;
     }
     .form-nav {
         width: 100%!important;
@@ -322,6 +474,13 @@ h2 {
     .form-nav input {
         display: inline-block!important;
     }
+}
+
+.show {
+    display: block !important;
+}
+.hide {
+    display: none !important;
 }
 
 .form-wrapper {
@@ -337,21 +496,31 @@ h2 {
     display: inline-block;
     float: right;
 }
-@media screen and (max-width: 800px) and (min-height: 300px) and (max-height: 920px) {
-    .wrapper .halfitem .caption {
-        top: 35vh;
-        height: 21vh;
-    }
+
+.caption h2 {
+    font-size: 20px;
+    line-height: 1.2;
+    margin-bottom: 5px;
 }
+
 
 @media screen and (max-height: 550px) and (max-width: 950px) {
     .wrapper .halfitem .caption {
         top: 35vh;
         height: 25vh;
     }
+    .wrapper .halfitem img {
+        height: 35vh;
+    }
 }
 
-h4 .next {
+
+.nextprev {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+.nextprev .next {
     display: inline-block;
     float: right;
 }
@@ -365,4 +534,10 @@ h4 .next {
         width: 100%;
         max-height: unset;
     }   
+}
+
+.breadcrumb {
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 30px;
 }

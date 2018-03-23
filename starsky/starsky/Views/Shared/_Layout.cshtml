@@ -9,25 +9,16 @@
     </environment>
     <environment exclude="Development">
     </environment>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+@*    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />*@
     <link rel="stylesheet" href="~/css/site.css" />
 
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-inverse">
         <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Starsky</a>
-            </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Starsky</a></li>
                     <li>
                         <form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-nav">
                               <input name="t" class="form-control" value="@ViewData["SearchQuery"]" autocomplete="off"/>
@@ -46,8 +37,8 @@
         </footer>
     </div>
 
-    <script src="~/lib/jquery/dist/jquery.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+@*    <script src="~/lib/jquery/dist/jquery.js"></script>*@
+@*    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>*@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
 <script src="~/js/lazyload.js"></script>

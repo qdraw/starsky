@@ -7,7 +7,19 @@
 }
 @*<h2>@ViewData["Title"]</h2>*@
 
-<h3>
+<h4 class="nextprev">
+    &nbsp;
+    @if (@Model.RelativeObjects.PrevFilePath != null)
+    {
+        <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige</a>
+    }
+    @if (@Model.RelativeObjects.NextFilePath != null)
+    {
+        <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende</a>
+    }
+</h4>
+
+<h1 class="breadcrumb">
     @foreach (var item in Model.Breadcrumb)
     {
         var name = @item.Split("/")[item.Split("/").Length - 1];
@@ -18,8 +30,10 @@
         <a asp-controller="Home" asp-action="Index" asp-route-f="@item">@name</a>
         <span> &raquo;</span>
     }
-    @Model.FileIndexItem.FileName
-</h3>
+    <span>
+        @Model.FileIndexItem.FileName
+    </span>
+</h1>
 
 
 <div class="wrapper">
@@ -30,20 +44,9 @@
     </div>
 </div>
 
-<h4>
-    &nbsp;
-    @if (@Model.RelativeObjects.PrevFilePath != null)
-    {
-        <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Prev</a>
-    }
-    @if (@Model.RelativeObjects.NextFilePath != null)
-    {
-        <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Next</a>
-    }
 
-</h4>
 
-<img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = false })" />
+<img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
 
 <div class="add-colorclass">
     @{
@@ -62,7 +65,7 @@
     }
 </div>
 
-<h4>
+<h4 class="nextprev">
     &nbsp;
     @if (@Model.RelativeObjects.PrevFilePath != null)
     {
