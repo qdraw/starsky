@@ -10,7 +10,7 @@ namespace starsky.Services
     {
         // For displaying single photo's
         // input: Name of item by db style path
-        public ObjectItem SingleItem(string singleItemDbPath)
+        public DetailView SingleItem(string singleItemDbPath)
         {
             if (string.IsNullOrWhiteSpace(singleItemDbPath)) return null;
 
@@ -20,7 +20,7 @@ namespace starsky.Services
 
             var relativeObject = _getNextPrevInSubFolder(query?.ParentDirectory, singleItemDbPath);
 
-            var itemResult = new ObjectItem
+            var itemResult = new DetailView
             {
                 FileIndexItem = query,
                 RelativeObjects = relativeObject

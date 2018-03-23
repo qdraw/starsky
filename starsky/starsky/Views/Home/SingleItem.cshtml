@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Mvc
 @using starsky.ViewModels
 @using starsky.Models
-@model ObjectItem
+@model DetailView
 
 @{
     ViewData["Title"] = @Model.FileIndexItem.FileName;
@@ -26,66 +26,13 @@
 
 
 <div class="wrapper">
-    <form asp-controller="Api" asp-action="UpdateTag" method="post" class="form-inline form-wrapper" id="js-tag-update">
+    <div class="form-inline form-wrapper" id="js-keywords-update">
         <input name="f" value="@Model.FileIndexItem.FilePath" hidden />
-        <input class="form-control t" name="t" value="@Model.FileIndexItem.Tags" autocomplete="off" disabled="true" />
-        <button class="btn btn-default" type="submit" style="display: none;">Update</button>
-    </form>
+        <input class="form-control js-keywords" name="keywords" onfocusout="updateKeywords()" value="@Model.FileIndexItem.Tags" autocomplete="off" disabled="true" />
+        <a class="btn btn-default" type="submit" onClick="updateKeywords()" style="display: none;">Update</a>
+    </div>
 </div>
 
-<script type="text/javascript">
-    function loadJSON(path, success, error, type)
-    {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function()
-        {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200 || xhr.status === 205) {
-                    if (success) {
-                        console.log(xhr.responseText);
-                        success(JSON.parse(xhr.responseText));
-                    };
-                } else {
-                    if (error)
-                        error(xhr);
-                }
-            }
-        };
-        xhr.open(type, path, true);
-        xhr.send();
-    }
-
-    function updateElement(data) {
-        document.querySelector("#js-tag-update button").style.display = "inline-block";
-        document.querySelector('#js-tag-update .t').value = data.tags;
-        document.querySelector('#js-tag-update .t').disabled = false;
-
-        if (document.querySelectorAll(".addDeleteTag").length >= 1 ) {
-            document.querySelector(".addDeleteTag").style.display = "inline-block";
-            if (data.tags.indexOf("!delete!") >= 0) {
-                document.querySelector(".addDeleteTag a").innerHTML = "Zet terug uit prullenmand";
-                document.querySelector("#js-tag-update button").style.display = "none";
-                document.querySelector('#js-tag-update .t').disabled = true;
-                document.querySelector(".addDeleteTag a").classList.remove("btn-danger");
-                document.querySelector(".addDeleteTag a").classList.add("btn-warning");
-
-            } else {
-                document.querySelector(".addDeleteTag a").innerHTML = "Verplaats naar prullenmand";
-                document.querySelector(".addDeleteTag a").classList.remove("btn-warning");
-                document.querySelector(".addDeleteTag a").classList.add("btn-danger");
-            }
-        }
-
-    }
-    var url = "@Url.Action("Info", "Api", new { f = @Model.FileIndexItem.FilePath, t = "1" })";
-    url = url.replace("&amp;", "&");
-    loadJSON(url,
-        function(data) { updateElement(data); },
-        function (xhr) { console.error(xhr); },
-        "GET"
-    );
-
-</script>
 <h4>
     &nbsp;
     @if (@Model.RelativeObjects.PrevFilePath != null)
@@ -102,22 +49,20 @@
 <img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
 
 <div class="add-colorclass">
-
     @{
-        var typesList = new List<string> {"winner", "winneralt", "superior", "superioralt", "typical", "typicalalt", "extras", "trash", "none"};
-        foreach (var item in typesList)
+        foreach (var item in @Model.GetAllColor)
         {
-            if (@Model.FileIndexItem.ColorClass.ToString().ToLower() == item)
+            var enumValue = (int) item;
+            if (@Model.FileIndexItem.ColorClass == item)
             {
-                <button type="button" class="btn @item on" onclick="updateColorClass(this)">@item</button>
+                <a class="@item.ToString().ToLower() on" data-colorclass="@enumValue" onclick="updateColorClass(this)"><span class='checkbox'></span>@item.ToString()</a>
             }
             else
             {
-                <button type="button" class="btn @item" data-name="@item" onclick="updateColorClass(this)">@item</button>
+                <a class="@item.ToString().ToLower()" data-colorclass="@enumValue" data-id=" "onclick="updateColorClass(this)"><span class='checkbox'></span>@item.ToString()</a>
             }
         }
     }
-    
 </div>
 
 <h4>
@@ -130,63 +75,17 @@
     {
         <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Next</a>
     }
-
 </h4>
-
-
 
 <div class="addDeleteTag">
     <h4>Danger zone:</h4>
     <a onClick="addDeleteTag()" class="btn-sm btn btn-danger"></a>
     <a asp-controller="Search" asp-action="Trash" class="btn-sm btn-info">Bekijk prullenmand</a>
-
 </div>
 
 
 <script type="text/javascript">
-    function addDeleteTag() {
-        document.querySelector(".addDeleteTag").style.display = "none";
-
-        var queryItem = document.querySelector('#js-tag-update .t').value;
-
-        if (queryItem.length === 0) {
-            queryItem = "!delete!";
-        } else {
-            if (queryItem.indexOf("!delete!") >= 0) {
-                queryItem = queryItem.replace("!delete!","");
-            } else {
-                queryItem += ", !delete!";
-            }
-        }
-
-        var url = "@Url.Action("UpdateTag", "Api", new { f = @Model.FileIndexItem.FilePath, redirect = false })" + "&t=" + queryItem;;
-        if (queryItem.length === 0) {
-            url += "?";
-        }
-        url = url.replace("&amp;", "&");
-        loadJSON(url,
-            function (data) { updateElement(data) },
-            function (xhr) { console.error(xhr); },
-            "POST"
-        );
-    }
-
+    var updateApiBase = "@Url.Action("Update", "Api", new { f = @Model.FileIndexItem.FilePath})";
+    var infoApiBase = "@Url.Action("Info", "Api", new { f = @Model.FileIndexItem.FilePath})";
 </script>
-
-
-<script type="text/javascript">
-    function updateColorClass(those) {
-        var url = "@Url.Action("UpdateColorClass", "Api", new { f = @Model.FileIndexItem.FilePath})" + "&name=" + those.dataset.name;;
-
-        url = url.replace("&amp;", "&");
-        loadJSON(url,
-            function(data) {
-                
-                console.log(data);
-            },
-            function (xhr) { console.error(xhr); },
-            "POST"
-        );    
-    }
-
-</script>
+<script type="text/javascript" src="js/detailview.js"></script>

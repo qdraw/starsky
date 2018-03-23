@@ -12,7 +12,7 @@ namespace starsky.Interfaces
 
         IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/");
 
-        ObjectItem SingleItem(string singleItemDbPath);
+        DetailView SingleItem(string singleItemDbPath);
 
         FileIndexItem GetObjectByFilePath(string filePath);
 

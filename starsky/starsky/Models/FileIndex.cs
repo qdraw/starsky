@@ -43,59 +43,59 @@ namespace starsky.Models
                 case "0":
                     _colorClass = Color.None;
                     return _colorClass;
-                case "none":
-                    _colorClass = Color.None;
-                    return _colorClass;
+//                case "none":
+//                    _colorClass = Color.None;
+//                    return _colorClass;
                 case "1":
                     _colorClass = Color.Trash;
                     return _colorClass;
-                case "trash":
-                    _colorClass = Color.Trash;
-                    return _colorClass;
+//                case "trash":
+//                    _colorClass = Color.Trash;
+//                    return _colorClass;
                 case "2":
                     _colorClass = Color.Extras;
                     return _colorClass;
-                case "extras":
-                    _colorClass = Color.Extras;
-                    return _colorClass;
+//                case "extras":
+//                    _colorClass = Color.Extras;
+//                    return _colorClass;
                 case "3":
                     _colorClass = Color.TypicalAlt;
                     return _colorClass;
-                case "typicalalt":
-                    _colorClass = Color.TypicalAlt;
-                    return _colorClass;
+//                case "typicalalt":
+//                    _colorClass = Color.TypicalAlt;
+//                    return _colorClass;
                 case "4":
                     _colorClass = Color.Typical;
                     return _colorClass;
-                case "typical":
-                    _colorClass = Color.Typical;
-                    return _colorClass;
+//                case "typical":
+//                    _colorClass = Color.Typical;
+//                    return _colorClass;
                 case "5":
                     _colorClass = Color.SuperiorAlt;
                     return _colorClass;
-                case "superioralt":
-                    _colorClass = Color.SuperiorAlt;
-                    return _colorClass;
+//                case "superioralt":
+//                    _colorClass = Color.SuperiorAlt;
+//                    return _colorClass;
                 case "6":
                     _colorClass = Color.Superior;
                     return _colorClass;
-                case "superior":
-                    _colorClass = Color.Superior;
-                    return _colorClass;
+//                case "superior":
+//                    _colorClass = Color.Superior;
+//                    return _colorClass;
                 case "7":
                     _colorClass = Color.WinnerAlt;
                     return _colorClass;
-                case "winneralt":
-                    _colorClass = Color.WinnerAlt;
-                    return _colorClass;
+//                case "winneralt":
+//                    _colorClass = Color.WinnerAlt;
+//                    return _colorClass;
                 case "8":
                     _colorClass = Color.Winner;
                     return _colorClass;
-                case "winner":
-                    _colorClass = Color.Winner;
-                    return _colorClass;
+//                case "winner":
+//                    _colorClass = Color.Winner;
+//                    return _colorClass;
                 default:
-                    _colorClass = Color.None;
+                    _colorClass = Color.DoNotChange;
                     return _colorClass;
             }
         }
@@ -108,16 +108,24 @@ namespace starsky.Models
 
         public enum Color
         {
-            None = 0, // donkergrijs Dark Grey
-            Trash = 1, // grijs - Grey
-            Extras = 2, // Blauw - blue
-            TypicalAlt = 3, // Turquoise
-            Typical = 4, // Groen - groen
-            SuperiorAlt = 5, //Geel - yellow
-            Superior = 6, // Oranje - orange
+            Winner = 8, // Paars - purple
             WinnerAlt = 7, // rood - Red -
-            Winner = 8 // Paars - purple
+            Superior = 6, // Oranje - orange
+            SuperiorAlt = 5, //Geel - yellow
+            Typical = 4, // Groen - groen
+            TypicalAlt = 3, // Turquoise
+            Extras = 2, // Blauw - blue
+            Trash = 1, // grijs - Grey
+            None = 0, // donkergrijs Dark Grey
+            DoNotChange = -1
         }
+
+        public static IEnumerable<Color> GetAllColor()
+        {
+            return Enum.GetValues(typeof(Color)).Cast<Color>().Where(p => (int)p >= 0).OrderByDescending(p => (int)p );
+        }
+      
+        
 
         // From System full path => database relative path
         public string FullPathToDatabaseStyle() //PathToSys

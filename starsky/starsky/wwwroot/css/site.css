@@ -53,6 +53,7 @@
     text-align: left; 
 }
 
+.add-colorclass a,
 #portfolio-filter ul > li > a {
     margin-right: 15px;
     border-radius: 3px;
@@ -71,6 +72,7 @@
     padding-left: 10px;
 }
 
+.add-colorclass .checkbox,
 #portfolio-filter .checkbox {
     float: left;
     height: 20px;
@@ -78,12 +80,15 @@
     margin-left: 10px;
     background-color: #ccc;
     background-color: rgba(137,135,123,0.3);
-    /*background-image: url("../images/checkbox.svg");*/
     background-size: contain;
     background-repeat: no-repeat;
     background-position: left center;
     display: inline-block;
     margin-right: 10px;
+}
+
+.add-colorclass .on .checkbox {
+    background-image: url("../images/roundbox.svg");
 }
 
 #portfolio-filter .active .checkbox{

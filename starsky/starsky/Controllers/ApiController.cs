@@ -44,73 +44,85 @@ namespace starsky.Controllers
             return Json(model);
         }
 
-        [HttpPost]
+
         [HttpGet]
-        public IActionResult UpdateTag(string f = "path", string t = "", bool redirect = true)
+        [HttpPost]
+
+        public IActionResult Update(string keywords, string colorClass, string f = "dbStylePath")
         {
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index " +  f);
-
-            if (string.IsNullOrWhiteSpace(t)) return BadRequest("tag label missing");
-
-            var oldHashCode = _query.SingleItem(f).FileIndexItem.FileHash;
-
+            var oldHashCode = singleItem.FileIndexItem.FileHash;
             if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
                 return NotFound("source image missing " + FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
 
-            var exifToolResult = ExifTool.SetExifToolKeywords(t, FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-            if (exifToolResult == null) return BadRequest();
-
-            var item = _query.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
-
-            item.FileHash = FileHash.CalcHashCode(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-            item.AddToDatabase = DateTime.Now;
-            item.Tags = exifToolResult;
-            _query.UpdateItem(item);
-
-            new Thumbnail().RenameThumb(oldHashCode, item.FileHash);
-
-            // for using the api
-            if (redirect)
-            {
-                return RedirectToAction("index", "home", new { f = f, t = exifToolResult });
+            var updateModel = new ExifToolModel();
+            if(keywords != null) {
+//                if (keywords == "?#?#?") keywords = string.Empty;
+                updateModel.Keywords = keywords;
             }
-            return Json(item);
-        }
-
-        [HttpPost]
-        [HttpGet]
-        public IActionResult UpdateColorClass(string f = "path", string name = "")
-        {
-            if (f.Contains("?name=")) return NotFound("please use &name= instead of ?name=");
-
-            var singleItem = _query.SingleItem(f);
-            singleItem.FileIndexItem.SetColorClass(name);
             
-            if (singleItem.FileIndexItem.FilePath == null) return NotFound("not in index");
-            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
-                return NotFound("source image missing " + FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-            return Json(singleItem.FileIndexItem);
+            // Enum get always one value and no null
+            singleItem.FileIndexItem.SetColorClass(colorClass);
+            updateModel.ColorClass = singleItem.FileIndexItem.ColorClass;
+
+            var exifToolResults = ExifTool.Update(updateModel, FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+
+            // Update Database with results
+            singleItem.FileIndexItem.FileHash = FileHash.CalcHashCode(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            singleItem.FileIndexItem.AddToDatabase = DateTime.Now;
+            singleItem.FileIndexItem.Tags = exifToolResults.Keywords;
+            singleItem.FileIndexItem.ColorClass = exifToolResults.ColorClass;
+            _query.UpdateItem(singleItem.FileIndexItem);
+            
+            return Json(exifToolResults);
         }
 
-        public IActionResult Info(string f = "dbStyleFilepath", string t = "")
+//        [HttpPost]
+//        [HttpGet]
+//        public IActionResult UpdateTag(string f = "path", string t = "", bool redirect = true)
+//        {
+//            var singleItem = _query.SingleItem(f);
+//            if (singleItem == null) return NotFound("not in index " +  f);
+//
+//            if (string.IsNullOrWhiteSpace(t)) return BadRequest("tag label missing");
+//
+//            var oldHashCode = _query.SingleItem(f).FileIndexItem.FileHash;
+//
+//            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
+//                return NotFound("source image missing " + FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+//
+//            var exifToolResult = ExifTool.SetExifToolKeywords(t, FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+//            if (exifToolResult == null) return BadRequest();
+//
+//            var item = _query.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
+//
+//            item.FileHash = FileHash.CalcHashCode(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+//            item.AddToDatabase = DateTime.Now;
+//            item.Tags = exifToolResult;
+//            _query.UpdateItem(item);
+//
+//            new Thumbnail().RenameThumb(oldHashCode, item.FileHash);
+//
+//            // for using the api
+//            if (redirect)
+//            {
+//                return RedirectToAction("index", "home", new { f = f, t = exifToolResult });
+//            }
+//            return Json(item);
+//        }
+
+        public IActionResult Info(string f = "dbStyleFilepath")
         {
             if (f.Contains("?t=")) return NotFound("please use &t= instead of ?t=");
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index");
-            if (string.IsNullOrWhiteSpace(t)) return BadRequest("tag label missing");
             if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
                 return NotFound("source image missing " + FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             var item = _query.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
 
-            var getExiftool = ExifTool.ReadExifToolKeywords(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-            if (item.Tags == null) item.Tags = string.Empty;
-            //if (item.Tags != getExiftool)
-            //{
-            //    Response.StatusCode = 205;
-            //}
-            item.Tags = getExiftool;
-            return Json(item);
+            var getExiftool = ExifTool.Info(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            return Json(getExiftool);
         }
 
         [HttpDelete]
