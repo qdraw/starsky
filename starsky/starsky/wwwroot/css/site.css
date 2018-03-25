@@ -579,6 +579,7 @@ h2 {
     font-size: 20px;
     margin-top: 20px;
     margin-bottom: 30px;
+    word-break: break-all;
 }
 .breadcrumb a {
     color: black;
@@ -638,6 +639,7 @@ h2 {
     .sidebar {
         height: initial;
         position: static;
+        width: 100%;
     }
 }
 
@@ -655,6 +657,7 @@ h2 {
     .sidebar .content {
         height: initial;
         overflow-y:initial;
+        width: 80vw;
     }
 }
 .sidebar .content.collapsed {
@@ -663,13 +666,15 @@ h2 {
 
 
 .sidebar .close {
-    width: 30px;
+    width: 40px;
     display: block;
-    margin-left: -30px;
+    margin-left: -40px;
     background-color: red;
     height: 50px;
     top: 0px;
     position: absolute;
+    background-image: url("../images/arrow-toright-white.svg");
+    background-size: cover;
 }
 @media screen and (max-width: 600px) {
     .sidebar .close {
@@ -679,7 +684,8 @@ h2 {
     }
 }
 .sidebar .close.collapsed{
-    margin-left: -30px;
+    margin-left: -40px;
+    background-image: url("../images/arrow-toleft-white.svg");
 }
 
 footer {
