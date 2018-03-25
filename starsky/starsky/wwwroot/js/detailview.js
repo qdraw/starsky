@@ -47,12 +47,14 @@ function updateColorClass(those) {
 function showPreloader() {
     if (document.querySelectorAll(".preloader").length === 1){
         document.querySelector(".preloader").style.display = "block";
-    }  
+    }
 }
 function hidePreloader() {
     if (document.querySelectorAll(".preloader").length === 1){
         document.querySelector(".preloader").style.display = "none";
     }
+    // document.querySelector('.js-keywords').classList.remove("disabled");
+    // document.querySelector("#js-keywords-update .btn").classList.remove("disabled");
 }
 
 function updateColorClassButtons(selectedIntColorClass) {
@@ -74,8 +76,10 @@ function updateColorClassButtons(selectedIntColorClass) {
 
 function updateDeletedKeywordElement(data) {
    document.querySelector("#js-keywords-update a").style.display = "inline-block";
-   document.querySelector('.js-keywords').value = data.keywords;
-   document.querySelector('.js-keywords').disabled = false;
+   // console.log(document.querySelector("#js-keywords-update a.btn-default").style.display);
+   // document.querySelector('.js-keywords').value = data.keywords;
+   document.querySelector('.js-keywords').textContent = data.keywords;
+
 
    if (document.querySelectorAll(".addDeleteTag").length >= 1 ) {
        document.querySelector(".addDeleteTag").style.display = "inline-block";
@@ -83,16 +87,21 @@ function updateDeletedKeywordElement(data) {
 
        if (data.keywords.indexOf("!delete!") >= 0) {
                document.querySelector(".addDeleteTag a").innerHTML = "Zet terug uit prullenmand";
-               document.querySelector("#js-keywords-update a").style.display = "none"; //
-               document.querySelector('.js-keywords').disabled = true;
+               document.querySelector("#js-keywords-update a").classList.add("disabled") //
+               document.querySelector('.js-keywords').contentEditable = false;
                document.querySelector(".addDeleteTag a").classList.remove("btn-danger");
                document.querySelector(".addDeleteTag a").classList.add("btn-warning");
+               document.querySelector(".js-keywords").classList.add("disabled");
     
            } else {
                document.querySelector(".addDeleteTag a").innerHTML = "Verplaats naar prullenmand";
                document.querySelector(".addDeleteTag a").classList.remove("btn-warning");
                document.querySelector(".addDeleteTag a").classList.add("btn-danger");
-           }
+               document.querySelector("#js-keywords-update a").classList.remove("disabled");
+               document.querySelector(".js-keywords").classList.remove("disabled");
+               document.querySelector('.js-keywords').contentEditable = true;
+
+       }
    }
 }
 
@@ -113,7 +122,7 @@ if (document.querySelectorAll("#js-keywords-update").length === 1) {
 function addDeleteTag() {
     document.querySelector(".addDeleteTag").style.display = "none";
 
-    var queryItem = document.querySelector('.js-keywords').value;
+    var queryItem = document.querySelector('.js-keywords').textContent;
     
     if (queryItem.length === 0) {
         queryItem = "!delete!";
@@ -151,7 +160,9 @@ function queryKeywords(queryItem) {
 
 function updateKeywords() {
     if (document.querySelectorAll("#js-keywords-update").length === 1){
-        var keywords = document.querySelector('.js-keywords').value;
+        var keywords = document.querySelector('.js-keywords').textContent;
+        console.log(keywords);
+        
         queryKeywords(keywords);
     } 
 }
@@ -174,6 +185,5 @@ window.onload = function() {
         return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
     });
 };
-
 
 

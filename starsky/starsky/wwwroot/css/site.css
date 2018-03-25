@@ -79,8 +79,10 @@ html {
 
 .preloader {
     position:fixed;
-    top:48%;
-    left:48%;
+    left: calc( 50% - 50px );
+    top: calc( 50% - 50px );
+    width: 100px;
+    height: 100px;
     display: block;
 }
 
@@ -396,7 +398,6 @@ h2 {
     border-color: #080808;
 }
 
-
 .form-control {
     display: block;
     width: 100%;
@@ -410,7 +411,21 @@ h2 {
     border-radius: 4px;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    font-family: "Gloriola Std", sans-serif;
 }
+
+.contenteditable {
+    height: 100%; 
+}
+
+.btn.disabled,
+.form-control.disabled{
+    background-color: #ccc;
+    pointer-events: none;
+}
+
+
+
 .form-inline .form-control {
     display: inline-block;
     width: auto;

@@ -18,6 +18,7 @@ if(tagItems.length >= 1) {
         }
     }
 }
+
 // var breadcrumbItem =   document.querySelectorAll(".breadcrumb");
 // if (breadcrumbItem.length === 1){
 //     for(var i = 0; i < breadcrumbItem[0].children.length; i++) {

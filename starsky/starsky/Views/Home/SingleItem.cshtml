@@ -38,9 +38,8 @@
 
 <div class="wrapper">
     <div class="form-inline form-wrapper" id="js-keywords-update">
-        <input name="f" value="@Model.FileIndexItem.FilePath" hidden />
-        <input class="form-control js-keywords" name="keywords" onfocusout="updateKeywords()" value="@Model.FileIndexItem.Tags" autocomplete="off" disabled="true" />
-        <a class="btn btn-default" type="submit" onClick="updateKeywords()" style="display: none;">Update</a>
+        <div class="form-control js-keywords contenteditable disabled" contenteditable="false" name="keywords" onfocusout="updateKeywords()">@Model.FileIndexItem.Tags</div>
+        <a class="btn btn-default" type="submit" onClick="updateKeywords()">Update</a>
     </div>
 </div>
 
