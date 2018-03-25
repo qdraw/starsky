@@ -528,6 +528,27 @@ h2 {
         height: 35vh;
     }
 }
+.wrapper .halfitem .caption p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 40ch;
+}
+
+@media screen and (min-width: 200px) and (max-width: 950px) {
+    .wrapper .halfitem .caption h2{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 23ch;
+    }
+    .wrapper .halfitem .caption p{
+        max-width: 30ch;
+    }
+}
+
+
+
 
 
 .nextprev {

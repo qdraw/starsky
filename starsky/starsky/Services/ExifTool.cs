@@ -59,10 +59,26 @@ namespace starsky.Services
             text = text.Replace(@"]", "");
             text = text.Replace("\",\"", ", ");
             
-            // > (",(\d+))|((\d+),")   --> single numbers will be removed
-            text = Regex.Replace(text, $"(\",(\\d+))|((\\d+),\")", "");
+//            text = Regex.Replace(text, $"(\",(\\d+))|((\\d+),\")", "");
             text = text.Replace($",\"", "");
-
+            
+            Regex isKeywordRegex = new Regex($"\"Keywords\": \"", RegexOptions.IgnoreCase);
+            if (!isKeywordRegex.Match(text).Success)
+            {
+                text = text.Replace($"\"Keywords\": ", "\"Keywords\": \"" );
+            }
+            Regex isKeywordEndRegex = new Regex($"\",\n(\\s+\"Prefs|}})", RegexOptions.IgnoreCase);
+            if (!isKeywordEndRegex.Match(text).Success)
+            {
+                Console.WriteLine("sdfdsfsdf");
+                text = text.Replace($",\n", "\"," );
+                text = text.Replace("\"\"", "\"");
+                // ",0,1",
+                Console.WriteLine(text);
+                // > (",(\d+))|((\d+),")   --> single numbers will be removed
+                text = Regex.Replace(text, $"(\",(\\d+))|((\\d+),\")", "");
+            }
+           
             Console.WriteLine(text);
             
             var exifData = JsonConvert.DeserializeObject<ExifToolModel>(text);
