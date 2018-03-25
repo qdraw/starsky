@@ -29,7 +29,7 @@ namespace starsky.Models
                 }
             }
         }
-        
+
         private string _keywords;
 
         public string Keywords

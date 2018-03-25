@@ -57,11 +57,12 @@ namespace starsky.Services
             text = text.Replace($"\\", "");
             text = text.Replace(@"[", "");
             text = text.Replace(@"]", "");
-            //text = text.Replace("\\\",\\\"", string.Empty); //-- \",\"
             text = text.Replace("\",\"", ", ");
-
-            text = Regex.Replace(text, $"\\d*,\"", "\"");
             
+            // > (",(\d+))|((\d+),")   --> single numbers will be removed
+            text = Regex.Replace(text, $"(\",(\\d+))|((\\d+),\")", "");
+            text = text.Replace($",\"", "");
+
             Console.WriteLine(text);
             
             var exifData = JsonConvert.DeserializeObject<ExifToolModel>(text);
