@@ -38,7 +38,6 @@ namespace starsky.Controllers
             if (singleItem?.FileIndexItem.FilePath != null)
             {
                 singleItem.GetAllColor = FileIndexItem.GetAllColorUserInterface();
-                
                 singleItem.Breadcrumb = Breadcrumbs.BreadcrumbHelper(singleItem.FileIndexItem.FilePath);
                 return View("SingleItem", singleItem);
             }

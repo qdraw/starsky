@@ -119,7 +119,7 @@ html {
 
 .add-colorclass a,
 #portfolio-filter ul > li > a {
-    margin-right: 15px;
+    margin-right: 10px;
     border-radius: 3px;
     margin-bottom: 13px;
     padding-right: 10px;
@@ -198,9 +198,14 @@ h2 {
 }
 
 .addDeleteTag {
-    margin-top: 30px;
-    margin-bottom: 50px;
+    padding: 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background-color: rgba(255, 0, 2, 0.1);
     display: none;
+}
+.addDeleteTag a{
+    margin-top: 15px;
 }
 
 .add-colorclass {
@@ -244,12 +249,14 @@ h2 {
 }
 
 .add-colorclass .none,
+.add-colorclass .colorclass-0,
 #portfolio-filter ul > li > a#none,
 .wrapper .halfitem.None .caption {
     background-color: rgba(0, 0, 0, 0.3);
 }
 
 .add-colorclass .none.on,
+.add-colorclass .colorclass-0.on,
 #portfolio-filter ul > li > a#none.active {
     background-color: rgba(0, 0, 0, 1);
     color: white;
@@ -257,34 +264,40 @@ h2 {
 }
 
 .add-colorclass .winner,
+.add-colorclass .colorclass-8,
 #portfolio-filter ul > li > a#winner,
 .wrapper .halfitem.Winner .caption {
     background-color: rgba(255, 0, 255, 0.3);
 }
 .add-colorclass .winner.on,
+.add-colorclass .colorclass-8 .on,
 #portfolio-filter ul > li > a#winner.active {
     background-color: rgba(255, 0, 255, 1);
     opacity: 1;
 }
 
 .add-colorclass .winneralt,
+.add-colorclass .colorclass-7,
 #portfolio-filter ul > li > a#winneralt,
 .wrapper .halfitem.WinnerAlt .caption {
     background-color: rgba(255, 0, 2, 0.3);
 }
 
 .add-colorclass .winneralt.on,
+.add-colorclass .colorclass-7.on,
 #portfolio-filter ul > li > a#winneralt.active {
     background-color: rgba(255, 0, 2, 1);
     opacity: 1;
 }
 
 .add-colorclass .superior,
+.add-colorclass .colorclass-6,
 #portfolio-filter ul > li > a#superior {
     background-color: rgba(255, 127, 1, 0.6);
 }
 
 .add-colorclass .superior.on,
+.add-colorclass .colorclass-6.on,
 #portfolio-filter ul > li > a#superior.active {
     background-color: rgba(255, 127, 1, 1);
     opacity: 1;
@@ -295,18 +308,21 @@ h2 {
 }
 
 .add-colorclass .superioralt.on,
+.add-colorclass .colorclass-5.on,
 #portfolio-filter ul > li > a#superioralt.active {
     color: #8447B2;
     background-color: rgba(255, 255, 83, 1);
     opacity: 1;
 }
 
+.add-colorclass .colorclass-5,
 .add-colorclass .superioralt,
 #portfolio-filter ul > li > a#superioralt,
 .wrapper .halfitem.SuperiorAlt .caption {
     background-color: rgba(255, 255, 83, 0.3);
 }
 
+.add-colorclass .colorclass-4.on,
 .add-colorclass .typical.on,
 #portfolio-filter ul > li > a#typical.active {
     background-color: rgba(0, 255, 0, 1);
@@ -314,40 +330,50 @@ h2 {
     opacity: 1;
 }
 
+.add-colorclass .colorclass-4,
 .add-colorclass .typical,
 #portfolio-filter ul > li > a#typical,
 .wrapper .halfitem.Typical .caption {
     background-color: rgba(0, 255, 0, 0.3);
 }
 
+.add-colorclass .colorclass-3.on,
 .add-colorclass .typical.on,
 #portfolio-filter ul > li > a#typicalalt.active {
     color: #B2582F;
     background-color: rgba(0, 255, 255, 1);
     opacity: 1;
 }
+
+.add-colorclass .colorclass-3,
 #portfolio-filter ul > li > a#typicalalt,
 .wrapper .halfitem.TypicalAlt .caption {
     background-color: rgba(0, 255, 255, 0.3);
 }
 
+.add-colorclass .colorclass-2.on,
 .add-colorclass .extras.on,
 #portfolio-filter ul > li > a#extras.active {
     background-color: rgba(0, 0, 255, 1);
     opacity: 1;
     color: white;
 }
+
+.add-colorclass .colorclass-2,
 .add-colorclass .extras,
 #portfolio-filter ul > li > a#extras,
 .wrapper .halfitem.Extras .caption {
     background-color: rgba(0, 0, 255, 0.3);
 }
 
+.add-colorclass .colorclass-1.on,
 .add-colorclass .trash.on,
 #portfolio-filter ul > li > a#trash.active {
     background-color: rgba(150, 150, 100, 1);
     opacity: 1;
 }
+
+.add-colorclass .colorclass-1,
 #portfolio-filter ul > li > a#trash,
 .wrapper .halfitem.Trash .caption {
     background-color: rgba(150, 150, 100, 0.3);
@@ -459,7 +485,21 @@ h2 {
     background-color: #fff;
     border-color: #ccc;
 }
+.btn-danger {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+.btn-warning {
+    color: #212529;
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
 
+.btn-info {
+    color: #007bff;
+    background-color: #EBEBEB;
+}
 .navbar-header {
     float: left;
 }

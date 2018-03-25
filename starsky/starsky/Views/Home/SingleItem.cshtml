@@ -24,11 +24,11 @@
                     var enumValue = (int) item;
                     if ((int) @Model.FileIndexItem.ColorClass == enumValue)
                     {
-                        <a class="@item.ToString().ToLower() on" data-colorclass="@enumValue" onclick="updateColorClass(this)"><span class='checkbox'></span>@item.ToString()</a>
+                        <a class="colorclass-@enumValue on" data-colorclass="@enumValue" onclick="updateColorClass(this)"><span class='checkbox'></span>@item.ToString()</a>
                     }
                     else
                     {
-                        <a class="@item.ToString().ToLower()" data-colorclass="@enumValue" data-id=" "onclick="updateColorClass(this)"><span class='checkbox'></span>@item.ToString()</a>
+                        <a class="colorclass-@enumValue" data-colorclass="@enumValue" data-id=" "onclick="updateColorClass(this)"><span class='checkbox'></span>@item.ToString()</a>
                     }
                 }
             }
@@ -36,7 +36,7 @@
         <div class="addDeleteTag">
             <h4>Danger zone:</h4>
             <a onClick="addDeleteTag()" class="btn-sm btn btn-danger"></a>
-            <a asp-controller="Search" asp-action="Trash" class="btn-sm btn-info">Bekijk prullenmand</a>
+            <a asp-controller="Search" asp-action="Trash" class="btn-sm btn btn-info">Bekijk prullenmand</a>
         </div>
     </div>
 </div>

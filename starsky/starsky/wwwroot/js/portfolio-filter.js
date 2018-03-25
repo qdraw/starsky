@@ -81,11 +81,11 @@ function writeFilterList (tags) {
             // EINDE ALLES
 
             var newTags = [];
-            if(tags.indexOf("Winner") >= 0) {
-                newTags.push(tags[tags.indexOf("Winner")])
+            if(tags.indexOf("8") >= 0) {
+                newTags.push("Paars");
             }
 
-            if(tags.indexOf("WinnerAlt") >= 0) {
+            if(tags.indexOf("7") >= 0) {
                 newTags.push(tags[tags.indexOf("WinnerAlt")])
             }
 
