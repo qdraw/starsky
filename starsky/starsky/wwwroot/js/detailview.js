@@ -211,14 +211,14 @@ if (document.querySelectorAll(".sidebar").length === 1) {
         }
         else {
             document.querySelector(".sidebar .close").classList.remove("collapsed");
-            document.querySelector(".sidebar").style.width = "300px";
+            document.querySelector(".sidebar").style.width = sideBarDefaultWidth;
             if (isStartup) {
                 document.querySelector(".sidebar .content").classList.remove("collapsed");
             }
             else {
                 setTimeout(function () {
                     document.querySelector(".sidebar .content").classList.remove("collapsed");
-                }, 1000);
+                }, 300);
             }
             if(document.querySelectorAll(".main-image").length === 1){
                 document.querySelector(".main-image").classList.add("collapsed")
