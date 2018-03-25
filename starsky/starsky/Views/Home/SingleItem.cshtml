@@ -5,83 +5,73 @@
 @{
     ViewData["Title"] = @Model.FileIndexItem.FileName;
 }
-@*<h2>@ViewData["Title"]</h2>*@
-
-<h4 class="nextprev">
-    &nbsp;
-    @if (@Model.RelativeObjects.PrevFilePath != null)
-    {
-        <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige</a>
-    }
-    @if (@Model.RelativeObjects.NextFilePath != null)
-    {
-        <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende</a>
-    }
-</h4>
-
-<h1 class="breadcrumb">
-    @foreach (var item in Model.Breadcrumb)
-    {
-        var name = @item.Split("/")[item.Split("/").Length - 1];
-        if (name == "")
-        {
-            name = "Home";
-        }
-        <a asp-controller="Home" asp-action="Index" asp-route-f="@item">@name</a>
-        <span> &raquo;</span>
-    }
-    <span>
-        @Model.FileIndexItem.FileName
-    </span>
-</h1>
 
 
-<div class="wrapper">
-    <div class="form-inline form-wrapper" id="js-keywords-update">
-        <div class="form-control js-keywords contenteditable disabled" contenteditable="false" name="keywords" onfocusout="updateKeywords()">@Model.FileIndexItem.Tags</div>
-        <a class="btn btn-default" type="submit" onClick="updateKeywords()">Update</a>
+<div class="sidebar">
+    <div class="close" onclick="toggleSideMenu()"></div>
+    <div class="content">
+        <img src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
+
+        <div class="form-inline form-wrapper" id="js-keywords-update">
+            <div class="form-control js-keywords contenteditable disabled" contenteditable="false" name="keywords" onfocusout="updateKeywords()">@Model.FileIndexItem.Tags</div>
+            <a class="btn btn-default" type="submit" onClick="updateKeywords()">Update</a>
+        </div>
+
+        <div class="add-colorclass">
+            @{
+                foreach (var item in @Model.GetAllColor)
+                {
+                    var enumValue = (int) item;
+                    if ((int) @Model.FileIndexItem.ColorClass == enumValue)
+                    {
+                        <a class="@item.ToString().ToLower() on" data-colorclass="@enumValue" onclick="updateColorClass(this)"><span class='checkbox'></span>@item.ToString()</a>
+                    }
+                    else
+                    {
+                        <a class="@item.ToString().ToLower()" data-colorclass="@enumValue" data-id=" "onclick="updateColorClass(this)"><span class='checkbox'></span>@item.ToString()</a>
+                    }
+                }
+            }
+        </div>
+        <div class="addDeleteTag">
+            <h4>Danger zone:</h4>
+            <a onClick="addDeleteTag()" class="btn-sm btn btn-danger"></a>
+            <a asp-controller="Search" asp-action="Trash" class="btn-sm btn-info">Bekijk prullenmand</a>
+        </div>
     </div>
 </div>
 
-
-
-<img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
-
-<div class="add-colorclass">
-    @{
-        foreach (var item in @Model.GetAllColor)
+<div class="detailview">
+    <h4 class="nextprev">
+        &nbsp;
+        @if (@Model.RelativeObjects.PrevFilePath != null)
         {
-            var enumValue = (int) item;
-            if (@Model.FileIndexItem.ColorClass == item)
-            {
-                <a class="@item.ToString().ToLower() on" data-colorclass="@enumValue" onclick="updateColorClass(this)"><span class='checkbox'></span>@item.ToString()</a>
-            }
-            else
-            {
-                <a class="@item.ToString().ToLower()" data-colorclass="@enumValue" data-id=" "onclick="updateColorClass(this)"><span class='checkbox'></span>@item.ToString()</a>
-            }
+            <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige</a>
         }
-    }
+        @if (@Model.RelativeObjects.NextFilePath != null)
+        {
+            <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende</a>
+        }
+    </h4>
+    
+    <h1 class="breadcrumb">
+        @foreach (var item in Model.Breadcrumb)
+        {
+            var name = @item.Split("/")[item.Split("/").Length - 1];
+            if (name == "")
+            {
+                name = "Home";
+            }
+            <a asp-controller="Home" asp-action="Index" asp-route-f="@item">@name</a>
+            <span> &raquo;</span>
+        }
+        <span>
+            @Model.FileIndexItem.FileName
+        </span>
+    </h1>
+    
+    <img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
 </div>
-
-<h4 class="nextprev">
-    &nbsp;
-    @if (@Model.RelativeObjects.PrevFilePath != null)
-    {
-        <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Prev</a>
-    }
-    @if (@Model.RelativeObjects.NextFilePath != null)
-    {
-        <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Next</a>
-    }
-</h4>
-
-<div class="addDeleteTag">
-    <h4>Danger zone:</h4>
-    <a onClick="addDeleteTag()" class="btn-sm btn btn-danger"></a>
-    <a asp-controller="Search" asp-action="Trash" class="btn-sm btn-info">Bekijk prullenmand</a>
-</div>
-
 
 <script type="text/javascript">
     var updateApiBase = "@Url.Action("Update", "Api", new { f = @Model.FileIndexItem.FilePath})";

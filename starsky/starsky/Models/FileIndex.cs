@@ -32,10 +32,9 @@ namespace starsky.Models
 
         public DateTime AddToDatabase { get; set; }
         
-        
         private Color _colorClass;
 
-        public Color SetColorClass(string colorclassString = "0")
+        public Color SetColorClass(string colorclassString = "-1")
         {
 
             switch (colorclassString)
@@ -43,57 +42,30 @@ namespace starsky.Models
                 case "0":
                     _colorClass = Color.None;
                     return _colorClass;
-//                case "none":
-//                    _colorClass = Color.None;
-//                    return _colorClass;
                 case "1":
                     _colorClass = Color.Trash;
                     return _colorClass;
-//                case "trash":
-//                    _colorClass = Color.Trash;
-//                    return _colorClass;
                 case "2":
                     _colorClass = Color.Extras;
                     return _colorClass;
-//                case "extras":
-//                    _colorClass = Color.Extras;
-//                    return _colorClass;
                 case "3":
                     _colorClass = Color.TypicalAlt;
                     return _colorClass;
-//                case "typicalalt":
-//                    _colorClass = Color.TypicalAlt;
-//                    return _colorClass;
                 case "4":
                     _colorClass = Color.Typical;
                     return _colorClass;
-//                case "typical":
-//                    _colorClass = Color.Typical;
-//                    return _colorClass;
                 case "5":
                     _colorClass = Color.SuperiorAlt;
                     return _colorClass;
-//                case "superioralt":
-//                    _colorClass = Color.SuperiorAlt;
-//                    return _colorClass;
                 case "6":
                     _colorClass = Color.Superior;
                     return _colorClass;
-//                case "superior":
-//                    _colorClass = Color.Superior;
-//                    return _colorClass;
                 case "7":
                     _colorClass = Color.WinnerAlt;
                     return _colorClass;
-//                case "winneralt":
-//                    _colorClass = Color.WinnerAlt;
-//                    return _colorClass;
                 case "8":
                     _colorClass = Color.Winner;
                     return _colorClass;
-//                case "winner":
-//                    _colorClass = Color.Winner;
-//                    return _colorClass;
                 default:
                     _colorClass = Color.DoNotChange;
                     return _colorClass;
@@ -119,12 +91,30 @@ namespace starsky.Models
             None = 0, // donkergrijs Dark Grey
             DoNotChange = -1
         }
-
+        
         public static IEnumerable<Color> GetAllColor()
         {
             return Enum.GetValues(typeof(Color)).Cast<Color>().Where(p => (int)p >= 0).OrderByDescending(p => (int)p );
         }
-      
+        
+        public enum ColorUserInterface
+        {
+            Paars = 8, // Paars - purple
+            Rood = 7, // rood - Red -
+            Oranje = 6, // Oranje - orange
+            Geel = 5, //Geel - yellow
+            Groen = 4, // Groen - groen
+            Turquoise = 3, // Turquoise
+            Blauw = 2, // Blauw - blue
+            Grijs = 1, // grijs - Grey
+            GeenKleur = 0, // donkergrijs Dark Grey
+            DoNotChange = -1
+        }
+
+        public static IEnumerable<ColorUserInterface> GetAllColorUserInterface()
+        {
+            return Enum.GetValues(typeof(ColorUserInterface)).Cast<ColorUserInterface>().Where(p => (int)p >= 0).OrderByDescending(p => (int)p );
+        }
         
 
         // From System full path => database relative path

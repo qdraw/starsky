@@ -37,13 +37,17 @@ namespace starsky.Controllers
 
             if (singleItem?.FileIndexItem.FilePath != null)
             {
-                singleItem.GetAllColor = FileIndexItem.GetAllColor();
+                singleItem.GetAllColor = FileIndexItem.GetAllColorUserInterface();
+                
                 singleItem.Breadcrumb = Breadcrumbs.BreadcrumbHelper(singleItem.FileIndexItem.FilePath);
                 return View("SingleItem", singleItem);
             }
 
             model.Breadcrumb = Breadcrumbs.BreadcrumbHelper(model.FileIndexItems?.FirstOrDefault().FilePath);
             model.SearchQuery = model.FileIndexItems?.FirstOrDefault().ParentDirectory.Split("/").LastOrDefault();
+            
+                
+            model.RelativeObjects = _query.GetNextPrevInFolder(model.FileIndexItems?.FirstOrDefault().ParentDirectory);
             return View(model);
         }
 

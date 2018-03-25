@@ -5,8 +5,6 @@ using starsky.Data;
 using starsky.Services;
 using starsky.Models;
 
-
-
 namespace starskyCli
 {
     public class SyncDatabase

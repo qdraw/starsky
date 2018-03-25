@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Data;
+using starsky.ViewModels;
 
 
 namespace starsky.Services
@@ -53,24 +55,62 @@ namespace starsky.Services
             {
                 return new List<FileIndexItem>();
             }
+            return _hideDeletedFileFolderList(queryItems);
+        }
 
+        private static IEnumerable<FileIndexItem> _hideDeletedFileFolderList(List<FileIndexItem> queryItems){
             // temp feature to hide deleted items
             var displayItems = new List<FileIndexItem>();
-            foreach (var item in queryItems)
+                foreach (var item in queryItems)
             {
                 if (item.Tags == null)
                 {
                     item.Tags = string.Empty;
                 }
-
+    
                 if (!item.Tags.Contains("!delete!"))
                 {
                     displayItems.Add(item);
                 }
             }
-            // temp feature to hide deleted items
-
             return displayItems;
+            // temp feature to hide deleted items
+        }
+        
+        
+        public RelativeObjects GetNextPrevInFolder(string currentFolder)
+        {
+
+            var parrentFolderPathArray = currentFolder.Split("/");
+            var parrentFolderPath = "/";
+            for (int i = 0; i < parrentFolderPathArray.Length; i++)
+            {
+                if (i <= parrentFolderPathArray.Length-2)
+                {
+                    parrentFolderPath += parrentFolderPathArray[i];
+                }
+            }
+            Console.WriteLine(parrentFolderPath);
+            Console.WriteLine(currentFolder);
+            
+            var itemsInSubFolder = _context.FileIndex
+                .Where(p => p.ParentDirectory == parrentFolderPath)
+                .OrderBy(p => p.FileName).ToList();
+            
+            var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == currentFolder);
+
+            var relativeObject = new RelativeObjects();
+            if (photoIndexOfSubFolder != itemsInSubFolder.Count - 1)
+            {
+                relativeObject.NextFilePath = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FilePath;
+            }
+
+            if (photoIndexOfSubFolder >= 1)
+            {
+                relativeObject.PrevFilePath = itemsInSubFolder[photoIndexOfSubFolder - 1]?.FilePath;
+            }
+
+            return relativeObject;
         }
 
 

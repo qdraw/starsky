@@ -186,4 +186,60 @@ window.onload = function() {
     });
 };
 
+var sideBarDefaultWidth;
+if (document.querySelectorAll(".sidebar").length === 1) {
+    function toggleSideMenu(isStartup) {
+        if (document.querySelector(".sidebar .close").className.indexOf("collapsed") === -1) {
+            document.querySelector(".sidebar .close").classList.add("collapsed");
+            sideBarDefaultWidth = document.querySelector(".sidebar").style.width;
+            document.querySelector(".sidebar").style.width = "0px";
+            sideBarDefaultPadding = document.querySelector(".sidebar").style.padding;
+            document.querySelector(".sidebar").style.padding = "0px";
+            document.querySelector(".sidebar .content").classList.add("collapsed");
+            
+            if(document.querySelectorAll(".main-image").length === 1){
+                document.querySelector(".main-image").classList.remove("collapsed")
+            }
+            if(document.querySelectorAll(".detailview").length === 1){
+                document.querySelector(".detailview").classList.remove("collapsed")
+            }
+            if(document.querySelectorAll(".body-content").length === 1){
+                document.querySelector(".body-content").classList.remove("collapsed")
+            }
+            document.querySelector("body").classList.remove("collapsed")
 
+        }
+        else {
+            document.querySelector(".sidebar .close").classList.remove("collapsed");
+            document.querySelector(".sidebar").style.width = "300px";
+            if (isStartup) {
+                document.querySelector(".sidebar .content").classList.remove("collapsed");
+            }
+            else {
+                setTimeout(function () {
+                    document.querySelector(".sidebar .content").classList.remove("collapsed");
+                }, 1000);
+            }
+            if(document.querySelectorAll(".main-image").length === 1){
+                document.querySelector(".main-image").classList.add("collapsed")
+            }
+            if(document.querySelectorAll(".detailview").length === 1){
+                document.querySelector(".detailview").classList.add("collapsed")
+            }
+            if(document.querySelectorAll("body-content").length === 1){
+                document.querySelector(".body-content").classList.add("collapsed")
+            }
+            document.querySelector("body").classList.add("collapsed")
+
+        }
+    }
+
+    if(window.innerWidth <= 650) {
+        toggleSideMenu(true);
+    }
+    else {
+        toggleSideMenu(true);
+        toggleSideMenu(true);
+    }
+    
+}

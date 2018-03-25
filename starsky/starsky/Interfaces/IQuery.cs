@@ -26,6 +26,6 @@ namespace starsky.Interfaces
 
         string SubPathSlashRemove(string subPath = "/");
 
-
+        RelativeObjects GetNextPrevInFolder(string currentFolder);
     }
 }

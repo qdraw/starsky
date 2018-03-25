@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using starsky.Models;
 
 namespace starsky.ViewModels
@@ -10,7 +7,7 @@ namespace starsky.ViewModels
     {
         public IEnumerable<FileIndexItem> FileIndexItems { get; set; }
         public List<string> Breadcrumb { get; set; }
-//        public ObjectItem SingleItem { get; set; }
+        public RelativeObjects RelativeObjects { get; set; }
         public string SearchQuery { get; set; }
     }
 }

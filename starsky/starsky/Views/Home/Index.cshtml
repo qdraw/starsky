@@ -1,12 +1,24 @@
-﻿@using Microsoft.AspNetCore.Mvc
+﻿@using System.Linq
+@using Microsoft.AspNetCore.Mvc
 @using starsky.ViewModels
 @model IndexViewModel
 @{
     ViewData["Title"] = Model.SearchQuery + " Index view ";
 }
 
-<h1 class="breadcrumb">
+<h4 class="nextprev">
+    @if (@Model.RelativeObjects.PrevFilePath != null)
+    {
+        <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige (@Model.RelativeObjects.PrevFilePath.Split("/").LastOrDefault())</a>
+    }
+    @if (@Model.RelativeObjects.NextFilePath != null)
+    {
+        <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende (@Model.RelativeObjects.NextFilePath.Split("/").LastOrDefault())</a>
+    }
+    &nbsp;
+</h4>
 
+<h1 class="breadcrumb">
     @foreach (var item in Model.Breadcrumb)
     {
         var name = @item.Split("/")[item.Split("/").Length - 1];

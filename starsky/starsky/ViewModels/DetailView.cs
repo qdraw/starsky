@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using starsky.Models;
 
 namespace starsky.ViewModels
@@ -11,7 +8,7 @@ namespace starsky.ViewModels
         public FileIndexItem FileIndexItem { get; set; }
         public RelativeObjects RelativeObjects { get; set; }
         public List<string> Breadcrumb { get; set; }
-        public IEnumerable<FileIndexItem.Color> GetAllColor { get; set; }
+        public IEnumerable<FileIndexItem.ColorUserInterface> GetAllColor { get; set; }
 
     }
 }
