@@ -40,14 +40,14 @@ namespace starsky.Services
         #pragma warning restore 1998
 
             var task = Task.Run(() => CalculateMd5Async(fullFileName));
-                if (task.Wait(TimeSpan.FromSeconds(20)))
+                if (task.Wait(TimeSpan.FromSeconds(18)))
                 return task.Result;
 
             Console.WriteLine(">>>>>>>>>>>            Timeout Md5 Hashing::: "
                               + fullFileName 
                               + "            <<<<<<<<<<<<");
             
-            return Base32.Encode(GenerateRandomBytes(25));
+            return Base32.Encode(GenerateRandomBytes(27)) + "_T";
             throw new Exception("Timed out");
         }
 
@@ -78,12 +78,12 @@ namespace starsky.Services
 
         private static async Task<string> CalculateMd5Async(string fullFileName)
         {
-            var block = ArrayPool<byte>.Shared.Rent(8192);
+            var block = ArrayPool<byte>.Shared.Rent(500000); // 0,5 Mb
             try
             {
                 using (var md5 = MD5.Create())
                 {
-                    using (var stream = new FileStream(fullFileName, FileMode.Open, FileAccess.Read, FileShare.Read, 8192, true))
+                    using (var stream = new FileStream(fullFileName, FileMode.Open, FileAccess.Read, FileShare.Read, 500000, true))
                     {
                         int length;
                         while ((length = await stream.ReadAsync(block, 0, block.Length).ConfigureAwait(false)) > 0)
