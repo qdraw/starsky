@@ -32,20 +32,20 @@ namespace starsky.Services
 
         public static void CreateThumb(FileIndexItem item)
         {
-            if (!System.IO.Directory.Exists(AppSettingsProvider.ThumbnailTempFolder))
+            if (!Directory.Exists(AppSettingsProvider.ThumbnailTempFolder))
             {
                 throw new FileNotFoundException("ThumbnailTempFolder not found " + AppSettingsProvider.ThumbnailTempFolder);
             }
 
             var thumbPath = AppSettingsProvider.ThumbnailTempFolder + item.FileHash + ".jpg";
 
-            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(item.FilePath)))
+            if (!File.Exists(FileIndexItem.DatabasePathToFilePath(item.FilePath)))
             {
                 Console.WriteLine("File Not found: " + item.FilePath);
                 return;
             }
 
-            if (System.IO.File.Exists(thumbPath))
+            if (File.Exists(thumbPath))
             {
                 return;
             }
@@ -66,7 +66,7 @@ namespace starsky.Services
         private static async Task<bool> ResizeThumbnailTimeOut(string inputFilePath, string thumbPath){
         #pragma warning restore 1998
 
-            var task = Task.Run(() => resizeThumbnail(inputFilePath, thumbPath));
+            var task = Task.Run(() => ResizeThumbnail(inputFilePath, thumbPath));
             if (task.Wait(TimeSpan.FromSeconds(8)))
                 return task.Result;
 
@@ -102,7 +102,7 @@ namespace starsky.Services
 //            }
 //        }
         
-        private static bool resizeThumbnail(string inputFilePath, string thumbPath)
+        private static bool ResizeThumbnail(string inputFilePath, string thumbPath)
         {
             // resize the image and save it to the output stream
             using (var outputStream = new FileStream(thumbPath, FileMode.CreateNew))
