@@ -87,7 +87,8 @@ namespace starsky.Services
             {
                 if (i <= parrentFolderPathArray.Length-2)
                 {
-                    parrentFolderPath += parrentFolderPathArray[i];
+                    // Remove the backslash first (if exist) and add it back;
+                    parrentFolderPath = ConfigRead.RemoveLatestBackslash(parrentFolderPath) + "/" + parrentFolderPathArray[i];
                 }
             }
             Console.WriteLine(parrentFolderPath);
@@ -100,8 +101,9 @@ namespace starsky.Services
             var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == currentFolder);
 
             var relativeObject = new RelativeObjects();
-            if (photoIndexOfSubFolder != itemsInSubFolder.Count - 1)
+            if (photoIndexOfSubFolder != itemsInSubFolder.Count - 1 && currentFolder != "/")
             {
+                // on the home folder you will automaticly go to a subfolder
                 relativeObject.NextFilePath = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FilePath;
             }
 
