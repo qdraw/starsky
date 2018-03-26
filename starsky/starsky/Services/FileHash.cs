@@ -40,7 +40,7 @@ namespace starsky.Services
         #pragma warning restore 1998
 
             var task = Task.Run(() => CalculateMd5Async(fullFileName));
-                if (task.Wait(TimeSpan.FromSeconds(18)))
+                if (task.Wait(TimeSpan.FromSeconds(8)))
                 return task.Result;
 
             Console.WriteLine(">>>>>>>>>>>            Timeout Md5 Hashing::: "

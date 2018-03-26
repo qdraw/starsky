@@ -75,6 +75,9 @@ namespace starskyCli
                         FilePath = FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i]),
                         FileHash = localFileListFileHash[i]
                     };
+                    
+                    if(AppSettingsProvider.Verbose) Console.WriteLine("localFileListFileHash[i] " + localFileListFileHash[i]); 
+                    
                     Thumbnail.CreateThumb(value);
                 }
 
