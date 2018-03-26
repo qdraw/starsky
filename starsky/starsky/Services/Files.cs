@@ -100,7 +100,7 @@ namespace starsky.Services
                             {
                                 FilePath = files[i],
                                 FileName = Path.GetFileName(files[i]),
-                                FileHash = FileHash.CalcHashCode(files[i]),
+                                FileHash = FileHash.GetHashCode(files[i]),
                                 //Folder = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(files[i]))
                             };
                             yield return fileItem;

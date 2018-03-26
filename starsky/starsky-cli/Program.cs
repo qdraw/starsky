@@ -12,23 +12,29 @@ namespace starskyCli
     {
         public static void Main(string[] args)
         {
-            ConfigRead.SetAppSettingsProvider();
+            // Check if user want more info
+            AppSettingsProvider.Verbose = ArgsHelper.NeedVerbose(args);
 
+            ConfigRead.SetAppSettingsProvider();
+            
             //var q = ExifTool.WriteExifToolKeywords("test1", "Z:\\data\\git\\starsky\\starsky\\starsky-cli\\bin\\Debug\\netcoreapp2.0\\20180101_000337.jpg");
 
             if (ArgsHelper.NeedHelp(args))
             {
-                Console.WriteLine("Settings:");
-                Console.WriteLine("Database Type "+ AppSettingsProvider.DatabaseType);
-                Console.WriteLine("BasePath " + AppSettingsProvider.BasePath);
-                Console.WriteLine("ThumbnailTempFolder " + AppSettingsProvider.ThumbnailTempFolder);
-                Console.WriteLine("");
                 Console.WriteLine("Starsky Help:");
                 Console.WriteLine("--help or -h == help (this window)");
                 Console.WriteLine("--subpath or -s == parameter: (string) ; path inside the index, default '/' ");
                 Console.WriteLine("--path or -p == parameter: (string) ; fullpath, search and replace first part of the filename '/' ");
                 Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
                 Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
+                Console.WriteLine("--verbose or -v == verbose, more detailed info");
+                Console.WriteLine("  use -v -help to show settings: ");
+                if (!AppSettingsProvider.Verbose) return;
+                Console.WriteLine("");
+                Console.WriteLine("Settings:");
+                Console.WriteLine("Database Type "+ AppSettingsProvider.DatabaseType);
+                Console.WriteLine("BasePath " + AppSettingsProvider.BasePath);
+                Console.WriteLine("ThumbnailTempFolder " + AppSettingsProvider.ThumbnailTempFolder);
                 return;
             }
 
@@ -60,7 +66,7 @@ namespace starskyCli
             foreach (var singleFolderFullPath in subFoldersFullPath)
             {
                 string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath,false);
-                var localFileListFileHash = FileHash.CalcHashCode(filesInDirectoryFullPath);
+                var localFileListFileHash = FileHash.GetHashCode(filesInDirectoryFullPath);
 
                 for (int i = 0; i < filesInDirectoryFullPath.Length; i++)
                 {

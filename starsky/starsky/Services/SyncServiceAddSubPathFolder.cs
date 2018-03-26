@@ -29,6 +29,8 @@ namespace starsky.Services
         {
             foreach (var itemSubpath in GetListOfSubpaths(subPath))
             {
+                if(AppSettingsProvider.Verbose) Console.WriteLine("AddSubPathFolder: " + itemSubpath);
+
                 var countFolder = _context.FileIndex.Count(p => p.FilePath == itemSubpath);
                 if (countFolder == 0)
                 {

@@ -5,8 +5,27 @@ using starsky.Models;
 
 namespace starskycli
 {
-    public class ArgsHelper
+    public static class ArgsHelper
     {
+        public static bool NeedVerbose(IReadOnlyList<string> args)
+        {
+            var needDebug = false;
+
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--verbose" || args[arg].ToLower() == "-v") && (arg + 1) != args.Count)
+                {
+                    bool.TryParse(args[arg + 1], out needDebug);
+                }
+                if ((args[arg].ToLower() == "--verbose" || args[arg].ToLower() == "-v"))
+                {
+                    needDebug = true;
+                }
+            }
+
+            return needDebug;
+        }
+        
         public static bool NeedHelp(IReadOnlyList<string> args)
         {
             var needHelp = false;

@@ -23,8 +23,6 @@ namespace starskyCli
                 builder.UseSqlite(AppSettingsProvider.DbConnectionString);
             }
 
-            Console.WriteLine(AppSettingsProvider.DbConnectionString);
-
             var _options = builder.Options;
 
             _context = new ApplicationDbContext(_options);

@@ -19,7 +19,6 @@ namespace starsky.Services
         {
             foreach (var singleFolderDbStyle in localSubFolderDbStyle)
             {
-
                 // Check if Photo is in database
                 var dbFolderMatchFirst = databaseFileList.FirstOrDefault(
                     p =>
@@ -33,10 +32,12 @@ namespace starsky.Services
                 {
                     // photo
                     Console.Write(".");
+                    if(AppSettingsProvider.Verbose) Console.WriteLine("AddPhotoToDatabase: " + singleFolderDbStyle);
+
                     var singleFilePath = FileIndexItem.DatabasePathToFilePath(singleFolderDbStyle);
                     var databaseItem = ExifRead.ReadExifFromFile(singleFilePath);
                     databaseItem.AddToDatabase = DateTime.UtcNow;
-                    databaseItem.FileHash = FileHash.CalcHashCode(singleFilePath);
+                    databaseItem.FileHash = FileHash.GetHashCode(singleFilePath);
                     databaseItem.FileName = Path.GetFileName(singleFilePath);
                     databaseItem.IsDirectory = false;
                     databaseItem.ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(singleFilePath));

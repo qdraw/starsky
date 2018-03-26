@@ -71,7 +71,7 @@ namespace starsky.Controllers
             var exifToolResults = ExifTool.Update(updateModel, FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
 
             // Update Database with results
-            singleItem.FileIndexItem.FileHash = FileHash.CalcHashCode(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            singleItem.FileIndexItem.FileHash = FileHash.GetHashCode(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             singleItem.FileIndexItem.AddToDatabase = DateTime.Now;
             singleItem.FileIndexItem.Tags = exifToolResults.Keywords;
             singleItem.FileIndexItem.ColorClass = exifToolResults.ColorClass;

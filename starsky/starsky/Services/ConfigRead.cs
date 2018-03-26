@@ -18,8 +18,6 @@ namespace starsky.Services
             string thumbnailTempFolder;
             string exifToolPath;
 
-            Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json");
-
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json"))
             {
                 string text =
@@ -84,6 +82,7 @@ namespace starsky.Services
             AppSettingsProvider.ThumbnailTempFolder = thumbnailTempFolder;
             AppSettingsProvider.ExifToolPath = exifToolPath;
 
+            if(AppSettingsProvider.Verbose) Console.WriteLine("DatabaseType: " +AppSettingsProvider.DatabaseType.ToString() );
 
         }
 

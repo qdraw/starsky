@@ -19,11 +19,15 @@ namespace starsky.Services
         {
             foreach (var itemLocal in localSubFolderDbStyle)
             {
+                if(AppSettingsProvider.Verbose) Console.WriteLine("CheckMd5Hash: " + itemLocal);
+
                 var dbItem = databaseFileList.FirstOrDefault(p => p.FilePath == itemLocal);
                 if (dbItem != null)
                 {
                     // Check if Hash is changed
-                    var localHash = FileHash.CalcHashCode(FileIndexItem.DatabasePathToFilePath(itemLocal));
+                    var localHash = FileHash.GetHashCode(FileIndexItem.DatabasePathToFilePath(itemLocal));
+                    if(AppSettingsProvider.Verbose) Console.WriteLine("localHash: " + localHash);
+
                     if (localHash != dbItem.FileHash)
                     {
                         _query.RemoveItem(dbItem);

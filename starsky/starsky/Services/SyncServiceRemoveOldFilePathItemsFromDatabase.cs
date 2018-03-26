@@ -15,8 +15,7 @@ namespace starsky.Services
         public List<FileIndexItem> RemoveOldFilePathItemsFromDatabase(
             List<string> localSubFolderListDatabaseStyle,
             List<FileIndexItem> databaseSubFolderList,
-            string subpath
-        )
+            string subpath)
         {
 
             //Check fileName Difference
@@ -29,7 +28,8 @@ namespace starsky.Services
 
             IEnumerable<string> differenceFileNames = databaseFileListFileName.Except(localSubFolderListDatabaseStyle);
 
-            Console.Write(differenceFileNames.Count() + " " + databaseSubFolderList.Count);
+            if(AppSettingsProvider.Verbose) Console.Write("diff: " + differenceFileNames.Count() + "  | in db folder" + databaseSubFolderList.Count);;
+            
 
             // Delete removed items
             foreach (var item in differenceFileNames)
