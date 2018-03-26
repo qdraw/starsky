@@ -46,7 +46,7 @@
         &nbsp;
         @if (@Model.RelativeObjects.PrevFilePath != null)
         {
-            <a asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige</a>
+            <a class="prev" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige</a>
         }
         @if (@Model.RelativeObjects.NextFilePath != null)
         {
