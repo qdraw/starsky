@@ -36,3 +36,5 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
         }
     };
 }
+
+

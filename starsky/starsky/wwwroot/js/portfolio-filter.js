@@ -224,7 +224,8 @@ function constructURL() {
 }
 
 function setVariable(hashList) {
-    
+    updateBreadCrumb();
+
     if (document.querySelectorAll("#portfolio-data").length === 1 
         && document.querySelectorAll("#portfolio-filter").length === 1)
     {
@@ -247,24 +248,33 @@ function setVariable(hashList) {
                 object[i].classList.add("show");     
             }
 
-            // Add to Url
-            if (object[i].href.indexOf("#colorclass") === -1) {
-                object[i].href += "#colorclass=";
-            }
-            else {
-                var position = object[i].href.indexOf("#colorclass");
-                object[i].href = object[i].href.substr(0,position);
-                object[i].href += "#colorclass=";
-            }
-            for (var j = 0; j < hashList.length; j++) {
-                if (j !== hashList.length-1){
-                    object[i].href += hashList[j] +  ",";
+
+                // Add to Url
+                if (object[i].href.indexOf("&colorclass") === -1 && hashList.length >= 1) {
+                    object[i].href += "&colorclass=";
                 }
-                else {
-                    object[i].href += hashList[j];
+                else if (object[i].href.indexOf("&colorclass") >= 0 && hashList.length <= 0) {
+                    //  if press reset
+                    var position = object[i].href.indexOf("&colorclass");
+                    object[i].href = object[i].href.substr(0, position);        
                 }
-            }
-            // end add to url
+                else if(hashList.length >= 1) {
+                    var position = object[i].href.indexOf("&colorclass");
+                    object[i].href = object[i].href.substr(0, position);
+                    object[i].href += "&colorclass=";
+                }
+    
+                if (hashList.length >= 1) {
+                    for (var j = 0; j < hashList.length; j++) {
+                        if (j !== hashList.length - 1) {
+                            object[i].href += hashList[j].replace("colorclass-","") + ",";
+                        }
+                        else {
+                            object[i].href += hashList[j].replace("colorclass-","");
+                        }
+                    }
+                }
+                // end add to url
 
             if(hashList.length >= 1) {
     
@@ -336,7 +346,6 @@ function buildPage() {
                 // console.log(object[i].children[0].id)
             }
         }
-
 }
 window.onhashchange = function() {
     if (window.innerDocClick) {
@@ -363,3 +372,25 @@ window.onhashchange = function() {
 
 
 buildPage();
+
+function updateBreadCrumb() {
+    // looking for anchor based urls
+    if (document.querySelectorAll(".breadcrumb").length >= 1) {
+        var breadcrumbObject = document.querySelector(".breadcrumb").children;
+        if (window.location.hash.indexOf("colorclass") >= 0) {
+            if (breadcrumbObject.length >= 2) {
+                for (var i = 0; i < breadcrumbObject.length; i++) {
+                    if (i === breadcrumbObject.length - 1) {
+                        if (breadcrumbObject[i].href.indexOf("#colorclass") >= 0) {
+                            var index = breadcrumbObject[i].href.indexOf("#colorclass");
+                            breadcrumbObject[i].href = breadcrumbObject[i].href.substr(0,index);
+                        }
+                        if (breadcrumbObject[i].href.indexOf("colorclass") === -1) {
+                            breadcrumbObject[i].href += window.location.hash;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

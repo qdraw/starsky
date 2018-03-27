@@ -609,7 +609,12 @@ h2 {
     margin-top: 10px;
     margin-bottom: 10px;
     font-size: 15px;
+    min-height: 10px;
 }
+.nextprev .prev {
+float: left;
+}
+
 .nextprev .next {
     display: inline-block;
     float: right;
@@ -625,6 +630,12 @@ h2 {
 
 .js-filterinfo {
     margin-left: 40px;
+}
+@media screen and (max-width: 600px) {
+    .js-filterinfo {
+        width: 100px;
+        display: inline-block;
+    }
 }
 
 .nextprev .sqbox {

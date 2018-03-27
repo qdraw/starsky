@@ -86,12 +86,12 @@ namespace starsky.Models
             if (colorclassString.Contains(",")) {
                 colorclassStringList = colorclassString.Split(",").ToList();
             }
-            var colorclassList = new List<Color>();
+            var colorclassList = new HashSet<Color>();
             foreach (var colorclassStringItem in colorclassStringList)
             {
                 colorclassList.Add(SetColorClass(colorclassStringItem));
             }
-            return colorclassList;
+            return colorclassList.ToList();
         }
 
 

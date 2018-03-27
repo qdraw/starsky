@@ -244,43 +244,54 @@ if (document.querySelectorAll(".sidebar").length === 1) {
     
 }
 
-
+// Add select part to next prev url
 if (document.querySelectorAll(".nextprev").length >= 1) {
 
     var object = document.querySelector(".nextprev").children;
     var searchPosition = window.location.search.indexOf("colorclass") - 1;
     addcolorclassPart = window.location.search.substr(searchPosition, window.location.search.length);
-    
+
     for (var i = 0; i < object.length; i++) {
-        
+
         if (window.location.search.indexOf("colorclass") >= 0) {
             object[i].href += addcolorclassPart;
         }
     }
+}
 
-    if (document.querySelectorAll(".js-filterinfo").length >= 1) {
 
-        if (addcolorclassPart.indexOf(",") >= 0) {
-        var split = addcolorclassPart.split(",");
-            var filterinfoobject = document.querySelector(".js-filterinfo");
-            console.log(split)
-            if (split.length >= 1) {
-                filterinfoobject.innerHTML += "<span>Filters:</span> "
-                for (var j = 0; j < split.length; j++) {
-                    var itemname = split[j].replace("&colorclass=","")
-                    filterinfoobject.innerHTML += "<span class='sqbox on colorclass-" + itemname + "'></span>";
+
+// Adding filter options to current breadcrum indexer
+// > transform it to javascript fast filter style
+// looking for ?f=/20161217_180000_imc.jpg&colorclass=7,0 urls
+
+if (document.querySelectorAll(".breadcrumb").length >= 1) {
+    var breadcrumbObject = document.querySelector(".breadcrumb").children;
+    if(window.location.search.indexOf("colorclass") >= 0) {
+        var searchPositionCl = window.location.search.indexOf("colorclass") - 1;
+        addcolorclassHash = window.location.search.substr(searchPositionCl+("colorclass".length+2), window.location.search.length);
+        var addcolorclassArray = [];
+        if (addcolorclassHash.indexOf(",")>= 0){
+            addcolorclassArray = addcolorclassHash.split(",");
+        }
+        else addcolorclassArray.push(addcolorclassHash);
+
+        if (breadcrumbObject.length >= 4) {
+            for (var i = 0; i < breadcrumbObject.length; i++) {
+
+                if (i === breadcrumbObject.length-3){
+                    breadcrumbObject[i].href += "#colorclass=";
+
+                    for (var j = 0; j < addcolorclassArray.length; j++) {
+                        if (j !== addcolorclassArray[j].length-1 ){
+                            breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[j];
+                        }
+                        else {
+                            breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[j] + ",";
+                        }
+                    }
                 }
             }
         }
-    
-        console.log(addcolorclassPart.replace("&colorclass=",""))
-        console.log(isNaN(addcolorclassPart.replace("&colorclass=","")))
-        if (!isNaN(addcolorclassPart.replace("&colorclass=",""))) {
-            var filterinfoobject = document.querySelector(".js-filterinfo");
-            filterinfoobject.innerHTML += "<span>Filters:</span> "
-            filterinfoobject.innerHTML += "<span class='sqbox on colorclass-" + addcolorclassPart.replace("&colorclass=","") + "'></span>";
-        }
     }
-    // todo: Missing duplicate check and full mobile support
-
 }
