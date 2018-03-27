@@ -289,7 +289,7 @@ function buildPage() {
     }
 
         // read from url
-        console.log(window.location.hash);
+        // console.log(window.location.hash);
     
         var urlsubject = [];
         var replaceurl = window.location.hash.replace("#colorclass=","");

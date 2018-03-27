@@ -11,7 +11,7 @@ function loadJSON(path, success, error, type)
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200 || xhr.status === 205) {
                 if (success) {
-                    console.log(xhr.responseText);
+                    // console.log(xhr.responseText);
                     success(JSON.parse(xhr.responseText));
                 };
             } else {
@@ -243,3 +243,103 @@ if (document.querySelectorAll(".sidebar").length === 1) {
     }
     
 }
+
+
+if (document.querySelectorAll(".nextprev").length >= 1) {
+
+    var object = document.querySelector(".nextprev").children;
+    for (var i = 0; i < object.length; i++) {
+        if (object[i].href.indexOf("#colorclass") === -1) {
+        }
+        else {
+            var position = object[i].href.indexOf("#colorclass");
+            object[i].href = object[i].href.substr(0,position);
+        }
+        object[i].href += window.location.hash
+    }
+
+    var urlsubject = [];
+    var replaceurl = window.location.hash.replace("#colorclass=","");
+    if (replaceurl.indexOf(",") >= 0){
+        replaceurl = replaceurl.split(",");
+        for (var i = 0; i < replaceurl.length; i++) {
+            urlsubject.push(parseInt(replaceurl[i].replace("colorclass-","")))
+        }
+    }
+    else {
+        if (replaceurl.indexOf("colorclass") >= 0) {
+            console.log(replaceurl);
+
+            replaceurl = replaceurl.replace("colorclass-","");
+            console.log(replaceurl);
+            urlsubject.push(parseInt(replaceurl));
+        }
+    }
+    console.log(urlsubject)
+    
+    if (urlsubject.length >= 1) {
+        loadJSON(folderApiBase,
+            function(data) {
+                // updateNextPrev(data);
+            },
+            function (xhr) { console.error(xhr); },
+            "GET"
+        );
+    }
+    
+}
+
+// function  updateNextPrev(data){
+//     var currentitem = window.location.search.replace("?f=");
+//     currentitem = currentitem.replace("undefined","");
+//     currentitem = currentitem.replace(/%2F/ig,"/");
+//    
+//     var nexturl = null;
+//     var prevurl = null;
+//
+//     var next = false;
+//     Object.keys(data).forEach(function(key) {
+//         if (next){
+//             var index = urlsubject.indexOf(data[key].colorClass);
+//             if (index >= 0){
+//                 nexturl = data[key].filePath;
+//                 next = false;
+//                 // console.log(key, data[key]);
+//             }
+//         }
+//         if (data[key].filePath === currentitem){
+//             next = true;
+//         }
+//     });
+//     reversedata = reverseObject(data);
+//     Object.keys(reversedata).forEach(function(key) {
+//         if (prev){
+//             var index = urlsubject.indexOf(reversedata[key].colorClass);
+//             if (index >= 0){
+//                 // console.log(key, reversedata[key]);
+//                 prevurl = reversedata[key].filePath;
+//                 prev = false;
+//             }
+//         }
+//         if (reversedata[key].filePath === currentitem){
+//             prev = true;
+//         }
+//     });
+//     console.log(prevurl);
+//     console.log(nexturl);
+// }
+//
+// function reverseObject(object) {
+//     var newObject = {};
+//     var keys = [];
+//     for (var key in object) {
+//         keys.push(key);
+//     }
+//     for (var i = keys.length - 1; i >= 0; i--) {
+//
+//         var value = object[keys[i]];
+//         newObject[keys[i]]= value;
+//     }
+//
+//     return newObject;
+// }

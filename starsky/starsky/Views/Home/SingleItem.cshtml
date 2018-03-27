@@ -76,6 +76,7 @@
 <script type="text/javascript">
     var updateApiBase = "@Url.Action("Update", "Api", new { f = @Model.FileIndexItem.FilePath})";
     var infoApiBase = "@Url.Action("Info", "Api", new { f = @Model.FileIndexItem.FilePath})";
+    var folderApiBase = "@Url.Action("Folder", "Api", new { f = @Model.FileIndexItem.ParentDirectory})";
 </script>
 
 <div class="preloader">
