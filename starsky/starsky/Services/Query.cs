@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,7 @@ namespace starsky.Services
                 .OrderBy(r => r.FileName).ToList();
         }
 
+
         public FileIndexItem GetObjectByFilePath(string filePath)
         {
             filePath = SubPathSlashRemove(filePath);
@@ -43,14 +45,26 @@ namespace starsky.Services
         }
 
 
-        public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/")
+        public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/", 
+            IEnumerable<FileIndexItem.Color> colorClassFilterList = null)
         {
             subPath = SubPathSlashRemove(subPath);
-
-            var queryItems = _context.FileIndex
-                .Where(p => p.ParentDirectory == subPath)
-                .OrderBy(p => p.FileName).ToList();
-
+            List<FileIndexItem> queryItems;
+            
+            if (colorClassFilterList == null)
+            {
+                queryItems = _context.FileIndex
+                    .Where(p => p.ParentDirectory == subPath)
+                    .OrderBy(p => p.FileName).ToList();     
+            }
+            else
+            {
+                queryItems = _context.FileIndex
+                    .Where(p => p.ParentDirectory == subPath &&
+                                colorClassFilterList.Contains(p.ColorClass))
+                    .OrderBy(p => p.FileName).ToList();  
+            }
+            
             if (!queryItems.Any())
             {
                 return new List<FileIndexItem>();

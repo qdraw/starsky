@@ -72,6 +72,28 @@ namespace starsky.Models
             }
         }
 
+        public List<Color> GetColorClassList(string colorclassString = null)
+        {
+            if (string.IsNullOrWhiteSpace(colorclassString)) return null;
+
+
+            var colorclassStringList = new List<string>();
+            if (!colorclassString.Contains(","))
+            {
+                if (!int.TryParse(colorclassString, out var parsedInt)) return null;
+                colorclassStringList.Add(parsedInt.ToString());
+            }
+            if (colorclassString.Contains(",")) {
+                colorclassStringList = colorclassString.Split(",").ToList();
+            }
+            var colorclassList = new List<Color>();
+            foreach (var colorclassStringItem in colorclassStringList)
+            {
+                colorclassList.Add(SetColorClass(colorclassStringItem));
+            }
+            return colorclassList;
+        }
+
 
         public Color ColorClass { 
             get => _colorClass;

@@ -255,6 +255,7 @@ h2 {
     background-color: rgba(0, 0, 0, 0.3);
 }
 
+.nextprev .colorclass-0.on,
 .add-colorclass .none.on,
 .add-colorclass .colorclass-0.on,
 #portfolio-filter ul > li > a#colorclass-0.active {
@@ -269,6 +270,8 @@ h2 {
 .wrapper .halfitem.Winner .caption {
     background-color: rgba(255, 0, 255, 0.3);
 }
+
+.nextprev .colorclass-8.on,
 .add-colorclass .winner.on,
 .add-colorclass .colorclass-8 .on,
 #portfolio-filter ul > li > a#colorclass-8.active {
@@ -283,6 +286,7 @@ h2 {
     background-color: rgba(255, 0, 2, 0.3);
 }
 
+.nextprev .colorclass-7.on,
 .add-colorclass .winneralt.on,
 .add-colorclass .colorclass-7.on,
 #portfolio-filter ul > li > a#colorclass-7.active {
@@ -296,6 +300,7 @@ h2 {
     background-color: rgba(255, 127, 1, 0.6);
 }
 
+.nextprev .colorclass-6.on,
 .add-colorclass .superior.on,
 .add-colorclass .colorclass-6.on,
 #portfolio-filter ul > li > a#colorclass-6.active {
@@ -307,6 +312,7 @@ h2 {
     background-color: rgba(255, 127, 1, 0.3);
 }
 
+.nextprev .colorclass-5.on,
 .add-colorclass .superioralt.on,
 .add-colorclass .colorclass-5.on,
 #portfolio-filter ul > li > a#colorclass-5.active {
@@ -322,6 +328,7 @@ h2 {
     background-color: rgba(255, 255, 83, 0.3);
 }
 
+.nextprev .colorclass-4.on,
 .add-colorclass .colorclass-4.on,
 .add-colorclass .typical.on,
 #portfolio-filter ul > li > a#colorclass-4.active {
@@ -337,6 +344,7 @@ h2 {
     background-color: rgba(0, 255, 0, 0.3);
 }
 
+.nextprev .colorclass-3.on,
 .add-colorclass .colorclass-3.on,
 .add-colorclass .typical.on,
 #portfolio-filter ul > li > a#colorclass-3.active {
@@ -351,6 +359,7 @@ h2 {
     background-color: rgba(0, 255, 255, 0.3);
 }
 
+.nextprev .colorclass-2.on,
 .add-colorclass .colorclass-2.on,
 .add-colorclass .extras.on,
 #portfolio-filter ul > li > a#colorclass-2.active {
@@ -366,6 +375,7 @@ h2 {
     background-color: rgba(0, 0, 255, 0.3);
 }
 
+.nextprev .colorclass-1.on,
 .add-colorclass .colorclass-1.on,
 .add-colorclass .trash.on,
 #portfolio-filter ul > li > a#colorclass-1.active {
@@ -613,7 +623,15 @@ h2 {
     max-width: 20ch;
 }
 
+.js-filterinfo {
+    margin-left: 40px;
+}
 
+.nextprev .sqbox {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+}
 
 .breadcrumb {
     font-size: 20px;

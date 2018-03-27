@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using starsky.Models;
 using starsky.ViewModels;
 
 namespace starsky.Services
@@ -10,7 +11,8 @@ namespace starsky.Services
     {
         // For displaying single photo's
         // input: Name of item by db style path
-        public DetailView SingleItem(string singleItemDbPath)
+        public DetailView SingleItem(string singleItemDbPath,
+            IEnumerable<FileIndexItem.Color> colorClassFilterList = null)
         {
             if (string.IsNullOrWhiteSpace(singleItemDbPath)) return null;
 
@@ -18,7 +20,7 @@ namespace starsky.Services
 
             if (query == null) return null;
 
-            var relativeObject = _getNextPrevInSubFolder(query?.ParentDirectory, singleItemDbPath);
+            var relativeObject = _getNextPrevInSubFolder(query?.ParentDirectory, singleItemDbPath, colorClassFilterList);
 
             var itemResult = new DetailView
             {
@@ -30,18 +32,33 @@ namespace starsky.Services
         }
 
 
-        private RelativeObjects _getNextPrevInSubFolder(string parrentFolderPath, string fullImageFilePath)
+        private RelativeObjects _getNextPrevInSubFolder(
+            string parrentFolderPath, string fullImageFilePath,
+        IEnumerable<FileIndexItem.Color> colorClassFilterList = null
+            )
         {
-            var itemsInSubFolder = GetAllFiles(parrentFolderPath).OrderBy(p => p.FileName).ToList();
+            List<FileIndexItem> itemsInSubFolder;
+            if (colorClassFilterList == null)
+            {
+                itemsInSubFolder = GetAllFiles(parrentFolderPath).OrderBy(
+                    p => p.FileName).ToList();
+            }
+            else
+            {
+                itemsInSubFolder = GetAllFiles(parrentFolderPath).Where(
+                        p => colorClassFilterList.Contains(p.ColorClass)
+                    ).OrderBy(
+                    p => p.FileName).ToList();
+            }
+            
             var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == fullImageFilePath);
-
             var relativeObject = new RelativeObjects();
             if (photoIndexOfSubFolder != itemsInSubFolder.Count - 1)
             {
                 relativeObject.NextFilePath = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FilePath;
             }
 
-            if (photoIndexOfSubFolder != 0)
+            if (photoIndexOfSubFolder >= 1)
             {
                 relativeObject.PrevFilePath = itemsInSubFolder[photoIndexOfSubFolder - 1]?.FilePath;
             }

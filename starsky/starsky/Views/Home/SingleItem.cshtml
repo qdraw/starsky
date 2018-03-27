@@ -48,6 +48,7 @@
         {
             <a class="prev" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige</a>
         }
+        <span class="js-filterinfo"></span>
         @if (@Model.RelativeObjects.NextFilePath != null)
         {
             <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende</a>

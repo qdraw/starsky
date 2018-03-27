@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -21,9 +22,14 @@ namespace starsky.Controllers
         }
 
         [HttpGet]
-        public IActionResult Folder(string f = "/")
+        public IActionResult Folder(string f = "/", 
+            string colorClass = null)
         {
-            var fileIndexItems = _query.DisplayFileFolders(f);
+            // http://localhost:5000/api/folder?f=/2018/01/2018_01_01&colorClass=1,2
+            
+            var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
+            
+            var fileIndexItems = _query.DisplayFileFolders(f,colorClassFilterList);
             if (!fileIndexItems.Any()) NotFound("Folder not found");
             return Json(fileIndexItems);
         }

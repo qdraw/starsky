@@ -21,10 +21,13 @@ namespace starsky.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string f = "/")
+        public IActionResult Index(string f = "/", string colorClass = null)
         {
-            var model = new IndexViewModel {FileIndexItems = _query.DisplayFileFolders(f)};
-            var singleItem = _query.SingleItem(f);
+            // Used in Detail and Index View => does not hide this single item
+            var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
+
+            var model = new IndexViewModel {FileIndexItems = _query.DisplayFileFolders(f,colorClassFilterList)};
+            var singleItem = _query.SingleItem(f,colorClassFilterList);
             
             if (!model.FileIndexItems.Any())
             {
