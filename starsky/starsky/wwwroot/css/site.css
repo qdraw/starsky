@@ -250,14 +250,14 @@ h2 {
 
 .add-colorclass .none,
 .add-colorclass .colorclass-0,
-#portfolio-filter ul > li > a#none,
+#portfolio-filter ul > li > a#colorclass-0,
 .wrapper .halfitem.None .caption {
     background-color: rgba(0, 0, 0, 0.3);
 }
 
 .add-colorclass .none.on,
 .add-colorclass .colorclass-0.on,
-#portfolio-filter ul > li > a#none.active {
+#portfolio-filter ul > li > a#colorclass-0.active {
     background-color: rgba(0, 0, 0, 1);
     color: white;
     opacity: 1;
@@ -265,40 +265,40 @@ h2 {
 
 .add-colorclass .winner,
 .add-colorclass .colorclass-8,
-#portfolio-filter ul > li > a#winner,
+#portfolio-filter ul > li > a#colorclass-8,
 .wrapper .halfitem.Winner .caption {
     background-color: rgba(255, 0, 255, 0.3);
 }
 .add-colorclass .winner.on,
 .add-colorclass .colorclass-8 .on,
-#portfolio-filter ul > li > a#winner.active {
+#portfolio-filter ul > li > a#colorclass-8.active {
     background-color: rgba(255, 0, 255, 1);
     opacity: 1;
 }
 
 .add-colorclass .winneralt,
 .add-colorclass .colorclass-7,
-#portfolio-filter ul > li > a#winneralt,
+#portfolio-filter ul > li > a#colorclass-7,
 .wrapper .halfitem.WinnerAlt .caption {
     background-color: rgba(255, 0, 2, 0.3);
 }
 
 .add-colorclass .winneralt.on,
 .add-colorclass .colorclass-7.on,
-#portfolio-filter ul > li > a#winneralt.active {
+#portfolio-filter ul > li > a#colorclass-7.active {
     background-color: rgba(255, 0, 2, 1);
     opacity: 1;
 }
 
 .add-colorclass .superior,
 .add-colorclass .colorclass-6,
-#portfolio-filter ul > li > a#superior {
+#portfolio-filter ul > li > a#colorclass-6 {
     background-color: rgba(255, 127, 1, 0.6);
 }
 
 .add-colorclass .superior.on,
 .add-colorclass .colorclass-6.on,
-#portfolio-filter ul > li > a#superior.active {
+#portfolio-filter ul > li > a#colorclass-6.active {
     background-color: rgba(255, 127, 1, 1);
     opacity: 1;
 }
@@ -309,7 +309,7 @@ h2 {
 
 .add-colorclass .superioralt.on,
 .add-colorclass .colorclass-5.on,
-#portfolio-filter ul > li > a#superioralt.active {
+#portfolio-filter ul > li > a#colorclass-5.active {
     color: #8447B2;
     background-color: rgba(255, 255, 83, 1);
     opacity: 1;
@@ -317,14 +317,14 @@ h2 {
 
 .add-colorclass .colorclass-5,
 .add-colorclass .superioralt,
-#portfolio-filter ul > li > a#superioralt,
+#portfolio-filter ul > li > a#colorclass-5,
 .wrapper .halfitem.SuperiorAlt .caption {
     background-color: rgba(255, 255, 83, 0.3);
 }
 
 .add-colorclass .colorclass-4.on,
 .add-colorclass .typical.on,
-#portfolio-filter ul > li > a#typical.active {
+#portfolio-filter ul > li > a#colorclass-4.active {
     background-color: rgba(0, 255, 0, 1);
     color: #B23879;
     opacity: 1;
@@ -332,28 +332,28 @@ h2 {
 
 .add-colorclass .colorclass-4,
 .add-colorclass .typical,
-#portfolio-filter ul > li > a#typical,
+#portfolio-filter ul > li > a#colorclass-4,
 .wrapper .halfitem.Typical .caption {
     background-color: rgba(0, 255, 0, 0.3);
 }
 
 .add-colorclass .colorclass-3.on,
 .add-colorclass .typical.on,
-#portfolio-filter ul > li > a#typicalalt.active {
+#portfolio-filter ul > li > a#colorclass-3.active {
     color: #B2582F;
     background-color: rgba(0, 255, 255, 1);
     opacity: 1;
 }
 
 .add-colorclass .colorclass-3,
-#portfolio-filter ul > li > a#typicalalt,
+#portfolio-filter ul > li > a#colorclass-3,
 .wrapper .halfitem.TypicalAlt .caption {
     background-color: rgba(0, 255, 255, 0.3);
 }
 
 .add-colorclass .colorclass-2.on,
 .add-colorclass .extras.on,
-#portfolio-filter ul > li > a#extras.active {
+#portfolio-filter ul > li > a#colorclass-2.active {
     background-color: rgba(0, 0, 255, 1);
     opacity: 1;
     color: white;
@@ -361,20 +361,20 @@ h2 {
 
 .add-colorclass .colorclass-2,
 .add-colorclass .extras,
-#portfolio-filter ul > li > a#extras,
+#portfolio-filter ul > li > a#colorclass-2,
 .wrapper .halfitem.Extras .caption {
     background-color: rgba(0, 0, 255, 0.3);
 }
 
 .add-colorclass .colorclass-1.on,
 .add-colorclass .trash.on,
-#portfolio-filter ul > li > a#trash.active {
+#portfolio-filter ul > li > a#colorclass-1.active {
     background-color: rgba(150, 150, 100, 1);
     opacity: 1;
 }
 
 .add-colorclass .colorclass-1,
-#portfolio-filter ul > li > a#trash,
+#portfolio-filter ul > li > a#colorclass-1,
 .wrapper .halfitem.Trash .caption {
     background-color: rgba(150, 150, 100, 0.3);
 }

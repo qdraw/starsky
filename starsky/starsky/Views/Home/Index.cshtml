@@ -1,6 +1,7 @@
 ﻿@using System.Linq
 @using Microsoft.AspNetCore.Mvc
 @using starsky.ViewModels
+@using starsky.Models
 @model IndexViewModel
 @{
     ViewData["Title"] = Model.SearchQuery + " Index view ";
@@ -34,14 +35,16 @@
     }
 </h1>
 
-<div id="portfolio-filter" style="display: none">
+<div id="portfolio-filter">
 </div>
 
 <div class="wrapper" id="portfolio-data">
     @foreach (var item in Model.FileIndexItems)
     {
         var enumValue = (int) item.ColorClass;
-        <a class="halfitem @item.ColorClass" data-tag="@enumValue" asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
+        <a class="halfitem @item.ColorClass colorclass-@enumValue" data-tag="colorclass-@enumValue" 
+           data-tagnl="@FileIndexItem.GetAllColorUserInterface().FirstOrDefault(p => (int) p == enumValue )" 
+           asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
             <div class="caption">
                 <h2>@item.FileName</h2>
                 <p>@item.Tags&nbsp;</p>

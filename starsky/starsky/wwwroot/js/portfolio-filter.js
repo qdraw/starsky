@@ -10,6 +10,8 @@ makeTagList();
 tagList = removeArrayDuplicate(tagList);
 // alphabetic order
 tagList = tagList.sort();
+// not  => reverse
+tagList = tagList.reverse();
 
 writeFilterList (tagList);
 
@@ -33,7 +35,9 @@ function makeTagList() {
                 tags = 	tags.split(",");
 
                 for (var j = 0; j < tags.length; j++) {
-                    tagList.push(tags[j])
+                    if (tags[j] !== "colorclass--1"){
+                        tagList.push(tags[j])
+                    }
                 }
             }
 
@@ -77,58 +81,27 @@ function writeFilterList (tags) {
             var currentitem_alles = filterarticle.appendChild(li_alles).appendChild(a_alles);
             currentitem_alles.innerHTML = "Reset";
             currentitem_alles.className = "reset";
-            currentitem_alles.addEventListener("click", function(e){ var those = this; resetCheckBoxes();setVariable([]); constructURL(); }, false);
+            currentitem_alles.addEventListener("click", function(e){ var those = this; resetCheckBoxes(); selectedVar = []; setVariable([]); constructURL(); }, false);
             // EINDE ALLES
 
-            var newTags = [];
-            if(tags.indexOf("8") >= 0) {
-                newTags.push("Paars");
-            }
 
-            if(tags.indexOf("7") >= 0) {
-                newTags.push(tags[tags.indexOf("WinnerAlt")])
-            }
+            window.subject = tags;
 
-            if(tags.indexOf("Superior") >= 0) {
-                newTags.push(tags[tags.indexOf("Superior")])
-            }
-
-            if(tags.indexOf("SuperiorAlt") >= 0) {
-                newTags.push(tags[tags.indexOf("SuperiorAlt")])
-            }
-
-            if(tags.indexOf("Typical") >= 0) {
-                newTags.push(tags[tags.indexOf("Typical")])
-            }
-
-            if(tags.indexOf("TypicalAlt") >= 0) {
-                newTags.push(tags[tags.indexOf("TypicalAlt")])
-            }
-
-            if(tags.indexOf("Extras") >= 0) {
-                newTags.push(tags[tags.indexOf("Extras")])
-            }
-            if(tags.indexOf("Trash") >= 0) {
-                newTags.push(tags[tags.indexOf("Trash")])
-            }
-
-            if(tags.indexOf("None") >= 0) {
-                newTags.push(tags[tags.indexOf("None")])
-            }
-
-            window.subject = newTags;
-
-            for (var i = 0; i < newTags.length; i++) {
+            for (var i = 0; i < tags.length; i++) {
                 var li = document.createElement("li");
                 var a = document.createElement("a");
 
                 var currentitem = filterarticle.appendChild(li).appendChild(a);
-
                 currentitem.addEventListener("click", function(e){ var those = this; readVariable(those); }, false);
-                //   currentitem.href = "#" + newTags[i].toLowerCase().replace(/ /ig, "-");
+                currentitem.id = tags[i].toLowerCase().replace(/ /ig, "-");
+
+               
+                if (document.querySelectorAll("#portfolio-data ."+tags[i] ).length >= 0){
+                    var tagnl = document.querySelector("#portfolio-data ."+tags[i] ).dataset.tagnl;
+
+                    currentitem.innerHTML = "<span class='checkbox'></span>" + tagnl
+                }
                 
-                currentitem.id = newTags[i].toLowerCase().replace(/ /ig, "-");
-                currentitem.innerHTML = "<span class='checkbox'></span>" + newTags[i];
                 //"<span class='checkbox'></span>"
             }
             
@@ -138,13 +111,13 @@ function writeFilterList (tags) {
 }///e/writeFilterList
 
 
-function createSlug(tagList) {
-    var linkTagList = [];
-    for (var i = 0; i < tagList.length; i++) {
-        linkTagList.push(tagList[i].toLowerCase().replace(/ /ig, "-"));
-    }
-    return linkTagList;
-}
+// function createSlug(tagList) {
+//     var linkTagList = [];
+//     for (var i = 0; i < tagList.length; i++) {
+//         linkTagList.push(tagList[i].toLowerCase().replace(/ /ig, "-"));
+//     }
+//     return linkTagList;
+// }
 
 
 //
@@ -166,98 +139,6 @@ function resetCheckBoxes() {
         }
     }
 }
-
-//
-// function showLegenda() {
-//    
-//     if (window.location.hash != "") {
-//
-//         var hashname = window.location.hash.substring(1,window.location.hash.length).split(",");
-//         console.log(hashname);
-//        
-//         reset();
-//        
-//         var legendaobject = document.querySelector("#portfolio-filter" + " ." +  hashname[0]);
-//         legendaobject.className  = legendaobject.className.replace(/ off| on/ig,"") + " on"
-//     }
-//     if (window.location.hash === "") {
-//         reset();
-//         if (document.querySelectorAll("#portfolio-filter .alles").length === 1) {
-//             document.querySelector("#portfolio-filter .alles").className = "alles on"
-//         }
-//     }
-// }
-//
-// function filterPage() {
-//     console.log("sd")
-//
-//     var hashword = "";
-//     linkTagList = createSlug(tagList);
-//
-//     if (window.location.hash !== "") {
-//         hashword = window.location.hash.substring(1,window.location.hash.length);
-//     }
-//
-//     if (window.location.hash !== "" && linkTagList.indexOf(hashword) >= 0) {
-//         showLegenda();
-//
-//         currentFilter = hashword;
-//         if (linkTagList.indexOf(hashword) >= 0) {
-//             hideElementsByTag(hashword);
-//         }
-//     }
-//
-//     if (window.location.hash === "") {
-//         showLegenda();
-//         var object = document.querySelector("#portfolio-data").children;
-//         for (var i = 0; i < object.length; i++) {
-//             object[i].classList.remove("hide");
-//             object[i].classList.add("show");
-//         }
-//     }
-// }
-//
-//
-// function hideElementsByTag(hashword) {
-//     if (document.querySelectorAll("#portfolio-data").length === 1 
-//         && document.querySelectorAll("#portfolio-filter").length === 1)
-//     {
-//    
-//         var object = document.querySelector("#portfolio-data").children;
-//         for (var i = 0; i < object.length; i++) {
-//
-//             var tags = object[i].getAttribute('data-tag');
-//             var thisTags = [];
-//
-//             if (tags !== null) {
-//                 tags = 	tags.split(",");
-//
-//                 for (var j = 0; j < tags.length; j++) {
-//                     thisTags.push(tags[j])
-//                 }
-//                 thisTags = createSlug(thisTags);
-//
-//             }
-//             if (thisTags.indexOf(hashword) >= 0) {
-//                 // object[i].className = "halfitem show";
-//                 object[i].classList.remove("hide");
-//                 object[i].classList.add("show");
-//
-//             }
-//             if (thisTags.indexOf(hashword) === -1) {
-//                 // object[i].className = "halfitem hide";
-//                 object[i].classList.remove("show");
-//                 object[i].classList.add("hide");
-//             }
-//
-//         }
-//
-//     }
-// }
-//
-
-
-
 
 
 
@@ -357,11 +238,33 @@ function setVariable(hashList) {
         for (var i = 0; i < object.length; i++) {
 
             var tag = object[i].getAttribute('data-tag').toLowerCase();
+            
+            // tag = tag.replace("colorclass-","");
+            // console.log(tag)
            
             if(hashList.length >= 0) {
                 object[i].classList.remove("hide");
                 object[i].classList.add("show");     
             }
+
+            // Add to Url
+            if (object[i].href.indexOf("#colorclass") === -1) {
+                object[i].href += "#colorclass=";
+            }
+            else {
+                var position = object[i].href.indexOf("#colorclass");
+                object[i].href = object[i].href.substr(0,position);
+                object[i].href += "#colorclass=";
+            }
+            for (var j = 0; j < hashList.length; j++) {
+                if (j !== hashList.length-1){
+                    object[i].href += hashList[j] +  ",";
+                }
+                else {
+                    object[i].href += hashList[j];
+                }
+            }
+            // end add to url
 
             if(hashList.length >= 1) {
     
@@ -384,53 +287,67 @@ function buildPage() {
     if (document.querySelectorAll(".preloader").length === 1){
         document.querySelector(".preloader").style.display = "none";
     }
-    
-    var urlsubject = location.hash.replace("#colorclass=", "");
-    urlsubject = urlsubject.split(",");
 
-    var object = document.querySelector("#portfolio-filter .tags").children;
-    // console.log(urlsubject);
-
-    for (var i = 0; i < object.length; i++) {
-        object[i].children[0].classList.remove("active");
-    }
+        // read from url
+        console.log(window.location.hash);
     
-    setVariable(urlsubject);
-
-    if (urlsubject.length >= 1 && urlsubject[0] !== ""){
-    
-        for (var i = 0; i < urlsubject.length; i++) {
-            if (document.querySelectorAll("#portfolio-filter #" + urlsubject[i]).length === 1){
-                (document.querySelector("#portfolio-filter #" + urlsubject[i]).classList.remove("active"));
+        var urlsubject = [];
+        var replaceurl = window.location.hash.replace("#colorclass=","");
+        if (replaceurl.indexOf(",") >= 0){
+            urlsubject = replaceurl.split(",");
+        }
+        else {
+            if (replaceurl.indexOf("colorclass") >= 0) {
+                urlsubject.push(replaceurl)
             }
         }
-        
-        for (var i = 0; i < urlsubject.length; i++) {
-            if (document.querySelectorAll("#portfolio-filter #" + urlsubject[i]).length === 1){
-                (document.querySelector("#portfolio-filter #" + urlsubject[i]).classList.add("active"));
-            }
-        }
-        
+
+        selectedVar = urlsubject;
+
+
         var object = document.querySelector("#portfolio-filter .tags").children;
+        
+        console.log("urlsubject");
+
+        console.log(urlsubject);
+    
         for (var i = 0; i < object.length; i++) {
-            // console.log(object[i].children[0].id)
+            object[i].children[0].classList.remove("active");
         }
-    }
+        
+        setVariable(urlsubject);
+    
+        if (urlsubject.length >= 1 && urlsubject[0] !== ""){
+        
+            for (var i = 0; i < urlsubject.length; i++) {
+                if (document.querySelectorAll("#portfolio-filter #" + urlsubject[i]).length === 1){
+                    (document.querySelector("#portfolio-filter #" + urlsubject[i]).classList.remove("active"));
+                }
+            }
+            
+            for (var i = 0; i < urlsubject.length; i++) {
+                if (document.querySelectorAll("#portfolio-filter #" + urlsubject[i]).length === 1){
+                    (document.querySelector("#portfolio-filter #" + urlsubject[i]).classList.add("active"));
+                }
+            }
+            
+            var object = document.querySelector("#portfolio-filter .tags").children;
+            for (var i = 0; i < object.length; i++) {
+                // console.log(object[i].children[0].id)
+            }
+        }
+
 }
 window.onhashchange = function() {
     if (window.innerDocClick) {
         // Thanks: http://stackoverflow.com/questions/25806608/how-to-detect-browser-back-button-event-cross-browser
         window.innerDocClick = false;
-
-        console.log("innerDocClick");
-
+        
         buildPage()
 
     } else {
         if (window.location.hash != '#undefined') {
-
-            console.log("eiwn");
-
+            
             buildPage()
             
 
@@ -441,5 +358,8 @@ window.onhashchange = function() {
         }
     }
 };
+
+
+
 
 buildPage();
