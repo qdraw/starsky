@@ -2,48 +2,32 @@
 @using starsky.ViewModels
 @model SearchViewModel
 @{
-    ViewData["Title"] = Model.SearchQuery + " - Search";
+    ViewData["Title"] = "Prullenmand - ";
     ViewData["SearchQuery"] = Model.SearchQuery;
 }
 
-<h2>
-    @foreach (var item in Model.Breadcrumb)
-    {
-        var name = @item.Split("/")[item.Split("/").Length - 1];
-        if (name == "")
-        {
-            name = "Home";
-        }
-        if (name != "Home")
-        {
-            <a asp-controller="Search" asp-action="Trash" asp-route-t="@item">@name</a>
-        }
-        else
-        {
-            <a asp-controller="Home" asp-action="Index">@name</a>
-        }
-        if (item != Model.Breadcrumb[Model.Breadcrumb.Count - 1])
-        {
-            <span> &raquo;</span>
-        }
-    }
-</h2>
-
-
-<h4>
+<h4 class="nextprev">
     &nbsp;
     @if (Model.PageNumber >= 1)
     {
         var prevpage = @Model.PageNumber - 1;
-        <a asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Prev</a>
+        <a asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
     }
 
     @if (Model.PageNumber < Model.LastPageNumber)
     {
         var nextpage = @Model.PageNumber + 1;
-        <a class="next" asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Next</a>
+        <a class="next" asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
     }
 </h4>
+
+<h1 class="breadcrumb">
+    <a asp-controller="Home" asp-action="Index">Home</a>
+    <span> &raquo;</span>
+    <a asp-controller="Search" asp-action="Trash">Prullenmand</a>
+</h1>
+
+
 
 <div class="wrapper">
 
@@ -52,25 +36,25 @@
         <div class="halfitem">
             <div class="caption">
                 <h2><a asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">@item.FileName</a></h2>
-                <p>@item.Tags <a onclick="Remove('@item.FilePath')"class="btn-sm btn btn-danger">Verwijder van schijf</a></p>
+                <p><a onclick="Remove('@item.FilePath')"class="btn-sm btn btn-danger">Verwijder van schijf</a></p>
             </div>
             <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash})" alt="@item.Tags" />
         </div>
     }
 </div>
 
-<h4>
+<h4 class="nextprev" style="margin-top: 30px; margin-bottom: 30px;">
     &nbsp;
     @if (Model.PageNumber >= 1)
     {
         var prevpage = @Model.PageNumber - 1;
-        <a asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Prev</a>
+        <a asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
     }
 
     @if (Model.PageNumber < Model.LastPageNumber)
     {
         var nextpage = @Model.PageNumber + 1;
-        <a class="next" asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Next</a>
+        <a class="next" asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
     }
 </h4>
 

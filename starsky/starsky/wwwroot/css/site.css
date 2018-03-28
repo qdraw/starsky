@@ -600,6 +600,9 @@ h2 {
     margin-bottom: 5px;
 }
 
+.wrapper .halfitem .caption a {
+    color: white;
+}
 
 @media screen and (max-height: 550px) and (max-width: 950px) {
     .wrapper .halfitem .caption {
@@ -616,6 +619,7 @@ h2 {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 40ch;
+    margin-bottom: 4px;
 }
 
 @media screen and (min-width: 200px) and (max-width: 950px) {

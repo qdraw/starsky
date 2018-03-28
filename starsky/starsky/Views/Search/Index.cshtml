@@ -6,7 +6,23 @@
     ViewData["SearchQuery"] = Model.SearchQuery;
 }
 
-<h2>
+
+<h4 class="nextprev">
+    &nbsp;
+    @if (Model.PageNumber >= 1)
+    {
+        var prevpage = @Model.PageNumber - 1;
+        <a class="prev" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
+    }
+
+    @if (Model.PageNumber < Model.LastPageNumber)
+    {
+        var nextpage = @Model.PageNumber + 1;
+        <a class="next" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
+    }
+</h4>
+
+<h1 class="breadcrumb">
     @foreach (var item in Model.Breadcrumb)
     {
         var name = @item.Split("/")[item.Split("/").Length - 1];
@@ -27,7 +43,7 @@
             <span> &raquo;</span>
         }
     }
-</h2>
+</h1>
 
 <div class="wrapper">
     <form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-wrapper">
@@ -36,23 +52,21 @@
     </form>
 </div>
 
-<h4>
-    &nbsp;
-    @if (Model.PageNumber >= 1)
-    {
-        var prevpage = @Model.PageNumber - 1;
-        <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Prev</a>
-    }
 
-    @if (Model.PageNumber < Model.LastPageNumber)
-    {
-        var nextpage = @Model.PageNumber + 1;
-        <a class="next" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Next</a>
-    }
-</h4>
 
-<div class="wrapper">
-    <p>@Model.SearchCount resultaten in @Model.ElapsedSeconds seconden</p>
+<div class="wrapper" style="margin-bottom: 30px;">
+
+    <p>
+    @{ 
+        var humanPageNumbering = @Model.PageNumber + 1;
+    }
+        @if (@Model.PageNumber >= 1)
+        {
+            <text>Pagina @humanPageNumbering van </text> 
+        }
+        
+        @Model.SearchCount resultaten (@Model.ElapsedSeconds seconden)
+    </p>
 </div>
 
 <div class="wrapper">
@@ -69,17 +83,18 @@
     }
 </div>
 
-<h4>
+<h4 class="nextprev" style="margin-top: 30px; margin-bottom: 30px;">
     &nbsp;
     @if (Model.PageNumber >= 1)
     {
         var prevpage = @Model.PageNumber - 1;
-        <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Prev</a>
+        <a class="prev" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
     }
 
     @if (Model.PageNumber < Model.LastPageNumber)
     {
         var nextpage = @Model.PageNumber + 1;
-        <a class="next" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Next</a>
+        <a class="next" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
     }
 </h4>
+
