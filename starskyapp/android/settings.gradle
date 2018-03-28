@@ -1,0 +1,3 @@
+rootProject.name = 'starskyapp'
+
+include ':app'
