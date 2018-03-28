@@ -32,7 +32,7 @@ namespace starsky.Services
                 {
                     // photo
                     Console.Write(".");
-                    if(AppSettingsProvider.Verbose) Console.WriteLine("AddPhotoToDatabase: " + singleFolderDbStyle);
+                    if(AppSettingsProvider.Verbose) Console.WriteLine("\nAddPhotoToDatabase: " + singleFolderDbStyle);
 
                     var singleFilePath = FileIndexItem.DatabasePathToFilePath(singleFolderDbStyle);
                     var databaseItem = ExifRead.ReadExifFromFile(singleFilePath);

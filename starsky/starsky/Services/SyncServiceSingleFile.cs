@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using starsky.Interfaces;
 using starsky.Models;
 
 namespace starsky.Services
@@ -31,7 +27,8 @@ namespace starsky.Services
 
                 CheckMd5Hash(localListWithOneFileDbStyle, dbListWithOneFile);
                 AddPhotoToDatabase(localListWithOneFileDbStyle, dbListWithOneFile);
-
+                
+                // currently does not allow '-t true' extension on a single file
                 throw new FileNotFoundException();
             }
 

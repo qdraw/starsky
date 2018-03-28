@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using starsky.Models;
 
 namespace starsky.Services
@@ -67,10 +66,7 @@ namespace starsky.Services
                     Console.Write("$");
                     _query.RemoveItem(orphanItem);
                 }
-
-
             }
-
             return databaseSubFolderList;
         }
     }

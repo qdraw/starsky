@@ -32,7 +32,6 @@ namespace starsky.Services
                         _query.RemoveItem(item);
                     }
                 }
-
                 throw new FileNotFoundException();
             }
         }

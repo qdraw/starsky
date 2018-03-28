@@ -42,7 +42,8 @@
     @foreach (var item in Model.FileIndexItems)
     {
         var enumValue = (int) item.ColorClass;
-        <a class="halfitem @item.ColorClass colorclass-@enumValue" data-tag="colorclass-@enumValue" 
+        var directoryLabel = "directory-" + item.IsDirectory.ToString().ToLower();
+        <a class="halfitem @item.ColorClass colorclass-@enumValue @directoryLabel" data-tag="colorclass-@enumValue" 
            data-tagnl="@FileIndexItem.GetAllColorUserInterface().FirstOrDefault(p => (int) p == enumValue )" 
            asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
             <div class="caption">
@@ -50,7 +51,7 @@
                 <p>@item.Tags&nbsp;</p>
             </div>
 
-            @if (!@item.IsDirectory)
+            @if (!string.IsNullOrWhiteSpace(@item.FileHash) )
             {
                 <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash})" alt="" />
             }

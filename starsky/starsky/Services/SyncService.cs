@@ -54,6 +54,9 @@ namespace starsky.Services
             }
 
             AddSubPathFolder(subPath);
+            
+            // Gives folder an thumbnail image (only if contains direct files)
+            FirstItemDirectory(subPath);
 
             return null;
         }

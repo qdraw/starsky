@@ -34,10 +34,12 @@ namespace starsky.Services
                 var countFolder = _context.FileIndex.Count(p => p.FilePath == itemSubpath);
                 if (countFolder == 0)
                 {
-                    var newItem = new FileIndexItem();
-                    newItem.FilePath = itemSubpath;
-                    newItem.AddToDatabase = DateTime.UtcNow;
-                    newItem.IsDirectory = true;
+                    var newItem = new FileIndexItem
+                    {
+                        FilePath = itemSubpath,
+                        AddToDatabase = DateTime.UtcNow,
+                        IsDirectory = true
+                    };
                     if (itemSubpath != "/")
                     {
                         newItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(itemSubpath).LastOrDefault();

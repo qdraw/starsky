@@ -233,8 +233,16 @@ h2 {
     transition: transform .5s ease-in-out;
     overflow: hidden;
     position: relative;
-    background-color: beige;
+    /*background-color: beige;*/
+    background-color: rgba(109, 199, 256, 0.6);
 }
+.wrapper .halfitem.directory-true img {
+    opacity: 0.2;
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+}
+
+
 
 .wrapper .halfitem .caption {
     padding-left: 3vw;
@@ -255,6 +263,12 @@ h2 {
     background-color: rgba(0, 0, 0, 0.3);
 }
 
+.wrapper .halfitem.None.directory-true .caption {
+    /*// beige*/
+    background-color: rgba(109, 199, 256, 0.1);
+}
+
+
 .nextprev .colorclass-0.on,
 .add-colorclass .none.on,
 .add-colorclass .colorclass-0.on,
@@ -263,6 +277,7 @@ h2 {
     color: white;
     opacity: 1;
 }
+
 
 .add-colorclass .winner,
 .add-colorclass .colorclass-8,
