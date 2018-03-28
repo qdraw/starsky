@@ -30,7 +30,7 @@ ol, ul {
     list-style: none; }
 
 blockquote, q {
-    quotes: none; 
+    quotes: none;
 }
 
 blockquote:before, blockquote:after,
@@ -43,7 +43,7 @@ table {
     border-spacing: 0; }
 
 em, i {
-    font-style: italic; 
+    font-style: italic;
 }
 
 @font-face {
@@ -69,7 +69,7 @@ em, i {
 
 html {
     scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch; 
+    -webkit-overflow-scrolling: touch;
     font-family: 'Gloriola Std', sans-serif;
 }
 *, *:before, *:after {
@@ -114,7 +114,7 @@ html {
 }
 #portfolio-filter ul > li {
     display: inline-block;
-    text-align: left; 
+    text-align: left;
 }
 
 .add-colorclass a,
@@ -278,7 +278,7 @@ h2 {
 
 .wrapper .halfitem.None.directory-true .caption {
     /*// beige*/
-    background-color: rgba(109, 199, 256, 0.1);
+    background-color: rgba(109, 199, 256, 0.5);
 }
 
 
@@ -483,7 +483,7 @@ h2 {
 
 .contenteditable {
     min-height: 30px;
-    height: 100%; 
+    height: 100%;
 }
 
 .btn.disabled,
@@ -656,7 +656,16 @@ float: left;
     text-overflow: ellipsis;
     max-width: 20ch;
 }
-
+@media screen and (min-width: 400px) and (max-width: 600px) {
+    .nextprev a {
+        max-width: 17ch;
+    }
+}
+@media screen and (max-width: 400px) {
+    .nextprev a {
+        max-width: 14ch;
+    }
+}
 .js-filterinfo {
     margin-left: 40px;
 }
@@ -742,7 +751,7 @@ float: left;
 }
 
 
-.sidebar .content {    
+.sidebar .content {
     padding: 15px;
     padding-left: 30px;
     overflow-y: scroll;
