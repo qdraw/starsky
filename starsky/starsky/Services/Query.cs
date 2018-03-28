@@ -94,20 +94,18 @@ namespace starsky.Services
         
         public RelativeObjects GetNextPrevInFolder(string currentFolder)
         {
+            currentFolder = SubPathSlashRemove(currentFolder);
 
             var parrentFolderPathArray = currentFolder.Split("/");
-            var parrentFolderPath = "/";
-            for (int i = 0; i < parrentFolderPathArray.Length; i++)
+            var parrentFolderPath = String.Empty;
+            for (int i = 1; i < parrentFolderPathArray.Length; i++)
             {
                 if (i <= parrentFolderPathArray.Length-2)
                 {
-                    // Remove the backslash first (if exist) and add it back;
-                    parrentFolderPath = ConfigRead.RemoveLatestBackslash(parrentFolderPath) + "/" + parrentFolderPathArray[i];
+                    parrentFolderPath = parrentFolderPath + "/" + parrentFolderPathArray[i];
                 }
             }
-            Console.WriteLine(parrentFolderPath);
-            Console.WriteLine(currentFolder);
-            
+
             var itemsInSubFolder = _context.FileIndex
                 .Where(p => p.ParentDirectory == parrentFolderPath)
                 .OrderBy(p => p.FileName).ToList();
@@ -128,6 +126,7 @@ namespace starsky.Services
 
             return relativeObject;
         }
+
 
 
         public string SubPathSlashRemove(string subPath = "/")

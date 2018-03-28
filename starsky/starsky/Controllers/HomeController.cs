@@ -25,14 +25,16 @@ namespace starsky.Controllers
         {
             // Used in Detail and Index View => does not hide this single item
             var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
+            var subpath = _query.SubPathSlashRemove(f);
 
-            var model = new IndexViewModel {FileIndexItems = _query.DisplayFileFolders(f,colorClassFilterList)};
-            var singleItem = _query.SingleItem(f,colorClassFilterList);
             
+            var model = new IndexViewModel {FileIndexItems = _query.DisplayFileFolders(subpath,colorClassFilterList)};
+            var singleItem = _query.SingleItem(subpath,colorClassFilterList);
+
             if (!model.FileIndexItems.Any())
             {
                 // is directory is emthy 
-                var queryIfFolder = _query.GetObjectByFilePath(f);
+                var queryIfFolder = _query.GetObjectByFilePath(subpath);
                 
                 if (singleItem?.FileIndexItem.FilePath == null && queryIfFolder == null)
                 {
@@ -49,9 +51,10 @@ namespace starsky.Controllers
                 return View("SingleItem", singleItem);
             }
 
-            model.Breadcrumb = Breadcrumbs.BreadcrumbHelper(f);
-            model.SearchQuery = f.Split("/").LastOrDefault();                
-            model.RelativeObjects = _query.GetNextPrevInFolder(f);
+            
+            model.Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath);
+            model.SearchQuery = subpath.Split("/").LastOrDefault();                
+            model.RelativeObjects = _query.GetNextPrevInFolder(subpath);
             return View(model);
         }
 

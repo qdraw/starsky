@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace starsky.Services
 {
-    public class Breadcrumbs
+    public static class Breadcrumbs
     {
         public static List<string> BreadcrumbHelper(string filePath)
         {
             if (filePath == null) return null;
+
+            // remove backslash from end
+            filePath = ConfigRead.RemoveLatestBackslash(filePath);
 
             var breadcrumb = new List<string>();
             if (filePath[0].ToString() != "/")
@@ -35,17 +36,11 @@ namespace starsky.Services
                         {
                             item += "/" + filePathArray[i];
                         }
-                        //else
-                        //{
-                        //    item += "/" +filePathArray[i];
-                        //}
                     }
                     breadcrumb.Add(item);
                 }
                 dir++;
-
             }
-
             return breadcrumb;
         }
     }

@@ -96,6 +96,8 @@ namespace starsky.Services
         {
             if (string.IsNullOrWhiteSpace(basePath)) throw new FileNotFoundException("Error");
 
+            if (basePath == "/") return basePath;
+            
             // remove latest backslash
             if (basePath.Substring(basePath.Length - 1, 1) == Path.DirectorySeparatorChar.ToString())
             {

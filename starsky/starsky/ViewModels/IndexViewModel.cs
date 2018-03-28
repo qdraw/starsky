@@ -9,6 +9,8 @@ namespace starsky.ViewModels
         public List<string> Breadcrumb { get; set; }
         public RelativeObjects RelativeObjects { get; set; }
         public string SearchQuery { get; set; }
+        public string SubPath { get; set; }
+        
 //        public IEnumerable<FileIndexItem.ColorUserInterface> GetAllColor { get; set; }
     }
 }

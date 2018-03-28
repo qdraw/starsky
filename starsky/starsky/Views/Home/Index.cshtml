@@ -1,7 +1,6 @@
 ﻿@using System.Linq
 @using Microsoft.AspNetCore.Mvc
 @using starsky.ViewModels
-@using starsky.Models
 @model IndexViewModel
 @{
     ViewData["Title"] = Model.SearchQuery + " Index view ";
@@ -23,27 +22,35 @@
     @foreach (var item in Model.Breadcrumb)
     {
         var name = @item.Split("/")[item.Split("/").Length - 1];
-        if (name == "")
-        {
-            name = "Home";
-        }
+        if (name == "") {name = "Home";}
+
         <a asp-controller="Home" asp-action="Index" asp-route-f="@item">@name</a>
         if (item != Model.Breadcrumb[Model.Breadcrumb.Count - 1])
         {
             <span> &raquo;</span>
         }
     }
+    
+    @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+    {
+        <span> &raquo;</span>
+        <span> @Model.SearchQuery</span>
+    }
+
 </h1>
 
 <div id="portfolio-filter">
+
 </div>
 
+@if(!Model.FileIndexItems.Any())
+{
+    <div class="wrapper">
+        <h2> Er zijn geen afbeeldingen in de map <em>@Model.SearchQuery</em> </h2>
+    </div>
+}
+
 <div class="wrapper" id="portfolio-data">
-    @if(!Model.FileIndexItems.Any())
-    {
-        <h2> Er zijn geen items in deze map</h2>
-    }
-    
     @foreach (var item in Model.FileIndexItems)
     {
         var enumValue = (int) item.ColorClass;
