@@ -31,7 +31,10 @@ namespace starsky.Controllers
             
             if (!model.FileIndexItems.Any())
             {
-                if (singleItem?.FileIndexItem.FilePath == null)
+                // is directory is emthy 
+                var queryIfFolder = _query.GetObjectByFilePath(f);
+                
+                if (singleItem?.FileIndexItem.FilePath == null && queryIfFolder == null)
                 {
                     Response.StatusCode = 404;
                     return View("Error");
@@ -46,9 +49,9 @@ namespace starsky.Controllers
                 return View("SingleItem", singleItem);
             }
 
-            model.Breadcrumb = Breadcrumbs.BreadcrumbHelper(model.FileIndexItems?.FirstOrDefault().FilePath);
-            model.SearchQuery = model.FileIndexItems?.FirstOrDefault().ParentDirectory.Split("/").LastOrDefault();                
-            model.RelativeObjects = _query.GetNextPrevInFolder(model.FileIndexItems?.FirstOrDefault().ParentDirectory);
+            model.Breadcrumb = Breadcrumbs.BreadcrumbHelper(f);
+            model.SearchQuery = f.Split("/").LastOrDefault();                
+            model.RelativeObjects = _query.GetNextPrevInFolder(f);
             return View(model);
         }
 

@@ -30,7 +30,17 @@ namespace starsky.Controllers
             var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
             
             var fileIndexItems = _query.DisplayFileFolders(f,colorClassFilterList);
-            if (!fileIndexItems.Any()) NotFound("Folder not found");
+            if (!fileIndexItems.Any())
+            {
+                // is directory is emthy 
+                var queryIfFolder = _query.GetObjectByFilePath(f);
+                
+                if (queryIfFolder == null)
+                {
+                    Response.StatusCode = 404;
+                    return View("Error");
+                }
+            }
             return Json(fileIndexItems);
         }
         
@@ -192,9 +202,5 @@ namespace starsky.Controllers
 
         }
 
-        public IActionResult Error()
-        {
-            return View( new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }
