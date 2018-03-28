@@ -34,7 +34,7 @@ namespace starsky.Models
         
         private Color _colorClass;
 
-        public Color SetColorClass(string colorclassString = "-1")
+        public Color SetColorClass(string colorclassString = "0")
         {
 
             switch (colorclassString)
