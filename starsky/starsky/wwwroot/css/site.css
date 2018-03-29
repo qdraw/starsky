@@ -80,9 +80,12 @@ html {
     position:fixed;
     left: calc( 50% - 50px );
     top: calc( 50% - 50px );
+
+    display: block;
+}
+.preloader img {
     width: 100px;
     height: 100px;
-    display: block;
 }
 
 /* Wrapping element */
