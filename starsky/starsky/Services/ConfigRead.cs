@@ -8,7 +8,7 @@ using starsky.Models;
 
 namespace starsky.Services
 {
-    public class ConfigRead
+    public static class ConfigRead
     {
         public static void SetAppSettingsProvider()
         {
@@ -75,10 +75,10 @@ namespace starsky.Services
 
 
             AppSettingsProvider.BasePath = basePath;
-            AppSettingsProvider.DbConnectionString = defaultConnection;
             AppSettingsProvider.DatabaseType = databaseType == "mysql"
                 ? AppSettingsProvider.DatabaseTypeList.Mysql
                 : AppSettingsProvider.DatabaseTypeList.Sqlite;
+            AppSettingsProvider.DbConnectionString = defaultConnection; // First database type
             AppSettingsProvider.ThumbnailTempFolder = thumbnailTempFolder;
             AppSettingsProvider.ExifToolPath = exifToolPath;
 

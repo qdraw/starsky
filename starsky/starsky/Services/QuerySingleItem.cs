@@ -34,19 +34,23 @@ namespace starsky.Services
 
         private RelativeObjects _getNextPrevInSubFolder(
             string parrentFolderPath, string fullImageFilePath,
-        IEnumerable<FileIndexItem.Color> colorClassFilterList = null
+            IEnumerable<FileIndexItem.Color> colorClassFilterList = null
             )
         {
             List<FileIndexItem> itemsInSubFolder;
             if (colorClassFilterList == null)
             {
-                itemsInSubFolder = GetAllFiles(parrentFolderPath).OrderBy(
-                    p => p.FileName).ToList();
+                itemsInSubFolder = GetAllFiles(parrentFolderPath).
+                    Where(p => !p.Tags.Contains("!delete!")). // Hide Deleted items from prev/next
+                    OrderBy(
+                        p => p.FileName
+                    ).ToList();
             }
             else
             {
                 itemsInSubFolder = GetAllFiles(parrentFolderPath).Where(
-                        p => colorClassFilterList.Contains(p.ColorClass)
+                        p => colorClassFilterList.Contains(p.ColorClass) &&
+                             !p.Tags.Contains("!delete!") // Hide Deleted items from prev/next
                     ).OrderBy(
                     p => p.FileName).ToList();
             }
