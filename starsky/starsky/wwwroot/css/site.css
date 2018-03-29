@@ -173,7 +173,7 @@ html {
     position: relative;
     z-index: 3;
     transform-origin: center center;
-    transition: .5s ease-in-out;
+    transition: all 1.5s ease-in-out;
 }
 @media screen and (max-width: 767px) {
     .wrapper .halfitem {
@@ -715,6 +715,7 @@ float: left;
     width: auto;
     max-height: 80vh;
     max-width: calc(100vw - 30px);
+    transition: max-width 0.5s ease-in-out;
 }
 
 .main-image.collapsed {
@@ -751,6 +752,7 @@ float: left;
         height: initial;
         position: static;
         width: 100%;
+        transition:none;
     }
 }
 
@@ -780,7 +782,7 @@ float: left;
     width: 40px;
     display: block;
     margin-left: -40px;
-    background-color: red;
+    background-color: rgba(109, 199, 256, 0.7); /*red*/
     height: 50px;
     top: 0px;
     position: absolute;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using starsky.Models;
 using starsky.ViewModels;
@@ -41,7 +42,6 @@ namespace starsky.Services
             if (colorClassFilterList == null)
             {
                 itemsInSubFolder = GetAllFiles(parrentFolderPath).
-                    Where(p => !p.Tags.Contains("!delete!")). // Hide Deleted items from prev/next
                     OrderBy(
                         p => p.FileName
                     ).ToList();
@@ -49,10 +49,19 @@ namespace starsky.Services
             else
             {
                 itemsInSubFolder = GetAllFiles(parrentFolderPath).Where(
-                        p => colorClassFilterList.Contains(p.ColorClass) &&
-                             !p.Tags.Contains("!delete!") // Hide Deleted items from prev/next
-                    ).OrderBy(
+                        p => colorClassFilterList.Contains(p.ColorClass) 
+                ).OrderBy(
                     p => p.FileName).ToList();
+            }
+            
+            // todo: if image it self is deleted and page is refreshed
+            // Use only if you are sure that there are no nulls
+            if (itemsInSubFolder.Count >= 1)
+            {
+                itemsInSubFolder =
+                    itemsInSubFolder
+                        .Where(p => !p.Tags.Contains("!delete!"))
+                        .ToList(); // Hide Deleted items from prev/next
             }
             
             var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == fullImageFilePath);

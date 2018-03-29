@@ -24,7 +24,21 @@ namespace starsky.Models
 
         public bool IsDirectory { get; set; }
 
-        public string Tags { get; set; }
+        // Do not save null in database for tags
+        private string _tags;
+        public string Tags
+        {
+            get => _tags ?? string.Empty;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _tags = string.Empty;
+                    return;
+                }
+                _tags = value;
+            }
+        }
 
         public string Description { get; set; }
 

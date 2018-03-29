@@ -1,9 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Laag_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="22.678px" height="22.676px" viewBox="0 0 22.678 22.676" enable-background="new 0 0 22.678 22.676" xml:space="preserve">
-<g id="back.box_x3C_Group_x3E__8_">
-	<g>
-		<path fill="#FFFFFF" d="M10.306,10.868L5.35,5.913c-0.234-0.231-0.234-0.604,0-0.84l1.548-1.549c0.234-0.234,0.607-0.234,0.841,0    l6.924,6.924c0.234,0.234,0.234,0.607,0,0.842l-6.924,6.924c-0.232,0.233-0.605,0.233-0.841,0l-1.548-1.55    c-0.234-0.232-0.234-0.605,0-0.84L10.306,10.868z"/>
-	</g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Laag_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 12 12" style="enable-background:new 0 0 12 12;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+</style>
+<title>Group</title>
+<desc>Created with Sketch.</desc>
+<g id="Group">
+	<polyline id="Path-2" class="st0" points="1.9,2.5 1.9,4.1 7.4,4.1 5.7,2.4 1.9,2.4 	"/>
+	<path id="Path-2-Copy_2_" class="st0" d="M8.5,5.1H1.9v0.1v1.6h6.6l0.6-0.6c0.2-0.2,0.2-0.3,0-0.5C8.9,5.5,8.7,5.3,8.5,5.1"/>
+	<polyline id="Path-2_1_" class="st0" points="1.9,9.5 1.9,7.9 7.4,7.9 5.7,9.6 1.9,9.6 	"/>
 </g>
 </svg>

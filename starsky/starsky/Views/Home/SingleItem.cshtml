@@ -59,7 +59,11 @@
                 }
             </span>
         }
-        @if (@Model.RelativeObjects.NextFilePath != null)
+        @if (@Model.FileIndexItem.Tags.Contains("!delete!"))
+        {
+            <span>Verwijderd bestand!</span>
+        }
+        @if (@Model.RelativeObjects.NextFilePath != null && !@Model.FileIndexItem.Tags.Contains("!delete!"))
         {
             <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende</a>
         }
@@ -91,7 +95,7 @@
 </script>
 
 <div class="preloader">
-    <img src="images/preloader.svg" width="100px" height="100px">
+    <img src="images/preloader.svg" alt="preloader">
 </div>
 
 <script type="text/javascript" src="js/detailview.js"></script>
