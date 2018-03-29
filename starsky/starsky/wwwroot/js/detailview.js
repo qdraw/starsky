@@ -327,7 +327,7 @@ document.addEventListener('keydown', (event) => {
         if (keyName === "8" && document.querySelectorAll(".add-colorclass .colorclass-1").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-1"));
         }
-        if (keyName === "9" && document.querySelectorAll(".add-colorclass .colorclass-0").length === 1){
+        if ((keyName === "0" || keyName === "9" ) && document.querySelectorAll(".add-colorclass .colorclass-0").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-0"));
         }
         if (keyName === "Delete" && document.querySelectorAll(".addDeleteTag").length === 1){
