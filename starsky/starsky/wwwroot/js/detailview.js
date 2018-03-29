@@ -287,7 +287,12 @@ if (document.querySelectorAll(".breadcrumb").length >= 1) {
                             breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[j];
                         }
                         else {
-                            breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[j] + ",";
+                            if (addcolorclassArray.length === 1) {
+                                breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[j];
+                            }
+                            if (addcolorclassArray.length !== 1) {
+                                breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[j] + ",";
+                            }
                         }
                     }
                 }
