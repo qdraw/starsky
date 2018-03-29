@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using starsky.Models;
 using starsky.ViewModels;
 
@@ -20,7 +18,7 @@ namespace starsky.Services
 
             if (query == null) return null;
 
-            var relativeObject = _getNextPrevInSubFolder(query?.ParentDirectory, singleItemDbPath, colorClassFilterList);
+            var relativeObject = _getNextPrevInSubFolder(query.ParentDirectory, singleItemDbPath, colorClassFilterList);
 
             var itemResult = new DetailView
             {
@@ -31,13 +29,15 @@ namespace starsky.Services
             return itemResult;
         }
 
-
+        // Show previous en next items in the singleitem view.
+        // There is equivalent class (GetNextPrevInFolder) for prev next in the folder view
         private RelativeObjects _getNextPrevInSubFolder(
             string parrentFolderPath, string fullImageFilePath,
             IEnumerable<FileIndexItem.Color> colorClassFilterList = null
             )
         {
             List<FileIndexItem> itemsInSubFolder;
+            // Filter usage colorClassFilterList
             if (colorClassFilterList == null)
             {
                 itemsInSubFolder = GetAllFiles(parrentFolderPath).

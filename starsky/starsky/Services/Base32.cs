@@ -23,6 +23,8 @@ using System.Text.RegularExpressions;
 
 namespace starsky.Services
 {
+    // Create a Base32 string based on byte max arrond 30
+    
     public static class Base32
     {
 

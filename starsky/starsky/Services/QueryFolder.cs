@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using starsky.Models;
 using starsky.ViewModels;
@@ -8,6 +7,9 @@ namespace starsky.Services
 {
     public partial class Query // For folder displays only
     {
+        // Class for displaying folder content
+        
+        // Display File folder displays content of the folder
         public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/", 
             IEnumerable<FileIndexItem.Color> colorClassFilterList = null)
         {
@@ -35,6 +37,7 @@ namespace starsky.Services
             return _hideDeletedFileFolderList(queryItems);
         }
 
+        // Hide Deleted items in folder
         private static IEnumerable<FileIndexItem> _hideDeletedFileFolderList(List<FileIndexItem> queryItems){
             // temp feature to hide deleted items
             var displayItems = new List<FileIndexItem>();
@@ -54,21 +57,15 @@ namespace starsky.Services
             // temp feature to hide deleted items
         }
         
-        
+        // Show previous en next items in the folder view.
+        // There is equivalent class for prev next in the display view
         public RelativeObjects GetNextPrevInFolder(string currentFolder)
         {
             currentFolder = SubPathSlashRemove(currentFolder);
 
-            var parrentFolderPathArray = currentFolder.Split("/");
-            var parrentFolderPath = String.Empty;
-            for (int i = 1; i < parrentFolderPathArray.Length; i++)
-            {
-                if (i <= parrentFolderPathArray.Length-2)
-                {
-                    parrentFolderPath = parrentFolderPath + "/" + parrentFolderPathArray[i];
-                }
-            }
-
+            // We use breadcrums to get the parent folder
+            var parrentFolderPath = Breadcrumbs.BreadcrumbHelper(currentFolder).LastOrDefault();
+            
             var itemsInSubFolder = _context.FileIndex
                 .Where(p => p.ParentDirectory == parrentFolderPath)
                 .OrderBy(p => p.FileName).ToList();
@@ -78,7 +75,7 @@ namespace starsky.Services
             var relativeObject = new RelativeObjects();
             if (photoIndexOfSubFolder != itemsInSubFolder.Count - 1 && currentFolder != "/")
             {
-                // on the home folder you will automaticly go to a subfolder
+                // currentFolder != "/" >= on the home folder you will automaticly go to a subfolder
                 relativeObject.NextFilePath = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FilePath;
             }
 

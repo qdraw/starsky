@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using starsky.Models;
 
 namespace starsky.Services
 {
     public static class SqliteHelper
     {
-        
+        // Feature to check if a SQLite Database not is locked
         public static bool IsReady()
         {
             if(AppSettingsProvider.DatabaseType != AppSettingsProvider.DatabaseTypeList.Sqlite) return true; // mysql does not need this
@@ -27,10 +26,6 @@ namespace starsky.Services
                 return true; // Good to go!
             }
 
-            var journalCreationTime = File.GetCreationTime(fullDbPath+ "-journal");
-
-            TimeSpan time = DateTime.Now - journalCreationTime;
-            
             var startTime = DateTime.Now;
             int i = 0;
             while (i < 10000000)

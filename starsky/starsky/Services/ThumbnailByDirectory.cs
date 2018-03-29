@@ -3,6 +3,7 @@ using starsky.Models;
 
 namespace starsky.Services
 {
+    // This feature is used to crawl over directories and add this to the thumbnail-folder
     public static class ThumbnailByDirectory
     {
         public static void CreateThumb(string subpath = "/")

@@ -8,33 +8,40 @@ using System.Threading.Tasks;
 
 namespace starsky.Services
 {
-    public class FileHash
+    public static class FileHash
     {
+        // Two public interfaces
+        // Returns list of hashcodes
+        // or one hashcode (base32)
+        
         public static List<string> GetHashCode(string[] filesInDirectoryFullPath)
         {
-            return filesInDirectoryFullPath.Select(fileFullPath => CalcHashCode(fileFullPath)).ToList();
+            return filesInDirectoryFullPath.Select(fileFullPath => _calcHashCode(fileFullPath)).ToList();
         }
 
         public static string GetHashCode(string filename)
         {
-            return CalcHashCode(filename);
+            return _calcHashCode(filename);
         }
+        
+        // Here are some tricks used to avoid that CalculateMd5Async keeps waiting forever.
+        // In some cases hashing a file keeps waiting forever (at least on linux-arm)
 
-        public static string CalcHashCode(string filename)
+        private static string _calcHashCode(string filename)
         {
             var q = WrapSomeMethod(filename).Result;
-//            Console.WriteLine(q);
             return q;
 
         }
 
+        // Wrapper to do Async tasks
         private static async Task<string> WrapSomeMethod(string someParam)
         {
             //adding .ConfigureAwait(false) may NOT be what you want but google it.
             return await Task.Run(() => Md5Timeout(someParam)).ConfigureAwait(false);
         }
 
-        // Ignore Error CS1998
+        // Yes I know that I don't use the class propper, I use it in a sync way.
         #pragma warning disable 1998
         private static async Task<string> Md5Timeout(string fullFileName){
         #pragma warning restore 1998
@@ -43,15 +50,17 @@ namespace starsky.Services
                 if (task.Wait(TimeSpan.FromSeconds(8)))
                 return task.Result;
 
+            // Sometimes a Calc keeps waiting for days
             Console.WriteLine(">>>>>>>>>>>            Timeout Md5 Hashing::: "
                               + fullFileName 
                               + "            <<<<<<<<<<<<");
             
-            return Base32.Encode(GenerateRandomBytes(27)) + "_T";
+            return Base32.Encode(_generateRandomBytes(27)) + "_T";
             throw new Exception("Timed out");
         }
 
-        public static byte[] GenerateRandomBytes(int length)
+        // Create a random string
+        private static byte[] _generateRandomBytes(int length)
         {
             // Create a buffer
             byte[] randBytes;
@@ -76,6 +85,11 @@ namespace starsky.Services
             return randBytes;
         }
 
+        /// <summary>
+        ///  Calculate the hash based on the first 0.5 Mb of the file
+        /// </summary>
+        /// <param name="fullFileName"></param>
+        /// <returns></returns>
         private static async Task<string> CalculateMd5Async(string fullFileName)
         {
             var block = ArrayPool<byte>.Shared.Rent(500000); // 0,5 Mb
@@ -94,7 +108,6 @@ namespace starsky.Services
                     }
                     var hash = md5.Hash;       
                     return Base32.Encode(hash);
-//                    return Convert.ToBase64String(hash);
                 }
             }
             finally
@@ -102,26 +115,6 @@ namespace starsky.Services
                 ArrayPool<byte>.Shared.Return(block);
             }
         }
-        
 
-//        public static string CalcHashCode(BufferedStream filestream)
-//        {
-////            SHA256Managed sha = new SHA256Managed();
-////            byte[] hash = sha.ComputeHash(filestream);
-//            MD5CryptoServiceProvider md5Provider = new MD5CryptoServiceProvider();
-//            Byte[] hash = md5Provider.ComputeHash(filestream);
-//
-//            if (AppSettingsProvider.Verbose) Console.WriteLine(hash);
-//
-//            var stringHash =   Base32.Encode(hash);
-//
-//            stringHash = stringHash.Replace("/", "_");
-//            stringHash = stringHash.Replace("\\", "_");
-//            stringHash = stringHash.Replace("==", "");
-//            stringHash = stringHash.Replace("+", "0");
-//            if (AppSettingsProvider.Verbose) Console.WriteLine(stringHash);
-//
-//            return stringHash;
-//        }
     }
 }

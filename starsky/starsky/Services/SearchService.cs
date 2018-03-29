@@ -16,16 +16,19 @@ namespace starsky.Services
         }
 
         // The search feature on the website
-
+        
+        // The amount of search results on one single page
+        // Including the trash page
         private const int ResultsInView = 40;
 
+        // Query to count the number of results
         public int SearchCount(string tag = "")
         {
             return _context.FileIndex.Count
                 (p => !p.IsDirectory && p.Tags.Contains(tag));
         }
 
-
+        // Return the search results
         public IEnumerable<FileIndexItem> SearchObjectItem(string tag = "", int pageNumber = 0)
         {
             tag = tag.ToLower();
@@ -59,6 +62,7 @@ namespace starsky.Services
             return searchObjectItems;
         }
 
+        // Calc. the last page
         public int SearchLastPageNumber(string tag)
         {
             tag = tag.ToLower();
@@ -79,6 +83,7 @@ namespace starsky.Services
             return searchLastPageNumbers;
         }
 
+        // Round features:
         private int _roundUp(int toRound)
         {
             // 10 => ResultsInView
@@ -86,10 +91,10 @@ namespace starsky.Services
             return (ResultsInView - toRound % ResultsInView) + toRound;
         }
 
-        private int _RoundDown(int toRound)
+       /*private int _RoundDown(int toRound)
         {
             return toRound - toRound % 10;
-        }
+        }*/
 
 
     }

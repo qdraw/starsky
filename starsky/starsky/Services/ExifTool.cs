@@ -10,7 +10,9 @@ namespace starsky.Services
 {
     public static class ExifTool
     {
-
+        // Write To Meta data using Exiftool.
+        // This is a exiftool wrapper
+        
         private static string _baseCommmand(string options,string fullFilePath)
         {
             fullFilePath = $"\"" + fullFilePath + $"\"";
@@ -114,90 +116,6 @@ namespace starsky.Services
             // Also update class 'Update'
             return _parseJson(_baseCommmand("-Keywords -Prefs -json", fullFilePath));
         }
-      
-        
-        
-//            // REMOVE ======>>
-//        
-//        
-//        //public static ExifToolModel GetExitoolData(string filePathFull)
-//        //{
-//        //    return _parseJson(_baseCommmand("-Keywords -json", filePathFull));
-//        //}
-//
-//        public static string ReadExifToolKeywords(string filePathFull)
-//        {
-//            var model = _parseJson(_baseCommmand("-Keywords -json", filePathFull));
-//            return null;
-////            return _duplicateKeywordCheck(model.Keywords);
-//        }
-//
-//        // exiftool -Prefs="Tagged:0 ColorClass:0 Rating:2 FrameNum:0"
-//
-//
-//
-////        private static string _duplicateKeywordCheck(string keywords)
-////        {
-////            var hashSetKeywords = new HashSet<string>(keywords.Split(", "));
-////            var toBeAddedKeywords = string.Empty;
-////            foreach (var keyword in hashSetKeywords)
-////            {
-////
-////                if (!string.IsNullOrWhiteSpace(keyword) && keyword != hashSetKeywords.LastOrDefault())
-////                {
-////                    toBeAddedKeywords += keyword + ", ";
-////                }
-////
-////                if (!string.IsNullOrWhiteSpace(keyword) && keyword == hashSetKeywords.LastOrDefault())
-////                {
-////                    toBeAddedKeywords += keyword;
-////                }
-////
-////            }
-////
-////            // Add everyting in lowercase
-////            toBeAddedKeywords = toBeAddedKeywords.ToLower();
-////
-////            return toBeAddedKeywords;
-////        }
-//
-//
-//        public static string WriteExifToolKeywords(string keyWords, string filePathFull) // add or update
-//        {
-//            return null;
-////            if (string.IsNullOrWhiteSpace(keyWords)) return null;
-////
-////            var currentKeywords = _parseJson(_baseCommmand("-Keywords -json", filePathFull));
-////
-////            var toBeAddedKeywords = _duplicateKeywordCheck(currentKeywords.Keywords + ", " + keyWords);
-////
-////            Console.WriteLine(toBeAddedKeywords);
-////
-////            _baseCommmand("-overwrite_original -sep \", \" -Keywords=\"" + toBeAddedKeywords + "\" -json ",
-////                filePathFull);
-////
-////            return _parseJson(_baseCommmand("-Keywords -json", filePathFull)).Keywords;
-//
-//        }
-//
-//        // overwrite => keyword list
-//        public static string SetExifToolKeywords(string keyWords, string filePathFull)
-//        {
-//            return null;
-////            if (string.IsNullOrWhiteSpace(keyWords)) return null;
-////
-////            var toBeAddedKeywords = _duplicateKeywordCheck(keyWords);
-////
-////            _baseCommmand("-overwrite_original -sep \", \" -Keywords=\"" + toBeAddedKeywords + "\" -json ",
-////                filePathFull);
-////
-////            return _parseJson(_baseCommmand("-Keywords -json", filePathFull)).Keywords;
-//
-//        }
-//    // end
-
-
-
 
     }
 

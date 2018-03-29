@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using starsky.Models;
 
@@ -10,6 +7,8 @@ namespace starsky.Services
 {
     public static class ConfigRead
     {
+        // Write the setting to the Model.AppSettingsProvider
+        // Read settings first from appsettings.json + and later from ENV.
         public static void SetAppSettingsProvider()
         {
             string basePath;
@@ -21,7 +20,7 @@ namespace starsky.Services
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json"))
             {
                 string text =
-                    System.IO.File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json");
+                    File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json");
                 JObject obj = JObject.Parse(text);
 
                 // >>> Base Path of Orginal images <<<

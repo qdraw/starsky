@@ -18,28 +18,45 @@ namespace starsky.Services
             _query = query;
 
         }
+        
+        /* Base feature to sync files and folders
+        The filter you can use is subPath.
+        For example if your directory structure look like this:
+        /home/pi/images/2018
+            /home/pi/images/2018/01
+                .. here some files
+        
+        The base path can be '/home/pi/images'
+        And the subpath can ben 2018 to crawl only files inside this folder
+        */
+        
         public IEnumerable<string> SyncFiles(string subPath = "")
         {
+            // Handle single files
             Deleted(subPath);
             SingleFile(subPath);
 
-            // if folder: 
+            // Handle folder Get a list of all local folders and rename it to database style.
+            // Db Style is a relative path
             var localSubFolderDbStyle = _renameListItemsToDbStyle(
                 Files.GetAllFilesDirectory(subPath).ToList()
             );
 
-
+            // Query the database to get a list of the folder items
             var databaseSubFolderList = _context.FileIndex.Where(p => p.IsDirectory).ToList();
 
             // Sync for folders
+            // First remove old paths for the folders
             RemoveOldFilePathItemsFromDatabase(localSubFolderDbStyle, databaseSubFolderList, subPath);
+            // Add new paths to database
             AddFoldersToDatabase(localSubFolderDbStyle, databaseSubFolderList);
 
             Console.WriteLine(".");
 
-            // Allow sync for direct folder
+            // Allow sync for the path the direct subPath for example '/2018', 
             localSubFolderDbStyle.Add(subPath);
 
+            // Loop though the folders
             foreach (var singleFolder in localSubFolderDbStyle)
             {
                 Console.Write(singleFolder + "  ");
@@ -53,6 +70,7 @@ namespace starsky.Services
                 Console.WriteLine("-");
             }
 
+            // Add the subpaths recruisivly 
             AddSubPathFolder(subPath);
             
             // Gives folder an thumbnail image (only if contains direct files)
@@ -61,6 +79,7 @@ namespace starsky.Services
             return null;
         }
 
+        // Rename a list to database style (short style)
         private List<string> _renameListItemsToDbStyle(List<string> localSubFolderList)
         {
             var localSubFolderListDatabaseStyle = new List<string>();

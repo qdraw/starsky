@@ -5,6 +5,9 @@ namespace starsky.Services
 {
     public static class Breadcrumbs
     {
+        // Breadcrumb returns a list of parent folders
+        // it does not contain the current folder
+        
         public static List<string> BreadcrumbHelper(string filePath)
         {
             if (filePath == null) return null;
