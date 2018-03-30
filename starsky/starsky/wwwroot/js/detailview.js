@@ -78,16 +78,16 @@ function updateDeletedKeywordElement(data) {
    document.querySelector("#js-keywords-update a").style.display = "inline-block";
    // console.log(document.querySelector("#js-keywords-update a.btn-default").style.display);
    // document.querySelector('.js-keywords').value = data.keywords;
-   document.querySelector('.js-keywords').textContent = data.keywords;
+   document.querySelector('.js-keywords').textContent = data.tags;
 
 
    if (document.querySelectorAll(".addDeleteTag").length >= 1 ) {
        
        document.querySelector(".addDeleteTag").classList.remove("disabled");
        
-       if (data.keywords === null) data.keywords = "";
+       if (data.tags === null) data.tags = "";
 
-       if (data.keywords.indexOf("!delete!") >= 0) {
+       if (data.tags.indexOf("!delete!") >= 0) {
                document.querySelector(".addDeleteTag").classList.add("fileIsDeleted");
                document.querySelector(".addDeleteTag a").innerHTML = "Zet terug uit prullenmand";
                document.querySelector("#js-keywords-update a").classList.add("disabled") //
@@ -154,7 +154,7 @@ function queryKeywords(queryItem) {
     addUnloadWarning();
     showPreloader();
     
-    var url = updateApiBase + "&keywords=" + queryItem;
+    var url = updateApiBase + "&tags=" + queryItem;
     loadJSON(url,
         function (data) {
             hideUnloadWarning();

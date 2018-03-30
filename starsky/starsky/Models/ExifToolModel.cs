@@ -30,36 +30,35 @@ namespace starsky.Models
             }
         }
 
-        private string _keywords;
-
-        public string Keywords
+        private HashSet<string> _keywords;
+        
+        public HashSet<string> Keywords
         {
-            get { return _keywords; }
-            set
-            {
-                if (!string.IsNullOrWhiteSpace(value))
-                {
-                    _keywords = _duplicateKeywordCheck(value);
-                }
-                else
-                {
-                    _keywords = "";
-                }
-            }
+            get { return null; }
+            set { _keywords = value; }
         }
-            
-        private static string _duplicateKeywordCheck(string keywords)
+
+        public string Tags
         {
-            var hashSetKeywords = new HashSet<string>(keywords.Split(", "));
+            get { return _hashSetToString(_keywords); }
+            set { _keywords = _stringToHashSet(value); }
+        }
+
+        private static HashSet<string> _stringToHashSet(string inputKeywords)
+        {
+            HashSet<string> keywordsHashSet = inputKeywords.Split(", ").ToHashSet();
+            return keywordsHashSet;
+        }
+
+        private static string _hashSetToString(HashSet<string> hashSetKeywords)
+        {
             var toBeAddedKeywords = string.Empty;
             foreach (var keyword in hashSetKeywords)
             {
-
                 if (!string.IsNullOrWhiteSpace(keyword) && keyword != hashSetKeywords.LastOrDefault())
                 {
                     toBeAddedKeywords += keyword + ", ";
                 }
-
                 if (!string.IsNullOrWhiteSpace(keyword) && keyword == hashSetKeywords.LastOrDefault())
                 {
                     toBeAddedKeywords += keyword;
@@ -67,6 +66,7 @@ namespace starsky.Models
             }
             // Add everyting in lowercase
             toBeAddedKeywords = toBeAddedKeywords.ToLower();
+
             return toBeAddedKeywords;
         }
 

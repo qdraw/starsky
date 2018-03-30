@@ -62,7 +62,7 @@ namespace starsky.Controllers
         }
 
         [HttpPost]
-        public IActionResult Update(string keywords, string colorClass, string f = "dbStylePath")
+        public IActionResult Update(string tags, string colorClass, string f = "dbStylePath")
         {
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index " + f);
@@ -73,9 +73,11 @@ namespace starsky.Controllers
 
             var updateModel = new ExifToolModel();
 
-            if (keywords != null)
+            Console.WriteLine("tags>>>>");
+            Console.WriteLine(tags);
+            if (tags != null)
             {
-                updateModel.Keywords = keywords;
+                updateModel.Tags = tags;
             }
 
             // Enum get always one value and no null
@@ -90,7 +92,7 @@ namespace starsky.Controllers
             singleItem.FileIndexItem.FileHash =
                 FileHash.GetHashCode(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             singleItem.FileIndexItem.AddToDatabase = DateTime.Now;
-            singleItem.FileIndexItem.Tags = exifToolResults.Keywords;
+            singleItem.FileIndexItem.Tags = exifToolResults.Tags;
             singleItem.FileIndexItem.ColorClass = exifToolResults.ColorClass;
             _query.UpdateItem(singleItem.FileIndexItem);
 

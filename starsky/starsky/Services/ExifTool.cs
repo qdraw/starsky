@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using starsky.Models;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 
 namespace starsky.Services
 {
@@ -19,12 +20,8 @@ namespace starsky.Services
             options = " " + options + " " + fullFilePath;
 
             Console.WriteLine(AppSettingsProvider.ExifToolPath);
-            Console.WriteLine(options);
 
             if (!File.Exists(AppSettingsProvider.ExifToolPath)) return null;
-
-            Console.WriteLine("options");
-            Console.WriteLine(options);
 
             var exifToolPath = AppSettingsProvider.ExifToolPath;
 
@@ -46,9 +43,6 @@ namespace starsky.Services
             p.WaitForExit();
             Console.WriteLine(strOutput);
 
-
-            Console.WriteLine(AppSettingsProvider.ExifToolPath + options);
-
             return strOutput;
         }
 
@@ -57,35 +51,15 @@ namespace starsky.Services
 
             text = text.Replace("\r\n", "");
             text = text.Replace($"\\", "");
-            text = text.Replace(@"[", "");
-            text = text.Replace(@"]", "");
-            text = text.Replace("\",\"", ", ");
+
+            var exifData = JsonConvert.DeserializeObject<IEnumerable<ExifToolModel>>(text).FirstOrDefault();
+
+            if (exifData == null) return null;
             
-//            text = Regex.Replace(text, $"(\",(\\d+))|((\\d+),\")", "");
-            text = text.Replace($",\"", "");
-            
-            Regex isKeywordRegex = new Regex($"\"Keywords\": \"", RegexOptions.IgnoreCase);
-            if (!isKeywordRegex.Match(text).Success)
-            {
-                text = text.Replace($"\"Keywords\": ", "\"Keywords\": \"" );
-            }
-            Regex isKeywordEndRegex = new Regex($"\",\n(\\s+\"Prefs|}})", RegexOptions.IgnoreCase);
-            if (!isKeywordEndRegex.Match(text).Success)
-            {
-                Console.WriteLine("sdfdsfsdf");
-                text = text.Replace($",\n", "\"," );
-                text = text.Replace("\"\"", "\"");
-                // ",0,1",
-                Console.WriteLine(text);
-                // > (",(\d+))|((\d+),")   --> single numbers will be removed
-                text = Regex.Replace(text, $"(\",(\\d+))|((\\d+),\")", "");
-            }
-           
-            Console.WriteLine(text);
-            
-            var exifData = JsonConvert.DeserializeObject<ExifToolModel>(text);
             return exifData;
+
         }
+
 
 
         public static ExifToolModel Update(ExifToolModel updateModel, string fullFilePath)
@@ -93,9 +67,9 @@ namespace starsky.Services
             var command = "-json -overwrite_original";
             var initCommand = command; // to check if nothing
             
-            if(updateModel.Keywords != null)
+            if(updateModel.Tags != null)
             {
-                command += " -sep \", \" -Keywords=\"" + updateModel.Keywords + "\" ";
+                command += " -sep \", \" -Keywords=\"" + updateModel.Tags + "\" ";
             }
             if(updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
             {
