@@ -82,10 +82,13 @@ function updateDeletedKeywordElement(data) {
 
 
    if (document.querySelectorAll(".addDeleteTag").length >= 1 ) {
-       document.querySelector(".addDeleteTag").style.display = "inline-block";
+       
+       document.querySelector(".addDeleteTag").classList.remove("disabled");
+       
        if (data.keywords === null) data.keywords = "";
 
        if (data.keywords.indexOf("!delete!") >= 0) {
+               document.querySelector(".addDeleteTag").classList.add("fileIsDeleted");
                document.querySelector(".addDeleteTag a").innerHTML = "Zet terug uit prullenmand";
                document.querySelector("#js-keywords-update a").classList.add("disabled") //
                document.querySelector('.js-keywords').contentEditable = false;
@@ -94,6 +97,7 @@ function updateDeletedKeywordElement(data) {
                document.querySelector(".js-keywords").classList.add("disabled");
     
            } else {
+               document.querySelector(".addDeleteTag").classList.remove("fileIsDeleted");
                document.querySelector(".addDeleteTag a").innerHTML = "Verplaats naar prullenmand";
                document.querySelector(".addDeleteTag a").classList.remove("btn-warning");
                document.querySelector(".addDeleteTag a").classList.add("btn-danger");
@@ -108,10 +112,14 @@ function updateDeletedKeywordElement(data) {
 
 if (document.querySelectorAll("#js-keywords-update").length === 1) {
    loadJSON(infoApiBase,
-       function(data) { 
+       function(data) {
+       //debug
+       //     setTimeout(function(){  
            
            updateDeletedKeywordElement(data);
            hidePreloader();
+
+           // }, 3000);
 
        },
        function (xhr) { console.error(xhr); },
@@ -120,7 +128,7 @@ if (document.querySelectorAll("#js-keywords-update").length === 1) {
 }
 
 function addDeleteTag() {
-    document.querySelector(".addDeleteTag").style.display = "none";
+    document.querySelector(".addDeleteTag").classList.add("disabled");
 
     var queryItem = document.querySelector('.js-keywords').textContent;
     
@@ -247,16 +255,20 @@ if (document.querySelectorAll(".sidebar").length === 1) {
 // Add select part to next prev url
 if (document.querySelectorAll(".nextprev").length >= 1) {
 
-    var object = document.querySelector(".nextprev").children;
-    var searchPosition = window.location.search.indexOf("colorclass") - 1;
-    addcolorclassPart = window.location.search.substr(searchPosition, window.location.search.length);
+    for (var i = 0; i < document.querySelectorAll(".nextprev").length; i++) {
 
-    for (var i = 0; i < object.length; i++) {
+        var object = document.querySelectorAll(".nextprev")[i].children;
+        var searchPosition = window.location.search.indexOf("colorclass") - 1;
+        addcolorclassPart = window.location.search.substr(searchPosition, window.location.search.length);
 
-        if (window.location.search.indexOf("colorclass") >= 0) {
-            object[i].href += addcolorclassPart;
+        for (var j = 0; j < object.length; j++) {
+
+            if (window.location.search.indexOf("colorclass") >= 0) {
+                object[j].href += addcolorclassPart;
+            }
         }
     }
+    
 }
 
 

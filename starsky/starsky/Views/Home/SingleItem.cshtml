@@ -10,7 +10,20 @@
 <div class="sidebar">
     <div class="close" onclick="toggleSideMenu()"></div>
     <div class="content">
-        <img src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
+        
+        <h4 class="nextprev">
+            &nbsp;
+            @if (@Model.RelativeObjects.PrevFilePath != null)
+            {
+                <a class="prev" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige</a>
+            }
+            @if (@Model.RelativeObjects.NextFilePath != null && !@Model.FileIndexItem.Tags.Contains("!delete!"))
+            {
+                <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende</a>
+            }
+        </h4>
+
+        <img src="@Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash, issingleitem = true})"/>
 
         <div class="form-inline form-wrapper" id="js-keywords-update">
             <div class="form-control js-keywords contenteditable disabled" contenteditable="false" name="keywords" onfocusout="updateKeywords()">@Model.FileIndexItem.Tags</div>
@@ -33,11 +46,23 @@
                 }
             }
         </div>
-        <div class="addDeleteTag">
+        <div class="download-sidebar">
+            <h4>Downloads:</h4>
+
+            <a class="btn-sm btn btn-secondary" href="@Url.Action("DownloadPhoto", "Api", new {f = @Model.FileIndexItem.FilePath, isThumbnail = true})" download="@Model.FileIndexItem.FileName.Replace(".jpg", "")-th.jpg">
+                Thumbnail
+            </a>
+            <a class="btn-sm btn btn-secondary" href="@Url.Action("DownloadPhoto", "Api", new {f = @Model.FileIndexItem.FilePath, isThumbnail = false})" download="@Model.FileIndexItem.FileName">
+                Full
+            </a>
+        </div>
+
+        <div class="addDeleteTag disabled">
             <h4>Danger zone:</h4>
-            <a onClick="addDeleteTag()" class="btn-sm btn btn-danger"></a>
+            <a onClick="addDeleteTag()" class="btn-sm btn btn-danger delete">Verwijderen nog niet beschikbaar</a>
             <a asp-controller="Search" asp-action="Trash" class="btn-sm btn btn-info">Bekijk prullenmand</a>
         </div>
+
     </div>
 </div>
 
