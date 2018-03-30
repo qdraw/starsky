@@ -19,7 +19,7 @@ namespace starsky.Services
         
         // The amount of search results on one single page
         // Including the trash page
-        private const int ResultsInView = 40;
+        private const int ResultsInView = 20;
 
         // Query to count the number of results
         public int SearchCount(string tag = "")

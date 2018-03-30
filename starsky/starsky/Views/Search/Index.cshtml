@@ -83,18 +83,83 @@
     }
 </div>
 
-<h4 class="nextprev" style="margin-top: 30px; margin-bottom: 30px;">
-    &nbsp;
-    @if (Model.PageNumber >= 1)
-    {
-        var prevpage = @Model.PageNumber - 1;
-        <a class="prev" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
-    }
 
-    @if (Model.PageNumber < Model.LastPageNumber)
-    {
-        var nextpage = @Model.PageNumber + 1;
-        <a class="next" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
-    }
-</h4>
+@*Pagination*@
+<div class="wrapper">
 
+    <div class="paginationbase">
+        @{
+            var displayPageNumber = Model.PageNumber + 1;
+        }
+    
+        @if (Model.PageNumber >= 1)
+        {
+            var prevpage = Model.PageNumber - 1;
+            <a class="leftarrow" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">&lt;</a>
+        }
+
+    
+        <span class="numberbox">
+
+            @*  Display first page  *@
+            @{ var currentmin2 = (Model.PageNumber - 2);}
+            @if (@currentmin2 >= 0 )
+            {
+                <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="0">1</a>
+                if (@currentmin2-1 >= 0 ) {
+                    <span class="box">...</span>
+                }
+            }
+        
+            @*  Display previous page (-1)  *@
+            @{ var currentmin1 = (Model.PageNumber - 1);}
+            @if (@currentmin1 >= 0 )  // && !(@currentmin2-1 >= 0) 
+            {
+                //  !(@currentmin2-1 >= 0)  => hide if .. 
+                <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@currentmin1">
+                    @{
+                        @(currentmin1 + 1);
+                    }
+                </a>
+            }
+        
+            @*    Current page number*@
+            <a class="current" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@Model.PageNumber">
+                @displayPageNumber
+            </a>
+        
+            @*  Display next page (+1)  *@
+            @{ var currentplus1 = (Model.PageNumber + 1);}
+            @if (Model.PageNumber < Model.LastPageNumber )
+            {
+                // hide if .. !((Model.PageNumber + 2)-1 <= Model.LastPageNumber )
+                <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@currentplus1">
+                    @{
+                        @(currentplus1 + 1);
+                    }
+                </a>
+            }
+        
+            @*  Display last page  *@
+            @{ var currentplus2 = (Model.PageNumber + 2);}
+            @if (@currentplus2 <= @Model.LastPageNumber )
+            {
+                if ((@currentplus2-1 <= Model.LastPageNumber)  ) {
+                    <span class="box">..</span>
+                }
+                <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@Model.LastPageNumber">
+                    @{
+                        @(Model.LastPageNumber + 1);
+                    }
+                </a>
+            }
+            
+        </span>
+        @*  Next arrow  *@
+        @if (Model.PageNumber < Model.LastPageNumber)
+        {
+            var nextpage = @Model.PageNumber + 1;
+            <a class="rightarrow" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">&gt;</a>
+        }
+    </div>
+</div>

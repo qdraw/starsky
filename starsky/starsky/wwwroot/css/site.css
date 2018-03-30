@@ -829,3 +829,64 @@ float: left;
 footer {
     margin-top: 25px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.paginationbase {
+    position: relative;
+    height: 40px;
+    margin-top: 30px; 
+    margin-bottom: 30px; 
+    width: 300px;
+    position: relative;
+    left: calc(50% - 150px);
+    font-size: 30px; 
+    display: inline-block;
+}
+.paginationbase .numberbox {
+    position: absolute; 
+    left: 21px; 
+    width: 260px; 
+    text-align: center;
+}
+.paginationbase .box,
+.paginationbase a {
+    display: inline-block; 
+    width: 40px; 
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    margin-left: -4px;
+    text-decoration: none;
+    color: black;
+}
+.paginationbase a.current {
+    background-color: black;
+    color: white;
+}
+
+.paginationbase .leftarrow,
+.paginationbase .rightarrow,
+.paginationbase .box {
+    width: 20px;
+
+}
+.paginationbase .leftarrow{
+    position: absolute;
+    left: 0px; 
+}
+.paginationbase .rightarrow {
+    float: right;
+}
