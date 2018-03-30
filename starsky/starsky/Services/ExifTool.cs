@@ -6,6 +6,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using starsky.Models;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json.Linq;
 
 namespace starsky.Services
 {
@@ -52,12 +53,53 @@ namespace starsky.Services
             text = text.Replace("\r\n", "");
             text = text.Replace($"\\", "");
 
+            text = _fixingJsonKeywordString(text);
+
             var exifData = JsonConvert.DeserializeObject<IEnumerable<ExifToolModel>>(text).FirstOrDefault();
 
             if (exifData == null) return null;
-            
             return exifData;
 
+        }
+
+        private static string _fixingJsonKeywordString(string text)
+        {
+            //            [{
+            //                "SourceFile": "fullPath",
+            //                "Keywords": "singleword"
+            //            }]
+
+            // > need to be an array [""]
+
+            // Without gives nice shiny 500 runtime errors :) :)
+
+            var keywordsIndex = text.IndexOf("Keywords", StringComparison.InvariantCulture);
+            if (keywordsIndex >= 0)
+            {
+                Console.WriteLine("fds");
+                var splitArray = text.Split("\n");
+                var updatedText = string.Empty;
+                foreach (var item in splitArray)
+                {
+                    if (item.Contains("Keywords"))
+                    {
+                        var key = item.Replace("\"Keywords\":", "");
+                        key = key.Replace("\"", "");
+                        key = key.Trim();
+                        var newItem = "\"Keywords\": [\"" + key + "\"]";
+                        updatedText += newItem + "\n";
+                    }
+                    else
+                    {
+                        updatedText += item;
+                    }
+                }
+
+                Console.WriteLine(updatedText);
+                return updatedText;
+
+            }
+            return text;
         }
 
 
