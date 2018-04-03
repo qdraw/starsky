@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using starsky.Models;
 
 namespace starsky.Services
@@ -9,10 +10,16 @@ namespace starsky.Services
         public static void CreateThumb(string subpath = "/")
         {
             // Thumbnail check service
-            var subFoldersFullPath =  Files.GetAllFilesDirectory(subpath);
-
+            var subFoldersFullPath =  Files.GetAllFilesDirectory(subpath).ToList();
+            
+            // Add Subpath to scan the root folder for thumbs       
+            subFoldersFullPath.Add(FileIndexItem.DatabasePathToFilePath(subpath));
+            
             foreach (var singleFolderFullPath in subFoldersFullPath)
             {
+                
+                Console.WriteLine(singleFolderFullPath);
+                
                 string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath,false);
                 var localFileListFileHash = FileHash.GetHashCode(filesInDirectoryFullPath);
 

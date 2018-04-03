@@ -24,6 +24,11 @@ namespace starsky.Services
             {
                 return;
             }
+            
+            if (!File.Exists(newThumbPath))
+            {
+                return;
+            }
 
             File.Move(oldThumbPath, newThumbPath);
         }
@@ -43,10 +48,27 @@ namespace starsky.Services
                 Console.WriteLine("File Not found: " + item.FilePath);
                 return;
             }
-
+            
             if (File.Exists(thumbPath))
             {
-                return;
+                var imageFormat = Files.GetImageFormat(thumbPath);
+                if(AppSettingsProvider.Verbose) Console.WriteLine(Files.GetImageFormat(thumbPath));
+                switch (imageFormat)
+                {
+                    case Files.ImageFormat.jpeg:
+                        return;
+                    case Files.ImageFormat.unknown:
+                        try
+                        {
+                            File.Delete(thumbPath);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
+                        break;
+                }
+
             }
             
             // Wrapper to check if the thumbservice is not waiting forever

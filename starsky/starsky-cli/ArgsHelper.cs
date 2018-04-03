@@ -103,6 +103,7 @@ namespace starskycli
                 }
             }
 
+            if (AppSettingsProvider.Verbose) Console.WriteLine(">> GetThumbnail " + isThumbnail);
             return isThumbnail;
         }
     }
