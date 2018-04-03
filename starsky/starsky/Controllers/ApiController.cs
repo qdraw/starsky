@@ -175,6 +175,14 @@ namespace starsky.Controllers
 
             var thumbPath = AppSettingsProvider.ThumbnailTempFolder + f + ".jpg";
 
+            // If File is corrupt delete it;
+            if(System.IO.File.Exists(thumbPath)) {
+                if (Files.GetImageFormat(thumbPath) == Files.ImageFormat.unknown)
+                {
+                    System.IO.File.Delete(thumbPath);
+                }
+            }
+
             if (!System.IO.File.Exists(thumbPath) &&
                 System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(sourcePath)))
             {
@@ -226,7 +234,17 @@ namespace starsky.Controllers
             }
 
             // Return Thumbnail
+         
             var thumbPath = AppSettingsProvider.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
+
+            // If File is corrupt delete it;
+            if(System.IO.File.Exists(thumbPath)) {
+                if (Files.GetImageFormat(thumbPath) == Files.ImageFormat.unknown)
+                {
+                    System.IO.File.Delete(thumbPath);
+                }
+            }
+            
             if (!System.IO.File.Exists(thumbPath)){
                 return NotFound("Thumb not in cache");
             }

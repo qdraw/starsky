@@ -6,6 +6,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using starsky.Models;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
 namespace starsky.Services
@@ -70,9 +71,14 @@ namespace starsky.Services
                     {
                         var key = item.Replace("\"Keywords\":", "");
                         key = key.Replace("\"", "");
-                        // you could rm kanon(, )<== here
+                        
+                        // Remove commas at end
+                        Regex commaEndRegex = new Regex(",+$");
+                        key = commaEndRegex.Replace(key, "");
+                        
                         key = key.Trim();
-                        var newItem = "\"Keywords\": [\"" + key + "\"],";
+                        var newItem = "\"Keywords\": [\"" + key + "\"],"; 
+                        // bug potential: Could give a bug if the next line does not contain any values
                         updatedText += newItem + "\n";
                     }
                     else
