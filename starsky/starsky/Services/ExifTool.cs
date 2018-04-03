@@ -70,8 +70,9 @@ namespace starsky.Services
                     {
                         var key = item.Replace("\"Keywords\":", "");
                         key = key.Replace("\"", "");
+                        // you could rm kanon(, )<== here
                         key = key.Trim();
-                        var newItem = "\"Keywords\": [\"" + key + "\"]";
+                        var newItem = "\"Keywords\": [\"" + key + "\"],";
                         updatedText += newItem + "\n";
                     }
                     else
