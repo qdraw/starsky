@@ -287,70 +287,51 @@ h2 {
     display: block;
     z-index: 4;
 }
-
-.add-colorclass .none,
-.add-colorclass .colorclass-0,
-#portfolio-filter ul > li > a#colorclass-0,
-.wrapper .halfitem.None .caption {
-    background-color: rgba(0, 0, 0, 0.3);
-}
-
 .wrapper .halfitem.None.directory-true .caption {
     /*// beige*/
     background-color: rgba(109, 199, 256, 0.5);
 }
 
-
-.nextprev .colorclass-0.on,
-.add-colorclass .none.on,
-.add-colorclass .colorclass-0.on,
-#portfolio-filter ul > li > a#colorclass-0.active {
-    background-color: rgba(0, 0, 0, 1);
-    color: white;
-    opacity: 1;
-}
-
-
 .add-colorclass .winner,
-.add-colorclass .colorclass-8,
-#portfolio-filter ul > li > a#colorclass-8,
+.add-colorclass .colorclass-1,
+#portfolio-filter ul > li > a#colorclass-1,
 .wrapper .halfitem.Winner .caption {
     background-color: rgba(255, 0, 255, 0.3);
 }
 
-.nextprev .colorclass-8.on,
+.nextprev .colorclass-1.on,
 .add-colorclass .winner.on,
-.add-colorclass .colorclass-8 .on,
-#portfolio-filter ul > li > a#colorclass-8.active {
+.add-colorclass .colorclass-1 .on,
+#portfolio-filter ul > li > a#colorclass-1.active {
     background-color: rgba(255, 0, 255, 1);
     opacity: 1;
 }
 
 .add-colorclass .winneralt,
-.add-colorclass .colorclass-7,
-#portfolio-filter ul > li > a#colorclass-7,
+.add-colorclass .colorclass-2,
+#portfolio-filter ul > li > a#colorclass-2,
 .wrapper .halfitem.WinnerAlt .caption {
     background-color: rgba(255, 0, 2, 0.3);
 }
 
-.nextprev .colorclass-7.on,
+.nextprev .colorclass-2.on,
 .add-colorclass .winneralt.on,
-.add-colorclass .colorclass-7.on,
-#portfolio-filter ul > li > a#colorclass-7.active {
+.add-colorclass .colorclass-2.on,
+#portfolio-filter ul > li > a#colorclass-2.active {
     background-color: rgba(255, 0, 2, 1);
     opacity: 1;
 }
-
+/*until here*/
 .add-colorclass .superior,
-.add-colorclass .colorclass-6,
-#portfolio-filter ul > li > a#colorclass-6 {
+.add-colorclass .colorclass-3,
+#portfolio-filter ul > li > a#colorclass-3 {
     background-color: rgba(255, 127, 1, 0.6);
 }
 
-.nextprev .colorclass-6.on,
+.nextprev .colorclass-3.on,
 .add-colorclass .superior.on,
-.add-colorclass .colorclass-6.on,
-#portfolio-filter ul > li > a#colorclass-6.active {
+.add-colorclass .colorclass-3.on,
+#portfolio-filter ul > li > a#colorclass-2.active {
     background-color: rgba(255, 127, 1, 1);
     opacity: 1;
 }
@@ -359,85 +340,104 @@ h2 {
     background-color: rgba(255, 127, 1, 0.3);
 }
 
-.nextprev .colorclass-5.on,
+.nextprev .colorclass-4.on,
 .add-colorclass .superioralt.on,
-.add-colorclass .colorclass-5.on,
-#portfolio-filter ul > li > a#colorclass-5.active {
+.add-colorclass .colorclass-4.on,
+#portfolio-filter ul > li > a#colorclass-4.active {
     color: #8447B2;
     background-color: rgba(255, 255, 83, 1);
     opacity: 1;
 }
 
-.add-colorclass .colorclass-5,
+.add-colorclass .colorclass-4,
 .add-colorclass .superioralt,
-#portfolio-filter ul > li > a#colorclass-5,
+#portfolio-filter ul > li > a#colorclass-4,
 .wrapper .halfitem.SuperiorAlt .caption {
     background-color: rgba(255, 255, 83, 0.3);
 }
 
-.nextprev .colorclass-4.on,
-.add-colorclass .colorclass-4.on,
+.nextprev .colorclass-5.on,
+.add-colorclass .colorclass-5.on,
 .add-colorclass .typical.on,
-#portfolio-filter ul > li > a#colorclass-4.active {
+#portfolio-filter ul > li > a#colorclass-5.active {
     background-color: rgba(0, 255, 0, 1);
     color: #B23879;
     opacity: 1;
 }
 
-.add-colorclass .colorclass-4,
+.add-colorclass .colorclass-5,
 .add-colorclass .typical,
-#portfolio-filter ul > li > a#colorclass-4,
+#portfolio-filter ul > li > a#colorclass-5,
 .wrapper .halfitem.Typical .caption {
     background-color: rgba(0, 255, 0, 0.3);
 }
 
-.nextprev .colorclass-3.on,
-.add-colorclass .colorclass-3.on,
+.nextprev .colorclass-6.on,
+.add-colorclass .colorclass-6.on,
 .add-colorclass .typical.on,
-#portfolio-filter ul > li > a#colorclass-3.active {
+#portfolio-filter ul > li > a#colorclass-6.active {
     color: #B2582F;
     background-color: rgba(0, 255, 255, 1);
     opacity: 1;
 }
 
-.add-colorclass .colorclass-3,
-#portfolio-filter ul > li > a#colorclass-3,
+.add-colorclass .colorclass-6,
+#portfolio-filter ul > li > a#colorclass-6,
 .wrapper .halfitem.TypicalAlt .caption {
     background-color: rgba(0, 255, 255, 0.3);
 }
 
-.nextprev .colorclass-2.on,
-.add-colorclass .colorclass-2.on,
+.nextprev .colorclass-7.on,
+.add-colorclass .colorclass-7.on,
 .add-colorclass .extras.on,
-#portfolio-filter ul > li > a#colorclass-2.active {
+#portfolio-filter ul > li > a#colorclass-7.active {
     background-color: rgba(0, 0, 255, 1);
     opacity: 1;
     color: white;
 }
 
-.add-colorclass .colorclass-2,
+.add-colorclass .colorclass-7,
 .add-colorclass .extras,
-#portfolio-filter ul > li > a#colorclass-2,
+#portfolio-filter ul > li > a#colorclass-7,
 .wrapper .halfitem.Extras .caption {
     background-color: rgba(0, 0, 255, 0.3);
 }
 
-.nextprev .colorclass-1.on,
-.add-colorclass .colorclass-1.on,
+.nextprev .colorclass-8.on,
+.add-colorclass .colorclass-8.on,
 .add-colorclass .trash.on,
-#portfolio-filter ul > li > a#colorclass-1.active {
-    background-color: rgba(150, 150, 100, 1);
+#portfolio-filter ul > li > a#colorclass-8.active {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
     opacity: 1;
 }
 
-.add-colorclass .colorclass-1,
-#portfolio-filter ul > li > a#colorclass-1,
+.add-colorclass .colorclass-8,
+#portfolio-filter ul > li > a#colorclass-8,
 .wrapper .halfitem.Trash .caption {
-    background-color: rgba(150, 150, 100, 0.3);
+    background-color: rgba(0, 0, 0, 0.25);
 }
 
 #portfolio-filter ul > li > a.off {
     opacity: 0.65;
+}
+
+
+.add-colorclass .none,
+.add-colorclass .colorclass-0,
+#portfolio-filter ul > li > a#colorclass-0,
+.wrapper .halfitem.None .caption {
+    background-color: rgba(150, 150, 100, 0.3);
+
+}
+
+.nextprev .colorclass-0.on,
+.add-colorclass .none.on,
+.add-colorclass .colorclass-0.on,
+#portfolio-filter ul > li > a#colorclass-0.active {
+    background-color: rgba(150, 150, 100, 1);
+    color: white;
+    opacity: 1;
 }
 
 

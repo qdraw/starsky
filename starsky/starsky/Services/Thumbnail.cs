@@ -49,33 +49,39 @@ namespace starsky.Services
                 return;
             }
             
-            if (File.Exists(thumbPath))
-            {
-                var imageFormat = Files.GetImageFormat(thumbPath);
-                if(AppSettingsProvider.Verbose) Console.WriteLine(Files.GetImageFormat(thumbPath));
-                switch (imageFormat)
-                {
-                    case Files.ImageFormat.jpeg:
-                        return;
-                    case Files.ImageFormat.unknown:
-                        try
-                        {
-                            File.Delete(thumbPath);
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(e);
-                        }
-                        break;
-                }
-
-            }
+            // Return if thumnail already exist
+            if (File.Exists(thumbPath)) return;
             
             // Wrapper to check if the thumbservice is not waiting forever
             // In some scenarios thumbservice is waiting for days
             // Need to add var => else it will not await
             var q = WrapSomeMethod(item.FilePath,thumbPath).Result;
+            
+            _removeCorruptImage(thumbPath);
 
+        }
+
+        private static void _removeCorruptImage(string thumbPath)
+        {
+            if (!File.Exists(thumbPath)) return;
+            
+            var imageFormat = Files.GetImageFormat(thumbPath);
+            if(AppSettingsProvider.Verbose) Console.WriteLine(Files.GetImageFormat(thumbPath));
+            switch (imageFormat)
+            {
+                case Files.ImageFormat.jpeg:
+                    return;
+                case Files.ImageFormat.unknown:
+                    try
+                    {
+                        File.Delete(thumbPath);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                    break;
+            }
         }
         
         // Wrapper to Make a sync task sync
@@ -92,7 +98,7 @@ namespace starsky.Services
         #pragma warning restore 1998
 
             var task = Task.Run(() => ResizeThumbnail(inputFilePath, thumbPath));
-            if (task.Wait(TimeSpan.FromSeconds(14)))
+            if (task.Wait(TimeSpan.FromSeconds(30)))
                 return task.Result;
 
             Console.WriteLine(">>>>>>>>>>>            Timeout ThumbService "
@@ -113,7 +119,7 @@ namespace starsky.Services
                 image.Mutate(x => x
                     .Resize(1000, 0)
                 );
-                 image.SaveAsJpeg(outputStream);
+                image.SaveAsJpeg(outputStream);
             }
             return false;
         }

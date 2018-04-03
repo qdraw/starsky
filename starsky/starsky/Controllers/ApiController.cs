@@ -176,10 +176,12 @@ namespace starsky.Controllers
             var thumbPath = AppSettingsProvider.ThumbnailTempFolder + f + ".jpg";
 
             // If File is corrupt delete it;
+            // Temp off            
             if(System.IO.File.Exists(thumbPath)) {
                 if (Files.GetImageFormat(thumbPath) == Files.ImageFormat.unknown)
                 {
-                    System.IO.File.Delete(thumbPath);
+                    return NotFound("image is corrupt");
+                    // System.IO.File.Delete(thumbPath);
                 }
             }
 

@@ -10,8 +10,8 @@ makeTagList();
 tagList = removeArrayDuplicate(tagList);
 // alphabetic order
 tagList = tagList.sort();
-// not  => reverse
-tagList = tagList.reverse();
+// // not  => reverse
+// tagList = tagList.reverse();
 
 writeFilterList (tagList);
 

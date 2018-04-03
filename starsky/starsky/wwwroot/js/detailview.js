@@ -317,31 +317,31 @@ if (document.querySelectorAll(".breadcrumb").length >= 1) {
 document.addEventListener('keydown', (event) => {
     if (document.activeElement.className.indexOf("form-control") === -1) {
         const keyName = event.key;
-        if (keyName === "1" && document.querySelectorAll(".add-colorclass .colorclass-8").length === 1){
+        if (keyName === "8" && document.querySelectorAll(".add-colorclass .colorclass-8").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-8"));
         }
     
-        if (keyName === "2" && document.querySelectorAll(".add-colorclass .colorclass-7").length === 1){
+        if (keyName === "7" && document.querySelectorAll(".add-colorclass .colorclass-7").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-7"));
         }
 
-        if (keyName === "3" && document.querySelectorAll(".add-colorclass .colorclass-6").length === 1){
+        if (keyName === "6" && document.querySelectorAll(".add-colorclass .colorclass-6").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-6"));
         }
-        if (keyName === "4" && document.querySelectorAll(".add-colorclass .colorclass-5").length === 1){
+        if (keyName === "5" && document.querySelectorAll(".add-colorclass .colorclass-5").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-5"));
         }
 
-        if (keyName === "5" && document.querySelectorAll(".add-colorclass .colorclass-4").length === 1){
+        if (keyName === "4" && document.querySelectorAll(".add-colorclass .colorclass-4").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-4"));
         }
-        if (keyName === "6" && document.querySelectorAll(".add-colorclass .colorclass-3").length === 1){
+        if (keyName === "3" && document.querySelectorAll(".add-colorclass .colorclass-3").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-3"));
         }
-        if (keyName === "7" && document.querySelectorAll(".add-colorclass .colorclass-2").length === 1){
+        if (keyName === "2" && document.querySelectorAll(".add-colorclass .colorclass-2").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-2"));
         }
-        if (keyName === "8" && document.querySelectorAll(".add-colorclass .colorclass-1").length === 1){
+        if (keyName === "1" && document.querySelectorAll(".add-colorclass .colorclass-1").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-1"));
         }
         if ((keyName === "0" || keyName === "9" ) && document.querySelectorAll(".add-colorclass .colorclass-0").length === 1){

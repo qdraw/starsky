@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace starsky.Models
 {
@@ -116,40 +114,40 @@ namespace starsky.Models
 
         public enum Color
         {
-            Winner = 8, // Paars - purple
-            WinnerAlt = 7, // rood - Red -
-            Superior = 6, // Oranje - orange
-            SuperiorAlt = 5, //Geel - yellow
-            Typical = 4, // Groen - groen
-            TypicalAlt = 3, // Turquoise
-            Extras = 2, // Blauw - blue
-            Trash = 1, // grijs - Grey
+            Winner = 1, // Paars - purple
+            WinnerAlt = 2, // rood - Red -
+            Superior = 3, // Oranje - orange
+            SuperiorAlt = 4, //Geel - yellow
+            Typical = 5, // Groen - groen
+            TypicalAlt = 6, // Turquoise
+            Extras = 7, // Blauw - blue
+            Trash = 8, // grijs - Grey
             None = 0, // donkergrijs Dark Grey
             DoNotChange = -1
         }
-        
+      
         public static IEnumerable<Color> GetAllColor()
         {
-            return Enum.GetValues(typeof(Color)).Cast<Color>().Where(p => (int)p >= 0).OrderByDescending(p => (int)p );
+            return Enum.GetValues(typeof(Color)).Cast<Color>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
         }
         
         public enum ColorUserInterface
         {
-            Paars = 8, // Paars - purple
-            Rood = 7, // rood - Red -
-            Oranje = 6, // Oranje - orange
-            Geel = 5, //Geel - yellow
-            Groen = 4, // Groen - groen
-            Turquoise = 3, // Turquoise
-            Blauw = 2, // Blauw - blue
-            Grijs = 1, // grijs - Grey
+            Paars = 1, // Paars - purple
+            Rood = 2, // rood - Red -
+            Oranje = 3, // Oranje - orange
+            Geel = 4, //Geel - yellow
+            Groen = 5, // Groen - groen
+            Turquoise = 6, // Turquoise
+            Blauw = 7, // Blauw - blue
+            Grijs = 8, // grijs - Grey
             GeenKleur = 0, // donkergrijs Dark Grey
             DoNotChange = -1
         }
 
         public static IEnumerable<ColorUserInterface> GetAllColorUserInterface()
         {
-            return Enum.GetValues(typeof(ColorUserInterface)).Cast<ColorUserInterface>().Where(p => (int)p >= 0).OrderByDescending(p => (int)p );
+            return Enum.GetValues(typeof(ColorUserInterface)).Cast<ColorUserInterface>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
         }
         
 
