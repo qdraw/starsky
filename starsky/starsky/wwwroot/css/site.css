@@ -331,7 +331,7 @@ h2 {
 .nextprev .colorclass-3.on,
 .add-colorclass .superior.on,
 .add-colorclass .colorclass-3.on,
-#portfolio-filter ul > li > a#colorclass-2.active {
+#portfolio-filter ul > li > a#colorclass-3.active {
     background-color: rgba(255, 127, 1, 1);
     opacity: 1;
 }
