@@ -35,7 +35,14 @@ namespace starsky.Models
         public HashSet<string> Keywords
         {
             get { return null; }
-            set { _keywords = value; }
+            set {
+                    if (value == null)
+                    {
+                        _keywords = new HashSet<string>();
+                        return;
+                    }
+                    _keywords = value; 
+            }
         }
 
         public string Tags
@@ -52,6 +59,11 @@ namespace starsky.Models
 
         private static string _hashSetToString(HashSet<string> hashSetKeywords)
         {
+            if (hashSetKeywords == null)
+            {
+                return string.Empty;
+            }
+            
             var toBeAddedKeywords = string.Empty;
             foreach (var keyword in hashSetKeywords)
             {
