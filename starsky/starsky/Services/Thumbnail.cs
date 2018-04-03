@@ -3,6 +3,8 @@ using System.IO;
 using System.Threading.Tasks;
 using starsky.Models;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Transforms;
 
 namespace starsky.Services
 {
