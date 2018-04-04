@@ -105,7 +105,7 @@ namespace starsky.Services
         #pragma warning restore 1998
             
             var task = Task.Run(() => ResizeThumbnail(inputFilePath, thumbPath));
-            if (task.Wait(TimeSpan.FromSeconds(25)))
+            if (task.Wait(TimeSpan.FromSeconds(30)))
                 return task.Result;
 
             Console.WriteLine(">>>>>>>>>>>            Timeout ThumbService "
