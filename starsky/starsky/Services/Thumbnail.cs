@@ -51,6 +51,11 @@ namespace starsky.Services
                 return;
             }
             
+            
+            // If contains error with thumbnailing service then => skip
+            if (!_isErrorItem(FileIndexItem.DatabasePathToFilePath(item.FilePath))) return;
+            
+            
             // Return if thumnail already exist
             if (File.Exists(thumbPath)) return;
             
@@ -98,14 +103,18 @@ namespace starsky.Services
         #pragma warning disable 1998
         private static async Task<bool> ResizeThumbnailTimeOut(string inputFilePath, string thumbPath){
         #pragma warning restore 1998
-
+            
             var task = Task.Run(() => ResizeThumbnail(inputFilePath, thumbPath));
-            if (task.Wait(TimeSpan.FromSeconds(30)))
+            if (task.Wait(TimeSpan.FromSeconds(25)))
                 return task.Result;
 
             Console.WriteLine(">>>>>>>>>>>            Timeout ThumbService "
                               + inputFilePath 
                               + "            <<<<<<<<<<<<");
+            
+            // Log the corrupt image
+            _createErrorLogItem(FileIndexItem.DatabasePathToFilePath(inputFilePath));
+            
             return false;
         }
         
@@ -124,6 +133,37 @@ namespace starsky.Services
                 image.SaveAsJpeg(outputStream);
             }
             return false;
+        }
+
+        private static readonly string _thumbnailErrorMessage = "Thumbnail error";
+        private static readonly string _thumbnailPrefix = "-thumbnail-error.log";
+
+        private static void _createErrorLogItem(string inputFilePath)
+        {
+            var path = inputFilePath.Replace(".jpg", _thumbnailPrefix);
+            if (File.Exists(path)) return;
+            
+            // Create a file to write to.
+            using (StreamWriter sw = File.CreateText(path)) 
+            {
+                sw.WriteLine(_thumbnailErrorMessage);
+            }
+        }
+        
+        private static bool _isErrorItem(string inputFilePath)
+        {
+            var path = inputFilePath.Replace(".jpg", _thumbnailPrefix);
+            if (!File.Exists(path)) return true;
+            
+            using (StreamReader sr = File.OpenText(path)) 
+            {
+                string s = "";
+                while ((s = sr.ReadLine()) != null)
+                {
+                    if (s.Contains(_thumbnailErrorMessage)) return false;
+                }
+            }
+            return true;
         }
     }
 }
