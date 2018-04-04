@@ -255,8 +255,6 @@ namespace starsky.Controllers
             
             FileStream fs1 = System.IO.File.OpenRead(thumbPath);
             return File(fs1, "image/jpeg");
-                
         }
-
-}
+    }
 }

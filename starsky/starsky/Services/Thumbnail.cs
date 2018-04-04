@@ -27,7 +27,7 @@ namespace starsky.Services
                 return;
             }
             
-            if (!File.Exists(newThumbPath))
+            if (File.Exists(newThumbPath))
             {
                 return;
             }
