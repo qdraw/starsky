@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using starsky.Models;
 
 namespace starsky.Services
@@ -10,10 +10,17 @@ namespace starsky.Services
         //        => if this file exist on the file system 
         //              => check if the hash in the db is up to date
 
-        public void SingleFile(string subPath = "")
+        // True is stop after
+        // False is continue
+        
+        public bool SingleFile(string subPath = "")
         {
             if (Files.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.File) // false == file
             {
+                // File check if jpg #not corrupt
+                var imageFormat = Files.GetImageFormat(FileIndexItem.DatabasePathToFilePath(subPath));
+                if(imageFormat != Files.ImageFormat.jpeg) throw new BadImageFormatException("img != jpeg");
+                
                 // single file -- update or adding
                 var dbListWithOneFile = new List<FileIndexItem>();
                 var dbItem = _query.GetObjectByFilePath(subPath);
@@ -28,10 +35,9 @@ namespace starsky.Services
                 CheckMd5Hash(localListWithOneFileDbStyle, dbListWithOneFile);
                 AddPhotoToDatabase(localListWithOneFileDbStyle, dbListWithOneFile);
                 
-                // currently does not allow '-t true' extension on a single file
-                throw new FileNotFoundException();
+                return true;
             }
-
+            return false;
         }
     }
 }

@@ -34,6 +34,26 @@ namespace starsky.Services
 
             File.Move(oldThumbPath, newThumbPath);
         }
+        
+        // Feature used by the cli tool
+        public static void CreateThumb(string dbFilePath = "/")
+        {
+            var fullFilePath = FileIndexItem.DatabasePathToFilePath(dbFilePath);
+
+
+            if (Files.IsFolderOrFile(dbFilePath) 
+                == FolderOrFileModel.FolderOrFileTypeList.File)
+            {
+
+                var value = new FileIndexItem()
+                {
+                    FilePath = dbFilePath,
+                    FileHash = FileHash.GetHashCode(fullFilePath)
+                };
+                CreateThumb(value);
+
+            }
+        }
 
         // Create a new thumbnail
         public static void CreateThumb(FileIndexItem item)

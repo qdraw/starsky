@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using starsky.Models;
 using starsky.ViewModels;
@@ -9,6 +8,7 @@ namespace starsky.Services
     public partial class Query
     {
         // For displaying single photo's
+        // Display feature only?!
         // input: Name of item by db style path
         public DetailView SingleItem(string singleItemDbPath,
             IEnumerable<FileIndexItem.Color> colorClassFilterList = null)

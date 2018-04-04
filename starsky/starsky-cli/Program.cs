@@ -60,7 +60,15 @@ namespace starskyCli
 
             if (!ArgsHelper.GetThumbnail(args)) return;
 
-            ThumbnailByDirectory.CreateThumb(subpath);
+            // If single file => create thumbnail
+            Thumbnail.CreateThumb(subpath);
+
+            if (Files.IsFolderOrFile(subpath) 
+                == FolderOrFileModel.FolderOrFileTypeList.Folder)
+            {
+                ThumbnailByDirectory.CreateThumb(subpath);
+            }
+
             Console.WriteLine("Done!");
 
         }
