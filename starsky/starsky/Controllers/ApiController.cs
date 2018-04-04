@@ -215,7 +215,7 @@ namespace starsky.Controllers
             }
             
             // When using the api to check using javascript
-            if (isStatus) return Ok();
+            if (isStatus) return Json("OK");
 
             FileStream fs = System.IO.File.OpenRead(thumbPath);
             return File(fs, "image/jpeg");

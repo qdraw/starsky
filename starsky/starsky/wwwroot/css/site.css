@@ -796,6 +796,7 @@ float: left;
         height: initial;
         overflow-y:initial;
         width: 80vw;
+        padding: 12px;
     }
 }
 .sidebar .content.collapsed {

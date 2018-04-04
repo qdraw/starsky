@@ -203,6 +203,8 @@ var sideBarDefaultWidth;
 if (document.querySelectorAll(".sidebar").length === 1) {
     function toggleSideMenu(isStartup) {
         if (document.querySelector(".sidebar .close").className.indexOf("collapsed") === -1) {
+            window.location.hash = window.location.hash.replace("#sidebar","");
+            
             document.querySelector(".sidebar .close").classList.add("collapsed");
             sideBarDefaultWidth = document.querySelector(".sidebar").style.width;
             document.querySelector(".sidebar").style.width = "0px";
@@ -223,6 +225,8 @@ if (document.querySelectorAll(".sidebar").length === 1) {
 
         }
         else {
+            window.location.hash = '#sidebar';
+
             document.querySelector(".sidebar .close").classList.remove("collapsed");
             document.querySelector(".sidebar").style.width = sideBarDefaultWidth;
             if (isStartup) {
@@ -246,15 +250,12 @@ if (document.querySelectorAll(".sidebar").length === 1) {
 
         }
     }
-
-    if(window.innerWidth <= 650) {
+    // Default on mobile disabled
+    // Default on desktop enabled
+    toggleSideMenu(true);
+    if (window.location.hash.indexOf("sidebar") === -1 && window.innerWidth <= 650) {
         toggleSideMenu(true);
-    }
-    else {
-        toggleSideMenu(true);
-        toggleSideMenu(true);
-    }
-    
+    }    
 }
 
 // Add select part to next prev url
@@ -291,27 +292,30 @@ if (document.querySelectorAll(".breadcrumb").length >= 1) {
         if (addcolorclassHash.indexOf(",")>= 0){
             addcolorclassArray = addcolorclassHash.split(",");
         }
-        else addcolorclassArray.push(addcolorclassHash);
+        else {
+            addcolorclassArray.push(addcolorclassHash);
+        }
 
         if (breadcrumbObject.length >= 4) {
             for (var i = 0; i < breadcrumbObject.length; i++) {
 
                 if (i === breadcrumbObject.length-3){
                     breadcrumbObject[i].href += "#colorclass=";
-
-                    for (var j = 0; j < addcolorclassArray.length; j++) {
-                        if (j !== addcolorclassArray[j].length-1 ){
-                            breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[j];
-                        }
-                        else {
-                            if (addcolorclassArray.length === 1) {
-                                breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[j];
-                            }
-                            if (addcolorclassArray.length !== 1) {
+                    if (addcolorclassArray.length === 1) {
+                        breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[0];
+                    }
+                    else {
+                        for (var j = 0; j < addcolorclassArray.length; j++) {
+                            if (addcolorclassArray[j] != addcolorclassArray.length) {
                                 breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[j] + ",";
+                            }
+                            else {
+                                breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[j];
                             }
                         }
                     }
+                        
+                    
                 }
             }
         }
