@@ -136,7 +136,7 @@ namespace starsky.Services
         }
 
         private static readonly string _thumbnailErrorMessage = "Thumbnail error";
-        private static readonly string _thumbnailPrefix = "-thumbnail-error.log";
+        private static readonly string _thumbnailPrefix = "-starsky-error.log";
 
         private static void _createErrorLogItem(string inputFilePath)
         {

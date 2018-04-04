@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
@@ -161,7 +162,27 @@ namespace starsky.Controllers
                                 FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             var item = _query.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
 
-            System.IO.File.Delete(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            // Remove Files if exist // +++ RAW file
+            var fullFilePath = FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
+            var toDeletePaths =
+                new List<string>
+                {
+                    fullFilePath,
+                    fullFilePath.Replace(".jpg", ".arw"), 
+                    fullFilePath.Replace(".jpg", ".dng"),
+                    fullFilePath.Replace(".jpg", ".ARW"), 
+                    fullFilePath.Replace(".jpg", ".DNG")
+                };
+
+            foreach (var toDelPath in toDeletePaths)
+            {
+                if (System.IO.File.Exists(toDelPath))
+                {
+                    System.IO.File.Delete(toDelPath);
+                }
+            }
+            // End Remove files
+            
             _query.RemoveItem(item);
 
             return Json(item);
