@@ -104,40 +104,6 @@ namespace starsky.Controllers
             return Json(exifToolResults);
         }
 
-//        [HttpPost]
-//        [HttpGet]
-//        public IActionResult UpdateTag(string f = "path", string t = "", bool redirect = true)
-//        {
-//            var singleItem = _query.SingleItem(f);
-//            if (singleItem == null) return NotFound("not in index " +  f);
-//
-//            if (string.IsNullOrWhiteSpace(t)) return BadRequest("tag label missing");
-//
-//            var oldHashCode = _query.SingleItem(f).FileIndexItem.FileHash;
-//
-//            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
-//                return NotFound("source image missing " + FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-//
-//            var exifToolResult = ExifTool.SetExifToolKeywords(t, FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-//            if (exifToolResult == null) return BadRequest();
-//
-//            var item = _query.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
-//
-//            item.FileHash = FileHash.CalcHashCode(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-//            item.AddToDatabase = DateTime.Now;
-//            item.Tags = exifToolResult;
-//            _query.UpdateItem(item);
-//
-//            new Thumbnail().RenameThumb(oldHashCode, item.FileHash);
-//
-//            // for using the api
-//            if (redirect)
-//            {
-//                return RedirectToAction("index", "home", new { f = f, t = exifToolResult });
-//            }
-//            return Json(item);
-//        }
-
         public IActionResult Info(string f = "dbStyleFilepath")
         {
             if (f.Contains("?t=")) return NotFound("please use &t= instead of ?t=");
@@ -188,8 +154,15 @@ namespace starsky.Controllers
             return Json(item);
         }
 
-        public IActionResult Thumbnail(string f, bool isSingleitem = false)
+        public IActionResult Thumbnail(
+            string f, 
+            bool isSingleitem = false, 
+            bool retryThumbnail = false)
         {
+            // f is Hash
+            // isSingleItem => detailview
+            // Retry thumbnail is when you press reset thumbnail
+            
             var sourcePath = _query.GetItemByHash(f);
 
             if (sourcePath == null) return NotFound("not in index");
@@ -197,12 +170,15 @@ namespace starsky.Controllers
             var thumbPath = AppSettingsProvider.ThumbnailTempFolder + f + ".jpg";
 
             // If File is corrupt delete it;
-            // Temp off            
             if(System.IO.File.Exists(thumbPath)) {
                 if (Files.GetImageFormat(thumbPath) == Files.ImageFormat.unknown)
                 {
-                    return NotFound("image is corrupt");
-                    // System.IO.File.Delete(thumbPath);
+                    if (!retryThumbnail)
+                    {
+                        Console.WriteLine("image is corrupt !corrupt! ");
+                        return NoContent();
+                    }
+                    System.IO.File.Delete(thumbPath);
                 }
             }
 
@@ -211,7 +187,8 @@ namespace starsky.Controllers
             {
                 if (!isSingleitem)
                 {
-                    return NotFound("could regenerate thumb");
+                    return NotFound("Photo exist in database but " +
+                                    "isSingleItem flag is Missing");
                 }
 
                 try

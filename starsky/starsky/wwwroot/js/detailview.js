@@ -2,17 +2,22 @@
 // Req: base url = > updateApiBase
 updateApiBase = updateApiBase.replace("&amp;", "&");
 infoApiBase = infoApiBase.replace("&amp;", "&");
-
+thumbnailApiBase = thumbnailApiBase.replace("&amp;", "&");
+    
 function loadJSON(path, success, error, type)
 {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function()
     {
         if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200 || xhr.status === 205) {
+            if (xhr.status === 200) {
                 if (success) {
-                    // console.log(xhr.responseText);
-                    success(JSON.parse(xhr.responseText));
+                    try {
+                        success(JSON.parse(xhr.responseText));
+                    }
+                    catch(e) {
+                        error(xhr)
+                    }
                 };
             } else {
                 if (error)
@@ -355,3 +360,35 @@ document.addEventListener('keydown', (event) => {
         }
     }
 });
+
+
+function checkIfContentIsNot204() {
+    
+    if (thumbnailApiBase === undefined) return;
+    
+    loadJSON(thumbnailApiBase,
+        function (data) {},
+        function (xhr) { 
+            if (xhr.status === 204 && 
+                document.querySelectorAll(".status204button").length >= 0) 
+            {
+                document.querySelector(".status204button").classList.remove("hide");
+            }
+        },
+        "GET"
+    );
+}
+checkIfContentIsNot204();
+
+function retry204() {
+    showPreloader();
+    var url = thumbnailApiBase += "&retryThumbnail=True";
+    loadJSON(url,
+        function () {
+        },
+        function (xhr) {
+            location.reload();
+        },
+        "GET"
+    );  
+}
