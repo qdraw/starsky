@@ -116,7 +116,7 @@
 </div>
 
 <script type="text/javascript">
-    var thumbnailApiBase = "@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash})";
+    var thumbnailApiBase = "@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, isStatus = true})";
     var updateApiBase = "@Url.Action("Update", "Api", new { f = @Model.FileIndexItem.FilePath})";
     var infoApiBase = "@Url.Action("Info", "Api", new { f = @Model.FileIndexItem.FilePath})";
     var folderApiBase = "@Url.Action("Folder", "Api", new { f = @Model.FileIndexItem.ParentDirectory})";

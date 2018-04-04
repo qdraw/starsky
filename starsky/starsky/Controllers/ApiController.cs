@@ -157,11 +157,13 @@ namespace starsky.Controllers
         public IActionResult Thumbnail(
             string f, 
             bool isSingleitem = false, 
+            bool isStatus = false,
             bool retryThumbnail = false)
         {
             // f is Hash
             // isSingleItem => detailview
-            // Retry thumbnail is when you press reset thumbnail
+            // Retry thumbnail => is when you press reset thumbnail
+            // Isstatus, => to don't waste the users bandwith.
             
             var sourcePath = _query.GetItemByHash(f);
 
@@ -211,6 +213,9 @@ namespace starsky.Controllers
             {
                 return NotFound("in cache but not in thumbdb");
             }
+            
+            // When using the api to check using javascript
+            if (isStatus) return Ok();
 
             FileStream fs = System.IO.File.OpenRead(thumbPath);
             return File(fs, "image/jpeg");
