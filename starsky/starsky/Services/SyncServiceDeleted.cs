@@ -11,7 +11,7 @@ namespace starsky.Services
         //        => if this file is deleted on the file system 
         //              => delete it from the database
 
-        public void Deleted(string subPath = "")
+        private void Deleted(string subPath = "")
         {
             if (Files.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
             {
@@ -24,6 +24,7 @@ namespace starsky.Services
                     Console.WriteLine("File " + subPath +" not found and removed");
 
                     if (dbItem.IsDirectory == false) throw new FileNotFoundException();
+                    // Remove subitems in directory
                     var toBeDeleted = _query.GetAllFiles(dbItem.FilePath);
 
                     foreach (var item in toBeDeleted)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
 using starsky.Models;
@@ -33,7 +34,6 @@ namespace starsky.Controllers
             var model = new SearchViewModel();
             model.PageNumber = p;
             model.SearchQuery = t;
-            model.SearchCount = _search.SearchCount(t);
             model.Breadcrumb = new List<string>();
             model.Breadcrumb.Add("/");
             if (!string.IsNullOrEmpty(t))
@@ -48,6 +48,7 @@ namespace starsky.Controllers
             }
 
             model.LastPageNumber = _search.SearchLastPageNumber(t);
+            model.SearchCount = _search.SearchCount(t);
             model.FileIndexItems = _search.SearchObjectItem(model.SearchQuery, model.PageNumber);
             stopWatch.Stop();
             model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
