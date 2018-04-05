@@ -300,16 +300,59 @@ function buildPage() {
     }
 
         // read from url
-        // console.log(window.location.hash);
+        console.log(window.location.hash);
     
         var urlsubject = [];
-        var replaceurl = window.location.hash.replace("#colorclass=","");
-        if (replaceurl.indexOf(",") >= 0){
-            urlsubject = replaceurl.split(",");
+
+        var colorclassurl = window.location.hash;
+        var anchorurl = null;
+        if (colorclassurl.indexOf(";") >= 0) {
+            var hashSplit = window.location.hash.split(";"); // ;
+            for (var i = 0; i < hashSplit.length; i++) {
+                if (hashSplit[i].indexOf("colorclass") >= 0){
+                    colorclassurl = hashSplit[i];
+                    break; 
+                }
+            }
+            for (var i = 0; i < hashSplit.length; i++) {
+                if (hashSplit[i].indexOf("anchor") >= 0){
+                    anchorurl = hashSplit[i];
+                    break;
+                }
+            }
+            // console.log(anchorurl)
+            // colorclassurl = window.location.hash.split(";")[colorClassIndex];
+        }
+        // single file
+        if (colorclassurl.indexOf(";") === -1) {
+            if (colorclassurl.indexOf("anchor") >= 0){
+                anchorurl = colorclassurl;
+            }
+        }
+
+
+
+        // console.log(colorclassurl)
+        console.log(anchorurl)
+
+        if (anchorurl != null) {
+            anchorurl = anchorurl.replace(/(#a|a)nchor=/ig,"");
+            if (document.querySelectorAll('a[data-filename="' + anchorurl + '"]').length >= 1) {
+                var positionx = document.querySelector('a[data-filename="' + anchorurl + '"]').offsetTop;
+                console.log(positionx)
+                window.scrollTo(0, positionx);
+            }
+            
+        }
+    
+        colorclassurl = colorclassurl.replace("#colorclass=","");
+
+        if (colorclassurl.indexOf(",") >= 0){
+            urlsubject = colorclassurl.split(",");
         }
         else {
-            if (replaceurl.indexOf("colorclass") >= 0) {
-                urlsubject.push(replaceurl)
+            if (colorclassurl.indexOf("colorclass") >= 0) {
+                urlsubject.push(colorclassurl)
             }
         }
 

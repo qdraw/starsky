@@ -326,6 +326,16 @@ function updatePrevNextHash() {
 
 if (document.querySelectorAll(".breadcrumb").length >= 1) {
     var breadcrumbObject = document.querySelector(".breadcrumb").children;
+    if(window.location.search.indexOf("colorclass") === -1) {
+        if (breadcrumbObject.length >= 4) {
+            for (var i = 0; i < breadcrumbObject.length; i++) {
+                if (i === breadcrumbObject.length - 3) {
+                    breadcrumbObject[i].href += "#anchor=" + breadcrumbObject[i + 2].textContent.trim()
+                }
+            }
+        }
+    }
+
     if(window.location.search.indexOf("colorclass") >= 0) {
         var searchPositionCl = window.location.search.indexOf("colorclass") - 1;
         addcolorclassHash = window.location.search.substr(searchPositionCl+("colorclass".length+2), window.location.search.length);
@@ -340,22 +350,19 @@ if (document.querySelectorAll(".breadcrumb").length >= 1) {
         if (breadcrumbObject.length >= 4) {
             for (var i = 0; i < breadcrumbObject.length; i++) {
 
-                if (i === breadcrumbObject.length-3){
+                console.log(breadcrumbObject)
+
+                
+                if (i === breadcrumbObject.length-3) {
                     breadcrumbObject[i].href += "#colorclass=";
-                    if (addcolorclassArray.length === 1) {
-                        breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[0];
+                    for (var j = 0; j < addcolorclassArray.length; j++) {
+                        breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[j] + ",";
                     }
-                    else {
-                        for (var j = 0; j < addcolorclassArray.length; j++) {
-                            if (addcolorclassArray[j] != addcolorclassArray.length) {
-                                breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[j] + ",";
-                            }
-                            else {
-                                breadcrumbObject[i].href += "colorclass-" + addcolorclassArray[j];
-                            }
-                        }
+                    breadcrumbObject[i].href = breadcrumbObject[i].href.replace(/,$/ig, "");
+
+                    if (addcolorclassArray.length >= 1) {
+                        breadcrumbObject[i].href += ";anchor=" + breadcrumbObject[i + 2].textContent.trim()
                     }
-                        
                     
                 }
             }
@@ -367,6 +374,19 @@ if (document.querySelectorAll(".breadcrumb").length >= 1) {
 document.addEventListener('keydown', (event) => {
     if (document.activeElement.className.indexOf("form-control") === -1) {
         const keyName = event.key;
+
+        if (keyName === "Escape" && document.querySelectorAll(".breadcrumb").length === 1){
+            var breadcrumbObjectKey = document.querySelector(".breadcrumb").children;
+            if (breadcrumbObjectKey.length >= 4) {
+                for (var i = 0; i < breadcrumbObjectKey.length; i++) {
+                    if (i === breadcrumbObjectKey.length - 3) {
+                        console.log("esc");
+                        breadcrumbObjectKey[i].click();
+                    }
+                }
+            }
+        }
+        
         if (keyName === "8" && document.querySelectorAll(".add-colorclass .colorclass-8").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-8"));
         }
