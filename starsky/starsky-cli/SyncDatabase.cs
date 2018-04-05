@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using starsky.Data;
 using starsky.Services;
@@ -39,6 +38,11 @@ namespace starskyCli
         public IEnumerable<string> SyncFiles(string subPath = "")
         {
             return _syncservice.SyncFiles(subPath);
+        }
+
+        public void OrphanFolder(string subPath = "")
+        {
+            _syncservice.OrphanFolder(subPath);
         }
 
         public IEnumerable<FileIndexItem> GetAll(string subPath = "")

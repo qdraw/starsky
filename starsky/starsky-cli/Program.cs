@@ -27,6 +27,7 @@ namespace starskyCli
                 Console.WriteLine("--path or -p == parameter: (string) ; fullpath, search and replace first part of the filename '/' ");
                 Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
                 Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
+                Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder (heavy cpu usage), default false");
                 Console.WriteLine("--verbose or -v == verbose, more detailed info");
                 Console.WriteLine("  use -v -help to show settings: ");
                 if (!AppSettingsProvider.Verbose) return;
@@ -57,16 +58,23 @@ namespace starskyCli
                 Console.WriteLine("Done SyncFiles!");
             }
 
+            if (ArgsHelper.GetThumbnail(args)) {;
 
-            if (!ArgsHelper.GetThumbnail(args)) return;
-
-            // If single file => create thumbnail
-            Thumbnail.CreateThumb(subpath);
-
-            if (Files.IsFolderOrFile(subpath) 
-                == FolderOrFileModel.FolderOrFileTypeList.Folder)
+                // If single file => create thumbnail
+                Thumbnail.CreateThumb(subpath);
+    
+                if (Files.IsFolderOrFile(subpath) 
+                    == FolderOrFileModel.FolderOrFileTypeList.Folder)
+                {
+                    ThumbnailByDirectory.CreateThumb(subpath);
+                }
+                Console.WriteLine("Thumbnail Done!");
+            }
+            
+            if (ArgsHelper.GetOrphanFolderCheck(args))
             {
-                ThumbnailByDirectory.CreateThumb(subpath);
+                Console.WriteLine(">>>>> Heavy CPU Feature => Use with care <<<<< ");
+                new SyncDatabase().OrphanFolder(subpath);
             }
 
             Console.WriteLine("Done!");

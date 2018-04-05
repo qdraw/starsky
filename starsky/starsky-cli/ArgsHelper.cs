@@ -106,5 +106,23 @@ namespace starskycli
             if (AppSettingsProvider.Verbose) Console.WriteLine(">> GetThumbnail " + isThumbnail);
             return isThumbnail;
         }
+
+        public static bool GetOrphanFolderCheck(IReadOnlyList<string> args)
+        {
+            var isOrphanFolderCheck = false;
+
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--orphanfolder" || args[arg].ToLower() == "-o") && (arg + 1) != args.Count)
+                {
+                    bool.TryParse(args[arg + 1], out isOrphanFolderCheck);
+                }
+            }
+
+            if (AppSettingsProvider.Verbose) Console.WriteLine(">> isOrphanFolderCheck " + isOrphanFolderCheck);
+            return isOrphanFolderCheck;
+        }
+
+        
     }
 }

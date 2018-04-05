@@ -157,13 +157,13 @@ namespace starsky.Controllers
         public IActionResult Thumbnail(
             string f, 
             bool isSingleitem = false, 
-            bool isStatus = false,
+            bool json = false,
             bool retryThumbnail = false)
         {
             // f is Hash
             // isSingleItem => detailview
             // Retry thumbnail => is when you press reset thumbnail
-            // Isstatus, => to don't waste the users bandwith.
+            // json, => to don't waste the users bandwith.
             
             var sourcePath = _query.GetItemByHash(f);
 
@@ -215,7 +215,7 @@ namespace starsky.Controllers
             }
             
             // When using the api to check using javascript
-            if (isStatus) return Json("OK");
+            if (json) return Json("OK");
 
             FileStream fs = System.IO.File.OpenRead(thumbPath);
             return File(fs, "image/jpeg");

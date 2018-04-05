@@ -92,11 +92,14 @@ namespace starsky.Services
             var inurlQueryResults = new List<FileIndexItem>();
             if (searchQuery.Contains("-inurl"))
             {
-                Regex inurlRegex = new Regex("-inurl(:|=|;)((\\w+|-|_)+|\".+\")", RegexOptions.IgnoreCase);
-                // Without escaping: /-inurl(:|=|;)((\w+|-|_)+|".+")/g
+                Regex inurlRegex = new Regex("-inurl(:|=|;)((\\w+|-|_|/)+|\".+\")", RegexOptions.IgnoreCase);
+                // Without escaping: -inurl(:|=|;)((\w+|-|_|\/)+|".+")
                 if (inurlRegex.Match(searchQuery).Success)
                 {
                     var searchForFileName = inurlRegex.Match(searchQuery).Value.Replace("-inurl:", "");
+                    // if the value is quoted
+                    searchForFileName = searchForFileName.Replace("\"", "");
+
                     Console.WriteLine("searchForFileName");
                     Console.WriteLine(searchForFileName);
                     inurlQueryResults = _context.FileIndex.Where

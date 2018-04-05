@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
 using starsky.Models;
@@ -23,8 +22,10 @@ namespace starsky.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string t, int p = 0)
+        public IActionResult Index(string t, int p = 0, bool json = false)
         {
+            // Json api && View()
+            
             if (p <= 0) p = p * -1;
             Stopwatch stopWatch = Stopwatch.StartNew();
 
@@ -44,6 +45,7 @@ namespace starsky.Controllers
             if (string.IsNullOrWhiteSpace(t))
             {
                 model.FileIndexItems = new List<FileIndexItem>();
+                if (json) return Json(model);
                 return View("Index", model);
             }
 
@@ -53,6 +55,7 @@ namespace starsky.Controllers
             stopWatch.Stop();
             model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
 
+            if (json) return Json(model);
             return View("Index", model);
         }
 

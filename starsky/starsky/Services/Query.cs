@@ -65,43 +65,7 @@ namespace starsky.Services
 
 
      
-        // Very memory using feature to check if folders are not deleted
-        // do not remove this.
-        //public IEnumerable<string>
-        //    RemoveEmptyFolders(string subPath)
-        //{
-        //    // You will get Out of Memory issues
-        //    // 1. Index all folders
-        //    // 2. Rename single folder
-        //    // 3. The files are keeped in the index
-
-        //    var allItemsInDb = _context.FileIndex.Where
-        //        (p => p.ParentDirectory.Contains(subPath))
-        //        .OrderBy(r => r.FileName).ToList();
-
-        //    foreach (var dbItem in allItemsInDb)
-        //    {
-        //        if (!dbItem.IsDirectory)
-        //        {
-        //            var res = allItemsInDb.Where(
-        //                p =>
-        //                    p.IsDirectory &&
-        //                    p.FilePath == dbItem.ParentDirectory
-        //            );
-        //            if (!res.Any())
-        //            {
-        //                var c = res.Count();
-        //                var q = dbItem.FilePath;
-        //                var w = dbItem.IsDirectory;
-        //                RemoveItem(dbItem);
-        //            }
-        //        }
-
-        //    }
-
-        //    return null;
-        //}
-
+     
       
 
         // Currently not in use.
