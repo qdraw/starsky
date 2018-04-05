@@ -155,7 +155,8 @@
             @{ var currentplus2 = (Model.PageNumber + 2);}
             @if (@currentplus2 <= @Model.LastPageNumber )
             {
-                if ((@currentplus2-1 <= Model.LastPageNumber)  ) {
+                // it glitch if human lenght = 3
+                if ((@currentplus2-1 <= Model.LastPageNumber && Model.LastPageNumber != 2)  ) {
                     <span class="box">..</span>
                 }
                 <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@Model.LastPageNumber">
