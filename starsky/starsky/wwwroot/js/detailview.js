@@ -261,14 +261,12 @@ if (document.querySelectorAll(".sidebar").length === 1) {
     // Default on mobile disabled
     // Default on desktop enabled
     toggleSideMenu(true);
-    if (window.location.hash.indexOf("sidebar") === -1 && window.innerWidth >= 650) {
-        console.log("Sdf1111ide")
+    toggleSideMenu(true);
+
+    if (window.location.hash.indexOf("sidebar") === -1 && window.innerWidth <= 650) {
         toggleSideMenu(true);
     }
-    if (window.location.hash.indexOf("sidebar") >= 0 && window.innerWidth < 650) {
-        console.log("Sdfide")
-        toggleSideMenu(true);
-    }
+
     
 }
 // Add select part to next prev url
@@ -295,7 +293,6 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
 }  
 
 function updatePrevNextHash() {
-    console.log("Sfd")
     for (var i = 0; i < document.querySelectorAll(".nextprev").length; i++) {
         var object = document.querySelectorAll(".nextprev")[i].children;
         for (var j = 0; j < object.length; j++) {
@@ -419,6 +416,7 @@ function retry204() {
     var url = thumbnailApiBase += "&retryThumbnail=True";
     loadJSON(url,
         function () {
+            location.reload();
         },
         function (xhr) {
             location.reload();
