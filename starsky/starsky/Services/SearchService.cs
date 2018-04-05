@@ -96,7 +96,9 @@ namespace starsky.Services
                 // Without escaping: -inurl(:|=|;)((\w+|-|_|\/)+|".+")
                 if (inurlRegex.Match(searchQuery).Success)
                 {
-                    var searchForFileName = inurlRegex.Match(searchQuery).Value.Replace("-inurl:", "");
+                    var removeInUrlRegex = new Regex("-inurl(:|=|;)");
+                    var searchForFileName = removeInUrlRegex.Replace(inurlRegex.Match(searchQuery).Value, "");
+                    
                     // if the value is quoted
                     searchForFileName = searchForFileName.Replace("\"", "");
 
