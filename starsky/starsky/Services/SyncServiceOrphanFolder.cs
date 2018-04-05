@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using starsky.Models;
 
 namespace starsky.Services
@@ -16,16 +18,12 @@ namespace starsky.Services
             // 2. Rename single folder
             // 3. The files are keeped in the index
 
-            // Check if folder exist
-            if(Files.IsFolderOrFile(subPath) != FolderOrFileModel.FolderOrFileTypeList.Folder) return null;
+            // Check if folder does not exist on the fs
+            if(Directory.Exists(FileIndexItem.DatabasePathToFilePath(subPath,false))) return null;
                 
             var allItemsInDb = _query.GetAllFiles(subPath);
-            //                _context.FileIndex.Where
-            //                        (p => p.ParentDirectory.Contains(subPath))
-            //                    .OrderBy(r => r.FileName).ToList();
 
             if (allItemsInDb.Count > 500) throw new ApplicationException("Item in subfolder is to large");
-            
 
             foreach (var dbItem in allItemsInDb)
             {

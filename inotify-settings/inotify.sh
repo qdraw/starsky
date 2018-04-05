@@ -72,8 +72,8 @@ fi
 		[ "$MYCHMOD" != "" ] && /bin/chmod $MYCHMOD -R $file > /dev/null 2>&1
 
 		# Start starsky
-		$STARSKYPATH -p $file -i true
-		# /usr/sbin/csync2 -xv 2>&1 | logger -t "csync2" -p local5.notice > /dev/null 2>&1
+		$STARSKYPATH -p $file -i true -t true -o true
+		## Check starskycli -h for the shortcut meanings
 done
 
 

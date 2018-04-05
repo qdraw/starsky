@@ -33,7 +33,7 @@ namespace starsky.Services
         public IEnumerable<string> SyncFiles(string subPath = "")
         {
             // Handle single files
-            Deleted(subPath);
+            if (Deleted(subPath)) return null;
             if (SingleFile(subPath)) return null;
 
             // Handle folder Get a list of all local folders and rename it to database style.

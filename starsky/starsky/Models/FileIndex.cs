@@ -151,11 +151,11 @@ namespace starsky.Models
         }
         
 
-        // From System full path => database relative path
-        public string FullPathToDatabaseStyle() //PathToSys
-        {
-            return FullPathToDatabaseStyle(FilePath);
-        }
+//        // From System full path => database relative path
+//        public string FullPathToDatabaseStyle() //PathToSys
+//        {
+//            return FullPathToDatabaseStyle(FilePath);
+//        }
 
         public static string FullPathToDatabaseStyle(string subpath)
         {
@@ -186,12 +186,15 @@ namespace starsky.Models
 
 
         // from relative database path => file location path 
-        public static string DatabasePathToFilePath(string databaseFilePath)
+        public static string DatabasePathToFilePath(string databaseFilePath, bool checkIfExist = true)
         {
             var filepath = AppSettingsProvider.BasePath + databaseFilePath;
 
             filepath = _pathToFilePathStyle(filepath);
 
+            // Used for deleted files
+            if (!checkIfExist) return filepath;
+            
             var fileexist = File.Exists(filepath) ? filepath : null;
             if (fileexist != null)
             {

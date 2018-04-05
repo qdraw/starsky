@@ -25,9 +25,10 @@ namespace starsky.Services
             subPath = SubPathSlashRemove(subPath);
 
             return _context.FileIndex.Where
-                    (p => !p.IsDirectory && p.ParentDirectory == subPath) // used to be contains
+                    (p => !p.IsDirectory && p.ParentDirectory == subPath)
                 .OrderBy(r => r.FileName).ToList();
         }
+        
 
         // Return database object file or folder
         public FileIndexItem GetObjectByFilePath(string filePath)

@@ -10,16 +10,24 @@ namespace starsky.Services
         // When input a direct file
         //        => if this file is deleted on the file system 
         //              => delete it from the database
-
-        private void Deleted(string subPath = "")
+        
+        // True is stop after
+        // False is continue
+        
+        private bool Deleted(string subPath = "")
         {
+            subPath = _query.SubPathSlashRemove(subPath);
+
+            Console.WriteLine(Files.IsFolderOrFile(subPath));
+            
             if (Files.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
             {
+                Console.WriteLine(">>deleted");
                 // single file or folder deleting
-                //var dbListWithOneFile = new List<FileIndexItem>();
                 var dbItem = _query.GetObjectByFilePath(subPath);
                 if (dbItem != null)
                 {
+                    
                     _query.RemoveItem(dbItem);
                     Console.WriteLine("File " + subPath +" not found and removed");
 
@@ -33,8 +41,11 @@ namespace starsky.Services
                         _query.RemoveItem(item);
                     }
                 }
-                throw new FileNotFoundException();
+
+                return true;
             }
+
+            return false;
         }
     }
 }
