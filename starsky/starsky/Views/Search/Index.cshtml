@@ -69,6 +69,17 @@
     </p>
 </div>
 
+@if (@Model.SearchCount == 0)
+{
+    <div class="wrapper">
+        <p>
+            Zoekopties: <br/>
+            InUrl: Gebruik '-inurl=naam' of '-inurl="naam met spatie"' zoek woorden om verder te specificeren'<br/> 
+            Tags: Normale Sleutelwoorden worden gelezen als deze combinatie is aanwezig in het Tags-veld
+        </p>
+    </div>
+}
+
 <div class="wrapper">
 
     @foreach (var item in Model.FileIndexItems)
