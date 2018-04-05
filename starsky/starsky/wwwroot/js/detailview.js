@@ -127,7 +127,22 @@ if (document.querySelectorAll("#js-keywords-update").length === 1) {
            // }, 3000);
 
        },
-       function (xhr) { console.error(xhr); },
+       function (xhr) {
+            if (xhr.status === 404) {
+                if (document.querySelectorAll(".sidebar").length >= 0) {
+                    toggleSideMenu(true);
+                    document.querySelector(".sidebar").classList.add("hide");
+                    hidePreloader();
+                    if (document.querySelectorAll(".navbar").length >= 0) {
+                        document.querySelector(".navbar").classList.add("navbar-gray");
+                    }
+                    if (document.querySelectorAll(".js-filterinfo").length >= 0) {
+                        document.querySelector(".js-filterinfo").innerHTML += "<span class='red'>Alleen lezen</span>"
+                    }
+                }                
+            }
+            console.error(xhr); 
+       },
        "GET"
    );
 }
@@ -296,11 +311,10 @@ function updatePrevNextHash() {
     for (var i = 0; i < document.querySelectorAll(".nextprev").length; i++) {
         var object = document.querySelectorAll(".nextprev")[i].children;
         for (var j = 0; j < object.length; j++) {
+            if (object[j].href === undefined) return;
+
             object[j].href = object[j].href.replace("#sidebar","");
-
             object[j].href += window.location.hash;
-            console.log(object[j].href)
-
         }
     }
 

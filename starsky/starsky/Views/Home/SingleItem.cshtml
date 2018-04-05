@@ -75,17 +75,18 @@
         {
             <a class="prev" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige</a>
         }
-        @if (@Model.ColorClassFilterList != null)
-        {
-            <span class="js-filterinfo">
-                Filters: 
-                @foreach (var item in Model.ColorClassFilterList)
+
+        <span class="js-filterinfo">
+            @if (@Model.ColorClassFilterList != null)
+            {
+                <text>Filters:</text>
+                foreach(var item in Model.ColorClassFilterList)
                 {
                     var enumValue = (int) item;
                     <span class="sqbox on colorclass-@enumValue"></span>
                 }
-            </span>
-        }
+            }
+        </span>
         @if (@Model.FileIndexItem.Tags.Contains("!delete!"))
         {
             <span>Verwijderd bestand!</span>
