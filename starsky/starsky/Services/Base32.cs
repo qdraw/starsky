@@ -119,11 +119,6 @@ namespace starsky.Services
                 }
             }
 
-            // We'll ignore leftover bits for now.
-            //
-            // if (next != outLength || bitsLeft >= SHIFT) {
-            //  throw new DecodingException("Bits left: " + bitsLeft);
-            // }
             return result;
         }
 
@@ -188,5 +183,4 @@ namespace starsky.Services
             }
         }
     }
-
 }

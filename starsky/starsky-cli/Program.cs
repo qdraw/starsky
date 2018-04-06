@@ -17,8 +17,6 @@ namespace starskyCli
 
             ConfigRead.SetAppSettingsProvider();
             
-            //var q = ExifTool.WriteExifToolKeywords("test1", "Z:\\data\\git\\starsky\\starsky\\starsky-cli\\bin\\Debug\\netcoreapp2.0\\20180101_000337.jpg");
-
             if (ArgsHelper.NeedHelp(args))
             {
                 Console.WriteLine("Starsky Help:");
@@ -40,7 +38,7 @@ namespace starskyCli
             }
 
             // Using both options
-            var subpath = "/";
+            string subpath;
             if (ArgsHelper.GetPathFormArgs(args).Length >= 1)
             {
                 subpath = ArgsHelper.GetPathFormArgs(args);
@@ -58,7 +56,7 @@ namespace starskyCli
                 Console.WriteLine("Done SyncFiles!");
             }
 
-            if (ArgsHelper.GetThumbnail(args)) {;
+            if (ArgsHelper.GetThumbnail(args)) {
 
                 // If single file => create thumbnail
                 Thumbnail.CreateThumb(subpath);

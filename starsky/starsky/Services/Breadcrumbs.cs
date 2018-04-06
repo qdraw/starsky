@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace starsky.Services
 {
@@ -10,7 +11,7 @@ namespace starsky.Services
         
         public static List<string> BreadcrumbHelper(string filePath)
         {
-            if (filePath == null) return null;
+            if (filePath == null) return new List<string>(); 
 
             // remove backslash from end
             filePath = ConfigRead.RemoveLatestBackslash(filePath);
@@ -31,7 +32,6 @@ namespace starsky.Services
                 }
                 else
                 {
-
                     var item = "";
                     for (int i = 0; i <= dir; i++)
                     {
