@@ -9,6 +9,7 @@ namespace starsky.Services
         // When input a direct file
         //        => if this file exist on the file system 
         //              => check if the hash in the db is up to date
+        // Does not include parent folders
 
         // True is stop after
         // False is continue
