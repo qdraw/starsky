@@ -11,7 +11,7 @@ namespace starsky.Services
         // Display feature only?!
         // input: Name of item by db style path
         public DetailView SingleItem(string singleItemDbPath,
-            IEnumerable<FileIndexItem.Color> colorClassFilterList = null)
+            List<FileIndexItem.Color> colorClassFilterList = null)
         {
             if (string.IsNullOrWhiteSpace(singleItemDbPath)) return null;
 
@@ -34,12 +34,14 @@ namespace starsky.Services
         // There is equivalent class (GetNextPrevInFolder) for prev next in the folder view
         private RelativeObjects _getNextPrevInSubFolder(
             string parrentFolderPath, string fullImageFilePath,
-            IEnumerable<FileIndexItem.Color> colorClassFilterList = null
+            List<FileIndexItem.Color> colorClassFilterList = null
             )
         {
+            if (colorClassFilterList == null) colorClassFilterList = new List<FileIndexItem.Color>();
+
             List<FileIndexItem> itemsInSubFolder;
             // Filter usage colorClassFilterList
-            if (colorClassFilterList == null)
+            if (!colorClassFilterList.Any())
             {
                 itemsInSubFolder = GetAllFiles(parrentFolderPath).
                     OrderBy(

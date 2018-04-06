@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using MetadataExtractor;
@@ -12,66 +13,67 @@ namespace starsky.Services
         public static FileIndexItem ReadExifFromFile(string fileFullPath)
         {
             var item = new FileIndexItem();
-            
+            // Set the default value
+            item.SetColorClass();
+
+            List<Directory> allExifItems;
             try
             {
-                var allExifItems = ImageMetadataReader.ReadMetadata(fileFullPath);
-                
-                if(AppSettingsProvider.Verbose) {
-                    foreach (var exifItem in allExifItems) {
-                        foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
-                    }
-                }
-                
-                // Set the default value
-                item.SetColorClass();
-
-                foreach (var exifItem in allExifItems)
-                {
-                    //  exifItem.Tags
-                    var tags = _getExifTags(exifItem);
-                    if(tags != null) // null = is not the right tag or emthy tag
-                    {
-                        item.Tags = tags;
-                    }
-                    // Colour Class => ratings
-                    var colorClassString = _getColorClassString(exifItem);
-                    if(colorClassString != null) // null = is not the right tag or emthy tag
-                    {
-                        item.SetColorClass(colorClassString);
-                    }
-                    
-                    // [IPTC] Caption/Abstract
-                    var caption = _getCaptionAbstract(exifItem);
-                    if(caption != null) // null = is not the right tag or emthy tag
-                    {
-                        item.Description = caption;
-                    }    
-                    
-                    // [IPTC] Object Name = Title
-                    var title = _getCaptionAbstract(exifItem);
-                    if(title != null) // null = is not the right tag or emthy tag
-                    {
-                        // item.Title = title;
-                    }
-                    
-                    // DateTime of image
-                    var dateTime = _getDateTime(exifItem);
-                    if(dateTime.Year > 2) // 0 = is not the right tag or emthy tag
-                    {
-                        item.DateTime = dateTime;
-                    }
-                }
-                
+                allExifItems = ImageMetadataReader.ReadMetadata(fileFullPath).ToList();
+                _displayAllExif(allExifItems);
             }
             catch (ImageProcessingException e)
             {
                 item.Tags = "ImageProcessingException".ToLower();
-                Console.WriteLine(fileFullPath);
-                Console.WriteLine(e);
+                return item;
+            }
+
+            foreach (var exifItem in allExifItems)
+            {
+                //  exifItem.Tags
+                var tags = _getExifTags(exifItem);
+                if(tags != null) // null = is not the right tag or emthy tag
+                {
+                    item.Tags = tags;
+                }
+                // Colour Class => ratings
+                var colorClassString = _getColorClassString(exifItem);
+                if(colorClassString != null) // null = is not the right tag or emthy tag
+                {
+                    item.SetColorClass(colorClassString);
+                }
+                
+                // [IPTC] Caption/Abstract
+                var caption = _getCaptionAbstract(exifItem);
+                if(caption != null) // null = is not the right tag or emthy tag
+                {
+                    item.Description = caption;
+                }    
+                
+                // [IPTC] Object Name = Title
+                var title = _getCaptionAbstract(exifItem);
+                if(title != null) // null = is not the right tag or emthy tag
+                {
+                    // item.Title = title;
+                }
+                
+                // DateTime of image
+                var dateTime = _getDateTime(exifItem);
+                if(dateTime.Year > 2) // 0 = is not the right tag or emthy tag
+                {
+                    item.DateTime = dateTime;
+                }
             }
             
             return item;
+        }
+
+        private static void _displayAllExif(IEnumerable<Directory> allExifItems)
+        {
+            if (!AppSettingsProvider.Verbose) return;
+            foreach (var exifItem in allExifItems) {
+                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
+            }
         }
 
         // Update Database structure first

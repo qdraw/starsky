@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using starsky.Models;
 
 namespace starsky.Services
@@ -27,20 +26,16 @@ namespace starsky.Services
 
             foreach (var dbItem in allItemsInDb)
             {
-                if (!dbItem.IsDirectory)
+                if (dbItem.IsDirectory) continue;
+                
+                var res = allItemsInDb.Where(
+                    p =>
+                        p.IsDirectory &&
+                        p.FilePath == dbItem.ParentDirectory
+                );
+                if (!res.Any())
                 {
-                    var res = allItemsInDb.Where(
-                        p =>
-                            p.IsDirectory &&
-                            p.FilePath == dbItem.ParentDirectory
-                    );
-                    if (!res.Any())
-                    {
-                        var c = res.Count();
-                        var q = dbItem.FilePath;
-                        var w = dbItem.IsDirectory;
-                        _query.RemoveItem(dbItem);
-                    }
+                    _query.RemoveItem(dbItem);
                 }
 
             }

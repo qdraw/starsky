@@ -137,7 +137,7 @@ namespace starsky.Services
             tag = tag.ToLower();
             tag = tag.Trim();
 
-            var fileIndexQueryCount = _searchInDatabase(tag).Count();
+            var fileIndexQueryCount = _searchInDatabase(tag).Count;
 
             var searchLastPageNumbers = 
                 (_roundUp(fileIndexQueryCount) / NumberOfResultsInView) - 1;

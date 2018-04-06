@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Mvc
+﻿@using System.Linq
+@using Microsoft.AspNetCore.Mvc
 @using starsky.ViewModels
 @model DetailView
 
@@ -77,7 +78,7 @@
         }
 
         <span class="js-filterinfo">
-            @if (@Model.ColorClassFilterList != null)
+            @if (@Model.ColorClassFilterList.Any())
             {
                 <text>Filters:</text>
                 foreach(var item in Model.ColorClassFilterList)

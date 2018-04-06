@@ -11,12 +11,14 @@ namespace starsky.Services
         
         // Display File folder displays content of the folder
         public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/", 
-            IEnumerable<FileIndexItem.Color> colorClassFilterList = null)
+            List<FileIndexItem.Color> colorClassFilterList = null)
         {
+            if (colorClassFilterList == null) colorClassFilterList = new List<FileIndexItem.Color>();
+            
             subPath = SubPathSlashRemove(subPath);
             List<FileIndexItem> queryItems;
             
-            if (colorClassFilterList == null)
+            if (!colorClassFilterList.Any())
             {
                 queryItems = _context.FileIndex
                     .Where(p => p.ParentDirectory == subPath)
