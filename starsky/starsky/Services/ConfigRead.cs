@@ -11,67 +11,23 @@ namespace starsky.Services
         // Read settings first from appsettings.json + and later from ENV.
         public static void SetAppSettingsProvider()
         {
-            string basePath;
-            string defaultConnection;
-            string databaseType;
-            string thumbnailTempFolder;
-            string exifToolPath;
+            // First read from env variables, if not read appsettings.json
 
+            JObject obj = null;
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json"))
             {
                 string text =
                     File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json");
-                JObject obj = JObject.Parse(text);
-
-                // >>> Base Path of Orginal images <<<
-                basePath = (string)obj["ConnectionStrings"]["STARSKY_BASEPATH"];
-                IsSettingEmpty(basePath, "STARSKY_BASEPATH");
-                basePath = RemoveLatestBackslash(basePath);
-
-                // >>> Default Connection SQL <<<
-                defaultConnection = (string)obj["ConnectionStrings"]["DefaultConnection"];
-                IsSettingEmpty(defaultConnection, "defaultConnection");
-
-                // >>> Database Type <<<
-                databaseType = (string)obj["ConnectionStrings"]["DatabaseType"];
-                IsSettingEmpty(databaseType, "DatabaseType");
-
-                // >>> Thumbnail temp folder <<<
-                thumbnailTempFolder = (string)obj["ConnectionStrings"]["ThumbnailTempFolder"];
-                IsSettingEmpty(thumbnailTempFolder, "ThumbnailTempFolder");
-                thumbnailTempFolder = AddBackslash(thumbnailTempFolder);
-
-                // >>> ExifTool path => /usr/bin/exiftool <<<
-                exifToolPath = (string)obj["ConnectionStrings"]["ExifToolPath"];
-                IsSettingEmpty(exifToolPath, "ExifToolPath");
-                exifToolPath = RemoveLatestBackslash(exifToolPath);
-            }
-            else
-            {
-                // >>> Base Path of Orginal images <<<
-                basePath = Environment.GetEnvironmentVariable("STARSKY_BASEPATH");
-                IsSettingEmpty(basePath, "STARSKY_BASEPATH");
-                basePath = RemoveLatestBackslash(basePath);
-
-                // >>> Default Connection SQL <<<
-                defaultConnection = Environment.GetEnvironmentVariable("DefaultConnection");
-                IsSettingEmpty(defaultConnection, "defaultConnection");
-
-                // >>> Database Type <<<
-                databaseType = Environment.GetEnvironmentVariable("DatabaseType");
-                IsSettingEmpty(databaseType, "DatabaseType");
-
-                // >>> Thumbnail temp folder <<<
-                thumbnailTempFolder = Environment.GetEnvironmentVariable("ThumbnailTempFolder");
-                IsSettingEmpty(thumbnailTempFolder, "ThumbnailTempFolder");
-                thumbnailTempFolder = AddBackslash(thumbnailTempFolder);
-
-                // >>> ExifTool path => /usr/bin/exiftool <<<
-                exifToolPath = Environment.GetEnvironmentVariable("ExifToolPath");
-                IsSettingEmpty(exifToolPath, "ExifToolPath");
-                exifToolPath = RemoveLatestBackslash(exifToolPath);
+                obj = JObject.Parse(text);    
             }
 
+            var basePath = _readTextFromObjOrEnv("STARSKY_BASEPATH", obj);
+            var defaultConnection = _readTextFromObjOrEnv("DefaultConnection", obj);
+            var databaseType =_readTextFromObjOrEnv("DatabaseType", obj);
+            var thumbnailTempFolder =_readTextFromObjOrEnv("ThumbnailTempFolder", obj);
+            thumbnailTempFolder = AddBackslash(thumbnailTempFolder);
+            
+            var exifToolPath = _readTextFromObjOrEnv("ExifToolPath", obj);
 
             AppSettingsProvider.BasePath = basePath;
             AppSettingsProvider.DatabaseType = databaseType == "mysql"
@@ -85,9 +41,27 @@ namespace starsky.Services
 
         }
 
-        public static bool IsSettingEmpty(string setting, string name = "")
+        private static string _readTextFromObjOrEnv(string name, JObject obj = null)
         {
-            if (string.IsNullOrWhiteSpace(setting)) throw new FileNotFoundException(name + " ==null");
+            // input=text, nameofvar=text 
+            // >>> Base Path of Orginal images <<<
+            var value = Environment.GetEnvironmentVariable(name);
+
+            // >>> Base Path of Orginal images <<<
+            if(obj != null && IsSettingEmpty(value, name)) {
+                value = (string)obj["ConnectionStrings"][name];
+                IsSettingEmpty(value, name,true);
+                value = RemoveLatestBackslash(value);
+            }
+            IsSettingEmpty(value, name,true);
+            value = RemoveLatestBackslash(value);
+            return value;
+        }
+
+        public static bool IsSettingEmpty(string setting, string name = "", bool throwError = false)
+        {
+            if (string.IsNullOrWhiteSpace(setting) && throwError) throw new FileNotFoundException(name + " ==null");
+            if (string.IsNullOrWhiteSpace(setting)) return true;
             return false;
         }
 
@@ -102,7 +76,6 @@ namespace starsky.Services
             {
                 basePath = basePath.Substring(0, basePath.Length - 1);
             }
-
             return basePath;
         }
 
