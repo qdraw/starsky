@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace starsky.Models
 {
     public class ExifToolModel
     {
-        private FileIndexItem.Color _colorClass;
-
-        public FileIndexItem.Color ColorClass
-        {
-            get { return _colorClass;}
-            set { _colorClass = value; }
-        }
+        public FileIndexItem.Color ColorClass { get; set; }
 
         public string Prefs
         {
@@ -25,7 +18,7 @@ namespace starsky.Models
                 if (firstColorClass != null)
                 {
                     var stringColorClassItem = firstColorClass.Replace("ColorClass:", "");
-                    _colorClass = new FileIndexItem().SetColorClass(stringColorClassItem);
+                    ColorClass = new FileIndexItem().SetColorClass(stringColorClassItem);
                 }
             }
         }
@@ -34,7 +27,7 @@ namespace starsky.Models
         
         public HashSet<string> Keywords
         {
-            get { return null; }
+            get => new HashSet<string>();
             set {
                     if (value == null)
                     {

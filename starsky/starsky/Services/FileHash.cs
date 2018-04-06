@@ -56,7 +56,6 @@ namespace starsky.Services
                               + "            <<<<<<<<<<<<");
             
             return Base32.Encode(_generateRandomBytes(27)) + "_T";
-            throw new Exception("Timed out");
         }
 
         // Create a random string

@@ -86,10 +86,10 @@ namespace starsky.Models
 
         public List<Color> GetColorClassList(string colorclassString = null)
         {
-            if (string.IsNullOrWhiteSpace(colorclassString)) return null;
-
+            if (string.IsNullOrWhiteSpace(colorclassString)) return new List<Color>();
 
             var colorclassStringList = new List<string>();
+
             if (!colorclassString.Contains(","))
             {
                 if (!int.TryParse(colorclassString, out var parsedInt)) return null;
@@ -150,13 +150,6 @@ namespace starsky.Models
             return Enum.GetValues(typeof(ColorUserInterface)).Cast<ColorUserInterface>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
         }
         
-
-//        // From System full path => database relative path
-//        public string FullPathToDatabaseStyle() //PathToSys
-//        {
-//            return FullPathToDatabaseStyle(FilePath);
-//        }
-
         public static string FullPathToDatabaseStyle(string subpath)
         {
             var databaseFilePath = subpath.Replace(AppSettingsProvider.BasePath, "");

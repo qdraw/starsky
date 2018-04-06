@@ -175,8 +175,9 @@ namespace starsky.Services
 
             return result.ToString();
         }
-
-        private class DecodingException : Exception
+        
+        // ReSharper disable once MemberCanBePrivate.Global
+        public class DecodingException : Exception
         {
             public DecodingException(string message) : base(message)
             {

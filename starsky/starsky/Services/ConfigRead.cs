@@ -30,10 +30,7 @@ namespace starsky.Services
             var exifToolPath = _readTextFromObjOrEnv("ExifToolPath", obj);
 
             // Read /.config.json
-            //   json:         {
-            //   json:             "readonly":  ["test","test"]
-            //   json:         }
-
+            // Please check the config example in the starsky folder
 
             if (File.Exists(Path.Combine(basePath, ".config.json")))
             {

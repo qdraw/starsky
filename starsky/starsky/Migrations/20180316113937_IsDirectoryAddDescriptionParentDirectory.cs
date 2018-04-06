@@ -8,9 +8,6 @@ namespace starsky.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            //migrationBuilder.DropColumn(
-            //    name: "Folder",
-            //    table: "FileIndex");
 
             migrationBuilder.AddColumn<string>(
                 name: "ParentDirectory",
@@ -18,11 +15,6 @@ namespace starsky.Migrations
                 nullable: true);
 
             // SQLite does not support this migration operation ('RenameColumnOperation'). For more information, see http://go.microsoft.com/fwlink/?LinkId=723262.
-
-            //migrationBuilder.RenameColumn(
-            //    name: "Folder",
-            //    table: "FileIndex",
-            //    newName: "ParentDirectory");
 
             migrationBuilder.AddColumn<string>(
                 name: "Description",
@@ -52,15 +44,6 @@ namespace starsky.Migrations
                 name: "ParentDirectory",
                 table: "FileIndex");
 
-            //migrationBuilder.AddColumn<string>(
-            //    name: "Folder",
-            //    table: "FileIndex",
-            //    nullable: true);
-
-            //migrationBuilder.RenameColumn(
-            //    name: "ParentDirectory",
-            //    table: "FileIndex",
-            //    newName: "Folder");
         }
     }
 }

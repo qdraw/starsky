@@ -50,13 +50,9 @@ namespace starsky.Services
         
         private static string _fixingJsonKeywordString(string text)
         {
-            //            [{
-            //                "SourceFile": "fullPath",
-            //                "Keywords": "singleword"
-            //            }]
 
+            // Not Single Keyword
             // > need to be an array [""]
-
             // Without gives nice shiny 500 runtime errors :) :)
 
             var splitArray = text.Split("\n");
@@ -91,23 +87,6 @@ namespace starsky.Services
             }
 
             return text;
-//            else
-//            {
-//                var newupdatedText = string.Empty;
-//
-//                foreach (var item in splitArray)
-//                {
-//                    if (item.Contains("}]"))
-//                    {
-//                        newupdatedText += ", \"Keywords\": [\"" + "" + "\"]" + "\n";
-//                    }
-//                    newupdatedText += item + "\n";
-//                }
-//
-//                Console.WriteLine("dsfdsfdfsdfdsfbdshfbhjsdkb");
-//                Console.WriteLine(newupdatedText);
-//                return newupdatedText;
-//            }
         }
 
         private static ExifToolModel _parseJson(string text) {
@@ -137,7 +116,8 @@ namespace starsky.Services
                 var command = "-json -overwrite_original";
                 var initCommand = command; // to check if nothing
 
-                if (updateModel.Tags != null)
+                // Currently it does not allow emty strings
+                if (!string.IsNullOrWhiteSpace(updateModel.Tags))
                 {
                     command += " -sep \", \" -Keywords=\"" + updateModel.Tags + "\" ";
                 }

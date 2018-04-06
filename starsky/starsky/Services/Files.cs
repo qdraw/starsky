@@ -7,7 +7,7 @@ using starsky.Models;
 
 namespace starsky.Services
 {
-    public class Files
+    public static class Files
     {
         
         // is the subpath a folder or file
@@ -45,7 +45,7 @@ namespace starsky.Services
         // Returns a list of Files in a directory (non-recruisive)
         public static string[] GetFilesInDirectory(string path, bool dbStyle = true)
         {
-            if (path == null) return null;
+            if (path == null) return Enumerable.Empty<string>().ToArray();
 
             if (dbStyle)
             {
@@ -71,12 +71,15 @@ namespace starsky.Services
             gif,
             tiff,
             png,
-            unknown
+            unknown,
+            notfound
         }
 
      
         public static ImageFormat GetImageFormat(string filePath)
         {
+            if (!File.Exists(filePath)) return ImageFormat.notfound;
+            
             byte[] buffer = new byte[512];
             try
             {

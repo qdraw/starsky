@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using starsky.Models;
 using starsky.Services;
 using starskycli;
 
 namespace starskyCli
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
