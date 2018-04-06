@@ -86,7 +86,12 @@
             function(data) {
                 location.reload(); 
             },
-            function (xhr) { console.error(xhr); },
+            function(xhr) {
+                if (xhr.status === 404) {
+                    alert(xhr.response);
+                }
+                 console.error(xhr);
+            },
             "DELETE"
         );
     }

@@ -62,9 +62,19 @@ namespace starsky.Controllers
             return Json(model);
         }
 
+        private bool _isReadOnly(string f)
+        {
+            if (AppSettingsProvider.ReadOnlyFolders == null) return false;
+            
+            var result = AppSettingsProvider.ReadOnlyFolders.FirstOrDefault(f.Contains);
+            return result != null;
+        }
+        
         [HttpPost]
         public IActionResult Update(string tags, string colorClass, string f = "dbStylePath")
         {
+            if (_isReadOnly(f)) return NotFound("read only");
+            
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index " + f);
             var oldHashCode = singleItem.FileIndexItem.FileHash;
@@ -107,6 +117,9 @@ namespace starsky.Controllers
         public IActionResult Info(string f = "dbStyleFilepath")
         {
             if (f.Contains("?t=")) return NotFound("please use &t= instead of ?t=");
+            
+            if (_isReadOnly(f)) return NotFound("read only");
+            
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index");
             if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
@@ -121,6 +134,8 @@ namespace starsky.Controllers
         [HttpDelete]
         public IActionResult Delete(string f = "dbStyleFilepath")
         {
+            if (_isReadOnly(f)) return NotFound("afbeelding is in lees-only mode en kan niet worden verwijderd");
+
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index");
             if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))

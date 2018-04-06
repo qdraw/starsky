@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -22,7 +23,7 @@ namespace starsky.Models
                 _dbConnectionString = _sqliteFullPath(value);
             }
         }
-
+        public static List<string> ReadOnlyFolders { get; set; }
 
         public enum DatabaseTypeList
         {

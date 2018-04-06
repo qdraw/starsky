@@ -29,6 +29,21 @@ namespace starsky.Services
             
             var exifToolPath = _readTextFromObjOrEnv("ExifToolPath", obj);
 
+            // Read /.config.json
+            /*
+            {
+                "readonly":  ["test","test"]
+            }
+            */
+
+            if (File.Exists(Path.Combine(basePath, ".config.json")))
+            {
+                string text = File.ReadAllText(Path.Combine(basePath, ".config.json"));
+                var model = Newtonsoft.Json.JsonConvert.DeserializeObject<BasePathConfig>(text);
+                AppSettingsProvider.ReadOnlyFolders = model.Readonly;
+            }
+
+
             AppSettingsProvider.BasePath = basePath;
             AppSettingsProvider.DatabaseType = databaseType == "mysql"
                 ? AppSettingsProvider.DatabaseTypeList.Mysql
