@@ -9,7 +9,7 @@ makeTagList();
 
 tagList = removeArrayDuplicate(tagList);
 // alphabetic order
-tagList = tagList.sort();
+
 // // not  => reverse
 // tagList = tagList.reverse();
 
@@ -61,6 +61,7 @@ function removeArrayDuplicate (array) {
 
 // Writing filter for portfolio page
 function writeFilterList (tags) {
+    tags.sort();
 
     if (document.querySelectorAll("#portfolio-data").length === 1 && 
         document.querySelectorAll("#portfolio-filter").length === 1)
