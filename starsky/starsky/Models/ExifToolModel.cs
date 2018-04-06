@@ -27,7 +27,7 @@ namespace starsky.Models
         
         public HashSet<string> Keywords
         {
-            get => new HashSet<string>();
+            get { return null; } // keep null
             set {
                     if (value == null)
                     {

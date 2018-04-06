@@ -1,5 +1,3 @@
-using System;
-
 namespace starsky.Models
 {
     public class ErrorViewModel
