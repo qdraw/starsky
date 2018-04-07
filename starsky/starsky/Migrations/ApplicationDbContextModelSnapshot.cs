@@ -45,6 +45,8 @@ namespace starsky.Migrations
 
                     b.Property<string>("Tags");
 
+                    b.Property<string>("Title");
+
                     b.HasKey("Id");
 
                     b.ToTable("FileIndex");

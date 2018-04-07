@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Data;
@@ -82,8 +83,18 @@ namespace starsky.Services
         {
             if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
             
-            _context.FileIndex.Add(updateStatusContent);
-            _context.SaveChanges();
+            try
+            {
+                _context.FileIndex.Add(updateStatusContent);
+                _context.SaveChanges();
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(updateStatusContent.FilePath);
+                Console.WriteLine(e);
+                throw;
+            }
+
             return updateStatusContent;
         }
         

@@ -22,7 +22,7 @@ namespace starsky.Services
                 allExifItems = ImageMetadataReader.ReadMetadata(fileFullPath).ToList();
                 _displayAllExif(allExifItems);
             }
-            catch (ImageProcessingException e)
+            catch (ImageProcessingException)
             {
                 item.Tags = "ImageProcessingException".ToLower();
                 return item;
@@ -51,10 +51,10 @@ namespace starsky.Services
                 }    
                 
                 // [IPTC] Object Name = Title
-                var title = _getCaptionAbstract(exifItem);
+                var title = _getObjectName(exifItem);
                 if(title != null) // null = is not the right tag or emthy tag
                 {
-                    // item.Title = title;
+                     item.Title = title;
                 }
                 
                 // DateTime of image
