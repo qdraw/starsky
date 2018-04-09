@@ -151,7 +151,9 @@ namespace starsky.Controllers
                     fullFilePath.Replace(".jpg", ".arw"), 
                     fullFilePath.Replace(".jpg", ".dng"),
                     fullFilePath.Replace(".jpg", ".ARW"), 
-                    fullFilePath.Replace(".jpg", ".DNG")
+                    fullFilePath.Replace(".jpg", ".DNG"),
+                    fullFilePath.Replace(".jpg", ".xmp")
+                    fullFilePath.Replace(".jpg", ".XMP")
                 };
 
             foreach (var toDelPath in toDeletePaths)
