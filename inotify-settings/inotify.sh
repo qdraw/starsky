@@ -71,12 +71,9 @@ fi
 		# Change mode
 		[ "$MYCHMOD" != "" ] && /bin/chmod $MYCHMOD -R $file > /dev/null 2>&1
 
-		if [[ "$file" == *jpg || "$file" == *JPG ]]
-		then
-			# Start starsky
-			$STARSKYPATH -p $file -i true -t true -o true
-			## Check starskycli -h for the shortcut meanings
-		fi
+		# Start starsky
+		$STARSKYPATH -p $file -i true -t false -o true
+		## Check starskycli -h for the shortcut meanings
 
 done
 

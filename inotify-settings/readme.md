@@ -32,3 +32,19 @@ sudo service inotifyd restart
 
 Source:
 http://wiki.lenux.org/using-csync2-with-inotifywait/
+
+
+
+#Cron Tab
+
+
+sudo nano /usr/local/sbin/starskyhourly.sh
+	''''
+	copy content from => starskyhourly.sh
+	''''
+
+sudo chmod +x /usr/local/sbin/starskyhourly.sh
+
+
+crontab -e
+0       *            *       *       *       /usr/local/sbin/starskyhourly.sh > /home/pi/z-starskycli.log 2>&1
