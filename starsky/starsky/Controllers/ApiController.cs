@@ -190,7 +190,7 @@ namespace starsky.Controllers
             {
                 if (!retryThumbnail)
                 {
-                    Console.WriteLine("image is corrupt !corrupt! ");
+                    Console.WriteLine("image is corrupt");
                     return NoContent();
                 }
                 System.IO.File.Delete(thumbPath);
@@ -205,26 +205,14 @@ namespace starsky.Controllers
                     return NotFound("Photo exist in database but " +
                                     "isSingleItem flag is Missing");
                 }
-
-                try
-                {
-                    var searchItem = new FileIndexItem
-                    {
-                        FilePath = sourcePath,
-                        FileHash = f
-                    };
-                    Services.Thumbnail.CreateThumb(searchItem);
-                }
-                catch (FileNotFoundException)
-                {
-                    return NotFound("Thumb base folder not found");
-                }
-
+                FileStream fs1 = System.IO.File.OpenRead(FileIndexItem.DatabasePathToFilePath(sourcePath));
+                return File(fs1, "image/jpeg");
             }
 
-            if (!System.IO.File.Exists(thumbPath))
+            if (!System.IO.File.Exists(thumbPath) && 
+                !System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(sourcePath)))
             {
-                return NotFound("in cache but not in thumbdb");
+                return NotFound("There is no thumbnail image and no source image");
             }
             
             // When using the api to check using javascript
@@ -236,23 +224,24 @@ namespace starsky.Controllers
 
         public IActionResult DownloadPhoto(string f, bool isThumbnail = true){
             // f = filePath
-            
-            var singleItem = _query.SingleItem(f);
-            if (singleItem == null) return NotFound("not in index");
+            if (f.Contains("?isthumbnail")) return NotFound("please use &isthumbnail= instead of ?isthumbnail=");
 
-            var sourcePath = FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
-            if (!System.IO.File.Exists(sourcePath))
-                return NotFound("source image missing " + sourcePath );
+            var singleItem = _query.SingleItem(f);
+            if (singleItem == null) return NotFound("not in index " + f);
+
+            var sourceFullPath = FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
+            if (!System.IO.File.Exists(sourceFullPath))
+                return NotFound("source image missing " + sourceFullPath );
 
             // Return full image
             if (!isThumbnail)
             {
-                FileStream fs = System.IO.File.OpenRead(sourcePath);
+                FileStream fs = System.IO.File.OpenRead(sourceFullPath);
                 return File(fs, "image/jpeg");
             }
 
             // Return Thumbnail
-         
+            
             var thumbPath = AppSettingsProvider.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
 
             // If File is corrupt delete it
@@ -260,13 +249,32 @@ namespace starsky.Controllers
             {
                 System.IO.File.Delete(thumbPath);
             }
-            
-            if (!System.IO.File.Exists(thumbPath)){
-                return NotFound("Thumb not in cache");
+
+            if (Files.GetImageFormat(thumbPath) == Files.ImageFormat.notfound)
+            {
+                try
+                {
+                    var searchItem = new FileIndexItem
+                    {
+                        FilePath = FileIndexItem.FullPathToDatabaseStyle(sourceFullPath),
+                        FileHash = FileHash.GetHashCode(sourceFullPath)
+                    };
+                    
+                    Services.Thumbnail.CreateThumb(searchItem);
+
+                    FileStream fs2 = System.IO.File.OpenRead(thumbPath);
+                    return File(fs2, "image/jpeg");
+
+                }
+                catch (FileNotFoundException)
+                {
+                    return NotFound("Thumb base folder not found");
+                }
             }
-            var getExiftool = ExifTool.Info(sourcePath);
-            ExifTool.Update(getExiftool, sourcePath);
-            
+
+            var getExiftool = ExifTool.Info(sourceFullPath);
+            ExifTool.Update(getExiftool, sourceFullPath);
+
             FileStream fs1 = System.IO.File.OpenRead(thumbPath);
             return File(fs1, "image/jpeg");
         }
