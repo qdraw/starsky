@@ -72,8 +72,10 @@ fi
 		[ "$MYCHMOD" != "" ] && /bin/chmod $MYCHMOD -R $file > /dev/null 2>&1
 
 		# Start starsky
-		$STARSKYPATH -p $file -i true -t false -o true
-		## Check starskycli -h for the shortcut meanings
+		if [[ ${file} != *"tmp" ]];then
+			$STARSKYPATH -p $file -i true -t false -o true
+			## Check starskycli -h for the shortcut meanings
+		fi
 
 done
 

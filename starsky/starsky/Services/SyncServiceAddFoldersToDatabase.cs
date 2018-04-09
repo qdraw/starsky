@@ -15,6 +15,7 @@ namespace starsky.Services
         {
             foreach (var singleFolderDbStyle in localSubFolderDbStyle)
             {
+                if(AppSettingsProvider.Verbose) Console.WriteLine(singleFolderDbStyle);
 
                 // Check if Directory is in database
                 var dbFolderMatchFirst = _context.FileIndex.FirstOrDefault(p =>
@@ -25,12 +26,14 @@ namespace starsky.Services
                 // Folders!!!!
                 if (dbFolderMatchFirst == null)
                 {
-                    var folderItem = new FileIndexItem();
-                    folderItem.FilePath = singleFolderDbStyle;
-                    folderItem.IsDirectory = true;
-                    folderItem.AddToDatabase = DateTime.UtcNow;
-                    folderItem.FileName = singleFolderDbStyle.Split("/").LastOrDefault();
-                    folderItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault();
+                    var folderItem = new FileIndexItem
+                    {
+                        FilePath = singleFolderDbStyle,
+                        IsDirectory = true,
+                        AddToDatabase = DateTime.UtcNow,
+                        FileName = singleFolderDbStyle.Split("/").LastOrDefault(),
+                        ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault()
+                    };
                     _query.AddItem(folderItem);
                     // We dont need this localy
                 }
