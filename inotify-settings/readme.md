@@ -1,5 +1,7 @@
 # inotifywait
 
+## Currently only for .jpg or .JPG files
+
 First install tools
 $ sudo apt-get install inotify-tools
 
@@ -26,6 +28,7 @@ sudo update-rc.d -f inotifyd defaults
 
 sudo service inotifyd start
 
+sudo service inotifyd restart
 
 Source:
 http://wiki.lenux.org/using-csync2-with-inotifywait/

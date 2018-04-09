@@ -62,8 +62,8 @@ fi
 # Write log message
 /usr/bin/logger -p local5.notice -t "starsky" "Starting inotifywait monitoring script for $MYDIR ..."
 
-# Start inotify monitoring
-/usr/bin/inotifywait -mrq --format '%w%f' -e close_write -e delete -e moved_to -e create $MYDIR | while read file; do
+# Start inotify monitoring == -e close_write
+/usr/bin/inotifywait -mrq --format '%w%f' -e attrib -e delete -e move -e create $MYDIR | while read file; do
 
 		# Change owner
 		/bin/chown $MYOWNER -R $file > /dev/null 2>&1
@@ -71,9 +71,13 @@ fi
 		# Change mode
 		[ "$MYCHMOD" != "" ] && /bin/chmod $MYCHMOD -R $file > /dev/null 2>&1
 
-		# Start starsky
-		$STARSKYPATH -p $file -i true -t true -o true
-		## Check starskycli -h for the shortcut meanings
+		if [[ "$file" == *jpg || "$file" == *JPG ]]
+		then
+			# Start starsky
+			$STARSKYPATH -p $file -i true -t true -o true
+			## Check starskycli -h for the shortcut meanings
+		fi
+
 done
 
 
