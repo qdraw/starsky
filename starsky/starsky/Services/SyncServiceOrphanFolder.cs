@@ -20,7 +20,7 @@ namespace starsky.Services
             // Check if folder does not exist on the fs
             if(!Directory.Exists(FileIndexItem.DatabasePathToFilePath(subPath,false))) return null;
 
-            var allItemsInDb = _query.GetAllFilesRecursive(subPath);
+            var allItemsInDb = _query.GetAllRecursive(subPath);
 
             // Large items not recruisive
             if (allItemsInDb.Count > 2500)
@@ -33,20 +33,24 @@ namespace starsky.Services
                 }
             }
 
+            Console.WriteLine("> running");
+
             foreach (var dbItem in allItemsInDb)
             {
-                if (dbItem.IsDirectory)
+                Console.WriteLine(dbItem.FilePath);
+
+                if (!dbItem.IsDirectory)
                 {
-                    // For Checking if Directory has no child items
+                    // For Checking if File has no parent items
                     var res = allItemsInDb.Where(
                         p =>
                             p.IsDirectory &&
                             p.FilePath == dbItem.ParentDirectory
                     );
 
-                    if (!res.Any())
+                    if (!res.Any() && !File.Exists(FileIndexItem.DatabasePathToFilePath(dbItem.FilePath)) )
                     {
-                        if(AppSettingsProvider.Verbose) Console.WriteLine("o>> " + dbItem.FileName);
+                        if(AppSettingsProvider.Verbose) Console.WriteLine("o>> " + dbItem.FilePath);
                         _query.RemoveItem(dbItem);
                     }
                 }
