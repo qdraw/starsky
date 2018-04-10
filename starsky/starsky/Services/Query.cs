@@ -30,6 +30,15 @@ namespace starsky.Services
                 .OrderBy(r => r.FileName).ToList();
         }
         
+        // Includes sub items in file
+        // Used for Orphan Check
+        public List<FileIndexItem> GetAllFilesRecursive(string subPath = "/")
+        {
+            subPath = SubPathSlashRemove(subPath);
+            return _context.FileIndex.Where
+                    (p => !p.IsDirectory && p.ParentDirectory.Contains(subPath) )
+                .OrderBy(r => r.FileName).ToList();
+        }
 
         // Return database object file or folder
         public FileIndexItem GetObjectByFilePath(string filePath)

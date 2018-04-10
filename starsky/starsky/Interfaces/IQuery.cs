@@ -9,6 +9,8 @@ namespace starsky.Interfaces
     {
 
         List<FileIndexItem> GetAllFiles(string subPath = "");
+        
+        List<FileIndexItem> GetAllFilesRecursive(string subPath = "");
 
         IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
