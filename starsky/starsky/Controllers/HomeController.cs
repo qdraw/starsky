@@ -18,6 +18,7 @@ namespace starsky.Controllers
         }
 
         [HttpGet]
+        [HttpHead]
         public IActionResult Index(string f = "/", string colorClass = null)
         {
             // Used in Detail and Index View => does not hide this single item

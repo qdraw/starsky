@@ -45,6 +45,7 @@ namespace starsky.Controllers
 
         // Used for end2end test
         [HttpGet]
+        [HttpHead]
         public IActionResult Env()
         {
             var model = new EnvViewModel
@@ -152,7 +153,7 @@ namespace starsky.Controllers
                     fullFilePath.Replace(".jpg", ".dng"),
                     fullFilePath.Replace(".jpg", ".ARW"), 
                     fullFilePath.Replace(".jpg", ".DNG"),
-                    fullFilePath.Replace(".jpg", ".xmp")
+                    fullFilePath.Replace(".jpg", ".xmp"),
                     fullFilePath.Replace(".jpg", ".XMP")
                 };
 
