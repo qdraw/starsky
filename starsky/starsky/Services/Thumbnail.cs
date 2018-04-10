@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.Models;
 using SixLabors.ImageSharp;
@@ -121,19 +122,19 @@ namespace starsky.Services
         // Timeout feature to check if the service is answering within 8 seconds
         // Ignore Error CS1998
         #pragma warning disable 1998
-        private static async Task<bool> ResizeThumbnailTimeOut(string inputFilePath, string thumbPath){
+        private static async Task<bool> ResizeThumbnailTimeOut(string inputDatabaseFilePath, string thumbPath){
         #pragma warning restore 1998
             
-            var task = Task.Run(() => ResizeThumbnail(inputFilePath, thumbPath));
-            if (task.Wait(TimeSpan.FromSeconds(100)))
+            var task = Task.Run(() => ResizeThumbnail(inputDatabaseFilePath, thumbPath));
+            if (task.Wait(TimeSpan.FromSeconds(100))) 
                 return task.Result;
 
             Console.WriteLine(">>>>>>>>>>>            Timeout ThumbService "
-                              + inputFilePath 
+                              + inputDatabaseFilePath 
                               + "            <<<<<<<<<<<<");
             
             // Log the corrupt image
-            _createErrorLogItem(FileIndexItem.DatabasePathToFilePath(inputFilePath));
+            _createErrorLogItem(inputDatabaseFilePath);
             
             return false;
         }
@@ -156,11 +157,25 @@ namespace starsky.Services
         }
 
         private static readonly string _thumbnailErrorMessage = "Thumbnail error";
-        private static readonly string _thumbnailPrefix = "-starsky-error.log";
+        private static readonly string _thumbnailPrefix = "_";
+        private static readonly string _thumbnailSuffix = "_starksy-error.log";
 
-        private static void _createErrorLogItem(string inputFilePath)
+
+        private static string _GetErrorLogItemFullPath(string inputDatabaseFilePath)
         {
-            var path = inputFilePath.Replace(".jpg", _thumbnailPrefix);
+            var parentDatabaseFolder = Breadcrumbs.BreadcrumbHelper(inputDatabaseFilePath).LastOrDefault();
+            var fileName = inputDatabaseFilePath.Replace(parentDatabaseFolder, "");
+            fileName = fileName.Replace(".jpg", _thumbnailSuffix);
+            fileName = fileName.Replace("/", "");
+            var logFileDatabasePath = parentDatabaseFolder + "/" + _thumbnailPrefix + fileName;
+
+            var logFile = FileIndexItem.DatabasePathToFilePath(logFileDatabasePath,false);
+            return logFile;
+        }
+
+        private static void _createErrorLogItem(string inputDatabaseFilePath)
+        {
+            var path = _GetErrorLogItemFullPath(inputDatabaseFilePath);
             if (File.Exists(path)) return;
             
             // Create a file to write to.
@@ -170,9 +185,9 @@ namespace starsky.Services
             }
         }
         
-        private static bool _isErrorItem(string inputFilePath)
+        private static bool _isErrorItem(string inputDatabaseFilePath)
         {
-            var path = inputFilePath.Replace(".jpg", _thumbnailPrefix);
+            var path = _GetErrorLogItemFullPath(inputDatabaseFilePath);
             if (!File.Exists(path)) return true;
             
             using (StreamReader sr = File.OpenText(path)) 
