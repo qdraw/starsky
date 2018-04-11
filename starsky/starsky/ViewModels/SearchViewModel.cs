@@ -13,6 +13,7 @@ namespace starsky.ViewModels
         public int SearchCount { get; set; }
 
         private double _elapsedSeconds;
+        public PageViewType.PageType PageType => PageViewType.PageType.Search;
 
         public double ElapsedSeconds
         {

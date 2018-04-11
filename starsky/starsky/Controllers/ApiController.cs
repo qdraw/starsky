@@ -19,29 +19,29 @@ namespace starsky.Controllers
             _query = query;
         }
 
-        [HttpGet]
-        public IActionResult Folder(string f = "/",
-            string colorClass = null)
-        {
-            // http://localhost:5000/api/folder?f=/2018/01/2018_01_01&colorClass=1,2
-
-            var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
-
-            var fileIndexItems = _query.DisplayFileFolders(f, colorClassFilterList);
-            if (!fileIndexItems.Any())
-            {
-                // is directory is emthy 
-                var queryIfFolder = _query.GetObjectByFilePath(f);
-
-                if (queryIfFolder == null)
-                {
-                    Response.StatusCode = 404;
-                    return View("Error");
-                }
-            }
-
-            return Json(fileIndexItems);
-        }
+//        [HttpGet]
+//        public IActionResult Folder(string f = "/",
+//            string colorClass = null)
+//        {
+//            // http://localhost:5000/api/folder?f=/2018/01/2018_01_01&colorClass=1,2
+//
+//            var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
+//
+//            var fileIndexItems = _query.DisplayFileFolders(f, colorClassFilterList);
+//            if (!fileIndexItems.Any())
+//            {
+//                // is directory is emthy 
+//                var queryIfFolder = _query.GetObjectByFilePath(f);
+//
+//                if (queryIfFolder == null)
+//                {
+//                    Response.StatusCode = 404;
+//                    return View("Error");
+//                }
+//            }
+//
+//            return Json(fileIndexItems);
+//        }
 
         // Used for end2end test
         [HttpGet]

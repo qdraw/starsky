@@ -19,7 +19,11 @@ namespace starsky.Controllers
 
         [HttpGet]
         [HttpHead]
-        public IActionResult Index(string f = "/", string colorClass = null)
+        public IActionResult Index(
+            string f = "/", 
+            string colorClass = null,
+            bool json = false
+            )
         {
             // Used in Detail and Index View => does not hide this single item
             var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
@@ -46,13 +50,15 @@ namespace starsky.Controllers
                 singleItem.GetAllColor = FileIndexItem.GetAllColorUserInterface();
                 singleItem.ColorClassFilterList = colorClassFilterList;
                 singleItem.Breadcrumb = Breadcrumbs.BreadcrumbHelper(singleItem.FileIndexItem.FilePath);
+                if (json) return Json(singleItem);
                 return View("SingleItem", singleItem);
             }
-
             
             model.Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath);
             model.SearchQuery = subpath.Split("/").LastOrDefault();                
             model.RelativeObjects = _query.GetNextPrevInFolder(subpath);
+            
+            if (json) return Json(model);
             return View(model);
         }
 

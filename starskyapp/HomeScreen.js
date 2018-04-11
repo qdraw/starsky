@@ -8,28 +8,106 @@ import {
   Image,
   FlatList,
   ActivityIndicator,
+  ScrollView,
+  Button
 } from 'react-native';
-//   ScrollView,
+
+// import folderfetch from './folderfetch';
 
 
-export default class FetchExample extends React.Component {
-
+export default class HomeScreen extends React.Component {
   constructor(props){
     super(props);
-    this.state ={ isLoading: true}
+    const { params } = this.props.navigation.state;
+    this.state = { 
+       isLoading: true,
+       filePath: params ? params.filePath : "/"
+    }
   }
+  
+  // componentWillReceiveProps() {
+  //   // if (this.props.viewer && !this.props.navigation.state.params) {
+  //   //   this.props.navigation.setParams({imageUrl: this.props.viewer.imageUrl});
+  //   // }
 
+  //   // const { filePath } = this.props.navigation.state.params;
+  //   // const filePath = this.props.navigation.getParam('filePath', '/2018');
+
+  //   // const { params } = this.props.navigation.state;
+  //   // const filePath = params ? params.filePath : "/";
+
+  //   // console.log(filePath);
+
+  //   // console.log("this.props.navigation");
+
+  //   // console.log(this.props.navigation);
+  //   // console.log(this.props.navigation);
+
+  //   // const { params } = this.props.navigation.state;
+  //   // const filePath = params ? params.filePath : null;
+  //   // // const otherParam = params ? params.otherParam : null;
+
+
+  //   // const { navigate } = this.props.navigation;
+    
+  //   // console.log("sdfsdfdsfsdf1");
+
+  //   // console.log(filePath);
+
+  //   // console.log(filePath);
+
+  //   console.log("dfsdfnlsdfnlsdkfnlkdsf")
+  //   console.log(navigation.state)
+
+  //   // console.log("NAV11: ", this.props.navigation.filePath);
+  //   // console.log(this.props.navigation.getParam());
+
+  //   return fetch('http://localhost:5000/api/folder?f=')
+  //   .then((response) => response.json())
+  //   .then((responseJson) => {
+
+  //     this.setState({
+  //       isLoading: false,
+  //       dataSource: responseJson
+  //     }, function(){
+  //     });
+
+  //   })
+  //   .catch((error) =>{
+  //     console.error(error);
+  //   });
+
+  // }
+
+
+  static navigationOptions = ({ navigation, navigationOptions }) => {
+    const { params } = navigation.state;
+    return {
+      title: params ? params.title : 'Home',
+      filePath : params ? params.filePath : '/',
+    };
+  };
+  
   componentDidMount(){
-    return fetch('https://facebook.github.io/react-native/movies.json')
+
+    return fetch('http://localhost:5000/?json=true&f=' + this.state.filePath)
       .then((response) => response.json())
       .then((responseJson) => {
 
-        this.setState({
-          isLoading: false,
-          dataSource: responseJson.movies,
-        }, function(){
+        console.log(responseJson.pageType)
 
-        });
+        if(responseJson.pageType === "Archive") {
+          this.setState({
+            isLoading: false,
+            dataSource: responseJson.fileIndexItems
+          }, function(){
+          });
+        }
+        if(responseJson.pageType === "DetailView") {
+          this.props.navigation.navigate('Details',{
+            filePath: this.state.filePath
+          })
+        }
 
       })
       .catch((error) =>{
@@ -37,9 +115,8 @@ export default class FetchExample extends React.Component {
       });
   }
 
-
-
   render(){
+
 
     if(this.state.isLoading){
       return(
@@ -49,14 +126,35 @@ export default class FetchExample extends React.Component {
       )
     }
 
+
+
     return(
       <View style={{flex: 1, paddingTop:20}}>
+
         <FlatList
           data={this.state.dataSource}
-          renderItem={({item}) => <Text>{item.title}, {item.releaseYear}</Text>}
-          keyExtractor={(item, index) => index}
+          renderItem={({item}) => 
+          <Text>
+            <Button
+              title={"Go to " + item.fileName}
+              onPress={() => {
+                /* 1. Navigate to the Details route with params */
+                this.props.navigation.navigate('Home', {
+                  title: item.fileName,
+                  filePath: item.filePath,
+                });
+              }}
+            />
+          {item.fileName}, {item.filePath}</Text>}
+            keyExtractor={(item, index) => index}
         />
+
       </View>
     );
   }
 }
+
+
+
+
+

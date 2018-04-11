@@ -10,5 +10,7 @@ namespace starsky.ViewModels
         public List<string> Breadcrumb { get; set; }
         public IEnumerable<FileIndexItem.ColorUserInterface> GetAllColor { get; set; }
         public List<FileIndexItem.Color> ColorClassFilterList { get; set; }
+        // Used by react client
+        public string PageType => PageViewType.PageType.DetailView.ToString();
     }
 }
