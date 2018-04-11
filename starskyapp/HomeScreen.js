@@ -9,7 +9,8 @@ import {
   FlatList,
   ActivityIndicator,
   ScrollView,
-  Button
+  Button,
+  Dimensions
 } from 'react-native';
 
 import { NavigationActions } from 'react-navigation'
@@ -34,6 +35,65 @@ export default class ArchiveScreen extends React.Component {
       filePath : params ? params.filePath : '/',
     };
   };
+
+  _renderScene() {
+
+    if (this.state.dataSource.pageType === 'Archive') {
+      return(
+        <View style={{flex: 1, paddingTop:20}}>
+  
+          <FlatList
+            data={this.state.dataSource.fileIndexItems}
+            renderItem={({item}) => 
+            <Text>
+              <Button
+                title={"Go to " + item.fileName}
+                onPress={() => {
+                  /* 1. Navigate to the Details route with params */
+                  this.props.navigation.navigate('Home', {
+                    title: item.fileName,
+                    filePath: item.filePath,
+                  });
+                }}
+              />
+            {item.fileName}, {item.filePath}</Text>}
+              keyExtractor={(item, index) => index}
+          />
+  
+        </View>
+      );
+    }
+    if (this.state.dataSource.pageType === 'DetailView') {
+      var thumbPath = 'http://localhost:5000/api/thumbnail?f=' + this.state.dataSource.fileIndexItem.fileHash
+      return(
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text>Details Screen</Text>
+          <Text>otherParam: {JSON.stringify(this.state.dataSource.fileIndexItem.filePath)}</Text>
+          <Text>otherParam: {thumbPath}</Text>
+
+          <Image
+            style={styles.stretch}
+            source={{uri: thumbPath}}
+          />
+
+          <Button
+            title="Update the title"
+            onPress={() =>
+              this.props.navigation.setParams({ otherParam: 'Updated!' })}
+          />
+          <Button
+            title="Go to Details... again"
+            onPress={() => this.props.navigation.navigate('Details')}
+          />
+          <Button
+            title="Go back"
+            onPress={() => this.props.navigation.goBack()}
+          />
+        </View>
+      )
+    }
+
+ }
   
   componentDidMount(){
 
@@ -41,56 +101,11 @@ export default class ArchiveScreen extends React.Component {
       .then((response) => response.json())
       .then((responseJson) => {
 
-        console.log(responseJson.pageType)
-
-        if(responseJson.pageType === "Archive") {
-          this.setState({
-            isLoading: false,
-            dataSource: responseJson.fileIndexItems
-          }, function(){
-          });
-        }
-        if(responseJson.pageType === "DetailView") {
-
-          // var resetAction = NavigationActions.reset({
-          //   index: 0,
-          //   actions: []
-          // });
-          
-          // responseJson.breadcrumb.forEach(breadItem => {
-          //   resetAction.actions.push(
-          //     NavigationActions.navigate({ routeName: 'Home'
-          //   }));
-          //   resetAction.index = resetAction.index+1
-          // });
-
-          // console.log("resetAction");
-
-          // console.debug(resetAction);
-          // this.props.navigation.push('Details',{
-          //   filePath: this.state.filePath
-          // });
-
-          // this.props
-          //   .navigation
-          //   .dispatch(resetAction);
-
-
-
-          // this.props
-          //   .navigation
-          //   .dispatch(NavigationActions.reset(
-          //     {
-          //       index: 0,
-          //       actions: [
-          //         NavigationActions.navigate({ routeName: 'Home'})
-          //       ]
-          //     }));
-          // // this.props.navigation
-          // // // this.props.navigation.goBack()
-
-
-        }
+        this.setState({
+          isLoading: false,
+          dataSource: responseJson,
+        }, function(){
+        });
 
       })
       .catch((error) =>{
@@ -100,7 +115,6 @@ export default class ArchiveScreen extends React.Component {
 
   render(){
 
-
     if(this.state.isLoading){
       return(
         <View style={{flex: 1, padding: 20}}>
@@ -109,33 +123,22 @@ export default class ArchiveScreen extends React.Component {
       )
     }
 
+    return this._renderScene()
 
-
-    return(
-      <View style={{flex: 1, paddingTop:20}}>
-
-        <FlatList
-          data={this.state.dataSource}
-          renderItem={({item}) => 
-          <Text>
-            <Button
-              title={"Go to " + item.fileName}
-              onPress={() => {
-                /* 1. Navigate to the Details route with params */
-                this.props.navigation.navigate('Home', {
-                  title: item.fileName,
-                  filePath: item.filePath,
-                });
-              }}
-            />
-          {item.fileName}, {item.filePath}</Text>}
-            keyExtractor={(item, index) => index}
-        />
-
-      </View>
-    );
   }
 }
+
+var styles = StyleSheet.create({
+  stretch: {
+    width: Dimensions.get('window').width,
+    height: 300,
+    backgroundColor: '#ededed',
+    marginTop: 10,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+});
+
 
 
 
