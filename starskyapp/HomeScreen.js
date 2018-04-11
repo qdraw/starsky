@@ -12,10 +12,12 @@ import {
   Button
 } from 'react-native';
 
+import { NavigationActions } from 'react-navigation'
+
 // import folderfetch from './folderfetch';
 
 
-export default class HomeScreen extends React.Component {
+export default class ArchiveScreen extends React.Component {
   constructor(props){
     super(props);
     const { params } = this.props.navigation.state;
@@ -25,61 +27,6 @@ export default class HomeScreen extends React.Component {
     }
   }
   
-  // componentWillReceiveProps() {
-  //   // if (this.props.viewer && !this.props.navigation.state.params) {
-  //   //   this.props.navigation.setParams({imageUrl: this.props.viewer.imageUrl});
-  //   // }
-
-  //   // const { filePath } = this.props.navigation.state.params;
-  //   // const filePath = this.props.navigation.getParam('filePath', '/2018');
-
-  //   // const { params } = this.props.navigation.state;
-  //   // const filePath = params ? params.filePath : "/";
-
-  //   // console.log(filePath);
-
-  //   // console.log("this.props.navigation");
-
-  //   // console.log(this.props.navigation);
-  //   // console.log(this.props.navigation);
-
-  //   // const { params } = this.props.navigation.state;
-  //   // const filePath = params ? params.filePath : null;
-  //   // // const otherParam = params ? params.otherParam : null;
-
-
-  //   // const { navigate } = this.props.navigation;
-    
-  //   // console.log("sdfsdfdsfsdf1");
-
-  //   // console.log(filePath);
-
-  //   // console.log(filePath);
-
-  //   console.log("dfsdfnlsdfnlsdkfnlkdsf")
-  //   console.log(navigation.state)
-
-  //   // console.log("NAV11: ", this.props.navigation.filePath);
-  //   // console.log(this.props.navigation.getParam());
-
-  //   return fetch('http://localhost:5000/api/folder?f=')
-  //   .then((response) => response.json())
-  //   .then((responseJson) => {
-
-  //     this.setState({
-  //       isLoading: false,
-  //       dataSource: responseJson
-  //     }, function(){
-  //     });
-
-  //   })
-  //   .catch((error) =>{
-  //     console.error(error);
-  //   });
-
-  // }
-
-
   static navigationOptions = ({ navigation, navigationOptions }) => {
     const { params } = navigation.state;
     return {
@@ -104,9 +51,45 @@ export default class HomeScreen extends React.Component {
           });
         }
         if(responseJson.pageType === "DetailView") {
-          this.props.navigation.navigate('Details',{
-            filePath: this.state.filePath
-          })
+
+          // var resetAction = NavigationActions.reset({
+          //   index: 0,
+          //   actions: []
+          // });
+          
+          // responseJson.breadcrumb.forEach(breadItem => {
+          //   resetAction.actions.push(
+          //     NavigationActions.navigate({ routeName: 'Home'
+          //   }));
+          //   resetAction.index = resetAction.index+1
+          // });
+
+          // console.log("resetAction");
+
+          // console.debug(resetAction);
+          // this.props.navigation.push('Details',{
+          //   filePath: this.state.filePath
+          // });
+
+          // this.props
+          //   .navigation
+          //   .dispatch(resetAction);
+
+
+
+          // this.props
+          //   .navigation
+          //   .dispatch(NavigationActions.reset(
+          //     {
+          //       index: 0,
+          //       actions: [
+          //         NavigationActions.navigate({ routeName: 'Home'})
+          //       ]
+          //     }));
+          // // this.props.navigation
+          // // // this.props.navigation.goBack()
+
+
         }
 
       })

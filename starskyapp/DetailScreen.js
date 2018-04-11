@@ -14,16 +14,20 @@ import {
 
 
 export default class DetailScreen extends React.Component {
+  constructor(props){
+    super(props);
+    const { params } = this.props.navigation.state;
+    this.state = { 
+       isLoading: true,
+       filePath: params ? params.filePath : "/"
+    }
+  }
+  
   static navigationOptions = ({ navigation, navigationOptions }) => {
     const { params } = navigation.state;
-
     return {
-      title: params ? params.otherParam : 'A Nested Details Screen',
-      /* These values are used instead of the shared configuration! */
-      headerStyle: {
-        backgroundColor: navigationOptions.headerTintColor,
-      },
-      headerTintColor: navigationOptions.headerStyle.backgroundColor,
+      title: params ? params.title : 'Home',
+      filePath : params ? params.filePath : '/',
     };
   };
 
@@ -31,13 +35,12 @@ export default class DetailScreen extends React.Component {
     /* 2. Read the params from the navigation state */
     const { params } = this.props.navigation.state;
     const itemId = params ? params.itemId : null;
-    const otherParam = params ? params.otherParam : null;
+    const filePath = params ? params.filePath : null;
 
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Text>Details Screen</Text>
-        <Text>itemId: {JSON.stringify(itemId)}</Text>
-        <Text>otherParam: {JSON.stringify(otherParam)}</Text>
+        <Text>otherParam: {JSON.stringify(filePath)}</Text>
         <Button
           title="Update the title"
           onPress={() =>
