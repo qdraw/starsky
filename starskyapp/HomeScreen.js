@@ -13,9 +13,21 @@ import {
   Dimensions
 } from 'react-native';
 
-import { NavigationActions } from 'react-navigation'
+import { NavigationActions,HeaderBackButton } from 'react-navigation'
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
+function renderLeft(params,navigation) {
+  if(params == undefined) return;
+
+  console.log("params.breadcrumb")
+  console.log(params.breadcrumb)
+  if(params.breadcrumb != undefined && params.breadcrumb != "/") {
+    return (<HeaderBackButton onPress={() => navigation.navigate('Home', {
+      title: params ? params.breadcrumbName : "dsf",
+      filePath: params ? params.breadcrumb : "/",
+      })} />)
+  }
+}
 export default class ArchiveScreen extends React.Component {
   constructor(props){
     super(props);
@@ -23,14 +35,17 @@ export default class ArchiveScreen extends React.Component {
     this.state = { 
        isLoading: true,
        filePath: params ? params.filePath : "/",
-       fileName: params ? params.filePath : ""
+       title: params ? params.title : "Home"
       }
   }
   
   static navigationOptions = ({ navigation, navigationOptions }) => {
     const { params } = navigation.state;
+
     return {
       title: params ? params.title : 'Home',
+      headerLeft: renderLeft(params,navigation),
+      // headerLeft: (<HeaderBackButton onPress={() => navigation.goBack(null)} />),
       filePath : params ? params.filePath : '/',
     };
   };
@@ -59,61 +74,63 @@ export default class ArchiveScreen extends React.Component {
     }
   }
 
-  _prevButton() {
-    var prev =  this.state.dataSource.relativeObjects.prevFilePath;
-    if(prev != null) {
-      return (
-        <Text
-          title={"Prev"}
-          style={[styles.nextprev_button, styles.nextprev_button_prev] }
-          onPress={() => {
-            /* 1. Navigate to the Details route with params */
-            this.props.navigation.navigate('Home', {
-              title: "item.fileName",
-              filePath: prev,
-            });
-          }}
-        >
-          Vorige
-        </Text>
-      );  
-    }
-    else {
-      return (
-        <Text 
-          style={[styles.nextprev_button] }
-        />
-      )
-    }
-  }
-
   // {this._prevButton()}
-  _nextButton() {
-    var next =  this.state.dataSource.relativeObjects.nextFilePath;
-    if(next != null) {
-      return (
-        <Text
-          title={"Next"}
-          style={[styles.nextprev_button, styles.nextprev_button_next] }
-          onPress={() => {
-            /* 1. Navigate to the Details route with params */
-            this.props.navigation.navigate('Home', {
-              title: "item.fileName",
-              filePath: next,
-            });
-          }}
-        />
-      );  
-    }
-    else {
-      return (
-        <Text 
-          style={[styles.nextprev_button] }
-          title={"Next"}
-        />
-      )
-    }
-  }
+  // {this._nextButton()}
+  // _prevButton() {
+  //   var prev =  this.state.dataSource.relativeObjects.prevFilePath;
+  //   if(prev != null) {
+  //     return (
+  //       <Text
+  //         title={"Prev"}
+  //         style={[styles.nextprev_button, styles.nextprev_button_prev] }
+  //         onPress={() => {
+  //           /* 1. Navigate to the Details route with params */
+  //           this.props.navigation.navigate('Home', {
+  //             title: "item.fileName",
+  //             filePath: prev,
+  //           });
+  //         }}
+  //       >
+  //         Vorige
+  //       </Text>
+  //     );  
+  //   }
+  //   else {
+  //     return (
+  //       <Text 
+  //         style={[styles.nextprev_button] }
+  //       />
+  //     )
+  //   }
+  // }
+
+  // // {this._prevButton()}
+  // _nextButton() {
+  //   var next =  this.state.dataSource.relativeObjects.nextFilePath;
+  //   if(next != null) {
+  //     return (
+  //       <Text
+  //         title={"Next"}
+  //         style={[styles.nextprev_button, styles.nextprev_button_next] }
+  //         onPress={() => {
+  //           /* 1. Navigate to the Details route with params */
+  //           this.props.navigation.navigate('Home', {
+  //             title: "item.fileName",
+  //             filePath: next,
+  //           });
+  //         }}
+  //       />
+  //     );  
+  //   }
+  //   else {
+  //     return (
+  //       <Text 
+  //         style={[styles.nextprev_button] }
+  //         title={"Next"}
+  //       />
+  //     )
+  //   }
+  // }
 
   _renderScene() {
     const config = {
@@ -158,8 +175,6 @@ export default class ArchiveScreen extends React.Component {
             />
           </View>
           <View style={styles.nextprev}>
-            {this._prevButton()}
-            {this._nextButton()}
           </View>
         </GestureRecognizer>
 
@@ -197,15 +212,28 @@ export default class ArchiveScreen extends React.Component {
   
   componentDidMount(){
 
-    // http://localhost:5000/?json=true&f= 
-    var filePath = this.state.filePath.replace(/ /ig,"$20");
+    console.log("filePathfilePath");
+    console.log(filePath);
 
-    // console.log("filePathfilePath");
-    // console.log(filePath);
+    var filePath = this.state.filePath;
+    if(filePath === undefined) filePath = "/";
+    var filePath = filePath.replace(/ /ig,"$20");
+
+    // http://localhost:5000/?json=true&f= 
+
 
     return fetch('https://qdraw.eu/starsky_tmp_access_894ikrfs8m438g/api/f=' + filePath)
       .then((response) => response.json())
       .then((responseJson) => {
+
+        var breadcrumb = responseJson.breadcrumb[responseJson.breadcrumb.length-1];
+        var breadcrumbName = breadcrumb.split("/")[breadcrumb.split("/").length-1];
+        if(breadcrumbName === "")  breadcrumbName = "Home";
+
+        this.props.navigation.setParams({ 
+          breadcrumb: breadcrumb,
+          breadcrumbName: breadcrumbName,
+        });
 
         this.setState({
           isLoading: false,
