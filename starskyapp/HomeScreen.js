@@ -17,17 +17,19 @@ import { NavigationActions,HeaderBackButton } from 'react-navigation'
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
 function renderLeft(params,navigation) {
-  if(params == undefined) return;
+if(params == undefined) return(<Text> </Text>);
 
-  console.log("params.breadcrumb")
-  console.log(params.breadcrumb)
-  if(params.breadcrumb != undefined && params.breadcrumb != "/") {
+  if(params.breadcrumb != undefined && (params.filePath != undefined && params.filePath != "/")) {
     return (<HeaderBackButton onPress={() => navigation.navigate('Home', {
       title: params ? params.breadcrumbName : "dsf",
       filePath: params ? params.breadcrumb : "/",
       })} />)
   }
+  else {
+    return(<Text> </Text>)
+  }
 }
+
 export default class ArchiveScreen extends React.Component {
   constructor(props){
     super(props);
@@ -35,15 +37,17 @@ export default class ArchiveScreen extends React.Component {
     this.state = { 
        isLoading: true,
        filePath: params ? params.filePath : "/",
-       title: params ? params.title : "Home"
+      //  title: params ? params.title : "Home"
       }
   }
   
   static navigationOptions = ({ navigation, navigationOptions }) => {
     const { params } = navigation.state;
 
+    var title = params ? params.title : 'Home';
+    if(title === undefined) title = "Starsky"
     return {
-      title: params ? params.title : 'Home',
+      title: title,
       headerLeft: renderLeft(params,navigation),
       // headerLeft: (<HeaderBackButton onPress={() => navigation.goBack(null)} />),
       filePath : params ? params.filePath : '/',
@@ -73,64 +77,6 @@ export default class ArchiveScreen extends React.Component {
       });
     }
   }
-
-  // {this._prevButton()}
-  // {this._nextButton()}
-  // _prevButton() {
-  //   var prev =  this.state.dataSource.relativeObjects.prevFilePath;
-  //   if(prev != null) {
-  //     return (
-  //       <Text
-  //         title={"Prev"}
-  //         style={[styles.nextprev_button, styles.nextprev_button_prev] }
-  //         onPress={() => {
-  //           /* 1. Navigate to the Details route with params */
-  //           this.props.navigation.navigate('Home', {
-  //             title: "item.fileName",
-  //             filePath: prev,
-  //           });
-  //         }}
-  //       >
-  //         Vorige
-  //       </Text>
-  //     );  
-  //   }
-  //   else {
-  //     return (
-  //       <Text 
-  //         style={[styles.nextprev_button] }
-  //       />
-  //     )
-  //   }
-  // }
-
-  // // {this._prevButton()}
-  // _nextButton() {
-  //   var next =  this.state.dataSource.relativeObjects.nextFilePath;
-  //   if(next != null) {
-  //     return (
-  //       <Text
-  //         title={"Next"}
-  //         style={[styles.nextprev_button, styles.nextprev_button_next] }
-  //         onPress={() => {
-  //           /* 1. Navigate to the Details route with params */
-  //           this.props.navigation.navigate('Home', {
-  //             title: "item.fileName",
-  //             filePath: next,
-  //           });
-  //         }}
-  //       />
-  //     );  
-  //   }
-  //   else {
-  //     return (
-  //       <Text 
-  //         style={[styles.nextprev_button] }
-  //         title={"Next"}
-  //       />
-  //     )
-  //   }
-  // }
 
   _renderScene() {
     const config = {
@@ -228,7 +174,7 @@ export default class ArchiveScreen extends React.Component {
 
         var breadcrumb = responseJson.breadcrumb[responseJson.breadcrumb.length-1];
         var breadcrumbName = breadcrumb.split("/")[breadcrumb.split("/").length-1];
-        if(breadcrumbName === "")  breadcrumbName = "Home";
+        if(breadcrumbName === "")  breadcrumbName = "Starsky";
 
         this.props.navigation.setParams({ 
           breadcrumb: breadcrumb,
@@ -238,7 +184,8 @@ export default class ArchiveScreen extends React.Component {
         this.setState({
           isLoading: false,
           dataSource: responseJson,
-          fileName: responseJson.searchQuery
+          fileName: responseJson.searchQuery,
+
         }, function(){
         });
 
