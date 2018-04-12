@@ -25,6 +25,9 @@ namespace starsky.Controllers
             bool json = false
             )
         {
+            // Trick for avoiding spaces for behind proxy
+            f = f.Replace("$20", " ");
+            
             // Used in Detail and Index View => does not hide this single item
             var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
             var subpath = _query.SubPathSlashRemove(f);

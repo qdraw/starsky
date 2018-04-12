@@ -2,10 +2,21 @@ import React, { Component,PropTypes } from 'react';
 
 import { AppRegistry} from 'react-native';
 
-import { StackNavigator } from 'react-navigation';
+import { StackNavigator, DrawerNavigator } from 'react-navigation';
 import HomeScreen from './HomeScreen';
 import DetailScreen from './DetailScreen';
  
+import tabNav from './tabnav';
+
+const drawernav = DrawerNavigator({
+  DrawerItem1: {
+      screen: tabNav,
+      navigationOptions: {
+          drawerLabel: "Drawer Item 1",
+      },
+  }
+});
+
 
 const RootStack = StackNavigator(
   {
@@ -37,4 +48,4 @@ class App extends React.Component {
 }
 
 
-AppRegistry.registerComponent('starskyapp', () => App);
+AppRegistry.registerComponent('starskyapp', () => drawernav);
