@@ -59,42 +59,61 @@ export default class ArchiveScreen extends React.Component {
     }
   }
 
-  // _prevButton() {
-  //   var prev =  this.state.dataSource.relativeObjects.prevFilePath;
-  //   if(prev != null) {
-  //     return (
-  //       <Button
-  //         title={"Prev"}
-  //         onPress={() => {
-  //           /* 1. Navigate to the Details route with params */
-  //           this.props.navigation.navigate('Home', {
-  //             title: "item.fileName",
-  //             filePath: prev,
-  //           });
-  //         }}
-  //       />
-  //     );  
-  //   }
-  // }
+  _prevButton() {
+    var prev =  this.state.dataSource.relativeObjects.prevFilePath;
+    if(prev != null) {
+      return (
+        <Text
+          title={"Prev"}
+          style={[styles.nextprev_button, styles.nextprev_button_prev] }
+          onPress={() => {
+            /* 1. Navigate to the Details route with params */
+            this.props.navigation.navigate('Home', {
+              title: "item.fileName",
+              filePath: prev,
+            });
+          }}
+        >
+          Vorige
+        </Text>
+      );  
+    }
+    else {
+      return (
+        <Text 
+          style={[styles.nextprev_button] }
+        />
+      )
+    }
+  }
 
-  // // {this._prevButton()}
-  // _nextButton() {
-  //   var next =  this.state.dataSource.relativeObjects.nextFilePath;
-  //   if(next != null) {
-  //     return (
-  //       <Button
-  //         title={"Next"}
-  //         onPress={() => {
-  //           /* 1. Navigate to the Details route with params */
-  //           this.props.navigation.navigate('Home', {
-  //             title: "item.fileName",
-  //             filePath: next,
-  //           });
-  //         }}
-  //       />
-  //     );  
-  //   }
-  // }
+  // {this._prevButton()}
+  _nextButton() {
+    var next =  this.state.dataSource.relativeObjects.nextFilePath;
+    if(next != null) {
+      return (
+        <Text
+          title={"Next"}
+          style={[styles.nextprev_button, styles.nextprev_button_next] }
+          onPress={() => {
+            /* 1. Navigate to the Details route with params */
+            this.props.navigation.navigate('Home', {
+              title: "item.fileName",
+              filePath: next,
+            });
+          }}
+        />
+      );  
+    }
+    else {
+      return (
+        <Text 
+          style={[styles.nextprev_button] }
+          title={"Next"}
+        />
+      )
+    }
+  }
 
   _renderScene() {
     const config = {
@@ -115,7 +134,7 @@ export default class ArchiveScreen extends React.Component {
           flex: 1
         }}
         >
-          <View style={{flex: 1, paddingTop:20}}>
+          <View style={{flex: 10}}>
             <FlatList
               data={this.state.dataSource.fileIndexItems}
               renderItem={({item}) => 
@@ -138,6 +157,10 @@ export default class ArchiveScreen extends React.Component {
                 keyExtractor={(item, index) => index}
             />
           </View>
+          <View style={styles.nextprev}>
+            {this._prevButton()}
+            {this._nextButton()}
+          </View>
         </GestureRecognizer>
 
       );
@@ -146,12 +169,12 @@ export default class ArchiveScreen extends React.Component {
       var thumbPath = 'https://qdraw.eu/starsky_tmp_access_894ikrfs8m438g/thumbnail?f=' + this.state.dataSource.fileIndexItem.fileHash
       return(
         <GestureRecognizer
-        onSwipeLeft={(state) => this.onSwipeLeft(state)}
-        onSwipeRight={(state) => this.onSwipeRight(state)}
-        config={config}
-        style={{
-          flex: 1
-        }}
+          onSwipeLeft={(state) => this.onSwipeLeft(state)}
+          onSwipeRight={(state) => this.onSwipeRight(state)}
+          config={config}
+          style={{
+            flex: 1
+          }}
         >
           <ScrollView>
             <View>
@@ -216,7 +239,7 @@ var styles = StyleSheet.create({
   stretch: {
     width: Dimensions.get('window').width,
     height: 300,
-    backgroundColor: 'red',
+    backgroundColor: 'gray',
     marginTop: 10,
     justifyContent: 'center',
     alignItems: 'center'
@@ -224,6 +247,30 @@ var styles = StyleSheet.create({
   detailviewthumb: {
     width: 50,
     height: 50,
+  },
+  nextprev: {
+    flex: 1,
+    flexWrap: 'wrap', 
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+    // flexDirection:'row',
+    // backgroundColor: 'yellow',
+  },
+  nextprev_button: {
+    // width: 30,
+    // height: 30,
+    // flex: 2,
+    height: Math.round(Dimensions.get('window').height/12),
+    width: Math.round(Dimensions.get('window').width/2),
+    // flexDirection: 'row',
+    // justifyContent: 'space-between'
+  },
+  nextprev_button_prev: {
+    backgroundColor: 'yellow'
+  },
+  nextprev_button_next: {
+    backgroundColor: 'red'
   }
 });
 

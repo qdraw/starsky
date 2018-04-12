@@ -4,18 +4,24 @@ import { StackNavigator} from 'react-navigation'
 import HomeScreen from './HomeScreen';
 
 
-const stackNav = StackNavigator({
-    Home: {
+const RootStack = StackNavigator(
+    {
+      Home: {
         screen: HomeScreen,
-        navigationOptions:({navigation}) => ({
-            // headerLeft:(
-            //   <TouchableOpacity onPress={() => navigation.navigate("DrawerOpen")}>
-            //     <IOSIcon name="ios-menu" size={30} />
-            //   </TouchableOpacity>
-            // ),
-            headerStyle: { paddingRight: 10, paddingLeft: 10 }
-        })
+      }
+    },
+    {
+      initialRouteName: 'Home',
+      navigationOptions: {
+        headerStyle: {
+          backgroundColor: '#f4511e',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+      },
     }
-})
+  );
 
-export default stackNav;
+export default RootStack;

@@ -6,11 +6,12 @@ import { StackNavigator, DrawerNavigator } from 'react-navigation';
 import HomeScreen from './HomeScreen';
 import DetailScreen from './DetailScreen';
  
-import tabNav from './tabnav';
+// import tabNav from './tabnav';
+import stacknav from './stacknav';
 
 const drawernav = DrawerNavigator({
   DrawerItem1: {
-      screen: tabNav,
+      screen: stacknav,
       navigationOptions: {
           drawerLabel: "Drawer Item 1",
       },
@@ -18,34 +19,34 @@ const drawernav = DrawerNavigator({
 });
 
 
-const RootStack = StackNavigator(
-  {
-    Home: {
-      screen: HomeScreen,
-    },
-    Details: {
-      screen: DetailScreen,
-    },
-  },
-  {
-    initialRouteName: 'Home',
-    navigationOptions: {
-      headerStyle: {
-        backgroundColor: '#f4511e',
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    },
-  }
-);
+// const RootStack = StackNavigator(
+//   {
+//     Home: {
+//       screen: HomeScreen,
+//     },
+//     Details: {
+//       screen: DetailScreen,
+//     },
+//   },
+//   {
+//     initialRouteName: 'Home',
+//     navigationOptions: {
+//       headerStyle: {
+//         backgroundColor: '#f4511e',
+//       },
+//       headerTintColor: '#fff',
+//       headerTitleStyle: {
+//         fontWeight: 'bold',
+//       },
+//     },
+//   }
+// );
 
-class App extends React.Component {
-    render() {
-        return <RootStack />;
-    }
-}
+// class App extends React.Component {
+//     render() {
+//         return <RootStack />;
+//     }
+// }
 
 
 AppRegistry.registerComponent('starskyapp', () => drawernav);
