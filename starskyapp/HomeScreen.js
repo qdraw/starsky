@@ -97,17 +97,12 @@ export default class ArchiveScreen extends React.Component {
           flex: 1
         }}
         >
-          <View style={{flex: 10}}>
+          <View style={styles.flatlist}>
             <FlatList
               data={this.state.dataSource.fileIndexItems}
               renderItem={({item}) => 
-              <Text>
-                <Image
-                  style={styles.detailviewthumb}
-                  source={{uri: thumbBasePath + item.fileHash}}
-                />
-                <Button
-                  title={"Go to " + item.fileName}
+              <View style={styles.flatlistItem}>
+                <Text
                   onPress={() => {
                     /* 1. Navigate to the Details route with params */
                     this.props.navigation.navigate('Home', {
@@ -115,8 +110,17 @@ export default class ArchiveScreen extends React.Component {
                       filePath: item.filePath,
                     });
                   }}
+                > 
+                  {item.fileName}
+                </Text>
+
+                <Image
+                  style={styles.detailviewthumb}
+                  // source={{uri: thumbBasePath + item.fileHash}}
+                  source={{uri: "https://blog.solutotlv.com/wp-content/uploads/2017/03/article_screen_sizes-1280x447.png"}}
                 />
-              </Text>}
+
+              </View>}
                 keyExtractor={(item, index) => index}
             />
           </View>
@@ -147,7 +151,6 @@ export default class ArchiveScreen extends React.Component {
                 style={styles.stretch}
                 source={{uri: thumbPath}}
               />
-
             </View>
           </ScrollView>
         </GestureRecognizer>
@@ -222,6 +225,18 @@ var styles = StyleSheet.create({
   detailviewthumb: {
     width: 50,
     height: 50,
+  },
+  flatlist: {
+    flex: 10,
+    flexWrap: 'wrap', 
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  flatlistItem: {
+    // width: 50,
+    // backgroundColor: 'yellow',
+    // flex:1
   },
   nextprev: {
     flex: 1,
