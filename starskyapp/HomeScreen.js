@@ -10,7 +10,10 @@ import {
   ActivityIndicator,
   ScrollView,
   Button,
-  Dimensions
+  Dimensions,
+  ImageBackground,
+  TouchableHighlight,
+  PixelRatio
 } from 'react-native';
 
 import { NavigationActions,HeaderBackButton } from 'react-navigation'
@@ -86,7 +89,7 @@ export default class ArchiveScreen extends React.Component {
 
     if (this.state.dataSource.pageType === 'Archive') {
 
-      var thumbBasePath = 'https://qdraw.eu/starsky_tmp_access_894ikrfs8m438g/api/f=';
+      var thumbBasePath = 'https://qdraw.eu/starsky_tmp_access_894ikrfs8m438g/thumbnail?f=';
 
       return(
         <GestureRecognizer
@@ -101,26 +104,28 @@ export default class ArchiveScreen extends React.Component {
             <FlatList
               data={this.state.dataSource.fileIndexItems}
               renderItem={({item}) => 
-              <View style={styles.flatlistItem}>
-                <Text
-                  onPress={() => {
-                    /* 1. Navigate to the Details route with params */
-                    this.props.navigation.navigate('Home', {
-                      title: item.fileName,
-                      filePath: item.filePath,
-                    });
-                  }}
-                > 
-                  {item.fileName}
-                </Text>
+              <TouchableHighlight
+                onPress={() => {
+                  /* 1. Navigate to the Details route with params */
+                  this.props.navigation.navigate('Home', {
+                    title: item.fileName,
+                    filePath: item.filePath,
+                  });
+                }}
+              >
+                <ImageBackground 
+                  style={styles.flatlistItem}
+                  source={{uri: thumbBasePath + item.fileHash}}
+                >
+                  <Text
+                    style={styles.flatlistTitle}
+                  > 
+                    {item.fileName}
+                  </Text>
 
-                <Image
-                  style={styles.detailviewthumb}
-                  // source={{uri: thumbBasePath + item.fileHash}}
-                  source={{uri: "https://blog.solutotlv.com/wp-content/uploads/2017/03/article_screen_sizes-1280x447.png"}}
-                />
-
-              </View>}
+                </ImageBackground>
+              </TouchableHighlight>
+              }
                 keyExtractor={(item, index) => index}
             />
           </View>
@@ -187,8 +192,7 @@ export default class ArchiveScreen extends React.Component {
         this.setState({
           isLoading: false,
           dataSource: responseJson,
-          fileName: responseJson.searchQuery,
-
+          fileName: responseJson.searchQuery
         }, function(){
         });
 
@@ -227,16 +231,27 @@ var styles = StyleSheet.create({
     height: 50,
   },
   flatlist: {
-    flex: 10,
+    flex: 100, //10
     flexWrap: 'wrap', 
     alignItems: 'flex-start',
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
   flatlistItem: {
-    // width: 50,
-    // backgroundColor: 'yellow',
-    // flex:1
+    width: Math.round(Dimensions.get('window').width),
+    height: 125,
+    borderBottomColor: '#47315a',
+    borderBottomWidth: 1 / PixelRatio.get(),
+  },
+  flatlistTitle: {
+    marginTop: 10,
+    marginLeft: 20,
+    fontSize: 20,
+    color: "#fff",
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
   },
   nextprev: {
     flex: 1,
