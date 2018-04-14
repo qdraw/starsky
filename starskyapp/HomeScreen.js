@@ -13,7 +13,9 @@ import {
   Dimensions,
   ImageBackground,
   TouchableHighlight,
-  PixelRatio
+  PixelRatio,
+  AsyncStorage,
+  RefreshControl
 } from 'react-native';
 
 import { NavigationActions,HeaderBackButton } from 'react-navigation'
@@ -37,11 +39,12 @@ export default class ArchiveScreen extends React.Component {
   constructor(props){
     super(props);
     const { params } = this.props.navigation.state;
+
     this.state = { 
        isLoading: true,
        filePath: params ? params.filePath : "/",
-      //  title: params ? params.title : "Home"
-      }
+    }
+    
   }
   
   static navigationOptions = ({ navigation, navigationOptions }) => {
@@ -81,6 +84,27 @@ export default class ArchiveScreen extends React.Component {
     }
   }
 
+  async _getStorage(name,callback) {
+    try {
+      const value = await AsyncStorage.getItem(name);
+      if (value !== null){
+        // We have data!!
+        callback(value)
+      }
+    } catch (error) {
+      // Error retrieving data
+    }
+  }
+
+  async _storeStorage(name, status) {
+    try {
+      await AsyncStorage.setItem(name, status);
+    } catch (error) {
+      console.log("_storeStorage")
+      // Error saving data
+    }
+  }
+
   _renderScene() {
     const config = {
       velocityThreshold: 0.3,
@@ -103,15 +127,21 @@ export default class ArchiveScreen extends React.Component {
           <View style={styles.flatlist}>
             <FlatList
               data={this.state.dataSource.fileIndexItems}
+              // refreshControl={
+              //   <RefreshControl
+              //    refreshing={this.state.isLoading}
+              //    onRefresh={this._handleRefresh}
+              //   />
+              // }
               renderItem={({item}) => 
               <TouchableHighlight
-                onPress={() => {
-                  /* 1. Navigate to the Details route with params */
-                  this.props.navigation.navigate('Home', {
-                    title: item.fileName,
-                    filePath: item.filePath,
-                  });
-                }}
+                // onPress={() => {
+                //   /* 1. Navigate to the Details route with params */
+                //   this.props.navigation.navigate('Home', {
+                //     title: item.fileName,
+                //     filePath: item.filePath,
+                //   });
+                // }}
               >
                 <ImageBackground 
                   style={styles.flatlistItem}
@@ -119,6 +149,13 @@ export default class ArchiveScreen extends React.Component {
                 >
                   <Text
                     style={styles.flatlistTitle}
+                    onPress={() => {
+                      /* 1. Navigate to the Details route with params */
+                      this.props.navigation.navigate('Home', {
+                        title: item.fileName,
+                        filePath: item.filePath,
+                      });
+                    }}
                   > 
                     {item.fileName}
                   </Text>
@@ -166,15 +203,27 @@ export default class ArchiveScreen extends React.Component {
   
   componentDidMount(){
 
-    console.log("filePathfilePath");
-    console.log(filePath);
-
     var filePath = this.state.filePath;
+    // if(filePath === "/") {
+    //   console.log("SDFsdfsdfsdfdsf")
+    //   this._getStorage("filePath", function(filePathFromStorage){
+
+    //     this.setState({
+    //       filePath: filePathFromStorage
+    //     }, function(){
+    //       console.log("SDFsdfsdfsd1fdsf")
+    //       console.log(filePathFromStorage)
+  
+    //       componentDidMount();
+    //     });
+
+    //   });
+    // }
+
     if(filePath === undefined) filePath = "/";
     var filePath = filePath.replace(/ /ig,"$20");
 
     // http://localhost:5000/?json=true&f= 
-
 
     return fetch('https://qdraw.eu/starsky_tmp_access_894ikrfs8m438g/api/f=' + filePath)
       .then((response) => response.json())
@@ -195,6 +244,8 @@ export default class ArchiveScreen extends React.Component {
           fileName: responseJson.searchQuery
         }, function(){
         });
+
+        this._storeStorage("filePath", this.state.filePath);
 
       })
       .catch((error) =>{
