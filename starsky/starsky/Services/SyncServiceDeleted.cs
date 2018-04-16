@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using starsky.Models;
 
@@ -31,7 +30,7 @@ namespace starsky.Services
                     _query.RemoveItem(dbItem);
                     Console.WriteLine("File " + subPath +" not found and removed");
 
-                    if (dbItem.IsDirectory == false) throw new FileNotFoundException();
+                    if (dbItem.IsDirectory == false) return true;
                     // Remove subitems in directory
                     var toBeDeleted = _query.GetAllFiles(dbItem.FilePath);
 
