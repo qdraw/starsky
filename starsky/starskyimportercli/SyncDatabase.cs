@@ -4,7 +4,7 @@ using starsky.Data;
 using starsky.Services;
 using starsky.Models;
 
-namespace starskyCli
+namespace starskyimportercli
 {
     public class SyncDatabase
     {
@@ -25,14 +25,13 @@ namespace starskyCli
             var options = builder.Options;
 
             var context = new ApplicationDbContext(options);
-            _query = new Query(context);
-            _syncservice = new SyncService(context, _query);
+//            _query = new Query(context);
+//            _syncservice = new SyncService(context, _query);
 
         }
 
         private readonly Query _query;
         private readonly SyncService _syncservice;
-
 
         public IEnumerable<string> SyncFiles(string subPath = "")
         {
