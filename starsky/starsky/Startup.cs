@@ -1,4 +1,5 @@
-﻿using starsky.Interfaces;
+﻿using System;
+using starsky.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,7 @@ namespace starsky
             {
                 services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(AppSettingsProvider.DbConnectionString));
             }
-
+           
             services.AddScoped<IQuery, Query>();
             services.AddScoped<ISync, SyncService>();
             services.AddScoped<ISearch, SearchService>();
@@ -58,6 +59,24 @@ namespace starsky
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            // Run the latest migration on the database. 
+            // To startover with a sqlite database please remove it and
+            // it will add a new one
+
+            try
+            {
+                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
+                    .CreateScope())
+                {
+                    serviceScope.ServiceProvider.GetService<ApplicationDbContext>()
+                        .Database.Migrate();
+                }
+            }
+            catch (MySql.Data.MySqlClient.MySqlException e)
+            {
+                Console.WriteLine(e);
+            }
 
 
         }
