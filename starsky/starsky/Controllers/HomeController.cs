@@ -44,6 +44,7 @@ namespace starsky.Controllers
                 if (singleItem?.FileIndexItem.FilePath == null && queryIfFolder == null)
                 {
                     Response.StatusCode = 404;
+                    if (json) return Json("not found");
                     return View("Error");
                 }
             }
@@ -64,7 +65,6 @@ namespace starsky.Controllers
             if (json) return Json(model);
             return View(model);
         }
-
 
         public IActionResult Error()
         {

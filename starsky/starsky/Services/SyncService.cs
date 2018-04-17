@@ -16,7 +16,6 @@ namespace starsky.Services
         {
             _context = context;
             _query = query;
-
         }
         
         /* Base feature to sync files and folders

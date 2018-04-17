@@ -30,13 +30,15 @@ namespace starsky.Controllers
             Stopwatch stopWatch = Stopwatch.StartNew();
 
 
+            
             // t = tag name | p == pagenr.
 
-            var model = new SearchViewModel();
-            model.PageNumber = p;
-            model.SearchQuery = t;
-            model.Breadcrumb = new List<string>();
-            model.Breadcrumb.Add("/");
+            var model = new SearchViewModel
+            {
+                PageNumber = p,
+                SearchQuery = t,
+                Breadcrumb = new List<string> {"/"}
+            };
             if (!string.IsNullOrEmpty(t))
             {
                 model.Breadcrumb.Add(t);
@@ -51,6 +53,14 @@ namespace starsky.Controllers
 
             model.LastPageNumber = _search.SearchLastPageNumber(t);
             model.SearchCount = _search.SearchCount(t);
+
+            if (p > model.SearchCount)
+            {
+                Response.StatusCode = 404;
+                if (json) return Json("not found");
+                return View("Error", model);
+            }
+            
             model.FileIndexItems = _search.SearchObjectItem(model.SearchQuery, model.PageNumber);
             stopWatch.Stop();
             model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
@@ -78,6 +88,12 @@ namespace starsky.Controllers
             return View("Trash", model);
         }
 
+        public IActionResult Error()
+        {
+            // copy to controller, this one below is only for copying
+            Response.StatusCode = 404;
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
 
     }
 }
