@@ -9,5 +9,7 @@ namespace starsky.Data
         {
         }
         public DbSet<FileIndexItem> FileIndex { get; set; }
+        public DbSet<ImportIndexItem> ImportIndex { get; set; }
+
     }
 }
