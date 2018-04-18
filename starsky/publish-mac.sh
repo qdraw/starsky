@@ -7,3 +7,6 @@ popd
 pushd starsky-cli
 dotnet publish -c release -r osx.10.12-x64 --output ../osx.10.12-x64
 popd
+pushd starskyimportercli
+dotnet publish -c release -r osx.10.12-x64 --output ../osx.10.12-x64
+popd
