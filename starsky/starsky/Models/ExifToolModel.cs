@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace starsky.Models
 {
@@ -57,20 +58,19 @@ namespace starsky.Models
                 return string.Empty;
             }
             
-            var toBeAddedKeywords = string.Empty;
+            var toBeAddedKeywordsStringBuilder = new StringBuilder();
             foreach (var keyword in hashSetKeywords)
             {
                 if (!string.IsNullOrWhiteSpace(keyword) && keyword != hashSetKeywords.LastOrDefault())
                 {
-                    toBeAddedKeywords += keyword + ", ";
+                    toBeAddedKeywordsStringBuilder.Append(keyword + ", ");
                 }
                 if (!string.IsNullOrWhiteSpace(keyword) && keyword == hashSetKeywords.LastOrDefault())
                 {
-                    toBeAddedKeywords += keyword;
+                    toBeAddedKeywordsStringBuilder.Append(keyword);
                 }
             }
-            // Add everyting in lowercase
-            toBeAddedKeywords = toBeAddedKeywords.ToLower();
+            var toBeAddedKeywords = toBeAddedKeywordsStringBuilder.ToString();
 
             return toBeAddedKeywords;
         }

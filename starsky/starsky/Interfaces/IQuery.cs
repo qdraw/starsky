@@ -14,10 +14,10 @@ namespace starsky.Interfaces
 
         IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
-            List<FileIndexItem.Color> colorFilterClass = null);
+            List<FileIndexItem.Color> colorClassFilterList = null);
 
         DetailView SingleItem(string singleItemDbPath, 
-            List<FileIndexItem.Color> colorFilterClass = null);
+            List<FileIndexItem.Color> colorClassFilterList = null);
 
         FileIndexItem GetObjectByFilePath(string filePath);
 
