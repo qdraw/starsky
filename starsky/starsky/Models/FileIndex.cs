@@ -94,7 +94,7 @@ namespace starsky.Models
 
             if (!colorclassString.Contains(","))
             {
-                if (!int.TryParse(colorclassString, out var parsedInt)) return null;
+                if (!int.TryParse(colorclassString, out var parsedInt)) return new List<Color>();
                 colorclassStringList.Add(parsedInt.ToString());
             }
             if (colorclassString.Contains(",")) {
