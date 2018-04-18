@@ -23,30 +23,27 @@ namespace starskyimportercli
             }
 
             var options = builder.Options;
-
             var context = new ApplicationDbContext(options);
-//            _query = new Query(context);
-//            _syncservice = new SyncService(context, _query);
+            _importIndexItem = new ImportService(context);
 
         }
 
-        private readonly Query _query;
-        private readonly SyncService _syncservice;
+        private readonly ImportService _importIndexItem;
 
-        public IEnumerable<string> SyncFiles(string subPath = "")
-        {
-            return _syncservice.SyncFiles(subPath);
-        }
-
-        public void OrphanFolder(string subPath = "")
-        {
-            _syncservice.OrphanFolder(subPath);
-        }
-
-        public IEnumerable<FileIndexItem> GetAll(string subPath = "")
-        {
-            return _query.GetAllFiles(subPath);
-        }
+//        public IEnumerable<string> SyncFiles(string subPath = "")
+//        {
+//            return _syncservice.SyncFiles(subPath);
+//        }
+//
+//        public void OrphanFolder(string subPath = "")
+//        {
+//            _syncservice.OrphanFolder(subPath);
+//        }
+//
+//        public IEnumerable<FileIndexItem> GetAll(string subPath = "")
+//        {
+//            return _query.GetAllFiles(subPath);
+//        }
 
     }
 

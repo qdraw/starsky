@@ -162,10 +162,10 @@ namespace starsky.Services
             return (NumberOfResultsInView - toRound % NumberOfResultsInView) + toRound;
         }
 
-       /*private int _RoundDown(int toRound)
+        private int _RoundDown(int toRound)
         {
             return toRound - toRound % 10;
-        }*/
+        }
 
 
     }

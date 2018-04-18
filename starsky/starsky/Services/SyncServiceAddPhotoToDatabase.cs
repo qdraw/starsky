@@ -25,8 +25,6 @@ namespace starsky.Services
                         p.FilePath == singleFolderDbStyle
                 );
 
-                // Console.WriteLine(singleFolderDbStyle);
-
                 if (dbFolderMatchFirst == null)
                 {
                     // photo
