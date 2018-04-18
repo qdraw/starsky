@@ -6,6 +6,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using starsky.Models;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
@@ -60,7 +61,7 @@ namespace starsky.Services
             var keywordsIndex = text.IndexOf("Keywords", StringComparison.InvariantCulture);
             if (keywordsIndex >= 0)
             {
-                var updatedText = string.Empty;
+                var updatedTextStringBuilder = new StringBuilder();
                 foreach (var item in splitArray)
                 {
                     if (item.Contains("Keywords") && !item.Contains("["))
@@ -75,14 +76,14 @@ namespace starsky.Services
                         key = key.Trim();
                         var newItem = "\"Keywords\": [\"" + key + "\"],"; 
                         // bug potential: Could give a bug if the next line does not contain any values
-                        updatedText += newItem + "\n";
+                        updatedTextStringBuilder.Append(newItem + "\n");
                     }
                     else
                     {
-                        updatedText += item + "\n";;
+                        updatedTextStringBuilder.Append(item + "\n");
                     }
                 }
-                return updatedText;
+                return updatedTextStringBuilder.ToString();
 
             }
 
