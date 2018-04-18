@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace starsky.Services
 {
@@ -32,15 +33,16 @@ namespace starsky.Services
                 }
                 else
                 {
-                    var item = "";
+                    var itemStringBuilder = new StringBuilder();
+                    
                     for (int i = 0; i <= dir; i++)
                     {
                         if (!String.IsNullOrEmpty(filePathArray[i]))
                         {
-                            item += "/" + filePathArray[i];
+                            itemStringBuilder.Append("/" + filePathArray[i]);
                         }
                     }
-                    breadcrumb.Add(item);
+                    breadcrumb.Add(itemStringBuilder.ToString());
                 }
                 dir++;
             }
