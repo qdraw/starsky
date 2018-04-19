@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MySql.Data.MySqlClient;
@@ -42,25 +43,37 @@ namespace starsky.Services
 
             _checkIfSubDirectoriesExist(folderStructure);
 
-
             return null;
         }
 
-        private IEnumerable<string> _checkIfSubDirectoriesExist(IEnumerable<string> folderStructure)
+        private IEnumerable<string> _checkIfSubDirectoriesExist(List<string> folderStructure)
         {
-            // Check if Dir exist            
+            // Check if Dir exist
+
+            if (folderStructure.FirstOrDefault() == "/") return null;
+
+            folderStructure.Insert(0, string.Empty);
+
+            var fullPathBase = FileIndexItem.DatabasePathToFilePath(folderStructure.FirstOrDefault());
+                
             foreach (var folder in folderStructure)
             {
-                
-                Console.WriteLine(folder);
+                fullPathBase += folder + Path.DirectorySeparatorChar;
+                var isDeleted = !Directory.Exists(fullPathBase);
+                if (isDeleted)
+                {
+                    Directory.CreateDirectory(fullPathBase);
+                }
+                Console.WriteLine("q> " + fullPathBase);
             }
-            return new List<string>();
+              return new List<string>();
         }
 
-//        private IEnumerable<string> _checkIfSingleSubDirectorieExist(string singleSubFolder)
-//        {
-//            
-//        }
+        private IEnumerable<string> _checkIfSingleSubDirectorieExist(string singleSubFolder)
+        {
+            return new List<string>();
+
+        }
 
 
         private string _getFileNameFromDatePatern(
@@ -78,7 +91,7 @@ namespace starsky.Services
             return string.Empty;
         }
 
-        private IEnumerable<string> _getFilenamePattern()
+        private List<string> _getFilenamePattern()
         {
             // 20180419_164921.exP
             var structureAllSplit = AppSettingsProvider.Structure.Split("/");
@@ -88,7 +101,7 @@ namespace starsky.Services
         }
 
         
-        private IEnumerable<string> _getFoldersPattern()
+        private static List<string> _getFoldersPattern()
         {
             var structureAllSplit = AppSettingsProvider.Structure.Split("/");
 
@@ -109,11 +122,12 @@ namespace starsky.Services
             return structure;
         }
 
-        private IEnumerable<string> _parseListDateFormat(IEnumerable<string> patternList, DateTime fileDateTime)
+        private static List<string> _parseListDateFormat(List<string> patternList, DateTime fileDateTime)
         {
             var parseListDate = new List<string>();
             foreach (var patternItem in patternList)
             {
+                if (patternItem == "/") return patternList;
                 var item = fileDateTime.ToString(patternItem, CultureInfo.InvariantCulture);
                 parseListDate.Add(item);
             }

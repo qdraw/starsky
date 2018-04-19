@@ -38,7 +38,12 @@ namespace starsky.Models
                     // "ss" 	The second, from 00 through 59.
                     // --> / is split in folder
                     // ext = extension for example jpeg/jpg
+                    
                     // future feature: (\w)? <= regex
+                    // Currently only in strict mode
+                    // So we dont accept '2011_01_01 vuurwerk'
+                    // or 20180119_120000_DSC00009.jpg
+                    
                     // https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
                     return "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss.ext";
                 }
