@@ -51,6 +51,20 @@ namespace starsky.Migrations
 
                     b.ToTable("FileIndex");
                 });
+
+            modelBuilder.Entity("starsky.Models.ImportIndexItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("AddToDatabase");
+
+                    b.Property<string>("FileHash");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ImportIndex");
+                });
 #pragma warning restore 612, 618
         }
     }

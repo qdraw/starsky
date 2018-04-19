@@ -55,6 +55,14 @@ namespace starsky.Models
                     Path.DirectorySeparatorChar + "starsky-cli" + Path.DirectorySeparatorChar,
                     Path.DirectorySeparatorChar + "starsky" + Path.DirectorySeparatorChar);
             }
+            
+            // Replace starskyimportercli database ==> normal database
+            if (fullDbPath.Contains(Path.DirectorySeparatorChar + "starskyimportercli" + Path.DirectorySeparatorChar ))
+            {
+                fullDbPath = fullDbPath.Replace(
+                    Path.DirectorySeparatorChar + "starskyimportercli" + Path.DirectorySeparatorChar,
+                    Path.DirectorySeparatorChar + "starsky" + Path.DirectorySeparatorChar);
+            }
 
             var datasource = "Data Source=" + fullDbPath;
             if(Verbose) Console.WriteLine(datasource);

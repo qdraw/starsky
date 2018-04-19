@@ -20,7 +20,7 @@ namespace starsky.Services
             {
                 // File check if jpg #not corrupt
                 var imageFormat = Files.GetImageFormat(FileIndexItem.DatabasePathToFilePath(subPath));
-                if(imageFormat != Files.ImageFormat.jpeg) throw new BadImageFormatException("img != jpeg");
+                if(imageFormat != Files.ImageFormat.jpg) throw new BadImageFormatException("img != jpeg");
                 
                 // single file -- update or adding
                 var dbListWithOneFile = new List<FileIndexItem>();

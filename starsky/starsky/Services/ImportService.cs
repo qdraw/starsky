@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Text.RegularExpressions;
 using MySql.Data.MySqlClient;
 using starsky.Data;
 using starsky.Models;
@@ -18,23 +20,62 @@ namespace starsky.Services
 
         public IEnumerable<string> ImportFile(string inputFileFullPath)
         {
+            var fileHashCode = FileHash.GetHashCode(inputFileFullPath);
+            
+            // If is in the database
+            if(IsHashInDatabase(fileHashCode)) return new List<string>();
 
-            FileHash.GetHashCode(inputFileFullPath);
+            // Only exepts files with correct meta data
+            var model = ExifRead.ReadExifFromFile(inputFileFullPath);
             
-            var fileDateTime = DateTime.Now;
-            
-            var items = _getFoldersPattern();
-            
-            foreach (var item in items)
-            {
-                Console.WriteLine(item);
-            }
-            
-            _parseListDateFormat(items,fileDateTime);
-            
-            Console.WriteLine(items);
+            // Reading patterns from .config file
+            var fileNamePatterns = _getFilenamePattern();
+            var foldersPatterns = _getFoldersPattern();
+
+            // Parse datetime values
+            var fileNameStructureList = _parseListDateFormat(fileNamePatterns,model.DateTime);
+            var folderStructure = _parseListDateFormat(foldersPatterns,model.DateTime);
+
+            // Do the extension fix
+            var fileNameStructure = _getFileNameFromDatePatern(
+                fileNameStructureList, inputFileFullPath);
+
+            _checkIfSubDirectoriesExist(folderStructure);
+
 
             return null;
+        }
+
+        private IEnumerable<string> _checkIfSubDirectoriesExist(IEnumerable<string> folderStructure)
+        {
+            // Check if Dir exist            
+            foreach (var folder in folderStructure)
+            {
+                
+                Console.WriteLine(folder);
+            }
+            return new List<string>();
+        }
+
+//        private IEnumerable<string> _checkIfSingleSubDirectorieExist(string singleSubFolder)
+//        {
+//            
+//        }
+
+
+        private string _getFileNameFromDatePatern(
+            IEnumerable<string> fileNameStructureList, 
+            string inputFileFullPath)
+        {
+            var fileExtenstion = Files.GetImageFormat(inputFileFullPath).ToString();
+            
+            foreach (var item in fileNameStructureList)
+            {
+                Regex rgx = new Regex(".ex[A-Z]$");
+                var result = rgx.Replace(item, "." + fileExtenstion);
+                return result;
+            }
+            return string.Empty;
         }
 
         private IEnumerable<string> _getFilenamePattern()
@@ -70,12 +111,13 @@ namespace starsky.Services
 
         private IEnumerable<string> _parseListDateFormat(IEnumerable<string> patternList, DateTime fileDateTime)
         {
+            var parseListDate = new List<string>();
             foreach (var patternItem in patternList)
             {
                 var item = fileDateTime.ToString(patternItem, CultureInfo.InvariantCulture);
-                Console.WriteLine(item);
+                parseListDate.Add(item);
             }
-            return new List<string>();
+            return parseListDate;
         }
         
         // Add a new item to the database
@@ -96,6 +138,15 @@ namespace starsky.Services
             }
 
             return updateStatusContent;
+        }
+        
+       
+        public bool IsHashInDatabase(string fileHash)
+        {
+            var query = _context.ImportIndex.Any(
+                p => p.FileHash == fileHash 
+            );
+            return query;
         }
     }
     

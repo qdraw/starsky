@@ -67,7 +67,7 @@ namespace starsky.Services
         public enum ImageFormat
         {
             bmp,
-            jpeg,
+            jpg,
             gif,
             tiff,
             png,
@@ -124,10 +124,10 @@ namespace starsky.Services
                 return ImageFormat.tiff;
 
             if (jpeg.SequenceEqual(bytes.Take(jpeg.Length)))
-                return ImageFormat.jpeg;
+                return ImageFormat.jpg;
 
             if (jpeg2.SequenceEqual(bytes.Take(jpeg2.Length)))
-                return ImageFormat.jpeg;
+                return ImageFormat.jpg;
 
             return ImageFormat.unknown;
         }

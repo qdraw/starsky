@@ -97,7 +97,7 @@ namespace starsky.Services
             if(AppSettingsProvider.Verbose) Console.WriteLine(Files.GetImageFormat(thumbPath));
             switch (imageFormat)
             {
-                case Files.ImageFormat.jpeg:
+                case Files.ImageFormat.jpg:
                     return;
                 case Files.ImageFormat.unknown:
                     try

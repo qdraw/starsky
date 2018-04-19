@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\starsky-cli\starskycli.csproj">
+      <Project>{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}</Project>
+      <Name>starskycli</Name>
+    </ProjectReference>
     <ProjectReference Include="..\starsky\starsky.csproj" />
   </ItemGroup>
 </Project>

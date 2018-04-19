@@ -49,7 +49,7 @@ namespace starsky.Services
             AppSettingsProvider.ThumbnailTempFolder = thumbnailTempFolder;
             AppSettingsProvider.ExifToolPath = exifToolPath;
 
-            if(AppSettingsProvider.Verbose) Console.WriteLine("DatabaseType: " +AppSettingsProvider.DatabaseType.ToString() );
+            if(AppSettingsProvider.Verbose) Console.WriteLine("DatabaseType: " + AppSettingsProvider.DatabaseType.ToString() );
 
         }
 
