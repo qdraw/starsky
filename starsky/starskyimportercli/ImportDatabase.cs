@@ -6,10 +6,10 @@ using starsky.Models;
 
 namespace starskyimportercli
 {
-    public class SyncDatabase
+    public class ImportDatabase
     {
 
-        public SyncDatabase()
+        public ImportDatabase()
         {
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
@@ -24,26 +24,17 @@ namespace starskyimportercli
 
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
-            _importIndexItem = new ImportService(context);
+            _importService = new ImportService(context);
 
         }
 
-        private readonly ImportService _importIndexItem;
+        private readonly ImportService _importService;
 
-//        public IEnumerable<string> SyncFiles(string subPath = "")
-//        {
-//            return _syncservice.SyncFiles(subPath);
-//        }
-//
-//        public void OrphanFolder(string subPath = "")
-//        {
-//            _syncservice.OrphanFolder(subPath);
-//        }
-//
-//        public IEnumerable<FileIndexItem> GetAll(string subPath = "")
-//        {
-//            return _query.GetAllFiles(subPath);
-//        }
+        public IEnumerable<string> ImportFile(string inputFileFullPath)
+        {
+            return _importService.ImportFile(inputFileFullPath);
+        }
+
 
     }
 
