@@ -1,4 +1,4 @@
-﻿using System;
+﻿using starsky.Services;
 
 namespace starskyimportercli
 {
@@ -6,6 +6,10 @@ namespace starskyimportercli
     {
         static void Main(string[] args)
         {
+            
+            ConfigRead.SetAppSettingsProvider();
+
+            
             var inputFileFullPath = "";
             new ImportDatabase().ImportFile(inputFileFullPath);
             

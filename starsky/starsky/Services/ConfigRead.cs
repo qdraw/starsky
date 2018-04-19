@@ -37,6 +37,7 @@ namespace starsky.Services
                 string text = File.ReadAllText(Path.Combine(basePath, ".config.json"));
                 var model = Newtonsoft.Json.JsonConvert.DeserializeObject<BasePathConfig>(text);
                 AppSettingsProvider.ReadOnlyFolders = model.Readonly;
+                AppSettingsProvider.Structure = model.Structure;
             }
 
 
@@ -96,6 +97,18 @@ namespace starsky.Services
                 1) != Path.DirectorySeparatorChar.ToString())
             {
                 thumbnailTempFolder += Path.DirectorySeparatorChar.ToString();
+            }
+
+            return thumbnailTempFolder;
+        }
+        
+        public static string PrefixBackslash(string thumbnailTempFolder) { 
+            // Add backSlash to beginning of the configuration
+            if (thumbnailTempFolder.Length == 0) return "/";
+            
+            if (thumbnailTempFolder.Substring(0,1) != "/")
+            {
+                thumbnailTempFolder = "/" + thumbnailTempFolder;
             }
 
             return thumbnailTempFolder;

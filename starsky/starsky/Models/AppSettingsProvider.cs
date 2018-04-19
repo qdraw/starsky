@@ -24,6 +24,7 @@ namespace starsky.Models
             }
         }
         public static List<string> ReadOnlyFolders { get; set; }
+        public static string Structure { get; set; }
 
         public enum DatabaseTypeList
         {
