@@ -250,10 +250,5 @@ namespace starsky.Models
             }
             return parseListDate;
         }
-        
-       
-
-
-
     }
 }

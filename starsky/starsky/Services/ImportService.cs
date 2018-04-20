@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using MySql.Data.MySqlClient;
 using starsky.Data;
+using starsky.Interfaces;
 using starsky.Models;
 
 namespace starsky.Services
@@ -13,10 +14,12 @@ namespace starsky.Services
     public class ImportService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ISync _isync;
 
-        public ImportService(ApplicationDbContext context)
+        public ImportService(ApplicationDbContext context, ISync isync)
         {
             _context = context;
+            _isync = isync;
         }
 
         public IEnumerable<string> ImportFile(string inputFileFullPath)
@@ -33,19 +36,39 @@ namespace starsky.Services
             model.FilePath = inputFileFullPath;
             model.FileHash = fileHashCode;
 
-            var fileName = model.ParseFileName();
+            model.FileName = model.ParseFileName();
             var subFolders = model.ParseSubFolders();
 
-            _checkIfSubDirectoriesExist(subFolders);
+            var destFolder = _checkIfSubDirectoriesExist(subFolders);
 
+            var destinationFullPath = Path.Combine(destFolder, model.FileName);
+
+            if (inputFileFullPath != destinationFullPath 
+                && !File.Exists(destinationFullPath))
+            {
+                File.Copy(inputFileFullPath, destinationFullPath);
+            }
+
+            var destinationSubPath = FileIndexItem.FullPathToDatabaseStyle(destinationFullPath);
+            _isync.SyncFiles(destinationSubPath);
+
+            // Add item to Import database
+            var indexItem = new ImportIndexItem
+            {
+                AddToDatabase = DateTime.UtcNow,
+                FileHash = fileHashCode
+            };
+            AddItem(indexItem);
+            
             return null;
         }
 
-        private IEnumerable<string> _checkIfSubDirectoriesExist(List<string> folderStructure)
+        private string _checkIfSubDirectoriesExist(List<string> folderStructure)
         {
+            // Return fullDirectory Path
             // Check if Dir exist
 
-            if (folderStructure.FirstOrDefault() == "/") return null;
+            if (folderStructure.FirstOrDefault() == "/") return string.Empty;
 
             folderStructure.Insert(0, string.Empty);
 
@@ -59,21 +82,10 @@ namespace starsky.Services
                 {
                     Directory.CreateDirectory(fullPathBase);
                 }
-                Console.WriteLine("q> " + fullPathBase);
             }
-              return new List<string>();
+
+            return fullPathBase;
         }
-
-        private IEnumerable<string> _checkIfSingleSubDirectorieExist(string singleSubFolder)
-        {
-            return new List<string>();
-
-        }
-        
-        
-        
-        
-
 
 
         

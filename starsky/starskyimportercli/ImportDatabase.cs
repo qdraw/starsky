@@ -24,7 +24,10 @@ namespace starskyimportercli
 
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
-            _importService = new ImportService(context);
+
+            var query = new Query(context);
+            var isync = new SyncService(context,query);
+            _importService = new ImportService(context,isync);
 
         }
 
