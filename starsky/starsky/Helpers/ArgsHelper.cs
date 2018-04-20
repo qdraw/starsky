@@ -44,7 +44,7 @@ namespace starsky.Helpers
             return needHelp;
         }
 
-        public static string GetPathFormArgs(IReadOnlyList<string> args)
+        public static string GetPathFormArgs(IReadOnlyList<string> args, bool dbStyle = true)
         {
             var path = "";
 
@@ -55,9 +55,11 @@ namespace starsky.Helpers
                     path = args[arg + 1];
                 }
             }
-
-            var subpath = FileIndexItem.FullPathToDatabaseStyle(path);
-            return subpath;
+            if (dbStyle)
+            {
+                path = FileIndexItem.DatabasePathToFilePath(path);
+            }
+            return path;
         }
 
         public static string GetSubpathFormArgs(IReadOnlyList<string> args)

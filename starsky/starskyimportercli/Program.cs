@@ -11,8 +11,9 @@ namespace starskyimportercli
         {
             // Check if user want more info
             AppSettingsProvider.Verbose = ArgsHelper.NeedVerbose(args);
-            
-            if (ArgsHelper.NeedHelp(args) || ArgsHelper.GetPathFormArgs(args).Length <= 1)
+            ConfigRead.SetAppSettingsProvider();
+
+            if (ArgsHelper.NeedHelp(args) || ArgsHelper.GetPathFormArgs(args,false).Length <= 1)
             {
                 Console.WriteLine("Starsky");
                 Console.WriteLine("         Importer");
@@ -30,9 +31,8 @@ namespace starskyimportercli
                 return;
             }
             
-            ConfigRead.SetAppSettingsProvider();
-
-            var inputPath = ArgsHelper.GetPathFormArgs(args);
+            var inputPath = ArgsHelper.GetPathFormArgs(args,false);
+            Console.WriteLine(inputPath);
             new ImportDatabase().Import(inputPath);
             
         }
