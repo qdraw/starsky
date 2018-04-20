@@ -29,19 +29,14 @@ namespace starsky.Services
             // Only exepts files with correct meta data
             var model = ExifRead.ReadExifFromFile(inputFileFullPath);
             
-            // Reading patterns from .config file
-            var fileNamePatterns = _getFilenamePattern();
-            var foldersPatterns = _getFoldersPattern();
+            // You need to update this after moving file
+            model.FilePath = inputFileFullPath;
+            model.FileHash = fileHashCode;
 
-            // Parse datetime values
-            var fileNameStructureList = _parseListDateFormat(fileNamePatterns,model.DateTime);
-            var folderStructure = _parseListDateFormat(foldersPatterns,model.DateTime);
+            var fileName = model.ParseFileName();
+            var subFolders = model.ParseSubFolders();
 
-            // Do the extension fix
-            var fileNameStructure = _getFileNameFromDatePatern(
-                fileNameStructureList, inputFileFullPath);
-
-            _checkIfSubDirectoriesExist(folderStructure);
+            _checkIfSubDirectoriesExist(subFolders);
 
             return null;
         }
@@ -74,65 +69,14 @@ namespace starsky.Services
             return new List<string>();
 
         }
+        
+        
+        
+        
 
 
-        private string _getFileNameFromDatePatern(
-            IEnumerable<string> fileNameStructureList, 
-            string inputFileFullPath)
-        {
-            var fileExtenstion = Files.GetImageFormat(inputFileFullPath).ToString();
-            
-            foreach (var item in fileNameStructureList)
-            {
-                Regex rgx = new Regex(".ex[A-Z]$");
-                var result = rgx.Replace(item, "." + fileExtenstion);
-                return result;
-            }
-            return string.Empty;
-        }
-
-        private List<string> _getFilenamePattern()
-        {
-            // 20180419_164921.exP
-            var structureAllSplit = AppSettingsProvider.Structure.Split("/");
-            if (structureAllSplit.Length <= 2) Console.WriteLine("Should be protected by Model");
-
-            return new List<string> {structureAllSplit[structureAllSplit.Length - 1]};
-        }
 
         
-        private static List<string> _getFoldersPattern()
-        {
-            var structureAllSplit = AppSettingsProvider.Structure.Split("/");
-
-            if (structureAllSplit.Length <= 2)
-            {
-                var list = new List<string> {"/"};
-                return list;
-            }
-            // Return if nothing only a list with one slash
-
-
-            var structure = new List<string>();
-            for (int i = 1; i < structureAllSplit.Length-1; i++)
-            {
-                structure.Add(structureAllSplit[i]);
-            }
-            // else return the subfolders
-            return structure;
-        }
-
-        private static List<string> _parseListDateFormat(List<string> patternList, DateTime fileDateTime)
-        {
-            var parseListDate = new List<string>();
-            foreach (var patternItem in patternList)
-            {
-                if (patternItem == "/") return patternList;
-                var item = fileDateTime.ToString(patternItem, CultureInfo.InvariantCulture);
-                parseListDate.Add(item);
-            }
-            return parseListDate;
-        }
         
         // Add a new item to the database
         public ImportIndexItem AddItem(ImportIndexItem updateStatusContent)

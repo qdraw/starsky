@@ -25,6 +25,8 @@ namespace starsky.Models
         }
         public static List<string> ReadOnlyFolders { get; set; }
         public static string Structure { get; set; }
+        public static List<string> StructureFilenamePattern { get; set; }
+        public static List<string> StructureDirectoryPattern { get; set; }
 
         public enum DatabaseTypeList
         {
@@ -36,7 +38,7 @@ namespace starsky.Models
         private static string _sqliteFullPath(string connectionString)
         {
             if(!string.IsNullOrWhiteSpace(DbConnectionString)) throw new ArgumentException("connection string IsNullOrWhiteSpace ");
-            if(AppSettingsProvider.DatabaseType != AppSettingsProvider.DatabaseTypeList.Sqlite) return connectionString; // mysql does not need this
+            if(DatabaseType != DatabaseTypeList.Sqlite) return connectionString; // mysql does not need this
             if(Verbose) Console.WriteLine(connectionString);
             if(!connectionString.Contains("Data Source=")) throw new ArgumentException("missing Data Source in connection string");
             var databaseFileName = connectionString.Replace("Data Source=", "");

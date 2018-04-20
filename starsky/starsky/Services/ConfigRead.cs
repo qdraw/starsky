@@ -38,6 +38,9 @@ namespace starsky.Services
                 var model = Newtonsoft.Json.JsonConvert.DeserializeObject<BasePathConfig>(text);
                 AppSettingsProvider.ReadOnlyFolders = model.Readonly;
                 AppSettingsProvider.Structure = model.Structure;
+                AppSettingsProvider.StructureFilenamePattern = model.StructureFilenamePattern;
+                AppSettingsProvider.StructureDirectoryPattern = model.StructureDirectoryPattern;
+
             }
 
 

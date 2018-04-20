@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using starsky.Services;
 
 namespace starsky.Models
@@ -21,6 +24,9 @@ namespace starsky.Models
                 }
             }
         }
+        
+        
+        
 
         private string _structure;
 
@@ -50,14 +56,47 @@ namespace starsky.Models
 
                 return _structure;
             }
-            set
+            set // using Json importer
             {
                 if (string.IsNullOrEmpty(value) || value == "/") return;
                 var structure = ConfigRead.PrefixBackslash(value);
                 _structure = ConfigRead.RemoveLatestBackslash(structure);
             }
         }
+
+        public List<string> StructureFilenamePattern => _getFilenamePattern();
+        public List<string> StructureDirectoryPattern => _getFoldersPattern();
+
+        private List<string> _getFilenamePattern()
+        {
+            // 20180419_164921.exP
+            var structureAllSplit = AppSettingsProvider.Structure.Split("/");
+            if (structureAllSplit.Length <= 2) Console.WriteLine("Should be protected by Model");
+
+            return new List<string> {structureAllSplit[structureAllSplit.Length - 1]};
+        }
+
         
+        private static List<string> _getFoldersPattern()
+        {
+            var structureAllSplit = AppSettingsProvider.Structure.Split("/");
+
+            if (structureAllSplit.Length <= 2)
+            {
+                var list = new List<string> {"/"};
+                return list;
+            }
+            // Return if nothing only a list with one slash
+
+
+            var structure = new List<string>();
+            for (int i = 1; i < structureAllSplit.Length-1; i++)
+            {
+                structure.Add(structureAllSplit[i]);
+            }
+            // else return the subfolders
+            return structure;
+        }
         
     }
 }
