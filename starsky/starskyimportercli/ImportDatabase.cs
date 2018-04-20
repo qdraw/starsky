@@ -33,9 +33,9 @@ namespace starskyimportercli
 
         private readonly ImportService _importService;
 
-        public IEnumerable<string> ImportFile(string inputFileFullPath)
+        public void Import(string inputFullPath)
         {
-            return _importService.ImportFile(inputFileFullPath);
+            _importService.Import(inputFullPath);
         }
 
 

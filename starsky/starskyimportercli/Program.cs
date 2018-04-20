@@ -14,8 +14,8 @@ namespace starskyimportercli
             ConfigRead.SetAppSettingsProvider();
 
             
-            var inputFileFullPath = "/data/isight/2018/2018-content/20180101_112936_imlo.jpg";
-            new ImportDatabase().ImportFile(inputFileFullPath);
+            var inputPath = "/data/isight/2018/01/test/";
+            new ImportDatabase().Import(inputPath);
             
         }
     }

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using MySql.Data.MySqlClient;
 using starsky.Data;
 using starsky.Interfaces;
@@ -22,12 +20,33 @@ namespace starsky.Services
             _isync = isync;
         }
 
-        public IEnumerable<string> ImportFile(string inputFileFullPath)
+        public void Import(string inputFullPath)
+        {
+            if (!Directory.Exists(inputFullPath) && File.Exists(inputFullPath))
+            {
+                // file
+                ImportFile(inputFullPath);
+            }
+
+            if (!File.Exists(inputFullPath) && Directory.Exists(inputFullPath))
+            {
+                // Directory
+                var filesFullPath = Files.GetFilesInDirectory(inputFullPath,false);
+                foreach (var item in filesFullPath)
+                {
+                    ImportFile(item);
+                }
+            }
+
+        }
+
+
+        public void ImportFile(string inputFileFullPath)
         {
             var fileHashCode = FileHash.GetHashCode(inputFileFullPath);
             
             // If is in the database
-            if(IsHashInDatabase(fileHashCode)) return new List<string>();
+            if (IsHashInDatabase(fileHashCode)) return;
 
             // Only exepts files with correct meta data
             var model = ExifRead.ReadExifFromFile(inputFileFullPath);
@@ -60,7 +79,6 @@ namespace starsky.Services
             };
             AddItem(indexItem);
             
-            return null;
         }
 
         private string _checkIfSubDirectoriesExist(List<string> folderStructure)
