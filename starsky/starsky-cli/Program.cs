@@ -1,7 +1,7 @@
 ﻿using System;
+using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
-using starskycli;
 
 namespace starskyCli
 {
@@ -16,7 +16,7 @@ namespace starskyCli
             
             if (ArgsHelper.NeedHelp(args))
             {
-                Console.WriteLine("Starsky Help:");
+                Console.WriteLine("Starsky Indexer Help:");
                 Console.WriteLine("--help or -h == help (this window)");
                 Console.WriteLine("--subpath or -s == parameter: (string) ; path inside the index, default '/' ");
                 Console.WriteLine("--path or -p == parameter: (string) ; fullpath, search and replace first part of the filename '/' ");

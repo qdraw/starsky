@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using starsky.Models;
 
-namespace starskycli
+namespace starsky.Helpers
 {
     public static class ArgsHelper
     {
