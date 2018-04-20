@@ -123,6 +123,26 @@ namespace starsky.Helpers
             if (AppSettingsProvider.Verbose) Console.WriteLine(">> isOrphanFolderCheck " + isOrphanFolderCheck);
             return isOrphanFolderCheck;
         }
+        
+        public static bool GetMove(IReadOnlyList<string> args)
+        {
+            var getMove = false;
+
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--move" 
+                     || args[arg].ToLower() == "-m") 
+                     && (arg + 1) != args.Count)
+                {
+                    bool.TryParse(args[arg + 1], out getMove);
+                }
+                if ((args[arg].ToLower() == "--move" || args[arg].ToLower() == "-m"))
+                {
+                    getMove = true;
+                }
+            }
+            return getMove;
+        }
 
         
     }

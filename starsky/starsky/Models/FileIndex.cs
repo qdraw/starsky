@@ -234,10 +234,65 @@ namespace starsky.Models
                 var directoryStructureList = AppSettingsProvider.StructureDirectoryPattern;
 
                 var subFoldersList = _parseListDateFormat(directoryStructureList, DateTime);
-
+                
+                ParseCommentsFolder(subFoldersList);
+                
                 return subFoldersList;
             }
         }
+
+        public List<string> ParseCommentsFolder(List<string> subFoldersList)
+        {
+            if (subFoldersList.FirstOrDefault() == "/") return null;
+
+            subFoldersList.Insert(0, string.Empty);
+          
+            var fullPathBase = DatabasePathToFilePath(subFoldersList.FirstOrDefault(),false);
+            var newSubFoldersList = new List<string>();
+            foreach (var folder in subFoldersList)
+            {
+                fullPathBase += folder.Replace("*", string.Empty) + Path.DirectorySeparatorChar;
+                if (!folder.Contains("*")
+                    || Directory.Exists(fullPathBase))
+                {
+                    newSubFoldersList.Add(folder);
+                    continue;
+                }
+                
+                SearchAsteriskFolder(fullPathBase);
+
+            }
+
+            Console.WriteLine("newSubFoldersList");
+            Console.WriteLine(newSubFoldersList);
+            return newSubFoldersList;
+        }
+
+        public string SearchAsteriskFolder(string fullFolderPath)
+        {
+            
+            Console.WriteLine(fullFolderPath);
+            
+            
+//                        
+//            var parrentFolder = Breadcrumbs.BreadcrumbHelper(fullFolderPath).LastOrDefault();
+//            
+//            fullFolderPath.Split("/")
+//            
+//                
+//            Console.WriteLine();
+//
+//            var t = Directory.GetDirectories(parrentFolder, "*", SearchOption.AllDirectories);
+//            Console.WriteLine();
+
+            return null;
+
+        }
+        
+        
+
+
+    
         
         private static List<string> _parseListDateFormat(List<string> patternList, DateTime fileDateTime)
         {

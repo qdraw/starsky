@@ -20,33 +20,36 @@ namespace starsky.Services
             _isync = isync;
         }
 
-        public void Import(string inputFullPath)
+        public List<string> Import(string inputFullPath)
         {
             if (!Directory.Exists(inputFullPath) && File.Exists(inputFullPath))
             {
                 // file
-                ImportFile(inputFullPath);
+                var succesfullFullPaths = ImportFile(inputFullPath);
+                return new List<string> {succesfullFullPaths};
             }
 
-            if (!File.Exists(inputFullPath) && Directory.Exists(inputFullPath))
+            if (File.Exists(inputFullPath) || !Directory.Exists(inputFullPath)) return new List<string>();
+
+            // Directory
+            var succesfullDirFullPaths = new List<string>();
+            var filesFullPath = Files.GetFilesInDirectory(inputFullPath,false);
+            foreach (var item in filesFullPath)
             {
-                // Directory
-                var filesFullPath = Files.GetFilesInDirectory(inputFullPath,false);
-                foreach (var item in filesFullPath)
-                {
-                    ImportFile(item);
-                }
+                var fullPath = ImportFile(item);
+                succesfullDirFullPaths.Add(fullPath);
             }
+            return succesfullDirFullPaths;
 
         }
 
 
-        public void ImportFile(string inputFileFullPath)
+        private string ImportFile(string inputFileFullPath)
         {
             var fileHashCode = FileHash.GetHashCode(inputFileFullPath);
             
-            // If is in the database
-            if (IsHashInDatabase(fileHashCode)) return;
+            // If is in the database, ignore it and dont delete it
+            if (IsHashInDatabase(fileHashCode)) return string.Empty;
 
             // Only exepts files with correct meta data
             var model = ExifRead.ReadExifFromFile(inputFileFullPath);
@@ -78,7 +81,7 @@ namespace starsky.Services
                 FileHash = fileHashCode
             };
             AddItem(indexItem);
-            
+            return inputFileFullPath;
         }
 
         private string _checkIfSubDirectoriesExist(List<string> folderStructure)
@@ -94,7 +97,7 @@ namespace starsky.Services
                 
             foreach (var folder in folderStructure)
             {
-                fullPathBase += folder + Path.DirectorySeparatorChar;
+                fullPathBase += folder.Replace("*", string.Empty) + Path.DirectorySeparatorChar;
                 var isDeleted = !Directory.Exists(fullPathBase);
                 if (isDeleted)
                 {
@@ -109,7 +112,7 @@ namespace starsky.Services
         
         
         // Add a new item to the database
-        public ImportIndexItem AddItem(ImportIndexItem updateStatusContent)
+        private ImportIndexItem AddItem(ImportIndexItem updateStatusContent)
         {
             if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
             

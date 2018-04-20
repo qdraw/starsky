@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
@@ -21,6 +22,7 @@ namespace starskyimportercli
                 Console.WriteLine("--help or -h == help (this window)");
                 Console.WriteLine("--path or -p == parameter: (string) ; fullpath");
                 Console.WriteLine("                can be an folder or file");
+                Console.WriteLine("--move or -m == move file after importing (default false)");
                 Console.WriteLine("--verbose or -v == verbose, more detailed info");
                 Console.WriteLine("  use -v -help to show settings: ");
                 if (!AppSettingsProvider.Verbose) return;
@@ -35,9 +37,27 @@ namespace starskyimportercli
             
             if(AppSettingsProvider.Verbose) Console.WriteLine("inputPath " + inputPath);
             
-            new ImportDatabase().Import(inputPath);
+            var importedValues = new ImportDatabase().Import(inputPath);
+            
+            // Delete files after succesfull indexing
+            if (ArgsHelper.GetMove(args))
+            {
+                DeleteFiles(importedValues);
+            }
+            
             Console.WriteLine("Done Importing");
             
         }
+
+        private static void DeleteFiles(IEnumerable<string> listOfFullPaths)
+        {
+            foreach (var value in listOfFullPaths)
+            {
+                if (string.IsNullOrWhiteSpace(value)) continue;
+                System.IO.File.Delete(value);
+                Console.WriteLine("Delete: " + value);
+            }
+        }
+        
     }
 }
