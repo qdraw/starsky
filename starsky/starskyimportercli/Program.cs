@@ -32,8 +32,11 @@ namespace starskyimportercli
             }
             
             var inputPath = ArgsHelper.GetPathFormArgs(args,false);
-            Console.WriteLine(inputPath);
+            
+            if(AppSettingsProvider.Verbose) Console.WriteLine("inputPath " + inputPath);
+            
             new ImportDatabase().Import(inputPath);
+            Console.WriteLine("Done Importing");
             
         }
     }
