@@ -48,7 +48,7 @@ namespace starsky.Controllers
         }
         
         [HttpPost]
-        public IActionResult Update(string tags, string colorClass, string f = "dbStylePath")
+        public IActionResult Update(string tags, string colorClass, string captionAbstract, string f = "dbStylePath")
         {
             if (_isReadOnly(f)) return NotFound("read only");
             
@@ -68,6 +68,11 @@ namespace starsky.Controllers
                 updateModel.Tags = tags;
             }
 
+            if (captionAbstract != null)
+            {
+                updateModel.CaptionAbstract = captionAbstract;
+            }
+
             // Enum get always one value and no null
             singleItem.FileIndexItem.SetColorClass(colorClass);
             updateModel.ColorClass = singleItem.FileIndexItem.ColorClass;
@@ -81,6 +86,7 @@ namespace starsky.Controllers
                 FileHash.GetHashCode(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             singleItem.FileIndexItem.AddToDatabase = DateTime.Now;
             singleItem.FileIndexItem.Tags = exifToolResults.Tags;
+            singleItem.FileIndexItem.Description = exifToolResults.CaptionAbstract;
             singleItem.FileIndexItem.ColorClass = exifToolResults.ColorClass;
             _query.UpdateItem(singleItem.FileIndexItem);
 

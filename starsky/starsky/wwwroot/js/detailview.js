@@ -95,13 +95,15 @@ function updateDeletedKeywordElement(data) {
        if (data.tags.indexOf("!delete!") >= 0) {
                document.querySelector(".addDeleteTag").classList.add("fileIsDeleted");
                document.querySelector(".addDeleteTag a").innerHTML = "Zet terug uit prullenmand";
-               document.querySelector("#js-keywords-update a").classList.add("disabled") //
+               document.querySelector("#js-keywords-update a").classList.add("disabled"); //
                document.querySelector('.js-keywords').contentEditable = false;
                document.querySelector(".addDeleteTag a").classList.remove("btn-danger");
                document.querySelector(".addDeleteTag a").classList.add("btn-warning");
                document.querySelector(".js-keywords").classList.add("disabled");
-    
-           } else {
+               document.querySelector(".js-captionabstract").classList.add("disabled");
+               document.querySelector('.js-captionabstract').contentEditable = false;
+
+       } else {
                document.querySelector(".addDeleteTag").classList.remove("fileIsDeleted");
                document.querySelector(".addDeleteTag a").innerHTML = "Verplaats naar prullenmand";
                document.querySelector(".addDeleteTag a").classList.remove("btn-warning");
@@ -109,23 +111,22 @@ function updateDeletedKeywordElement(data) {
                document.querySelector("#js-keywords-update a").classList.remove("disabled");
                document.querySelector(".js-keywords").classList.remove("disabled");
                document.querySelector('.js-keywords').contentEditable = true;
-
+               document.querySelector(".js-captionabstract").classList.remove("disabled");
+               document.querySelector('.js-captionabstract').contentEditable = true;
        }
    }
 }
 
 
-if (document.querySelectorAll("#js-keywords-update").length === 1) {
+if (document.querySelectorAll("#js-keywords-update").length === 1 && 
+    document.querySelectorAll("#js-captionabstract-update").length === 1) 
+{
    loadJSON(infoApiBase,
        function(data) {
-       //debug
-       //     setTimeout(function(){  
            
            updateDeletedKeywordElement(data);
+           updateCaptionAbstractFromInput(data);
            hidePreloader();
-
-           // }, 3000);
-
        },
        function (xhr) {
             if (xhr.status === 404) {
@@ -188,6 +189,22 @@ function queryKeywords(queryItem) {
     );
 }
 
+function queryCaptionAbstract(queryItem) {
+
+    addUnloadWarning();
+    showPreloader();
+
+    var url = updateApiBase + "&captionabstract=" + queryItem;
+    loadJSON(url,
+        function (data) {
+            hideUnloadWarning();
+            hidePreloader();
+        },
+        function (xhr) { console.error(xhr); },
+        "POST"
+    );
+}
+
 function updateKeywords() {
     if (document.querySelectorAll("#js-keywords-update").length === 1){
         var keywords = document.querySelector('.js-keywords').textContent;
@@ -196,6 +213,24 @@ function updateKeywords() {
         queryKeywords(keywords);
     } 
 }
+
+function updateCaptionAbstract() {
+    if (document.querySelectorAll("#js-captionabstract-update").length === 1){
+        var captionabstract = document.querySelector('.js-captionabstract').textContent;
+        console.log(captionabstract);
+
+        queryCaptionAbstract(captionabstract);
+    }
+}
+
+function updateCaptionAbstractFromInput(data) {
+    if (document.querySelectorAll("#js-captionabstract-update").length === 1) {
+        document.querySelector('.js-captionabstract').textContent = data["Caption-Abstract"];
+        document.querySelector('#js-captionabstract-update .btn').classList.remove("disabled");
+    
+    }
+}
+    
 
 
 var formSubmitting = true;

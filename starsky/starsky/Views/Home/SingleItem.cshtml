@@ -25,12 +25,17 @@
         </h4>
 
         <img src="@Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash, issingleitem = true})"/>
-
         <div class="form-inline form-wrapper" id="js-keywords-update">
+            <p>Tags: <em>(komma gescheiden)</em></p>
             <div class="form-control js-keywords contenteditable disabled" contenteditable="false" name="keywords" onfocusout="updateKeywords()">@Model.FileIndexItem.Tags</div>
             <a class="btn btn-default" type="submit" onClick="updateKeywords()">Update</a>
         </div>
 
+        <div class="form-inline form-wrapper" id="js-captionabstract-update">
+            <p>Info:</p>
+            <div class="form-control js-captionabstract contenteditable disabled" contenteditable="false" name="keywords" onfocusout="updateCaptionAbstract()">@Model.FileIndexItem.Description</div>
+            <a class="btn btn-default disabled" type="submit" onClick="updateCaptionAbstract()">Update</a>
+        </div>
         <div class="add-colorclass">
             @{
                 foreach (var item in @Model.GetAllColor)

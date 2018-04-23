@@ -487,7 +487,12 @@ h2 {
 }
 
 #js-keywords-update {
-    margin-top: 20px;
+    margin-top: 15px;
+}
+
+#js-captionabstract-update p,
+#js-keywords-update p {
+    margin-bottom: 3px;
 }
 
 .form-control {

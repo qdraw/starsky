@@ -122,6 +122,11 @@ namespace starsky.Services
                 {
                     command += " -sep \", \" -Keywords=\"" + updateModel.Tags + "\" ";
                 }
+                
+                if (!string.IsNullOrWhiteSpace(updateModel.CaptionAbstract))
+                {
+                    command += " -Caption-Abstract=\"" + updateModel.CaptionAbstract + "\" ";
+                }
 
                 if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
                 {
@@ -135,13 +140,13 @@ namespace starsky.Services
                 }
 
                 // Also update class info
-                return _parseJson(_baseCommmand("-Keywords -Prefs -json", fullFilePath));
+                return _parseJson(_baseCommmand("-Keywords -Prefs -Caption-Abstract -json", fullFilePath));
             }
 
             public static ExifToolModel Info(string fullFilePath)
             {
                 // Also update class 'Update'
-                return _parseJson(_baseCommmand("-Keywords -Prefs -json", fullFilePath));
+                return _parseJson(_baseCommmand("-Keywords -Caption-Abstract -Prefs -json", fullFilePath));
             }
 
         }

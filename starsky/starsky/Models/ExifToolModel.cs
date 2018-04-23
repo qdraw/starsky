@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace starsky.Models
 {
@@ -8,6 +9,9 @@ namespace starsky.Models
     {
         public FileIndexItem.Color ColorClass { get; set; }
 
+        [JsonProperty(PropertyName="Caption-Abstract")]
+        public string CaptionAbstract { get; set; }
+        
         public string Prefs
         {
             get { return null; }
