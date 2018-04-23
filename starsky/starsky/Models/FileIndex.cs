@@ -146,7 +146,7 @@ namespace starsky.Models
             Turquoise = 6, // Turquoise
             Blauw = 7, // Blauw - blue
             Grijs = 8, // grijs - Grey
-            GeenKleur = 0, // donkergrijs Dark Grey
+            Geen = 0, // donkergrijs Dark Grey
             DoNotChange = -1
         }
 

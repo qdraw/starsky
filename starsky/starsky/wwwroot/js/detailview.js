@@ -130,8 +130,10 @@ if (document.querySelectorAll("#js-keywords-update").length === 1) {
        function (xhr) {
             if (xhr.status === 404) {
                 if (document.querySelectorAll(".sidebar").length >= 0) {
-                    toggleSideMenu(true);
-                    document.querySelector(".sidebar").classList.add("hide");
+                    // toggleSideMenu(true);
+                    document.querySelector(".sidebar").classList.add("readonly");
+                    document.querySelector("#js-keywords-update .btn").classList.add("disabled");
+
                     hidePreloader();
                     if (document.querySelectorAll(".navbar").length >= 0) {
                         document.querySelector(".navbar").classList.add("navbar-gray");

@@ -803,7 +803,7 @@ float: left;
     .sidebar .content {
         height: initial;
         overflow-y:initial;
-        width: 80vw;
+        width: 90vw;
         padding: 12px;
     }
 }
@@ -839,6 +839,14 @@ footer {
     margin-top: 25px;
 }
 
+/* if in readonly mode */
+.sidebar.readonly .add-colorclass a{
+    display: none;
+}
+.sidebar.readonly .add-colorclass a.on{
+    display: inline-block;
+    pointer-events: none;
+}
 
 
 
