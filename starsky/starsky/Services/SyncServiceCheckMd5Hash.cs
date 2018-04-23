@@ -19,7 +19,7 @@ namespace starsky.Services
         {
             foreach (var itemLocal in localSubFolderDbStyle)
             {
-                if(AppSettingsProvider.Verbose) Console.WriteLine("CheckMd5Hash: " + itemLocal);
+                if(AppSettingsProvider.Verbose) Console.WriteLine("CheckMd5Hash: (path): " + itemLocal);
 
                 var dbItem = databaseFileList.FirstOrDefault(p => p.FilePath == itemLocal);
                 if (dbItem != null)

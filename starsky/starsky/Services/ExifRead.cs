@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using MetadataExtractor;
 using starsky.Models;
 
@@ -27,6 +28,8 @@ namespace starsky.Services
                 item.Tags = "ImageProcessingException".ToLower();
                 return item;
             }
+
+            GetGeoLocation(allExifItems);
 
             foreach (var exifItem in allExifItems)
             {
@@ -57,6 +60,7 @@ namespace starsky.Services
                      item.Title = title;
                 }
                 
+               
                 // DateTime of image
                 var dateTime = _getDateTime(exifItem);
                 if(dateTime.Year > 2) // 0 = is not the right tag or emthy tag
@@ -167,5 +171,85 @@ namespace starsky.Services
 
             return itemDateTime;
         }
+        
+        private static double GetGeoLocationLatitude(List<Directory> allExifItems)
+        {
+            var latitudeString = string.Empty;
+            var latitudeRef = string.Empty;
+            var longitudeString = string.Empty;
+            var longitudeRef = string.Empty;
+            
+            foreach (var exifItem in allExifItems)
+            {
+                var latitudeRefLocal = exifItem.Tags.FirstOrDefault(
+                    p => p.DirectoryName == "GPS" 
+                    && p.Name == "GPS Latitude Ref")?.Description;
+                
+                if (latitudeRefLocal != null)
+                {
+                    latitudeRef = latitudeRefLocal;
+                }
+                
+                var latitudeLocal = exifItem.Tags.FirstOrDefault(
+                    p => p.DirectoryName == "GPS" 
+                         && p.Name == "GPS Latitude")?.Description;
+
+                if (latitudeLocal != null)
+                {
+                    latitudeString = latitudeLocal;
+                }
+                
+                var longitudeRefLocal = exifItem.Tags.FirstOrDefault(
+                    p => p.DirectoryName == "GPS" 
+                         && p.Name == "GPS Longitude Ref")?.Description;
+                
+                if (latitudeRefLocal != null)
+                {
+                    longitudeRef = longitudeRefLocal;
+                }
+                
+                var longitudeLocal = exifItem.Tags.FirstOrDefault(
+                    p => p.DirectoryName == "GPS" 
+                         && p.Name == "GPS Longitude")?.Description;
+
+                if (longitudeLocal != null)
+                {
+                    longitudeString = longitudeLocal;
+                }
+            }
+
+            Console.WriteLine(latitudeString);
+            Console.WriteLine(latitudeRef);
+            Console.WriteLine(longitudeString);
+            Console.WriteLine(longitudeRef);
+            var t = ConvertDegreeAngleToDouble(longitudeString, longitudeRef);
+            var y = ConvertDegreeAngleToDouble(latitudeString, latitudeRef);
+
+            return latitudeString;
+        }
+        
+        public static double ConvertDegreeAngleToDouble(string point, string refGps)
+        {
+            //Example: 17.21.18S
+
+            var multiplier = (refGps.Contains("S") || refGps.Contains("W")) ? -1 : 1; //handle south and west
+
+            point = Regex.Replace(point, "[^0-9. ]", ""); //remove the characters
+
+            var pointArray = point.Split(' '); //split the string.
+
+            //Decimal degrees = 
+            //   whole number of degrees, 
+            //   plus minutes divided by 60, 
+            //   plus seconds divided by 3600
+
+            var degrees = Double.Parse(pointArray[0]);
+            var minutes = Double.Parse(pointArray[1]) / 60;
+            var seconds = Double.Parse(pointArray[2]) / 3600;
+
+            return (degrees + minutes + seconds) * multiplier;
+        }
+        
+        
     }
 }
