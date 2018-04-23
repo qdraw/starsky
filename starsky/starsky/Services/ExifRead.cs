@@ -29,7 +29,9 @@ namespace starsky.Services
                 return item;
             }
 
-            GetGeoLocation(allExifItems);
+            item.Latitude = GetGeoLocationLatitude(allExifItems);
+            item.Longitude = GetGeoLocationLongitude(allExifItems);
+            
 
             foreach (var exifItem in allExifItems)
             {
@@ -176,8 +178,6 @@ namespace starsky.Services
         {
             var latitudeString = string.Empty;
             var latitudeRef = string.Empty;
-            var longitudeString = string.Empty;
-            var longitudeRef = string.Empty;
             
             foreach (var exifItem in allExifItems)
             {
@@ -198,12 +198,29 @@ namespace starsky.Services
                 {
                     latitudeString = latitudeLocal;
                 }
-                
+            }
+
+            if (!string.IsNullOrWhiteSpace(latitudeString))
+            {
+                var latitude = ConvertDegreeAngleToDouble(latitudeString, latitudeRef);
+                latitude = Math.Floor(latitude * 10000000000) / 10000000000; 
+                return latitude;
+            }
+            return 0;
+        }
+        
+         private static double GetGeoLocationLongitude(List<Directory> allExifItems)
+        {
+            var longitudeString = string.Empty;
+            var longitudeRef = string.Empty;
+            
+            foreach (var exifItem in allExifItems)
+            {
                 var longitudeRefLocal = exifItem.Tags.FirstOrDefault(
                     p => p.DirectoryName == "GPS" 
                          && p.Name == "GPS Longitude Ref")?.Description;
                 
-                if (latitudeRefLocal != null)
+                if (longitudeRefLocal != null)
                 {
                     longitudeRef = longitudeRefLocal;
                 }
@@ -218,14 +235,13 @@ namespace starsky.Services
                 }
             }
 
-            Console.WriteLine(latitudeString);
-            Console.WriteLine(latitudeRef);
-            Console.WriteLine(longitudeString);
-            Console.WriteLine(longitudeRef);
-            var t = ConvertDegreeAngleToDouble(longitudeString, longitudeRef);
-            var y = ConvertDegreeAngleToDouble(latitudeString, latitudeRef);
-
-            return latitudeString;
+            if (!string.IsNullOrWhiteSpace(longitudeString))
+            {
+                var longitude = ConvertDegreeAngleToDouble(longitudeString, longitudeRef);
+                longitude = Math.Floor(longitude * 10000000000) / 10000000000; 
+                return longitude;
+            }
+            return 0;
         }
         
         public static double ConvertDegreeAngleToDouble(string point, string refGps)

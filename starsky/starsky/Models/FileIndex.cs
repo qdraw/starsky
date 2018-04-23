@@ -50,6 +50,9 @@ namespace starsky.Models
         public DateTime AddToDatabase { get; set; }
         
         private Color _colorClass;
+        
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
 
         public Color SetColorClass(string colorclassString = "0")
         {
@@ -116,6 +119,7 @@ namespace starsky.Models
             get => _colorClass;
             set => _colorClass = value;
         }
+
 
         public enum Color
         {
