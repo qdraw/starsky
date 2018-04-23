@@ -227,7 +227,6 @@ function updateCaptionAbstractFromInput(data) {
     if (document.querySelectorAll("#js-captionabstract-update").length === 1) {
         document.querySelector('.js-captionabstract').textContent = data["Caption-Abstract"];
         document.querySelector('#js-captionabstract-update .btn').classList.remove("disabled");
-    
     }
 }
     

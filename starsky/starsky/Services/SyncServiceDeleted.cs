@@ -22,6 +22,8 @@ namespace starsky.Services
             if (Files.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
             {
                 Console.WriteLine(">>deleted");
+                if(AppSettingsProvider.Verbose) Console.WriteLine(subPath);
+                
                 // single file or folder deleting
                 var dbItem = _query.GetObjectByFilePath(subPath);
                 if (dbItem != null)

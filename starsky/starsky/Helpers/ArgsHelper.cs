@@ -57,11 +57,27 @@ namespace starsky.Helpers
             }
             if (dbStyle)
             {
-                path = FileIndexItem.DatabasePathToFilePath(path);
+                path = FileIndexItem.FullPathToDatabaseStyle(path);
             }
             return path;
         }
 
+        public static bool ifSubpath(IReadOnlyList<string> args)
+        {
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--subpath" || args[arg].ToLower() == "-s") && (arg + 1) != args.Count)
+                {
+                    return true;
+                }
+                if ((args[arg].ToLower() == "--path" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
         public static string GetSubpathFormArgs(IReadOnlyList<string> args)
         {
             var subpath = "/";
@@ -73,7 +89,6 @@ namespace starsky.Helpers
                     subpath = args[arg + 1];
                 }
             }
-
             return subpath;
         }
 
