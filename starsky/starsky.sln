@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskycli", "starsky-cli\s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskyimportercli", "starskyimportercli\starskyimportercli.csproj", "{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskytest", "starskytest\starskytest.csproj", "{1E2346C0-67B3-4538-8F76-B152AA65BB1B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskytests", "starskytests\starskytests.csproj", "{1E2346C0-67B3-4538-8F76-B152AA65BB1B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
