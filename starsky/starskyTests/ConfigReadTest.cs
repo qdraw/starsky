@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
 using starsky.Services;
@@ -20,7 +21,11 @@ namespace starskytest
          [TestMethod]
          public void RemoveLatestBackslashTest()
          {
-             var input = ConfigRead.RemoveLatestBackslash("/2018" + Path.DirectorySeparatorChar);
+             bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+             var input = ConfigRead.RemoveLatestBackslash("/2018/");
+             if (isWindows) input = ConfigRead.RemoveLatestBackslash("\\2018\\");
+
              var output = "/2018";
              Assert.AreEqual(input, output);
          }
