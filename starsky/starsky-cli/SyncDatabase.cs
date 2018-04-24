@@ -27,7 +27,6 @@ namespace starskyCli
             var context = new ApplicationDbContext(options);
             _query = new Query(context);
             _syncservice = new SyncService(context, _query);
-
         }
 
         private readonly Query _query;
