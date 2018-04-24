@@ -58,6 +58,7 @@ namespace starsky.Models
             {
                 if (string.IsNullOrEmpty(value) || value == "/") return;
                 var structure = ConfigRead.PrefixBackslash(value);
+                // todo: check if the feature works under windows
                 _structure = ConfigRead.RemoveLatestBackslash(structure);
             }
         }
