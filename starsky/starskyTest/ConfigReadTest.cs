@@ -24,12 +24,22 @@ namespace starskyTest
              Assert.AreEqual(input, output);
          }
          
+         [TestMethod]
          public void AddBackslashTest()
          {
              var input = ConfigRead.RemoveLatestBackslash("/2018/");
              var output = "/2018";
              Assert.AreEqual(input, output);
-         }       
+         }
+
+         [TestMethod]
+         public void PrefixBackslashTest()
+         {
+             var input = ConfigRead.PrefixBackslash("2018/");
+             var output = "/2018/";
+             Assert.AreEqual(input, output);
+         }
+         
          
      }
  }

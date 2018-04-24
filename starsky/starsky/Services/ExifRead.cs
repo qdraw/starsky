@@ -13,10 +13,6 @@ namespace starsky.Services
     {
         public static FileIndexItem ReadExifFromFile(string fileFullPath)
         {
-            var item = new FileIndexItem();
-            // Set the default value
-            item.SetColorClass();
-
             List<Directory> allExifItems;
             try
             {
@@ -25,9 +21,18 @@ namespace starsky.Services
             }
             catch (ImageProcessingException)
             {
-                item.Tags = "ImageProcessingException".ToLower();
+                var item = new FileIndexItem {Tags = "ImageProcessingException".ToLower()};
                 return item;
             }
+
+            return ParseExifDirectory(allExifItems);
+        }
+
+        public static FileIndexItem ParseExifDirectory(List<Directory> allExifItems)
+        {
+            var item = new FileIndexItem();
+            // Set the default value
+            item.SetColorClass();
 
             item.Latitude = GetGeoLocationLatitude(allExifItems);
             item.Longitude = GetGeoLocationLongitude(allExifItems);
@@ -56,13 +61,12 @@ namespace starsky.Services
                 }    
                 
                 // [IPTC] Object Name = Title
-                var title = _getObjectName(exifItem);
+                var title = GetObjectName(exifItem);
                 if(title != null) // null = is not the right tag or emthy tag
                 {
                      item.Title = title;
                 }
                 
-               
                 // DateTime of image
                 var dateTime = _getDateTime(exifItem);
                 if(dateTime.Year > 2) // 0 = is not the right tag or emthy tag
@@ -82,8 +86,7 @@ namespace starsky.Services
             }
         }
 
-        // Update Database structure first
-        private static string _getObjectName (Directory exifItem)
+        public static string GetObjectName (Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Object Name");
             if (tCounts < 1) return null;
