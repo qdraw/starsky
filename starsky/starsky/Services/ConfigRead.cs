@@ -9,6 +9,7 @@ namespace starsky.Services
     {
         // Write the setting to the Model.AppSettingsProvider
         // Read settings first from appsettings.json + and later from ENV.
+        
         public static void SetAppSettingsProvider()
         {
             // First read from env variables, if not read appsettings.json
@@ -20,15 +21,20 @@ namespace starsky.Services
                     File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json");
                 obj = JObject.Parse(text);    
             }
-
             var basePath = _readTextFromObjOrEnv("STARSKY_BASEPATH", obj);
             var defaultConnection = _readTextFromObjOrEnv("DefaultConnection", obj);
             var databaseType =_readTextFromObjOrEnv("DatabaseType", obj);
             var thumbnailTempFolder =_readTextFromObjOrEnv("ThumbnailTempFolder", obj);
-            thumbnailTempFolder = AddBackslash(thumbnailTempFolder);
-            
             var exifToolPath = _readTextFromObjOrEnv("ExifToolPath", obj);
 
+            SetAppSettingsProvider(basePath,defaultConnection,databaseType,thumbnailTempFolder,exifToolPath);
+        }
+
+        public static void SetAppSettingsProvider(string basePath,string defaultConnection,string databaseType,string thumbnailTempFolder, string exifToolPath)
+        {
+
+            thumbnailTempFolder = AddBackslash(thumbnailTempFolder);
+            
             // Read /.config.json
             // Please check the config example in the starsky folder
 
@@ -40,9 +46,7 @@ namespace starsky.Services
                 AppSettingsProvider.Structure = model.Structure;
                 AppSettingsProvider.StructureFilenamePattern = model.StructureFilenamePattern;
                 AppSettingsProvider.StructureDirectoryPattern = model.StructureDirectoryPattern;
-
             }
-
 
             AppSettingsProvider.BasePath = basePath;
             AppSettingsProvider.DatabaseType = databaseType == "mysql"

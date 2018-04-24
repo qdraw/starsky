@@ -13,7 +13,7 @@ namespace starskyTest
             var breadcrumbExample = Breadcrumbs.BreadcrumbHelper("/");
 
             var breadcrumblist = new List<string> {"/"};
-            Assert.AreEqual(breadcrumbExample,breadcrumblist);
+            CollectionAssert.AreEqual(breadcrumbExample,breadcrumblist);
         }
 
         [TestMethod]
