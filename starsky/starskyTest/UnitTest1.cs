@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
 using starsky.Services;
 
-namespace starskyTest
+namespace starskytest
 {
     [TestClass]
     public class UnitTest1
@@ -11,9 +11,9 @@ namespace starskyTest
         public UnitTest1()
         {
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-    
+
            var options = builder.Options;
-    
+
             var context = new ApplicationDbContext(options);
             _query = new Query(context);
             _syncservice = new SyncService(context, _query);
@@ -21,7 +21,7 @@ namespace starskyTest
 
         private readonly Query _query;
         private readonly SyncService _syncservice;
-        
+
         [TestMethod]
         public void TestMethod1()
         {

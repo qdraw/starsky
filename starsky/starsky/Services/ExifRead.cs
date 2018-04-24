@@ -41,7 +41,7 @@ namespace starsky.Services
             foreach (var exifItem in allExifItems)
             {
                 //  exifItem.Tags
-                var tags = _getExifTags(exifItem);
+                var tags = GetExifKeywords(exifItem);
                 if(tags != null) // null = is not the right tag or emthy tag
                 {
                     item.Tags = tags;
@@ -54,7 +54,7 @@ namespace starsky.Services
                 }
                 
                 // [IPTC] Caption/Abstract
-                var caption = _getCaptionAbstract(exifItem);
+                var caption = GetCaptionAbstract(exifItem);
                 if(caption != null) // null = is not the right tag or emthy tag
                 {
                     item.Description = caption;
@@ -68,7 +68,7 @@ namespace starsky.Services
                 }
                 
                 // DateTime of image
-                var dateTime = _getDateTime(exifItem);
+                var dateTime = GetExifDateTime(exifItem);
                 if(dateTime.Year > 2) // 0 = is not the right tag or emthy tag
                 {
                     item.DateTime = dateTime;
@@ -98,7 +98,7 @@ namespace starsky.Services
         }
 
         
-        private static string _getCaptionAbstract(Directory exifItem)
+        public static string GetCaptionAbstract(Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Caption/Abstract");
             if (tCounts < 1) return null;
@@ -110,7 +110,7 @@ namespace starsky.Services
             
         }
         
-        private static string _getExifTags(Directory exifItem)
+        public static string GetExifKeywords(Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Keywords");
             if (tCounts >= 1)
@@ -152,27 +152,27 @@ namespace starsky.Services
             return null;
         }
 
-        private static DateTime _getDateTime(Directory exifItem)
+        public static DateTime GetExifDateTime(Directory exifItem)
         {
             var itemDateTime = new DateTime();
+            
+            string pattern = "yyyy:MM:dd HH:mm:ss";
+            CultureInfo provider = CultureInfo.InvariantCulture;
+            
             var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized");
             if (dtCounts >= 1)
             {
-    
                 var dateString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized")?.Description;
     
                 // https://odedcoster.com/blog/2011/12/13/date-and-time-format-strings-in-net-understanding-format-strings/
                 //2018:01:01 11:29:36
-                string pattern = "yyyy:MM:dd HH:mm:ss";
-                CultureInfo provider = CultureInfo.InvariantCulture;
                 DateTime.TryParseExact(dateString, pattern, provider, DateTimeStyles.AdjustToUniversal, out itemDateTime);
-    
-                if (itemDateTime.Year == 1 && itemDateTime.Month == 1)
-                {
-                    dateString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Original")?.Description;
-                    DateTime.TryParseExact(dateString, pattern, provider, DateTimeStyles.AdjustToUniversal, out itemDateTime);
-                }
             }
+
+            if (itemDateTime.Year != 1 || itemDateTime.Month != 1) return itemDateTime;
+
+            var dateStringOriginal = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Original")?.Description;
+            DateTime.TryParseExact(dateStringOriginal, pattern, provider, DateTimeStyles.AdjustToUniversal, out itemDateTime);
 
             return itemDateTime;
         }

@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starsky", "starsky\starsky.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskycli", "starsky-cli\starskycli.csproj", "{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyimportercli", "starskyimportercli\starskyimportercli.csproj", "{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskyimportercli", "starskyimportercli\starskyimportercli.csproj", "{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyTest", "starskyTest\starskyTest.csproj", "{3CCD8FF6-D372-4C69-9E96-267255F52456}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskytest", "starskytest\starskytest.csproj", "{1E2346C0-67B3-4538-8F76-B152AA65BB1B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3CCD8FF6-D372-4C69-9E96-267255F52456}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3CCD8FF6-D372-4C69-9E96-267255F52456}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3CCD8FF6-D372-4C69-9E96-267255F52456}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3CCD8FF6-D372-4C69-9E96-267255F52456}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E2346C0-67B3-4538-8F76-B152AA65BB1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E2346C0-67B3-4538-8F76-B152AA65BB1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E2346C0-67B3-4538-8F76-B152AA65BB1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E2346C0-67B3-4538-8F76-B152AA65BB1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

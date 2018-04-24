@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Services;
 
-namespace starskyTest
+namespace starskytest
 {
     [TestClass]
     public class BreadcrumbHelperTest
@@ -23,7 +23,7 @@ namespace starskyTest
             var breadcrumblist = new List<string> {"/","/2018"};
             CollectionAssert.AreEqual(breadcrumbExample,breadcrumblist);
         }
-        
+
         [TestMethod]
         public void Null()
         {

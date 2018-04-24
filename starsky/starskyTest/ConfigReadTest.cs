@@ -3,12 +3,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
 using starsky.Services;
 
-namespace starskyTest
+namespace starskytest
  {
      [TestClass]
      public class ConfigReadTest
      {
-         
+
          [TestMethod]
          public void BasePathTest()
          {
@@ -23,7 +23,7 @@ namespace starskyTest
              var output = "/2018";
              Assert.AreEqual(input, output);
          }
-         
+
          [TestMethod]
          public void AddBackslashTest()
          {
@@ -39,7 +39,7 @@ namespace starskyTest
              var output = "/2018/";
              Assert.AreEqual(input, output);
          }
-         
-         
+
+
      }
  }
