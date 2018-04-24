@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
 using starsky.Services;
@@ -19,7 +20,7 @@ namespace starskytest
          [TestMethod]
          public void RemoveLatestBackslashTest()
          {
-             var input = ConfigRead.RemoveLatestBackslash("/2018/");
+             var input = ConfigRead.RemoveLatestBackslash("/2018" + Path.DirectorySeparatorChar);
              var output = "/2018";
              Assert.AreEqual(input, output);
          }
