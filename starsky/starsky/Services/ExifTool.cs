@@ -49,7 +49,7 @@ namespace starsky.Services
             return strOutput;
         }
         
-        private static string FixingJsonKeywordString(string text)
+        public static string FixingJsonKeywordString(string text)
         {
 
             // Not Single Keyword
@@ -108,9 +108,6 @@ namespace starsky.Services
             return exifData;
 
         }
-
-
-
 
         public static ExifToolModel Update(ExifToolModel updateModel, string fullFilePath)
             {
