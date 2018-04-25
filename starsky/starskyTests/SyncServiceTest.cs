@@ -79,25 +79,21 @@ namespace starskytests
         [TestMethod]
         public void SyncServiceAddSubPathFolderTest()
         {
-            var tempFolder = _query.AddItem(new FileIndexItem
-            {
-                FileName = "temp",
-                FilePath = "/temp",
-                ParentDirectory = "/",
-                IsDirectory = true
-            });
-            
-            _syncservice.AddSubPathFolder("/temp/dir/dir2");
-            
-            var output = new List<string> {"/temp/dir","/temp/dir/dir2"};
-            var input = _query.GetAllRecursive();
-            // .Select(item => item.FilePath)
+            // For the parent folders
+            _syncservice.AddSubPathFolder("/temp/dir/dir2/");
+            var output = new List<string> {"/temp/dir"};
+            var input = _query.DisplayFileFolders("/temp").Select(item => item.FilePath).ToList();
             
             CollectionAssert.AreEqual(input,output);
 
         }
         
+        [TestMethod]
+        public void SyncServiceCheckMd5HashTest()
+        {
+        }
 
+        
         
         
 

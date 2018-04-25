@@ -7,7 +7,7 @@ namespace starsky.Services
 {
     public partial class SyncService
     {
-        // AddSubPathFolder
+        // Add Sub Path Folder - Parent Folders
         //  root(/)
         //      /2017  <= index only this folder
         //      /2018
