@@ -2,7 +2,7 @@
 using System.IO;
 using starsky.Models;
 
-namespace starsky.Services
+namespace starsky.Helpers
 {
     public static class SqliteHelper
     {
