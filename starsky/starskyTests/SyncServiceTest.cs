@@ -30,18 +30,18 @@ namespace starskytests
         {
             var folder1 = new FileIndexItem
             {
-                FileName = "folder1",
-                FilePath = "/folder1",
-                ParentDirectory = "/",
+                FileName = "test",
+                FilePath = "/folder99/test",
+                ParentDirectory = "/folder99",
                 IsDirectory = true
             };
             
-            var folder1List = new List<string> {"/folder1"};
+            var folder1List = new List<string> {"/folder99/test"};
             _syncservice.AddFoldersToDatabase(folder1List,new List<FileIndexItem>());
-            // Run twice to check if there are no duplicates
-            // _syncservice.AddFoldersToDatabase(folder1List,new List<FileIndexItem> {folder1});
+            //  Run twice to check if there are no duplicates
+             _syncservice.AddFoldersToDatabase(folder1List,new List<FileIndexItem> {folder1});
             
-            var allItems = _query.GetAllRecursive().Select(p => p.FilePath).ToList();
+            var allItems = _query.GetAllRecursive("/folder99").Select(p => p.FilePath).ToList();
 
             CollectionAssert.AreEqual(allItems, folder1List);
         }
