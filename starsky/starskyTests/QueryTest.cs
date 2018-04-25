@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Attributes;
 using starsky.Data;
 using starsky.Models;
 using starsky.Services;
@@ -24,6 +25,7 @@ namespace starskytests
         private readonly Query _query;
 
         [TestMethod]
+        [ExcludeFromCoverage]
         public void QueryAddSingleItemReadReadAllBasicTest()
         {
 
@@ -111,6 +113,7 @@ namespace starskytests
         }
 
         [TestMethod]
+        [ExcludeFromCoverage]
         public void QueryFolder_DisplayFileFoldersTest()
         {
             var hiJpgInput =  _query.AddItem(new FileIndexItem
@@ -168,10 +171,6 @@ namespace starskytests
             Assert.AreEqual(releative2.NextFilePath,"/display/hi2.jpg");
             Assert.AreEqual(releative2.PrevFilePath,null);
             
-            // 
-            
-
-
         }
         
     }

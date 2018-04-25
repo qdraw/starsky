@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
+using starsky.Attributes;
 
 namespace starsky.Migrations
 {
     public partial class IsDirectoryAddDescriptionParentDirectory : Migration
     {
+        [ExcludeFromCoverage]
         protected override void Up(MigrationBuilder migrationBuilder)
         {
 
@@ -28,6 +28,7 @@ namespace starsky.Migrations
                 defaultValue: false);
         }
 
+        [ExcludeFromCoverage]
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(

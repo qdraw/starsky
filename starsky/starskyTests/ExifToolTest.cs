@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Attributes;
 using starsky.Services;
 
 namespace starskytests
@@ -7,6 +8,7 @@ namespace starskytests
     public class ExifToolTest
     {
         [TestMethod]
+        [ExcludeFromCoverage]
         public void ExifToolTestFixingJsonKeywordStringTest()
         {
             var input = "{\"keywords\": [\"test\"] }";

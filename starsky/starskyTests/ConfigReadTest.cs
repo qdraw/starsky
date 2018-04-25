@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Attributes;
 using starsky.Models;
 using starsky.Services;
 
@@ -8,6 +9,7 @@ namespace starskytests
      public class ConfigReadTest
      {
 
+         [ExcludeFromCoverage]
          [TestMethod]
          public void BasePathTest()
          {
@@ -15,7 +17,7 @@ namespace starskytests
              Assert.AreEqual("/",AppSettingsProvider.BasePath);
          }
 
-
+         [ExcludeFromCoverage]
          [TestMethod]
          public void RemoveLatestBackslashTest()
          {
@@ -24,6 +26,7 @@ namespace starskytests
 //             Assert.AreEqual(input, output);
          }
 
+         [ExcludeFromCoverage]
          [TestMethod]
          public void PrefixBackslashTest()
          {

@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
+using starsky.Attributes;
 
 namespace starsky.Migrations
 {
     public partial class initDatabase : Migration
     {
+        [ExcludeFromCoverage]
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -22,7 +22,8 @@ namespace starsky.Migrations
                     table.PrimaryKey("PK_FileIndex", x => x.Id);
                 });
         }
-
+        
+        [ExcludeFromCoverage]
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

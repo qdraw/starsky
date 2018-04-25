@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Attributes;
 using starsky.Data;
 using starsky.Models;
 using starsky.Services;
@@ -25,6 +25,7 @@ namespace starskytests
         private readonly Query _query;
         private readonly SyncService _syncservice;
 
+        [ExcludeFromCoverage]
         [TestMethod]
         public void SyncServiceAddFoldersToDatabaseTest()
         {
@@ -47,6 +48,7 @@ namespace starskytests
         }
 
         [TestMethod]
+        [ExcludeFromCoverage]
         public void SyncServiceRemoveOldFilePathItemsFromDatabaseTest()
         {
             var folder1 =  _query.AddItem(new FileIndexItem
@@ -77,6 +79,7 @@ namespace starskytests
         }
 
         [TestMethod]
+        [ExcludeFromCoverage]
         public void SyncServiceAddSubPathFolderTest()
         {
             // For the parent folders
@@ -89,6 +92,7 @@ namespace starskytests
         }
         
         [TestMethod]
+        [ExcludeFromCoverage]
         public void SyncServiceCheckMd5HashTest()
         {
         }

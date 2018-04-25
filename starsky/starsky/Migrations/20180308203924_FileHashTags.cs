@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
+using starsky.Attributes;
 
 namespace starsky.Migrations
 {
     public partial class FileHashTags : Migration
     {
+        [ExcludeFromCoverage]
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
@@ -19,6 +19,7 @@ namespace starsky.Migrations
                 nullable: true);
         }
 
+        [ExcludeFromCoverage]
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(

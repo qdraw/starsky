@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
+using starsky.Attributes;
 
 namespace starsky.Migrations
 {
     public partial class LatitudeLongitudeGPS : Migration
     {
+        [ExcludeFromCoverage]
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<double>(
@@ -20,7 +20,8 @@ namespace starsky.Migrations
                 nullable: false,
                 defaultValue: 0.0);
         }
-
+        
+        [ExcludeFromCoverage]
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(

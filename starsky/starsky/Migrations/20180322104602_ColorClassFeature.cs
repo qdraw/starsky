@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
+using starsky.Attributes;
 
 namespace starsky.Migrations
 {
     public partial class ColorClassFeature : Migration
     {
+        [ExcludeFromCoverage]
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
@@ -15,6 +15,7 @@ namespace starsky.Migrations
                 defaultValue: 0);
         }
 
+        [ExcludeFromCoverage]
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(

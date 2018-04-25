@@ -3,6 +3,7 @@ using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Attributes;
 using starsky.Services;
 
 namespace starskytests
@@ -11,6 +12,7 @@ namespace starskytests
      {
          public override string Name => string.Empty;
 
+         [ExcludeFromCoverage]
          protected override bool TryGetTagName(int tagType, out string tagName)
          {
              tagName = null;
@@ -23,6 +25,7 @@ namespace starskytests
      {
 
          [TestMethod]
+         [ExcludeFromCoverage]
          public void GetObjectNameNull()
          {
              var t = ExifRead.GetObjectName(new MockDirectory());
@@ -30,6 +33,7 @@ namespace starskytests
          }
 
          [TestMethod]
+         [ExcludeFromCoverage]
          public void GetObjectNameTest()
          {
              var dir = new IptcDirectory();
@@ -40,6 +44,7 @@ namespace starskytests
          }
 
         [TestMethod]
+        [ExcludeFromCoverage]
         public void GetCaptionAbstractTest()
         {
             var dir = new IptcDirectory();
@@ -51,6 +56,7 @@ namespace starskytests
         }
          
          [TestMethod]
+         [ExcludeFromCoverage]
          public void GetExifKeywordsSingleTest()
          {
              var dir = new IptcDirectory();
@@ -61,6 +67,7 @@ namespace starskytests
          }
          
          [TestMethod]
+         [ExcludeFromCoverage]
          public void GetExifKeywordsMultipleTest()
          {
              var dir = new IptcDirectory();
@@ -73,6 +80,7 @@ namespace starskytests
          }
          
          [TestMethod]
+         [ExcludeFromCoverage]
          public void GetExifDateTimeTest()
          {
              // Incomplete unit test 

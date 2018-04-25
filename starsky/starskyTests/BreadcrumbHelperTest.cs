@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Attributes;
 using starsky.Services;
 
 namespace starskytests
@@ -8,6 +9,7 @@ namespace starskytests
     public class BreadcrumbHelperTest
     {
         [TestMethod]
+        [ExcludeFromCoverage]
         public void BreadcrumbSlashMethodTest()
         {
             var breadcrumbExample = Breadcrumbs.BreadcrumbHelper("/");
@@ -16,6 +18,7 @@ namespace starskytests
             CollectionAssert.AreEqual(breadcrumbExample,breadcrumblist);
         }
 
+        [ExcludeFromCoverage]
         [TestMethod]
         public void BreadcrumbFileNameMethodTest()
         {
@@ -24,6 +27,7 @@ namespace starskytests
             CollectionAssert.AreEqual(breadcrumbExample,breadcrumblist);
         }
 
+        [ExcludeFromCoverage]
         [TestMethod]
         public void BreadcrumbNullTest()
         {
