@@ -39,7 +39,7 @@ namespace starskytests
             var folder1List = new List<string> {"/folder1"};
             _syncservice.AddFoldersToDatabase(folder1List,new List<FileIndexItem>());
             // Run twice to check if there are no duplicates
-            _syncservice.AddFoldersToDatabase(folder1List,new List<FileIndexItem> {folder1});
+            // _syncservice.AddFoldersToDatabase(folder1List,new List<FileIndexItem> {folder1});
             
             var allItems = _query.GetAllRecursive().Select(p => p.FilePath).ToList();
 
