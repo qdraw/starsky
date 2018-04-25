@@ -56,10 +56,12 @@ namespace starsky.Services
                 // 2. Rename single folder
                 // 3. The files are keeped in the index
                 // RemoveOldFilePathItemsFromDatabase => remove this items from database
-
+                
+                // todo: not shure if this function is any good
+                
                 if (!ditem.IsDirectory) continue;
 
-                var orphanPictures = _context.FileIndex.Where(p => !p.IsDirectory && p.ParentDirectory == ditem.FilePath);
+                var orphanPictures = _context.FileIndex.Where(p => !p.IsDirectory && p.ParentDirectory == ditem.FilePath).ToList();
                 foreach (var orphanItem in orphanPictures)
                 {
                     Console.Write("$");

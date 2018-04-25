@@ -37,7 +37,7 @@ namespace starsky.Services
 
             // Handle folder Get a list of all local folders and rename it to database style.
             // Db Style is a relative path
-            var localSubFolderDbStyle = _renameListItemsToDbStyle(
+            var localSubFolderDbStyle = RenameListItemsToDbStyle(
                 Files.GetAllFilesDirectory(subPath).ToList()
             );
 
@@ -79,7 +79,7 @@ namespace starsky.Services
         }
 
         // Rename a list to database style (short style)
-        private List<string> _renameListItemsToDbStyle(List<string> localSubFolderList)
+        private static List<string> RenameListItemsToDbStyle(List<string> localSubFolderList)
         {
             var localSubFolderListDatabaseStyle = new List<string>();
 

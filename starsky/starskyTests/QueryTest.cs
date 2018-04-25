@@ -19,11 +19,9 @@ namespace starskytests
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
             _query = new Query(context);
-//            _syncservice = new SyncService(context, _query);
         }
 
         private readonly Query _query;
-//        private readonly SyncService _syncservice;
 
         [TestMethod]
         public void QueryAddSingleItemReadReadAllBasicTest()
@@ -160,7 +158,8 @@ namespace starskytests
             // Hi3.jpg Previous -- all mode
             var releative = _query.GetNextPrevInFolder("/display/hi3.jpg");
             
-            Assert.AreEqual(releative.PrevFilePath,"/display/hi.jpg");
+            // Folders ignore deleted items
+            Assert.AreEqual(releative.PrevFilePath,"/display/hi2.jpg");
             Assert.AreEqual(releative.NextFilePath,null);
 
             // Next  Relative -- all mode
