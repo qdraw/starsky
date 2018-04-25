@@ -5,8 +5,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mac|AnyCPU' ">
     <IntermediateOutputPath>obj\Mac</IntermediateOutputPath>
     <DebugSymbols>false</DebugSymbols>
-    <DebugType>
-    </DebugType>
+    <!-- Required in both test/product projects. This is a temporary workaround for https://github.com/Microsoft/vstest/issues/800 -->
+    <DebugType>Full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Mac</OutputPath>
     <DefineConstants>
