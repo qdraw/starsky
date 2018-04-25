@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
@@ -95,6 +98,37 @@ namespace starskytests
         [ExcludeFromCoverage]
         public void SyncServiceCheckMd5HashTest()
         {
+            string path = "hashing-file-test.tmp";
+
+            var basePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
+
+            AppSettingsProvider.BasePath = basePath;
+            
+            Thumbnail.CreateErrorLogItem(path);
+            
+            var input = new List<string> {"/_hashing-file-test.tmp"};
+            
+            var folder2 = _query.AddItem(new FileIndexItem
+            {
+                FileName = "_hashing-file-test.tmp",
+                FilePath = "/_hashing-file-test.tmp",
+                ParentDirectory = "/",
+                Tags = "!delete!"
+            });
+
+            var t = FileIndexItem.DatabasePathToFilePath("_hashing-file-test.tmp");
+            
+            var localHash = FileHash.GetHashCode(FileIndexItem.DatabasePathToFilePath("_hashing-file-test.tmp"));
+
+            var databaseList = new List<FileIndexItem> {folder2};
+            _syncservice.CheckMd5Hash(input,databaseList);
+
+            var outputFileIndex = _query.SingleItem("/_hashing-file-test.tmp").FileIndexItem;
+            var output = new List<FileIndexItem> {outputFileIndex}.Select(p => p.FilePath).ToList();
+           
+            CollectionAssert.AreEqual(output,input);
+
+            
         }
 
         
