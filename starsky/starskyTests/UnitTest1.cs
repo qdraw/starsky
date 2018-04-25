@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
 using starsky.Services;
 
-namespace starskytest
+namespace starskytests
 {
     [TestClass]
     public class UnitTest1

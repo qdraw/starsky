@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Services;
 
-namespace starskytest
+namespace starskytests
  {
      public class MockDirectory : Directory
      {

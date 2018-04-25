@@ -2,13 +2,13 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Services;
 
-namespace starskytest
+namespace starskytests
 {
     [TestClass]
     public class BreadcrumbHelperTest
     {
         [TestMethod]
-        public void SlashMethod()
+        public void BreadcrumbSlashMethodTest()
         {
             var breadcrumbExample = Breadcrumbs.BreadcrumbHelper("/");
 
@@ -17,7 +17,7 @@ namespace starskytest
         }
 
         [TestMethod]
-        public void FileNameMethod()
+        public void BreadcrumbFileNameMethodTest()
         {
             var breadcrumbExample = Breadcrumbs.BreadcrumbHelper("/2018/2.jpg");
             var breadcrumblist = new List<string> {"/","/2018"};
@@ -25,7 +25,7 @@ namespace starskytest
         }
 
         [TestMethod]
-        public void Null()
+        public void BreadcrumbNullTest()
         {
             var breadcrumbExample = Breadcrumbs.BreadcrumbHelper(null);
             var breadcrumblist = new List<string>();

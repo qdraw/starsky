@@ -49,7 +49,7 @@ namespace starsky.Services
             return strOutput;
         }
         
-        private static string _fixingJsonKeywordString(string text)
+        private static string FixingJsonKeywordString(string text)
         {
 
             // Not Single Keyword
@@ -97,7 +97,7 @@ namespace starsky.Services
             text = text.Replace($"\\", "");
 
             Console.WriteLine("apply fix");
-            text = _fixingJsonKeywordString(text);
+            text = FixingJsonKeywordString(text);
             
             Console.WriteLine("read from exiftool with fix applied");
             Console.WriteLine(text);
