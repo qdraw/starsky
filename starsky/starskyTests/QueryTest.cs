@@ -34,7 +34,8 @@ namespace starskytests
                 FileName = "hi.jpg",
                 FilePath = "/hi.jpg",
                 ParentDirectory = "/",
-                FileHash = "09876543456789"
+                FileHash = "09876543456789",
+                ColorClass = FileIndexItem.Color.Winner // 1
             });
 
             var hiJpgOutput = _query.SingleItem(hiJpgInput.FilePath).FileIndexItem;
@@ -46,7 +47,23 @@ namespace starskytests
                 FileName = "hi2.jpg",
                 FilePath = "/hi2.jpg",
                 Tags = "!delete!",
+                ParentDirectory = "/"
+            });
+            
+            var hi3JpgInput =  _query.AddItem(new FileIndexItem
+            {
+                FileName = "hi3.jpg",
+                FilePath = "/hi3.jpg",
                 ParentDirectory = "/",
+                ColorClass = FileIndexItem.Color.Trash // 9
+            });
+            
+            var hi4JpgInput =  _query.AddItem(new FileIndexItem
+            {
+                FileName = "hi4.jpg",
+                FilePath = "/hi4.jpg",
+                ParentDirectory = "/",
+                ColorClass = FileIndexItem.Color.Winner // 1
             });
             
             var hi2SubfolderJpgInput =  _query.AddItem(new FileIndexItem
@@ -58,7 +75,7 @@ namespace starskytests
             });
             
             // Test root folder ("/)
-            var getAllFilesExpectedResult = new List<FileIndexItem> {hiJpgInput, hi2JpgInput};
+            var getAllFilesExpectedResult = new List<FileIndexItem> {hiJpgInput, hi2JpgInput,hi3JpgInput,hi4JpgInput};
 
             var getAllResult = _query.GetAllFiles();
 
@@ -71,9 +88,10 @@ namespace starskytests
             CollectionAssert.AreEqual(getAllFilesSubFolderExpectedResult,getAllResultSubfolder);
             
             // GetAllRecursive
-            var getAllRecursiveExpectedResult = new List<FileIndexItem> {hiJpgInput, hi2JpgInput, hi2SubfolderJpgInput};
-            var getAllRecursive = _query.GetAllRecursive();
-            CollectionAssert.AreEqual(getAllRecursive,getAllRecursiveExpectedResult);
+            var getAllRecursiveExpectedResult123 = new List<FileIndexItem> {
+                hiJpgInput, hi2JpgInput, hi2SubfolderJpgInput, hi3JpgInput, hi4JpgInput };
+            var getAllRecursive123 = _query.GetAllRecursive();
+            CollectionAssert.AreEqual(getAllRecursive123,getAllRecursiveExpectedResult123);
             
             
             // GetItemByHash
@@ -82,11 +100,20 @@ namespace starskytests
 
             // SubPathSlashRemove
             Assert.AreEqual(_query.SubPathSlashRemove("/test/"), "/test");
+            
+            // Next Winner
+            var colorClassFilterList = new FileIndexItem().GetColorClassList("1");
+            var next = _query.SingleItem("/hi.jpg", colorClassFilterList);
+            Assert.AreEqual(next.RelativeObjects.NextFilePath, "/hi4.jpg");
+            
+            // Prev Winner
+            var prev = _query.SingleItem("/hi4.jpg", colorClassFilterList).RelativeObjects.PrevFilePath;
+            Assert.AreEqual(prev, "/hi.jpg");
 
         }
 
         [TestMethod]
-        public void DisplayFileFoldersTest()
+        public void QueryFolder_DisplayFileFoldersTest()
         {
             var hiJpgInput =  _query.AddItem(new FileIndexItem
             {
@@ -128,6 +155,23 @@ namespace starskytests
             var getDisplaySuperior = _query.DisplayFileFolders("/display",colorClassFilterList).ToList();
            
             CollectionAssert.AreEqual(getDisplayExpectedResultSuperior,getDisplaySuperior);
+
+            // This feature is normal used for folders, for now it is done on files
+            // Hi3.jpg Previous -- all mode
+            var releative = _query.GetNextPrevInFolder("/display/hi3.jpg");
+            
+            Assert.AreEqual(releative.PrevFilePath,"/display/hi.jpg");
+            Assert.AreEqual(releative.NextFilePath,null);
+
+            // Next  Relative -- all mode
+            var releative2 = _query.GetNextPrevInFolder("/display/hi.jpg");
+            
+            Assert.AreEqual(releative2.NextFilePath,"/display/hi2.jpg");
+            Assert.AreEqual(releative2.PrevFilePath,null);
+            
+            // 
+            
+
 
         }
         
