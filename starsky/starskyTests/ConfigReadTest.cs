@@ -17,6 +17,16 @@ namespace starskytests
              Assert.AreEqual("/",AppSettingsProvider.BasePath);
          }
 
+         [TestMethod]
+         public void IsSettingEmptyTest()
+         {
+             var input = ConfigRead.IsSettingEmpty(string.Empty);
+             Assert.AreEqual(input,true);
+         }
+
+         
+             
+             
          [ExcludeFromCoverage]
          [TestMethod]
          public void RemoveLatestBackslashTest()
@@ -34,7 +44,18 @@ namespace starskytests
              var output = "/2018/";
              Assert.AreEqual(input, output);
          }
-
-
+         
+         [ExcludeFromCoverage]
+         [TestMethod]
+         public void AddBackslashTest()
+         {
+             var input = ConfigRead.AddBackslash("2018");
+             var output = "2018/";
+             Assert.AreEqual(input, output);
+             
+             input = ConfigRead.AddBackslash("2018/");
+             output = "2018/";
+             Assert.AreEqual(input, output);
+         }
      }
  }
