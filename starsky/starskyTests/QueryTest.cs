@@ -32,8 +32,8 @@ namespace starskytests
             var hiJpgInput = _query.AddItem(new FileIndexItem
             {
                 FileName = "hi.jpg",
-                FilePath = "/hi.jpg",
-                ParentDirectory = "/",
+                FilePath = "/basic/hi.jpg",
+                ParentDirectory = "/basic",
                 FileHash = "09876543456789",
                 ColorClass = FileIndexItem.Color.Winner // 1
             });
@@ -45,46 +45,46 @@ namespace starskytests
             var hi2JpgInput =  _query.AddItem(new FileIndexItem
             {
                 FileName = "hi2.jpg",
-                FilePath = "/hi2.jpg",
+                FilePath = "/basic/hi2.jpg",
                 Tags = "!delete!",
-                ParentDirectory = "/"
+                ParentDirectory = "/basic"
             });
             
             var hi3JpgInput =  _query.AddItem(new FileIndexItem
             {
                 FileName = "hi3.jpg",
-                FilePath = "/hi3.jpg",
-                ParentDirectory = "/",
+                FilePath = "/basic/hi3.jpg",
+                ParentDirectory = "/basic",
                 ColorClass = FileIndexItem.Color.Trash // 9
             });
             
             var hi4JpgInput =  _query.AddItem(new FileIndexItem
             {
                 FileName = "hi4.jpg",
-                FilePath = "/hi4.jpg",
-                ParentDirectory = "/",
+                FilePath = "/basic/hi4.jpg",
+                ParentDirectory = "/basic",
                 ColorClass = FileIndexItem.Color.Winner // 1
             });
             
             var hi2SubfolderJpgInput =  _query.AddItem(new FileIndexItem
             {
                 FileName = "hi2.jpg",
-                FilePath = "/subfolder/hi2.jpg",
-                ParentDirectory = "/subfolder",
+                FilePath = "/basic/subfolder/hi2.jpg",
+                ParentDirectory = "/basic/subfolder",
                 FileHash = "234567876543"
             });
             
             // Test root folder ("/)
             var getAllFilesExpectedResult = new List<FileIndexItem> {hiJpgInput, hi2JpgInput,hi3JpgInput,hi4JpgInput};
 
-            var getAllResult = _query.GetAllFiles();
+            var getAllResult = _query.GetAllFiles("/basic");
 
             CollectionAssert.AreEqual(getAllFilesExpectedResult,getAllResult);
             
             // Test subfolder
             var getAllFilesSubFolderExpectedResult = new List<FileIndexItem> {hi2SubfolderJpgInput};
 
-            var getAllResultSubfolder = _query.GetAllFiles("/subfolder");
+            var getAllResultSubfolder = _query.GetAllFiles("/basic/subfolder");
             CollectionAssert.AreEqual(getAllFilesSubFolderExpectedResult,getAllResultSubfolder);
             
             // GetAllRecursive
@@ -96,19 +96,19 @@ namespace starskytests
             
             // GetItemByHash
             // See above for objects
-            Assert.AreEqual(_query.GetItemByHash("09876543456789"), "/hi.jpg");
+            Assert.AreEqual(_query.GetItemByHash("09876543456789"), "/basic/hi.jpg");
 
             // SubPathSlashRemove
             Assert.AreEqual(_query.SubPathSlashRemove("/test/"), "/test");
             
             // Next Winner
             var colorClassFilterList = new FileIndexItem().GetColorClassList("1");
-            var next = _query.SingleItem("/hi.jpg", colorClassFilterList);
-            Assert.AreEqual(next.RelativeObjects.NextFilePath, "/hi4.jpg");
+            var next = _query.SingleItem("/basic/hi.jpg", colorClassFilterList);
+            Assert.AreEqual(next.RelativeObjects.NextFilePath, "/basic/hi4.jpg");
             
             // Prev Winner
-            var prev = _query.SingleItem("/hi4.jpg", colorClassFilterList).RelativeObjects.PrevFilePath;
-            Assert.AreEqual(prev, "/hi.jpg");
+            var prev = _query.SingleItem("/basic/hi4.jpg", colorClassFilterList).RelativeObjects.PrevFilePath;
+            Assert.AreEqual(prev, "/basic/hi.jpg");
 
         }
 
