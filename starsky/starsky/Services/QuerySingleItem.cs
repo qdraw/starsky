@@ -24,7 +24,10 @@ namespace starsky.Services
             var itemResult = new DetailView
             {
                 FileIndexItem = query,
-                RelativeObjects = relativeObject
+                RelativeObjects = relativeObject,
+                Breadcrumb = Breadcrumbs.BreadcrumbHelper(singleItemDbPath),
+                GetAllColor = FileIndexItem.GetAllColorUserInterface(),
+                ColorClassFilterList = colorClassFilterList
             };
 
             return itemResult;
