@@ -5,9 +5,16 @@ using starsky.Models;
 namespace starskytests
 {
     [TestClass]
-    public class FileIndexModelTest
+    public class FileIndexItemTest
     {
-
+        [TestMethod]
+        public void SetTagsToNull()
+        {
+            var item = new FileIndexItem{Tags = null};
+            Assert.AreEqual(item.Tags,string.Empty);
+        }
+        
+        
         [TestMethod]
         public void SetColorClassTestDefault()
         {
