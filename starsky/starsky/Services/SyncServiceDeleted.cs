@@ -12,8 +12,8 @@ namespace starsky.Services
         
         // True is stop after
         // False is continue
-        
-        private bool Deleted(string subPath = "")
+
+        public bool Deleted(string subPath = "")
         {
             subPath = _query.SubPathSlashRemove(subPath);
 

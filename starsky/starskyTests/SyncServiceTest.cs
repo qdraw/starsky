@@ -135,9 +135,69 @@ namespace starskytests
             
         }
 
+        [TestMethod]
+        [ExcludeFromCoverage]
+        public void SyncServiceSingleFileTest()
+        {
+            var newImage = new CreateAnImage();
+            AppSettingsProvider.BasePath = newImage.BasePath;
+
+            _syncservice.SingleFile(newImage.DbPath);
+
+            var item = _query.SingleItem(newImage.DbPath).FileIndexItem;
+            Assert.AreEqual(item.FileHash.Length >= 5,true);
+            _query.RemoveItem(item);
+
+        }
         
-        
-        
+        [TestMethod]
+        [ExcludeFromCoverage]
+        public void SyncServiceDeletedSingleFileTest()
+        {
+            var newImage = new CreateAnImage();
+            AppSettingsProvider.BasePath = newImage.BasePath;
+
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "non-existing.jpg",
+                FilePath = "/non-existing.jpg",
+                ParentDirectory = "/"
+            });
+
+            _syncservice.Deleted("/non-existing.jpg");
+
+        }
+
+        [TestMethod]
+        [ExcludeFromCoverage]
+        public void SyncServiceDeletedFolderTest()
+        {
+            var newImage = new CreateAnImage();
+            AppSettingsProvider.BasePath = newImage.BasePath;
+
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "non-existing-folder",
+                FilePath = "/non-existing-folder",
+                ParentDirectory = "/",
+                IsDirectory = true
+            });
+            
+            // Test if deleted file
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "non-existing.jpg",
+                FilePath = "non-existing-folder/non-existing.jpg",
+                ParentDirectory = "/non-existing-folder",
+                FileHash = "4444"
+            });
+            
+            _syncservice.Deleted("/non-existing-folder");
+
+            var nonExisting = _query.GetItemByHash("4444");
+            Assert.AreEqual(nonExisting,null);
+            
+        }
 
     }
 }
