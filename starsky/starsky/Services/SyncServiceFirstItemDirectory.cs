@@ -6,8 +6,11 @@ namespace starsky.Services
     // SyncServiceFirstItemDirectory
     public partial class SyncService
     {
+        // Subpath is the base folder, it scans subfolders
         public void FirstItemDirectory(string subpath = "/")
         {
+            subpath = _query.SubPathSlashRemove(subpath);
+
             // Loop though all folders
             var subFoldersFullPath = Files.GetAllFilesDirectory(subpath);
 
