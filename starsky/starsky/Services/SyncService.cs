@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using starsky.Attributes;
 using starsky.Data;
 using starsky.Interfaces;
 using starsky.Models;
@@ -29,6 +30,8 @@ namespace starsky.Services
         And the subpath can ben 2018 to crawl only files inside this folder
         */
         
+        
+        [ExcludeFromCoverage] // The reason is because this is an index
         public IEnumerable<string> SyncFiles(string subPath = "")
         {
             // Handle single files
@@ -79,7 +82,7 @@ namespace starsky.Services
         }
 
         // Rename a list to database style (short style)
-        private static List<string> RenameListItemsToDbStyle(List<string> localSubFolderList)
+        public List<string> RenameListItemsToDbStyle(List<string> localSubFolderList)
         {
             var localSubFolderListDatabaseStyle = new List<string>();
 
