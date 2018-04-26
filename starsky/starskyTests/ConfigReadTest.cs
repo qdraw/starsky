@@ -32,9 +32,9 @@ namespace starskytests
          [TestMethod]
          public void RemoveLatestBackslashTest()
          {
-//             var input = ConfigRead.RemoveLatestBackslash("/2018/");
-//             var output = "/2018";
-//             Assert.AreEqual(input, output);
+             var input = ConfigRead.RemoveLatestBackslash("/2018"+ Path.DirectorySeparatorChar.ToString());
+             var output = "/2018";
+             Assert.AreEqual(input, output);
          }
 
          [ExcludeFromCoverage]
