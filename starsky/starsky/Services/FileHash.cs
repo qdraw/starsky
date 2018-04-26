@@ -55,11 +55,11 @@ namespace starsky.Services
                               + fullFileName 
                               + "            <<<<<<<<<<<<");
             
-            return Base32.Encode(_generateRandomBytes(27)) + "_T";
+            return Base32.Encode(GenerateRandomBytes(27)) + "_T";
         }
 
         // Create a random string
-        private static byte[] _generateRandomBytes(int length)
+        public static byte[] GenerateRandomBytes(int length)
         {
             // Create a buffer
             byte[] randBytes;
