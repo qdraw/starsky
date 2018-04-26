@@ -8,7 +8,6 @@ namespace starskyCli
 {
     public class SyncDatabase
     {
-
         public SyncDatabase()
         {
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
@@ -31,7 +30,6 @@ namespace starskyCli
 
         private readonly Query _query;
         private readonly SyncService _syncservice;
-
 
         public IEnumerable<string> SyncFiles(string subPath = "")
         {
