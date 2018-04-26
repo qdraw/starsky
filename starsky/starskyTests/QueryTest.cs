@@ -42,6 +42,11 @@ namespace starskytests
             
             Assert.AreEqual(hiJpgInput,hiJpgOutput);
             
+            // other api Get Object By FilePath
+            hiJpgOutput = _query.GetObjectByFilePath(hiJpgInput.FilePath);
+            Assert.AreEqual(hiJpgInput,hiJpgOutput);
+
+            
             var hi2JpgInput =  _query.AddItem(new FileIndexItem
             {
                 FileName = "hi2.jpg",
@@ -134,7 +139,7 @@ namespace starskytests
                 ColorClass = FileIndexItem.Color.Extras
             });
             
-            var hi2JpgInput =  _query.AddItem(new FileIndexItem
+            _query.AddItem(new FileIndexItem
             {
                 FileName = "hi2.jpg",
                 FilePath = "/display/hi2.jpg",
@@ -172,6 +177,27 @@ namespace starskytests
             Assert.AreEqual(releative2.PrevFilePath,null);
             
         }
+        
+        [ExcludeFromCoverage]
+        [TestMethod]
+        public void BreadcrumbDetailViewTest()
+        {
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "hi3.jpg",
+                FilePath = "/bread/hi3.jpg",
+                ParentDirectory = "/bread", // without slash
+                FileHash = "234565432",
+                ColorClass = FileIndexItem.Color.Extras,
+                IsDirectory = false
+            });
+            
+            var exptectedOutput = new List<string>{"/","/bread"};
+            var output = _query.SingleItem("/bread/hi3.jpg").Breadcrumb;
+            CollectionAssert.AreEqual(exptectedOutput,output);
+        }
+        
+        
         
     }
 }
