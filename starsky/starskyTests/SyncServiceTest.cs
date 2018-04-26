@@ -255,7 +255,31 @@ namespace starskytests
             Assert.AreEqual(expectThisHashCode, baseFolder.FirstOrDefault().FileHash);
         }
 
-        
+        [TestMethod]
+        [ExcludeFromCoverage]
+        public void SyncServiceOrphanFolderTest()
+        {
+            var newImage = new CreateAnImage();
+            AppSettingsProvider.BasePath = _query.SubPathSlashRemove(newImage.BasePath);
+            
+            // Add Image
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "test.jpg",
+                FilePath = "/deletedFolder/test.jpg",
+                ParentDirectory = "/deletedFolder",
+                FileHash = "deletedFile",
+                IsDirectory = false
+            });
+
+            Assert.AreNotEqual(_query.GetItemByHash("deletedFile"),null);
+       
+            _syncservice.OrphanFolder("/");
+            
+            Assert.AreEqual(_query.GetItemByHash("deletedFile"),null);
+   
+            
+        }
 
     }
 }
