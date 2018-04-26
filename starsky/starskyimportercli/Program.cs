@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using starsky.Attributes;
 using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
@@ -8,6 +9,7 @@ namespace starskyimportercli
 {
     static class Program
     {
+        [ExcludeFromCoverage] // The ArgsHelper.cs is covered by unit tests
         static void Main(string[] args)
         {
             // Check if user want more info

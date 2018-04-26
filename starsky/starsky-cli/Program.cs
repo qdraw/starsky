@@ -1,4 +1,5 @@
 ﻿using System;
+using starsky.Attributes;
 using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
@@ -7,6 +8,7 @@ namespace starskyCli
 {
     public static class Program
     {
+        [ExcludeFromCoverage] // The ArgsHelper.cs is covered by unit tests
         public static void Main(string[] args)
         {
             // Check if user want more info
