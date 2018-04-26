@@ -43,6 +43,22 @@ namespace starsky.Helpers
 
             return needHelp;
         }
+        
+        // Default On
+        public static bool GetIndexMode(IReadOnlyList<string> args)
+        {
+            var isIndexMode = true;
+
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--index" || args[arg].ToLower() == "-i") && (arg + 1) != args.Count)
+                {
+                    bool.TryParse(args[arg + 1], out isIndexMode);
+                }
+            }
+
+            return isIndexMode;
+        }
 
         public static string GetPathFormArgs(IReadOnlyList<string> args, bool dbStyle = true)
         {
@@ -61,8 +77,22 @@ namespace starsky.Helpers
             }
             return path;
         }
+        
+        public static string GetSubpathFormArgs(IReadOnlyList<string> args)
+        {
+            var subpath = "/";
 
-        public static bool ifSubpath(IReadOnlyList<string> args)
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--subpath" || args[arg].ToLower() == "-s") && (arg + 1) != args.Count)
+                {
+                    subpath = args[arg + 1];
+                }
+            }
+            return subpath;
+        }
+        
+        public static bool IfSubpath(IReadOnlyList<string> args)
         {
             for (int arg = 0; arg < args.Count; arg++)
             {
@@ -78,35 +108,6 @@ namespace starsky.Helpers
             return true;
         }
         
-        public static string GetSubpathFormArgs(IReadOnlyList<string> args)
-        {
-            var subpath = "/";
-
-            for (int arg = 0; arg < args.Count; arg++)
-            {
-                if ((args[arg].ToLower() == "--subpath" || args[arg].ToLower() == "-s") && (arg + 1) != args.Count)
-                {
-                    subpath = args[arg + 1];
-                }
-            }
-            return subpath;
-        }
-
-        public static bool GetIndexMode(IReadOnlyList<string> args)
-        {
-            var isIndexMode = true;
-
-            for (int arg = 0; arg < args.Count; arg++)
-            {
-                if ((args[arg].ToLower() == "--index" || args[arg].ToLower() == "-i") && (arg + 1) != args.Count)
-                {
-                    bool.TryParse(args[arg + 1], out isIndexMode);
-                }
-            }
-
-            return isIndexMode;
-        }
-
         public static bool GetThumbnail(IReadOnlyList<string> args)
         {
             var isThumbnail = false;
