@@ -21,7 +21,22 @@ namespace starsky.Models
 
         public string FileHash { get; set; }
 
-        public string ParentDirectory { get; set; }
+        // Do not save null in database for ParentDirectory
+        private string _parentDirectory;
+        public string ParentDirectory
+        {
+            get => _parentDirectory ?? string.Empty;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _parentDirectory = string.Empty;
+                    return;
+                }
+                _parentDirectory = value;
+            }
+        }
+        
 
         public bool IsDirectory { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
 using starsky.Services;
@@ -13,8 +14,13 @@ namespace starskytests
         {
             var newImage = new CreateAnImage();
             // Testing base folder of Image, and Image it self
-            Assert.AreEqual(Files.IsFolderOrFile(newImage.BasePath), FolderOrFileModel.FolderOrFileTypeList.Folder);
-            Assert.AreEqual(Files.IsFolderOrFile(newImage.FullFilePath), FolderOrFileModel.FolderOrFileTypeList.File);
+            AppSettingsProvider.BasePath = newImage.BasePath;
+
+            Console.WriteLine(newImage.BasePath);
+            Console.WriteLine(newImage.FullFilePath);
+            
+            Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, Files.IsFolderOrFile("/"));
+            Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,Files.IsFolderOrFile(newImage.DbPath));
         }
 
         [TestMethod]
@@ -26,8 +32,9 @@ namespace starskytests
             
             // Used For subfolders
             var newImage = new CreateAnImage();
-            var filesInFolder = Files.GetAllFilesDirectory(newImage.BasePath);
-            Assert.AreEqual(filesInFolder.Any(),true);
+            AppSettingsProvider.BasePath = newImage.BasePath;
+            var filesInFolder = Files.GetAllFilesDirectory();
+            Assert.AreEqual(true,filesInFolder.Any());
             
         }
 

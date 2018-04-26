@@ -114,7 +114,8 @@ namespace starskytests
                 FileName = "_hashing-file-test.tmp",
                 FilePath = "/_hashing-file-test.tmp",
                 ParentDirectory = "/",
-                Tags = "!delete!"
+                Tags = "!delete!",
+                IsDirectory = false
             });
 
             FileIndexItem.DatabasePathToFilePath("_hashing-file-test.tmp");
@@ -170,7 +171,8 @@ namespace starskytests
             {
                 FileName = "non-existing.jpg",
                 FilePath = "/non-existing.jpg",
-                ParentDirectory = "/"
+                ParentDirectory = "/",
+                IsDirectory = false
             });
 
             Assert.AreEqual(_syncservice.Deleted("/non-existing.jpg"),true);
@@ -201,7 +203,8 @@ namespace starskytests
                 FileName = "non-existing.jpg",
                 FilePath = "non-existing-folder/non-existing.jpg",
                 ParentDirectory = "/non-existing-folder",
-                FileHash = "4444"
+                FileHash = "4444",
+                IsDirectory =  false
             });
             
             _syncservice.Deleted("/non-existing-folder");

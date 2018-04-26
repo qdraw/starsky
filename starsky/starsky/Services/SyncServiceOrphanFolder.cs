@@ -17,7 +17,7 @@ namespace starsky.Services
             // 2. Rename single folder
             // 3. The files are keeped in the index
 
-            // Check if folder does not exist on the fs
+            // Check if the subfolder it self exist, then search for child folders
             if(!Directory.Exists(FileIndexItem.DatabasePathToFilePath(subPath,false))) return null;
 
             var allItemsInDb = _query.GetAllRecursive(subPath);
