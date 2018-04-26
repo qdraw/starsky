@@ -195,6 +195,11 @@ namespace starskytests
             var exptectedOutput = new List<string>{"/","/bread"};
             var output = _query.SingleItem("/bread/hi3.jpg").Breadcrumb;
             CollectionAssert.AreEqual(exptectedOutput,output);
+
+            // Used for react to get the context
+            var pageTypeReact = _query.SingleItem("/bread/hi3.jpg").PageType;
+            Assert.AreEqual("DetailView",pageTypeReact);
+
         }
         
         
