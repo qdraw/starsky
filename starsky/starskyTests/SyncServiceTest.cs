@@ -116,10 +116,14 @@ namespace starskytests
                 Tags = "!delete!"
             });
 
-            var t = FileIndexItem.DatabasePathToFilePath("_hashing-file-test.tmp");
+            FileIndexItem.DatabasePathToFilePath("_hashing-file-test.tmp");
             
             var localHash = FileHash.GetHashCode(FileIndexItem.DatabasePathToFilePath("_hashing-file-test.tmp"));
+            var localHashInList = new List<string> {FileHash.GetHashCode(FileIndexItem.DatabasePathToFilePath("_hashing-file-test.tmp"))}.FirstOrDefault();
+            
+            Assert.AreEqual(localHash,localHashInList);
 
+            
             var databaseList = new List<FileIndexItem> {folder2};
             _syncservice.CheckMd5Hash(input,databaseList);
 
