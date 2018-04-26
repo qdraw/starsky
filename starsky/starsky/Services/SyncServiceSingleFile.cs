@@ -27,6 +27,7 @@ namespace starsky.Services
                 var dbItem = _query.GetObjectByFilePath(subPath);
                 if (dbItem != null)
                 {
+                    // If file already exist in database
                     dbListWithOneFile.Add(dbItem);
                 }
 

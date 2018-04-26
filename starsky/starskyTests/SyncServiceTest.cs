@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
@@ -144,9 +145,17 @@ namespace starskytests
 
             _syncservice.SingleFile(newImage.DbPath);
 
+            // Run twice >= result is one image in database
+            _syncservice.SingleFile(newImage.DbPath);
+
+            // todo: Need to check if there is only one image with the same name
+                
             var item = _query.SingleItem(newImage.DbPath).FileIndexItem;
             Assert.AreEqual(item.FileHash.Length >= 5,true);
             _query.RemoveItem(item);
+            
+            // The Base Directory will be ignored
+            Assert.AreEqual(_syncservice.SingleFile(),false);
 
         }
         
@@ -201,6 +210,52 @@ namespace starskytests
             Assert.AreEqual(nonExisting,null);
             
         }
+
+        [TestMethod]
+        [ExcludeFromCoverage]
+        public void SyncServiceFirstItemDirectoryTest() // Scans childfolders and add thumbnails
+        {
+            var newImage = new CreateAnImage();
+            AppSettingsProvider.BasePath = newImage.BasePath;
+            var copyLocationFilePath = Path.Combine(newImage.BasePath, "directory_test", "test.jpg");
+
+            var expectThisHashCode = FileHash.GetHashCode(copyLocationFilePath);
+            if (!Directory.Exists(Path.Combine(newImage.BasePath, "directory_test")))
+            {
+                Directory.CreateDirectory(Path.Combine(newImage.BasePath, "directory_test"));
+            }
+
+            if (!File.Exists(copyLocationFilePath))
+            {
+                File.Copy(newImage.FullFilePath,copyLocationFilePath);
+            }
+            
+            // Add base folder
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "directory_test",
+                FilePath = "/directory_test",
+                ParentDirectory = "/",
+                IsDirectory = true
+            });
+            
+            // Add Image
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "test.jpg",
+                FilePath = "/directory_test/test.jpg",
+                ParentDirectory = "/directory_test",
+                IsDirectory = false
+            });
+            
+            _syncservice.FirstItemDirectory();
+
+            var baseFolder = _query.DisplayFileFolders().Where(p => p.FileName == "directory_test").ToList();
+            Assert.AreEqual(baseFolder.Any(), true);
+            Assert.AreEqual(expectThisHashCode, baseFolder.FirstOrDefault().FileHash);
+        }
+
+        
 
     }
 }
