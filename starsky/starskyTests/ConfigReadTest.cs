@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starsky.Models;
 using starsky.Services;
@@ -50,11 +51,11 @@ namespace starskytests
          public void AddBackslashTest()
          {
              var input = ConfigRead.AddBackslash("2018");
-             var output = "2018/";
+             var output = "2018" + Path.DirectorySeparatorChar.ToString();
              Assert.AreEqual(input, output);
              
-             input = ConfigRead.AddBackslash("2018/");
-             output = "2018/";
+             input = ConfigRead.AddBackslash("2018" + Path.DirectorySeparatorChar.ToString());
+             output = "2018"+ Path.DirectorySeparatorChar.ToString();
              Assert.AreEqual(input, output);
          }
      }
