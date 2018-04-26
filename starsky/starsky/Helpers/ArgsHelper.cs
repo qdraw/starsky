@@ -25,6 +25,35 @@ namespace starsky.Helpers
             return needDebug;
         }
         
+        public static void SetEnvironmentVariableConnectionBasePathDatabaseType(IReadOnlyList<string> args)
+        {
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--databasetype" || args[arg].ToLower() == "-d") && (arg + 1) != args.Count)
+                {
+                    Environment.SetEnvironmentVariable("DatabaseType",args[arg+1]);
+                }
+                if ((args[arg].ToLower() == "--basepath" || args[arg].ToLower() == "-b") && (arg + 1) != args.Count)
+                {
+                    Environment.SetEnvironmentVariable("STARSKY_BASEPATH",args[arg+1]);
+                }
+                if ((args[arg].ToLower() == "--connection" || args[arg].ToLower() == "-c") && (arg + 1) != args.Count)
+                {
+                    Environment.SetEnvironmentVariable("DefaultConnection",args[arg+1]);
+                }
+                if ((args[arg].ToLower() == "--thumbnailtempfolder" || args[arg].ToLower() == "-f") && (arg + 1) != args.Count)
+                {
+                    Environment.SetEnvironmentVariable("ThumbnailTempFolder",args[arg+1]);
+                }
+                if ((args[arg].ToLower() == "--exiftoolpath" || args[arg].ToLower() == "-e") && (arg + 1) != args.Count)
+                {
+                    Environment.SetEnvironmentVariable("ExifToolPath",args[arg+1]);
+                }
+            }
+        }
+        
+        
+        
         public static bool NeedHelp(IReadOnlyList<string> args)
         {
             var needHelp = false;

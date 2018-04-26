@@ -12,13 +12,20 @@ namespace starskyCli
         {
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
-            if (AppSettingsProvider.DatabaseType == AppSettingsProvider.DatabaseTypeList.Mysql)
+            switch (AppSettingsProvider.DatabaseType)
             {
-                builder.UseMySql(AppSettingsProvider.DbConnectionString);
-            }
-            else
-            {
-                builder.UseSqlite(AppSettingsProvider.DbConnectionString);
+                case AppSettingsProvider.DatabaseTypeList.mysql:
+                    builder.UseMySql(AppSettingsProvider.DbConnectionString);
+                    break;
+                case AppSettingsProvider.DatabaseTypeList.inmemorydatabase:
+                    builder.UseInMemoryDatabase("starsky");
+                    break;
+                case AppSettingsProvider.DatabaseTypeList.sqlite:
+                    builder.UseSqlite(AppSettingsProvider.DbConnectionString);
+                    break;
+                default:
+                    builder.UseSqlite(AppSettingsProvider.DbConnectionString);
+                    break;
             }
 
             var options = builder.Options;

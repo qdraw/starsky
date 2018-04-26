@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
+using starsky.Helpers;
 using starskyCli;
 
 namespace starskytests
@@ -12,8 +13,10 @@ namespace starskytests
         [TestMethod]
         public void StarskyCliHelpTest()
         {
-//            var args = new List<string> {"-h"}.ToArray();
-//            Program.Main(args);
+            var newImage = new CreateAnImage();
+            var args = new List<string> {"-h","-v","-c","test","-d", "inmemorydatabase",
+                "-b", newImage.BasePath, "--thumbnailtempfolder", newImage.BasePath, "-e", newImage.FullFilePath }.ToArray();
+            Program.Main(args);
             
         }
     }

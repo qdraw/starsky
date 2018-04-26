@@ -13,7 +13,7 @@ namespace starskyimportercli
         {
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
-            if (AppSettingsProvider.DatabaseType == AppSettingsProvider.DatabaseTypeList.Mysql)
+            if (AppSettingsProvider.DatabaseType == AppSettingsProvider.DatabaseTypeList.mysql)
             {
                 builder.UseMySql(AppSettingsProvider.DbConnectionString);
             }

@@ -19,13 +19,20 @@ namespace starsky
         {
             ConfigRead.SetAppSettingsProvider();
 
-            if (AppSettingsProvider.DatabaseType == AppSettingsProvider.DatabaseTypeList.Mysql)
+            switch (AppSettingsProvider.DatabaseType)
             {
-                services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(AppSettingsProvider.DbConnectionString));
-            }
-            else
-            {
-                services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(AppSettingsProvider.DbConnectionString));
+                case AppSettingsProvider.DatabaseTypeList.mysql:
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(AppSettingsProvider.DbConnectionString));
+                    break;
+                case AppSettingsProvider.DatabaseTypeList.inmemorydatabase:
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
+                    break;
+                case AppSettingsProvider.DatabaseTypeList.sqlite:
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(AppSettingsProvider.DbConnectionString));
+                    break;
+                default:
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(AppSettingsProvider.DbConnectionString));
+                    break;
             }
            
             services.AddScoped<IQuery, Query>();

@@ -21,11 +21,11 @@ namespace starsky.Services
                     File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json");
                 obj = JObject.Parse(text);    
             }
-            var basePath = _readTextFromObjOrEnv("STARSKY_BASEPATH", obj);
-            var defaultConnection = _readTextFromObjOrEnv("DefaultConnection", obj);
-            var databaseType =_readTextFromObjOrEnv("DatabaseType", obj);
-            var thumbnailTempFolder =_readTextFromObjOrEnv("ThumbnailTempFolder", obj);
-            var exifToolPath = _readTextFromObjOrEnv("ExifToolPath", obj);
+            var basePath = ReadTextFromObjOrEnv("STARSKY_BASEPATH", obj);
+            var defaultConnection = ReadTextFromObjOrEnv("DefaultConnection", obj);
+            var databaseType = ReadTextFromObjOrEnv("DatabaseType", obj);
+            var thumbnailTempFolder = ReadTextFromObjOrEnv("ThumbnailTempFolder", obj);
+            var exifToolPath = ReadTextFromObjOrEnv("ExifToolPath", obj);
 
             SetAppSettingsProvider(basePath,defaultConnection,databaseType,thumbnailTempFolder,exifToolPath);
         }
@@ -49,9 +49,8 @@ namespace starsky.Services
             }
 
             AppSettingsProvider.BasePath = basePath;
-            AppSettingsProvider.DatabaseType = databaseType == "mysql"
-                ? AppSettingsProvider.DatabaseTypeList.Mysql
-                : AppSettingsProvider.DatabaseTypeList.Sqlite;
+            Enum.TryParse<AppSettingsProvider.DatabaseTypeList>(databaseType, out var databaseTypeEnum);
+            AppSettingsProvider.DatabaseType = databaseTypeEnum;
             AppSettingsProvider.DbConnectionString = defaultConnection; // First database type
             AppSettingsProvider.ThumbnailTempFolder = thumbnailTempFolder;
             AppSettingsProvider.ExifToolPath = exifToolPath;
@@ -60,7 +59,7 @@ namespace starsky.Services
 
         }
 
-        private static string _readTextFromObjOrEnv(string name, JObject obj = null)
+        private static string ReadTextFromObjOrEnv(string name, JObject obj = null)
         {
             // input=text, nameofvar=text 
             // >>> Base Path of Orginal images <<<

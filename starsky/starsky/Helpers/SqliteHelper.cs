@@ -9,7 +9,7 @@ namespace starsky.Helpers
         // Feature to check if a SQLite Database not is locked
         public static bool IsReady()
         {
-            if(AppSettingsProvider.DatabaseType != AppSettingsProvider.DatabaseTypeList.Sqlite) return true; // mysql does not need this
+            if(AppSettingsProvider.DatabaseType != AppSettingsProvider.DatabaseTypeList.sqlite) return true; // mysql does not need this
             //     "DefaultConnection": "Data Source=data.db",
             // locked db:  data.db-journal
 

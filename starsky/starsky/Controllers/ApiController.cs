@@ -31,7 +31,7 @@ namespace starsky.Controllers
                 ExifToolPath = AppSettingsProvider.ExifToolPath,
                 ThumbnailTempFolder = AppSettingsProvider.ThumbnailTempFolder,
             };
-            if (AppSettingsProvider.DatabaseType != AppSettingsProvider.DatabaseTypeList.Mysql)
+            if (AppSettingsProvider.DatabaseType != AppSettingsProvider.DatabaseTypeList.mysql)
             {
                 model.DbConnectionString = AppSettingsProvider.DbConnectionString;
             }
