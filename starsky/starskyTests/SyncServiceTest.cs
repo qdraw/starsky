@@ -164,7 +164,10 @@ namespace starskytests
                 ParentDirectory = "/"
             });
 
-            _syncservice.Deleted("/non-existing.jpg");
+            Assert.AreEqual(_syncservice.Deleted("/non-existing.jpg"),true);
+            
+            // If file exist => ignore this one 
+            Assert.AreEqual(_syncservice.Deleted(newImage.DbPath),false);
 
         }
 
