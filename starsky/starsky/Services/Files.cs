@@ -38,6 +38,7 @@ namespace starsky.Services
 
             if (!Directory.Exists(path)) return new List<string>().ToArray();
             string[] folders = Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
+            // Used For subfolders
 
             return folders;
         }
@@ -52,6 +53,8 @@ namespace starsky.Services
                 path = FileIndexItem.DatabasePathToFilePath(path);
             }
             string[] allFiles = Directory.GetFiles(path);
+            
+            // Used for jpeg files
 
             var jpgFiles = new List<string>();
             foreach (var file in allFiles)
