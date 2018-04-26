@@ -121,6 +121,17 @@ namespace starskytests
          }
 
          [TestMethod]
+         public void ParseGPSTest()
+         {
+             var latitude = ExifRead.ConvertDegreeAngleToDouble("52° 18' 29.54\"", "N");
+             Assert.AreEqual(latitude,  52.308205555500003, 0.000001);
+             
+             var longitude = ExifRead.ConvertDegreeAngleToDouble("6° 11' 36.8\"", "E");
+             Assert.AreEqual(longitude,  6.1935555554999997, 0.000001);
+
+         }
+         
+         [TestMethod]
          public void ReadExifFromFileTest()
          {
              WriteExampleExifFile();
@@ -132,7 +143,6 @@ namespace starskytests
              Assert.AreEqual(item.Tags, "test, sion");
              Assert.AreEqual(item.Latitude,  52.308205555500003, 0.000001);
              Assert.AreEqual(item.Longitude, 6.1935555554999997, 0.000001);
-             
          }
 
      }

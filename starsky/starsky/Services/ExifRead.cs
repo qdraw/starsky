@@ -253,18 +253,21 @@ namespace starsky.Services
 
             var multiplier = (refGps.Contains("S") || refGps.Contains("W")) ? -1 : 1; //handle south and west
 
-            point = Regex.Replace(point, "[^0-9. ]", ""); //remove the characters
+            point = Regex.Replace(point, "[^0-9\\., ]", "", RegexOptions.CultureInvariant); //remove the characters
 
+            // When you use an localisation where commas are used instead of a dot
+            point = point.Replace(",", ".");
+            
             var pointArray = point.Split(' '); //split the string.
-
+            
             //Decimal degrees = 
             //   whole number of degrees, 
             //   plus minutes divided by 60, 
             //   plus seconds divided by 3600
 
-            var degrees = Double.Parse(pointArray[0]);
-            var minutes = Double.Parse(pointArray[1]) / 60;
-            var seconds = Double.Parse(pointArray[2]) / 3600;
+            var degrees = double.Parse(pointArray[0],CultureInfo.InvariantCulture);
+            var minutes = double.Parse(pointArray[1],CultureInfo.InvariantCulture) / 60;
+            var seconds = double.Parse(pointArray[2],CultureInfo.InvariantCulture) / 3600;
 
             return (degrees + minutes + seconds) * multiplier;
         }
