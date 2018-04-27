@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starsky.Helpers;
@@ -112,18 +113,21 @@ namespace starskytests
         [ExcludeFromCoverage]
         public void ArgsHelperSetEnvironmentByArgsShortTestListTest()
         {
+            var shortNameList = ArgsHelper.ShortNameList.ToArray();
+            var envNameList = ArgsHelper.EnvNameList.ToArray();
+
             var shortTestList = new List<string>();
-            for (int i = 0; i < ArgsHelper.ShortNameList.Count; i++)
+            for (int i = 0; i < shortNameList.Length; i++)
             {
-                shortTestList.Add(ArgsHelper.ShortNameList[i]);
+                shortTestList.Add(shortNameList[i]);
                 shortTestList.Add(i.ToString());
             }
             
             ArgsHelper.SetEnvironmentByArgs(shortTestList);
             
-            for (int i = 0; i < ArgsHelper.EnvNameList.Count; i++)
+            for (int i = 0; i < envNameList.Length; i++)
             {
-                Assert.AreEqual(Environment.GetEnvironmentVariable(ArgsHelper.EnvNameList[i]),i.ToString());
+                Assert.AreEqual(Environment.GetEnvironmentVariable(envNameList[i]),i.ToString());
             }
         }
         
@@ -131,18 +135,21 @@ namespace starskytests
         [ExcludeFromCoverage]
         public void ArgsHelperSetEnvironmentByArgsLongTestListTest()
         {
+            var longNameList = ArgsHelper.LongNameList.ToArray();
+            var envNameList = ArgsHelper.EnvNameList.ToArray();
+            
             var longTestList = new List<string>();
-            for (int i = 0; i < ArgsHelper.LongNameList.Count; i++)
+            for (int i = 0; i < longNameList.Length; i++)
             {
-                longTestList.Add(ArgsHelper.LongNameList[i]);
+                longTestList.Add(longNameList[i]);
                 longTestList.Add(i.ToString());
             }
             
             ArgsHelper.SetEnvironmentByArgs(longTestList);
 
-            for (int i = 0; i < ArgsHelper.EnvNameList.Count; i++)
+            for (int i = 0; i < envNameList.Length; i++)
             {
-                Assert.AreEqual(Environment.GetEnvironmentVariable(ArgsHelper.EnvNameList[i]),i.ToString());
+                Assert.AreEqual(Environment.GetEnvironmentVariable(envNameList[i]),i.ToString());
             }
         }
 

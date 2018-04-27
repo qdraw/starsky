@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using starsky.Models;
 
 namespace starsky.Helpers
@@ -25,19 +26,23 @@ namespace starsky.Helpers
             return needDebug;
         }
         
-        public static readonly List<string> ShortNameList = new List<string>{"-d","-c","-b","-f","-e"};
-        public static readonly List<string> LongNameList = new List<string>{"--databasetype","--connection","--basepath","--thumbnailtempfolder","--exiftoolpath"};
-        public static readonly List<string> EnvNameList = new List<string>{"DatabaseType","DefaultConnection","STARSKY_BASEPATH","ThumbnailTempFolder","ExifToolPath"};
-        
+        public static readonly IEnumerable<string> ShortNameList = new List<string>{"-d","-c","-b","-f","-e"}.AsReadOnly();
+        public static readonly IEnumerable<string> LongNameList = new List<string>{"--databasetype","--connection","--basepath","--thumbnailtempfolder","--exiftoolpath"}.AsReadOnly();
+        public static readonly IEnumerable<string> EnvNameList = new List<string>{"DatabaseType","DefaultConnection","STARSKY_BASEPATH","ThumbnailTempFolder","ExifToolPath"}.AsReadOnly();
+
         public static void SetEnvironmentByArgs(IReadOnlyList<string> args)
         {
-            for (int i = 0; i < ShortNameList.Count; i++)
+            var shortNameList = ShortNameList.ToArray();
+            var longNameList = LongNameList.ToArray();
+            var envNameList = EnvNameList.ToArray();
+
+            for (int i = 0; i < ShortNameList.Count(); i++)
             {
                 for (int arg = 0; arg < args.Count; arg++)
                 {
-                    if ((args[arg].ToLower() == LongNameList[i] || args[arg].ToLower() == ShortNameList[i]) && (arg + 1) != args.Count)
+                    if ((args[arg].ToLower() == longNameList[i] || args[arg].ToLower() == shortNameList[i]) && (arg + 1) != args.Count)
                     {
-                        Environment.SetEnvironmentVariable(EnvNameList[i],args[arg+1]);
+                        Environment.SetEnvironmentVariable(envNameList[i],args[arg+1]);
                     }
                 }
             }
