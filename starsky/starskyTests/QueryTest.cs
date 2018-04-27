@@ -195,14 +195,26 @@ namespace starskytests
             var exptectedOutput = new List<string>{"/","/bread"};
             var output = _query.SingleItem("/bread/hi3.jpg").Breadcrumb;
             CollectionAssert.AreEqual(exptectedOutput,output);
-
-            // Used for react to get the context
-            var pageTypeReact = _query.SingleItem("/bread/hi3.jpg").PageType;
-            Assert.AreEqual("DetailView",pageTypeReact);
-
         }
-        
-        
-        
+
+        [ExcludeFromCoverage]
+        [TestMethod]
+        public void BreadcrumbDetailViewPagViewTypeTest()
+        {
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "hi4.jpg",
+                FilePath = "/bread/hi4.jpg",
+                ParentDirectory = "/bread", // without slash
+                FileHash = "23456543",
+                ColorClass = FileIndexItem.Color.Extras,
+                IsDirectory = false
+            });
+            
+            // Used for react to get the context
+            var pageTypeReact = _query.SingleItem("/bread/hi4.jpg").PageType;
+            Assert.AreEqual("DetailView",pageTypeReact);
+        }
+
     }
 }
