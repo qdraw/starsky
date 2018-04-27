@@ -283,18 +283,18 @@ namespace starskytests
    
         }
 
-//        [TestMethod]
-//        [ExcludeFromCoverage]
-//        public void SyncServiceRenameListItemsToDbStyleTest()
-//        {
-//            var newImage = new CreateAnImage();
-//            AppSettingsProvider.BasePath = _query.SubPathSlashRemove(newImage.BasePath);
-//            var inputList = new List<string>{Path.Combine(AppSettingsProvider.BasePath,"___test.jpg")};
-//            var expectedOutputList = new List<string>{"/___test.jpg"};
-//
-//            var output = _syncservice.RenameListItemsToDbStyle(inputList);
-//            CollectionAssert.AreEqual(expectedOutputList,output);
-//        }
+        [TestMethod]
+        [ExcludeFromCoverage]
+        public void SyncServiceRenameListItemsToDbStyleTest()
+        {
+            var newImage = new CreateAnImage();
+            AppSettingsProvider.BasePath = _query.SubPathSlashRemove(newImage.BasePath);
+            var inputList = new List<string>{newImage.FullFilePath};
+            var expectedOutputList = new List<string>{newImage.DbPath};
+
+            var output = _syncservice.RenameListItemsToDbStyle(inputList);
+            CollectionAssert.AreEqual(expectedOutputList,output);
+        }
         
     }
 }
