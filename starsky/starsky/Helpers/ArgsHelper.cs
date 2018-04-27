@@ -25,37 +25,26 @@ namespace starsky.Helpers
             return needDebug;
         }
         
-        public static void SetEnvironmentVariableConnectionBasePathDatabaseType(IReadOnlyList<string> args)
+        public static readonly List<string> ShortNameList = new List<string>{"-d","-c","-b","-f","-e"};
+        public static readonly List<string> LongNameList = new List<string>{"--databasetype","--connection","--basepath","--thumbnailtempfolder","--exiftoolpath"};
+        public static readonly List<string> EnvNameList = new List<string>{"DatabaseType","DefaultConnection","STARSKY_BASEPATH","ThumbnailTempFolder","ExifToolPath"};
+        
+        public static void SetEnvironmentByArgs(IReadOnlyList<string> args)
         {
-            for (int arg = 0; arg < args.Count; arg++)
+            for (int i = 0; i < ShortNameList.Count; i++)
             {
-                if ((args[arg].ToLower() == "--databasetype" || args[arg].ToLower() == "-d") && (arg + 1) != args.Count)
+                for (int arg = 0; arg < args.Count; arg++)
                 {
-                    Environment.SetEnvironmentVariable("DatabaseType",args[arg+1]);
-                }
-                if ((args[arg].ToLower() == "--basepath" || args[arg].ToLower() == "-b") && (arg + 1) != args.Count)
-                {
-                    Environment.SetEnvironmentVariable("STARSKY_BASEPATH",args[arg+1]);
-                }
-                if ((args[arg].ToLower() == "--connection" || args[arg].ToLower() == "-c") && (arg + 1) != args.Count)
-                {
-                    Environment.SetEnvironmentVariable("DefaultConnection",args[arg+1]);
-                }
-                if ((args[arg].ToLower() == "--thumbnailtempfolder" || args[arg].ToLower() == "-f") && (arg + 1) != args.Count)
-                {
-                    Environment.SetEnvironmentVariable("ThumbnailTempFolder",args[arg+1]);
-                }
-                if ((args[arg].ToLower() == "--exiftoolpath" || args[arg].ToLower() == "-e") && (arg + 1) != args.Count)
-                {
-                    Environment.SetEnvironmentVariable("ExifToolPath",args[arg+1]);
+                    if ((args[arg].ToLower() == LongNameList[i] || args[arg].ToLower() == ShortNameList[i]) && (arg + 1) != args.Count)
+                    {
+                        Environment.SetEnvironmentVariable(EnvNameList[i],args[arg+1]);
+                    }
                 }
             }
         }
-        
-        
-        
-        public static bool NeedHelp(IReadOnlyList<string> args)
-        {
+
+       public static bool NeedHelp(IReadOnlyList<string> args)
+       {
             var needHelp = false;
 
             for (int arg = 0; arg < args.Count; arg++)

@@ -14,8 +14,8 @@ namespace starskyCli
             AppSettingsProvider.Verbose = ArgsHelper.NeedVerbose(args);
 
             // If used '-d inmemorydatabase'
-            ArgsHelper.SetEnvironmentVariableConnectionBasePathDatabaseType(args);
-                
+            ArgsHelper.SetEnvironmentByArgs(args);
+
             ConfigRead.SetAppSettingsProvider();
             
             if (ArgsHelper.NeedHelp(args))

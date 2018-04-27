@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
+using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
 
@@ -25,9 +27,16 @@ namespace starskytests
              Assert.AreEqual(input,true);
          }
 
-         
+         [TestMethod]
+         public void SetAppSettingsProviderEnvTest()
+         {
+             // todo: this one
              
-             
+         }
+
+
+
+
          [ExcludeFromCoverage]
          [TestMethod]
          public void RemoveLatestBackslashTest()

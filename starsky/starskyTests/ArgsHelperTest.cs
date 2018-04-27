@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starsky.Helpers;
@@ -97,7 +98,7 @@ namespace starskytests
         
         [TestMethod]
         [ExcludeFromCoverage]
-        public void ArgsHelpeGetMoveTest()
+        public void ArgsHelperGetMoveTest()
         {
             var args = new List<string> {"-m"}.ToArray();
             Assert.AreEqual(ArgsHelper.GetMove(args), true);
@@ -106,6 +107,46 @@ namespace starskytests
             args = new List<string> {"-m","true"}.ToArray();
             Assert.AreEqual(ArgsHelper.GetMove(args), true);
         }
+
+        [TestMethod]
+        [ExcludeFromCoverage]
+        public void ArgsHelperSetEnvironmentByArgsShortTestListTest()
+        {
+            var shortTestList = new List<string>();
+            for (int i = 0; i < ArgsHelper.ShortNameList.Count; i++)
+            {
+                shortTestList.Add(ArgsHelper.ShortNameList[i]);
+                shortTestList.Add(i.ToString());
+            }
+            
+            ArgsHelper.SetEnvironmentByArgs(shortTestList);
+            
+            for (int i = 0; i < ArgsHelper.EnvNameList.Count; i++)
+            {
+                Assert.AreEqual(Environment.GetEnvironmentVariable(ArgsHelper.EnvNameList[i]),i.ToString());
+            }
+        }
         
+        [TestMethod]
+        [ExcludeFromCoverage]
+        public void ArgsHelperSetEnvironmentByArgsLongTestListTest()
+        {
+            var longTestList = new List<string>();
+            for (int i = 0; i < ArgsHelper.LongNameList.Count; i++)
+            {
+                longTestList.Add(ArgsHelper.LongNameList[i]);
+                longTestList.Add(i.ToString());
+            }
+            
+            ArgsHelper.SetEnvironmentByArgs(longTestList);
+
+            for (int i = 0; i < ArgsHelper.EnvNameList.Count; i++)
+            {
+                Assert.AreEqual(Environment.GetEnvironmentVariable(ArgsHelper.EnvNameList[i]),i.ToString());
+            }
+        }
+
+
+
     }
 }
