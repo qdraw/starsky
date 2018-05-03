@@ -291,7 +291,7 @@ namespace starskytests
             var newImage = new CreateAnImage();
             AppSettingsProvider.BasePath = newImage.BasePath;
             var inputList = new List<string>{newImage.FullFilePath};
-            var expectedOutputList = new List<string>{newImage.DbPath.Replace("/","")};
+            var expectedOutputList = new List<string>{newImage.DbPath.Replace(Path.DirectorySeparatorChar.ToString(),"")};
 
             Console.WriteLine("-inputList-");
 
