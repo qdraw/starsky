@@ -316,3 +316,8 @@ DerivedData/
 
 */.sonarqube/**
 starsky/starsky/.sonarqube*
+**/appsettings.senex*
+**/appsettings.mac*
+**/appsettings.win*
+starsky/starskyTests/coverage.xml
+starskyapp/ios/main.jsbundle
