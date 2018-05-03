@@ -259,7 +259,7 @@ namespace starskytests
             _query.AddItem(new FileIndexItem
             {
                 FileName = "test.jpg",
-                FilePath = "/"+ testfolder + newImage.DbPath,
+                FilePath = "/"+ testfolder + newImage.DbPath.Replace(Path.DirectorySeparatorChar.ToString(),"/"),
                 ParentDirectory = "/" + testfolder,
                 IsDirectory = false
             });
