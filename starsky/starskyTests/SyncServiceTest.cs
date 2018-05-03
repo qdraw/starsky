@@ -243,6 +243,9 @@ namespace starskytests
                 testfolder = split[i];
             }
 
+            Console.WriteLine("AppSettingsProvider.BasePath");
+            Console.WriteLine(AppSettingsProvider.BasePath);
+
             // Add base folder
             _query.AddItem(new FileIndexItem
             {
@@ -260,6 +263,9 @@ namespace starskytests
                 ParentDirectory = "/" + testfolder,
                 IsDirectory = false
             });
+
+            Console.WriteLine("\"/\"+ testfolder + newImage.DbPath");
+            Console.WriteLine("/"+ testfolder + newImage.DbPath);
             
             _syncservice.FirstItemDirectory();
 
