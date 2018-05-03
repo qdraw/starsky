@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
 
@@ -110,8 +112,19 @@ namespace starskytests
             var eightSeven = new List<FileIndexItem.Color> {FileIndexItem.Color.Trash,FileIndexItem.Color.Extras};
             var output = new FileIndexItem().GetColorClassList(input);
             CollectionAssert.AreEqual(eightSeven,output);
-            
         }
+
+        [TestMethod]
+        public void GetAllColorTest()
+        {
+            Assert.IsTrue(FileIndexItem.GetAllColor().Any());
+        }
+        
+
+        
+        
+
+        
         
 
 
