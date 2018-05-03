@@ -287,42 +287,13 @@ namespace starskytests
         [ExcludeFromCoverage]
         public void SyncServiceRenameListItemsToDbStyleTest()
         {
-            // Error in VSTS
             var newImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = newImage.BasePath;
+            AppSettingsProvider.BasePath = newImage.BasePath; // needs to have an / or \ at the end
             var inputList = new List<string>{newImage.FullFilePath};
             var expectedOutputList = new List<string>{newImage.DbPath.Replace(Path.DirectorySeparatorChar.ToString(),"")};
-
-            Console.WriteLine("-inputList-");
-
-            foreach (var item in inputList)
-            {
-                Console.WriteLine(item);
-            }
-
-            Console.WriteLine("-expectedOutputList-");
-            foreach (var item in expectedOutputList)
-            {
-                Console.WriteLine(item);
-            }
-
-            var vsts =
-                " C:\\Users\\VssAdministrator\\.nuget\\packages\\microsoft.testplatform.testhost\\15.6.0\\lib\\netstandard1.5\\exifreadingtest0.jpg";
-            var mac =
-                "/Users/dionvanvelde/.nuget/packages/microsoft.testplatform.testhost/15.6.0/lib/netstandard1.5/exifreadingtest0.jpg";
-            
-            var q = FileIndexItem.FullPathToDatabaseStyle(vsts);
-            Console.WriteLine(q);
-                
-
             var output = _syncservice.RenameListItemsToDbStyle(inputList);
-            
-            Console.WriteLine("-output-");
-            foreach (var item in output)
-            {
-                Console.WriteLine(item);
-            }
-            
+            // list of files names that are starting with a filename (and not an / or \ )
+
             CollectionAssert.AreEqual(expectedOutputList,output);
         }
         
