@@ -214,49 +214,58 @@ namespace starskytests
             
         }
 
-//        [TestMethod]
-//        [ExcludeFromCoverage]
-//        public void SyncServiceFirstItemDirectoryTest() // Scans childfolders and add thumbnails
-//        {
-//            var newImage = new CreateAnImage();
-//            AppSettingsProvider.BasePath = newImage.BasePath;
-//            var copyLocationFilePath = Path.Combine(newImage.BasePath, "directory_test", "test.jpg");
-//
-//            var expectThisHashCode = FileHash.GetHashCode(copyLocationFilePath);
-//            if (!Directory.Exists(Path.Combine(newImage.BasePath, "directory_test")))
-//            {
-//                Directory.CreateDirectory(Path.Combine(newImage.BasePath, "directory_test"));
-//            }
-//
-//            if (!File.Exists(copyLocationFilePath))
-//            {
-//                File.Copy(newImage.FullFilePath,copyLocationFilePath);
-//            }
-//            
-//            // Add base folder
-//            _query.AddItem(new FileIndexItem
-//            {
-//                FileName = "directory_test",
-//                FilePath = "/directory_test",
-//                ParentDirectory = "/",
-//                IsDirectory = true
-//            });
-//            
-//            // Add Image
-//            _query.AddItem(new FileIndexItem
-//            {
-//                FileName = "test.jpg",
-//                FilePath = "/directory_test/test.jpg",
-//                ParentDirectory = "/directory_test",
-//                IsDirectory = false
-//            });
-//            
-//            _syncservice.FirstItemDirectory();
-//
-//            var baseFolder = _query.DisplayFileFolders().Where(p => p.FileName == "directory_test").ToList();
-//            Assert.AreEqual(baseFolder.Any(), true);
-//            Assert.AreEqual(expectThisHashCode, baseFolder.FirstOrDefault().FileHash);
-//        }
+        [TestMethod]
+        [ExcludeFromCoverage]
+        public void SyncServiceFirstItemDirectoryTest() // Scans childfolders and add thumbnails
+        {
+            // Give some errors in vsts
+            
+            var newImage = new CreateAnImage();
+            
+            var split = newImage.BasePath.Split(Path.DirectorySeparatorChar);
+            AppSettingsProvider.BasePath = string.Empty;
+            var testfolder = string.Empty;
+
+            var expectThisHashCode = FileHash.GetHashCode(newImage.FullFilePath);
+
+            for (var i = 0; i < split.Length; i++)
+            {
+                if (i != split.Length - 2)
+                {
+                    AppSettingsProvider.BasePath += split[i];
+                    if (i != split.Length - 1)
+                    {
+                        AppSettingsProvider.BasePath += Path.DirectorySeparatorChar;
+                    }
+                    continue;
+                }
+                // save the last folder to test
+                testfolder = split[i];
+            }
+
+            // Add base folder
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = testfolder,
+                FilePath = "/"+ testfolder,
+                ParentDirectory = "/",
+                IsDirectory = true
+            });
+            
+            // Add Image
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "test.jpg",
+                FilePath = "/"+ testfolder + newImage.DbPath,
+                ParentDirectory = "/" + testfolder,
+                IsDirectory = false
+            });
+            
+            _syncservice.FirstItemDirectory();
+
+            var queryItem = _query.GetObjectByFilePath("/" + testfolder);
+            Assert.AreEqual(expectThisHashCode, queryItem.FileHash);
+        }
 
         [TestMethod]
         [ExcludeFromCoverage]
