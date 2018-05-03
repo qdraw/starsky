@@ -289,9 +289,9 @@ namespace starskytests
         {
             // Error in VSTS
             var newImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = _query.SubPathSlashRemove(newImage.BasePath);
+            AppSettingsProvider.BasePath = newImage.BasePath;
             var inputList = new List<string>{newImage.FullFilePath};
-            var expectedOutputList = new List<string>{newImage.DbPath};
+            var expectedOutputList = new List<string>{newImage.DbPath.Replace("/","")};
 
             Console.WriteLine("-inputList-");
 
@@ -305,6 +305,15 @@ namespace starskytests
             {
                 Console.WriteLine(item);
             }
+
+            var vsts =
+                " C:\\Users\\VssAdministrator\\.nuget\\packages\\microsoft.testplatform.testhost\\15.6.0\\lib\\netstandard1.5\\exifreadingtest0.jpg";
+            var mac =
+                "/Users/dionvanvelde/.nuget/packages/microsoft.testplatform.testhost/15.6.0/lib/netstandard1.5/exifreadingtest0.jpg";
+            
+            var q = FileIndexItem.FullPathToDatabaseStyle(vsts);
+            Console.WriteLine(q);
+                
 
             var output = _syncservice.RenameListItemsToDbStyle(inputList);
             
