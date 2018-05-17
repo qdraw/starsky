@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Rewrite.Internal.ApacheModRewrite;
 using starsky.Data;
 using starsky.Interfaces;
 using starsky.Models;
+using starsky.ViewModels;
 
 namespace starsky.Services
 {
@@ -17,6 +18,30 @@ namespace starsky.Services
         {
             _context = context;
         }
+        
+        public SearchViewModel Search(string query = "", int p = 0)
+        {
+            // Create an view model
+            var model = new SearchViewModel
+            {
+                PageNumber = p,
+                SearchQuery = query,
+                Breadcrumb = new List<string> {"/",query}
+            };
+            
+            query = query.Replace("?", "\\?");
+                
+            var queryRegex = new Regex(query.Replace(" ","|"), RegexOptions.IgnoreCase);
+            
+
+            // Always search case insensitive
+//            model.SearchCount = _context.FileIndex.Count(i => i.Tags.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0);
+            model.SearchCount = _context.FileIndex.Count(i => queryRegex.IsMatch(i.Tags));
+            
+            
+            return model;
+        }
+
 
         // The search feature on the website
         

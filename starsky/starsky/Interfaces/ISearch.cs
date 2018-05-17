@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using starsky.Models;
+using starsky.ViewModels;
 
 namespace starsky.Interfaces
 {
@@ -11,5 +9,6 @@ namespace starsky.Interfaces
         IEnumerable<FileIndexItem> SearchObjectItem(string tag = "", int pageNumber = 0);
         int SearchLastPageNumber(string tag);
         int SearchCount(string tag = "");
+        SearchViewModel Search(string query = "", int p = 0);
     }
 }

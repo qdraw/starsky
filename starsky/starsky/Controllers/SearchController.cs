@@ -24,49 +24,49 @@ namespace starsky.Controllers
         [HttpGet]
         public IActionResult Index(string t, int p = 0, bool json = false)
         {
-            // Json api && View()
-            
-            if (p <= 0) p = p * -1;
-            Stopwatch stopWatch = Stopwatch.StartNew();
+            return Json(_search.Search(t, p));
 
-
-            
-            // t = tag name | p == pagenr.
-
-            var model = new SearchViewModel
-            {
-                PageNumber = p,
-                SearchQuery = t,
-                Breadcrumb = new List<string> {"/"}
-            };
-            if (!string.IsNullOrEmpty(t))
-            {
-                model.Breadcrumb.Add(t);
-            }
-
-            if (string.IsNullOrWhiteSpace(t))
-            {
-                model.FileIndexItems = new List<FileIndexItem>();
-                if (json) return Json(model);
-                return View("Index", model);
-            }
-
-            model.LastPageNumber = _search.SearchLastPageNumber(t);
-            model.SearchCount = _search.SearchCount(t);
-
-            if (p > model.SearchCount)
-            {
-                Response.StatusCode = 404;
-                if (json) return Json("not found");
-                return View("Error", model);
-            }
-            
-            model.FileIndexItems = _search.SearchObjectItem(model.SearchQuery, model.PageNumber);
-            stopWatch.Stop();
-            model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
-
-            if (json) return Json(model);
-            return View("Index", model);
+//            // Json api && View()
+//            
+//            if (p <= 0) p = p * -1;
+//            Stopwatch stopWatch = Stopwatch.StartNew();
+//            
+//            // t = tag name | p == pagenr.
+//
+//            var model = new SearchViewModel
+//            {
+//                PageNumber = p,
+//                SearchQuery = t,
+//                Breadcrumb = new List<string> {"/"}
+//            };
+//            if (!string.IsNullOrEmpty(t))
+//            {
+//                model.Breadcrumb.Add(t);
+//            }
+//
+//            if (string.IsNullOrWhiteSpace(t))
+//            {
+//                model.FileIndexItems = new List<FileIndexItem>();
+//                if (json) return Json(model);
+//                return View("Index", model);
+//            }
+//
+//            model.LastPageNumber = _search.SearchLastPageNumber(t);
+//            model.SearchCount = _search.SearchCount(t);
+//
+//            if (p > model.SearchCount)
+//            {
+//                Response.StatusCode = 404;
+//                if (json) return Json("not found");
+//                return View("Error", model);
+//            }
+//            
+//            model.FileIndexItems = _search.SearchObjectItem(model.SearchQuery, model.PageNumber);
+//            stopWatch.Stop();
+//            model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
+//
+//            if (json) return Json(model);
+//            return View("Index", model);
         }
 
         [HttpGet]

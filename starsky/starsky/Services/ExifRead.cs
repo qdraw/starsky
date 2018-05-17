@@ -107,7 +107,6 @@ namespace starsky.Services
                 p => p.DirectoryName == "IPTC" 
                      && p.Name == "Caption/Abstract")?.Description;
             return caption;
-            
         }
         
         public static string GetExifKeywords(Directory exifItem)

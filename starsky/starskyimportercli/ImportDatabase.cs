@@ -8,7 +8,6 @@ namespace starskyimportercli
 {
     public class ImportDatabase
     {
-
         public ImportDatabase()
         {
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
@@ -28,7 +27,6 @@ namespace starskyimportercli
             var query = new Query(context);
             var isync = new SyncService(context,query);
             _importService = new ImportService(context,isync);
-
         }
 
         private readonly ImportService _importService;
