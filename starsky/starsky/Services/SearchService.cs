@@ -19,59 +19,101 @@ namespace starsky.Services
         {
             _context = context;
         }
-        
-        public SearchViewModel Search(string query = "", int p = 0)
+
+        public bool ContainInAllFields(SearchViewModel model, FileIndexItem item)
+        {
+            var isMatchList = new List<bool>();;
+            for (int i = 0; i < model.SearchIn.Count; i++)
+            {
+                var queryRegex = new Regex(model.SearchFor[i].Replace(" ", "|"), RegexOptions.IgnoreCase);
+                model.SearchQuery = QueryTransformations(model.SearchQuery);
+                isMatchList.Add(queryRegex.IsMatch(item.GetPropValue(model.SearchIn[i]).ToString()));
+            }
+            if (isMatchList.Contains(false)) return false;
+            return true;
+        }
+
+        public SearchViewModel Search(string query = "", int pageNumber = 0)
         {
             // Create an view model
             var model = new SearchViewModel
             {
-                PageNumber = p,
+                PageNumber = pageNumber,
                 SearchQuery = query,
                 Breadcrumb = new List<string> {"/",query}
             };
+
+            model = MatchSearch(model);
             
+            model.SearchCount = 0;
+            model.SearchCount += _context.FileIndex.Count(
+                p => ContainInAllFields(model,p)
+            );
+
+            // Calculate how much items we have
+//            model.SearchCount = 0;
+//            for (int i = 0; i < model.SearchIn.Count; i++)
+//            {
+//                var queryRegex = new Regex(model.SearchFor[i].Replace(" ","|"), RegexOptions.IgnoreCase);
+//                query = QueryTransformations(query);
+//
+//                model.SearchCount += _context.FileIndex.Count(
+//                    p => queryRegex.IsMatch(p.GetPropValue( model.SearchIn[i]).ToString()) 
+//                );
+//            }
+
                 
-            var queryRegex = new Regex(query.Replace(" ","|"), RegexOptions.IgnoreCase);
+//            var queryRegex = new Regex(query.Replace(" ","|"), RegexOptions.IgnoreCase);
+//            
+//            // Always search case insensitive
+//            //  model.SearchCount = _context.FileIndex.Count(i => i.Tags.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0);
+//            model.SearchCount = _context.FileIndex.Count(i => queryRegex.IsMatch(i.Tags));
             
-            // Always search case insensitive
-            //  model.SearchCount = _context.FileIndex.Count(i => i.Tags.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0);
-            model.SearchCount = _context.FileIndex.Count(i => queryRegex.IsMatch(i.Tags));
             model.LastPageNumber = GetLastPageNumber(model.SearchCount);
             
             return model;
         }
 
 
-        public void MatchSearch(SearchViewModel model)
-        {
-            var defaultQuery = model.SearchQuery;
-            foreach (var itemName in new SearchViewModel().FileIndexPropList())
-            {
-                Regex inurlRegex = new Regex("-"+ itemName +"(:|=|;)((\\w+|-|_|/)+|(\"|').+(\"|'))", RegexOptions.IgnoreCase);
-                defaultQuery = inurlRegex.Replace(defaultQuery,"");
-                if (inurlRegex.Match(model.SearchQuery).Success)
-                {
-                    var item = inurlRegex.Match(model.SearchQuery).Value;
-                    Regex rgx = new Regex("-"+ itemName +"(:|=|;)", RegexOptions.IgnoreCase);
-                    item = rgx.Replace(item, string.Empty);
-                    item = item.Replace("\"", string.Empty);
-                    item = item.Replace("'", string.Empty);
-                    model.AddSearchFor = item;
-                    model.AddSearchInStringType = itemName;
-                }
-            }
-            Console.WriteLine(defaultQuery);
+        private string _defaultQuery = string.Empty;
+        private string _orginalSearchQuery = string.Empty;
 
+        public SearchViewModel MatchSearch(SearchViewModel model)
+        {
+            _defaultQuery = model.SearchQuery;
+            _orginalSearchQuery = model.SearchQuery;
+
+            foreach (var itemName in new FileIndexItem().FileIndexPropList())
+            {
+                SearchItemName(model, itemName);
+            }
+
+            model.SearchQuery = "-Tags:" + _defaultQuery.Trim();
+            SearchItemName(model, "Tags");
+            model.SearchQuery = _orginalSearchQuery;
+            return model;
         }
-        
-        private void Search
+
+        private void SearchItemName(SearchViewModel model, string itemName)
+        {
+            Regex inurlRegex = new Regex("-"+ itemName +"(:|=|;)((\\w+|-|_|/)+|(\"|').+(\"|'))", RegexOptions.IgnoreCase);
+            _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
+            if (inurlRegex.Match(model.SearchQuery).Success)
+            {
+                var item = inurlRegex.Match(model.SearchQuery).Value;
+                Regex rgx = new Regex("-"+ itemName +"(:|=|;)", RegexOptions.IgnoreCase);
+                item = rgx.Replace(item, string.Empty);
+                item = item.Replace("\"", string.Empty);
+                item = item.Replace("'", string.Empty);
+                model.AddSearchFor = item;
+                model.AddSearchInStringType = itemName;
+            }
+        }
 
         
 
         private string QueryTransformations(string query)
         {
-            //            query = QueryTransformations(query);
-
             query = query.Trim();
             query = query.Replace("?", "\\?");
             return query;

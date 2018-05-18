@@ -97,14 +97,13 @@ namespace starskytests
             Assert.AreEqual(61, _search.Search("   CityLoop    ").SearchCount);
         }
 
-        [TestMethod]
-        public void SearchInUrlTest()
-        {
-            InsertSearchData();
-            Assert.AreEqual(2, _search.Search("-inurl:/stations").SearchCount);
-            Assert.AreEqual(2, _search.Search("-inurl:\"/stations\"").SearchCount);
-
-        }
+//        [TestMethod]
+//        public void SearchInUrlTest()
+//        {
+//            InsertSearchData();
+//            Assert.AreEqual(2, _search.Search("-inurl:/stations").SearchCount);
+//            Assert.AreEqual(2, _search.Search("-inurl:\"/stations\"").SearchCount);
+//        }
 
         [TestMethod]
         public void SearchSetSearchInStringTypeTest()
@@ -143,8 +142,17 @@ namespace starskytests
             // Single keyword
             var model = new SearchViewModel {SearchQuery = "-Filename:dion test"};
             _search.MatchSearch(model);
-            Assert.AreEqual(model.SearchIn.Contains("Filename"), true);
+            Assert.AreEqual(model.SearchIn.Contains("FileName"), true);
+            Assert.AreEqual(model.SearchIn.Contains("Tags"), true);
         }
+
+        [TestMethod]
+        public void ComparePropValueTest()
+        {
+            var test = new FileIndexItem() {Tags = "test"}.GetPropValue("Tags");
+            Assert.AreEqual(test,"test");
+        }
+
         
         [TestMethod]
         public void MatchSearchDefaultOptionTest()
@@ -152,6 +160,7 @@ namespace starskytests
             // Single keyword
             var model = new SearchViewModel {SearchQuery = "test"};
             _search.MatchSearch(model);
+            Assert.AreEqual(model.SearchIn.Contains("Tags"), true);
         } 
         
         

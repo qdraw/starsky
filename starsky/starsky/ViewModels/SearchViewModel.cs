@@ -29,7 +29,7 @@ namespace starsky.ViewModels
             {
                 if (_searchIn == null) _searchIn = new List<string>(); 
 
-                var fileIndexPropList = FileIndexPropList();
+                var fileIndexPropList = new FileIndexItem().FileIndexPropList();
                 var fileIndexPropListIndex = fileIndexPropList.FindIndex(x => x.Equals(value, StringComparison.OrdinalIgnoreCase)) ;
                 if (fileIndexPropListIndex != -1 )
                 {
@@ -56,22 +56,7 @@ namespace starsky.ViewModels
             }
         }
 
-        // Creat an List of all String based database fields
-        // Depends on FileIndex.cs
-        public List<string> FileIndexPropList()
-        {
-            var fileIndexPropList = new List<string>();
-            // only for types String in FileIndexItem()
 
-            foreach (var propertyInfo in new FileIndexItem().GetType().GetProperties())
-            {
-                if (propertyInfo.PropertyType == typeof(string) && propertyInfo.CanRead)
-                {
-                    fileIndexPropList.Add(propertyInfo.Name);
-                }
-            }
-            return fileIndexPropList;
-        }
 
 
 

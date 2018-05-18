@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using starsky.Services;
 
@@ -129,6 +130,36 @@ namespace starsky.Models
             return colorclassList.ToList();
         }
 
+        
+        // Creat an List of all String based database fields
+        public List<string> FileIndexPropList()
+        {
+            var fileIndexPropList = new List<string>();
+            // only for types String in FileIndexItem()
+
+            foreach (var propertyInfo in new FileIndexItem().GetType().GetProperties())
+            {
+                if (propertyInfo.PropertyType == typeof(string) && propertyInfo.CanRead)
+                {
+                    fileIndexPropList.Add(propertyInfo.Name);
+                }
+            }
+            return fileIndexPropList;
+        }
+
+        public object GetPropValue(string propertyName)
+        {
+            var source = this;
+            
+            // source: https://stackoverflow.com/questions/1196991/get-property-value-from-string-using-reflection-in-c-sharp
+            var property = source.GetType().GetRuntimeProperties().FirstOrDefault(p => string.Equals(p.Name, propertyName, StringComparison.OrdinalIgnoreCase));
+            if(property != null)
+            {
+                return property.GetValue(source);
+            }
+            return null;
+        }
+        
 
         public Color ColorClass { 
             get => _colorClass;
