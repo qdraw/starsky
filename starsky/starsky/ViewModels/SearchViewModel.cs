@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using starsky.Models;
 
@@ -13,13 +14,66 @@ namespace starsky.ViewModels
         public int LastPageNumber { get; set; }
         public int SearchCount { get; set; }
 
+        
+        // Contains an list of Database fields to search in.
         private List<string> _searchIn;
-        public List<string> SearchIn => _searchIn;
+        public List<string> SearchIn
+        {
+            get { return _searchIn; }
+            set { _searchIn = value; }
+        }
+        
+        public string AddSearchInStringType
+        {
+            set
+            {
+                if (_searchIn == null) _searchIn = new List<string>(); 
 
-//        public string SetSearchIn
-//        {
-//            set { return new FileIndexItem().GetType().GetProperties().ToList(); }
-//        };
+                var fileIndexPropList = FileIndexPropList();
+                var fileIndexPropListIndex = fileIndexPropList.FindIndex(x => x.Equals(value, StringComparison.OrdinalIgnoreCase)) ;
+                if (fileIndexPropListIndex != -1 )
+                {
+                    _searchIn.Add(fileIndexPropList[fileIndexPropListIndex]);
+                } 
+            }
+        }
+        
+        
+        // Search for the folling value in using SearchFor inside: _searchIn
+        private List<string> _searchFor;
+        public List<string> SearchFor
+        {
+            get { return _searchFor; }
+            set { _searchFor = value; }
+        }
+
+        public string AddSearchFor
+        {
+            set
+            {
+                if (_searchFor == null) _searchFor = new List<string>();
+                _searchFor.Add(value);
+            }
+        }
+
+        // Creat an List of all String based database fields
+        // Depends on FileIndex.cs
+        public List<string> FileIndexPropList()
+        {
+            var fileIndexPropList = new List<string>();
+            // only for types String in FileIndexItem()
+
+            foreach (var propertyInfo in new FileIndexItem().GetType().GetProperties())
+            {
+                if (propertyInfo.PropertyType == typeof(string) && propertyInfo.CanRead)
+                {
+                    fileIndexPropList.Add(propertyInfo.Name);
+                }
+            }
+            return fileIndexPropList;
+        }
+
+
 
         
 

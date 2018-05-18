@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Rewrite.Internal.ApacheModRewrite;
 using starsky.Data;
@@ -29,7 +30,6 @@ namespace starsky.Services
                 Breadcrumb = new List<string> {"/",query}
             };
             
-            query = QueryTransformations(query);
                 
             var queryRegex = new Regex(query.Replace(" ","|"), RegexOptions.IgnoreCase);
             
@@ -41,24 +41,53 @@ namespace starsky.Services
             return model;
         }
 
+
+        public void MatchSearch(SearchViewModel model)
+        {
+            var defaultQuery = model.SearchQuery;
+            foreach (var itemName in new SearchViewModel().FileIndexPropList())
+            {
+                Regex inurlRegex = new Regex("-"+ itemName +"(:|=|;)((\\w+|-|_|/)+|(\"|').+(\"|'))", RegexOptions.IgnoreCase);
+                defaultQuery = inurlRegex.Replace(defaultQuery,"");
+                if (inurlRegex.Match(model.SearchQuery).Success)
+                {
+                    var item = inurlRegex.Match(model.SearchQuery).Value;
+                    Regex rgx = new Regex("-"+ itemName +"(:|=|;)", RegexOptions.IgnoreCase);
+                    item = rgx.Replace(item, string.Empty);
+                    item = item.Replace("\"", string.Empty);
+                    item = item.Replace("'", string.Empty);
+                    model.AddSearchFor = item;
+                    model.AddSearchInStringType = itemName;
+                }
+            }
+            Console.WriteLine(defaultQuery);
+
+        }
+        
+        private void Search
+
+        
+
         private string QueryTransformations(string query)
         {
+            //            query = QueryTransformations(query);
+
             query = query.Trim();
             query = query.Replace("?", "\\?");
             return query;
         }
 
-        private string InUrlRegex(string query)
-        {
-            Regex inurlRegex = new Regex("-inurl(:|=|;)((\\w+|-|_|/)+|\".+\")", RegexOptions.IgnoreCase);
-            // Without escaping: -inurl(:|=|;)((\w+|-|_|\/)+|".+")
-            if (inurlRegex.Match(query).Success)
-            {
-                
-            }
-
-            return query;
-        }
+//        private string InUrlRegex(string query)
+//        {
+//            Regex inurlRegex = new Regex("-inurl(:|=|;)((\\w+|-|_|/)+|\".+\")", RegexOptions.IgnoreCase);
+//            // Without escaping: -inurl(:|=|;)((\w+|-|_|\/)+|".+")
+//            if (inurlRegex.Match(query).Success)
+//            {
+//                
+//            }
+//
+//            return query;
+//        }
 
 
         // The amount of search results on one single page

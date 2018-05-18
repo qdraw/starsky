@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starsky.Data;
 using starsky.Models;
 using starsky.Services;
+using starsky.ViewModels;
 
 namespace starskytests
 {
@@ -36,7 +39,7 @@ namespace starskytests
                     Tags = "schiphol, airplane, station"
                 });
             }
-            
+
             if (string.IsNullOrEmpty(_query.GetItemByHash("lelystadcentrum")))
             {
                 _query.AddItem(new FileIndexItem
@@ -48,37 +51,38 @@ namespace starskytests
                     Tags = "station, train"
                 });
             }
+
             if (string.IsNullOrEmpty(_query.GetItemByHash("cityloop9")))
             {
                 for (var i = 0; i < 61; i++)
                 {
                     _query.AddItem(new FileIndexItem
                     {
-                        FileName = "cityloop"+ i +".jpg",
-                        FilePath = "/cities/cityloop"+ i +".jpg",
+                        FileName = "cityloop" + i + ".jpg",
+                        FilePath = "/cities/cityloop" + i + ".jpg",
                         ParentDirectory = "/cities",
-                        FileHash = "cityloop"+ i,
+                        FileHash = "cityloop" + i,
                         Tags = "cityloop"
                     });
                 }
 
 //                var q = _query.GetAllFiles("/cities").Count;
             }
-            
+
         }
 
         [TestMethod]
         public void SearchCountStationTest()
         {
             InsertSearchData();
-            Assert.AreEqual(2, _search.Search("station").SearchCount);          
+            Assert.AreEqual(2, _search.Search("station").SearchCount);
         }
 
         [TestMethod]
         public void SearchLastPageCityloopTest()
         {
             InsertSearchData();
-            Assert.AreEqual(3, _search.Search("cityloop").LastPageNumber);          
+            Assert.AreEqual(3, _search.Search("cityloop").LastPageNumber);
         }
 
         [TestMethod]
@@ -102,7 +106,54 @@ namespace starskytests
 
         }
 
+        [TestMethod]
+        public void SearchSetSearchInStringTypeTest()
+        {
+            var model = new SearchViewModel() {AddSearchInStringType = "Tags"};
+            Assert.AreEqual("Tags", model.SearchIn.FirstOrDefault());
 
+            // Case insensitive!
+            model = new SearchViewModel() {AddSearchInStringType = "tAgs"};
+            Assert.AreEqual("Tags", model.SearchIn.FirstOrDefault());
+        }
 
+        [TestMethod]
+        public void MatchSearchTwoKeywordsTest()
+        {
+            var model = new SearchViewModel();
+            model.SearchQuery = "-Tags:dion -Filename:'dion.jpg'";
+            _search.MatchSearch(model);
+
+            Assert.AreEqual(model.SearchIn.Contains("Tags"), true);
+            Assert.AreEqual(model.SearchFor.Contains("dion.jpg"), true);
+        }
+
+        [TestMethod]
+        public void MatchSearchOneKeywordsTest()
+        {
+            // Single keyword
+            var model = new SearchViewModel {SearchQuery = "-Tags:dion"};
+            _search.MatchSearch(model);
+            Assert.AreEqual(model.SearchIn.Contains("Tags"), true);
+        }
+        
+        [TestMethod]
+        public void MatchSearchFileNameAndDefaultOptionTest()
+        {
+            // Single keyword
+            var model = new SearchViewModel {SearchQuery = "-Filename:dion test"};
+            _search.MatchSearch(model);
+            Assert.AreEqual(model.SearchIn.Contains("Filename"), true);
+        }
+        
+        [TestMethod]
+        public void MatchSearchDefaultOptionTest()
+        {
+            // Single keyword
+            var model = new SearchViewModel {SearchQuery = "test"};
+            _search.MatchSearch(model);
+        } 
+        
+        
     }
 }

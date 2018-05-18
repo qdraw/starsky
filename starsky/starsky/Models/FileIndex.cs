@@ -220,11 +220,11 @@ namespace starsky.Models
             return Directory.Exists(filepath) ? filepath : null;
         }
 
-        // todo: remove this?
-        public string DatabasePathToFilePath()
-        {
-            return DatabasePathToFilePath(FilePath);
-        }
+//        // todo: remove this?
+//        public string DatabasePathToFilePath()
+//        {
+//            return DatabasePathToFilePath(FilePath);
+//        }
 
         // Depends on App Settings for storing values
         // Depends on BasePathConfig for setting default values
