@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Rewrite.Internal.ApacheModRewrite;
 using starsky.Data;
 using starsky.Interfaces;
 using starsky.Models;
@@ -20,7 +17,7 @@ namespace starsky.Services
             _context = context;
         }
 
-        public bool ContainInAllFields(SearchViewModel model, FileIndexItem item)
+        public bool ContainInAllFields(SearchViewModel model, FileIndexItem item )
         {
             var isMatchList = new List<bool>();;
             for (int i = 0; i < model.SearchIn.Count; i++)
@@ -45,11 +42,17 @@ namespace starsky.Services
 
             model = MatchSearch(model);
             
+            // Calculate how much items we have
             model.SearchCount = 0;
             model.SearchCount += _context.FileIndex.Count(
                 p => ContainInAllFields(model,p)
             );
 
+            model.FileIndexItems = _context.FileIndex.Where(p => ContainInAllFields(model, p))
+                .OrderByDescending(p => p.DateTime).ToList()
+                .Skip( pageNumber * NumberOfResultsInView )
+                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView );
+            
             // Calculate how much items we have
 //            model.SearchCount = 0;
 //            for (int i = 0; i < model.SearchIn.Count; i++)
