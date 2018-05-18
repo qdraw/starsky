@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using starsky.Models;
 
 namespace starsky.ViewModels
@@ -11,6 +12,16 @@ namespace starsky.ViewModels
         public int PageNumber { get; set; }
         public int LastPageNumber { get; set; }
         public int SearchCount { get; set; }
+
+        private List<string> _searchIn;
+        public List<string> SearchIn => _searchIn;
+
+//        public string SetSearchIn
+//        {
+//            set { return new FileIndexItem().GetType().GetProperties().ToList(); }
+//        };
+
+        
 
         private double _elapsedSeconds;
         public PageViewType.PageType PageType => PageViewType.PageType.Search;

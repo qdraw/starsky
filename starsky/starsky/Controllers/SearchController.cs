@@ -78,13 +78,13 @@ namespace starsky.Controllers
 
             var model = new SearchViewModel();
             model.PageNumber = p;
-            model.SearchQuery = "!delete!";
-            model.Breadcrumb = new List<string>();
-            model.Breadcrumb.Add("/");
-            model.Breadcrumb.Add("/Search/Trash");
-
-            model.LastPageNumber = _search.SearchLastPageNumber("!delete!");
-            model.FileIndexItems = _search.SearchObjectItem(model.SearchQuery, model.PageNumber);
+//            model.SearchQuery = "!delete!";
+//            model.Breadcrumb = new List<string>();
+//            model.Breadcrumb.Add("/");
+//            model.Breadcrumb.Add("/Search/Trash");
+//
+//            model.LastPageNumber = _search.SearchLastPageNumber("!delete!");
+//            model.FileIndexItems = _search.SearchObjectItem(model.SearchQuery, model.PageNumber);
             return View("Trash", model);
         }
 
