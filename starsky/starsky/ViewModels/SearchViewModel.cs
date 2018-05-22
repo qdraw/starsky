@@ -57,7 +57,7 @@ namespace starsky.ViewModels
             set
             {
                 if (_searchFor == null) _searchFor = new List<string>();
-                _searchFor.Add(value);
+                _searchFor.Add(value.Trim());
             }
         }
 

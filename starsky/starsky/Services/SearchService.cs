@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -52,22 +53,60 @@ namespace starsky.Services
 
             for (var i = 0; i < model.SearchIn.Count; i++)
             {
-                var queryRegex = new Regex(model.SearchFor[i].Replace(" ", "|"), RegexOptions.IgnoreCase);
-                model.FileIndexItems = model.FileIndexItems.Concat(
-                    _context.FileIndex.Where(
-                        p => queryRegex.IsMatch(
-                            p.GetPropValue(model.SearchIn[i]).ToString() 
-                        )
-                    )
-                ).ToList();
+                switch (model.SearchIn[i].ToLower())
+                {
+                    case "filepath":
+                        model.FileIndexItems = model.FileIndexItems.Concat(
+                            _context.FileIndex.Where(
+                                p => p.FilePath.Contains(model.SearchFor[i])
+                            ).ToList()    
+                        );
+                        break;
+                    case "filename":
+                        model.FileIndexItems = model.FileIndexItems.Concat(
+                            _context.FileIndex.Where(
+                                p => p.FileName.Contains(model.SearchFor[i])
+                            ).ToList()    
+                        );
+                        break;
+                    case "parentdirectory":
+                        model.FileIndexItems = model.FileIndexItems.Concat(
+                            _context.FileIndex.Where(
+                                p => p.ParentDirectory.Contains(model.SearchFor[i])
+                            ).ToList()    
+                        );
+                        break;   
+                    case "tags":
+                        model.FileIndexItems = model.FileIndexItems.Concat(
+                            _context.FileIndex.Where(
+                                p => p.Tags.Contains(model.SearchFor[i])
+                            ).ToList()    
+                        );
+                        break;   
+                    case "description":
+                        model.FileIndexItems = model.FileIndexItems.Concat(
+                            _context.FileIndex.Where(
+                                p => p.Description.Contains(model.SearchFor[i])
+                            ).ToList()    
+                        );
+                        break;  
+                    case "title":
+                        model.FileIndexItems = model.FileIndexItems.Concat(
+                            _context.FileIndex.Where(
+                                p => p.Title.Contains(model.SearchFor[i])
+                            ).ToList()    
+                        );
+                        break;  
+                }
             }
-
+            
             model.SearchCount = model.FileIndexItems.Count();
-            
+
             model.FileIndexItems = model.FileIndexItems
+                .OrderByDescending(p => p.DateTime)
                 .Skip( pageNumber * NumberOfResultsInView )
-                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView ); 
-            
+                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView ).ToList(); 
+
             model.LastPageNumber = GetLastPageNumber(model.SearchCount);
             
             model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
@@ -103,7 +142,7 @@ namespace starsky.Services
                 item = rgx.Replace(item, string.Empty);
                 item = item.Replace("\"", string.Empty);
                 item = item.Replace("'", string.Empty);
-                model.AddSearchFor = item;
+                model.AddSearchFor = item.Trim();
                 model.AddSearchInStringType = itemName;
             }
         }
@@ -111,8 +150,6 @@ namespace starsky.Services
         private string QuerySafe(string query)
         {
             query = query.Trim();
-            query = query.Replace("?", "\\?");
-            query = query.Replace("!", "\\!");
             return query;
         }
         
