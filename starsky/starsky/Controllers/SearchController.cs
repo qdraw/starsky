@@ -71,24 +71,35 @@ namespace starsky.Controllers
 //            return View("Index", model);
         }
 
+
         [HttpGet]
-        public IActionResult Trash(int p = 0)
+        public IActionResult Trash(int p = 0, bool json = false)
         {
-            if (p <= 0) p = p * -1;
-
-            // t = tag name | p == pagenr.
-
-            var model = new SearchViewModel();
-            model.PageNumber = p;
-//            model.SearchQuery = "!delete!";
-//            model.Breadcrumb = new List<string>();
-//            model.Breadcrumb.Add("/");
-//            model.Breadcrumb.Add("/Search/Trash");
-//
-//            model.LastPageNumber = _search.SearchLastPageNumber("!delete!");
-//            model.FileIndexItems = _search.SearchObjectItem(model.SearchQuery, model.PageNumber);
-            return View("Trash", model);
+            // todo: throws nasty expetion!!!
+            // \\\\\\\\\\\\\\\\\\\\\\\\!
+            var model = _search.Search("!delete!", p);
+            if (json) return Json(model);
+            return View("Index", model);
         }
+
+//        [HttpGet]
+//        public IActionResult Trash(int p = 0)
+//        {
+//            if (p <= 0) p = p * -1;
+//
+//            // t = tag name | p == pagenr.
+//
+//            var model = new SearchViewModel();
+//            model.PageNumber = p;
+////            model.SearchQuery = "!delete!";
+////            model.Breadcrumb = new List<string>();
+////            model.Breadcrumb.Add("/");
+////            model.Breadcrumb.Add("/Search/Trash");
+////
+////            model.LastPageNumber = _search.SearchLastPageNumber("!delete!");
+////            model.FileIndexItems = _search.SearchObjectItem(model.SearchQuery, model.PageNumber);
+//            return View("Trash", model);
+//        }
 
         public IActionResult Error()
         {

@@ -22,6 +22,7 @@ namespace starsky.Controllers
         // Used for end2end test
         [HttpGet]
         [HttpHead]
+        [ResponseCache(Duration = 30 )]
         public IActionResult Env()
         {
             var model = new EnvViewModel
@@ -153,6 +154,9 @@ namespace starsky.Controllers
             return Json(item);
         }
 
+        [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f" } )]
+        [HttpGet]
+        [HttpHead]
         public IActionResult Thumbnail(
             string f, 
             bool isSingleitem = false, 

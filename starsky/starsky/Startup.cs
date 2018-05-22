@@ -17,6 +17,8 @@ namespace starsky
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCaching();
+            
             ConfigRead.SetAppSettingsProvider();
 
             switch (AppSettingsProvider.DatabaseType)
@@ -44,6 +46,8 @@ namespace starsky
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseResponseCaching();
+            
             app.UsePathBase("/starsky");
 
             if (env.IsDevelopment())

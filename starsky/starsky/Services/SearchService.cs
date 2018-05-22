@@ -118,7 +118,9 @@ namespace starsky.Services
         private string QueryTransformations(string query)
         {
             query = query.Trim();
-            query = query.Replace("?", "\\?");
+            // todo: this is not working!!!!
+//            query = query.Replace("?", "\\?");
+//            query = query.Replace("!", "\\!");
             return query;
         }
 
