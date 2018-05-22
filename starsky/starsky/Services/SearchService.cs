@@ -52,31 +52,22 @@ namespace starsky.Services
 
             for (var i = 0; i < model.SearchIn.Count; i++)
             {
-                model.FileIndexItems = model.FileIndexItems.Concat(_context.FileIndex.Where(p =>
-                    p.GetPropValue(model.SearchIn[i]).ToString().Contains(model.SearchFor[i]))).ToList();
+                var queryRegex = new Regex(model.SearchFor[i].Replace(" ", "|"), RegexOptions.IgnoreCase);
+                model.FileIndexItems = model.FileIndexItems.Concat(
+                    _context.FileIndex.Where(
+                        p => queryRegex.IsMatch(
+                            p.GetPropValue(model.SearchIn[i]).ToString() 
+                        )
+                    )
+                ).ToList();
             }
 
             model.SearchCount = model.FileIndexItems.Count();
             
-            
-//            // Calculate how much items we have
-//            model.SearchCount = 0;
-//            model.SearchCount += _context.FileIndex.Count(
-//                p => ContainInAllFields(model,p)
-//            );
-//            model.LastPageNumber = 0;
-//
-//            model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
-//            if (model.SearchCount == 0) return model;
-//
-//            model.FileIndexItems = _context.FileIndex.Where(p => ContainInAllFields(model, p))
-//                .OrderByDescending(p => p.DateTime).ToList()
-//                .Skip( pageNumber * NumberOfResultsInView )
-//                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView );  
-
-            model.FileIndexItems = 
-                model.FileIndexItems.Skip( pageNumber * NumberOfResultsInView )
+            model.FileIndexItems = model.FileIndexItems
+                .Skip( pageNumber * NumberOfResultsInView )
                 .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView ); 
+            
             model.LastPageNumber = GetLastPageNumber(model.SearchCount);
             
             model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
@@ -137,7 +128,7 @@ namespace starsky.Services
 
         private int GetLastPageNumber(int fileIndexQueryCount)
         {
-            var searchLastPageNumbers = (_roundUp(fileIndexQueryCount) / NumberOfResultsInView) - 1;
+            var searchLastPageNumbers = (RoundUp(fileIndexQueryCount) / NumberOfResultsInView) - 1;
 
             if (fileIndexQueryCount <= NumberOfResultsInView)
             {
@@ -147,7 +138,7 @@ namespace starsky.Services
        }
 
         // Round features:
-        private int _roundUp(int toRound)
+        private int RoundUp(int toRound)
         {
             // 10 => ResultsInView
             if (toRound % NumberOfResultsInView == 0) return toRound;
