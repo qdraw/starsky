@@ -49,22 +49,34 @@ namespace starsky.Services
             model.SearchQuery = QuerySafe(model.SearchQuery);
             model.SearchQuery = QueryShortcuts(model.SearchQuery);
             model = MatchSearch(model);
+
+            for (var i = 0; i < model.SearchIn.Count; i++)
+            {
+                model.FileIndexItems = model.FileIndexItems.Concat(_context.FileIndex.Where(p =>
+                    p.GetPropValue(model.SearchIn[i]).ToString().Contains(model.SearchFor[i]))).ToList();
+            }
+
+            model.SearchCount = model.FileIndexItems.Count();
             
-            // Calculate how much items we have
-            model.SearchCount = 0;
-            model.SearchCount += _context.FileIndex.Count(
-                p => ContainInAllFields(model,p)
-            );
-            model.LastPageNumber = 0;
+            
+//            // Calculate how much items we have
+//            model.SearchCount = 0;
+//            model.SearchCount += _context.FileIndex.Count(
+//                p => ContainInAllFields(model,p)
+//            );
+//            model.LastPageNumber = 0;
+//
+//            model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
+//            if (model.SearchCount == 0) return model;
+//
+//            model.FileIndexItems = _context.FileIndex.Where(p => ContainInAllFields(model, p))
+//                .OrderByDescending(p => p.DateTime).ToList()
+//                .Skip( pageNumber * NumberOfResultsInView )
+//                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView );  
 
-            model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
-            if (model.SearchCount == 0) return model;
-
-            model.FileIndexItems = _context.FileIndex.Where(p => ContainInAllFields(model, p))
-                .OrderByDescending(p => p.DateTime).ToList()
-                .Skip( pageNumber * NumberOfResultsInView )
-                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView );  
-
+            model.FileIndexItems = 
+                model.FileIndexItems.Skip( pageNumber * NumberOfResultsInView )
+                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView ); 
             model.LastPageNumber = GetLastPageNumber(model.SearchCount);
             
             model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;

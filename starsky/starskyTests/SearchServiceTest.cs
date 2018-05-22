@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Attributes;
 using starsky.Data;
 using starsky.Models;
 using starsky.Services;
@@ -101,10 +99,21 @@ namespace starskytests
         {
             InsertSearchData();
             Assert.AreEqual(61, _search.Search("cityloop").SearchCount);
+        }
+
+        [TestMethod]
+        public void SearchCityloopCaseSensitiveTest()
+        {
+            InsertSearchData();
             // Check case sensitive!
             Assert.AreEqual(61, _search.Search("CityLoop").SearchCount);
+        }
 
+        [TestMethod]
+        public void SearchCityloopTrimTest()
+        {
             // Test TRIM
+            InsertSearchData();
             Assert.AreEqual(61, _search.Search("   CityLoop    ").SearchCount);
         }
 
