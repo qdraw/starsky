@@ -72,15 +72,12 @@ namespace starsky.Controllers
 //            return View("Index", model);
         }
 
-
         [HttpGet]
         public IActionResult Trash(int p = 0, bool json = false)
         {
-            // todo: throws nasty expetion!!!
-            // \\\\\\\\\\\\\\\\\\\\\\\\!
             var model = _search.Search("!delete!", p);
             if (json) return Json(model);
-            return View("Index", model);
+            return View("Trash", model);
         }
 
 //        [HttpGet]

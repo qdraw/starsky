@@ -83,7 +83,7 @@ namespace starsky.Services
                 SearchItemName(model, itemName);
             }
 
-            model.SearchQuery = "-Tags:" + _defaultQuery.Trim();
+            model.SearchQuery = "-Tags:" + "\"" + _defaultQuery.Trim()+ "\""; // escape values for !delete! query
             SearchItemName(model, "Tags");
             model.SearchQuery = _orginalSearchQuery;
             return model;

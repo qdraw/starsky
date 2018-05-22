@@ -180,7 +180,6 @@ namespace starskytests
             InsertSearchData();
             var del = _search.Search("!delete!");
             Assert.AreEqual(del.FileIndexItems.FirstOrDefault().FileHash, "deletedfile");
-            
         }
 
     }
