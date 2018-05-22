@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -48,6 +47,7 @@ namespace starsky.Services
             _orginalSearchQuery = model.SearchQuery;
 
             model.SearchQuery = QuerySafe(model.SearchQuery);
+            model.SearchQuery = QueryShortcuts(model.SearchQuery);
             model = MatchSearch(model);
             
             // Calculate how much items we have
@@ -110,6 +110,12 @@ namespace starsky.Services
             query = query.Trim();
             query = query.Replace("?", "\\?");
             query = query.Replace("!", "\\!");
+            return query;
+        }
+        
+        private string QueryShortcuts(string query)
+        {
+            query = query.Replace("-inurl", "-FilePath");
             return query;
         }
 

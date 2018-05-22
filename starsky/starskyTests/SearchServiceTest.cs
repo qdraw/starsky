@@ -108,13 +108,14 @@ namespace starskytests
             Assert.AreEqual(61, _search.Search("   CityLoop    ").SearchCount);
         }
 
-//        [TestMethod]
-//        public void SearchInUrlTest()
-//        {
-//            InsertSearchData();
-//            Assert.AreEqual(2, _search.Search("-inurl:/stations").SearchCount);
-//            Assert.AreEqual(2, _search.Search("-inurl:\"/stations\"").SearchCount);
-//        }
+        [TestMethod]
+        public void SearchInUrlTest()
+        {
+            InsertSearchData();
+            // Not 3, because one file is marked as deleted!
+            Assert.AreEqual(2, _search.Search("-inurl:/stations").SearchCount);
+            Assert.AreEqual(2, _search.Search("-inurl:\"/stations\"").SearchCount);
+        }
 
         [TestMethod]
         public void SearchSetSearchInStringTypeTest()
