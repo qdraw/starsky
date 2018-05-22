@@ -7,6 +7,10 @@ namespace starsky.ViewModels
 {
     public class SearchViewModel
     {
+        public SearchViewModel()
+        {
+            if (_searchIn == null) _searchIn = new List<string>(); 
+        }
         public IEnumerable<FileIndexItem> FileIndexItems { get; set; }
         public List<string> Breadcrumb { get; set; }
         public string SearchQuery { get; set; }
@@ -27,8 +31,7 @@ namespace starsky.ViewModels
         {
             set
             {
-                if (_searchIn == null) _searchIn = new List<string>(); 
-
+                // use ctor to have an empty list
                 var fileIndexPropList = new FileIndexItem().FileIndexPropList();
                 var fileIndexPropListIndex = fileIndexPropList.FindIndex(x => x.Equals(value, StringComparison.OrdinalIgnoreCase)) ;
                 if (fileIndexPropListIndex != -1 )

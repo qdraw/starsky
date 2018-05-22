@@ -24,6 +24,7 @@ namespace starsky.Controllers
         [HttpGet]
         public IActionResult Index(string t, int p = 0, bool json = false)
         {
+            
             var model = _search.Search(t, p);
             if (json) return Json(model);
             return View("Index", model);

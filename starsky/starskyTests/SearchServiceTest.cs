@@ -51,6 +51,19 @@ namespace starskytests
                     Tags = "station, train"
                 });
             }
+            
+            if (string.IsNullOrEmpty(_query.GetItemByHash("deletedfile")))
+            {
+                _query.AddItem(new FileIndexItem
+                {
+                    FileName = "deletedfile.jpg",
+                    FilePath = "/stations/deletedfile.jpg",
+                    ParentDirectory = "/stations",
+                    FileHash = "deletedfile",
+                    Tags = "!delete!"
+                });
+            }
+            
 
             if (string.IsNullOrEmpty(_query.GetItemByHash("cityloop9")))
             {
@@ -65,8 +78,6 @@ namespace starskytests
                         Tags = "cityloop"
                     });
                 }
-
-//                var q = _query.GetAllFiles("/cities").Count;
             }
 
         }
@@ -161,8 +172,16 @@ namespace starskytests
             var model = new SearchViewModel {SearchQuery = "test"};
             _search.MatchSearch(model);
             Assert.AreEqual(model.SearchIn.Contains("Tags"), true);
-        } 
-        
-        
+        }
+
+        [TestMethod]
+        public void SearchForDeletedFiles()
+        {
+            InsertSearchData();
+            var del = _search.Search("!delete!");
+            Assert.AreEqual(del.FileIndexItems.FirstOrDefault().FileHash, "deletedfile");
+            
+        }
+
     }
 }
