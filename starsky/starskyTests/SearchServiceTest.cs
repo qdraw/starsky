@@ -34,7 +34,8 @@ namespace starskytests
                     FilePath = "/stations/schipholairplane.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "schipholairplane",
-                    Tags = "schiphol, airplane, station"
+                    Tags = "schiphol, airplane, station",
+                    Description = "schiphol"
                 });
             }
 
@@ -108,6 +109,20 @@ namespace starskytests
             Assert.AreEqual(3, _search.Search("cityloop").LastPageNumber);
         }
 
+        [TestMethod]
+        public void SearchSchipholDescriptionTest()
+        {
+            InsertSearchData();
+            Assert.AreEqual(1, _search.Search("-Description:Schiphol").SearchCount);
+        }
+   
+        [TestMethod]
+        public void SearchSchipholFilenameTest()
+        {
+            InsertSearchData();
+            Assert.AreEqual(1, _search.Search("-filename:'schipholairplane.jpg'").SearchCount);
+        }
+            
         [TestMethod]
         public void SearchCityloopTest()
         {
