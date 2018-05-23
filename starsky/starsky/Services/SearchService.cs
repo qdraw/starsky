@@ -61,42 +61,42 @@ namespace starsky.Services
                     case SearchViewModel.SearchInTypes.description:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
-                                p => p.FilePath.Contains(model.SearchFor[i])
+                                p => p.FilePath.ToLower().Contains(model.SearchFor[i].ToLower())
                             ).ToHashSet()    
                         );
                         break;
                     case SearchViewModel.SearchInTypes.filename:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
-                                p => p.FileName.Contains(model.SearchFor[i])
+                                p => p.FileName.ToLower().Contains(model.SearchFor[i].ToLower())
                             ).ToHashSet()    
                         );
                         break;
                     case SearchViewModel.SearchInTypes.filepath:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
-                                p => p.FilePath.Contains(model.SearchFor[i])
+                                p => p.FilePath.ToLower().Contains(model.SearchFor[i].ToLower())
                             ).ToHashSet()   
                         );
                         break;
                     case SearchViewModel.SearchInTypes.parentdirectory:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
-                                p => p.ParentDirectory.Contains(model.SearchFor[i])
+                                p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i].ToLower())
                             ).ToHashSet()    
                         );
                         break;   
                     case SearchViewModel.SearchInTypes.tags:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
-                                p => p.Tags.Contains(model.SearchFor[i])
+                                p => p.Tags.ToLower().Contains(model.SearchFor[i].ToLower())
                             ).ToHashSet()    
                         );
                         break;   
                     case SearchViewModel.SearchInTypes.title:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
-                                p => p.Title.Contains(model.SearchFor[i])
+                                p => p.Title.ToLower().Contains(model.SearchFor[i].ToLower())
                             ).ToHashSet()   
                         );
                         break;  
@@ -113,37 +113,37 @@ namespace starsky.Services
                 {
                     case SearchViewModel.SearchInTypes.description:
                         model.FileIndexItems = model.FileIndexItems.Where(
-                            p => p.Description.Contains(model.SearchFor[i])
+                            p => p.Description.ToLower().Contains(model.SearchFor[i].ToLower())
                         ).ToHashSet();  
                         break;  
                     
                     case SearchViewModel.SearchInTypes.filename:
                         model.FileIndexItems = model.FileIndexItems.Where(
-                            p => p.FileName.Contains(model.SearchFor[i])
+                            p => p.FileName.ToLower().Contains(model.SearchFor[i].ToLower())
                         ).ToHashSet();  
                         break;  
 
                     case SearchViewModel.SearchInTypes.filepath:
                         model.FileIndexItems = model.FileIndexItems.Where(
-                            p => p.FilePath.Contains(model.SearchFor[i])
+                            p => p.FilePath.ToLower().Contains(model.SearchFor[i].ToLower())
                         ).ToHashSet();  
                         break;  
 
                     case SearchViewModel.SearchInTypes.parentdirectory:
                         model.FileIndexItems = model.FileIndexItems.Where(
-                            p => p.ParentDirectory.Contains(model.SearchFor[i])
+                            p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i].ToLower())
                         ).ToHashSet();  
                         break;  
 
                     case SearchViewModel.SearchInTypes.tags:
                         model.FileIndexItems = model.FileIndexItems.Where(
-                            p => p.Tags.Contains(model.SearchFor[i])
+                            p => p.Tags.ToLower().Contains(model.SearchFor[i].ToLower())
                         ).ToHashSet();  
                         break;  
 
                     case SearchViewModel.SearchInTypes.title:
                         model.FileIndexItems = model.FileIndexItems.Where(
-                            p => p.Title.Contains(model.SearchFor[i])
+                            p => p.Title.ToLower().Contains(model.SearchFor[i].ToLower())
                         ).ToHashSet();  
                         break;  
                 }

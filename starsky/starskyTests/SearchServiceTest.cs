@@ -118,10 +118,9 @@ namespace starskytests
         [TestMethod]
         public void SearchCityloopCaseSensitiveTest()
         {
-            // Mysql is not case sensitive by default and this test will fail
-            //  InsertSearchData();
-            // Check case sensitive!
-            // Assert.AreEqual(61, _search.Search("CityLoop").SearchCount);
+              InsertSearchData();
+//             Check case sensitive!
+             Assert.AreEqual(61, _search.Search("CityLoop").SearchCount);
         }
 
         [TestMethod]
