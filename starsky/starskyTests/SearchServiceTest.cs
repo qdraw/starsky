@@ -35,7 +35,8 @@ namespace starskytests
                     ParentDirectory = "/stations",
                     FileHash = "schipholairplane",
                     Tags = "schiphol, airplane, station",
-                    Description = "schiphol"
+                    Description = "schiphol",
+                    Title = "Schiphol"
                 });
             }
 
@@ -121,6 +122,13 @@ namespace starskytests
         {
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("-filename:'schipholairplane.jpg'").SearchCount);
+        }
+        
+        [TestMethod]
+        public void SearchSchipholTitleTest()
+        {
+            InsertSearchData();
+            Assert.AreEqual(1, _search.Search("-title:Schiphol").SearchCount);
         }
             
         [TestMethod]

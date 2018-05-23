@@ -59,8 +59,22 @@ namespace starsky.Models
 
         public string Description { get; set; }
         
-        public string Title { get; set; }
-
+        // Do not save null in database for Title
+        private string _title;
+        public string Title
+        {
+            get => _title ?? string.Empty;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _title = string.Empty;
+                    return;
+                }
+                _title = value;
+            }
+        }
+        
         public DateTime DateTime { get; set; }
 
         public DateTime AddToDatabase { get; set; }
