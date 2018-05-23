@@ -20,6 +20,16 @@ namespace starsky.ViewModels
         public int LastPageNumber { get; set; }
         public int SearchCount { get; set; }
 
+        public enum SearchInTypes
+        {
+            filepath = 0,
+            filename = 1,
+            parentdirectory = 2,
+            tags = 3,
+            description = 4,
+            title = 5
+        }
+
         
         // Contains an list of Database fields to search in.
         private List<string> _searchIn;

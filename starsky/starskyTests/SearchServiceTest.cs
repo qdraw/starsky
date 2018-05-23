@@ -46,7 +46,19 @@ namespace starskytests
                     FilePath = "/stations/lelystadcentrum.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "lelystadcentrum",
-                    Tags = "station, train"
+                    Tags = "station, train, lelystad"
+                });
+            }
+            
+            if (string.IsNullOrEmpty(_query.GetItemByHash("lelystadcentrum2")))
+            {
+                _query.AddItem(new FileIndexItem
+                {
+                    FileName = "lelystadcentrum2.jpg",
+                    FilePath = "/stations2/lelystadcentrum.jpg",
+                    ParentDirectory = "/stations2",
+                    FileHash = "lelystadcentrum2",
+                    Tags = "lelystadcentrum2"
                 });
             }
             
@@ -84,6 +96,8 @@ namespace starskytests
         public void SearchCountStationTest()
         {
             InsertSearchData();
+            // With deleted files is it 3
+            // todo: check the value of this one
             Assert.AreEqual(2, _search.Search("station").SearchCount);
         }
 
@@ -144,9 +158,21 @@ namespace starskytests
         {
             InsertSearchData();
             // Not 3, because one file is marked as deleted!
-//            Assert.AreEqual(2, _search.Search("-inurl:/stations").SearchCount);
-//            Assert.AreEqual(2, _search.Search("-inurl:\"/stations\"").SearchCount);
+            // todo: check the value of this one
+            Assert.AreEqual(4, _search.Search("-inurl:/stations").SearchCount);
+            Assert.AreEqual(4, _search.Search("-inurl:\"/stations\"").SearchCount);
         }
+
+        [TestMethod]
+        public void SearchNarrowFileNameTags()
+        {
+            InsertSearchData();
+            // Not 2 > but needs to be narrow
+            // todo: check the value of this one
+            Assert.AreEqual(1, _search.Search("lelystad -ParentDirectory:/stations2").SearchCount);
+        }
+
+        
 
         [TestMethod]
         public void SearchSetSearchInStringTypeTest()

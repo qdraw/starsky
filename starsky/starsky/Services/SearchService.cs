@@ -53,52 +53,102 @@ namespace starsky.Services
 
             for (var i = 0; i < model.SearchIn.Count; i++)
             {
-                switch (model.SearchIn[i].ToLower())
+                var  searchInType = (SearchViewModel.SearchInTypes) 
+                    Enum.Parse(typeof(SearchViewModel.SearchInTypes), model.SearchIn[i].ToLower());
+                
+                switch (searchInType)
                 {
-                    case "filepath":
+                    case SearchViewModel.SearchInTypes.description:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
                                 p => p.FilePath.Contains(model.SearchFor[i])
-                            ).ToList()    
+                            ).ToHashSet()    
                         );
                         break;
-                    case "filename":
+                    case SearchViewModel.SearchInTypes.filename:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
                                 p => p.FileName.Contains(model.SearchFor[i])
-                            ).ToList()    
+                            ).ToHashSet()    
                         );
                         break;
-                    case "parentdirectory":
+                    case SearchViewModel.SearchInTypes.filepath:
+                        model.FileIndexItems = model.FileIndexItems.Concat(
+                            _context.FileIndex.Where(
+                                p => p.FilePath.Contains(model.SearchFor[i])
+                            ).ToHashSet()   
+                        );
+                        break;
+                    case SearchViewModel.SearchInTypes.parentdirectory:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
                                 p => p.ParentDirectory.Contains(model.SearchFor[i])
-                            ).ToList()    
+                            ).ToHashSet()    
                         );
                         break;   
-                    case "tags":
+                    case SearchViewModel.SearchInTypes.tags:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
                                 p => p.Tags.Contains(model.SearchFor[i])
-                            ).ToList()    
+                            ).ToHashSet()    
                         );
                         break;   
-                    case "description":
-                        model.FileIndexItems = model.FileIndexItems.Concat(
-                            _context.FileIndex.Where(
-                                p => p.Description.Contains(model.SearchFor[i])
-                            ).ToList()    
-                        );
-                        break;  
-                    case "title":
+                    case SearchViewModel.SearchInTypes.title:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
                                 p => p.Title.Contains(model.SearchFor[i])
-                            ).ToList()    
+                            ).ToHashSet()   
                         );
                         break;  
                 }
             }
+
+            // Narrow Search
+            for (var i = 0; i < model.SearchIn.Count; i++)
+            {
+                var searchInType = (SearchViewModel.SearchInTypes)
+                    Enum.Parse(typeof(SearchViewModel.SearchInTypes), model.SearchIn[i].ToLower());
+                
+                switch (searchInType)
+                {
+                    case SearchViewModel.SearchInTypes.description:
+                        model.FileIndexItems = model.FileIndexItems.Where(
+                            p => p.Description.Contains(model.SearchFor[i])
+                        ).ToHashSet();  
+                        break;  
+                    
+                    case SearchViewModel.SearchInTypes.filename:
+                        model.FileIndexItems = model.FileIndexItems.Where(
+                            p => p.FileName.Contains(model.SearchFor[i])
+                        ).ToHashSet();  
+                        break;  
+
+                    case SearchViewModel.SearchInTypes.filepath:
+                        model.FileIndexItems = model.FileIndexItems.Where(
+                            p => p.FilePath.Contains(model.SearchFor[i])
+                        ).ToHashSet();  
+                        break;  
+
+                    case SearchViewModel.SearchInTypes.parentdirectory:
+                        model.FileIndexItems = model.FileIndexItems.Where(
+                            p => p.ParentDirectory.Contains(model.SearchFor[i])
+                        ).ToHashSet();  
+                        break;  
+
+                    case SearchViewModel.SearchInTypes.tags:
+                        model.FileIndexItems = model.FileIndexItems.Where(
+                            p => p.Tags.Contains(model.SearchFor[i])
+                        ).ToHashSet();  
+                        break;  
+
+                    case SearchViewModel.SearchInTypes.title:
+                        model.FileIndexItems = model.FileIndexItems.Where(
+                            p => p.Title.Contains(model.SearchFor[i])
+                        ).ToHashSet();  
+                        break;  
+                }
+            }
+
             
             model.SearchCount = model.FileIndexItems.Count();
 
