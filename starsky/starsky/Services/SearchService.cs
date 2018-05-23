@@ -25,51 +25,58 @@ namespace starsky.Services
             {
                 var  searchInType = (SearchViewModel.SearchInTypes) 
                     Enum.Parse(typeof(SearchViewModel.SearchInTypes), model.SearchIn[i].ToLower());
-                
+
+                model.SearchFor[i] = model.SearchFor[i].ToLower();
+                    
                 switch (searchInType)
                 {
                     case SearchViewModel.SearchInTypes.description:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
-                                p => p.FilePath.ToLower().Contains(model.SearchFor[i].ToLower())
+                                p => p.FilePath.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()    
                         );
                         break;
                     case SearchViewModel.SearchInTypes.filename:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
-                                p => p.FileName.ToLower().Contains(model.SearchFor[i].ToLower())
+                                p => p.FileName.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()    
                         );
                         break;
                     case SearchViewModel.SearchInTypes.filepath:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
-                                p => p.FilePath.ToLower().Contains(model.SearchFor[i].ToLower())
+                                p => p.FilePath.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()   
                         );
                         break;
                     case SearchViewModel.SearchInTypes.parentdirectory:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
-                                p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i].ToLower())
-                            ).ToHashSet()    
-                        );
-                        break;   
-                    case SearchViewModel.SearchInTypes.tags:
-                        model.FileIndexItems = model.FileIndexItems.Concat(
-                            _context.FileIndex.Where(
-                                p => p.Tags.ToLower().Contains(model.SearchFor[i].ToLower())
+                                p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()    
                         );
                         break;   
                     case SearchViewModel.SearchInTypes.title:
                         model.FileIndexItems = model.FileIndexItems.Concat(
                             _context.FileIndex.Where(
-                                p => p.Title.ToLower().Contains(model.SearchFor[i].ToLower())
+                                p => p.Title.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()   
                         );
                         break;  
+                    default:
+                        var splitSearchFor = Split(model.SearchFor[i]);
+                        
+                        foreach (var itemSearchFor in splitSearchFor)
+                        {
+                            model.FileIndexItems = model.FileIndexItems.Concat(
+                                _context.FileIndex.Where(
+                                    p => p.Tags.ToLower().Contains(itemSearchFor)
+                                ).ToHashSet()    
+                            );
+                        }
+                    break;   
                 }
             }
         }
@@ -109,9 +116,15 @@ namespace starsky.Services
                         break;  
 
                     case SearchViewModel.SearchInTypes.tags:
-                        model.FileIndexItems = model.FileIndexItems.Where(
-                            p => p.Tags.ToLower().Contains(model.SearchFor[i].ToLower())
-                        ).ToHashSet();  
+                        // Tags are searched by multiple words
+
+                        var splitSearchFor = Split(model.SearchFor[i]);
+                        foreach (var itemSearchFor in splitSearchFor)
+                        {
+                            model.FileIndexItems = model.FileIndexItems.Where(
+                                p => p.Tags.ToLower().Contains(itemSearchFor)
+                            ).ToHashSet();  
+                        }
                         break;  
 
                     case SearchViewModel.SearchInTypes.title:
@@ -121,6 +134,11 @@ namespace starsky.Services
                         break;  
                 }
             }  
+        }
+
+        private List<string> Split(string input)
+        {
+            return input.ToLower().Split(" ").ToList();
         }
 
         public SearchViewModel Search(string query = "", int pageNumber = 0)
@@ -184,6 +202,7 @@ namespace starsky.Services
                 var item = inurlRegex.Match(model.SearchQuery).Value;
                 Regex rgx = new Regex("-"+ itemName +"(:|=|;)", RegexOptions.IgnoreCase);
                 item = rgx.Replace(item, string.Empty);
+                // Remove parenthesis
                 item = item.Replace("\"", string.Empty);
                 item = item.Replace("'", string.Empty);
                 model.AddSearchFor = item.Trim();

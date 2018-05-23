@@ -48,7 +48,7 @@ namespace starskytests
                     FilePath = "/stations/lelystadcentrum.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "lelystadcentrum",
-                    Tags = "station, train, lelystad"
+                    Tags = "station, train, lelystad, de trein"
                 });
             }
             
@@ -137,12 +137,26 @@ namespace starskytests
             InsertSearchData();
             Assert.AreEqual(61, _search.Search("cityloop").SearchCount);
         }
+        
+        [TestMethod]
+        public void SearchStationLelystadTest()
+        {
+            InsertSearchData();
+            Assert.AreEqual(1, _search.Search("station lelystad").SearchCount);
+        }
+
+        [TestMethod]
+        public void SearchParenthesisTreinTest()
+        {
+            InsertSearchData();
+            Assert.AreEqual(1, _search.Search("\"de trein\"").SearchCount);
+        }
 
         [TestMethod]
         public void SearchCityloopCaseSensitiveTest()
         {
-              InsertSearchData();
-//             Check case sensitive!
+             InsertSearchData();
+             //    Check case sensitive!
              Assert.AreEqual(61, _search.Search("CityLoop").SearchCount);
         }
 
