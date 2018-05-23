@@ -191,13 +191,13 @@ namespace starsky.Services
             }
         }
 
-        private string QuerySafe(string query)
+        public string QuerySafe(string query)
         {
             query = query.Trim();
             return query;
         }
-        
-        private string QueryShortcuts(string query)
+
+        public string QueryShortcuts(string query)
         {
             query = query.Replace("-inurl", "-FilePath");
             return query;
@@ -219,14 +219,14 @@ namespace starsky.Services
        }
 
         // Round features:
-        private int RoundUp(int toRound)
+        public int RoundUp(int toRound)
         {
             // 10 => ResultsInView
             if (toRound % NumberOfResultsInView == 0) return toRound;
             return (NumberOfResultsInView - toRound % NumberOfResultsInView) + toRound;
         }
 
-        private int _RoundDown(int toRound)
+        public int RoundDown(int toRound)
         {
             return toRound - toRound % 10;
         }

@@ -222,7 +222,23 @@ namespace starskytests
             Assert.AreEqual(test,"test");
         }
 
-        
+        [TestMethod]
+        public void QuerySafeTest()
+        {
+            var query = _search.QuerySafe("   d   ");
+            Assert.AreEqual("d",query);
+        }
+
+        [TestMethod]
+        public void QueryShortcutsInurlTest()
+        {
+            var query = _search.QueryShortcuts("-inurl");
+            Assert.AreEqual("-FilePath",query);
+        }
+
+
+
+
         [TestMethod]
         public void MatchSearchDefaultOptionTest()
         {
@@ -241,5 +257,17 @@ namespace starskytests
             Assert.AreEqual(del.FileIndexItems.FirstOrDefault().FileHash, "deletedfile");
         }
 
+        [TestMethod]
+        public void RoundDownTest()
+        {
+            Assert.AreEqual(_search.RoundDown(12),10);
+        }
+        
+        [TestMethod]
+        public void RoundUpTest()
+        {
+            Assert.AreEqual(_search.RoundUp(8),20); // NumberOfResultsInView
+        }
+        
     }
 }
