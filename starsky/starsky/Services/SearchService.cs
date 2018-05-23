@@ -143,16 +143,20 @@ namespace starsky.Services
 
         public SearchViewModel Search(string query = "", int pageNumber = 0)
         {
+
             var stopWatch = Stopwatch.StartNew();
             
             // Create an view model
             var model = new SearchViewModel
             {
                 PageNumber = pageNumber,
-                SearchQuery = query,
-                Breadcrumb = new List<string> {"/",query}
+                SearchQuery = query ?? string.Empty,
+                Breadcrumb = new List<string> {"/", query ?? string.Empty  }
+                // Null check will safe you from error 500 with Empty request
             };
 
+            if (query == null) return model;
+            
             _orginalSearchQuery = model.SearchQuery;
 
             model.SearchQuery = QuerySafe(model.SearchQuery);

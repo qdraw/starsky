@@ -95,6 +95,13 @@ namespace starskytests
         }
 
         [TestMethod]
+        public void SearchNull()
+        {
+            InsertSearchData();
+            Assert.AreEqual(0, _search.Search(null).SearchCount);
+        }
+        
+        [TestMethod]
         public void SearchCountStationTest()
         {
             InsertSearchData();
