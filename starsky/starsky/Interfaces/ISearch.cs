@@ -4,6 +4,6 @@ namespace starsky.Interfaces
 {
     public interface ISearch
     {
-        SearchViewModel Search(string query = "", int p = 0);
+        SearchViewModel Search(string query = "", int pageNumber = 0);
     }
 }

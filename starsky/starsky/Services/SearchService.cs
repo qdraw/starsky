@@ -19,38 +19,8 @@ namespace starsky.Services
             _context = context;
         }
 
-        public bool ContainInAllFields(SearchViewModel model, FileIndexItem item )
+        private void WideSearch(SearchViewModel model)
         {
-            var isMatchList = new List<bool>();
-
-            for (int i = 0; i < model.SearchIn.Count; i++)
-            {
-                var queryRegex = new Regex(model.SearchFor[i].Replace(" ", "|"), RegexOptions.IgnoreCase);
-                model.SearchQuery = model.SearchQuery.Trim();
-                isMatchList.Add(queryRegex.IsMatch(item.GetPropValue(model.SearchIn[i]).ToString()));
-            }
-            if (isMatchList.Contains(false)) return false;
-            return true;
-        }
-
-        public SearchViewModel Search(string query = "", int pageNumber = 0)
-        {
-            var stopWatch = Stopwatch.StartNew();
-            
-            // Create an view model
-            var model = new SearchViewModel
-            {
-                PageNumber = pageNumber,
-                SearchQuery = query,
-                Breadcrumb = new List<string> {"/",query}
-            };
-
-            _orginalSearchQuery = model.SearchQuery;
-
-            model.SearchQuery = QuerySafe(model.SearchQuery);
-            model.SearchQuery = QueryShortcuts(model.SearchQuery);
-            model = MatchSearch(model);
-
             for (var i = 0; i < model.SearchIn.Count; i++)
             {
                 var  searchInType = (SearchViewModel.SearchInTypes) 
@@ -102,7 +72,10 @@ namespace starsky.Services
                         break;  
                 }
             }
+        }
 
+        private void NarrowSearch(SearchViewModel model)
+        {
             // Narrow Search
             for (var i = 0; i < model.SearchIn.Count; i++)
             {
@@ -147,9 +120,30 @@ namespace starsky.Services
                         ).ToHashSet();  
                         break;  
                 }
-            }
+            }  
+        }
 
+        public SearchViewModel Search(string query = "", int pageNumber = 0)
+        {
+            var stopWatch = Stopwatch.StartNew();
             
+            // Create an view model
+            var model = new SearchViewModel
+            {
+                PageNumber = pageNumber,
+                SearchQuery = query,
+                Breadcrumb = new List<string> {"/",query}
+            };
+
+            _orginalSearchQuery = model.SearchQuery;
+
+            model.SearchQuery = QuerySafe(model.SearchQuery);
+            model.SearchQuery = QueryShortcuts(model.SearchQuery);
+            model = MatchSearch(model);
+
+            WideSearch(model);
+            NarrowSearch(model);
+
             model.SearchCount = model.FileIndexItems.Count();
 
             model.FileIndexItems = model.FileIndexItems
