@@ -45,11 +45,6 @@ namespace starsky.Services
             var displayItems = new List<FileIndexItem>();
                 foreach (var item in queryItems)
             {
-                if (item.Tags == null)
-                {
-                    item.Tags = string.Empty;
-                }
-    
                 if (!item.Tags.Contains("!delete!"))
                 {
                     displayItems.Add(item);

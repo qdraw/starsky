@@ -220,11 +220,12 @@ namespace starskytests
         [TestMethod]
         public void SearchSetSearchInStringTypeTest()
         {
-            var model = new SearchViewModel() {AddSearchInStringType = "Tags"};
+            var model = new SearchViewModel();
+            model.SetAddSearchInStringType("Tags");
             Assert.AreEqual("Tags", model.SearchIn.FirstOrDefault());
 
             // Case insensitive!
-            model = new SearchViewModel() {AddSearchInStringType = "tAgs"};
+            model.SetAddSearchInStringType("tAgs");
             Assert.AreEqual("Tags", model.SearchIn.FirstOrDefault());
         }
 

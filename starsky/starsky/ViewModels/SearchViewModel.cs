@@ -42,19 +42,16 @@ namespace starsky.ViewModels
             set { _searchIn = value; }
         }
         
-        public string AddSearchInStringType
+        public void SetAddSearchInStringType(string value)
         {
-            set
+            // use ctor to have an empty list
+            var fileIndexPropList = new FileIndexItem().FileIndexPropList();
+            var fileIndexPropListIndex = fileIndexPropList.FindIndex
+                (x => x.Equals(value, StringComparison.OrdinalIgnoreCase));
+            if (fileIndexPropListIndex != -1 )
             {
-                // use ctor to have an empty list
-                var fileIndexPropList = new FileIndexItem().FileIndexPropList();
-                var fileIndexPropListIndex = fileIndexPropList.FindIndex
-                    (x => x.Equals(value, StringComparison.OrdinalIgnoreCase));
-                if (fileIndexPropListIndex != -1 )
-                {
-                    _searchIn.Add(fileIndexPropList[fileIndexPropListIndex]);
-                } 
-            }
+                _searchIn.Add(fileIndexPropList[fileIndexPropListIndex]);
+            } 
         }
         
         

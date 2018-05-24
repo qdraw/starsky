@@ -177,7 +177,14 @@ namespace starskytests
             Assert.AreEqual(releative2.PrevFilePath,null);
             
         }
-        
+
+        [TestMethod]
+        public void QueryFolder_DisplayFileFoldersNoResultTest()
+        {
+            var getDisplay = _query.DisplayFileFolders("/12345678987654").ToList();
+            Assert.AreEqual(0, getDisplay.Count);
+        }
+
         [ExcludeFromCoverage]
         [TestMethod]
         public void BreadcrumbDetailViewTest()
