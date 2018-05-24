@@ -32,7 +32,7 @@ namespace starsky.Models
         
         public HashSet<string> Keywords
         {
-            get { return null; } // keep null
+            get { return _keywords; } // keep null? temp off
             set {
                     if (value == null)
                     {
