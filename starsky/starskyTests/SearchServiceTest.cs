@@ -64,14 +64,14 @@ namespace starskytests
                 });
             }
             
-            if (string.IsNullOrEmpty(_query.GetItemByHash("deletedfile")))
+            if (string.IsNullOrEmpty(_query.GetItemByHash("stationdeletedfile")))
             {
                 _query.AddItem(new FileIndexItem
                 {
                     FileName = "deletedfile.jpg",
                     FilePath = "/stations/deletedfile.jpg",
                     ParentDirectory = "/stations",
-                    FileHash = "deletedfile",
+                    FileHash = "stationdeletedfile",
                     Tags = "!delete!"
                 });
             }
@@ -295,7 +295,7 @@ namespace starskytests
             InsertSearchData();
             var del = _search.Search("!delete!");
             Assert.AreEqual(del.FileIndexItems.Count(),1);
-            Assert.AreEqual(del.FileIndexItems.FirstOrDefault().FileHash, "deletedfile");
+            Assert.AreEqual(del.FileIndexItems.FirstOrDefault().FileHash, "stationdeletedfile");
         }
 
         [TestMethod]

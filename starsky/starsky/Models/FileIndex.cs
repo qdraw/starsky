@@ -22,8 +22,21 @@ namespace starsky.Models
 
         public string FileHash { get; set; }
 
-        [System.ComponentModel.DefaultValue("")]
-        public string ParentDirectory { get; set; }
+        // Do not save null in database for tags
+        private string _parentDirectory;
+        public string ParentDirectory
+        {
+            get => _parentDirectory ?? string.Empty;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _parentDirectory = string.Empty;
+                    return;
+                }
+                _parentDirectory = value;
+            }
+        }
         
         public bool IsDirectory { get; set; }
 
@@ -322,23 +335,13 @@ namespace starsky.Models
 
         public string SearchAsteriskFolder(string fullFolderPath)
         {
-            
             Console.WriteLine(fullFolderPath);
             
-            
-//                        
 //            var parrentFolder = Breadcrumbs.BreadcrumbHelper(fullFolderPath).LastOrDefault();
-//            
 //            fullFolderPath.Split("/")
-//            
-//                
-//            Console.WriteLine();
-//
 //            var t = Directory.GetDirectories(parrentFolder, "*", SearchOption.AllDirectories);
 //            Console.WriteLine();
-
             return null;
-
         }
         
         
