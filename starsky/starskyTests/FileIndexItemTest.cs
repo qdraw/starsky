@@ -120,14 +120,13 @@ namespace starskytests
             Assert.IsTrue(FileIndexItem.GetAllColor().Any());
         }
         
-
+        [TestMethod]
+        public void FileIndexItemTitleTest()
+        {
+            var fileIndexItem = new FileIndexItem {Title = null};
+            Assert.AreEqual(fileIndexItem.Title,string.Empty);
+        }
         
-        
-
-        
-        
-
-
 
     }
 }
