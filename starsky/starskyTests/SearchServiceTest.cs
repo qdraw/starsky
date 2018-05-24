@@ -276,14 +276,6 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void ComparePropValueTest()
-        {
-            // not in use :(
-            var test = new FileIndexItem() {Tags = "test"}.GetPropValue("Tags");
-            Assert.AreEqual(test,"test");
-        }
-
-        [TestMethod]
         public void QuerySafeTest()
         {
             var query = _search.QuerySafe("   d   ");

@@ -161,20 +161,7 @@ namespace starsky.Models
             return fileIndexPropList;
         }
 
-        public object GetPropValue(string propertyName)
-        {
-            //  The LINQ expression 'where [p].GetPropValue(__get_Item_0).ToString().Contains(__get_Item_1)' could not be translated and will be evaluated locally.
-            var source = this;
-            
-            // source: https://stackoverflow.com/questions/1196991/get-property-value-from-string-using-reflection-in-c-sharp
-            var property = source.GetType().GetRuntimeProperties().FirstOrDefault(p => string.Equals(p.Name, propertyName, StringComparison.OrdinalIgnoreCase));
-            if(property != null)
-            {
-                return property.GetValue(source);
-            }
-            return null;
-        }
-        
+      
 
         public Color ColorClass { 
             get => _colorClass;
