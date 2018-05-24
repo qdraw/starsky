@@ -261,6 +261,7 @@ namespace starskytests
         [TestMethod]
         public void SearchElapsedSecondsIsNotZeroSecondsTest()
         {
+            InsertSearchData();
             var model = _search.Search("-Tags:dion");
             Assert.AreNotEqual(0f,model.ElapsedSeconds);
         }

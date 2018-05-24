@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -24,97 +25,170 @@ namespace starskytests
 
         private readonly Query _query;
 
-        [TestMethod]
-        [ExcludeFromCoverage]
-        public void QueryAddSingleItemReadReadAllBasicTest()
+        private static FileIndexItem _insertSearchDatahiJpgInput;
+        private static FileIndexItem _insertSearchDatahi2JpgInput;
+        private static FileIndexItem _insertSearchDatahi3JpgInput;
+        private static FileIndexItem _insertSearchDatahi4JpgInput;
+        private static FileIndexItem _insertSearchDatahi2SubfolderJpgInput;
+
+        private void InsertSearchData()
         {
-
-            var hiJpgInput = _query.AddItem(new FileIndexItem
+            if (string.IsNullOrEmpty(_query.GetItemByHash("09876543456789")))
             {
-                FileName = "hi.jpg",
-                FilePath = "/basic/hi.jpg",
-                ParentDirectory = "/basic",
-                FileHash = "09876543456789",
-                ColorClass = FileIndexItem.Color.Winner // 1
-            });
-
-            var hiJpgOutput = _query.SingleItem(hiJpgInput.FilePath).FileIndexItem;
+                _insertSearchDatahiJpgInput = _query.AddItem(new FileIndexItem
+                {
+                    FileName = "hi.jpg",
+                    FilePath = "/basic/hi.jpg",
+                    ParentDirectory = "/basic",
+                    FileHash = "09876543456789",
+                    ColorClass = FileIndexItem.Color.Winner, // 1
+                    Tags = "",
+                    Title = ""
+                });
+                
+                _insertSearchDatahi2JpgInput =  _query.AddItem(new FileIndexItem
+                {
+                    FileName = "hi2.jpg",
+                    FilePath = "/basic/hi2.jpg",
+                    Tags = "!delete!",
+                    ParentDirectory = "/basic"
+                });
             
-            Assert.AreEqual(hiJpgInput,hiJpgOutput);
+                _insertSearchDatahi3JpgInput =  _query.AddItem(new FileIndexItem
+                {
+                    FileName = "hi3.jpg",
+                    FilePath = "/basic/hi3.jpg",
+                    ParentDirectory = "/basic",
+                    ColorClass = FileIndexItem.Color.Trash // 9
+                });
+            
+                _insertSearchDatahi4JpgInput =  _query.AddItem(new FileIndexItem
+                {
+                    FileName = "hi4.jpg",
+                    FilePath = "/basic/hi4.jpg",
+                    ParentDirectory = "/basic",
+                    ColorClass = FileIndexItem.Color.Winner // 1
+                });
+            
+                _insertSearchDatahi2SubfolderJpgInput =  _query.AddItem(new FileIndexItem
+                {
+                    FileName = "hi2.jpg",
+                    FilePath = "/basic/subfolder/hi2.jpg",
+                    ParentDirectory = "/basic/subfolder",
+                    FileHash = "234567876543"
+                });
+            }
+        }
+
+        [TestMethod]
+        public void QueryAddSingleItemhiJpgOutputTest()
+        {
+            InsertSearchData();
+            var hiJpgOutput = _query.SingleItem(_insertSearchDatahiJpgInput.FilePath).FileIndexItem;
+            
+            Assert.AreEqual(_insertSearchDatahiJpgInput,hiJpgOutput);
             
             // other api Get Object By FilePath
-            hiJpgOutput = _query.GetObjectByFilePath(hiJpgInput.FilePath);
-            Assert.AreEqual(hiJpgInput,hiJpgOutput);
+            hiJpgOutput = _query.GetObjectByFilePath(_insertSearchDatahiJpgInput.FilePath);
+            Assert.AreEqual(_insertSearchDatahiJpgInput,hiJpgOutput);
+        }
 
-            
-            var hi2JpgInput =  _query.AddItem(new FileIndexItem
-            {
-                FileName = "hi2.jpg",
-                FilePath = "/basic/hi2.jpg",
-                Tags = "!delete!",
-                ParentDirectory = "/basic"
-            });
-            
-            var hi3JpgInput =  _query.AddItem(new FileIndexItem
-            {
-                FileName = "hi3.jpg",
-                FilePath = "/basic/hi3.jpg",
-                ParentDirectory = "/basic",
-                ColorClass = FileIndexItem.Color.Trash // 9
-            });
-            
-            var hi4JpgInput =  _query.AddItem(new FileIndexItem
-            {
-                FileName = "hi4.jpg",
-                FilePath = "/basic/hi4.jpg",
-                ParentDirectory = "/basic",
-                ColorClass = FileIndexItem.Color.Winner // 1
-            });
-            
-            var hi2SubfolderJpgInput =  _query.AddItem(new FileIndexItem
-            {
-                FileName = "hi2.jpg",
-                FilePath = "/basic/subfolder/hi2.jpg",
-                ParentDirectory = "/basic/subfolder",
-                FileHash = "234567876543"
-            });
-            
+        [TestMethod]
+        public void QueryAddSingleItemRootFolderTest()
+        {
+
+            InsertSearchData();
             // Test root folder ("/)
-            var getAllFilesExpectedResult = new List<FileIndexItem> {hiJpgInput, hi2JpgInput,hi3JpgInput,hi4JpgInput};
+            var getAllFilesExpectedResult = new List<FileIndexItem>
+            {
+                _insertSearchDatahiJpgInput,
+                _insertSearchDatahi2JpgInput,
+                _insertSearchDatahi3JpgInput,
+                _insertSearchDatahi4JpgInput
+            };
 
             var getAllResult = _query.GetAllFiles("/basic");
 
-            CollectionAssert.AreEqual(getAllFilesExpectedResult,getAllResult);
-            
+            CollectionAssert.AreEqual(getAllFilesExpectedResult.Select(p => p.FilePath).ToList(), 
+                getAllResult.Select(p => p.FilePath).ToList());
+        }
+
+        [TestMethod]
+        public void QueryAddSingleItemSubFolderTest()
+        {
+            InsertSearchData();
+
             // Test subfolder
-            var getAllFilesSubFolderExpectedResult = new List<FileIndexItem> {hi2SubfolderJpgInput};
+            var getAllFilesSubFolderExpectedResult = new List<FileIndexItem> {_insertSearchDatahi2SubfolderJpgInput};
 
             var getAllResultSubfolder = _query.GetAllFiles("/basic/subfolder");
-            CollectionAssert.AreEqual(getAllFilesSubFolderExpectedResult,getAllResultSubfolder);
             
+            CollectionAssert.AreEqual(getAllFilesSubFolderExpectedResult.Select(p => p.FilePath).ToList(), 
+                getAllResultSubfolder.Select(p => p.FilePath).ToList());
+        }
+
+
+
+        [TestMethod]
+        public void QueryAddSingleItemGetAllRecursiveTest()
+        {
+            InsertSearchData();
+
             // GetAllRecursive
-            var getAllRecursiveExpectedResult123 = new List<FileIndexItem> {
-                hiJpgInput, hi2JpgInput, hi2SubfolderJpgInput, hi3JpgInput, hi4JpgInput };
-            var getAllRecursive123 = _query.GetAllRecursive();
-            CollectionAssert.AreEqual(getAllRecursive123,getAllRecursiveExpectedResult123);
+            var getAllRecursiveExpectedResult123 = new List<FileIndexItem>
+            {
+                _insertSearchDatahiJpgInput,
+                _insertSearchDatahi2JpgInput,
+                _insertSearchDatahi2SubfolderJpgInput,
+                _insertSearchDatahi3JpgInput,
+                _insertSearchDatahi4JpgInput
+            }.OrderBy(p => p.FileName).ToList();
             
+            var getAllRecursive123 = _query.GetAllRecursive()
+                .Where(p => p.FilePath.Contains("/basic"))
+                .OrderBy(p => p.FileName).ToList();
+
+            Assert.AreEqual(getAllRecursive123.Count,getAllRecursiveExpectedResult123.Count);
             
+            CollectionAssert.AreEqual(getAllRecursive123.Select(p => p.FileHash).ToList(), 
+                getAllRecursiveExpectedResult123.Select(p => p.FileHash).ToList());
+        }
+
+        [TestMethod]
+        public void QueryAddSingleItemGetItemByHashTest()
+        {
+            InsertSearchData();
             // GetItemByHash
             // See above for objects
             Assert.AreEqual(_query.GetItemByHash("09876543456789"), "/basic/hi.jpg");
+        }
 
+        [TestMethod]
+        public void QueryAddSingleItemSubPathSlashRemoveTest()
+        {
+            InsertSearchData();
             // SubPathSlashRemove
             Assert.AreEqual(_query.SubPathSlashRemove("/test/"), "/test");
-            
+        }
+
+        [TestMethod]
+        public void QueryAddSingleItemNextWinnerTest()
+        {
+            InsertSearchData();
             // Next Winner
             var colorClassFilterList = new FileIndexItem().GetColorClassList("1");
             var next = _query.SingleItem("/basic/hi.jpg", colorClassFilterList);
             Assert.AreEqual(next.RelativeObjects.NextFilePath, "/basic/hi4.jpg");
-            
+        }
+
+        [TestMethod]
+        public void QueryAddSingleItemPrevWinnerTest()
+        {       
+            InsertSearchData();
             // Prev Winner
+            var colorClassFilterList = new FileIndexItem().GetColorClassList("1");
             var prev = _query.SingleItem("/basic/hi4.jpg", colorClassFilterList).RelativeObjects.PrevFilePath;
             Assert.AreEqual(prev, "/basic/hi.jpg");
-
         }
 
         [TestMethod]
