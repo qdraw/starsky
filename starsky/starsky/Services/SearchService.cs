@@ -215,7 +215,7 @@ namespace starsky.Services
                 // Remove parenthesis
                 item = item.Replace("\"", string.Empty);
                 item = item.Replace("'", string.Empty);
-                model.AddSearchFor = item.Trim();
+                model.SetAddSearchFor(item.Trim());
                 model.SetAddSearchInStringType(itemName);
             }
         }

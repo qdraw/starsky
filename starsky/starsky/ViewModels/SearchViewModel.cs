@@ -63,16 +63,11 @@ namespace starsky.ViewModels
             set { _searchFor = value; }
         }
 
-        public string AddSearchFor
+        public void SetAddSearchFor(string value)
         {
-            set
-            {
-                if (_searchFor == null) _searchFor = new List<string>();
-                _searchFor.Add(value.Trim());
-            }
+            if (_searchFor == null) _searchFor = new List<string>();
+            _searchFor.Add(value.Trim());
         }
-
-        
 
         private double _elapsedSeconds;
         public PageViewType.PageType PageType => PageViewType.PageType.Search;
