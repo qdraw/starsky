@@ -154,7 +154,7 @@ namespace starsky.Services
                 Breadcrumb = new List<string> {"/", query ?? string.Empty  }
                 // Null check will safe you from error 500 with Empty request
             };
-
+            
             if (query == null) return model;
             
             _orginalSearchQuery = model.SearchQuery;
@@ -199,7 +199,12 @@ namespace starsky.Services
 
         private void SearchItemName(SearchViewModel model, string itemName)
         {
-            Regex inurlRegex = new Regex("-"+ itemName +"(:|=|;)((\\w+|-|_|/)+|(\"|').+(\"|'))", RegexOptions.IgnoreCase);
+            // Without double escapes:
+            // (:|=|;)(([\w\!\~\-_\.]+|\/)|(\"|').+(\"|'))
+            Regex inurlRegex = new Regex(
+                "-" + itemName +
+                "(:|=|;)(([\\w\\!\\~\\-_\\.]+|\\/)|(\"|').+(\"|'))", 
+                RegexOptions.IgnoreCase);
             _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
             if (inurlRegex.Match(model.SearchQuery).Success)
             {
