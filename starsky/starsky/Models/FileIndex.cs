@@ -22,23 +22,9 @@ namespace starsky.Models
 
         public string FileHash { get; set; }
 
-        // Do not save null in database for ParentDirectory
-        private string _parentDirectory;
-        public string ParentDirectory
-        {
-            get => _parentDirectory ?? string.Empty;
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    _parentDirectory = string.Empty;
-                    return;
-                }
-                _parentDirectory = value;
-            }
-        }
+        [System.ComponentModel.DefaultValue("")]
+        public string ParentDirectory { get; set; }
         
-
         public bool IsDirectory { get; set; }
 
         // Do not save null in database for tags
@@ -57,6 +43,7 @@ namespace starsky.Models
             }
         }
 
+        [System.ComponentModel.DefaultValue("")]
         public string Description { get; set; }
         
         // Do not save null in database for Title

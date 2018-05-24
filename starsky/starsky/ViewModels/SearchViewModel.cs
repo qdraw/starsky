@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
 using starsky.Models;
 
 namespace starsky.ViewModels
@@ -23,6 +23,8 @@ namespace starsky.ViewModels
 
         public enum SearchInTypes
         {
+            [Description("value 3")]
+            // https://www.codementor.io/cerkit/giving-an-enum-a-string-value-using-the-description-attribute-6b4fwdle0
             filepath = 0,
             filename = 1,
             parentdirectory = 2,
@@ -46,7 +48,8 @@ namespace starsky.ViewModels
             {
                 // use ctor to have an empty list
                 var fileIndexPropList = new FileIndexItem().FileIndexPropList();
-                var fileIndexPropListIndex = fileIndexPropList.FindIndex(x => x.Equals(value, StringComparison.OrdinalIgnoreCase)) ;
+                var fileIndexPropListIndex = fileIndexPropList.FindIndex
+                    (x => x.Equals(value, StringComparison.OrdinalIgnoreCase));
                 if (fileIndexPropListIndex != -1 )
                 {
                     _searchIn.Add(fileIndexPropList[fileIndexPropListIndex]);
@@ -71,10 +74,6 @@ namespace starsky.ViewModels
                 _searchFor.Add(value.Trim());
             }
         }
-
-
-
-
 
         
 

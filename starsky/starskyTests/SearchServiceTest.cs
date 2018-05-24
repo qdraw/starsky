@@ -280,9 +280,6 @@ namespace starskytests
             Assert.AreEqual("-FilePath",query);
         }
 
-
-
-
         [TestMethod]
         public void MatchSearchDefaultOptionTest()
         {
