@@ -70,7 +70,7 @@ namespace starsky.ViewModels
         }
 
         private double _elapsedSeconds;
-        public PageViewType.PageType PageType => PageViewType.PageType.Search;
+        public string PageType { get; } = PageViewType.PageType.Search.ToString();
 
         public double ElapsedSeconds
         {

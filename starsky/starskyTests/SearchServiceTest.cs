@@ -232,8 +232,10 @@ namespace starskytests
         [TestMethod]
         public void MatchSearchTwoKeywordsTest()
         {
-            var model = new SearchViewModel();
-            model.SearchQuery = "-Tags:dion -Filename:'dion.jpg'";
+            var model = new SearchViewModel
+            {
+                SearchQuery = "-Tags:dion -Filename:'dion.jpg'"
+            };
             _search.MatchSearch(model);
 
             Assert.AreEqual(model.SearchIn.Contains("Tags"), true);
@@ -248,7 +250,21 @@ namespace starskytests
             _search.MatchSearch(model);
             Assert.AreEqual(model.SearchIn.Contains("Tags"), true);
         }
+
+        [TestMethod]
+        public void SearchPageTypeTest()
+        {
+            var model = _search.Search();
+            Assert.AreEqual("Search",model.PageType);
+        }
         
+        [TestMethod]
+        public void SearchElapsedSecondsIsNotZeroSecondsTest()
+        {
+            var model = _search.Search("-Tags:dion");
+            Assert.AreNotEqual(0f,model.ElapsedSeconds);
+        }
+
         [TestMethod]
         public void MatchSearchFileNameAndDefaultOptionTest()
         {
