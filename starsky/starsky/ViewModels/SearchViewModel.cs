@@ -35,13 +35,9 @@ namespace starsky.ViewModels
 
         
         // Contains an list of Database fields to search in.
-        private List<string> _searchIn;
-        public List<string> SearchIn
-        {
-            get { return _searchIn; }
-            set { _searchIn = value; }
-        }
-        
+        private readonly List<string> _searchIn;
+        public List<string> SearchIn => _searchIn;
+
         public void SetAddSearchInStringType(string value)
         {
             // use ctor to have an empty list
@@ -58,9 +54,9 @@ namespace starsky.ViewModels
         // Search for the folling value in using SearchFor inside: _searchIn
         private List<string> _searchFor;
         public List<string> SearchFor
-        {
+        {  
+            // don't change it to 'SearchFor => _searchFor'
             get { return _searchFor; }
-            set { _searchFor = value; }
         }
 
         public void SetAddSearchFor(string value)
