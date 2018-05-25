@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
 
@@ -14,6 +16,8 @@ namespace starskytests
             // Remove backslash
             var readonlyTest = new List<string>{"test/"};
             var basePathConfig = new BasePathConfig{Readonly = readonlyTest};
+            Console.WriteLine("basePathConfig.Readonly");
+            Console.WriteLine(basePathConfig.Readonly.FirstOrDefault());
             CollectionAssert.AreEqual(new List<string>{"test"}, basePathConfig.Readonly);
         }
 
