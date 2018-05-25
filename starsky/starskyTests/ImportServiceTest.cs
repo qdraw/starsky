@@ -26,9 +26,9 @@ namespace starskytests
         [TestMethod]
         public void ImportServiceInportTest()
         {
-            var createAnImage = new CreateAnImage();
-
-            _import.Import(createAnImage.FullFilePath);
+//            var createAnImage = new CreateAnImage();
+//
+//            _import.Import(createAnImage.FullFilePath);
         }
     }
 }
