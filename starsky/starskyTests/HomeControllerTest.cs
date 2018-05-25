@@ -1,9 +1,5 @@
-﻿using System.IO;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
@@ -29,7 +25,7 @@ namespace starskytests
             _query = new Query(context);
         }
 
-        public void InsertSearchData()
+        private void InsertSearchData()
         {
             if (string.IsNullOrEmpty(_query.GetItemByHash("home0012304590")))
             {
@@ -50,6 +46,7 @@ namespace starskytests
             InsertSearchData();
             var controller = new HomeController(_query);
             var actionResult = controller.Index("/homecontrollertest/hi.jpg",null,true) as JsonResult;
+            Assert.AreNotEqual(actionResult,null);
             var jsonCollection = actionResult.Value as DetailView;
             Assert.AreEqual("home0012304590",jsonCollection.FileIndexItem.FileHash);
         }
@@ -60,6 +57,7 @@ namespace starskytests
             InsertSearchData();
             var controller = new HomeController(_query);
             var actionResult = controller.Index("/homecontrollertest",null,true) as JsonResult;
+            Assert.AreNotEqual(actionResult,null);
             var jsonCollection = actionResult.Value as IndexViewModel;
             Assert.AreEqual("home0012304590",jsonCollection.FileIndexItems.FirstOrDefault().FileHash);
         }
