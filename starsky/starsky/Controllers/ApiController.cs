@@ -155,8 +155,8 @@ namespace starsky.Controllers
         }
 
         [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f" } )]
-        [HttpGet]
-        [HttpHead]
+        [HttpGet("/api/thumbnail/{f}")]
+        [HttpHead("/api/thumbnail/{f}")]
         public IActionResult Thumbnail(
             string f, 
             bool isSingleitem = false, 
@@ -211,6 +211,8 @@ namespace starsky.Controllers
             return File(fs, "image/jpeg");
         }
 
+        [HttpGet]
+        [HttpHead]
         public IActionResult DownloadPhoto(string f, bool isThumbnail = true){
             // f = filePath
             if (f.Contains("?isthumbnail")) return NotFound("please use &isthumbnail= instead of ?isthumbnail=");
