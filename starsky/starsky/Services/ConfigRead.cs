@@ -43,9 +43,8 @@ namespace starsky.Services
                 string text = File.ReadAllText(Path.Combine(basePath, ".config.json"));
                 var model = Newtonsoft.Json.JsonConvert.DeserializeObject<BasePathConfig>(text);
                 AppSettingsProvider.ReadOnlyFolders = model.Readonly;
+                // "structure": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss.ext/"
                 AppSettingsProvider.Structure = model.Structure;
-                AppSettingsProvider.StructureFilenamePattern = model.StructureFilenamePattern;
-                AppSettingsProvider.StructureDirectoryPattern = model.StructureDirectoryPattern;
             }
 
             AppSettingsProvider.BasePath = basePath;

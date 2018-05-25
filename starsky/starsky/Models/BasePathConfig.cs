@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using starsky.Services;
 
 namespace starsky.Models
 {
+    // used for .config files
     public class BasePathConfig
     {
         private List<string> _readonly;
@@ -23,9 +25,6 @@ namespace starsky.Models
             }
         }
         
-        
-        
-
         private string _structure;
 
         public string Structure
@@ -63,39 +62,60 @@ namespace starsky.Models
             }
         }
 
-        public List<string> StructureFilenamePattern => _getFilenamePattern();
-        public List<string> StructureDirectoryPattern => _getFoldersPattern();
+        public DateTime StructureDateTime;
 
-        private List<string> _getFilenamePattern()
+        public List<int> StructureAsterixPositions()
         {
-            // 20180419_164921.exP
-            var structureAllSplit = AppSettingsProvider.Structure.Split("/");
-            if (structureAllSplit.Length <= 2) Console.WriteLine("Should be protected by Model");
-
-            return new List<string> {structureAllSplit[structureAllSplit.Length - 1]};
+            return AllIndexesOf(_structure,"*");
         }
-
         
-        private static List<string> _getFoldersPattern()
-        {
-            var structureAllSplit = AppSettingsProvider.Structure.Split("/");
-
-            if (structureAllSplit.Length <= 2)
-            {
-                var list = new List<string> {"/"};
-                return list;
+        private List<int> AllIndexesOf(string str, string value) {
+            if (String.IsNullOrEmpty(value))
+                throw new ArgumentException("the string to find may not be empty", "value");
+            List<int> indexes = new List<int>();
+            for (int index = 0;; index += value.Length) {
+                index = str.IndexOf(value, index);
+                if (index == -1)
+                    return indexes;
+                indexes.Add(index);
             }
-            // Return if nothing only a list with one slash
-
-
-            var structure = new List<string>();
-            for (int i = 1; i < structureAllSplit.Length-1; i++)
-            {
-                structure.Add(structureAllSplit[i]);
-            }
-            // else return the subfolders
-            return structure;
         }
+        
+
+
+//        public List<string> StructureFilenamePattern => _getFilenamePattern();
+//        public List<string> StructureDirectoryPattern => _getFoldersPattern();
+//
+//        private List<string> _getFilenamePattern()
+//        {
+//            // 20180419_164921.exP
+//            var structureAllSplit = AppSettingsProvider.Structure.Split("/");
+//            if (structureAllSplit.Length <= 2) Console.WriteLine("Should be protected by Model");
+//
+//            return new List<string> {structureAllSplit[structureAllSplit.Length - 1]};
+//        }
+//
+//        
+//        private static List<string> _getFoldersPattern()
+//        {
+//            var structureAllSplit = AppSettingsProvider.Structure.Split("/");
+//
+//            if (structureAllSplit.Length <= 2)
+//            {
+//                var list = new List<string> {"/"};
+//                return list;
+//            }
+//            // Return if nothing only a list with one slash
+//
+//
+//            var structure = new List<string>();
+//            for (int i = 1; i < structureAllSplit.Length-1; i++)
+//            {
+//                structure.Add(structureAllSplit[i]);
+//            }
+//            // else return the subfolders
+//            return structure;
+//        }
         
     }
 }
