@@ -24,9 +24,25 @@ namespace starsky.Models
             }
         }
         public static List<string> ReadOnlyFolders { get; set; }
-        public static string Structure { get; set; }
-        public static List<string> StructureFilenamePattern { get; set; }
-        public static List<string> StructureDirectoryPattern { get; set; }
+
+        // doing the same trick as in 
+        // todo: merge with: BasePathConfig.cs
+        private static string _structure;
+        public static string Structure
+        {
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(_structure))
+                {
+                    return _structure;
+                }
+                return new BasePathConfig().Structure;
+            }
+            set
+            {
+                _structure = new BasePathConfig().Structure = value;
+            }
+        }
 
         public enum DatabaseTypeList
         {

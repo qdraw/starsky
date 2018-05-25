@@ -37,11 +37,11 @@ namespace starsky.Services
             var filesFullPath = Files.GetFilesInDirectory(inputFullPath,false);
             foreach (var item in filesFullPath)
             {
+                // Directory
                 var fullPath = ImportFile(item);
                 succesfullDirFullPaths.Add(fullPath);
             }
             return succesfullDirFullPaths;
-
         }
 
 
@@ -53,36 +53,44 @@ namespace starsky.Services
             if (IsHashInDatabase(fileHashCode)) return string.Empty;
 
             // Only exepts files with correct meta data
-            var model = ExifRead.ReadExifFromFile(inputFileFullPath);
-            
-            // You need to update this after moving file
-            model.FilePath = inputFileFullPath;
-            model.FileHash = fileHashCode;
-
-            model.FileName = model.ParseFileName();
-            var subFolders = model.ParseSubFolders();
-
-            var destFolder = _checkIfSubDirectoriesExist(subFolders);
-
-            var destinationFullPath = Path.Combine(destFolder, model.FileName);
-
-            if (inputFileFullPath != destinationFullPath 
-                && !File.Exists(destinationFullPath))
+            var fileIndexItem = ExifRead.ReadExifFromFile(inputFileFullPath);
+            var importIndexItem = new ImportIndexItem
             {
-                File.Copy(inputFileFullPath, destinationFullPath);
-            }
-
-            var destinationSubPath = FileIndexItem.FullPathToDatabaseStyle(destinationFullPath);
-            _isync.SyncFiles(destinationSubPath);
-
-            // Add item to Import database
-            var indexItem = new ImportIndexItem
-            {
-                AddToDatabase = DateTime.UtcNow,
-                FileHash = fileHashCode
+                SourceFullFilePath = inputFileFullPath,
+                DateTime = fileIndexItem.DateTime
             };
-            AddItem(indexItem);
-            return inputFileFullPath;
+            importIndexItem.ParseFileName();
+
+//            
+//            // You need to update this after moving file
+//            model.FilePath = inputFileFullPath;
+//            model.FileHash = fileHashCode;
+//
+//            model.FileName = model.ParseFileName();
+//            var subFolders = model.ParseSubFolders();
+//
+//            var destFolder = _checkIfSubDirectoriesExist(subFolders);
+//
+//            var destinationFullPath = Path.Combine(destFolder, model.FileName);
+//
+//            if (inputFileFullPath != destinationFullPath 
+//                && !File.Exists(destinationFullPath))
+//            {
+//                File.Copy(inputFileFullPath, destinationFullPath);
+//            }
+//
+//            var destinationSubPath = FileIndexItem.FullPathToDatabaseStyle(destinationFullPath);
+//            _isync.SyncFiles(destinationSubPath);
+//
+//            // Add item to Import database
+//            var indexItem = new ImportIndexItem
+//            {
+//                AddToDatabase = DateTime.UtcNow,
+//                FileHash = fileHashCode
+//            };
+//            AddItem(indexItem);
+//            return inputFileFullPath;
+            return null;
         }
 
         private string _checkIfSubDirectoriesExist(List<string> folderStructure)

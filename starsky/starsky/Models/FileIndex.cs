@@ -253,99 +253,70 @@ namespace starsky.Models
             return Directory.Exists(filepath) ? filepath : null;
         }
 
-//        // todo: remove this?
-//        public string DatabasePathToFilePath()
+
+//
+//        public void Test()
 //        {
-//            return DatabasePathToFilePath(FilePath);
+//            structureAllSplit = AppSettingsProvider.Structure.Split("/");
 //        }
+//
+//        public List<string> ParseSubFolders()
+//        {
+//            if (string.IsNullOrWhiteSpace(FilePath)) return new List<string>();
+//            {
+//                var directoryStructureList = AppSettingsProvider.StructureDirectoryPattern;
+//
+//                var subFoldersList = _parseListDateFormat(directoryStructureList, DateTime);
+//                
+//                ParseCommentsFolder(subFoldersList);
+//                
+//                return subFoldersList;
+//            }
+//        }
+//
+//        public List<string> ParseCommentsFolder(List<string> subFoldersList)
+//        {
+//            if (subFoldersList.FirstOrDefault() == "/") return null;
+//
+//            subFoldersList.Insert(0, string.Empty);
+//          
+//            var fullPathBase = DatabasePathToFilePath(subFoldersList.FirstOrDefault(),false);
+//            var newSubFoldersList = new List<string>();
+//            foreach (var folder in subFoldersList)
+//            {
+//                fullPathBase += folder.Replace("*", string.Empty) + Path.DirectorySeparatorChar;
+//                if (!folder.Contains("*")
+//                    || Directory.Exists(fullPathBase))
+//                {
+//                    newSubFoldersList.Add(folder);
+//                    continue;
+//                }
+//                
+////                SearchAsteriskFolder(fullPathBase);
+//
+//            }
+//
+//            Console.WriteLine("newSubFoldersList");
+//            Console.WriteLine(newSubFoldersList);
+//            return newSubFoldersList;
+//        }
+//
+//        public string SearchAsteriskFolder(string fullFolderPath)
+//        {
+//            Console.WriteLine(fullFolderPath);
+//            
+////            var parrentFolder = Breadcrumbs.BreadcrumbHelper(fullFolderPath).LastOrDefault();
+////            fullFolderPath.Split("/")
+////            var t = Directory.GetDirectories(parrentFolder, "*", SearchOption.AllDirectories);
+////            Console.WriteLine();
+//            return null;
+//        }
+//        
+//        
+//
+//
+//    
+//        
 
-        // Depends on App Settings for storing values
-        // Depends on BasePathConfig for setting default values
-        public string ParseFileName()
-        {
-            if (string.IsNullOrWhiteSpace(FilePath)) return string.Empty;
-
-            var fileExtenstion = Files.GetImageFormat(FilePath).ToString();
-            var fileNameStructureList = AppSettingsProvider.StructureFilenamePattern;
-
-            fileNameStructureList = _parseListDateFormat(fileNameStructureList, DateTime);
-                
-            foreach (var item in fileNameStructureList)
-            {
-                Regex rgx = new Regex(".ex[A-Z]$");
-                var result = rgx.Replace(item, "." + fileExtenstion);
-                return result;
-            }
-            return string.Empty;
-        }
-
-        public List<string> ParseSubFolders()
-        {
-            if (string.IsNullOrWhiteSpace(FilePath)) return new List<string>();
-            {
-                var directoryStructureList = AppSettingsProvider.StructureDirectoryPattern;
-
-                var subFoldersList = _parseListDateFormat(directoryStructureList, DateTime);
-                
-                ParseCommentsFolder(subFoldersList);
-                
-                return subFoldersList;
-            }
-        }
-
-        public List<string> ParseCommentsFolder(List<string> subFoldersList)
-        {
-            if (subFoldersList.FirstOrDefault() == "/") return null;
-
-            subFoldersList.Insert(0, string.Empty);
-          
-            var fullPathBase = DatabasePathToFilePath(subFoldersList.FirstOrDefault(),false);
-            var newSubFoldersList = new List<string>();
-            foreach (var folder in subFoldersList)
-            {
-                fullPathBase += folder.Replace("*", string.Empty) + Path.DirectorySeparatorChar;
-                if (!folder.Contains("*")
-                    || Directory.Exists(fullPathBase))
-                {
-                    newSubFoldersList.Add(folder);
-                    continue;
-                }
-                
-                SearchAsteriskFolder(fullPathBase);
-
-            }
-
-            Console.WriteLine("newSubFoldersList");
-            Console.WriteLine(newSubFoldersList);
-            return newSubFoldersList;
-        }
-
-        public string SearchAsteriskFolder(string fullFolderPath)
-        {
-            Console.WriteLine(fullFolderPath);
-            
-//            var parrentFolder = Breadcrumbs.BreadcrumbHelper(fullFolderPath).LastOrDefault();
-//            fullFolderPath.Split("/")
-//            var t = Directory.GetDirectories(parrentFolder, "*", SearchOption.AllDirectories);
-//            Console.WriteLine();
-            return null;
-        }
-        
-        
-
-
-    
-        
-        private static List<string> _parseListDateFormat(List<string> patternList, DateTime fileDateTime)
-        {
-            var parseListDate = new List<string>();
-            foreach (var patternItem in patternList)
-            {
-                if (patternItem == "/") return patternList;
-                var item = fileDateTime.ToString(patternItem, CultureInfo.InvariantCulture);
-                parseListDate.Add(item);
-            }
-            return parseListDate;
-        }
     }
 }

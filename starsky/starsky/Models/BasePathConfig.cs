@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using starsky.Services;
 
 namespace starsky.Models
@@ -24,9 +22,9 @@ namespace starsky.Models
                 }
             }
         }
-        
-        private string _structure;
 
+        // todo: merge with: AppSettingsProvider.cs
+        private string _structure;
         public string Structure
         {
             get
@@ -62,24 +60,7 @@ namespace starsky.Models
             }
         }
 
-        public DateTime StructureDateTime;
 
-        public List<int> StructureAsterixPositions()
-        {
-            return AllIndexesOf(_structure,"*");
-        }
-        
-        private List<int> AllIndexesOf(string str, string value) {
-            if (String.IsNullOrEmpty(value))
-                throw new ArgumentException("the string to find may not be empty", "value");
-            List<int> indexes = new List<int>();
-            for (int index = 0;; index += value.Length) {
-                index = str.IndexOf(value, index);
-                if (index == -1)
-                    return indexes;
-                indexes.Add(index);
-            }
-        }
         
 
 

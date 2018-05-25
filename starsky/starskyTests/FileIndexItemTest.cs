@@ -126,6 +126,19 @@ namespace starskytests
             var fileIndexItem = new FileIndexItem {Title = null};
             Assert.AreEqual(fileIndexItem.Title,string.Empty);
         }
+
+//        [TestMethod]
+//        public void FileIndexItemParseFileNameTest()
+//        {
+//            var createAnImage = new CreateAnImage();
+//
+//            var fileIndexItem = new FileIndexItem
+//            {
+//                FilePath = createAnImage.FullFilePath
+//            };
+////            var t = fileIndexItem.ParseFileName();
+//            
+//        }
         
 
     }
