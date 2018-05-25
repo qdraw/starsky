@@ -64,16 +64,16 @@ namespace starskytests
             Assert.AreEqual("home0012304590",jsonCollection.FileIndexItems.FirstOrDefault().FileHash);
         }
 
-        [TestMethod]
-        public void HomeControllerIndex404Test()
-        {
-            var controller = new HomeController(_query);
-            
-            // Act
-//            var actionResult = controller.Index("/not-found-test",null,true) as JsonResult;
-//            Assert.AreEqual(404, actionResult.StatusCode);
-  
-        }
+//        [TestMethod]
+//        public void HomeControllerIndex404Test()
+//        {
+////            var controller = new HomeController(_query);
+//            
+//            // Act
+////            var actionResult = controller.Index("/not-found-test",null,true) as JsonResult;
+////            Assert.AreEqual(404, actionResult.StatusCode);
+//  
+//        }
 
     }
 }
