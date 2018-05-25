@@ -13,11 +13,9 @@ namespace starskytests
         [TestMethod]
         public void BasePathConfigTestReadonlyTest()
         {
-            // Remove backslash
-            var readonlyTest = new List<string>{"test/"};
+            // Remove backslash DirectorySeparatorChar
+            var readonlyTest = new List<string>{"test" + Path.DirectorySeparatorChar};
             var basePathConfig = new BasePathConfig{Readonly = readonlyTest};
-            Console.WriteLine("basePathConfig.Readonly");
-            Console.WriteLine(basePathConfig.Readonly.FirstOrDefault());
             CollectionAssert.AreEqual(new List<string>{"test"}, basePathConfig.Readonly);
         }
 
