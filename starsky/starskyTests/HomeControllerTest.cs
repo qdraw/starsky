@@ -1,5 +1,9 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
@@ -24,23 +28,51 @@ namespace starskytests
             var context = new ApplicationDbContext(options);
             _query = new Query(context);
         }
-        
-        [TestMethod]
-        public void HomeControllerIndexTest()
+
+        public void InsertSearchData()
         {
-            _query.AddItem(new FileIndexItem
+            if (string.IsNullOrEmpty(_query.GetItemByHash("home0012304590")))
             {
-                FileName = "hi.jpg",
-                FilePath = "/homecontrollertest/hi.jpg",
-                ParentDirectory = "/homecontrollertest",
-                FileHash = "home0012304590",
-                ColorClass = FileIndexItem.Color.Winner // 1
-            });
+                _query.AddItem(new FileIndexItem
+                {
+                    FileName = "hi.jpg",
+                    FilePath = "/homecontrollertest/hi.jpg",
+                    ParentDirectory = "/homecontrollertest",
+                    FileHash = "home0012304590",
+                    ColorClass = FileIndexItem.Color.Winner // 1
+                });
+            }
+        }
+
+        [TestMethod]
+        public void HomeControllerIndexDetailViewTest()
+        {
+            InsertSearchData();
+            var controller = new HomeController(_query);
+            var actionResult = controller.Index("/homecontrollertest/hi.jpg",null,true) as JsonResult;
+            var jsonCollection = actionResult.Value as DetailView;
+            Assert.AreEqual("home0012304590",jsonCollection.FileIndexItem.FileHash);
+        }
+
+        [TestMethod]
+        public void HomeControllerIndexIndexViewModelTest()
+        {
+            InsertSearchData();
             var controller = new HomeController(_query);
             var actionResult = controller.Index("/homecontrollertest",null,true) as JsonResult;
             var jsonCollection = actionResult.Value as IndexViewModel;
-                        
             Assert.AreEqual("home0012304590",jsonCollection.FileIndexItems.FirstOrDefault().FileHash);
+        }
+
+        [TestMethod]
+        public void HomeControllerIndex404Test()
+        {
+            var controller = new HomeController(_query);
+            
+            // Act
+//            var actionResult = controller.Index("/not-found-test",null,true) as JsonResult;
+//            Assert.AreEqual(404, actionResult.StatusCode);
+  
         }
 
     }
