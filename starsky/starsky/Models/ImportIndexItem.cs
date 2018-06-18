@@ -42,7 +42,7 @@ namespace starsky.Models
         {
             var patternList = AppSettingsProvider.Structure.Split("/").ToList();
             var parsedList = ParseListDateFormat(patternList, DateTime);
-            // todo: removeAt asumes that is has to items
+            // todo: removeAt asumes that is has 2 items
             parsedList.RemoveAt(parsedList.Count - 1);
             return parsedList;
         }

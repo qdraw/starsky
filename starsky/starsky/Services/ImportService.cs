@@ -59,8 +59,8 @@ namespace starsky.Services
                 SourceFullFilePath = inputFileFullPath,
                 DateTime = fileIndexItem.DateTime
             };
-            
-            
+
+            CheckIfSubDirectoriesExist(importIndexItem.ParseSubfolders());
 
             
 //            // You need to update this after moving file
@@ -94,29 +94,31 @@ namespace starsky.Services
             return null;
         }
 
-//        private string checkIfSubDirectoriesExist(List<string> folderStructure)
-//        {
-//            // Return fullDirectory Path
-//            // Check if Dir exist
-//
-//            if (folderStructure.FirstOrDefault() == "/") return string.Empty;
-//
-//            folderStructure.Insert(0, string.Empty);
-//
-//            var fullPathBase = FileIndexItem.DatabasePathToFilePath(folderStructure.FirstOrDefault());
-//                
-//            foreach (var folder in folderStructure)
-//            {
-//                fullPathBase += folder.Replace("*", string.Empty) + Path.DirectorySeparatorChar;
-//                var isDeleted = !Directory.Exists(fullPathBase);
-//                if (isDeleted)
-//                {
-//                    Directory.CreateDirectory(fullPathBase);
-//                }
-//            }
-//
-//            return fullPathBase;
-//        }
+
+        public string CheckIfSubDirectoriesExist(List<string> folderStructure)
+        {
+            // Return fullDirectory Path
+            // Check if Dir exist
+
+            if (folderStructure.FirstOrDefault() == "/") return string.Empty;
+
+            folderStructure.Insert(0, string.Empty);
+
+            var fullPathBase = FileIndexItem.DatabasePathToFilePath(folderStructure.FirstOrDefault());
+                
+            foreach (var folder in folderStructure)
+            {
+                
+                fullPathBase += folder.Replace("*", string.Empty) + Path.DirectorySeparatorChar;
+                var isDeleted = !Directory.Exists(fullPathBase);
+                if (isDeleted)
+                {
+                    Directory.CreateDirectory(fullPathBase);
+                }
+            }
+
+            return fullPathBase;
+        }
 
 
         

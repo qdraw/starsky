@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
+using starsky.Models;
 using starsky.Services;
 
 namespace starskytests
@@ -22,7 +23,16 @@ namespace starskytests
             _isync = new SyncService(context, _query);
             _import = new ImportService(context,_isync);
         }
-        
+
+        [TestMethod]
+        public void ImportServiceCheckIfSubDirectoriesExistTest()
+        {
+            var createAnImage = new CreateAnImage();
+            var importItem = new ImportIndexItem();
+            importItem.SourceFullFilePath = createAnImage.FullFilePath;
+            _import.CheckIfSubDirectoriesExist(importItem.ParseSubfolders());
+        }
+
         [TestMethod]
         public void ImportServiceInportTest()
         {

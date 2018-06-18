@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
 using starsky.Models;
@@ -25,11 +26,10 @@ namespace starskytests
         public void ImportIndexItemParseSubfoldersTest()
         {
             var createAnImage = new CreateAnImage();
-
             var importItem = new ImportIndexItem();
             importItem.SourceFullFilePath = createAnImage.FullFilePath;
-            importItem.ParseSubfolders();
-            
+            var s = importItem.ParseSubfolders();
+            Assert.AreEqual("0001_01_01",s.LastOrDefault());
         }
 
     }
