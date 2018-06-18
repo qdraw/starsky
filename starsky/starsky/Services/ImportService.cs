@@ -59,14 +59,15 @@ namespace starsky.Services
                 SourceFullFilePath = inputFileFullPath,
                 DateTime = fileIndexItem.DateTime
             };
-            importIndexItem.ParseFileName();
+            
+            
 
-//            
+            
 //            // You need to update this after moving file
 //            model.FilePath = inputFileFullPath;
 //            model.FileHash = fileHashCode;
 //
-//            model.FileName = model.ParseFileName();
+//            model.FileName = importIndexItem.ParseFileName();
 //            var subFolders = model.ParseSubFolders();
 //
 //            var destFolder = _checkIfSubDirectoriesExist(subFolders);
@@ -93,29 +94,29 @@ namespace starsky.Services
             return null;
         }
 
-        private string _checkIfSubDirectoriesExist(List<string> folderStructure)
-        {
-            // Return fullDirectory Path
-            // Check if Dir exist
-
-            if (folderStructure.FirstOrDefault() == "/") return string.Empty;
-
-            folderStructure.Insert(0, string.Empty);
-
-            var fullPathBase = FileIndexItem.DatabasePathToFilePath(folderStructure.FirstOrDefault());
-                
-            foreach (var folder in folderStructure)
-            {
-                fullPathBase += folder.Replace("*", string.Empty) + Path.DirectorySeparatorChar;
-                var isDeleted = !Directory.Exists(fullPathBase);
-                if (isDeleted)
-                {
-                    Directory.CreateDirectory(fullPathBase);
-                }
-            }
-
-            return fullPathBase;
-        }
+//        private string checkIfSubDirectoriesExist(List<string> folderStructure)
+//        {
+//            // Return fullDirectory Path
+//            // Check if Dir exist
+//
+//            if (folderStructure.FirstOrDefault() == "/") return string.Empty;
+//
+//            folderStructure.Insert(0, string.Empty);
+//
+//            var fullPathBase = FileIndexItem.DatabasePathToFilePath(folderStructure.FirstOrDefault());
+//                
+//            foreach (var folder in folderStructure)
+//            {
+//                fullPathBase += folder.Replace("*", string.Empty) + Path.DirectorySeparatorChar;
+//                var isDeleted = !Directory.Exists(fullPathBase);
+//                if (isDeleted)
+//                {
+//                    Directory.CreateDirectory(fullPathBase);
+//                }
+//            }
+//
+//            return fullPathBase;
+//        }
 
 
         

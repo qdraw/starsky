@@ -21,5 +21,16 @@ namespace starskytests
             Assert.AreEqual("00010101_000000.jpg", fileName);
         }
 
+        [TestMethod]
+        public void ImportIndexItemParseSubfoldersTest()
+        {
+            var createAnImage = new CreateAnImage();
+
+            var importItem = new ImportIndexItem();
+            importItem.SourceFullFilePath = createAnImage.FullFilePath;
+            importItem.ParseSubfolders();
+            
+        }
+
     }
 }

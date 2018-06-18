@@ -23,8 +23,9 @@ namespace starsky.Models
             if (string.IsNullOrWhiteSpace(SourceFullFilePath)) return string.Empty;
             var fileExtenstion = Files.GetImageFormat(SourceFullFilePath).ToString();
 
-            // Replace Astriks
             var structuredFileName = AppSettingsProvider.Structure.Split("/").LastOrDefault();
+
+            // Replace Astriks
             structuredFileName = structuredFileName?.Replace("*", "");
 
             var extPosition = structuredFileName.IndexOf(".ext", StringComparison.Ordinal);
@@ -35,13 +36,28 @@ namespace starsky.Models
             return fileName;
         }
         
-        private static List<string> _parseListDateFormat(List<string> patternList, DateTime fileDateTime)
+        // Depends on App Settings /BasePathConfig
+        // Not Checking if it exist on filesystem
+        public List<string> ParseSubfolders()
+        {
+            var patternList = AppSettingsProvider.Structure.Split("/").ToList();
+            var parsedList = ParseListDateFormat(patternList, DateTime);
+            // todo: removeAt asumes that is has to items
+            parsedList.RemoveAt(parsedList.Count - 1);
+            return parsedList;
+        }
+
+        private List<string> ParseListDateFormat(List<string> patternList, DateTime fileDateTime)
         {
             var parseListDate = new List<string>();
             foreach (var patternItem in patternList)
             {
-                if (patternItem == "/") return patternList;
-                var item = fileDateTime.ToString(patternItem, CultureInfo.InvariantCulture);
+                if (patternItem == "/" ) return patternList;
+                var item = patternItem;
+                if(!string.IsNullOrWhiteSpace(patternItem))
+                {
+                    item = fileDateTime.ToString(patternItem, CultureInfo.InvariantCulture);
+                }
                 parseListDate.Add(item);
             }
             return parseListDate;
