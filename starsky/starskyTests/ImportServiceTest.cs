@@ -24,31 +24,38 @@ namespace starskytests
             _import = new ImportService(context,_isync);
         }
 
-        [TestMethod]
-        public void ImportServiceCheckIfSubDirectoriesExistTest()
-        {
-            var createAnImage = new CreateAnImage();
-            var importItem = new ImportIndexItem();
-            importItem.SourceFullFilePath = createAnImage.FullFilePath;
-            _import.CheckIfSubDirectoriesExist(importItem.ParseSubfolders());
-        }
+//        [TestMethod]
+//        public void ImportServiceCheckIfSubDirectoriesExistTest()
+//        {
+//            var createAnImage = new CreateAnImage();
+//            var importItem = new ImportIndexItem();
+//            importItem.SourceFullFilePath = createAnImage.FullFilePath;
+//            _import.CheckIfSubDirectoriesExist(importItem.ParseSubfolders());
+//        }
 
-        [TestMethod]
-        public void ImportServiceImportTest()
-        {
-            var createAnImage = new CreateAnImage();
-            // using default structure
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
-            _import.Import(createAnImage.FullFilePath);
-        }
+//        [TestMethod]
+//        public void ImportServiceImportTest()
+//        {
+//            var createAnImage = new CreateAnImage();
+//            // using default structure
+//            AppSettingsProvider.BasePath = createAnImage.BasePath;
+//            _import.Import(createAnImage.FullFilePath);
+//        }
         
         [TestMethod]
         public void ImportServiceYYYYMMdd_HHmmssImportTest()
         {
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/yyyyMMdd_HHmmss.ext";
+            AppSettingsProvider.Structure = "/xxx__yyyyMMdd_HHmmss.ext";
+            // This is not to be the first file in the test directory
+            // => otherwise SyncServiceFirstItemDirectoryTest() will fail
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             _import.Import(createAnImage.FullFilePath);
+            
+            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
+            
+            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+            
         }
     }
 }

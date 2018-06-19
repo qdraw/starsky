@@ -58,6 +58,7 @@ namespace starsky.Services
             {
                 SourceFullFilePath = inputFileFullPath,
                 DateTime = fileIndexItem.DateTime,
+                FileHash = fileHashCode
             };
 
             fileIndexItem.FileName = importIndexItem.ParseFileName();
