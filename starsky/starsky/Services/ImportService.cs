@@ -57,41 +57,27 @@ namespace starsky.Services
             var importIndexItem = new ImportIndexItem
             {
                 SourceFullFilePath = inputFileFullPath,
-                DateTime = fileIndexItem.DateTime
+                DateTime = fileIndexItem.DateTime,
             };
 
-            CheckIfSubDirectoriesExist(importIndexItem.ParseSubfolders());
-
+            fileIndexItem.FileName = importIndexItem.ParseFileName();
+            var fullDestFolderPath = CheckIfSubDirectoriesExist(importIndexItem.ParseSubfolders());
             
-//            // You need to update this after moving file
-//            model.FilePath = inputFileFullPath;
-//            model.FileHash = fileHashCode;
-//
-//            model.FileName = importIndexItem.ParseFileName();
-//            var subFolders = model.ParseSubFolders();
-//
-//            var destFolder = _checkIfSubDirectoriesExist(subFolders);
-//
-//            var destinationFullPath = Path.Combine(destFolder, model.FileName);
-//
-//            if (inputFileFullPath != destinationFullPath 
-//                && !File.Exists(destinationFullPath))
-//            {
-//                File.Copy(inputFileFullPath, destinationFullPath);
-//            }
-//
-//            var destinationSubPath = FileIndexItem.FullPathToDatabaseStyle(destinationFullPath);
-//            _isync.SyncFiles(destinationSubPath);
-//
-//            // Add item to Import database
-//            var indexItem = new ImportIndexItem
-//            {
-//                AddToDatabase = DateTime.UtcNow,
-//                FileHash = fileHashCode
-//            };
-//            AddItem(indexItem);
-//            return inputFileFullPath;
-            return null;
+            fileIndexItem.FilePath = FileIndexItem.FullPathToDatabaseStyle(fullDestFolderPath);
+            fileIndexItem.FileHash = fileHashCode;
+
+            var destinationFullPath = Path.Combine(fullDestFolderPath, fileIndexItem.FileName);
+
+            if (inputFileFullPath != destinationFullPath 
+                && !File.Exists(destinationFullPath))
+            {
+                File.Copy(inputFileFullPath, destinationFullPath);
+            }
+
+            _isync.SyncFiles(fileIndexItem.FilePath);
+            
+            AddItem(importIndexItem);
+            return inputFileFullPath;
         }
 
 

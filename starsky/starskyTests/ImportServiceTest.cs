@@ -34,10 +34,20 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void ImportServiceInportTest()
+        public void ImportServiceImportTest()
         {
             var createAnImage = new CreateAnImage();
             // using default structure
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            _import.Import(createAnImage.FullFilePath);
+        }
+        
+        [TestMethod]
+        public void ImportServiceYYYYMMdd_HHmmssImportTest()
+        {
+            var createAnImage = new CreateAnImage();
+            AppSettingsProvider.Structure = "/yyyyMMdd_HHmmss.ext";
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
             _import.Import(createAnImage.FullFilePath);
         }
     }

@@ -42,8 +42,10 @@ namespace starsky.Models
         {
             var patternList = AppSettingsProvider.Structure.Split("/").ToList();
             var parsedList = ParseListDateFormat(patternList, DateTime);
-            // todo: removeAt asumes that is has 2 items
-            parsedList.RemoveAt(parsedList.Count - 1);
+            if (parsedList.Count >= 1)
+            {
+                parsedList.RemoveAt(parsedList.Count - 1);
+            }
             return parsedList;
         }
 
@@ -53,12 +55,11 @@ namespace starsky.Models
             foreach (var patternItem in patternList)
             {
                 if (patternItem == "/" ) return patternList;
-                var item = patternItem;
                 if(!string.IsNullOrWhiteSpace(patternItem))
                 {
-                    item = fileDateTime.ToString(patternItem, CultureInfo.InvariantCulture);
+                    var item = fileDateTime.ToString(patternItem, CultureInfo.InvariantCulture);
+                    parseListDate.Add(item);
                 }
-                parseListDate.Add(item);
             }
             return parseListDate;
         }
