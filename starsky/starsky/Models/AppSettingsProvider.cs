@@ -52,7 +52,7 @@ namespace starsky.Models
         }
         
         
-        private static string SqliteFullPath(string connectionString)
+        public static string SqliteFullPath(string connectionString)
         {
             if(string.IsNullOrWhiteSpace(connectionString)) throw new ArgumentException(">> Connection string IsNullOrWhiteSpace ");
             if(DatabaseType != DatabaseTypeList.sqlite) return connectionString; // mysql does not need this
