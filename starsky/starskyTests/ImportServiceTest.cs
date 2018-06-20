@@ -61,8 +61,28 @@ namespace starskytests
             // Clean file after succesfull run;
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
             var file = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime}.ParseFileName();
-            
             File.Delete(FileIndexItem.DatabasePathToFilePath(file));
+        }
+        
+        [TestMethod]
+        public void ImportServiceAsteriskFolderHHmmssImportTest()
+        {
+            var createAnImage = new CreateAnImage();
+            AppSettingsProvider.Structure = "/*/*/HHmmss.ext";
+            // This is not to be the first file in the test directory
+            // => otherwise SyncServiceFirstItemDirectoryTest() will fail
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            var importedFile = _import.Import(createAnImage.FullFilePath);
+            
+            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
+            
+            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+
+            // Clean file after succesfull run;
+            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+            var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
+            
+            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseFileName()));
         }
         
         

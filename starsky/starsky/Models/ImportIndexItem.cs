@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using starsky.Services;
 
@@ -38,9 +40,24 @@ namespace starsky.Models
             fileName += "." + fileExtenstion;
             return fileName;
         }
-        
+
+        private string  _subFolder  { get; set; }
+
+        [NotMapped]
+        public string SubFolder
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_subFolder))
+                {
+                    return "/";
+                }
+                return ConfigRead.PrefixBackslash(_subFolder);
+            }
+            set { _subFolder += value + "/" ; }
+        }
+
         // Depends on App Settings /BasePathConfig
-        // Not Checking if it exist on filesystem
         public List<string> ParseSubfolders()
         {
             var patternList = AppSettingsProvider.Structure.Split("/").ToList();
@@ -49,21 +66,77 @@ namespace starsky.Models
             {
                 parsedList.RemoveAt(parsedList.Count - 1);
             }
+
+            foreach (var parsedItem in parsedList)
+            {
+                var parentItem = SubFolder;
+                string childDirectory = null;
+                if (parsedItem.Contains("*"))
+                {
+                    var childDirectories = Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem), parsedItem).ToList();
+                    childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
+                    childDirectory = childDirectories.FirstOrDefault();
+                }
+
+                if (childDirectory == null)
+                {
+                    
+                }
+                
+                SubFolder = childDirectory;
+                
+                
+//                var parentItem = SubFolder;
+//                SubFolder = parsedItem;
+//
+//                if (FileIndexItem.DatabasePathToFilePath(SubFolder) == null)
+//                {
+//                    if (parsedItem.Contains("*"))
+//                    {
+//                        var childDirectories = Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem), parsedItem).ToList();
+//                        childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
+//
+//                    }
+//                    Console.WriteLine(parentItem);
+//                }
+                
+            }
+
+            Console.WriteLine(SubFolder);
+            
             return parsedList;
+        }
+
+        // Escape feature
+        private List<string> PatternListInput(List<string> patternList, string search, string replace)
+        {
+            var patternListReturn = new List<string>();
+            foreach (var t in patternList)
+            {
+                patternListReturn.Add(t.Replace(search, replace));
+            }
+            return patternListReturn;
         }
 
         private List<string> ParseListDateFormat(List<string> patternList, DateTime fileDateTime)
         {
             var parseListDate = new List<string>();
+
+            patternList = PatternListInput(patternList, "*", "_!x_");
+
             foreach (var patternItem in patternList)
             {
                 if (patternItem == "/" ) return patternList;
+
                 if(!string.IsNullOrWhiteSpace(patternItem))
                 {
                     var item = fileDateTime.ToString(patternItem, CultureInfo.InvariantCulture);
                     parseListDate.Add(item);
                 }
             }
+
+            parseListDate = PatternListInput(parseListDate, "_!x_", "*");
+            
             return parseListDate;
         }
         
