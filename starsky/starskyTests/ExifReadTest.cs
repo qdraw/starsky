@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -109,7 +107,7 @@ namespace starskytests
 
          
          [TestMethod]
-         public void ParseGPSTest()
+         public void ParseGpsTest()
          {
              var latitude = ExifRead.ConvertDegreeAngleToDouble("52° 18' 29.54\"", "N");
              Assert.AreEqual(latitude,  52.308205555500003, 0.000001);
@@ -132,6 +130,7 @@ namespace starskytests
              Assert.AreEqual(item.Tags, "test, sion");
              Assert.AreEqual(item.Latitude,  52.308205555500003, 0.000001);
              Assert.AreEqual(item.Longitude, 6.1935555554999997, 0.000001);
+//             Assert.AreEqual(item.Title, "");
          }
 
      }

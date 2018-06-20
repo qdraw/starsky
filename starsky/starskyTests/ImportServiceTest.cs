@@ -43,7 +43,7 @@ namespace starskytests
 //        }
         
         [TestMethod]
-        public void ImportServiceYYYYMMdd_HHmmssImportTest()
+        public void ImportServiceyyyyMMdd_HHmmssImportTest()
         {
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.Structure = "/xxx__yyyyMMdd_HHmmss.ext";

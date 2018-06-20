@@ -52,7 +52,7 @@ namespace starsky.Models
         }
         
         
-        public static string SqliteFullPath(string connectionString)
+        public static string SqliteFullPath(string connectionString, string fullDbPath = null)
         {
             if(string.IsNullOrWhiteSpace(connectionString)) throw new ArgumentException(">> Connection string IsNullOrWhiteSpace ");
             if(DatabaseType != DatabaseTypeList.sqlite) return connectionString; // mysql does not need this
@@ -61,8 +61,12 @@ namespace starsky.Models
             var databaseFileName = connectionString.Replace("Data Source=", "");
             // Check if path is not absolute already
             if (databaseFileName.Contains("/") || databaseFileName.Contains("\\")) return connectionString;
-          
-            var fullDbPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "data.db");
+
+            // Overwrite to default when not using the fullDbPath option
+            if (fullDbPath == null)
+            {
+                fullDbPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "data.db");
+            }
 
             // Return if running in Microsoft.EntityFrameworkCore.Sqlite (location is now root folder)
             if(fullDbPath.Contains("entityframeworkcore")) return connectionString;
