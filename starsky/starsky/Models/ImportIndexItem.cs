@@ -33,8 +33,12 @@ namespace starsky.Models
             // Replace Astriks
             structuredFileName = structuredFileName?.Replace("*", "");
 
-            var extPosition = structuredFileName.IndexOf(".ext", StringComparison.Ordinal);
-            structuredFileName = structuredFileName.Substring(0, extPosition);
+            if (structuredFileName.Contains(".ext"))
+            {
+                var extPosition = structuredFileName.IndexOf(".ext", StringComparison.Ordinal);
+                structuredFileName = structuredFileName.Substring(0, extPosition);
+            }
+
 
             var fileName = DateTime.ToString(structuredFileName, CultureInfo.InvariantCulture);
             fileName += "." + fileExtenstion;
