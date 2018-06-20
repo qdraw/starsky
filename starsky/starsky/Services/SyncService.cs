@@ -32,7 +32,7 @@ namespace starsky.Services
         
         
         [ExcludeFromCoverage] // The reason is because this is an index
-        public IEnumerable<string> SyncFiles(string subPath = "")
+        public IEnumerable<string> SyncFiles(string subPath)
         {
             // Handle single files
             if (Deleted(subPath)) return null;
