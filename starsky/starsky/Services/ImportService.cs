@@ -21,6 +21,10 @@ namespace starsky.Services
             _isync = isync;
         }
 
+        // todo: implement delete after
+        // todo: implement aterixs feature
+        
+        
         public List<string> Import(string inputFullPath)
         {
             if (!Directory.Exists(inputFullPath) && File.Exists(inputFullPath))
@@ -44,6 +48,18 @@ namespace starsky.Services
             return succesfullDirFullPaths;
         }
 
+        public ImportIndexItem SetupImportIndexItem(string inputFileFullPath, string fileHashCode, FileIndexItem fileIndexItem)
+        {
+            var importIndexItem = new ImportIndexItem
+            {
+                SourceFullFilePath = inputFileFullPath,
+                DateTime = fileIndexItem.DateTime,
+                FileHash = fileHashCode
+            };
+
+            fileIndexItem.FileName = importIndexItem.ParseFileName();
+            return importIndexItem;
+        }
 
         private string ImportFile(string inputFileFullPath)
         {
@@ -54,14 +70,9 @@ namespace starsky.Services
 
             // Only exepts files with correct meta data
             var fileIndexItem = ExifRead.ReadExifFromFile(inputFileFullPath);
-            var importIndexItem = new ImportIndexItem
-            {
-                SourceFullFilePath = inputFileFullPath,
-                DateTime = fileIndexItem.DateTime,
-                FileHash = fileHashCode
-            };
 
-            fileIndexItem.FileName = importIndexItem.ParseFileName();
+            var importIndexItem = SetupImportIndexItem(inputFileFullPath, fileHashCode, fileIndexItem);
+            
             var fullDestFolderPath = CheckIfSubDirectoriesExist(importIndexItem.ParseSubfolders());
             
             fileIndexItem.FilePath = FileIndexItem.FullPathToDatabaseStyle(fullDestFolderPath);

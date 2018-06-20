@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.IO;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
 using starsky.Models;
@@ -46,16 +48,23 @@ namespace starskytests
         public void ImportServiceyyyyMMdd_HHmmssImportTest()
         {
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/xxx__yyyyMMdd_HHmmss.ext";
+            AppSettingsProvider.Structure = "/xxxxx__yyyyMMdd_HHmmss.ext";
             // This is not to be the first file in the test directory
             // => otherwise SyncServiceFirstItemDirectoryTest() will fail
             AppSettingsProvider.BasePath = createAnImage.BasePath;
-            _import.Import(createAnImage.FullFilePath);
+            var importedFile = _import.Import(createAnImage.FullFilePath);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             
             Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+
+            // Clean file after succesfull run;
+            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+            var file = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime}.ParseFileName();
             
+            File.Delete(FileIndexItem.DatabasePathToFilePath(file));
         }
+        
+        
     }
 }

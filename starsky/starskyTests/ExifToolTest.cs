@@ -31,34 +31,34 @@ namespace starskytests
             Assert.AreEqual(expetectedOutput,output2);   
         }
 
-        [TestMethod]
-        public void ExifToolFakeApiTest()
-        {
-            var solutionDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
-            var solutionTestsDir = solutionDir.Replace("starskyTests", "starskyTestsExifTool");
-
-            var starskyTestsExifTool =
-                Path.Combine(solutionTestsDir, "Debug", "netcoreapp2.0", "starskyTestsExifTool.dll");
-
-            if (!File.Exists(starskyTestsExifTool))
-                Path.Combine(solutionTestsDir, "Release", "netcoreapp2.0", "starskyTestsExifTool.dll");
-            
-            
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = "dotnet",
-                UseShellExecute = false,
-                RedirectStandardOutput = true
-            };
-
-            psi.Arguments = starskyTestsExifTool;
-            Process p = Process.Start(psi);
-            string strOutput = p.StandardOutput.ReadToEnd();
-            p.WaitForExit();
-            Console.WriteLine(strOutput);
-            Assert.AreEqual("Hello World!",strOutput.Trim());
-
-        }
+//        [TestMethod]
+//        public void ExifToolFakeApiTest()
+//        {
+//            var solutionDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
+//            var solutionTestsDir = solutionDir.Replace("starskyTests", "starskyTestsExifTool");
+//
+//            var starskyTestsExifTool =
+//                Path.Combine(solutionTestsDir, "Debug", "netcoreapp2.0", "starskyTestsExifTool.dll");
+//
+//            if (!File.Exists(starskyTestsExifTool))
+//                Path.Combine(solutionTestsDir, "Release", "netcoreapp2.0", "starskyTestsExifTool.dll");
+//            
+//            
+//            ProcessStartInfo psi = new ProcessStartInfo
+//            {
+//                FileName = "dotnet",
+//                UseShellExecute = false,
+//                RedirectStandardOutput = true
+//            };
+//
+//            psi.Arguments = starskyTestsExifTool;
+//            Process p = Process.Start(psi);
+//            string strOutput = p.StandardOutput.ReadToEnd();
+//            p.WaitForExit();
+//            Console.WriteLine(strOutput);
+//            Assert.AreEqual("Hello World!",strOutput.Trim());
+//
+//        }
 
         
         

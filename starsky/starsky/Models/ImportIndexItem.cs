@@ -18,6 +18,8 @@ namespace starsky.Models
         
         // Depends on App Settings for storing values
         // Depends on BasePathConfig for setting default values
+        // Imput required:
+        // SourceFullFilePath= createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime
         public string ParseFileName()
         {
             if (string.IsNullOrWhiteSpace(SourceFullFilePath)) return string.Empty;
@@ -28,7 +30,6 @@ namespace starsky.Models
 
             // Replace Astriks
             structuredFileName = structuredFileName?.Replace("*", "");
-
 
             var extPosition = structuredFileName.IndexOf(".ext", StringComparison.Ordinal);
             structuredFileName = structuredFileName.Substring(0, extPosition);
