@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
@@ -261,10 +262,11 @@ namespace starskytests
         [TestMethod]
         public void SearchElapsedSecondsIsNotZeroSecondsTest()
         {
-            // todo:    at starskytests.SearchServiceTest.SearchElapsedSecondsIsNotZeroSecondsTest() in :line 266
-//            InsertSearchData();
-//            var model = _search.Search("dion");
-//            Assert.AreNotEqual(0f,model.ElapsedSeconds);
+            InsertSearchData();
+            var model = _search.Search("cityloop");
+            // Search is fast so one item is in the unit test 0 seconds;
+            Console.WriteLine(model.ElapsedSeconds);
+            Assert.AreNotEqual(0f,model.ElapsedSeconds);
         }
 
         [TestMethod]
