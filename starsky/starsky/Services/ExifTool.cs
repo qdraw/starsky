@@ -33,11 +33,13 @@ namespace starsky.Services
                 exifToolPath = $"\"" + AppSettingsProvider.ExifToolPath + $"\"";
             }
 
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = exifToolPath;
-            psi.UseShellExecute = false;
-            psi.RedirectStandardOutput = true;
-            
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = exifToolPath,
+                UseShellExecute = false,
+                RedirectStandardOutput = true
+            };
+
             Console.WriteLine(options);
             
             psi.Arguments = options;

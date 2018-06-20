@@ -1,5 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Diagnostics;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
+using starsky.Models;
 using starsky.Services;
 
 namespace starskytests
@@ -24,6 +27,27 @@ namespace starskytests
             var output2 = ExifTool.FixingJsonKeywordString(input2);
             Assert.AreEqual(expetectedOutput,output2);   
         }
+
+        [TestMethod]
+        public void ExifToolFakeApiTest()
+        {
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "dotnet",
+                UseShellExecute = false,
+                RedirectStandardOutput = true
+            };
+
+            
+            psi.Arguments = "";
+            Process p = Process.Start(psi);
+            string strOutput = p.StandardOutput.ReadToEnd();
+            p.WaitForExit();
+            Console.WriteLine(strOutput);
+            
+        }
+
+        
         
     }
 }
