@@ -68,7 +68,7 @@ namespace starskytests
         public void ImportServiceAsteriskFolderHHmmssImportTest()
         {
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/*/*/HHmmss.ext";
+            AppSettingsProvider.Structure = "/\\d\\e*/HHmmss.ext";
             // This is not to be the first file in the test directory
             // => otherwise SyncServiceFirstItemDirectoryTest() will fail
             AppSettingsProvider.BasePath = createAnImage.BasePath;
@@ -82,7 +82,7 @@ namespace starskytests
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
             var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
             
-            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseFileName()));
+//            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseFileName()));
         }
         
         

@@ -57,6 +57,14 @@ namespace starsky.Models
             set { _subFolder += value + "/" ; }
         }
 
+        private string SelectFirstDirectory(string parentItem, string parsedItem)
+        {
+            var childDirectories = Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem), parsedItem).ToList();
+            childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
+            var childDirectory = childDirectories.FirstOrDefault();
+            return childDirectory;
+        }
+        
         // Depends on App Settings /BasePathConfig
         public List<string> ParseSubfolders()
         {
@@ -71,19 +79,26 @@ namespace starsky.Models
             {
                 var parentItem = SubFolder;
                 string childDirectory = null;
-                if (parsedItem.Contains("*"))
+                foreach (var test in Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem)))
                 {
-                    var childDirectories = Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem), parsedItem).ToList();
-                    childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
-                    childDirectory = childDirectories.FirstOrDefault();
+                    Console.WriteLine(test);
+                }
+                    
+                if (Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem)).Length != 0)
+                {
+                    childDirectory = SelectFirstDirectory(parentItem, parsedItem);
                 }
 
-                if (childDirectory == null)
+//                if (childDirectory == null)
+//                {
+//                    childDirectory = SelectFirstDirectory(parentItem, parsedItem.Replace("*",string.Empty));
+//                }
+
+                if (childDirectory != null)
                 {
-                    
+                    SubFolder = FileIndexItem.FullPathToDatabaseStyle(childDirectory);
                 }
                 
-                SubFolder = childDirectory;
                 
                 
 //                var parentItem = SubFolder;
