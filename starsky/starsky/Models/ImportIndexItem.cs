@@ -24,13 +24,15 @@ namespace starsky.Models
             var fileExtenstion = Files.GetImageFormat(SourceFullFilePath).ToString();
 
             var structuredFileName = AppSettingsProvider.Structure.Split("/").LastOrDefault();
+            if (structuredFileName == null) return null;
 
             // Replace Astriks
             structuredFileName = structuredFileName?.Replace("*", "");
 
+
             var extPosition = structuredFileName.IndexOf(".ext", StringComparison.Ordinal);
             structuredFileName = structuredFileName.Substring(0, extPosition);
-            
+
             var fileName = DateTime.ToString(structuredFileName, CultureInfo.InvariantCulture);
             fileName += "." + fileExtenstion;
             return fileName;
