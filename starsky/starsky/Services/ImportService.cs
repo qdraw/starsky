@@ -68,15 +68,16 @@ namespace starsky.Services
             var fileIndexItem = ExifRead.ReadExifFromFile(inputFileFullPath);
 
             var importIndexItem = SetupImportIndexItem(inputFileFullPath, fileHashCode, fileIndexItem);
-            
-            var fullDestFolderPath = FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders()) ;
-            
-            fileIndexItem.ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(fullDestFolderPath);
-            fileIndexItem.FilePath = FileIndexItem.FullPathToDatabaseStyle(fullDestFolderPath) +
+                        
+            fileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders();
+            fileIndexItem.FilePath = fileIndexItem.ParentDirectory +
                                      Path.DirectorySeparatorChar + fileIndexItem.FileName;
             fileIndexItem.FileHash = fileHashCode;
 
-            var destinationFullPath = Path.Combine(fullDestFolderPath, fileIndexItem.FileName);
+            var destinationFullPath = 
+                FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
+                + Path.DirectorySeparatorChar +
+                fileIndexItem.FileName;
 
             if (inputFileFullPath != destinationFullPath 
                 && !File.Exists(destinationFullPath))

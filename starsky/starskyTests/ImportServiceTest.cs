@@ -78,14 +78,28 @@ namespace starskytests
 
             // Clean file after succesfull run;
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
-            var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
+            var importIndexItem = new ImportIndexItem
+            {
+                SourceFullFilePath = createAnImage.FullFilePath,  
+                DateTime = fileIndexItem.DateTime
+            };
             
             Console.WriteLine(importIndexItem.ParseSubfolders());
             Console.WriteLine(importIndexItem.ParseFileName());
+            Console.WriteLine(">>>>TR>>");
             
+            var fail2000 =
+                FileIndexItem.DatabasePathToFilePath(
+                    importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName());
+            Console.WriteLine();
+
+            if (string.IsNullOrEmpty(fail2000))
+            {
+                throw new Exception("dsflnksdf");
+            }
             File.Delete(
                 FileIndexItem.DatabasePathToFilePath(
-                    importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()
+                    importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName(), true
                 )
             );
         }
@@ -109,6 +123,8 @@ namespace starskytests
 
             Console.WriteLine(importIndexItem.ParseSubfolders());
             Console.WriteLine(importIndexItem.ParseFileName());
+            Console.WriteLine(">>>>");
+            Console.WriteLine(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
             File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
         }
         
