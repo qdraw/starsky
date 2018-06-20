@@ -25,12 +25,12 @@ namespace starsky.Services
         // todo: implement aterixs feature
         
         
-        public List<string> Import(string inputFullPath)
+        public List<string> Import(string inputFullPath, bool deleteAfter = false)
         {
             if (!Directory.Exists(inputFullPath) && File.Exists(inputFullPath))
             {
                 // file
-                var succesfullFullPaths = ImportFile(inputFullPath);
+                var succesfullFullPaths = ImportFile(inputFullPath, deleteAfter);
                 return new List<string> {succesfullFullPaths};
             }
 
@@ -42,7 +42,7 @@ namespace starsky.Services
             foreach (var item in filesFullPath)
             {
                 // Directory
-                var fullPath = ImportFile(item);
+                var fullPath = ImportFile(item, deleteAfter);
                 succesfullDirFullPaths.Add(fullPath);
             }
             return succesfullDirFullPaths;
@@ -61,7 +61,7 @@ namespace starsky.Services
             return importIndexItem;
         }
 
-        private string ImportFile(string inputFileFullPath)
+        private string ImportFile(string inputFileFullPath, bool deleteAfter = false)
         {
             var fileHashCode = FileHash.GetHashCode(inputFileFullPath);
             
@@ -91,6 +91,12 @@ namespace starsky.Services
             _isync.SyncFiles(fileIndexItem.FilePath);
             
             AddItem(importIndexItem);
+
+            if (deleteAfter)
+            {
+                File.Delete(inputFileFullPath);
+            }
+            
             return inputFileFullPath;
         }
 

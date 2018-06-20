@@ -69,8 +69,6 @@ namespace starskytests
         {
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.Structure = "/\\d\\e*/HHmmss.ext";
-            // This is not to be the first file in the test directory
-            // => otherwise SyncServiceFirstItemDirectoryTest() will fail
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             var importedFile = _import.Import(createAnImage.FullFilePath);
             
@@ -90,10 +88,8 @@ namespace starskytests
         {
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.Structure = "/\\c\\s/\\a\\b\\c/HHmmss.ext";
-            // This is not to be the first file in the test directory
-            // => otherwise SyncServiceFirstItemDirectoryTest() will fail
             AppSettingsProvider.BasePath = createAnImage.BasePath;
-            var importedFile = _import.Import(createAnImage.FullFilePath);
+            _import.Import(createAnImage.FullFilePath);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             
@@ -105,5 +101,16 @@ namespace starskytests
             File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
         }
         
+        // todo: test without extension
+
+        [TestMethod]
+        public void ImportService_DeleteAfterTest_HHmmssImportTest()
+        {
+            var createAnImage = new CreateAnImage();
+            AppSettingsProvider.Structure = "/\\c\\s/\\a\\b\\c/yyyy/mm/HHmmss.ext";
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            _import.Import(createAnImage.FullFilePath,true);  
+            Assert.AreEqual(File.Exists(createAnImage.FullFilePath), false);
+        }
     }
 }
