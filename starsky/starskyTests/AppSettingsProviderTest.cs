@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
 namespace starskytests
@@ -6,6 +7,14 @@ namespace starskytests
     [TestClass]
     public class AppSettingsProviderTest
     {
+        [TestMethod]
+        public void ReadOnlyFoldersTest()
+        {
+            AppSettingsProvider.ReadOnlyFolders = new List<string> {"test"};
+            CollectionAssert.AreEqual(new List<string> {"test"}, AppSettingsProvider.ReadOnlyFolders);
+        }
+
+        
         [TestMethod]
         public void SqliteFullPathTest()
         {
