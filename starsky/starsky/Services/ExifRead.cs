@@ -81,9 +81,9 @@ namespace starsky.Services
         private static void _displayAllExif(IEnumerable<Directory> allExifItems)
         {
             if (!AppSettingsProvider.Verbose) return;
-            foreach (var exifItem in allExifItems) {
-                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
-            }
+//            foreach (var exifItem in allExifItems) {
+//                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
+//            }
         }
 
         public static string GetObjectName (Directory exifItem)

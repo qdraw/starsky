@@ -82,31 +82,28 @@ namespace starsky.Models
             foreach (var parsedItem in parsedList)
             {
                 var parentItem = SubFolder;
-                string childDirectory = null;
+                string childFullDirectory = null;
 
-                if (Directory.Exists(parentItem))
+                if (Directory.Exists(FileIndexItem.DatabasePathToFilePath(parentItem)))
                 {
                     if (Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem)).Length != 0)
                     {
-                        childDirectory = SelectFirstDirectory(parentItem, parsedItem);
+                        childFullDirectory = SelectFirstDirectory(parentItem, parsedItem);
                     }
                 }
 
-                if (childDirectory == null)
+
+                if (childFullDirectory == null)
                 {
-                    var fullPathBase =   FileIndexItem.DatabasePathToFilePath(parentItem)
-                                       + SubFolder
-                                       + parsedItem.Replace("*", string.Empty);
-                    
-                    if (string.IsNullOrWhiteSpace(fullPathBase)) fullPathBase += "*" + Path.DirectorySeparatorChar;
+                    childFullDirectory = SubFolder
+                                     + parsedItem.Replace("*", string.Empty);
                     if (createFolder)
                     {
-                        Directory.CreateDirectory(fullPathBase);
+                        Directory.CreateDirectory(childFullDirectory);
                     }
-                    childDirectory = fullPathBase; // FileIndexItem.FullPathToDatabaseStyle(fullPathBase);
-                }
 
-                SubFolder = FileIndexItem.FullPathToDatabaseStyle(childDirectory);
+                }
+                SubFolder = FileIndexItem.FullPathToDatabaseStyle(childFullDirectory);
             }
             return SubFolder;
         }

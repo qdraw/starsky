@@ -21,10 +21,6 @@ namespace starsky.Services
             _isync = isync;
         }
 
-        // todo: implement delete after
-        // todo: implement aterixs feature
-        
-        
         public List<string> Import(string inputFullPath, bool deleteAfter = false)
         {
             if (!Directory.Exists(inputFullPath) && File.Exists(inputFullPath))
@@ -99,34 +95,6 @@ namespace starsky.Services
             
             return inputFileFullPath;
         }
-
-
-//        public string CheckIfSubDirectoriesExist(List<string> folderStructure)
-//        {
-//            // Return fullDirectory Path
-//            // Check if Dir exist
-//
-//            if (folderStructure.FirstOrDefault() == "/") return string.Empty;
-//
-//            folderStructure.Insert(0, string.Empty);
-//
-//            var fullPathBase = FileIndexItem.DatabasePathToFilePath(folderStructure.FirstOrDefault());
-//                
-//            foreach (var folder in folderStructure)
-//            {
-//                
-//                fullPathBase += folder.Replace("*", string.Empty) + Path.DirectorySeparatorChar;
-//                var isDeleted = !Directory.Exists(fullPathBase);
-//                if (isDeleted)
-//                {
-//                    Directory.CreateDirectory(fullPathBase);
-//                }
-//            }
-//
-//            return fullPathBase;
-//        }
-
-
         
         
         // Add a new item to the database

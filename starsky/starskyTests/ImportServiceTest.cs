@@ -45,7 +45,7 @@ namespace starskytests
 //        }
         
         [TestMethod]
-        public void ImportServiceyyyyMMdd_HHmmssImportTest()
+        public void ImportService_slashyyyyMMdd_HHmmss_ImportTest()
         {
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.Structure = "/xxxxx__yyyyMMdd_HHmmss.ext";
@@ -65,10 +65,10 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void ImportServiceAsteriskDeFolderHHmmssImportTest()
+        public void ImportService_AsteriskTRFolderHHmmss_ImportTest()
         {
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/\\d\\e*/HHmmss.ext";
+            AppSettingsProvider.Structure = "/\\t\\r*/HHmmss.ext";
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             var importedFile = _import.Import(createAnImage.FullFilePath);
             
@@ -79,7 +79,15 @@ namespace starskytests
             // Clean file after succesfull run;
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
             var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
-            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
+            
+            Console.WriteLine(importIndexItem.ParseSubfolders());
+            Console.WriteLine(importIndexItem.ParseFileName());
+            
+            File.Delete(
+                FileIndexItem.DatabasePathToFilePath(
+                    importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()
+                )
+            );
         }
         
         
@@ -87,7 +95,7 @@ namespace starskytests
         public void ImportService_NonExistingFolder_HHmmssImportTest()
         {
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/\\c\\s/\\a\\b\\c/HHmmss.ext";
+            AppSettingsProvider.Structure = "/\\t\\r/\\a\\b\\c/HHmmss.ext";
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             _import.Import(createAnImage.FullFilePath);
             
@@ -98,6 +106,9 @@ namespace starskytests
             // Clean file after succesfull run;
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
             var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
+
+            Console.WriteLine(importIndexItem.ParseSubfolders());
+            Console.WriteLine(importIndexItem.ParseFileName());
             File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
         }
         
@@ -107,7 +118,7 @@ namespace starskytests
             // We currently force you to use an extension
             
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/\\d\\e*/HHmmss";
+            AppSettingsProvider.Structure = "/\\t\\r*/ssHHmm";
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             var importedFile = _import.Import(createAnImage.FullFilePath);
             
@@ -125,7 +136,7 @@ namespace starskytests
         public void ImportService_DeleteAfterTest_HHmmssImportTest()
         {
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/\\c\\s/\\a\\b\\c/yyyy/mm/HHmmss.ext";
+            AppSettingsProvider.Structure = "/\\t\\r/\\a\\b\\c/yyyy/mm/HHmmss.ext";
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             _import.Import(createAnImage.FullFilePath, true);  
             // We do not test if is excutaily removed
