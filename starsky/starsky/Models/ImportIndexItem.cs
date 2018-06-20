@@ -54,7 +54,7 @@ namespace starsky.Models
                 }
                 return ConfigRead.PrefixBackslash(_subFolder);
             }
-            set { _subFolder += value + "/" ; }
+            set { _subFolder = value + "/" ; } // +?
         }
 
         private string SelectFirstDirectory(string parentItem, string parsedItem)
@@ -66,7 +66,7 @@ namespace starsky.Models
         }
         
         // Depends on App Settings /BasePathConfig
-        public List<string> ParseSubfolders()
+        public string ParseSubfolders()
         {
             var patternList = AppSettingsProvider.Structure.Split("/").ToList();
             var parsedList = ParseListDateFormat(patternList, DateTime);
@@ -79,47 +79,24 @@ namespace starsky.Models
             {
                 var parentItem = SubFolder;
                 string childDirectory = null;
-                foreach (var test in Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem)))
-                {
-                    Console.WriteLine(test);
-                }
                     
                 if (Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem)).Length != 0)
                 {
                     childDirectory = SelectFirstDirectory(parentItem, parsedItem);
                 }
 
-//                if (childDirectory == null)
-//                {
-//                    childDirectory = SelectFirstDirectory(parentItem, parsedItem.Replace("*",string.Empty));
-//                }
-
-                if (childDirectory != null)
+                if (childDirectory == null)
                 {
-                    SubFolder = FileIndexItem.FullPathToDatabaseStyle(childDirectory);
+                    var fullPathBase = FileIndexItem.DatabasePathToFilePath(parentItem) + Path.DirectorySeparatorChar +  parsedItem.Replace("*", string.Empty);
+                    if (string.IsNullOrWhiteSpace(fullPathBase)) fullPathBase += "*" + Path.DirectorySeparatorChar;
+                    Directory.CreateDirectory(fullPathBase);
+                    childDirectory = fullPathBase; // FileIndexItem.FullPathToDatabaseStyle(fullPathBase);
                 }
-                
-                
-                
-//                var parentItem = SubFolder;
-//                SubFolder = parsedItem;
-//
-//                if (FileIndexItem.DatabasePathToFilePath(SubFolder) == null)
-//                {
-//                    if (parsedItem.Contains("*"))
-//                    {
-//                        var childDirectories = Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem), parsedItem).ToList();
-//                        childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
-//
-//                    }
-//                    Console.WriteLine(parentItem);
-//                }
-                
-            }
 
-            Console.WriteLine(SubFolder);
-            
-            return parsedList;
+                SubFolder = FileIndexItem.FullPathToDatabaseStyle(childDirectory);
+
+            }
+            return SubFolder;
         }
 
         // Escape feature
