@@ -1,11 +1,12 @@
 # Starsky Indexer Help:
+The goal of this wrapper is to get command line access to the photo index database
 
 ## To get help:
 ```sh
 starskycli --help
 ```
 
-## All command line options:
+## The StarskyCli --Help window:
 ```
 --help or -h == help (this window)
 --subpath or -s == parameter: (string) ; path inside the index, default '/'
