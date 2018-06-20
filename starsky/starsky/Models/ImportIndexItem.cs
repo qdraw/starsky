@@ -54,7 +54,7 @@ namespace starsky.Models
             {
                 if (string.IsNullOrEmpty(_subFolder))
                 {
-                    return "/";
+                    return string.Empty;
                 }
                 return ConfigRead.PrefixBackslash(_subFolder);
             }
@@ -70,7 +70,7 @@ namespace starsky.Models
         }
         
         // Depends on App Settings /BasePathConfig
-        public string ParseSubfolders()
+        public string ParseSubfolders(bool createFolder = true)
         {
             var patternList = AppSettingsProvider.Structure.Split("/").ToList();
             var parsedList = ParseListDateFormat(patternList, DateTime);
@@ -83,22 +83,30 @@ namespace starsky.Models
             {
                 var parentItem = SubFolder;
                 string childDirectory = null;
-                    
-                if (Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem)).Length != 0)
+
+                if (Directory.Exists(parentItem))
                 {
-                    childDirectory = SelectFirstDirectory(parentItem, parsedItem);
+                    if (Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem)).Length != 0)
+                    {
+                        childDirectory = SelectFirstDirectory(parentItem, parsedItem);
+                    }
                 }
 
                 if (childDirectory == null)
                 {
-                    var fullPathBase = FileIndexItem.DatabasePathToFilePath(parentItem) + Path.DirectorySeparatorChar +  parsedItem.Replace("*", string.Empty);
+                    var fullPathBase =   FileIndexItem.DatabasePathToFilePath(parentItem)
+                                       + SubFolder
+                                       + parsedItem.Replace("*", string.Empty);
+                    
                     if (string.IsNullOrWhiteSpace(fullPathBase)) fullPathBase += "*" + Path.DirectorySeparatorChar;
-                    Directory.CreateDirectory(fullPathBase);
+                    if (createFolder)
+                    {
+                        Directory.CreateDirectory(fullPathBase);
+                    }
                     childDirectory = fullPathBase; // FileIndexItem.FullPathToDatabaseStyle(fullPathBase);
                 }
 
                 SubFolder = FileIndexItem.FullPathToDatabaseStyle(childDirectory);
-
             }
             return SubFolder;
         }

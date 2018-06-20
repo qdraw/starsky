@@ -60,8 +60,8 @@ namespace starskytests
 
             // Clean file after succesfull run;
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
-            var file = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime}.ParseFileName();
-            File.Delete(FileIndexItem.DatabasePathToFilePath(file));
+            var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
+            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
         }
         
         [TestMethod]
@@ -79,7 +79,7 @@ namespace starskytests
             // Clean file after succesfull run;
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
             var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
-            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() +importIndexItem.ParseFileName()));
+            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
         }
         
         

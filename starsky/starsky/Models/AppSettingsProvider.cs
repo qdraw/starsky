@@ -8,7 +8,6 @@ namespace starsky.Models
     public static class AppSettingsProvider
     {
         public static string BasePath { get; set; }
-
         public static DatabaseTypeList DatabaseType { get; set; }
         public static string ThumbnailTempFolder { get; set; }
         public static string ExifToolPath { get; set; }
