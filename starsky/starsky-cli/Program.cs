@@ -20,6 +20,7 @@ namespace starskyCli
             
             if (ArgsHelper.NeedHelp(args))
             {
+                // Update Readme.md when this change!
                 Console.WriteLine("Starsky Indexer Help:");
                 Console.WriteLine("--help or -h == help (this window)");
                 Console.WriteLine("--subpath or -s == parameter: (string) ; path inside the index, default '/' ");
