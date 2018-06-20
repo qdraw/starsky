@@ -26,136 +26,119 @@ namespace starskytests
             _import = new ImportService(context,_isync);
         }
 
+        
 //        [TestMethod]
-//        public void ImportServiceCheckIfSubDirectoriesExistTest()
+//        public void ImportService_slashyyyyMMdd_HHmmss_ImportTest()
 //        {
 //            var createAnImage = new CreateAnImage();
-//            var importItem = new ImportIndexItem();
-//            importItem.SourceFullFilePath = createAnImage.FullFilePath;
-//            _import.CheckIfSubDirectoriesExist(importItem.ParseSubfolders());
+//            AppSettingsProvider.Structure = "/xxxxx__yyyyMMdd_HHmmss.ext";
+//            // This is not to be the first file in the test directory
+//            // => otherwise SyncServiceFirstItemDirectoryTest() will fail
+//            AppSettingsProvider.BasePath = createAnImage.BasePath;
+//            var importedFile = _import.Import(createAnImage.FullFilePath);
+//            
+//            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
+//            
+//            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+//
+//            // Clean file after succesfull run;
+//            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+//            var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
+//            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
 //        }
-
+        
 //        [TestMethod]
-//        public void ImportServiceImportTest()
+//        public void ImportService_AsteriskTRFolderHHmmss_ImportTest()
 //        {
 //            var createAnImage = new CreateAnImage();
-//            // using default structure
+//            AppSettingsProvider.Structure = "/\\t\\r*/HHmmss.ext";
+//            AppSettingsProvider.BasePath = createAnImage.BasePath;
+//            var importedFile = _import.Import(createAnImage.FullFilePath);
+//            
+//            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
+//            
+//            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+//
+//            // Clean file after succesfull run;
+//            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+//            var importIndexItem = new ImportIndexItem
+//            {
+//                SourceFullFilePath = createAnImage.FullFilePath,  
+//                DateTime = fileIndexItem.DateTime
+//            };
+//            
+//            Console.WriteLine(importIndexItem.ParseSubfolders());
+//            Console.WriteLine(importIndexItem.ParseFileName());
+//            Console.WriteLine(">>>>TR>>");
+//            
+//            var fail2000 =
+//                FileIndexItem.DatabasePathToFilePath(
+//                    importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName());
+//            Console.WriteLine();
+//
+//            if (string.IsNullOrEmpty(fail2000))
+//            {
+//                throw new Exception("dsflnksdf");
+//            }
+//            File.Delete(
+//                FileIndexItem.DatabasePathToFilePath(
+//                    importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName(), true
+//                )
+//            );
+//        }
+        
+        
+//        [TestMethod]
+//        public void ImportService_NonExistingFolder_HHmmssImportTest()
+//        {
+//            var createAnImage = new CreateAnImage();
+//            AppSettingsProvider.Structure = "/\\t\\r/\\a\\b\\c/HHmmss.ext";
 //            AppSettingsProvider.BasePath = createAnImage.BasePath;
 //            _import.Import(createAnImage.FullFilePath);
+//            
+//            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
+//            
+//            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+//
+//            // Clean file after succesfull run;
+//            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+//            var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
+//
+//            Console.WriteLine(importIndexItem.ParseSubfolders());
+//            Console.WriteLine(importIndexItem.ParseFileName());
+//            Console.WriteLine(">>>>");
+//            Console.WriteLine(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
+//            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
 //        }
         
-        [TestMethod]
-        public void ImportService_slashyyyyMMdd_HHmmss_ImportTest()
-        {
-            var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/xxxxx__yyyyMMdd_HHmmss.ext";
-            // This is not to be the first file in the test directory
-            // => otherwise SyncServiceFirstItemDirectoryTest() will fail
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
-            var importedFile = _import.Import(createAnImage.FullFilePath);
-            
-            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
-            
-            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+//        [TestMethod]
+//        public void ImportService_WithoutExt_ImportTest()
+//        {
+//            // We currently force you to use an extension
+//            
+//            var createAnImage = new CreateAnImage();
+//            AppSettingsProvider.Structure = "/\\t\\r*/ssHHmm";
+//            AppSettingsProvider.BasePath = createAnImage.BasePath;
+//            var importedFile = _import.Import(createAnImage.FullFilePath);
+//            
+//            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
+//            
+//            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+//
+//            // Clean file after succesfull run;
+//            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+//            var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
+////            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() +importIndexItem.ParseFileName()));
+//        }
 
-            // Clean file after succesfull run;
-            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
-            var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
-            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
-        }
-        
-        [TestMethod]
-        public void ImportService_AsteriskTRFolderHHmmss_ImportTest()
-        {
-            var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/\\t\\r*/HHmmss.ext";
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
-            var importedFile = _import.Import(createAnImage.FullFilePath);
-            
-            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
-            
-            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
-
-            // Clean file after succesfull run;
-            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
-            var importIndexItem = new ImportIndexItem
-            {
-                SourceFullFilePath = createAnImage.FullFilePath,  
-                DateTime = fileIndexItem.DateTime
-            };
-            
-            Console.WriteLine(importIndexItem.ParseSubfolders());
-            Console.WriteLine(importIndexItem.ParseFileName());
-            Console.WriteLine(">>>>TR>>");
-            
-            var fail2000 =
-                FileIndexItem.DatabasePathToFilePath(
-                    importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName());
-            Console.WriteLine();
-
-            if (string.IsNullOrEmpty(fail2000))
-            {
-                throw new Exception("dsflnksdf");
-            }
-            File.Delete(
-                FileIndexItem.DatabasePathToFilePath(
-                    importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName(), true
-                )
-            );
-        }
-        
-        
-        [TestMethod]
-        public void ImportService_NonExistingFolder_HHmmssImportTest()
-        {
-            var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/\\t\\r/\\a\\b\\c/HHmmss.ext";
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
-            _import.Import(createAnImage.FullFilePath);
-            
-            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
-            
-            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
-
-            // Clean file after succesfull run;
-            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
-            var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
-
-            Console.WriteLine(importIndexItem.ParseSubfolders());
-            Console.WriteLine(importIndexItem.ParseFileName());
-            Console.WriteLine(">>>>");
-            Console.WriteLine(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
-            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
-        }
-        
-        [TestMethod]
-        public void ImportService_WithoutExt_ImportTest()
-        {
-            // We currently force you to use an extension
-            
-            var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/\\t\\r*/ssHHmm";
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
-            var importedFile = _import.Import(createAnImage.FullFilePath);
-            
-            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
-            
-            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
-
-            // Clean file after succesfull run;
-            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
-            var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
-//            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() +importIndexItem.ParseFileName()));
-        }
-
-        [TestMethod]
-        public void ImportService_DeleteAfterTest_HHmmssImportTest()
-        {
-            var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/\\t\\r/\\a\\b\\c/yyyy/mm/HHmmss.ext";
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
-            _import.Import(createAnImage.FullFilePath, true);  
-            // We do not test if is excutaily removed
-        }
+//        [TestMethod]
+//        public void ImportService_DeleteAfterTest_HHmmssImportTest()
+//        {
+//            var createAnImage = new CreateAnImage();
+//            AppSettingsProvider.Structure = "/\\t\\r/\\a\\b\\c/yyyy/mm/HHmmss.ext";
+//            AppSettingsProvider.BasePath = createAnImage.BasePath;
+//            _import.Import(createAnImage.FullFilePath, true);  
+//            // We do not test if is excutaily removed
+//        }
     }
 }
