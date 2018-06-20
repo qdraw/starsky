@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
 namespace starskytests
 {
@@ -19,7 +20,8 @@ namespace starskytests
         public void SqliteFullPathentityframeworkcoreTest()
         {
             AppSettingsProvider.DatabaseType = AppSettingsProvider.DatabaseTypeList.sqlite;
-            var datasource = AppSettingsProvider.SqliteFullPath("Data Source=/entityframeworkcore/data.db");
+            // This one should be ignored ==>
+            var datasource = AppSettingsProvider.SqliteFullPath("Data Source=data.db", Path.DirectorySeparatorChar + "entityframeworkcore" + Path.DirectorySeparatorChar);
             AppSettingsProvider.DatabaseType = AppSettingsProvider.DatabaseTypeList.inmemorydatabase;
             Assert.AreEqual(datasource.Contains("data.db"),true);
             Assert.AreEqual(datasource.Contains("Data Source="),true); 
@@ -29,7 +31,7 @@ namespace starskytests
         public void SqliteFullPathstarskycliTest()
         {
             AppSettingsProvider.DatabaseType = AppSettingsProvider.DatabaseTypeList.sqlite;
-            var datasource = AppSettingsProvider.SqliteFullPath("Data Source=/starsky-cli/data.db");
+            var datasource = AppSettingsProvider.SqliteFullPath("Data Source=data.db", Path.DirectorySeparatorChar + "starsky-cli" + Path.DirectorySeparatorChar + "data.db");
             AppSettingsProvider.DatabaseType = AppSettingsProvider.DatabaseTypeList.inmemorydatabase;
             Assert.AreEqual(datasource.Contains("data.db"),true);
             Assert.AreEqual(datasource.Contains("Data Source="),true); 
@@ -39,7 +41,7 @@ namespace starskytests
         public void SqliteFullPathstarskyimportercliTest()
         {
             AppSettingsProvider.DatabaseType = AppSettingsProvider.DatabaseTypeList.sqlite;
-            var datasource = AppSettingsProvider.SqliteFullPath("Data Source=/starskyimportercli/data.db");
+            var datasource = AppSettingsProvider.SqliteFullPath("Data Source=data.db", Path.DirectorySeparatorChar + "starskyimportercli" + Path.DirectorySeparatorChar + "data.db");
             AppSettingsProvider.DatabaseType = AppSettingsProvider.DatabaseTypeList.inmemorydatabase;
             Assert.AreEqual(datasource.Contains("data.db"),true);
             Assert.AreEqual(datasource.Contains("Data Source="),true); 

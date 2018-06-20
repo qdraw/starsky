@@ -51,7 +51,7 @@ namespace starsky.Models
             inmemorydatabase = 3
         }
         
-        
+        // fullDbPath must include data.db
         public static string SqliteFullPath(string connectionString, string fullDbPath = null)
         {
             if(string.IsNullOrWhiteSpace(connectionString)) throw new ArgumentException(">> Connection string IsNullOrWhiteSpace ");
