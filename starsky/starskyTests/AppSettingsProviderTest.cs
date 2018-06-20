@@ -20,11 +20,10 @@ namespace starskytests
         public void SqliteFullPathentityframeworkcoreTest()
         {
             AppSettingsProvider.DatabaseType = AppSettingsProvider.DatabaseTypeList.sqlite;
-            // This one should be ignored ==>
+            // This one should be ignored by SqliteFullPath so it must return ==> "Data Source=data.db"
             var datasource = AppSettingsProvider.SqliteFullPath("Data Source=data.db", Path.DirectorySeparatorChar + "entityframeworkcore" + Path.DirectorySeparatorChar);
             AppSettingsProvider.DatabaseType = AppSettingsProvider.DatabaseTypeList.inmemorydatabase;
-            Assert.AreEqual(datasource.Contains("data.db"),true);
-            Assert.AreEqual(datasource.Contains("Data Source="),true); 
+            Assert.AreEqual(datasource,"Data Source=data.db"); 
         }
         
         [TestMethod]
