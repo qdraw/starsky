@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IO;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
@@ -28,6 +29,7 @@ namespace starskytests
         {
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.BasePath = createAnImage.BasePath;
+            AppSettingsProvider.ThumbnailTempFolder = createAnImage.BasePath;
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             if (string.IsNullOrEmpty(_query.GetItemByHash(fileHashCode)))
             {
@@ -37,7 +39,7 @@ namespace starskytests
                     FilePath = createAnImage.DbPath,
                     ParentDirectory = "/",
                     FileHash = fileHashCode,
-                    ColorClass = FileIndexItem.Color.Winner // 1
+                    ColorClass = FileIndexItem.Color.Winner, // 1
                 });
             }
             return _query.GetObjectByFilePath(createAnImage.DbPath);
@@ -54,6 +56,23 @@ namespace starskytests
             var jsonCollection = actionResult.Value as FileIndexItem;
             Assert.AreEqual(createAnImage.FilePath,jsonCollection.FilePath);
             new CreateAnImage(); //restore afterwards
+        }
+
+        [TestMethod]
+        public void ApiController_Thumbnail_API_Test()
+        {
+            var createAnImage = InsertSearchData();
+            var controller = new ApiController(_query);
+            
+            Thumbnail.CreateThumb(createAnImage);
+            
+            var actionResult = controller.Thumbnail(createAnImage.FileHash,true,true) as JsonResult;
+            Assert.AreNotEqual(actionResult,null);
+            var thumbnailAnswer = actionResult.Value as string;
+            Assert.AreEqual("OK",thumbnailAnswer);
+
+            var thumbnewImg = new CreateAnImage().BasePath + Path.DirectorySeparatorChar + createAnImage.FileHash + ".jpg";
+            File.Delete(thumbnewImg);
         }
 
     }

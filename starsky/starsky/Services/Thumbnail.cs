@@ -38,6 +38,7 @@ namespace starsky.Services
         }
         
         // Feature used by the cli tool
+        // Use FileIndexItem or database style path
         public static void CreateThumb(string dbFilePath = "/")
         {
             var fullFilePath = FileIndexItem.DatabasePathToFilePath(dbFilePath);
