@@ -72,6 +72,9 @@ namespace starsky.Models
         // Depends on App Settings /BasePathConfig
         public string ParseSubfolders(bool createFolder = true)
         {
+            // If command running twiche you will get /tr/tr (when tr is your single folder name)
+            _subFolder = string.Empty;
+            
             var patternList = AppSettingsProvider.Structure.Split("/").ToList();
             var parsedList = ParseListDateFormat(patternList, DateTime);
             if (parsedList.Count >= 1)
@@ -95,10 +98,15 @@ namespace starsky.Models
 
                 if (childFullDirectory == null)
                 {
-                    childFullDirectory = SubFolder
-                                     + parsedItem.Replace("*", string.Empty);
+                    childFullDirectory = FileIndexItem.DatabasePathToFilePath(
+                                          SubFolder
+                                          + parsedItem.Replace("*", string.Empty),
+                                        false // folder does not exist
+                                        );
                     if (createFolder)
                     {
+                        Console.WriteLine("childFullDirectory");
+                        Console.WriteLine(childFullDirectory);
                         Directory.CreateDirectory(childFullDirectory);
                     }
 

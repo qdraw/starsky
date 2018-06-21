@@ -99,7 +99,7 @@ namespace starsky.Services
         
         
         // Add a new item to the database
-        private ImportIndexItem AddItem(ImportIndexItem updateStatusContent)
+        private void AddItem(ImportIndexItem updateStatusContent)
         {
             if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
             
@@ -114,8 +114,26 @@ namespace starsky.Services
                 Console.WriteLine(e);
                 throw;
             }
+        }
+        
+        // Remove a new item from the database
+        public ImportIndexItem RemoveItem(ImportIndexItem updateStatusContent)
+        {
+            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
 
+            _context.ImportIndex.Remove(updateStatusContent);
+            _context.SaveChanges();
             return updateStatusContent;
+        }
+        
+        // Return a File Item By it Hash value
+        // New added, directory hash now also hashes
+        public ImportIndexItem GetItemByHash(string fileHash)
+        {
+            var query = _context.ImportIndex.FirstOrDefault(
+                p => p.FileHash == fileHash 
+            );
+            return query;
         }
         
        
