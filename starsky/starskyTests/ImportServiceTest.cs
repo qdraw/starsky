@@ -135,7 +135,6 @@ namespace starskytests
         [TestMethod]
         public void ImportService_DeleteAfterTest_HHmmssImportTest()
         {
-
              // // Test if a source file is delete afterwards
             var createAnImage = new CreateAnImage();
             
@@ -171,7 +170,7 @@ namespace starskytests
 
         [TestMethod]
         [ExpectedException(typeof(FileNotFoundException))]
-        public void ImportService_NonExistingImportFail_HHmmssImportTest()
+        public void ImportService_NonExistingImportFail_ImportTest()
         {
             // Get an Not found error when parsing
             var importIndexItem = new ImportIndexItem
@@ -183,14 +182,24 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void ImportService_EntireBasePathImport_ToTR_Test()
+        public void ImportService_EntireBasePath_Folder_Import_ToTR_Test()
         {
             // import folder
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/\\t\\r*/HHssmm.ext";
+            AppSettingsProvider.Structure = "/\\t\\r*/\\f\\o\\l\\d\\e\\r\\i\\m\\p\\o\\r\\t_HHssmm.ext";
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             
-            // todo: incomplete 
+            _import.Import(createAnImage.FullFilePath);  
+
+            Assert.AreEqual(File.Exists(createAnImage.FullFilePath), true);
+
+            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
+            var importIndexItem = _import.GetItemByHash(fileHashCode);
+            var outputFileName = importIndexItem.ParseFileName();
+            var outputSubfolders = importIndexItem.ParseSubfolders();
+
+            _import.RemoveItem(importIndexItem);
+            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() +importIndexItem.ParseFileName()));
         }
     }
 }
