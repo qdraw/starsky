@@ -84,7 +84,8 @@ namespace starsky.Services
             // Wrapper to check if the thumbservice is not waiting forever
             // In some scenarios thumbservice is waiting for days
             // Need to add var => else it will not await
-            var q = WrapSomeMethod(item.FilePath,thumbPath).Result;
+            var wrap = WrapSomeMethod(item.FilePath,thumbPath).Result;
+            if(wrap) Console.WriteLine(".");
             
             _removeCorruptImage(thumbPath);
 
@@ -161,7 +162,7 @@ namespace starsky.Services
         private static readonly string _thumbnailPrefix = "_";
         private static readonly string _thumbnailSuffix = "_starksy-error.log";
 
-
+        // todo: replace this code with something good
         private static string _GetErrorLogItemFullPath(string inputDatabaseFilePath)
         {
             var parentDatabaseFolder = Breadcrumbs.BreadcrumbHelper(inputDatabaseFilePath).LastOrDefault();
