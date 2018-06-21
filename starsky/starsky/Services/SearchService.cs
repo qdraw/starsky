@@ -208,7 +208,6 @@ namespace starsky.Services
                 "(:|=|;)(([\\w\\!\\~\\-_\\.\\/]+)|(\"|').+(\"|'))", 
                 RegexOptions.IgnoreCase);
             _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
-            var t = inurlRegex.Match(model.SearchQuery).Value;
             if (inurlRegex.Match(model.SearchQuery).Success)
             {
                 var item = inurlRegex.Match(model.SearchQuery).Value;
