@@ -40,7 +40,7 @@ namespace starsky.Models
                     //   - https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
                     //   - \\           (double escape sign or double backslash); to escape dd use this: \\d\\d 
                     //   - /            (slash); is split in folder (Windows / Linux / Mac)
-                    //   - .ext         (dot ext); extension for example jpeg/jpg
+                    //   - .ext         (dot ext); extension for example: .jpg
                     //   - (nothing)    extension is forced
                     //   - *            (asterisk); match anything
                     //   - *od*         match 'de'-folder so for example the folder: good
@@ -48,10 +48,8 @@ namespace starsky.Models
                     
                     //    Please update /starskyimportercli/readme.md when this changes
                     
-                    
                     return "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss.ext";
                 }
-
                 return _structure;
             }
             set // using Json importer
@@ -62,44 +60,5 @@ namespace starsky.Models
                 _structure = ConfigRead.RemoveLatestBackslash(structure);
             }
         }
-
-
-        
-
-
-//        public List<string> StructureFilenamePattern => _getFilenamePattern();
-//        public List<string> StructureDirectoryPattern => _getFoldersPattern();
-//
-//        private List<string> _getFilenamePattern()
-//        {
-//            // 20180419_164921.exP
-//            var structureAllSplit = AppSettingsProvider.Structure.Split("/");
-//            if (structureAllSplit.Length <= 2) Console.WriteLine("Should be protected by Model");
-//
-//            return new List<string> {structureAllSplit[structureAllSplit.Length - 1]};
-//        }
-//
-//        
-//        private static List<string> _getFoldersPattern()
-//        {
-//            var structureAllSplit = AppSettingsProvider.Structure.Split("/");
-//
-//            if (structureAllSplit.Length <= 2)
-//            {
-//                var list = new List<string> {"/"};
-//                return list;
-//            }
-//            // Return if nothing only a list with one slash
-//
-//
-//            var structure = new List<string>();
-//            for (int i = 1; i < structureAllSplit.Length-1; i++)
-//            {
-//                structure.Add(structureAllSplit[i]);
-//            }
-//            // else return the subfolders
-//            return structure;
-//        }
-        
     }
 }

@@ -9,7 +9,7 @@
 - ss 	 -   The second, from 00 through 59.
 - \\\     -      (double escape sign or double backslash); to escape dd use this: \\\d\\\d 
 - /     -       (slash); is split in folder (Windows / Linux / Mac)
-- .ext   -       (dot ext); extension for example jpg
+- .ext   -       (dot ext); extension for example: .jpg
 - (nothing)  -   extension is forced
 - \*      -     (asterisk); match anything
 - \*od\*    -    match 'de'-folder so for example the folder: good
