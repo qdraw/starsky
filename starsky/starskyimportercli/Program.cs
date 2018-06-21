@@ -39,27 +39,12 @@ namespace starskyimportercli
             
             if(AppSettingsProvider.Verbose) Console.WriteLine("inputPath " + inputPath);
             
-            var importedValues = new ImportDatabase().Import(inputPath);
-            
-            // Delete files after succesfull indexing
-            if (ArgsHelper.GetMove(args))
-            {
-                DeleteFiles(importedValues);
-            }
-            
+            new ImportDatabase().Import(inputPath, ArgsHelper.GetMove(args));
+           
             Console.WriteLine("Done Importing");
             
         }
 
-        private static void DeleteFiles(IEnumerable<string> listOfFullPaths)
-        {
-            foreach (var value in listOfFullPaths)
-            {
-                if (string.IsNullOrWhiteSpace(value)) continue;
-                System.IO.File.Delete(value);
-                Console.WriteLine("Delete: " + value);
-            }
-        }
         
     }
 }
