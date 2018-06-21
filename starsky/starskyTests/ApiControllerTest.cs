@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -30,6 +31,8 @@ namespace starskytests
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             AppSettingsProvider.ThumbnailTempFolder = createAnImage.BasePath;
+            AppSettingsProvider.ReadOnlyFolders = new List<string>();
+            
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             if (string.IsNullOrEmpty(_query.GetItemByHash(fileHashCode)))
             {
@@ -46,7 +49,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void ApiController_Delete_API_Test()
+        public void ApiController_Delete_API_HappyFlow_Test()
         {
             var createAnImage = InsertSearchData();
             var controller = new ApiController(_query);
@@ -59,7 +62,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void ApiController_Thumbnail_API_Test()
+        public void ApiController_Thumbnail_HappyFlowDisplayJson_API_Test()
         {
             var createAnImage = InsertSearchData();
             var controller = new ApiController(_query);
@@ -73,6 +76,17 @@ namespace starskytests
 
             var thumbnewImg = new CreateAnImage().BasePath + Path.DirectorySeparatorChar + createAnImage.FileHash + ".jpg";
             File.Delete(thumbnewImg);
+        }
+
+        [TestMethod]
+        public void ApiController_Thumbnail_ShowOrginalImage_API_Test()
+        {
+            var createAnImage = InsertSearchData();
+            var controller = new ApiController(_query);
+
+            var actionResult = controller.Thumbnail(createAnImage.FileHash, true, true) as FileStreamResult;
+            var thumbnailAnswer = actionResult.ContentType;
+            Assert.AreEqual("image/jpeg",thumbnailAnswer);
         }
 
     }
