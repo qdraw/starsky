@@ -185,11 +185,12 @@ namespace starskytests
         [TestMethod]
         public void ImportService_EntireBasePathImport_ToTR_Test()
         {
+            // import folder
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.Structure = "/\\t\\r*/HHssmm.ext";
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             
-            
+            // todo: incomplete 
         }
     }
 }
