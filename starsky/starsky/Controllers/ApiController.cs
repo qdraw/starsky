@@ -26,19 +26,7 @@ namespace starsky.Controllers
         [ResponseCache(Duration = 30 )]
         public IActionResult Env()
         {
-            var model = new EnvViewModel
-            {
-                DatabaseType = AppSettingsProvider.DatabaseType,
-                BasePath = AppSettingsProvider.BasePath,
-                ExifToolPath = AppSettingsProvider.ExifToolPath,
-                ThumbnailTempFolder = AppSettingsProvider.ThumbnailTempFolder,
-            };
-            if (AppSettingsProvider.DatabaseType != AppSettingsProvider.DatabaseTypeList.mysql)
-            {
-                model.DbConnectionString = AppSettingsProvider.DbConnectionString;
-            }
-
-            return Json(model);
+            return Json(new EnvViewModel().GetEnvAppSettingsProvider());
         }
 
         private bool _isReadOnly(string f)
