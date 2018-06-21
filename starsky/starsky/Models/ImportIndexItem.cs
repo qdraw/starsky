@@ -87,12 +87,10 @@ namespace starsky.Models
                 var parentItem = SubFolder;
                 string childFullDirectory = null;
 
-                if (Directory.Exists(FileIndexItem.DatabasePathToFilePath(parentItem)))
+                if (Directory.Exists(FileIndexItem.DatabasePathToFilePath(parentItem)) &&
+                    Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem)).Length != 0)
                 {
-                    if (Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem)).Length != 0)
-                    {
-                        childFullDirectory = SelectFirstDirectory(parentItem, parsedItem);
-                    }
+                    childFullDirectory = SelectFirstDirectory(parentItem, parsedItem);
                 }
 
 
