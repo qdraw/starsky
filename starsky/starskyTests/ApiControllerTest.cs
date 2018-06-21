@@ -77,6 +77,22 @@ namespace starskytests
             var thumbnewImg = new CreateAnImage().BasePath + Path.DirectorySeparatorChar + createAnImage.FileHash + ".jpg";
             File.Delete(thumbnewImg);
         }
+        
+        [TestMethod]
+        public void ApiController_Thumbnail_HappyFlowFileStreamResult_API_Test()
+        {
+            var createAnImage = InsertSearchData();
+            var controller = new ApiController(_query);
+            
+            Thumbnail.CreateThumb(createAnImage);
+            
+            var actionResult = controller.Thumbnail(createAnImage.FileHash,true) as FileStreamResult;
+            var thumbnailAnswer = actionResult.ContentType;
+            Assert.AreEqual("image/jpeg",thumbnailAnswer);
+
+            var thumbnewImg = new CreateAnImage().BasePath + Path.DirectorySeparatorChar + createAnImage.FileHash + ".jpg";
+            File.Delete(thumbnewImg);
+        }
 
         [TestMethod]
         public void ApiController_Thumbnail_ShowOrginalImage_API_Test()
@@ -84,10 +100,45 @@ namespace starskytests
             var createAnImage = InsertSearchData();
             var controller = new ApiController(_query);
 
-            var actionResult = controller.Thumbnail(createAnImage.FileHash, true, true) as FileStreamResult;
+            var actionResult = controller.Thumbnail(createAnImage.FileHash, true) as FileStreamResult;
             var thumbnailAnswer = actionResult.ContentType;
             Assert.AreEqual("image/jpeg",thumbnailAnswer);
         }
+        
+        [TestMethod]
+        public void ApiController_ThumbIsMissing_ButOrginalExist_butNoIsSingleItemFlag_API_Test()
+        {
+            // Photo exist in database but " + "isSingleItem flag is Missing
+            var createAnImage = InsertSearchData();
+            var controller = new ApiController(_query);
 
+            var actionResult = controller.Thumbnail(createAnImage.FileHash, false, true) as NoContentResult;
+            var thumbnailAnswer = actionResult.StatusCode;
+            Assert.AreNotEqual(200,thumbnailAnswer);
+        }
+
+        [TestMethod]
+        public void ApiController_FloatingDatabaseFileTest_API_Test()
+        {
+            var item = _query.AddItem(new FileIndexItem
+            {
+                FilePath = "/fakeImage/fake.jpg",
+                FileHash = "0986524678765456786543"
+            });
+            var controller = new ApiController(_query);
+            var actionResult = controller.Thumbnail(item.FileHash, false, true) as NotFoundObjectResult;
+            var thumbnailAnswer = actionResult.StatusCode;
+            Assert.AreEqual(404,thumbnailAnswer);
+            _query.RemoveItem(item);
+        }
+
+        [TestMethod]
+        public void ApiController_NonExistingFile_API_Test()
+        {
+            var controller = new ApiController(_query);
+            var actionResult = controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
+            var thumbnailAnswer = actionResult.StatusCode;
+            Assert.AreEqual(404,thumbnailAnswer);
+        }
     }
 }

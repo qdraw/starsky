@@ -180,8 +180,8 @@ namespace starsky.Controllers
             {
                 if (!isSingleitem)
                 {
-                    return NotFound("Photo exist in database but " +
-                                    "isSingleItem flag is Missing");
+                    // "Photo exist in database but " + "isSingleItem flag is Missing"
+                    return NoContent();
                 }
                 FileStream fs1 = System.IO.File.OpenRead(FileIndexItem.DatabasePathToFilePath(sourcePath));
                 return File(fs1, "image/jpeg");
