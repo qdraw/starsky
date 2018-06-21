@@ -189,7 +189,7 @@ namespace starskytests
             AppSettingsProvider.Structure = "/\\t\\r*/\\f\\o\\l\\d\\e\\r\\i\\m\\p\\o\\r\\t_HHssmm.ext";
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             
-            _import.Import(createAnImage.FullFilePath);  
+            _import.Import(createAnImage.BasePath);  // So testing the folder feature
 
             Assert.AreEqual(File.Exists(createAnImage.FullFilePath), true);
 

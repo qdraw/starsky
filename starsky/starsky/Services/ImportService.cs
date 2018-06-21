@@ -103,17 +103,9 @@ namespace starsky.Services
         {
             if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
             
-            try
-            {
-                _context.ImportIndex.Add(updateStatusContent);
-                _context.SaveChanges();
-            }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(updateStatusContent);
-                Console.WriteLine(e);
-                throw;
-            }
+            _context.ImportIndex.Add(updateStatusContent);
+            _context.SaveChanges();
+            // removed MySqlException catch
         }
         
         // Remove a new item from the database
