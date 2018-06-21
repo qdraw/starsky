@@ -72,11 +72,6 @@ namespace starskytests
                 DateTime = fileIndexItem.DateTime
             };
 
-//            Console.WriteLine("--ImportService_AsteriskTRFolderHHmmss_ImportTest--");
-//            Console.WriteLine(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName());
-//            Console.WriteLine(FileIndexItem.DatabasePathToFilePath(
-//                importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()
-//            ));
             File.Delete(
                 FileIndexItem.DatabasePathToFilePath(
                     importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()
@@ -84,7 +79,6 @@ namespace starskytests
             );
             
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
-            // todo: add clean import database
         }
         
         
@@ -173,6 +167,29 @@ namespace starskytests
             _import.RemoveItem(importIndexItem);
             File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() +importIndexItem.ParseFileName()));
 
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FileNotFoundException))]
+        public void ImportService_NonExistingImportFail_HHmmssImportTest()
+        {
+            // Get an Not found error when parsing
+            var importIndexItem = new ImportIndexItem
+            {
+                SourceFullFilePath = "123456789876",  
+                DateTime = DateTime.Now
+            };
+            importIndexItem.ParseFileName();
+        }
+
+        [TestMethod]
+        public void ImportService_EntireBasePathImport_ToTR_Test()
+        {
+            var createAnImage = new CreateAnImage();
+            AppSettingsProvider.Structure = "/\\t\\r*/HHssmm.ext";
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            
+            
         }
     }
 }
