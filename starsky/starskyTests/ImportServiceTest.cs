@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
+using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
 
@@ -103,7 +104,8 @@ namespace starskytests
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
             var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
             File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
-            Directory.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
+            
+            Files.DeleteDirectory(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
 
         }
@@ -149,33 +151,31 @@ namespace starskytests
 
             var fullFilePath = createAnImage.FullFilePath.Replace("00", "01");
             
-
-            Console.WriteLine("fullFilePath");
-            Console.WriteLine(fullFilePath);
-            File.Copy(createAnImage.FullFilePath,fullFilePath);
+            
+            try
+            {
+                File.Copy(createAnImage.FullFilePath,fullFilePath);
+            }
+            catch (IOException)
+            {
+            }
             
             var fileHashCode = FileHash.GetHashCode(fullFilePath);
             
-            // Prep clean collect data
-            var fileIndexItem = ExifRead.ReadExifFromFile(fullFilePath);
-            var importIndexItem = new ImportIndexItem
-            {
-                SourceFullFilePath = fullFilePath,  DateTime = fileIndexItem.DateTime
-            };
+//            // Prep clean collect data
+//            var fileIndexItem = ExifRead.ReadExifFromFile(fullFilePath);
+//            var importIndexItem = new ImportIndexItem
+//            {
+//                SourceFullFilePath = fullFilePath,  DateTime = fileIndexItem.DateTime
+//            };
             
             _import.Import(fullFilePath, true);  
             
-            //   // Clean file after succesfull run;
-            Console.WriteLine("0987654323456789");
-            Console.WriteLine(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() +
-                                                                   importIndexItem.ParseFileName()));
-            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() +
-                                                             importIndexItem.ParseFileName()));
 
             Assert.AreEqual(File.Exists(fullFilePath), false);
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
 
-            new CreateAnImage();
+            // it does not clean the imported file
 
         }
     }
