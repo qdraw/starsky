@@ -50,17 +50,18 @@ namespace starskytests
             var hashString = FileHash.GetHashCode(newImage.FullFilePath);
 
             // Delete if exist, to optimize test
-            var thumbnailPAth = Path.Combine(newImage.BasePath, hashString + ".jpg");
-            if (File.Exists(thumbnailPAth))
+            var thumbnailPath = Path.Combine(newImage.BasePath, hashString + ".jpg");
+            if (File.Exists(thumbnailPath))
             {
-                File.Delete(thumbnailPAth);
+                File.Delete(thumbnailPath);
             }
         
             // Create an thumbnail based on the image
             ThumbnailByDirectory.CreateThumb();
             
-            Assert.AreEqual(true,File.Exists(thumbnailPAth));
-            File.Delete(thumbnailPAth);
+            Assert.AreEqual(true,File.Exists(thumbnailPath));
+            
+            File.Delete(thumbnailPath);
 
         }
         

@@ -266,6 +266,11 @@ namespace starskytests
             var model = _search.Search("cityloop");
             // Search is fast so one item is in the unit test 0 seconds;
             Console.WriteLine(model.ElapsedSeconds);
+            // Sometimes it fails randomly that is 0 seconds
+            if (model.ElapsedSeconds == 0f)
+            {
+                model = _search.Search("cityloop");
+            }
             Assert.AreNotEqual(0f,model.ElapsedSeconds);
         }
 

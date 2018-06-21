@@ -142,7 +142,6 @@ namespace starskytests
         public void ImportService_DeleteAfterTest_HHmmssImportTest()
         {
 
-            
              // // Test if a source file is delete afterwards
             var createAnImage = new CreateAnImage();
             
@@ -150,7 +149,6 @@ namespace starskytests
             AppSettingsProvider.BasePath = createAnImage.BasePath;
 
             var fullFilePath = createAnImage.FullFilePath.Replace("00", "01");
-            
             
             try
             {
@@ -162,20 +160,18 @@ namespace starskytests
             
             var fileHashCode = FileHash.GetHashCode(fullFilePath);
             
-//            // Prep clean collect data
-//            var fileIndexItem = ExifRead.ReadExifFromFile(fullFilePath);
-//            var importIndexItem = new ImportIndexItem
-//            {
-//                SourceFullFilePath = fullFilePath,  DateTime = fileIndexItem.DateTime
-//            };
             
             _import.Import(fullFilePath, true);  
             
 
             Assert.AreEqual(File.Exists(fullFilePath), false);
-            _import.RemoveItem(_import.GetItemByHash(fileHashCode));
 
-            // it does not clean the imported file
+            var importIndexItem = _import.GetItemByHash(fileHashCode);
+            var outputFileName = importIndexItem.ParseFileName();
+            var outputSubfolders = importIndexItem.ParseSubfolders();
+
+            _import.RemoveItem(importIndexItem);
+            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() +importIndexItem.ParseFileName()));
 
         }
     }

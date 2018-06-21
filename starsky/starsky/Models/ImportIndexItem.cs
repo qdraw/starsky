@@ -18,7 +18,9 @@ namespace starsky.Models
         public string SourceFullFilePath { get; set; }
         public DateTime DateTime{ get; set; }
         
-        
+        // Caching to have it after you use the afterDelete flag
+        private string FileName { get; set; }
+
         // Depends on App Settings for storing values
         // Depends on BasePathConfig for setting default values
         // Imput required:
@@ -26,8 +28,15 @@ namespace starsky.Models
         public string ParseFileName()
         {
             if (string.IsNullOrWhiteSpace(SourceFullFilePath)) return string.Empty;
-            var fileExtenstion = Files.GetImageFormat(SourceFullFilePath).ToString();
+            var fileExtenstion = Files.GetImageFormat(SourceFullFilePath);
 
+            if (fileExtenstion == Files.ImageFormat.notfound)
+            {
+                // Caching feature to have te Path and url after you deleted the orginal in the ImportIndexItem context
+                if (FileName != null) return FileName;
+                throw new FileNotFoundException("source image not found");
+            }
+            
             var structuredFileName = AppSettingsProvider.Structure.Split("/").LastOrDefault();
             if (structuredFileName == null) return null;
 
@@ -43,6 +52,9 @@ namespace starsky.Models
 
             var fileName = DateTime.ToString(structuredFileName, CultureInfo.InvariantCulture);
             fileName += "." + fileExtenstion;
+            
+            // Caching to have it after you use the afterDelete flag
+            FileName = fileName;
             return fileName;
         }
 
@@ -93,7 +105,6 @@ namespace starsky.Models
                 {
                     childFullDirectory = SelectFirstDirectory(parentItem, parsedItem);
                 }
-
 
                 if (childFullDirectory == null)
                 {
