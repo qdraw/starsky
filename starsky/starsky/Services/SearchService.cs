@@ -18,6 +18,44 @@ namespace starsky.Services
         {
             _context = context;
         }
+        
+        public SearchViewModel Search(string query = "", int pageNumber = 0)
+        {
+
+            var stopWatch = Stopwatch.StartNew();
+            
+            // Create an view model
+            var model = new SearchViewModel
+            {
+                PageNumber = pageNumber,
+                SearchQuery = query ?? string.Empty,
+                Breadcrumb = new List<string> {"/", query ?? string.Empty  }
+                // Null check will safe you from error 500 with Empty request
+            };
+            
+            if (query == null) return model;
+            
+            _orginalSearchQuery = model.SearchQuery;
+
+            model.SearchQuery = QuerySafe(model.SearchQuery);
+            model.SearchQuery = QueryShortcuts(model.SearchQuery);
+            model = MatchSearch(model);
+
+            WideSearch(model);
+            NarrowSearch(model);
+
+            model.SearchCount = model.FileIndexItems.Count();
+
+            model.FileIndexItems = model.FileIndexItems
+                .OrderByDescending(p => p.DateTime)
+                .Skip( pageNumber * NumberOfResultsInView )
+                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView ).ToList(); 
+
+            model.LastPageNumber = GetLastPageNumber(model.SearchCount);
+            
+            model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
+            return model;
+        }
 
         private void WideSearch(SearchViewModel model)
         {
@@ -141,43 +179,7 @@ namespace starsky.Services
             return input.ToLower().Split(" ").ToList();
         }
 
-        public SearchViewModel Search(string query = "", int pageNumber = 0)
-        {
 
-            var stopWatch = Stopwatch.StartNew();
-            
-            // Create an view model
-            var model = new SearchViewModel
-            {
-                PageNumber = pageNumber,
-                SearchQuery = query ?? string.Empty,
-                Breadcrumb = new List<string> {"/", query ?? string.Empty  }
-                // Null check will safe you from error 500 with Empty request
-            };
-            
-            if (query == null) return model;
-            
-            _orginalSearchQuery = model.SearchQuery;
-
-            model.SearchQuery = QuerySafe(model.SearchQuery);
-            model.SearchQuery = QueryShortcuts(model.SearchQuery);
-            model = MatchSearch(model);
-
-            WideSearch(model);
-            NarrowSearch(model);
-
-            model.SearchCount = model.FileIndexItems.Count();
-
-            model.FileIndexItems = model.FileIndexItems
-                .OrderByDescending(p => p.DateTime)
-                .Skip( pageNumber * NumberOfResultsInView )
-                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView ).ToList(); 
-
-            model.LastPageNumber = GetLastPageNumber(model.SearchCount);
-            
-            model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
-            return model;
-        }
 
         private string _defaultQuery = string.Empty;
         private string _orginalSearchQuery = string.Empty;
