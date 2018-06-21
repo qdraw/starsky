@@ -130,9 +130,16 @@ namespace starskytests
 
         }
 
+        [TestMethod]
+        public void ImportService_DuplicateImport_HHmmssImportTest()
+        {
+            // todo: implement duplicate file import
+        }
+
 //        [TestMethod]
 //        public void ImportService_DeleteAfterTest_HHmmssImportTest()
 //        {
+        // // Test if a source file is delete afterwards
 //            var createAnImage = new CreateAnImage();
 //            AppSettingsProvider.Structure = "/\\t\\r/\\a\\b\\c/yyyy/mm/HHmmss.ext";
 //            AppSettingsProvider.BasePath = createAnImage.BasePath;
