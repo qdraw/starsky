@@ -7,9 +7,10 @@ namespace starskytests
     public class CreateAnImage
     {
 
-        private static readonly string fileName = "exifreadingtest0.jpg";
+        private static readonly string fileName = "zz__exifreadingtest00.jpg";
         public readonly string DbPath = Path.DirectorySeparatorChar + fileName;
-        public readonly string FullFilePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + fileName;
+        public readonly string FullFilePath = 
+            Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + fileName;
         public readonly string BasePath =
             Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
 

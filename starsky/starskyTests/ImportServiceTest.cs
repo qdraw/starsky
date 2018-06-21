@@ -136,15 +136,47 @@ namespace starskytests
             // todo: implement duplicate file import
         }
 
-//        [TestMethod]
-//        public void ImportService_DeleteAfterTest_HHmmssImportTest()
-//        {
-        // // Test if a source file is delete afterwards
-//            var createAnImage = new CreateAnImage();
-//            AppSettingsProvider.Structure = "/\\t\\r/\\a\\b\\c/yyyy/mm/HHmmss.ext";
-//            AppSettingsProvider.BasePath = createAnImage.BasePath;
-//            _import.Import(createAnImage.FullFilePath, true);  
-//            // We do not test if is excutaily removed
-//        }
+        [TestMethod]
+        public void ImportService_DeleteAfterTest_HHmmssImportTest()
+        {
+
+            
+             // // Test if a source file is delete afterwards
+            var createAnImage = new CreateAnImage();
+            
+            AppSettingsProvider.Structure = "/\\t\\r/\\a\\b\\c/yyyy/mm/HHmmss.ext";
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+
+            var fullFilePath = createAnImage.FullFilePath.Replace("00", "01");
+            
+
+            Console.WriteLine("fullFilePath");
+            Console.WriteLine(fullFilePath);
+            File.Copy(createAnImage.FullFilePath,fullFilePath);
+            
+            var fileHashCode = FileHash.GetHashCode(fullFilePath);
+            
+            // Prep clean collect data
+            var fileIndexItem = ExifRead.ReadExifFromFile(fullFilePath);
+            var importIndexItem = new ImportIndexItem
+            {
+                SourceFullFilePath = fullFilePath,  DateTime = fileIndexItem.DateTime
+            };
+            
+            _import.Import(fullFilePath, true);  
+            
+            //   // Clean file after succesfull run;
+            Console.WriteLine("0987654323456789");
+            Console.WriteLine(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() +
+                                                                   importIndexItem.ParseFileName()));
+            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() +
+                                                             importIndexItem.ParseFileName()));
+
+            Assert.AreEqual(File.Exists(fullFilePath), false);
+            _import.RemoveItem(_import.GetItemByHash(fileHashCode));
+
+            new CreateAnImage();
+
+        }
     }
 }
