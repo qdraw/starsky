@@ -102,6 +102,7 @@ namespace starsky.Services
         private void AddItem(ImportIndexItem updateStatusContent)
         {
             if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
+            updateStatusContent.AddToDatabase = DateTime.UtcNow;
             
             _context.ImportIndex.Add(updateStatusContent);
             _context.SaveChanges();

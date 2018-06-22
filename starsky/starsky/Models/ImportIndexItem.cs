@@ -13,14 +13,17 @@ namespace starsky.Models
     {
         public int Id { get; set; }
         public string FileHash { get; set; }
+
         public DateTime AddToDatabase { get; set; }
 
-        public string SourceFullFilePath { get; set; }
         public DateTime DateTime{ get; set; }
         
         // Caching to have it after you use the afterDelete flag
         private string FileName { get; set; }
 
+        [NotMapped]
+        public string SourceFullFilePath { get; set; }
+        
         // Depends on App Settings for storing values
         // Depends on BasePathConfig for setting default values
         // Imput required:
