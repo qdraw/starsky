@@ -27,9 +27,44 @@ namespace starskytests
             _import = new ImportService(context,_isync);
         }
 
+        [TestMethod]
+        public void ImportService_NoSubPath_WithoutSlashEndingBasePath_ImportTest()
+        {
+            var createAnImage = new CreateAnImage();
+            AppSettingsProvider.Structure = "/xxxxx__yyyyMMdd_HHmmss.ext";
+            // This is not to be the first file in the test directory
+            // => otherwise SyncServiceFirstItemDirectoryTest() will fail
+            
+            // Remove last lashEndingBasePath
+            for (int i = 0; i < createAnImage.BasePath.Length-1; i++)
+            {
+                AppSettingsProvider.BasePath += createAnImage.BasePath[i];
+            }
+
+            _import.Import(createAnImage.FullFilePath);
+            
+            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
+            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+
+            // Clean file after succesfull run;
+            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+            var importIndexItem = new ImportIndexItem
+            {
+                SourceFullFilePath = createAnImage.FullFilePath,  
+                DateTime = fileIndexItem.DateTime
+            };
+            
+            File.Delete(
+                FileIndexItem.DatabasePathToFilePath(
+                    importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+                )
+            );
+            _import.RemoveItem(_import.GetItemByHash(fileHashCode));
+        }
+        
         
         [TestMethod]
-        public void ImportService_slashyyyyMMdd_HHmmss_ImportTest()
+        public void ImportService_NoSubPath_slashyyyyMMdd_HHmmss_ImportTest()
         {
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.Structure = "/xxxxx__yyyyMMdd_HHmmss.ext";
@@ -50,7 +85,6 @@ namespace starskytests
             };
             File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
-
         }
         
         [TestMethod]
@@ -74,7 +108,7 @@ namespace starskytests
 
             File.Delete(
                 FileIndexItem.DatabasePathToFilePath(
-                    importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()
+                    importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
                 )
             );
             
@@ -97,7 +131,9 @@ namespace starskytests
             // Clean file after succesfull run;
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
             var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
-            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
+            File.Delete(FileIndexItem.DatabasePathToFilePath(
+                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+            ));
             
             Files.DeleteDirectory(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
@@ -121,7 +157,9 @@ namespace starskytests
             // Clean file after succesfull run;
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
             var importIndexItem = new ImportIndexItem {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
-            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() +importIndexItem.ParseFileName()));
+            File.Delete(FileIndexItem.DatabasePathToFilePath(
+                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+            ));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
 
         }
@@ -164,8 +202,9 @@ namespace starskytests
             var outputSubfolders = importIndexItem.ParseSubfolders();
 
             _import.RemoveItem(importIndexItem);
-            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() +importIndexItem.ParseFileName()));
-
+            File.Delete(FileIndexItem.DatabasePathToFilePath(
+                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+            ));
         }
 
         [TestMethod]
@@ -199,7 +238,9 @@ namespace starskytests
             var outputSubfolders = importIndexItem.ParseSubfolders();
 
             _import.RemoveItem(importIndexItem);
-            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() +importIndexItem.ParseFileName()));
+            File.Delete(FileIndexItem.DatabasePathToFilePath(
+                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+            ));
         }
     }
 }

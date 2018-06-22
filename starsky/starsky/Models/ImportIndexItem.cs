@@ -130,6 +130,9 @@ namespace starsky.Models
                 }
                 SubFolder = FileIndexItem.FullPathToDatabaseStyle(childFullDirectory);
             }
+
+            if (SubFolder == "/") SubFolder = string.Empty;
+            
             return SubFolder;
         }
 

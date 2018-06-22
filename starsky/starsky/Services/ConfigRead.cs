@@ -108,17 +108,6 @@ namespace starsky.Services
             return thumbnailTempFolder;
         }
         
-        public static string PrefixBackslash(string thumbnailTempFolder) { 
-            // Add BackSlash to beginning of the configuration
-            if (thumbnailTempFolder.Length == 0) return "/";
-            
-            if (thumbnailTempFolder.Substring(0,1) != Path.DirectorySeparatorChar.ToString())
-            {
-                thumbnailTempFolder = Path.DirectorySeparatorChar.ToString() + thumbnailTempFolder;
-            }
-            return thumbnailTempFolder;
-        }
-        
         public static string PrefixDbSlash(string thumbnailTempFolder) { 
             // Add normal linux slash to beginning of the configuration
             if (thumbnailTempFolder.Length == 0) return "/";
