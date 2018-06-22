@@ -4,6 +4,8 @@
     <DebugType>Full</DebugType>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="2.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
