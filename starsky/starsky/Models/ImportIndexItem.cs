@@ -92,16 +92,21 @@ namespace starsky.Models
                 if (Directory.Exists(FileIndexItem.DatabasePathToFilePath(parentItem)) &&
                     Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem)).Length != 0)
                 {
-                    childFullDirectory = SelectFirstDirectory(parentItem, parsedItem);
+                    // add backslash
+                    childFullDirectory = ConfigRead.AddBackslash(SelectFirstDirectory(parentItem, parsedItem));
                 }
 
                 if (childFullDirectory == null)
                 {
-                    childFullDirectory =  FileIndexItem.DatabasePathToFilePath(
-                                            ConfigRead.AddBackslash(SubFolder)
-                                            + parsedItem.Replace("*", string.Empty),
-                                          false // folder does not exist
-                                          );
+                    childFullDirectory = FileIndexItem.DatabasePathToFilePath(
+                                            ConfigRead.PrefixBackslash(
+                                                ConfigRead.AddBackslash(
+                                                    SubFolder
+                                                    +  parsedItem.Replace("*", string.Empty)
+                                                )
+                                            ),false
+                                         );
+
                     if (createFolder)
                     {
                         Console.WriteLine("childFullDirectory");
