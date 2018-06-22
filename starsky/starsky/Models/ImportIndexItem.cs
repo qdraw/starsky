@@ -60,22 +60,8 @@ namespace starsky.Models
             FileName = fileName;
             return fileName;
         }
-
-        private string  _subFolder  { get; set; }
-
         [NotMapped]
-        public string SubFolder
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_subFolder))
-                {
-                    return "/";
-                }
-                return _subFolder;
-            }
-            set { _subFolder = value; } // +?
-        }
+        public string SubFolder  { get; set; }
 
         private string SelectFirstDirectory(string parentItem, string parsedItem)
         {
@@ -89,7 +75,7 @@ namespace starsky.Models
         public string ParseSubfolders(bool createFolder = true)
         {
             // If command running twiche you will get /tr/tr (when tr is your single folder name)
-            _subFolder = string.Empty;
+            SubFolder = string.Empty;
             
             var patternList = AppSettingsProvider.Structure.Split("/").ToList();
             var parsedList = ParseListDateFormat(patternList, DateTime);
@@ -111,15 +97,11 @@ namespace starsky.Models
 
                 if (childFullDirectory == null)
                 {
-//                    if (!string.IsNullOrEmpty(SubFolder)) SubFolder = ConfigRead.AddBackslash(SubFolder);
-                    Console.WriteLine("parsedItem.Replace(, string.Empty)");
-                    Console.WriteLine(parsedItem.Replace("*", string.Empty));
                     childFullDirectory =  FileIndexItem.DatabasePathToFilePath(
                                             ConfigRead.AddBackslash(SubFolder)
                                             + parsedItem.Replace("*", string.Empty),
                                           false // folder does not exist
                                           );
-                    
                     if (createFolder)
                     {
                         Console.WriteLine("childFullDirectory");
@@ -131,6 +113,9 @@ namespace starsky.Models
                 SubFolder = FileIndexItem.FullPathToDatabaseStyle(childFullDirectory);
             }
 
+            // Some very nast exeptions in the prefix handler
+            // if the folder is /yyy.ext then SubFolder = string.Empty
+            SubFolder = ConfigRead.PrefixBackslash(SubFolder);
             if (SubFolder == "/") SubFolder = string.Empty;
             
             return SubFolder;
