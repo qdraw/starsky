@@ -55,7 +55,7 @@ namespace starsky.Models
             set // using Json importer
             {
                 if (string.IsNullOrEmpty(value) || value == "/") return;
-                var structure = ConfigRead.PrefixBackslash(value);
+                var structure = ConfigRead.PrefixDbSlash(value);
                 // todo: check if the feature works under windows
                 _structure = ConfigRead.RemoveLatestBackslash(structure);
             }

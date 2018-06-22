@@ -31,7 +31,7 @@ namespace starskytests
             AppSettingsProvider.Structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss.ext";
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             var s = importItem.ParseSubfolders(false);
-            Assert.AreEqual("/0001/01/0001_01_01/",s);
+            Assert.AreEqual("/0001/01/0001_01_01",s);
         }
 
         [TestMethod]
@@ -44,7 +44,7 @@ namespace starskytests
             importItem.SourceFullFilePath = createAnImage.FullFilePath;
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             var s = importItem.ParseSubfolders(false);
-            Assert.AreEqual("/tr/abc/",s);
+            Assert.AreEqual("/tr/abc",s);
         }
 
     }

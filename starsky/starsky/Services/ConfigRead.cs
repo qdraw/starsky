@@ -34,7 +34,7 @@ namespace starsky.Services
         {
 
             thumbnailTempFolder = AddBackslash(thumbnailTempFolder);
-            
+
             // Read /.config.json
             // Please check the config example in the starsky folder
 
@@ -98,24 +98,35 @@ namespace starsky.Services
 
         public static string AddBackslash(string thumbnailTempFolder) { 
             // Add backSlash to configuration
+            if (string.IsNullOrWhiteSpace(thumbnailTempFolder)) return thumbnailTempFolder;
+            
             if (thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1,
                 1) != Path.DirectorySeparatorChar.ToString())
             {
                 thumbnailTempFolder += Path.DirectorySeparatorChar.ToString();
             }
-
             return thumbnailTempFolder;
         }
         
         public static string PrefixBackslash(string thumbnailTempFolder) { 
-            // Add backSlash to beginning of the configuration
+            // Add BackSlash to beginning of the configuration
+            if (thumbnailTempFolder.Length == 0) return "/";
+            
+            if (thumbnailTempFolder.Substring(0,1) != Path.DirectorySeparatorChar.ToString())
+            {
+                thumbnailTempFolder = Path.DirectorySeparatorChar.ToString() + thumbnailTempFolder;
+            }
+            return thumbnailTempFolder;
+        }
+        
+        public static string PrefixDbSlash(string thumbnailTempFolder) { 
+            // Add normal linux slash to beginning of the configuration
             if (thumbnailTempFolder.Length == 0) return "/";
             
             if (thumbnailTempFolder.Substring(0,1) != "/")
             {
                 thumbnailTempFolder = "/" + thumbnailTempFolder;
             }
-
             return thumbnailTempFolder;
         }
 

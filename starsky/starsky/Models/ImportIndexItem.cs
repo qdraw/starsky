@@ -70,11 +70,11 @@ namespace starsky.Models
             {
                 if (string.IsNullOrEmpty(_subFolder))
                 {
-                    return string.Empty;
+                    return "/";
                 }
-                return ConfigRead.PrefixBackslash(_subFolder);
+                return _subFolder;
             }
-            set { _subFolder = value + "/" ; } // +?
+            set { _subFolder = value; } // +?
         }
 
         private string SelectFirstDirectory(string parentItem, string parsedItem)
@@ -111,11 +111,15 @@ namespace starsky.Models
 
                 if (childFullDirectory == null)
                 {
-                    childFullDirectory = FileIndexItem.DatabasePathToFilePath(
-                                          SubFolder
-                                          + parsedItem.Replace("*", string.Empty),
-                                        false // folder does not exist
-                                        );
+//                    if (!string.IsNullOrEmpty(SubFolder)) SubFolder = ConfigRead.AddBackslash(SubFolder);
+                    Console.WriteLine("parsedItem.Replace(, string.Empty)");
+                    Console.WriteLine(parsedItem.Replace("*", string.Empty));
+                    childFullDirectory =  FileIndexItem.DatabasePathToFilePath(
+                                            ConfigRead.AddBackslash(SubFolder)
+                                            + parsedItem.Replace("*", string.Empty),
+                                          false // folder does not exist
+                                          );
+                    
                     if (createFolder)
                     {
                         Console.WriteLine("childFullDirectory");

@@ -50,7 +50,7 @@ namespace starskytests
          [TestMethod]
          public void PrefixBackslashTest()
          {
-             var input = ConfigRead.PrefixBackslash("2018/");
+             var input = ConfigRead.PrefixDbSlash("2018/");
              var output = "/2018/";
              Assert.AreEqual(input, output);
          }
