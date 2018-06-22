@@ -16,7 +16,7 @@ namespace starsky.Models
 
         public DateTime AddToDatabase { get; set; }
 
-        public DateTime DateTime{ get; set; }
+        public DateTime DateTime{ get; set; } // Time of the photo
         
         // Caching to have it after you use the afterDelete flag
         private string FileName { get; set; }
