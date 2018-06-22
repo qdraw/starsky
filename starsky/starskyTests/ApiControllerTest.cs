@@ -84,10 +84,11 @@ namespace starskytests
             var controller = new ApiController(_query);
             
             Thumbnail.CreateThumb(createAnImage);
-            
-            var actionResult = controller.Thumbnail(createAnImage.FileHash,true) as FileStreamResult;
+
+            var actionResult = controller.Thumbnail(createAnImage.FileHash, true) as FileStreamResult;
             var thumbnailAnswer = actionResult.ContentType;
             Assert.AreEqual("image/jpeg",thumbnailAnswer);
+            actionResult.FileStream.Dispose(); // for windows
 
             var thumbnewImg = new CreateAnImage().BasePath + Path.DirectorySeparatorChar + createAnImage.FileHash + ".jpg";
             File.Delete(thumbnewImg);
@@ -102,8 +103,10 @@ namespace starskytests
             var actionResult = controller.Thumbnail(createAnImage.FileHash, true) as FileStreamResult;
             var thumbnailAnswer = actionResult.ContentType;
             Assert.AreEqual("image/jpeg",thumbnailAnswer);
+            actionResult.FileStream.Dispose(); // for windows
+
         }
-        
+
         [TestMethod]
         public void ApiController_ThumbIsMissing_ButOrginalExist_butNoIsSingleItemFlag_API_Test()
         {
