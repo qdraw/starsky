@@ -94,15 +94,13 @@ namespace starsky.Services
 
         private static ExifToolModel _parseJson(string text) {
             if (string.IsNullOrEmpty(text)) return null;
-
-            text = text.Replace("\r\n", "");
+            text = text.Replace("\r", "");
             text = text.Replace($"\\", "");
 
             Console.WriteLine("apply fix");
             text = FixingJsonKeywordString(text);
             
             Console.WriteLine("read from exiftool with fix applied");
-            Console.WriteLine(text);
 
             var exifData = JsonConvert.DeserializeObject<IEnumerable<ExifToolModel>>(text).FirstOrDefault();
 

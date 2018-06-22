@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,8 @@ namespace starskytests
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             AppSettingsProvider.ThumbnailTempFolder = createAnImage.BasePath;
             AppSettingsProvider.ReadOnlyFolders = new List<string>();
+
+            Console.WriteLine(createAnImage.BasePath);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             if (string.IsNullOrEmpty(_query.GetItemByHash(fileHashCode)))

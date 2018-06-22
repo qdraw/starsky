@@ -319,5 +319,5 @@ starsky/starsky/.sonarqube*
 **/appsettings.senex*
 **/appsettings.mac*
 **/appsettings.win*
-starsky/starskyTests/coverage.xml
+starsky/starskyTests/coverag*.xml
 starskyapp/ios/main.jsbundle

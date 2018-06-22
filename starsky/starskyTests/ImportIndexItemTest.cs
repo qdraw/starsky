@@ -28,6 +28,7 @@ namespace starskytests
             var createAnImage = new CreateAnImage();
             var importItem = new ImportIndexItem();
             importItem.SourceFullFilePath = createAnImage.FullFilePath;
+            AppSettingsProvider.Structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss.ext";
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             var s = importItem.ParseSubfolders(false);
             Assert.AreEqual("/0001/01/0001_01_01/",s);

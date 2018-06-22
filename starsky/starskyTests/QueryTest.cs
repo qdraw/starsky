@@ -85,12 +85,15 @@ namespace starskytests
         {
             InsertSearchData();
             var hiJpgOutput = _query.SingleItem(_insertSearchDatahiJpgInput.FilePath).FileIndexItem;
-            
-            Assert.AreEqual(_insertSearchDatahiJpgInput,hiJpgOutput);
+
+            Console.WriteLine(_insertSearchDatahiJpgInput.FileHash);
+            Console.WriteLine(hiJpgOutput.FileHash);
+
+            Assert.AreEqual(_insertSearchDatahiJpgInput.FileHash, hiJpgOutput.FileHash);
             
             // other api Get Object By FilePath
             hiJpgOutput = _query.GetObjectByFilePath(_insertSearchDatahiJpgInput.FilePath);
-            Assert.AreEqual(_insertSearchDatahiJpgInput,hiJpgOutput);
+            Assert.AreEqual(_insertSearchDatahiJpgInput.FilePath, hiJpgOutput.FilePath);
         }
 
         [TestMethod]
