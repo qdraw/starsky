@@ -14,6 +14,9 @@
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>0</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Migrations\20180308104506_initDatabaseKey.cs" />
     <Compile Remove="Migrations\20180308104506_initDatabaseKey.Designer.cs" />
@@ -24,7 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MetadataExtractor" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0003" />
   </ItemGroup>
