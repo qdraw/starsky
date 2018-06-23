@@ -79,10 +79,15 @@ namespace starsky.Models
             
             var patternList = AppSettingsProvider.Structure.Split("/").ToList();
             var parsedList = ParseListDateFormat(patternList, DateTime);
+            patternList = new List<string>();
+
             if (parsedList.Count >= 1)
             {
                 parsedList.RemoveAt(parsedList.Count - 1);
             }
+
+            // database slash to first item
+            parsedList[0] = "/" + parsedList[0];
 
             foreach (var parsedItem in parsedList)
             {
@@ -93,19 +98,20 @@ namespace starsky.Models
                     Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem)).Length != 0)
                 {
                     // add backslash
-                    childFullDirectory = ConfigRead.AddBackslash(SelectFirstDirectory(parentItem, parsedItem));
+                    var noSlashInParsedItem = parsedItem.Replace("/", string.Empty);
+                    
+                    childFullDirectory = ConfigRead.AddBackslash(SelectFirstDirectory(parentItem, noSlashInParsedItem));
+                    /// only first item
+                    if (SubFolder == string.Empty && childFullDirectory != null)
+                    {
+                        childFullDirectory = Path.DirectorySeparatorChar + childFullDirectory;
+                    }
                 }
 
                 if (childFullDirectory == null)
                 {
-                    childFullDirectory = FileIndexItem.DatabasePathToFilePath(
-                                            ConfigRead.PrefixBackslash(
-                                                ConfigRead.AddBackslash(
-                                                    SubFolder
-                                                    +  parsedItem.Replace("*", string.Empty)
-                                                )
-                                            ),false
-                                         );
+                    var childDirectory = SubFolder + parsedItem.Replace("*", string.Empty) + "/";
+                    childFullDirectory = FileIndexItem.DatabasePathToFilePath(childDirectory,false);
 
                     if (createFolder)
                     {
@@ -113,16 +119,15 @@ namespace starsky.Models
                         Console.WriteLine(childFullDirectory);
                         Directory.CreateDirectory(childFullDirectory);
                     }
-
                 }
                 SubFolder = FileIndexItem.FullPathToDatabaseStyle(childFullDirectory);
             }
 
             // Some very nast exeptions in the prefix handler
             // if the folder is /yyy.ext then SubFolder = string.Empty
-            SubFolder = ConfigRead.PrefixBackslash(SubFolder);
-            if (SubFolder == "/") SubFolder = string.Empty;
-            
+            // SubFolder = ConfigRead.PrefixDbSlash(SubFolder);
+            //if (SubFolder == "/") SubFolder = string.Empty;
+
             return SubFolder;
         }
 
