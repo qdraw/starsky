@@ -84,10 +84,10 @@ namespace starsky.Models
             if (parsedList.Count >= 1)
             {
                 parsedList.RemoveAt(parsedList.Count - 1);
-            }
 
-            // database slash to first item
-            parsedList[0] = "/" + parsedList[0];
+                // database slash to first item
+                parsedList[0] = "/" + parsedList[0];
+            }
 
             foreach (var parsedItem in parsedList)
             {
