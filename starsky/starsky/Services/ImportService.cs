@@ -30,7 +30,11 @@ namespace starsky.Services
                 return new List<string> {succesfullFullPaths};
             }
 
-            if (File.Exists(inputFullPath) || !Directory.Exists(inputFullPath)) return new List<string>();
+            if (File.Exists(inputFullPath) || !Directory.Exists(inputFullPath))
+            {
+                Console.WriteLine("File already exist or not found " + inputFullPath);
+                return new List<string>();
+            }
 
             // Directory
             var succesfullDirFullPaths = new List<string>();
