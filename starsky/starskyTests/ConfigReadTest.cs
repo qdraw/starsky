@@ -16,9 +16,9 @@ namespace starskytests
          [TestMethod]
          public void BasePathTest()
          {
-             ConfigRead.SetAppSettingsProvider("/","defaultConnection","mysql","/","/exiftool");
              // depends on platform
-             Assert.AreEqual(Path.DirectorySeparatorChar,AppSettingsProvider.BasePath);
+             ConfigRead.SetAppSettingsProvider(Path.DirectorySeparatorChar.ToString(), "defaultConnection","mysql","/","/exiftool");
+             Assert.AreEqual(Path.DirectorySeparatorChar.ToString(),AppSettingsProvider.BasePath);
          }
 
          [TestMethod]
