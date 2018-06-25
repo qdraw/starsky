@@ -166,7 +166,7 @@ namespace starsky.Helpers
         public static bool GetMove(IReadOnlyList<string> args)
         {
             var getMove = false;
-
+        
             for (int arg = 0; arg < args.Count; arg++)
             {
                 if ((args[arg].ToLower() == "--move" 
@@ -183,6 +183,30 @@ namespace starsky.Helpers
             return getMove;
         }
 
+        public static bool GetAll(IReadOnlyList<string> args)
+        {
+            // default false
+            var getAll = true;
+        
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--all" 
+                     || args[arg].ToLower() == "-a") 
+                    && (arg + 1) != args.Count)
+                {
+                    bool.TryParse(args[arg + 1], out getAll);
+                }
+                if ((args[arg].ToLower() == "--all" || args[arg].ToLower() == "-all"))
+                {
+                    getAll = false;
+                }
+            }
+            return getAll;
+        }
+        
+        
+        
+        
         
     }
 }

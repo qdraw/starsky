@@ -25,6 +25,7 @@ namespace starskyimportercli
                 Console.WriteLine("--path or -p == parameter: (string) ; fullpath");
                 Console.WriteLine("                can be an folder or file");
                 Console.WriteLine("--move or -m == move file after importing (default false)");
+                Console.WriteLine("--all or -a == import all files including files older than 2 years (default: false) ");
                 Console.WriteLine("--verbose or -v == verbose, more detailed info");
                 Console.WriteLine("  use -v -help to show settings: ");
                 if (!AppSettingsProvider.Verbose) return;
@@ -39,7 +40,7 @@ namespace starskyimportercli
             
             if(AppSettingsProvider.Verbose) Console.WriteLine("inputPath " + inputPath);
             
-            new ImportDatabase().Import(inputPath, ArgsHelper.GetMove(args));
+            new ImportDatabase().Import(inputPath, ArgsHelper.GetMove(args),ArgsHelper.GetAll(args));
            
             Console.WriteLine("Done Importing");
             

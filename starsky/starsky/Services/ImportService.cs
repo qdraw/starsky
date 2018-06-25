@@ -71,7 +71,7 @@ namespace starsky.Services
             
             if (ageFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
             {
-                Console.WriteLine("> File is older than 2 years, please use a special flag to overwrite this; stops now;");
+                Console.WriteLine("> "+ inputFileFullPath +  " is older than 2 years, please use the -a flag to overwrite this; skip this file;");
                 return string.Empty;
             }
             
