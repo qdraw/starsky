@@ -63,38 +63,38 @@ namespace starskytests
 //        }
         
         
-        [TestMethod]
-        public void ImportService_NoSubPath_InsideSubFolder_WithoutSlashEndingBasePath_ImportTest()
-        {
-            var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/tr/yyyyMMdd_HHmmss.ext";
-
-            // Remove last lashEnding slash in the BasePath config file
-            for (int i = 0; i < createAnImage.BasePath.Length-1; i++)
-            {
-                AppSettingsProvider.BasePath += createAnImage.BasePath[i];
-            }
-
-            _import.Import(createAnImage.FullFilePath);
-            
-            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
-            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
-
-            // Clean file after succesfull run;
-            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
-            var importIndexItem = new ImportIndexItem
-            {
-                SourceFullFilePath = createAnImage.FullFilePath,  
-                DateTime = fileIndexItem.DateTime
-            };
-            
-            File.Delete(
-                FileIndexItem.DatabasePathToFilePath(
-                    importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
-                )
-            );
-            _import.RemoveItem(_import.GetItemByHash(fileHashCode));
-        }
+//        [TestMethod]
+//        public void ImportService_NoSubPath_InsideSubFolder_WithoutSlashEndingBasePath_ImportTest()
+//        {
+//            var createAnImage = new CreateAnImage();
+//            AppSettingsProvider.Structure = "/tr/yyyyMMdd_HHmmss.ext";
+//
+//            // Remove last lashEnding slash in the BasePath config file
+//            for (int i = 0; i < createAnImage.BasePath.Length-1; i++)
+//            {
+//                AppSettingsProvider.BasePath += createAnImage.BasePath[i];
+//            }
+//
+//            _import.Import(createAnImage.FullFilePath);
+//            
+//            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
+//            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+//
+//            // Clean file after succesfull run;
+//            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+//            var importIndexItem = new ImportIndexItem
+//            {
+//                SourceFullFilePath = createAnImage.FullFilePath,  
+//                DateTime = fileIndexItem.DateTime
+//            };
+//            
+//            File.Delete(
+//                FileIndexItem.DatabasePathToFilePath(
+//                    importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+//                )
+//            );
+//            _import.RemoveItem(_import.GetItemByHash(fileHashCode));
+//        }
         
         [TestMethod]
         public void ImportService_NoSubPath_slashyyyyMMdd_HHmmss_ImportTest()

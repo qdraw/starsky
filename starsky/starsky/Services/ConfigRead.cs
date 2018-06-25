@@ -102,7 +102,8 @@ namespace starsky.Services
         }
 
         public static string AddBackslash(string thumbnailTempFolder) { 
-            // Add backSlash to configuration
+            // Add backSlash to configuration // or \\
+            // Platform depended feature
             if (string.IsNullOrWhiteSpace(thumbnailTempFolder)) return thumbnailTempFolder;
             
             if (thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1,
