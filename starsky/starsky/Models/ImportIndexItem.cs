@@ -81,14 +81,19 @@ namespace starsky.Models
             var parsedList = ParseListDateFormat(patternList, DateTime);
             patternList = new List<string>();
 
-            if (parsedList.Count >= 1)
+            if (parsedList.Count == 1)
+            {
+                return string.Empty;
+            }
+                
+            if (parsedList.Count >= 2)
             {
                 parsedList.RemoveAt(parsedList.Count - 1);
-
-                // database slash to first item
-                parsedList[0] = "/" + parsedList[0];
             }
 
+            // database slash to first item
+            parsedList[0] = "/" + parsedList[0];
+            
             foreach (var parsedItem in parsedList)
             {
                 var parentItem = SubFolder;
