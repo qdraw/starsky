@@ -42,6 +42,19 @@ namespace starskytests
             var s = importItem.ParseSubfolders(false);
             Assert.AreEqual("/tr/abc/",s);
         }
+        
+        [TestMethod]
+        public void ImportIndexItemParseSubfolders_Tzzz_slashABC_Test()
+        {
+            var createAnImage = new CreateAnImage();
+            var importItem = new ImportIndexItem();
+            AppSettingsProvider.Structure = "/\\t\\z/\\a\\b\\c/test";
+
+            importItem.SourceFullFilePath = createAnImage.FullFilePath;
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            var s = importItem.ParseSubfolders(false);
+            Assert.AreEqual("/tz/abc/",s);
+        }
 
     }
 }

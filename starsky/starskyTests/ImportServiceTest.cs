@@ -107,7 +107,7 @@ namespace starskytests
             _import.Import(createAnImage.FullFilePath);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
-            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+            Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after succesfull run;
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
@@ -129,7 +129,7 @@ namespace starskytests
             _import.Import(createAnImage.FullFilePath);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
-            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+            Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after succesfull run;
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
@@ -164,7 +164,7 @@ namespace starskytests
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             
-            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+            Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after succesfull run;
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
@@ -195,7 +195,7 @@ namespace starskytests
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             
-            Assert.AreEqual(true, _import.IsHashInDatabase(fileHashCode));
+            Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after succesfull run;
             var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
@@ -211,6 +211,12 @@ namespace starskytests
         public void ImportService_DuplicateDateStamp_Import_HHmmssImportTest()
         {
             // todo: implement duplicate file import
+            var createAnImage = new CreateAnImage();
+            AppSettingsProvider.Structure = "/ssHHmm.ext";
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            
+//            var q = _import.Import("/Users/dionvanvelde/Desktop/Werk/import");
+
         }
 
         [TestMethod]

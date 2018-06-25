@@ -63,12 +63,11 @@ namespace starsky.Models
         [NotMapped]
         public string SubFolder  { get; set; }
 
-        private string SelectFirstDirectory(string parentItem, string parsedItem)
+        public List<string> SearchItemInDirectory(string parentItem, string parsedItem)
         {
             var childDirectories = Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem), parsedItem).ToList();
             childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
-            var childDirectory = childDirectories.FirstOrDefault();
-            return childDirectory;
+            return childDirectories;
         }
         
         // Depends on App Settings /BasePathConfig
@@ -105,7 +104,7 @@ namespace starsky.Models
                     // add backslash
                     var noSlashInParsedItem = parsedItem.Replace("/", string.Empty);
                     
-                    childFullDirectory = ConfigRead.AddBackslash(SelectFirstDirectory(parentItem, noSlashInParsedItem));
+                    childFullDirectory = ConfigRead.AddBackslash(SearchItemInDirectory(parentItem, noSlashInParsedItem).FirstOrDefault());
                     /// only first item
                     if (SubFolder == string.Empty && childFullDirectory != null)
                     {

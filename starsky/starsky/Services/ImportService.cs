@@ -48,7 +48,7 @@ namespace starsky.Services
             return succesfullDirFullPaths;
         }
 
-        public ImportIndexItem SetupImportIndexItem(string inputFileFullPath, string fileHashCode, FileIndexItem fileIndexItem)
+        public ImportIndexItem ObjectCreateIndexItem(string inputFileFullPath, string fileHashCode, FileIndexItem fileIndexItem)
         {
             var importIndexItem = new ImportIndexItem
             {
@@ -66,28 +66,46 @@ namespace starsky.Services
             var fileHashCode = FileHash.GetHashCode(inputFileFullPath);
             
             // If is in the database, ignore it and dont delete it
-            if (IsHashInDatabase(fileHashCode)) return string.Empty;
+            if (IsHashInImportDb(fileHashCode)) return string.Empty;
 
-            // Only exepts files with correct meta data
+            // Only accept files with correct meta data
             var fileIndexItem = ExifRead.ReadExifFromFile(inputFileFullPath);
 
-            var importIndexItem = SetupImportIndexItem(inputFileFullPath, fileHashCode, fileIndexItem);
+            var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem);
                         
             fileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders();
-            fileIndexItem.FilePath = fileIndexItem.ParentDirectory +
-                                     fileIndexItem.FileName;
+            fileIndexItem.FilePath = fileIndexItem.ParentDirectory + fileIndexItem.FileName;
             fileIndexItem.FileHash = fileHashCode;
 
             var destinationFullPath = 
                 FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
-                + Path.DirectorySeparatorChar
+//                + Path.DirectorySeparatorChar
                 + fileIndexItem.FileName;
 
-            if (inputFileFullPath != destinationFullPath 
-                && !File.Exists(destinationFullPath))
+            // When a file already exist
+            if (inputFileFullPath != destinationFullPath
+                && File.Exists(destinationFullPath) )
             {
-                File.Copy(inputFileFullPath, destinationFullPath);
+                Console.WriteLine(FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory));
+                Console.WriteLine(Path.GetFileNameWithoutExtension(fileIndexItem.FileName) +"*");
+                
+//                var q = importIndexItem.SearchItemInDirectory(
+//                    FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory),
+//                    Path.GetFileNameWithoutExtension(fileIndexItem.FileName)
+//                );
+                fileIndexItem.FileName = string.Concat(
+                    Path.GetFileNameWithoutExtension(fileIndexItem.FileName),
+                    DateTime.Now.ToString("_fff"),
+                    Path.GetExtension(fileIndexItem.FileName)
+                );
+                fileIndexItem.FilePath = fileIndexItem.ParentDirectory + fileIndexItem.FileName;
+                destinationFullPath = 
+                    FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
+                    + Path.DirectorySeparatorChar
+                    + fileIndexItem.FileName;
             }
+
+            File.Copy(inputFileFullPath, destinationFullPath);
 
             _isync.SyncFiles(fileIndexItem.FilePath);
             
@@ -134,7 +152,7 @@ namespace starsky.Services
         }
         
        
-        public bool IsHashInDatabase(string fileHash)
+        public bool IsHashInImportDb(string fileHash)
         {
             var query = _context.ImportIndex.Any(
                 p => p.FileHash == fileHash 
