@@ -60,6 +60,7 @@ namespace starsky.Models
             FileName = fileName;
             return fileName;
         }
+        
         [NotMapped]
         public string SubFolder  { get; set; }
 
@@ -127,11 +128,6 @@ namespace starsky.Models
                 }
                 SubFolder = FileIndexItem.FullPathToDatabaseStyle(childFullDirectory);
             }
-
-            // Some very nast exeptions in the prefix handler
-            // if the folder is /yyy.ext then SubFolder = string.Empty
-            // SubFolder = ConfigRead.PrefixDbSlash(SubFolder);
-            //if (SubFolder == "/") SubFolder = string.Empty;
 
             return SubFolder;
         }
