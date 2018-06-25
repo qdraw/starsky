@@ -208,7 +208,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void ImportService_DuplicateImport_HHmmssImportTest()
+        public void ImportService_DuplicateDateStamp_Import_HHmmssImportTest()
         {
             // todo: implement duplicate file import
         }
