@@ -104,7 +104,7 @@ namespace starskytests
             // This is not to be the first file in the test directory
             // => otherwise SyncServiceFirstItemDirectoryTest() will fail
             AppSettingsProvider.BasePath = createAnImage.BasePath;
-            _import.Import(createAnImage.FullFilePath);
+            _import.Import(createAnImage.FullFilePath,false,false);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
@@ -126,7 +126,7 @@ namespace starskytests
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.Structure = "/\\t\\r*/HHmmss_\\d.ext";
             AppSettingsProvider.BasePath = createAnImage.BasePath;
-            _import.Import(createAnImage.FullFilePath);
+            _import.Import(createAnImage.FullFilePath,false,false);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
@@ -160,7 +160,7 @@ namespace starskytests
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.Structure = "/\\e\\x\\i\\s\\t/\\a\\b\\c/HHmmss.ext";
             AppSettingsProvider.BasePath = createAnImage.BasePath;
-            _import.Import(createAnImage.FullFilePath);
+            _import.Import(createAnImage.FullFilePath,false,false);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             
@@ -191,7 +191,7 @@ namespace starskytests
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.Structure = "/\\e\\x\\i\\s*/ssHHmm";
             AppSettingsProvider.BasePath = createAnImage.BasePath;
-            _import.Import(createAnImage.FullFilePath);
+            _import.Import(createAnImage.FullFilePath,false,false);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             
@@ -243,7 +243,7 @@ namespace starskytests
             var fileHashCode = FileHash.GetHashCode(fullFilePath);
             
             
-            _import.Import(fullFilePath, true);  
+            _import.Import(fullFilePath, true,false);  
             
 
             Assert.AreEqual(File.Exists(fullFilePath), false);
@@ -285,7 +285,7 @@ namespace starskytests
             AppSettingsProvider.Structure = "/\\e\\x\\i\\s*/\\f\\o\\l\\d\\e\\r\\i\\m\\p\\o\\r\\t_HHssmm.ext";
             AppSettingsProvider.BasePath = createAnImage.BasePath;
             
-            _import.Import(createAnImage.BasePath);  // So testing the folder feature
+            _import.Import(createAnImage.BasePath,false,false);  // So testing the folder feature
 
             Assert.AreEqual(File.Exists(createAnImage.FullFilePath), true);
 
