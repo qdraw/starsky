@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MySql.Data.MySqlClient;
 using starsky.Data;
 using starsky.Helpers;
 using starsky.Interfaces;
@@ -21,12 +20,12 @@ namespace starsky.Services
             _isync = isync;
         }
 
-        public List<string> Import(string inputFullPath, bool deleteAfter = false)
+        public List<string> Import(string inputFullPath, bool deleteAfter = false, bool ageFileFilter = true)
         {
             if (!Directory.Exists(inputFullPath) && File.Exists(inputFullPath))
             {
                 // file
-                var succesfullFullPaths = ImportFile(inputFullPath, deleteAfter);
+                var succesfullFullPaths = ImportFile(inputFullPath, deleteAfter, ageFileFilter);
                 return new List<string> {succesfullFullPaths};
             }
 
@@ -42,7 +41,7 @@ namespace starsky.Services
             foreach (var item in filesFullPath)
             {
                 // Directory
-                var fullPath = ImportFile(item, deleteAfter);
+                var fullPath = ImportFile(item, deleteAfter, ageFileFilter);
                 succesfullDirFullPaths.Add(fullPath);
             }
             return succesfullDirFullPaths;
@@ -56,12 +55,11 @@ namespace starsky.Services
                 DateTime = fileIndexItem.DateTime,
                 FileHash = fileHashCode
             };
-
             fileIndexItem.FileName = importIndexItem.ParseFileName();
             return importIndexItem;
         }
 
-        private string ImportFile(string inputFileFullPath, bool deleteAfter = false)
+        private string ImportFile(string inputFileFullPath, bool deleteAfter = false, bool ageFileFilter = true)
         {
             var fileHashCode = FileHash.GetHashCode(inputFileFullPath);
             
@@ -70,34 +68,34 @@ namespace starsky.Services
 
             // Only accept files with correct meta data
             var fileIndexItem = ExifRead.ReadExifFromFile(inputFileFullPath);
-
+            
+            if (ageFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
+            {
+                Console.WriteLine("> File is older than 2 years, please use a special flag to overwrite this; stops now;");
+                return string.Empty;
+            }
+            
             var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem);
-                        
+
             fileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders();
             fileIndexItem.FilePath = fileIndexItem.ParentDirectory + fileIndexItem.FileName;
             fileIndexItem.FileHash = fileHashCode;
 
             var destinationFullPath = 
                 FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
-//                + Path.DirectorySeparatorChar
                 + fileIndexItem.FileName;
 
-            // When a file already exist
+            // When a file already exist, when you have multiple files with the same datetime
             if (inputFileFullPath != destinationFullPath
                 && File.Exists(destinationFullPath) )
             {
-                Console.WriteLine(FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory));
-                Console.WriteLine(Path.GetFileNameWithoutExtension(fileIndexItem.FileName) +"*");
-                
-//                var q = importIndexItem.SearchItemInDirectory(
-//                    FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory),
-//                    Path.GetFileNameWithoutExtension(fileIndexItem.FileName)
-//                );
+               
                 fileIndexItem.FileName = string.Concat(
                     Path.GetFileNameWithoutExtension(fileIndexItem.FileName),
-                    DateTime.Now.ToString("_fff"),
+                    DateTime.UtcNow.ToString("-ff"),
                     Path.GetExtension(fileIndexItem.FileName)
                 );
+
                 fileIndexItem.FilePath = fileIndexItem.ParentDirectory + fileIndexItem.FileName;
                 destinationFullPath = 
                     FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
@@ -105,6 +103,8 @@ namespace starsky.Services
                     + fileIndexItem.FileName;
             }
 
+
+            
             File.Copy(inputFileFullPath, destinationFullPath);
 
             _isync.SyncFiles(fileIndexItem.FilePath);
