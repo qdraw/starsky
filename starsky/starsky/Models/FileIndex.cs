@@ -34,7 +34,7 @@ namespace starsky.Models
                     _parentDirectory = string.Empty;
                     return;
                 }
-                _parentDirectory = value;
+                _parentDirectory = ConfigRead.PrefixDbSlash(value);
             }
         }
         

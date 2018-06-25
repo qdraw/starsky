@@ -15,12 +15,16 @@ namespace starsky.Services
             // First read from env variables, if not read appsettings.json
 
             JObject obj = null;
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json"))
+            var appsettingsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+            if (File.Exists(appsettingsFile))
             {
                 string text =
-                    File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json");
+                    File.ReadAllText(appsettingsFile);
                 obj = JObject.Parse(text);    
             }
+
+            if (obj == null) Console.WriteLine("> " + appsettingsFile + " is missing; \n you could use env variables");
+
             var basePath = ReadTextFromObjOrEnv("STARSKY_BASEPATH", obj);
             var defaultConnection = ReadTextFromObjOrEnv("DefaultConnection", obj);
             var databaseType = ReadTextFromObjOrEnv("DatabaseType", obj);
@@ -34,6 +38,7 @@ namespace starsky.Services
         {
 
             thumbnailTempFolder = AddBackslash(thumbnailTempFolder);
+            basePath = AddBackslash(basePath);
 
             // Read /.config.json
             // Please check the config example in the starsky folder
@@ -119,16 +124,16 @@ namespace starsky.Services
             return thumbnailTempFolder;
         }
         
-        public static string PrefixBackslash(string thumbnailTempFolder) { 
-            // Add BackSlash to beginning of the configuration
-            if (thumbnailTempFolder.Length == 0) return "/";
-            
-            if (thumbnailTempFolder.Substring(0,1) != Path.DirectorySeparatorChar.ToString())
-            {
-                thumbnailTempFolder = Path.DirectorySeparatorChar.ToString() + thumbnailTempFolder;
-            }
-            return thumbnailTempFolder;
-        }
+//        public static string PrefixBackslash(string thumbnailTempFolder) { 
+//            // Add BackSlash to beginning of the configuration
+//            if (thumbnailTempFolder.Length == 0) return "/";
+//            
+//            if (thumbnailTempFolder.Substring(0,1) != Path.DirectorySeparatorChar.ToString())
+//            {
+//                thumbnailTempFolder = Path.DirectorySeparatorChar.ToString() + thumbnailTempFolder;
+//            }
+//            return thumbnailTempFolder;
+//        }
 
         
     }

@@ -1,9 +1,5 @@
-﻿using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Data;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
-using starsky.Services;
 
 namespace starskytests
 {

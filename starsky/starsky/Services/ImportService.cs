@@ -71,13 +71,13 @@ namespace starsky.Services
                         
             fileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders();
             fileIndexItem.FilePath = fileIndexItem.ParentDirectory +
-                                     Path.DirectorySeparatorChar + fileIndexItem.FileName;
+                                     fileIndexItem.FileName;
             fileIndexItem.FileHash = fileHashCode;
 
             var destinationFullPath = 
                 FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
-                + Path.DirectorySeparatorChar +
-                fileIndexItem.FileName;
+                + Path.DirectorySeparatorChar
+                + fileIndexItem.FileName;
 
             if (inputFileFullPath != destinationFullPath 
                 && !File.Exists(destinationFullPath))
