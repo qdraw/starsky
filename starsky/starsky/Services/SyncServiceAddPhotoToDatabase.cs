@@ -33,11 +33,13 @@ namespace starsky.Services
 
                     var singleFilePath = FileIndexItem.DatabasePathToFilePath(singleFolderDbStyle);
                     var databaseItem = ExifRead.ReadExifFromFile(singleFilePath);
+
+                    var test = Path.GetDirectoryName(singleFilePath);
                     databaseItem.AddToDatabase = DateTime.UtcNow;
                     databaseItem.FileHash = FileHash.GetHashCode(singleFilePath);
                     databaseItem.FileName = Path.GetFileName(singleFilePath);
                     databaseItem.IsDirectory = false;
-                    databaseItem.ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(singleFilePath));
+                    databaseItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFilePath).LastOrDefault();
                     // databaseItem.FilePath = singleFolderDbStyle;
 
                     _query.AddItem(databaseItem);

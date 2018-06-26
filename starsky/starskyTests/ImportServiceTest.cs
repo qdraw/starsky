@@ -274,7 +274,7 @@ namespace starskytests
 
             foreach (var item in allXuXuFiles)
             {
-                Console.WriteLine(item.FilePath);
+                Console.WriteLine("item.FilePath" + item.FilePath);
                 Console.WriteLine("---");
                 Console.WriteLine(FileIndexItem.DatabasePathToFilePath(
                     item.FilePath

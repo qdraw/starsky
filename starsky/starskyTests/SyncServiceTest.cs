@@ -217,7 +217,6 @@ namespace starskytests
         // Fails
         public void SyncServiceFirstItemDirectoryTest() // Scans childfolders and add thumbnails
         {
-            // Give some errors in vsts
             
             var newImage = new CreateAnImage();
             
@@ -249,7 +248,6 @@ namespace starskytests
             _query.AddItem(new FileIndexItem
             {
                 FileName = testfolder,
-                //FilePath = "/"+ testfolder,
                 ParentDirectory = "/",
                 IsDirectory = true
             });
@@ -257,7 +255,7 @@ namespace starskytests
             // Add Image
             _query.AddItem(new FileIndexItem
             {
-                FileName = "test.jpg",
+                FileName = newImage.DbPath.Replace("/",string.Empty),
                 //FilePath = "/"+ testfolder + newImage.DbPath.Replace(Path.DirectorySeparatorChar.ToString(),"/"),
                 ParentDirectory = "/" + testfolder,
                 IsDirectory = false
@@ -267,6 +265,8 @@ namespace starskytests
             Console.WriteLine("/"+ testfolder + newImage.DbPath);
             
             _syncservice.FirstItemDirectory();
+
+            var q = _query.GetAllRecursive();
 
             var queryItem = _query.GetObjectByFilePath("/" + testfolder);
             Assert.AreEqual(expectThisHashCode, queryItem.FileHash);
