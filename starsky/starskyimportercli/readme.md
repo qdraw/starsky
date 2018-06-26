@@ -11,6 +11,7 @@
 - /     -       (slash); is split in folder (Windows / Linux / Mac)
 - .ext   -       (dot ext); extension for example: .jpg
 - (nothing)  -   extension is forced
+- {filenamebase} - use the orginal filename without extension
 - \*      -     (asterisk); match anything
 - \*od\*    -    match 'de'-folder so for example the folder: good
 
