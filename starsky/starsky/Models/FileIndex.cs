@@ -15,10 +15,13 @@ namespace starsky.Models
         public int Id { get; set; }
 
 
+        private string _filePath { get; set; }
+
         [Column(Order = 2)]
         public string FilePath
         {
             get { return ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName); }
+            set {_filePath = ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName);} // For legacy reasons
         }
 
         [Column(Order = 1)]

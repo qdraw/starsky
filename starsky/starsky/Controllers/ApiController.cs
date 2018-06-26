@@ -251,8 +251,8 @@ namespace starsky.Controllers
                 {
                     var searchItem = new FileIndexItem
                     {
-                        // Todo: check
-                        // FilePath = FileIndexItem.FullPathToDatabaseStyle(sourceFullPath),
+                        FileName = FileIndexItem.FullPathToDatabaseStyle(sourceFullPath).Split("/").LastOrDefault(),
+                        ParentDirectory = Breadcrumbs.BreadcrumbHelper(FileIndexItem.FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
                         FileHash = FileHash.GetHashCode(sourceFullPath)
                     };
                     
