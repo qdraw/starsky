@@ -19,10 +19,6 @@ namespace starsky.Models
         public string FilePath
         {
             get { return ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName); }
-            //set
-            //{
-            //    _filePath = value; // ConfigRead.PrefixDbSlash(value);
-            //} 
         }
 
         [Column(Order = 1)]
