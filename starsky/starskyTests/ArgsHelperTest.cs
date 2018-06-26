@@ -108,7 +108,19 @@ namespace starskytests
             args = new List<string> {"-m","true"}.ToArray();
             Assert.AreEqual(ArgsHelper.GetMove(args), true);
         }
-
+        
+        [TestMethod]
+        [ExcludeFromCoverage]
+        public void ArgsHelperGetAllTest()
+        {
+            var args = new List<string> {"-a"}.ToArray();
+            Assert.AreEqual(ArgsHelper.GetMove(args), false);
+            
+            // Bool parse check
+            args = new List<string> {"-a","false"}.ToArray();
+            Assert.AreEqual(ArgsHelper.GetMove(args), false);
+        }
+        
         [TestMethod]
         [ExcludeFromCoverage]
         public void ArgsHelperSetEnvironmentByArgsShortTestListTest()
