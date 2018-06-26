@@ -14,8 +14,14 @@ namespace starsky.Models
     {
         public int Id { get; set; }
 
+        private string _filePath { get; set; }
+
         [Column(Order = 2)]
-        public string FilePath { get; set; }
+        public string FilePath
+        {
+            get { return _filePath; }
+            set { _filePath = ConfigRead.PrefixDbSlash(value); } 
+        }
 
         [Column(Order = 1)]
         public string FileName { get; set; }

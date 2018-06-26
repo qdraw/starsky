@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
@@ -182,15 +183,14 @@ namespace starskytests
         public void ImportService_WithoutExt_ImportTest()
         {
             // We currently force you to use an extension
-            
+            var createAnImage = new CreateAnImage();
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
             if (!Directory.Exists(AppSettingsProvider.BasePath + Path.DirectorySeparatorChar + "exist"))
             {
                 Directory.CreateDirectory(AppSettingsProvider.BasePath + Path.DirectorySeparatorChar + "exist");
             }
             
-            var createAnImage = new CreateAnImage();
             AppSettingsProvider.Structure = "/\\e\\x\\i\\s*/ssHHmm";
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
             _import.Import(createAnImage.FullFilePath,false,false);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
@@ -204,19 +204,90 @@ namespace starskytests
                 importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
             ));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
-
         }
 
         [TestMethod]
+        public void ImportService_DuplicateImport_Test()
+        {
+            
+            var createAnImage = new CreateAnImage();
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            AppSettingsProvider.Structure = "/xux_ssHHmm.ext";
+            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
+            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
+            Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
+            var itemFilePath = _query.GetItemByHash(fileHashCode);
+            Assert.AreNotEqual(null, itemFilePath);
+                        
+            // Run a second time: > Must return nothing
+            Assert.AreEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
+            Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
+
+            // Search on filename in database
+//            Assert.AreEqual(true, _query.GetAllFiles().Any(p => p.FileName.Contains("xux_"))   );
+            
+            // Clean afterwards
+            var importIndexItem = _import.GetItemByHash(fileHashCode);
+            var outputFileName = importIndexItem.ParseFileName();
+            var outputSubfolders = importIndexItem.ParseSubfolders();
+
+            _import.RemoveItem(importIndexItem);
+            File.Delete(FileIndexItem.DatabasePathToFilePath(
+                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+            ));
+        }
+
+        [TestMethod]
+        public void ImportService_DuplicateFileName_Test()
+        {
+            
+            var createAnImage = new CreateAnImage();
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            AppSettingsProvider.Structure = "/xux_ssHHmm.ext";
+            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
+            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
+            Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
+            var itemFilePath = _query.GetItemByHash(fileHashCode);
+            Assert.AreNotEqual(null, itemFilePath);
+                        
+            // Remove item from import index
+            var importIndexItem = _import.GetItemByHash(fileHashCode);
+            _import.RemoveItem(importIndexItem);
+
+            var firstImportedFileName = _query.GetObjectByFilePath(itemFilePath);
+            Console.WriteLine("firstImportedFileName " + firstImportedFileName);
+            
+            // Run a second time: Now it not in the database
+            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
+            Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
+
+            // >>>> ParentDirectory ===  /Users/dionvanvelde/.nuget/packages/microsoft.testplatform.testhost/15.7.2/lib/netstandard1.5
+                
+            // Search on filename in database
+            var allXuXuFiles = _query.GetAllRecursive().Where(p => p.FileName.Contains("xux_")).ToList();
+            Assert.AreEqual(true, allXuXuFiles.Any()  );
+
+            // Clean afterwards
+            importIndexItem = _import.GetItemByHash(fileHashCode);
+
+            var outputFileName = importIndexItem.ParseFileName();
+            var outputSubfolders = importIndexItem.ParseSubfolders();
+
+            _import.RemoveItem(importIndexItem);
+
+            foreach (var item in allXuXuFiles)
+            {
+                File.Delete(FileIndexItem.DatabasePathToFilePath(
+                    importIndexItem.ParseSubfolders() + "/" + item.FileName
+                ));
+            }
+            
+        }
+        
+        [TestMethod]
         public void ImportService_DuplicateDateStamp_Import_HHmmssImportTest()
         {
-            // todo: implement duplicate file import
-            var createAnImage = new CreateAnImage();
-            AppSettingsProvider.Structure = "/ssHHmm.ext";
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
             
-//            var q = _import.Import("/Users/dionvanvelde/Desktop/Werk/import");
-
         }
 
         [TestMethod]
@@ -285,7 +356,7 @@ namespace starskytests
             
             AppSettingsProvider.Structure = "/\\e\\x\\i\\s*/\\f\\o\\l\\d\\e\\r\\i\\m\\p\\o\\r\\t_HHssmm.ext";
             
-            _import.Import(createAnImage.BasePath,false,false);  // So testing the folder feature
+            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  // So testing the folder feature
 
             Assert.AreEqual(File.Exists(createAnImage.FullFilePath), true);
 
@@ -296,7 +367,7 @@ namespace starskytests
 
             _import.RemoveItem(importIndexItem);
             File.Delete(FileIndexItem.DatabasePathToFilePath(
-                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+                outputSubfolders + outputFileName
             ));
         }
     }
