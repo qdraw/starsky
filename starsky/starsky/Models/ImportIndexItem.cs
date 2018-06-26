@@ -52,9 +52,15 @@ namespace starsky.Models
                 structuredFileName = structuredFileName.Substring(0, extPosition);
             }
 
+            structuredFileName = structuredFileName.Replace("{filenamebase}", "_!q_");
 
             var fileName = DateTime.ToString(structuredFileName, CultureInfo.InvariantCulture);
             fileName += "." + fileExtenstion;
+            
+            if (fileName.Contains("_!q_")) // filenamebase
+            {
+                fileName = fileName.Replace("_!q_", Path.GetFileNameWithoutExtension(SourceFullFilePath));
+            }
             
             // Caching to have it after you use the afterDelete flag
             FileName = fileName;
@@ -79,7 +85,7 @@ namespace starsky.Models
             SubFolder = string.Empty;
             
             var patternList = AppSettingsProvider.Structure.Split("/").ToList();
-            var parsedList = ParseListDateFormat(patternList, DateTime);
+            var parsedList = ParseListBasePathAndDateFormat(patternList, DateTime);
 
             if (parsedList.Count == 1)
             {
@@ -142,11 +148,12 @@ namespace starsky.Models
             return patternListReturn;
         }
 
-        private List<string> ParseListDateFormat(List<string> patternList, DateTime fileDateTime)
+        private List<string> ParseListBasePathAndDateFormat(List<string> patternList, DateTime fileDateTime)
         {
             var parseListDate = new List<string>();
 
             patternList = PatternListInput(patternList, "*", "_!x_");
+            patternList = PatternListInput(patternList, "{filenamebase}", "_!q_");
 
             foreach (var patternItem in patternList)
             {
@@ -160,7 +167,8 @@ namespace starsky.Models
             }
 
             parseListDate = PatternListInput(parseListDate, "_!x_", "*");
-            
+            parseListDate = PatternListInput(parseListDate, "_!q_", Path.GetFileNameWithoutExtension(SourceFullFilePath));
+
             return parseListDate;
         }
         

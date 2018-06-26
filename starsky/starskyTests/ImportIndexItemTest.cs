@@ -56,6 +56,33 @@ namespace starskytests
             var s = importItem.ParseSubfolders(false);
             Assert.AreEqual("/tz/abc/",s);
         }
+        
+        [TestMethod]
+        public void ImportIndexItemParse_filenamebase_filename_Test()
+        {
+            var createAnImage = new CreateAnImage();
+            var importItem = new ImportIndexItem();
+            AppSettingsProvider.Structure = "/\\t\\z/\\a\\b{filenamebase}/{filenamebase}.ext";
+
+            importItem.SourceFullFilePath = createAnImage.FullFilePath;
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            var fileName = importItem.ParseFileName();
+            Assert.AreEqual(createAnImage.DbPath.Replace("/",string.Empty),fileName);
+        }
+        
+        [TestMethod]
+        public void ImportIndexItemParse_filenamebase_subfolder_Test()
+        {
+            var createAnImage = new CreateAnImage();
+            var importItem = new ImportIndexItem();
+            AppSettingsProvider.Structure = "/{filenamebase}/{filenamebase}.ext";
+
+            importItem.SourceFullFilePath = createAnImage.FullFilePath;
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            var subfolders = importItem.ParseSubfolders();
+            Assert.AreEqual("/" + createAnImage.DbPath.Replace("/",string.Empty).Replace(".jpg",string.Empty) + "/",subfolders);
+        }   
+        
 
     }
 }
