@@ -40,6 +40,53 @@ namespace starskytests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(FileNotFoundException))]
+        public void ThumbnailCreateThumbnailNullTest()
+        {
+            Thumbnail.CreateThumb(new FileIndexItem());
+        }
+        
+        [TestMethod]
+        public void ThumbnailCreateThumbnailNotFoundTest()
+        {
+            Thumbnail.CreateThumb(new FileIndexItem().FileHash = "t");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FileNotFoundException))]
+        public void ThumbnailCreateThumb_FileIndexItem_ThumbnailTempFolderNull_Test()
+        {
+            AppSettingsProvider.ThumbnailTempFolder = null;
+            Thumbnail.CreateThumb(new FileIndexItem());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FileNotFoundException))]
+        public void ThumbnailRenameThumb_DirectInput_ThumbnailTempFolderNull_Test()
+        {
+            AppSettingsProvider.ThumbnailTempFolder = null;
+            new Thumbnail().RenameThumb(null, null);
+        }
+        
+        [TestMethod]
+        public void ThumbnailRenameThumb_DirectInput_nonexistingOldHash_Test()
+        {
+            // Should not crash
+            var newImage = new CreateAnImage();
+            AppSettingsProvider.ThumbnailTempFolder = newImage.BasePath;
+            new Thumbnail().RenameThumb(null, "ThumbnailRenameThumb_nonexistingOldHash_Test");
+        }
+        
+        [TestMethod]
+        public void ThumbnailRenameThumb_DirectInput_nonexistingNewHash_Test()
+        {
+            // Should not crash
+            var newImage = new CreateAnImage();
+            AppSettingsProvider.ThumbnailTempFolder = newImage.BasePath;
+            new Thumbnail().RenameThumb(newImage.DbPath,null);
+        }
+        
+        [TestMethod]
         public void ThumbnailByDirectoryTest()
         {
 
@@ -64,6 +111,9 @@ namespace starskytests
             File.Delete(thumbnailPath);
 
         }
+
+        
+        
         
         
     }

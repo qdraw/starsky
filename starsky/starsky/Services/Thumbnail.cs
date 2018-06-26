@@ -68,6 +68,8 @@ namespace starsky.Services
                 throw new FileNotFoundException("ThumbnailTempFolder not found " + AppSettingsProvider.ThumbnailTempFolder);
             }
 
+            if(string.IsNullOrWhiteSpace(item.FileHash)) throw new FileNotFoundException("(CreateThumb) FileHash is null " + AppSettingsProvider.ThumbnailTempFolder);
+            
             var thumbPath = AppSettingsProvider.ThumbnailTempFolder + item.FileHash + ".jpg";
 
             if (!File.Exists(FileIndexItem.DatabasePathToFilePath(item.FilePath)))
