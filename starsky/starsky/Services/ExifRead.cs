@@ -17,7 +17,7 @@ namespace starsky.Services
             try
             {
                 allExifItems = ImageMetadataReader.ReadMetadata(fileFullPath).ToList();
-                _displayAllExif(allExifItems);
+                DisplayAllExif(allExifItems);
             }
             catch (ImageProcessingException)
             {
@@ -78,12 +78,12 @@ namespace starsky.Services
             return item;
         }
 
-        private static void _displayAllExif(IEnumerable<Directory> allExifItems)
+        private static void DisplayAllExif(IEnumerable<Directory> allExifItems)
         {
-//            if (!AppSettingsProvider.Verbose) return;
-//            foreach (var exifItem in allExifItems) {
-//                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
-//            }
+            if (!AppSettingsProvider.Verbose) return;
+            foreach (var exifItem in allExifItems) {
+                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
+            }
         }
 
         public static string GetObjectName (Directory exifItem)

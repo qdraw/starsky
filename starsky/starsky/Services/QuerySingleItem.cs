@@ -15,8 +15,6 @@ namespace starsky.Services
         {
             if (string.IsNullOrWhiteSpace(singleItemDbPath)) return null;
 
-            var qq = GetAllRecursive();
-
             var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == singleItemDbPath && !p.IsDirectory);
 
             if (query == null) return null;

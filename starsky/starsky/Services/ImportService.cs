@@ -75,7 +75,6 @@ namespace starsky.Services
                     Path.GetExtension(fileIndexItem.FileName)
                 );
                 
-                // fileIndexItem.FilePath = fileIndexItem.ParentDirectory + fileIndexItem.FileName;
                 destinationFullPath = FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
                                       + fileIndexItem.FileName;
             }
@@ -106,7 +105,6 @@ namespace starsky.Services
             var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem);
 
             fileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders();
-            //fileIndexItem.FilePath = fileIndexItem.ParentDirectory + fileIndexItem.FileName;
             fileIndexItem.FileHash = fileHashCode;
 
             var destinationFullPath = DestionationFullPathDuplicate(inputFileFullPath,fileIndexItem,true);

@@ -33,7 +33,6 @@ namespace starsky.Services
                     {
                         _query.RemoveItem(dbItem);
                         var updatedDatabaseItem = ExifRead.ReadExifFromFile(FileIndexItem.DatabasePathToFilePath(itemLocal));
-                        // updatedDatabaseItem.FilePath = dbItem.FilePath;
                         updatedDatabaseItem.FileHash = localHash;
                         updatedDatabaseItem.FileName = dbItem.FileName;
                         updatedDatabaseItem.AddToDatabase = DateTime.Now;

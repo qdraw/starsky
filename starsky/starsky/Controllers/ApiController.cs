@@ -181,20 +181,20 @@ namespace starsky.Controllers
                 if (!isSingleitem)
                 {
                     // "Photo exist in database but " + "isSingleItem flag is Missing"
-                    //try
-                    //{
-                    //    Request.HttpContext.Response.Headers.Remove("Cache-Control");
-                    //    Request.HttpContext.Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+                    try
+                    {
+                        Request.HttpContext.Response.Headers.Remove("Cache-Control");
+                        Request.HttpContext.Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
 
-                    //    Request.HttpContext.Response.Headers.Remove("Pragma");
-                    //    Request.HttpContext.Response.Headers.Add("Pragma", "no-cache");
+                        Request.HttpContext.Response.Headers.Remove("Pragma");
+                        Request.HttpContext.Response.Headers.Add("Pragma", "no-cache");
 
-                    //    Request.HttpContext.Response.Headers.Remove("Expires");
-                    //    Request.HttpContext.Response.Headers.Add("Expires", "0");
-                    //}
-                    //catch (System.NullReferenceException)
-                    //{
-                    //}
+                        Request.HttpContext.Response.Headers.Remove("Expires");
+                        Request.HttpContext.Response.Headers.Add("Expires", "0");
+                    }
+                    catch (NullReferenceException)
+                    {
+                    }
 
                     return NoContent();
                 }

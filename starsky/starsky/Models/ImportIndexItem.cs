@@ -80,7 +80,6 @@ namespace starsky.Models
             
             var patternList = AppSettingsProvider.Structure.Split("/").ToList();
             var parsedList = ParseListDateFormat(patternList, DateTime);
-            patternList = new List<string>();
 
             if (parsedList.Count == 1)
             {

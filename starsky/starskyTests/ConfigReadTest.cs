@@ -49,7 +49,7 @@ namespace starskytests
 
          [ExcludeFromCoverage]
          [TestMethod]
-         public void PrefixBackslashTest()
+         public void PrefixDbslashTest()
          {
              var input = ConfigRead.PrefixDbSlash("2018/");
              var output = "/2018/";
