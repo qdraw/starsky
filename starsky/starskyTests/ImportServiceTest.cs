@@ -272,18 +272,18 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void ImportService_EntireBasePath_Folder_Import_ToTR_Test()
+        public void ImportService_EntireBasePath_Folder_Import_ToFolderExist_Test()
         {
             // import folder
             var createAnImage = new CreateAnImage();
-            
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+
             if (!Directory.Exists(AppSettingsProvider.BasePath + Path.DirectorySeparatorChar + "exist"))
             {
                 Directory.CreateDirectory(AppSettingsProvider.BasePath + Path.DirectorySeparatorChar + "exist");
             }
             
             AppSettingsProvider.Structure = "/\\e\\x\\i\\s*/\\f\\o\\l\\d\\e\\r\\i\\m\\p\\o\\r\\t_HHssmm.ext";
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
             
             _import.Import(createAnImage.BasePath,false,false);  // So testing the folder feature
 

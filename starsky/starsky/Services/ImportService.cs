@@ -59,6 +59,34 @@ namespace starsky.Services
             return importIndexItem;
         }
 
+        public string DestionationFullPathDuplicate(string inputFileFullPath, FileIndexItem fileIndexItem, bool tryagain)
+        {
+
+            var destinationFullPath = FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
+                                      + fileIndexItem.FileName;
+            // When a file already exist, when you have multiple files with the same datetime
+            if (inputFileFullPath != destinationFullPath
+                && File.Exists(destinationFullPath) )
+            {
+               
+                fileIndexItem.FileName = string.Concat(
+                    Path.GetFileNameWithoutExtension(fileIndexItem.FileName),
+                    DateTime.UtcNow.ToString("-ff"),
+                    Path.GetExtension(fileIndexItem.FileName)
+                );
+                
+                fileIndexItem.FilePath = fileIndexItem.ParentDirectory + fileIndexItem.FileName;
+                destinationFullPath = FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
+                                      + fileIndexItem.FileName;
+            }
+
+            // For example when the number (ff) is already used:
+            if (!tryagain || !File.Exists(destinationFullPath)) return destinationFullPath;
+            destinationFullPath = DestionationFullPathDuplicate(inputFileFullPath,fileIndexItem,false);
+
+            return File.Exists(destinationFullPath) ? null : destinationFullPath;
+        }
+
         private string ImportFile(string inputFileFullPath, bool deleteAfter = false, bool ageFileFilter = true)
         {
             var fileHashCode = FileHash.GetHashCode(inputFileFullPath);
@@ -81,29 +109,10 @@ namespace starsky.Services
             fileIndexItem.FilePath = fileIndexItem.ParentDirectory + fileIndexItem.FileName;
             fileIndexItem.FileHash = fileHashCode;
 
-            var destinationFullPath = 
-                FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
-                + fileIndexItem.FileName;
-
-            // When a file already exist, when you have multiple files with the same datetime
-            if (inputFileFullPath != destinationFullPath
-                && File.Exists(destinationFullPath) )
-            {
-               
-                fileIndexItem.FileName = string.Concat(
-                    Path.GetFileNameWithoutExtension(fileIndexItem.FileName),
-                    DateTime.UtcNow.ToString("-ff"),
-                    Path.GetExtension(fileIndexItem.FileName)
-                );
-
-                fileIndexItem.FilePath = fileIndexItem.ParentDirectory + fileIndexItem.FileName;
-                destinationFullPath = 
-                    FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
-                    + Path.DirectorySeparatorChar
-                    + fileIndexItem.FileName;
-            }
-
-
+            var destinationFullPath = DestionationFullPathDuplicate(inputFileFullPath,fileIndexItem,true);
+            
+            if (destinationFullPath == null) Console.WriteLine("> "+ inputFileFullPath + " "  + fileIndexItem.FileName +  " Please try again > to many failures;");
+            if (destinationFullPath == null) return string.Empty;
             
             File.Copy(inputFileFullPath, destinationFullPath);
 
