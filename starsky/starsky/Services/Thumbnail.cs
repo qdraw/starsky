@@ -43,6 +43,7 @@ namespace starsky.Services
         {
             var fullFilePath = FileIndexItem.DatabasePathToFilePath(dbFilePath);
 
+            var fileName = dbFilePath.Split("/").LastOrDefault();
 
             if (Files.IsFolderOrFile(dbFilePath) 
                 == FolderOrFileModel.FolderOrFileTypeList.File)
@@ -50,7 +51,8 @@ namespace starsky.Services
 
                 var value = new FileIndexItem()
                 {
-                    FilePath = dbFilePath,
+                    FileName = fileName,
+                    // FilePath = dbFilePath,
                     FileHash = FileHash.GetHashCode(fullFilePath)
                 };
                 CreateThumb(value);

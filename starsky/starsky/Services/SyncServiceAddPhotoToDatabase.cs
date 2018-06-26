@@ -38,7 +38,7 @@ namespace starsky.Services
                     databaseItem.FileName = Path.GetFileName(singleFilePath);
                     databaseItem.IsDirectory = false;
                     databaseItem.ParentDirectory = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(singleFilePath));
-                    databaseItem.FilePath = singleFolderDbStyle;
+                    // databaseItem.FilePath = singleFolderDbStyle;
 
                     _query.AddItem(databaseItem);
                     databaseFileList.Add(databaseItem);

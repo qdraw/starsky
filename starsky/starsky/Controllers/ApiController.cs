@@ -251,7 +251,8 @@ namespace starsky.Controllers
                 {
                     var searchItem = new FileIndexItem
                     {
-                        FilePath = FileIndexItem.FullPathToDatabaseStyle(sourceFullPath),
+                        // Todo: check
+                        // FilePath = FileIndexItem.FullPathToDatabaseStyle(sourceFullPath),
                         FileHash = FileHash.GetHashCode(sourceFullPath)
                     };
                     

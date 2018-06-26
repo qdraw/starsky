@@ -38,10 +38,10 @@ namespace starskytests
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             if (string.IsNullOrEmpty(_query.GetItemByHash(fileHashCode)))
             {
-                _query.AddItem(new FileIndexItem
+                var q = _query.AddItem(new FileIndexItem
                 {
                     FileName = createAnImage.DbPath.Replace("/",string.Empty),
-                    FilePath = createAnImage.DbPath,
+                    //FilePath = createAnImage.DbPath,
                     ParentDirectory = "/",
                     FileHash = fileHashCode,
                     ColorClass = FileIndexItem.Color.Winner, // 1
@@ -55,6 +55,9 @@ namespace starskytests
         {
             var createAnImage = InsertSearchData();
             var controller = new ApiController(_query);
+
+            Console.WriteLine("createAnImage.FilePath");
+            Console.WriteLine(createAnImage.FilePath);
 
             var actionResult = controller.Delete(createAnImage.FilePath) as JsonResult;
             Assert.AreNotEqual(actionResult,null);
@@ -127,7 +130,9 @@ namespace starskytests
         {
             var item = _query.AddItem(new FileIndexItem
             {
-                FilePath = "/fakeImage/fake.jpg",
+                //FilePath = "/fakeImage/fake.jpg",
+                ParentDirectory = "/fakeImage/",
+                FileName = "fake.jpg",
                 FileHash = "0986524678765456786543"
             });
             var controller = new ApiController(_query);

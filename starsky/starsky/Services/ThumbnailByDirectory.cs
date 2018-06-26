@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using starsky.Helpers;
 using starsky.Models;
@@ -28,11 +29,14 @@ namespace starsky.Services
                 {
                     var value = new FileIndexItem()
                     {
-                        FilePath = FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i]),
+                        ParentDirectory = Breadcrumbs.BreadcrumbHelper(FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i])).LastOrDefault(),
+                        FileName = Path.GetFileName(FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i])),
                         FileHash = localFileListFileHash[i]
                     };
-                    
-                    if(AppSettingsProvider.Verbose) Console.WriteLine("localFileListFileHash[i] " + localFileListFileHash[i]); 
+                    // FilePath = FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i]),
+
+
+                    if (AppSettingsProvider.Verbose) Console.WriteLine("localFileListFileHash[i] " + localFileListFileHash[i]); 
                     
                     Thumbnail.CreateThumb(value);
                 }

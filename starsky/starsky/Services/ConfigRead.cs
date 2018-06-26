@@ -91,10 +91,25 @@ namespace starsky.Services
         {
             if (string.IsNullOrWhiteSpace(basePath)) throw new FileNotFoundException("Error");
 
+            // Depends on Platform
             if (basePath == "/") return basePath;
             
             // remove latest backslash
             if (basePath.Substring(basePath.Length - 1, 1) == Path.DirectorySeparatorChar.ToString())
+            {
+                basePath = basePath.Substring(0, basePath.Length - 1);
+            }
+            return basePath;
+        }
+
+
+        public static string RemoveLatestSlash(string basePath)
+        {
+            // on all platforms the same
+            if (string.IsNullOrWhiteSpace(basePath) || basePath == "/" ) return string.Empty;
+
+            // remove latest slash
+            if (basePath.Substring(basePath.Length - 1, 1) == "/")
             {
                 basePath = basePath.Substring(0, basePath.Length - 1);
             }
@@ -113,7 +128,20 @@ namespace starsky.Services
             }
             return thumbnailTempFolder;
         }
-        
+
+        public static string AddSlash(string thumbnailTempFolder)
+        {
+            // Add Slash / (only)
+            if (string.IsNullOrWhiteSpace(thumbnailTempFolder)) return thumbnailTempFolder;
+
+            if (thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1,
+                    1) != "/")
+            {
+                thumbnailTempFolder += "/";
+            }
+            return thumbnailTempFolder;
+        }
+
         public static string PrefixDbSlash(string thumbnailTempFolder) { 
             // Add normal linux slash to beginning of the configuration
             if (thumbnailTempFolder.Length == 0) return "/";

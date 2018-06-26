@@ -38,7 +38,7 @@ namespace starskytests
                 _insertSearchDatahiJpgInput = _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi.jpg",
-                    FilePath = "/basic/hi.jpg",
+                    //FilePath = "/basic/hi.jpg",
                     ParentDirectory = "/basic",
                     FileHash = "09876543456789",
                     ColorClass = FileIndexItem.Color.Winner, // 1
@@ -49,7 +49,7 @@ namespace starskytests
                 _insertSearchDatahi2JpgInput =  _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi2.jpg",
-                    FilePath = "/basic/hi2.jpg",
+                    //FilePath = "/basic/hi2.jpg",
                     Tags = "!delete!",
                     ParentDirectory = "/basic"
                 });
@@ -57,7 +57,7 @@ namespace starskytests
                 _insertSearchDatahi3JpgInput =  _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi3.jpg",
-                    FilePath = "/basic/hi3.jpg",
+                    //FilePath = "/basic/hi3.jpg",
                     ParentDirectory = "/basic",
                     ColorClass = FileIndexItem.Color.Trash // 9
                 });
@@ -65,7 +65,7 @@ namespace starskytests
                 _insertSearchDatahi4JpgInput =  _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi4.jpg",
-                    FilePath = "/basic/hi4.jpg",
+                    //FilePath = "/basic/hi4.jpg",
                     ParentDirectory = "/basic",
                     ColorClass = FileIndexItem.Color.Winner // 1
                 });
@@ -73,7 +73,7 @@ namespace starskytests
                 _insertSearchDatahi2SubfolderJpgInput =  _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi2.jpg",
-                    FilePath = "/basic/subfolder/hi2.jpg",
+                    //FilePath = "/basic/subfolder/hi2.jpg",
                     ParentDirectory = "/basic/subfolder",
                     FileHash = "234567876543"
                 });
@@ -201,7 +201,7 @@ namespace starskytests
             var hiJpgInput =  _query.AddItem(new FileIndexItem
             {
                 FileName = "hi.jpg",
-                FilePath = "/display/hi.jpg",
+                //FilePath = "/display/hi.jpg",
                 ParentDirectory = "/display", // without slash
                 FileHash = "123458465522",
                 ColorClass = FileIndexItem.Color.Winner // 1
@@ -210,7 +210,7 @@ namespace starskytests
             var hi3JpgInput =  _query.AddItem(new FileIndexItem
             {
                 FileName = "hi3.jpg",
-                FilePath = "/display/hi3.jpg",
+                //FilePath = "/display/hi3.jpg",
                 ParentDirectory = "/display", // without slash
                 FileHash = "78539048765",
                 ColorClass = FileIndexItem.Color.Extras
@@ -219,7 +219,7 @@ namespace starskytests
             _query.AddItem(new FileIndexItem
             {
                 FileName = "hi2.jpg",
-                FilePath = "/display/hi2.jpg",
+                //FilePath = "/display/hi2.jpg",
                 ParentDirectory = "/display",
                 FileHash = "98765432123456",
                 Tags = "!delete!"
@@ -269,7 +269,7 @@ namespace starskytests
             _query.AddItem(new FileIndexItem
             {
                 FileName = "hi3.jpg",
-                FilePath = "/bread/hi3.jpg",
+                //FilePath = "/bread/hi3.jpg",
                 ParentDirectory = "/bread", // without slash
                 FileHash = "234565432",
                 ColorClass = FileIndexItem.Color.Extras,
@@ -281,14 +281,13 @@ namespace starskytests
             CollectionAssert.AreEqual(exptectedOutput,output);
         }
 
-        [ExcludeFromCoverage]
         [TestMethod]
         public void BreadcrumbDetailViewPagViewTypeTest()
         {
             _query.AddItem(new FileIndexItem
             {
                 FileName = "hi4.jpg",
-                FilePath = "/bread/hi4.jpg",
+                //FilePath = "/bread/hi4.jpg",
                 ParentDirectory = "/bread", // without slash
                 FileHash = "23456543",
                 ColorClass = FileIndexItem.Color.Extras,

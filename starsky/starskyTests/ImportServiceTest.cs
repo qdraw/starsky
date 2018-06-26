@@ -237,6 +237,7 @@ namespace starskytests
             ));
         }
 
+        
         [TestMethod]
         public void ImportService_DuplicateFileName_Test()
         {
@@ -250,17 +251,13 @@ namespace starskytests
             var itemFilePath = _query.GetItemByHash(fileHashCode);
             Assert.AreNotEqual(null, itemFilePath);
                         
-            // Remove item from import index
+            // Remove item from import index             // Run a second time: Now it not in the database
             var importIndexItem = _import.GetItemByHash(fileHashCode);
             _import.RemoveItem(importIndexItem);
-
-            var firstImportedFileName = _query.GetObjectByFilePath(itemFilePath);
-            Console.WriteLine("firstImportedFileName " + firstImportedFileName);
-            
-            // Run a second time: Now it not in the database
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
-
+            
+            
             // >>>> ParentDirectory ===  /Users/dionvanvelde/.nuget/packages/microsoft.testplatform.testhost/15.7.2/lib/netstandard1.5
                 
             // Search on filename in database
@@ -277,9 +274,14 @@ namespace starskytests
 
             foreach (var item in allXuXuFiles)
             {
-                File.Delete(FileIndexItem.DatabasePathToFilePath(
-                    importIndexItem.ParseSubfolders() + "/" + item.FileName
+                Console.WriteLine(item.FilePath);
+                Console.WriteLine("---");
+                Console.WriteLine(FileIndexItem.DatabasePathToFilePath(
+                    item.FilePath
                 ));
+                //File.Delete(FileIndexItem.DatabasePathToFilePath(
+                //    item.FilePath
+                //));
             }
             
         }

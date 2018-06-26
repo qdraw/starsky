@@ -36,7 +36,7 @@ namespace starskytests
             var folder1 = new FileIndexItem
             {
                 FileName = "test",
-                FilePath = "/folder99/test",
+                //FilePath = "/folder99/test",
                 ParentDirectory = "/folder99",
                 IsDirectory = true
             };
@@ -58,7 +58,7 @@ namespace starskytests
             var folder1 =  _query.AddItem(new FileIndexItem
             {
                 FileName = "folder1",
-                FilePath = "/test/folder1",
+                //FilePath = "/test/folder1",
                 ParentDirectory = "/test/",
                 IsDirectory = true
             });
@@ -67,7 +67,7 @@ namespace starskytests
             var folder2 = _query.AddItem(new FileIndexItem
             {
                 FileName = "folder2",
-                FilePath = "/test/folder2",
+                //FilePath = "/test/folder2",
                 ParentDirectory = "/test/",
                 IsDirectory = true
             });
@@ -112,7 +112,7 @@ namespace starskytests
             var folder2 = _query.AddItem(new FileIndexItem
             {
                 FileName = "_hashing-file-test.tmp",
-                FilePath = "/_hashing-file-test.tmp",
+                //FilePath = "/_hashing-file-test.tmp",
                 ParentDirectory = "/",
                 Tags = "!delete!",
                 IsDirectory = false
@@ -138,7 +138,6 @@ namespace starskytests
         }
 
         [TestMethod]
-        [ExcludeFromCoverage]
         public void SyncServiceSingleFileTest()
         {
             var newImage = new CreateAnImage();
@@ -170,7 +169,7 @@ namespace starskytests
             _query.AddItem(new FileIndexItem
             {
                 FileName = "non-existing.jpg",
-                FilePath = "/non-existing.jpg",
+                //FilePath = "/non-existing.jpg",
                 ParentDirectory = "/",
                 IsDirectory = false
             });
@@ -192,7 +191,7 @@ namespace starskytests
             _query.AddItem(new FileIndexItem
             {
                 FileName = "non-existing-folder",
-                FilePath = "/non-existing-folder",
+                //FilePath = "/non-existing-folder",
                 ParentDirectory = "/",
                 IsDirectory = true
             });
@@ -201,7 +200,7 @@ namespace starskytests
             _query.AddItem(new FileIndexItem
             {
                 FileName = "non-existing.jpg",
-                FilePath = "non-existing-folder/non-existing.jpg",
+               // FilePath = "non-existing-folder/non-existing.jpg",
                 ParentDirectory = "/non-existing-folder",
                 FileHash = "4444",
                 IsDirectory =  false
@@ -215,7 +214,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        [ExcludeFromCoverage]
+        // Fails
         public void SyncServiceFirstItemDirectoryTest() // Scans childfolders and add thumbnails
         {
             // Give some errors in vsts
@@ -250,7 +249,7 @@ namespace starskytests
             _query.AddItem(new FileIndexItem
             {
                 FileName = testfolder,
-                FilePath = "/"+ testfolder,
+                //FilePath = "/"+ testfolder,
                 ParentDirectory = "/",
                 IsDirectory = true
             });
@@ -259,7 +258,7 @@ namespace starskytests
             _query.AddItem(new FileIndexItem
             {
                 FileName = "test.jpg",
-                FilePath = "/"+ testfolder + newImage.DbPath.Replace(Path.DirectorySeparatorChar.ToString(),"/"),
+                //FilePath = "/"+ testfolder + newImage.DbPath.Replace(Path.DirectorySeparatorChar.ToString(),"/"),
                 ParentDirectory = "/" + testfolder,
                 IsDirectory = false
             });
@@ -284,7 +283,7 @@ namespace starskytests
             _query.AddItem(new FileIndexItem
             {
                 FileName = "test.jpg",
-                FilePath = "/deletedFolder/test.jpg",
+                //FilePath = "/deletedFolder/test.jpg",
                 ParentDirectory = "/deletedFolder",
                 FileHash = "deletedFile",
                 IsDirectory = false
@@ -299,13 +298,12 @@ namespace starskytests
         }
 
         [TestMethod]
-        [ExcludeFromCoverage]
         public void SyncServiceRenameListItemsToDbStyleTest()
         {
             var newImage = new CreateAnImage();
             AppSettingsProvider.BasePath = newImage.BasePath; // needs to have an / or \ at the end
-            var inputList = new List<string>{newImage.FullFilePath};
-            var expectedOutputList = new List<string>{newImage.DbPath.Replace(Path.DirectorySeparatorChar.ToString(),"")};
+            var inputList = new List<string>{ Path.DirectorySeparatorChar.ToString() };
+            var expectedOutputList = new List<string>{ "/"};
             var output = _syncservice.RenameListItemsToDbStyle(inputList);
             // list of files names that are starting with a filename (and not an / or \ )
 

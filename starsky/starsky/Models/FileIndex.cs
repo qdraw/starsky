@@ -14,13 +14,15 @@ namespace starsky.Models
     {
         public int Id { get; set; }
 
-        private string _filePath { get; set; }
 
         [Column(Order = 2)]
         public string FilePath
         {
-            get { return _filePath; }
-            set { _filePath = ConfigRead.PrefixDbSlash(value); } 
+            get { return ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName); }
+            //set
+            //{
+            //    _filePath = value; // ConfigRead.PrefixDbSlash(value);
+            //} 
         }
 
         [Column(Order = 1)]
@@ -28,7 +30,7 @@ namespace starsky.Models
 
         public string FileHash { get; set; }
 
-        // Do not save null in database for tags
+        // Do not save null in database for Parent Directory
         private string _parentDirectory;
         public string ParentDirectory
         {
@@ -40,7 +42,7 @@ namespace starsky.Models
                     _parentDirectory = string.Empty;
                     return;
                 }
-                _parentDirectory = ConfigRead.PrefixDbSlash(value);
+                _parentDirectory = value;
             }
         }
         

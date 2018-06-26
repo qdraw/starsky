@@ -35,7 +35,7 @@ namespace starsky.Services
                 {
                     var newItem = new FileIndexItem
                     {
-                        FilePath = itemSubpath,
+                        // FilePath = itemSubpath,
                         AddToDatabase = DateTime.UtcNow,
                         IsDirectory = true
                     };

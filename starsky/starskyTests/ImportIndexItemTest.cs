@@ -10,6 +10,7 @@ namespace starskytests
         public void ImportIndexItemParseFileNameTest()
         {
             var createAnImage = new CreateAnImage();
+            AppSettingsProvider.Structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss.ext";
 
             var importItem = new ImportIndexItem();
             importItem.SourceFullFilePath = createAnImage.FullFilePath;

@@ -32,7 +32,7 @@ namespace starskytests
                 _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi.jpg",
-                    FilePath = "/homecontrollertest/hi.jpg",
+                    //FilePath = "/homecontrollertest/hi.jpg",
                     ParentDirectory = "/homecontrollertest",
                     FileHash = "home0012304590",
                     ColorClass = FileIndexItem.Color.Winner // 1

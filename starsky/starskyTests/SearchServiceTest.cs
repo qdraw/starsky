@@ -32,7 +32,7 @@ namespace starskytests
                 _query.AddItem(new FileIndexItem
                 {
                     FileName = "schipholairplane.jpg",
-                    FilePath = "/stations/schipholairplane.jpg",
+                    //FilePath = "/stations/schipholairplane.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "schipholairplane",
                     Tags = "schiphol, airplane, station",
@@ -46,7 +46,7 @@ namespace starskytests
                 _query.AddItem(new FileIndexItem
                 {
                     FileName = "lelystadcentrum.jpg",
-                    FilePath = "/stations/lelystadcentrum.jpg",
+                    //FilePath = "/stations/lelystadcentrum.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "lelystadcentrum",
                     Tags = "station, train, lelystad, de trein"
@@ -58,7 +58,7 @@ namespace starskytests
                 _query.AddItem(new FileIndexItem
                 {
                     FileName = "lelystadcentrum2.jpg",
-                    FilePath = "/stations2/lelystadcentrum.jpg",
+                    //FilePath = "/stations2/lelystadcentrum.jpg",
                     ParentDirectory = "/stations2",
                     FileHash = "lelystadcentrum2",
                     Tags = "lelystadcentrum2"
@@ -70,7 +70,7 @@ namespace starskytests
                 _query.AddItem(new FileIndexItem
                 {
                     FileName = "deletedfile.jpg",
-                    FilePath = "/stations/deletedfile.jpg",
+                    //FilePath = "/stations/deletedfile.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "stationdeletedfile",
                     Tags = "!delete!"
@@ -85,7 +85,7 @@ namespace starskytests
                     _query.AddItem(new FileIndexItem
                     {
                         FileName = "cityloop" + i + ".jpg",
-                        FilePath = "/cities/cityloop" + i + ".jpg",
+                        //FilePath = "/cities/cityloop" + i + ".jpg",
                         ParentDirectory = "/cities",
                         FileHash = "cityloop" + i,
                         Tags = "cityloop"
