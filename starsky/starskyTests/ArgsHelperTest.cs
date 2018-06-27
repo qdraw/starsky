@@ -114,11 +114,11 @@ namespace starskytests
         public void ArgsHelperGetAllTest()
         {
             var args = new List<string> {"-a"}.ToArray();
-            Assert.AreEqual(ArgsHelper.GetMove(args), false);
+            Assert.AreEqual(true, ArgsHelper.GetAll(args));
             
             // Bool parse check
             args = new List<string> {"-a","false"}.ToArray();
-            Assert.AreEqual(ArgsHelper.GetMove(args), false);
+            Assert.AreEqual(false, ArgsHelper.GetAll(args));
         }
         
         [TestMethod]
