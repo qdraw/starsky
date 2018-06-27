@@ -60,9 +60,7 @@ namespace starsky
                 app.UseStatusCodePagesWithReExecute("/Shared/Error");
             }
 
-
             app.UseStaticFiles();
-
 
             app.UseMvc(routes =>
             {
