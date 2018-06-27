@@ -19,6 +19,7 @@ namespace starsky.Controllers
 
         [HttpGet]
         [HttpHead]
+        [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f", "colorClass" } )]
         public IActionResult Index(
             string f = "/", 
             string colorClass = null,

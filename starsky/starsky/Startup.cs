@@ -40,6 +40,16 @@ namespace starsky
             services.AddScoped<IQuery, Query>();
             services.AddScoped<ISync, SyncService>();
             services.AddScoped<ISearch, SearchService>();
+            
+            services.AddAntiforgery(
+                options =>
+                {
+                    options.Cookie.Name = "_af";
+                    options.Cookie.HttpOnly = true;
+                    options.HeaderName = "X-XSRF-TOKEN";
+                }
+            );
+
             services.AddMvc();
         }
 
@@ -47,7 +57,7 @@ namespace starsky
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseResponseCaching();
-            
+
             app.UsePathBase("/starsky");
 
             if (env.IsDevelopment())

@@ -24,6 +24,7 @@ namespace starsky.Controllers
         [HttpGet]
         [HttpHead]
         [ResponseCache(Duration = 30 )]
+        [IgnoreAntiforgeryToken]
         public IActionResult Env()
         {
             return Json(new EnvViewModel().GetEnvAppSettingsProvider());
@@ -87,6 +88,7 @@ namespace starsky.Controllers
             return Json(exifToolResults);
         }
 
+        [ResponseCache(Duration = 30, VaryByQueryKeys = new [] { "f" } )]
         public IActionResult Info(string f = "dbStyleFilepath")
         {
             if (f.Contains("?t=")) return NotFound("please use &t= instead of ?t=");
@@ -146,6 +148,7 @@ namespace starsky.Controllers
         [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f" } )]
         [HttpGet("/api/thumbnail/{f}")]
         [HttpHead("/api/thumbnail/{f}")]
+        [IgnoreAntiforgeryToken]
         public IActionResult Thumbnail(
             string f, 
             bool isSingleitem = false, 
