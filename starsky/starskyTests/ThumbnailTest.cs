@@ -82,10 +82,11 @@ namespace starskytests
         [TestMethod]
         public void ThumbnailRenameThumb_DirectInput_nonexistingNewHash_Test()
         {
-            // Should not crash
+            // For testing:    if File.Exists(newThumbPath)
             var newImage = new CreateAnImage();
             AppSettingsProvider.ThumbnailTempFolder = newImage.BasePath;
-            new Thumbnail().RenameThumb(newImage.DbPath,null);
+            var dbPathWithoutExtAndSlash = newImage.DbPath.Replace(".jpg", string.Empty).Replace("/", string.Empty);
+            new Thumbnail().RenameThumb(dbPathWithoutExtAndSlash,dbPathWithoutExtAndSlash);
         }
         
         [TestMethod]
