@@ -49,7 +49,9 @@ namespace starskytests
         [TestMethod]
         public void ThumbnailCreateThumbnailNotFoundTest()
         {
-            Thumbnail.CreateThumb(new FileIndexItem().FileHash = "t");
+            var newImage = new CreateAnImage();
+            AppSettingsProvider.ThumbnailTempFolder = newImage.BasePath;
+            Thumbnail.CreateThumb(new FileIndexItem{FileHash = "t",FileName = "t",FilePath = "/"});
         }
 
         [TestMethod]
