@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
@@ -10,6 +11,7 @@ namespace starsky.Controllers
 {
     public class HomeController : Controller
     {
+        
         private readonly IQuery _query;
 
         public HomeController(IQuery query)
@@ -19,20 +21,19 @@ namespace starsky.Controllers
 
         [HttpGet]
         [HttpHead]
-        [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f", "colorClass" } )]
         public IActionResult Index(
             string f = "/", 
             string colorClass = null,
             bool json = false
             )
         {
+
             // Trick for avoiding spaces for behind proxy
             f = f.Replace("$20", " ");
             
             // Used in Detail and Index View => does not hide this single item
             var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
             var subpath = _query.SubPathSlashRemove(f);
-
             
             var model = new IndexViewModel {FileIndexItems = _query.DisplayFileFolders(subpath,colorClassFilterList)};
             var singleItem = _query.SingleItem(subpath,colorClassFilterList);

@@ -18,6 +18,7 @@ namespace starsky
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddResponseCaching();
+            services.AddMemoryCache();
             
             ConfigRead.SetAppSettingsProvider();
 

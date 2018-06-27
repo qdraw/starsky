@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.Models;
 using starsky.ViewModels;
 
@@ -10,18 +12,22 @@ namespace starsky.Services
         // For displaying single photo's
         // Display feature only?!
         // input: Name of item by db style path
+        // With Caching feature :)
         public DetailView SingleItem(string singleItemDbPath,
             List<FileIndexItem.Color> colorClassFilterList = null)
         {
             if (string.IsNullOrWhiteSpace(singleItemDbPath)) return null;
 
+            // Return values from IMemoryCache
+            if (_cache.TryGetValue(singleItemDbPath, out var itemResult)) return itemResult as DetailView;
+            
             var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == singleItemDbPath && !p.IsDirectory);
 
             if (query == null) return null;
 
             var relativeObject = _getNextPrevInSubFolder(query.ParentDirectory, singleItemDbPath, colorClassFilterList);
 
-            var itemResult = new DetailView
+            itemResult = new DetailView
             {
                 FileIndexItem = query,
                 RelativeObjects = relativeObject,
@@ -29,8 +35,12 @@ namespace starsky.Services
                 GetAllColor = FileIndexItem.GetAllColorUserInterface(),
                 ColorClassFilterList = colorClassFilterList
             };
+            
+            // Cache with 1 hour timespan
+            _cache.Set(singleItemDbPath, itemResult, new TimeSpan(1,0,0));
 
-            return itemResult;
+            // Cast object to DetailView
+            return (DetailView) itemResult;
         }
 
         // Show previous en next items in the singleitem view.

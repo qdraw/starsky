@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using MySql.Data.MySqlClient;
 using starsky.Interfaces;
 using starsky.Models;
@@ -15,9 +16,17 @@ namespace starsky.Services
     {
         private readonly ApplicationDbContext _context;
 
-        public Query(ApplicationDbContext context)
+        private IMemoryCache _cache;
+
+//        public Query(ApplicationDbContext context)
+//        {
+//            _context = context;
+//        }
+        
+        public Query(ApplicationDbContext context, IMemoryCache memoryCache)
         {
             _context = context;
+            _cache = memoryCache;
         }
 
         // Get a list of all files inside an folder

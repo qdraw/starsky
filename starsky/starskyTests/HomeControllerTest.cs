@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.Data;
@@ -18,11 +20,16 @@ namespace starskytests
 
         public HomeControllerTest()
         {
+            var provider = new ServiceCollection()
+                .AddMemoryCache()
+                .BuildServiceProvider();
+            var memoryCache = provider.GetService<IMemoryCache>();
+            
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             builder.UseInMemoryDatabase("test");
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
-            _query = new Query(context);
+            _query = new Query(context,memoryCache);
         }
 
         private void InsertSearchData()

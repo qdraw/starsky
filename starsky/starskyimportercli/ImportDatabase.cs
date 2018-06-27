@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.Data;
 using starsky.Services;
 using starsky.Models;
@@ -8,7 +9,7 @@ namespace starskyimportercli
 {
     public class ImportDatabase
     {
-        public ImportDatabase()
+        public ImportDatabase(IMemoryCache memoryCache)
         {
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
@@ -24,7 +25,7 @@ namespace starskyimportercli
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
 
-            var query = new Query(context);
+            var query = new Query(context,memoryCache);
             var isync = new SyncService(context,query);
             _importService = new ImportService(context,isync);
         }

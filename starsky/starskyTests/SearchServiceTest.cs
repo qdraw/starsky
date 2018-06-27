@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
 using starsky.Models;
@@ -16,12 +18,17 @@ namespace starskytests
 
         public SearchServiceTest()
         {
+            var provider = new ServiceCollection()
+                .AddMemoryCache()
+                .BuildServiceProvider();
+            var memoryCache = provider.GetService<IMemoryCache>();
+            
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             builder.UseInMemoryDatabase("search");
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
             _search = new SearchService(context);
-            _query = new Query(context);
+            _query = new Query(context,memoryCache);
         }
 
         public void InsertSearchData()

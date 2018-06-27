@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
 using starsky.Helpers;
@@ -20,11 +22,16 @@ namespace starskytests
 
         public ImportServiceTest()
         {
+            var provider = new ServiceCollection()
+                .AddMemoryCache()
+                .BuildServiceProvider();
+            var memoryCache = provider.GetService<IMemoryCache>();
+            
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             builder.UseInMemoryDatabase("test");
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
-            _query = new Query(context);
+            _query = new Query(context,memoryCache);
             _isync = new SyncService(context, _query);
             _import = new ImportService(context,_isync);
         }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
 using starsky.Helpers;
 using starsky.Models;
@@ -9,9 +11,15 @@ namespace starskyimportercli
 {
     static class Program
     {
+        
         [ExcludeFromCoverage] // The ArgsHelper.cs is covered by unit tests
         static void Main(string[] args)
         {
+            var provider = new ServiceCollection()
+                .AddMemoryCache()
+                .BuildServiceProvider();
+            var cache = provider.GetService<IMemoryCache>();
+            
             // Check if user want more info
             AppSettingsProvider.Verbose = ArgsHelper.NeedVerbose(args);
             ConfigRead.SetAppSettingsProvider();
@@ -40,7 +48,7 @@ namespace starskyimportercli
             
             if(AppSettingsProvider.Verbose) Console.WriteLine("inputPath " + inputPath);
             
-            new ImportDatabase().Import(inputPath, ArgsHelper.GetMove(args),ArgsHelper.GetAll(args));
+            new ImportDatabase(cache).Import(inputPath, ArgsHelper.GetMove(args),ArgsHelper.GetAll(args));
            
             Console.WriteLine("Done Importing");
             
