@@ -31,6 +31,7 @@ namespace starsky.Services
         And the subpath can ben 2018 to crawl only files inside this folder
         */
         
+        [ExcludeFromCoverage]
         public IEnumerable<string> SyncFiles(string subPath)
         {
             // Handle single files
