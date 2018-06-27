@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -371,6 +372,12 @@ namespace starskytests
             File.Delete(FileIndexItem.DatabasePathToFilePath(
                 outputSubfolders + outputFileName
             ));
+        }
+
+        [TestMethod]
+        public void ImportService_Import_NotFound_Test()
+        {
+            CollectionAssert.AreEqual(new List<string>(),_import.Import(null, true, false));
         }
     }
 }
