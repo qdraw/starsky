@@ -129,18 +129,6 @@ namespace starsky.Services
             return thumbnailTempFolder;
         }
 
-        public static string AddSlash(string thumbnailTempFolder)
-        {
-            // Add Slash / (only)
-            if (string.IsNullOrWhiteSpace(thumbnailTempFolder)) return thumbnailTempFolder;
-
-            if (thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1,
-                    1) != "/")
-            {
-                thumbnailTempFolder += "/";
-            }
-            return thumbnailTempFolder;
-        }
 
         public static string PrefixDbSlash(string thumbnailTempFolder) { 
             // Add normal linux slash to beginning of the configuration
