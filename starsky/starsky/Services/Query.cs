@@ -18,11 +18,6 @@ namespace starsky.Services
 
         private IMemoryCache _cache;
 
-//        public Query(ApplicationDbContext context)
-//        {
-//            _context = context;
-//        }
-        
         public Query(ApplicationDbContext context, IMemoryCache memoryCache)
         {
             _context = context;

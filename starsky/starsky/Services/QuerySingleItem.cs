@@ -18,8 +18,19 @@ namespace starsky.Services
         {
             if (string.IsNullOrWhiteSpace(singleItemDbPath)) return null;
 
+            // For creating an unique name: DetailView_/2018/01/1.jpg_Superior
+            var uniqueSingleDbCacheName = "DetailView_" + singleItemDbPath;
+            if (colorClassFilterList != null)
+            {
+                uniqueSingleDbCacheName += "_";
+                foreach (var oneColor in colorClassFilterList)
+                {
+                    uniqueSingleDbCacheName += oneColor.ToString();
+                }
+            }
+
             // Return values from IMemoryCache
-            if (_cache.TryGetValue(singleItemDbPath, out var itemResult)) return itemResult as DetailView;
+            if (_cache.TryGetValue(uniqueSingleDbCacheName, out var itemResult)) return itemResult as DetailView;
             
             var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == singleItemDbPath && !p.IsDirectory);
 
