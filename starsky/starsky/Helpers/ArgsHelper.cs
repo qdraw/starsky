@@ -196,7 +196,7 @@ namespace starsky.Helpers
                 {
                     bool.TryParse(args[arg + 1], out getAll);
                 }
-                if ((args[arg].ToLower() == "--all" || args[arg].ToLower() == "-all"))
+                if ((args[arg].ToLower() == "--all" || args[arg].ToLower() == "-a"))
                 {
                     getAll = false;
                 }
