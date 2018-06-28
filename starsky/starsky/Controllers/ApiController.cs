@@ -41,7 +41,7 @@ namespace starsky.Controllers
         [HttpPost]
         public IActionResult Update(string tags, string colorClass, string captionAbstract, string f = "dbStylePath")
         {
-            if (_isReadOnly(f)) return NotFound("read only");
+            if (_isReadOnly(f)) return StatusCode(203,"read only");
             
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index " + f);
@@ -93,7 +93,7 @@ namespace starsky.Controllers
         {
             if (f.Contains("?t=")) return NotFound("please use &t= instead of ?t=");
             
-            if (_isReadOnly(f)) return NotFound("read only");
+            if (_isReadOnly(f)) return StatusCode(203,"read only");
             
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index");

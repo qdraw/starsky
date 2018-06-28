@@ -129,7 +129,7 @@ if (document.querySelectorAll("#js-keywords-update").length === 1 &&
            hidePreloader();
        },
        function (xhr) {
-            if (xhr.status === 404) {
+            if (xhr.status === 404 || xhr.status === 203) {
                 if (document.querySelectorAll(".sidebar").length >= 0) {
                     // toggleSideMenu(true);
                     document.querySelector(".sidebar").classList.add("readonly");
