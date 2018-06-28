@@ -342,6 +342,11 @@ namespace starskytests
             single001 = 
                 _query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_001.jpg");
             Assert.AreEqual(null,single001.RelativeObjects.NextFilePath);
+            
+            // For avoiding conflicts when running multiple unit tests
+            single001.FileIndexItem.Tags = "!delete!";
+            _query.UpdateItem(single001.FileIndexItem);
+            
         }
 
         [TestMethod]
@@ -383,6 +388,11 @@ namespace starskytests
             single004 = 
                 _query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_004.jpg");
             Assert.AreEqual(null,single004.RelativeObjects.PrevFilePath);
+            
+            // For avoiding conflicts when running multiple unit tests
+            single004.FileIndexItem.Tags = "!delete!";
+            _query.UpdateItem(single004.FileIndexItem);
+            
         }
         
     }
