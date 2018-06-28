@@ -23,7 +23,8 @@ namespace starsky.Services
             
             if (query == null) return null;
 
-            var relativeObject = CacheGetNextPrevInSubFolder(query.ParentDirectory, singleItemDbPath, colorClassFilterList);
+            var relativeObject = CacheGetNextPrevInSubFolder(
+                query.ParentDirectory, singleItemDbPath, colorClassFilterList);
 
             var itemResult = new DetailView
             {
@@ -40,7 +41,9 @@ namespace starsky.Services
         private RelativeObjects CacheGetNextPrevInSubFolder(string parentDirectory, string singleItemDbPath,
             List<FileIndexItem.Color> colorClassFilterList = null)
         {
-            if (_cache == null) return GetNextPrevInSubFolder(parentDirectory, singleItemDbPath, colorClassFilterList);
+            // The CLI programs uses no cache
+            if (_cache == null) return GetNextPrevInSubFolder(
+                parentDirectory, singleItemDbPath, colorClassFilterList);
             
             // Return values from IMemoryCache
             var queryCacheName = CachingSingleDbName(typeof(RelativeObjects).Name, 
@@ -58,7 +61,9 @@ namespace starsky.Services
         
         private FileIndexItem CacheSingleFileIndex(string singleItemDbPath)
         {
-            if (_cache == null) return _context.FileIndex.FirstOrDefault(p => p.FilePath == singleItemDbPath && !p.IsDirectory);
+            // The CLI programs uses no cache
+            if (_cache == null) return _context.FileIndex.FirstOrDefault(
+                p => p.FilePath == singleItemDbPath && !p.IsDirectory);
 
             // Return values from IMemoryCache
             var queryCacheName = CachingSingleDbName(typeof(FileIndexItem).Name, 
@@ -67,7 +72,9 @@ namespace starsky.Services
             object queryResult;
             if (!_cache.TryGetValue(queryCacheName, out queryResult))
             {
-                queryResult = _context.FileIndex.FirstOrDefault(p => p.FilePath == singleItemDbPath && !p.IsDirectory);
+                queryResult = _context.FileIndex.FirstOrDefault(
+                    p => p.FilePath == singleItemDbPath && !p.IsDirectory);
+                
                 _cache.Set(queryCacheName, queryResult, new TimeSpan(1,0,0));
             }
 
