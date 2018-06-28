@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using MySql.Data.MySqlClient;
@@ -83,7 +84,24 @@ namespace starsky.Services
         }
 
 
-     
+        private string CachingDbName(string functionName, string singleItemDbPath,
+            IReadOnlyCollection<FileIndexItem.Color> colorClassFilterList = null)
+        {
+            // For creating an unique name: DetailView_/2018/01/1.jpg_Superior
+            
+            var uniqueSingleDbCacheNameBuilder = new StringBuilder();
+            uniqueSingleDbCacheNameBuilder.Append(functionName + "_" + singleItemDbPath);
+            if (colorClassFilterList != null)
+            {
+                uniqueSingleDbCacheNameBuilder.Append("_");
+                foreach (var oneColor in colorClassFilterList)
+                {
+                    uniqueSingleDbCacheNameBuilder.Append(oneColor);
+                }
+            }
+            return uniqueSingleDbCacheNameBuilder.ToString();
+        }
+
      
       
 

@@ -46,7 +46,7 @@ namespace starsky.Services
                 parentDirectory, singleItemDbPath, colorClassFilterList);
             
             // Return values from IMemoryCache
-            var queryCacheName = CachingSingleDbName(typeof(RelativeObjects).Name, 
+            var queryCacheName = CachingDbName(typeof(RelativeObjects).Name, 
                 singleItemDbPath, colorClassFilterList);
 
             object relativeObject;
@@ -66,7 +66,7 @@ namespace starsky.Services
                 p => p.FilePath == singleItemDbPath && !p.IsDirectory);
 
             // Return values from IMemoryCache
-            var queryCacheName = CachingSingleDbName(typeof(FileIndexItem).Name, 
+            var queryCacheName = CachingDbName(typeof(FileIndexItem).Name, 
                 singleItemDbPath); // no need to specify colorClassFilterList
 
             object queryResult;
@@ -81,24 +81,7 @@ namespace starsky.Services
             return queryResult as FileIndexItem;
         }
 
-        private string CachingSingleDbName(string functionName, string singleItemDbPath,
-            IReadOnlyCollection<FileIndexItem.Color> colorClassFilterList = null)
-        {
-            // For creating an unique name: DetailView_/2018/01/1.jpg_Superior
-            
-            var uniqueSingleDbCacheNameBuilder = new StringBuilder();
-            uniqueSingleDbCacheNameBuilder.Append(functionName + "_" + singleItemDbPath);
-            if (colorClassFilterList != null)
-            {
-                uniqueSingleDbCacheNameBuilder.Append("_");
-                foreach (var oneColor in colorClassFilterList)
-                {
-                    uniqueSingleDbCacheNameBuilder.Append(oneColor);
-                }
-            }
-            return uniqueSingleDbCacheNameBuilder.ToString();
-        }
-
+        
         // Show previous en next items in the singleitem view.
         // There is equivalent class (GetNextPrevInFolder) for prev next in the folder view
         private RelativeObjects GetNextPrevInSubFolder(
