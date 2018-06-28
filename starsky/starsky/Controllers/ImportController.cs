@@ -12,20 +12,12 @@ namespace starsky.Controllers
     public class ImportController : Controller
     {
         private readonly IImport _import;
-
         
         public ImportController(IImport import)
         {
             _import = import;
         }
 
-        [HttpGet]
-        [HttpHead]
-        public IActionResult Index1()
-        {
-            return NotFound();
-        }
-        
         [HttpPost]
         [DisableFormValueModelBinding]
         public async Task<IActionResult> Index()

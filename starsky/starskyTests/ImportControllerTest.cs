@@ -1,12 +1,9 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.AspNetCore.TestHost;
 using starsky.Controllers;
 using starsky.Data;
 using starsky.Interfaces;
