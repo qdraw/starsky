@@ -79,7 +79,7 @@ namespace starskytests
 
             importItem.SourceFullFilePath = createAnImage.FullFilePath;
             AppSettingsProvider.BasePath = createAnImage.BasePath;
-            var subfolders = importItem.ParseSubfolders();
+            var subfolders = importItem.ParseSubfolders(false);
             Assert.AreEqual("/" + createAnImage.DbPath.Replace("/",string.Empty).Replace(".jpg",string.Empty) + "/",subfolders);
         }   
         
