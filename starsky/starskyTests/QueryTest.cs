@@ -418,7 +418,7 @@ namespace starskytests
                 _query.SingleItem("/CheckIfContentIsInCacheUpdated/CachingDeleted_001.jpg").FileIndexItem;
             Assert.AreEqual("#", cachingDeleted001Update.Tags);
             Assert.AreNotEqual(string.Empty, cachingDeleted001Update.Tags);
-            // When it item used cache it will return string.Emthy
+            // AreNotEqual: When it item used cache  it will return string.Emthy
             
         }
 
