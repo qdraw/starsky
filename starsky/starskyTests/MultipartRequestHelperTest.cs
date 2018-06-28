@@ -44,15 +44,24 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void MultipartRequestHelperTest_HasFormDataContentDisposition()
+        public void MultipartRequestHelperTest_HasFormDataContentDispositionFalse()
         {
             var formdata =
                 new Microsoft.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
             formdata.FileName = "test";
             formdata.FileNameStar = "1";
             Assert.AreEqual("form-data; filename=test; filename*=UTF-8''1",formdata.ToString());
+            Assert.AreEqual(false,MultipartRequestHelper.HasFormDataContentDisposition(formdata));
+        }
+        
+        [TestMethod]
+        public void MultipartRequestHelperTest_HasFormDataContentDispositionTrue()
+        {
+            var formdata =
+                new Microsoft.Net.Http.Headers.ContentDispositionHeaderValue("form-data");
             Assert.AreEqual(true,MultipartRequestHelper.HasFormDataContentDisposition(formdata));
         }
+
         
         [TestMethod]
         public void MultipartRequestHelperTest_HasFileContentDisposition()
