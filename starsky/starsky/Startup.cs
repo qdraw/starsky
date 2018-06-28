@@ -41,7 +41,8 @@ namespace starsky
             services.AddScoped<IQuery, Query>();
             services.AddScoped<ISync, SyncService>();
             services.AddScoped<ISearch, SearchService>();
-            
+            services.AddScoped<IImport, ImportService>();
+
             services.AddAntiforgery(
                 options =>
                 {

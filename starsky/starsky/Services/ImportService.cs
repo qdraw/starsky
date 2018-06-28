@@ -9,7 +9,7 @@ using starsky.Models;
 
 namespace starsky.Services
 {
-    public class ImportService
+    public class ImportService : IImport
     {
         private readonly ApplicationDbContext _context;
         private readonly ISync _isync;
