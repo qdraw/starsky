@@ -10,7 +10,7 @@ namespace starskyCli
     public class SyncDatabase
     {
        
-        public SyncDatabase(IMemoryCache memoryCache)
+        public SyncDatabase()
         {
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
@@ -33,7 +33,7 @@ namespace starskyCli
             var options = builder.Options;
 
             var context = new ApplicationDbContext(options);
-            _query = new Query(context,memoryCache);
+            _query = new Query(context); //without cache
             _syncservice = new SyncService(context, _query);
         }
 

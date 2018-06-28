@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.Models;
 using starsky.ViewModels;
@@ -18,27 +19,13 @@ namespace starsky.Services
         {
             if (string.IsNullOrWhiteSpace(singleItemDbPath)) return null;
 
-            // For creating an unique name: DetailView_/2018/01/1.jpg_Superior
-            var uniqueSingleDbCacheName = "DetailView_" + singleItemDbPath;
-            if (colorClassFilterList != null)
-            {
-                uniqueSingleDbCacheName += "_";
-                foreach (var oneColor in colorClassFilterList)
-                {
-                    uniqueSingleDbCacheName += oneColor.ToString();
-                }
-            }
-
-            // Return values from IMemoryCache
-            if (_cache.TryGetValue(uniqueSingleDbCacheName, out var itemResult)) return itemResult as DetailView;
+            var query = CacheSingleFileIndex(singleItemDbPath);
             
-            var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == singleItemDbPath && !p.IsDirectory);
-
             if (query == null) return null;
 
-            var relativeObject = _getNextPrevInSubFolder(query.ParentDirectory, singleItemDbPath, colorClassFilterList);
+            var relativeObject = CacheGetNextPrevInSubFolder(query.ParentDirectory, singleItemDbPath, colorClassFilterList);
 
-            itemResult = new DetailView
+            var itemResult = new DetailView
             {
                 FileIndexItem = query,
                 RelativeObjects = relativeObject,
@@ -47,16 +34,67 @@ namespace starsky.Services
                 ColorClassFilterList = colorClassFilterList
             };
             
-            // Cache with 1 hour timespan
-            _cache.Set(singleItemDbPath, itemResult, new TimeSpan(1,0,0));
+            return itemResult;
+        }
 
-            // Cast object to DetailView
-            return (DetailView) itemResult;
+        private RelativeObjects CacheGetNextPrevInSubFolder(string parentDirectory, string singleItemDbPath,
+            List<FileIndexItem.Color> colorClassFilterList = null)
+        {
+            if (_cache == null) return GetNextPrevInSubFolder(parentDirectory, singleItemDbPath, colorClassFilterList);
+            
+            // Return values from IMemoryCache
+            var queryCacheName = CachingSingleDbName(typeof(RelativeObjects).Name, 
+                singleItemDbPath, colorClassFilterList);
+
+            object relativeObject;
+            if (!_cache.TryGetValue(queryCacheName, out relativeObject))
+            {
+                relativeObject = GetNextPrevInSubFolder(parentDirectory, singleItemDbPath, colorClassFilterList);
+                _cache.Set(queryCacheName, relativeObject, new TimeSpan(1,0,0));
+            }
+
+            return relativeObject as RelativeObjects;
+        }
+        
+        private FileIndexItem CacheSingleFileIndex(string singleItemDbPath)
+        {
+            if (_cache == null) return _context.FileIndex.FirstOrDefault(p => p.FilePath == singleItemDbPath && !p.IsDirectory);
+
+            // Return values from IMemoryCache
+            var queryCacheName = CachingSingleDbName(typeof(FileIndexItem).Name, 
+                singleItemDbPath); // no need to specify colorClassFilterList
+
+            object queryResult;
+            if (!_cache.TryGetValue(queryCacheName, out queryResult))
+            {
+                queryResult = _context.FileIndex.FirstOrDefault(p => p.FilePath == singleItemDbPath && !p.IsDirectory);
+                _cache.Set(queryCacheName, queryResult, new TimeSpan(1,0,0));
+            }
+
+            return queryResult as FileIndexItem;
+        }
+
+        private string CachingSingleDbName(string functionName, string singleItemDbPath,
+            IReadOnlyCollection<FileIndexItem.Color> colorClassFilterList = null)
+        {
+            // For creating an unique name: DetailView_/2018/01/1.jpg_Superior
+            
+            var uniqueSingleDbCacheNameBuilder = new StringBuilder();
+            uniqueSingleDbCacheNameBuilder.Append(functionName + "_" + singleItemDbPath);
+            if (colorClassFilterList != null)
+            {
+                uniqueSingleDbCacheNameBuilder.Append("_");
+                foreach (var oneColor in colorClassFilterList)
+                {
+                    uniqueSingleDbCacheNameBuilder.Append(oneColor);
+                }
+            }
+            return uniqueSingleDbCacheNameBuilder.ToString();
         }
 
         // Show previous en next items in the singleitem view.
         // There is equivalent class (GetNextPrevInFolder) for prev next in the folder view
-        private RelativeObjects _getNextPrevInSubFolder(
+        private RelativeObjects GetNextPrevInSubFolder(
             string parrentFolderPath, string fullImageFilePath,
             List<FileIndexItem.Color> colorClassFilterList = null
             )

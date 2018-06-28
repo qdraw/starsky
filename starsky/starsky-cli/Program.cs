@@ -12,10 +12,6 @@ namespace starskyCli
     {
         public static void Main(string[] args)
         {
-            var provider = new ServiceCollection()
-                .AddMemoryCache()
-                .BuildServiceProvider();
-            var cache = provider.GetService<IMemoryCache>();
             
             // Check if user want more info
             AppSettingsProvider.Verbose = ArgsHelper.NeedVerbose(args);
@@ -68,7 +64,7 @@ namespace starskyCli
             if (ArgsHelper.GetIndexMode(args))
             {
                 Console.WriteLine("Start indexing");
-                new SyncDatabase(cache).SyncFiles(subpath);
+                new SyncDatabase().SyncFiles(subpath);
                 Console.WriteLine("Done SyncFiles!");
             }
 
@@ -88,7 +84,7 @@ namespace starskyCli
             if (ArgsHelper.GetOrphanFolderCheck(args))
             {
                 Console.WriteLine(">>>>> Heavy CPU Feature => Use with care <<<<< ");
-                new SyncDatabase(cache).OrphanFolder(subpath);
+                new SyncDatabase().OrphanFolder(subpath);
             }
 
             Console.WriteLine("Done!");
