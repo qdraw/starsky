@@ -105,13 +105,39 @@ namespace starsky.Services
      
       
 
-        // Currently not in use.
+        // For the API/update endpoint
         public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
         {
             _context.Attach(updateStatusContent).State = EntityState.Modified;
             _context.SaveChanges();
+            CacheUpdateItem(updateStatusContent);
+
             return updateStatusContent;
         }
+
+        private void CacheUpdateItem(FileIndexItem updateStatusContent)
+        {
+            if (_cache == null) return;
+            
+            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+                updateStatusContent.ParentDirectory);
+
+            if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
+            
+            var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
+                
+            var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == updateStatusContent.FilePath);
+            if (obj == null) return;
+            displayFileFolders.Remove(obj);
+            displayFileFolders.Add(updateStatusContent);
+            // Order by filename
+            displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
+            
+            _cache.Remove(queryCacheName);
+            _cache.Set(queryCacheName, displayFileFolders);
+
+        }
+
 
         // Add a new item to the database
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)
