@@ -15,11 +15,6 @@ namespace starskyimportercli
         [ExcludeFromCoverage] // The ArgsHelper.cs is covered by unit tests
         static void Main(string[] args)
         {
-            var provider = new ServiceCollection()
-                .AddMemoryCache()
-                .BuildServiceProvider();
-            var cache = provider.GetService<IMemoryCache>();
-            
             // Check if user want more info
             AppSettingsProvider.Verbose = ArgsHelper.NeedVerbose(args);
             ConfigRead.SetAppSettingsProvider();
@@ -48,7 +43,7 @@ namespace starskyimportercli
             
             if(AppSettingsProvider.Verbose) Console.WriteLine("inputPath " + inputPath);
             
-            new ImportDatabase(cache).Import(inputPath, ArgsHelper.GetMove(args),ArgsHelper.GetAll(args));
+            new ImportDatabase().Import(inputPath, ArgsHelper.GetMove(args),ArgsHelper.GetAll(args));
            
             Console.WriteLine("Done Importing");
             

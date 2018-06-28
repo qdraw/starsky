@@ -9,7 +9,7 @@ namespace starskyimportercli
 {
     public class ImportDatabase
     {
-        public ImportDatabase(IMemoryCache memoryCache)
+        public ImportDatabase()
         {
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
@@ -25,7 +25,7 @@ namespace starskyimportercli
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
 
-            var query = new Query(context,memoryCache);
+            var query = new Query(context);
             var isync = new SyncService(context,query);
             _importService = new ImportService(context,isync);
         }
