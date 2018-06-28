@@ -309,6 +309,7 @@ namespace starskytests
         [TestMethod]
         public void QueryTest_NextFilePathCachingConflicts_Deleted()
         {
+            // init items
             _query.AddItem(new FileIndexItem
             {
                 FileName = "CachingDeleted_001.jpg",
@@ -338,7 +339,7 @@ namespace starskytests
             single002.Tags = "!delete!";
             _query.UpdateItem(single002);
             
-            // Request new
+            // Request new; and check if content is updated in memory cache
             single001 = 
                 _query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_001.jpg");
             Assert.AreEqual(null,single001.RelativeObjects.NextFilePath);
@@ -372,7 +373,7 @@ namespace starskytests
                 IsDirectory = false
             });
             
-            // For previous item
+            // For previous item; 
             var single004 = 
                 _query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_004.jpg");
             Assert.AreEqual("/QueryTest_NextPrevCachingDeleted/CachingDeleted_003.jpg",
@@ -384,7 +385,7 @@ namespace starskytests
             single003.Tags = "!delete!";
             _query.UpdateItem(single003);
             
-            // Request new
+            // Request new; item must be updated in cache
             single004 = 
                 _query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_004.jpg");
             Assert.AreEqual(null,single004.RelativeObjects.PrevFilePath);
@@ -394,6 +395,32 @@ namespace starskytests
             _query.UpdateItem(single004.FileIndexItem);
             
         }
-        
+
+        [TestMethod]
+        public void QueryTest_CachingDirectoryConflicts_CheckIfContentIsInCacheUpdated()
+        {
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "CachingDeleted_001.jpg",
+                ParentDirectory = "/CheckIfContentIsInCacheUpdated",
+                FileHash = "567897",
+                IsDirectory = false
+            });
+            
+            // trigger caching
+            _query.DisplayFileFolders("/CheckIfContentIsInCacheUpdated");
+            
+            var cachingDeleted001 = 
+                _query.SingleItem("/CheckIfContentIsInCacheUpdated/CachingDeleted_001.jpg").FileIndexItem;
+            cachingDeleted001.Tags = "#";
+            _query.UpdateItem(cachingDeleted001);
+            var cachingDeleted001Update = 
+                _query.SingleItem("/CheckIfContentIsInCacheUpdated/CachingDeleted_001.jpg").FileIndexItem;
+            Assert.AreEqual("#", cachingDeleted001Update.Tags);
+            Assert.AreNotEqual(string.Empty, cachingDeleted001Update.Tags);
+            // When it item used cache it will return string.Emthy
+            
+        }
+
     }
 }
