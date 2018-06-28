@@ -25,7 +25,7 @@ namespace starsky.Services
 
             var relativeObject = CacheGetNextPrevInSubFolder(
                 query.ParentDirectory, singleItemDbPath, colorClassFilterList);
-
+                
             var itemResult = new DetailView
             {
                 FileIndexItem = query,
@@ -49,14 +49,41 @@ namespace starsky.Services
             var queryCacheName = CachingDbName(typeof(RelativeObjects).Name, 
                 singleItemDbPath, colorClassFilterList);
 
-            object relativeObject;
-            if (!_cache.TryGetValue(queryCacheName, out relativeObject))
+            object objectRelativeObject;
+            if (!_cache.TryGetValue(queryCacheName, out objectRelativeObject))
             {
-                relativeObject = GetNextPrevInSubFolder(parentDirectory, singleItemDbPath, colorClassFilterList);
-                _cache.Set(queryCacheName, relativeObject, new TimeSpan(1,0,0));
+                objectRelativeObject = GetNextPrevInSubFolder(parentDirectory, singleItemDbPath, colorClassFilterList);
+                _cache.Set(queryCacheName, objectRelativeObject, new TimeSpan(1,0,0));
             }
 
-            return relativeObject as RelativeObjects;
+            var relativeObject = (RelativeObjects) objectRelativeObject;
+
+            // It will be removed when you update this. !delete does not exist in .nextfilePath
+            // For the NextFilePath check if it is not deleted
+            if (relativeObject.NextFilePath != null)
+            {
+                if (CacheSingleFileIndex(relativeObject.NextFilePath).Tags.Contains("!delete"))
+                {
+                    _cache.Remove(queryCacheName);
+                    objectRelativeObject = GetNextPrevInSubFolder(parentDirectory,
+                        singleItemDbPath, colorClassFilterList);
+                    _cache.Set(queryCacheName, objectRelativeObject, new TimeSpan(1,0,0));
+                    relativeObject = (RelativeObjects) objectRelativeObject;
+                }
+            }
+
+            // Check if item is deleted in prev path before showing
+            if (relativeObject.PrevFilePath == null) return relativeObject;
+            if (!CacheSingleFileIndex(relativeObject.PrevFilePath).Tags.Contains("!delete")) 
+                return relativeObject;
+            
+            _cache.Remove(queryCacheName);
+            objectRelativeObject = GetNextPrevInSubFolder(parentDirectory,
+                singleItemDbPath, colorClassFilterList);
+            _cache.Set(queryCacheName, objectRelativeObject, new TimeSpan(1,0,0));
+            relativeObject = (RelativeObjects) objectRelativeObject;
+            
+            return relativeObject;
         }
         
         private FileIndexItem CacheSingleFileIndex(string singleItemDbPath)
