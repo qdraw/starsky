@@ -304,6 +304,86 @@ namespace starskytests
             var pageTypeReact = _query.SingleItem("/bread/hi4.jpg").PageType;
             Assert.AreEqual("DetailView",pageTypeReact);
         }
+        
+        
+        [TestMethod]
+        public void QueryTest_NextFilePathCachingConflicts_Deleted()
+        {
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "CachingDeleted_001.jpg",
+                ParentDirectory = "/QueryTest_NextPrevCachingDeleted",
+                FileHash = "0987345678654345678",
+                Tags = string.Empty,
+                IsDirectory = false
+            });
+            
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "CachingDeleted_002.jpg",
+                ParentDirectory = "/QueryTest_NextPrevCachingDeleted",
+                FileHash = "3456783456780987654",
+                Tags = string.Empty,
+                IsDirectory = false
+            });
+            
+            var single001 = 
+                _query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_001.jpg");
+            Assert.AreEqual("/QueryTest_NextPrevCachingDeleted/CachingDeleted_002.jpg",
+                single001.RelativeObjects.NextFilePath);
 
+            var single002 =
+                _query
+                    .SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_002.jpg").FileIndexItem;
+            single002.Tags = "!delete!";
+            _query.UpdateItem(single002);
+            
+            // Request new
+            single001 = 
+                _query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_001.jpg");
+            Assert.AreEqual(null,single001.RelativeObjects.NextFilePath);
+        }
+
+        [TestMethod]
+        public void QueryTest_PrevFilePathCachingConflicts_Deleted()
+        {
+            // For previous item check if caching has no conflicts
+            
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "CachingDeleted_003.jpg",
+                ParentDirectory = "/QueryTest_NextPrevCachingDeleted",
+                FileHash = "56787654",
+                Tags = string.Empty,
+                IsDirectory = false
+            });
+            
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "CachingDeleted_004.jpg",
+                ParentDirectory = "/QueryTest_NextPrevCachingDeleted",
+                FileHash = "98765467876",
+                Tags = string.Empty,
+                IsDirectory = false
+            });
+            
+            // For previous item
+            var single004 = 
+                _query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_004.jpg");
+            Assert.AreEqual("/QueryTest_NextPrevCachingDeleted/CachingDeleted_003.jpg",
+                single004.RelativeObjects.PrevFilePath);
+
+            var single003 =
+                _query
+                    .SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_003.jpg").FileIndexItem;
+            single003.Tags = "!delete!";
+            _query.UpdateItem(single003);
+            
+            // Request new
+            single004 = 
+                _query.SingleItem("/QueryTest_NextPrevCachingDeleted/CachingDeleted_004.jpg");
+            Assert.AreEqual(null,single004.RelativeObjects.PrevFilePath);
+        }
+        
     }
 }
