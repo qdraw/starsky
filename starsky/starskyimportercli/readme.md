@@ -9,6 +9,8 @@ The default structure in `.config.json` is:
 {
 	"structure":  "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext"
 }
+>   Structure uses slash as directory seperator for Linux and Windows
+
 ```
 ### Structure configuation options:
 
