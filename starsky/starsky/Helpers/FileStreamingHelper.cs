@@ -21,7 +21,8 @@ namespace starsky.Helpers
             {
                 throw new Exception($"Expected a multipart request, but got {request.ContentType}");
             }
-
+            // From here on no unit tests anymore :(
+            
             // Used to accumulate all the form url encoded key value pairs in the 
             // request.
             var formAccumulator = new KeyValueAccumulator();
@@ -91,7 +92,7 @@ namespace starsky.Helpers
             return formValueProvider;
         }
 
-        private static Encoding GetEncoding(MultipartSection section)
+        public static Encoding GetEncoding(MultipartSection section)
         {
             MediaTypeHeaderValue mediaType;
             var hasMediaTypeHeader = MediaTypeHeaderValue.TryParse(section.ContentType, out mediaType);
