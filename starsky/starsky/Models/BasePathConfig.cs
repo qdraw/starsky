@@ -49,7 +49,7 @@ namespace starsky.Models
                     
                     //    Please update /starskyimportercli/readme.md when this changes
                     
-                    return "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss.ext";
+                    return "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext";
                 }
                 return _structure;
             }

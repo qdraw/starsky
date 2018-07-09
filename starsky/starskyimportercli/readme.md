@@ -1,5 +1,16 @@
 
-## Structure configuation
+## Config file (.config.json)
+To use custom configuration place a `.config.json` file inside the: appsettings `STARSKY_BASEPATH` folder
+For more information about the `appsettings.json` configuration
+
+### Structure configuration:
+The default structure in `.config.json` is:
+```json
+{
+	"structure":  "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext"
+}
+```
+### Structure configuation options:
 
 - dd 	 -   The day of the month, from 01 through 31.
 - MM 	 -   The month, from 01 through 12.
@@ -7,7 +18,7 @@
 - HH 	 -   The hour, using a 24-hour clock from 00 to 23.
 - mm 	 -   The minute, from 00 through 59.
 - ss 	 -   The second, from 00 through 59.
-- \\\     -      (double escape sign or double backslash); to escape dd use this: \\\d\\\d 
+- \\\     -      (double escape sign or double backslash); to escape dd use this: \\\d\\\d
 - /     -       (slash); is split in folder (Windows / Linux / Mac)
 - .ext   -       (dot ext); extension for example: .jpg
 - (nothing)  -   extension is forced
