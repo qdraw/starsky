@@ -10,7 +10,7 @@
  - [starskyapp](../starskyapp) _React-Native app (Pre-alpha code)_
 
 ## Build status   
-![Build status](https://qdraw.visualstudio.com/7bab52f1-7600-4295-a199-1bb81cc1e4d7/_apis/build/status/1)
+![Build status](https://img.shields.io/vso/build/qdraw/7bab52f1-7600-4295-a199-1bb81cc1e4d7/1.svg)
 For the master branch using Windows and Visual Studio 2017
 
 
