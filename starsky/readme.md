@@ -9,7 +9,16 @@
  - starsky-node-client  _(depreciated)_
  - [starskyapp](../starskyapp) _React-Native app (Pre-alpha code)_
 
-## General Starsky (sln) docs 
+## General Starsky (sln) docs
+
+### Install instructions
+
+(incomplete)
+
+1. Download exiftool
+2. Update the `appsettings.json` configuration before starting
+> Windows: use double escape \\\\ in config directory paths
+
 
 ### Bash build and configuation scripts
 

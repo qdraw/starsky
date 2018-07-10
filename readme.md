@@ -12,6 +12,5 @@
 ## Starsky   
 An attempt to create a database driven photo library
 
-1. Download exiftool
-2. Update the `appsettings.json` configuration before starting
-> Windows: use double escape \\\\ in config directory paths
+The General application is Starsky (sln). You need to install this first.
+_[(Starsky (sln) mvc application / web interface documentation)](starsky/starsky/readme.md)_
