@@ -17,4 +17,4 @@ The general application is Starsky (sln). You need to [install the solution](sta
 
 ## Build status
 
-[![Visual Studio Team Services](https://img.shields.io/vso/build/qdraw/7bab52f1-7600-4295-a199-1bb81cc1e4d7/1.svg)](https://qdraw.visualstudio.com/7bab52f1-7600-4295-a199-1bb81cc1e4d7/_apis/build/status/1) For the master branch using Windows and Visual Studio 2017
+[![Visual Studio Team Services](https://img.shields.io/vso/build/qdraw/7bab52f1-7600-4295-a199-1bb81cc1e4d7/1.png)](https://qdraw.visualstudio.com/7bab52f1-7600-4295-a199-1bb81cc1e4d7/_apis/build/status/1) For the master branch using Windows and Visual Studio 2017
