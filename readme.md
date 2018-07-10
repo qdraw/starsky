@@ -12,4 +12,5 @@
 ## Starsky   
 An attempt to create a database driven photo library
 
-The general application is Starsky (sln). You need to _[(install the solution)](starsky/readme.md)_ first.
+The general application is Starsky (sln). You need to [(install the solution)](starsky/readme.md) first. The subapplications
+[(starsky-cli)](starsky/starsky-cli/readme.md)  and [(starskyimportercli)](starsky/starskyimportercli/readme.md) uses the same configuation files. These projects are separately compiled using the build script.
