@@ -1,12 +1,23 @@
-# Starsky Indexer Help:
+# Starsky
+## List of Starksy Projects
+ - [inotify-settings](../../inotify-settings) _to setup auto indexing on linux_
+ - [starsky (sln)](../../starsky) _database photo index & import index project___
+   - [starsky](../../starsky/starsky)  _mvc application / web interface [(docs)](../../starsky/starsky/readme.md)_
+   - __[starsky-cli](../../starsky/starsky-cli)  _database command line interface [(docs)](../../starsky/starsky-cli/readme.md)___
+   - [starskyimportercli](../../starsky/starskyimportercli)  _import command line interface [(docs)](../../starsky/starskyimportercli/readme.md)_
+   - [starskyTests](../../starsky/starskyTests)  _mstest unit tests_
+ - starsky-node-client  _(depreciated)_
+ - [starskyapp](../../starskyapp) _React-Native app (Pre-alpha code)_
+
+### StarskyCli Indexer Help:
 The goal of this wrapper is to get command line access to the photo index database
 
-## To get help:
+### To get help:
 ```sh
 starskycli --help
 ```
 
-## The StarskyCli --Help window:
+### The StarskyCli --Help window:
 ```
 --help or -h == help (this window)
 --subpath or -s == parameter: (string) ; path inside the index, default '/'
