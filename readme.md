@@ -1,7 +1,7 @@
 # Starsky
 ## List of Starksy Projects
  - [inotify-settings](inotify-settings) _to setup auto indexing on linux_
- - [starsky (sln)](starsky) _database photo index & import index project_
+ - [starsky (sln)](starsky) _database photo index & import index project [(docs)](starsky/readme.md)_
    - [starsky](starsky/starsky)  _mvc application / web interface [(docs)](starsky/starsky/readme.md)_
    - [starsky-cli](starsky/starsky-cli)  _database command line interface [(docs)](starsky/starsky-cli/readme.md)_
    - [starskyimportercli](starsky/starskyimportercli)  _import command line interface [(docs)](starsky/starskyimportercli/readme.md)_
