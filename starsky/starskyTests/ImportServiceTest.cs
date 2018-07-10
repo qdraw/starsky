@@ -324,9 +324,9 @@ namespace starskytests
             var fileHashCode = FileHash.GetHashCode(fullFilePath);
             
             
-            _import.Import(fullFilePath, true,false);  
-            
+            _import.Import(fullFilePath, true,false);
 
+            Console.WriteLine(File.Exists(fullFilePath));
             Assert.AreEqual(File.Exists(fullFilePath), false);
 
             var importIndexItem = _import.GetItemByHash(fileHashCode);
@@ -358,6 +358,8 @@ namespace starskytests
             // import folder
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.BasePath = createAnImage.BasePath;
+
+            Console.WriteLine(createAnImage.BasePath);
 
             if (!Directory.Exists(AppSettingsProvider.BasePath + Path.DirectorySeparatorChar + "exist"))
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 
 namespace starsky.Helpers
@@ -19,8 +21,26 @@ namespace starsky.Helpers
         {
             if (!MultipartRequestHelper.IsMultipartContentType(request.ContentType))
             {
+                var formAccumulatorSingle = new KeyValueAccumulator();
+                ContentDispositionHeaderValue.TryParse("form-data; name=\"file2\"; filename=\"2017-12-07 17.01.25.png\"", out var contentDisposition);
+                var sectionSingle = new MultipartSection {Body = request.Body as MemoryStream};
+                sectionSingle.Headers = new Dictionary<string, StringValues>();
+                sectionSingle.Headers.Add("Content-Type",request.ContentType);
+                sectionSingle.Headers.Add("Content-Disposition","form-data; name=\"file2\"; filename=\"2017-12-07 17.01.25.png\"");
+                
+                request.Body.CopyToAsync(targetStream);
+                    
+                // Bind form data to a model
+                var formValueProviderSingle = new FormValueProvider(
+                    BindingSource.Form,
+                    new FormCollection(formAccumulatorSingle.GetResults()),
+                    CultureInfo.CurrentCulture);
+
+                return formValueProviderSingle;
+                
                 throw new Exception($"Expected a multipart request, but got {request.ContentType}");
             }
+            
             // From here on no unit tests anymore :(
             
             // Used to accumulate all the form url encoded key value pairs in the 
@@ -45,37 +65,10 @@ namespace starsky.Helpers
                     {
                         await section.Body.CopyToAsync(targetStream);
                     }
-                    else if (MultipartRequestHelper.HasFormDataContentDisposition(contentDisposition))
-                    {
-                        // Content-Disposition: form-data; name="key"
-                        //
-                        // value
-
-                        // Do not limit the key name length here because the 
-                        // multipart headers length limit is already in effect.
-                        var key = HeaderUtilities.RemoveQuotes(contentDisposition.Name);
-                        var encoding = GetEncoding(section);
-                        using (var streamReader = new StreamReader(
-                            section.Body,
-                            encoding,
-                            detectEncodingFromByteOrderMarks: true,
-                            bufferSize: 1024,
-                            leaveOpen: true))
-                        {
-                            // The value length limit is enforced by MultipartBodyLengthLimit
-                            var value = await streamReader.ReadToEndAsync();
-                            if (String.Equals(value, "undefined", StringComparison.OrdinalIgnoreCase))
-                            {
-                                value = String.Empty;
-                            }
-                            formAccumulator.Append(key.Value, value); // For .NET Core <2.0 remove ".Value" from key
-
-                            if (formAccumulator.ValueCount > _defaultFormOptions.ValueCountLimit)
-                            {
-                                throw new InvalidDataException($"Form key count limit {_defaultFormOptions.ValueCountLimit} exceeded.");
-                            }
-                        }
-                    }
+//                    else if (MultipartRequestHelper.HasFormDataContentDisposition(contentDisposition))
+//                    {
+//                        formAccumulator = await formAccumulatorHelper(contentDisposition, section, formAccumulator);
+//                    }
                 }
 
                 // Drains any remaining section body that has not been consumed and
@@ -92,17 +85,50 @@ namespace starsky.Helpers
             return formValueProvider;
         }
 
-        public static Encoding GetEncoding(MultipartSection section)
-        {
-            MediaTypeHeaderValue mediaType;
-            var hasMediaTypeHeader = MediaTypeHeaderValue.TryParse(section.ContentType, out mediaType);
-            // UTF-7 is insecure and should not be honored. UTF-8 will succeed in 
-            // most cases.
-            if (!hasMediaTypeHeader || Encoding.UTF7.Equals(mediaType.Encoding))
-            {
-                return Encoding.UTF8;
-            }
-            return mediaType.Encoding;
-        }
+//        public static async Task<KeyValueAccumulator> formAccumulatorHelper(ContentDispositionHeaderValue contentDisposition, 
+//            MultipartSection section, KeyValueAccumulator formAccumulator)
+//        {
+//            // Content-Disposition: form-data; name="key"
+//            // value
+//
+//            // Do not limit the key name length here because the 
+//            // multipart headers length limit is already in effect.
+//            var key = HeaderUtilities.RemoveQuotes(contentDisposition.Name);
+//            var encoding = GetEncoding(section);
+//            using (var streamReader = new StreamReader(
+//                section.Body,
+//                encoding,
+//                detectEncodingFromByteOrderMarks: true,
+//                bufferSize: 1024,
+//                leaveOpen: true))
+//            {
+//                // The value length limit is enforced by MultipartBodyLengthLimit
+//                var value = await streamReader.ReadToEndAsync();
+//                if (String.Equals(value, "undefined", StringComparison.OrdinalIgnoreCase))
+//                {
+//                    value = String.Empty;
+//                }
+//                formAccumulator.Append(key.Value, value); // For .NET Core <2.0 remove ".Value" from key
+//
+//                if (formAccumulator.ValueCount > _defaultFormOptions.ValueCountLimit)
+//                {
+//                    throw new InvalidDataException($"Form key count limit {_defaultFormOptions.ValueCountLimit} exceeded.");
+//                }
+//            }
+//            return formAccumulator;
+//        }
+
+//        public static Encoding GetEncoding(MultipartSection section)
+//        {
+//            MediaTypeHeaderValue mediaType;
+//            var hasMediaTypeHeader = MediaTypeHeaderValue.TryParse(section.ContentType, out mediaType);
+//            // UTF-7 is insecure and should not be honored. UTF-8 will succeed in 
+//            // most cases.
+//            if (!hasMediaTypeHeader || Encoding.UTF7.Equals(mediaType.Encoding))
+//            {
+//                return Encoding.UTF8;
+//            }
+//            return mediaType.Encoding;
+//        }
     }
 }

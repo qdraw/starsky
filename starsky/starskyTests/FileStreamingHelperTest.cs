@@ -40,24 +40,24 @@ namespace starskytests
             await FileStreamingHelper.StreamFile(httpContext.Request, ms);
         }
 
-        [TestMethod]
-        public void FileStreamingHelperTestGetEncodingTest()
-        {
-            
-            var multipartSection = new MultipartSection();
-            var bound = Encoding.UTF7.GetBytes("test");
-            var boundMs = new MemoryStream();
-            boundMs.Write(bound,0,bound.Length);
-            var ms = new MemoryStream();
-            ms.CopyTo(boundMs);
-            multipartSection.Headers = new Dictionary<string, StringValues>();
-            multipartSection.Headers.Add("Content-Type","text/plain");
-            multipartSection.Body = ms;
-
-            var result = FileStreamingHelper.GetEncoding(multipartSection);
-            Assert.AreEqual(null,result);
-            
-        }
+//        [TestMethod]
+//        public void FileStreamingHelperTestGetEncodingTest()
+//        {
+//            
+//            var multipartSection = new MultipartSection();
+//            var bound = Encoding.UTF7.GetBytes("test");
+//            var boundMs = new MemoryStream();
+//            boundMs.Write(bound,0,bound.Length);
+//            var ms = new MemoryStream();
+//            ms.CopyTo(boundMs);
+//            multipartSection.Headers = new Dictionary<string, StringValues>();
+//            multipartSection.Headers.Add("Content-Type","text/plain");
+//            multipartSection.Body = ms;
+//
+//            var result = FileStreamingHelper.GetEncoding(multipartSection);
+//            Assert.AreEqual(null,result);
+//            
+//        }
 
 //        [TestMethod]
 //        public async Task StreamFileBoundaryMultipart()
