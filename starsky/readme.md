@@ -1,6 +1,6 @@
 # Starsky
 ## List of Starksy Projects
- - [inotify-settings](../inotify-settings) _to setup auto indexing on linux_
+ - [inotify-settings](../inotify-settings) _to setup auto indexing on linux [(docs)](../inotify-settings/readme.md)_
  - __[starsky (sln)](../starsky) _database photo index & import index project [(docs)](../starsky/readme.md)___
    - [starsky](../starsky/starsky)  _mvc application / web interface [(docs)](../starsky/starsky/readme.md)_
    - [starsky-cli](../starsky/starsky-cli)  _database command line interface [(docs)](../starsky/starsky-cli/readme.md)_
@@ -9,7 +9,7 @@
  - starsky-node-client  _(depreciated)_
  - [starskyapp](../starskyapp) _React-Native app (Pre-alpha code)_
 
-## General solution docs
+## General Starsky (sln) docs 
 
 ### Bash build and configuation scripts
 
