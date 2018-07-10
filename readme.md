@@ -12,5 +12,4 @@
 ## Starsky   
 An attempt to create a database driven photo library
 
-The General application is Starsky (sln). You need to install this first.
-_[(Starsky (sln) mvc application / web interface documentation)](starsky/starsky/readme.md)_
+The general application is Starsky (sln). You need to _[(install the solution)](starsky/readme.md)_ first.
