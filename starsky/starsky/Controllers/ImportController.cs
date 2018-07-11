@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using starsky.Attributes;
 using starsky.Helpers;
 using starsky.Interfaces;
@@ -18,42 +19,38 @@ namespace starsky.Controllers
             _import = import;
         }
 
+        [HttpGet]
+        [ActionName("Index")]
+        public IActionResult Index()
+        {
+            return View("Index");
+        }
+
+
+        
         [HttpPost]
+        [ActionName("Index")]
         [DisableFormValueModelBinding]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> IndexPost()
         {
             // if (!IsApikeyValid(Request)) return BadRequest("Authorisation Error");
 
-            var path = GetTempFilePath();
-            using (var stream = System.IO.File.Create(path))
-            {
-                // In mstest is has no Request item
-                try
-                {
-                    await Request.StreamFile(stream);
-                }
-                catch (NullReferenceException e)
-                {
-                    Console.WriteLine(e);
-                }
-            }
+            var tempImportPaths = await Request.StreamFile();
 
-            _import.Import(path, true);
+            _import.Import(tempImportPaths, true);
 
-            if (System.IO.File.Exists(path))
+            foreach (var path in tempImportPaths)
             {
-                System.IO.File.Delete(path);
+                if (System.IO.File.Exists(path))
+                {
+                    System.IO.File.Delete(path);
+                } 
             }
             
-            return Json(path);
+            return Json(tempImportPaths);
         }
 
-        public string GetTempFilePath()
-        {
-            var guid = DateTime.UtcNow.ToString("yyyyddMM_HHmmss__") + Guid.NewGuid().ToString().Substring(0, 20) + ".jpg";
-            var path = Path.Combine(AppSettingsProvider.ThumbnailTempFolder, guid);
-            return path;
-        }
+
             
         
     }

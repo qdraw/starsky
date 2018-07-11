@@ -15,12 +15,14 @@ namespace starsky.Controllers
         }
         
         [HttpPost]
-        public IActionResult Index(string t)
+        [ActionName("Index")]
+        public IActionResult IndexPost(string t)
         {
             return RedirectToAction("Index", new { t = t, p = 0 });
         }
 
         [HttpGet]
+        [ActionName("Index")]
         public IActionResult Index(string t, int p = 0, bool json = false)
         {
             // Json api && View()            

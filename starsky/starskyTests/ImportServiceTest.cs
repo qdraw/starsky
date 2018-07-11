@@ -386,7 +386,7 @@ namespace starskytests
         [TestMethod]
         public void ImportService_Import_NotFound_Test()
         {
-            CollectionAssert.AreEqual(new List<string>(),_import.Import(null, true, false));
+            CollectionAssert.AreEqual(new List<string>(),_import.Import(string.Empty, true, false));
         }
     }
 }

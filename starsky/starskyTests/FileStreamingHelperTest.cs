@@ -36,7 +36,7 @@ namespace starskytests
 //            };
 
             var ms = new MemoryStream();
-            await FileStreamingHelper.StreamFile(httpContext.Request, ms);
+            await FileStreamingHelper.StreamFile(httpContext.Request);
         }
         
         [TestMethod]
@@ -47,7 +47,7 @@ namespace starskytests
             httpContext.Request.Headers["token"] = "fake_token_here"; //Set header
             httpContext.Request.ContentType = "multipart/form-data";
             var ms = new MemoryStream();
-            await FileStreamingHelper.StreamFile(httpContext.Request, ms);
+            await FileStreamingHelper.StreamFile(httpContext.Request);
         }
 
         [TestMethod]
@@ -58,7 +58,7 @@ namespace starskytests
             
             FileStream requestBody = new FileStream(createAnImage.FullFilePath, FileMode.Open);
             
-            var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg", requestBody, targetStream);
+            var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg", requestBody);
             Assert.AreNotEqual(null, formValueProvider.ToString());
             requestBody.Dispose();
         }

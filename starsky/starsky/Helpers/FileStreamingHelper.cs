@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
+using starsky.Models;
 
 namespace starsky.Helpers
 {
@@ -14,29 +18,24 @@ namespace starsky.Helpers
     {
         private static readonly FormOptions _defaultFormOptions = new FormOptions();
 
-        public static async Task<FormValueProvider> StreamFile(this HttpRequest request, Stream targetStream)
+        public static async Task<List<string>> StreamFile(this HttpRequest request)
         {
-            return await StreamFile(request.ContentType, request.Body, targetStream);
+            return await StreamFile(request.ContentType, request.Body);            
         }
 
-        public static async Task<FormValueProvider> StreamFile(string contentType, Stream requestBody, Stream targetStream)
+        public static async Task<List<string>> StreamFile(string contentType, Stream requestBody)
         {
-            var formAccumulator = new KeyValueAccumulator();
+            var tempPaths = new List<string>();
 
             if (!MultipartRequestHelper.IsMultipartContentType(contentType))
             {
                 if (contentType != "image/jpeg")
                     throw new Exception($"Expected a multipart request, but got {contentType}");
-                    
-                requestBody.CopyToAsync(targetStream);
-                    
-                // Bind form data to a model
-                var formValueProviderSingle = new FormValueProvider(
-                    BindingSource.Form,
-                    new FormCollection(formAccumulator.GetResults()),
-                    CultureInfo.CurrentCulture);
+                
+                var fullFilePath = GetTempFilePath();
+                Store(fullFilePath,requestBody);
 
-                return formValueProviderSingle;
+                return new List<string>{"test"};
             }
             
             // From here on no unit tests anymore :(
@@ -60,12 +59,10 @@ namespace starsky.Helpers
                 {
                     if (MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
                     {
-                        await section.Body.CopyToAsync(targetStream);
+                        var fullFilePath = GetTempFilePath();
+                        await Store(fullFilePath,section.Body);
+                        tempPaths.Add(fullFilePath);
                     }
-//                    else if (MultipartRequestHelper.HasFormDataContentDisposition(contentDisposition))
-//                    {
-//                        formAccumulator = await formAccumulatorHelper(contentDisposition, section, formAccumulator);
-//                    }
                 }
 
                 // Drains any remaining section body that has not been consumed and
@@ -73,16 +70,40 @@ namespace starsky.Helpers
                 section = await reader.ReadNextSectionAsync();
             }
 
-            // Bind form data to a model
-            var formValueProvider = new FormValueProvider(
-                BindingSource.Form,
-                new FormCollection(formAccumulator.GetResults()),
-                CultureInfo.CurrentCulture);
-
-            return formValueProvider;
+            return tempPaths;
         }
 
-//        public static async Task<KeyValueAccumulator> formAccumulatorHelper(ContentDispositionHeaderValue contentDisposition, 
+        
+
+        private static async Task Store(string path, Stream stream)
+        {
+            var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
+            stream.CopyTo(fileStream);
+            fileStream.Dispose();
+        }
+
+
+//        public static async Task Store(string fullFilePath, Stream inputStream)
+//        {
+//            using (var stream = File.Create(fullFilePath))
+//            {
+//                await inputStream.CopyToAsync(stream);
+//            }
+//        }
+        
+        public static string GetTempFilePath()
+        {
+            var guid = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss__") + Guid.NewGuid().ToString().Substring(0, 20) + ".jpg";
+            var path = Path.Combine(AppSettingsProvider.ThumbnailTempFolder, guid);
+            return path;
+        }
+
+//        // For reading plain text form fields
+//                    else if (MultipartRequestHelper.HasFormDataContentDisposition(contentDisposition))
+//                    {
+//                        formAccumulator = await FormAccumulatorHelper(contentDisposition, section, formAccumulator);
+//                    }
+//        public static async Task<KeyValueAccumulator> FormAccumulatorHelper(ContentDispositionHeaderValue contentDisposition, 
 //            MultipartSection section, KeyValueAccumulator formAccumulator)
 //        {
 //            // Content-Disposition: form-data; name="key"
@@ -114,7 +135,7 @@ namespace starsky.Helpers
 //            }
 //            return formAccumulator;
 //        }
-
+//
 //        public static Encoding GetEncoding(MultipartSection section)
 //        {
 //            MediaTypeHeaderValue mediaType;
