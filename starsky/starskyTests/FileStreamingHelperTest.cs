@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
 
@@ -14,6 +15,14 @@ namespace starskytests
     [TestClass]
     public class FileStreamingHelperTest
     {
+        
+//        ContentDispositionHeaderValue.TryParse(
+//        "form-data; name=\"file\"; filename=\"2017-12-07 17.01.25.png\"", out var contentDisposition);
+//        var sectionSingle = new MultipartSection {Body = request.Body as MemoryStream};
+//        sectionSingle.Headers = new Dictionary<string, StringValues>();
+//        sectionSingle.Headers.Add("Content-Type",request.ContentType);
+//        sectionSingle.Headers.Add("Content-Disposition","form-data; name=\"file2\"; filename=\"2017-12-07 17.01.25.png\"");
+
         [TestMethod]
         [ExpectedException(typeof(Exception))]
         public async Task StreamFileExeption()
@@ -38,6 +47,20 @@ namespace starskytests
             httpContext.Request.ContentType = "multipart/form-data";
             var ms = new MemoryStream();
             await FileStreamingHelper.StreamFile(httpContext.Request, ms);
+        }
+
+        [TestMethod]
+        public void Test()
+        {
+            ContentDispositionHeaderValue.TryParse(
+                "form-data; name=\"file\"; filename=\"2017-12-07 17.01.25.png\"", out var contentDisposition);
+            
+            var sectionSingle = new MultipartSection {Body = request.Body as MemoryStream};
+            sectionSingle.Headers = new Dictionary<string, StringValues>();
+            sectionSingle.Headers.Add("Content-Type","image/jpeg");
+            sectionSingle.Headers.Add("Content-Disposition","form-data; name=\"file2\"; filename=\"2017-12-07 17.01.25.png\"");
+            
+            
         }
 
 //        [TestMethod]

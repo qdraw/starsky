@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 
 namespace starsky.Helpers
@@ -19,33 +16,28 @@ namespace starsky.Helpers
 
         public static async Task<FormValueProvider> StreamFile(this HttpRequest request, Stream targetStream)
         {
+            var formAccumulator = new KeyValueAccumulator();
+
             if (!MultipartRequestHelper.IsMultipartContentType(request.ContentType))
             {
-                var formAccumulatorSingle = new KeyValueAccumulator();
-                ContentDispositionHeaderValue.TryParse("form-data; name=\"file2\"; filename=\"2017-12-07 17.01.25.png\"", out var contentDisposition);
-                var sectionSingle = new MultipartSection {Body = request.Body as MemoryStream};
-                sectionSingle.Headers = new Dictionary<string, StringValues>();
-                sectionSingle.Headers.Add("Content-Type",request.ContentType);
-                sectionSingle.Headers.Add("Content-Disposition","form-data; name=\"file2\"; filename=\"2017-12-07 17.01.25.png\"");
-                
+                if (request.ContentType != "image/jpeg")
+                    throw new Exception($"Expected a multipart request, but got {request.ContentType}");
+                    
                 request.Body.CopyToAsync(targetStream);
                     
                 // Bind form data to a model
                 var formValueProviderSingle = new FormValueProvider(
                     BindingSource.Form,
-                    new FormCollection(formAccumulatorSingle.GetResults()),
+                    new FormCollection(formAccumulator.GetResults()),
                     CultureInfo.CurrentCulture);
 
                 return formValueProviderSingle;
-                
-                throw new Exception($"Expected a multipart request, but got {request.ContentType}");
             }
             
             // From here on no unit tests anymore :(
             
             // Used to accumulate all the form url encoded key value pairs in the 
             // request.
-            var formAccumulator = new KeyValueAccumulator();
             string targetFilePath = null;
 
             var boundary = MultipartRequestHelper.GetBoundary(
