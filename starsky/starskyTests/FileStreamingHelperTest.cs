@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -50,18 +51,47 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void Test()
+        public async Task FileStreamingHelperTest_FileStreamingHelper_StreamFile_imagejpeg()
         {
-            ContentDispositionHeaderValue.TryParse(
-                "form-data; name=\"file\"; filename=\"2017-12-07 17.01.25.png\"", out var contentDisposition);
+            var targetStream = new MemoryStream();
+            var createAnImage = new CreateAnImage();
             
-            var sectionSingle = new MultipartSection {Body = request.Body as MemoryStream};
-            sectionSingle.Headers = new Dictionary<string, StringValues>();
-            sectionSingle.Headers.Add("Content-Type","image/jpeg");
-            sectionSingle.Headers.Add("Content-Disposition","form-data; name=\"file2\"; filename=\"2017-12-07 17.01.25.png\"");
+            FileStream requestBody = new FileStream(createAnImage.FullFilePath, FileMode.Open);
             
-            
+            var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg", requestBody, targetStream);
+            Assert.AreNotEqual(null, formValueProvider.ToString());
+            requestBody.Dispose();
         }
+
+        
+        [TestMethod]
+        public async Task FileStreamingHelperTest_FileStreamingHelper_StreamFile_multiPart()
+        {
+            var targetStream = new MemoryStream();
+            var createAnImage = new CreateAnImage();
+            
+//            FileStream requestBody = new FileStream(createAnImage.FullFilePath, FileMode.Open);
+            
+//            var formValueProvider = await FileStreamingHelper.StreamFile("multipart/form-data; boundary=test", targetStream, targetStream);
+//            Assert.AreNotEqual(null, formValueProvider.ToString());
+//            requestBody.Dispose();
+        }
+        
+        
+//        [TestMethod]
+//        public void Test()
+//        {
+//            ContentDispositionHeaderValue.TryParse(
+//                "form-data; name=\"file\"; filename=\"2017-12-07 17.01.25.png\"", out var contentDisposition);
+//
+////            FileStreamingHelper.StreamFile("image/jpeg", Stream requestBody, Stream targetStream)
+//             
+//            
+//            var sectionSingle = new MultipartSection {Body = request.Body as MemoryStream};
+//            sectionSingle.Headers = new Dictionary<string, StringValues>();
+//            sectionSingle.Headers.Add("Content-Type","image/jpeg");
+//            sectionSingle.Headers.Add("Content-Disposition","form-data; name=\"file2\"; filename=\"2017-12-07 17.01.25.png\"");
+//        }
 
 //        [TestMethod]
 //        public void FileStreamingHelperTestGetEncodingTest()

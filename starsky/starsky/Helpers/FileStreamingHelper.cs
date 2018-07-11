@@ -16,14 +16,19 @@ namespace starsky.Helpers
 
         public static async Task<FormValueProvider> StreamFile(this HttpRequest request, Stream targetStream)
         {
+            return await StreamFile(request.ContentType, request.Body, targetStream);
+        }
+
+        public static async Task<FormValueProvider> StreamFile(string contentType, Stream requestBody, Stream targetStream)
+        {
             var formAccumulator = new KeyValueAccumulator();
 
-            if (!MultipartRequestHelper.IsMultipartContentType(request.ContentType))
+            if (!MultipartRequestHelper.IsMultipartContentType(contentType))
             {
-                if (request.ContentType != "image/jpeg")
-                    throw new Exception($"Expected a multipart request, but got {request.ContentType}");
+                if (contentType != "image/jpeg")
+                    throw new Exception($"Expected a multipart request, but got {contentType}");
                     
-                request.Body.CopyToAsync(targetStream);
+                requestBody.CopyToAsync(targetStream);
                     
                 // Bind form data to a model
                 var formValueProviderSingle = new FormValueProvider(
@@ -41,9 +46,9 @@ namespace starsky.Helpers
             string targetFilePath = null;
 
             var boundary = MultipartRequestHelper.GetBoundary(
-                MediaTypeHeaderValue.Parse(request.ContentType),
+                MediaTypeHeaderValue.Parse(contentType),
                 _defaultFormOptions.MultipartBoundaryLengthLimit);
-            var reader = new MultipartReader(boundary, request.Body);
+            var reader = new MultipartReader(boundary, requestBody);
 
             var section = await reader.ReadNextSectionAsync();
             while (section != null)
