@@ -34,7 +34,7 @@ namespace starsky.Controllers
             var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
             var subpath = _query.SubPathSlashRemove(f);
             
-            var model = new ArchiveViewModel {FileIndexItems = _query.DisplayFileFolders(subpath,colorClassFilterList)};
+            var model = new IndexViewModel{FileIndexItems = _query.DisplayFileFolders(subpath,colorClassFilterList)};
             model.RelativeObjects = new RelativeObjects();
             model.Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath);
             
