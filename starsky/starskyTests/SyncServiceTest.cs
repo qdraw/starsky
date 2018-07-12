@@ -283,7 +283,6 @@ namespace starskytests
             _query.AddItem(new FileIndexItem
             {
                 FileName = "test.jpg",
-                //FilePath = "/deletedFolder/test.jpg",
                 ParentDirectory = "/deletedFolder",
                 FileHash = "deletedFile",
                 IsDirectory = false
