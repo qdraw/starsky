@@ -20,7 +20,7 @@ namespace starsky.Controllers
 
         [HttpGet]
         [HttpHead]
-=        public IActionResult Index(
+        public IActionResult Index(
             string f = "/", 
             string colorClass = null,
             bool json = false
