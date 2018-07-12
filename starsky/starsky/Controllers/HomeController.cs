@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
@@ -21,7 +20,7 @@ namespace starsky.Controllers
 
         [HttpGet]
         [HttpHead]
-        public IActionResult Index(
+=        public IActionResult Index(
             string f = "/", 
             string colorClass = null,
             bool json = false
@@ -35,7 +34,10 @@ namespace starsky.Controllers
             var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
             var subpath = _query.SubPathSlashRemove(f);
             
-            var model = new IndexViewModel {FileIndexItems = _query.DisplayFileFolders(subpath,colorClassFilterList)};
+            var model = new ArchiveViewModel {FileIndexItems = _query.DisplayFileFolders(subpath,colorClassFilterList)};
+            model.RelativeObjects = new RelativeObjects();
+            model.Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath);
+            
             var singleItem = _query.SingleItem(subpath,colorClassFilterList);
 
             if (!model.FileIndexItems.Any())
@@ -45,6 +47,9 @@ namespace starsky.Controllers
                 
                 if (singleItem?.FileIndexItem.FilePath == null && queryIfFolder == null)
                 {
+                    if (f == "/" && !json) return View(model);
+                    if (f == "/") return Json(model);
+
                     Response.StatusCode = 404;
                     if (json) return Json("not found");
                     return View("Error");
@@ -57,7 +62,6 @@ namespace starsky.Controllers
                 return View("SingleItem", singleItem);
             }
             
-            model.Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath);
             model.SearchQuery = subpath.Split("/").LastOrDefault();                
             model.RelativeObjects = _query.GetNextPrevInFolder(subpath);
             
