@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Helpers;
 using starsky.Interfaces;
@@ -11,6 +12,7 @@ using starsky.ViewModels;
 
 namespace starsky.Controllers
 {
+    [Authorize]
     public class ApiController : Controller
     {
         private readonly IQuery _query;

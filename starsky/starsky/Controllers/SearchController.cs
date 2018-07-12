@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
 using starsky.Models;
 
 namespace starsky.Controllers
 {
+    [Authorize]
     public class SearchController : Controller
     {
         private readonly ISearch _search;

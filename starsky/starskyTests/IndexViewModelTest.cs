@@ -9,7 +9,7 @@ namespace starskytests
         [TestMethod]
         public void IndexViewModelPageTypeTest()
         {
-            var t = new IndexViewModel();
+            var t = new ArchiveViewModel();
             Assert.AreEqual(t.PageType, PageViewType.PageType.Archive.ToString());            
         }
     }

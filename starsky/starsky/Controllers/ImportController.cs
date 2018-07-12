@@ -1,15 +1,13 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using starsky.Attributes;
 using starsky.Helpers;
 using starsky.Interfaces;
-using starsky.Models;
 
 namespace starsky.Controllers
 {
+    [Authorize]
     public class ImportController : Controller
     {
         private readonly IImport _import;
