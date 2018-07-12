@@ -222,40 +222,32 @@ namespace starskytests
         }
 
         [TestMethod]
-        // Fails
         public void SyncServiceFirstItemDirectoryTest() // Scans childfolders and add thumbnails
         {
             
-            var newImage = new CreateAnImage();
-            
-            var split = newImage.BasePath.Split(Path.DirectorySeparatorChar);
-            AppSettingsProvider.BasePath = string.Empty;
-            var testfolder = string.Empty;
+            var createAnImage = new CreateAnImage();
 
-            var expectThisHashCode = FileHash.GetHashCode(newImage.FullFilePath);
-
-            for (var i = 0; i < split.Length; i++)
+            var existFullDir = createAnImage.BasePath + Path.DirectorySeparatorChar + "exist";
+            if (!Directory.Exists(existFullDir))
             {
-                if (i != split.Length - 2)
-                {
-                    AppSettingsProvider.BasePath += split[i];
-                    if (i != split.Length - 1)
-                    {
-                        AppSettingsProvider.BasePath += Path.DirectorySeparatorChar;
-                    }
-                    continue;
-                }
-                // save the last folder to test
-                testfolder = split[i];
+                Directory.CreateDirectory(existFullDir);
+            }
+            
+            var testFileFullPath = existFullDir + Path.DirectorySeparatorChar +
+                    createAnImage.DbPath.Replace("/", string.Empty);
+
+
+            if (!File.Exists(testFileFullPath))
+            {
+                File.Copy(createAnImage.FullFilePath, testFileFullPath);                
             }
 
-            Console.WriteLine("AppSettingsProvider.BasePath");
-            Console.WriteLine(AppSettingsProvider.BasePath);
-
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            
             // Add base folder
             _query.AddItem(new FileIndexItem
             {
-                FileName = testfolder,
+                FileName = "exist",
                 ParentDirectory = "/",
                 IsDirectory = true
             });
@@ -263,21 +255,21 @@ namespace starskytests
             // Add Image
             _query.AddItem(new FileIndexItem
             {
-                FileName = newImage.DbPath.Replace("/",string.Empty),
-                //FilePath = "/"+ testfolder + newImage.DbPath.Replace(Path.DirectorySeparatorChar.ToString(),"/"),
-                ParentDirectory = "/" + testfolder,
+                FileName = createAnImage.DbPath.Replace("/",string.Empty),
+                ParentDirectory = "/" + "exist",
                 IsDirectory = false
             });
-
-            Console.WriteLine("\"/\"+ testfolder + newImage.DbPath");
-            Console.WriteLine("/"+ testfolder + newImage.DbPath);
+            var expectThisHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             
             _syncservice.FirstItemDirectory();
-
+            
             var q = _query.GetAllRecursive();
 
-            var queryItem = _query.GetObjectByFilePath("/" + testfolder);
+            var queryItem = _query.GetObjectByFilePath("/exist");
             Assert.AreEqual(expectThisHashCode, queryItem.FileHash);
+            
+            File.Delete(testFileFullPath);
+  
         }
 
         [TestMethod]
