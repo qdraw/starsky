@@ -220,7 +220,7 @@ namespace starskytests
             
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.BasePath = createAnImage.BasePath;
-            AppSettingsProvider.Structure = "/xux_ssHHmm.ext";
+            AppSettingsProvider.Structure = "/xuxuxuxu_ssHHmm.ext";
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
@@ -240,9 +240,14 @@ namespace starskytests
             var outputSubfolders = importIndexItem.ParseSubfolders();
 
             _import.RemoveItem(importIndexItem);
-            File.Delete(FileIndexItem.DatabasePathToFilePath(
-                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
-            ));
+            string[] picList = Directory.GetFiles(FileIndexItem.DatabasePathToFilePath(
+                importIndexItem.ParseSubfolders()), "xuxuxuxu_*.jpg");
+            // Delete source files that were copied.
+            foreach (string f in picList)
+            {
+                File.Delete(f);
+            }
+
         }
 
         
@@ -252,7 +257,7 @@ namespace starskytests
             
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.BasePath = createAnImage.BasePath;
-            AppSettingsProvider.Structure = "/xux_ssHHmm.ext";
+            AppSettingsProvider.Structure = "/xux99999xxxx_ssHHmm.ext";
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
@@ -269,7 +274,7 @@ namespace starskytests
             // >>>> ParentDirectory ===  /Users/dionvanvelde/.nuget/packages/microsoft.testplatform.testhost/15.7.2/lib/netstandard1.5
                 
             // Search on filename in database
-            var allXuXuFiles = _query.GetAllRecursive().Where(p => p.FileName.Contains("xux_")).ToList();
+            var allXuXuFiles = _query.GetAllRecursive().Where(p => p.FileName.Contains("xux99999xxxx_")).ToList();
             Assert.AreEqual(true, allXuXuFiles.Any()  );
 
             // Clean afterwards
@@ -280,18 +285,14 @@ namespace starskytests
 
             _import.RemoveItem(importIndexItem);
 
-            foreach (var item in allXuXuFiles)
+            string[] picList = Directory.GetFiles(FileIndexItem.DatabasePathToFilePath(
+                importIndexItem.ParseSubfolders()), "xux99999xxxx_*.jpg");
+            // Delete source files that were copied.
+            foreach (string f in picList)
             {
-                Console.WriteLine("item.FilePath" + item.FilePath);
-                Console.WriteLine("---");
-                Console.WriteLine(FileIndexItem.DatabasePathToFilePath(
-                    item.FilePath
-                ));
-                //File.Delete(FileIndexItem.DatabasePathToFilePath(
-                //    item.FilePath
-                //));
+                File.Delete(f);
             }
-            
+                        
         }
         
         [TestMethod]

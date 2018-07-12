@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
 using starsky.Models;
@@ -8,6 +9,7 @@ using starsky.ViewModels;
 
 namespace starsky.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         

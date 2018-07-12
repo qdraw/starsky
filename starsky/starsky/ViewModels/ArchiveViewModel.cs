@@ -3,7 +3,7 @@ using starsky.Models;
 
 namespace starsky.ViewModels
 {
-    public class IndexViewModel
+    public class ArchiveViewModel
     {
         public IEnumerable<FileIndexItem> FileIndexItems { get; set; }
         public List<string> Breadcrumb { get; set; }

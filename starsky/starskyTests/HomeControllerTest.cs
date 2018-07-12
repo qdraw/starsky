@@ -65,7 +65,7 @@ namespace starskytests
             var controller = new HomeController(_query);
             var actionResult = controller.Index("/homecontrollertest",null,true) as JsonResult;
             Assert.AreNotEqual(actionResult,null);
-            var jsonCollection = actionResult.Value as IndexViewModel;
+            var jsonCollection = actionResult.Value as ArchiveViewModel;
             Assert.AreEqual("home0012304590",jsonCollection.FileIndexItems.FirstOrDefault().FileHash);
         }
 
