@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Middleware;
 
 namespace starskytests
@@ -28,6 +29,14 @@ namespace starskytests
             var bto = new BasicAuthenticationHeaderValue("Basic dGVzdDp0ZXN0");
             Assert.AreEqual("test",bto.UserIdentifier);
             Assert.AreEqual("test",bto.UserPassword);
+        }  
+        
+        [TestMethod]
+        public void MiddlewareBasicAuthenticationHeaderValueCtor_FormatException_Test()
+        {
+            // Not a valid imput :(
+            var bto = new BasicAuthenticationHeaderValue("00000000000");
+            Assert.AreEqual(null,bto.UserIdentifier);
         }  
         
     }

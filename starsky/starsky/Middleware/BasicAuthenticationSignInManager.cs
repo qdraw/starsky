@@ -16,8 +16,7 @@ namespace starsky.Middleware
             _userManager = _context.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
             _signInManager = _context.RequestServices.GetRequiredService<SignInManager<ApplicationUser>>();
         }
-        private IApplicationBuilder _app;
-
+        
         private readonly HttpContext _context;
         private readonly BasicAuthenticationHeaderValue _authenticationHeaderValue;
         private readonly UserManager<ApplicationUser> _userManager;
