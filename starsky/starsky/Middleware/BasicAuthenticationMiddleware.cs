@@ -12,8 +12,6 @@ namespace starsky.Middleware
     public class BasicAuthenticationMiddleware
     {
         
-        private IApplicationBuilder _app;
-
         public BasicAuthenticationMiddleware(RequestDelegate next)
         {
             _next = next;

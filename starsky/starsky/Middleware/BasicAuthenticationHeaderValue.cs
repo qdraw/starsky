@@ -25,7 +25,8 @@ namespace starsky.Middleware
 
         private bool TryDecodeHeaderValue()
         {
-            const int headerSchemeLength = 6; // "Basic ".Length;
+            const int headerSchemeLength = 6; 
+            // The Length of the word "Basic "
             if (_authenticationHeaderValue.Length <= headerSchemeLength)
             {
                 return false;
