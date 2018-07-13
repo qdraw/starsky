@@ -35,23 +35,32 @@ namespace starsky.Controllers
             // Used in Detail and Index View => does not hide this single item
             var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
             var subpath = _query.SubPathSlashRemove(f);
-            
-            var model = new ArchiveViewModel{FileIndexItems = _query.DisplayFileFolders(subpath,colorClassFilterList)};
-            model.RelativeObjects = new RelativeObjects();
-            model.Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath);
-            
+
+            var model = new ArchiveViewModel
+            {
+                FileIndexItems = _query.DisplayFileFolders(subpath, colorClassFilterList),
+                RelativeObjects = new RelativeObjects(),
+                Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath)
+            };
+
             var singleItem = _query.SingleItem(subpath,colorClassFilterList);
 
             if (!model.FileIndexItems.Any())
             {
                 // is directory is emthy 
                 var queryIfFolder = _query.GetObjectByFilePath(subpath);
-                
+
+                // For showing a new database
+                switch (f)
+                {
+                    case "/" when !json && queryIfFolder == null:
+                        return View(model);
+                    case "/" when queryIfFolder == null:
+                        return Json(model);
+                }
+
                 if (singleItem?.FileIndexItem.FilePath == null && queryIfFolder == null)
                 {
-                    if (f == "/" && !json) return View(model);
-                    if (f == "/") return Json(model);
-
                     Response.StatusCode = 404;
                     if (json) return Json("not found");
                     return View("Error");

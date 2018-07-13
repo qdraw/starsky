@@ -35,8 +35,13 @@
     <Compile Remove="Migrations\20180712132428_IdentityProvider.cs" />
     <Compile Remove="Migrations\20180712132428_IdentityProvider.Designer.cs" />
     <Compile Remove="Migrations\20180308203924_FileHashTags.cs" />
+    <Compile Remove="Migrations\20180308203924_FileHashTags.Designer.cs" />
     <Compile Remove="Migrations\20180308213306_DateTime_AddToDatabase.cs" />
+    <Compile Remove="Migrations\20180308213306_DateTime_AddToDatabase.Designer.cs" />
     <Compile Remove="Migrations\20180322104602_ColorClassFeature.cs" />
+    <Compile Remove="Migrations\20180322104602_ColorClassFeature.Designer.cs" />
+
+
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MetadataExtractor" Version="2.0.0" />

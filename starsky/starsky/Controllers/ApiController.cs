@@ -199,6 +199,7 @@ namespace starsky.Controllers
                     }
                     catch (NullReferenceException)
                     {
+                        Console.WriteLine("Request.HttpContext.Response.Headers");
                     }
 
                     return NoContent();
