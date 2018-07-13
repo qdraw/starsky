@@ -27,6 +27,7 @@ namespace starsky.Controllers
         [HttpHead]
         [ResponseCache(Duration = 30 )]
         [IgnoreAntiforgeryToken]
+        [AllowAnonymous] /// <=================================
         public IActionResult Env()
         {
             return Json(new EnvViewModel().GetEnvAppSettingsProvider());
