@@ -1,13 +1,12 @@
 ﻿using System;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using starsky.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Data;
+using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
 
@@ -53,6 +52,12 @@ namespace starsky
                 })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+            
+
+            // Enable Dual Authentication 
+            services.AddAuthentication()
+                .AddCookie(cfg => cfg.SlidingExpiration = true);
+
 
             // // //  Cookie settings for loging in > instead of: .AspNetCore.Identity.Application
             services.ConfigureApplicationCookie(options =>
@@ -83,7 +88,7 @@ namespace starsky
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseResponseCaching();
-
+            
             app.UsePathBase("/starsky");
             
             if (env.IsDevelopment())
@@ -95,10 +100,10 @@ namespace starsky
             {
                 app.UseStatusCodePagesWithReExecute("/Shared/Error");
             }
-
             app.UseStaticFiles();
-            
+
             app.UseAuthentication();
+            app.UseBasicAuthentication();
 
 
             app.UseMvc(routes =>

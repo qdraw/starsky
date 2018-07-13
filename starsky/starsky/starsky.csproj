@@ -40,8 +40,6 @@
     <Compile Remove="Migrations\20180308213306_DateTime_AddToDatabase.Designer.cs" />
     <Compile Remove="Migrations\20180322104602_ColorClassFeature.cs" />
     <Compile Remove="Migrations\20180322104602_ColorClassFeature.Designer.cs" />
-
-
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MetadataExtractor" Version="2.0.0" />
