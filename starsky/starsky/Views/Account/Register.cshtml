@@ -1,4 +1,5 @@
-﻿@model RegisterViewModel
+﻿@using starsky.ViewModels.Account
+@model RegisterViewModel
 @{
     ViewData["Title"] = "Register";
 }
@@ -31,6 +32,3 @@
     </div>
 </div>
 
-@section Scripts {
-    @await Html.PartialAsync("_ValidationScriptsPartial")
-}

@@ -1,8 +1,11 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
+using starsky.ViewModels.Account;
 
 namespace starsky.Controllers
 {
@@ -12,31 +15,56 @@ namespace starsky.Controllers
 
         public AccountController(IUserManager userManager)
         {
-            this._userManager = userManager;
+            _userManager = userManager;
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Login()
         {
-            return this.View();
+            return View();
         }
 
         [HttpPost]
-        public IActionResult Login()
+        [ActionName("Login")]
+        public IActionResult LoginPost()
         {
-            ValidateResult validateResult = this._userManager.Validate("Email", "admin@example.com", "admin");
+            ValidateResult validateResult = _userManager.Validate("Email", "admin@adm", "secret-password");
 
             if (validateResult.Success)
-                this._userManager.SignIn(this.HttpContext, validateResult.User, false);
+                _userManager.SignIn(HttpContext, validateResult.User, false);
 
-            return this.RedirectToAction("Index");
+            return RedirectToAction("Index","Home");
         }
 
         [HttpPost]
         public IActionResult Logout()
         {
             this._userManager.SignOut(this.HttpContext);
-            return this.RedirectToAction("Index");
+            return this.RedirectToAction("Login");
+        }
+        
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Register(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            if (ModelState.IsValid)
+            {
+                var result = _userManager.SignUp("", "email", model.Email, model.Password);
+                if(result.Success) return View(model);
+            }
+
+            // If we got this far, something failed, redisplay form
+            return Json(model);
         }
     }
 }

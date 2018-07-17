@@ -28,7 +28,6 @@ public class UserManager : IUserManager
         {
             return this.SignUp(name, credentialTypeCode, identifier, null);
         }
-        
         public SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret)
         {
             User user = new User();
@@ -39,9 +38,22 @@ public class UserManager : IUserManager
             this.storage.SaveChanges();
             
             CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
-            
-            if (credentialType == null)
-            return new SignUpResult(success: false, error: SignUpResultError.CredentialTypeNotFound);
+
+            // If not exist add it;
+            if (credentialType == null && credentialTypeCode.ToLower() == "email" )
+            {
+                credentialType = new CredentialType
+                {
+                    Code = "email",
+                    Name = "email",
+                    Position = 1,
+                    Id = 1
+                };
+                storage.CredentialTypes.Add(credentialType);
+            }
+
+            if (credentialType == null) 
+                return new SignUpResult(success: false, error: SignUpResultError.CredentialTypeNotFound);
             
             Credential credential = new Credential();
             
@@ -58,8 +70,8 @@ public class UserManager : IUserManager
                 credential.Extra = Convert.ToBase64String(salt);
             }
         
-            this.storage.Credentials.Add(credential);
-            this.storage.SaveChanges();
+            storage.Credentials.Add(credential);
+            storage.SaveChanges();
             return new SignUpResult(user: user, success: true);
         }
         
