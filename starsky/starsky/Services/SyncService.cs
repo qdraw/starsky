@@ -35,7 +35,6 @@ namespace starsky.Services
         public IEnumerable<string> SyncFiles(string subPath)
         {
             // Handle single files
-            // todo: missing subfolder support for direct syncs
             if (Deleted(subPath)) return null;
             if (SingleFile(subPath)) return null;
 

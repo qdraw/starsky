@@ -15,6 +15,8 @@ namespace starsky.Services
         // True is stop after
         // False is continue
         
+        // Has support for subPaths in the index
+        
         public bool SingleFile(string subPath = "")
         {
             if (Files.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.File) // false == file
@@ -37,6 +39,9 @@ namespace starsky.Services
 
                 CheckMd5Hash(localListWithOneFileDbStyle, dbListWithOneFile);
                 AddPhotoToDatabase(localListWithOneFileDbStyle, dbListWithOneFile);
+
+                // add subpath
+                AddSubPathFolder(subPath);
                 
                 return true;
             }
