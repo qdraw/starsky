@@ -1,0 +1,226 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "logicAppName": {
+      "type": "String",
+      "metadata": {
+        "description": "Name of the logic app."
+      }
+    },
+    "logicAppLocation": {
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": [
+        "eastasia",
+        "southeastasia",
+        "centralus",
+        "eastus",
+        "eastus2",
+        "westus",
+        "northcentralus",
+        "southcentralus",
+        "northeurope",
+        "westeurope",
+        "japanwest",
+        "japaneast",
+        "brazilsouth",
+        "australiaeast",
+        "australiasoutheast",
+        "southindia",
+        "centralindia",
+        "westindia",
+        "canadacentral",
+        "canadaeast",
+        "westcentralus",
+        "westus2",
+        "[resourceGroup().location]"
+      ],
+      "type": "String",
+      "metadata": {
+        "description": "Location of the logic app."
+      }
+    },
+    "dropbox_Connection_Name": {
+      "defaultValue": "dropbox",
+      "type": "String",
+      "metadata": {
+        "description": "Name of the connection."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Logic/workflows",
+      "name": "[parameters('logicAppName')]",
+      "apiVersion": "2016-06-01",
+      "location": "[parameters('logicAppLocation')]",
+      "properties": {
+        "state": "Disabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            },
+            "$authentication": {
+              "defaultValue": {},
+              "type": "SecureObject"
+            }
+          },
+          "triggers": {
+            "When_a_file_is_created": {
+              "recurrence": {
+                "interval": 15,
+                "frequency": "Minute"
+              },
+              "metadata": {
+                "id:4Z6vPlVwQrIAAAAAAAE7Iw": "/camera uploads",
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "OnNewFile"
+                }
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['dropbox']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/datasets/default/triggers/onnewfile",
+                "queries": {
+                  "folderId": "id:4Z6vPlVwQrIAAAAAAAE7Iw",
+                  "queryParametersSingleEncoded": true,
+                  "inferContentType": true
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          },
+          "actions": {
+            "Condition_2": {
+              "actions": {
+                "HTTP": {
+                  "runAfter": {},
+                  "type": "Http",
+                  "inputs": {
+                    "method": "POST",
+                    "uri": "endpoint/starsky/import",
+                    "body": "@triggerBody()",
+                    "authentication": {
+                      "type": "Basic",
+                      "username": "dionvanvelde@gmail.com",
+                      "password": ""
+                    }
+                  }
+                },
+                "Condition": {
+                  "actions": {
+                    "Copy_file": {
+                      "runAfter": {},
+                      "metadata": {
+                        "flowSystemMetadata": {
+                          "swaggerOperationId": "CopyFile"
+                        }
+                      },
+                      "type": "ApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connection": {
+                            "name": "@parameters('$connections')['dropbox']['connectionId']"
+                          }
+                        },
+                        "method": "post",
+                        "path": "/datasets/default/copyFile",
+                        "queries": {
+                          "source": "@base64ToString(triggerOutputs()['headers']['x-ms-file-path-encoded'])",
+                          "destination": "/Camera uploads/done/@{base64ToString(triggerOutputs()['headers']['x-ms-file-name-encoded'])}",
+                          "overwrite": false,
+                          "queryParametersSingleEncoded": true
+                        },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    },
+                    "Delete_file": {
+                      "runAfter": {
+                        "Copy_file": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "flowSystemMetadata": {
+                          "swaggerOperationId": "DeleteFile"
+                        }
+                      },
+                      "type": "ApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connection": {
+                            "name": "@parameters('$connections')['dropbox']['connectionId']"
+                          }
+                        },
+                        "method": "delete",
+                        "path": "/datasets/default/files/@{encodeURIComponent(encodeURIComponent('/Camera uploads/', base64ToString(triggerOutputs()['headers']['x-ms-file-name-encoded'])))}",
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    }
+                  },
+                  "runAfter": {
+                    "HTTP": [
+                      "Succeeded"
+                    ]
+                  },
+                  "expression": "@equals(outputs('HTTP')['statusCode'], 200)",
+                  "type": "If"
+                }
+              },
+              "runAfter": {},
+              "expression": "@contains(triggerOutputs()['headers']['Content-Type'], 'jpeg')",
+              "type": "If"
+            }
+          },
+          "outputs": {},
+          "description": "test"
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "dropbox": {
+                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'dropbox')]",
+                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('dropbox_Connection_Name'))]",
+                "connectionName": "[parameters('dropbox_Connection_Name')]"
+              }
+            }
+          }
+        },
+        "runtimeConfiguration": {
+          "collections": {
+            "maximumItemCount": 5000
+          },
+          "performanceProfile": {
+            "throttles": {
+              "mode": "Low"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', parameters('dropbox_Connection_Name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/connections",
+      "name": "[parameters('dropbox_Connection_Name')]",
+      "apiVersion": "2016-06-01",
+      "location": "[parameters('logicAppLocation')]",
+      "properties": {
+        "api": {
+          "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'dropbox')]"
+        },
+        "displayName": "[parameters('dropbox_Connection_Name')]"
+      }
+    }
+  ]
+}
