@@ -59,4 +59,7 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Account" />
+  </ItemGroup>
 </Project>

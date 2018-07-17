@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using starsky.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -40,24 +41,28 @@ namespace starsky
                     break;
             }
             
-            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-                {
-                    // Password settings
-                    options.Password.RequireDigit = false;
-                    options.Password.RequiredLength = 10;
-                    options.Password.RequiredUniqueChars = 0;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+//            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+//                {
+//                    // Password settings
+//                    options.Password.RequireDigit = false;
+//                    options.Password.RequiredLength = 10;
+//                    options.Password.RequiredUniqueChars = 0;
+//                    options.Password.RequireLowercase = false;
+//                    options.Password.RequireNonAlphanumeric = false;
+//                    options.Password.RequireUppercase = false;
+//                })
+//                .AddEntityFrameworkStores<ApplicationDbContext>()
+//                .AddDefaultTokenProviders();
             
 
             // Enable Dual Authentication 
-            services.AddAuthentication()
-                .AddCookie(cfg => cfg.SlidingExpiration = true);
-
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                    {
+                        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                        options.SlidingExpiration = true;
+                    }
+                );
 
             // // //  Cookie settings for loging in > instead of: .AspNetCore.Identity.Application
             services.ConfigureApplicationCookie(options =>
@@ -71,7 +76,8 @@ namespace starsky
             services.AddScoped<ISync, SyncService>();
             services.AddScoped<ISearch, SearchService>();
             services.AddScoped<IImport, ImportService>();
-
+            services.AddScoped<IUserManager, UserManager>();
+            
             services.AddAntiforgery(
                 options =>
                 {
