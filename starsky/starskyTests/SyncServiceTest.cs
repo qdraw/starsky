@@ -308,6 +308,37 @@ namespace starskytests
 
             CollectionAssert.AreEqual(expectedOutputList,output);
         }
-        
+
+        [TestMethod]
+        public void SyncService_DuplicateContentInDatabase_Test()
+        {
+            var createAnImage = new CreateAnImage();
+            AppSettingsProvider.BasePath = createAnImage.BasePath; // needs to have an / or \ at the end
+
+            var testjpg = new FileIndexItem
+            {
+                Id = 200,
+                FileName = createAnImage.DbPath.Replace("/",string.Empty),
+                ParentDirectory = "/",
+                IsDirectory = false
+            };
+
+            _query.AddItem(testjpg);
+            testjpg.Id++;
+            _query.AddItem(testjpg);
+
+            // this query is before syncing the api
+            var inputWithoutSync = _query.GetAllFiles();
+            Assert.AreEqual(2,inputWithoutSync.Count(p => p.FilePath == createAnImage.DbPath));
+
+            // do a sync
+            _syncservice.SyncFiles("/");
+            var outputWithSync = _query.GetAllFiles();
+
+            // test if the sync is working
+            Assert.AreEqual(1,outputWithSync.Count(p => p.FilePath == createAnImage.DbPath));
+
+        }
+
     }
 }

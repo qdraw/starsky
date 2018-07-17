@@ -10,6 +10,7 @@ namespace starsky.Services
         // Sync the database
         // Based on subpath, do a cached database query
         // Check differences in the database and local version
+        // No Duplicate file support in the class
 
         public List<FileIndexItem> RemoveOldFilePathItemsFromDatabase(
             List<string> localSubFolderListDatabaseStyle,

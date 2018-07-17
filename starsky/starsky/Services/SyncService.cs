@@ -35,6 +35,7 @@ namespace starsky.Services
         public IEnumerable<string> SyncFiles(string subPath)
         {
             // Handle single files
+            // todo: missing subfolder support for direct syncs
             if (Deleted(subPath)) return null;
             if (SingleFile(subPath)) return null;
 
@@ -66,6 +67,7 @@ namespace starsky.Services
                 var databaseFileList = _query.GetAllFiles(singleFolder);
                 var localFarrayFilesDbStyle = Files.GetFilesInDirectory(singleFolder).ToList();
 
+                databaseFileList = RemoveDuplicate(databaseFileList);
                 databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);
                 CheckMd5Hash(localFarrayFilesDbStyle, databaseFileList);
                 AddPhotoToDatabase(localFarrayFilesDbStyle, databaseFileList);
