@@ -34,8 +34,8 @@ namespace starsky.Helpers
                 
                 var fullFilePath = GetTempFilePath();
                 await Store(fullFilePath,requestBody);
-
-                return new List<string>{"test"};
+                tempPaths.Add(fullFilePath);
+                return tempPaths;
             }
             
             // From here on no unit tests anymore :(

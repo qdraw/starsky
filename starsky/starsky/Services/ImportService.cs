@@ -28,6 +28,9 @@ namespace starsky.Services
             {
                 output.Add(Import(inputFullPath, deleteAfter, ageFileFilter).FirstOrDefault());
             }
+
+            // Remove duplicate and empty-strings-from-list
+            output = output.Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().ToList();
             return output;
         }
 
@@ -102,7 +105,7 @@ namespace starsky.Services
         {
             var fileHashCode = FileHash.GetHashCode(inputFileFullPath);
             
-            // If is in the database, ignore it and dont delete it
+            // If is in the database, ignore it and don't delete it
             if (IsHashInImportDb(fileHashCode)) return string.Empty;
 
             // Only accept files with correct meta data
@@ -135,7 +138,7 @@ namespace starsky.Services
                 File.Delete(inputFileFullPath);
             }
             
-            return inputFileFullPath;
+            return fileIndexItem.FilePath;
         }
         
         

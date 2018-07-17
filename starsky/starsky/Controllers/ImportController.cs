@@ -31,11 +31,9 @@ namespace starsky.Controllers
         [DisableFormValueModelBinding]
         public async Task<IActionResult> IndexPost()
         {
-            // if (!IsApikeyValid(Request)) return BadRequest("Authorisation Error");
-
             var tempImportPaths = await Request.StreamFile();
 
-            _import.Import(tempImportPaths, true);
+            var importedFiles = _import.Import(tempImportPaths, true);
 
             foreach (var path in tempImportPaths)
             {
@@ -45,11 +43,7 @@ namespace starsky.Controllers
                 } 
             }
             
-            return Json(tempImportPaths);
+            return Json(importedFiles);
         }
-
-
-            
-        
     }
 }
