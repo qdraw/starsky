@@ -25,7 +25,7 @@ namespace starskytests
 //        sectionSingle.Headers.Add("Content-Disposition","form-data; name=\"file2\"; filename=\"2017-12-07 17.01.25.png\"");
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(FileLoadException))]
         public async Task StreamFileExeption()
         {
             var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
