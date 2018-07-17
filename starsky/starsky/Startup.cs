@@ -95,11 +95,13 @@ namespace starsky
             {
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
+                app.UseStatusCodePages();
             }
             else
             {
-                app.UseStatusCodePagesWithReExecute("/Shared/Error");
+                app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
+
             app.UseStaticFiles();
 
             app.UseAuthentication();
