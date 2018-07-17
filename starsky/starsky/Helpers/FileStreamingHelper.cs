@@ -33,7 +33,7 @@ namespace starsky.Helpers
                     throw new Exception($"Expected a multipart request, but got {contentType}");
                 
                 var fullFilePath = GetTempFilePath();
-                Store(fullFilePath,requestBody);
+                await Store(fullFilePath,requestBody);
 
                 return new List<string>{"test"};
             }
@@ -42,7 +42,6 @@ namespace starsky.Helpers
             
             // Used to accumulate all the form url encoded key value pairs in the 
             // request.
-            string targetFilePath = null;
 
             var boundary = MultipartRequestHelper.GetBoundary(
                 MediaTypeHeaderValue.Parse(contentType),
@@ -78,18 +77,9 @@ namespace starsky.Helpers
         private static async Task Store(string path, Stream stream)
         {
             var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
-            stream.CopyTo(fileStream);
+            await stream.CopyToAsync(fileStream); // changed
             fileStream.Dispose();
         }
-
-
-//        public static async Task Store(string fullFilePath, Stream inputStream)
-//        {
-//            using (var stream = File.Create(fullFilePath))
-//            {
-//                await inputStream.CopyToAsync(stream);
-//            }
-//        }
         
         public static string GetTempFilePath()
         {
