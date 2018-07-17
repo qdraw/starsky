@@ -5,8 +5,8 @@ pushd starsky
 dotnet publish -c release -r linux-arm --output ../linux-arm
 popd
 pushd starsky-cli
-dotnet publish -c release -r linux-arm --output ../linux-arm
+dotnet publish -c release -r linux-arm --no-dependencies --output ../linux-arm
 popd
 pushd starskyimportercli
-dotnet publish -c release -r linux-arm --output ../linux-arm
+dotnet publish -c release -r linux-arm --no-dependencies --output ../linux-arm
 popd
