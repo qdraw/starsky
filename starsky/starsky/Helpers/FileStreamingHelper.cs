@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using starsky.Models;
@@ -30,7 +26,7 @@ namespace starsky.Helpers
             if (!MultipartRequestHelper.IsMultipartContentType(contentType))
             {
                 if (contentType != "image/jpeg")
-                    throw new Exception($"Expected a multipart request, but got {contentType}");
+                    throw new FileLoadException($"Expected a multipart request, but got {contentType}");
                 
                 var fullFilePath = GetTempFilePath();
                 await Store(fullFilePath,requestBody);
@@ -83,7 +79,7 @@ namespace starsky.Helpers
         
         public static string GetTempFilePath()
         {
-            var guid = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss__") + Guid.NewGuid().ToString().Substring(0, 20) + ".jpg";
+            var guid = "_import_" + Guid.NewGuid().ToString().Substring(0, 20) + ".jpg";
             var path = Path.Combine(AppSettingsProvider.ThumbnailTempFolder, guid);
             return path;
         }
