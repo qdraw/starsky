@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using starsky.Interfaces;
 
 namespace starsky.Middleware
 {
@@ -11,7 +11,7 @@ namespace starsky.Middleware
     /// </summary>
     public class BasicAuthenticationMiddleware
     {
-        
+       
         public BasicAuthenticationMiddleware(RequestDelegate next)
         {
             _next = next;
@@ -19,14 +19,15 @@ namespace starsky.Middleware
 
         private readonly RequestDelegate _next;
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IUserManager userManager)
         {
             if (!context.User.Identity.IsAuthenticated)
             {
                 var basicAuthenticationHeader = GetBasicAuthenticationHeaderValue(context);
                 if (basicAuthenticationHeader.IsValidBasicAuthenticationHeaderValue)
                 {
-                    var authenticationManager = new BasicAuthenticationSignInManager(context, basicAuthenticationHeader);
+                    var authenticationManager = new BasicAuthenticationSignInManager(
+                        context, basicAuthenticationHeader, userManager);
                     await authenticationManager.TrySignInUser();
                 }
             }

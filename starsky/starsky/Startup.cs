@@ -54,30 +54,32 @@ namespace starsky
 //                .AddEntityFrameworkStores<ApplicationDbContext>()
 //                .AddDefaultTokenProviders();
             
-
+            
             // Enable Dual Authentication 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            services
+                .AddAuthentication(sharedOptions =>
+                {
+                    sharedOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    sharedOptions.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
                 .AddCookie(options =>
                     {
-                        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                        options.Cookie.Name = "_id";
+                        options.Cookie.Expiration = TimeSpan.FromDays(7);
                         options.SlidingExpiration = true;
+//                        options.EventsType = typeof(BasicAuthenticationMiddleware);
                     }
                 );
 
-            // // //  Cookie settings for loging in > instead of: .AspNetCore.Identity.Application
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.SlidingExpiration = true;
-                options.ExpireTimeSpan = TimeSpan.FromDays(400);
-                options.CookieName = "_id";
-            });           
+//            services.AddScoped<BasicAuthenticationMiddleware>();
            
             services.AddScoped<IQuery, Query>();
             services.AddScoped<ISync, SyncService>();
             services.AddScoped<ISearch, SearchService>();
             services.AddScoped<IImport, ImportService>();
             services.AddScoped<IUserManager, UserManager>();
-            
+
             services.AddAntiforgery(
                 options =>
                 {
@@ -112,7 +114,6 @@ namespace starsky
 
             app.UseAuthentication();
             app.UseBasicAuthentication();
-
 
             app.UseMvc(routes =>
             {

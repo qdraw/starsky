@@ -1,6 +1,7 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using starsky.Models.Account;
 
@@ -65,19 +66,19 @@ this.Error = error;
 }
 
 public interface IUserManager
-{
-SignUpResult SignUp(string name, string credentialTypeCode, string identifier);
-SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret);
-void AddToRole(User user, string roleCode);
-void AddToRole(User user, Role role);
-void RemoveFromRole(User user, string roleCode);
-void RemoveFromRole(User user, Role role);
-ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret);
-ValidateResult Validate(string credentialTypeCode, string identifier);
-ValidateResult Validate(string credentialTypeCode, string identifier, string secret);
-void SignIn(HttpContext httpContext, User user, bool isPersistent = false);
-void SignOut(HttpContext httpContext);
-int GetCurrentUserId(HttpContext httpContext);
-User GetCurrentUser(HttpContext httpContext);
-}
+    {
+        SignUpResult SignUp(string name, string credentialTypeCode, string identifier);
+        SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret);
+        void AddToRole(User user, string roleCode);
+        void AddToRole(User user, Role role);
+        void RemoveFromRole(User user, string roleCode);
+        void RemoveFromRole(User user, Role role);
+        ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret);
+        ValidateResult Validate(string credentialTypeCode, string identifier);
+        ValidateResult Validate(string credentialTypeCode, string identifier, string secret);
+        Task SignIn(HttpContext httpContext, User user, bool isPersistent = false);
+        void SignOut(HttpContext httpContext);
+        int GetCurrentUserId(HttpContext httpContext);
+        User GetCurrentUser(HttpContext httpContext);
+    }
 }

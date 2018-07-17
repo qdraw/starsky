@@ -1,53 +1,56 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Security.Authentication;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using starsky.Models;
+using starsky.Interfaces;
 
 namespace starsky.Middleware
 {
     public class BasicAuthenticationSignInManager
     {
-        public BasicAuthenticationSignInManager(HttpContext context, BasicAuthenticationHeaderValue authenticationHeaderValue)
+        private readonly IUserManager _userManager;
+
+        public BasicAuthenticationSignInManager(
+            HttpContext context, 
+            BasicAuthenticationHeaderValue authenticationHeaderValue,
+            IUserManager userManager)
         {
             _context = context;
             _authenticationHeaderValue = authenticationHeaderValue;
-            _userManager = _context.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
-            _signInManager = _context.RequestServices.GetRequiredService<SignInManager<ApplicationUser>>();
+            _userManager = userManager;
         }
         
         private readonly HttpContext _context;
         private readonly BasicAuthenticationHeaderValue _authenticationHeaderValue;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private ApplicationUser _user;
 
         public async Task TrySignInUser()
         {
                 
             if (_authenticationHeaderValue.IsValidBasicAuthenticationHeaderValue)
             {
-                await GetUserByUsernameOrEmail();
-                if (_user != null)
+                // _authenticationHeaderValue.UserIdentifier
+                // _authenticationHeaderValue.UserPassword
+
+                var validateResult = _userManager.Validate("email",
+                    _authenticationHeaderValue.UserIdentifier,
+                    _authenticationHeaderValue.UserPassword);
+                
+                if (!validateResult.Success)
                 {
-                    await SignInUserIfPasswordIsCorrect();
+                    _context.Response.StatusCode = 401;
+                    _context.Response.Headers.Add("WWW-Authenticate", "Basic realm=\"Starsky " + validateResult.Error + " \"");
+                    return;
                 }
+
+                await _userManager.SignIn(_context, validateResult.User, false);
+
+//                // Add ClaimsIdentity
+//                var claims = new[] { new Claim("name", _authenticationHeaderValue.UserPassword), new Claim(ClaimTypes.Role, "Admin") };
+//                var identity = new ClaimsIdentity(claims, "Basic");
+//                _context.User = new ClaimsPrincipal(identity);
             }
         }
 
-        private async Task GetUserByUsernameOrEmail()
-        {
-            _user = await  _userManager.FindByEmailAsync(_authenticationHeaderValue.UserIdentifier)
-                    ?? await _userManager.FindByNameAsync(_authenticationHeaderValue.UserIdentifier);
-        }
-
-        private async Task SignInUserIfPasswordIsCorrect()
-        {
-            if (await _userManager.CheckPasswordAsync(_user, _authenticationHeaderValue.UserPassword))
-            {
-                _context.User = await _signInManager.CreateUserPrincipalAsync(_user);
-            }
-        }
     }
 }

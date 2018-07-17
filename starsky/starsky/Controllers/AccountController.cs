@@ -1,9 +1,11 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.WindowsAzure.Storage.Shared.Protocol;
 using starsky.Interfaces;
 using starsky.ViewModels.Account;
 
@@ -16,6 +18,11 @@ namespace starsky.Controllers
         public AccountController(IUserManager userManager)
         {
             _userManager = userManager;
+        }
+        
+        public IActionResult Index()
+        {
+            return Json(User.Identity.IsAuthenticated.ToString());
         }
 
         [HttpGet]

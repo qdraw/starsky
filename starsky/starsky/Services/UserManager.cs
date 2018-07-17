@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
@@ -171,14 +172,18 @@ public class UserManager : IUserManager
             return new ValidateResult(user: this.storage.Users.Find(credential.UserId), success: true);
         }
         
-        public async void SignIn(HttpContext httpContext, User user, bool isPersistent = false)
+        public async Task SignIn(HttpContext httpContext, User user, bool isPersistent = false)
         {
             ClaimsIdentity identity = new ClaimsIdentity(this.GetUserClaims(user), CookieAuthenticationDefaults.AuthenticationScheme);
             ClaimsPrincipal principal = new ClaimsPrincipal(identity);
             
             await httpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties() { IsPersistent = isPersistent }
+                CookieAuthenticationDefaults.AuthenticationScheme, 
+                principal, 
+                new AuthenticationProperties() { IsPersistent = isPersistent }
             );
+            // Required in the direct context;  when using a REST like call
+            httpContext.User = principal;
         }
         
         public async void SignOut(HttpContext httpContext)
