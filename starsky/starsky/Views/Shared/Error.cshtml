@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Pagina niet gevonden";
 }
-<h2>@ViewData["Title"]</h2>
+<h1>@ViewData["Title"]</h1>
 <h3>@ViewData["Message"]</h3>
 
-<p>Pagina niet gevonden.</p>
+<p>@Html.ActionLink("Ga naar de home pagina", "Index", "Home");</p>
