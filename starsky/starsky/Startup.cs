@@ -68,11 +68,9 @@ namespace starsky
                         options.Cookie.Name = "_id";
                         options.Cookie.Expiration = TimeSpan.FromDays(7);
                         options.SlidingExpiration = true;
-//                        options.EventsType = typeof(BasicAuthenticationMiddleware);
                     }
                 );
 
-//            services.AddScoped<BasicAuthenticationMiddleware>();
            
             services.AddScoped<IQuery, Query>();
             services.AddScoped<ISync, SyncService>();

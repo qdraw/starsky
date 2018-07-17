@@ -43,7 +43,7 @@ namespace starsky.Middleware
                     return;
                 }
 
-                await _userManager.SignIn(_context, validateResult.User, false);
+                await _userManager.SignIn(_context, validateResult.User,false);
 
 //                // Add ClaimsIdentity
 //                var claims = new[] { new Claim("name", _authenticationHeaderValue.UserPassword), new Claim(ClaimTypes.Role, "Admin") };

@@ -33,14 +33,18 @@ namespace starsky.Controllers
 
         [HttpPost]
         [ActionName("Login")]
-        public IActionResult LoginPost()
+        public async Task<IActionResult> LoginPost(LoginViewModel model, string returnUrl = null)
         {
-            ValidateResult validateResult = _userManager.Validate("Email", "admin@adm", "secret-password");
+            ValidateResult validateResult = _userManager.Validate("Email", model.Email, model.Password);
 
-            if (validateResult.Success)
-                _userManager.SignIn(HttpContext, validateResult.User, false);
+            if (!validateResult.Success) return View(model);
+            await _userManager.SignIn(HttpContext, validateResult.User,model.RememberMe);
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToLocal(returnUrl);
+            }
 
-            return RedirectToAction("Index","Home");
+            return View(model);
         }
 
         [HttpPost]
@@ -67,12 +71,22 @@ namespace starsky.Controllers
             if (ModelState.IsValid)
             {
                 var result = _userManager.SignUp("", "email", model.Email, model.Password);
-                if(result.Success) return View(model);
+                if(result.Success) return RedirectToLocal(returnUrl);
             }
 
             // If we got this far, something failed, redisplay form
-            return Json(model);
+            return View(model);
         }
+        
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+        
     }
 }
 
@@ -296,14 +310,7 @@ namespace starsky.Controllers
 //            }
 //        }
 //
-//        private IActionResult RedirectToLocal(string returnUrl)
-//        {
-//            if (Url.IsLocalUrl(returnUrl))
-//            {
-//                return Redirect(returnUrl);
-//            }
-//            return RedirectToAction(nameof(HomeController.Index), "Home");
-//        }
+
 //
 //        #endregion
 //    }
