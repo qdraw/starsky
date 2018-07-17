@@ -389,5 +389,35 @@ namespace starskytests
         {
             CollectionAssert.AreEqual(new List<string>(),_import.Import(string.Empty, true, false));
         }
+        
+        [TestMethod]
+        public void ImportService_inputFullPathList_ListInput_ImportTest()
+        {
+            // test for: Import(IEnumerable<string> inputFullPathList, bool deleteAfter = false, bool ageFileFilter = true)
+            var createAnImage = new CreateAnImage();
+            AppSettingsProvider.Structure = "/xxxxx__yyyyMMdd_HHmmss.ext";
+            // This is not to be the first file in the test directory
+            // => otherwise SyncServiceFirstItemDirectoryTest() will fail
+            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            
+            // The only difference is that the item is in a list
+            var storeItemInList = new List<string>{createAnImage.FullFilePath};
+            _import.Import(storeItemInList,false,false);
+            
+            var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
+            Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
+
+            // Clean file after succesfull run;
+            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+            var importIndexItem = new ImportIndexItem
+            {
+                SourceFullFilePath = createAnImage.FullFilePath,  
+                DateTime = fileIndexItem.DateTime
+            };
+            File.Delete(FileIndexItem.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
+            _import.RemoveItem(_import.GetItemByHash(fileHashCode));
+        }
+        
+        
     }
 }
