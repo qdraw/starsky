@@ -20,8 +20,7 @@ namespace starsky.Services
             _isync = isync;
         }
 
-        // todo: Add unit test for this one
-        // a list of paths; used by the importer web interface;
+        // Imports a list of paths, used by the importer web interface
         public List<string> Import(IEnumerable<string> inputFullPathList, bool deleteAfter = false, bool ageFileFilter = true)
         {
             var output = new List<string>();
@@ -32,6 +31,7 @@ namespace starsky.Services
             return output;
         }
 
+        // Imports a single path, used by the cli importer
         public List<string> Import(string inputFullPath, bool deleteAfter = false, bool ageFileFilter = true)
         {
             if (!Directory.Exists(inputFullPath) && File.Exists(inputFullPath))
