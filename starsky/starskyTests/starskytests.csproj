@@ -20,7 +20,4 @@
     <ProjectReference Include="..\starsky-cli\starskycli.csproj" />
     <ProjectReference Include="..\starsky\starsky.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models" />
-  </ItemGroup>
 </Project>
