@@ -45,7 +45,7 @@ namespace starsky.Controllers
         {
             // copy to controller, this one below is only for copying
             Response.StatusCode = 404;
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
         }
 
     }

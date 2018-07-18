@@ -68,10 +68,10 @@ namespace starsky.Interfaces
     public interface IUserManager
     {
         SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret);
-        void AddToRole(User user, string roleCode);
-        void AddToRole(User user, Role role);
-        void RemoveFromRole(User user, string roleCode);
-        void RemoveFromRole(User user, Role role);
+//        void AddToRole(User user, string roleCode);
+//        void AddToRole(User user, Role role);
+//        void RemoveFromRole(User user, string roleCode);
+//        void RemoveFromRole(User user, Role role);
         ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret);
         ValidateResult Validate(string credentialTypeCode, string identifier, string secret);
         Task SignIn(HttpContext httpContext, User user, bool isPersistent = false);

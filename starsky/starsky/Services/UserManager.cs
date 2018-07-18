@@ -76,63 +76,65 @@ public class UserManager : IUserManager
             _storage.SaveChanges();
             return new SignUpResult(user: user, success: true);
         }
+       
+//  // Features are temp off // keep in code 
         
-        public void AddToRole(User user, string roleCode)
-        {
-            Role role = _storage.Roles.FirstOrDefault(r => 
-                string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
-
-            if (role == null)
-            {
-                return;                
-            }
-            
-            AddToRole(user, role);
-        }
+//        public void AddToRole(User user, string roleCode)
+//        {
+//            Role role = _storage.Roles.FirstOrDefault(r => 
+//                string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+//
+//            if (role == null)
+//            {
+//                return;                
+//            }
+//            
+//            AddToRole(user, role);
+//        }
+//        
+//        public void AddToRole(User user, Role role)
+//        {
+//            UserRole userRole = this._storage.UserRoles.Find(user.Id, role.Id);
+//
+//            if (userRole != null)
+//            {
+//                return;                
+//            }
+//
+//            userRole = new UserRole
+//            {
+//                UserId = user.Id,
+//                RoleId = role.Id
+//            };
+//            _storage.UserRoles.Add(userRole);
+//            _storage.SaveChanges();
+//        }
         
-        public void AddToRole(User user, Role role)
-        {
-            UserRole userRole = this._storage.UserRoles.Find(user.Id, role.Id);
-
-            if (userRole != null)
-            {
-                return;                
-            }
-
-            userRole = new UserRole
-            {
-                UserId = user.Id,
-                RoleId = role.Id
-            };
-            _storage.UserRoles.Add(userRole);
-            _storage.SaveChanges();
-        }
-        
-        public void RemoveFromRole(User user, string roleCode)
-        {
-            Role role = _storage.Roles.FirstOrDefault(
-                r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
-            
-            if (role == null)
-            {
-                return;                
-            }
-            
-            RemoveFromRole(user, role);
-        }
-        
-        public void RemoveFromRole(User user, Role role)
-        {
-            UserRole userRole = _storage.UserRoles.Find(user.Id, role.Id);
-            
-            if (userRole == null)
-            {
-                return;
-            }
-            
-            _storage.UserRoles.Remove(userRole);
-            _storage.SaveChanges();
-        }
+//        public void RemoveFromRole(User user, string roleCode)
+//        {
+//            Role role = _storage.Roles.FirstOrDefault(
+//                r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+//            
+//            if (role == null)
+//            {
+//                return;                
+//            }
+//            
+//            RemoveFromRole(user, role);
+//        }
+//        
+//        public void RemoveFromRole(User user, Role role)
+//        {
+//            UserRole userRole = _storage.UserRoles.Find(user.Id, role.Id);
+//            
+//            if (userRole == null)
+//            {
+//                return;
+//            }
+//            
+//            _storage.UserRoles.Remove(userRole);
+//            _storage.SaveChanges();
+//        }
         
         public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
         {
