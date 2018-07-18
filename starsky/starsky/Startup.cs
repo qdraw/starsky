@@ -41,20 +41,6 @@ namespace starsky
                     break;
             }
             
-//            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-//                {
-//                    // Password settings
-//                    options.Password.RequireDigit = false;
-//                    options.Password.RequiredLength = 10;
-//                    options.Password.RequiredUniqueChars = 0;
-//                    options.Password.RequireLowercase = false;
-//                    options.Password.RequireNonAlphanumeric = false;
-//                    options.Password.RequireUppercase = false;
-//                })
-//                .AddEntityFrameworkStores<ApplicationDbContext>()
-//                .AddDefaultTokenProviders();
-            
-            
             // Enable Dual Authentication 
             services
                 .AddAuthentication(sharedOptions =>

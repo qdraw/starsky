@@ -29,14 +29,17 @@ public class UserManager : IUserManager
         {
             return this.SignUp(name, credentialTypeCode, identifier, null);
         }
+        
         public SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret)
         {
-            User user = new User();
-            
-            user.Name = name;
-            user.Created = DateTime.Now;
-            this.storage.Users.Add(user);
-            this.storage.SaveChanges();
+            User user = new User
+            {
+                Name = name,
+                Created = DateTime.Now
+            };
+
+            storage.Users.Add(user);
+            storage.SaveChanges();
             
             CredentialType credentialType = storage.CredentialTypes.FirstOrDefault(
                 ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
