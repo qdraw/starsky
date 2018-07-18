@@ -158,7 +158,7 @@ public class UserManager : IUserManager
         
         public ValidateResult Validate(string credentialTypeCode, string identifier)
         {
-            return this.Validate(credentialTypeCode, identifier, null);
+            return Validate(credentialTypeCode, identifier, null);
         }
         
         public ValidateResult Validate(string credentialTypeCode, string identifier, string secret)
@@ -167,13 +167,17 @@ public class UserManager : IUserManager
                 ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
             
             if (credentialType == null)
+            {
                 return new ValidateResult(success: false, error: ValidateResultError.CredentialTypeNotFound);
+            }
             
             Credential credential = this.storage.Credentials.FirstOrDefault(
                 c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
-            
+
             if (credential == null)
+            {
                 return new ValidateResult(success: false, error: ValidateResultError.CredentialNotFound);
+            }
             
             if (!string.IsNullOrEmpty(secret))
             {
@@ -210,17 +214,23 @@ public class UserManager : IUserManager
         public int GetCurrentUserId(HttpContext httpContext)
         {
             if (!httpContext.User.Identity.IsAuthenticated)
-            return -1;
+            {
+                return -1;
+            }
             
             Claim claim = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             
             if (claim == null)
-            return -1;
+            {
+                return -1;
+            }
             
             int currentUserId;
             
             if (!int.TryParse(claim.Value, out currentUserId))
-            return -1;
+            {
+                return -1;
+            }
             
             return currentUserId;
         }
@@ -230,18 +240,20 @@ public class UserManager : IUserManager
             int currentUserId = this.GetCurrentUserId(httpContext);
             
             if (currentUserId == -1)
-            return null;
-            
-            return this.storage.Users.Find(currentUserId);
+            {
+                return null;
             }
             
-            private IEnumerable<Claim> GetUserClaims(User user)
-            {
+            return this.storage.Users.Find(currentUserId);
+        }
+            
+        private IEnumerable<Claim> GetUserClaims(User user)
+        {
             List<Claim> claims = new List<Claim>();
             
             claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.Name, user.Name));
-            claims.AddRange(this.GetUserRoleClaims(user));
+            claims.AddRange(GetUserRoleClaims(user));
             return claims;
         }
         
@@ -274,7 +286,7 @@ public class UserManager : IUserManager
             {
                 foreach (int permissionId in permissionIds)
                 {
-                    Permission permission = this.storage.Permissions.Find(permissionId);
+                    Permission permission = storage.Permissions.Find(permissionId);
                     
                     claims.Add(new Claim("Permission", permission.Code));
                 }
