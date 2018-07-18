@@ -66,7 +66,7 @@ namespace starsky.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model, bool json = false, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && model.ConfirmPassword == model.Password)
             {
                 var result = _userManager.SignUp("", "email", model.Email, model.Password);
                 if (json && result.Success) return Json("Account Created");
@@ -74,6 +74,8 @@ namespace starsky.Controllers
             }
 
             // If we got this far, something failed, redisplay form
+            Response.StatusCode = 400;
+            if (json) return Json("Model is not correct");
             return View(model);
         }
         

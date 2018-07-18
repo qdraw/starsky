@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -111,6 +112,34 @@ namespace starskytests.Controller
             
         }
 
+        [TestMethod]
+        public async Task AccountController_Model_is_not_correct()
+        {
+            var controller = new AccountController(_userManager);
+            var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+            controller.ControllerContext.HttpContext = httpContext;
+
+            var reg = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2"};
+            var actionResult = await controller.Register(reg,true) as JsonResult;
+            
+            Assert.AreEqual("Model is not correct", actionResult.Value as string);
+        }
+
+        [TestMethod]
+        public void AccountController_LogInGet()
+        {
+            var controller = new AccountController(_userManager);
+            controller.Login();
+        }
+        
+        [TestMethod]
+        public void AccountController_RegisterGet()
+        {
+            var controller = new AccountController(_userManager);
+            controller.Register();
+        }
+        
+        
     }
 
     // Mock class for IAuth..
