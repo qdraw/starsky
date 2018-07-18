@@ -18,11 +18,11 @@ namespace starsky.Services
 {
 public class UserManager : IUserManager
     {
-        private ApplicationDbContext storage;
+        private readonly ApplicationDbContext _storage;
         
         public UserManager(ApplicationDbContext storage)
         {
-            this.storage = storage;
+            _storage = storage;
         }
         
         public SignUpResult SignUp(string name, string credentialTypeCode, string identifier)
@@ -38,10 +38,10 @@ public class UserManager : IUserManager
                 Created = DateTime.Now
             };
 
-            storage.Users.Add(user);
-            storage.SaveChanges();
+            _storage.Users.Add(user);
+            _storage.SaveChanges();
             
-            CredentialType credentialType = storage.CredentialTypes.FirstOrDefault(
+            CredentialType credentialType = _storage.CredentialTypes.FirstOrDefault(
                 ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
 
             // When not exist add it
@@ -54,7 +54,7 @@ public class UserManager : IUserManager
                     Position = 1,
                     Id = 1
                 };
-                storage.CredentialTypes.Add(credentialType);
+                _storage.CredentialTypes.Add(credentialType);
             }
 
             if (credentialType == null)
@@ -77,14 +77,14 @@ public class UserManager : IUserManager
                 credential.Extra = Convert.ToBase64String(salt);
             }
         
-            storage.Credentials.Add(credential);
-            storage.SaveChanges();
+            _storage.Credentials.Add(credential);
+            _storage.SaveChanges();
             return new SignUpResult(user: user, success: true);
         }
         
         public void AddToRole(User user, string roleCode)
         {
-            Role role = storage.Roles.FirstOrDefault(r => 
+            Role role = _storage.Roles.FirstOrDefault(r => 
                 string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
 
             if (role == null)
@@ -97,7 +97,7 @@ public class UserManager : IUserManager
         
         public void AddToRole(User user, Role role)
         {
-            UserRole userRole = this.storage.UserRoles.Find(user.Id, role.Id);
+            UserRole userRole = this._storage.UserRoles.Find(user.Id, role.Id);
 
             if (userRole != null)
             {
@@ -109,13 +109,13 @@ public class UserManager : IUserManager
                 UserId = user.Id,
                 RoleId = role.Id
             };
-            storage.UserRoles.Add(userRole);
-            storage.SaveChanges();
+            _storage.UserRoles.Add(userRole);
+            _storage.SaveChanges();
         }
         
         public void RemoveFromRole(User user, string roleCode)
         {
-            Role role = storage.Roles.FirstOrDefault(
+            Role role = _storage.Roles.FirstOrDefault(
                 r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
             
             if (role == null)
@@ -128,18 +128,20 @@ public class UserManager : IUserManager
         
         public void RemoveFromRole(User user, Role role)
         {
-            UserRole userRole = this.storage.UserRoles.Find(user.Id, role.Id);
+            UserRole userRole = _storage.UserRoles.Find(user.Id, role.Id);
             
             if (userRole == null)
-            return;
+            {
+                return;
+            }
             
-            this.storage.UserRoles.Remove(userRole);
-            this.storage.SaveChanges();
+            _storage.UserRoles.Remove(userRole);
+            _storage.SaveChanges();
         }
         
         public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
         {
-            CredentialType credentialType = storage.CredentialTypes.FirstOrDefault(
+            CredentialType credentialType = _storage.CredentialTypes.FirstOrDefault(
                 ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
             
             if (credentialType == null)
@@ -147,7 +149,7 @@ public class UserManager : IUserManager
                 return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialTypeNotFound);
             }
             
-            Credential credential = storage.Credentials.FirstOrDefault(
+            Credential credential = _storage.Credentials.FirstOrDefault(
                 c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
             
             if (credential == null)
@@ -160,8 +162,8 @@ public class UserManager : IUserManager
             
             credential.Secret = hash;
             credential.Extra = Convert.ToBase64String(salt);
-            storage.Credentials.Update(credential);
-            storage.SaveChanges();
+            _storage.Credentials.Update(credential);
+            _storage.SaveChanges();
             return new ChangeSecretResult(success: true);
         }
         
@@ -172,7 +174,7 @@ public class UserManager : IUserManager
         
         public ValidateResult Validate(string credentialTypeCode, string identifier, string secret)
         {
-            CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(
+            CredentialType credentialType = this._storage.CredentialTypes.FirstOrDefault(
                 ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
             
             if (credentialType == null)
@@ -180,7 +182,7 @@ public class UserManager : IUserManager
                 return new ValidateResult(success: false, error: ValidateResultError.CredentialTypeNotFound);
             }
             
-            Credential credential = this.storage.Credentials.FirstOrDefault(
+            Credential credential = this._storage.Credentials.FirstOrDefault(
                 c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 
             if (credential == null)
@@ -197,7 +199,7 @@ public class UserManager : IUserManager
                     return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
             }
             
-            return new ValidateResult(user: this.storage.Users.Find(credential.UserId), success: true);
+            return new ValidateResult(user: this._storage.Users.Find(credential.UserId), success: true);
         }
         
         public async Task SignIn(HttpContext httpContext, User user, bool isPersistent = false)
@@ -253,7 +255,7 @@ public class UserManager : IUserManager
                 return null;
             }
             
-            return this.storage.Users.Find(currentUserId);
+            return this._storage.Users.Find(currentUserId);
         }
             
         private IEnumerable<Claim> GetUserClaims(User user)
@@ -269,14 +271,14 @@ public class UserManager : IUserManager
         private IEnumerable<Claim> GetUserRoleClaims(User user)
         {
             List<Claim> claims = new List<Claim>();
-            IEnumerable<int> roleIds = this.storage.UserRoles.Where(
+            IEnumerable<int> roleIds = this._storage.UserRoles.Where(
                 ur => ur.UserId == user.Id).Select(ur => ur.RoleId).ToList();
             
             if (roleIds != null)
             {
                 foreach (int roleId in roleIds)
                 {
-                    Role role = this.storage.Roles.Find(roleId);
+                    Role role = this._storage.Roles.Find(roleId);
                     
                     claims.Add(new Claim(ClaimTypes.Role, role.Code));
                     claims.AddRange(this.GetUserPermissionClaims(role));
@@ -288,14 +290,14 @@ public class UserManager : IUserManager
         private IEnumerable<Claim> GetUserPermissionClaims(Role role)
         {
             List<Claim> claims = new List<Claim>();
-            IEnumerable<int> permissionIds = this.storage.RolePermissions.Where(
+            IEnumerable<int> permissionIds = this._storage.RolePermissions.Where(
                 rp => rp.RoleId == role.Id).Select(rp => rp.PermissionId).ToList();
             
             if (permissionIds != null)
             {
                 foreach (int permissionId in permissionIds)
                 {
-                    Permission permission = storage.Permissions.Find(permissionId);
+                    Permission permission = _storage.Permissions.Find(permissionId);
                     
                     claims.Add(new Claim("Permission", permission.Code));
                 }
