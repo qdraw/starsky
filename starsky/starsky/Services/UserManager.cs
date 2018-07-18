@@ -44,7 +44,7 @@ public class UserManager : IUserManager
             CredentialType credentialType = storage.CredentialTypes.FirstOrDefault(
                 ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
 
-            // When not exist add it;
+            // When not exist add it
             if (credentialType == null && credentialTypeCode.ToLower() == "email" )
             {
                 credentialType = new CredentialType
@@ -57,8 +57,10 @@ public class UserManager : IUserManager
                 storage.CredentialTypes.Add(credentialType);
             }
 
-            if (credentialType == null) 
+            if (credentialType == null)
+            {
                 return new SignUpResult(success: false, error: SignUpResultError.CredentialTypeNotFound);
+            }
             
             Credential credential = new Credential();
             
@@ -141,13 +143,17 @@ public class UserManager : IUserManager
                 ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
             
             if (credentialType == null)
-            return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialTypeNotFound);
+            {
+                return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialTypeNotFound);
+            }
             
             Credential credential = storage.Credentials.FirstOrDefault(
                 c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
             
             if (credential == null)
-            return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialNotFound);
+            {
+                return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialNotFound);
+            }
             
             byte[] salt = Pbkdf2Hasher.GenerateRandomSalt();
             string hash = Pbkdf2Hasher.ComputeHash(secret, salt);
