@@ -41,7 +41,7 @@ public class UserManager : IUserManager
             CredentialType credentialType = storage.CredentialTypes.FirstOrDefault(
                 ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
 
-            // If not exist add it;
+            // When not exist add it;
             if (credentialType == null && credentialTypeCode.ToLower() == "email" )
             {
                 credentialType = new CredentialType
