@@ -7,8 +7,16 @@ namespace starskytests.Models.Account
     public class RolePermissionTest
     {
         [TestMethod]
-        public void RolePermissionTest1()
+        public void RolePermissionSetupTest()
         {
+            // RoleId +  PermissionId
+            var creds = new RolePermission
+            {
+                RoleId = 0,
+                PermissionId = 0,
+            };
+            Assert.AreEqual(0, creds.RoleId);
+            Assert.AreEqual(0, creds.PermissionId);
         }
     }
 }
