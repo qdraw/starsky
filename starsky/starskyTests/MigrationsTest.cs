@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
@@ -21,6 +22,13 @@ namespace starskytests
         [TestMethod]
         public void MigrationsTest_contextDatabaseMigrate()
         {
+            Console.WriteLine(new CreateAnImage().BasePath + "temp.db");
+
+            if (File.Exists(new CreateAnImage().BasePath + "temp.db"))
+            {
+                File.Delete(new CreateAnImage().BasePath + "temp.db");
+            }
+            
             _context.Database.Migrate();
             File.Delete(new CreateAnImage().BasePath + "temp.db");
         }

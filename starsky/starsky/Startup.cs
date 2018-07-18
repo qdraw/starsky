@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using starsky.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -40,37 +41,42 @@ namespace starsky
                     break;
             }
             
-            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-                {
-                    // Password settings
-                    options.Password.RequireDigit = false;
-                    options.Password.RequiredLength = 10;
-                    options.Password.RequiredUniqueChars = 0;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+//            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+//                {
+//                    // Password settings
+//                    options.Password.RequireDigit = false;
+//                    options.Password.RequiredLength = 10;
+//                    options.Password.RequiredUniqueChars = 0;
+//                    options.Password.RequireLowercase = false;
+//                    options.Password.RequireNonAlphanumeric = false;
+//                    options.Password.RequireUppercase = false;
+//                })
+//                .AddEntityFrameworkStores<ApplicationDbContext>()
+//                .AddDefaultTokenProviders();
             
-
+            
             // Enable Dual Authentication 
-            services.AddAuthentication()
-                .AddCookie(cfg => cfg.SlidingExpiration = true);
+            services
+                .AddAuthentication(sharedOptions =>
+                {
+                    sharedOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    sharedOptions.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
+                .AddCookie(options =>
+                    {
+                        options.Cookie.Name = "_id";
+                        options.Cookie.Expiration = TimeSpan.FromDays(7);
+                        options.SlidingExpiration = true;
+                    }
+                );
 
-
-            // // //  Cookie settings for loging in > instead of: .AspNetCore.Identity.Application
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.SlidingExpiration = true;
-                options.ExpireTimeSpan = TimeSpan.FromDays(400);
-                options.CookieName = "_id";
-            });           
            
             services.AddScoped<IQuery, Query>();
             services.AddScoped<ISync, SyncService>();
             services.AddScoped<ISearch, SearchService>();
             services.AddScoped<IImport, ImportService>();
+            services.AddScoped<IUserManager, UserManager>();
 
             services.AddAntiforgery(
                 options =>
@@ -106,7 +112,6 @@ namespace starsky
 
             app.UseAuthentication();
             app.UseBasicAuthentication();
-
 
             app.UseMvc(routes =>
             {

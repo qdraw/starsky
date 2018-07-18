@@ -40,6 +40,8 @@
     <Compile Remove="Migrations\20180308213306_DateTime_AddToDatabase.Designer.cs" />
     <Compile Remove="Migrations\20180322104602_ColorClassFeature.cs" />
     <Compile Remove="Migrations\20180322104602_ColorClassFeature.Designer.cs" />
+    <Compile Remove="Migrations\20180717164601_userAccountStorage.cs" />
+    <Compile Remove="Migrations\20180717164601_userAccountStorage.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MetadataExtractor" Version="2.0.0" />
@@ -58,5 +60,8 @@
     <Content Update="Views\Shared\Error.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Account" />
   </ItemGroup>
 </Project>

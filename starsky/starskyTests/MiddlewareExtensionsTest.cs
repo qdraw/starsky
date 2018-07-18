@@ -7,8 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
+using starsky.Interfaces;
 using starsky.Middleware;
 using starsky.Models;
+using starsky.Services;
 
 namespace starskytests
 {
@@ -16,29 +18,17 @@ namespace starskytests
     [TestClass]
     public class MiddlewareExtensionsTest
     {
-//        private readonly UserManager<ApplicationUser> _userManager;
-
+        private IUserManager _userManager;
         
-//            var httpContext = new DefaultHttpContext();
-//            
-//            var provider = new ServiceCollection()
-//                .AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"))
-//                .AddIdentity<ApplicationUser, IdentityRole>(options =>
-//                {
-//                    // Password settings
-//                    options.Password.RequireDigit = false;
-//                    options.Password.RequiredLength = 10;
-//                    options.Password.RequiredUniqueChars = 0;
-//                    options.Password.RequireLowercase = false;
-//                    options.Password.RequireNonAlphanumeric = false;
-//                    options.Password.RequireUppercase = false;
-//                })
-//                .AddEntityFrameworkStores<ApplicationDbContext>()
-//                .AddDefaultTokenProviders();
-//            
-//            _userManager = httpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
-//            
-//        }
+        public MiddlewareExtensionsTest()
+        {
+            var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            builder.UseInMemoryDatabase("test");
+            var options = builder.Options;
+            var context = new ApplicationDbContext(options);
+            _userManager = new UserManager(context);
+        }
+
         
         
         [TestMethod]
@@ -49,7 +39,7 @@ namespace starskytests
             var authMiddleware = new BasicAuthenticationMiddleware(next: (innerHttpContext) => Task.FromResult(0));
 
             // Act
-            await authMiddleware.Invoke(httpContext);
+            await authMiddleware.Invoke(httpContext,_userManager);
         }
         
         

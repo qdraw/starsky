@@ -12,7 +12,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.Data;
 using starsky.Models;
-using starsky.Models.AccountViewModels;
 
 namespace starskytests.Controller
 {
