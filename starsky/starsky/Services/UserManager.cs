@@ -25,11 +25,6 @@ public class UserManager : IUserManager
             _storage = storage;
         }
         
-        public SignUpResult SignUp(string name, string credentialTypeCode, string identifier)
-        {
-            return this.SignUp(name, credentialTypeCode, identifier, null);
-        }
-        
         public SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret)
         {
             User user = new User
@@ -167,11 +162,7 @@ public class UserManager : IUserManager
             return new ChangeSecretResult(success: true);
         }
         
-        public ValidateResult Validate(string credentialTypeCode, string identifier)
-        {
-            return Validate(credentialTypeCode, identifier, null);
-        }
-        
+       
         public ValidateResult Validate(string credentialTypeCode, string identifier, string secret)
         {
             CredentialType credentialType = this._storage.CredentialTypes.FirstOrDefault(

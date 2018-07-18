@@ -110,6 +110,10 @@ namespace starskytests.Controller
             // Test login
             Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
             
+            // The logout is mocked so this will not actual log it out;
+            // controller.Logout() not crashing is good enough;
+            controller.Logout();
+            
         }
 
         [TestMethod]

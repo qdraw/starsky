@@ -48,8 +48,8 @@ namespace starsky.Controllers
         [HttpPost]
         public IActionResult Logout()
         {
-            this._userManager.SignOut(this.HttpContext);
-            return this.RedirectToAction("Login");
+            _userManager.SignOut(HttpContext);
+            return RedirectToAction("Login");
         }
         
         [HttpGet]
