@@ -40,11 +40,21 @@ namespace starskytests.Controller
             var redirectToActionResult = controller.IndexPost("98765456789987") as RedirectToActionResult;
             Assert.AreEqual("Index",redirectToActionResult.ActionName);
         }
+        
         [TestMethod]
         public void SearchControllerTest_ZeroItems_Index()
         {
             var controller = new SearchController(_search);
             var jsonResult = controller.Index("98765456789987",0,true) as JsonResult;
+            var searchViewResult = jsonResult.Value as SearchViewModel;
+            Assert.AreEqual(0,searchViewResult.FileIndexItems.Count());
+        }
+        
+        [TestMethod]
+        public void SearchControllerTest_TrashZeroItems()
+        {
+            var controller = new SearchController(_search);
+            var jsonResult = controller.Trash(0,true) as JsonResult;
             var searchViewResult = jsonResult.Value as SearchViewModel;
             Assert.AreEqual(0,searchViewResult.FileIndexItems.Count());
         }

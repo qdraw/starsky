@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,21 +13,25 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.Data;
 using starsky.Interfaces;
+using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
 using starsky.ViewModels.Account;
 using starskytests.Mocks;
 
-namespace starskytests.Controller
+namespace starskytests.Middleware
 {
     [TestClass]
-    public class AccountControllerTest2
+    public class BasicAuthenticationMiddlewareTest
     {
         private IUserManager _userManager;
         private readonly IServiceProvider _serviceProvider;
         private DefaultHttpContext _context;
-
-        public AccountControllerTest2()
+        private readonly Task _onNextResult = Task.FromResult(0);
+        private readonly RequestDelegate _onNext;
+        private int _requestId;
+        
+        public BasicAuthenticationMiddlewareTest()
         {
             var efServiceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase().BuildServiceProvider();
 
@@ -36,7 +40,7 @@ namespace starskytests.Controller
             services.AddOptions();
             services
                 .AddDbContext<ApplicationDbContext>(b =>
-                    b.UseInMemoryDatabase("test123").UseInternalServiceProvider(efServiceProvider));
+                    b.UseInMemoryDatabase("test1234").UseInternalServiceProvider(efServiceProvider));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -57,18 +61,23 @@ namespace starskytests.Controller
 
             _serviceProvider = services.BuildServiceProvider();
             
+            _onNext = _ =>
+            {
+                Interlocked.Increment(ref _requestId);
+                return _onNextResult;
+            };
             
             // InMemory
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            builder.UseInMemoryDatabase("test123");
+            builder.UseInMemoryDatabase("123456789");
             var options = builder.Options;
             var context2 = new ApplicationDbContext(options);
             _userManager = new UserManager(context2);
             
         }
-        
+
         [TestMethod]
-        public async Task AccountController_NoLogin_Login_And_newAccount_Test()
+        public async Task BasicAuthenticationMiddlewareLoginTest()
         {
             // Arrange
             var userId = "TestUserA";
@@ -85,66 +94,27 @@ namespace starskytests.Controller
             var controller = new AccountController(_userManager);
             controller.ControllerContext.HttpContext = httpContext;
             
-            var login = new LoginViewModel
-            {
-                Email = "shared@dion.local",
-                Password = "test"
-            };
-            
-            // Try login > result login false
-            await controller.LoginPost(login);
-            // Test login
-            Assert.AreEqual(false,httpContext.User.Identity.IsAuthenticated);
-            
             // Make new account; 
             var newAccount = new RegisterViewModel
             {
                 Password = "test",
                 ConfirmPassword = "test",
-                Email = "shared@dion.local"
+                Email = "test"
             };
             // Arange > new account
             await controller.Register(newAccount,true,string.Empty);
-            
-            // Try login again > now it must be succesfull
-            await controller.LoginPost(login);
-            // Test login
-            Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
-            
-            // The logout is mocked so this will not actual log it out;
-            // controller.Logout() not crashing is good enough;
-            controller.Logout();
-            
-        }
 
-        [TestMethod]
-        public async Task AccountController_Model_is_not_correct()
-        {
-            var controller = new AccountController(_userManager);
-            var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            controller.ControllerContext.HttpContext = httpContext;
-
-            var reg = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2"};
-            var actionResult = await controller.Register(reg,true) as JsonResult;
+            // base64 dGVzdDp0ZXN0 > test:test
+            httpContext.Request.Headers["Authorization"] = "Basic dGVzdDp0ZXN0";
+                
+            // Call the middleware app
+            var basicAuthMiddleware = new BasicAuthenticationMiddleware(_onNext);
+            await basicAuthMiddleware.Invoke(httpContext, _userManager);
             
-            Assert.AreEqual("Model is not correct", actionResult.Value as string);
-        }
+            Assert.AreEqual(true, httpContext.User.Identity.IsAuthenticated);
 
-        [TestMethod]
-        public void AccountController_LogInGet()
-        {
-            var controller = new AccountController(_userManager);
-            controller.Login();
-        }
-        
-        [TestMethod]
-        public void AccountController_RegisterGet()
-        {
-            var controller = new AccountController(_userManager);
-            controller.Register();
         }
         
         
     }
-
 }
