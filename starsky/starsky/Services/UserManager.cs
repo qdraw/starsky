@@ -38,7 +38,8 @@ public class UserManager : IUserManager
             this.storage.Users.Add(user);
             this.storage.SaveChanges();
             
-            CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
+            CredentialType credentialType = storage.CredentialTypes.FirstOrDefault(
+                ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
 
             // If not exist add it;
             if (credentialType == null && credentialTypeCode.ToLower() == "email" )
@@ -78,10 +79,13 @@ public class UserManager : IUserManager
         
         public void AddToRole(User user, string roleCode)
         {
-            Role role = this.storage.Roles.FirstOrDefault(r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
-            
+            Role role = storage.Roles.FirstOrDefault(r => 
+                string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+
             if (role == null)
-            return;
+            {
+                return;                
+            }
             
             AddToRole(user, role);
         }
@@ -89,25 +93,32 @@ public class UserManager : IUserManager
         public void AddToRole(User user, Role role)
         {
             UserRole userRole = this.storage.UserRoles.Find(user.Id, role.Id);
-            
+
             if (userRole != null)
-            return;
-            
-            userRole = new UserRole();
-            userRole.UserId = user.Id;
-            userRole.RoleId = role.Id;
-            this.storage.UserRoles.Add(userRole);
-            this.storage.SaveChanges();
+            {
+                return;                
+            }
+
+            userRole = new UserRole
+            {
+                UserId = user.Id,
+                RoleId = role.Id
+            };
+            storage.UserRoles.Add(userRole);
+            storage.SaveChanges();
         }
         
         public void RemoveFromRole(User user, string roleCode)
         {
-            Role role = this.storage.Roles.FirstOrDefault(r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+            Role role = storage.Roles.FirstOrDefault(
+                r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
             
             if (role == null)
-            return;
+            {
+                return;                
+            }
             
-            this.RemoveFromRole(user, role);
+            RemoveFromRole(user, role);
         }
         
         public void RemoveFromRole(User user, Role role)
@@ -123,12 +134,14 @@ public class UserManager : IUserManager
         
         public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
         {
-            CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
+            CredentialType credentialType = storage.CredentialTypes.FirstOrDefault(
+                ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
             
             if (credentialType == null)
             return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialTypeNotFound);
             
-            Credential credential = this.storage.Credentials.FirstOrDefault(c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+            Credential credential = storage.Credentials.FirstOrDefault(
+                c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
             
             if (credential == null)
             return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialNotFound);
@@ -150,12 +163,14 @@ public class UserManager : IUserManager
         
         public ValidateResult Validate(string credentialTypeCode, string identifier, string secret)
         {
-            CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
+            CredentialType credentialType = this.storage.CredentialTypes.FirstOrDefault(
+                ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
             
             if (credentialType == null)
                 return new ValidateResult(success: false, error: ValidateResultError.CredentialTypeNotFound);
             
-            Credential credential = this.storage.Credentials.FirstOrDefault(c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+            Credential credential = this.storage.Credentials.FirstOrDefault(
+                c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
             
             if (credential == null)
                 return new ValidateResult(success: false, error: ValidateResultError.CredentialNotFound);
@@ -174,7 +189,8 @@ public class UserManager : IUserManager
         
         public async Task SignIn(HttpContext httpContext, User user, bool isPersistent = false)
         {
-            ClaimsIdentity identity = new ClaimsIdentity(this.GetUserClaims(user), CookieAuthenticationDefaults.AuthenticationScheme);
+            ClaimsIdentity identity = new ClaimsIdentity(
+                GetUserClaims(user), CookieAuthenticationDefaults.AuthenticationScheme);
             ClaimsPrincipal principal = new ClaimsPrincipal(identity);
             
             await httpContext.SignInAsync(
@@ -232,7 +248,8 @@ public class UserManager : IUserManager
         private IEnumerable<Claim> GetUserRoleClaims(User user)
         {
             List<Claim> claims = new List<Claim>();
-            IEnumerable<int> roleIds = this.storage.UserRoles.Where(ur => ur.UserId == user.Id).Select(ur => ur.RoleId).ToList();
+            IEnumerable<int> roleIds = this.storage.UserRoles.Where(
+                ur => ur.UserId == user.Id).Select(ur => ur.RoleId).ToList();
             
             if (roleIds != null)
             {
@@ -250,7 +267,8 @@ public class UserManager : IUserManager
         private IEnumerable<Claim> GetUserPermissionClaims(Role role)
         {
             List<Claim> claims = new List<Claim>();
-            IEnumerable<int> permissionIds = this.storage.RolePermissions.Where(rp => rp.RoleId == role.Id).Select(rp => rp.PermissionId).ToList();
+            IEnumerable<int> permissionIds = this.storage.RolePermissions.Where(
+                rp => rp.RoleId == role.Id).Select(rp => rp.PermissionId).ToList();
             
             if (permissionIds != null)
             {
