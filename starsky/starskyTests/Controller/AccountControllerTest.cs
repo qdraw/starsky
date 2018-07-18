@@ -1,49 +1,90 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
+﻿
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.Data;
-using starsky.Models;
+using starsky.Interfaces;
+using starsky.Middleware;
+using starsky.Services;
+using starsky.ViewModels.Account;
 
 namespace starskytests.Controller
 {
     [TestClass]
     public class AccountControllerTest
     {
-        private UserManager<ApplicationUser> _userManager;
-        private SignInManager<ApplicationUser> _signInManager;
-
+        private IUserManager _userManager;
+        
         public AccountControllerTest()
         {
-            var serviceCollection = new ServiceCollection();
+            var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            builder.UseInMemoryDatabase("test");
+            var options = builder.Options;
+            var context = new ApplicationDbContext(options);
+            _userManager = new UserManager(context);
+        }
+
+        
+        
+        [TestMethod]
+        public async Task AccountController_Register_newAccount_Test()
+        {
+            // Arrange
+            AccountController controller = new AccountController(_userManager)
+            {
+                ControllerContext = new ControllerContext {HttpContext = new DefaultHttpContext()}
+            };
+            var newAccount = new RegisterViewModel
+            {
+                Password = "test12345678",
+                ConfirmPassword = "test12345678",
+                Email = "test@dion.local"
+            };
             
-            serviceCollection.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("db_Test"));
-            
-            serviceCollection.AddIdentity<ApplicationUser, IdentityRole>(options =>
-                {
-                    // Password settings
-                    options.Password.RequireDigit = false;
-                    options.Password.RequiredLength = 5;
-                    options.Password.RequiredUniqueChars = 0;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
-            
-            _userManager = serviceCollection.BuildServiceProvider().GetService<UserManager<ApplicationUser>>();
-            _signInManager = serviceCollection.BuildServiceProvider().GetService<SignInManager<ApplicationUser>>();
+            // Act
+            var registerResult = await controller.Register(newAccount,true,string.Empty) as JsonResult;
+            Assert.AreNotEqual(registerResult,null);
+            var accountCreatedString = registerResult.Value as string;
+            Assert.AreEqual("Account Created",accountCreatedString);
 
         }
+        
+        
+        
+        
+        
+        
+        
+        
+//        private UserManager<ApplicationUser> _userManager;
+//        private SignInManager<ApplicationUser> _signInManager;
+//
+//        public AccountControllerTest()
+//        {
+//            var serviceCollection = new ServiceCollection();
+//            
+//            serviceCollection.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("db_Test"));
+//            
+//            serviceCollection.AddIdentity<ApplicationUser, IdentityRole>(options =>
+//                {
+//                    // Password settings
+//                    options.Password.RequireDigit = false;
+//                    options.Password.RequiredLength = 5;
+//                    options.Password.RequiredUniqueChars = 0;
+//                    options.Password.RequireLowercase = false;
+//                    options.Password.RequireNonAlphanumeric = false;
+//                    options.Password.RequireUppercase = false;
+//                })
+//                .AddEntityFrameworkStores<ApplicationDbContext>()
+//                .AddDefaultTokenProviders();
+//            
+//            _userManager = serviceCollection.BuildServiceProvider().GetService<UserManager<ApplicationUser>>();
+//            _signInManager = serviceCollection.BuildServiceProvider().GetService<SignInManager<ApplicationUser>>();
+//
+//        }
 
         
 

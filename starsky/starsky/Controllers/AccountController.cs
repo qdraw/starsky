@@ -1,11 +1,9 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.WindowsAzure.Storage.Shared.Protocol;
 using starsky.Interfaces;
 using starsky.ViewModels.Account;
 
@@ -65,12 +63,13 @@ namespace starsky.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Register(RegisterViewModel model, bool json = false, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
                 var result = _userManager.SignUp("", "email", model.Email, model.Password);
+                if (json && result.Success) return Json("Account Created");
                 if(result.Success) return RedirectToLocal(returnUrl);
             }
 
