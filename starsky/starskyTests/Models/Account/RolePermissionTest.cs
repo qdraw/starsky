@@ -14,6 +14,8 @@ namespace starskytests.Models.Account
             {
                 RoleId = 0,
                 PermissionId = 0,
+                Role = new Role(),
+                Permission = new Permission()
             };
             Assert.AreEqual(0, creds.RoleId);
             Assert.AreEqual(0, creds.PermissionId);
