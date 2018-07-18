@@ -160,8 +160,8 @@ public class UserManager : IUserManager
             
             credential.Secret = hash;
             credential.Extra = Convert.ToBase64String(salt);
-            this.storage.Credentials.Update(credential);
-            this.storage.SaveChanges();
+            storage.Credentials.Update(credential);
+            storage.SaveChanges();
             return new ChangeSecretResult(success: true);
         }
         
