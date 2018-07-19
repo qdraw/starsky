@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using starsky.Helpers;
 using starsky.Services;
 
@@ -43,7 +44,7 @@ namespace starsky.Models
             var structuredFileName = AppSettingsProvider.Structure.Split("/").LastOrDefault();
             if (structuredFileName == null) return null;
 
-            // Replace Astriks
+            // Escape feature to Replace Astriks
             structuredFileName = structuredFileName?.Replace("*", "");
 
             if (structuredFileName.Contains(".ext"))
@@ -52,11 +53,14 @@ namespace starsky.Models
                 structuredFileName = structuredFileName.Substring(0, extPosition);
             }
 
+            // Escape feature to {filenamebase} replace
             structuredFileName = structuredFileName.Replace("{filenamebase}", "_!q_");
 
+            // Parse the DateTime to a string
             var fileName = DateTime.ToString(structuredFileName, CultureInfo.InvariantCulture);
             fileName += "." + fileExtenstion;
             
+            // Escape feature to Restore {filenamebase}
             if (fileName.Contains("_!q_")) // filenamebase
             {
                 fileName = fileName.Replace("_!q_", Path.GetFileNameWithoutExtension(SourceFullFilePath));
@@ -67,10 +71,45 @@ namespace starsky.Models
             return fileName;
         }
 
-        public DateTime ParseDateTimeFromFileName()
+        public void ParseDateTimeFromFileName()
         {
-            var value = Uri.EscapeUriString(FileName);
-            return new DateTime();
+            // Depends on 'AppSettingsProvider.Structure'
+            // depends on SourceFullFilePath
+            if(string.IsNullOrEmpty(SourceFullFilePath)) {return new DateTime();}
+
+            var fileName = Path.GetFileNameWithoutExtension(SourceFullFilePath);
+            
+            // Replace Astriks > escape all options
+            var structuredFileName = AppSettingsProvider.Structure.Split("/").LastOrDefault();
+            structuredFileName = structuredFileName.Replace("*", "");
+            structuredFileName = structuredFileName.Replace(".ext", string.Empty);
+            structuredFileName = structuredFileName.Replace("{filenamebase}", string.Empty);
+            
+            DateTime.TryParseExact(fileName, 
+                structuredFileName, 
+                CultureInfo.InvariantCulture, 
+                DateTimeStyles.None, 
+                out var dateTime);
+
+            if (dateTime.Year >= 2)
+            {
+                DateTime = dateTime;
+                return dateTime;
+            }
+            
+            // Now retry it and replace special charaters from string
+            Regex pattern = new Regex("-|_| |;|\\.|:");
+            fileName = pattern.Replace(fileName,string.Empty);
+            structuredFileName = pattern.Replace(structuredFileName,string.Empty);
+                
+            DateTime.TryParseExact(fileName, 
+                structuredFileName, 
+                CultureInfo.InvariantCulture, 
+                DateTimeStyles.None, 
+                out dateTime);
+            
+            DateTime = dateTime;
+            return dateTime;
         }
 
 

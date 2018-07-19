@@ -1,4 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Globalization;
+using System.IO;
+using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
 
 namespace starskytests.Models
@@ -83,12 +87,73 @@ namespace starskytests.Models
             Assert.AreEqual("/" + createAnImage.DbPath.Replace("/",string.Empty).Replace(".jpg",string.Empty) + "/",subfolders);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(FileNotFoundException))]
+        public void ImportIndexItemParse_FileNotExist_Test()
+        {
+            var createAnImage = new CreateAnImage();
+
+            AppSettingsProvider.Structure = "/yyyyMMdd_HHmmss.ext";
+
+            var input = new ImportIndexItem
+            {
+                SourceFullFilePath = Path.DirectorySeparatorChar + "20180101_011223.jpg"
+            };
+
+            input.ParseFileName();
+            // ExpectedException
+        }
 
         [TestMethod]
         public void ImportIndexItemParse_ParseDateTimeFromFileName_Test()
         {
+
+            AppSettingsProvider.Structure = "/yyyyMMdd_HHmmss.ext";
             
+            var input = new ImportIndexItem
+            {
+                SourceFullFilePath = Path.DirectorySeparatorChar + "20180101_011223.jpg"
+            };
+            
+            input.ParseDateTimeFromFileName();
+            
+            DateTime.TryParseExact(
+                "20180101_011223", 
+                "yyyyMMdd_HHmmss",
+                CultureInfo.InvariantCulture, 
+                DateTimeStyles.None, 
+                out var anserDateTime);
+            
+            Assert.AreEqual(anserDateTime,input.DateTime);
         }
 
+        
+        [TestMethod]
+        public void ImportIndexItemParse_ParseDateTimeFromFileName_WithExtraDotsInName_Test()
+        {
+
+            AppSettingsProvider.Structure = "/yyyyMMdd_HHmmss.ext";
+            
+            var input = new ImportIndexItem
+            {
+                SourceFullFilePath = Path.DirectorySeparatorChar + "2018-02-03 18.47.35.jpg"
+            };
+            
+            input.ParseDateTimeFromFileName();
+            
+            Regex pattern = new Regex("-|_| |;|\\.|:");
+            var output = pattern.Replace("2018-02-03 18.47.35.jpg",string.Empty);
+            
+            DateTime.TryParseExact(
+                "20180203_184735", 
+                "yyyyMMdd_HHmmss",
+                CultureInfo.InvariantCulture, 
+                DateTimeStyles.None, 
+                out var anserDateTime);
+            
+            Assert.AreEqual(anserDateTime,input.DateTime);
+        }
+        
+        
     }
 }
