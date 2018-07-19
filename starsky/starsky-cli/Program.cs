@@ -51,7 +51,7 @@ namespace starskyCli
             // Using both options
             string subpath;
             // -s = ifsubpath || -p is path
-            if (ArgsHelper.IfSubpath(args))
+            if (ArgsHelper.IfSubpathOrPath(args))
             {
                 subpath = ArgsHelper.GetSubpathFormArgs(args);
             }

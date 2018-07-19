@@ -69,14 +69,14 @@ namespace starskytests
         {
             AppSettingsProvider.BasePath = new CreateAnImage().BasePath;
             var args = new List<string> {"-s", "/"}.ToArray();
-            Assert.AreEqual(ArgsHelper.IfSubpath(args), true);
+            Assert.AreEqual(ArgsHelper.IfSubpathOrPath(args), true);
             
             // Default
             args = new List<string>{string.Empty}.ToArray();
-            Assert.AreEqual(ArgsHelper.IfSubpath(args), true);
+            Assert.AreEqual(ArgsHelper.IfSubpathOrPath(args), true);
             
             args = new List<string> {"-p", "/"}.ToArray();
-            Assert.AreEqual(ArgsHelper.IfSubpath(args), false);
+            Assert.AreEqual(ArgsHelper.IfSubpathOrPath(args), false);
         }
 
         [TestMethod]

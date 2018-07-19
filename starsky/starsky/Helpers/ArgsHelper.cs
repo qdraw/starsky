@@ -7,6 +7,23 @@ namespace starsky.Helpers
 {
     public static class ArgsHelper
     {
+        // Table of Content
+        
+        // --verbose -v
+        // --databasetype -d
+        // --connection -c
+        // --basepath -b
+        // --thumbnailtempfolder -f
+        // --exiftoolpath -e
+        // --help -h
+        // --index -i
+        // --path -p
+        // --subpath -s
+        // --thumbnail -t
+        // --orphanfolder -o
+        // --move -m
+        // --all -a
+        
         public static bool NeedVerbose(IReadOnlyList<string> args)
         {
             var needDebug = false;
@@ -115,8 +132,9 @@ namespace starsky.Helpers
             return subpath;
         }
         
-        public static bool IfSubpath(IReadOnlyList<string> args)
+        public static bool IfSubpathOrPath(IReadOnlyList<string> args)
         {
+            // Detect if a input is a fullpath or a subpath.
             for (int arg = 0; arg < args.Count; arg++)
             {
                 if ((args[arg].ToLower() == "--subpath" || args[arg].ToLower() == "-s") && (arg + 1) != args.Count)
