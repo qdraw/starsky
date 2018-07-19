@@ -66,7 +66,14 @@ namespace starsky.Models
             FileName = fileName;
             return fileName;
         }
-        
+
+        public DateTime ParseDateTimeFromFileName()
+        {
+            var value = Uri.EscapeUriString(FileName);
+            return new DateTime();
+        }
+
+
         [NotMapped]
         public string SubFolder  { get; set; }
 
