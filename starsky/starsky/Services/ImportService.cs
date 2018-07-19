@@ -111,13 +111,20 @@ namespace starsky.Services
             // Only accept files with correct meta data
             var fileIndexItem = ExifRead.ReadExifFromFile(inputFileFullPath);
             
+            var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem);
+            
+            // Parse DateTime from filename
+            if (fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
+            {
+                fileIndexItem.DateTime = importIndexItem.ParseDateTimeFromFileName();
+            }
+            
             if (ageFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
             {
                 Console.WriteLine("> "+ inputFileFullPath +  " is older than 2 years, please use the -a flag to overwrite this; skip this file;");
                 return string.Empty;
             }
             
-            var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem);
 
             fileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders();
             fileIndexItem.FileHash = fileHashCode;

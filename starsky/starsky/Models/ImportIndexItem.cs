@@ -71,11 +71,11 @@ namespace starsky.Models
             return fileName;
         }
 
-        public void ParseDateTimeFromFileName()
+        public DateTime ParseDateTimeFromFileName()
         {
             // Depends on 'AppSettingsProvider.Structure'
             // depends on SourceFullFilePath
-            if(string.IsNullOrEmpty(SourceFullFilePath)) {return;}
+            if(string.IsNullOrEmpty(SourceFullFilePath)) {return new DateTime();}
 
             var fileName = Path.GetFileNameWithoutExtension(SourceFullFilePath);
             
@@ -94,7 +94,7 @@ namespace starsky.Models
             if (dateTime.Year >= 2)
             {
                 DateTime = dateTime;
-                return;
+                return dateTime;
             }
             
             // Now retry it and replace special charaters from string
@@ -109,6 +109,7 @@ namespace starsky.Models
                 out dateTime);
             
             DateTime = dateTime;
+            return dateTime;
         }
 
 
