@@ -44,7 +44,7 @@ namespace starsky.Models
                     //   - (nothing)        extension is forced
                     //   - {filenamebase}   use the orginal filename without extension
                     //   - *                (asterisk); match anything
-                    //   - *od*             match 'de'-folder so for example the folder: good
+                    //   - *starksy*        Match the folder match that contains the word 'starksy'
                     
                     
                     //    Please update /starskyimportercli/readme.md when this changes

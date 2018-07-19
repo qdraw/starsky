@@ -21,14 +21,15 @@ namespace starskyimportercli
 
             if (ArgsHelper.NeedHelp(args) || ArgsHelper.GetPathFormArgs(args,false).Length <= 1)
             {
+                // When this change please update ./readme.md
                 Console.WriteLine("Starsky");
                 Console.WriteLine("         Importer");
                 Console.WriteLine("                  Help:");
                 Console.WriteLine("--help or -h == help (this window)");
                 Console.WriteLine("--path or -p == parameter: (string) ; fullpath");
                 Console.WriteLine("                can be an folder or file");
-                Console.WriteLine("--move or -m == move file after importing (default false)");
-                Console.WriteLine("--all or -a == import all files including files older than 2 years (default: false) ");
+                Console.WriteLine("--move or -m == delete file after importing (default false / copy file)");
+                Console.WriteLine("--all or -a == import all files including files older than 2 years (default: false / ignore old files) ");
                 Console.WriteLine("--verbose or -v == verbose, more detailed info");
                 Console.WriteLine("  use -v -help to show settings: ");
                 if (!AppSettingsProvider.Verbose) return;

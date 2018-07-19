@@ -11,7 +11,6 @@
 
 ## starskyimportercli docs
 
-
 ## Config file (.config.json)
 To use custom configuration place a `.config.json` file inside the: appsettings `STARSKY_BASEPATH` folder
 For more information about the `appsettings.json` configuration
@@ -39,7 +38,22 @@ The default structure in `.config.json` is:
 - (nothing)  -   extension is forced
 - {filenamebase} - use the orginal filename without extension
 - \*      -     (asterisk); match anything
-- \*od\*    -    match 'de'-folder so for example the folder: good
+- \*starksy\*    -   Match the folder match that contains the word 'starksy' 
 
 Check for more date conversions:
 https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
+
+
+### To get help:
+```sh
+starskyimportercli --help
+```
+
+### The StarskyImporterCli --Help window:
+```
+--help or -h == help (this window)
+--path or -p == parameter: (string) ; fullpath, can be an folder or file
+--move or -m == delete file after importing (default false / copy file)
+--all or -a == import all files including files older than 2 years (default: false / ignore old files) 
+--verbose or -v == verbose, more detailed info, use -v -help to show settings:
+```
