@@ -222,9 +222,5 @@ namespace starsky.Helpers
             return getAll;
         }
         
-        
-        
-        
-        
     }
 }
