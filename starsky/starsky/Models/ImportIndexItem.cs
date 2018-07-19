@@ -75,7 +75,7 @@ namespace starsky.Models
         {
             // Depends on 'AppSettingsProvider.Structure'
             // depends on SourceFullFilePath
-            if(string.IsNullOrEmpty(SourceFullFilePath)) {return new DateTime();}
+            if(string.IsNullOrEmpty(SourceFullFilePath)) {return;}
 
             var fileName = Path.GetFileNameWithoutExtension(SourceFullFilePath);
             
@@ -94,7 +94,7 @@ namespace starsky.Models
             if (dateTime.Year >= 2)
             {
                 DateTime = dateTime;
-                return dateTime;
+                return;
             }
             
             // Now retry it and replace special charaters from string
@@ -109,7 +109,6 @@ namespace starsky.Models
                 out dateTime);
             
             DateTime = dateTime;
-            return dateTime;
         }
 
 
