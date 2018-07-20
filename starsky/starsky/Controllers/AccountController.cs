@@ -11,7 +11,7 @@ namespace starsky.Controllers
 {
     public class AccountController : Controller
     {
-        private IUserManager _userManager;
+        private readonly IUserManager _userManager;
 
         public AccountController(IUserManager userManager)
         {

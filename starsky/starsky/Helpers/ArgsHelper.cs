@@ -23,6 +23,8 @@ namespace starsky.Helpers
         // --orphanfolder -o
         // --move -m
         // --all -a
+        // --recruisive -r todo: implement this feature
+        // -rf --readonlyfolders // no need to use in cli/importercli
         
         public static bool NeedVerbose(IReadOnlyList<string> args)
         {

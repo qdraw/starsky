@@ -63,6 +63,14 @@ namespace starskytests
               //    ExpectedException > NullReferenceException
          }
 
+         [TestMethod]
+         public void ConfigRead_ReadTextFromObjOrEnvListOfItems_zzEnv()
+         {
+             Environment.SetEnvironmentVariable("ReadOnlyFolders","[\"2018\"]");
+             var returnlist = ConfigRead.ReadTextFromObjOrEnvListOfItems("ReadOnlyFolders");
+             Assert.AreEqual("2018",returnlist.FirstOrDefault());
+         }
+
          [ExcludeFromCoverage]
          [TestMethod]
          public void RemoveLatestBackslashTest()

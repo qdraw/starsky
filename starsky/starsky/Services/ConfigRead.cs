@@ -35,7 +35,7 @@ namespace starsky.Services
             var exifToolPath = ReadTextFromObjOrEnv("ExifToolPath", obj);
             var addMemoryCache = ReadTextFromObjOrEnv("AddMemoryCache", obj, false); // false means is optional
             var structure = ReadTextFromObjOrEnv("Structure", obj, false); // false means is optional
-            var readOnlyFolders = ReadTextFromObjOrEnvListOfItems("ReadOnlyFolders", obj, false); // false means is optional
+            var readOnlyFolders = ReadTextFromObjOrEnvListOfItems("ReadOnlyFolders", obj, false); // false means, is optional
 
             SetAppSettingsProvider(basePath,defaultConnection,databaseType,thumbnailTempFolder,
                 exifToolPath,addMemoryCache, structure, readOnlyFolders);
