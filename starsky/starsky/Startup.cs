@@ -79,7 +79,8 @@ namespace starsky
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            
+            app.UseResponseCaching();
+
             app.UsePathBase("/starsky");
             
             if (env.IsDevelopment())
