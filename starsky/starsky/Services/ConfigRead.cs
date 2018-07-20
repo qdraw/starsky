@@ -86,10 +86,11 @@ namespace starsky.Services
                     Console.WriteLine(e);
                     if(throwError) throw;
                 }
+                if(listOfStrings.Count >= 1) value = "list";
             }
-
             IsSettingEmpty(value, name, throwError);
-            if (value != null)
+
+            if (!string.IsNullOrWhiteSpace(value) && value != "list")
             {
                 listOfStrings = JArray.Parse(value).ToObject<List<string>>();
             }
