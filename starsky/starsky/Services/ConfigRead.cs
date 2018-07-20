@@ -62,9 +62,6 @@ namespace starsky.Services
             AppSettingsProvider.AddMemoryCache = memoryCache;
             
             AppSettingsProvider.Structure = structure;
-            
-//            if (string.IsNullOrWhiteSpace(readonlyFolders)) readonlyFolders = "[]";
-//            JArray.Parse(readonlyFolders).ToObject<List<string>>();
             AppSettingsProvider.ReadOnlyFolders = readonlyFolders;
 
             if(AppSettingsProvider.Verbose) Console.WriteLine("DatabaseType: " + AppSettingsProvider.DatabaseType.ToString() );
