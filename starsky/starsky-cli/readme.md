@@ -25,7 +25,7 @@ When you start this application at first please update the `appsettings.json`
     "DatabaseType": "mysql",
     "DefaultConnection": "Server=mysqlserver.nl;database=dbname;uid=username;pwd=password;",
     "ExifToolPath": "C:\\exiftool.exe",
-    "Structure": "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext",
+    "Structure": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext",
     "ReadOnlyFolders": ["/2015","/2018"],
     "AddMemoryCache": false
   }

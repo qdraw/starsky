@@ -13,10 +13,26 @@
 
 ### Structure configuration:
 
-When setup Starksy there are two options to configure the installation
+When setup Starksy there are two options to configure the installation.
+There is a list of required settings. First the `appsettings.json` is loaded and the
+environment variables are overwriting features. 
+The commandline arguments are shortcuts to set an in-app environment variable
 
-1) You can use `appsettings.json` inside the application folder
-2) Environment variables with the same name
+### The order of reading settings
+1) You can use `appsettings.json` inside the application folder to set base settings
+2) Use Environment variables to overwrite those base settings
+3) Command line argumements in the Cli applications to set in-app environment variables
+
+### Required settings
+1) `ThumbnailTempFolder` - For storing thumbnails
+2) `STARSKY_BASEPATH` - For the main photo directory
+3) `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported
+4) `DefaultConnection` - The connectionstring to the database
+5) `ExifToolPath` - A path to Exiftool.exe
+### Optional settings
+1) `Structure` - The structure that will be used when you import files, has a default fallback.
+2) `ReadOnlyFolders` - Accepts a list of folders that never may be edited, defaults a emphy list
+3) `AddMemoryCache`- Enable caching
 
 ### Appsettings.json example
 ```json
