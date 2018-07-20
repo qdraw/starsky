@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -15,12 +17,15 @@ namespace starsky.Helpers
         private static readonly FormOptions _defaultFormOptions = new FormOptions();
 
         public static async Task<List<string>> StreamFile(this HttpRequest request)
-        {
-            return await StreamFile(request.ContentType, request.Body);            
+        {            
+            // The Header 'filename' is for uploading on file without a form;
+            return await StreamFile(request.ContentType, request.Body,request.Headers["filename"]);            
         }
 
-        public static async Task<List<string>> StreamFile(string contentType, Stream requestBody)
+        public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, string headerFileName = null)
         {
+            // headerFileName is for uploading on a single file without a multi part form;
+
             var tempPaths = new List<string>();
 
             if (!MultipartRequestHelper.IsMultipartContentType(contentType))
@@ -28,7 +33,7 @@ namespace starsky.Helpers
                 if (contentType != "image/jpeg")
                     throw new FileLoadException($"Expected a multipart request, but got {contentType}");
                 
-                var fullFilePath = GetTempFilePath();
+                var fullFilePath = GetTempFilePath(headerFileName);
                 await Store(fullFilePath,requestBody);
                 tempPaths.Add(fullFilePath);
                 return tempPaths;
@@ -54,7 +59,7 @@ namespace starsky.Helpers
                 {
                     if (MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
                     {
-                        var fullFilePath = GetTempFilePath();
+                        var fullFilePath = GetTempFilePath(contentDisposition.FileName.ToString());
                         await Store(fullFilePath,section.Body);
                         tempPaths.Add(fullFilePath);
                     }
@@ -68,8 +73,6 @@ namespace starsky.Helpers
             return tempPaths;
         }
 
-        
-
         private static async Task Store(string path, Stream stream)
         {
             var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
@@ -77,13 +80,36 @@ namespace starsky.Helpers
             fileStream.Dispose();
         }
         
-        public static string GetTempFilePath()
+        public static string GetTempFilePath(string baseFileName)
         {
-            var guid = "_import_" + Guid.NewGuid().ToString().Substring(0, 20) + ".jpg";
-            var path = Path.Combine(AppSettingsProvider.ThumbnailTempFolder, guid);
-            return path;
+            if (string.IsNullOrEmpty(baseFileName))
+            {
+                var guid = "_import_" + Guid.NewGuid().ToString().Substring(0, 20) + ".jpg";
+                var path = Path.Combine(AppSettingsProvider.ThumbnailTempFolder, guid);
+                return path;
+            }
+            
+            var importIndexItem = new ImportIndexItem {SourceFullFilePath = baseFileName};
+            
+            // Replace appendix with '-1' or '-222' ; (-22 will not be replaced)
+            importIndexItem.SourceFullFilePath = Regex.Replace(
+                importIndexItem.SourceFullFilePath, 
+                "\\-(\\d{3}|\\d)\\.\\w{3}$", 
+                string.Empty, 
+                RegexOptions.CultureInvariant);
+            
+            importIndexItem.ParseDateTimeFromFileName();
+            
+            // > Magic string "_import_"  used in: ParseDateTimeFromFileName();
+            
+            // Files that are not good parsed will be _import_00010101_000000.jpg
+            // By default those files are ignored by the ageing filter
+            
+            
+            return Path.Combine(AppSettingsProvider.ThumbnailTempFolder, "_import_" + importIndexItem.ParseFileName(false) );
         }
 
+        
 //        // For reading plain text form fields
 //                    else if (MultipartRequestHelper.HasFormDataContentDisposition(contentDisposition))
 //                    {

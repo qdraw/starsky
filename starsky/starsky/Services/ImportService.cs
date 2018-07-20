@@ -86,7 +86,7 @@ namespace starsky.Services
                
                 fileIndexItem.FileName = string.Concat(
                     Path.GetFileNameWithoutExtension(fileIndexItem.FileName),
-                    DateTime.UtcNow.ToString("-ff"),
+                    DateTime.UtcNow.ToString("-fff"),
                     Path.GetExtension(fileIndexItem.FileName)
                 );
                 

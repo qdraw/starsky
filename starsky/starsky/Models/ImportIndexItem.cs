@@ -29,16 +29,20 @@ namespace starsky.Models
         // Depends on BasePathConfig for setting default values
         // Imput required:
         // SourceFullFilePath= createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime
-        public string ParseFileName()
+        public string ParseFileName(bool checkIfExist = true)
         {
             if (string.IsNullOrWhiteSpace(SourceFullFilePath)) return string.Empty;
-            var fileExtenstion = Files.GetImageFormat(SourceFullFilePath);
-
-            if (fileExtenstion == Files.ImageFormat.notfound)
+            var imageFormatExtenstion = Files.GetImageFormat(SourceFullFilePath);
+            
+            var fileExtenstion = imageFormatExtenstion.ToString().ToLower();
+            
+            if (imageFormatExtenstion == Files.ImageFormat.notfound)
             {
                 // Caching feature to have te Path and url after you deleted the orginal in the ImportIndexItem context
                 if (FileName != null) return FileName;
-                throw new FileNotFoundException("source image not found");
+                if(checkIfExist) throw new FileNotFoundException("source image not found");
+
+                fileExtenstion = Path.GetExtension(SourceFullFilePath).Replace(".",string.Empty);
             }
             
             var structuredFileName = AppSettingsProvider.Structure.Split("/").LastOrDefault();
@@ -78,6 +82,9 @@ namespace starsky.Models
             if(string.IsNullOrEmpty(SourceFullFilePath)) {return new DateTime();}
 
             var fileName = Path.GetFileNameWithoutExtension(SourceFullFilePath);
+            
+            // Replace magic string from import
+            fileName = fileName.Replace("_import_", string.Empty);
             
             // Replace Astriks > escape all options
             var structuredFileName = AppSettingsProvider.Structure.Split("/").LastOrDefault();
