@@ -36,4 +36,4 @@ When setup Starksy there are two options to configure the installation
 #### Appsettings Notes
 1)   Structure uses slash as directory separators for Linux and Windows
 2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `STARSKY_BASEPATH` uses the system path directory separators
-3)  When using Windows please double escape (`\\\`) system path's 
+3)  When using Windows please double escape (`\\`) system path's 
