@@ -85,7 +85,8 @@ namespace starsky.Helpers
             
             if (string.IsNullOrEmpty(baseFileName))
             {
-                var guid = "_import_" + Guid.NewGuid().ToString().Substring(0, 20) + ".jpg";
+                var guid = "_import_" + Guid.NewGuid().ToString().Substring(0, 5) + ".jpg";
+                guid = guid.Replace("=", string.Empty);
                 var path = Path.Combine(AppSettingsProvider.ThumbnailTempFolder, guid);
                 return path;
             }
