@@ -18,13 +18,13 @@ namespace starsky.Helpers
 
         public static async Task<List<string>> StreamFile(this HttpRequest request)
         {            
-            // The Header 'filename' is for uploading on file without a form;
+            // The Header 'filename' is for uploading on file without a form.
             return await StreamFile(request.ContentType, request.Body,request.Headers["filename"]);            
         }
 
         public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, string headerFileName = null)
         {
-            // headerFileName is for uploading on a single file without a multi part form;
+            // headerFileName is for uploading on a single file without a multi part form.
 
             var tempPaths = new List<string>();
 
@@ -55,14 +55,11 @@ namespace starsky.Helpers
                 ContentDispositionHeaderValue contentDisposition;
                 var hasContentDispositionHeader = ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out contentDisposition);
 
-                if (hasContentDispositionHeader)
+                if (hasContentDispositionHeader && MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
                 {
-                    if (MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
-                    {
-                        var fullFilePath = GetTempFilePath(contentDisposition.FileName.ToString());
-                        await Store(fullFilePath,section.Body);
-                        tempPaths.Add(fullFilePath);
-                    }
+                    var fullFilePath = GetTempFilePath(contentDisposition.FileName.ToString());
+                    await Store(fullFilePath, section.Body);
+                    tempPaths.Add(fullFilePath);
                 }
 
                 // Drains any remaining section body that has not been consumed and
@@ -105,7 +102,7 @@ namespace starsky.Helpers
             
             importIndexItem.ParseDateTimeFromFileName();
             
-            // > Magic string "_import_"  used in: ParseDateTimeFromFileName();
+            //  Magic string "_import_"  used in: ParseDateTimeFromFileName()
             
             // Files that are not good parsed will be _import_00010101_000000.jpg
             // By default those files are ignored by the ageing filter
