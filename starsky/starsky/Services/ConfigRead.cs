@@ -86,7 +86,6 @@ namespace starsky.Services
                     Console.WriteLine(e);
                     if(throwError) throw;
                 }
-                value = listOfStrings.ToString();
             }
 
             IsSettingEmpty(value, name, throwError);

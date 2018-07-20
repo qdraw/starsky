@@ -14,7 +14,9 @@ namespace starskytests.StarskyCli
         {
             var newImage = new CreateAnImage();
             var args = new List<string> {"-h","-v","-c","test","-d", "inmemorydatabase",
-                "-b", newImage.BasePath, "--thumbnailtempfolder", newImage.BasePath, "-e", newImage.FullFilePath }.ToArray();
+                "-b", newImage.BasePath, "--thumbnailtempfolder", 
+                newImage.BasePath, "-e", newImage.FullFilePath 
+            }.ToArray();
             Program.Main(args);
         }
         
@@ -24,7 +26,8 @@ namespace starskytests.StarskyCli
         {
             var newImage = new CreateAnImage();
             var args = new List<string> {"-s",newImage.DbPath, "-v","-c","test","-d", "inmemorydatabase",
-                "-b", newImage.BasePath, "--thumbnailtempfolder", newImage.BasePath, "-e", newImage.FullFilePath }.ToArray();
+                "-b", newImage.BasePath, "--thumbnailtempfolder", newImage.BasePath, "-e", newImage.FullFilePath 
+            }.ToArray();
             Program.Main(args);
         }
         
