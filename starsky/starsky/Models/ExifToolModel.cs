@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
@@ -47,6 +48,14 @@ namespace starsky.Models
         {
             get { return _hashSetToString(_keywords); }
             set { _keywords = _stringToHashSet(value); }
+        }
+
+        public DateTime AllDatesDateTime { get; set; }
+        
+        public string AllDates {
+            set
+            {
+            }
         }
 
         private static HashSet<string> _stringToHashSet(string inputKeywords)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
@@ -129,6 +130,12 @@ namespace starsky.Services
                 {
                     var intColorClass = (int) updateModel.ColorClass;
                     command += " -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
+                }
+
+                if (updateModel.AllDatesDateTime.Year > 2)
+                {
+                    var exifToolString = updateModel.AllDatesDateTime.ToString("yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
+                    command += " -AllDates=\""+ exifToolString + "\" ";
                 }
 
                 if (command != initCommand)

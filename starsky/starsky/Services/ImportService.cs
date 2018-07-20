@@ -149,6 +149,7 @@ namespace starsky.Services
             {
                 ExifTool.Update(new ExifToolModel
                 {
+                    AllDatesDateTime = fileIndexItem.DateTime,
                     CaptionAbstract = fileIndexItem.Description
                 }, destinationFullPath);
             }
