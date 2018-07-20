@@ -103,6 +103,8 @@ namespace starsky.Services
 
         private string ImportFile(string inputFileFullPath, bool deleteAfter = false, bool ageFileFilter = true)
         {
+            var exifToolSync = false;
+            
             var fileHashCode = FileHash.GetHashCode(inputFileFullPath);
             
             // If is in the database, ignore it and don't delete it
@@ -111,21 +113,27 @@ namespace starsky.Services
             // Only accept files with correct meta data
             var fileIndexItem = ExifRead.ReadExifFromFile(inputFileFullPath);
             
+            // Parse the filename and create a new importIndexItem object
             var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem);
             
             // Parse DateTime from filename
             if (fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
             {
                 fileIndexItem.DateTime = importIndexItem.ParseDateTimeFromFileName();
+                // > for the exif based items it is done in: ObjectCreateIndexItem()
+                fileIndexItem.FileName = importIndexItem.ParseFileName();
+
+                fileIndexItem.Description = "Date and Time based on filename";
+                exifToolSync = true;
             }
             
+            // Feature to ignore old files
             if (ageFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
             {
                 Console.WriteLine("> "+ inputFileFullPath +  " is older than 2 years, please use the -a flag to overwrite this; skip this file;");
                 return string.Empty;
             }
             
-
             fileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders();
             fileIndexItem.FileHash = fileHashCode;
 
@@ -135,7 +143,16 @@ namespace starsky.Services
             if (destinationFullPath == null) return string.Empty;
             
             File.Copy(inputFileFullPath, destinationFullPath);
-
+            
+            // Update the contents to the file the imported item
+            if (exifToolSync)
+            {
+                ExifTool.Update(new ExifToolModel
+                {
+                    CaptionAbstract = fileIndexItem.Description
+                }, destinationFullPath);
+            }
+            
             _isync.SyncFiles(fileIndexItem.FilePath);
             
             AddItem(importIndexItem);
