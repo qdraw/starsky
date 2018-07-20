@@ -11,18 +11,30 @@
 
 ## starskyimportercli docs
 
-## Config file (.config.json)
-To use custom configuration place a `.config.json` file inside the: appsettings `STARSKY_BASEPATH` folder
+## Config file (appsettings.json)
 For more information about the `appsettings.json` configuration
 
 ### Structure configuration:
-The default structure in `.config.json` is:
+The default structure in `appsettings.json` is:
 ```json
 {
-	"structure":  "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext"
+  "ConnectionStrings": {
+    "ThumbnailTempFolder": "/data/photodirectory/temp",
+    "STARSKY_BASEPATH": "/data/photodirectory/storage",
+    "DatabaseType": "sqlite",
+    "DefaultConnection": "Data Source=data.db",
+    "ExifToolPath": "/usr/local/bin/exiftool",
+    "Structure": "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext",
+    "ReadOnlyFolders": ["/2015","/2018"],
+    "AddMemoryCache": false
+  }
 }
+
 ```
->   Structure uses slash as directory separator for Linux and Windows
+#### Appsettings Notes
+1)   Structure uses slash as directory separator for Linux and Windows
+2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `STARSKY_BASEPATH` uses the system path directory separators
+3)    The `AddMemoryCache` setting is ignored in the console/cli applications 
 
 ### Structure configuation options:
 
