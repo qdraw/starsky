@@ -91,8 +91,6 @@ namespace starskytests.Models
         [ExpectedException(typeof(FileNotFoundException))]
         public void ImportIndexItemParse_FileNotExist_Test()
         {
-            var createAnImage = new CreateAnImage();
-
             AppSettingsProvider.Structure = "/yyyyMMdd_HHmmss.ext";
 
             var input = new ImportIndexItem
