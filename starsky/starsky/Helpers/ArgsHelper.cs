@@ -25,6 +25,7 @@ namespace starsky.Helpers
         // --all -a
         // --recruisive -r todo: implement this feature
         // -rf --readonlyfolders // no need to use in cli/importercli
+        // -u --structure
         
         public static bool NeedVerbose(IReadOnlyList<string> args)
         {
@@ -45,9 +46,21 @@ namespace starsky.Helpers
             return needDebug;
         }
         
-        public static readonly IEnumerable<string> ShortNameList = new List<string>{"-d","-c","-b","-f","-e"}.AsReadOnly();
-        public static readonly IEnumerable<string> LongNameList = new List<string>{"--databasetype","--connection","--basepath","--thumbnailtempfolder","--exiftoolpath"}.AsReadOnly();
-        public static readonly IEnumerable<string> EnvNameList = new List<string>{"DatabaseType","DefaultConnection","STARSKY_BASEPATH","ThumbnailTempFolder","ExifToolPath"}.AsReadOnly();
+        public static readonly IEnumerable<string> ShortNameList = new List<string>
+            {
+                "-d","-c","-b","-f","-e","-u"
+            }.AsReadOnly();
+        
+        public static readonly IEnumerable<string> LongNameList = new List<string>
+            {
+            "--databasetype","--connection","--basepath","--thumbnailtempfolder","--exiftoolpath","--structure"
+            }
+            .AsReadOnly();
+        
+        public static readonly IEnumerable<string> EnvNameList = new List<string>
+            {
+                "DatabaseType","DefaultConnection","STARSKY_BASEPATH","ThumbnailTempFolder","ExifToolPath", "Structure"
+            }.AsReadOnly();
 
         public static void SetEnvironmentByArgs(IReadOnlyList<string> args)
         {
@@ -59,7 +72,8 @@ namespace starsky.Helpers
             {
                 for (int arg = 0; arg < args.Count; arg++)
                 {
-                    if ((args[arg].ToLower() == longNameList[i] || args[arg].ToLower() == shortNameList[i]) && (arg + 1) != args.Count)
+                    if ((args[arg].ToLower() == longNameList[i] || 
+                         args[arg].ToLower() == shortNameList[i]) && (arg + 1) != args.Count)
                     {
                         Environment.SetEnvironmentVariable(envNameList[i],args[arg+1]);
                     }

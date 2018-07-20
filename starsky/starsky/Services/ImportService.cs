@@ -130,7 +130,11 @@ namespace starsky.Services
             // Feature to ignore old files
             if (ageFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
             {
-                Console.WriteLine("> "+ inputFileFullPath +  " is older than 2 years, please use the -a flag to overwrite this; skip this file;");
+                if (AppSettingsProvider.Verbose) 
+                    Console.WriteLine("use this structure to parse: " + AppSettingsProvider.Structure);
+                
+                Console.WriteLine("> "+ inputFileFullPath 
+                                      +  " is older than 2 years, please use the -a flag to overwrite this; skip this file;");
                 return string.Empty;
             }
             

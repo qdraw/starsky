@@ -17,6 +17,10 @@ namespace starskyimportercli
         {
             // Check if user want more info
             AppSettingsProvider.Verbose = ArgsHelper.NeedVerbose(args);
+            
+            // Use args in application
+            ArgsHelper.SetEnvironmentByArgs(args);
+
             ConfigRead.SetAppSettingsProvider();
 
             if (ArgsHelper.NeedHelp(args) || ArgsHelper.GetPathFormArgs(args,false).Length <= 1)
