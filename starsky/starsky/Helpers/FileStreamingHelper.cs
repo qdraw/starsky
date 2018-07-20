@@ -82,6 +82,10 @@ namespace starsky.Helpers
         
         public static string GetTempFilePath(string baseFileName)
         {
+            // Requires  AppSettingsProvider.ThumbnailTempFolder
+            // Requires: importIndexItem()
+            // Requires: AppSettingsProvider.Structure
+            
             if (string.IsNullOrEmpty(baseFileName))
             {
                 var guid = "_import_" + Guid.NewGuid().ToString().Substring(0, 20) + ".jpg";
@@ -92,10 +96,11 @@ namespace starsky.Helpers
             var importIndexItem = new ImportIndexItem {SourceFullFilePath = baseFileName};
             
             // Replace appendix with '-1' or '-222' ; (-22 will not be replaced)
+            // Assumes that a extension has always 3 letters. so no mp3 or html
             importIndexItem.SourceFullFilePath = Regex.Replace(
                 importIndexItem.SourceFullFilePath, 
                 "\\-(\\d{3}|\\d)\\.\\w{3}$", 
-                string.Empty, 
+                importIndexItem.SourceFullFilePath.Substring(importIndexItem.SourceFullFilePath.Length - 4), 
                 RegexOptions.CultureInvariant);
             
             importIndexItem.ParseDateTimeFromFileName();

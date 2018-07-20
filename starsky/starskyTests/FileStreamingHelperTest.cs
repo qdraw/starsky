@@ -10,6 +10,7 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
+using starsky.Models;
 
 namespace starskytests
 {
@@ -63,6 +64,41 @@ namespace starskytests
             requestBody.Dispose();
         }
 
+        [TestMethod]
+        public void FileStreamingHelper_GetTempFilePath_NullOption()
+        {
+            AppSettingsProvider.ThumbnailTempFolder = string.Empty;
+            var tempFilePath = FileStreamingHelper.GetTempFilePath(null);
+            Assert.AreEqual(true,tempFilePath.Contains("_import_"));
+        }
+        
+        
+        [TestMethod]
+        public void FileStreamingHelper_GetTempFilePath_ParseStringSimple_Option()
+        {
+            AppSettingsProvider.ThumbnailTempFolder = string.Empty;
+            AppSettingsProvider.Structure = "/yyyyMMdd_HHmmss.ext";
+            var tempFilePath = FileStreamingHelper.GetTempFilePath("20180123_132404.jpg");
+            Assert.AreEqual("_import_20180123_132404.jpg",tempFilePath);
+        }
+        
+        [TestMethod]
+        public void FileStreamingHelper_GetTempFilePath_ParseStringWithDots_Option()
+        {
+            AppSettingsProvider.ThumbnailTempFolder = string.Empty;
+            AppSettingsProvider.Structure = "/yyyyMMdd_HHmmss.ext";
+            var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04.jpg");
+            Assert.AreEqual("_import_20180123_132404.jpg",tempFilePath);
+        }
+        
+        [TestMethod]
+        public void FileStreamingHelper_GetTempFilePath_ParseStringAppendix1_Option()
+        {
+            AppSettingsProvider.ThumbnailTempFolder = string.Empty;
+            AppSettingsProvider.Structure = "/yyyyMMdd_HHmmss.ext";
+            var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04-1.jpg");
+            Assert.AreEqual("_import_20180123_132404.jpg",tempFilePath);
+        }
         
         [TestMethod]
         public async Task FileStreamingHelperTest_FileStreamingHelper_StreamFile_multiPart()
