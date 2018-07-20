@@ -43,6 +43,8 @@ namespace starsky.Models
             }
         }
 
+        public static bool AddMemoryCache { get; set; }
+
         public enum DatabaseTypeList
         {
             mysql = 1,

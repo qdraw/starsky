@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using starsky.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Data;
@@ -20,11 +19,12 @@ namespace starsky
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddResponseCaching();
-            services.AddMemoryCache();
-            
             ConfigRead.SetAppSettingsProvider();
-
+            
+            if(AppSettingsProvider.AddMemoryCache) services.AddMemoryCache();
+            
+            services.AddResponseCaching();
+            
             switch (AppSettingsProvider.DatabaseType)
             {
                 case AppSettingsProvider.DatabaseTypeList.mysql:
@@ -79,7 +79,6 @@ namespace starsky
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseResponseCaching();
             
             app.UsePathBase("/starsky");
             

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 using starsky.Attributes;
 using starsky.Helpers;
 using starsky.Models;
@@ -17,7 +20,7 @@ namespace starskytests
          public void BasePathTest()
          {
              // depends on platform
-             ConfigRead.SetAppSettingsProvider(Path.DirectorySeparatorChar.ToString(), "defaultConnection","mysql","/","/exiftool");
+             ConfigRead.SetAppSettingsProvider(Path.DirectorySeparatorChar.ToString(), "defaultConnection","mysql","/","/exiftool","false","/yyyy.ext",new List<string>());
              Assert.AreEqual(Path.DirectorySeparatorChar.ToString(),AppSettingsProvider.BasePath);
          }
 
@@ -35,8 +38,30 @@ namespace starskytests
              
          }
 
-
-
+         [TestMethod]
+         public void ConfigRead_ReadTextFromObjOrEnvListOfItemsWithItems()
+         {
+             var jObject = JObject.Parse("{ \"ConnectionStrings\": {\"ReadOnlyFolders\":[\"2018\"]   } }");
+             var returnlist = ConfigRead.ReadTextFromObjOrEnvListOfItems("ReadOnlyFolders",jObject);
+             Assert.AreEqual("2018",returnlist.FirstOrDefault());
+         }
+         
+         [TestMethod]
+         public void ConfigRead_ReadTextFromObjOrEnvListOfItems_null_Items()
+         {
+             var jObject = JObject.Parse("{ \"ConnectionStrings\": {  } }");
+             var returnlist = ConfigRead.ReadTextFromObjOrEnvListOfItems("ReadOnlyFolders",jObject,false);
+             Assert.AreEqual(null,returnlist.FirstOrDefault());
+         }
+         
+         [TestMethod]
+         [ExpectedException(typeof(NullReferenceException))]
+         public void ConfigRead_ReadTextFromObjOrEnvListOfItems_nullExpectedException_Items()
+         {
+             var jObject = JObject.Parse("{ \"ConnectionStrings\": {  } }");
+              ConfigRead.ReadTextFromObjOrEnvListOfItems("ReadOnlyFolders",jObject);
+              //    ExpectedException > NullReferenceException
+         }
 
          [ExcludeFromCoverage]
          [TestMethod]

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using Newtonsoft.Json.Linq;
 using starsky.Models;
 
@@ -30,27 +33,21 @@ namespace starsky.Services
             var databaseType = ReadTextFromObjOrEnv("DatabaseType", obj);
             var thumbnailTempFolder = ReadTextFromObjOrEnv("ThumbnailTempFolder", obj);
             var exifToolPath = ReadTextFromObjOrEnv("ExifToolPath", obj);
+            var addMemoryCache = ReadTextFromObjOrEnv("AddMemoryCache", obj, false); // false means is optional
+            var structure = ReadTextFromObjOrEnv("Structure", obj, false); // false means is optional
+            var readOnlyFolders = ReadTextFromObjOrEnvListOfItems("ReadOnlyFolders", obj, false); // false means is optional
 
-            SetAppSettingsProvider(basePath,defaultConnection,databaseType,thumbnailTempFolder,exifToolPath);
+            SetAppSettingsProvider(basePath,defaultConnection,databaseType,thumbnailTempFolder,
+                exifToolPath,addMemoryCache, structure, readOnlyFolders);
         }
 
-        public static void SetAppSettingsProvider(string basePath,string defaultConnection,string databaseType,string thumbnailTempFolder, string exifToolPath)
+        public static void SetAppSettingsProvider(
+            string basePath,string defaultConnection,string databaseType,string thumbnailTempFolder, 
+            string exifToolPath, string addMemoryCache, string structure, List<string> readonlyFolders)
         {
 
             thumbnailTempFolder = AddBackslash(thumbnailTempFolder);
             basePath = AddBackslash(basePath);
-
-            // Read /.config.json
-            // Please check the config example in the starsky folder
-
-            if (File.Exists(Path.Combine(basePath, ".config.json")))
-            {
-                string text = File.ReadAllText(Path.Combine(basePath, ".config.json"));
-                var model = Newtonsoft.Json.JsonConvert.DeserializeObject<BasePathConfig>(text);
-                AppSettingsProvider.ReadOnlyFolders = model.Readonly;
-                // "structure": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss.ext/"
-                AppSettingsProvider.Structure = model.Structure;
-            }
 
             AppSettingsProvider.BasePath = basePath;
             Enum.TryParse<AppSettingsProvider.DatabaseTypeList>(databaseType, out var databaseTypeEnum);
@@ -58,12 +55,53 @@ namespace starsky.Services
             AppSettingsProvider.DbConnectionString = defaultConnection; // First database type
             AppSettingsProvider.ThumbnailTempFolder = thumbnailTempFolder;
             AppSettingsProvider.ExifToolPath = exifToolPath;
+            // When using in combination with /api/env > please update it also in EnvViewModel()
+                        
+            bool.TryParse(addMemoryCache, out var memoryCache);
+            if (string.IsNullOrWhiteSpace(addMemoryCache)) memoryCache = true;
+            AppSettingsProvider.AddMemoryCache = memoryCache;
+            
+            AppSettingsProvider.Structure = structure;
+            
+//            if (string.IsNullOrWhiteSpace(readonlyFolders)) readonlyFolders = "[]";
+//            JArray.Parse(readonlyFolders).ToObject<List<string>>();
+            AppSettingsProvider.ReadOnlyFolders = readonlyFolders;
 
             if(AppSettingsProvider.Verbose) Console.WriteLine("DatabaseType: " + AppSettingsProvider.DatabaseType.ToString() );
+        }
+        
+        public static List<string> ReadTextFromObjOrEnvListOfItems(string name, JObject obj = null, bool throwError = true)
+        {
+            // input=text, nameofvar=text 
+            // >>> Base Path of Orginal images <<<
+            var value = Environment.GetEnvironmentVariable(name);
 
+            var listOfStrings = new List<string>();
+            // >>> Base Path of Orginal images <<<
+            if(obj != null && IsSettingEmpty(value, name)) {
+                JArray array = (JArray) obj["ConnectionStrings"][name];
+                try
+                {
+                    listOfStrings = array.ToObject<List<string>>();
+                }
+                catch (NullReferenceException e)
+                {
+                    Console.WriteLine(e);
+                    if(throwError) throw;
+                }
+                value = listOfStrings.ToString();
+            }
+
+            IsSettingEmpty(value, name, throwError);
+            if (value != null)
+            {
+                listOfStrings = JArray.Parse(value).ToObject<List<string>>();
+            }
+            
+            return listOfStrings;
         }
 
-        private static string ReadTextFromObjOrEnv(string name, JObject obj = null)
+        private static string ReadTextFromObjOrEnv(string name, JObject obj = null, bool throwError = true)
         {
             // input=text, nameofvar=text 
             // >>> Base Path of Orginal images <<<
@@ -72,10 +110,10 @@ namespace starsky.Services
             // >>> Base Path of Orginal images <<<
             if(obj != null && IsSettingEmpty(value, name)) {
                 value = (string)obj["ConnectionStrings"][name];
-                IsSettingEmpty(value, name,true);
+                IsSettingEmpty(value, name, throwError);
                 value = RemoveLatestBackslash(value);
             }
-            IsSettingEmpty(value, name,true);
+            IsSettingEmpty(value, name, throwError);
             value = RemoveLatestBackslash(value);
             return value;
         }
@@ -87,9 +125,9 @@ namespace starsky.Services
             return false;
         }
 
-        public static string RemoveLatestBackslash(string basePath)
+        public static string RemoveLatestBackslash(string basePath = "/")
         {
-            if (string.IsNullOrWhiteSpace(basePath)) throw new FileNotFoundException("Error");
+            if (string.IsNullOrWhiteSpace(basePath)) return null;
 
             // Depends on Platform
             if (basePath == "/") return basePath;
