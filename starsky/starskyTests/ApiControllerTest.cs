@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -125,7 +126,9 @@ namespace starskytests
         {
             // Photo exist in database but " + "isSingleItem flag is Missing
             var createAnImage = InsertSearchData();
+
             var controller = new ApiController(_query);
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
             var actionResult = controller.Thumbnail(createAnImage.FileHash, false, true) as NoContentResult;
             var thumbnailAnswer = actionResult.StatusCode;

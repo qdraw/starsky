@@ -8,16 +8,8 @@ namespace starsky.Helpers
         public static byte[] TryParse(string s)
         {
             if (s?.Length % 4 != 0 || !_rx.IsMatch(s)) return null;
-            try
-            {
-                return Convert.FromBase64String(s);
-            }
-            catch (FormatException)
-            {
-                // ignore this FormatException
-                Console.WriteLine("ignore this: FormatException");
-            }
-            return null;
+            return Convert.FromBase64String(s);
+            // Source: https://stackoverflow.com/questions/7686585/something-like-tryparse-from-convert-frombase64string
         }
     
         private static readonly Regex _rx = new Regex(

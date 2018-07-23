@@ -148,7 +148,7 @@ namespace starsky.Controllers
             return Json(item);
         }
 
-        [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f", "retryThumbnail" } )]
+        [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f"} )]
         [HttpGet("/api/thumbnail/{f}")]
         [HttpHead("/api/thumbnail/{f}")]
         [IgnoreAntiforgeryToken]
@@ -175,6 +175,7 @@ namespace starsky.Controllers
                 if (!retryThumbnail)
                 {
                     Console.WriteLine("image is corrupt");
+                    SetExpiresResponseHeadersToZero();
                     return NoContent();
                 }
                 System.IO.File.Delete(thumbPath);
@@ -187,22 +188,7 @@ namespace starsky.Controllers
                 if (!isSingleitem)
                 {
                     // "Photo exist in database but " + "isSingleItem flag is Missing"
-                    try
-                    {
-                        Request.HttpContext.Response.Headers.Remove("Cache-Control");
-                        Request.HttpContext.Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
-
-                        Request.HttpContext.Response.Headers.Remove("Pragma");
-                        Request.HttpContext.Response.Headers.Add("Pragma", "no-cache");
-
-                        Request.HttpContext.Response.Headers.Remove("Expires");
-                        Request.HttpContext.Response.Headers.Add("Expires", "0");
-                    }
-                    catch (NullReferenceException)
-                    {
-                        Console.WriteLine("Request.HttpContext.Response.Headers");
-                    }
-
+                    SetExpiresResponseHeadersToZero();
                     return NoContent();
                 }
                 FileStream fs1 = System.IO.File.OpenRead(FileIndexItem.DatabasePathToFilePath(sourcePath));
@@ -220,6 +206,18 @@ namespace starsky.Controllers
 
             FileStream fs = System.IO.File.OpenRead(thumbPath);
             return File(fs, "image/jpeg");
+        }
+
+        public void SetExpiresResponseHeadersToZero()
+        {
+            Request.HttpContext.Response.Headers.Remove("Cache-Control");
+            Request.HttpContext.Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+
+            Request.HttpContext.Response.Headers.Remove("Pragma");
+            Request.HttpContext.Response.Headers.Add("Pragma", "no-cache");
+
+            Request.HttpContext.Response.Headers.Remove("Expires");
+            Request.HttpContext.Response.Headers.Add("Expires", "0");
         }
 
         [HttpGet]

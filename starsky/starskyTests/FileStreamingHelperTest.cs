@@ -119,6 +119,9 @@ namespace starskytests
             Assert.AreEqual("_import_20180123_132404.jpg",tempFilePath);
         }
         
+      
+        
+        
         [TestMethod]
         public async Task FileStreamingHelperTest_FileStreamingHelper_StreamFile_multiPart()
         {
