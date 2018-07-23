@@ -4,8 +4,8 @@
 The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 - [Get PageType	"Archive" ](#get-pagetypearchive)
 - [Get PageType	"DetailView"](#get-pagetypedetailview)
-- [Direct import](#directimport)
-- [Form import](#formimport)
+- [Direct import](#direct-import)
+- [Form import](#form-import)
 
 ## Get PageType	"Archive" 
 Endpoint `/starsky/?f=/&json=true` 
