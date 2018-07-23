@@ -2,8 +2,13 @@
 # Rest Api docs
 
 The autorisation using the rest api is done though Basic Auth or Cookie Auth.
+- [Get PageType	"Archive" ](#get-pagetypearchive)
+- [Get PageType	"DetailView"](#get-pagetypedetailview)
+- [Direct import](#directimport)
+- [Form import](#formimport)
 
-## Get PageType	"Archive" `/starsky/?f=/&json=true` 
+## Get PageType	"Archive" 
+Endpoint `/starsky/?f=/&json=true` 
 For browsing the folders. Please use  `"pageType": "Archive"` to check the page type. 
 ```
 {
@@ -52,8 +57,9 @@ For browsing the folders. Please use  `"pageType": "Archive"` to check the page 
 
 
 
-## Get PageType	"DetailView" `/starsky/?f=/image.jpg` 
+## Get PageType	"DetailView" 
 Api to get fast meta data about the picture. 
+Endpoint: `/starsky/?f=/image.jpg` 
 ```
 {
     "uri":"`/starsky/?f=/image.jpg&json=true",
@@ -98,9 +104,11 @@ Api to get fast meta data about the picture.
 }
 ```
 
-## Direct input `/starsky/import` 
+## Direct import
+For importing using the structure configuration
 The filename-header can be added in `base64` or as `string`.
 `Content-type` is required, please use `image/jpeg`
+Endpoint: `/starsky/import` 
 
 ```
 {
@@ -132,9 +140,9 @@ The filename-header can be added in `base64` or as `string`.
 ]
 ```
 
-## Form input `/starsky/import` 
+## Form import
 When using a form, the filename is extracted from the multipart. For the filename there is only string encoding support
-
+Endpoint: `/starsky/import` 
 ```
 {
     "uri":"/starsky/import",
