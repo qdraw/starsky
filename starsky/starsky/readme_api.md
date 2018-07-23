@@ -6,6 +6,8 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 - [Get PageType	"DetailView"](#get-pagetypedetailview)
 - [Exif Info](#exif-info)
 - [Exif Update](#exif-update)
+- [Thumbnail](#thumbnail)
+- [Thumbnail Json](#thumbnail-json)
 - [Direct import](#direct-import)
 - [Form import](#form-import)
 
@@ -182,6 +184,53 @@ For now this api end point is using this method:
 }
 ```
 
+## Thumbnail
+To get an thumbnail of the image, the thumbnail is 1000px width.
+Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
+```
+{
+    "uri":"/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU",
+    "method":"GET",
+    "authentication":
+    {
+        "username":"username",
+        "password":"*sanitized*",
+        "type":"Basic"
+    }
+}
+```
+### Thumbnail querystring options
+- There is a orginal fallback, when using the `?issingleitem=True` query
+  The orginal image will be loaded instead of the thumbnail
+- The `retryThumbnail` is removing a thumbnail image. When this is used in combination with
+ `?issingleitem=True` a orginal image is loaded.
+- [Thumbnail Json](#thumbnail-json).
+
+### Expected `/starsky/Api/Thumbnail` response:
+- A jpeg image
+- A 204 / `NoContent()` result when a thumbnail is corrupt
+- A 404 Error page, when the base32 hash does not exist
+
+## Thumbnail Json
+Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU&json=true`
+For checking if a thumbnail exist without loading the entire image
+
+```
+{
+    "uri":"/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU&json=true",
+    "method":"GET",
+    "authentication":
+    {
+        "username":"username",
+        "password":"*sanitized*",
+        "type":"Basic"
+    }
+}
+```
+### Expected `/starsky/Api/Thumbnail` response:
+- A 200 result with no content if the request is successfull
+- A 204 / `NoContent()` result when a thumbnail is corrupt
+- A 404 Error page, when the base32 hash does not exist
 
 
 ## Direct import
