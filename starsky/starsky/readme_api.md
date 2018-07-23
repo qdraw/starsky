@@ -14,9 +14,9 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 ## Get PageType	"Archive" 
 Endpoint `/starsky/?f=/&json=true` 
 For browsing the folders. Please use  `"pageType": "Archive"` to check the page type. 
-```
+```json
 {
-    "uri":"`/starsky/?f=/&json=true",
+    "uri":"/starsky/?f=/&json=true",
     "method":"GET",
     "authentication":
     {
@@ -27,7 +27,7 @@ For browsing the folders. Please use  `"pageType": "Archive"` to check the page 
 }
 ```
 ### Expected `/starsky/?f=/&json=true` response:
-```
+```json
 {
   "fileIndexItems": [
     {
@@ -64,7 +64,7 @@ For browsing the folders. Please use  `"pageType": "Archive"` to check the page 
 ## Get PageType	"DetailView" 
 Api to get fast meta data about the picture. 
 Endpoint: `/starsky/?f=/image.jpg` 
-```
+```json
 {
     "uri":"`/starsky/?f=/image.jpg&json=true",
     "method":"GET",
@@ -79,7 +79,7 @@ Endpoint: `/starsky/?f=/image.jpg`
 
 ### Expected `/starsky/?f=/image.jpg` response:
 
-```
+```json
 {
   "fileIndexItem": {
     "id": 2837,
@@ -112,7 +112,7 @@ Endpoint: `/starsky/?f=/image.jpg`
 ## Exif Info
 Api to get data about the picture that is editable. This checks the file using Exiftool
 Endpoint: `/starsky/Api/Info?f=/image.jpg`
-```
+```json
 {
     "uri":"/starsky/Api/Info?f=/image.jpg",
     "method":"GET",
@@ -156,7 +156,7 @@ Endpoint: `/starsky/Api/Update?f=/image.jpg`
 For now this api end point is using this method:
 `Update(string tags, string colorClass, string captionAbstract, string f = "dbStylePath")`
 
-```
+```json
 {
     "uri":"/starsky/Api/Update?f=/image.jpg",
     "method":"POST",
@@ -174,7 +174,7 @@ For now this api end point is using this method:
 ```
 
 ### Expected `/starsky/Api/Update?f=/image.jpg` response:
-```
+```json
 {
   "colorClass": 0,
   "Caption-Abstract": null,
@@ -187,7 +187,7 @@ For now this api end point is using this method:
 ## Thumbnail
 To get an thumbnail of the image, the thumbnail is 1000px width.
 Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
-```
+```json
 {
     "uri":"/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU",
     "method":"GET",
@@ -203,8 +203,8 @@ Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
 - There is a orginal fallback, when using the `?issingleitem=True` query
   The orginal image will be loaded instead of the thumbnail
 - The `retryThumbnail` is removing a thumbnail image. When this is used in combination with
- `?issingleitem=True` a orginal image is loaded.
-- [Thumbnail Json](#thumbnail-json).
+ `isSingleItem` a orginal image is loaded. The query string is  `?retryThumbnail=True`. 
+- Check [Thumbnail Json](#thumbnail-json) for more information
 
 ### Expected `/starsky/Api/Thumbnail` response:
 - A jpeg image
@@ -215,7 +215,7 @@ Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
 Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU&json=true`
 For checking if a thumbnail exist without loading the entire image
 
-```
+```json
 {
     "uri":"/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU&json=true",
     "method":"GET",
@@ -239,7 +239,7 @@ The filename-header can be added in `base64` or as `string`.
 `Content-type` is required, please use `image/jpeg`
 Endpoint: `/starsky/import` 
 
-```
+```json
 {
     "uri":"/starsky/import",
     "method":"POST",
@@ -263,7 +263,7 @@ Endpoint: `/starsky/import`
 ### Expected `/starsky/import` response:
 - Error 409 when the response array is empty. The response array is empty when there are no items added.
 - An array with the added items: (with direct input this is always one item)
-```
+```json
 [
     "/2018/07/2018_07_22/20180722_220442__import_20180720_201452_2018-07-20 20.14.52.jpg"
 ]
@@ -272,7 +272,7 @@ Endpoint: `/starsky/import`
 ## Form import
 When using a form, the filename is extracted from the multipart. For the filename there is only string encoding support
 Endpoint: `/starsky/import` 
-```
+```json
 {
     "uri":"/starsky/import",
     "method":"POST",
@@ -293,7 +293,7 @@ Endpoint: `/starsky/import`
 - Error 409 when the response array is empty. The response array is empty when there are no items added.
 - When you have try to add duplicate items, those are not included in the list 
 - An array with the added items:
-```
+```json
 [
     "/2018/07/2018_07_22/20180722_220442__import_20180720_201452_2018-07-20 20.14.52.jpg"
 ]
