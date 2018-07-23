@@ -4,6 +4,7 @@
 The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 - [Get PageType	"Archive" ](#get-pagetypearchive)
 - [Get PageType	"DetailView"](#get-pagetypedetailview)
+- [Exif Info](#exif-info)
 - [Direct import](#direct-import)
 - [Form import](#form-import)
 
@@ -72,6 +73,7 @@ Endpoint: `/starsky/?f=/image.jpg`
     }
 }
 ```
+
 ### Expected `/starsky/?f=/image.jpg` response:
 
 ```
@@ -103,6 +105,59 @@ Endpoint: `/starsky/?f=/image.jpg`
   "pageType": "DetailView"
 }
 ```
+
+## Exif Info
+Api to get data about the picture that is editable. This checks the file using Exiftool
+Endpoint: `/starsky/Api/Info?f=/image.jpg`
+```
+{
+    "uri":"`/starsky/?f=/image.jpg&json=true",
+    "method":"GET",
+    "authentication":
+    {
+        "username":"username",
+        "password":"*sanitized*",
+        "type":"Basic"
+    }
+}
+```
+### Expected `/starsky/Api/Info?f=/image.jpg` response:
+- Statuscode 203 with the content `read only` when readonly mode is active
+- Gives a list of names that are used by exiftool
+- Colorclass is a enum, and the values are:      
+```cs
+case "0":
+    _colorClass = Color.None;
+case "8":
+    _colorClass = Color.Trash;
+case "7":
+    _colorClass = Color.Extras;
+case "6":
+    _colorClass = Color.TypicalAlt;
+case "5":
+    _colorClass = Color.Typical;
+case "4":
+    _colorClass = Color.SuperiorAlt;
+case "3":
+    _colorClass = Color.Superior;
+case "2":
+    _colorClass = Color.WinnerAlt;
+case "1":
+    _colorClass = Color.Winner;
+```
+
+```
+{
+  "colorClass": 0,
+  "Caption-Abstract": null,
+  "prefs": null,
+  "keywords": null,
+  "tags": "",
+  "allDatesDateTime": "0001-01-01T00:00:00"
+}
+```
+
+
 
 ## Direct import
 For importing using the structure configuration
