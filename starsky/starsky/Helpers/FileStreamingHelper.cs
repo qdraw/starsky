@@ -100,6 +100,11 @@ namespace starsky.Helpers
                 return path;
             }
             
+            // // Escape a filename from nasty signs \/|:|\*|\?|\"|<|>|]
+            Regex illegalInFileName = new Regex("[\\/|:|\\*|\\?|\"|<|>|]");
+            baseFileName = illegalInFileName.Replace(baseFileName, string.Empty);
+
+            
             var importIndexItem = new ImportIndexItem {SourceFullFilePath = baseFileName};
             
             // Replace appendix with '-1' or '-222' ; (-22 will not be replaced)
