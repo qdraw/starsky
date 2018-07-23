@@ -73,7 +73,7 @@ Api to get fast meta data about the picture.
 Endpoint: `/starsky/?f=/image.jpg` 
 ```json
 {
-    "uri":"`/starsky/?f=/image.jpg&json=true",
+    "uri":"/starsky/?f=/image.jpg&json=true",
     "method":"GET",
     "authentication":
     {
