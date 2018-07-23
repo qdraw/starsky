@@ -52,21 +52,12 @@ namespace starsky.Services
 
             var filesFullPathList = new List<string>();
             // recursive
-            if(recursiveDirectory) filesFullPathList = Files.GetFilesRecrusive(inputFullPath).ToList();
+            if(recursiveDirectory) filesFullPathList = Files.GetFilesRecrusive(inputFullPath,false).ToList();
             // non-recursive
             if(!recursiveDirectory) filesFullPathList = Files.GetFilesInDirectory(inputFullPath,false).ToList();
 
             var succesfullDirFullPaths = Import(filesFullPathList, deleteAfter, ageFileFilter);
                 
-//            // Do a direct files input to ignore the directories inside the list
-//            var succesfullDirFullPaths = new List<string>();
-//            foreach (var item in filesFullPathList)
-//            {
-//                // Directory
-//                var fullPath = ImportFile(item, deleteAfter, ageFileFilter);
-//                succesfullDirFullPaths.Add(fullPath);
-//            }
-
             return succesfullDirFullPaths;
         }
 

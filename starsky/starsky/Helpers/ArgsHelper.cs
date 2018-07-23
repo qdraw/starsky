@@ -240,14 +240,10 @@ namespace starsky.Helpers
         
         public static bool NeedRecruisive(IReadOnlyList<string> args)
         {
-            var needRecruisive = false;
-
+            bool needRecruisive = false;
+            
             for (int arg = 0; arg < args.Count; arg++)
             {
-                if ((args[arg].ToLower() == "--recruisive" || args[arg].ToLower() == "-r") && (arg + 1) != args.Count)
-                {
-                    bool.TryParse(args[arg + 1], out needRecruisive);
-                }
                 if ((args[arg].ToLower() == "--recruisive" || args[arg].ToLower() == "-r"))
                 {
                     needRecruisive = true;

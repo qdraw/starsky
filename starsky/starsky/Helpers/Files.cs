@@ -161,10 +161,13 @@ namespace starsky.Helpers
         }
         
         // Read a folder recruisive
-        public static IEnumerable<string> GetFilesRecrusive(string subPath = "")
+        public static IEnumerable<string> GetFilesRecrusive(string path = "", bool dbStyle = true)
         {
-            var path = FileIndexItem.DatabasePathToFilePath(subPath);
-
+            if (dbStyle)
+            {
+                path = FileIndexItem.DatabasePathToFilePath(path);
+            }
+            
             Queue<string> queue = new Queue<string>();
             queue.Enqueue(path);
             while (queue.Count > 0)
