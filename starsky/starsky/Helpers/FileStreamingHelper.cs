@@ -19,7 +19,16 @@ namespace starsky.Helpers
         public static async Task<List<string>> StreamFile(this HttpRequest request)
         {            
             // The Header 'filename' is for uploading on file without a form.
-            return await StreamFile(request.ContentType, request.Body,request.Headers["filename"]);            
+            return await StreamFile(request.ContentType, request.Body,HeaderFileName(request));            
+        }
+
+        // Support for plain text input and base64 strings
+        public static string HeaderFileName(HttpRequest request)
+        {
+            if (Base64Helper.TryParse(request.Headers["filename"]) == null) return request.Headers["filename"];
+            var requestHeadersBytes = Base64Helper.TryParse(request.Headers["filename"]);
+            var requestHeaders = System.Text.Encoding.ASCII.GetString(requestHeadersBytes);
+            return requestHeaders;
         }
 
         public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, string headerFileName = null)

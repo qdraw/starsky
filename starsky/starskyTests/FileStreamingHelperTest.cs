@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
@@ -89,6 +90,24 @@ namespace starskytests
             AppSettingsProvider.Structure = "/yyyyMMdd_HHmmss.ext";
             var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04.jpg");
             Assert.AreEqual("_import_20180123_132404.jpg",tempFilePath);
+        }
+
+        [TestMethod]
+        public void FileStreamingHelper_HeaderFileName_normalStringTest()
+        {
+            var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
+            httpContext.Request.Headers["filename"] = "2018-07-20 20.14.52.jpg"; //Set header
+            var result = FileStreamingHelper.HeaderFileName(httpContext.Request);
+            Assert.AreEqual("2018-07-20 20.14.52.jpg",result);    
+        }
+
+        [TestMethod]
+        public void FileStreamingHelper_HeaderFileName_base64StringTest()
+        {
+            var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
+            httpContext.Request.Headers["filename"] = "MjAxOC0wNy0yMCAyMC4xNC41Mi5qcGc="; //Set header
+            var result = FileStreamingHelper.HeaderFileName(httpContext.Request);
+            Assert.AreEqual("2018-07-20 20.14.52.jpg",result);    
         }
         
         [TestMethod]
