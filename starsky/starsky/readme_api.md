@@ -5,6 +5,7 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 - [Get PageType	"Archive" ](#get-pagetypearchive)
 - [Get PageType	"DetailView"](#get-pagetypedetailview)
 - [Exif Info](#exif-info)
+- [Exif Update](#exif-update)
 - [Direct import](#direct-import)
 - [Form import](#form-import)
 
@@ -111,7 +112,7 @@ Api to get data about the picture that is editable. This checks the file using E
 Endpoint: `/starsky/Api/Info?f=/image.jpg`
 ```
 {
-    "uri":"`/starsky/?f=/image.jpg&json=true",
+    "uri":"/starsky/Api/Info?f=/image.jpg",
     "method":"GET",
     "authentication":
     {
@@ -146,11 +147,35 @@ case "1":
     _colorClass = Color.Winner;
 ```
 
+## Exif Update
+To update please request first [Exif Info](#exif-info).
+Endpoint: `/starsky/Api/Update?f=/image.jpg`
+
+For now this api end point is using this method:
+`Update(string tags, string colorClass, string captionAbstract, string f = "dbStylePath")`
+
+```
+{
+    "uri":"/starsky/Api/Update?f=/image.jpg",
+    "method":"POST",
+    "headers":
+    {
+       "Content-Type":"application/json"
+    },
+    "authentication":
+    {
+        "username":"username",
+        "password":"*sanitized*",
+        "type":"Basic"
+    }
+}
+```
+
+### Expected `/starsky/Api/Update?f=/image.jpg` response:
 ```
 {
   "colorClass": 0,
   "Caption-Abstract": null,
-  "prefs": null,
   "keywords": null,
   "tags": "",
   "allDatesDateTime": "0001-01-01T00:00:00"
