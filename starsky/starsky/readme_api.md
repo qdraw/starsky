@@ -9,8 +9,10 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 - [Get PageType	"DetailView"](#get-pagetypedetailview)
 - [Exif Info](#exif-info)
 - [Exif Update](#exif-update)
+- [File Delete](#file-delete)
 - [Thumbnail](#thumbnail)
 - [Thumbnail Json](#thumbnail-json)
+- [Download Photo](#download-photo)
 - [Direct import](#direct-import)
 - [Form import](#form-import)
 - [Search](#search)
@@ -165,6 +167,8 @@ Endpoint: `/starsky/Api/Update?f=/image.jpg`
 For now this api end point is using this method:
 `Update(string tags, string colorClass, string captionAbstract, string f = "dbStylePath")`
 - The querystring name `f` is used for the file path in releative/subpath style
+- Empty tags are always ignored
+
 ```json
 {
     "uri":"/starsky/Api/Update?f=/image.jpg",
@@ -196,6 +200,27 @@ For now this api end point is using this method:
 -  Error 404 When a image is `not in index`
 
 
+## File Delete
+To permanent delete a file from the file system and the database.
+The tag: `!delete!` is used to mark a file that is in the Trash.
+
+```json
+{
+    "uri":"/starsky/Api/Delete?f=/image.jpg",
+    "method":"DELETE",
+    "authentication":
+    {
+        "username":"username",
+        "password":"*sanitized*",
+        "type":"Basic"
+    }
+}
+```
+### Expected `/starsky/Api/Delete?f=/image.jpg` response:
+- Error 404, when it is in `read only` mode
+- Error 404, when the file does not exist
+- Statuscode 200, when the file is deleted.
+
 ## Thumbnail
 To get an thumbnail of the image, the thumbnail is 1000px width.
 - The querystring after `Thumbnail/` is used for the base32 hash of the orginal image
@@ -212,6 +237,7 @@ Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
         "type":"Basic"
     }
 }
+
 ```
 ### Thumbnail querystring options
 - There is a orginal fallback, when using the `?issingleitem=True` query
@@ -246,6 +272,29 @@ For checking if a thumbnail exist without loading the entire image
 - A 200 result with no content if the request is successfull
 - A 204 / `NoContent()` result when a thumbnail is corrupt
 - A 404 Error page, when the base32 hash does not exist
+
+## Download Photo
+To get an orginal or to regenerate a thumbnail.
+- The querystring  `f` is used for the filepath of the orginal image
+- When the querystring `isThumbnail` is used `true` a thumbnail we used or generated
+
+Endpoint: `/starsky/Api/DownloadPhoto?f=/image.jpg`
+```json
+{
+    "uri":"/starsky/Api/DownloadPhoto?f=/image.jpg",
+    "method":"GET",
+    "authentication":
+    {
+        "username":"username",
+        "password":"*sanitized*",
+        "type":"Basic"
+    }
+}
+```
+### Expected `/starsky/Api/DownloadPhoto` response:
+- A thumbnail image with the type `image/jpeg`
+- An orginal image
+
 
 
 ## Direct import
