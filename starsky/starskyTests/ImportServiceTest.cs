@@ -220,6 +220,9 @@ namespace starskytests
             
             var createAnImage = new CreateAnImage();
             AppSettingsProvider.BasePath = createAnImage.BasePath;
+            
+            Console.WriteLine(AppSettingsProvider.BasePath);
+            
             AppSettingsProvider.Structure = "/xuxuxuxu_ssHHmm.ext";
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);

@@ -23,6 +23,13 @@ dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
 >> All tests must run succesfull to build 
 
+### Location of temp files
+#### OS X
+```
+~/.nuget/packages/microsoft.testplatform.testhost/15.7.2/lib/netstandard1.5/
+~/.nuget/packages/microsoft.testplatform.testhost/15.7.2/lib/netstandard1.5/exist/
+```
+
 ### Coverlet.msbuild
 The goal is improve test coverage
 ```
