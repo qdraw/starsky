@@ -21,4 +21,16 @@ dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 ``` 
 > The unittests are creating a few files inside the mstest build directory. Those files will be removed afterwards.
 
-All tests must run succesfull to build
+>> All tests must run succesfull to build 
+
+### Coverlet.msbuild
+The goal is improve test coverage
+```
++------------+--------+--------+--------+
+| Module     | Line   | Branch | Method |
++------------+--------+--------+--------+
+| starsky    | 77,3%  | 76,3%  | 91,3%  |
++------------+--------+--------+--------+
+| starskycli | 68,2%  | 64,3%  | 50%    |
++------------+--------+--------+--------+
+```
