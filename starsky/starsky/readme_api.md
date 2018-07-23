@@ -10,6 +10,7 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 - [Thumbnail Json](#thumbnail-json)
 - [Direct import](#direct-import)
 - [Form import](#form-import)
+- [Search](#search)
 
 ## Get PageType	"Archive" 
 Endpoint `/starsky/?f=/&json=true` 
@@ -234,6 +235,7 @@ For checking if a thumbnail exist without loading the entire image
     }
 }
 ```
+
 ### Expected `/starsky/Api/Thumbnail` response:
 - A 200 result with no content if the request is successfull
 - A 204 / `NoContent()` result when a thumbnail is corrupt
@@ -308,8 +310,31 @@ Endpoint: `/starsky/import`
 
 
 # Search
+To search in the database.
 
-/Starky/Search?t=dion&p=0&json=true
+- Querystring `t` is used for the search query
+- Querystring `p` is used for the pagina number. The first page is page 0.
+- Querystring `json` is to render json.
+Endpoint: `/Starky/Search?t=searchword&p=0&json=true` 
+
+## Search using POST
+The POST-request is a redirect to a get query with the same searchquery and the same pagenumber
+
+## Search using GET
+```json
+{
+    "uri":"/Starky/Search?t=searchword&p=0&json=true",
+    "method":"GET",
+    "authentication":
+    {
+        "username":"username",
+        "password":"*sanitized*",
+        "type":"Basic"
+    }
+}
+```
+
+### Expected `/starsky/search` response: 
 
 ```json
 {
@@ -338,7 +363,7 @@ Endpoint: `/starsky/import`
   "searchQuery": "searchword",
   "pageNumber": 0,
   "lastPageNumber": 1,
-  "searchCount": 21,
+  "searchCount": 1,
   "searchIn": [
     "Tags"
   ],
@@ -349,3 +374,5 @@ Endpoint: `/starsky/import`
   "elapsedSeconds": 0.003
 }
 ```
+
+- When there are no search results:  `"searchCount": 1` will be `0` and the `fileIndexItems` will be a empty array
