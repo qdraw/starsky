@@ -14,6 +14,8 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 ## Get PageType	"Archive" 
 Endpoint `/starsky/?f=/&json=true` 
 For browsing the folders. Please use  `"pageType": "Archive"` to check the page type. 
+The querystring name `f` is used for the file path in releative/subpath style
+ 
 ```json
 {
     "uri":"/starsky/?f=/&json=true",
@@ -63,6 +65,7 @@ For browsing the folders. Please use  `"pageType": "Archive"` to check the page 
 
 ## Get PageType	"DetailView" 
 Api to get fast meta data about the picture. 
+- The querystring name `f` is used for the file path in releative/subpath style
 Endpoint: `/starsky/?f=/image.jpg` 
 ```json
 {
@@ -111,7 +114,8 @@ Endpoint: `/starsky/?f=/image.jpg`
 
 ## Exif Info
 Api to get data about the picture that is editable. This checks the file using Exiftool
-Endpoint: `/starsky/Api/Info?f=/image.jpg`
+Endpoint: `/starsky/Api/Info?f=/image.jpg` The querystring name `f` is used for file path's
+
 ```json
 {
     "uri":"/starsky/Api/Info?f=/image.jpg",
@@ -127,6 +131,7 @@ Endpoint: `/starsky/Api/Info?f=/image.jpg`
 ### Expected `/starsky/Api/Info?f=/image.jpg` response:
 - Statuscode 203 with the content `read only` when readonly mode is active
 - Gives a list of names that are used by exiftool
+- The querystring name `f` is used for the file path in releative/subpath style
 - Colorclass is a enum, and the values are:      
 ```cs
 case "0":
@@ -155,7 +160,7 @@ Endpoint: `/starsky/Api/Update?f=/image.jpg`
 
 For now this api end point is using this method:
 `Update(string tags, string colorClass, string captionAbstract, string f = "dbStylePath")`
-
+- The querystring name `f` is used for the file path in releative/subpath style
 ```json
 {
     "uri":"/starsky/Api/Update?f=/image.jpg",
@@ -186,6 +191,8 @@ For now this api end point is using this method:
 
 ## Thumbnail
 To get an thumbnail of the image, the thumbnail is 1000px width.
+- The querystring after `Thumbnail/` is used for the base32 hash of the orginal image
+
 Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
 ```json
 {
@@ -300,3 +307,45 @@ Endpoint: `/starsky/import`
 ```
 
 
+# Search
+
+/Starky/Search?t=dion&p=0&json=true
+
+```json
+{
+  "fileIndexItems": [
+    {
+      "id": 414,
+      "filePath": "/2018/2018-content/20180104_164720_mbp.jpg",
+      "fileName": "20180104_164720_mbp.jpg",
+      "fileHash": "CNO4NOALCDWVNGY66XG4427LIE",
+      "parentDirectory": "/2018/2018-content",
+      "isDirectory": false,
+      "tags": "searchword",
+      "description": null,
+      "title": "",
+      "dateTime": "2018-01-04T16:47:20",
+      "addToDatabase": "2018-07-13T11:52:43.647793",
+      "latitude": 0,
+      "longitude": 0,
+      "colorClass": 0
+    }
+  ],
+  "breadcrumb": [
+    "/",
+    "searchword"
+  ],
+  "searchQuery": "searchword",
+  "pageNumber": 0,
+  "lastPageNumber": 1,
+  "searchCount": 21,
+  "searchIn": [
+    "Tags"
+  ],
+  "searchFor": [
+    "searchword"
+  ],
+  "pageType": "Search",
+  "elapsedSeconds": 0.003
+}
+```
