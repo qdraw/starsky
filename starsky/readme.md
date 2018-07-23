@@ -1,10 +1,10 @@
 # Starsky
 ## List of Starksy Projects
- - [inotify-settings](../inotify-settings/readme.md) _to setup auto indexing on linux [(docs)](../inotify-settings)_
- - __[starsky (sln)](../starsky/readme.md) _database photo index & import index project [(docs)](../starsky)___
-   - [starsky](../starsky/starsky/readme.md)  _mvc application / web interface [(docs)](../starsky/starsky)_
-   - [starsky-cli](../starsky/starsky-cli/readme.md)  _database command line interface [(docs)](../starsky/starsky-cli)_
-   - [starskyimportercli](../starsky/starskyimportercli/readme.md)  _import command line interface [(docs)](../starsky/starskyimporterclid)_
+ - [inotify-settings](../inotify-settings/readme.md) _to setup auto indexing on linux [(files)](../inotify-settings)_
+ - __[starsky (sln)](../starsky/readme.md) _database photo index & import index project [(files)](../starsky)___
+   - [starsky](../starsky/starsky/readme.md)  _mvc application / web interface [(files)](../starsky/starsky)_
+   - [starsky-cli](../starsky/starsky-cli/readme.md)  _database command line interface [(files)](../starsky/starsky-cli)_
+   - [starskyimportercli](../starsky/starskyimportercli/readme.md)  _import command line interface [(files)](../starsky/starskyimporterclid)_
    - [starskyTests](../starsky/starskyTests/readme.md)  _mstest unit tests [(files)](../starsky/starskyTests)_
  - starsky-node-client  _(depreciated)_
  - [starskyapp](../starskyapp) _React-Native app (Pre-alpha code)_
