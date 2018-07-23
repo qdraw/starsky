@@ -460,4 +460,4 @@ This endpoint does not require autorisation.
   ]
 }
 ```
-- When using a mysql database `` will be `null` DefaultConnectin
+- When using a mysql database `DefaultConnection` will be `null`. The connection string is not publicly visible.
