@@ -53,3 +53,21 @@ The commandline arguments are shortcuts to set an in-app environment variable
 1)   Structure uses slash as directory separators for Linux and Windows
 2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `STARSKY_BASEPATH` uses the system path directory separators
 3)  When using Windows please double escape (`\\`) system path's 
+
+
+### Rest API documentation
+Starsky has a Json and Razorview restfull API. Please read the documentation 
+
+#### Rest API Table of contents
+- [Get PageType	"Archive" ](readme_api.md#get-pagetypearchive)
+- [Get PageType	"DetailView"](readme_api.md#get-pagetypedetailview)
+- [Exif Info](readme_api.md#exif-info)
+- [Exif Update](readme_api.md#exif-update)
+- [Thumbnail](readme_api.md#thumbnail)
+- [Thumbnail Json](readme_api.md#thumbnail-json)
+- [Direct import](readme_api.md#direct-import)
+- [Form import](readme_api.md#form-import)
+- [Search](readme_api.md#search)
+
+
+

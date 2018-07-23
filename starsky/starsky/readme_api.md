@@ -2,6 +2,9 @@
 # Rest Api docs
 
 The autorisation using the rest api is done though Basic Auth or Cookie Auth.
+
+## Rest API Table of contents
+
 - [Get PageType	"Archive" ](#get-pagetypearchive)
 - [Get PageType	"DetailView"](#get-pagetypedetailview)
 - [Exif Info](#exif-info)
