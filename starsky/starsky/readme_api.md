@@ -16,6 +16,7 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 - [Direct import](#direct-import)
 - [Form import](#form-import)
 - [Search](#search)
+- [Environment info](#environment-info)
 
 ## Get PageType	"Archive" 
 Endpoint `/starsky/?f=/&json=true` 
@@ -431,3 +432,32 @@ The POST-request is a redirect to a get query with the same searchquery and the 
 ```
 
 - When there are no search results:  `"searchCount": 1` will be `0` and the `fileIndexItems` will be a empty array
+
+## Environment info
+
+To get information about the configuration.
+This endpoint does not require autorisation.
+
+```json
+{
+    "uri":"/Starky/Api/Env",
+    "method":"GET"
+}
+```
+### Expected `/Starky/Api/Env` response: 
+
+```json
+{
+  "DefaultConnection": "Data Source=/a/full/path/to/data.db",
+  "STARSKY_BASEPATH": "/data/photolib/",
+  "DatabaseType": "sqlite",
+  "ThumbnailTempFolder": "/data/thumb",
+  "ExifToolPath": "/usr/local/bin/exiftool",
+  "AddMemoryCache": false,
+  "Structure": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext",
+  "readOnlyFolders": [
+    "/2013"
+  ]
+}
+```
+- When using a mysql database `` will be `null` DefaultConnectin

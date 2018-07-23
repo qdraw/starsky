@@ -70,6 +70,6 @@ Starsky has a Json and Razorview restfull API. Please read the documentation
 - [Direct import](readme_api.md#direct-import)
 - [Form import](readme_api.md#form-import)
 - [Search](readme_api.md#search)
-
+- [Environment info](readme_api.md#environment-info)
 
 
