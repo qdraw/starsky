@@ -23,7 +23,7 @@ namespace starsky.Helpers
         // --orphanfolder -o
         // --move -m
         // --all -a
-        // --recruisive -r todo: implement this feature
+        // --recruisive -r 
         // -rf --readonlyfolders // no need to use in cli/importercli
         // -u --structure
         
@@ -237,6 +237,26 @@ namespace starsky.Helpers
             }
             return getAll;
         }
+        
+        public static bool NeedRecruisive(IReadOnlyList<string> args)
+        {
+            var needRecruisive = false;
+
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--recruisive" || args[arg].ToLower() == "-r") && (arg + 1) != args.Count)
+                {
+                    bool.TryParse(args[arg + 1], out needRecruisive);
+                }
+                if ((args[arg].ToLower() == "--recruisive" || args[arg].ToLower() == "-r"))
+                {
+                    needRecruisive = true;
+                }
+            }
+
+            return needRecruisive;
+        }
+        
         
     }
 }

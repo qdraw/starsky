@@ -160,58 +160,49 @@ namespace starsky.Helpers
             }
         }
         
-        // Legacy Keep here
         // Read a folder recruisive
-        // Currently we dont use it because memory problems on linux-arm
-//        public static IEnumerable<FileIndexItem> GetFilesRecrusive(string subPath = "")
-//        {
-//            var path = FileIndexItem.DatabasePathToFilePath(subPath);
-//
-//            Queue<string> queue = new Queue<string>();
-//            queue.Enqueue(path);
-//            while (queue.Count > 0)
-//            {
-//                path = queue.Dequeue();
-//                try
-//                {
-//                    foreach (string subDir in System.IO.Directory.GetDirectories(path))
-//                    {
-//                        Console.WriteLine(subDir);
-//                        queue.Enqueue(subDir);
-//                    }
-//                }
-//                catch (Exception ex)
-//                {
-//                    Console.Error.WriteLine(ex);
-//                }
-//                string[] files = null;
-//                try
-//                {
-//                    files = System.IO.Directory.GetFiles(path);
-//                }
-//                catch (Exception ex)
-//                {
-//                    Console.Error.WriteLine(ex);
-//                }
-//                if (files != null)
-//                {
-//                    for (int i = 0; i < files.Length; i++)
-//                    {
-//                        if (files[i].ToLower().EndsWith("jpg"))
-//                        {
-//                            var fileItem = new FileIndexItem
-//                            {
-//                                FilePath = files[i],
-//                                FileName = Path.GetFileName(files[i]),
-//                                FileHash = FileHash.GetHashCode(files[i]),
-//                                //Folder = FileIndexItem.FullPathToDatabaseStyle(Path.GetDirectoryName(files[i]))
-//                            };
-//                            yield return fileItem;
-//                        }
-//                    }
-//                }
-//            }
-//        }        // end lagacy
+        public static IEnumerable<string> GetFilesRecrusive(string subPath = "")
+        {
+            var path = FileIndexItem.DatabasePathToFilePath(subPath);
+
+            Queue<string> queue = new Queue<string>();
+            queue.Enqueue(path);
+            while (queue.Count > 0)
+            {
+                path = queue.Dequeue();
+                try
+                {
+                    foreach (string subDir in Directory.GetDirectories(path))
+                    {
+                        Console.WriteLine(subDir);
+                        queue.Enqueue(subDir);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(ex);
+                }
+                string[] files = null;
+                try
+                {
+                    files = System.IO.Directory.GetFiles(path);
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(ex);
+                }
+                if (files != null)
+                {
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        if (files[i].ToLower().EndsWith("jpg"))
+                        {
+                            yield return files[i];
+                        }
+                    }
+                }
+            }
+        }
         
 
 

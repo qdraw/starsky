@@ -32,9 +32,9 @@ namespace starskyimportercli
 
         private readonly ImportService _importService;
 
-        public IEnumerable<string> Import(string inputFullPath, bool deleteAfter, bool ageFileFilter)
+        public IEnumerable<string> Import(string inputFullPath, bool deleteAfter, bool ageFileFilter, bool recursiveDirectory = false)
         {
-            return _importService.Import(inputFullPath, deleteAfter,ageFileFilter);
+            return _importService.Import(inputFullPath, deleteAfter,ageFileFilter,recursiveDirectory);
         }
 
     }

@@ -21,12 +21,12 @@ namespace starsky.Services
         }
 
         // Imports a list of paths, used by the importer web interface
-        public List<string> Import(IEnumerable<string> inputFullPathList, bool deleteAfter = false, bool ageFileFilter = true)
+        public List<string> Import(IEnumerable<string> inputFullPathList, bool deleteAfter = false, bool ageFileFilter = true, bool recursiveDirectory = false)
         {
             var output = new List<string>();
             foreach (var inputFullPath in inputFullPathList)
             {
-                output.Add(Import(inputFullPath, deleteAfter, ageFileFilter).FirstOrDefault());
+                output.Add(Import(inputFullPath, deleteAfter, ageFileFilter,recursiveDirectory).FirstOrDefault());
             }
 
             // Remove duplicate and empty-strings-from-list
@@ -35,7 +35,7 @@ namespace starsky.Services
         }
 
         // Imports a single path, used by the cli importer
-        public List<string> Import(string inputFullPath, bool deleteAfter = false, bool ageFileFilter = true)
+        public List<string> Import(string inputFullPath, bool deleteAfter = false, bool ageFileFilter = true, bool recursiveDirectory = false)
         {
             if (!Directory.Exists(inputFullPath) && File.Exists(inputFullPath))
             {
@@ -50,15 +50,23 @@ namespace starsky.Services
                 return new List<string>();
             }
 
-            // Directory
-            var succesfullDirFullPaths = new List<string>();
-            var filesFullPath = Files.GetFilesInDirectory(inputFullPath,false);
-            foreach (var item in filesFullPath)
-            {
-                // Directory
-                var fullPath = ImportFile(item, deleteAfter, ageFileFilter);
-                succesfullDirFullPaths.Add(fullPath);
-            }
+            var filesFullPathList = new List<string>();
+            // recursive
+            if(recursiveDirectory) filesFullPathList = Files.GetFilesRecrusive(inputFullPath).ToList();
+            // non-recursive
+            if(!recursiveDirectory) filesFullPathList = Files.GetFilesInDirectory(inputFullPath,false).ToList();
+
+            var succesfullDirFullPaths = Import(filesFullPathList, deleteAfter, ageFileFilter);
+                
+//            // Do a direct files input to ignore the directories inside the list
+//            var succesfullDirFullPaths = new List<string>();
+//            foreach (var item in filesFullPathList)
+//            {
+//                // Directory
+//                var fullPath = ImportFile(item, deleteAfter, ageFileFilter);
+//                succesfullDirFullPaths.Add(fullPath);
+//            }
+
             return succesfullDirFullPaths;
         }
 

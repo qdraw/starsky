@@ -67,5 +67,6 @@ starskyimportercli --help
 --path or -p == parameter: (string) ; fullpath, can be an folder or file
 --move or -m == delete file after importing (default false / copy file)
 --all or -a == import all files including files older than 2 years (default: false / ignore old files) 
+--recursive or -r == Import Directory recursive (default: false / only the selected folder) 
 --verbose or -v == verbose, more detailed info, use -v -help to show settings:
 ```
