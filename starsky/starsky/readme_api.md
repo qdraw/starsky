@@ -192,6 +192,9 @@ For now this api end point is using this method:
   "allDatesDateTime": "0001-01-01T00:00:00"
 }
 ```
+-  Statuscode 203. When trying to update a `read only` image. With the content `read only`
+-  Error 404 When a image is `not in index`
+
 
 ## Thumbnail
 To get an thumbnail of the image, the thumbnail is 1000px width.
