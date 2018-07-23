@@ -1,3 +1,4 @@
+[< starsky/starsky docs](readme.md)
 
 # Rest Api docs
 
