@@ -1,16 +1,14 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.Data;
 using starsky.Interfaces;
-using starsky.Models;
 using starsky.Services;
 using starskytests.Services;
 
-namespace starskytests.Controller
+namespace starskytests.Controllers
 {
     [TestClass]
     public class ImportControllerTest

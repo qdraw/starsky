@@ -10,7 +10,7 @@ using starsky.Interfaces;
 using starsky.Services;
 using starsky.ViewModels;
 
-namespace starskytests.Controller
+namespace starskytests.Controllers
 {
     [TestClass]
     public class SearchControllerTest

@@ -11,7 +11,7 @@ using starsky.Models;
 using starsky.Services;
 using starsky.ViewModels;
 
-namespace starskytests.Controller
+namespace starskytests.Controllers
 {
     [TestClass]
     public class HomeControllerTest

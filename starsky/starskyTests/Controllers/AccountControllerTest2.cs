@@ -18,7 +18,7 @@ using starsky.Services;
 using starsky.ViewModels.Account;
 using starskytests.FakeMocks;
 
-namespace starskytests.Controller
+namespace starskytests.Controllers
 {
     [TestClass]
     public class AccountControllerTest2

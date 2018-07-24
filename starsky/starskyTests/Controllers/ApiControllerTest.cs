@@ -14,7 +14,7 @@ using starsky.Models;
 using starsky.Services;
 using starskytests.Services;
 
-namespace starskytests
+namespace starskytests.Controllers
 {
     [TestClass]
     public class ApiControllerTest
