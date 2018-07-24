@@ -231,11 +231,12 @@ namespace starskytests
             Assert.AreNotEqual(null, itemFilePath);
                         
             // Run a second time: > Must return nothing
-            Assert.AreEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
+            var returnObject = _import.Import(createAnImage.BasePath, false, false);
+            Assert.AreEqual(true, string.IsNullOrWhiteSpace(returnObject.FirstOrDefault()) );  
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Search on filename in database
-//            Assert.AreEqual(true, _query.GetAllFiles().Any(p => p.FileName.Contains("xux_"))   );
+            Assert.AreEqual(true, _query.GetAllFiles().Any(p => p.FileName.Contains("xuxuxuxu_"))   );
             
             // Clean afterwards
             var importIndexItem = _import.GetItemByHash(fileHashCode);
