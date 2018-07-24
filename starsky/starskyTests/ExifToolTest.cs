@@ -18,7 +18,7 @@ namespace starskytests
         public void  ExifToolFixTestIgnoreStringTest()
         {
             var input = "{\n\"Keywords\": [\"test\",\"word2\"], \n}"; // CamelCase!
-            var output = ExifTool.FixingJsonKeywordString(input);
+            var output = new ExifTool().FixingJsonKeywordString(input);
             Assert.AreEqual(input+"\n",output);
         }
         
@@ -27,7 +27,7 @@ namespace starskytests
         {
             var expetectedOutput = "{\n\"Keywords\": [\"test,\"],\n}\n"; // There is an comma inside "test,"
             var input2 = "{\n\"Keywords\": \"test\", \n}"; 
-            var output2 = ExifTool.FixingJsonKeywordString(input2);
+            var output2 = new ExifTool().FixingJsonKeywordString(input2);
             Assert.AreEqual(expetectedOutput,output2);   
         }
 

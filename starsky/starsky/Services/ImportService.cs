@@ -13,11 +13,13 @@ namespace starsky.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly ISync _isync;
+        private readonly IExiftool _exiftool;
 
-        public ImportService(ApplicationDbContext context, ISync isync)
+        public ImportService(ApplicationDbContext context, ISync isync, IExiftool exiftool)
         {
             _context = context;
             _isync = isync;
+            _exiftool = exiftool;
         }
 
         // Imports a list of paths, used by the importer web interface
@@ -150,7 +152,7 @@ namespace starsky.Services
             // Update the contents to the file the imported item
             if (exifToolSync)
             {
-                ExifTool.Update(new ExifToolModel
+                _exiftool.Update(new ExifToolModel
                 {
                     AllDatesDateTime = fileIndexItem.DateTime,
                     CaptionAbstract = fileIndexItem.Description

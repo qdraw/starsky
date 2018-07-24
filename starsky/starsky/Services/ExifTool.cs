@@ -9,16 +9,16 @@ using starsky.Models;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
+using starsky.Interfaces;
 
 namespace starsky.Services
 {
-    public static class ExifTool
+    public class ExifTool : IExiftool
     {
         // Write To Meta data using Exiftool.
         // This is a exiftool wrapper
         
-        private static string _baseCommmand(string options,string fullFilePath)
+        private string _baseCommmand(string options,string fullFilePath)
         {
             fullFilePath = $"\"" + fullFilePath + $"\"";
             options = " " + options + " " + fullFilePath;
@@ -52,7 +52,7 @@ namespace starsky.Services
             return strOutput;
         }
         
-        public static string FixingJsonKeywordString(string text)
+        public string FixingJsonKeywordString(string text)
         {
 
             // Not Single Keyword
@@ -93,7 +93,7 @@ namespace starsky.Services
             return text;
         }
 
-        private static ExifToolModel _parseJson(string text) {
+        private ExifToolModel _parseJson(string text) {
             if (string.IsNullOrEmpty(text)) return null;
             text = text.Replace("\r", "");
             text = text.Replace($"\\", "");
@@ -110,7 +110,7 @@ namespace starsky.Services
 
         }
 
-        public static ExifToolModel Update(ExifToolModel updateModel, string fullFilePath)
+        public ExifToolModel Update(ExifToolModel updateModel, string fullFilePath)
             {
                 var command = "-json -overwrite_original";
                 var initCommand = command; // to check if nothing
@@ -147,7 +147,7 @@ namespace starsky.Services
                 return _parseJson(_baseCommmand("-Keywords -Prefs -Caption-Abstract -json", fullFilePath));
             }
 
-            public static ExifToolModel Info(string fullFilePath)
+            public ExifToolModel Info(string fullFilePath)
             {
                 // Also update class 'Update'
                 return _parseJson(_baseCommmand("-Keywords -Caption-Abstract -Prefs -json", fullFilePath));

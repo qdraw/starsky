@@ -25,9 +25,10 @@ namespace starskyimportercli
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
 
+            var exiftool = new ExifTool();
             var query = new Query(context);
             var isync = new SyncService(context,query);
-            _importService = new ImportService(context,isync);
+            _importService = new ImportService(context,isync,exiftool);
         }
 
         private readonly ImportService _importService;

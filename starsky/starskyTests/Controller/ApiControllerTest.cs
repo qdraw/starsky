@@ -12,6 +12,7 @@ using starsky.Data;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
+using starskytests.Services;
 
 namespace starskytests
 {
@@ -19,6 +20,7 @@ namespace starskytests
     public class ApiControllerTest
     {
         private readonly IQuery _query;
+        private IExiftool _exiftool;
 
         public ApiControllerTest()
         {
@@ -32,6 +34,12 @@ namespace starskytests
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
             _query = new Query(context,memoryCache);
+            
+            // Inject Fake Exiftool; dependency injection
+            var services = new ServiceCollection();
+            services.AddSingleton<IExiftool, FakeExiftool>();      
+            var serviceProvider = services.BuildServiceProvider();
+            _exiftool = serviceProvider.GetRequiredService<IExiftool>();
         }
         
         private FileIndexItem InsertSearchData()
@@ -49,7 +57,6 @@ namespace starskytests
                 var q = _query.AddItem(new FileIndexItem
                 {
                     FileName = createAnImage.DbPath.Replace("/",string.Empty),
-                    //FilePath = createAnImage.DbPath,
                     ParentDirectory = "/",
                     FileHash = fileHashCode,
                     ColorClass = FileIndexItem.Color.Winner, // 1
@@ -62,7 +69,7 @@ namespace starskytests
         public void ApiController_Delete_API_HappyFlow_Test()
         {
             var createAnImage = InsertSearchData();
-            var controller = new ApiController(_query);
+            var controller = new ApiController(_query,_exiftool);
 
             Console.WriteLine("createAnImage.FilePath");
             Console.WriteLine(createAnImage.FilePath);
@@ -78,7 +85,7 @@ namespace starskytests
         public void ApiController_Thumbnail_HappyFlowDisplayJson_API_Test()
         {
             var createAnImage = InsertSearchData();
-            var controller = new ApiController(_query);
+            var controller = new ApiController(_query,_exiftool);
             
             Thumbnail.CreateThumb(createAnImage);
             
@@ -95,7 +102,7 @@ namespace starskytests
         public void ApiController_Thumbnail_HappyFlowFileStreamResult_API_Test()
         {
             var createAnImage = InsertSearchData();
-            var controller = new ApiController(_query);
+            var controller = new ApiController(_query,_exiftool);
             
             Thumbnail.CreateThumb(createAnImage);
 
@@ -112,7 +119,7 @@ namespace starskytests
         public void ApiController_Thumbnail_ShowOrginalImage_API_Test()
         {
             var createAnImage = InsertSearchData();
-            var controller = new ApiController(_query);
+            var controller = new ApiController(_query,_exiftool);
 
             var actionResult = controller.Thumbnail(createAnImage.FileHash, true) as FileStreamResult;
             var thumbnailAnswer = actionResult.ContentType;
@@ -127,7 +134,7 @@ namespace starskytests
             // Photo exist in database but " + "isSingleItem flag is Missing
             var createAnImage = InsertSearchData();
 
-            var controller = new ApiController(_query);
+            var controller = new ApiController(_query,_exiftool);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
             var actionResult = controller.Thumbnail(createAnImage.FileHash, false, true) as NoContentResult;
@@ -145,7 +152,7 @@ namespace starskytests
                 FileName = "fake.jpg",
                 FileHash = "0986524678765456786543"
             });
-            var controller = new ApiController(_query);
+            var controller = new ApiController(_query,_exiftool);
             var actionResult = controller.Thumbnail(item.FileHash, false, true) as NotFoundObjectResult;
             var thumbnailAnswer = actionResult.StatusCode;
             Assert.AreEqual(404,thumbnailAnswer);
@@ -155,10 +162,79 @@ namespace starskytests
         [TestMethod]
         public void ApiController_NonExistingFile_API_Test()
         {
-            var controller = new ApiController(_query);
+            var controller = new ApiController(_query,_exiftool);
             var actionResult = controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
             var thumbnailAnswer = actionResult.StatusCode;
             Assert.AreEqual(404,thumbnailAnswer);
         }
+
+        [TestMethod]
+        public void ApiController_starskyTestEnv()
+        {
+            var controller = new ApiController(_query,_exiftool);
+            controller.Env();
+        }
+        
+        [TestMethod]
+        public void ApiController_Update_AllDataIncluded_WithFakeExiftool()
+        {
+            var createAnImage = new CreateAnImage();
+            var imageToUpdate = createAnImage.DbPath.Replace("/", string.Empty);
+            InsertSearchData();
+            
+            var controller = new ApiController(_query,_exiftool);
+            var jsonResult = controller.Update("test", "1", "test", createAnImage.DbPath) as JsonResult;
+            var exiftoolModel = jsonResult.Value as ExifToolModel;
+            Assert.AreEqual("test",exiftoolModel.Tags);            
+        }
+        
+        [TestMethod]
+        public void ApiController_Update_SourceImageMissingOnDisk_WithFakeExiftool()
+        {
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "345678765434567.jpg",
+                ParentDirectory = "/",
+                FileHash = "345678765434567"
+            });
+            
+            var controller = new ApiController(_query,_exiftool);
+            var notFoundResult = controller.Update("test", "1", "test", "/345678765434567.jpg") as NotFoundObjectResult;
+            Assert.AreEqual(404,notFoundResult.StatusCode);
+
+            _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
+        }
+        
+        [TestMethod]
+        public void ApiController_Info_AllDataIncluded_WithFakeExiftool()
+        {
+            // Using Fake exiftool
+            var createAnImage = new CreateAnImage();
+            var imageToUpdate = createAnImage.DbPath.Replace("/", string.Empty);
+            InsertSearchData();
+            
+            var controller = new ApiController(_query,_exiftool);
+            var jsonResult = controller.Info(createAnImage.DbPath) as JsonResult;
+            var exiftoolModel = jsonResult.Value as ExifToolModel;
+            Assert.AreEqual(string.Empty,exiftoolModel.Tags);            
+        }
+
+        [TestMethod]
+        public void ApiController_Info_SourceImageMissingOnDisk_WithFakeExiftool()
+        {
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "345678765434567.jpg",
+                ParentDirectory = "/",
+                FileHash = "345678765434567"
+            });
+            
+            var controller = new ApiController(_query,_exiftool);
+            var notFoundResult = controller.Info("/345678765434567.jpg") as NotFoundObjectResult;
+            Assert.AreEqual(404,notFoundResult.StatusCode);
+            
+            _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
+        }
+
     }
 }

@@ -63,6 +63,7 @@ namespace starsky
             services.AddScoped<ISearch, SearchService>();
             services.AddScoped<IImport, ImportService>();
             services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<IExiftool, ExifTool>();
 
             services.AddAntiforgery(
                 options =>
