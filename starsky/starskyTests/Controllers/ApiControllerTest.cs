@@ -30,7 +30,7 @@ namespace starskytests.Controllers
             var memoryCache = provider.GetService<IMemoryCache>();
             
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            builder.UseInMemoryDatabase("test");
+            builder.UseInMemoryDatabase("test1234");
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
             _query = new Query(context,memoryCache);
@@ -129,7 +129,7 @@ namespace starskytests.Controllers
         }
 
         [TestMethod]
-        public void ApiController_Thumbnail_IsMissing_ButOrginalExist_butNoIsSingleItemFlag_API_Test()
+        public void ApiController_ThumbIsMissing_ButOrginalExist_butNoIsSingleItemFlag_API_Test()
         {
             // Photo exist in database but " + "isSingleItem flag is Missing
             var createAnImage = InsertSearchData();
@@ -143,10 +143,11 @@ namespace starskytests.Controllers
         }
 
         [TestMethod]
-        public void ApiController_Thumbnail_FloatingDatabaseFileTest_API_Test()
+        public void ApiController_FloatingDatabaseFileTest_API_Test()
         {
             var item = _query.AddItem(new FileIndexItem
             {
+                //FilePath = "/fakeImage/fake.jpg",
                 ParentDirectory = "/fakeImage/",
                 FileName = "fake.jpg",
                 FileHash = "0986524678765456786543"
@@ -158,27 +159,17 @@ namespace starskytests.Controllers
             _query.RemoveItem(item);
         }
 
-//        [TestMethod]
-//        public void ApiController_Thumbnail_NonExistingFile_API_Test()
-//        {
-//            var controller = new ApiController(_query,_exiftool);
-//            var actionResult = controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
-//            var thumbnailAnswer = actionResult.StatusCode;
-//            Assert.AreEqual(404,thumbnailAnswer);
-//        }
-
-        
         [TestMethod]
-        public void ApiController_Thumbnail_NonExistingFile_API_Test()
+        public void ApiController_NonExistingFile_API_Test()
         {
             var controller = new ApiController(_query,_exiftool);
             var actionResult = controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
             var thumbnailAnswer = actionResult.StatusCode;
             Assert.AreEqual(404,thumbnailAnswer);
         }
-        
+
         [TestMethod]
-        public void ApiController_Env_starskyTestEnv()
+        public void ApiController_starskyTestEnv()
         {
             var controller = new ApiController(_query,_exiftool);
             controller.Env();
@@ -195,23 +186,6 @@ namespace starskytests.Controllers
             var jsonResult = controller.Update("test", "1", "test", createAnImage.DbPath) as JsonResult;
             var exiftoolModel = jsonResult.Value as ExifToolModel;
             Assert.AreEqual("test",exiftoolModel.Tags);            
-        }
-        
-        [TestMethod]
-        public void ApiController_Delete_SourceImageMissingOnDisk_WithFakeExiftool()
-        {
-            _query.AddItem(new FileIndexItem
-            {
-                FileName = "345678765434567.jpg",
-                ParentDirectory = "/",
-                FileHash = "345678765434567"
-            });
-            
-            var controller = new ApiController(_query,_exiftool);
-            var notFoundResult = controller.Delete("/345678765434567.jpg") as NotFoundObjectResult;
-            Assert.AreEqual(404,notFoundResult.StatusCode);
-
-            _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
         }
         
         [TestMethod]
@@ -261,6 +235,34 @@ namespace starskytests.Controllers
             
             _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
         }
+        
+        [TestMethod]
+        public void ApiController_Delete_SourceImageMissingOnDisk_WithFakeExiftool()
+        {
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "345678765434567.jpg",
+                ParentDirectory = "/",
+                FileHash = "345678765434567"
+            });
+            
+            var controller = new ApiController(_query,_exiftool);
+            var notFoundResult = controller.Delete("/345678765434567.jpg") as NotFoundObjectResult;
+            Assert.AreEqual(404,notFoundResult.StatusCode);
+
+            _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
+        }
+        
+        [TestMethod]
+        public void ApiController_Thumbnail_NonExistingFile_API_Test()
+        {
+            var controller = new ApiController(_query,_exiftool);
+            var actionResult = controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
+            var thumbnailAnswer = actionResult.StatusCode;
+            Assert.AreEqual(404,thumbnailAnswer);
+        }
+
+
 
     }
 }

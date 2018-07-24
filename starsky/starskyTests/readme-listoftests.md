@@ -7,7 +7,7 @@
  ```
 bash ./readme-listoftests-update.sh 
 ``` 
-Last updated:  2018-07-24 16:33:37
+Last updated:  2018-07-24
 ```
     ReadOnlyFoldersTest
     SqliteFullPathTest
