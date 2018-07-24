@@ -12,18 +12,25 @@ namespace starsky.Services
         {
             
             // Get a list of duplicate items
-            var duplicateItems = databaseSubFolderList.GroupBy(item => item.FilePath)
+            var duplicateItemsByFilePath = databaseSubFolderList.GroupBy(item => item.FilePath)
                 .SelectMany(grp => grp.Skip(1).Take(1)).ToList();
             
-            // Delete duplicate items
-            foreach (var item in duplicateItems)
+            // duplicateItemsByFilePath > 
+            // If you have 3 item with the same name it will include 1 name;
+            // So we do a linq query to search simalar items
+            // We keep the first item
+            // And Delete duplicate items
+            
+            foreach (var duplicateItemByName in duplicateItemsByFilePath)
             {
-                var ditem = databaseSubFolderList.FirstOrDefault(p => p == item);
-                databaseSubFolderList.Remove(ditem);
-                if (AppSettingsProvider.Verbose) Console.WriteLine("> RemoveDuplicate - " + item.FilePath);
-                _query.RemoveItem(ditem);
+                var duplicateItems = databaseSubFolderList.Where(p => p.FilePath == duplicateItemByName.FilePath).ToList();
+                for (int i = 1; i < duplicateItems.Count(); i++)
+                {
+                    databaseSubFolderList.Remove(duplicateItems[i]);
+                    if (AppSettingsProvider.Verbose) Console.WriteLine("> RemoveDuplicate - " + duplicateItems[i].FilePath);
+                    _query.RemoveItem(duplicateItems[i]);
+                }
             }
-
             return databaseSubFolderList;
         }
 
