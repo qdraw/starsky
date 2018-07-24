@@ -1,11 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.Data;
 using starsky.Interfaces;
+using starsky.Models;
 using starsky.Services;
+using starskytests.Services;
 
 namespace starskytests.Controller
 {
@@ -14,12 +17,14 @@ namespace starskytests.Controller
     {
         private readonly ImportService _import;
         private readonly ImportController _importController;
-        
+        private IExiftool _exiftool;
+
         public ImportControllerTest()
         {
             var provider = new ServiceCollection()
                 .AddMemoryCache()
                 .BuildServiceProvider();
+            
             var memoryCache = provider.GetService<IMemoryCache>();
 
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
@@ -28,8 +33,23 @@ namespace starskytests.Controller
             var context = new ApplicationDbContext(options);
             IQuery query = new Query(context,memoryCache);
             var isync = new SyncService(context,query);
-            _import = new ImportService(context, isync);
+            
+            // Inject Fake Exiftool; dependency injection
+            var services = new ServiceCollection();
+            services.AddSingleton<IExiftool, FakeExiftool>();      
+            var serviceProvider = services.BuildServiceProvider();
+            _exiftool = serviceProvider.GetRequiredService<IExiftool>();
+
+            
+            _import = new ImportService(context, isync, _exiftool);
             _importController = new ImportController(_import);
+        }
+
+        [TestMethod]
+        public void TEst()
+        {
+            _exiftool.Info("test");
+            
         }
         
 //        [TestMethod]

@@ -16,10 +16,12 @@ namespace starsky.Controllers
     public class ApiController : Controller
     {
         private readonly IQuery _query;
+        private readonly IExiftool _exiftool;
 
-        public ApiController(IQuery query)
+        public ApiController(IQuery query, IExiftool exiftool)
         {
             _query = query;
+            _exiftool = exiftool;
         }
 
         // Used for end2end test
@@ -72,7 +74,7 @@ namespace starsky.Controllers
             updateModel.ColorClass = singleItem.FileIndexItem.ColorClass;
 
             // Run ExifTool updater
-            var exifToolResults = ExifTool.Update(updateModel,
+            var exifToolResults = _exiftool.Update(updateModel,
                 FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
 
             // Update Database with results
@@ -104,7 +106,7 @@ namespace starsky.Controllers
                 return NotFound("source image missing " +
                                 FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
 
-            var getExiftool = ExifTool.Info(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            var getExiftool = _exiftool.Info(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             return Json(getExiftool);
         }
 
@@ -273,8 +275,8 @@ namespace starsky.Controllers
                 }
             }
 
-            var getExiftool = ExifTool.Info(sourceFullPath);
-            ExifTool.Update(getExiftool, sourceFullPath);
+            var getExiftool = _exiftool.Info(sourceFullPath);
+            _exiftool.Update(getExiftool, sourceFullPath);
 
             FileStream fs1 = System.IO.File.OpenRead(thumbPath);
             return File(fs1, "image/jpeg");

@@ -8,8 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
 using starsky.Helpers;
+using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
+using starskytests.Services;
 
 namespace starskytests
 {
@@ -19,6 +21,7 @@ namespace starskytests
         private ImportService _import;
         private Query _query;
         private SyncService _isync;
+        private IExiftool _exiftool;
 
         public ImportServiceTest()
         {
@@ -33,7 +36,14 @@ namespace starskytests
             var context = new ApplicationDbContext(options);
             _query = new Query(context,memoryCache);
             _isync = new SyncService(context, _query);
-            _import = new ImportService(context,_isync);
+            
+            // Inject Fake Exiftool; dependency injection
+            var services = new ServiceCollection();
+            services.AddSingleton<IExiftool, FakeExiftool>();      
+            var serviceProvider = services.BuildServiceProvider();
+            _exiftool = serviceProvider.GetRequiredService<IExiftool>();
+            
+            _import = new ImportService(context,_isync,_exiftool);
         }
 
 //        [TestMethod]
