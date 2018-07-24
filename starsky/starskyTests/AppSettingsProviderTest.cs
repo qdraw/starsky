@@ -8,7 +8,7 @@ namespace starskytests
     public class AppSettingsProviderTest
     {
         [TestMethod]
-        public void ReadOnlyFoldersTest()
+        public void AppSettingsProviderTest_ReadOnlyFoldersTest()
         {
             AppSettingsProvider.ReadOnlyFolders = new List<string> {"test"};
             CollectionAssert.AreEqual(new List<string> {"test"}, AppSettingsProvider.ReadOnlyFolders);
@@ -16,7 +16,7 @@ namespace starskytests
 
         
         [TestMethod]
-        public void SqliteFullPathTest()
+        public void AppSettingsProviderTest_SqliteFullPathTest()
         {
             AppSettingsProvider.DatabaseType = AppSettingsProvider.DatabaseTypeList.sqlite;
             var datasource = AppSettingsProvider.SqliteFullPath("Data Source=data.db");
@@ -26,7 +26,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void SqliteFullPathentityframeworkcoreTest()
+        public void AppSettingsProviderTest_SqliteFullPathentityframeworkcoreTest()
         {
             AppSettingsProvider.DatabaseType = AppSettingsProvider.DatabaseTypeList.sqlite;
             // This one should be ignored by SqliteFullPath so it must return ==> "Data Source=data.db"
@@ -36,7 +36,7 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void SqliteFullPathstarskycliTest()
+        public void AppSettingsProviderTest_SqliteFullPathstarskycliTest()
         {
             AppSettingsProvider.DatabaseType = AppSettingsProvider.DatabaseTypeList.sqlite;
             var datasource = AppSettingsProvider.SqliteFullPath("Data Source=data.db", Path.DirectorySeparatorChar + "starsky-cli" + Path.DirectorySeparatorChar + "data.db");
@@ -46,7 +46,7 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void SqliteFullPathstarskyimportercliTest()
+        public void AppSettingsProviderTest_SqliteFullPathstarskyimportercliTest()
         {
             AppSettingsProvider.DatabaseType = AppSettingsProvider.DatabaseTypeList.sqlite;
             var datasource = AppSettingsProvider.SqliteFullPath("Data Source=data.db", Path.DirectorySeparatorChar + "starskyimportercli" + Path.DirectorySeparatorChar + "data.db");

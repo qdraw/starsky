@@ -10,7 +10,7 @@ namespace starskytests
     public class FileIndexItemTest
     {
         [TestMethod]
-        public void SetTagsToNull()
+        public void FileIndexItemTest_SetTagsToNull()
         {
             var item = new FileIndexItem{Tags = null};
             Assert.AreEqual(item.Tags,string.Empty);
@@ -18,7 +18,7 @@ namespace starskytests
         
         
         [TestMethod]
-        public void SetColorClassTestDefault()
+        public void FileIndexItemTest_SetColorClassTestDefault()
         {
             var input = new FileIndexItem().SetColorClass();
             var output = FileIndexItem.Color.None;
@@ -26,7 +26,7 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void SetColorClassTestMin1()
+        public void FileIndexItemTest_SetColorClassTestMin1()
         {
             var input = new FileIndexItem().SetColorClass("-1");
             var output = FileIndexItem.Color.DoNotChange;
@@ -34,7 +34,7 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void SetColorClassTest0()
+        public void FileIndexItemTest_SetColorClassTest0()
         {
             var input = new FileIndexItem().SetColorClass("0");
             var output = FileIndexItem.Color.None;
@@ -42,7 +42,7 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void SetColorClassTest1()
+        public void FileIndexItemTest_SetColorClassTest1()
         {
             var input = new FileIndexItem().SetColorClass("1");
             var output = FileIndexItem.Color.Winner;
@@ -50,7 +50,7 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void SetColorClassTest2()
+        public void FileIndexItemTest_SetColorClassTest2()
         {
             var input = new FileIndexItem().SetColorClass("2");
             var output = FileIndexItem.Color.WinnerAlt;
@@ -58,7 +58,7 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void SetColorClassTest3()
+        public void FileIndexItemTest_SetColorClassTest3()
         {
             var input = new FileIndexItem().SetColorClass("3");
             var output = FileIndexItem.Color.Superior;
@@ -66,7 +66,7 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void SetColorClassTest4()
+        public void FileIndexItemTest_SetColorClassTest4()
         {
             var input = new FileIndexItem().SetColorClass("4");
             var output = FileIndexItem.Color.SuperiorAlt;
@@ -74,7 +74,7 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void SetColorClassTest5()
+        public void FileIndexItemTest_SetColorClassTest5()
         {
             var input = new FileIndexItem().SetColorClass("5");
             var output = FileIndexItem.Color.Typical;
@@ -82,7 +82,7 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void SetColorClassTest6()
+        public void FileIndexItemTest_SetColorClassTest6()
         {
             var input = new FileIndexItem().SetColorClass("6");
             var output = FileIndexItem.Color.TypicalAlt;
@@ -90,7 +90,7 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void SetColorClassTest7()
+        public void FileIndexItemTest_SetColorClassTest7()
         {
             var input = new FileIndexItem().SetColorClass("7");
             var output = FileIndexItem.Color.Extras;
@@ -98,7 +98,7 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void SetColorClassTest8()
+        public void FileIndexItemTest_SetColorClassTest8()
         {
             var input = new FileIndexItem().SetColorClass("8");
             var output = FileIndexItem.Color.Trash;
@@ -106,7 +106,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void GetColorClassListTestEightSeven()
+        public void FileIndexItemTest_GetColorClassListTestEightSeven()
         {
             var input = "8,7";
             var eightSeven = new List<FileIndexItem.Color> {FileIndexItem.Color.Trash,FileIndexItem.Color.Extras};
@@ -115,13 +115,13 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void GetAllColorTest()
+        public void FileIndexItemTest_GetAllColorTest()
         {
             Assert.IsTrue(FileIndexItem.GetAllColor().Any());
         }
         
         [TestMethod]
-        public void FileIndexItemTitleTest()
+        public void FileIndexItemTest_FileIndexItemTitleTest()
         {
             var fileIndexItem = new FileIndexItem {Title = null};
             Assert.AreEqual(fileIndexItem.Title,string.Empty);

@@ -43,12 +43,12 @@ namespace starskytests.Controllers
             _importController = new ImportController(_import);
         }
 
-        [TestMethod]
-        public void TEst()
-        {
-            _exiftool.Info("test");
-            
-        }
+//        [TestMethod]
+//        public void TEst()
+//        {
+//            _exiftool.Info("test");
+//            
+//        }
         
 //        [TestMethod]
 //        public async Task ImportController_IndexPost()

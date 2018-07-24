@@ -9,11 +9,11 @@ bash ./readme-listoftests-update.sh
 ``` 
 Last updated:  2018-07-24
 ```
-    ReadOnlyFoldersTest
-    SqliteFullPathTest
-    SqliteFullPathentityframeworkcoreTest
-    SqliteFullPathstarskycliTest
-    SqliteFullPathstarskyimportercliTest
+    AppSettingsProviderTest_ReadOnlyFoldersTest
+    AppSettingsProviderTest_SqliteFullPathTest
+    AppSettingsProviderTest_SqliteFullPathentityframeworkcoreTest
+    AppSettingsProviderTest_SqliteFullPathstarskycliTest
+    AppSettingsProviderTest_SqliteFullPathstarskyimportercliTest
     ArgsHelperNeedVerboseTest
     ArgsGetIndexModeTest
     ArgsHelperNeedHelpTest
@@ -61,21 +61,21 @@ Last updated:  2018-07-24
     ExifToolFixTestIgnoreStringTest
     ExifToolFixTestSingleWord
     FileHashGenerateRandomBytesTest
-    SetTagsToNull
-    SetColorClassTestDefault
-    SetColorClassTestMin1
-    SetColorClassTest0
-    SetColorClassTest1
-    SetColorClassTest2
-    SetColorClassTest3
-    SetColorClassTest4
-    SetColorClassTest5
-    SetColorClassTest6
-    SetColorClassTest7
-    SetColorClassTest8
-    GetColorClassListTestEightSeven
-    GetAllColorTest
-    FileIndexItemTitleTest
+    FileIndexItemTest_SetTagsToNull
+    FileIndexItemTest_SetColorClassTestDefault
+    FileIndexItemTest_SetColorClassTestMin1
+    FileIndexItemTest_SetColorClassTest0
+    FileIndexItemTest_SetColorClassTest1
+    FileIndexItemTest_SetColorClassTest2
+    FileIndexItemTest_SetColorClassTest3
+    FileIndexItemTest_SetColorClassTest4
+    FileIndexItemTest_SetColorClassTest5
+    FileIndexItemTest_SetColorClassTest6
+    FileIndexItemTest_SetColorClassTest7
+    FileIndexItemTest_SetColorClassTest8
+    FileIndexItemTest_GetColorClassListTestEightSeven
+    FileIndexItemTest_GetAllColorTest
+    FileIndexItemTest_FileIndexItemTitleTest
     IsFolderOrFileTest
     GetAllFilesDirectoryTest
     GetFilesInDirectoryTest1
@@ -210,18 +210,18 @@ Last updated:  2018-07-24
     ApiController_Thumbnail_HappyFlowDisplayJson_API_Test
     ApiController_Thumbnail_HappyFlowFileStreamResult_API_Test
     ApiController_Thumbnail_ShowOrginalImage_API_Test
-    ApiController_Thumbnail_IsMissing_ButOrginalExist_butNoIsSingleItemFlag_API_Test
-    ApiController_Thumbnail_FloatingDatabaseFileTest_API_Test
-    ApiController_Thumbnail_NonExistingFile_API_Test
-    ApiController_Env_starskyTestEnv
+    ApiController_ThumbIsMissing_ButOrginalExist_butNoIsSingleItemFlag_API_Test
+    ApiController_FloatingDatabaseFileTest_API_Test
+    ApiController_NonExistingFile_API_Test
+    ApiController_starskyTestEnv
     ApiController_Update_AllDataIncluded_WithFakeExiftool
-    ApiController_Delete_SourceImageMissingOnDisk_WithFakeExiftool
     ApiController_Update_SourceImageMissingOnDisk_WithFakeExiftool
     ApiController_Info_AllDataIncluded_WithFakeExiftool
     ApiController_Info_SourceImageMissingOnDisk_WithFakeExiftool
+    ApiController_Delete_SourceImageMissingOnDisk_WithFakeExiftool
+    ApiController_Thumbnail_NonExistingFile_API_Test
     HomeControllerIndexDetailViewTest
     HomeControllerIndexIndexViewModelTest
-    TEst
     SearchControllerTest_IndexPost
     SearchControllerTest_ZeroItems_Index
     SearchControllerTest_TrashZeroItems
