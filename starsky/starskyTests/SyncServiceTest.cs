@@ -263,13 +263,13 @@ namespace starskytests
             
             _syncservice.FirstItemDirectory();
             
-            var q = _query.GetAllRecursive();
 
             var queryItem = _query.GetObjectByFilePath("/exist");
             Assert.AreEqual(expectThisHashCode, queryItem.FileHash);
             
             File.Delete(testFileFullPath);
-  
+            _query.RemoveItem(queryItem);
+            
         }
 
         [TestMethod]
@@ -337,7 +337,48 @@ namespace starskytests
 
             // test if the sync is working
             Assert.AreEqual(1,outputWithSync.Count(p => p.FilePath == createAnImage.DbPath));
+        }
+        
+        [TestMethod]
+        public void SyncService_Duplicate_Folders_Directories_InDatabase_Test()
+        {
+            var createAnImage = new CreateAnImage();
+            AppSettingsProvider.BasePath = createAnImage.BasePath; // needs to have an / or \ at the end
 
+            var existFullDir = createAnImage.BasePath + Path.DirectorySeparatorChar + "exist";
+            if (!Directory.Exists(existFullDir))
+            {
+                Directory.CreateDirectory(existFullDir);
+            }
+            
+            var q = _query.GetAllRecursive();
+
+            
+            var testjpg = new FileIndexItem
+            {
+                Id = 200,
+                FileName = "exist",
+                ParentDirectory = "/",
+                IsDirectory = true
+            };
+
+            _query.AddItem(testjpg);
+            testjpg.Id++;
+            _query.AddItem(testjpg);
+
+            // this query is before syncing the api
+            var inputWithoutSync = _query.GetAllRecursive();
+            Assert.AreEqual(true,inputWithoutSync.Count(p => p.FilePath == "/exist") >= 2);
+
+            // do a sync
+            _syncservice.SyncFiles("/");
+            var outputWithSync = _query.GetAllRecursive();
+
+            // test if the sync is working
+            Assert.AreEqual(1,outputWithSync.Count(p => p.FilePath == "/exist"));
+            
+            // remove item
+            _query.RemoveItem(outputWithSync.FirstOrDefault(p => p.FilePath == "/exist"));
         }
 
     }
