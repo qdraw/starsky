@@ -13,7 +13,7 @@ namespace starskytests
     {
         [TestMethod]
         [ExcludeFromCoverage]
-        public void ArgsHelperNeedVerboseTest()
+        public void ArgsHelper_NeedVerboseTest()
         {
             var args = new List<string> {"-v"}.ToArray();
             Assert.AreEqual(ArgsHelper.NeedVerbose(args), true);
@@ -25,7 +25,7 @@ namespace starskytests
 
         [TestMethod]
         [ExcludeFromCoverage]
-        public void ArgsGetIndexModeTest()
+        public void ArgsHelper_GetIndexModeTest()
         {
             // Default on so testing off
             var args = new List<string> {"-i","false"}.ToArray();
@@ -35,7 +35,7 @@ namespace starskytests
         
         [TestMethod]
         [ExcludeFromCoverage]
-        public void ArgsHelperNeedHelpTest()
+        public void ArgsHelper_NeedHelpTest()
         {
             var args = new List<string> {"-h"}.ToArray();
             Assert.AreEqual(ArgsHelper.NeedHelp(args), true);
@@ -47,7 +47,7 @@ namespace starskytests
         
         [TestMethod]
         [ExcludeFromCoverage]
-        public void ArgsHelperGetPathFormArgsTest()
+        public void ArgsHelper_GetPathFormArgsTest()
         {
             AppSettingsProvider.BasePath = new CreateAnImage().BasePath;
             var args = new List<string> {"-p", "/"}.ToArray();
@@ -56,7 +56,7 @@ namespace starskytests
         
         [TestMethod]
         [ExcludeFromCoverage]
-        public void ArgsHelperGetSubpathFormArgsTest()
+        public void ArgsHelper_GetSubpathFormArgsTest()
         {
             AppSettingsProvider.BasePath = new CreateAnImage().BasePath;
             var args = new List<string> {"-s", "/"}.ToArray();
@@ -65,7 +65,7 @@ namespace starskytests
         
         [TestMethod]
         [ExcludeFromCoverage]
-        public void ArgsHelperIfSubpathTest()
+        public void ArgsHelper_IfSubpathTest()
         {
             AppSettingsProvider.BasePath = new CreateAnImage().BasePath;
             var args = new List<string> {"-s", "/"}.ToArray();
@@ -81,7 +81,7 @@ namespace starskytests
 
         [TestMethod]
         [ExcludeFromCoverage]
-        public void ArgsHelperGetThumbnailTest()
+        public void ArgsHelper_GetThumbnailTest()
         {
             AppSettingsProvider.BasePath = new CreateAnImage().BasePath;
             var args = new List<string> {"-t", "true"}.ToArray();
@@ -90,7 +90,7 @@ namespace starskytests
         
         [TestMethod]
         [ExcludeFromCoverage]
-        public void ArgsHelperGetOrphanFolderCheckTest()
+        public void ArgsHelper_GetOrphanFolderCheckTest()
         {
             AppSettingsProvider.BasePath = new CreateAnImage().BasePath;
             var args = new List<string> {"-o", "true"}.ToArray();
@@ -99,7 +99,7 @@ namespace starskytests
         
         [TestMethod]
         [ExcludeFromCoverage]
-        public void ArgsHelperGetMoveTest()
+        public void ArgsHelper_GetMoveTest()
         {
             var args = new List<string> {"-m"}.ToArray();
             Assert.AreEqual(ArgsHelper.GetMove(args), true);
@@ -111,7 +111,7 @@ namespace starskytests
         
         [TestMethod]
         [ExcludeFromCoverage]
-        public void ArgsHelperGetAllTest()
+        public void ArgsHelper_GetAllTest()
         {
             var args = new List<string> {"-a"}.ToArray();
             Assert.AreEqual(false, ArgsHelper.GetAll(args));
@@ -123,7 +123,7 @@ namespace starskytests
         
         [TestMethod]
         [ExcludeFromCoverage]
-        public void ArgsHelperSetEnvironmentByArgsShortTestListTest()
+        public void ArgsHelper_SetEnvironmentByArgsShortTestListTest()
         {
             var shortNameList = ArgsHelper.ShortNameList.ToArray();
             var envNameList = ArgsHelper.EnvNameList.ToArray();
@@ -145,7 +145,7 @@ namespace starskytests
         
         [TestMethod]
         [ExcludeFromCoverage]
-        public void ArgsHelperSetEnvironmentByArgsLongTestListTest()
+        public void ArgsHelper_SetEnvironmentByArgsLongTestListTest()
         {
             var longNameList = ArgsHelper.LongNameList.ToArray();
             var envNameList = ArgsHelper.EnvNameList.ToArray();

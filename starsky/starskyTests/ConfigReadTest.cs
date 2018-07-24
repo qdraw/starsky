@@ -17,7 +17,7 @@ namespace starskytests
 
          [ExcludeFromCoverage]
          [TestMethod]
-         public void BasePathTest()
+         public void ConfigRead_BasePathTest()
          {
              // depends on platform
              ConfigRead.SetAppSettingsProvider(Path.DirectorySeparatorChar.ToString(), "defaultConnection","mysql","/","/exiftool","false","/yyyy.ext",new List<string>());
@@ -25,14 +25,14 @@ namespace starskytests
          }
 
          [TestMethod]
-         public void IsSettingEmptyTest()
+         public void ConfigRead_IsSettingEmptyTest()
          {
              var input = ConfigRead.IsSettingEmpty(string.Empty);
              Assert.AreEqual(input,true);
          }
 
          [TestMethod]
-         public void SetAppSettingsProviderEnvTest()
+         public void ConfigRead_SetAppSettingsProviderEnvTest()
          {
              // todo: this one
              
@@ -73,7 +73,7 @@ namespace starskytests
 
          [ExcludeFromCoverage]
          [TestMethod]
-         public void RemoveLatestBackslashTest()
+         public void ConfigRead_RemoveLatestBackslashTest()
          {
              var input = ConfigRead.RemoveLatestBackslash("/2018"+ Path.DirectorySeparatorChar.ToString());
              var output = "/2018";
@@ -82,7 +82,7 @@ namespace starskytests
 
          [ExcludeFromCoverage]
          [TestMethod]
-         public void PrefixDbslashTest()
+         public void ConfigRead_PrefixDbslashTest()
          {
              var input = ConfigRead.PrefixDbSlash("2018/");
              var output = "/2018/";
@@ -91,7 +91,7 @@ namespace starskytests
          
          [ExcludeFromCoverage]
          [TestMethod]
-         public void AddBackslashTest()
+         public void ConfigRead_AddBackslashTest()
          {
              var input = ConfigRead.AddBackslash("2018");
              var output = "2018" + Path.DirectorySeparatorChar.ToString();

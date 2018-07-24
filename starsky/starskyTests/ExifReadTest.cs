@@ -27,7 +27,7 @@ namespace starskytests
 
          [TestMethod]
          [ExcludeFromCoverage]
-         public void GetObjectNameNull()
+         public void ExifRead_GetObjectNameNull()
          {
              var t = ExifRead.GetObjectName(new MockDirectory());
              Assert.AreEqual(t, null);
@@ -35,7 +35,7 @@ namespace starskytests
 
          [TestMethod]
          [ExcludeFromCoverage]
-         public void GetObjectNameTest()
+         public void ExifRead_GetObjectNameTest()
          {
              var dir = new IptcDirectory();
              dir.Set(IptcDirectory.TagObjectName, "test" );
@@ -46,7 +46,7 @@ namespace starskytests
 
         [TestMethod]
         [ExcludeFromCoverage]
-        public void GetCaptionAbstractTest()
+        public void ExifRead_GetCaptionAbstractTest()
         {
             var dir = new IptcDirectory();
             dir.Set(IptcDirectory.TagCaption, "test123");
@@ -58,7 +58,7 @@ namespace starskytests
          
          [TestMethod]
          [ExcludeFromCoverage]
-         public void GetExifKeywordsSingleTest()
+         public void ExifRead_GetExifKeywordsSingleTest()
          {
              var dir = new IptcDirectory();
              dir.Set(IptcDirectory.TagKeywords, "test123");
@@ -69,7 +69,7 @@ namespace starskytests
          
          [TestMethod]
          [ExcludeFromCoverage]
-         public void GetExifKeywordsMultipleTest()
+         public void ExifRead_GetExifKeywordsMultipleTest()
          {
              var dir = new IptcDirectory();
              dir.Set(IptcDirectory.TagKeywords, "test123;test12");
@@ -82,7 +82,7 @@ namespace starskytests
          
          [TestMethod]
          [ExcludeFromCoverage]
-         public void GetExifDateTimeTest()
+         public void ExifRead_GetExifDateTimeTest()
          {
              // Incomplete unit test 
              // todo: fix this test
@@ -107,7 +107,7 @@ namespace starskytests
 
          
          [TestMethod]
-         public void ParseGpsTest()
+         public void ExifRead_ParseGpsTest()
          {
              var latitude = ExifRead.ConvertDegreeAngleToDouble("52° 18' 29.54\"", "N");
              Assert.AreEqual(latitude,  52.308205555500003, 0.000001);
@@ -118,7 +118,7 @@ namespace starskytests
          }
          
          [TestMethod]
-         public void ReadExifFromFileTest()
+         public void ExifRead_ReadExifFromFileTest()
          {
              var newImage = new CreateAnImage();
              AppSettingsProvider.Verbose = true;

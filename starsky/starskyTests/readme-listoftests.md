@@ -14,41 +14,41 @@ Last updated:  2018-07-24
     AppSettingsProviderTest_SqliteFullPathentityframeworkcoreTest
     AppSettingsProviderTest_SqliteFullPathstarskycliTest
     AppSettingsProviderTest_SqliteFullPathstarskyimportercliTest
-    ArgsHelperNeedVerboseTest
-    ArgsGetIndexModeTest
-    ArgsHelperNeedHelpTest
-    ArgsHelperGetPathFormArgsTest
-    ArgsHelperGetSubpathFormArgsTest
-    ArgsHelperIfSubpathTest
-    ArgsHelperGetThumbnailTest
-    ArgsHelperGetOrphanFolderCheckTest
-    ArgsHelperGetMoveTest
-    ArgsHelperGetAllTest
-    ArgsHelperSetEnvironmentByArgsShortTestListTest
-    ArgsHelperSetEnvironmentByArgsLongTestListTest
+    ArgsHelper_NeedVerboseTest
+    ArgsHelper_GetIndexModeTest
+    ArgsHelper_NeedHelpTest
+    ArgsHelper_GetPathFormArgsTest
+    ArgsHelper_GetSubpathFormArgsTest
+    ArgsHelper_IfSubpathTest
+    ArgsHelper_GetThumbnailTest
+    ArgsHelper_GetOrphanFolderCheckTest
+    ArgsHelper_GetMoveTest
+    ArgsHelper_GetAllTest
+    ArgsHelper_SetEnvironmentByArgsShortTestListTest
+    ArgsHelper_SetEnvironmentByArgsLongTestListTest
     Base32EncodeDecodeTest
     BreadcrumbSlashMethodTest
     BreadcrumbFileNameMethodTest
     BreadcrumbNullTest
-    BasePathTest
-    IsSettingEmptyTest
-    SetAppSettingsProviderEnvTest
+    ConfigRead_BasePathTest
+    ConfigRead_IsSettingEmptyTest
+    ConfigRead_SetAppSettingsProviderEnvTest
     ConfigRead_ReadTextFromObjOrEnvListOfItemsWithItems
     ConfigRead_ReadTextFromObjOrEnvListOfItems_null_Items
     ConfigRead_ReadTextFromObjOrEnvListOfItems_nullExpectedException_Items
     ConfigRead_ReadTextFromObjOrEnvListOfItems_zzEnv
-    RemoveLatestBackslashTest
-    PrefixDbslashTest
-    AddBackslashTest
+    ConfigRead_RemoveLatestBackslashTest
+    ConfigRead_PrefixDbslashTest
+    ConfigRead_AddBackslashTest
     EnvViewModelTestEnvViewModelTest
-    GetObjectNameNull
-    GetObjectNameTest
-    GetCaptionAbstractTest
-    GetExifKeywordsSingleTest
-    GetExifKeywordsMultipleTest
-    GetExifDateTimeTest
-    ParseGpsTest
-    ReadExifFromFileTest
+    ExifRead_GetObjectNameNull
+    ExifRead_GetObjectNameTest
+    ExifRead_GetCaptionAbstractTest
+    ExifRead_GetExifKeywordsSingleTest
+    ExifRead_GetExifKeywordsMultipleTest
+    ExifRead_GetExifDateTimeTest
+    ExifRead_ParseGpsTest
+    ExifRead_ReadExifFromFileTest
     ExifToolModelColorClassTest
     ExifToolCaptionAbstractTest
     ExifToolPrefsParseTest
