@@ -37,11 +37,11 @@ On Linux ARM there is no SDK avaiable, but the runtime works. So you have to com
     ```
     sudo apt-get install curl libunwind8 gettext apt-transport-https
     ```
-4) On the Raspi, install Exiftool
+5) On the Raspi, install Exiftool
     ```
     sudo apt-get install libimage-exiftool-perl
     ```
-5)  Setup `appsettings.json` configuration
+6)  Setup `appsettings.json` configuration
     This is the most basic configuration. There are more options available
     ```json
     {
@@ -55,7 +55,7 @@ On Linux ARM there is no SDK avaiable, but the runtime works. So you have to com
     	}
     }   
     ```
-6) Run the Starsky web interface
+7) Run the Starsky web interface
 
     ```
     ./starsky
