@@ -42,14 +42,14 @@ On Linux ARM there is no SDK avaiable, but the runtime works. So you have to com
     This is the most basic configuration. There are more options available
     ```json
     {
-      "ConnectionStrings": {
-          "ThumbnailTempFolder": "/home/pi/starsky_thumbnails",
-    	  "STARSKY_BASEPATH": "/home/pi/starsky_base",
-          "DatabaseType": "sqlite",
-          "DefaultConnection": "Data Source=data.db",
-          "ExifToolPath": "/usr/bin/exiftool",
-          "ReadOnlyFolders": []
-    	}
+        "ConnectionStrings": {
+            "ThumbnailTempFolder": "/home/pi/starsky_thumbnails",
+            "STARSKY_BASEPATH": "/home/pi/starsky_base",
+            "DatabaseType": "sqlite",
+            "DefaultConnection": "Data Source=data.db",
+            "ExifToolPath": "/usr/bin/exiftool",
+            "ReadOnlyFolders": []
+        }
     }   
     ```
 6) Run the Starsky web interface
