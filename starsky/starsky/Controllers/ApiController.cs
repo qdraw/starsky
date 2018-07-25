@@ -224,7 +224,8 @@ namespace starsky.Controllers
 
         [HttpGet]
         [HttpHead]
-        public IActionResult DownloadPhoto(string f, bool isThumbnail = true){
+        public IActionResult DownloadPhoto(string f, bool isThumbnail = true)
+        {
             // f = filePath
             if (f.Contains("?isthumbnail")) return NotFound("please use &isthumbnail= instead of ?isthumbnail=");
 

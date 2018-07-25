@@ -7,7 +7,7 @@
  ```
 bash ./readme-listoftests-update.sh 
 ``` 
-Last updated:  2018-07-24
+Last updated:  2018-07-25
 ```
     AppSettingsProviderTest_ReadOnlyFoldersTest
     AppSettingsProviderTest_SqliteFullPathTest
@@ -220,6 +220,9 @@ Last updated:  2018-07-24
     ApiController_Info_SourceImageMissingOnDisk_WithFakeExiftool
     ApiController_Delete_SourceImageMissingOnDisk_WithFakeExiftool
     ApiController_Thumbnail_NonExistingFile_API_Test
+    ApiController_Thumbnail_CorruptImage_NoContentResult_Test
+    ApiController_Thumbnail_CorruptImage_retryThumbnail_Test
+    ApiController_DownloadPhoto_isThumbnailTrue_NotFound_Test
     HomeControllerIndexDetailViewTest
     HomeControllerIndexIndexViewModelTest
     SearchControllerTest_IndexPost

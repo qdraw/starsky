@@ -264,7 +264,7 @@ namespace starskytests.Controllers
         }
 
         [TestMethod]
-        public void ApiController_Thumbnail_CorruptImage_Test()
+        public void ApiController_Thumbnail_CorruptImage_NoContentResult_Test()
         {
             // Arrange
             AppSettingsProvider.ThumbnailTempFolder = new CreateAnImage().BasePath;
@@ -301,11 +301,68 @@ namespace starskytests.Controllers
             }
 
         }
+        
+        [TestMethod]
+        public void ApiController_Thumbnail_CorruptImage_retryThumbnail_Test()
+        {
+            // Arrange
+            AppSettingsProvider.ThumbnailTempFolder = new CreateAnImage().BasePath;
+
+            var thumbHash = "ApiController_Thumbnail_CorruptImage_Test";
+            var path = AppSettingsProvider.ThumbnailTempFolder + Path.DirectorySeparatorChar + thumbHash + ".jpg";
+            if (!File.Exists(path))
+            {
+                using (StreamWriter sw = File.CreateText(path)) 
+                {
+                    sw.WriteLine("CorruptImage");
+                } 
+            }
+            
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "ApiController_Thumbnail_CorruptImage_Test.jpg",
+                ParentDirectory = "/",
+                FileHash = thumbHash
+            });
+            
+            // Act
+            var controller = new ApiController(_query,_exiftool);
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+            // The only difference between ApiController_Thumbnail_CorruptImage_NoContentResult_Test
+            var actionResult = controller.Thumbnail(thumbHash, false, true, true) as NotFoundObjectResult;
+            Assert.AreEqual(404,actionResult.StatusCode);
+               
+            // remove files + database item
+            _query.RemoveItem(_query.GetObjectByFilePath("/" + thumbHash + ".jpg"));
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+
+        }
 
         [TestMethod]
-        public void ApiController_DownloadPhoto_Test()
+        public void ApiController_DownloadPhoto_isThumbnailTrue_NotFound_Test()
         {
+            // Arange
+            var fileIndexItem = InsertSearchData();
+
+            // Remove thumb if exist
+            var thumbPath = new CreateAnImage().BasePath + Path.DirectorySeparatorChar + fileIndexItem.FileHash +
+                            ".jpg";
             
+            if (File.Exists(thumbPath))
+            {
+                File.Delete(thumbPath);
+            }
+            
+            // Act
+            var controller = new ApiController(_query,_exiftool);
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+            var actionResult =  controller.DownloadPhoto(fileIndexItem.FilePath)  as FileStreamResult;
+            Assert.AreNotEqual(null,actionResult);
+
         }
 
 
