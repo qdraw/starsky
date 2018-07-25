@@ -141,7 +141,13 @@ namespace starskytests
             var output = new List<FileIndexItem> {outputFileIndex}.Select(p => p.FilePath).ToList();
            
             CollectionAssert.AreEqual(output,input);
-            
+
+            // Clean // add underscore
+            var fullPath = basePath + "_" + path;
+            if (File.Exists(fullPath))
+            {
+                File.Delete(fullPath);
+            }  
             
         }
 
