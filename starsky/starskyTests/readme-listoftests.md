@@ -9,6 +9,12 @@ bash ./readme-listoftests-update.sh
 ``` 
 Last updated:  2018-07-25
 ```
+
+Test run for /data/git/starsky/starsky/starskyTests/bin/Debug/netcoreapp2.1/starskytests.dll(.NETCoreApp,Version=v2.1)
+Microsoft (R) Test Execution Command Line Tool Version 15.7.0
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+The following Tests are available:
     AppSettingsProviderTest_ReadOnlyFoldersTest
     AppSettingsProviderTest_SqliteFullPathTest
     AppSettingsProviderTest_SqliteFullPathentityframeworkcoreTest
