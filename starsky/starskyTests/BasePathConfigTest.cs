@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
 
 namespace starskytests
@@ -15,6 +11,13 @@ namespace starskytests
         public void BasePathConfig_StructureNotNull()
         {
             Assert.AreNotEqual(null,new BasePathConfig().Structure );
+        }
+
+        [TestMethod]
+        public void BasePathConfig_StructureRead()
+        {
+            var test = new BasePathConfig{Structure = "/yyyy"};
+            Assert.AreEqual(test.Structure, "/yyyy");
         }
 
     }

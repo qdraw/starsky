@@ -28,6 +28,7 @@ Last updated:  2018-07-25
     ArgsHelper_SetEnvironmentByArgsLongTestListTest
     Base32EncodeDecodeTest
     BasePathConfig_StructureNotNull
+    BasePathConfig_StructureRead
     BreadcrumbSlashMethodTest
     BreadcrumbFileNameMethodTest
     BreadcrumbNullTest
