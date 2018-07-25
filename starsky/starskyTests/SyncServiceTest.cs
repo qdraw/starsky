@@ -141,7 +141,7 @@ namespace starskytests
             var output = new List<FileIndexItem> {outputFileIndex}.Select(p => p.FilePath).ToList();
            
             CollectionAssert.AreEqual(output,input);
-
+            
             
         }
 

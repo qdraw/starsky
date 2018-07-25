@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -65,6 +66,10 @@ namespace starskytests
             var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg", requestBody);
             Assert.AreNotEqual(null, formValueProvider.ToString());
             requestBody.Dispose();
+            
+            // Clean
+            File.Delete(formValueProvider.FirstOrDefault());
+            
         }
 
         [TestMethod]
