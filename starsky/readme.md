@@ -62,7 +62,7 @@ On Linux ARM there is no SDK avaiable, but the runtime works. So you have to com
 When using SQLite as databasetype without `SQLitePCLRaw.lib.e_sqlite3.linux` the following error appears:
 `System.DllNotFoundException: Unable to load DLL 'e_sqlite3'`
 
-To avoid the error: `System.IO.FileLoadException` `Microsoft.Extensions.Options, Version=2.0.2.0` the package Microsoft.EntityFrameworkCore is installed
+To avoid the error: `System.IO.FileLoadException` `Microsoft.Extensions.Options, Version=2.0.2.0` the package `Microsoft.EntityFrameworkCore` is installed
 
 
 ### Bash build and configuation scripts
