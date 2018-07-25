@@ -24,10 +24,14 @@ dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 >> All tests must run succesfull to build
 
 ### Location of temp files
+#### Windows
+```
+C:\Users\VssAdministrator\.nuget\packages\microsoft.testplatform.testhost\15.7.2\lib\netstandard1.5\
+```
+
 #### OS X
 ```
 ~/.nuget/packages/microsoft.testplatform.testhost/15.7.2/lib/netstandard1.5/
-~/.nuget/packages/microsoft.testplatform.testhost/15.7.2/lib/netstandard1.5/exist/
 ```
 
 ### List of Tests
@@ -41,7 +45,7 @@ The goal is improve test coverage
 +------------+--------+--------+--------+
 | Module     | Line   | Branch | Method |
 +------------+--------+--------+--------+
-| starsky    | 77,3%  | 76,3%  | 91,3%  |
+| starsky    | 79%    | 77,5%  | 92,2%  |
 +------------+--------+--------+--------+
 | starskycli | 68,2%  | 64,3%  | 50%    |
 +------------+--------+--------+--------+
