@@ -160,54 +160,40 @@ namespace starsky.Helpers
             }
         }
         
-        // Read a folder recruisive
-        public static IEnumerable<string> GetFilesRecrusive(string path = "", bool dbStyle = true)
+        public static IEnumerable<string> GetFilesRecrusive(string path, bool dbStyle = true)
         {
             if (dbStyle)
             {
                 path = FileIndexItem.DatabasePathToFilePath(path);
             }
-            
-            Queue<string> queue = new Queue<string>();
-            queue.Enqueue(path);
-            while (queue.Count > 0)
+            List<string> findlist = new List<string>();
+
+            /* I begin a recursion, following the order:
+             * - Insert all the files in the current directory with the recursion
+             * - Insert all subdirectories in the list and rebegin the recursion from there until the end
+             */
+            RecurseFind( path, findlist );
+
+            return findlist;
+        }
+
+        private static void RecurseFind( string path, List<string> list )
+        {
+            string[] fl = Directory.GetFiles(path);
+            string[] dl = Directory.GetDirectories(path);
+            if ( fl.Length>0 || dl.Length>0 )
             {
-                path = queue.Dequeue();
-                try
+                //I begin with the files, and store all of them in the list
+                foreach(string s in fl)
+                    list.Add(s);
+                //I then add the directory and recurse that directory, the process will repeat until there are no more files and directories to recurse
+                foreach(string s in dl)
                 {
-                    foreach (string subDir in Directory.GetDirectories(path))
-                    {
-                        Console.WriteLine(subDir);
-                        queue.Enqueue(subDir);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine(ex);
-                }
-                string[] files = null;
-                try
-                {
-                    files = System.IO.Directory.GetFiles(path);
-                }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine(ex);
-                }
-                if (files != null)
-                {
-                    for (int i = 0; i < files.Length; i++)
-                    {
-                        if (files[i].ToLower().EndsWith("jpg"))
-                        {
-                            yield return files[i];
-                        }
-                    }
+                    list.Add(s);
+                    RecurseFind(s, list);
                 }
             }
         }
-        
-
 
     }
 }
