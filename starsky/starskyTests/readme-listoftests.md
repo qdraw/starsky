@@ -27,6 +27,7 @@ Last updated:  2018-07-25
     ArgsHelper_SetEnvironmentByArgsShortTestListTest
     ArgsHelper_SetEnvironmentByArgsLongTestListTest
     Base32EncodeDecodeTest
+    BasePathConfig_StructureNotNull
     BreadcrumbSlashMethodTest
     BreadcrumbFileNameMethodTest
     BreadcrumbNullTest
@@ -76,9 +77,6 @@ Last updated:  2018-07-25
     FileIndexItemTest_GetColorClassListTestEightSeven
     FileIndexItemTest_GetAllColorTest
     FileIndexItemTest_FileIndexItemTitleTest
-    IsFolderOrFileTest
-    GetAllFilesDirectoryTest
-    GetFilesInDirectoryTest1
     StreamFileExeption
     StreamFilemultipart
     FileStreamingHelperTest_FileStreamingHelper_StreamFile_imagejpeg
@@ -90,6 +88,9 @@ Last updated:  2018-07-25
     FileStreamingHelper_GetTempFilePath_ParseStringAppendix1_Option
     FileStreamingHelperTest_FileStreamingHelper_StreamFile_multiPart
     FolderOrFileModelFolderOrFileTypeListTest
+    IsFolderOrFileTest
+    GetAllFilesDirectoryTest
+    GetFilesInDirectoryTest1
     ImportService_NoSubPath_slashyyyyMMdd_HHmmss_ImportTest
     ImportService_AsteriskTRFolderHHmmss_ImportTest
     ImportService_NonExistingFolder_HHmmssImportTest
@@ -222,7 +223,11 @@ Last updated:  2018-07-25
     ApiController_Thumbnail_NonExistingFile_API_Test
     ApiController_Thumbnail_CorruptImage_NoContentResult_Test
     ApiController_Thumbnail_CorruptImage_retryThumbnail_Test
-    ApiController_DownloadPhoto_isThumbnailTrue_NotFound_Test
+    ApiController_DownloadPhoto_isThumbnailTrue_CreateThumb_ReturnFileStream_Test
+    ApiController_DownloadPhoto_isThumbnailFalse_ReturnFileStream_Test
+    ApiController_DownloadPhoto_isThumbnailTrue_ReturnAThumb_ReturnFileStream_Test
+    ApiController_DownloadPhoto_SourceImageIsMissing_Test
+    ApiController_DownloadPhoto_Thumb_base_folder_not_found_Test
     HomeControllerIndexDetailViewTest
     HomeControllerIndexIndexViewModelTest
     SearchControllerTest_IndexPost

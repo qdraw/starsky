@@ -57,6 +57,8 @@ namespace starskytests
         {
             var targetStream = new MemoryStream();
             var createAnImage = new CreateAnImage();
+
+            AppSettingsProvider.ThumbnailTempFolder = createAnImage.BasePath;
             
             FileStream requestBody = new FileStream(createAnImage.FullFilePath, FileMode.Open);
             
