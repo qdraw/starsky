@@ -52,7 +52,11 @@ On Linux ARM there is no SDK avaiable, but the runtime works. So you have to com
     	}
     }   
     ```
-6) Run `./starsky`
+6) Run the Starsky web interface
+
+    ```
+    ./starsky
+    ```
 
 #### Errors
 When using SQLite as databasetype without `SQLitePCLRaw.lib.e_sqlite3.linux` the following error appears:
