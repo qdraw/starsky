@@ -60,6 +60,17 @@ On Linux ARM there is no SDK avaiable, but the runtime works. So you have to com
     ```
     ./starsky
     ```
+8) Create a account in the starsky application. Those credentials are only required by the web application
+    ```
+   http://localhost:5000/account/register
+    ```
+    
+#### Optional steps  
+9)  The script [`new-pm2.sh`](new-pm2.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
+    ```sh
+        export ASPNETCORE_URLS="http://localhost:4823/"
+        export ASPNETCORE_ENVIRONMENT="Production"
+    ```
 
 #### Errors
 When using SQLite as databasetype without `SQLitePCLRaw.lib.e_sqlite3.linux` the following error appears:
