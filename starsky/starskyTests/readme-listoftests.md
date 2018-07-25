@@ -127,33 +127,33 @@ Last updated:  2018-07-24
     QueryTest_PrevFilePathCachingConflicts_Deleted
     QueryTest_CachingDirectoryConflicts_CheckIfContentIsInCacheUpdated
     QueryNoCache_SingleItem_Test
-    SearchNull
-    SearchCountStationTest
-    SearchLastPageCityloopTest
+    SearchService_SearchNull
+    SearchService_SearchCountStationTest
+    SearchService_SearchLastPageCityloopTest
     SearchSchipholDescriptionTest
-    SearchSchipholFilenameTest
-    SearchSchipholTitleTest
-    SearchCityloopTest
-    SearchStationLelystadTest
-    SearchParenthesisTreinTest
-    SearchCityloopCaseSensitiveTest
-    SearchCityloopTrimTest
-    SearchCityloopFilePathTest
-    SearchCityloopFileNameTest
-    SearchCityloopParentDirectoryTest
-    SearchInUrlTest
-    SearchNarrowFileNameTags
-    SearchSetSearchInStringTypeTest
-    MatchSearchTwoKeywordsTest
-    MatchSearchOneKeywordsTest
-    SearchPageTypeTest
-    MatchSearchFileNameAndDefaultOptionTest
-    QuerySafeTest
-    QueryShortcutsInurlTest
-    MatchSearchDefaultOptionTest
-    SearchForDeletedFiles
-    RoundDownTest
-    RoundUpTest
+    SearchService_SearchSchipholFilenameTest
+    SearchService_SearchSchipholTitleTest
+    SearchService_SearchCityloopTest
+    SearchService_SearchStationLelystadTest
+    SearchService_SearchParenthesisTreinTest
+    SearchService_SearchCityloopCaseSensitiveTest
+    SearchService_SearchCityloopTrimTest
+    SearchService_SearchCityloopFilePathTest
+    SearchService_SearchCityloopFileNameTest
+    SearchService_SearchCityloopParentDirectoryTest
+    SearchService_SearchInUrlTest
+    SearchService_SearchNarrowFileNameTags
+    SearchService_SearchSetSearchInStringTypeTest
+    SearchService_MatchSearchTwoKeywordsTest
+    SearchService_MatchSearchOneKeywordsTest
+    SearchService_SearchPageTypeTest
+    SearchService_MatchSearchFileNameAndDefaultOptionTest
+    SearchService_QuerySafeTest
+    SearchService_QueryShortcutsInurlTest
+    SearchService_MatchSearchDefaultOptionTest
+    SearchService_SearchForDeletedFiles
+    SearchService_RoundDownTest
+    SearchService_RoundUpTest
     SearchViewModel_ElapsedSeconds_Test
     SyncServiceAddFoldersToDatabaseTest
     SyncServiceRemoveOldFilePathItemsFromDatabaseTest

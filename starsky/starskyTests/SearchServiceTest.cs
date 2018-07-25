@@ -102,14 +102,14 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void SearchNull()
+        public void SearchService_SearchNull()
         {
             InsertSearchData();
             Assert.AreEqual(0, _search.Search(null).SearchCount);
         }
         
         [TestMethod]
-        public void SearchCountStationTest()
+        public void SearchService_SearchCountStationTest()
         {
             InsertSearchData();
             // With deleted files is it 3
@@ -118,7 +118,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void SearchLastPageCityloopTest()
+        public void SearchService_SearchLastPageCityloopTest()
         {
             InsertSearchData();
             Assert.AreEqual(3, _search.Search("cityloop").LastPageNumber);
@@ -132,42 +132,42 @@ namespace starskytests
         }
    
         [TestMethod]
-        public void SearchSchipholFilenameTest()
+        public void SearchService_SearchSchipholFilenameTest()
         {
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("-filename:'schipholairplane.jpg'").SearchCount);
         }
         
         [TestMethod]
-        public void SearchSchipholTitleTest()
+        public void SearchService_SearchSchipholTitleTest()
         {
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("-title:Schiphol").SearchCount);
         }
             
         [TestMethod]
-        public void SearchCityloopTest()
+        public void SearchService_SearchCityloopTest()
         {
             InsertSearchData();
             Assert.AreEqual(61, _search.Search("cityloop").SearchCount);
         }
         
         [TestMethod]
-        public void SearchStationLelystadTest()
+        public void SearchService_SearchStationLelystadTest()
         {
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("station lelystad").SearchCount);
         }
 
         [TestMethod]
-        public void SearchParenthesisTreinTest()
+        public void SearchService_SearchParenthesisTreinTest()
         {
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("\"de trein\"").SearchCount);
         }
 
         [TestMethod]
-        public void SearchCityloopCaseSensitiveTest()
+        public void SearchService_SearchCityloopCaseSensitiveTest()
         {
              InsertSearchData();
              //    Check case sensitive!
@@ -175,7 +175,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void SearchCityloopTrimTest()
+        public void SearchService_SearchCityloopTrimTest()
         {
             // Test TRIM
             InsertSearchData();
@@ -183,28 +183,28 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void SearchCityloopFilePathTest()
+        public void SearchService_SearchCityloopFilePathTest()
         {
             InsertSearchData();
             Assert.AreEqual(61, _search.Search("-FilePath:cityloop").SearchCount);
         }
         
         [TestMethod]
-        public void SearchCityloopFileNameTest()
+        public void SearchService_SearchCityloopFileNameTest()
         {
             InsertSearchData();
             Assert.AreEqual(61, _search.Search("-FilePath:cityloop").SearchCount);
         }
         
         [TestMethod]
-        public void SearchCityloopParentDirectoryTest()
+        public void SearchService_SearchCityloopParentDirectoryTest()
         {
             InsertSearchData();
             Assert.AreEqual(61, _search.Search("-ParentDirectory:/cities").SearchCount);
         }
         
         [TestMethod]
-        public void SearchInUrlTest()
+        public void SearchService_SearchInUrlTest()
         {
             InsertSearchData();
             // Not 3, because one file is marked as deleted!
@@ -214,7 +214,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void SearchNarrowFileNameTags()
+        public void SearchService_SearchNarrowFileNameTags()
         {
             InsertSearchData();
             // Not 2 > but needs to be narrow
@@ -225,7 +225,7 @@ namespace starskytests
         
 
         [TestMethod]
-        public void SearchSetSearchInStringTypeTest()
+        public void SearchService_SearchSetSearchInStringTypeTest()
         {
             var model = new SearchViewModel();
             model.SetAddSearchInStringType("Tags");
@@ -237,7 +237,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void MatchSearchTwoKeywordsTest()
+        public void SearchService_MatchSearchTwoKeywordsTest()
         {
             var model = new SearchViewModel
             {
@@ -250,7 +250,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void MatchSearchOneKeywordsTest()
+        public void SearchService_MatchSearchOneKeywordsTest()
         {
             // Single keyword
             var model = new SearchViewModel {SearchQuery = "-Tags:dion"};
@@ -259,7 +259,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void SearchPageTypeTest()
+        public void SearchService_SearchPageTypeTest()
         {
             var model = _search.Search();
             Assert.AreEqual("Search",model.PageType);
@@ -281,7 +281,7 @@ namespace starskytests
 //        }
 
         [TestMethod]
-        public void MatchSearchFileNameAndDefaultOptionTest()
+        public void SearchService_MatchSearchFileNameAndDefaultOptionTest()
         {
             // Single keyword
             var model = new SearchViewModel {SearchQuery = "-Filename:dion test"};
@@ -291,21 +291,21 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void QuerySafeTest()
+        public void SearchService_QuerySafeTest()
         {
             var query = _search.QuerySafe("   d   ");
             Assert.AreEqual("d",query);
         }
 
         [TestMethod]
-        public void QueryShortcutsInurlTest()
+        public void SearchService_QueryShortcutsInurlTest()
         {
             var query = _search.QueryShortcuts("-inurl");
             Assert.AreEqual("-FilePath",query);
         }
 
         [TestMethod]
-        public void MatchSearchDefaultOptionTest()
+        public void SearchService_MatchSearchDefaultOptionTest()
         {
             // Single keyword
             var model = new SearchViewModel {SearchQuery = "test"};
@@ -314,7 +314,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void SearchForDeletedFiles()
+        public void SearchService_SearchForDeletedFiles()
         {
             InsertSearchData();
             var del = _search.Search("!delete!");
@@ -323,13 +323,13 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void RoundDownTest()
+        public void SearchService_RoundDownTest()
         {
             Assert.AreEqual(_search.RoundDown(12),10);
         }
         
         [TestMethod]
-        public void RoundUpTest()
+        public void SearchService_RoundUpTest()
         {
             Assert.AreEqual(_search.RoundUp(8),20); // NumberOfResultsInView
         }
