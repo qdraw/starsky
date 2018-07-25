@@ -92,7 +92,6 @@ Last updated:  2018-07-25
     Files_IsFolderOrFileTest
     Files_GetAllFilesDirectoryTest
     Files_GetFilesInDirectoryTest1
-    Files_GetFilesRecrusiveTest
     ImportService_NoSubPath_slashyyyyMMdd_HHmmss_ImportTest
     ImportService_AsteriskTRFolderHHmmss_ImportTest
     ImportService_NonExistingFolder_HHmmssImportTest
