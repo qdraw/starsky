@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
 using starsky.Models;
@@ -11,7 +13,7 @@ namespace starskytests
     public class FilesTest
     {
         [TestMethod]
-        public void IsFolderOrFileTest()
+        public void Files_IsFolderOrFileTest()
         {
             var newImage = new CreateAnImage();
             // Testing base folder of Image, and Image it self
@@ -25,7 +27,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void GetAllFilesDirectoryTest()
+        public void Files_GetAllFilesDirectoryTest()
         {
             // Assumes that
             //     ~/.nuget/packages/microsoft.testplatform.testhost/15.6.0/lib/netstandard1.5/
@@ -40,7 +42,7 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void GetFilesInDirectoryTest1()
+        public void Files_GetFilesInDirectoryTest1()
         {
             // Used for JPEG files
             var newImage = new CreateAnImage();
@@ -48,8 +50,18 @@ namespace starskytests
             AppSettingsProvider.BasePath = newImage.BasePath;
             var filesInFolder = Files.GetFilesInDirectory("/");
             Assert.AreEqual(filesInFolder.Any(),true);
-            
         }
 
+        [TestMethod]
+        public void Files_GetFilesRecrusiveTest()
+        {            
+            var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
+
+            var content = Files.GetFilesRecrusive(path,false);
+            
+            // Gives a list of the content in the temp folder.
+            Assert.AreEqual(true, content.Count() > 12);            
+
+        }
     }
 }
