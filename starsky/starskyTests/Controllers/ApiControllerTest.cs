@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -262,6 +263,50 @@ namespace starskytests.Controllers
             Assert.AreEqual(404,thumbnailAnswer);
         }
 
+        [TestMethod]
+        public void ApiController_Thumbnail_CorruptImage_Test()
+        {
+            // Arrange
+            AppSettingsProvider.ThumbnailTempFolder = new CreateAnImage().BasePath;
+
+            var thumbHash = "ApiController_Thumbnail_CorruptImage_Test";
+            var path = AppSettingsProvider.ThumbnailTempFolder + Path.DirectorySeparatorChar + thumbHash + ".jpg";
+            if (!File.Exists(path))
+            {
+                using (StreamWriter sw = File.CreateText(path)) 
+                {
+                    sw.WriteLine("CorruptImage");
+                } 
+            }
+            
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "ApiController_Thumbnail_CorruptImage_Test.jpg",
+                ParentDirectory = "/",
+                FileHash = thumbHash
+            });
+            
+            // Act
+            var controller = new ApiController(_query,_exiftool);
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+            var actionResult = controller.Thumbnail(thumbHash, false, true) as NoContentResult;
+            Assert.AreEqual(204,actionResult.StatusCode);
+               
+            // remove files + database item
+            _query.RemoveItem(_query.GetObjectByFilePath("/" + thumbHash + ".jpg"));
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+
+        }
+
+        [TestMethod]
+        public void ApiController_DownloadPhoto_Test()
+        {
+            
+        }
 
 
     }
