@@ -84,6 +84,7 @@ namespace starsky.Services
                 catch (NullReferenceException e)
                 {
                     Console.WriteLine(e);
+                    Console.WriteLine("> Configuration error with:" + name);
                     if(throwError) throw;
                 }
                 if(listOfStrings.Count >= 1) value = "list";
