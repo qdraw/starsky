@@ -142,7 +142,7 @@ namespace starsky.Services
         // Add a new item to the database
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)
         {
-            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
+//            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
             
             try
             {
@@ -162,7 +162,7 @@ namespace starsky.Services
         // Remove a new item from the database
         public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
         {
-            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
+//            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
 
             _context.FileIndex.Remove(updateStatusContent);
             _context.SaveChanges();

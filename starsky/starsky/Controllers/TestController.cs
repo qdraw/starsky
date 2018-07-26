@@ -1,20 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using starsky.Models;
 
 namespace starsky.Controllers
 {
     public class TestController : Controller
     {
-        private readonly IConfiguration _iconfig;
-        public TestController(IConfiguration config)
+        private readonly AppSettings _appSettings;
+        public TestController(AppSettings appSettings)
         {
-            _iconfig = config;
+            _appSettings = appSettings;
         }
+        
         public IActionResult Index()
         {
-            var t = _iconfig.GetSection("App") as AppSettings;
-            return Json(t);
+            return Json(_appSettings);
         }
     }
 }

@@ -15,9 +15,11 @@ namespace starsky.Helpers
     public static class FileStreamingHelper
     {
         private static readonly FormOptions _defaultFormOptions = new FormOptions();
+        private static AppSettings _appSettings;
 
-        public static async Task<List<string>> StreamFile(this HttpRequest request)
-        {            
+        public static async Task<List<string>> StreamFile(this HttpRequest request, AppSettings appSettings)
+        {
+            _appSettings = appSettings;
             // The Header 'filename' is for uploading on file without a form.
             return await StreamFile(request.ContentType, request.Body,HeaderFileName(request));            
         }
@@ -105,7 +107,7 @@ namespace starsky.Helpers
             baseFileName = illegalInFileName.Replace(baseFileName, string.Empty);
 
             
-            var importIndexItem = new ImportIndexItem {SourceFullFilePath = baseFileName};
+            var importIndexItem = new ImportIndexItem(_appSettings) {SourceFullFilePath = baseFileName};
             
             // Replace appendix with '-1' or '-222' ; (-22 will not be replaced)
             // Assumes that a extension has always 3 letters. so no mp3 or html

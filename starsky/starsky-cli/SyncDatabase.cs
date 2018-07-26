@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.Data;
+using starsky.Helpers;
 using starsky.Services;
 using starsky.Models;
 
@@ -12,21 +13,23 @@ namespace starskyCli
        
         public SyncDatabase()
         {
+            var appSettings = new ConfigCliAppsStartupHelper().AppSettings();
+            
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
-            switch (AppSettingsProvider.DatabaseType)
+            switch (appSettings.DatabaseType)
             {
-                case AppSettingsProvider.DatabaseTypeList.mysql:
-                    builder.UseMySql(AppSettingsProvider.DbConnectionString);
+                case AppSettings.DatabaseTypeList.Mysql:
+                    builder.UseMySql(appSettings.DatabaseConnection);
                     break;
-                case AppSettingsProvider.DatabaseTypeList.inmemorydatabase:
+                case AppSettings.DatabaseTypeList.InMemoryDatabase:
                     builder.UseInMemoryDatabase("starsky");
                     break;
-                case AppSettingsProvider.DatabaseTypeList.sqlite:
-                    builder.UseSqlite(AppSettingsProvider.DbConnectionString);
+                case AppSettings.DatabaseTypeList.Sqlite:
+                    builder.UseSqlite(appSettings.DatabaseConnection);
                     break;
                 default:
-                    builder.UseSqlite(AppSettingsProvider.DbConnectionString);
+                    builder.UseSqlite(appSettings.DatabaseConnection);
                     break;
             }
 
@@ -34,7 +37,7 @@ namespace starskyCli
 
             var context = new ApplicationDbContext(options);
             _query = new Query(context); //without cache
-            _syncservice = new SyncService(context, _query);
+            _syncservice = new SyncService(context, _query, appSettings);
         }
 
         private readonly Query _query;
@@ -48,11 +51,6 @@ namespace starskyCli
         public void OrphanFolder(string subPath = "")
         {
             _syncservice.OrphanFolder(subPath);
-        }
-
-        public IEnumerable<FileIndexItem> GetAll(string subPath = "")
-        {
-            return _query.GetAllFiles(subPath);
         }
 
     }

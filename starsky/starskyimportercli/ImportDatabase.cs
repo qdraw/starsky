@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.Data;
+using starsky.Helpers;
 using starsky.Services;
 using starsky.Models;
 
@@ -11,6 +12,8 @@ namespace starskyimportercli
     {
         public ImportDatabase()
         {
+            var appSettings = new ConfigCliAppsStartupHelper().AppSettings();
+            
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
             if (AppSettingsProvider.DatabaseType == AppSettingsProvider.DatabaseTypeList.mysql)

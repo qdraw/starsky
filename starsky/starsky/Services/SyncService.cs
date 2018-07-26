@@ -13,11 +13,13 @@ namespace starsky.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IQuery _query;
+        private AppSettings _appSettings;
 
-        public SyncService(ApplicationDbContext context, IQuery query)
+        public SyncService(ApplicationDbContext context, IQuery query, AppSettings appSettings)
         {
             _context = context;
             _query = query;
+            _appSettings = appSettings;
         }
         
         /* Base feature to sync files and folders

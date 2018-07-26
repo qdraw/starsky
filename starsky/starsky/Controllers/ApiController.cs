@@ -17,12 +17,15 @@ namespace starsky.Controllers
     {
         private readonly IQuery _query;
         private readonly IExiftool _exiftool;
+        private readonly AppSettings _appSettings;
 
-        public ApiController(IQuery query, IExiftool exiftool)
+        public ApiController(IQuery query, IExiftool exiftool, AppSettings appSettings)
         {
+            _appSettings = appSettings;
             _query = query;
             _exiftool = exiftool;
         }
+        
 
         // Used for end2end test
         [HttpGet]
@@ -32,7 +35,7 @@ namespace starsky.Controllers
         [AllowAnonymous] /// <=================================
         public IActionResult Env()
         {
-            return Json(new EnvViewModel().GetEnvAppSettingsProvider());
+            return Json(_appSettings);
         }
 
         private bool _isReadOnly(string f)

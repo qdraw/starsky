@@ -12,6 +12,14 @@ namespace starsky.Models
 {
     public class ImportIndexItem
     {
+        private readonly AppSettings _appSettings;
+
+        public ImportIndexItem(AppSettings appSettings)
+        {
+            _appSettings = appSettings;
+        }
+
+        
         public int Id { get; set; }
         public string FileHash { get; set; }
 
@@ -45,7 +53,7 @@ namespace starsky.Models
                 fileExtenstion = Path.GetExtension(SourceFullFilePath).Replace(".",string.Empty);
             }
             
-            var structuredFileName = AppSettingsProvider.Structure.Split("/").LastOrDefault();
+            var structuredFileName = _appSettings.Structure.Split("/").LastOrDefault();
             if (structuredFileName == null) return null;
 
             // Escape feature to Replace Astriks
@@ -87,7 +95,7 @@ namespace starsky.Models
             fileName = fileName.Replace("_import_", string.Empty);
             
             // Replace Astriks > escape all options
-            var structuredFileName = AppSettingsProvider.Structure.Split("/").LastOrDefault();
+            var structuredFileName = _appSettings.Structure.Split("/").LastOrDefault();
             structuredFileName = structuredFileName.Replace("*", "");
             structuredFileName = structuredFileName.Replace(".ext", string.Empty);
             structuredFileName = structuredFileName.Replace("{filenamebase}", string.Empty);
@@ -137,7 +145,7 @@ namespace starsky.Models
             // If command running twiche you will get /tr/tr (when tr is your single folder name)
             SubFolder = string.Empty;
             
-            var patternList = AppSettingsProvider.Structure.Split("/").ToList();
+            var patternList = _appSettings.Structure.Split("/").ToList();
             var parsedList = ParseListBasePathAndDateFormat(patternList, DateTime);
 
             if (parsedList.Count == 1)

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Data;
+using starsky.Helpers;
 using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
@@ -17,25 +18,30 @@ namespace starsky
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        private IConfigurationRoot _configuration;
+        private ServiceProvider _serviceProvider;
+
+        public Startup()
         {
+            // new style config
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            Configuration = builder.Build();
-            
-            var appConfig = new AppSettings();
-            Configuration.GetSection("App").Bind(appConfig);
+            _configuration = builder.Build();
+
         }
-        public static IConfigurationRoot Configuration { get; set; }
-        
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // old configs
-            ConfigRead.SetAppSettingsProvider();
+            // configs
+            services.ConfigurePoco<AppSettings>(_configuration.GetSection("App"));
+            _serviceProvider = services.BuildServiceProvider();
+            
+            var appSettings = _serviceProvider.GetRequiredService<AppSettings>();
+
+
             
             if(AppSettingsProvider.AddMemoryCache) services.AddMemoryCache();
             
@@ -44,16 +50,16 @@ namespace starsky
             switch (AppSettingsProvider.DatabaseType)
             {
                 case AppSettingsProvider.DatabaseTypeList.mysql:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(AppSettingsProvider.DbConnectionString));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(appSettings.DatabaseConnection));
                     break;
                 case AppSettingsProvider.DatabaseTypeList.inmemorydatabase:
                     services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
                     break;
                 case AppSettingsProvider.DatabaseTypeList.sqlite:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(AppSettingsProvider.DbConnectionString));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(appSettings.DatabaseConnection));
                     break;
                 default:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(AppSettingsProvider.DbConnectionString));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(appSettings.DatabaseConnection));
                     break;
             }
             
@@ -80,7 +86,7 @@ namespace starsky
             services.AddScoped<IImport, ImportService>();
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IExiftool, ExifTool>();
-
+            
             services.AddAntiforgery(
                 options =>
                 {

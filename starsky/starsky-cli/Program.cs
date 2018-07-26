@@ -13,13 +13,13 @@ namespace starskyCli
         public static void Main(string[] args)
         {
             
-            // Check if user want more info
-            AppSettingsProvider.Verbose = ArgsHelper.NeedVerbose(args);
-
-            // If used '-d inmemorydatabase'
-            ArgsHelper.SetEnvironmentByArgs(args);
-
-            ConfigRead.SetAppSettingsProvider();
+//            // Check if user want more info
+//            AppSettingsProvider.Verbose = ArgsHelper.NeedVerbose(args);
+//
+//            // If used '-d inmemorydatabase'
+//            ArgsHelper.SetEnvironmentByArgs(args);
+//
+//            ConfigRead.SetAppSettingsProvider();
             
             if (ArgsHelper.NeedHelp(args))
             {
@@ -41,10 +41,10 @@ namespace starskyCli
                 if (!AppSettingsProvider.Verbose) return;
                 Console.WriteLine("");
                 Console.WriteLine("Settings:");
-                Console.WriteLine("Database Type "+ AppSettingsProvider.DatabaseType);
-                Console.WriteLine("BasePath " + AppSettingsProvider.BasePath);
-                Console.WriteLine("ThumbnailTempFolder " + AppSettingsProvider.ThumbnailTempFolder);
-                Console.WriteLine("DbConnectionString " + AppSettingsProvider.DbConnectionString);
+//                Console.WriteLine("Database Type "+ AppSettingsProvider.DatabaseType);
+//                Console.WriteLine("BasePath " + AppSettingsProvider.BasePath);
+//                Console.WriteLine("ThumbnailTempFolder " + AppSettingsProvider.ThumbnailTempFolder);
+//                Console.WriteLine("DbConnectionString " + AppSettingsProvider.DbConnectionString);
                 return;
             }
 

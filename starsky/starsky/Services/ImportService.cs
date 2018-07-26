@@ -14,12 +14,14 @@ namespace starsky.Services
         private readonly ApplicationDbContext _context;
         private readonly ISync _isync;
         private readonly IExiftool _exiftool;
+        private readonly AppSettings _appSettings;
 
-        public ImportService(ApplicationDbContext context, ISync isync, IExiftool exiftool)
+        public ImportService(ApplicationDbContext context, ISync isync, IExiftool exiftool, AppSettings appSettings)
         {
             _context = context;
             _isync = isync;
             _exiftool = exiftool;
+            _appSettings = appSettings;
         }
 
         // Imports a list of paths, used by the importer web interface
@@ -71,7 +73,7 @@ namespace starsky.Services
             string fileHashCode, 
             FileIndexItem fileIndexItem)
         {
-            var importIndexItem = new ImportIndexItem
+            var importIndexItem = new ImportIndexItem(_appSettings)
             {
                 SourceFullFilePath = inputFileFullPath,
                 DateTime = fileIndexItem.DateTime,
@@ -141,7 +143,7 @@ namespace starsky.Services
             if (ageFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
             {
                 if (AppSettingsProvider.Verbose) 
-                    Console.WriteLine("use this structure to parse: " + AppSettingsProvider.Structure);
+                    Console.WriteLine("use this structure to parse: " + _appSettings.Structure);
                 
                 Console.WriteLine("> "+ inputFileFullPath 
                                       +  " is older than 2 years, "+
@@ -187,7 +189,7 @@ namespace starsky.Services
         // Add a new item to the database
         private void AddItem(ImportIndexItem updateStatusContent)
         {
-            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
+//            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
             updateStatusContent.AddToDatabase = DateTime.UtcNow;
             
             _context.ImportIndex.Add(updateStatusContent);
@@ -198,7 +200,7 @@ namespace starsky.Services
         // Remove a new item from the database
         public ImportIndexItem RemoveItem(ImportIndexItem updateStatusContent)
         {
-            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
+//            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
 
             _context.ImportIndex.Remove(updateStatusContent);
             _context.SaveChanges();
