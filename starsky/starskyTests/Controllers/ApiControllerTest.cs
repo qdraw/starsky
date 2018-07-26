@@ -326,7 +326,7 @@ namespace starskytests.Controllers
         public void ApiController_Thumbnail_CorruptImage_retryThumbnail_Test()
         {
             var thumbHash = "ApiController_Thumbnail_CorruptImage_Test";
-            var path = _createAnImage.FullFilePath + Path.DirectorySeparatorChar + thumbHash + ".jpg";
+            var path = _createAnImage.BasePath + Path.DirectorySeparatorChar + thumbHash + ".jpg";
             if (!File.Exists(path))
             {
                 using (StreamWriter sw = File.CreateText(path)) 

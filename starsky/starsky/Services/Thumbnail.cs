@@ -83,12 +83,16 @@ namespace starsky.Services
                                           + _appSettings.ThumbnailTempFolder);
             
             var thumbPath = _appSettings.ThumbnailTempFolder + item.FileHash + ".jpg";
-
+//<<full
             if (!File.Exists(_appSettings.DatabasePathToFilePath(item.FilePath)))
             {
                 Console.WriteLine("File Not found: " + item.FilePath);
                 return;
             }
+
+            Console.WriteLine("thumbPath" + thumbPath);
+            Console.WriteLine("item.FilePath " + item.FilePath);
+            Console.WriteLine("_appSettings.DatabasePathToFilePath(item.FilePath))" + _appSettings.DatabasePathToFilePath(item.FilePath));
             
             
             // If contains error with thumbnailing service then => skip
@@ -104,35 +108,35 @@ namespace starsky.Services
             var wrap = WrapSomeMethod(item.FilePath,thumbPath).Result;
             if(wrap) Console.WriteLine(".");
             
-//            _removeCorruptImage(thumbPath);
+            _removeCorruptImage(thumbPath);
 
         }
 
-//        private static void _removeCorruptImage(string thumbPath)
-//        {
-//            if (!File.Exists(thumbPath)) return;
-//            
-//            var imageFormat = Files.GetImageFormat(thumbPath);
-//            if(AppSettingsProvider.Verbose) Console.WriteLine(Files.GetImageFormat(thumbPath));
-//            switch (imageFormat)
-//            {
-//                case Files.ImageFormat.jpg:
-//                    return;
-//                case Files.ImageFormat.unknown:
-//                    try
-//                    {
-//                        File.Delete(thumbPath);
-//                    }
-//                    catch (Exception e)
-//                    {
-//                        Console.WriteLine(e);
-//                    }
-//                    break;
-//            }
-//        }
+        private static void _removeCorruptImage(string thumbPath)
+        {
+            if (!File.Exists(thumbPath)) return;
+            
+            var imageFormat = Files.GetImageFormat(thumbPath);
+            if(AppSettingsProvider.Verbose) Console.WriteLine(Files.GetImageFormat(thumbPath));
+            switch (imageFormat)
+            {
+                case Files.ImageFormat.jpg:
+                    return;
+                case Files.ImageFormat.unknown:
+                    try
+                    {
+                        File.Delete(thumbPath);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                    break;
+            }
+        }
         
         // Wrapper to Make a sync task sync
-        private static async Task<bool> WrapSomeMethod(string someParam, string someParam2)
+        private async Task<bool> WrapSomeMethod(string someParam, string someParam2)
         {
             //adding .ConfigureAwait(false) may NOT be what you want but google it.
             return await Task.Run(() => ResizeThumbnailTimeOut(someParam, someParam2)).ConfigureAwait(false);
@@ -141,7 +145,7 @@ namespace starsky.Services
         // Timeout feature to check if the service is answering within 8 seconds
         // Ignore Error CS1998
         #pragma warning disable 1998
-        private static async Task<bool> ResizeThumbnailTimeOut(string inputDatabaseFilePath, string thumbPath){
+        private async Task<bool> ResizeThumbnailTimeOut(string inputDatabaseFilePath, string thumbPath){
         #pragma warning restore 1998
             
             var task = Task.Run(() => ResizeThumbnail(inputDatabaseFilePath, thumbPath));
@@ -159,13 +163,15 @@ namespace starsky.Services
         }
         
         // Resize the thumbnail
-        private static bool ResizeThumbnail(string inputFilePath, string thumbPath)
+        private bool ResizeThumbnail(string inputDbPath, string thumbPath)
         {
             // might be a short path;
+
+            Console.WriteLine("inputFilePath >> " + inputDbPath);
             
             // resize the image and save it to the output stream
             using (var outputStream = new FileStream(thumbPath, FileMode.CreateNew))
-            using (var inputStream = File.OpenRead(inputFilePath))
+            using (var inputStream = File.OpenRead(_appSettings.DatabasePathToFilePath(inputDbPath)))
             using (var image = Image.Load(inputStream))
             {
                 image.Mutate(x => x.AutoOrient());
