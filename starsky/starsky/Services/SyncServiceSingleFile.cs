@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using starsky.Helpers;
 using starsky.Models;
 
@@ -23,7 +22,9 @@ namespace starsky.Services
             {
                 // File check if jpg #not corrupt
                 var imageFormat = Files.GetImageFormat(FileIndexItem.DatabasePathToFilePath(subPath));
-                if(imageFormat != Files.ImageFormat.jpg) throw new BadImageFormatException("img != jpeg");
+                if(imageFormat != Files.ImageFormat.jpg) return true;
+                // todo: make fix for non-jpeg files
+                // if(imageFormat != Files.ImageFormat.jpg) throw new BadImageFormatException("img != jpeg");
                 
                 // single file -- update or adding
                 var dbListWithOneFile = new List<FileIndexItem>();
