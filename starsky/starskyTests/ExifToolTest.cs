@@ -45,6 +45,7 @@ namespace starskytests
             // get the service
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();
         }
+        
         [TestMethod]
         [ExcludeFromCoverage]
         public void  ExifToolFixTestIgnoreStringTest()
