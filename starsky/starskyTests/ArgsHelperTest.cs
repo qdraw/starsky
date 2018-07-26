@@ -89,7 +89,7 @@ namespace starskytests
         [ExcludeFromCoverage]
         public void ArgsHelper_GetSubpathFormArgsTest()
         {
-            AppSettingsProvider.BasePath = new CreateAnImage().BasePath;
+            _appSettings.StorageFolder = new CreateAnImage().BasePath;
             var args = new List<string> {"-s", "/"}.ToArray();
             Assert.AreEqual(new ArgsHelper(_appSettings).GetSubpathFormArgs(args), "/");
         }    
@@ -98,7 +98,7 @@ namespace starskytests
         [ExcludeFromCoverage]
         public void ArgsHelper_IfSubpathTest()
         {
-            AppSettingsProvider.BasePath = new CreateAnImage().BasePath;
+            _appSettings.StorageFolder = new CreateAnImage().BasePath;
             var args = new List<string> {"-s", "/"}.ToArray();
             Assert.AreEqual(new ArgsHelper(_appSettings).IfSubpathOrPath(args), true);
             
@@ -114,7 +114,7 @@ namespace starskytests
         [ExcludeFromCoverage]
         public void ArgsHelper_GetThumbnailTest()
         {
-            AppSettingsProvider.BasePath = new CreateAnImage().BasePath;
+            _appSettings.StorageFolder = new CreateAnImage().BasePath;
             var args = new List<string> {"-t", "true"}.ToArray();
             Assert.AreEqual(new ArgsHelper(_appSettings).GetThumbnail(args), true);
         }   
@@ -123,7 +123,7 @@ namespace starskytests
         [ExcludeFromCoverage]
         public void ArgsHelper_GetOrphanFolderCheckTest()
         {
-            AppSettingsProvider.BasePath = new CreateAnImage().BasePath;
+            _appSettings.StorageFolder = new CreateAnImage().BasePath;
             var args = new List<string> {"-o", "true"}.ToArray();
             Assert.AreEqual(new ArgsHelper(_appSettings).GetOrphanFolderCheck(args), true);
         }   

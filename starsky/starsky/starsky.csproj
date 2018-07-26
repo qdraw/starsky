@@ -21,30 +21,30 @@
     <WarningLevel>0</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <!--<Compile Remove="Migrations\20180308104506_initDatabaseKey.cs" />-->
-    <!--<Compile Remove="Migrations\20180308104506_initDatabaseKey.Designer.cs" />-->
-    <!--<Compile Remove="Migrations\20180308104642_initDatabaseKey.cs" />-->
-    <!--<Compile Remove="Migrations\20180308104642_initDatabaseKey.Designer.cs" />-->
-    <!--<Compile Remove="Migrations\20180316113937_IsDirectoryAddDescriptionParentDirectory.cs" />-->
-    <!--<Compile Remove="Migrations\20180316113937_IsDirectoryAddDescriptionParentDirectory.Designer.cs" />-->
-    <!--<Compile Remove="Migrations\20180407074506_Title.cs" />-->
-    <!--<Compile Remove="Migrations\20180407074506_Title.Designer.cs" />-->
-    <!--<Compile Remove="Migrations\20180419182654_importdatabase.cs" />-->
-    <!--<Compile Remove="Migrations\20180419182654_importdatabase.Designer.cs" />-->
-    <!--<Compile Remove="Migrations\20180423120037_LatitudeLongitudeGPS.cs" />-->
-    <!--<Compile Remove="Migrations\20180423120037_LatitudeLongitudeGPS.Designer.cs" />-->
-    <!--<Compile Remove="Migrations\20180622130045_DateTimeImportIndexItem.cs" />-->
-    <!--<Compile Remove="Migrations\20180622130045_DateTimeImportIndexItem.Designer.cs" />-->
-    <!--<Compile Remove="Migrations\20180712132428_IdentityProvider.cs" />-->
-    <!--<Compile Remove="Migrations\20180712132428_IdentityProvider.Designer.cs" />-->
-    <!--<Compile Remove="Migrations\20180308203924_FileHashTags.cs" />-->
-    <!--<Compile Remove="Migrations\20180308203924_FileHashTags.Designer.cs" />-->
-    <!--<Compile Remove="Migrations\20180308213306_DateTime_AddToDatabase.cs" />-->
-    <!--<Compile Remove="Migrations\20180308213306_DateTime_AddToDatabase.Designer.cs" />-->
-    <!--<Compile Remove="Migrations\20180322104602_ColorClassFeature.cs" />-->
-    <!--<Compile Remove="Migrations\20180322104602_ColorClassFeature.Designer.cs" />-->
-    <!--<Compile Remove="Migrations\20180717164601_userAccountStorage.cs" />-->
-    <!--<Compile Remove="Migrations\20180717164601_userAccountStorage.Designer.cs" />-->
+    <Compile Remove="Migrations\20180308104506_initDatabaseKey.cs" />
+    <Compile Remove="Migrations\20180308104506_initDatabaseKey.Designer.cs" />
+    <Compile Remove="Migrations\20180308104642_initDatabaseKey.cs" />
+    <Compile Remove="Migrations\20180308104642_initDatabaseKey.Designer.cs" />
+    <Compile Remove="Migrations\20180316113937_IsDirectoryAddDescriptionParentDirectory.cs" />
+    <Compile Remove="Migrations\20180316113937_IsDirectoryAddDescriptionParentDirectory.Designer.cs" />
+    <Compile Remove="Migrations\20180407074506_Title.cs" />
+    <Compile Remove="Migrations\20180407074506_Title.Designer.cs" />
+    <Compile Remove="Migrations\20180419182654_importdatabase.cs" />
+    <Compile Remove="Migrations\20180419182654_importdatabase.Designer.cs" />
+    <Compile Remove="Migrations\20180423120037_LatitudeLongitudeGPS.cs" />
+    <Compile Remove="Migrations\20180423120037_LatitudeLongitudeGPS.Designer.cs" />
+    <Compile Remove="Migrations\20180622130045_DateTimeImportIndexItem.cs" />
+    <Compile Remove="Migrations\20180622130045_DateTimeImportIndexItem.Designer.cs" />
+    <Compile Remove="Migrations\20180712132428_IdentityProvider.cs" />
+    <Compile Remove="Migrations\20180712132428_IdentityProvider.Designer.cs" />
+    <Compile Remove="Migrations\20180308203924_FileHashTags.cs" />
+    <Compile Remove="Migrations\20180308203924_FileHashTags.Designer.cs" />
+    <Compile Remove="Migrations\20180308213306_DateTime_AddToDatabase.cs" />
+    <Compile Remove="Migrations\20180308213306_DateTime_AddToDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20180322104602_ColorClassFeature.cs" />
+    <Compile Remove="Migrations\20180322104602_ColorClassFeature.Designer.cs" />
+    <Compile Remove="Migrations\20180717164601_userAccountStorage.cs" />
+    <Compile Remove="Migrations\20180717164601_userAccountStorage.Designer.cs" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />

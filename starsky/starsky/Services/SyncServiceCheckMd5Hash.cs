@@ -19,7 +19,7 @@ namespace starsky.Services
         {
             foreach (var itemLocal in localSubFolderDbStyle)
             {
-                if(AppSettingsProvider.Verbose) Console.WriteLine("CheckMd5Hash: (path): " + itemLocal);
+                if(_appSettings.Verbose) Console.WriteLine("CheckMd5Hash: (path): " + itemLocal);
 
                 var dbItem = databaseFileList.FirstOrDefault(p => p.FilePath == itemLocal);
                 if (dbItem != null)
@@ -27,7 +27,7 @@ namespace starsky.Services
                     // Check if Hash is changed
                     // how should i unittest this?
                     var localHash = FileHash.GetHashCode(_appSettings.DatabasePathToFilePath(itemLocal));
-                    if(AppSettingsProvider.Verbose) Console.WriteLine("localHash: " + localHash);
+                    if(_appSettings.Verbose) Console.WriteLine("localHash: " + localHash);
 
                     if (localHash != dbItem.FileHash)
                     {

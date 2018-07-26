@@ -66,9 +66,31 @@ The following Tests are available:
     FileIndexItemTest_GetColorClassListTestEightSeven
     FileIndexItemTest_GetAllColorTest
     FileIndexItemTest_FileIndexItemTitleTest
+    StreamFileExeption
+    StreamFilemultipart
+    FileStreamingHelperTest_FileStreamingHelper_StreamFile_imagejpeg
+    FileStreamingHelper_GetTempFilePath_NullOption
+    FileStreamingHelper_GetTempFilePath_ParseStringSimple_Option
+    FileStreamingHelper_GetTempFilePath_ParseStringWithDots_Option
+    FileStreamingHelper_HeaderFileName_normalStringTest
+    FileStreamingHelper_HeaderFileName_base64StringTest
+    FileStreamingHelper_GetTempFilePath_ParseStringAppendix1_Option
+    FileStreamingHelperTest_FileStreamingHelper_StreamFile_multiPart
     FolderOrFileModelFolderOrFileTypeListTest
     Files_IsFolderOrFileTest
     Files_GetAllFilesDirectoryTest
+    Test
+    ImportService_NoSubPath_slashyyyyMMdd_HHmmss_ImportTest
+    ImportService_AsteriskTRFolderHHmmss_ImportTest
+    ImportService_NonExistingFolder_HHmmssImportTest
+    ImportService_WithoutExt_ImportTest
+    ImportService_DuplicateImport_Test
+    ImportService_DuplicateFileName_Test
+    ImportService_DeleteAfterTest_HHmmssImportTest
+    ImportService_NonExistingImportFail_ImportTest
+    ImportService_EntireBasePath_Folder_Import_ToFolderExist_Test
+    ImportService_Import_NotFound_Test
+    ImportService_inputFullPathList_ListInput_ImportTest
     IndexViewModelPageTypeTest
     MigrationsTest_contextDatabaseMigrate
     MultipartRequestHelperTest_Missingcontenttypeboundary
@@ -133,8 +155,25 @@ The following Tests are available:
     SyncServiceRenameListItemsToDbStyleTest
     SyncService_DuplicateContentInDatabase_Test
     SyncService_Duplicate_Folders_Directories_InDatabase_Test
+    CreateAndRenamteThumbTest
+    ThumbnailCreateThumbnailNullTest
+    ThumbnailCreateThumbnailNotFoundTest
+    ThumbnailCreateThumb_FileIndexItem_ThumbnailTempFolderNull_Test
+    ThumbnailRenameThumb_DirectInput_ThumbnailTempFolderNull_Test
+    ThumbnailRenameThumb_DirectInput_nonexistingOldHash_Test
+    ThumbnailRenameThumb_DirectInput_nonexistingNewHash_Test
+    ThumbnailByDirectoryTest
     LoginViewModelTestLoadAll
     RegisterViewModelLoadAll
+    ImportIndexItemParseFileNameTest
+    ImportIndexItemParseSubfoldersTest
+    ImportIndexItemParseSubfolders_TRslashABC_Test
+    ImportIndexItemParseSubfolders_Tzzz_slashABC_Test
+    ImportIndexItemParse_filenamebase_filename_Test
+    ImportIndexItemParse_filenamebase_subfolder_Test
+    ImportIndexItemParse_FileNotExist_Test
+    ImportIndexItemParse_ParseDateTimeFromFileName_Test
+    ImportIndexItemParse_ParseDateTimeFromFileName_WithExtraDotsInName_Test
     CredentialSetupTest
     CredentialTypeSetup_Test
     CredentialSetupTest
@@ -160,23 +199,4 @@ The following Tests are available:
     ApiController_ThumbIsMissing_ButOrginalExist_butNoIsSingleItemFlag_API_Test
     ApiController_FloatingDatabaseFileTest_API_Test
     ApiController_NonExistingFile_API_Test
-    ApiController_starskyTestEnv
-    ApiController_Update_AllDataIncluded_WithFakeExiftool
-    ApiController_Update_SourceImageMissingOnDisk_WithFakeExiftool
-    ApiController_Info_AllDataIncluded_WithFakeExiftool
-    ApiController_Info_SourceImageMissingOnDisk_WithFakeExiftool
-    ApiController_Delete_SourceImageMissingOnDisk_WithFakeExiftool
-    ApiController_Thumbnail_NonExistingFile_API_Test
-    ApiController_Thumbnail_CorruptImage_NoContentResult_Test
-    ApiController_Thumbnail_CorruptImage_retryThumbnail_Test
-    ApiController_DownloadPhoto_isThumbnailTrue_CreateThumb_ReturnFileStream_Test
-    ApiController_DownloadPhoto_isThumbnailFalse_ReturnFileStream_Test
-    ApiController_DownloadPhoto_isThumbnailTrue_ReturnAThumb_ReturnFileStream_Test
-    ApiController_DownloadPhoto_SourceImageIsMissing_Test
-    ApiController_DownloadPhoto_Thumb_base_folder_not_found_Test
-    HomeControllerIndexDetailViewTest
-    HomeControllerIndexIndexViewModelTest
-    SearchControllerTest_IndexPost
-    SearchControllerTest_ZeroItems_Index
-    SearchControllerTest_TrashZeroItems
-```
+    ApiController_starskyTes```

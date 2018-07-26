@@ -46,7 +46,7 @@ namespace starsky.Services
 
                     if (!res.Any() && !File.Exists(_appSettings.DatabasePathToFilePath(dbItem.FilePath)) )
                     {
-                        if(AppSettingsProvider.Verbose) Console.WriteLine("o>> " + dbItem.FilePath);
+                        if(_appSettings.Verbose) Console.WriteLine("o>> " + dbItem.FilePath);
                         _query.RemoveItem(dbItem);
                     }
                 }

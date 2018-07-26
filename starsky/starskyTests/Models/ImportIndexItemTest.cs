@@ -89,7 +89,7 @@ namespace starskytests.Models
             var importItem = new ImportIndexItem(_appSettings);
 
             importItem.SourceFullFilePath = createAnImage.FullFilePath;
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            _appSettings.StorageFolder = createAnImage.BasePath;
             var s = importItem.ParseSubfolders(false);
             Assert.AreEqual("/tz/abc/",s);
         }
@@ -102,7 +102,7 @@ namespace starskytests.Models
             var createAnImage = new CreateAnImage();
             var importItem = new ImportIndexItem(_appSettings);
             importItem.SourceFullFilePath = createAnImage.FullFilePath;
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            _appSettings.StorageFolder = createAnImage.BasePath;
             var fileName = importItem.ParseFileName();
             Assert.AreEqual(createAnImage.DbPath.Replace("/",string.Empty),fileName);
         }
@@ -115,7 +115,7 @@ namespace starskytests.Models
             var importItem = new ImportIndexItem(_appSettings);
 
             importItem.SourceFullFilePath = createAnImage.FullFilePath;
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            _appSettings.StorageFolder = createAnImage.BasePath;
             var subfolders = importItem.ParseSubfolders(false);
             Assert.AreEqual("/" + createAnImage.DbPath.Replace("/",string.Empty).Replace(".jpg",string.Empty) + "/",subfolders);
         }

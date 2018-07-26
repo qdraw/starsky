@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using starsky.Services;
@@ -7,11 +8,14 @@ namespace starsky.Models
 {
     public class AppSettings
     {
+        public AppSettings()
+        {
+            ReadOnlyFolders = new List<string>();
+        }
+        
         public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
-            .Replace("starsky-cli", "starsky")
+            .Replace("starskysynccli", "starsky")
             .Replace("starskyimportercli", "starsky");
-
-
 
         private string _storageFolder; // in old versions: basePath 
         public string StorageFolder
@@ -95,6 +99,9 @@ namespace starsky.Models
         }
 
         public string ExifToolPath { get; set; }
+        
+        // fallback in contructor
+        public List<string> ReadOnlyFolders { get; set; }
 
         public string FullPathToDatabaseStyle(string subpath)
         {

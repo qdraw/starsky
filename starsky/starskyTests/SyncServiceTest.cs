@@ -183,7 +183,8 @@ namespace starskytests
         public void SyncServiceSingleFileTest()
         {
             var newImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = newImage.BasePath;
+            
+            _appSettings.StorageFolder = newImage.BasePath;
 
             _syncservice.SingleFile(newImage.DbPath);
 
@@ -206,7 +207,7 @@ namespace starskytests
         public void SyncServiceDeletedSingleFileTest()
         {
             var newImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = newImage.BasePath;
+            _appSettings.StorageFolder = newImage.BasePath;
 
             _query.AddItem(new FileIndexItem
             {
@@ -228,7 +229,7 @@ namespace starskytests
         public void SyncServiceDeletedFolderTest()
         {
             var newImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = newImage.BasePath;
+            _appSettings.StorageFolder = newImage.BasePath;
 
             _query.AddItem(new FileIndexItem
             {
@@ -276,7 +277,7 @@ namespace starskytests
                 File.Copy(createAnImage.FullFilePath, testFileFullPath);                
             }
 
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            _appSettings.StorageFolder = createAnImage.BasePath;
             
             // Add base folder
             _query.AddItem(new FileIndexItem
@@ -311,7 +312,7 @@ namespace starskytests
         public void SyncServiceOrphanFolderTest()
         {
             var newImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = _query.SubPathSlashRemove(newImage.BasePath);
+            _appSettings.StorageFolder = _query.SubPathSlashRemove(newImage.BasePath);
             
             // Add Image
             _query.AddItem(new FileIndexItem
@@ -334,7 +335,7 @@ namespace starskytests
         public void SyncServiceRenameListItemsToDbStyleTest()
         {
             var newImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = newImage.BasePath; // needs to have an / or \ at the end
+            _appSettings.StorageFolder = newImage.BasePath; // needs to have an / or \ at the end
             var inputList = new List<string>{ Path.DirectorySeparatorChar.ToString() };
             var expectedOutputList = new List<string>{ "/"};
             var output = _syncservice.RenameListItemsToDbStyle(inputList);
@@ -374,10 +375,10 @@ namespace starskytests
         [TestMethod]
         public void SyncService_Duplicate_Folders_Directories_InDatabase_Test()
         {
-            AppSettingsProvider.Verbose = true;
+            _appSettings.Verbose = true;
             
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = createAnImage.BasePath; // needs to have an / or \ at the end
+            _appSettings.StorageFolder = createAnImage.BasePath; // needs to have an / or \ at the end
 
             var existFullDir = createAnImage.BasePath + Path.DirectorySeparatorChar + "exist";
             if (!Directory.Exists(existFullDir))

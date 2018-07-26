@@ -231,10 +231,11 @@ namespace starskytests
         {
             // We currently force you to use an extension
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
-            if (!Directory.Exists(AppSettingsProvider.BasePath + Path.DirectorySeparatorChar + "exist"))
+            
+            _appSettings.StorageFolder = createAnImage.BasePath;
+            if (!Directory.Exists(_appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist"))
             {
-                Directory.CreateDirectory(AppSettingsProvider.BasePath + Path.DirectorySeparatorChar + "exist");
+                Directory.CreateDirectory(_appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist");
             }
             
             _appSettings.Structure = "/\\e\\x\\i\\s*/ssHHmm";
@@ -258,9 +259,9 @@ namespace starskytests
         {
             
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            _appSettings.StorageFolder = createAnImage.BasePath;
             
-            Console.WriteLine(AppSettingsProvider.BasePath);
+            Console.WriteLine(_appSettings.StorageFolder);
             
             _appSettings.Structure = "/xuxuxuxu_ssHHmm.ext";
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
@@ -299,7 +300,7 @@ namespace starskytests
         {
             
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            _appSettings.StorageFolder = createAnImage.BasePath;
             _appSettings.Structure = "/xux99999xxxx_ssHHmm.ext";
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
@@ -348,7 +349,7 @@ namespace starskytests
             _appSettings.Structure = "/\\e\\x\\i\\s\\t/\\a\\b\\c/yyyy/mm/HHmmss.ext";
             _appSettings.StorageFolder = createAnImage.BasePath;
 
-            Directory.CreateDirectory(AppSettingsProvider.BasePath + Path.DirectorySeparatorChar + "exist");
+            Directory.CreateDirectory(_appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist");
 
             var fullFilePath = createAnImage.FullFilePath.Replace("00", "01");
             
@@ -396,13 +397,13 @@ namespace starskytests
         {
             // import folder
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            _appSettings.StorageFolder = createAnImage.BasePath;
 
             Console.WriteLine(createAnImage.BasePath);
 
-            if (!Directory.Exists(AppSettingsProvider.BasePath + Path.DirectorySeparatorChar + "exist"))
+            if (!Directory.Exists(_appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist"))
             {
-                Directory.CreateDirectory(AppSettingsProvider.BasePath + Path.DirectorySeparatorChar + "exist");
+                Directory.CreateDirectory(_appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist");
             }
             
             _appSettings.Structure = "/\\e\\x\\i\\s*/\\f\\o\\l\\d\\e\\r\\i\\m\\p\\o\\r\\t_HHssmm.ext";
@@ -436,7 +437,7 @@ namespace starskytests
             _appSettings.Structure = "/xxxxx__yyyyMMdd_HHmmss.ext";
             // This is not to be the first file in the test directory
             // => otherwise SyncServiceFirstItemDirectoryTest() will fail
-            AppSettingsProvider.BasePath = createAnImage.BasePath;
+            _appSettings.StorageFolder = createAnImage.BasePath;
             
             // The only difference is that the item is in a list
             var storeItemInList = new List<string>{createAnImage.FullFilePath};

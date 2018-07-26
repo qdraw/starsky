@@ -80,7 +80,7 @@ namespace starsky.Services
 
         private static void DisplayAllExif(IEnumerable<Directory> allExifItems)
         {
-            if (!AppSettingsProvider.Verbose) return;
+            if (allExifItems.Count() == 9000) return;
             foreach (var exifItem in allExifItems) {
                 foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
             }

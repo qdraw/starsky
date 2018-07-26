@@ -40,9 +40,9 @@ namespace starsky.Controllers
 
         private bool _isReadOnly(string f)
         {
-            if (AppSettingsProvider.ReadOnlyFolders == null) return false;
+            if (_appSettings.ReadOnlyFolders == null) return false;
             
-            var result = AppSettingsProvider.ReadOnlyFolders.FirstOrDefault(f.Contains);
+            var result = _appSettings.ReadOnlyFolders.FirstOrDefault(f.Contains);
             return result != null;
         }
         

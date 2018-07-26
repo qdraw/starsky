@@ -185,7 +185,7 @@ namespace starsky.Helpers
                 }
             }
         
-            if (AppSettingsProvider.Verbose) Console.WriteLine(">> GetThumbnail " + isThumbnail);
+            if (_appSettings.Verbose) Console.WriteLine(">> GetThumbnail " + isThumbnail);
             return isThumbnail;
         }
         
@@ -201,7 +201,7 @@ namespace starsky.Helpers
                 }
             }
         
-            if (AppSettingsProvider.Verbose) Console.WriteLine(">> isOrphanFolderCheck " + isOrphanFolderCheck);
+            if (_appSettings.Verbose) Console.WriteLine(">> isOrphanFolderCheck " + isOrphanFolderCheck);
             return isOrphanFolderCheck;
         }
         

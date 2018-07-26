@@ -112,12 +112,13 @@ namespace starsky.Services
 
         }
 
-        private static void _removeCorruptImage(string thumbPath)
+        private void _removeCorruptImage(string thumbPath)
         {
             if (!File.Exists(thumbPath)) return;
             
             var imageFormat = Files.GetImageFormat(thumbPath);
-            if(AppSettingsProvider.Verbose) Console.WriteLine(Files.GetImageFormat(thumbPath));
+           
+            if(_appSettings.Verbose) Console.WriteLine(Files.GetImageFormat(thumbPath));
             switch (imageFormat)
             {
                 case Files.ImageFormat.jpg:

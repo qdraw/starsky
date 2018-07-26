@@ -15,7 +15,7 @@ namespace starsky.Services
         {
             foreach (var singleFolderDbStyle in localSubFolderDbStyle)
             {
-                if(AppSettingsProvider.Verbose) Console.WriteLine(singleFolderDbStyle);
+                if(_appSettings.Verbose) Console.WriteLine(singleFolderDbStyle);
 
                 // Check if Directory is in database
                 var dbFolderMatchFirst = databaseSubFolderList.FirstOrDefault(p =>

@@ -150,7 +150,7 @@ namespace starsky.Services
             // Feature to ignore old files
             if (ageFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
             {
-                if (AppSettingsProvider.Verbose) 
+                if (_appSettings.Verbose) 
                     Console.WriteLine("use this structure to parse: " + _appSettings.Structure);
                 
                 Console.WriteLine("> "+ inputFileFullPath 

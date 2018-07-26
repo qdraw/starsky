@@ -41,21 +41,20 @@ namespace starsky
             
             var appSettings = _serviceProvider.GetRequiredService<AppSettings>();
 
-
-            
-            if(AppSettingsProvider.AddMemoryCache) services.AddMemoryCache();
+//            if(AppSettingsProvider.AddMemoryCache) 
+            services.AddMemoryCache();
             
             services.AddResponseCaching();
             
-            switch (AppSettingsProvider.DatabaseType)
+            switch (appSettings.DatabaseType)
             {
-                case AppSettingsProvider.DatabaseTypeList.mysql:
+                case (AppSettings.DatabaseTypeList.Mysql):
                     services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(appSettings.DatabaseConnection));
                     break;
-                case AppSettingsProvider.DatabaseTypeList.inmemorydatabase:
+                case AppSettings.DatabaseTypeList.InMemoryDatabase:
                     services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
                     break;
-                case AppSettingsProvider.DatabaseTypeList.sqlite:
+                case AppSettings.DatabaseTypeList.Sqlite:
                     services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(appSettings.DatabaseConnection));
                     break;
                 default:

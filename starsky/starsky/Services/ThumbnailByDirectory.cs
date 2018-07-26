@@ -45,7 +45,7 @@ namespace starsky.Services
                     // FilePath = FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i]),
 
 
-                    if (AppSettingsProvider.Verbose) Console.WriteLine("localFileListFileHash[i] " + localFileListFileHash[i]); 
+                    if (_appSettings.Verbose) Console.WriteLine("localFileListFileHash[i] " + localFileListFileHash[i]); 
                     
                     new Thumbnail(_appSettings).CreateThumb(value);
                 }

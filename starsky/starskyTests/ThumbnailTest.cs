@@ -127,7 +127,7 @@ namespace starskytests
 
             var newImage = new CreateAnImage();
             _appSettings.ThumbnailTempFolder = newImage.BasePath;;
-            AppSettingsProvider.BasePath = newImage.BasePath;
+            _appSettings.StorageFolder = newImage.BasePath;
 
             var hashString = FileHash.GetHashCode(newImage.FullFilePath);
 
