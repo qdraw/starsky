@@ -14,6 +14,12 @@ namespace starsky.Models
     {
         private readonly AppSettings _appSettings;
 
+        //  In order to create an instance of 'ImportIndexItem'
+        // EF requires that a parameterless constructor be declared.
+        public ImportIndexItem()
+        {
+        }
+        
         public ImportIndexItem(AppSettings appSettings)
         {
             _appSettings = appSettings;
@@ -133,6 +139,7 @@ namespace starsky.Models
 
         public List<string> SearchSubDirInDirectory(string parentItem, string parsedItem)
         {
+            if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
             var childDirectories = Directory.GetDirectories(_appSettings.DatabasePathToFilePath(parentItem), parsedItem).ToList();
             childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
             return childDirectories;
@@ -142,6 +149,8 @@ namespace starsky.Models
         // Depends on App Settings /BasePathConfig
         public string ParseSubfolders(bool createFolder = true)
         {
+            if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
+
             // If command running twiche you will get /tr/tr (when tr is your single folder name)
             SubFolder = string.Empty;
             

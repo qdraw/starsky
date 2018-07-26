@@ -24,6 +24,14 @@ namespace starsky.Services
             _appSettings = appSettings;
         }
 
+        public void Test()
+        {
+            _context.FileIndex.FirstOrDefault();
+            _isync.SyncFiles("/");
+            _exiftool.Info("/");
+            var t =_appSettings.DatabaseConnection;
+        }
+
         // Imports a list of paths, used by the importer web interface
         public List<string> Import(IEnumerable<string> inputFullPathList, 
             bool deleteAfter = false, bool ageFileFilter = true, bool recursiveDirectory = false)
