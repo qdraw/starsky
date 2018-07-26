@@ -23,7 +23,8 @@ namespace starsky.Services
         }
 
         // Imports a list of paths, used by the importer web interface
-        public List<string> Import(IEnumerable<string> inputFullPathList, bool deleteAfter = false, bool ageFileFilter = true, bool recursiveDirectory = false)
+        public List<string> Import(IEnumerable<string> inputFullPathList, 
+            bool deleteAfter = false, bool ageFileFilter = true, bool recursiveDirectory = false)
         {
             var output = new List<string>();
             foreach (var inputFullPath in inputFullPathList)
@@ -37,7 +38,8 @@ namespace starsky.Services
         }
 
         // Imports a single path, used by the cli importer
-        public List<string> Import(string inputFullPath, bool deleteAfter = false, bool ageFileFilter = true, bool recursiveDirectory = false)
+        public List<string> Import(string inputFullPath, bool deleteAfter = false, 
+            bool ageFileFilter = true, bool recursiveDirectory = false)
         {
             if (!Directory.Exists(inputFullPath) && File.Exists(inputFullPath))
             {
@@ -63,7 +65,11 @@ namespace starsky.Services
             return succesfullDirFullPaths;
         }
 
-        public ImportIndexItem ObjectCreateIndexItem(string inputFileFullPath, string fileHashCode, FileIndexItem fileIndexItem)
+        // Create a new import object
+        public ImportIndexItem ObjectCreateIndexItem(
+            string inputFileFullPath, 
+            string fileHashCode, 
+            FileIndexItem fileIndexItem)
         {
             var importIndexItem = new ImportIndexItem
             {
@@ -75,7 +81,10 @@ namespace starsky.Services
             return importIndexItem;
         }
 
-        public string DestionationFullPathDuplicate(string inputFileFullPath, FileIndexItem fileIndexItem, bool tryagain)
+        public string DestionationFullPathDuplicate(
+            string inputFileFullPath, 
+            FileIndexItem fileIndexItem, 
+            bool tryagain)
         {
 
             var destinationFullPath = FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
@@ -135,7 +144,8 @@ namespace starsky.Services
                     Console.WriteLine("use this structure to parse: " + AppSettingsProvider.Structure);
                 
                 Console.WriteLine("> "+ inputFileFullPath 
-                                      +  " is older than 2 years, please use the -a flag to overwrite this; skip this file;");
+                                      +  " is older than 2 years, "+
+                                      "please use the -a flag to overwrite this; skip this file;");
                 return string.Empty;
             }
             
@@ -144,7 +154,9 @@ namespace starsky.Services
 
             var destinationFullPath = DestionationFullPathDuplicate(inputFileFullPath,fileIndexItem,true);
             
-            if (destinationFullPath == null) Console.WriteLine("> "+ inputFileFullPath + " "  + fileIndexItem.FileName +  " Please try again > to many failures;");
+            if (destinationFullPath == null) Console.WriteLine("> "+ inputFileFullPath 
+                                                                   + " "  + fileIndexItem.FileName 
+                                                                   +  " Please try again > to many failures;");
             if (destinationFullPath == null) return string.Empty;
             
             File.Copy(inputFileFullPath, destinationFullPath);
