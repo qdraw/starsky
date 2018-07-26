@@ -22,7 +22,23 @@ namespace starsky.Models
                 _dbConnectionString = SqliteFullPath(value);
             }
         }
-        public static List<string> ReadOnlyFolders { get; set; }
+
+        private static List<string> _readOnlyFolders;
+        public static List<string> ReadOnlyFolders
+        {
+            get
+            {
+                if (_readOnlyFolders == null) return new List<string>();
+                return _readOnlyFolders;
+            }
+            set
+            {
+                if (_readOnlyFolders != null)
+                {
+                    _readOnlyFolders = value;
+                }
+            }
+        }
 
         // doing the same trick as in 
         // todo: merge with: BasePathConfig.cs
