@@ -68,18 +68,18 @@ namespace starskyCli
                 Console.WriteLine("Done SyncFiles!");
             }
 
-            if (ArgsHelper.GetThumbnail(args)) {
-
-                // If single file => create thumbnail
-                Thumbnail.CreateThumb(subpath);
-    
-                if (Files.IsFolderOrFile(subpath) 
-                    == FolderOrFileModel.FolderOrFileTypeList.Folder)
-                {
-                    ThumbnailByDirectory.CreateThumb(subpath);
-                }
-                Console.WriteLine("Thumbnail Done!");
-            }
+//            if (ArgsHelper.GetThumbnail(args)) {
+//
+//                // If single file => create thumbnail
+//                Thumbnail.CreateThumb(subpath);
+//    
+//                if (Files.IsFolderOrFile(subpath) 
+//                    == FolderOrFileModel.FolderOrFileTypeList.Folder)
+//                {
+//                    ThumbnailByDirectory.CreateThumb(subpath);
+//                }
+//                Console.WriteLine("Thumbnail Done!");
+//            }
             
             if (ArgsHelper.GetOrphanFolderCheck(args))
             {

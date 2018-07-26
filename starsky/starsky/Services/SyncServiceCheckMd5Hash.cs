@@ -26,13 +26,13 @@ namespace starsky.Services
                 {
                     // Check if Hash is changed
                     // how should i unittest this?
-                    var localHash = FileHash.GetHashCode(FileIndexItem.DatabasePathToFilePath(itemLocal));
+                    var localHash = FileHash.GetHashCode(_appSettings.DatabasePathToFilePath(itemLocal));
                     if(AppSettingsProvider.Verbose) Console.WriteLine("localHash: " + localHash);
 
                     if (localHash != dbItem.FileHash)
                     {
                         _query.RemoveItem(dbItem);
-                        var updatedDatabaseItem = ExifRead.ReadExifFromFile(FileIndexItem.DatabasePathToFilePath(itemLocal));
+                        var updatedDatabaseItem = ExifRead.ReadExifFromFile(_appSettings.DatabasePathToFilePath(itemLocal));
                         updatedDatabaseItem.FileHash = localHash;
                         updatedDatabaseItem.FileName = dbItem.FileName;
                         updatedDatabaseItem.AddToDatabase = DateTime.Now;

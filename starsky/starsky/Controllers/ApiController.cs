@@ -54,9 +54,9 @@ namespace starsky.Controllers
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index " + f);
             var oldHashCode = singleItem.FileIndexItem.FileHash;
-            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
+            if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
                 return NotFound("source image missing " +
-                                FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+                                _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
 
             var updateModel = new ExifToolModel();
 
@@ -78,11 +78,11 @@ namespace starsky.Controllers
 
             // Run ExifTool updater
             var exifToolResults = _exiftool.Update(updateModel,
-                FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+                _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
 
             // Update Database with results
             singleItem.FileIndexItem.FileHash =
-                FileHash.GetHashCode(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+                FileHash.GetHashCode(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             singleItem.FileIndexItem.AddToDatabase = DateTime.Now;
             singleItem.FileIndexItem.Tags = exifToolResults.Tags;
             singleItem.FileIndexItem.Description = exifToolResults.CaptionAbstract;
@@ -90,7 +90,7 @@ namespace starsky.Controllers
             _query.UpdateItem(singleItem.FileIndexItem);
 
             // Rename Thumbnail
-            new Thumbnail().RenameThumb(oldHashCode, singleItem.FileIndexItem.FileHash);
+            new Thumbnail(_appSettings).RenameThumb(oldHashCode, singleItem.FileIndexItem.FileHash);
 
 
             return Json(exifToolResults);
@@ -105,11 +105,11 @@ namespace starsky.Controllers
             
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index");
-            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
+            if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
                 return NotFound("source image missing " +
-                                FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+                                _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
 
-            var getExiftool = _exiftool.Info(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            var getExiftool = _exiftool.Info(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             return Json(getExiftool);
         }
 
@@ -120,13 +120,13 @@ namespace starsky.Controllers
 
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index");
-            if (!System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
+            if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
                 return NotFound("source image missing " +
-                                FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+                                _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             var item = _query.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
 
             //  Remove Files if exist and RAW file
-            var fullFilePath = FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
+            var fullFilePath = _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
             var toDeletePaths =
                 new List<string>
                 {
@@ -172,7 +172,7 @@ namespace starsky.Controllers
 
             if (sourcePath == null) return NotFound("not in index");
 
-            var thumbPath = AppSettingsProvider.ThumbnailTempFolder + f + ".jpg";
+            var thumbPath = _appSettings.ThumbnailTempFolder + f + ".jpg";
 
             // When a file is corrupt show error + Delete
             if (Files.GetImageFormat(thumbPath) == Files.ImageFormat.unknown)
@@ -188,7 +188,7 @@ namespace starsky.Controllers
 
 
             if (!System.IO.File.Exists(thumbPath) &&
-                System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(sourcePath)))
+                System.IO.File.Exists(_appSettings.DatabasePathToFilePath(sourcePath)))
             {
                 if (!isSingleitem)
                 {
@@ -196,12 +196,12 @@ namespace starsky.Controllers
                     SetExpiresResponseHeadersToZero();
                     return NoContent();
                 }
-                FileStream fs1 = System.IO.File.OpenRead(FileIndexItem.DatabasePathToFilePath(sourcePath));
+                FileStream fs1 = System.IO.File.OpenRead(_appSettings.DatabasePathToFilePath(sourcePath));
                 return File(fs1, "image/jpeg");
             }
 
             if (!System.IO.File.Exists(thumbPath) && 
-                !System.IO.File.Exists(FileIndexItem.DatabasePathToFilePath(sourcePath)))
+                !System.IO.File.Exists(_appSettings.DatabasePathToFilePath(sourcePath)))
             {
                 return NotFound("There is no thumbnail image and no source image");
             }
@@ -235,7 +235,7 @@ namespace starsky.Controllers
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index " + f);
 
-            var sourceFullPath = FileIndexItem.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
+            var sourceFullPath = _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
             if (!System.IO.File.Exists(sourceFullPath))
                 return NotFound("source image missing " + sourceFullPath );
 
@@ -248,7 +248,7 @@ namespace starsky.Controllers
 
             // Return Thumbnail
             
-            var thumbPath = AppSettingsProvider.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
+            var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
 
             // If File is corrupt delete it
             if (Files.GetImageFormat(thumbPath) == Files.ImageFormat.unknown)
@@ -262,12 +262,12 @@ namespace starsky.Controllers
                 {
                     var searchItem = new FileIndexItem
                     {
-                        FileName = FileIndexItem.FullPathToDatabaseStyle(sourceFullPath).Split("/").LastOrDefault(),
-                        ParentDirectory = Breadcrumbs.BreadcrumbHelper(FileIndexItem.FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
+                        FileName = _appSettings.FullPathToDatabaseStyle(sourceFullPath).Split("/").LastOrDefault(),
+                        ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
                         FileHash = FileHash.GetHashCode(sourceFullPath)
                     };
                     
-                    Services.Thumbnail.CreateThumb(searchItem);
+                    new Thumbnail(_appSettings).CreateThumb(searchItem);
 
                     FileStream fs2 = System.IO.File.OpenRead(thumbPath);
                     return File(fs2, "image/jpeg");

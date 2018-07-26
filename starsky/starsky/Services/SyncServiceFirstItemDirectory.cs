@@ -17,12 +17,12 @@ namespace starsky.Services
 
             foreach (var singleFolderFullPath in subFoldersFullPath)
             {
-                string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath, false);
+                string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath,_appSettings);
 
                 if (filesInDirectoryFullPath.Length >= 1)
                 {
                     var subPathSingleItem = 
-                        FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[0]);
+                        _appSettings.FullPathToDatabaseStyle(filesInDirectoryFullPath[0]);
                     var dbItem = _query.GetObjectByFilePath(subPathSingleItem);
                     // Check if photo item exist in database
                     if (dbItem == null) return;

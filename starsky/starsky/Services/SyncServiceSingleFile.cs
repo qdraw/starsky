@@ -18,10 +18,12 @@ namespace starsky.Services
         
         public bool SingleFile(string subPath = "")
         {
-            if (Files.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.File) // false == file
+            var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
+            
+            if (Files.IsFolderOrFile(fullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File) // false == file
             {
                 // File check if jpg #not corrupt
-                var imageFormat = Files.GetImageFormat(FileIndexItem.DatabasePathToFilePath(subPath));
+                var imageFormat = Files.GetImageFormat(fullFilePath);
                 if(imageFormat != Files.ImageFormat.jpg) return true;
                 // todo: make fix for non-jpeg files
                 // if(imageFormat != Files.ImageFormat.jpg) throw new BadImageFormatException("img != jpeg");

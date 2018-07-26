@@ -69,7 +69,7 @@ namespace starsky.Services
                 Console.Write(singleFolder + "  ");
 
                 var databaseFileList = _query.GetAllFiles(singleFolder);
-                var localFarrayFilesDbStyle = Files.GetFilesInDirectory(singleFolder).ToList();
+                var localFarrayFilesDbStyle = Files.GetFilesInDirectory(singleFolder,_appSettings).ToList();
 
                 databaseFileList = RemoveDuplicate(databaseFileList);
                 databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);
@@ -94,7 +94,7 @@ namespace starsky.Services
 
             foreach (var item in localSubFolderList)
             {
-                localSubFolderListDatabaseStyle.Add(FileIndexItem.FullPathToDatabaseStyle(item));
+                localSubFolderListDatabaseStyle.Add(_appSettings.FullPathToDatabaseStyle(item));
             }
 
             return localSubFolderListDatabaseStyle;

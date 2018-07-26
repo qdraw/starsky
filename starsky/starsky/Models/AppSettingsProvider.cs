@@ -9,7 +9,7 @@ namespace starsky.Models
     {
         public static string BasePath { get; set; }
         public static DatabaseTypeList DatabaseType { get; set; }
-        public static string ThumbnailTempFolder { get; set; }
+//        public static string ThumbnailTempFolder { get; set; }
         public static string ExifToolPath { get; set; }
         public static bool Verbose { get; set; }
 

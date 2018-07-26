@@ -12,17 +12,25 @@ namespace starsky.Services
 {
     public class Thumbnail
     {
+        private readonly AppSettings _appSettings;
+
+        public Thumbnail(AppSettings appSettings)
+        {
+            _appSettings = appSettings;
+        }
+        
         // Rename a thumbnail, used when you change exifdata,
         // the hash is also changed but the images remain the same
         public void RenameThumb(string oldHashCode, string newHashCode)
         {
-            if (!Directory.Exists(AppSettingsProvider.ThumbnailTempFolder))
+            if (!Directory.Exists(_appSettings.ThumbnailTempFolder))
             {
-                throw new FileNotFoundException("ThumbnailTempFolder not found " + AppSettingsProvider.ThumbnailTempFolder);
+                throw new FileNotFoundException("ThumbnailTempFolder not found " 
+                                                + _appSettings.ThumbnailTempFolder);
             }
 
-            var oldThumbPath = AppSettingsProvider.ThumbnailTempFolder + oldHashCode + ".jpg";
-            var newThumbPath = AppSettingsProvider.ThumbnailTempFolder + newHashCode + ".jpg";
+            var oldThumbPath = _appSettings.ThumbnailTempFolder + oldHashCode + ".jpg";
+            var newThumbPath = _appSettings.ThumbnailTempFolder + newHashCode + ".jpg";
 
             if (!File.Exists(oldThumbPath))
             {
@@ -39,13 +47,14 @@ namespace starsky.Services
         
         // Feature used by the cli tool
         // Use FileIndexItem or database style path
-        public static void CreateThumb(string dbFilePath = "/")
+        public void CreateThumb(string dbFilePath = "/")
         {
-            var fullFilePath = FileIndexItem.DatabasePathToFilePath(dbFilePath);
+            
+            var fullFilePath = _appSettings.DatabasePathToFilePath(dbFilePath);;
 
             var fileName = dbFilePath.Split("/").LastOrDefault();
 
-            if (Files.IsFolderOrFile(dbFilePath) 
+            if (Files.IsFolderOrFile(fullFilePath) 
                 == FolderOrFileModel.FolderOrFileTypeList.File)
             {
 
@@ -61,18 +70,21 @@ namespace starsky.Services
         }
 
         // Create a new thumbnail
-        public static void CreateThumb(FileIndexItem item)
+        public void CreateThumb(FileIndexItem item)
         {
-            if (!Directory.Exists(AppSettingsProvider.ThumbnailTempFolder))
+            if (!Directory.Exists(_appSettings.ThumbnailTempFolder))
             {
-                throw new FileNotFoundException("ThumbnailTempFolder not found " + AppSettingsProvider.ThumbnailTempFolder);
+                throw new FileNotFoundException("ThumbnailTempFolder not found " 
+                                                + _appSettings.ThumbnailTempFolder);
             }
 
-            if(string.IsNullOrWhiteSpace(item.FileHash)) throw new FileNotFoundException("(CreateThumb) FileHash is null " + AppSettingsProvider.ThumbnailTempFolder);
+            if(string.IsNullOrWhiteSpace(item.FileHash)) throw 
+                new FileNotFoundException("(CreateThumb) FileHash is null " 
+                                          + _appSettings.ThumbnailTempFolder);
             
-            var thumbPath = AppSettingsProvider.ThumbnailTempFolder + item.FileHash + ".jpg";
+            var thumbPath = _appSettings.ThumbnailTempFolder + item.FileHash + ".jpg";
 
-            if (!File.Exists(FileIndexItem.DatabasePathToFilePath(item.FilePath)))
+            if (!File.Exists(_appSettings.DatabasePathToFilePath(item.FilePath)))
             {
                 Console.WriteLine("File Not found: " + item.FilePath);
                 return;
@@ -80,7 +92,7 @@ namespace starsky.Services
             
             
             // If contains error with thumbnailing service then => skip
-            if (!_isErrorItem(FileIndexItem.DatabasePathToFilePath(item.FilePath))) return;
+//            if (!_isErrorItem(_appSettings.DatabasePathToFilePath(item.FilePath))) return;
             
             
             // Return if thumnail already exist
@@ -141,7 +153,7 @@ namespace starsky.Services
                               + "            <<<<<<<<<<<<");
             
             // Log the corrupt image
-            CreateErrorLogItem(inputDatabaseFilePath);
+//            CreateErrorLogItem(inputDatabaseFilePath);
             
             return false;
         }
@@ -149,9 +161,11 @@ namespace starsky.Services
         // Resize the thumbnail
         private static bool ResizeThumbnail(string inputFilePath, string thumbPath)
         {
+            // might be a short path;
+            
             // resize the image and save it to the output stream
             using (var outputStream = new FileStream(thumbPath, FileMode.CreateNew))
-            using (var inputStream = File.OpenRead(FileIndexItem.DatabasePathToFilePath(inputFilePath)))
+            using (var inputStream = File.OpenRead(inputFilePath))
             using (var image = Image.Load(inputStream))
             {
                 image.Mutate(x => x.AutoOrient());
@@ -167,45 +181,45 @@ namespace starsky.Services
         private static readonly string _thumbnailPrefix = "_";
         private static readonly string _thumbnailSuffix = "_starksy-error.log";
 
-        // todo: replace this code with something good
-        private static string _GetErrorLogItemFullPath(string inputDatabaseFilePath)
-        {
-            var parentDatabaseFolder = Breadcrumbs.BreadcrumbHelper(inputDatabaseFilePath).LastOrDefault();
-            var fileName = inputDatabaseFilePath.Replace(parentDatabaseFolder, "");
-            fileName = fileName.Replace(".jpg", _thumbnailSuffix);
-            fileName = fileName.Replace("/", "");
-            var logFileDatabasePath = parentDatabaseFolder + "/" + _thumbnailPrefix + fileName;
-
-            var logFile = FileIndexItem.DatabasePathToFilePath(logFileDatabasePath,false);
-            return logFile;
-        }
-
-        public static void CreateErrorLogItem(string inputDatabaseFilePath)
-        {
-            var path = _GetErrorLogItemFullPath(inputDatabaseFilePath);
-            if (File.Exists(path)) return;
-            
-            // Create a file to write to.
-            using (StreamWriter sw = File.CreateText(path)) 
-            {
-                sw.WriteLine(_thumbnailErrorMessage);
-            }
-        }
-        
-        private static bool _isErrorItem(string inputDatabaseFilePath)
-        {
-            var path = _GetErrorLogItemFullPath(inputDatabaseFilePath);
-            if (!File.Exists(path)) return true;
-            
-            using (StreamReader sr = File.OpenText(path)) 
-            {
-                string s = "";
-                while ((s = sr.ReadLine()) != null)
-                {
-                    if (s.Contains(_thumbnailErrorMessage)) return false;
-                }
-            }
-            return true;
-        }
+//        // todo: replace this code with something good
+//        private static string _GetErrorLogItemFullPath(string inputDatabaseFilePath)
+//        {
+//            var parentDatabaseFolder = Breadcrumbs.BreadcrumbHelper(inputDatabaseFilePath).LastOrDefault();
+//            var fileName = inputDatabaseFilePath.Replace(parentDatabaseFolder, "");
+//            fileName = fileName.Replace(".jpg", _thumbnailSuffix);
+//            fileName = fileName.Replace("/", "");
+//            var logFileDatabasePath = parentDatabaseFolder + "/" + _thumbnailPrefix + fileName;
+//
+//            var logFile = FileIndexItem.DatabasePathToFilePath(logFileDatabasePath,false);
+//            return logFile;
+//        }
+//
+//        public static void CreateErrorLogItem(string inputDatabaseFilePath)
+//        {
+//            var path = _GetErrorLogItemFullPath(inputDatabaseFilePath);
+//            if (File.Exists(path)) return;
+//            
+//            // Create a file to write to.
+//            using (StreamWriter sw = File.CreateText(path)) 
+//            {
+//                sw.WriteLine(_thumbnailErrorMessage);
+//            }
+//        }
+//        
+//        private static bool _isErrorItem(string inputDatabaseFilePath)
+//        {
+//            var path = _GetErrorLogItemFullPath(inputDatabaseFilePath);
+//            if (!File.Exists(path)) return true;
+//            
+//            using (StreamReader sr = File.OpenText(path)) 
+//            {
+//                string s = "";
+//                while ((s = sr.ReadLine()) != null)
+//                {
+//                    if (s.Contains(_thumbnailErrorMessage)) return false;
+//                }
+//            }
+//            return true;
+//        }
     }
 }

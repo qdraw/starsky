@@ -58,9 +58,9 @@ namespace starsky.Services
 
             var filesFullPathList = new List<string>();
             // recursive
-            if(recursiveDirectory) filesFullPathList = Files.GetFilesRecrusive(inputFullPath,false).ToList();
+            if(recursiveDirectory) filesFullPathList = Files.GetFilesRecrusive(inputFullPath).ToList();
             // non-recursive
-            if(!recursiveDirectory) filesFullPathList = Files.GetFilesInDirectory(inputFullPath,false).ToList();
+            if(!recursiveDirectory) filesFullPathList = Files.GetFilesInDirectory(inputFullPath,_appSettings).ToList();
 
             var succesfullDirFullPaths = Import(filesFullPathList, deleteAfter, ageFileFilter);
                 
@@ -89,7 +89,7 @@ namespace starsky.Services
             bool tryagain)
         {
 
-            var destinationFullPath = FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
+            var destinationFullPath = _appSettings.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
                                       + fileIndexItem.FileName;
             // When a file already exist, when you have multiple files with the same datetime
             if (inputFileFullPath != destinationFullPath
@@ -102,7 +102,7 @@ namespace starsky.Services
                     Path.GetExtension(fileIndexItem.FileName)
                 );
                 
-                destinationFullPath = FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
+                destinationFullPath = _appSettings.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
                                       + fileIndexItem.FileName;
             }
 

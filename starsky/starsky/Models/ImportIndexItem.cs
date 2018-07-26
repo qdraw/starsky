@@ -133,7 +133,7 @@ namespace starsky.Models
 
         public List<string> SearchSubDirInDirectory(string parentItem, string parsedItem)
         {
-            var childDirectories = Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem), parsedItem).ToList();
+            var childDirectories = Directory.GetDirectories(_appSettings.DatabasePathToFilePath(parentItem), parsedItem).ToList();
             childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
             return childDirectories;
         }
@@ -166,8 +166,8 @@ namespace starsky.Models
                 var parentItem = SubFolder;
                 string childFullDirectory = null;
 
-                if (Directory.Exists(FileIndexItem.DatabasePathToFilePath(parentItem)) &&
-                    Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem)).Length != 0)
+                if (Directory.Exists(_appSettings.DatabasePathToFilePath(parentItem)) &&
+                    Directory.GetDirectories(_appSettings.DatabasePathToFilePath(parentItem)).Length != 0)
                 {
                     // add backslash
                     var noSlashInParsedItem = parsedItem.Replace("/", string.Empty);
@@ -183,7 +183,7 @@ namespace starsky.Models
                 if (childFullDirectory == null)
                 {
                     var childDirectory = SubFolder + parsedItem.Replace("*", string.Empty) + "/";
-                    childFullDirectory = FileIndexItem.DatabasePathToFilePath(childDirectory,false);
+                    childFullDirectory = _appSettings.DatabasePathToFilePath(childDirectory,false);
 
                     if (createFolder)
                     {
@@ -192,7 +192,7 @@ namespace starsky.Models
                         Directory.CreateDirectory(childFullDirectory);
                     }
                 }
-                SubFolder = FileIndexItem.FullPathToDatabaseStyle(childFullDirectory);
+                SubFolder = _appSettings.FullPathToDatabaseStyle(childFullDirectory);
             }
 
             return SubFolder;

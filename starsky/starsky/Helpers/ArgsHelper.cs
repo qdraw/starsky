@@ -129,7 +129,8 @@ namespace starsky.Helpers
             }
             if (dbStyle)
             {
-                path = FileIndexItem.FullPathToDatabaseStyle(path);
+                throw new NotImplementedException("f");
+//                path = FileIndexItem.FullPathToDatabaseStyle(path);
             }
             return path;
         }

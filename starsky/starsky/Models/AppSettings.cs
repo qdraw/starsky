@@ -12,7 +12,17 @@ namespace starsky.Models
             .Replace("starskyimportercli", "starsky");
 
 
-        public string StorageFolder { get; set; }
+
+        private string _storageFolder; // in old versions: basePath 
+        public string StorageFolder
+        {
+            get { return _storageFolder; }
+            set
+            {
+                _storageFolder = ConfigRead.AddBackslash(value);
+            }
+        }
+
         public bool Verbose { get; set; }
                 
         
@@ -28,7 +38,7 @@ namespace starsky.Models
         
         // DatabaseType > above this one
         private  string _databaseConnection;
-        public  string DatabaseConnection
+        public string DatabaseConnection
         {
             get { return _databaseConnection; }
             set
@@ -37,7 +47,6 @@ namespace starsky.Models
             }
         }
 
-        
         private string _structure;
         public string Structure
         {
@@ -74,13 +83,69 @@ namespace starsky.Models
                 _structure = ConfigRead.RemoveLatestBackslash(structure);
             }
         }
+
+        private string _thumbnailTempFolder;
+        public string ThumbnailTempFolder
+        {
+            get { return _thumbnailTempFolder; }
+            set
+            {
+                _thumbnailTempFolder = ConfigRead.AddBackslash(value);
+            }
+        }
+        
+        public string FullPathToDatabaseStyle(string subpath)
+        {
+            var databaseFilePath = subpath.Replace(StorageFolder, "");
+            databaseFilePath = _pathToDatabaseStyle(databaseFilePath);
+            return databaseFilePath;
+        }
+        
+        // Replace windows \\ > /
+        private string _pathToDatabaseStyle(string subPath)
+        {
+            if (Path.DirectorySeparatorChar.ToString() == "\\")
+            {
+                subPath = subPath.Replace("\\", "/");
+            }
+            return subPath;
+        }
+
+        // Replace windows \\ > /
+        private string _pathToFilePathStyle(string subPath)
+        {
+            if (Path.DirectorySeparatorChar.ToString() == "\\")
+            {
+                subPath = subPath.Replace("/", "\\");
+            }
+            return subPath;
+        }
+
+
+        // from relative database path => file location path 
+        public string DatabasePathToFilePath(string databaseFilePath, bool checkIfExist = true)
+        {
+            var filepath = StorageFolder + databaseFilePath;
+
+            filepath = _pathToFilePathStyle(filepath);
+
+            // Used for deleted files
+            if (!checkIfExist) return filepath;
+            
+            var fileexist = File.Exists(filepath) ? filepath : null;
+            if (fileexist != null)
+            {
+                return fileexist;
+            }
+            return Directory.Exists(filepath) ? filepath : null;
+        }
+        
         
         
          // Replaces a SQLite url with a full path in the connection string
         public string SqliteFullPath(string connectionString, string fullDbPath = null)
         {
             if (string.IsNullOrWhiteSpace(connectionString)) return connectionString;
-//            if(string.IsNullOrWhiteSpace(connectionString)) throw new ArgumentException(">> Connection string IsNullOrWhiteSpace ");
             if(DatabaseType != DatabaseTypeList.Sqlite) return connectionString; // mysql does not need this
             if(Verbose) Console.WriteLine(connectionString);
             if(!connectionString.Contains("Data Source=")) throw new ArgumentException("missing Data Source in connection string");
