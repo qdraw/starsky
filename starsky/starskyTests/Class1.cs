@@ -26,7 +26,7 @@ namespace starskytests
 //                .AddJsonFile("appsettings.json")
 //                .AddEnvironmentVariables();
 //            var configuration = builder.Build();
-//            services.ConfigurePOCO<AppSettings>(configuration.GetSection("App"));
+//            services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
 //            _serviceProvider = services.BuildServiceProvider();
 //            // End of Depencency Injection for configuration
 

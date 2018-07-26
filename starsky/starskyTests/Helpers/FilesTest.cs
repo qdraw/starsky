@@ -41,29 +41,29 @@ namespace starskytests
             
         }
 
-        [TestMethod]
-        public void Files_GetFilesInDirectoryTest1()
-        {
-            // Used for JPEG files
-            var newImage = new CreateAnImage();
-            AppSettingsProvider.ThumbnailTempFolder = newImage.BasePath;
-            AppSettingsProvider.BasePath = newImage.BasePath;
-            var filesInFolder = Files.GetFilesInDirectory("/");
-            Assert.AreEqual(filesInFolder.Any(),true);
-        }
+//        [TestMethod]
+//        public void Files_GetFilesInDirectoryTest1()
+//        {
+//            // Used for JPEG files
+//            var newImage = new CreateAnImage();
+//            AppSettingsProvider.ThumbnailTempFolder = newImage.BasePath;
+//            AppSettingsProvider.BasePath = newImage.BasePath;
+//            var filesInFolder = Files.GetFilesInDirectory("/");
+//            Assert.AreEqual(filesInFolder.Any(),true);
+//        }
 
-        [TestMethod]
-        public void Files_GetFilesRecrusiveTest()
-        {            
-            var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
-
-            var content = Files.GetFilesRecrusive(path,false);
-
-            Console.WriteLine("count => "+ content.Count());
-
-            // Gives a list of the content in the temp folder.
-            Assert.AreEqual(true, content.Count() >= 5);            
-
-        }
+//        [TestMethod]
+//        public void Files_GetFilesRecrusiveTest()
+//        {            
+//            var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
+//
+//            var content = Files.GetFilesRecrusive(path,false);
+//
+//            Console.WriteLine("count => "+ content.Count());
+//
+//            // Gives a list of the content in the temp folder.
+//            Assert.AreEqual(true, content.Count() >= 5);            
+//
+//        }
     }
 }

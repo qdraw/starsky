@@ -104,32 +104,32 @@ namespace starsky.Services
             var wrap = WrapSomeMethod(item.FilePath,thumbPath).Result;
             if(wrap) Console.WriteLine(".");
             
-            _removeCorruptImage(thumbPath);
+//            _removeCorruptImage(thumbPath);
 
         }
 
-        private static void _removeCorruptImage(string thumbPath)
-        {
-            if (!File.Exists(thumbPath)) return;
-            
-            var imageFormat = Files.GetImageFormat(thumbPath);
-            if(AppSettingsProvider.Verbose) Console.WriteLine(Files.GetImageFormat(thumbPath));
-            switch (imageFormat)
-            {
-                case Files.ImageFormat.jpg:
-                    return;
-                case Files.ImageFormat.unknown:
-                    try
-                    {
-                        File.Delete(thumbPath);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
-                    break;
-            }
-        }
+//        private static void _removeCorruptImage(string thumbPath)
+//        {
+//            if (!File.Exists(thumbPath)) return;
+//            
+//            var imageFormat = Files.GetImageFormat(thumbPath);
+//            if(AppSettingsProvider.Verbose) Console.WriteLine(Files.GetImageFormat(thumbPath));
+//            switch (imageFormat)
+//            {
+//                case Files.ImageFormat.jpg:
+//                    return;
+//                case Files.ImageFormat.unknown:
+//                    try
+//                    {
+//                        File.Delete(thumbPath);
+//                    }
+//                    catch (Exception e)
+//                    {
+//                        Console.WriteLine(e);
+//                    }
+//                    break;
+//            }
+//        }
         
         // Wrapper to Make a sync task sync
         private static async Task<bool> WrapSomeMethod(string someParam, string someParam2)

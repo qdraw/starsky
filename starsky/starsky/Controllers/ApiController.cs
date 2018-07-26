@@ -186,9 +186,10 @@ namespace starsky.Controllers
                 System.IO.File.Delete(thumbPath);
             }
 
+            var sourceFullPath = _appSettings.DatabasePathToFilePath(sourcePath);
 
             if (!System.IO.File.Exists(thumbPath) &&
-                System.IO.File.Exists(_appSettings.DatabasePathToFilePath(sourcePath)))
+                System.IO.File.Exists(sourceFullPath))
             {
                 if (!isSingleitem)
                 {
@@ -196,12 +197,12 @@ namespace starsky.Controllers
                     SetExpiresResponseHeadersToZero();
                     return NoContent();
                 }
-                FileStream fs1 = System.IO.File.OpenRead(_appSettings.DatabasePathToFilePath(sourcePath));
+                FileStream fs1 = System.IO.File.OpenRead(sourceFullPath);
                 return File(fs1, "image/jpeg");
             }
 
             if (!System.IO.File.Exists(thumbPath) && 
-                !System.IO.File.Exists(_appSettings.DatabasePathToFilePath(sourcePath)))
+                !System.IO.File.Exists(sourceFullPath))
             {
                 return NotFound("There is no thumbnail image and no source image");
             }
@@ -229,7 +230,7 @@ namespace starsky.Controllers
         [HttpHead]
         public IActionResult DownloadPhoto(string f, bool isThumbnail = true)
         {
-            // f = filePath
+            // f = subpath/filepath
             if (f.Contains("?isthumbnail")) return NotFound("please use &isthumbnail= instead of ?isthumbnail=");
 
             var singleItem = _query.SingleItem(f);
