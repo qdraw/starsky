@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starsky", "starsky\starsky.csproj", "{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskycli", "starsky-cli\starskycli.csproj", "{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskysynccli", "starskysynccli\starskysynccli.csproj", "{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskyimportercli", "starskyimportercli\starskyimportercli.csproj", "{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}"
 EndProject
