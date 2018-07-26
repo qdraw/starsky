@@ -7,19 +7,14 @@
  ```
 bash ./readme-listoftests-update.sh 
 ``` 
-Last updated:  2018-07-25
+Last updated:  2018-07-26
 ```
 
-Test run for /data/git/starsky/starsky/starskyTests/bin/Debug/netcoreapp2.1/starskytests.dll(.NETCoreApp,Version=v2.1)
+Test run for /data/git/starsky/starsky/starskyTests/bin/Debug/netcoreapp2.0/starskytests.dll(.NETCoreApp,Version=v2.0)
 Microsoft (R) Test Execution Command Line Tool Version 15.7.0
 Copyright (c) Microsoft Corporation.  All rights reserved.
 
 The following Tests are available:
-    AppSettingsProviderTest_ReadOnlyFoldersTest
-    AppSettingsProviderTest_SqliteFullPathTest
-    AppSettingsProviderTest_SqliteFullPathentityframeworkcoreTest
-    AppSettingsProviderTest_SqliteFullPathstarskycliTest
-    AppSettingsProviderTest_SqliteFullPathstarskyimportercliTest
     ArgsHelper_NeedVerboseTest
     ArgsHelper_GetIndexModeTest
     ArgsHelper_NeedHelpTest
@@ -33,22 +28,9 @@ The following Tests are available:
     ArgsHelper_SetEnvironmentByArgsShortTestListTest
     ArgsHelper_SetEnvironmentByArgsLongTestListTest
     Base32EncodeDecodeTest
-    BasePathConfig_StructureNotNull
-    BasePathConfig_StructureRead
     BreadcrumbSlashMethodTest
     BreadcrumbFileNameMethodTest
     BreadcrumbNullTest
-    ConfigRead_BasePathTest
-    ConfigRead_IsSettingEmptyTest
-    ConfigRead_SetAppSettingsProviderEnvTest
-    ConfigRead_ReadTextFromObjOrEnvListOfItemsWithItems
-    ConfigRead_ReadTextFromObjOrEnvListOfItems_null_Items
-    ConfigRead_ReadTextFromObjOrEnvListOfItems_nullExpectedException_Items
-    ConfigRead_ReadTextFromObjOrEnvListOfItems_zzEnv
-    ConfigRead_RemoveLatestBackslashTest
-    ConfigRead_PrefixDbslashTest
-    ConfigRead_AddBackslashTest
-    EnvViewModelTestEnvViewModelTest
     ExifRead_GetObjectNameNull
     ExifRead_GetObjectNameTest
     ExifRead_GetCaptionAbstractTest
@@ -84,33 +66,9 @@ The following Tests are available:
     FileIndexItemTest_GetColorClassListTestEightSeven
     FileIndexItemTest_GetAllColorTest
     FileIndexItemTest_FileIndexItemTitleTest
-    StreamFileExeption
-    StreamFilemultipart
-    FileStreamingHelperTest_FileStreamingHelper_StreamFile_imagejpeg
-    FileStreamingHelper_GetTempFilePath_NullOption
-    FileStreamingHelper_GetTempFilePath_ParseStringSimple_Option
-    FileStreamingHelper_GetTempFilePath_ParseStringWithDots_Option
-    FileStreamingHelper_HeaderFileName_normalStringTest
-    FileStreamingHelper_HeaderFileName_base64StringTest
-    FileStreamingHelper_GetTempFilePath_ParseStringAppendix1_Option
-    FileStreamingHelperTest_FileStreamingHelper_StreamFile_multiPart
     FolderOrFileModelFolderOrFileTypeListTest
     Files_IsFolderOrFileTest
     Files_GetAllFilesDirectoryTest
-    Files_GetFilesInDirectoryTest1
-    Files_GetFilesRecrusiveTest
-    ImportService_NoSubPath_slashyyyyMMdd_HHmmss_ImportTest
-    ImportService_AsteriskTRFolderHHmmss_ImportTest
-    ImportService_NonExistingFolder_HHmmssImportTest
-    ImportService_WithoutExt_ImportTest
-    ImportService_DuplicateImport_Test
-    ImportService_DuplicateFileName_Test
-    ImportService_DuplicateDateStamp_Import_HHmmssImportTest
-    ImportService_DeleteAfterTest_HHmmssImportTest
-    ImportService_NonExistingImportFail_ImportTest
-    ImportService_EntireBasePath_Folder_Import_ToFolderExist_Test
-    ImportService_Import_NotFound_Test
-    ImportService_inputFullPathList_ListInput_ImportTest
     IndexViewModelPageTypeTest
     MigrationsTest_contextDatabaseMigrate
     MultipartRequestHelperTest_Missingcontenttypeboundary
@@ -167,7 +125,6 @@ The following Tests are available:
     SyncServiceAddFoldersToDatabaseTest
     SyncServiceRemoveOldFilePathItemsFromDatabaseTest
     SyncServiceAddSubPathFolderTest
-    SyncServiceCheckMd5HashTest
     SyncServiceSingleFileTest
     SyncServiceDeletedSingleFileTest
     SyncServiceDeletedFolderTest
@@ -176,27 +133,8 @@ The following Tests are available:
     SyncServiceRenameListItemsToDbStyleTest
     SyncService_DuplicateContentInDatabase_Test
     SyncService_Duplicate_Folders_Directories_InDatabase_Test
-    CreateAndRenamteThumbTest
-    ThumbnailCreateThumbnailNullTest
-    ThumbnailCreateThumbnailNotFoundTest
-    ThumbnailCreateThumb_FileIndexItem_ThumbnailTempFolderNull_Test
-    ThumbnailRenameThumb_DirectInput_ThumbnailTempFolderNull_Test
-    ThumbnailRenameThumb_DirectInput_nonexistingOldHash_Test
-    ThumbnailRenameThumb_DirectInput_nonexistingNewHash_Test
-    ThumbnailByDirectoryTest
     LoginViewModelTestLoadAll
     RegisterViewModelLoadAll
-    StarskyCliHelpTest
-    StarskyCliSubPathOneImage
-    ImportIndexItemParseFileNameTest
-    ImportIndexItemParseSubfoldersTest
-    ImportIndexItemParseSubfolders_TRslashABC_Test
-    ImportIndexItemParseSubfolders_Tzzz_slashABC_Test
-    ImportIndexItemParse_filenamebase_filename_Test
-    ImportIndexItemParse_filenamebase_subfolder_Test
-    ImportIndexItemParse_FileNotExist_Test
-    ImportIndexItemParse_ParseDateTimeFromFileName_Test
-    ImportIndexItemParse_ParseDateTimeFromFileName_WithExtraDotsInName_Test
     CredentialSetupTest
     CredentialTypeSetup_Test
     CredentialSetupTest

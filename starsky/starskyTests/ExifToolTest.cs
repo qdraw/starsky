@@ -26,9 +26,11 @@ namespace starskytests
             // Inject Config helper
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             // random config
+            var newImage = new CreateAnImage();
             var dict = new Dictionary<string, string>
             {
-                {"App:SomeRandomConfig", "11"},
+                { "App:StorageFolder", newImage.BasePath },
+                { "App:Verbose", "true" }
             };
             // Start using dependency injection
             var builder = new ConfigurationBuilder();  
