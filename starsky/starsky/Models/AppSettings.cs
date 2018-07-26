@@ -93,7 +93,9 @@ namespace starsky.Models
                 _thumbnailTempFolder = ConfigRead.AddBackslash(value);
             }
         }
-        
+
+        public string ExifToolPath { get; set; }
+
         public string FullPathToDatabaseStyle(string subpath)
         {
             var databaseFilePath = subpath.Replace(StorageFolder, "");
