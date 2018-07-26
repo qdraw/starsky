@@ -14,7 +14,7 @@ namespace starskytests
     [TestClass]
     public class ArgsHelperTest
     {
-        private AppSettings _appSettings;
+        private readonly AppSettings _appSettings;
 
         public ArgsHelperTest()
         {

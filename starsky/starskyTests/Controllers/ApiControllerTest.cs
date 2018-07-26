@@ -23,9 +23,9 @@ namespace starskytests.Controllers
     public class ApiControllerTest
     {
         private readonly IQuery _query;
-        private IExiftool _exiftool;
-        private AppSettings _appSettings;
-        private CreateAnImage _createAnImage;
+        private readonly IExiftool _exiftool;
+        private readonly AppSettings _appSettings;
+        private readonly CreateAnImage _createAnImage;
 
         public ApiControllerTest()
         {

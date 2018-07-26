@@ -33,7 +33,7 @@ namespace starsky.Helpers
 
         public static bool HasFormDataContentDisposition(ContentDispositionHeaderValue contentDisposition)
         {
-            // Content-Disposition: form-data; name="key";
+            // Content-Disposition: form-data; name="key" dot comma
             return contentDisposition != null
                     && contentDisposition.DispositionType.Equals("form-data")
                     && string.IsNullOrEmpty(contentDisposition.FileName.Value) // For .NET Core <2.0 remove ".Value"

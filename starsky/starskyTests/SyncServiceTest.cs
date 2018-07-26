@@ -63,7 +63,7 @@ namespace starskytests
 
         private readonly Query _query;
         private readonly SyncService _syncservice;
-        private AppSettings _appSettings;
+        private readonly AppSettings _appSettings;
 
         [ExcludeFromCoverage]
         [TestMethod]

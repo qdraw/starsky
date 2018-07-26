@@ -32,8 +32,6 @@ namespace starsky.Helpers
         // Returns a list of directories
         public static string[] GetAllFilesDirectory(string fullFilePath = "")
         {
-//            // This one does not include the subfolder itself
-//            var path = FileIndexItem.DatabasePathToFilePath(subPath);
 
             if (!Directory.Exists(fullFilePath)) return new List<string>().ToArray();
             string[] folders = Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);

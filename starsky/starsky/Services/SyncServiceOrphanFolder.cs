@@ -25,8 +25,7 @@ namespace starsky.Services
             // Large items not recruisive
             if (allItemsInDb.Count > 2500)
             {
-                Console.WriteLine("Item in subfolder is to large");
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException("Item in subfolder is to large");
             }
 
             Console.WriteLine("> running");

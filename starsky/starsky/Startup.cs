@@ -18,7 +18,7 @@ namespace starsky
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Startup
     {
-        private IConfigurationRoot _configuration;
+        private readonly IConfigurationRoot _configuration;
         private ServiceProvider _serviceProvider;
 
         public Startup()

@@ -24,7 +24,7 @@ namespace starskytests
         private Query _query;
         private SyncService _isync;
         private IExiftool _exiftool;
-        private AppSettings _appSettings;
+        private readonly AppSettings _appSettings;
         private CreateAnImage _createAnImage;
 
         public ImportServiceTest()

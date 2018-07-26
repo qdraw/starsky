@@ -166,8 +166,6 @@ namespace starsky.Services
         // Resize the thumbnail
         private bool ResizeThumbnail(string inputDbPath, string thumbPath)
         {
-            // might be a short path;
-
             Console.WriteLine("inputFilePath >> " + inputDbPath);
             
             // resize the image and save it to the output stream
@@ -189,44 +187,46 @@ namespace starsky.Services
         private static readonly string _thumbnailSuffix = "_starksy-error.log";
 
 //        // todo: replace this code with something good
-//        private static string _GetErrorLogItemFullPath(string inputDatabaseFilePath)
-//        {
-//            var parentDatabaseFolder = Breadcrumbs.BreadcrumbHelper(inputDatabaseFilePath).LastOrDefault();
-//            var fileName = inputDatabaseFilePath.Replace(parentDatabaseFolder, "");
-//            fileName = fileName.Replace(".jpg", _thumbnailSuffix);
-//            fileName = fileName.Replace("/", "");
-//            var logFileDatabasePath = parentDatabaseFolder + "/" + _thumbnailPrefix + fileName;
-//
-//            var logFile = FileIndexItem.DatabasePathToFilePath(logFileDatabasePath,false);
-//            return logFile;
-//        }
-//
-//        public static void CreateErrorLogItem(string inputDatabaseFilePath)
-//        {
-//            var path = _GetErrorLogItemFullPath(inputDatabaseFilePath);
-//            if (File.Exists(path)) return;
-//            
-//            // Create a file to write to.
-//            using (StreamWriter sw = File.CreateText(path)) 
-//            {
-//                sw.WriteLine(_thumbnailErrorMessage);
-//            }
-//        }
-//        
-//        private static bool _isErrorItem(string inputDatabaseFilePath)
-//        {
-//            var path = _GetErrorLogItemFullPath(inputDatabaseFilePath);
-//            if (!File.Exists(path)) return true;
-//            
-//            using (StreamReader sr = File.OpenText(path)) 
-//            {
-//                string s = "";
-//                while ((s = sr.ReadLine()) != null)
-//                {
-//                    if (s.Contains(_thumbnailErrorMessage)) return false;
-//                }
-//            }
-//            return true;
-//        }
+        
+        private string _GetErrorLogItemFullPath(string inputDatabaseFilePath)
+        {
+            var parentDatabaseFolder = Breadcrumbs.BreadcrumbHelper(inputDatabaseFilePath).LastOrDefault();
+            var fileName = inputDatabaseFilePath.Replace(parentDatabaseFolder, "");
+            fileName = fileName.Replace(".jpg", _thumbnailSuffix);
+            fileName = fileName.Replace("/", "");
+            var logFileDatabasePath = parentDatabaseFolder + "/" + _thumbnailPrefix + fileName;
+
+            
+            var logFile = _appSettings.DatabasePathToFilePath(logFileDatabasePath,false);
+            return logFile;
+        }
+
+        public void CreateErrorLogItem(string inputDatabaseFilePath)
+        {
+            var path = _GetErrorLogItemFullPath(inputDatabaseFilePath);
+            if (File.Exists(path)) return;
+            
+            // Create a file to write to.
+            using (StreamWriter sw = File.CreateText(path)) 
+            {
+                sw.WriteLine(_thumbnailErrorMessage);
+            }
+        }
+        
+        private bool _isErrorItem(string inputDatabaseFilePath)
+        {
+            var path = _GetErrorLogItemFullPath(inputDatabaseFilePath);
+            if (!File.Exists(path)) return true;
+            
+            using (StreamReader sr = File.OpenText(path)) 
+            {
+                string s = "";
+                while ((s = sr.ReadLine()) != null)
+                {
+                    if (s.Contains(_thumbnailErrorMessage)) return false;
+                }
+            }
+            return true;
+        }
     }
 }

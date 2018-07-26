@@ -9,7 +9,7 @@ namespace starsky.Services
     // This feature is used to crawl over directories and add this to the thumbnail-folder
     public class ThumbnailByDirectory
     {
-        private AppSettings _appSettings;
+        private readonly AppSettings _appSettings;
 
         public ThumbnailByDirectory(AppSettings appSettings)
         {

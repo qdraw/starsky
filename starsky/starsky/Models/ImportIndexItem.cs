@@ -78,7 +78,7 @@ namespace starsky.Models
             var fileName = DateTime.ToString(structuredFileName, CultureInfo.InvariantCulture);
             fileName += "." + fileExtenstion;
             
-            // Escape feature to Restore {filenamebase}
+            // Escape feature to Restore (filenamebase)
             if (fileName.Contains("_!q_")) // filenamebase
             {
                 fileName = fileName.Replace("_!q_", Path.GetFileNameWithoutExtension(SourceFullFilePath));
