@@ -117,7 +117,8 @@ namespace starskytests.Controllers
             var thumbnailAnswer = actionResult.Value as string;
             Assert.AreEqual("OK",thumbnailAnswer);
 
-            var thumbnewImg = new CreateAnImage().BasePath + Path.DirectorySeparatorChar + createAnImage.FileHash + ".jpg";
+            var thumbnewImg = new CreateAnImage().BasePath + 
+                              Path.DirectorySeparatorChar + createAnImage.FileHash + ".jpg";
             File.Delete(thumbnewImg);
         }
         
@@ -134,7 +135,8 @@ namespace starskytests.Controllers
             Assert.AreEqual("image/jpeg",thumbnailAnswer);
             actionResult.FileStream.Dispose(); // for windows
 
-            var thumbnewImg = new CreateAnImage().BasePath + Path.DirectorySeparatorChar + createAnImage.FileHash + ".jpg";
+            var thumbnewImg = new CreateAnImage().BasePath + 
+                              Path.DirectorySeparatorChar + createAnImage.FileHash + ".jpg";
             File.Delete(thumbnewImg);
         }
 
@@ -222,7 +224,8 @@ namespace starskytests.Controllers
             });
             
             var controller = new ApiController(_query,_exiftool,_appSettings);
-            var notFoundResult = controller.Update("test", "1", "test", "/345678765434567.jpg") as NotFoundObjectResult;
+            var notFoundResult = controller.Update(
+                "test", "1", "test", "/345678765434567.jpg") as NotFoundObjectResult;
             Assert.AreEqual(404,notFoundResult.StatusCode);
 
             _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
