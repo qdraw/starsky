@@ -83,9 +83,12 @@ namespace starsky.Services
                 }
                 catch (NullReferenceException e)
                 {
-                    Console.WriteLine(e);
-                    Console.WriteLine("> Configuration error with:" + name);
-                    if(throwError) throw;
+                    if (throwError)
+                    {
+                        Console.WriteLine(e);
+                        Console.WriteLine("> Configuration error with:" + name);
+                        throw;
+                    }
                 }
                 if(listOfStrings.Count >= 1) value = "list";
             }

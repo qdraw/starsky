@@ -23,6 +23,7 @@ namespace starsky.Models
             }
         }
 
+        // Do a default fallback for readonly folders
         private static List<string> _readOnlyFolders;
         public static List<string> ReadOnlyFolders
         {
