@@ -37,6 +37,7 @@ namespace starsky.Services
             var structure = ReadTextFromObjOrEnv("Structure", obj, false); // false means is optional
             var readOnlyFolders = ReadTextFromObjOrEnvListOfItems("ReadOnlyFolders", obj, false); // false means, is optional
 
+            
             SetAppSettingsProvider(basePath,defaultConnection,databaseType,thumbnailTempFolder,
                 exifToolPath,addMemoryCache, structure, readOnlyFolders);
         }
@@ -64,7 +65,8 @@ namespace starsky.Services
             AppSettingsProvider.Structure = structure;
             AppSettingsProvider.ReadOnlyFolders = readonlyFolders;
 
-            if(AppSettingsProvider.Verbose) Console.WriteLine("DatabaseType: " + AppSettingsProvider.DatabaseType.ToString() );
+            if(AppSettingsProvider.Verbose) Console.WriteLine("DatabaseType: " + 
+                                                              AppSettingsProvider.DatabaseType.ToString() );
         }
         
         public static List<string> ReadTextFromObjOrEnvListOfItems(string name, JObject obj = null, bool throwError = true)

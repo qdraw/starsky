@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using starsky.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Data;
 using starsky.Middleware;
@@ -15,10 +17,24 @@ namespace starsky
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Startup
     {
-
+        public Startup(IHostingEnvironment env)
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+            Configuration = builder.Build();
+            
+            var appConfig = new AppSettings();
+            Configuration.GetSection("App").Bind(appConfig);
+        }
+        public static IConfigurationRoot Configuration { get; set; }
+        
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // old configs
             ConfigRead.SetAppSettingsProvider();
             
             if(AppSettingsProvider.AddMemoryCache) services.AddMemoryCache();

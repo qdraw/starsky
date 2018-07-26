@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace starsky.Models
 {
-    public static class AppSettingsProvider
+    public class AppSettingsProvider
     {
         public static string BasePath { get; set; }
         public static DatabaseTypeList DatabaseType { get; set; }
