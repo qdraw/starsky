@@ -13,7 +13,8 @@ namespace starsky.Services
             subpath = _query.SubPathSlashRemove(subpath);
 
             // Loop though all folders
-            var subFoldersFullPath = Files.GetAllFilesDirectory(subpath);
+            var fullFilePath = _appSettings.DatabasePathToFilePath(subpath);
+            var subFoldersFullPath = Files.GetAllFilesDirectory(fullFilePath);
 
             foreach (var singleFolderFullPath in subFoldersFullPath)
             {

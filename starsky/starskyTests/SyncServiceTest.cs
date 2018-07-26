@@ -33,12 +33,14 @@ namespace starskytests
             // Add IConfig to DI
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             // Make example config in memory
+            var newImage = new CreateAnImage();
             var dict = new Dictionary<string, string>
             {
-                {"App:MainWindow:Height", "11"},
+                { "App:StorageFolder", newImage.BasePath },
+                { "App:Verbose", "true" }
             };
             // Build Fake database
-            var dbBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            var dbBuilder = new     DbContextOptionsBuilder<ApplicationDbContext>();
             dbBuilder.UseInMemoryDatabase("test");
             var options = dbBuilder.Options;
             var context = new ApplicationDbContext(options);
@@ -345,8 +347,6 @@ namespace starskytests
         public void SyncService_DuplicateContentInDatabase_Test()
         {
             var createAnImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = createAnImage.BasePath; // needs to have an / or \ at the end
-
             var testjpg = new FileIndexItem
             {
                 Id = 200,

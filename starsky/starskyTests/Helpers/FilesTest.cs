@@ -17,13 +17,9 @@ namespace starskytests
         {
             var newImage = new CreateAnImage();
             // Testing base folder of Image, and Image it self
-            AppSettingsProvider.BasePath = newImage.BasePath;
-
-            Console.WriteLine(newImage.BasePath);
-            Console.WriteLine(newImage.FullFilePath);
             
-            Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, Files.IsFolderOrFile("/"));
-            Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,Files.IsFolderOrFile(newImage.DbPath));
+            Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, Files.IsFolderOrFile(newImage.BasePath));
+            Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,Files.IsFolderOrFile(newImage.FullFilePath));
         }
 
         [TestMethod]
@@ -35,8 +31,7 @@ namespace starskytests
             
             // Used For subfolders
             var newImage = new CreateAnImage();
-            AppSettingsProvider.BasePath = newImage.BasePath;
-            var filesInFolder = Files.GetAllFilesDirectory();
+            var filesInFolder = Files.GetAllFilesDirectory(newImage.BasePath);
             Assert.AreEqual(true,filesInFolder.Any());
             
         }

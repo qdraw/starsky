@@ -21,17 +21,26 @@ namespace starskytests
 
         public ExifToolTest()
         {
+            // Add a dependency injection feature
             var services = new ServiceCollection();
+            // Inject Config helper
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+            // random config
             var dict = new Dictionary<string, string>
             {
-                {"App:MainWindow:Height", "11"},
+                {"App:SomeRandomConfig", "11"},
             };
-            var builder = new ConfigurationBuilder();                
+            // Start using dependency injection
+            var builder = new ConfigurationBuilder();  
+            // Add random config to dependency injection
             builder.AddInMemoryCollection(dict);
+            // build config
             var configuration = builder.Build();
+            // inject config as object to a service
             services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+            // build the service
             var serviceProvider = services.BuildServiceProvider();
+            // get the service
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();
         }
         [TestMethod]
