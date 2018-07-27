@@ -56,7 +56,7 @@ starskycli --help
 --verbose or -v == verbose, more detailed info
 --databasetype or -d == Overwrite EnvironmentVariable for DatabaseType
 --basepath or -b == Overwrite EnvironmentVariable for StorageFolder
---connection or -c == Overwrite EnvironmentVariable for DefaultConnection
+--connection or -c == Overwrite EnvironmentVariable for DatabaseConnection
 --thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder
 --exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath
   use -v -help to show settings:
