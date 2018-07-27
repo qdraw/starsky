@@ -115,8 +115,12 @@ namespace starsky.Services
             return updateStatusContent;
         }
 
-        private void AddCacheItem(FileIndexItem updateStatusContent)
+        // Private api within Query to add cached items
+        public void AddCacheItem(FileIndexItem updateStatusContent)
         {
+            // Add protection for disabeling caching
+            if (_cache == null) return;
+
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
                 updateStatusContent.ParentDirectory);
 
@@ -132,7 +136,8 @@ namespace starsky.Services
             _cache.Set(queryCacheName, displayFileFolders);
         }
 
-        private void CacheUpdateItem(FileIndexItem updateStatusContent)
+        // Private api within Query to update cached items
+        public void CacheUpdateItem(FileIndexItem updateStatusContent)
         {
             if (_cache == null) return;
             

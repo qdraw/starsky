@@ -20,13 +20,13 @@ namespace starskytests
             var provider = new ServiceCollection()
                 .AddMemoryCache()
                 .BuildServiceProvider();
-            var memoryCache = provider.GetService<IMemoryCache>();
+            _memoryCache = provider.GetService<IMemoryCache>();
             
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             builder.UseInMemoryDatabase("test");
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
-            _query = new Query(context,memoryCache);
+            _query = new Query(context,_memoryCache);
         }
 
         private readonly Query _query;
@@ -36,6 +36,7 @@ namespace starskytests
         private static FileIndexItem _insertSearchDatahi3JpgInput;
         private static FileIndexItem _insertSearchDatahi4JpgInput;
         private static FileIndexItem _insertSearchDatahi2SubfolderJpgInput;
+        private readonly IMemoryCache _memoryCache;
 
         private void InsertSearchData()
         {
@@ -420,6 +421,25 @@ namespace starskytests
             Assert.AreNotEqual(string.Empty, cachingDeleted001Update.Tags);
             // AreNotEqual: When it item used cache  it will return string.Emthy
             
+        }
+
+        [TestMethod]
+        public void QueryFolder_Add_And_UpdateFolderCache_UpdateCacheItemTest()
+        {
+            // Add folder to cache normaly done by: CacheQueryDisplayFileFolders
+            _memoryCache.Set("List`1_", new List<FileIndexItem>(), new TimeSpan(1,0,0));
+            // "List`1_" is from CachingDbName
+            
+            var item = new FileIndexItem {Id = 400, FileName = "cache"};
+            _query.AddCacheItem(item);
+            
+            var item1 = new FileIndexItem {Id = 400, Tags = "hi", FileName = "cache"};
+            _query.CacheUpdateItem(item1);
+
+           if (!_memoryCache.TryGetValue("List`1_", out var objectFileFolders));
+            var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
+
+            Assert.AreEqual(displayFileFolders.FirstOrDefault(p => p.FileName == "cache").Tags,"hi");
         }
 
     }
