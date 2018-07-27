@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using Newtonsoft.Json;
 using starsky.Services;
 
 namespace starsky.Models
@@ -43,6 +44,7 @@ namespace starsky.Models
         
         // DatabaseType > above this one
         private  string _databaseConnection;
+        [JsonIgnore]
         public string DatabaseConnection
         {
             get { return _databaseConnection; }

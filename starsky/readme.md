@@ -45,11 +45,11 @@ On Linux ARM there is no SDK avaiable, but the runtime works. So you have to com
     This is the most basic configuration. There are more options available
     ```json
     {
-        "ConnectionStrings": {
+        "App": {
             "ThumbnailTempFolder": "/home/pi/starsky_thumbnails",
-            "STARSKY_BASEPATH": "/home/pi/starsky_base",
+            "StorageFolder": "/home/pi/starsky_base",
             "DatabaseType": "sqlite",
-            "DefaultConnection": "Data Source=data.db",
+            "DatabaseConnection": "Data Source=data.db",
             "ExifToolPath": "/usr/bin/exiftool",
             "ReadOnlyFolders": []
         }
@@ -64,7 +64,7 @@ On Linux ARM there is no SDK avaiable, but the runtime works. So you have to com
     ```
    http://localhost:5000/account/register
     ```
-    
+
 #### Optional steps  
 9)  The script [`new-pm2.sh`](new-pm2.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
     ```sh

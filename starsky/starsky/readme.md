@@ -15,7 +15,7 @@
 
 When setup Starksy there are two options to configure the installation.
 There is a list of required settings. First the `appsettings.json` is loaded and the
-environment variables are overwriting features. 
+environment variables are overwriting features.
 The commandline arguments are shortcuts to set an in-app environment variable
 
 ### The order of reading settings
@@ -37,11 +37,11 @@ The commandline arguments are shortcuts to set an in-app environment variable
 ### Appsettings.json example
 ```json
 {
-  "ConnectionStrings": {
+  "App": {
     "ThumbnailTempFolder": "Y:\\data\\photodirectory\\temp",
-    "STARSKY_BASEPATH": "Y:\\data\\photodirectory\\storage",
+    "StorageFolder": "Y:\\data\\photodirectory\\storage",
     "DatabaseType": "mysql",
-    "DefaultConnection": "Server=mysqlserver.nl;database=dbname;uid=username;pwd=password;",
+    "DatabaseConnection": "Server=mysqlserver.nl;database=dbname;uid=username;pwd=password;",
     "ExifToolPath": "C:\\exiftool.exe",
     "Structure": "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext",
     "ReadOnlyFolders": ["/2015","/2018"],
@@ -52,11 +52,11 @@ The commandline arguments are shortcuts to set an in-app environment variable
 #### Appsettings Notes
 1)   Structure uses slash as directory separators for Linux and Windows
 2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `STARSKY_BASEPATH` uses the system path directory separators
-3)  When using Windows please double escape (`\\`) system path's 
+3)  When using Windows please double escape (`\\`) system path's
 
 
 ### Rest API documentation
-Starsky has a Json and Razorview restfull API. Please read the documentation 
+Starsky has a Json and Razorview restfull API. Please read the documentation
 
 #### Rest API Table of contents
 - [Get PageType	"Archive" ](readme_api.md#get-pagetypearchive)
@@ -71,5 +71,3 @@ Starsky has a Json and Razorview restfull API. Please read the documentation
 - [Form import](readme_api.md#form-import)
 - [Search](readme_api.md#search)
 - [Environment info](readme_api.md#environment-info)
-
-
