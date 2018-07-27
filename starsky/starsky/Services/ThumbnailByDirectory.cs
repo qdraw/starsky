@@ -16,15 +16,14 @@ namespace starsky.Services
             _appSettings = appSettings;
         }
 
-        public void CreateThumb(string subpath = "/")
+        public void CreateThumb(string parentFolderFullPath = "/")
         {
             // Thumbnail check service
             
-            var subFoldersFullPath =  Files.GetAllFilesDirectory(
-                _appSettings.DatabasePathToFilePath(subpath)).ToList();
+            var subFoldersFullPath =  Files.GetAllFilesDirectory(parentFolderFullPath).ToList();
             
             // Add Subpath to scan the root folder for thumbs       
-            subFoldersFullPath.Add(_appSettings.DatabasePathToFilePath(subpath));
+            subFoldersFullPath.Add(parentFolderFullPath);
             
             foreach (var singleFolderFullPath in subFoldersFullPath)
             {
@@ -42,8 +41,6 @@ namespace starsky.Services
                         FileName = Path.GetFileName(_appSettings.FullPathToDatabaseStyle(filesInDirectoryFullPath[i])),
                         FileHash = localFileListFileHash[i]
                     };
-                    // FilePath = FileIndexItem.FullPathToDatabaseStyle(filesInDirectoryFullPath[i]),
-
 
                     if (_appSettings.Verbose) Console.WriteLine("localFileListFileHash[i] " + localFileListFileHash[i]); 
                     

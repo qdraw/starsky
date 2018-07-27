@@ -66,15 +66,26 @@ namespace starskysynccli
                 Console.WriteLine("Done SyncFiles!");
             }
 
-            if (new ArgsHelper(appSettings).GetThumbnail(args)) {
+            if (new ArgsHelper(appSettings).GetThumbnail(args))
+            {
 
-                // If single file => create thumbnail
-                new Thumbnail(appSettings).CreateThumb(subpath);
-    
-                if (Files.IsFolderOrFile(subpath) 
-                    == FolderOrFileModel.FolderOrFileTypeList.Folder)
+                var fullPath = appSettings.DatabasePathToFilePath(subpath);
+                var isFolderOrFile = Files.IsFolderOrFile(fullPath);
+                
+                if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.Deleted)
                 {
-                    new ThumbnailByDirectory(appSettings).CreateThumb(subpath);
+                    Console.WriteLine("Deleted");
+                }
+                else if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
+                {
+                    // If single file => create thumbnail
+                    Console.WriteLine("File");
+                    new Thumbnail(appSettings).CreateThumb(fullPath);
+                }
+                else
+                {
+                    Console.WriteLine("folder");
+                    new ThumbnailByDirectory(appSettings).CreateThumb(fullPath);
                 }
                 Console.WriteLine("Thumbnail Done!");
             }
