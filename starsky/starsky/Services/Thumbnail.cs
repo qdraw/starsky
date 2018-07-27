@@ -61,7 +61,6 @@ namespace starsky.Services
                 var value = new FileIndexItem()
                 {
                     FileName = fileName,
-                    // FilePath = dbFilePath,
                     FileHash = FileHash.GetHashCode(fullFilePath)
                 };
                 CreateThumb(value);

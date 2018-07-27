@@ -10,7 +10,7 @@ namespace starskysynccli
         public static void Main(string[] args)
         {
             // Use args in application
-            new ArgsHelper().SetEnvironmentByArgs(args);
+             new ArgsHelper().SetEnvironmentByArgs(args);
             
             var startupHelper = new ConfigCliAppsStartupHelper();
             var appSettings = startupHelper.AppSettings();
@@ -71,22 +71,19 @@ namespace starskysynccli
 
                 var fullPath = appSettings.DatabasePathToFilePath(subpath);
                 var isFolderOrFile = Files.IsFolderOrFile(fullPath);
+
+                if (appSettings.Verbose) Console.WriteLine(isFolderOrFile);
                 
-                if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.Deleted)
-                {
-                    Console.WriteLine("Deleted");
-                }
-                else if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
+                if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
                 {
                     // If single file => create thumbnail
-                    Console.WriteLine("File");
-                    new Thumbnail(appSettings).CreateThumb(fullPath);
+                    new Thumbnail(appSettings).CreateThumb(subpath); // <= this uses subpath
                 }
                 else
                 {
-                    Console.WriteLine("folder");
-                    new ThumbnailByDirectory(appSettings).CreateThumb(fullPath);
+                    new ThumbnailByDirectory(appSettings).CreateThumb(fullPath); // <= this uses fullpath
                 }
+                
                 Console.WriteLine("Thumbnail Done!");
             }
             

@@ -34,12 +34,15 @@ namespace starsky.Helpers
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             //             // Start using dependency injection
 
+            Console.WriteLine(new AppSettings().BaseDirectoryProject  +  
+                              Path.DirectorySeparatorChar + "appsettings.json");
+            
             var builder = new ConfigurationBuilder()
                 .AddJsonFile(
                     new AppSettings().BaseDirectoryProject  + 
                     Path.DirectorySeparatorChar + "appsettings.json", optional: false)
                 .AddEnvironmentVariables();
-            
+                        
             // build config
             var configuration = builder.Build();
             // inject config as object to a service
@@ -55,6 +58,8 @@ namespace starsky.Helpers
             // Build Datbase Context
             var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
             
+            if(_appSettings.Verbose) Console.WriteLine(_appSettings.DatabaseConnection);
+
             // Select database type
             switch (_appSettings.DatabaseType)
             {
