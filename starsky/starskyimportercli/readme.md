@@ -18,11 +18,11 @@ For more information about the `appsettings.json` configuration
 The default structure in `appsettings.json` is:
 ```json
 {
-  "ConnectionStrings": {
+  "App": {
     "ThumbnailTempFolder": "/data/photodirectory/temp",
-    "STARSKY_BASEPATH": "/data/photodirectory/storage",
+    "StorageFolder": "/data/photodirectory/storage",
     "DatabaseType": "sqlite",
-    "DefaultConnection": "Data Source=data.db",
+    "DatabaseConnection": "Data Source=data.db",
     "ExifToolPath": "/usr/local/bin/exiftool",
     "Structure": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext",
     "ReadOnlyFolders": ["/2015","/2018"],
