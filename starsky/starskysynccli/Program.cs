@@ -66,7 +66,7 @@ namespace starskysynccli
                 Console.WriteLine("Done SyncFiles!");
             }
 
-            if (new ArgsHelper().GetThumbnail(args)) {
+            if (new ArgsHelper(appSettings).GetThumbnail(args)) {
 
                 // If single file => create thumbnail
                 new Thumbnail(appSettings).CreateThumb(subpath);
@@ -79,7 +79,7 @@ namespace starskysynccli
                 Console.WriteLine("Thumbnail Done!");
             }
             
-            if (new ArgsHelper().GetOrphanFolderCheck(args))
+            if (new ArgsHelper(appSettings).GetOrphanFolderCheck(args))
             {
                 Console.WriteLine(">>>>> Heavy CPU Feature => Use with care <<<<< ");
                 startupHelper.SyncService().OrphanFolder(subpath);
