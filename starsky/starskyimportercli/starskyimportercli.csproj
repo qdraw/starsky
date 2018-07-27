@@ -9,5 +9,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\starsky\starsky.csproj" />
+    <ProjectReference Include="..\starsky\starsky.csproj" />
   </ItemGroup>
 </Project>

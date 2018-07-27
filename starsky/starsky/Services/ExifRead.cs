@@ -17,7 +17,7 @@ namespace starsky.Services
             try
             {
                 allExifItems = ImageMetadataReader.ReadMetadata(fileFullPath).ToList();
-                DisplayAllExif(allExifItems);
+//                DisplayAllExif(allExifItems);
             }
             catch (ImageProcessingException)
             {

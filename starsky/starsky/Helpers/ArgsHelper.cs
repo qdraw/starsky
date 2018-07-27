@@ -27,6 +27,11 @@ namespace starsky.Helpers
         // -rf --readonlyfolders // no need to use in cli/importercli
         // -u --structure
 
+        public ArgsHelper()
+        {
+            // 
+        }
+        
         public ArgsHelper(AppSettings appSettings)
         {
             _appSettings = appSettings;
@@ -66,7 +71,7 @@ namespace starsky.Helpers
         
         public readonly IEnumerable<string> EnvNameList = new List<string>
             {
-                "DatabaseType","DefaultConnection","STARSKY_BASEPATH","ThumbnailTempFolder","ExifToolPath", "Structure"
+                "app__DatabaseType","app__DatabaseConnection","app__StorageFolder","app__ThumbnailTempFolder","app__ExifToolPath", "app__Structure"
             }.AsReadOnly();
 
 
