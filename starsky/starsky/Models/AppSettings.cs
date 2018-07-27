@@ -16,6 +16,7 @@ namespace starsky.Models
         public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
             .Replace("starskysynccli", "starsky")
             .Replace("starskyimportercli", "starsky");
+        // When adding or updating please also update SqliteFullPath()
 
         private string _storageFolder; // in old versions: basePath 
         public string StorageFolder
@@ -172,10 +173,10 @@ namespace starsky.Models
             if(fullDbPath.Contains("entityframeworkcore")) return connectionString;
             
             // Replace cli database ==> normal database
-            if (fullDbPath.Contains(Path.DirectorySeparatorChar + "starsky-cli" + Path.DirectorySeparatorChar ))
+            if (fullDbPath.Contains(Path.DirectorySeparatorChar + "starskysynccli" + Path.DirectorySeparatorChar ))
             {
                 fullDbPath = fullDbPath.Replace(
-                    Path.DirectorySeparatorChar + "starsky-cli" + Path.DirectorySeparatorChar,
+                    Path.DirectorySeparatorChar + "starskysynccli" + Path.DirectorySeparatorChar,
                     Path.DirectorySeparatorChar + "starsky" + Path.DirectorySeparatorChar);
             }
             

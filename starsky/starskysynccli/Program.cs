@@ -42,6 +42,7 @@ namespace starskysynccli
                 Console.WriteLine("ThumbnailTempFolder (-f --thumbnailtempfolder) "+ appSettings.ThumbnailTempFolder);
                 Console.WriteLine("ExifToolPath  (-e --exiftoolpath) "+ appSettings.ExifToolPath);
                 Console.WriteLine("Structure  (-u --structure) "+ appSettings.Structure);
+                Console.WriteLine("BaseDirectoryProject (where the exe is located) " + appSettings.BaseDirectoryProject);
                 return;
             }
 
