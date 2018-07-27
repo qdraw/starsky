@@ -19,35 +19,34 @@ namespace starsky.Services
             return filesInDirectoryFullPath.Select(fileFullPath => _calcHashCode(fileFullPath)).ToList();
         }
 
-        public static string GetHashCode(string filename)
+        public static string GetHashCode(string filename, int timeoutSeconds = 8)
         {
-            return _calcHashCode(filename);
+            return _calcHashCode(filename,timeoutSeconds);
         }
         
         // Here are some tricks used to avoid that CalculateMd5Async keeps waiting forever.
         // In some cases hashing a file keeps waiting forever (at least on linux-arm)
 
-        private static string _calcHashCode(string filename)
+        private static string _calcHashCode(string filename, int timeoutSeconds = 8)
         {
-            var q = WrapSomeMethod(filename).Result;
+            var q = Md5TimeoutAsyncWrapper(filename,timeoutSeconds).Result;
             return q;
-
         }
 
-        // Wrapper to do Async tasks
-        private static async Task<string> WrapSomeMethod(string someParam)
+        // Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
+        private static async Task<string> Md5TimeoutAsyncWrapper(string fullFileName, int timeoutSeconds)
         {
             //adding .ConfigureAwait(false) may NOT be what you want but google it.
-            return await Task.Run(() => Md5Timeout(someParam)).ConfigureAwait(false);
+            return await Task.Run(() => Md5Timeout(fullFileName,timeoutSeconds)).ConfigureAwait(false);
         }
 
         // Yes I know that I don't use the class propper, I use it in a sync way.
         #pragma warning disable 1998
-        private static async Task<string> Md5Timeout(string fullFileName){
+        private static async Task<string> Md5Timeout(string fullFileName, int timeoutSeconds){
         #pragma warning restore 1998
 
             var task = Task.Run(() => CalculateMd5Async(fullFileName));
-                if (task.Wait(TimeSpan.FromSeconds(8)))
+                if (task.Wait(TimeSpan.FromSeconds(timeoutSeconds)))
                 return task.Result;
 
             // Sometimes a Calc keeps waiting for days
