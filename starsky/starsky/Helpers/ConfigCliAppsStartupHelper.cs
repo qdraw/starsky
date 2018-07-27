@@ -34,13 +34,11 @@ namespace starsky.Helpers
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             //             // Start using dependency injection
 
-            Console.WriteLine(new AppSettings().BaseDirectoryProject  +  
-                              Path.DirectorySeparatorChar + "appsettings.json");
+            Console.WriteLine(new AppSettings().BaseDirectoryProject  + "appsettings.json");
             
             var builder = new ConfigurationBuilder()
                 .AddJsonFile(
-                    new AppSettings().BaseDirectoryProject  + 
-                    Path.DirectorySeparatorChar + "appsettings.json", optional: false)
+                    new AppSettings().BaseDirectoryProject + "appsettings.json", optional: false)
                 .AddEnvironmentVariables();
                         
             // build config

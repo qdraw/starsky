@@ -45,73 +45,101 @@ namespace starsky.Services
             File.Move(oldThumbPath, newThumbPath);
         }
         
+        
+        
+        
         // Feature used by the cli tool
         // Use FileIndexItem or database style path
-        public void CreateThumb(string dbFilePath = "/")
-        {
-            
-            var fullFilePath = _appSettings.DatabasePathToFilePath(dbFilePath);;
-
-            var fileName = dbFilePath.Split("/").LastOrDefault();
-
-            if (Files.IsFolderOrFile(fullFilePath) 
-                == FolderOrFileModel.FolderOrFileTypeList.File)
-            {
-
-                var value = new FileIndexItem()
-                {
-                    FileName = fileName,
-                    FileHash = FileHash.GetHashCode(fullFilePath)
-                };
-                CreateThumb(value);
-
-            }
-        }
-
-        // Create a new thumbnail
-        public void CreateThumb(FileIndexItem item)
+        public void CreateThumb(string subpath = "/", string fileHash = null)
         {
             if (!Directory.Exists(_appSettings.ThumbnailTempFolder))
             {
                 throw new FileNotFoundException("ThumbnailTempFolder not found " 
                                                 + _appSettings.ThumbnailTempFolder);
             }
-
-            if(string.IsNullOrWhiteSpace(item.FileHash)) throw 
-                new FileNotFoundException("(CreateThumb) FileHash is null " 
-                                          + _appSettings.ThumbnailTempFolder);
             
-            var thumbPath = _appSettings.ThumbnailTempFolder + item.FileHash + ".jpg";
-//<<full
-            if (!File.Exists(_appSettings.DatabasePathToFilePath(item.FilePath)))
+            var fullFilePath = _appSettings.DatabasePathToFilePath(subpath);;
+            
+            if (Files.IsFolderOrFile(fullFilePath) 
+                == FolderOrFileModel.FolderOrFileTypeList.File)
             {
-                Console.WriteLine("File Not found: " + item.FilePath);
-                return;
+
+                if(fileHash == null) fileHash = FileHash.GetHashCode(fullFilePath);
+                var thumbPath = _appSettings.ThumbnailTempFolder + fileHash + ".jpg"; //<<full
+                if (Files.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
+                {
+                    Console.WriteLine("The file " + thumbPath + " already exists.");
+                    return;
+                }
+
+                if (!_isErrorItem(_appSettings.DatabasePathToFilePath(subpath))) return;
+
+                // Wrapper to check if the thumbservice is not waiting forever
+                // In some scenarios thumbservice is waiting for days
+                // Need to add var => else it will not await
+                var wrap = ResizeThumbnailTimeoutWrap(fullFilePath,thumbPath).Result;
+                if(wrap) Console.WriteLine(".");
+                RemoveCorruptImage(thumbPath);
             }
-
-            Console.WriteLine("thumbPath" + thumbPath);
-            Console.WriteLine("item.FilePath " + item.FilePath);
-            Console.WriteLine("_appSettings.DatabasePathToFilePath(item.FilePath))" + _appSettings.DatabasePathToFilePath(item.FilePath));
-            
-            
-            // If contains error with thumbnailing service then => skip
-//            if (!_isErrorItem(_appSettings.DatabasePathToFilePath(item.FilePath))) return;
-            
-            
-            // Return if thumnail already exist
-            if (File.Exists(thumbPath)) return;
-            
-            // Wrapper to check if the thumbservice is not waiting forever
-            // In some scenarios thumbservice is waiting for days
-            // Need to add var => else it will not await
-            var wrap = WrapSomeMethod(item.FilePath,thumbPath).Result;
-            if(wrap) Console.WriteLine(".");
-            
-            _removeCorruptImage(thumbPath);
-
         }
 
-        private void _removeCorruptImage(string thumbPath)
+        // Create a new thumbnail
+        public void CreateThumb(FileIndexItem item)
+        {
+            if(string.IsNullOrEmpty(item.FilePath) || string.IsNullOrEmpty(item.FileHash)) throw new FileNotFoundException("FilePath or FileHash == null");
+            CreateThumb(item.FilePath, item.FileHash);
+        }
+
+        // Wrapper to Make a sync task sync
+        private async Task<bool> ResizeThumbnailTimeoutWrap(string fullSourceImage, string thumbPath)
+        {
+            //adding .ConfigureAwait(false) may NOT be what you want but google it.
+            return await Task.Run(() => ResizeThumbnailTimeOut(fullSourceImage, thumbPath)).ConfigureAwait(false);
+        }
+        
+        // Timeout feature to check if the service is answering within 8 seconds
+        // Ignore Error CS1998
+        #pragma warning disable 1998
+        private async Task<bool> ResizeThumbnailTimeOut(string fullSourceImage, string thumbPath){
+        #pragma warning restore 1998
+            
+            var task = Task.Run(() => ResizeThumbnailPlain(fullSourceImage, thumbPath));
+            if (task.Wait(TimeSpan.FromSeconds(100))) 
+                return task.Result;
+
+            Console.WriteLine(">>>>>>>>>>>            Timeout ThumbService "
+                              + fullSourceImage 
+                              + "            <<<<<<<<<<<<");
+            
+            // Log the corrupt image
+//            CreateErrorLogItem(inputDatabaseFilePath);
+            
+            return false;
+        }
+        
+        // Resize the thumbnail
+        private bool ResizeThumbnailPlain(string fullSourceImage, string thumbPath)
+        {
+            Console.WriteLine("fullSourceImage >> " + fullSourceImage);
+            
+            // resize the image and save it to the output stream
+            using (var outputStream = new FileStream(thumbPath, FileMode.CreateNew))
+            using (var inputStream = File.OpenRead(fullSourceImage))
+            using (var image = Image.Load(inputStream))
+            {
+                image.Mutate(x => x.AutoOrient());
+                image.Mutate(x => x
+                    .Resize(1000, 0)
+                );
+                image.SaveAsJpeg(outputStream);
+            }
+            return false;
+        }
+
+        
+        
+        
+        private void RemoveCorruptImage(string thumbPath)
         {
             if (!File.Exists(thumbPath)) return;
             
@@ -135,52 +163,7 @@ namespace starsky.Services
             }
         }
         
-        // Wrapper to Make a sync task sync
-        private async Task<bool> WrapSomeMethod(string someParam, string someParam2)
-        {
-            //adding .ConfigureAwait(false) may NOT be what you want but google it.
-            return await Task.Run(() => ResizeThumbnailTimeOut(someParam, someParam2)).ConfigureAwait(false);
-        }
         
-        // Timeout feature to check if the service is answering within 8 seconds
-        // Ignore Error CS1998
-        #pragma warning disable 1998
-        private async Task<bool> ResizeThumbnailTimeOut(string inputDatabaseFilePath, string thumbPath){
-        #pragma warning restore 1998
-            
-            var task = Task.Run(() => ResizeThumbnail(inputDatabaseFilePath, thumbPath));
-            if (task.Wait(TimeSpan.FromSeconds(100))) 
-                return task.Result;
-
-            Console.WriteLine(">>>>>>>>>>>            Timeout ThumbService "
-                              + inputDatabaseFilePath 
-                              + "            <<<<<<<<<<<<");
-            
-            // Log the corrupt image
-//            CreateErrorLogItem(inputDatabaseFilePath);
-            
-            return false;
-        }
-        
-        // Resize the thumbnail
-        private bool ResizeThumbnail(string inputDbPath, string thumbPath)
-        {
-            Console.WriteLine("inputFilePath >> " + inputDbPath);
-            
-            // resize the image and save it to the output stream
-            using (var outputStream = new FileStream(thumbPath, FileMode.CreateNew))
-            using (var inputStream = File.OpenRead(_appSettings.DatabasePathToFilePath(inputDbPath)))
-            using (var image = Image.Load(inputStream))
-            {
-                image.Mutate(x => x.AutoOrient());
-                image.Mutate(x => x
-                    .Resize(1000, 0)
-                );
-                image.SaveAsJpeg(outputStream);
-            }
-            return false;
-        }
-
         private static readonly string _thumbnailErrorMessage = "Thumbnail error";
         private static readonly string _thumbnailPrefix = "_";
         private static readonly string _thumbnailSuffix = "_starksy-error.log";

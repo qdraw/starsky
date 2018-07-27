@@ -16,16 +16,29 @@ namespace starsky.Models
 
 
         private string _filePath { get; set; }
-
         [Column(Order = 2)]
         public string FilePath
         {
             get { return ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName); }
             set {_filePath = ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName);} // For legacy reasons
         }
-
+        
+        // Do not save null in database for FileName
+        private string _fileName;
         [Column(Order = 1)]
-        public string FileName { get; set; }
+        public string FileName
+        {
+            get => _fileName ?? string.Empty;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _fileName = string.Empty;
+                    return;
+                }
+                _fileName = value;
+            }
+        }
 
         public string FileHash { get; set; }
 

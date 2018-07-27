@@ -127,6 +127,27 @@ namespace starskytests
             Assert.AreEqual(fileIndexItem.Title,string.Empty);
         }
 
+        [TestMethod]
+        public void FileIndexItemTest_FileNameNull()
+        {
+            var t = new FileIndexItem();
+            Assert.AreEqual(string.Empty,t.FileName);
+        }
+        
+        [TestMethod]
+        public void FileIndexItemTest_ParentDirectoryNull()
+        {
+            var t = new FileIndexItem();
+            Assert.AreEqual("/",t.ParentDirectory);
+        }
+        
+        [TestMethod]
+        public void FileIndexItemTest_FilePathNull()
+        {
+            var t = new FileIndexItem();
+            Assert.AreEqual("/",t.FilePath);
+        }
+
 //        [TestMethod]
 //        public void FileIndexItemParseFileNameTest()
 //        {
