@@ -55,7 +55,7 @@ starskycli --help
 --orphanfolder or -o == To delete files without a parent folder (heavy cpu usage), default false
 --verbose or -v == verbose, more detailed info
 --databasetype or -d == Overwrite EnvironmentVariable for DatabaseType
---basepath or -b == Overwrite EnvironmentVariable for STARSKY_BASEPATH
+--basepath or -b == Overwrite EnvironmentVariable for StorageFolder
 --connection or -c == Overwrite EnvironmentVariable for DefaultConnection
 --thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder
 --exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath
