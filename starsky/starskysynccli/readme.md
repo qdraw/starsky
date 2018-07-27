@@ -3,13 +3,13 @@
  - [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux [(files)](../../inotify-settings)_
  - [starsky (sln)](../../starsky/readme.md) _database photo index & import index project [(files)](../../starsky)_
    - [starsky](../../starsky/starsky/readme.md)  _mvc application / web interface [(files)](../../starsky/starsky)_
-   - __[starsky-cli](../../starsky/starsky-cli/readme.md)  _database command line interface [(files)](../../starsky/starsky-cli)___
+   - __[starskysynccli](../../starsky/starskysynccli/readme.md)  _database command line interface [(files)](../../starsky/starskysynccli)___
    - [starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface [(files)](../../starsky/starskyimportercli)_
    - [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests [(files)](../../starsky/starskyTests)_
  - starsky-node-client  _(depreciated)_
  - [starskyapp](../../starskyapp) _React-Native app (Pre-alpha code)_
 
-## Starsky-cli docs
+## starskysynccli docs
 
 ### Starsky-cli Indexer Help:
 The goal of this wrapper is to get command line access to the photo index database
@@ -19,11 +19,11 @@ The goal of this wrapper is to get command line access to the photo index databa
 When you start this application at first please update the `appsettings.json`
 ```json
 {
-  "ConnectionStrings": {
+  "App": {
     "ThumbnailTempFolder": "Y:\\data\\photodirectory\\temp",
-    "STARSKY_BASEPATH": "Y:\\data\\photodirectory\\storage",
+    "StorageFolder": "Y:\\data\\photodirectory\\storage",
     "DatabaseType": "mysql",
-    "DefaultConnection": "Server=mysqlserver.nl;database=dbname;uid=username;pwd=password;",
+    "DatabaseConnection": "Server=mysqlserver.nl;database=dbname;uid=username;pwd=password;",
     "ExifToolPath": "C:\\exiftool.exe",
     "Structure": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext",
     "ReadOnlyFolders": ["/2015","/2018"],

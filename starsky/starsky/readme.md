@@ -3,7 +3,7 @@
  - [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux [(files)](../../inotify-settings/)_
  - [starsky (sln)](../../starsky/readme.md) _database photo index & import index project [(files)](../../starsky/)_
    - __[starsky](../../starsky/starsky/readme.md)  _mvc application / web interface [(files)](../../starsky/starsky/)___
-   - [starsky-cli](../../starsky/starsky-cli/readme.md)  _database command line interface [(files)](../../starsky/starsky-cli/)_
+   - [starskysynccli](../../starsky/starskysynccli/readme.md)  _database command line interface [(files)](../../starsky/starskysynccli/)_
    - [starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface [(files)](../../starsky/starskyimportercli/)
    - [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests [(files)](../../starsky/starskyTests)_
  - starsky-node-client  _(depreciated)_
