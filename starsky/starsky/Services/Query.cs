@@ -115,6 +115,23 @@ namespace starsky.Services
             return updateStatusContent;
         }
 
+        private void AddCacheItem(FileIndexItem updateStatusContent)
+        {
+            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+                updateStatusContent.ParentDirectory);
+
+            if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
+            
+            var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
+            
+            displayFileFolders.Add(updateStatusContent);
+            // Order by filename
+            displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
+            
+            _cache.Remove(queryCacheName);
+            _cache.Set(queryCacheName, displayFileFolders);
+        }
+
         private void CacheUpdateItem(FileIndexItem updateStatusContent)
         {
             if (_cache == null) return;
@@ -155,6 +172,8 @@ namespace starsky.Services
                 Console.WriteLine(e);
                 throw;
             }
+            
+            AddCacheItem(updateStatusContent);
 
             return updateStatusContent;
         }

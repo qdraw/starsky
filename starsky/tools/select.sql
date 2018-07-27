@@ -1,1 +1,1 @@
-SELECT * FROM `FileIndex` WHERE `FilePath` LIKE '%/2018/02/2018_02_18/%'
+SELECT * FROM `FileIndex` WHERE `FilePath` LIKE '%/2018/07/2018_07_27%'
