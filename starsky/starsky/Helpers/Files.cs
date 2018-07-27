@@ -11,17 +11,16 @@ namespace starsky.Helpers
     {
         
         // is the subpath a folder or file
-        public static FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath = "")
+        public static FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string fullFilePath = "")
         {
-            var fullPath = FileIndexItem.DatabasePathToFilePath(subPath);
 
-            if (!Directory.Exists(fullPath) && File.Exists(fullPath))
+            if (!Directory.Exists(fullFilePath) && File.Exists(fullFilePath))
             {
                 // file
                 return FolderOrFileModel.FolderOrFileTypeList.File;
             }
 
-            if (!File.Exists(fullPath) && Directory.Exists(fullPath))
+            if (!File.Exists(fullFilePath) && Directory.Exists(fullFilePath))
             {
                 // Directory
                 return FolderOrFileModel.FolderOrFileTypeList.Folder;
@@ -31,28 +30,22 @@ namespace starsky.Helpers
         }
 
         // Returns a list of directories
-        public static string[] GetAllFilesDirectory(string subPath = "")
+        public static string[] GetAllFilesDirectory(string fullFilePath = "")
         {
-            // This one does not include the subfolder itself
-            var path = FileIndexItem.DatabasePathToFilePath(subPath);
 
-            if (!Directory.Exists(path)) return new List<string>().ToArray();
-            string[] folders = Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
+            if (!Directory.Exists(fullFilePath)) return new List<string>().ToArray();
+            string[] folders = Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);
             // Used For subfolders
 
             return folders;
         }
 
         // Returns a list of Files in a directory (non-recruisive)
-        public static string[] GetFilesInDirectory(string path, bool dbStyle = true)
+        public static string[] GetFilesInDirectory(string fullFilePath, AppSettings appSettings)
         {
-            if (path == null) return Enumerable.Empty<string>().ToArray();
+            if (fullFilePath == null) return Enumerable.Empty<string>().ToArray();
 
-            if (dbStyle)
-            {
-                path = FileIndexItem.DatabasePathToFilePath(path);
-            }
-            string[] allFiles = Directory.GetFiles(path);
+            string[] allFiles = Directory.GetFiles(fullFilePath);
             
             // Used for jpeg files
 
@@ -61,7 +54,7 @@ namespace starsky.Helpers
             {
                 if (file.ToLower().EndsWith("jpg"))
                 {
-                    jpgFiles.Add(dbStyle ? FileIndexItem.FullPathToDatabaseStyle(file) : file);
+                    jpgFiles.Add(file); // change behavior
                 }
             }
             return jpgFiles.ToArray();
@@ -160,19 +153,15 @@ namespace starsky.Helpers
             }
         }
         
-        public static IEnumerable<string> GetFilesRecrusive(string path, bool dbStyle = true)
+        public static IEnumerable<string> GetFilesRecrusive(string fullFilePath)
         {
-            if (dbStyle)
-            {
-                path = FileIndexItem.DatabasePathToFilePath(path);
-            }
             List<string> findlist = new List<string>();
 
             /* I begin a recursion, following the order:
              * - Insert all the files in the current directory with the recursion
              * - Insert all subdirectories in the list and rebegin the recursion from there until the end
              */
-            RecurseFind( path, findlist );
+            RecurseFind( fullFilePath, findlist );
 
             return findlist;
         }

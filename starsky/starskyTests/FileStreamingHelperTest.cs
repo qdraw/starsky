@@ -8,10 +8,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
+using starsky.Middleware;
 using starsky.Models;
 
 namespace starskytests
@@ -19,6 +22,35 @@ namespace starskytests
     [TestClass]
     public class FileStreamingHelperTest
     {
+        private readonly AppSettings _appSettings;
+
+        public FileStreamingHelperTest()
+        {
+            // Add a dependency injection feature
+            var services = new ServiceCollection();
+            // Inject Config helper
+            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+            // random config
+            var newImage = new CreateAnImage();
+            var dict = new Dictionary<string, string>
+            {
+                { "App:StorageFolder", newImage.BasePath },
+                { "App:ThumbnailTempFolder", newImage.BasePath },
+                { "App:Verbose", "true" }
+            };
+            // Start using dependency injection
+            var builder = new ConfigurationBuilder();  
+            // Add random config to dependency injection
+            builder.AddInMemoryCollection(dict);
+            // build config
+            var configuration = builder.Build();
+            // inject config as object to a service
+            services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+            // build the service
+            var serviceProvider = services.BuildServiceProvider();
+            // get the service
+            _appSettings = serviceProvider.GetRequiredService<AppSettings>();
+        }
         
 //        ContentDispositionHeaderValue.TryParse(
 //        "form-data; name=\"file\"; filename=\"2017-12-07 17.01.25.png\"", out var contentDisposition);
@@ -39,7 +71,7 @@ namespace starskytests
 //            };
 
             var ms = new MemoryStream();
-            await FileStreamingHelper.StreamFile(httpContext.Request);
+            await FileStreamingHelper.StreamFile(httpContext.Request,_appSettings);
         }
         
         [TestMethod]
@@ -50,7 +82,7 @@ namespace starskytests
             httpContext.Request.Headers["token"] = "fake_token_here"; //Set header
             httpContext.Request.ContentType = "multipart/form-data";
             var ms = new MemoryStream();
-            await FileStreamingHelper.StreamFile(httpContext.Request);
+            await FileStreamingHelper.StreamFile(httpContext.Request,_appSettings);
         }
 
         [TestMethod]
@@ -59,8 +91,6 @@ namespace starskytests
             var targetStream = new MemoryStream();
             var createAnImage = new CreateAnImage();
 
-            AppSettingsProvider.ThumbnailTempFolder = createAnImage.BasePath;
-            
             FileStream requestBody = new FileStream(createAnImage.FullFilePath, FileMode.Open);
             
             var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg", requestBody);
@@ -75,8 +105,8 @@ namespace starskytests
         [TestMethod]
         public void FileStreamingHelper_GetTempFilePath_NullOption()
         {
-            AppSettingsProvider.ThumbnailTempFolder = string.Empty;
-            var tempFilePath = FileStreamingHelper.GetTempFilePath(null);
+            _appSettings.ThumbnailTempFolder = String.Empty;
+            var tempFilePath = FileStreamingHelper.GetTempFilePath(null,_appSettings);
             Assert.AreEqual(true,tempFilePath.Contains("_import_"));
         }
         
@@ -84,18 +114,19 @@ namespace starskytests
         [TestMethod]
         public void FileStreamingHelper_GetTempFilePath_ParseStringSimple_Option()
         {
-            AppSettingsProvider.ThumbnailTempFolder = string.Empty;
-            AppSettingsProvider.Structure = "/yyyyMMdd_HHmmss.ext";
-            var tempFilePath = FileStreamingHelper.GetTempFilePath("20180123_132404.jpg");
+            _appSettings.ThumbnailTempFolder = String.Empty;
+            _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
+
+            var tempFilePath = FileStreamingHelper.GetTempFilePath("20180123_132404.jpg",_appSettings);
             Assert.AreEqual("_import_20180123_132404.jpg",tempFilePath);
         }
         
         [TestMethod]
         public void FileStreamingHelper_GetTempFilePath_ParseStringWithDots_Option()
         {
-            AppSettingsProvider.ThumbnailTempFolder = string.Empty;
-            AppSettingsProvider.Structure = "/yyyyMMdd_HHmmss.ext";
-            var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04.jpg");
+            _appSettings.ThumbnailTempFolder = string.Empty;
+            _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
+            var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04.jpg",_appSettings);
             Assert.AreEqual("_import_20180123_132404.jpg",tempFilePath);
         }
 
@@ -120,9 +151,9 @@ namespace starskytests
         [TestMethod]
         public void FileStreamingHelper_GetTempFilePath_ParseStringAppendix1_Option()
         {
-            AppSettingsProvider.ThumbnailTempFolder = string.Empty;
-            AppSettingsProvider.Structure = "/yyyyMMdd_HHmmss.ext";
-            var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04-1.jpg");
+            _appSettings.ThumbnailTempFolder = string.Empty;
+            _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
+            var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04-1.jpg",_appSettings);
             Assert.AreEqual("_import_20180123_132404.jpg",tempFilePath);
         }
         

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
 using starsky.Helpers;
 using starsky.Interfaces;
+using starsky.Models;
 
 namespace starsky.Controllers
 {
@@ -11,9 +12,11 @@ namespace starsky.Controllers
     public class ImportController : Controller
     {
         private readonly IImport _import;
-        
-        public ImportController(IImport import)
+        private readonly AppSettings _appSettings;
+
+        public ImportController(IImport import, AppSettings appSettings)
         {
+            _appSettings = appSettings;
             _import = import;
         }
 
@@ -31,7 +34,7 @@ namespace starsky.Controllers
         [DisableFormValueModelBinding]
         public async Task<IActionResult> IndexPost()
         {
-            var tempImportPaths = await Request.StreamFile();
+            var tempImportPaths = await Request.StreamFile(_appSettings);
 
             var importedFiles = _import.Import(tempImportPaths, true);
 

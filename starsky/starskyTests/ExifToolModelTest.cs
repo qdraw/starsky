@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
@@ -16,11 +17,20 @@ namespace starskytests
         }
 
         [TestMethod]
+        public void ExifToolCAllDatesDateTimeTest()
+        {
+            var datetime = new DateTime();
+            var exifToolModel = new ExifToolModel{AllDatesDateTime = datetime};
+            Assert.AreEqual(datetime,exifToolModel.AllDatesDateTime);
+        }
+        
+        [TestMethod]
         public void ExifToolCaptionAbstractTest()
         {
             var exifToolModel = new ExifToolModel{CaptionAbstract = "test"};
             Assert.AreEqual(exifToolModel.CaptionAbstract,"test");
         }
+
 
         [TestMethod]
         public void ExifToolPrefsParseTest()

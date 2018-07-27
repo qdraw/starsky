@@ -5,7 +5,7 @@ using starsky.Models;
 
 namespace starsky.Helpers
 {
-    public static class ArgsHelper
+    public class ArgsHelper
     {
         // Table of Content
         
@@ -26,8 +26,20 @@ namespace starsky.Helpers
         // --recruisive -r 
         // -rf --readonlyfolders // no need to use in cli/importercli
         // -u --structure
+
+        public ArgsHelper()
+        {
+            // 
+        }
         
-        public static bool NeedVerbose(IReadOnlyList<string> args)
+        public ArgsHelper(AppSettings appSettings)
+        {
+            _appSettings = appSettings;
+        }
+
+        private readonly AppSettings _appSettings;
+
+        public bool NeedVerbose(IReadOnlyList<string> args)
         {
             var needDebug = false;
 
@@ -46,23 +58,24 @@ namespace starsky.Helpers
             return needDebug;
         }
         
-        public static readonly IEnumerable<string> ShortNameList = new List<string>
+        public readonly IEnumerable<string> ShortNameList = new List<string>
             {
                 "-d","-c","-b","-f","-e","-u"
             }.AsReadOnly();
         
-        public static readonly IEnumerable<string> LongNameList = new List<string>
+        public readonly IEnumerable<string> LongNameList = new List<string>
             {
             "--databasetype","--connection","--basepath","--thumbnailtempfolder","--exiftoolpath","--structure"
             }
             .AsReadOnly();
         
-        public static readonly IEnumerable<string> EnvNameList = new List<string>
+        public readonly IEnumerable<string> EnvNameList = new List<string>
             {
-                "DatabaseType","DefaultConnection","STARSKY_BASEPATH","ThumbnailTempFolder","ExifToolPath", "Structure"
+                "app__DatabaseType","app__DatabaseConnection","app__StorageFolder","app__ThumbnailTempFolder","app__ExifToolPath", "app__Structure"
             }.AsReadOnly();
 
-        public static void SetEnvironmentByArgs(IReadOnlyList<string> args)
+
+        public void SetEnvironmentByArgs(IReadOnlyList<string> args)
         {
             var shortNameList = ShortNameList.ToArray();
             var longNameList = LongNameList.ToArray();
@@ -81,7 +94,7 @@ namespace starsky.Helpers
             }
         }
 
-       public static bool NeedHelp(IReadOnlyList<string> args)
+       public bool NeedHelp(IReadOnlyList<string> args)
        {
             var needHelp = false;
 
@@ -101,7 +114,7 @@ namespace starsky.Helpers
        }
         
         // Default On
-        public static bool GetIndexMode(IReadOnlyList<string> args)
+        public bool GetIndexMode(IReadOnlyList<string> args)
         {
             var isIndexMode = true;
         
@@ -116,7 +129,7 @@ namespace starsky.Helpers
             return isIndexMode;
         }
         
-        public static string GetPathFormArgs(IReadOnlyList<string> args, bool dbStyle = true)
+        public string GetPathFormArgs(IReadOnlyList<string> args, bool dbStyle = true)
         {
             var path = "";
         
@@ -129,12 +142,12 @@ namespace starsky.Helpers
             }
             if (dbStyle)
             {
-                path = FileIndexItem.FullPathToDatabaseStyle(path);
+                path = _appSettings.FullPathToDatabaseStyle(path);
             }
             return path;
         }
         
-        public static string GetSubpathFormArgs(IReadOnlyList<string> args)
+        public string GetSubpathFormArgs(IReadOnlyList<string> args)
         {
             var subpath = "/";
         
@@ -148,7 +161,7 @@ namespace starsky.Helpers
             return subpath;
         }
         
-        public static bool IfSubpathOrPath(IReadOnlyList<string> args)
+        public bool IfSubpathOrPath(IReadOnlyList<string> args)
         {
             // Detect if a input is a fullpath or a subpath.
             for (int arg = 0; arg < args.Count; arg++)
@@ -165,7 +178,7 @@ namespace starsky.Helpers
             return true;
         }
         
-        public static bool GetThumbnail(IReadOnlyList<string> args)
+        public bool GetThumbnail(IReadOnlyList<string> args)
         {
             var isThumbnail = false;
         
@@ -177,11 +190,11 @@ namespace starsky.Helpers
                 }
             }
         
-            if (AppSettingsProvider.Verbose) Console.WriteLine(">> GetThumbnail " + isThumbnail);
+            if (_appSettings.Verbose) Console.WriteLine(">> GetThumbnail " + isThumbnail);
             return isThumbnail;
         }
         
-        public static bool GetOrphanFolderCheck(IReadOnlyList<string> args)
+        public bool GetOrphanFolderCheck(IReadOnlyList<string> args)
         {
             var isOrphanFolderCheck = false;
         
@@ -193,11 +206,11 @@ namespace starsky.Helpers
                 }
             }
         
-            if (AppSettingsProvider.Verbose) Console.WriteLine(">> isOrphanFolderCheck " + isOrphanFolderCheck);
+            if (_appSettings.Verbose) Console.WriteLine(">> isOrphanFolderCheck " + isOrphanFolderCheck);
             return isOrphanFolderCheck;
         }
         
-        public static bool GetMove(IReadOnlyList<string> args)
+        public bool GetMove(IReadOnlyList<string> args)
         {
             var getMove = false;
         
@@ -217,7 +230,7 @@ namespace starsky.Helpers
             return getMove;
         }
         
-        public static bool GetAll(IReadOnlyList<string> args)
+        public bool GetAll(IReadOnlyList<string> args)
         {
             // default false
             var getAll = true;
@@ -238,7 +251,7 @@ namespace starsky.Helpers
             return getAll;
         }
         
-        public static bool NeedRecruisive(IReadOnlyList<string> args)
+        public bool NeedRecruisive(IReadOnlyList<string> args)
         {
             bool needRecruisive = false;
             

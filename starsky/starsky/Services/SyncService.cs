@@ -13,11 +13,13 @@ namespace starsky.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IQuery _query;
+        private readonly AppSettings _appSettings;
 
-        public SyncService(ApplicationDbContext context, IQuery query)
+        public SyncService(ApplicationDbContext context, IQuery query, AppSettings appSettings)
         {
             _context = context;
             _query = query;
+            _appSettings = appSettings;
         }
         
         /* Base feature to sync files and folders
@@ -41,7 +43,7 @@ namespace starsky.Services
             // Handle folder Get a list of all local folders and rename it to database style.
             // Db Style is a relative path
             var localSubFolderDbStyle = RenameListItemsToDbStyle(
-                Files.GetAllFilesDirectory(subPath).ToList()
+                Files.GetAllFilesDirectory(_appSettings.DatabasePathToFilePath(subPath)).ToList()
             );
 
             // Query the database to get a list of the folder items
@@ -67,8 +69,9 @@ namespace starsky.Services
                 Console.Write(singleFolder + "  ");
 
                 var databaseFileList = _query.GetAllFiles(singleFolder);
-                var localFarrayFilesDbStyle = Files.GetFilesInDirectory(singleFolder).ToList();
-
+                var singleFolderFullPath = _appSettings.DatabasePathToFilePath(singleFolder);
+                var localFarrayFilesFullFilePathStyle = Files.GetFilesInDirectory(singleFolderFullPath,_appSettings).ToList();
+                var localFarrayFilesDbStyle = RenameListItemsToDbStyle(localFarrayFilesFullFilePathStyle); 
                 databaseFileList = RemoveDuplicate(databaseFileList);
                 databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);
                 CheckMd5Hash(localFarrayFilesDbStyle, databaseFileList);
@@ -92,7 +95,7 @@ namespace starsky.Services
 
             foreach (var item in localSubFolderList)
             {
-                localSubFolderListDatabaseStyle.Add(FileIndexItem.FullPathToDatabaseStyle(item));
+                localSubFolderListDatabaseStyle.Add(_appSettings.FullPathToDatabaseStyle(item));
             }
 
             return localSubFolderListDatabaseStyle;

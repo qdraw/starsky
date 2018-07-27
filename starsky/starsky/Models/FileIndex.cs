@@ -16,16 +16,29 @@ namespace starsky.Models
 
 
         private string _filePath { get; set; }
-
         [Column(Order = 2)]
         public string FilePath
         {
             get { return ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName); }
             set {_filePath = ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName);} // For legacy reasons
         }
-
+        
+        // Do not save null in database for FileName
+        private string _fileName;
         [Column(Order = 1)]
-        public string FileName { get; set; }
+        public string FileName
+        {
+            get => _fileName ?? string.Empty;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _fileName = string.Empty;
+                    return;
+                }
+                _fileName = value;
+            }
+        }
 
         public string FileHash { get; set; }
 
@@ -214,51 +227,5 @@ namespace starsky.Models
             return Enum.GetValues(typeof(ColorUserInterface)).Cast<ColorUserInterface>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
         }
         
-        public static string FullPathToDatabaseStyle(string subpath)
-        {
-            var databaseFilePath = subpath.Replace(AppSettingsProvider.BasePath, "");
-            databaseFilePath = _pathToDatabaseStyle(databaseFilePath);
-            return databaseFilePath;
-        }
-        
-        // Replace windows \\ > /
-        private static string _pathToDatabaseStyle(string subPath)
-        {
-            if (Path.DirectorySeparatorChar.ToString() == "\\")
-            {
-                subPath = subPath.Replace("\\", "/");
-            }
-            return subPath;
-        }
-
-        // Replace windows \\ > /
-        private static string _pathToFilePathStyle(string subPath)
-        {
-            if (Path.DirectorySeparatorChar.ToString() == "\\")
-            {
-                subPath = subPath.Replace("/", "\\");
-            }
-            return subPath;
-        }
-
-
-        // from relative database path => file location path 
-        public static string DatabasePathToFilePath(string databaseFilePath, bool checkIfExist = true)
-        {
-            var filepath = AppSettingsProvider.BasePath + databaseFilePath;
-
-            filepath = _pathToFilePathStyle(filepath);
-
-            // Used for deleted files
-            if (!checkIfExist) return filepath;
-            
-            var fileexist = File.Exists(filepath) ? filepath : null;
-            if (fileexist != null)
-            {
-                return fileexist;
-            }
-            return Directory.Exists(filepath) ? filepath : null;
-        }
-
     }
 }

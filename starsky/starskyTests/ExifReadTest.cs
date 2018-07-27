@@ -121,7 +121,6 @@ namespace starskytests
          public void ExifRead_ReadExifFromFileTest()
          {
              var newImage = new CreateAnImage();
-             AppSettingsProvider.Verbose = true;
              var item = ExifRead.ReadExifFromFile(newImage.FullFilePath);
              
              Assert.AreEqual(item.ColorClass,FileIndexItem.Color.None);

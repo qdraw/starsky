@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
 using starsky.Helpers;
+using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
 
@@ -15,15 +18,16 @@ namespace starskyimportercli
         [ExcludeFromCoverage] // The ArgsHelper.cs is covered by unit tests
         static void Main(string[] args)
         {
-            // Check if user want more info
-            AppSettingsProvider.Verbose = ArgsHelper.NeedVerbose(args);
-            
             // Use args in application
-            ArgsHelper.SetEnvironmentByArgs(args);
+            new ArgsHelper().SetEnvironmentByArgs(args);
+            
 
-            ConfigRead.SetAppSettingsProvider();
+            var startupHelper = new ConfigCliAppsStartupHelper();
+            var appSettings = startupHelper.AppSettings();
+            appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 
-            if (ArgsHelper.NeedHelp(args) || ArgsHelper.GetPathFormArgs(args,false).Length <= 1)
+
+            if (new ArgsHelper().NeedHelp(args) || new ArgsHelper().GetPathFormArgs(args,false).Length <= 1)
             {
                 // When this change please update ./readme.md
                 Console.WriteLine("Starsky");
@@ -37,19 +41,23 @@ namespace starskyimportercli
                 Console.WriteLine("--recursive or -r == Import Directory recursive (default: false / only the selected folder) ");
                 Console.WriteLine("--verbose or -v == verbose, more detailed info");
                 Console.WriteLine("  use -v -help to show settings: ");
-                if (!AppSettingsProvider.Verbose) return;
+                if (!appSettings.Verbose) return;
                 Console.WriteLine("");
-                Console.WriteLine("Settings:");
-                Console.WriteLine("Database Type "+ AppSettingsProvider.DatabaseType);
-                Console.WriteLine("BasePath " + AppSettingsProvider.BasePath);
+                Console.WriteLine("AppSettings:");
+                Console.WriteLine("Database Type (-d --databasetype) "+ appSettings.DatabaseType);
+                Console.WriteLine("DatabaseConnection (-c --connection) " + appSettings.DatabaseConnection);
+                Console.WriteLine("StorageFolder (-b --basepath) " + appSettings.StorageFolder);
+                Console.WriteLine("ThumbnailTempFolder (-f --thumbnailtempfolder) "+ appSettings.ThumbnailTempFolder);
+                Console.WriteLine("ExifToolPath  (-e --exiftoolpath) "+ appSettings.ExifToolPath);
+                Console.WriteLine("Structure  (-u --structure) "+ appSettings.Structure);
                 return;
             }
             
-            var inputPath = ArgsHelper.GetPathFormArgs(args,false);
+            var inputPath = new ArgsHelper().GetPathFormArgs(args,false);
             
-            if(AppSettingsProvider.Verbose) Console.WriteLine("inputPath " + inputPath);
+            if(appSettings.Verbose) Console.WriteLine("inputPath " + inputPath);
             
-            new ImportDatabase().Import(inputPath, ArgsHelper.GetMove(args),ArgsHelper.GetAll(args),ArgsHelper.NeedRecruisive(args));
+            startupHelper.ImportService().Import(inputPath, new ArgsHelper(appSettings).GetMove(args),new ArgsHelper(appSettings).GetAll(args),new ArgsHelper().NeedRecruisive(args));
            
             Console.WriteLine("Done Importing");
             

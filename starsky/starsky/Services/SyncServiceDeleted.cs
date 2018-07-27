@@ -18,12 +18,13 @@ namespace starsky.Services
         {
             subPath = _query.SubPathSlashRemove(subPath);
 
-            Console.WriteLine(Files.IsFolderOrFile(subPath));
-            
-            if (Files.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+            var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);;
+            Console.WriteLine(Files.IsFolderOrFile(fullFilePath));
+
+            if (Files.IsFolderOrFile(fullFilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
             {
                 Console.WriteLine(">>deleted");
-                if(AppSettingsProvider.Verbose) Console.WriteLine(subPath);
+                if(_appSettings.Verbose) Console.WriteLine(subPath);
                 
                 // single file or folder deleting
                 var dbItem = _query.GetObjectByFilePath(subPath);

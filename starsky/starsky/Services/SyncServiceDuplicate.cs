@@ -27,7 +27,7 @@ namespace starsky.Services
                 for (int i = 1; i < duplicateItems.Count(); i++)
                 {
                     databaseSubFolderList.Remove(duplicateItems[i]);
-                    if (AppSettingsProvider.Verbose) Console.WriteLine("> RemoveDuplicate - " + duplicateItems[i].FilePath);
+                    if (_appSettings.Verbose) Console.WriteLine("> RemoveDuplicate - " + duplicateItems[i].FilePath);
                     _query.RemoveItem(duplicateItems[i]);
                 }
             }

@@ -17,21 +17,28 @@ namespace starsky.Services
     {
         // Write To Meta data using Exiftool.
         // This is a exiftool wrapper
+
+        private readonly AppSettings _appSettings;
+
+        public ExifTool(AppSettings appSettings)
+        {
+            _appSettings = appSettings;
+        }
         
         private string _baseCommmand(string options,string fullFilePath)
         {
             fullFilePath = $"\"" + fullFilePath + $"\"";
             options = " " + options + " " + fullFilePath;
 
-            Console.WriteLine(AppSettingsProvider.ExifToolPath);
+            Console.WriteLine(_appSettings.ExifToolPath);
 
-            if (!File.Exists(AppSettingsProvider.ExifToolPath)) return null;
+            if (!File.Exists(_appSettings.ExifToolPath)) return null;
 
-            var exifToolPath = AppSettingsProvider.ExifToolPath;
+            var exifToolPath = _appSettings.ExifToolPath;
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                exifToolPath = $"\"" + AppSettingsProvider.ExifToolPath + $"\"";
+                exifToolPath = $"\"" + _appSettings.ExifToolPath + $"\"";
             }
 
             ProcessStartInfo psi = new ProcessStartInfo

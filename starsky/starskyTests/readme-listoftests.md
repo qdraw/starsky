@@ -7,19 +7,14 @@
  ```
 bash ./readme-listoftests-update.sh 
 ``` 
-Last updated:  2018-07-25
+Last updated:  2018-07-26
 ```
 
-Test run for /data/git/starsky/starsky/starskyTests/bin/Debug/netcoreapp2.1/starskytests.dll(.NETCoreApp,Version=v2.1)
+Test run for /data/git/starsky/starsky/starskyTests/bin/Debug/netcoreapp2.0/starskytests.dll(.NETCoreApp,Version=v2.0)
 Microsoft (R) Test Execution Command Line Tool Version 15.7.0
 Copyright (c) Microsoft Corporation.  All rights reserved.
 
 The following Tests are available:
-    AppSettingsProviderTest_ReadOnlyFoldersTest
-    AppSettingsProviderTest_SqliteFullPathTest
-    AppSettingsProviderTest_SqliteFullPathentityframeworkcoreTest
-    AppSettingsProviderTest_SqliteFullPathstarskycliTest
-    AppSettingsProviderTest_SqliteFullPathstarskyimportercliTest
     ArgsHelper_NeedVerboseTest
     ArgsHelper_GetIndexModeTest
     ArgsHelper_NeedHelpTest
@@ -33,22 +28,9 @@ The following Tests are available:
     ArgsHelper_SetEnvironmentByArgsShortTestListTest
     ArgsHelper_SetEnvironmentByArgsLongTestListTest
     Base32EncodeDecodeTest
-    BasePathConfig_StructureNotNull
-    BasePathConfig_StructureRead
     BreadcrumbSlashMethodTest
     BreadcrumbFileNameMethodTest
     BreadcrumbNullTest
-    ConfigRead_BasePathTest
-    ConfigRead_IsSettingEmptyTest
-    ConfigRead_SetAppSettingsProviderEnvTest
-    ConfigRead_ReadTextFromObjOrEnvListOfItemsWithItems
-    ConfigRead_ReadTextFromObjOrEnvListOfItems_null_Items
-    ConfigRead_ReadTextFromObjOrEnvListOfItems_nullExpectedException_Items
-    ConfigRead_ReadTextFromObjOrEnvListOfItems_zzEnv
-    ConfigRead_RemoveLatestBackslashTest
-    ConfigRead_PrefixDbslashTest
-    ConfigRead_AddBackslashTest
-    EnvViewModelTestEnvViewModelTest
     ExifRead_GetObjectNameNull
     ExifRead_GetObjectNameTest
     ExifRead_GetCaptionAbstractTest
@@ -97,15 +79,13 @@ The following Tests are available:
     FolderOrFileModelFolderOrFileTypeListTest
     Files_IsFolderOrFileTest
     Files_GetAllFilesDirectoryTest
-    Files_GetFilesInDirectoryTest1
-    Files_GetFilesRecrusiveTest
+    Test
     ImportService_NoSubPath_slashyyyyMMdd_HHmmss_ImportTest
     ImportService_AsteriskTRFolderHHmmss_ImportTest
     ImportService_NonExistingFolder_HHmmssImportTest
     ImportService_WithoutExt_ImportTest
     ImportService_DuplicateImport_Test
     ImportService_DuplicateFileName_Test
-    ImportService_DuplicateDateStamp_Import_HHmmssImportTest
     ImportService_DeleteAfterTest_HHmmssImportTest
     ImportService_NonExistingImportFail_ImportTest
     ImportService_EntireBasePath_Folder_Import_ToFolderExist_Test
@@ -167,7 +147,6 @@ The following Tests are available:
     SyncServiceAddFoldersToDatabaseTest
     SyncServiceRemoveOldFilePathItemsFromDatabaseTest
     SyncServiceAddSubPathFolderTest
-    SyncServiceCheckMd5HashTest
     SyncServiceSingleFileTest
     SyncServiceDeletedSingleFileTest
     SyncServiceDeletedFolderTest
@@ -186,8 +165,6 @@ The following Tests are available:
     ThumbnailByDirectoryTest
     LoginViewModelTestLoadAll
     RegisterViewModelLoadAll
-    StarskyCliHelpTest
-    StarskyCliSubPathOneImage
     ImportIndexItemParseFileNameTest
     ImportIndexItemParseSubfoldersTest
     ImportIndexItemParseSubfolders_TRslashABC_Test
@@ -222,23 +199,4 @@ The following Tests are available:
     ApiController_ThumbIsMissing_ButOrginalExist_butNoIsSingleItemFlag_API_Test
     ApiController_FloatingDatabaseFileTest_API_Test
     ApiController_NonExistingFile_API_Test
-    ApiController_starskyTestEnv
-    ApiController_Update_AllDataIncluded_WithFakeExiftool
-    ApiController_Update_SourceImageMissingOnDisk_WithFakeExiftool
-    ApiController_Info_AllDataIncluded_WithFakeExiftool
-    ApiController_Info_SourceImageMissingOnDisk_WithFakeExiftool
-    ApiController_Delete_SourceImageMissingOnDisk_WithFakeExiftool
-    ApiController_Thumbnail_NonExistingFile_API_Test
-    ApiController_Thumbnail_CorruptImage_NoContentResult_Test
-    ApiController_Thumbnail_CorruptImage_retryThumbnail_Test
-    ApiController_DownloadPhoto_isThumbnailTrue_CreateThumb_ReturnFileStream_Test
-    ApiController_DownloadPhoto_isThumbnailFalse_ReturnFileStream_Test
-    ApiController_DownloadPhoto_isThumbnailTrue_ReturnAThumb_ReturnFileStream_Test
-    ApiController_DownloadPhoto_SourceImageIsMissing_Test
-    ApiController_DownloadPhoto_Thumb_base_folder_not_found_Test
-    HomeControllerIndexDetailViewTest
-    HomeControllerIndexIndexViewModelTest
-    SearchControllerTest_IndexPost
-    SearchControllerTest_ZeroItems_Index
-    SearchControllerTest_TrashZeroItems
-```
+    ApiController_starskyTes```

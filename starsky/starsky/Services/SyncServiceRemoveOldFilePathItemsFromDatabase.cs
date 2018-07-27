@@ -28,7 +28,10 @@ namespace starsky.Services
 
             var differenceFileNames = databaseFileListFileName.Except(localSubFolderListDatabaseStyle).ToList();
 
-            if(AppSettingsProvider.Verbose) Console.Write("diff: " + differenceFileNames.Count + "  | in db folder" + databaseSubFolderList.Count);;
+            if (_appSettings.Verbose)
+            {
+                Console.Write("diff: " + differenceFileNames.Count + "  | in db folder" + databaseSubFolderList.Count);
+            };
 
             // Delete removed items
             foreach (var item in differenceFileNames)

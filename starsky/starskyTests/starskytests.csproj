@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-      <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <!-- <TargetFrameworks>netcoreapp2.0;netcoreapp2.1</TargetFrameworks> -->
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.7</RuntimeFrameworkVersion>
     <!-- <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">2.1.2</RuntimeFrameworkVersion>     -->
@@ -9,27 +9,23 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
-
-    <!-- <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
+  <!-- <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
         <PackageReference Include="coverlet.msbuild" Version="2.1.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     </ItemGroup> -->
-
-    <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
-        <PackageReference Include="coverlet.msbuild" Version="2.0.1" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
-        <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
-    </ItemGroup>
-
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
+    <PackageReference Include="coverlet.msbuild" Version="2.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
+  </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\starsky-cli\starskycli.csproj" />
+    <ProjectReference Include="..\starskysynccli\starskysynccli.csproj" />
     <ProjectReference Include="..\starsky\starsky.csproj" />
   </ItemGroup>
 </Project>

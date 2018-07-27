@@ -14,16 +14,27 @@ namespace starsky.Services
         private readonly ApplicationDbContext _context;
         private readonly ISync _isync;
         private readonly IExiftool _exiftool;
+        private readonly AppSettings _appSettings;
 
-        public ImportService(ApplicationDbContext context, ISync isync, IExiftool exiftool)
+        public ImportService(ApplicationDbContext context, ISync isync, IExiftool exiftool, AppSettings appSettings)
         {
             _context = context;
             _isync = isync;
             _exiftool = exiftool;
+            _appSettings = appSettings;
+        }
+
+        public void Test()
+        {
+            _context.FileIndex.FirstOrDefault();
+            _isync.SyncFiles("/");
+            _exiftool.Info("/");
+            var t =_appSettings.DatabaseConnection;
         }
 
         // Imports a list of paths, used by the importer web interface
-        public List<string> Import(IEnumerable<string> inputFullPathList, bool deleteAfter = false, bool ageFileFilter = true, bool recursiveDirectory = false)
+        public List<string> Import(IEnumerable<string> inputFullPathList, 
+            bool deleteAfter = false, bool ageFileFilter = true, bool recursiveDirectory = false)
         {
             var output = new List<string>();
             foreach (var inputFullPath in inputFullPathList)
@@ -37,7 +48,8 @@ namespace starsky.Services
         }
 
         // Imports a single path, used by the cli importer
-        public List<string> Import(string inputFullPath, bool deleteAfter = false, bool ageFileFilter = true, bool recursiveDirectory = false)
+        public List<string> Import(string inputFullPath, bool deleteAfter = false, 
+            bool ageFileFilter = true, bool recursiveDirectory = false)
         {
             if (!Directory.Exists(inputFullPath) && File.Exists(inputFullPath))
             {
@@ -54,18 +66,22 @@ namespace starsky.Services
 
             var filesFullPathList = new List<string>();
             // recursive
-            if(recursiveDirectory) filesFullPathList = Files.GetFilesRecrusive(inputFullPath,false).ToList();
+            if(recursiveDirectory) filesFullPathList = Files.GetFilesRecrusive(inputFullPath).ToList();
             // non-recursive
-            if(!recursiveDirectory) filesFullPathList = Files.GetFilesInDirectory(inputFullPath,false).ToList();
+            if(!recursiveDirectory) filesFullPathList = Files.GetFilesInDirectory(inputFullPath,_appSettings).ToList();
 
             var succesfullDirFullPaths = Import(filesFullPathList, deleteAfter, ageFileFilter);
                 
             return succesfullDirFullPaths;
         }
 
-        public ImportIndexItem ObjectCreateIndexItem(string inputFileFullPath, string fileHashCode, FileIndexItem fileIndexItem)
+        // Create a new import object
+        public ImportIndexItem ObjectCreateIndexItem(
+            string inputFileFullPath, 
+            string fileHashCode, 
+            FileIndexItem fileIndexItem)
         {
-            var importIndexItem = new ImportIndexItem
+            var importIndexItem = new ImportIndexItem(_appSettings)
             {
                 SourceFullFilePath = inputFileFullPath,
                 DateTime = fileIndexItem.DateTime,
@@ -75,10 +91,13 @@ namespace starsky.Services
             return importIndexItem;
         }
 
-        public string DestionationFullPathDuplicate(string inputFileFullPath, FileIndexItem fileIndexItem, bool tryagain)
+        public string DestionationFullPathDuplicate(
+            string inputFileFullPath, 
+            FileIndexItem fileIndexItem, 
+            bool tryagain)
         {
 
-            var destinationFullPath = FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
+            var destinationFullPath = _appSettings.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
                                       + fileIndexItem.FileName;
             // When a file already exist, when you have multiple files with the same datetime
             if (inputFileFullPath != destinationFullPath
@@ -91,7 +110,7 @@ namespace starsky.Services
                     Path.GetExtension(fileIndexItem.FileName)
                 );
                 
-                destinationFullPath = FileIndexItem.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
+                destinationFullPath = _appSettings.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
                                       + fileIndexItem.FileName;
             }
 
@@ -131,11 +150,12 @@ namespace starsky.Services
             // Feature to ignore old files
             if (ageFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
             {
-                if (AppSettingsProvider.Verbose) 
-                    Console.WriteLine("use this structure to parse: " + AppSettingsProvider.Structure);
+                if (_appSettings.Verbose) 
+                    Console.WriteLine("use this structure to parse: " + _appSettings.Structure);
                 
                 Console.WriteLine("> "+ inputFileFullPath 
-                                      +  " is older than 2 years, please use the -a flag to overwrite this; skip this file;");
+                                      +  " is older than 2 years, "+
+                                      "please use the -a flag to overwrite this; skip this file;");
                 return string.Empty;
             }
             
@@ -144,7 +164,9 @@ namespace starsky.Services
 
             var destinationFullPath = DestionationFullPathDuplicate(inputFileFullPath,fileIndexItem,true);
             
-            if (destinationFullPath == null) Console.WriteLine("> "+ inputFileFullPath + " "  + fileIndexItem.FileName +  " Please try again > to many failures;");
+            if (destinationFullPath == null) Console.WriteLine("> "+ inputFileFullPath 
+                                                                   + " "  + fileIndexItem.FileName 
+                                                                   +  " Please try again > to many failures;");
             if (destinationFullPath == null) return string.Empty;
             
             File.Copy(inputFileFullPath, destinationFullPath);
@@ -175,7 +197,7 @@ namespace starsky.Services
         // Add a new item to the database
         private void AddItem(ImportIndexItem updateStatusContent)
         {
-            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
+//            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
             updateStatusContent.AddToDatabase = DateTime.UtcNow;
             
             _context.ImportIndex.Add(updateStatusContent);
@@ -186,7 +208,7 @@ namespace starsky.Services
         // Remove a new item from the database
         public ImportIndexItem RemoveItem(ImportIndexItem updateStatusContent)
         {
-            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
+//            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
 
             _context.ImportIndex.Remove(updateStatusContent);
             _context.SaveChanges();

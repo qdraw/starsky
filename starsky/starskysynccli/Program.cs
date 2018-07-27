@@ -1,27 +1,22 @@
 ﻿using System;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
-using starsky.Attributes;
 using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
 
-namespace starskyCli
+namespace starskysynccli
 {
     public static class Program
     {
         public static void Main(string[] args)
         {
+            // Use args in application
+             new ArgsHelper().SetEnvironmentByArgs(args);
             
-            // Check if user want more info
-            AppSettingsProvider.Verbose = ArgsHelper.NeedVerbose(args);
-
-            // If used '-d inmemorydatabase'
-            ArgsHelper.SetEnvironmentByArgs(args);
-
-            ConfigRead.SetAppSettingsProvider();
+            var startupHelper = new ConfigCliAppsStartupHelper();
+            var appSettings = startupHelper.AppSettings();
+            appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
             
-            if (ArgsHelper.NeedHelp(args))
+            if (new ArgsHelper().NeedHelp(args))
             {
                 // Update Readme.md when this change!
                 Console.WriteLine("Starsky Indexer Help:");
@@ -38,55 +33,65 @@ namespace starskyCli
                 Console.WriteLine("--thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder");
                 Console.WriteLine("--exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath");
                 Console.WriteLine("  use -v -help to show settings: ");
-                if (!AppSettingsProvider.Verbose) return;
+                if (!appSettings.Verbose) return;
                 Console.WriteLine("");
-                Console.WriteLine("Settings:");
-                Console.WriteLine("Database Type "+ AppSettingsProvider.DatabaseType);
-                Console.WriteLine("BasePath " + AppSettingsProvider.BasePath);
-                Console.WriteLine("ThumbnailTempFolder " + AppSettingsProvider.ThumbnailTempFolder);
-                Console.WriteLine("DbConnectionString " + AppSettingsProvider.DbConnectionString);
+                Console.WriteLine("AppSettings:");
+                Console.WriteLine("Database Type (-d --databasetype) "+ appSettings.DatabaseType);
+                Console.WriteLine("DatabaseConnection (-c --connection) " + appSettings.DatabaseConnection);
+                Console.WriteLine("StorageFolder (-b --basepath) " + appSettings.StorageFolder);
+                Console.WriteLine("ThumbnailTempFolder (-f --thumbnailtempfolder) "+ appSettings.ThumbnailTempFolder);
+                Console.WriteLine("ExifToolPath  (-e --exiftoolpath) "+ appSettings.ExifToolPath);
+                Console.WriteLine("Structure  (-u --structure) "+ appSettings.Structure);
+                Console.WriteLine("BaseDirectoryProject (where the exe is located) " + appSettings.BaseDirectoryProject);
                 return;
             }
 
             // Using both options
             string subpath;
             // -s = ifsubpath || -p is path
-            if (ArgsHelper.IfSubpathOrPath(args))
+            if (new ArgsHelper(appSettings).IfSubpathOrPath(args))
             {
-                subpath = ArgsHelper.GetSubpathFormArgs(args);
+                subpath = new ArgsHelper(appSettings).GetSubpathFormArgs(args);
             }
             else
             {
-                subpath = ArgsHelper.GetPathFormArgs(args);
+                subpath = new ArgsHelper((appSettings)).GetPathFormArgs(args);
             }
            
 
-            if (ArgsHelper.GetIndexMode(args))
+            if (new ArgsHelper().GetIndexMode(args))
             {
                 Console.WriteLine("Start indexing");
-                new SyncDatabase().SyncFiles(subpath);
+                startupHelper.SyncService().SyncFiles(subpath);
                 Console.WriteLine("Done SyncFiles!");
             }
 
-            if (ArgsHelper.GetThumbnail(args)) {
+            if (new ArgsHelper(appSettings).GetThumbnail(args))
+            {
 
-                // If single file => create thumbnail
-                Thumbnail.CreateThumb(subpath);
-    
-                if (Files.IsFolderOrFile(subpath) 
-                    == FolderOrFileModel.FolderOrFileTypeList.Folder)
+                var fullPath = appSettings.DatabasePathToFilePath(subpath);
+                var isFolderOrFile = Files.IsFolderOrFile(fullPath);
+
+                if (appSettings.Verbose) Console.WriteLine(isFolderOrFile);
+                
+                if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
                 {
-                    ThumbnailByDirectory.CreateThumb(subpath);
+                    // If single file => create thumbnail
+                    new Thumbnail(appSettings).CreateThumb(subpath); // <= this uses subpath
                 }
+                else
+                {
+                    new ThumbnailByDirectory(appSettings).CreateThumb(fullPath); // <= this uses fullpath
+                }
+                
                 Console.WriteLine("Thumbnail Done!");
             }
             
-            if (ArgsHelper.GetOrphanFolderCheck(args))
+            if (new ArgsHelper(appSettings).GetOrphanFolderCheck(args))
             {
                 Console.WriteLine(">>>>> Heavy CPU Feature => Use with care <<<<< ");
-                new SyncDatabase().OrphanFolder(subpath);
+                startupHelper.SyncService().OrphanFolder(subpath);
             }
-
             Console.WriteLine("Done!");
 
         }

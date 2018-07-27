@@ -12,6 +12,20 @@ namespace starsky.Models
 {
     public class ImportIndexItem
     {
+        private readonly AppSettings _appSettings;
+
+        //  In order to create an instance of 'ImportIndexItem'
+        // EF requires that a parameterless constructor be declared.
+        public ImportIndexItem()
+        {
+        }
+        
+        public ImportIndexItem(AppSettings appSettings)
+        {
+            _appSettings = appSettings;
+        }
+
+        
         public int Id { get; set; }
         public string FileHash { get; set; }
 
@@ -45,7 +59,7 @@ namespace starsky.Models
                 fileExtenstion = Path.GetExtension(SourceFullFilePath).Replace(".",string.Empty);
             }
             
-            var structuredFileName = AppSettingsProvider.Structure.Split("/").LastOrDefault();
+            var structuredFileName = _appSettings.Structure.Split("/").LastOrDefault();
             if (structuredFileName == null) return null;
 
             // Escape feature to Replace Astriks
@@ -64,7 +78,7 @@ namespace starsky.Models
             var fileName = DateTime.ToString(structuredFileName, CultureInfo.InvariantCulture);
             fileName += "." + fileExtenstion;
             
-            // Escape feature to Restore {filenamebase}
+            // Escape feature to Restore (filenamebase)
             if (fileName.Contains("_!q_")) // filenamebase
             {
                 fileName = fileName.Replace("_!q_", Path.GetFileNameWithoutExtension(SourceFullFilePath));
@@ -87,7 +101,7 @@ namespace starsky.Models
             fileName = fileName.Replace("_import_", string.Empty);
             
             // Replace Astriks > escape all options
-            var structuredFileName = AppSettingsProvider.Structure.Split("/").LastOrDefault();
+            var structuredFileName = _appSettings.Structure.Split("/").LastOrDefault();
             structuredFileName = structuredFileName.Replace("*", "");
             structuredFileName = structuredFileName.Replace(".ext", string.Empty);
             structuredFileName = structuredFileName.Replace("{filenamebase}", string.Empty);
@@ -103,12 +117,27 @@ namespace starsky.Models
                 DateTime = dateTime;
                 return dateTime;
             }
-            
+                            
             // Now retry it and replace special charaters from string
             Regex pattern = new Regex("-|_| |;|\\.|:");
             fileName = pattern.Replace(fileName,string.Empty);
             structuredFileName = pattern.Replace(structuredFileName,string.Empty);
                 
+            DateTime.TryParseExact(fileName, 
+                structuredFileName, 
+                CultureInfo.InvariantCulture, 
+                DateTimeStyles.None, 
+                out dateTime);
+            
+            if (dateTime.Year >= 2)
+            {
+                DateTime = dateTime;
+                return dateTime;
+            }
+
+            // when using /yyyymmhhss_{filenamebase}.jpg
+            fileName = fileName.Substring(0, structuredFileName.Length);
+            
             DateTime.TryParseExact(fileName, 
                 structuredFileName, 
                 CultureInfo.InvariantCulture, 
@@ -125,7 +154,8 @@ namespace starsky.Models
 
         public List<string> SearchSubDirInDirectory(string parentItem, string parsedItem)
         {
-            var childDirectories = Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem), parsedItem).ToList();
+            if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
+            var childDirectories = Directory.GetDirectories(_appSettings.DatabasePathToFilePath(parentItem), parsedItem).ToList();
             childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
             return childDirectories;
         }
@@ -134,10 +164,12 @@ namespace starsky.Models
         // Depends on App Settings /BasePathConfig
         public string ParseSubfolders(bool createFolder = true)
         {
+            if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
+
             // If command running twiche you will get /tr/tr (when tr is your single folder name)
             SubFolder = string.Empty;
             
-            var patternList = AppSettingsProvider.Structure.Split("/").ToList();
+            var patternList = _appSettings.Structure.Split("/").ToList();
             var parsedList = ParseListBasePathAndDateFormat(patternList, DateTime);
 
             if (parsedList.Count == 1)
@@ -158,8 +190,8 @@ namespace starsky.Models
                 var parentItem = SubFolder;
                 string childFullDirectory = null;
 
-                if (Directory.Exists(FileIndexItem.DatabasePathToFilePath(parentItem)) &&
-                    Directory.GetDirectories(FileIndexItem.DatabasePathToFilePath(parentItem)).Length != 0)
+                if (Directory.Exists(_appSettings.DatabasePathToFilePath(parentItem)) &&
+                    Directory.GetDirectories(_appSettings.DatabasePathToFilePath(parentItem)).Length != 0)
                 {
                     // add backslash
                     var noSlashInParsedItem = parsedItem.Replace("/", string.Empty);
@@ -175,7 +207,7 @@ namespace starsky.Models
                 if (childFullDirectory == null)
                 {
                     var childDirectory = SubFolder + parsedItem.Replace("*", string.Empty) + "/";
-                    childFullDirectory = FileIndexItem.DatabasePathToFilePath(childDirectory,false);
+                    childFullDirectory = _appSettings.DatabasePathToFilePath(childDirectory,false);
 
                     if (createFolder)
                     {
@@ -184,7 +216,7 @@ namespace starsky.Models
                         Directory.CreateDirectory(childFullDirectory);
                     }
                 }
-                SubFolder = FileIndexItem.FullPathToDatabaseStyle(childFullDirectory);
+                SubFolder = _appSettings.FullPathToDatabaseStyle(childFullDirectory);
             }
 
             return SubFolder;

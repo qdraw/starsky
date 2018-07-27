@@ -29,9 +29,9 @@ namespace starsky.Services
                 {
                     // photo
                     Console.Write(".");
-                    if(AppSettingsProvider.Verbose) Console.WriteLine("\nAddPhotoToDatabase: " + singleFolderDbStyle);
+                    if(_appSettings.Verbose) Console.WriteLine("\nAddPhotoToDatabase: " + singleFolderDbStyle);
 
-                    var singleFilePath = FileIndexItem.DatabasePathToFilePath(singleFolderDbStyle);
+                    var singleFilePath = _appSettings.DatabasePathToFilePath(singleFolderDbStyle);
                     var databaseItem = ExifRead.ReadExifFromFile(singleFilePath);
 
                     databaseItem.AddToDatabase = DateTime.UtcNow;

@@ -18,15 +18,14 @@ namespace starsky.Services
             // 3. The files are keeped in the index
 
             // Check if the subfolder it self exist, then search for child folders
-            if(!Directory.Exists(FileIndexItem.DatabasePathToFilePath(subPath,false))) return null;
+            if(!Directory.Exists(_appSettings.DatabasePathToFilePath(subPath,false))) return null;
 
             var allItemsInDb = _query.GetAllRecursive(subPath);
 
             // Large items not recruisive
             if (allItemsInDb.Count > 2500)
             {
-                Console.WriteLine("Item in subfolder is to large");
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException("Item in subfolder is to large");
             }
 
             Console.WriteLine("> running");
@@ -44,9 +43,9 @@ namespace starsky.Services
                             p.FilePath == dbItem.ParentDirectory
                     );
 
-                    if (!res.Any() && !File.Exists(FileIndexItem.DatabasePathToFilePath(dbItem.FilePath)) )
+                    if (!res.Any() && !File.Exists(_appSettings.DatabasePathToFilePath(dbItem.FilePath)) )
                     {
-                        if(AppSettingsProvider.Verbose) Console.WriteLine("o>> " + dbItem.FilePath);
+                        if(_appSettings.Verbose) Console.WriteLine("o>> " + dbItem.FilePath);
                         _query.RemoveItem(dbItem);
                     }
                 }

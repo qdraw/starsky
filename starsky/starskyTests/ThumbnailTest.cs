@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
 
@@ -9,13 +13,41 @@ namespace starskytests
     [TestClass]
     public class ThumbnailTest
     {
+        private readonly AppSettings _appSettings;
+
+        public ThumbnailTest()
+        {
+            // Add a dependency injection feature
+            var services = new ServiceCollection();
+            // Inject Config helper
+            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+            // random config
+            var newImage = new CreateAnImage();
+            var dict = new Dictionary<string, string>
+            {
+                { "App:StorageFolder", newImage.BasePath },
+                { "App:Verbose", "true" }
+            };
+            // Start using dependency injection
+            var builder = new ConfigurationBuilder();  
+            // Add random config to dependency injection
+            builder.AddInMemoryCollection(dict);
+            // build config
+            var configuration = builder.Build();
+            // inject config as object to a service
+            services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+            // build the service
+            var serviceProvider = services.BuildServiceProvider();
+            // get the service
+            _appSettings = serviceProvider.GetRequiredService<AppSettings>();
+        }
+        
         [TestMethod]
         public void CreateAndRenamteThumbTest()
         {
 
             var newImage = new CreateAnImage();
-            AppSettingsProvider.ThumbnailTempFolder = newImage.BasePath;
-            AppSettingsProvider.BasePath = newImage.BasePath;
+            _appSettings.ThumbnailTempFolder = newImage.BasePath;;
 
             var hashString = FileHash.GetHashCode(newImage.FullFilePath);
 
@@ -27,11 +59,11 @@ namespace starskytests
             }
 
             // Create an thumbnail based on the image
-            Thumbnail.CreateThumb(newImage.DbPath);
+            new Thumbnail(_appSettings).CreateThumb(newImage.DbPath);
             Assert.AreEqual(true,File.Exists(thumbnailPAth));
 
             // Test Rename feature and delete if passed
-            new Thumbnail().RenameThumb(hashString, "AAAAA");
+            new Thumbnail(_appSettings).RenameThumb(hashString, "AAAAA");
             var thumbnailApAth = Path.Combine(newImage.BasePath, "AAAAA" + ".jpg");
             if (File.Exists(thumbnailApAth))
             {
@@ -43,31 +75,31 @@ namespace starskytests
         [ExpectedException(typeof(FileNotFoundException))]
         public void ThumbnailCreateThumbnailNullTest()
         {
-            Thumbnail.CreateThumb(new FileIndexItem());
+            new Thumbnail(_appSettings).CreateThumb(new FileIndexItem());
         }
         
         [TestMethod]
         public void ThumbnailCreateThumbnailNotFoundTest()
         {
             var newImage = new CreateAnImage();
-            AppSettingsProvider.ThumbnailTempFolder = newImage.BasePath;
-            Thumbnail.CreateThumb(new FileIndexItem{FileHash = "t",FileName = "t",FilePath = "/"});
+            _appSettings.ThumbnailTempFolder = newImage.BasePath;;
+            new Thumbnail(_appSettings).CreateThumb(new FileIndexItem{FileHash = "t",FileName = "t",FilePath = "/"});
         }
 
         [TestMethod]
         [ExpectedException(typeof(FileNotFoundException))]
         public void ThumbnailCreateThumb_FileIndexItem_ThumbnailTempFolderNull_Test()
         {
-            AppSettingsProvider.ThumbnailTempFolder = null;
-            Thumbnail.CreateThumb(new FileIndexItem());
+            _appSettings.ThumbnailTempFolder = null;
+            new Thumbnail(_appSettings).CreateThumb(new FileIndexItem());
         }
 
         [TestMethod]
         [ExpectedException(typeof(FileNotFoundException))]
         public void ThumbnailRenameThumb_DirectInput_ThumbnailTempFolderNull_Test()
         {
-            AppSettingsProvider.ThumbnailTempFolder = null;
-            new Thumbnail().RenameThumb(null, null);
+            _appSettings.ThumbnailTempFolder = null;
+            new Thumbnail(_appSettings).RenameThumb(null, null);
         }
         
         [TestMethod]
@@ -75,8 +107,8 @@ namespace starskytests
         {
             // Should not crash
             var newImage = new CreateAnImage();
-            AppSettingsProvider.ThumbnailTempFolder = newImage.BasePath;
-            new Thumbnail().RenameThumb(null, "ThumbnailRenameThumb_nonexistingOldHash_Test");
+            _appSettings.ThumbnailTempFolder = newImage.BasePath;;
+            new Thumbnail(_appSettings).RenameThumb(null, "ThumbnailRenameThumb_nonexistingOldHash_Test");
         }
         
         [TestMethod]
@@ -84,9 +116,9 @@ namespace starskytests
         {
             // For testing:    if File.Exists(newThumbPath)
             var newImage = new CreateAnImage();
-            AppSettingsProvider.ThumbnailTempFolder = newImage.BasePath;
+            _appSettings.ThumbnailTempFolder = newImage.BasePath;;
             var dbPathWithoutExtAndSlash = newImage.DbPath.Replace(".jpg", string.Empty).Replace("/", string.Empty);
-            new Thumbnail().RenameThumb(dbPathWithoutExtAndSlash,dbPathWithoutExtAndSlash);
+            new Thumbnail(_appSettings).RenameThumb(dbPathWithoutExtAndSlash,dbPathWithoutExtAndSlash);
         }
         
         [TestMethod]
@@ -94,8 +126,8 @@ namespace starskytests
         {
 
             var newImage = new CreateAnImage();
-            AppSettingsProvider.ThumbnailTempFolder = newImage.BasePath;
-            AppSettingsProvider.BasePath = newImage.BasePath;
+            _appSettings.ThumbnailTempFolder = newImage.BasePath;;
+            _appSettings.StorageFolder = newImage.BasePath;
 
             var hashString = FileHash.GetHashCode(newImage.FullFilePath);
 
@@ -107,7 +139,7 @@ namespace starskytests
             }
         
             // Create an thumbnail based on the image
-            ThumbnailByDirectory.CreateThumb();
+            new ThumbnailByDirectory(_appSettings).CreateThumb(newImage.BasePath);
             
             Assert.AreEqual(true,File.Exists(thumbnailPath));
             

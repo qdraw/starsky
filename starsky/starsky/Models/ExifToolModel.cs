@@ -51,12 +51,6 @@ namespace starsky.Models
         }
 
         public DateTime AllDatesDateTime { get; set; }
-        
-        public string AllDates {
-            set
-            {
-            }
-        }
 
         private static HashSet<string> _stringToHashSet(string inputKeywords)
         {
