@@ -19,7 +19,7 @@ namespace starsky.Services
             return filesInDirectoryFullPath.Select(fileFullPath => _calcHashCode(fileFullPath)).ToList();
         }
 
-        public static string GetHashCode(string filename, int timeoutSeconds = 10)
+        public static string GetHashCode(string filename, int timeoutSeconds = 8)
         {
             return _calcHashCode(filename,timeoutSeconds);
         }
