@@ -33,7 +33,7 @@ The default structure in `appsettings.json` is:
 ```
 #### Appsettings Notes
 1)   Structure uses slash as directory separator for Linux and Windows
-2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `STARSKY_BASEPATH` uses the system path directory separators
+2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `StorageFolder` uses the system path directory separators
 3)    The `AddMemoryCache` setting is ignored in the console/cli applications 
 
 ### Structure configuation options:
