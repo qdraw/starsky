@@ -139,7 +139,7 @@ namespace starskytests
             }
         
             // Create an thumbnail based on the image
-            new ThumbnailByDirectory(_appSettings).CreateThumb();
+            new ThumbnailByDirectory(_appSettings).CreateThumb(newImage.BasePath);
             
             Assert.AreEqual(true,File.Exists(thumbnailPath));
             

@@ -20,16 +20,13 @@ namespace starsky.Services
         {
             // Thumbnail check service
             
-            var subFoldersFullPath =  Files.GetAllFilesDirectory(parentFolderFullPath).ToList();
+            var subFoldersFullPathList =  Files.GetAllFilesDirectory(parentFolderFullPath).ToList();
             
             // Add Subpath to scan the root folder for thumbs       
-            subFoldersFullPath.Add(parentFolderFullPath);
+            subFoldersFullPathList.Add(parentFolderFullPath);
             
-            foreach (var singleFolderFullPath in subFoldersFullPath)
+            foreach (var singleFolderFullPath in subFoldersFullPathList)
             {
-                
-                Console.WriteLine(singleFolderFullPath);
-                
                 string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath,_appSettings);
                 var localFileListFileHash = FileHash.GetHashCode(filesInDirectoryFullPath);
 
@@ -53,6 +50,7 @@ namespace starsky.Services
                 }
 
             }
+
         }
     }
 }
