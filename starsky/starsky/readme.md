@@ -51,7 +51,7 @@ The commandline arguments are shortcuts to set an in-app environment variable
 ```
 #### Appsettings Notes
 1)   Structure uses slash as directory separators for Linux and Windows
-2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `STARSKY_BASEPATH` uses the system path directory separators
+2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `StorageFolder` uses the system path directory separators
 3)  When using Windows please double escape (`\\`) system path's
 
 
