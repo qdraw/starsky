@@ -28,8 +28,8 @@ namespace starskysynccli
                 Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder (heavy cpu usage), default false");
                 Console.WriteLine("--verbose or -v == verbose, more detailed info");
                 Console.WriteLine("--databasetype or -d == Overwrite EnvironmentVariable for DatabaseType");
-                Console.WriteLine("--basepath or -b == Overwrite EnvironmentVariable for STARSKY_BASEPATH");
-                Console.WriteLine("--connection or -c == Overwrite EnvironmentVariable for DefaultConnection");
+                Console.WriteLine("--basepath or -b == Overwrite EnvironmentVariable for StorageFolder");
+                Console.WriteLine("--connection or -c == Overwrite EnvironmentVariable for DatabaseConnection");
                 Console.WriteLine("--thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder");
                 Console.WriteLine("--exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath");
                 Console.WriteLine("  use -v -help to show settings: ");
