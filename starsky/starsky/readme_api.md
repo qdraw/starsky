@@ -449,7 +449,6 @@ This endpoint does not require autorisation.
 
 ```json
 {
-  "DefaultConnection": "Data Source=/a/full/path/to/data.db",
   "StorageFolder": "/data/photolib/",
   "DatabaseType": "sqlite",
   "ThumbnailTempFolder": "/data/thumb",
@@ -461,4 +460,4 @@ This endpoint does not require autorisation.
   ]
 }
 ```
-- When using a mysql database `DefaultConnection` will be `null`. The connection string is not publicly visible.
+- The setting `DatabaseConnection` will be ignored . The connection string is not publicly visible due security reasons.
