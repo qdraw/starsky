@@ -450,7 +450,7 @@ This endpoint does not require autorisation.
 ```json
 {
   "DefaultConnection": "Data Source=/a/full/path/to/data.db",
-  "STARSKY_BASEPATH": "/data/photolib/",
+  "StorageFolder": "/data/photolib/",
   "DatabaseType": "sqlite",
   "ThumbnailTempFolder": "/data/thumb",
   "ExifToolPath": "/usr/local/bin/exiftool",
