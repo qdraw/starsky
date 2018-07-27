@@ -42,7 +42,7 @@ When using Windows please escape the backslash, otherwise the application will c
 
 ### To get help:
 ```sh
-starskycli --help
+./starskysynccli --help
 ```
 
 ### The StarskyCli --Help window:
