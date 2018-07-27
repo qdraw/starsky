@@ -35,7 +35,7 @@ When you start this application at first please update the `appsettings.json`
 #### Appsettings Notes
 1)   The `Structure`-setting is used by the `StarskyImporterCli` and the `/import` endpoint. 
     This always uses slash as directory marker. 
-2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `STARSKY_BASEPATH` uses the system path.
+2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `StorageFolder` uses the system path.
 When using Windows please escape the backslash, otherwise the application will crash.
 3)    The `AddMemoryCache` setting is ignored in the console/cli applications 
 
