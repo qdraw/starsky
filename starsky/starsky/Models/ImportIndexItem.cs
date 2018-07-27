@@ -117,12 +117,27 @@ namespace starsky.Models
                 DateTime = dateTime;
                 return dateTime;
             }
-            
+                            
             // Now retry it and replace special charaters from string
             Regex pattern = new Regex("-|_| |;|\\.|:");
             fileName = pattern.Replace(fileName,string.Empty);
             structuredFileName = pattern.Replace(structuredFileName,string.Empty);
                 
+            DateTime.TryParseExact(fileName, 
+                structuredFileName, 
+                CultureInfo.InvariantCulture, 
+                DateTimeStyles.None, 
+                out dateTime);
+            
+            if (dateTime.Year >= 2)
+            {
+                DateTime = dateTime;
+                return dateTime;
+            }
+
+            // when using /yyyymmhhss_{filenamebase}.jpg
+            fileName = fileName.Substring(0, structuredFileName.Length);
+            
             DateTime.TryParseExact(fileName, 
                 structuredFileName, 
                 CultureInfo.InvariantCulture, 
