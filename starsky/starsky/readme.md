@@ -25,9 +25,9 @@ The commandline arguments are shortcuts to set an in-app environment variable
 
 ### Required settings
 1) `ThumbnailTempFolder` - For storing thumbnails
-2) `STARSKY_BASEPATH` - For the main photo directory
+2) `StorageFolder` - For the main photo directory
 3) `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported
-4) `DefaultConnection` - The connectionstring to the database
+4) `DatabaseConnection` - The connectionstring to the database
 5) `ExifToolPath` - A path to Exiftool.exe
 ### Optional settings
 1) `Structure` - The structure that will be used when you import files, has a default fallback.
