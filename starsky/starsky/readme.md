@@ -21,6 +21,7 @@ The commandline arguments are shortcuts to set an in-app environment variable
 ### The order of reading settings
 1) You can use `appsettings.json` inside the application folder to set base settings
 2) Use Environment variables to overwrite those base settings
+   For `ThumbnailTempFolder` use `app__ThumbnailTempFolder` https://github.com/aspnet/Configuration/commit/cafd2e53eb71a6d0cecc60a9e38ea1df2dafb916
 3) Command line argumements in the Cli applications to set in-app environment variables
 
 ### Required settings
