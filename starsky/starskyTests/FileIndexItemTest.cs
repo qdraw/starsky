@@ -138,7 +138,7 @@ namespace starskytests
         public void FileIndexItemTest_ParentDirectoryNull()
         {
             var t = new FileIndexItem();
-            Assert.AreEqual("/",t.ParentDirectory);
+            Assert.AreEqual(string.Empty,t.ParentDirectory);
         }
         
         [TestMethod]
