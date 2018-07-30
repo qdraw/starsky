@@ -32,11 +32,13 @@ namespace starsky.Controllers
         [HttpPost]
         [ActionName("Index")]
         [DisableFormValueModelBinding]
-        public async Task<IActionResult> IndexPost()
+        public async Task<IActionResult> IndexPost(ImportSettingsModel importSettings)
         {
             var tempImportPaths = await Request.StreamFile(_appSettings);
+            
+            importSettings.DeleteAfter = true;
 
-            var importedFiles = _import.Import(tempImportPaths, true);
+            var importedFiles = _import.Import(tempImportPaths, importSettings);
 
             foreach (var path in tempImportPaths)
             {

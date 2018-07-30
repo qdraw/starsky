@@ -56,8 +56,15 @@ namespace starskyimportercli
             var inputPath = new ArgsHelper().GetPathFormArgs(args,false);
             
             if(appSettings.Verbose) Console.WriteLine("inputPath " + inputPath);
+
+            var importSettings = new ImportSettingsModel
+            {
+                DeleteAfter = new ArgsHelper(appSettings).GetMove(args),
+                AgeFileFilter = new ArgsHelper(appSettings).GetAll(args),
+                RecursiveDirectory = new ArgsHelper().NeedRecruisive(args)
+            };
             
-            startupHelper.ImportService().Import(inputPath, new ArgsHelper(appSettings).GetMove(args),new ArgsHelper(appSettings).GetAll(args),new ArgsHelper().NeedRecruisive(args));
+            startupHelper.ImportService().Import(inputPath, importSettings);
            
             Console.WriteLine("Done Importing");
             

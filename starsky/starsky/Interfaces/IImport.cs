@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using starsky.Models;
 
 namespace starsky.Interfaces
 {
     public interface IImport
     {
-        List<string> Import(IEnumerable<string> inputFullPathList, bool deleteAfter = false, bool ageFileFilter = true, bool recursiveDirectory = false);
+        List<string> Import(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings);
     }
 }

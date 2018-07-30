@@ -136,13 +136,16 @@ namespace starsky.Models
             }
 
             // when using /yyyymmhhss_{filenamebase}.jpg
-            fileName = fileName.Substring(0, structuredFileName.Length);
-            
-            DateTime.TryParseExact(fileName, 
-                structuredFileName, 
-                CultureInfo.InvariantCulture, 
-                DateTimeStyles.None, 
-                out dateTime);
+            if(fileName.Length >= structuredFileName.Length) {
+                
+                fileName = fileName.Substring(0, structuredFileName.Length);
+                
+                DateTime.TryParseExact(fileName, 
+                    structuredFileName, 
+                    CultureInfo.InvariantCulture, 
+                    DateTimeStyles.None, 
+                    out dateTime);
+            }
             
             DateTime = dateTime;
             return dateTime;

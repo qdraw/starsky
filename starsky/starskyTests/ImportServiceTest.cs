@@ -145,7 +145,11 @@ namespace starskytests
             // This is not to be the first file in the test directory
             // => otherwise SyncServiceFirstItemDirectoryTest() will fail
             _appSettings.StorageFolder = createAnImage.BasePath;
-            _import.Import(createAnImage.FullFilePath,false,false);
+            var importSettings = new ImportSettingsModel();
+            importSettings.DeleteAfter = false;
+            importSettings.AgeFileFilter = false;
+            
+            _import.Import(createAnImage.FullFilePath,importSettings);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
@@ -169,7 +173,12 @@ namespace starskytests
             _appSettings.StorageFolder = createAnImage.BasePath;
 
             Console.WriteLine(createAnImage.FullFilePath);
-            _import.Import(createAnImage.FullFilePath,false,false);
+            var importSettings = new ImportSettingsModel
+            {
+                DeleteAfter = false,
+                AgeFileFilter = false
+            };
+            _import.Import(createAnImage.FullFilePath,importSettings);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
@@ -207,8 +216,14 @@ namespace starskytests
             {
                 Directory.CreateDirectory(_appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist");
             }
+            var importSettings = new ImportSettingsModel
+            {
+                DeleteAfter = false,
+                AgeFileFilter = false
+            };
+            
             _appSettings.Structure = "/\\e\\x\\i\\s\\t/\\a\\b\\c/HHmmss.ext";
-            _import.Import(createAnImage.FullFilePath,false,false);
+            _import.Import(createAnImage.FullFilePath,importSettings);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             
@@ -239,7 +254,12 @@ namespace starskytests
             }
             
             _appSettings.Structure = "/\\e\\x\\i\\s*/ssHHmm";
-            _import.Import(createAnImage.FullFilePath,false,false);
+            var importSettings = new ImportSettingsModel
+            {
+                DeleteAfter = false,
+                AgeFileFilter = false
+            };
+            _import.Import(createAnImage.FullFilePath,importSettings);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             
@@ -264,14 +284,18 @@ namespace starskytests
             Console.WriteLine(_appSettings.StorageFolder);
             
             _appSettings.Structure = "/xuxuxuxu_ssHHmm.ext";
-            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
+
+            var importSettings = new ImportSettingsModel();
+            importSettings.DeleteAfter = false;
+            importSettings.AgeFileFilter = false;
+            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());  
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
             var itemFilePath = _query.GetItemByHash(fileHashCode);
             Assert.AreNotEqual(null, itemFilePath);
                         
             // Run a second time: > Must return nothing
-            var returnObject = _import.Import(createAnImage.BasePath, false, false);
+            var returnObject = _import.Import(createAnImage.BasePath, importSettings);
             Assert.AreEqual(true, string.IsNullOrWhiteSpace(returnObject.FirstOrDefault()) );  
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
@@ -298,11 +322,15 @@ namespace starskytests
         [TestMethod]
         public void ImportService_DuplicateFileName_Test()
         {
-            
+            var importSettings = new ImportSettingsModel
+            {
+                DeleteAfter = false,
+                AgeFileFilter = false
+            };
             var createAnImage = new CreateAnImage();
             _appSettings.StorageFolder = createAnImage.BasePath;
             _appSettings.Structure = "/xux99999xxxx_ssHHmm.ext";
-            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
+            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());  
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
             var itemFilePath = _query.GetItemByHash(fileHashCode);
@@ -311,7 +339,7 @@ namespace starskytests
             // Remove item from import index             // Run a second time: Now it not in the database
             var importIndexItem = _import.GetItemByHash(fileHashCode);
             _import.RemoveItem(importIndexItem);
-            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  
+            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());  
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
             
             
@@ -363,8 +391,12 @@ namespace starskytests
             
             var fileHashCode = FileHash.GetHashCode(fullFilePath);
             
-            
-            _import.Import(fullFilePath, true,false);
+            var importSettings = new ImportSettingsModel
+            {
+                DeleteAfter = true,
+                AgeFileFilter = false
+            };
+            _import.Import(fullFilePath, importSettings);
 
             Console.WriteLine(File.Exists(fullFilePath));
             Assert.AreEqual(File.Exists(fullFilePath), false);
@@ -407,8 +439,12 @@ namespace starskytests
             }
             
             _appSettings.Structure = "/\\e\\x\\i\\s*/\\f\\o\\l\\d\\e\\r\\i\\m\\p\\o\\r\\t_HHssmm.ext";
-            
-            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,false,false).FirstOrDefault());  // So testing the folder feature
+            var importSettings = new ImportSettingsModel
+            {
+                DeleteAfter = false,
+                AgeFileFilter = false
+            };
+            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());  // So testing the folder feature
 
             Assert.AreEqual(File.Exists(createAnImage.FullFilePath), true);
 
@@ -426,7 +462,12 @@ namespace starskytests
         [TestMethod]
         public void ImportService_Import_NotFound_Test()
         {
-            CollectionAssert.AreEqual(new List<string>(),_import.Import(string.Empty, true, false));
+            var importSettings = new ImportSettingsModel
+            {
+                DeleteAfter = true,
+                AgeFileFilter = false
+            };
+            CollectionAssert.AreEqual(new List<string>(),_import.Import(string.Empty, importSettings));
         }
         
         [TestMethod]
@@ -441,7 +482,12 @@ namespace starskytests
             
             // The only difference is that the item is in a list
             var storeItemInList = new List<string>{createAnImage.FullFilePath};
-            _import.Import(storeItemInList,false,false);
+            var importSettings = new ImportSettingsModel
+            {
+                DeleteAfter = false,
+                AgeFileFilter = false
+            };
+            _import.Import(storeItemInList,importSettings);
             
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
