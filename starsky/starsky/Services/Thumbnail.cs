@@ -112,7 +112,7 @@ namespace starsky.Services
                               + "            <<<<<<<<<<<<");
             
             // Log the corrupt image
-//            CreateErrorLogItem(inputDatabaseFilePath);
+            CreateErrorLogItem(fullSourceImage);
             
             return false;
         }
@@ -183,9 +183,8 @@ namespace starsky.Services
             return logFile;
         }
 
-        public void CreateErrorLogItem(string inputDatabaseFilePath)
+        public void CreateErrorLogItem(string path)
         {
-            var path = _GetErrorLogItemFullPath(inputDatabaseFilePath);
             if (File.Exists(path)) return;
             
             // Create a file to write to.
