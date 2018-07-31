@@ -72,8 +72,9 @@ namespace starskytests.Models
         [TestMethod]
         public void ImportIndexItemParseSubfolders_TRslashABC_Test()
         {
-            _appSettings.Structure = "/\\t\\r/\\a\\b\\c/test";
-
+            _appSettings.Structure = "/\\t\\r/\\a\\b\\c/\\t\\e\\s\\t.ext";
+            // file.ext is ignored but required
+            
             var createAnImage = new CreateAnImage();
             var importItem = new ImportIndexItem(_appSettings);
 
@@ -85,7 +86,7 @@ namespace starskytests.Models
         [TestMethod]
         public void ImportIndexItemParseSubfolders_Tzzz_slashABC_Test()
         {
-            _appSettings.Structure = "/\\t\\z/\\a\\b\\c/test";
+            _appSettings.Structure = "/\\t\\z/\\a\\b\\c/test.ext";
             var createAnImage = new CreateAnImage();
             var importItem = new ImportIndexItem(_appSettings);
 

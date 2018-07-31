@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using starsky.Services;
 
@@ -100,7 +101,22 @@ namespace starsky.Models
                 if (string.IsNullOrEmpty(value) || value == "/") return;
                 var structure = ConfigRead.PrefixDbSlash(value);
                 _structure = ConfigRead.RemoveLatestBackslash(structure);
+                Console.WriteLine("_structure  > " + _structure);
+                StructureCheck(_structure);
             }
+        }
+
+        public void StructureCheck(string structure)
+        {
+            // Unescaped regex:
+            //      \/(\d|\w|\\|-|.|\/)+.ext
+            
+            Regex structureRegex = new Regex( "\\/(\\d|\\w|\\\\|-|.|\\/)+.ext", 
+                RegexOptions.IgnoreCase);
+
+            if (structureRegex.Match(structure).Success) return;
+
+            throw new ArgumentException("Structure is not confirm regex");
         }
 
         private string _thumbnailTempFolder;
