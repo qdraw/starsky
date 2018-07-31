@@ -41,8 +41,7 @@ namespace starsky
             
             var appSettings = _serviceProvider.GetRequiredService<AppSettings>();
 
-//            if(AppSettingsProvider.AddMemoryCache) 
-            services.AddMemoryCache();
+            if(appSettings.AddMemoryCache) services.AddMemoryCache();
             
             services.AddResponseCaching();
             

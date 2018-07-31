@@ -20,6 +20,8 @@ namespace starsky.Models
 
             StorageFolder = Path.Combine(BaseDirectoryProject, "storageFolder");
             if(!Directory.Exists(StorageFolder)) Directory.CreateDirectory(StorageFolder);
+            
+            // AddMemoryCache defaults in prop
         }
         
         public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
@@ -115,6 +117,9 @@ namespace starsky.Models
         
         // fallback in contructor
         public List<string> ReadOnlyFolders { get; set; }
+
+        // C# 6+ required for this
+        public bool AddMemoryCache { get; set; } = true;
 
         public string FullPathToDatabaseStyle(string subpath)
         {
