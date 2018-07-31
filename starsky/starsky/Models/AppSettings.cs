@@ -101,7 +101,7 @@ namespace starsky.Models
                 if (string.IsNullOrEmpty(value) || value == "/") return;
                 var structure = ConfigRead.PrefixDbSlash(value);
                 _structure = ConfigRead.RemoveLatestBackslash(structure);
-                Console.WriteLine("_structure  > " + _structure);
+                // Struture regex check
                 StructureCheck(_structure);
             }
         }

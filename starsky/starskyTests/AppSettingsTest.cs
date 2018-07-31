@@ -81,7 +81,22 @@ namespace starskytests
         public void AppSettingsProviderTest_MySQL_ExpectException()
         {
             _appSettings.DatabaseType = AppSettings.DatabaseTypeList.Mysql;
-            var datasource = _appSettings.SqliteFullPath(string.Empty,null);
+            _appSettings.SqliteFullPath(string.Empty,null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void AppSettingsProviderTest_StructureFails_withoutExtAndNoSlash()
+        {
+            _appSettings.Structure = "\\d";
+            Assert.AreEqual("d", _appSettings.Structure);
+        }
+
+        [TestMethod]
+        public void AppSettingsProviderTest_StructureFails_withExtAndNoSlash()
+        {
+            _appSettings.Structure = "\\d.ext";
+            Assert.AreEqual("/\\d.ext", _appSettings.Structure);
         }
 
     }
