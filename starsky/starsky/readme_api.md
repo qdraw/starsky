@@ -386,8 +386,12 @@ This is a feature that is used by:
    By default is this filter enabled
 -  `Structure` is a toggles a feature that overwrites the default Structure settings
     It only overwrites when this header has content (So not when it empty or null`)
-    > Be carefull `Structure` no checks. It requires at least `/{filenamebase}.ext`
-        
+    > If the structure is incorrect an Application Exception occurs. 
+      Structure requires to start with a `/` and the filename it must end with `.ext`
+      With the [Environment info](#environment-info) `structureExampleNoSetting` value 
+      you can check the structure right now.
+
+
 ```json
 {
     "This Json is missing Authorisation and HTTP-method": true,
@@ -474,6 +478,11 @@ The POST-request is a redirect to a get query with the same searchquery and the 
 
 To get information about the configuration.
 This endpoint does not require autorisation.
+
+### StructureExampleNoSetting
+If the structure is incorrect an Application Exception occurs. 
+With the  `structureExampleNoSetting` value you can check the structure today.
+It does not require that the orginal `example.jpg` exist
 
 ```json
 {
