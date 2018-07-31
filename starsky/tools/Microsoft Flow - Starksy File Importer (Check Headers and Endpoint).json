@@ -108,6 +108,10 @@
                   "inputs": {
                     "method": "POST",
                     "uri": "endpoint/starsky/import",
+                    "headers": {
+                      "filename": "@triggerOutputs()['headers']['x-ms-file-name-encoded']",
+                      "ColorClass": "7"
+                    },
                     "body": "@triggerBody()",
                     "authentication": {
                       "type": "Basic",
