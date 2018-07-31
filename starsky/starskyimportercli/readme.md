@@ -54,35 +54,6 @@ The default structure in `appsettings.json` is:
 Check for more date conversions:
 https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
 
-### Examples
-#### In the main folder
-```
- /yyyyMMdd_HHmmss.ext
- /20180731_215100.jpg
-```
-
-#### In the subfolder 2018
-```
- /yyyy/yyyyMMdd_HHmmss.ext
- /2018/20180731_215100.jpg
-```
-#### Using orginal name
-```
- /yyyy/{filenamebase}.ext
- /2018/example.jpg
-```
-
-#### Exception due missing starting slash
-```
- yyyy/yyyyMMdd_HHmmss.ext
- (Exception dus missing starting slash)
-```
-
-#### Exception due missing extension
-```
- yyyy/yyyyMMdd_HHmmss
- (Exception dus missing missing extension)
-```
 
 
 ### To get help:
@@ -98,4 +69,37 @@ starskyimportercli --help
 --all or -a == import all files including files older than 2 years (default: false / ignore old files) 
 --recursive or -r == Import Directory recursive (default: false / only the selected folder) 
 --verbose or -v == verbose, more detailed info, use -v -help to show settings:
+```
+
+
+## Structure Examples
+### Good examples
+#### In the main folder
+```
+ input: /yyyyMMdd_HHmmss.ext
+ output: /20180731_215100.jpg
+```
+
+#### In the subfolder 2018
+```
+ input: /yyyy/yyyyMMdd_HHmmss.ext
+ output: /2018/20180731_215100.jpg
+```
+#### Using orginal name
+```
+  input: /yyyy/{filenamebase}.ext
+  output: /2018/example.jpg
+```
+### Bad examples
+
+#### Exception due missing starting slash
+```
+  input: yyyy/yyyyMMdd_HHmmss.ext
+  output: (Exception dus missing starting slash)
+```
+
+#### Exception due missing extension
+```
+  input: yyyy/yyyyMMdd_HHmmss
+  output: (Exception dus missing missing extension)
 ```
