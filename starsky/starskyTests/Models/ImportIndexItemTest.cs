@@ -217,6 +217,35 @@ namespace starskytests.Models
             Assert.AreEqual(1, model.ColorClass);
             
         }
+        
+        [TestMethod]
+        public void ImportIndexItemParse_OverWriteStructureFeature_Test()
+        {
+            var createAnImage = new CreateAnImage();
+            _appSettings.Structure = null;
+            // Go to the default structure setting 
+            _appSettings.StorageFolder = createAnImage.BasePath;
+    
+            // Use a strange structure setting to overwrite
+            var input = new ImportIndexItem(_appSettings)
+            {
+                SourceFullFilePath = createAnImage.FullFilePath1,
+                Structure =  "/HHmmss_yyyyMMdd.ext"
+            };
+
+            input.ParseDateTimeFromFileName();
+            
+            DateTime.TryParseExact(
+                "20120101_123300", 
+                "yyyyMMdd_HHmmss",
+                CultureInfo.InvariantCulture, 
+                DateTimeStyles.None, 
+                out var anserDateTime);
+            
+            // Check if those overwite is accepted
+            Assert.AreEqual(anserDateTime,input.DateTime);
+                        
+        }
 
 
 

@@ -131,11 +131,7 @@ namespace starskytests
 //            //   _appSettings = appSettings
 //            _import = new ImportService(context,_isync,_exiftool,_appSettings);
 //        }
-        [TestMethod]
-        public void Test()
-        {
-           _import.Test();
-        }
+
         
         [TestMethod]
         public void ImportService_NoSubPath_slashyyyyMMdd_HHmmss_ImportTest()
@@ -502,7 +498,45 @@ namespace starskytests
             File.Delete(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
         }
+
+        [TestMethod]
+        public void ImportService_overWriteStructure_MatchItem_ObjectCreateIndexItem()
+        {
+            var importSettings = new ImportSettingsModel {Structure = "/HHmmss_yyyyMMdd.ext"};
+            var importIndexItem = _import.ObjectCreateIndexItem(string.Empty, string.Empty, new FileIndexItem(),
+                importSettings.Structure);
+            
+            Assert.AreEqual(importSettings.Structure,importIndexItem.Structure);
+        }
         
+        [TestMethod]
+        public void ImportService_overWriteStructure_NullIgnore_ObjectCreateIndexItem()
+        {
+            var importSettings = new ImportSettingsModel {Structure = string.Empty};
+            var importIndexItem = _import.ObjectCreateIndexItem(string.Empty, string.Empty, new FileIndexItem(),
+                importSettings.Structure);
+            
+            // Fallback to system settings
+            Assert.AreEqual("/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext",importIndexItem.Structure);
+        }
+
+        [TestMethod]
+        public void ImportService_ImportAndIgnore_ImportTest()
+        {
+            var createAnImage = new CreateAnImage();
+            _appSettings.Structure = null;
+            _appSettings.StorageFolder = createAnImage.BasePath;
+            var importSettings = new ImportSettingsModel();
+            
+            importSettings.DeleteAfter = true;
+            importSettings.AgeFileFilter = true;
+            importSettings.Structure = "/HHmmss_yyyyMMdd.ext";
+            var result = _import.Import(createAnImage.FullFilePath1,importSettings);
+            
+            Assert.AreEqual(string.Empty,result.FirstOrDefault());
+        }
+        
+
         
     }
 }

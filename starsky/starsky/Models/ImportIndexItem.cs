@@ -23,6 +23,7 @@ namespace starsky.Models
         public ImportIndexItem(AppSettings appSettings)
         {
             _appSettings = appSettings;
+            Structure = _appSettings.Structure;
         }
 
         
@@ -38,6 +39,12 @@ namespace starsky.Models
 
         [NotMapped]
         public string SourceFullFilePath { get; set; }
+
+        // Defaults to _appSettings.Structure
+        // Feature to overwrite system structure by request
+        [NotMapped] 
+        public string Structure { get; set; }
+
         
         // Depends on App Settings for storing values
         // Depends on BasePathConfig for setting default values
@@ -59,7 +66,7 @@ namespace starsky.Models
                 fileExtenstion = Path.GetExtension(SourceFullFilePath).Replace(".",string.Empty);
             }
             
-            var structuredFileName = _appSettings.Structure.Split("/").LastOrDefault();
+            var structuredFileName = Structure.Split("/").LastOrDefault();
             if (structuredFileName == null) return null;
 
             // Escape feature to Replace Astriks
@@ -101,7 +108,7 @@ namespace starsky.Models
             fileName = fileName.Replace("_import_", string.Empty);
             
             // Replace Astriks > escape all options
-            var structuredFileName = _appSettings.Structure.Split("/").LastOrDefault();
+            var structuredFileName = Structure.Split("/").LastOrDefault();
             structuredFileName = structuredFileName.Replace("*", "");
             structuredFileName = structuredFileName.Replace(".ext", string.Empty);
             structuredFileName = structuredFileName.Replace("{filenamebase}", string.Empty);
@@ -172,7 +179,7 @@ namespace starsky.Models
             // If command running twiche you will get /tr/tr (when tr is your single folder name)
             SubFolder = string.Empty;
             
-            var patternList = _appSettings.Structure.Split("/").ToList();
+            var patternList = Structure.Split("/").ToList();
             var parsedList = ParseListBasePathAndDateFormat(patternList, DateTime);
 
             if (parsedList.Count == 1)

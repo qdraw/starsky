@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using starsky.Helpers;
 
 namespace starsky.Models
@@ -22,12 +23,16 @@ namespace starsky.Models
             
             int.TryParse(request.Headers["ColorClass"], out var colorClass);
             ColorClass = colorClass;
+
+            Structure = request.Headers["Structure"].ToString();
             
             // Always when importing using a request
             // otherwise it will stick in the temp folder
             DeleteAfter = true;
         }
-        
+
+        public string Structure { get; set; }
+
         public bool DeleteAfter { get; set; }
         
         public bool AgeFileFilter { get; set; }

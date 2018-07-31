@@ -24,13 +24,6 @@ namespace starsky.Services
             _appSettings = appSettings;
         }
 
-        public void Test()
-        {
-            _context.FileIndex.FirstOrDefault();
-            _isync.SyncFiles("/");
-            _exiftool.Info("/");
-            var t =_appSettings.DatabaseConnection;
-        }
 
         // Imports a list of paths, used by the importer web interface
         public List<string> Import(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
@@ -77,7 +70,8 @@ namespace starsky.Services
         public ImportIndexItem ObjectCreateIndexItem(
             string inputFileFullPath, 
             string fileHashCode, 
-            FileIndexItem fileIndexItem)
+            FileIndexItem fileIndexItem,
+            string overwriteStructure)
         {
             var importIndexItem = new ImportIndexItem(_appSettings)
             {
@@ -85,6 +79,14 @@ namespace starsky.Services
                 DateTime = fileIndexItem.DateTime,
                 FileHash = fileHashCode
             };
+
+            // Feature to overwrite structures when importing using a header
+            // Overwrite the structure in the ImportIndexItem
+            if (!string.IsNullOrWhiteSpace(overwriteStructure))
+            {
+                importIndexItem.Structure = overwriteStructure;
+            }
+            
             fileIndexItem.FileName = importIndexItem.ParseFileName();
             return importIndexItem;
         }
@@ -130,9 +132,11 @@ namespace starsky.Services
 
             // Only accept files with correct meta data
             var fileIndexItem = ExifRead.ReadExifFromFile(inputFileFullPath);
-            
+
             // Parse the filename and create a new importIndexItem object
-            var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem);
+            var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem, importSettings.Structure);
+            
+
             
             // Parse DateTime from filename
             if (fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
@@ -149,7 +153,7 @@ namespace starsky.Services
             if (importSettings.AgeFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
             {
                 if (_appSettings.Verbose) 
-                    Console.WriteLine("use this structure to parse: " + _appSettings.Structure);
+                    Console.WriteLine("use this structure to parse: " + _appSettings.Structure + "or " + importIndexItem.Structure);
                 
                 Console.WriteLine("> "+ inputFileFullPath 
                                       +  " is older than 2 years, "+
@@ -165,7 +169,8 @@ namespace starsky.Services
             fileIndexItem.SetColorClass(importSettings.ColorClass.ToString());
             if (fileIndexItem.ColorClass != FileIndexItem.Color.None)
                 exifToolSync = true;
-            
+
+
             
             var destinationFullPath = DestionationFullPathDuplicate(inputFileFullPath,fileIndexItem,true);
             
