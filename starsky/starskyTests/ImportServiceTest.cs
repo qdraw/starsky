@@ -525,12 +525,15 @@ namespace starskytests
         {
             var createAnImage = new CreateAnImage();
             _appSettings.Structure = null;
+            _appSettings.Verbose = true;
             _appSettings.StorageFolder = createAnImage.BasePath;
-            var importSettings = new ImportSettingsModel();
-            
-            importSettings.DeleteAfter = true;
-            importSettings.AgeFileFilter = true;
-            importSettings.Structure = "/HHmmss_yyyyMMdd.ext";
+            var importSettings = new ImportSettingsModel
+            {
+                DeleteAfter = true,
+                AgeFileFilter = true,
+                Structure = "/HHmmss_yyyyMMdd.ext"
+            };
+
             var result = _import.Import(createAnImage.FullFilePath1,importSettings);
             
             Assert.AreEqual(string.Empty,result.FirstOrDefault());

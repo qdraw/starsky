@@ -247,6 +247,15 @@ namespace starskytests.Models
                         
         }
 
+        [TestMethod]
+        public void ImportFileSettingsModel_DefaultsToZero_Test()
+        {
+            var importSettings = new ImportSettingsModel {ColorClass = 999};
+            Assert.AreEqual(0,importSettings.ColorClass);
+        }
+
+        
+
 
 
     }
