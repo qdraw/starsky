@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
 using starsky.Helpers;
@@ -27,16 +28,15 @@ namespace starsky.Controllers
             return View("Index");
         }
 
-
         
         [HttpPost]
         [ActionName("Index")]
         [DisableFormValueModelBinding]
-        public async Task<IActionResult> IndexPost(ImportSettingsModel importSettings)
+        public async Task<IActionResult> IndexPost()
         {
             var tempImportPaths = await Request.StreamFile(_appSettings);
             
-            importSettings.DeleteAfter = true;
+            var importSettings = new ImportSettingsModel(Request);
 
             var importedFiles = _import.Import(tempImportPaths, importSettings);
 

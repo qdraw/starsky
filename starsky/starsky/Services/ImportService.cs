@@ -145,10 +145,6 @@ namespace starsky.Services
                 exifToolSync = true;
             }
             
-            // Feature to overwrite default ColorClass Setting
-            if (fileIndexItem.ColorClass != FileIndexItem.Color.None)
-                exifToolSync = true;
-            
             // Feature to ignore old files
             if (importSettings.AgeFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
             {
@@ -163,7 +159,13 @@ namespace starsky.Services
             
             fileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders();
             fileIndexItem.FileHash = fileHashCode;
+            
+            // Feature to overwrite default ColorClass Setting
+            // First check and I is defferent than default enable sync
             fileIndexItem.SetColorClass(importSettings.ColorClass.ToString());
+            if (fileIndexItem.ColorClass != FileIndexItem.Color.None)
+                exifToolSync = true;
+            
             
             var destinationFullPath = DestionationFullPathDuplicate(inputFileFullPath,fileIndexItem,true);
             

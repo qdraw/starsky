@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -206,7 +207,18 @@ namespace starskytests.Models
             
             Assert.AreEqual(anserDateTime,input.DateTime);
         }
-        
-        
+
+        [TestMethod]
+        public void ImportIndexItem_CtorRequest_ColorClass()
+        {
+            var context = new DefaultHttpContext();
+            context.Request.Headers["ColorClass"] = "1";
+            var model = new ImportSettingsModel(context.Request);
+            Assert.AreEqual(1, model.ColorClass);
+            
+        }
+
+
+
     }
 }
