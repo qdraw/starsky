@@ -5,10 +5,10 @@ using starsky.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Data;
-using starsky.Helpers;
 using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
@@ -41,7 +41,8 @@ namespace starsky
             
             var appSettings = _serviceProvider.GetRequiredService<AppSettings>();
 
-            if(appSettings.AddMemoryCache) services.AddMemoryCache();
+            services.AddMemoryCache();
+            // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
             
             services.AddResponseCaching();
             

@@ -17,12 +17,14 @@ namespace starsky.Services
     {
         private readonly ApplicationDbContext _context;
 
-        private IMemoryCache _cache;
+        private readonly IMemoryCache _cache;
+        private readonly AppSettings _appSettings;
 
-        public Query(ApplicationDbContext context, IMemoryCache memoryCache = null )
+        public Query(ApplicationDbContext context, IMemoryCache memoryCache = null, AppSettings appSettings = null )
         {
             _context = context;
             _cache = memoryCache;
+            _appSettings = appSettings;
         }
 
         // Get a list of all files inside an folder
@@ -119,7 +121,7 @@ namespace starsky.Services
         public void AddCacheItem(FileIndexItem updateStatusContent)
         {
             // Add protection for disabeling caching
-            if (_cache == null) return;
+            if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
                 updateStatusContent.ParentDirectory);
@@ -139,7 +141,7 @@ namespace starsky.Services
         // Private api within Query to update cached items
         public void CacheUpdateItem(FileIndexItem updateStatusContent)
         {
-            if (_cache == null) return;
+            if( _cache == null || _appSettings?.AddMemoryCache == false) return;
             
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
                 updateStatusContent.ParentDirectory);

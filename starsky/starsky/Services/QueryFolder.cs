@@ -44,7 +44,7 @@ namespace starsky.Services
         private List<FileIndexItem> CacheQueryDisplayFileFolders(string subPath)
         {
             // The CLI programs uses no cache
-            if (_cache == null) return QueryDisplayFileFolders(subPath);
+            if( _cache == null || _appSettings?.AddMemoryCache == false) return QueryDisplayFileFolders(subPath);
             
             // Return values from IMemoryCache
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
