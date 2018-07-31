@@ -384,14 +384,18 @@ This is a feature that is used by:
    This header defaults to `0`
 -  `AgeFileFilter` is a filter that ignores files that are older than 2 years.
    By default is this filter enabled
-   
+-  `Structure` is a toggles a feature that overwrites the default Structure settings
+    It only overwrites when this header has content (So not when it empty or null`)
+    > Be carefull `Structure` no checks. It requires at least `/{filenamebase}.ext`
+        
 ```json
 {
     "This Json is missing Authorisation and HTTP-method": true,
     "headers":
     {
        "ColorClass":"1",
-       "AgeFileFilter": "false"
+       "AgeFileFilter": "false",
+       "Structure": "/yyyy/MM/yyyy_MM_dd*/HHmmss_yyyyMMdd_\d.ext"
     }
 }
 ```
