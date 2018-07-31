@@ -52,7 +52,7 @@ namespace starsky.Services
             if (!Directory.Exists(inputFullPath) && File.Exists(inputFullPath))
             {
                 // file
-                var succesfullFullPaths = ImportFile(inputFullPath, importSettings.DeleteAfter, importSettings.AgeFileFilter);
+                var succesfullFullPaths = ImportFile(inputFullPath, importSettings);
                 return new List<string> {succesfullFullPaths};
             }
 
@@ -119,7 +119,7 @@ namespace starsky.Services
             return File.Exists(destinationFullPath) ? null : destinationFullPath;
         }
 
-        private string ImportFile(string inputFileFullPath, bool deleteAfter = false, bool ageFileFilter = true)
+        private string ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)
         {
             var exifToolSync = false;
             
@@ -145,8 +145,12 @@ namespace starsky.Services
                 exifToolSync = true;
             }
             
+            // Feature to overwrite default ColorClass Setting
+            if (fileIndexItem.ColorClass != FileIndexItem.Color.None)
+                exifToolSync = true;
+            
             // Feature to ignore old files
-            if (ageFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
+            if (importSettings.AgeFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
             {
                 if (_appSettings.Verbose) 
                     Console.WriteLine("use this structure to parse: " + _appSettings.Structure);
@@ -159,7 +163,8 @@ namespace starsky.Services
             
             fileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders();
             fileIndexItem.FileHash = fileHashCode;
-
+            fileIndexItem.SetColorClass(importSettings.ColorClass.ToString());
+            
             var destinationFullPath = DestionationFullPathDuplicate(inputFileFullPath,fileIndexItem,true);
             
             if (destinationFullPath == null) Console.WriteLine("> "+ inputFileFullPath 
@@ -172,18 +177,21 @@ namespace starsky.Services
             // Update the contents to the file the imported item
             if (exifToolSync)
             {
-                _exiftool.Update(new ExifToolModel
+                var exiftoolmodel = new ExifToolModel
                 {
                     AllDatesDateTime = fileIndexItem.DateTime,
-                    CaptionAbstract = fileIndexItem.Description
-                }, destinationFullPath);
+                    CaptionAbstract = fileIndexItem.Description,
+                    ColorClass = fileIndexItem.ColorClass
+                };
+                    
+                _exiftool.Update(exiftoolmodel, destinationFullPath);
             }
             
             _isync.SyncFiles(fileIndexItem.FilePath);
             
             AddItem(importIndexItem);
 
-            if (deleteAfter)
+            if (importSettings.DeleteAfter)
             {
                 File.Delete(inputFileFullPath);
             }
