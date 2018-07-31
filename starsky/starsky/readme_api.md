@@ -16,6 +16,7 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 - [Download Photo](#download-photo)
 - [Direct import](#direct-import)
 - [Form import](#form-import)
+- [Import Exif Overwrites (shared feature)](#import-exif-overwrites-shared-feature)
 - [Search](#search)
 - [Environment info](#environment-info)
 
@@ -303,7 +304,9 @@ Endpoint: `/starsky/Api/DownloadPhoto?f=/image.jpg`
 For importing using the structure configuration
 The filename-header can be added in `base64` or as `string`.
 `Content-type` is required, please use `image/jpeg`
-Endpoint: `/starsky/import` 
+- Endpoint: `/starsky/import` 
+- Import overwrites are disabled by default
+- [Check #import-exif-overwrites for info about overwrite (all) imported files](#import-exif-overwrites)
 
 ```json
 {
@@ -337,7 +340,10 @@ Endpoint: `/starsky/import`
 
 ## Form import
 When using a form, the filename is extracted from the multipart. For the filename there is only string encoding support
-Endpoint: `/starsky/import` 
+- Endpoint: `/starsky/import` 
+- Import overwrites are disabled by default
+- [Check #import-exif-overwrites for info about overwrite (all) imported files](#import-exif-overwrites)
+
 ```json
 {
     "uri":"/starsky/import",
@@ -365,6 +371,30 @@ Endpoint: `/starsky/import`
 ]
 ```
 
+## Import Exif Overwrites (shared feature)
+This is a feature that is used by: 
+- [Direct import](#direct-import)
+- [Form import](#form-import)
+
+### Headers
+- `ColorClass` accepts an integer between `0` and `8`.
+   The values are indicated in [Exif Info](#exif-info)
+   This header defaults to `0`
+-  `AgeFileFilter` is a filter that ignores files that are older than 2 years.
+   By default is this filter enabled
+   
+```json
+{
+    "This Json is missing Authorisation and HTTP-method": true,
+    "headers":
+    {
+       "ColorClass":"1",
+       "AgeFileFilter": "false"
+    }
+}
+```
+### Expected _Import Exif Overwrites_ result: 
+- Do overwrites using exiftool and update it in the database
 
 # Search
 To search in the database.
@@ -460,4 +490,5 @@ This endpoint does not require autorisation.
   ]
 }
 ```
-- The setting `DatabaseConnection` will be ignored . The connection string is not publicly visible due security reasons.
+- The setting `DatabaseConnection` is only visable in `-c|--configuration {Debug}`. The connection string is in production not publicly visible due security reasons.
+- Never use `-c|--configuration {Debug}` in production. [Check the Microsoft documentation for more information](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-run?tabs=netcore20) 
