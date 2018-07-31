@@ -395,7 +395,7 @@ This is a feature that is used by:
     {
        "ColorClass":"1",
        "AgeFileFilter": "false",
-       "Structure": "/yyyy/MM/yyyy_MM_dd*/HHmmss_yyyyMMdd_\d.ext"
+       "Structure": "/yyyy/MM/yyyy_MM_dd*/HHmmss_yyyyMMdd_d.ext"
     }
 }
 ```
@@ -485,15 +485,17 @@ This endpoint does not require autorisation.
 
 ```json
 {
-  "StorageFolder": "/data/photolib/",
-  "DatabaseType": "sqlite",
-  "ThumbnailTempFolder": "/data/thumb",
-  "ExifToolPath": "/usr/local/bin/exiftool",
-  "AddMemoryCache": false,
-  "Structure": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext",
-  "readOnlyFolders": [
-    "/2013"
-  ]
+  "baseDirectoryProject": "/starsky/starsky/starsky/bin/Debug/netcoreapp2.0/",
+  "storageFolder": "/data/photolib/",
+  "verbose": true,
+  "databaseType": 2,
+  "databaseConnection": "Data Source=/starsky/starsky/starsky/bin/Debug/netcoreapp2.0//data.db",
+  "structure": "/yyyy/\file.ext",
+  "structureExampleNoSetting": "/2018/file.jpg",
+  "thumbnailTempFolder": "/starsky/thumbnailTempFolder/",
+  "exifToolPath": "/usr/local/bin/exiftool",
+  "readOnlyFolders": ["/2013"],
+  "addMemoryCache": true
 }
 ```
 - The setting `DatabaseConnection` is only visable in `-c|--configuration {Debug}`. The connection string is in production not publicly visible due security reasons.

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Middleware;
 using starsky.Models;
+
 namespace starskytests
 {
     [TestClass]
@@ -99,5 +100,39 @@ namespace starskytests
             Assert.AreEqual("/\\d.ext", _appSettings.Structure);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void AppSettingsProviderTest_StructureCheck_MissingFirstSlash()
+        {
+            AppSettings.StructureCheck("d/test.ext");
+            // >= ArgumentException
+        }
+
+        [TestMethod]
+        public void AppSettingsProviderTest_FolderWithFirstSlash()
+        {
+            AppSettings.StructureCheck("/d/dion.ext");
+        }
+        
+        [TestMethod]
+        public void AppSettingsProviderTest_NoFolderWithFirstSlash()
+        {
+            AppSettings.StructureCheck("/dion.ext");
+        }  
+        
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void AppSettingsProviderTest_NoFolderMissingFirstSlash()
+        {
+            AppSettings.StructureCheck("dion.ext");
+            // >= ArgumentException
+        }
+
+        [TestMethod]
+        public void AppSettingsStructureExampleNoSetting()
+        {
+            var content = _appSettings.StructureExampleNoSetting;
+            Assert.AreEqual(content.Contains(DateTime.Now.Year.ToString()), true );
+        }
     }
 }

@@ -106,13 +106,27 @@ namespace starsky.Models
             }
         }
 
+        public string StructureExampleNoSetting
+        {
+            get
+            {
+                var import = new ImportIndexItem(this);
+                import.DateTime = DateTime.Now;
+                import.SourceFullFilePath = "example.jpg";
+                return import.ParseSubfolders(false) + import.ParseFileName(false);
+            }
+        }
+
         public static void StructureCheck(string structure)
         {
             // Unescaped regex:
-            //      \/(\d|\w|\\|-|.|\/)+.ext
+            //      ^(\/.+)?\/([\/_ A-Z0-9*{}\.\\-]+(?=\.ext))\.ext$
             
-            Regex structureRegex = new Regex( "\\/(\\d|\\w|\\\\|-|.|\\/)+.ext", 
+            Regex structureRegex = new Regex( 
+                "^(\\/.+)?\\/([\\/_ A-Z0-9*{}\\.\\\\-]+(?=\\.ext))\\.ext$", 
                 RegexOptions.IgnoreCase);
+
+            Console.WriteLine(structure);
 
             if (structureRegex.Match(structure).Success) return;
 
