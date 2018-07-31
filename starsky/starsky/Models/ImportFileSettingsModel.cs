@@ -13,6 +13,7 @@ namespace starsky.Models
             AgeFileFilter = true;
             RecursiveDirectory = false;
             // ColorClass defaults in prop
+            // Structure defaults in appsettings
         }
         
         // Construct model using a request
@@ -25,13 +26,27 @@ namespace starsky.Models
             ColorClass = colorClass;
 
             Structure = request.Headers["Structure"].ToString();
-            
+
             // Always when importing using a request
             // otherwise it will stick in the temp folder
             DeleteAfter = true;
         }
 
-        public string Structure { get; set; }
+        
+        // This is optinal, when not in use ignore this setting
+        private string _structure;
+        public string Structure
+        {
+            get { return _structure; }
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    AppSettings.StructureCheck(value);
+                }
+                _structure = Structure;
+            }
+        }
 
         public bool DeleteAfter { get; set; }
         

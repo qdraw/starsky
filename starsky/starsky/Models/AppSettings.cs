@@ -106,7 +106,7 @@ namespace starsky.Models
             }
         }
 
-        public void StructureCheck(string structure)
+        public static void StructureCheck(string structure)
         {
             // Unescaped regex:
             //      \/(\d|\w|\\|-|.|\/)+.ext
