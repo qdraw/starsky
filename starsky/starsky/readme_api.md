@@ -479,11 +479,6 @@ The POST-request is a redirect to a get query with the same searchquery and the 
 To get information about the configuration.
 This endpoint does not require autorisation.
 
-### StructureExampleNoSetting
-If the structure is incorrect an Application Exception occurs. 
-With the  `structureExampleNoSetting` value you can check the structure today.
-It does not require that the orginal `example.jpg` exist
-
 ```json
 {
     "uri":"/Starky/Api/Env",
@@ -509,3 +504,9 @@ It does not require that the orginal `example.jpg` exist
 ```
 - The setting `DatabaseConnection` is only visable in `-c|--configuration {Debug}`. The connection string is in production not publicly visible due security reasons.
 - Never use `-c|--configuration {Debug}` in production. [Check the Microsoft documentation for more information](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-run?tabs=netcore20) 
+
+### StructureExampleNoSetting
+If the structure is incorrect an Application Exception occurs. Structure requires to start with a `/` and the filename it must end with `.ext`
+With the  `structureExampleNoSetting` value you can check the structure today.
+In the view `example.jpg` is used to replace `{filenamebase}`. The file `example.jpg` and would be replaced with the orginal filename.
+- [Read more about Structure configuation (starskyimportercli docs) ](../../starsky/starskyimportercli/readme.md) 
