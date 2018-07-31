@@ -47,7 +47,6 @@ The default structure in `appsettings.json` is:
 - `\\`     -      (double escape sign or double backslash); to escape dd use this: \\\d\\\d
 - `/`     -       (slash); is split in folder (Windows / Linux / Mac)
 - `.ext`   -       (dot ext); extension for example: .jpg
-- `(nothing)`  -   extension is forced
 - `{filenamebase}` - use the orginal filename without extension
 - `*`      -     (asterisk); match anything
 - `*starksy*    -   Match the folder match that contains the word 'starksy' 
