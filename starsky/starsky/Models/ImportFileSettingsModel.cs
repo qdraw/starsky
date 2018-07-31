@@ -44,7 +44,7 @@ namespace starsky.Models
                 {
                     AppSettings.StructureCheck(value);
                 }
-                _structure = Structure;
+                _structure = value;
             }
         }
 

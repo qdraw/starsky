@@ -14,7 +14,7 @@ namespace starskytests.Models
             var context = new DefaultHttpContext();
 
             var importSettings = new ImportSettingsModel(context.Request);
-            Assert.AreEqual(null,importSettings.Structure);
+            Assert.AreEqual(string.Empty,importSettings.Structure);
         }
         
         [TestMethod]
