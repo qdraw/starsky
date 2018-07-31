@@ -20,7 +20,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningLevel>0</WarningLevel>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(hideMigrations)' == 'true' ">
     <Compile Remove="Migrations\20180308104506_initDatabaseKey.cs" />
     <Compile Remove="Migrations\20180308104506_initDatabaseKey.Designer.cs" />
     <Compile Remove="Migrations\20180308104642_initDatabaseKey.cs" />
