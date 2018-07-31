@@ -97,6 +97,11 @@ starskyimportercli --help
   input: yyyy/yyyyMMdd_HHmmss.ext
   output: (Exception dus missing starting slash)
 ```
+#### Only an asterix
+```
+  input: /*/yyyyMMdd_HHmmss.ext
+```
+> Todo: find out what the result is
 
 #### Exception due missing extension
 ```
