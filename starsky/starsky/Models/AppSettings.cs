@@ -172,13 +172,6 @@ namespace starsky.Models
             // Check if path is not absolute already
             if (databaseFileName.Contains("/") || databaseFileName.Contains("\\")) return connectionString;
 
-            // Always Overwrite to default when not using the fullDbPath option
-            if (baseDirectoryProject == null)
-            {
-                baseDirectoryProject = Path.Combine(
-                    Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "data.db");
-            }
-
             // Return if running in Microsoft.EntityFrameworkCore.Sqlite (location is now root folder)
             if(baseDirectoryProject.Contains("entityframeworkcore")) return connectionString;
 
