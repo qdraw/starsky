@@ -12,7 +12,14 @@ namespace starsky.Models
         public AppSettings()
         {
             ReadOnlyFolders = new List<string>();
-            DatabaseConnection = "Data Source=starsky.db";
+            DatabaseType = DatabaseTypeList.Sqlite;
+            DatabaseConnection = SqliteFullPath("Data Source=data.db",BaseDirectoryProject);
+            
+            ThumbnailTempFolder = Path.Combine(BaseDirectoryProject, "thumbnailTempFolder");
+            if(!Directory.Exists(ThumbnailTempFolder)) Directory.CreateDirectory(ThumbnailTempFolder);
+
+            StorageFolder = Path.Combine(BaseDirectoryProject, "storageFolder");
+            if(!Directory.Exists(StorageFolder)) Directory.CreateDirectory(StorageFolder);
         }
         
         public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
@@ -45,7 +52,9 @@ namespace starsky.Models
         
         // DatabaseType > above this one
         private  string _databaseConnection;
+    #if (!DEBUG) 
         [JsonIgnore]
+    #endif
         public string DatabaseConnection
         {
             get { return _databaseConnection; }

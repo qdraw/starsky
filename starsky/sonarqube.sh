@@ -11,5 +11,5 @@
 
 #dotnet tool install --global dotnet-sonarscanner
 dotnet sonarscanner begin /k:"starsky" /d:sonar.host.url="http://localhost:9000" /d:sonar.login="e23083ae4031b7e01c2045ea5815e1e7a8292a03" /d:sonar.cs.opencover.reportsPaths="/data/git/starsky/starsky/starskyTests/coverage.opencover.xml"
-dotnet build
+dotnet build /p:hideMigrations=\"true\"
 dotnet sonarscanner end /d:sonar.login="e23083ae4031b7e01c2045ea5815e1e7a8292a03"

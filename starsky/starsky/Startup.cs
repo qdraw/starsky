@@ -26,7 +26,7 @@ namespace starsky
             // new style config
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.json",true)
                 .AddEnvironmentVariables();
             _configuration = builder.Build();
 

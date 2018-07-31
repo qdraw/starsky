@@ -51,10 +51,9 @@ namespace starskytests
         [TestMethod]
         public void AppSettingsProviderTest_SqliteFullPathTest()
         {
-            var datasource = _appSettings.SqliteFullPath("Data Source=data.db",null);
+            var datasource = _appSettings.SqliteFullPath("Data Source=data.db",string.Empty);
             Assert.AreEqual(datasource.Contains("data.db"),true);
             Assert.AreEqual(datasource.Contains("Data Source="),true);    
-            Assert.AreEqual(datasource, "Data Source=data.db");
         }
 
        
