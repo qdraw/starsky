@@ -238,6 +238,7 @@ namespace starskytests
         }
         
         [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
         public void ImportService_WithoutExt_ImportTest()
         {
             // We currently force you to use an extension
