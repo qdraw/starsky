@@ -12,6 +12,7 @@ namespace starsky.Models
         public AppSettings()
         {
             ReadOnlyFolders = new List<string>();
+            DatabaseConnection = "Data Source=starsky.db";
         }
         
         public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
@@ -50,7 +51,7 @@ namespace starsky.Models
             get { return _databaseConnection; }
             set
             {
-                _databaseConnection = SqliteFullPath(value);
+                _databaseConnection = SqliteFullPath(value,BaseDirectoryProject);
             }
         }
 
@@ -154,43 +155,34 @@ namespace starsky.Models
         
         
         
-         // Replaces a SQLite url with a full path in the connection string
-        public string SqliteFullPath(string connectionString, string fullDbPath = null)
+         // Replaces a SQLite url with a full directory path in the connection string
+        public string SqliteFullPath(string connectionString, string baseDirectoryProject)
         {
             if (string.IsNullOrWhiteSpace(connectionString)) return connectionString;
             if(DatabaseType != DatabaseTypeList.Sqlite) return connectionString; // mysql does not need this
-            if(Verbose) Console.WriteLine(connectionString);
-            if(!connectionString.Contains("Data Source=")) throw new ArgumentException("missing Data Source in connection string");
+            
+            if(Verbose) Console.WriteLine(connectionString);            
+            
+            if(!connectionString.Contains("Data Source=")) throw 
+                new ArgumentException("missing Data Source in connection string");
+            
             var databaseFileName = connectionString.Replace("Data Source=", "");
+            
             // Check if path is not absolute already
             if (databaseFileName.Contains("/") || databaseFileName.Contains("\\")) return connectionString;
 
-            // Overwrite to default when not using the fullDbPath option
-            if (fullDbPath == null)
+            // Always Overwrite to default when not using the fullDbPath option
+            if (baseDirectoryProject == null)
             {
-                fullDbPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "data.db");
+                baseDirectoryProject = Path.Combine(
+                    Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "data.db");
             }
 
             // Return if running in Microsoft.EntityFrameworkCore.Sqlite (location is now root folder)
-            if(fullDbPath.Contains("entityframeworkcore")) return connectionString;
-            
-            // Replace cli database ==> normal database
-            if (fullDbPath.Contains(Path.DirectorySeparatorChar + "starskysynccli" + Path.DirectorySeparatorChar ))
-            {
-                fullDbPath = fullDbPath.Replace(
-                    Path.DirectorySeparatorChar + "starskysynccli" + Path.DirectorySeparatorChar,
-                    Path.DirectorySeparatorChar + "starsky" + Path.DirectorySeparatorChar);
-            }
-            
-            // Replace starskyimportercli database ==> normal database
-            if (fullDbPath.Contains(Path.DirectorySeparatorChar + "starskyimportercli" + Path.DirectorySeparatorChar ))
-            {
-                fullDbPath = fullDbPath.Replace(
-                    Path.DirectorySeparatorChar + "starskyimportercli" + Path.DirectorySeparatorChar,
-                    Path.DirectorySeparatorChar + "starsky" + Path.DirectorySeparatorChar);
-            }
+            if(baseDirectoryProject.Contains("entityframeworkcore")) return connectionString;
 
-            var datasource = "Data Source=" + fullDbPath;
+            var datasource = "Data Source=" + baseDirectoryProject + 
+                             Path.DirectorySeparatorChar+  databaseFileName;
             if(Verbose) Console.WriteLine(datasource);
             return datasource;
         }
