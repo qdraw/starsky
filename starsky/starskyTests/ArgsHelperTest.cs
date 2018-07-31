@@ -184,6 +184,13 @@ namespace starskytests
             {
                 Assert.AreEqual(Environment.GetEnvironmentVariable(envNameList[i]),i.ToString());
             }
+            
+            // Reset Environment after use
+            foreach (var t in envNameList)
+            {
+                Environment.SetEnvironmentVariable(t,string.Empty);
+            }
+            
         }
         
         [TestMethod]
@@ -206,6 +213,13 @@ namespace starskytests
             {
                 Assert.AreEqual(Environment.GetEnvironmentVariable(envNameList[i]),i.ToString());
             }
+            
+            // Reset Environment after use
+            foreach (var t in envNameList)
+            {
+                Environment.SetEnvironmentVariable(t,string.Empty);
+            }
+            
         }
 
 

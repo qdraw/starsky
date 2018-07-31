@@ -37,7 +37,6 @@ namespace starskytests.starskySyncCli
         {
             var newImage = new CreateAnImage();
             var args = new List<string> {
-                "-s", newImage.DbPath, 
                 "-v",
                 "-c","test",
                 "-d", "InMemoryDatabase", 
