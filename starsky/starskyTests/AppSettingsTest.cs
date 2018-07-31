@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -68,6 +69,21 @@ namespace starskytests
             Assert.AreEqual(datasource.Contains("Data Source="),true); 
         }
         
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void AppSettingsProviderTest_SQLite_ExpectException()
+        {
+            _appSettings.DatabaseType = AppSettings.DatabaseTypeList.Sqlite;
+            var datasource = _appSettings.SqliteFullPath(string.Empty,null);
+        }
+        
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void AppSettingsProviderTest_MySQL_ExpectException()
+        {
+            _appSettings.DatabaseType = AppSettings.DatabaseTypeList.Mysql;
+            var datasource = _appSettings.SqliteFullPath(string.Empty,null);
+        }
 
     }
 }

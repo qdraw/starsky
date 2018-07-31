@@ -158,14 +158,15 @@ namespace starsky.Models
          // Replaces a SQLite url with a full directory path in the connection string
         public string SqliteFullPath(string connectionString, string baseDirectoryProject)
         {
-            if (string.IsNullOrWhiteSpace(connectionString)) return connectionString;
+            if (DatabaseType == DatabaseTypeList.Mysql && string.IsNullOrWhiteSpace(connectionString)) 
+                throw  new ArgumentException("The 'DatabaseConnection' field is null or emphy");
+
             if(DatabaseType != DatabaseTypeList.Sqlite) return connectionString; // mysql does not need this
-            
             if(Verbose) Console.WriteLine(connectionString);            
-            
+
             if(!connectionString.Contains("Data Source=")) throw 
                 new ArgumentException("missing Data Source in connection string");
-            
+
             var databaseFileName = connectionString.Replace("Data Source=", "");
             
             // Check if path is not absolute already
