@@ -16,15 +16,13 @@ namespace starsky.Helpers
     public class ConfigCliAppsStartupHelper
     {
 
-        private ImportService _import;
-        private readonly Query _query;
+        private readonly ImportService _import;
         private readonly SyncService _isync;
-        private readonly IExiftool _exiftool;
-        private readonly AppSettings _appSettings;
-        private ServiceProvider _serviceProvider;
+        private readonly ServiceProvider _serviceProvider;
 
         public ConfigCliAppsStartupHelper()
         {
+            // Only for CLI apps
 
             // Inject Fake Exiftool; dependency injection
             var services = new ServiceCollection();
@@ -54,45 +52,45 @@ namespace starsky.Helpers
             // build the service
             _serviceProvider = services.BuildServiceProvider();
             // get the service
-            _appSettings = _serviceProvider.GetRequiredService<AppSettings>();
+            var appSettings = _serviceProvider.GetRequiredService<AppSettings>();
 
             // inject exiftool
-            _exiftool = _serviceProvider.GetRequiredService<IExiftool>();
+            var exiftool = _serviceProvider.GetRequiredService<IExiftool>();
 
             // Build Datbase Context
             var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
             
-            if(_appSettings.Verbose) Console.WriteLine(_appSettings.DatabaseConnection);
+            if(appSettings.Verbose) Console.WriteLine(appSettings.DatabaseConnection);
 
             // Select database type
-            switch (_appSettings.DatabaseType)
+            switch (appSettings.DatabaseType)
             {
                 case Models.AppSettings.DatabaseTypeList.Mysql:
-                    builderDb.UseMySql(_appSettings.DatabaseConnection);
+                    builderDb.UseMySql(appSettings.DatabaseConnection);
                     break;
                 case Models.AppSettings.DatabaseTypeList.InMemoryDatabase:
                     builderDb.UseInMemoryDatabase("Starsky");
                     break;
                 case Models.AppSettings.DatabaseTypeList.Sqlite:
-                    builderDb.UseSqlite(_appSettings.DatabaseConnection);
+                    builderDb.UseSqlite(appSettings.DatabaseConnection);
                     break;
                 default:
-                    builderDb.UseSqlite(_appSettings.DatabaseConnection);
+                    builderDb.UseSqlite(appSettings.DatabaseConnection);
                     break;
             }
             
             var options = builderDb.Options;
             var context = new ApplicationDbContext(options);
-            _query = new Query(context);
+            var query = new Query(context);
             
-            _isync = new SyncService(context, _query, _appSettings);
+            _isync = new SyncService(context, query, appSettings);
 
             // TOC:
             //   _context = context
             //   _isync = isync
             //   _exiftool = exiftool
             //   _appSettings = appSettings
-            _import = new ImportService(context, _isync, _exiftool, _appSettings);
+            _import = new ImportService(context, _isync, exiftool, appSettings);
         }
         
         public AppSettings AppSettings()
@@ -109,33 +107,5 @@ namespace starsky.Helpers
         {
             return _isync;
         }
-        
-        // Only for CLI apps
-        
-//        public ConfigCliAppsStartupHelper()
-//        {
-//            // Depencency Injection for configuration
-//            var services = new ServiceCollection();
-//            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-//
-//            var builder = new ConfigurationBuilder()
-//                .AddJsonFile(
-//                    AppSettings().BaseDirectoryProject  + 
-//                    Path.DirectorySeparatorChar + "appsettings.json", optional: false)
-//                .AddEnvironmentVariables();
-//            
-//            var configuration = builder.Build();
-//            services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
-//            _serviceProvider = services.BuildServiceProvider();
-//            // End of Depencency Injection for configuration
-//        }
-//        
-//        private readonly IServiceProvider _serviceProvider;
-//
-//        public AppSettings AppSettings()
-//        {
-//            return _serviceProvider.GetRequiredService<AppSettings>();
-//        }
-            
     }
 }
