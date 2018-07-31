@@ -24,12 +24,13 @@ The commandline arguments are shortcuts to set an in-app environment variable
    For `ThumbnailTempFolder` use `app__ThumbnailTempFolder` ([source](https://github.com/aspnet/Configuration/commit/cafd2e53eb71a6d0cecc60a9e38ea1df2dafb916))  
 3) Command line argumements in the Cli applications to set in-app environment variables
 
-### Required settings
-1) `ThumbnailTempFolder` - For storing thumbnails
-2) `StorageFolder` - For the main photo directory
-3) `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported
-4) `DatabaseConnection` - The connectionstring to the database
-5) `ExifToolPath` - A path to Exiftool.exe
+### Required settings to start
+1) `ExifToolPath` - A path to Exiftool.exe
+### Recommend settings
+2) `ThumbnailTempFolder` - For storing thumbnails (default: `./bin/Debug/netcoreapp2.0/thumbnailTempFolder`)
+3) `StorageFolder` - For the main photo directory (default: `./bin/Debug/netcoreapp2.0/storageFolder`)
+4) `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported (default: `sqlite`)
+5) `DatabaseConnection` - The connectionstring to the database (default: `./bin/Debug/netcoreapp2.0/data.db`)
 ### Optional settings
 1) `Structure` - The structure that will be used when you import files, has a default fallback.
 2) `ReadOnlyFolders` - Accepts a list of folders that never may be edited, defaults a emphy list
