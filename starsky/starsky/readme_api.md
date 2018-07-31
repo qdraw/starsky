@@ -144,24 +144,26 @@ Endpoint: `/starsky/Api/Info?f=/image.jpg` The querystring name `f` is used for 
 - Colorclass is a enum, and the values are:      
 ```cs
 case "0":
-    _colorClass = Color.None;
+    _colorClass = Color.None; // No color
 case "8":
-    _colorClass = Color.Trash;
+    _colorClass = Color.Trash; // Grey
 case "7":
-    _colorClass = Color.Extras;
+    _colorClass = Color.Extras; // Blue
 case "6":
-    _colorClass = Color.TypicalAlt;
+    _colorClass = Color.TypicalAlt; // Turquoise
 case "5":
-    _colorClass = Color.Typical;
+    _colorClass = Color.Typical; // Green
 case "4":
-    _colorClass = Color.SuperiorAlt;
+    _colorClass = Color.SuperiorAlt; // Yellow
 case "3":
-    _colorClass = Color.Superior;
+    _colorClass = Color.Superior; // Orange
 case "2":
-    _colorClass = Color.WinnerAlt;
+    _colorClass = Color.WinnerAlt; // Red
 case "1":
-    _colorClass = Color.Winner;
+    _colorClass = Color.Winner; // Purple
 ```
+
+
 
 ## Exif Update
 To update please request first [Exif Info](#exif-info).
