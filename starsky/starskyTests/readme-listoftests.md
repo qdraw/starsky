@@ -7,15 +7,14 @@
  ```
 bash ./readme-listoftests-update.sh 
 ``` 
-Last updated:  2018-07-26
+Last updated:  2018-07-31
 ```
-
-Test run for /data/git/starsky/starsky/starskyTests/bin/Debug/netcoreapp2.0/starskytests.dll(.NETCoreApp,Version=v2.0)
-Microsoft (R) Test Execution Command Line Tool Version 15.7.0
-Copyright (c) Microsoft Corporation.  All rights reserved.
-
-The following Tests are available:
+    AppSettingsProviderTest_SqliteFullPathTest
+    AppSettingsProviderTest_SqliteFullPathstarskycliTest
+    AppSettingsProviderTest_SQLite_ExpectException
+    AppSettingsProviderTest_MySQL_ExpectException
     ArgsHelper_NeedVerboseTest
+    ArgsHelper_NeedRecruisiveTest
     ArgsHelper_GetIndexModeTest
     ArgsHelper_NeedHelpTest
     ArgsHelper_GetPathFormArgsTest
@@ -40,6 +39,7 @@ The following Tests are available:
     ExifRead_ParseGpsTest
     ExifRead_ReadExifFromFileTest
     ExifToolModelColorClassTest
+    ExifToolCAllDatesDateTimeTest
     ExifToolCaptionAbstractTest
     ExifToolPrefsParseTest
     ExifToolPrefsNullTest
@@ -51,6 +51,7 @@ The following Tests are available:
     ExifToolFixTestIgnoreStringTest
     ExifToolFixTestSingleWord
     FileHashGenerateRandomBytesTest
+    FileHash_Md5TimeoutAsyncWrapper_Fail_Test
     FileIndexItemTest_SetTagsToNull
     FileIndexItemTest_SetColorClassTestDefault
     FileIndexItemTest_SetColorClassTestMin1
@@ -66,6 +67,9 @@ The following Tests are available:
     FileIndexItemTest_GetColorClassListTestEightSeven
     FileIndexItemTest_GetAllColorTest
     FileIndexItemTest_FileIndexItemTitleTest
+    FileIndexItemTest_FileNameNull
+    FileIndexItemTest_ParentDirectoryNull
+    FileIndexItemTest_FilePathNull
     StreamFileExeption
     StreamFilemultipart
     FileStreamingHelperTest_FileStreamingHelper_StreamFile_imagejpeg
@@ -79,6 +83,8 @@ The following Tests are available:
     FolderOrFileModelFolderOrFileTypeListTest
     Files_IsFolderOrFileTest
     Files_GetAllFilesDirectoryTest
+    Files_GetFilesInDirectoryTest1
+    Files_GetFilesRecrusiveTest
     Test
     ImportService_NoSubPath_slashyyyyMMdd_HHmmss_ImportTest
     ImportService_AsteriskTRFolderHHmmss_ImportTest
@@ -115,6 +121,7 @@ The following Tests are available:
     QueryTest_NextFilePathCachingConflicts_Deleted
     QueryTest_PrevFilePathCachingConflicts_Deleted
     QueryTest_CachingDirectoryConflicts_CheckIfContentIsInCacheUpdated
+    QueryFolder_Add_And_UpdateFolderCache_UpdateCacheItemTest
     QueryNoCache_SingleItem_Test
     SearchService_SearchNull
     SearchService_SearchCountStationTest
@@ -165,6 +172,9 @@ The following Tests are available:
     ThumbnailByDirectoryTest
     LoginViewModelTestLoadAll
     RegisterViewModelLoadAll
+    StarskyCliHelpVerbose
+    StarskyCliHelpTest
+    StarskyCliSubPathOneImage
     ImportIndexItemParseFileNameTest
     ImportIndexItemParseSubfoldersTest
     ImportIndexItemParseSubfolders_TRslashABC_Test
@@ -173,6 +183,7 @@ The following Tests are available:
     ImportIndexItemParse_filenamebase_subfolder_Test
     ImportIndexItemParse_FileNotExist_Test
     ImportIndexItemParse_ParseDateTimeFromFileName_Test
+    ImportIndexItemParse_ParseDateTimeFromFileNameWithExtraFileNameBase_Test
     ImportIndexItemParse_ParseDateTimeFromFileName_WithExtraDotsInName_Test
     CredentialSetupTest
     CredentialTypeSetup_Test
@@ -199,4 +210,24 @@ The following Tests are available:
     ApiController_ThumbIsMissing_ButOrginalExist_butNoIsSingleItemFlag_API_Test
     ApiController_FloatingDatabaseFileTest_API_Test
     ApiController_NonExistingFile_API_Test
-    ApiController_starskyTes```
+    ApiController_starskyTestEnv
+    ApiController_Update_AllDataIncluded_WithFakeExiftool
+    ApiController_Update_SourceImageMissingOnDisk_WithFakeExiftool
+    ApiController_Info_AllDataIncluded_WithFakeExiftool
+    ApiController_Info_SourceImageMissingOnDisk_WithFakeExiftool
+    ApiController_Delete_SourceImageMissingOnDisk_WithFakeExiftool
+    ApiController_Thumbnail_NonExistingFile_API_Test
+    ApiController_Thumbnail_CorruptImage_NoContentResult_Test
+    ApiController_Thumbnail_CorruptImage_retryThumbnail_Test
+    ApiController_DownloadPhoto_isThumbnailTrue_CreateThumb_ReturnFileStream_Test
+    ApiController_DownloadPhoto_isThumbnailFalse_ReturnFileStream_Test
+    ApiController_DownloadPhoto_isThumbnailTrue_ReturnAThumb_ReturnFileStream_Test
+    ApiController_DownloadPhoto_SourceImageIsMissing_Test
+    ApiController_DownloadPhoto_Thumb_base_folder_not_found_Test
+    HomeControllerIndexDetailViewTest
+    HomeControllerIndexIndexViewModelTest
+    SearchControllerTest_IndexPost
+    SearchControllerTest_ZeroItems_Index
+    SearchControllerTest_TrashZeroItems
+
+```
