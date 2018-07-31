@@ -241,7 +241,7 @@ namespace starskytests
         [ExpectedException(typeof(ArgumentException))]
         public void ImportService_WithoutExt_ImportTest()
         {
-            // We currently force you to use an extension
+            // We don't allow no extension
             var createAnImage = new CreateAnImage();
             
             _appSettings.StorageFolder = createAnImage.BasePath;
