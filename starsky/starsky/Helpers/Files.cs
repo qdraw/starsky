@@ -9,7 +9,7 @@ namespace starsky.Helpers
 {
     public static class Files
     {
-        
+
         // is the subpath a folder or file
         public static FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string fullFilePath = "")
         {
@@ -46,31 +46,83 @@ namespace starsky.Helpers
             if (fullFilePath == null) return Enumerable.Empty<string>().ToArray();
 
             string[] allFiles = Directory.GetFiles(fullFilePath);
-            
-            // Used for jpeg files
 
-            var jpgFiles = new List<string>();
+            var imageFilesList = new List<string>();
             foreach (var file in allFiles)
             {
-                if (file.ToLower().EndsWith("jpg"))
+                var extension = Path.GetExtension(file).ToLower().Replace(".",string.Empty);
+                // Path.GetExtension uses (.ext)
+                if (ExtensionList.Contains(extension))
                 {
-                    jpgFiles.Add(file); // change behavior
+                    imageFilesList.Add(file);
                 }
             }
-            return jpgFiles.ToArray();
-        }
-        
-        public enum ImageFormat
-        {
-            bmp,
-            jpg,
-            gif,
-            tiff,
-            png,
-            unknown,
-            notfound
+
+            return imageFilesList.ToArray();
         }
 
+        public enum ImageFormat
+        {
+            notfound = -1,
+            unknown = 0,
+
+            // Viewable types
+            jpg = 10,
+            tiff = 12,
+            bmp = 13,
+            gif = 14,
+            png = 15,
+
+            // Sitecare files
+            xmp = 30
+        }
+
+        private static readonly List<string> Extensionjpg = new List<string> {"jpg", "jpeg"};
+        private static readonly List<string> Extensiontiff = new List<string> {"tiff", "arw", "dng" };
+        private static readonly List<string> Extensionbmp = new List<string> {"bmp"};
+        private static readonly List<string> Extensiongif = new List<string> {"gif"};
+        private static readonly List<string> Extensionpng = new List<string> {"png"};
+
+        public static List<string> ExtensionList
+        {
+            get
+            {
+                var extensionList = new List<string>();
+                extensionList.AddRange(Extensionjpg);
+                extensionList.AddRange(Extensiontiff);
+                extensionList.AddRange(Extensionbmp);
+                extensionList.AddRange(Extensiongif);
+                extensionList.AddRange(Extensionpng);
+                return extensionList;
+            }
+        }
+
+
+
+//        public static bool IsExtensionAllowed(ImageFormat inputFormat, string fileExtesionWithoutDot)
+//        {
+//            switch (inputFormat)
+//            {
+//                case ImageFormat.jpg:
+//                    return new List<string>{"jpeg","jpg"}.Contains(fileExtesionWithoutDot);
+//                case ImageFormat.tiff:
+//                    return new List<string>{"arw","dng","tiff"}.Contains(fileExtesionWithoutDot);
+//                case ImageFormat.bmp:
+//                    return new List<string>{"bmp"}.Contains(fileExtesionWithoutDot);
+//                case ImageFormat.gif:
+//                    return new List<string>{"gif"}.Contains(fileExtesionWithoutDot);
+//                case ImageFormat.png:
+//                    return new List<string>{"png"}.Contains(fileExtesionWithoutDot);
+//                case ImageFormat.xmp:
+//                    return new List<string>{"xmp"}.Contains(fileExtesionWithoutDot);
+//                case ImageFormat.notfound:
+//                    break;
+//                case ImageFormat.unknown:
+//                    break;
+//            }
+//            return false;
+//        }
+       
      
         public static ImageFormat GetImageFormat(string filePath)
         {
@@ -103,6 +155,7 @@ namespace starsky.Helpers
             var tiff2  = new byte[] { 77, 77, 42 };         // TIFF
             var jpeg   = new byte[] { 255, 216, 255, 224 }; // jpeg
             var jpeg2  = new byte[] { 255, 216, 255, 225 }; // jpeg canon
+            var xmp    = Encoding.ASCII.GetBytes("<x:xmpmeta");    // xmp
 
             if (bmp.SequenceEqual(bytes.Take(bmp.Length)))
                 return ImageFormat.bmp;
@@ -124,6 +177,9 @@ namespace starsky.Helpers
 
             if (jpeg2.SequenceEqual(bytes.Take(jpeg2.Length)))
                 return ImageFormat.jpg;
+            
+            if (xmp.SequenceEqual(bytes.Take(xmp.Length)))
+                return ImageFormat.xmp;
 
             return ImageFormat.unknown;
         }

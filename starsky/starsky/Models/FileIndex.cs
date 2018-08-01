@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using starsky.Helpers;
 using starsky.Services;
 
 namespace starsky.Models
@@ -226,6 +227,9 @@ namespace starsky.Models
         {
             return Enum.GetValues(typeof(ColorUserInterface)).Cast<ColorUserInterface>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
         }
+        
+        public Files.ImageFormat ImageFormat { get; set; }
+
         
     }
 }
