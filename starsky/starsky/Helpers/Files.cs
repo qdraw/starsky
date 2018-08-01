@@ -97,33 +97,6 @@ namespace starsky.Helpers
             }
         }
 
-
-
-//        public static bool IsExtensionAllowed(ImageFormat inputFormat, string fileExtesionWithoutDot)
-//        {
-//            switch (inputFormat)
-//            {
-//                case ImageFormat.jpg:
-//                    return new List<string>{"jpeg","jpg"}.Contains(fileExtesionWithoutDot);
-//                case ImageFormat.tiff:
-//                    return new List<string>{"arw","dng","tiff"}.Contains(fileExtesionWithoutDot);
-//                case ImageFormat.bmp:
-//                    return new List<string>{"bmp"}.Contains(fileExtesionWithoutDot);
-//                case ImageFormat.gif:
-//                    return new List<string>{"gif"}.Contains(fileExtesionWithoutDot);
-//                case ImageFormat.png:
-//                    return new List<string>{"png"}.Contains(fileExtesionWithoutDot);
-//                case ImageFormat.xmp:
-//                    return new List<string>{"xmp"}.Contains(fileExtesionWithoutDot);
-//                case ImageFormat.notfound:
-//                    break;
-//                case ImageFormat.unknown:
-//                    break;
-//            }
-//            return false;
-//        }
-       
-     
         public static ImageFormat GetImageFormat(string filePath)
         {
             if (!File.Exists(filePath)) return ImageFormat.notfound;
