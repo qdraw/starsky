@@ -37,8 +37,7 @@ namespace starsky.Services
                     dbListWithOneFile.Add(dbItem);
                 }
 
-                var localListWithOneFileDbStyle = new List<string>();
-                localListWithOneFileDbStyle.Add(subPath);
+                var localListWithOneFileDbStyle = new List<string> {subPath};
 
                 CheckMd5Hash(localListWithOneFileDbStyle, dbListWithOneFile);
                 AddPhotoToDatabase(localListWithOneFileDbStyle, dbListWithOneFile);
