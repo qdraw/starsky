@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MetadataExtractor;
+using starsky.Helpers;
 using starsky.Models;
 
 namespace starsky.Services
@@ -11,13 +13,11 @@ namespace starsky.Services
     // Reading Exif using MetadataExtractor
     public static class ExifRead
     {
-        public static FileIndexItem ReadExifFromFile(string fileFullPath)
+        
+        public static FileIndexItem ReadExifFromFile(string fileFullPath, FileIndexItem existingFileIndexItem = null) // use null to create an object
         {
-            List<Directory> allExifItems;
+            List<MetadataExtractor.Directory> allExifItems;
             
-//            ExifToolXmpPrefix
-                
-                
             try
             {
                 allExifItems = ImageMetadataReader.ReadMetadata(fileFullPath).ToList();
@@ -29,12 +29,17 @@ namespace starsky.Services
                 return item;
             }
 
-            return ParseExifDirectory(allExifItems);
+            return ParseExifDirectory(allExifItems, existingFileIndexItem);
         }
 
-        public static FileIndexItem ParseExifDirectory(List<Directory> allExifItems)
+        public static FileIndexItem ParseExifDirectory(List<MetadataExtractor.Directory> allExifItems, FileIndexItem item)
         {
-            var item = new FileIndexItem();
+            // Used to overwrite feature
+            if (item == null)
+            {
+                item = new FileIndexItem();
+            }
+            
             // Set the default value
             item.SetColorClass();
 
@@ -82,14 +87,14 @@ namespace starsky.Services
             return item;
         }
 
-        private static void DisplayAllExif(IEnumerable<Directory> allExifItems)
+        private static void DisplayAllExif(IEnumerable<MetadataExtractor.Directory> allExifItems)
         {
             foreach (var exifItem in allExifItems) {
                 foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
             }
         }
 
-        public static string GetObjectName (Directory exifItem)
+        public static string GetObjectName (MetadataExtractor.Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Object Name");
             if (tCounts < 1) return null;
@@ -101,7 +106,7 @@ namespace starsky.Services
         }
 
         
-        public static string GetCaptionAbstract(Directory exifItem)
+        public static string GetCaptionAbstract(MetadataExtractor.Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Caption/Abstract");
             if (tCounts < 1) return null;
@@ -112,7 +117,7 @@ namespace starsky.Services
             return caption;
         }
         
-        public static string GetExifKeywords(Directory exifItem)
+        public static string GetExifKeywords(MetadataExtractor.Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Keywords");
             if (tCounts >= 1)
@@ -130,7 +135,7 @@ namespace starsky.Services
             return null;
         }
 
-        private static string _getColorClassString(Directory exifItem)
+        private static string _getColorClassString(MetadataExtractor.Directory exifItem)
         {
             var ratingCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"));
             if (ratingCounts >= 1)
@@ -154,7 +159,7 @@ namespace starsky.Services
             return null;
         }
 
-        public static DateTime GetExifDateTime(Directory exifItem)
+        public static DateTime GetExifDateTime(MetadataExtractor.Directory exifItem)
         {
             var itemDateTime = new DateTime();
             
@@ -179,7 +184,7 @@ namespace starsky.Services
             return itemDateTime;
         }
         
-        private static double GetGeoLocationLatitude(List<Directory> allExifItems)
+        private static double GetGeoLocationLatitude(List<MetadataExtractor.Directory> allExifItems)
         {
             var latitudeString = string.Empty;
             var latitudeRef = string.Empty;
@@ -214,7 +219,7 @@ namespace starsky.Services
             return 0;
         }
         
-         private static double GetGeoLocationLongitude(List<Directory> allExifItems)
+         private static double GetGeoLocationLongitude(List<MetadataExtractor.Directory> allExifItems)
         {
             var longitudeString = string.Empty;
             var longitudeRef = string.Empty;

@@ -124,11 +124,11 @@ namespace starsky.Services
                 var initCommand = command; // to check if nothing
 
                 // Create an XMP File -> as those files don't support those tags
-                if(!Files.ExtensionForceXmpUseList.Contains(Path.GetExtension(fullFilePath).Replace(".",string.Empty)))
+                // Check first if it is needed
+                
+                if(Files.IsXmpSidecarRequired(fullFilePath))
                 {
-                    var xmpFullPath = Path.Combine(Path.GetDirectoryName(fullFilePath), 
-                        _appSettings.ExifToolXmpPrefix + 
-                        Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
+                    var xmpFullPath = Files.GetXmpSidecarFileWhenRequired(fullFilePath, _appSettings.ExifToolXmpPrefix);
                     
                     if (Files.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
                     {
@@ -168,20 +168,16 @@ namespace starsky.Services
 
                 // Also update class info
                 return _parseJson(_baseCommmand("-Keywords -Prefs -Caption-Abstract -json", fullFilePath));
-                
             }
 
             public ExifToolModel Info(string fullFilePath)
             {
-                // Use an XMP File -> as those files don't support those tags
-                if(!Files.ExtensionForceXmpUseList.Contains(Path.GetExtension(fullFilePath).Replace(".",string.Empty)))
-                {
-                    // Overwrite to use xmp files
-                    fullFilePath = Path.Combine(Path.GetDirectoryName(fullFilePath), 
-                        _appSettings.ExifToolXmpPrefix 
-                        + Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
-                }
-
+                var xmpFullFilePath = Files.GetXmpSidecarFileWhenRequired(fullFilePath, _appSettings.ExifToolXmpPrefix);
+                
+                // only overwrite when a xmp file exist
+                if (Files.IsFolderOrFile(xmpFullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
+                    fullFilePath = xmpFullFilePath;
+                
                 // When change also update class 'Update'
                 return _parseJson(_baseCommmand("-Keywords -Caption-Abstract -Prefs -json", fullFilePath));
             }

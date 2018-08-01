@@ -149,7 +149,7 @@ namespace starsky.Models
         public string ExifToolPath { get; set; }
         
         // C# 6+ required for this
-        public string ExifToolXmpPrefix { get; set; } = "zz__";
+        public string ExifToolXmpPrefix { get; set; } = ""; //zz__
         
         // fallback in contructor
         public List<string> ReadOnlyFolders { get; set; }
