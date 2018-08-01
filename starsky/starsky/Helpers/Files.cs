@@ -112,7 +112,18 @@ namespace starsky.Helpers
                 return extensionList;
             }
         }
-        
+        public static List<string> ExtensionForceXmpUseList
+        {
+            get
+            {
+                var extensionList = new List<string>();
+                extensionList.AddRange(Extensionbmp);
+                extensionList.AddRange(Extensiongif);
+                extensionList.AddRange(Extensionpng);
+                extensionList.AddRange(Extensiontiff);
+                return extensionList;
+            }
+        }
 
 
 //        public static List<string> ExtensionThumbSupportedList

@@ -9,6 +9,7 @@ using starsky.Models;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using starsky.Helpers;
 using starsky.Interfaces;
 
 namespace starsky.Services
@@ -25,7 +26,7 @@ namespace starsky.Services
             _appSettings = appSettings;
         }
         
-        private string _baseCommmand(string options,string fullFilePath)
+        private string _baseCommmand(string options, string fullFilePath)
         {
             fullFilePath = $"\"" + fullFilePath + $"\"";
             options = " " + options + " " + fullFilePath;
@@ -122,7 +123,22 @@ namespace starsky.Services
                 var command = "-json -overwrite_original";
                 var initCommand = command; // to check if nothing
 
-                // Currently it does not allow emty strings
+                // Create an XMP File -> as those files don't support those tags
+                if(!Files.ExtensionForceXmpUseList.Contains(Path.GetExtension(fullFilePath).Replace(".",string.Empty)))
+                {
+                    var xmpFullPath = Path.Combine(Path.GetDirectoryName(fullFilePath), 
+                        _appSettings.ExifToolXmpPrefix + 
+                        Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
+                    
+                    if (Files.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+                    {
+                        _baseCommmand(" -overwrite_original -TagsFromFile \""  + fullFilePath + "\"", xmpFullPath);
+                    }
+                    // to continue as xmp file
+                    fullFilePath = xmpFullPath;
+                }
+                
+                // Currently it does not allow emthy strings
                 if (!string.IsNullOrWhiteSpace(updateModel.Tags))
                 {
                     command += " -sep \", \" -Keywords=\"" + updateModel.Tags + "\" ";
@@ -144,7 +160,7 @@ namespace starsky.Services
                     var exifToolString = updateModel.AllDatesDateTime.ToString("yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
                     command += " -AllDates=\""+ exifToolString + "\" ";
                 }
-
+                
                 if (command != initCommand)
                 {
                     _baseCommmand(command, fullFilePath);
@@ -152,11 +168,21 @@ namespace starsky.Services
 
                 // Also update class info
                 return _parseJson(_baseCommmand("-Keywords -Prefs -Caption-Abstract -json", fullFilePath));
+                
             }
 
             public ExifToolModel Info(string fullFilePath)
             {
-                // Also update class 'Update'
+                // Use an XMP File -> as those files don't support those tags
+                if(!Files.ExtensionForceXmpUseList.Contains(Path.GetExtension(fullFilePath).Replace(".",string.Empty)))
+                {
+                    // Overwrite to use xmp files
+                    fullFilePath = Path.Combine(Path.GetDirectoryName(fullFilePath), 
+                        _appSettings.ExifToolXmpPrefix 
+                        + Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
+                }
+
+                // When change also update class 'Update'
                 return _parseJson(_baseCommmand("-Keywords -Caption-Abstract -Prefs -json", fullFilePath));
             }
 

@@ -14,6 +14,10 @@ namespace starsky.Services
         public static FileIndexItem ReadExifFromFile(string fileFullPath)
         {
             List<Directory> allExifItems;
+            
+//            ExifToolXmpPrefix
+                
+                
             try
             {
                 allExifItems = ImageMetadataReader.ReadMetadata(fileFullPath).ToList();

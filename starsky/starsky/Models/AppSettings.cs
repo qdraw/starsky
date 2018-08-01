@@ -104,6 +104,7 @@ namespace starsky.Models
                 StructureCheck(_structure);
             }
         }
+        
 
         public string StructureExampleNoSetting
         {
@@ -142,8 +143,13 @@ namespace starsky.Models
                 _thumbnailTempFolder = ConfigRead.AddBackslash(value);
             }
         }
+        
+
 
         public string ExifToolPath { get; set; }
+        
+        // C# 6+ required for this
+        public string ExifToolXmpPrefix { get; set; } = "zz__";
         
         // fallback in contructor
         public List<string> ReadOnlyFolders { get; set; }
