@@ -116,6 +116,7 @@ namespace starsky.Models
             }
         }
 
+        // To Check if the structure is any good
         public static void StructureCheck(string structure)
         {
             // Unescaped regex:
@@ -149,6 +150,11 @@ namespace starsky.Models
 
         // C# 6+ required for this
         public bool AddMemoryCache { get; set; } = true;
+
+        
+        // -------------------------------------------------
+        // ------------------- Modifiers -------------------
+        // -------------------------------------------------
 
         public string FullPathToDatabaseStyle(string subpath)
         {
