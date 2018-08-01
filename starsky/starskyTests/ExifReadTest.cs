@@ -129,7 +129,25 @@ namespace starskytests
              Assert.AreEqual(item.Tags, "test, sion");
              Assert.AreEqual(item.Latitude,  52.308205555500003, 0.000001);
              Assert.AreEqual(item.Longitude, 6.1935555554999997, 0.000001);
-//             Assert.AreEqual(item.Title, "");
+         }
+         
+         [TestMethod]
+         public void ExifRead_ConvertLongLat()
+         {
+
+             var input = "52,20.708N";
+             string refGps = input.Substring(input.Length-1, 1);
+             var replaceComma = input.Replace(",", " ").Replace(".", " ");
+             var data = ExifRead.ConvertDegreeAngleToDouble(replaceComma, refGps);
+             Assert.AreEqual(52.53,data,0.001);
+
+            
+             var input1 = "5,55.840E";
+             var replaceComma1 = input1.Replace(",", " ").Replace(".", " ");
+             string refGps1 = input1.Substring(input1.Length-1, 1);
+             var data1 = ExifRead.ConvertDegreeAngleToDouble(replaceComma1, refGps1);
+             Assert.AreEqual(6.15,data1,0.001);
+
          }
 
      }
