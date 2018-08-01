@@ -35,13 +35,17 @@ namespace starsky.Services
                     var singleFilePath = _appSettings.DatabasePathToFilePath(singleFolderDbStyle);
                     var databaseItem = ExifRead.ReadExifFromFile(singleFilePath);
 
-                    if (Files.IsXmpSidecarRequired(singleFilePath))
-                    {
-                        var xmpFilePath = Files.GetXmpSidecarFileWhenRequired(
-                            _appSettings.DatabasePathToFilePath(singleFolderDbStyle),
-                            _appSettings.ExifToolXmpPrefix);
-                        databaseItem = ExifRead.ReadExifFromFile(xmpFilePath,databaseItem);
-                    }
+//                    if (Files.IsXmpSidecarRequired(singleFilePath))
+//                    {
+//                        var xmpFilePath = Files.GetXmpSidecarFileWhenRequired(
+//                            _appSettings.DatabasePathToFilePath(singleFolderDbStyle),
+//                            _appSettings.ExifToolXmpPrefix);
+//
+//                        if (Files.IsFolderOrFile(xmpFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
+//                        {
+//                            databaseItem = ExifRead.ReadExifFromFile(xmpFilePath,databaseItem);
+//                        }
+//                    }
                     
                     // Check the headers of a file to match a type
                     databaseItem.ImageFormat = Files.GetImageFormat(singleFilePath);
