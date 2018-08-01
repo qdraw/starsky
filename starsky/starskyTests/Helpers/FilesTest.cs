@@ -99,10 +99,9 @@ namespace starskytests
         {
             var extensionThumbSupportedList = Files.ExtensionThumbSupportedList;
             Assert.AreEqual(false,extensionThumbSupportedList.Contains("tiff"));
-            Assert.AreEqual(true,extensionThumbSupportedList.Contains("mp4"));
-            Assert.AreEqual(true,extensionThumbSupportedList.Contains("mov"));
-            Assert.AreEqual(true,extensionThumbSupportedList.Contains("xmp"));
-
+            Assert.AreEqual(false,extensionThumbSupportedList.Contains("mp4"));
+            Assert.AreEqual(false,extensionThumbSupportedList.Contains("mov"));
+            Assert.AreEqual(false,extensionThumbSupportedList.Contains("xmp"));
         }
         
         [TestMethod]
