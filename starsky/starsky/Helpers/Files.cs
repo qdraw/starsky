@@ -52,7 +52,7 @@ namespace starsky.Helpers
             {
                 var extension = Path.GetExtension(file).ToLower().Replace(".",string.Empty);
                 // Path.GetExtension uses (.ext)
-                if (ExtensionList.Contains(extension))
+                if (ExtensionSyncSupportedList.Contains(extension))
                 {
                     imageFilesList.Add(file);
                 }
@@ -77,13 +77,14 @@ namespace starsky.Helpers
             xmp = 30
         }
 
+        // General list of the extensions
         private static readonly List<string> Extensionjpg = new List<string> {"jpg", "jpeg"};
         private static readonly List<string> Extensiontiff = new List<string> {"tiff", "arw", "dng" };
         private static readonly List<string> Extensionbmp = new List<string> {"bmp"};
         private static readonly List<string> Extensiongif = new List<string> {"gif"};
         private static readonly List<string> Extensionpng = new List<string> {"png"};
 
-        public static List<string> ExtensionList
+        public static List<string> ExtensionSyncSupportedList
         {
             get
             {
@@ -96,6 +97,34 @@ namespace starsky.Helpers
                 return extensionList;
             }
         }
+        
+        // ImageSharp => The IImageFormat interface, Jpeg, Png, Bmp, and Gif formats.
+        // Tiff based images are not supported by the thumbnail application 
+        public static List<string> ExtensionThumbSupportedList
+        {
+            get
+            {
+                var extensionList = new List<string>();
+                extensionList.AddRange(Extensionjpg);
+                extensionList.AddRange(Extensionbmp);
+                extensionList.AddRange(Extensiongif);
+                extensionList.AddRange(Extensionpng);
+                return extensionList;
+            }
+        }
+        
+
+
+//        public static List<string> ExtensionThumbSupportedList
+//        {
+//            get
+//            {
+//                var list = ExtensionSyncSupportedList;
+//                foreach (var item in Extensiontiff.ToList()) list.Remove(item);
+//                return list;
+//            }
+//        }
+
 
         public static ImageFormat GetImageFormat(string filePath)
         {

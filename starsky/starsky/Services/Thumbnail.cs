@@ -63,6 +63,13 @@ namespace starsky.Services
             if (Files.IsFolderOrFile(fullFilePath) 
                 == FolderOrFileModel.FolderOrFileTypeList.File)
             {
+                
+                // Add addional check for raw/tiff based files, those are not supported by this helper 
+                if(!Files.ExtensionThumbSupportedList.Contains(Path.GetExtension(fullFilePath).Replace(".",string.Empty)))
+                {
+                    Console.WriteLine("File not supported (and ignored) > " + fullFilePath );
+                    return;
+                }
 
                 if(fileHash == null) fileHash = FileHash.GetHashCode(fullFilePath);
                 var thumbPath = _appSettings.ThumbnailTempFolder + fileHash + ".jpg"; //<<full
