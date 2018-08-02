@@ -189,6 +189,15 @@ namespace starsky.Models
             return subPath;
         }
 
+        public List<string> DatabasePathToFilePath(List<string> databaseFilePathList, bool checkIfExist = true)
+        {
+            var fullFilePathLists = new List<string>();
+            foreach (var databaseFilePath in databaseFilePathList)
+            {
+                fullFilePathLists.Add(DatabasePathToFilePath(databaseFilePath, checkIfExist));
+            }
+            return fullFilePathLists;
+        }
 
         // from relative database path => file location path 
         public string DatabasePathToFilePath(string databaseFilePath, bool checkIfExist = true)

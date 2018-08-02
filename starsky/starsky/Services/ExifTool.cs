@@ -28,10 +28,9 @@ namespace starsky.Services
             _appSettings = appSettings;
         }
         
-        private string _baseCommmand(string options, string fullFilePath)
+        private string BaseCommmand(string options, string fullFilePathSpaceSeperated)
         {
-            fullFilePath = $"\"" + fullFilePath + $"\"";
-            options = " " + options + " " + fullFilePath;
+            options = " " + options + " " + fullFilePathSpaceSeperated;
 
             Console.WriteLine(_appSettings.ExifToolPath);
 
@@ -103,7 +102,7 @@ namespace starsky.Services
             return text;
         }
 
-        private ExifToolModel _parseJson(string text) {
+        private ExifToolModel parseJson(string text) {
             if (string.IsNullOrEmpty(text)) return null;
             text = text.Replace("\r", "");
             text = text.Replace($"\\", "");
@@ -124,25 +123,38 @@ namespace starsky.Services
 
         }
 
-        public ExifToolModel Update(ExifToolModel updateModel, string fullFilePath)
+        public ExifToolModel Update(ExifToolModel updateModel, string inputFullFilePath)
+        {
+            return Update(updateModel, new List<string> {inputFullFilePath});
+        }
+        
+        // Does not check in c# code if file exist
+        public ExifToolModel Update(ExifToolModel updateModel, List<string> inputFullFilePaths)
             {
                 var command = "-json -overwrite_original";
                 var initCommand = command; // to check if nothing
 
                 // Create an XMP File -> as those files don't support those tags
                 // Check first if it is needed
-                
-                if(Files.IsXmpSidecarRequired(fullFilePath))
+
+                var fullFilePathsList = new List<string>();
+                foreach (var fullFilePath in inputFullFilePaths)
                 {
-                    var xmpFullPath = Files.GetXmpSidecarFileWhenRequired(fullFilePath, _appSettings.ExifToolXmpPrefix);
-                    
-                    if (Files.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+                    if(Files.IsXmpSidecarRequired(fullFilePath))
                     {
-                        _baseCommmand(" -overwrite_original -TagsFromFile \""  + fullFilePath + "\"", xmpFullPath);
+                        var xmpFullPath = Files.GetXmpSidecarFileWhenRequired(fullFilePath, _appSettings.ExifToolXmpPrefix);
+                    
+                        if (Files.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+                        {
+                            BaseCommmand(" -overwrite_original -TagsFromFile \""  + fullFilePath + "\"", xmpFullPath);
+                        }
+                        // to continue as xmp file
+                        fullFilePathsList.Add(xmpFullPath);
+                        continue;
                     }
-                    // to continue as xmp file
-                    fullFilePath = xmpFullPath;
+                    fullFilePathsList.Add(fullFilePath);
                 }
+                
                 
                 // Currently it does not allow emthy strings
                 if (!string.IsNullOrWhiteSpace(updateModel.Tags))
@@ -175,11 +187,19 @@ namespace starsky.Services
                 
                 if (command != initCommand)
                 {
-                    _baseCommmand(command, fullFilePath);
+                    var exifBaseInputStringBuilder = new StringBuilder();
+                    foreach (var fullFilePath in fullFilePathsList)
+                    {
+                        exifBaseInputStringBuilder.Append($"\"");
+                        exifBaseInputStringBuilder.Append(fullFilePath);
+                        exifBaseInputStringBuilder.Append($"\"");
+                        exifBaseInputStringBuilder.Append($" ");
+                    }
+                    BaseCommmand(command, exifBaseInputStringBuilder.ToString());
                 }
 
                 // Also update class info
-                return _parseJson(_baseCommmand("-Keywords -Description \"-xmp:subject\" -Prefs -Caption-Abstract -json", fullFilePath));
+                return parseJson(BaseCommmand("-Keywords -Description \"-xmp:subject\" -Prefs -Caption-Abstract -json", fullFilePathsList.FirstOrDefault()));
             }
 
             public ExifToolModel Info(string fullFilePath)
@@ -193,7 +213,7 @@ namespace starsky.Services
                 // When change also update class 'Update'
                 // xmp:Subject == Keywords
                 // Caption-Abstract == Description
-                return _parseJson(_baseCommmand("-Keywords -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", fullFilePath));
+                return parseJson(BaseCommmand("-Keywords -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", fullFilePath));
             }
 
         }

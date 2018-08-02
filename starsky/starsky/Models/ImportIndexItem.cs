@@ -55,15 +55,13 @@ namespace starsky.Models
             if (string.IsNullOrWhiteSpace(SourceFullFilePath)) return string.Empty;
             var imageFormatExtenstion = Files.GetImageFormat(SourceFullFilePath);
             
-            var fileExtenstion = imageFormatExtenstion.ToString().ToLower();
-            
+            var fileExtension = Path.GetExtension(SourceFullFilePath).Replace(".",string.Empty);
+
             if (imageFormatExtenstion == Files.ImageFormat.notfound)
             {
                 // Caching feature to have te Path and url after you deleted the orginal in the ImportIndexItem context
                 if (FileName != null) return FileName;
                 if(checkIfExist) throw new FileNotFoundException("source image not found");
-
-                fileExtenstion = Path.GetExtension(SourceFullFilePath).Replace(".",string.Empty);
             }
             
             var structuredFileName = Structure.Split("/").LastOrDefault();
@@ -83,7 +81,7 @@ namespace starsky.Models
 
             // Parse the DateTime to a string
             var fileName = DateTime.ToString(structuredFileName, CultureInfo.InvariantCulture);
-            fileName += "." + fileExtenstion;
+            fileName += "." + fileExtension;
             
             // Escape feature to Restore (filenamebase)
             if (fileName.Contains("_!q_")) // filenamebase

@@ -1,5 +1,6 @@
 ﻿@using System.Globalization
 @using System.Linq
+@using System.Text
 @using Microsoft.AspNetCore.Mvc
 @using starsky.ViewModels
 @model DetailView
@@ -137,6 +138,16 @@
     
     <img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
 </div>
+
+@{
+    //        var infoFilePaths = @Model.FileIndexItem.CollectionPaths.ToArray();
+    //        var filePathsAsStringBuilder = new StringBuilder(); 
+    //        foreach (var filePath in infoFilePaths)
+    //        {
+    //            filePathsAsStringBuilder.Append(filePath);
+    //            filePathsAsStringBuilder.Append(";");
+    //        }
+}
 
 <script type="text/javascript">
     var thumbnailApiBase = "@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, json = true})";

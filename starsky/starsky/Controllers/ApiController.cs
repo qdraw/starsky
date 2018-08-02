@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Helpers;
@@ -47,21 +48,29 @@ namespace starsky.Controllers
         }
         
         [HttpPost]
-        public IActionResult Update(string tags, string colorClass, string captionAbstract, string f = "dbStylePath")
+        public IActionResult Update(string tags, string colorClass, 
+            string captionAbstract, string f, bool collections = true)
         {
-            if (_isReadOnly(f)) return StatusCode(203,"read only");
-            
-            var singleItem = _query.SingleItem(f);
-            if (singleItem == null) return NotFound("not in index " + f);
-            var oldHashCode = singleItem.FileIndexItem.FileHash;
-            if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
-                return NotFound("source image missing " +
-                                _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            var detailView = _query.SingleItem(f);
+            if (detailView == null)
+            {
+                return NotFound("not in index " + f);
+            }
+            if (_isReadOnly(detailView.FileIndexItem.ParentDirectory)) return StatusCode(203,"read only");
 
+            foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths)
+            {
+                if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(collectionPath)))
+                    detailView.FileIndexItem.CollectionPaths.Remove(collectionPath);
+            }
+
+            if (detailView.FileIndexItem.CollectionPaths.Count == 0)
+            {
+                return NotFound("source image missing");
+            }
+
+            // First create an update model
             var updateModel = new ExifToolModel();
-
-            Console.WriteLine("tags>>>>");
-            Console.WriteLine(tags);
             if (tags != null)
             {
                 updateModel.Tags = tags;
@@ -71,27 +80,76 @@ namespace starsky.Controllers
             {
                 updateModel.CaptionAbstract = captionAbstract;
             }
+            
+            updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
 
-            // Enum get always one value and no null
-            singleItem.FileIndexItem.SetColorClass(colorClass);
-            updateModel.ColorClass = singleItem.FileIndexItem.ColorClass;
-
-            // Run ExifTool updater
-            var exifToolResults = _exiftool.Update(updateModel,
-                _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-
-            // Update Database with results
-            singleItem.FileIndexItem.FileHash =
-                FileHash.GetHashCode(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-            singleItem.FileIndexItem.AddToDatabase = DateTime.Now;
-            singleItem.FileIndexItem.Tags = exifToolResults.Tags;
-            singleItem.FileIndexItem.Description = exifToolResults.CaptionAbstract;
-            singleItem.FileIndexItem.ColorClass = exifToolResults.ColorClass;
-            _query.UpdateItem(singleItem.FileIndexItem);
-
-            // Rename Thumbnail
-            new Thumbnail(_appSettings).RenameThumb(oldHashCode, singleItem.FileIndexItem.FileHash);
-
+            var collectionFullPaths = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.CollectionPaths);
+            var exifToolResults = _exiftool.Update(updateModel, collectionFullPaths);
+            
+            
+//            var oldHashCodes = new List<string>();
+//
+//            var listOfSubPaths = new List<string> {f};
+//            if (f.Contains(";"))
+//            {
+//                listOfSubPaths = ConfigRead.RemoveLatestDotComma(f).Split(";").ToList();
+//            }
+//
+//            var singleItemList = new List<DetailView>();
+//            foreach (var item in listOfSubPaths)
+//            {
+//                if (_isReadOnly(item)) return StatusCode(203,"read only");
+//                var singleItem = _query.SingleItem(item);
+//                if (singleItem == null) return NotFound("not in index " + item);
+//                singleItemList.Add(singleItem);
+//                
+//                oldHashCodes.Add(singleItem.FileIndexItem.FileHash);
+//                if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
+//                    return NotFound("source image missing " +
+//                                    _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+//            }
+//
+//            var updateModel = new ExifToolModel();
+//            if (tags != null)
+//            {
+//                updateModel.Tags = tags;
+//            }
+//
+//            if (captionAbstract != null)
+//            {
+//                updateModel.CaptionAbstract = captionAbstract;
+//            }
+//
+//            var exiftoolPathsBuilder = new StringBuilder();
+//            foreach (var singleItem in singleItemList)
+//            {
+//                // Enum get always one value and no null
+//                singleItem.FileIndexItem.SetColorClass(colorClass);
+//                updateModel.ColorClass = singleItem.FileIndexItem.ColorClass;
+//
+//                // Update Database with results
+//                singleItem.FileIndexItem.FileHash =
+//                    FileHash.GetHashCode(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+//                singleItem.FileIndexItem.AddToDatabase = DateTime.Now;
+//
+//                exiftoolPathsBuilder.Append($"\"");
+//                exiftoolPathsBuilder.Append(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)); 
+//                exiftoolPathsBuilder.Append($"\"");
+//                exiftoolPathsBuilder.Append($" "); // space
+//                _query.UpdateItem(singleItem.FileIndexItem);
+//            }
+//            
+//            // Run ExifTool updater
+//            var exifToolResults = _exiftool.Update(updateModel,exiftoolPathsBuilder.ToString() );
+//
+//            for (int i = 0; i < singleItemList.Count; i++)
+//            {
+//                singleItemList[i].FileIndexItem.Tags = exifToolResults.Tags;
+//                singleItemList[i].FileIndexItem.Description = exifToolResults.CaptionAbstract;
+//                singleItemList[i].FileIndexItem.ColorClass = exifToolResults.ColorClass;
+//                // Rename Thumbnail
+//                new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItemList[i].FileIndexItem.FileHash);
+//            }
 
             return Json(exifToolResults);
         }
@@ -167,6 +225,14 @@ namespace starsky.Controllers
             // isSingleItem => detailview
             // Retry thumbnail => is when you press reset thumbnail
             // json, => to don't waste the users bandwith.
+
+            
+            // DEBUG            // DEBUG
+            isSingleitem = false;
+            // DEBUG            // DEBUG
+            
+            // DEBUG
+            
             
             var sourcePath = _query.GetItemByHash(f);
 
