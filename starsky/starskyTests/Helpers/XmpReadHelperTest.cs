@@ -43,7 +43,7 @@ namespace starskytests.Helpers
                         "Iptc4xmpExt:ProvinceState=\"Gelderland\" Iptc4xmpExt:CountryName=\"Nederland\" "+
                         "Iptc4xmpExt:CountryCode=\"\" Iptc4xmpExt:WorldRegion=\"\"/> </rdf:Bag> </Iptc4xmpExt:LocationShown> </rdf:Description> </rdf:RDF> </x:xmpmeta>";
             
-            var data = XmpReadHelper.GetDataFromString(input);
+            var data = new XmpReadHelper().GetDataFromString(input);
             
             Assert.AreEqual(52.3451333333,data.Latitude,0.001);
             Assert.AreEqual(5.930,data.Longitude,0.001);
