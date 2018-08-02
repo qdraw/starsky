@@ -125,6 +125,7 @@ if (document.querySelectorAll("#js-keywords-update").length === 1 &&
        function(data) {
            
            updateDeletedKeywordElement(data);
+           updateColorClassButtons(data.colorClass);
            updateCaptionAbstractFromInput(data);
            hidePreloader();
        },
