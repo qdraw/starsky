@@ -138,6 +138,14 @@ namespace starsky.Helpers
                         out var dateTime);
                     item.DateTime = dateTime;
                 }
+                
+                //   Path=photomechanic:ColorClass Namespace=http://ns.camerabits.com/photomechanic/1.0/ Value=1
+                var colorClass = GetContentNameSpace(property, "photomechanic:ColorClass");
+                if (colorClass != null)
+                {
+                    item.SetColorClass(colorClass);
+                }
+
             }
             return item;
         }

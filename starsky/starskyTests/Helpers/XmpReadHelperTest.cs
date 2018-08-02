@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
+using starsky.Models;
 
 namespace starskytests.Helpers
 {
@@ -49,6 +50,7 @@ namespace starskytests.Helpers
             Assert.AreEqual("caption",data.Description);
             Assert.AreEqual("keyword, keyword2",data.Tags);
             Assert.AreEqual("The object name",data.Title);
+            Assert.AreEqual(FileIndexItem.Color.Winner,data.ColorClass);
             
             DateTime.TryParseExact("2018-07-18 19:44:27", 
                 "yyyy-MM-dd HH:mm:ss",
