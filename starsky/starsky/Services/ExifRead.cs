@@ -212,7 +212,7 @@ namespace starsky.Services
 
             if (!string.IsNullOrWhiteSpace(latitudeString))
             {
-                var latitude = ConvertDegreeAngleToDouble(latitudeString, latitudeRef);
+                var latitude = ConvertDegreeMinutesSecondsToDouble(latitudeString, latitudeRef);
                 latitude = Math.Floor(latitude * 10000000000) / 10000000000; 
                 return latitude;
             }
@@ -247,38 +247,54 @@ namespace starsky.Services
 
             if (!string.IsNullOrWhiteSpace(longitudeString))
             {
-                var longitude = ConvertDegreeAngleToDouble(longitudeString, longitudeRef);
+                var longitude = ConvertDegreeMinutesSecondsToDouble(longitudeString, longitudeRef);
                 longitude = Math.Floor(longitude * 10000000000) / 10000000000; 
                 return longitude;
             }
             return 0;
         }
-        
-        public static double ConvertDegreeAngleToDouble(string point, string refGps)
+
+        public static double ConvertDegreeMinutesSecondsToDouble(string point, string refGps)
         {
             //Example: 17.21.18S
-
+            // DD°MM’SS.s” usage
+            
             var multiplier = (refGps.Contains("S") || refGps.Contains("W")) ? -1 : 1; //handle south and west
 
             point = Regex.Replace(point, "[^0-9\\., ]", "", RegexOptions.CultureInvariant); //remove the characters
 
             // When you use an localisation where commas are used instead of a dot
             point = point.Replace(",", ".");
-            
+
             var pointArray = point.Split(' '); //split the string.
-            
+
             //Decimal degrees = 
             //   whole number of degrees, 
             //   plus minutes divided by 60, 
             //   plus seconds divided by 3600
 
-            var degrees = double.Parse(pointArray[0],CultureInfo.InvariantCulture);
-            var minutes = double.Parse(pointArray[1],CultureInfo.InvariantCulture) / 60;
+            var degrees = double.Parse(pointArray[0], CultureInfo.InvariantCulture);
+            var minutes = double.Parse(pointArray[1], CultureInfo.InvariantCulture) / 60;
             var seconds = double.Parse(pointArray[2],CultureInfo.InvariantCulture) / 3600;
 
             return (degrees + minutes + seconds) * multiplier;
         }
-        
-        
+
+        public static double ConvertDegreeMinutesToDouble(string point, string refGps)
+        {
+            // "5,55.840E";
+            var multiplier = (refGps.Contains("S") || refGps.Contains("W")) ? -1 : 1; //handle south and west
+
+            point = point.Replace(",", " ");
+            point = Regex.Replace(point, "[^0-9\\., ]", "", RegexOptions.CultureInvariant); //remove the characters
+
+            var pointArray = point.Split(' '); //split the string.
+            var degrees = double.Parse(pointArray[0], CultureInfo.InvariantCulture);
+            var minutes = double.Parse(pointArray[1], CultureInfo.InvariantCulture) / 60;
+            
+            return (degrees + minutes) * multiplier;
+        }
+
+
     }
 }

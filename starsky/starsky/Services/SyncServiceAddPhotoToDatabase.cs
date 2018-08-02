@@ -35,17 +35,7 @@ namespace starsky.Services
                     var singleFilePath = _appSettings.DatabasePathToFilePath(singleFolderDbStyle);
                     var databaseItem = ExifRead.ReadExifFromFile(singleFilePath);
 
-//                    if (Files.IsXmpSidecarRequired(singleFilePath))
-//                    {
-//                        var xmpFilePath = Files.GetXmpSidecarFileWhenRequired(
-//                            _appSettings.DatabasePathToFilePath(singleFolderDbStyle),
-//                            _appSettings.ExifToolXmpPrefix);
-//
-//                        if (Files.IsFolderOrFile(xmpFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
-//                        {
-//                            databaseItem = ExifRead.ReadExifFromFile(xmpFilePath,databaseItem);
-//                        }
-//                    }
+                    databaseItem = XmpHelper(databaseItem, singleFilePath);
                     
                     // Check the headers of a file to match a type
                     databaseItem.ImageFormat = Files.GetImageFormat(singleFilePath);
@@ -63,5 +53,26 @@ namespace starsky.Services
                 // end photo
             }
         }
+
+        private FileIndexItem XmpHelper(FileIndexItem databaseItem, string singleFilePath)
+        {
+            // Read content from sidecar xmp file
+            if (Files.IsXmpSidecarRequired(singleFilePath))
+            {
+                // Parse an xmp file for this location
+                var xmpFilePath = Files.GetXmpSidecarFileWhenRequired(
+                    singleFilePath,
+                    _appSettings.ExifToolXmpPrefix);
+                if (Files.IsFolderOrFile(xmpFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
+                {
+                    // Read the text-content of the xmp file.
+                    var xmp = new PlainTextFileHelper().ReadFile(xmpFilePath);
+                    // Get the data from the xmp
+                    databaseItem = XmpReadHelper.GetDataFromString(xmp);
+                }
+            }
+            return databaseItem;
+        }
+        
     }
 }

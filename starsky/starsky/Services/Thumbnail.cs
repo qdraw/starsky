@@ -201,6 +201,7 @@ namespace starsky.Services
             }
         }
         
+        // todo: Use PlainTextFileHelper
         private bool _isErrorItem(string inputDatabaseFilePath)
         {
             var path = _GetErrorLogItemFullPath(inputDatabaseFilePath);
