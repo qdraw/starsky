@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,8 @@ namespace starsky.Controllers
         public IActionResult Index(
             string f = "/", 
             string colorClass = null,
-            bool json = false
+            bool json = false,
+            bool collections = true
             )
         {
 
@@ -44,7 +46,7 @@ namespace starsky.Controllers
             };
 
             var singleItem = _query.SingleItem(subpath,colorClassFilterList);
-
+            
             if (!model.FileIndexItems.Any())
             {
                 // is directory is emthy 
@@ -75,6 +77,11 @@ namespace starsky.Controllers
             
             model.SearchQuery = subpath.Split("/").LastOrDefault();                
             model.RelativeObjects = _query.GetNextPrevInFolder(subpath);
+
+            if (collections) // in prev next collections is required
+            {
+                model.FileIndexItems = _query.Collections(model.FileIndexItems.ToList());
+            }
             
             if (json) return Json(model);
             return View(model);

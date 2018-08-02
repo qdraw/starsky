@@ -43,6 +43,14 @@ namespace starsky.Models
         }
 
         public string FileHash { get; set; }
+        
+        [NotMapped]
+        public string FileCollectionName {
+            get
+            {
+                return Path.GetFileNameWithoutExtension(FileName);
+            } 
+        }
 
         // Do not save null in database for Parent Directory
         private string _parentDirectory;
@@ -251,6 +259,9 @@ namespace starsky.Models
         }
         
         public Files.ImageFormat ImageFormat { get; set; }
+        
+        [NotMapped]
+        public List<Files.ImageFormat> CollectionItems { get; set; }
 
         
     }

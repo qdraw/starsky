@@ -8,8 +8,6 @@ using MySql.Data.MySqlClient;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Data;
-using starsky.Helpers;
-
 
 namespace starsky.Services
 {
@@ -165,9 +163,7 @@ namespace starsky.Services
 
         // Add a new item to the database
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)
-        {
-//            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
-            
+        {            
             try
             {
                 _context.FileIndex.Add(updateStatusContent);
@@ -188,8 +184,6 @@ namespace starsky.Services
         // Remove a new item from the database
         public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
         {
-//            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
-
             _context.FileIndex.Remove(updateStatusContent);
             _context.SaveChanges();
             return updateStatusContent;

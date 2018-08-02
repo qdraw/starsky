@@ -14,6 +14,12 @@ namespace starsky.Services
         // Display feature only?!
         // input: Name of item by db style path
         // With Caching feature :)
+        
+        
+        // todo: update with directory caching
+        
+        
+        
         public DetailView SingleItem(string singleItemDbPath,
             List<FileIndexItem.Color> colorClassFilterList = null)
         {
@@ -134,6 +140,9 @@ namespace starsky.Services
                 ).OrderBy(
                     p => p.FileName).ToList();
             }
+
+            // Add collections
+            itemsInSubFolder = Collections(itemsInSubFolder);
             
             // todo: if image it self is deleted and page is refreshed
             // Use only if you are sure that there are no nulls
