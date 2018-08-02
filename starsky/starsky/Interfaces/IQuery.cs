@@ -14,7 +14,8 @@ namespace starsky.Interfaces
 
         IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
-            List<FileIndexItem.Color> colorClassFilterList = null);
+            List<FileIndexItem.Color> colorClassFilterList = null,
+            bool enableCollections = true);
 
         DetailView SingleItem(string singleItemDbPath, 
             List<FileIndexItem.Color> colorClassFilterList = null);

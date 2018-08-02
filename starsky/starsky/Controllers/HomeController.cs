@@ -40,7 +40,7 @@ namespace starsky.Controllers
 
             var model = new ArchiveViewModel
             {
-                FileIndexItems = _query.DisplayFileFolders(subpath, colorClassFilterList),
+                FileIndexItems = _query.DisplayFileFolders(subpath, colorClassFilterList,collections),
                 RelativeObjects = new RelativeObjects(),
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath)
             };
@@ -78,11 +78,6 @@ namespace starsky.Controllers
             model.SearchQuery = subpath.Split("/").LastOrDefault();                
             model.RelativeObjects = _query.GetNextPrevInFolder(subpath);
 
-            if (collections) // in prev next collections is required
-            {
-                model.FileIndexItems = _query.Collections(model.FileIndexItems.ToList());
-            }
-            
             if (json) return Json(model);
             return View(model);
         }
