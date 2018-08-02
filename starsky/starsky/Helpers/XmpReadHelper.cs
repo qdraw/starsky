@@ -56,8 +56,7 @@ namespace starsky.Helpers
         {
             // get ref North, South, East West
             string refGps = gpsLatOrLong.Substring(gpsLatOrLong.Length-1, 1);
-            var point = gpsLatOrLong.Replace(",", " ").Replace(".", " ");
-            return ExifRead.ConvertDegreeMinutesSecondsToDouble(point, refGps);
+            return ExifRead.ConvertDegreeMinutesToDouble(gpsLatOrLong, refGps);
         }
                 
         private static FileIndexItem GetDataNullNameSpaceTypes(string xmpDataAsString, FileIndexItem item)

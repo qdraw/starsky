@@ -45,8 +45,8 @@ namespace starskytests.Helpers
             
             var data = XmpReadHelper.GetDataFromString(input);
             
-            Assert.AreEqual(52.53,data.Latitude,0.001);
-            Assert.AreEqual(6.15,data.Longitude,0.001);
+            Assert.AreEqual(52.3451333333,data.Latitude,0.001);
+            Assert.AreEqual(5.930,data.Longitude,0.001);
             Assert.AreEqual("caption",data.Description);
             Assert.AreEqual("keyword, keyword2",data.Tags);
             Assert.AreEqual("The object name",data.Title);
