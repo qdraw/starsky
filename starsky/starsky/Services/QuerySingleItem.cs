@@ -34,8 +34,10 @@ namespace starsky.Services
             var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
             
             // When loading a raw file == next prev is using a jpeg file
+            var directAccessAnNonExtensionThumbSupported = false;
             if (currentFileIndexItem == null)
             {
+                directAccessAnNonExtensionThumbSupported = true;
                 currentFileIndexItem = fileIndexItemsList.FirstOrDefault(
                     p => p.FileCollectionName == singleItemDbPathFromDirectQuery.FileCollectionName);
             }
@@ -51,6 +53,12 @@ namespace starsky.Services
             
             // Search for collectionItems need to add a duplicate of the cache
             var collectionItemsDirectory = DisplayFileFolders(parentFolder,colorClassFilterList,false).ToList();
+
+            if (directAccessAnNonExtensionThumbSupported)
+            {
+                itemResult.FileIndexItem = singleItemDbPathFromDirectQuery;
+            }
+            
             
             itemResult.FileIndexItem.CollectionPaths = new List<string>();
             itemResult.FileIndexItem.CollectionPaths.AddRange(collectionItemsDirectory
