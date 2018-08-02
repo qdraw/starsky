@@ -128,10 +128,7 @@ namespace starsky.Helpers
                 var title = GetNullNameSpace(property, "dc:title[1]");
                 if (title != null) item.Title = title;
 
-                
-                
-                
-                Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
+//                Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
 
             }
 
