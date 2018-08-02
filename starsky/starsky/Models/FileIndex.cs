@@ -261,7 +261,7 @@ namespace starsky.Models
         public Files.ImageFormat ImageFormat { get; set; }
         
         [NotMapped]
-        public List<Files.ImageFormat> CollectionItems { get; set; }
+        public List<string> CollectionPaths { get; set; } = new List<string>();
 
         
     }

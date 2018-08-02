@@ -39,7 +39,7 @@ namespace starsky.Services
                 currentFileIndexItem = fileIndexItemsList.FirstOrDefault(
                     p => p.FileCollectionName == singleItemDbPathFromDirectQuery.FileCollectionName);
             }
-                
+            
             var itemResult = new DetailView
             {
                 FileIndexItem = currentFileIndexItem,
@@ -48,6 +48,14 @@ namespace starsky.Services
                 GetAllColor = FileIndexItem.GetAllColorUserInterface(),
                 ColorClassFilterList = colorClassFilterList
             };
+            
+            // Search for collectionItems need to add a duplicate of the cache
+            var collectionItemsDirectory = DisplayFileFolders(parentFolder,colorClassFilterList,false).ToList();
+            
+            itemResult.FileIndexItem.CollectionPaths = new List<string>();
+            itemResult.FileIndexItem.CollectionPaths.AddRange(collectionItemsDirectory
+                .Where(p => p.FileCollectionName == singleItemDbPathFromDirectQuery.FileCollectionName)
+                .Select(p => p.FilePath));
             
             return itemResult;
         }
