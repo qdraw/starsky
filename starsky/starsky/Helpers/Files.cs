@@ -121,7 +121,7 @@ namespace starsky.Helpers
                 var extensionList = new List<string>();
                 extensionList.AddRange(Extensionbmp);
                 extensionList.AddRange(Extensiongif);
-                extensionList.AddRange(Extensionpng);
+//                extensionList.AddRange(Extensionpng);
                 extensionList.AddRange(Extensiontiff);
                 return extensionList;
             }

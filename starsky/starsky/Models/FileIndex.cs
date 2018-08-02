@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.IO;
@@ -193,17 +194,37 @@ namespace starsky.Models
 
         public enum Color
         {
+            // Display name: used in -xmp:Label
+            [Display(Name = "Winner")]
             Winner = 1, // Paars - purple
+            [Display(Name = "Winner Alt")]
             WinnerAlt = 2, // rood - Red -
+            [Display(Name = "Superior")]
             Superior = 3, // Oranje - orange
+            [Display(Name = "Superior Alt")]
             SuperiorAlt = 4, //Geel - yellow
+            [Display(Name = "Typical")]
             Typical = 5, // Groen - groen
+            [Display(Name = "Typical Alt")]
             TypicalAlt = 6, // Turquoise
+            [Display(Name = "Extras")]
             Extras = 7, // Blauw - blue
+            [Display(Name = "")]
             Trash = 8, // grijs - Grey
             None = 0, // donkergrijs Dark Grey
             DoNotChange = -1
         }
+
+        public static string GetDisplayName(Enum enumValue)
+        {
+            var name = enumValue.GetType()?
+                .GetMember(enumValue.ToString())?
+                .First()?
+                .GetCustomAttribute<DisplayAttribute>()?
+                .Name;
+            return name;
+        }
+        
       
         public static IEnumerable<Color> GetAllColor()
         {

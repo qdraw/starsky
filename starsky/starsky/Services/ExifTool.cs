@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
 using starsky.Models;
 using System.Runtime.InteropServices;
@@ -153,10 +155,17 @@ namespace starsky.Services
                     command += " -Caption-Abstract=\"" + updateModel.CaptionAbstract + "\" -Description=\"" + updateModel.CaptionAbstract + "\"";
                 }
 
+               
                 if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
                 {
                     var intColorClass = (int) updateModel.ColorClass;
-                    command += " -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
+
+                    var color = FileIndexItem.GetDisplayName(updateModel.ColorClass);
+                    Console.WriteLine(">> color");
+
+                    Console.WriteLine(color);    
+
+                    command += " -ColorClass=\""+ intColorClass + "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
                 }
 
                 if (updateModel.AllDatesDateTime.Year > 2)
