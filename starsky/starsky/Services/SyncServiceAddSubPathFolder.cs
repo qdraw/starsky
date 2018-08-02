@@ -35,7 +35,6 @@ namespace starsky.Services
                 {
                     var newItem = new FileIndexItem
                     {
-                        // FilePath = itemSubpath,
                         AddToDatabase = DateTime.UtcNow,
                         IsDirectory = true
                     };
@@ -46,6 +45,17 @@ namespace starsky.Services
                     newItem.FileName = itemSubpath.Split("/").LastOrDefault();
                     _query.AddItem(newItem);
                 }
+
+//                // Remove some stange items in the database
+//                // with the name slash or /2018
+//                if (countFolder < 1) continue;
+//                
+//                var fileIndexItem = _query.GetObjectByFilePath(itemSubpath);
+//                if (!string.IsNullOrWhiteSpace(fileIndexItem.FileHash) || countFolder >= 2)
+//                {
+//                    _query.RemoveItem(fileIndexItem);
+//                }
+                
             }
         }
     }

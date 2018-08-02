@@ -20,8 +20,8 @@ namespace starsky.Services
         public DetailView SingleItem(string singleItemDbPath,
             List<FileIndexItem.Color> colorClassFilterList = null)
         {
-            // reject emphy requests
-            if (string.IsNullOrWhiteSpace(singleItemDbPath)) return null;
+            // reject emphy requests // --- || singleItemDbPath == "/"
+            if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
 
             // A direct query to check if the file exist
             var singleItemDbPathFromDirectQuery = CacheSingleFileIndex(singleItemDbPath);

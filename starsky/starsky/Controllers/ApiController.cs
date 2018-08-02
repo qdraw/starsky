@@ -46,9 +46,9 @@ namespace starsky.Controllers
             var result = _appSettings.ReadOnlyFolders.FirstOrDefault(f.Contains);
             return result != null;
         }
-        
+
         [HttpPost]
-        public IActionResult Update(string tags, string colorClass, 
+        public IActionResult Update(string tags, string colorClass,
             string captionAbstract, string f, bool collections = true)
         {
             var detailView = _query.SingleItem(f);
@@ -56,12 +56,16 @@ namespace starsky.Controllers
             {
                 return NotFound("not in index " + f);
             }
-            if (_isReadOnly(detailView.FileIndexItem.ParentDirectory)) return StatusCode(203,"read only");
+
+            if (_isReadOnly(detailView.FileIndexItem.ParentDirectory)) return StatusCode(203, "read only");
 
             foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths)
             {
-                if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(collectionPath)))
+                var fullPathCollection = _appSettings.DatabasePathToFilePath(collectionPath);
+                if (!System.IO.File.Exists(fullPathCollection))
+                {
                     detailView.FileIndexItem.CollectionPaths.Remove(collectionPath);
+                }
             }
 
             if (detailView.FileIndexItem.CollectionPaths.Count == 0)
@@ -80,13 +84,32 @@ namespace starsky.Controllers
             {
                 updateModel.CaptionAbstract = captionAbstract;
             }
-            
+            detailView.FileIndexItem.SetColorClass(colorClass);
             updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
 
             var collectionFullPaths = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.CollectionPaths);
+            var oldHashCodes = FileHash.GetHashCode(collectionFullPaths.ToArray());
+                
             var exifToolResults = _exiftool.Update(updateModel, collectionFullPaths);
-            
-            
+
+            var listOfUpdateFileIndexItems = new List<FileIndexItem>();
+            for (int i = 0; i < detailView.FileIndexItem.CollectionPaths.Count; i++)
+            {
+                var singleItem = _query.SingleItem(detailView.FileIndexItem.CollectionPaths[i]);
+                singleItem.FileIndexItem.Tags = exifToolResults.Tags;
+                singleItem.FileIndexItem.Description = exifToolResults.CaptionAbstract;
+                singleItem.FileIndexItem.ColorClass = exifToolResults.ColorClass;
+                singleItem.FileIndexItem.FileHash = FileHash.GetHashCode(collectionFullPaths[i]);
+                // Rename Thumbnail
+                new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItem.FileIndexItem.FileHash);
+                listOfUpdateFileIndexItems.Add(singleItem.FileIndexItem);
+                _query.UpdateItem(singleItem.FileIndexItem);
+            }
+         
+            return Json(exifToolResults);
+        }   
+        
+        
 //            var oldHashCodes = new List<string>();
 //
 //            var listOfSubPaths = new List<string> {f};
@@ -151,8 +174,6 @@ namespace starsky.Controllers
 //                new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItemList[i].FileIndexItem.FileHash);
 //            }
 
-            return Json(exifToolResults);
-        }
 
         [ResponseCache(Duration = 30, VaryByQueryKeys = new [] { "f" } )]
         public IActionResult Info(string f = "dbStyleFilepath")
@@ -211,7 +232,8 @@ namespace starsky.Controllers
             return Json(item);
         }
 
-        [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f"} )]
+        // DEBUG
+//        [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f"} )]
         [HttpGet("/api/thumbnail/{f}")]
         [HttpHead("/api/thumbnail/{f}")]
         [IgnoreAntiforgeryToken]
@@ -226,14 +248,6 @@ namespace starsky.Controllers
             // Retry thumbnail => is when you press reset thumbnail
             // json, => to don't waste the users bandwith.
 
-            
-            // DEBUG            // DEBUG
-            isSingleitem = false;
-            // DEBUG            // DEBUG
-            
-            // DEBUG
-            
-            
             var sourcePath = _query.GetItemByHash(f);
 
             if (sourcePath == null) return NotFound("not in index");
