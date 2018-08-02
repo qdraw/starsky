@@ -29,36 +29,46 @@ namespace starsky.Models
             }
         }
 
-        private HashSet<string> _keywords;
+        private HashSet<string> keywords = new HashSet<string>();
         
         public HashSet<string> Keywords
         {
-            get { return _keywords; } // keep null? temp off
+            get { return keywords; } // keep null? temp off
             set {
-                    if (value == null)
+                    if (value != null)
                     {
-                        _keywords = new HashSet<string>();
-                        return;
+                        keywords = value; 
                     }
-                    _keywords = value; 
             }
         }
 
         public string Tags
         {
-            get { return _hashSetToString(_keywords); }
-            set { _keywords = _stringToHashSet(value); }
+            get { return hashSetToString(keywords); }
+            set { keywords = stringToHashSet(value); }
         }
+
+        // overwrite "-xmp:subject" over -Keywords
+        public HashSet<string> Subject
+        {
+            set {
+                if (keywords.Count == 0)
+                {
+                    keywords = value;
+                }
+            }
+        }
+
 
         public DateTime AllDatesDateTime { get; set; }
 
-        private static HashSet<string> _stringToHashSet(string inputKeywords)
+        private static HashSet<string> stringToHashSet(string inputKeywords)
         {
             HashSet<string> keywordsHashSet = inputKeywords.Split(", ").ToHashSet();
             return keywordsHashSet;
         }
 
-        private static string _hashSetToString(HashSet<string> hashSetKeywords)
+        private static string hashSetToString(HashSet<string> hashSetKeywords)
         {
             if (hashSetKeywords == null)
             {

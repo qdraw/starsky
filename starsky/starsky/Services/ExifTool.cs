@@ -60,7 +60,7 @@ namespace starsky.Services
             return strOutput;
         }
         
-        public string FixingJsonKeywordString(string text)
+        public string FixingJsonKeywordString(string text, string nameInJson = "Keywords")
         {
 
             // Not Single Keyword
@@ -69,15 +69,15 @@ namespace starsky.Services
 
             var splitArray = text.Split("\n");
 
-            var keywordsIndex = text.IndexOf("Keywords", StringComparison.InvariantCulture);
+            var keywordsIndex = text.IndexOf(nameInJson, StringComparison.InvariantCulture);
             if (keywordsIndex >= 0)
             {
                 var updatedTextStringBuilder = new StringBuilder();
                 foreach (var item in splitArray)
                 {
-                    if (item.Contains("Keywords") && !item.Contains("["))
+                    if (item.Contains(nameInJson) && !item.Contains("["))
                     {
-                        var key = item.Replace("\"Keywords\":", "");
+                        var key = item.Replace("\"" + nameInJson + "\":", "");
                         key = key.Replace("\"", "");
                         
                         // Remove commas at end
@@ -85,7 +85,7 @@ namespace starsky.Services
                         key = commaEndRegex.Replace(key, "");
                         
                         key = key.Trim();
-                        var newItem = "\"Keywords\": [\"" + key + "\"],"; 
+                        var newItem = "\""+ nameInJson +"\": [\"" + key + "\"],"; 
                         // bug potential: Could give a bug if the next line does not contain any values
                         updatedTextStringBuilder.Append(newItem + "\n");
                     }
@@ -107,9 +107,13 @@ namespace starsky.Services
             text = text.Replace($"\\", "");
 
             Console.WriteLine("apply fix");
-            text = FixingJsonKeywordString(text);
-            
+            text = FixingJsonKeywordString(text); // "Keywords"
+            text = FixingJsonKeywordString(text,"Subject");
+
             Console.WriteLine("read from exiftool with fix applied");
+
+            Console.WriteLine(text);
+            Console.WriteLine("-----");
 
             var exifData = JsonConvert.DeserializeObject<IEnumerable<ExifToolModel>>(text).FirstOrDefault();
 
@@ -141,7 +145,7 @@ namespace starsky.Services
                 // Currently it does not allow emthy strings
                 if (!string.IsNullOrWhiteSpace(updateModel.Tags))
                 {
-                    command += " -sep \", \" -Keywords=\"" + updateModel.Tags + "\" ";
+                    command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags + "\" -Keywords=\"" + updateModel.Tags + "\" ";
                 }
                 
                 if (!string.IsNullOrWhiteSpace(updateModel.CaptionAbstract))
@@ -167,7 +171,7 @@ namespace starsky.Services
                 }
 
                 // Also update class info
-                return _parseJson(_baseCommmand("-Keywords -Prefs -Caption-Abstract -json", fullFilePath));
+                return _parseJson(_baseCommmand("-Keywords \"-xmp:subject\" -Prefs -Caption-Abstract -json", fullFilePath));
             }
 
             public ExifToolModel Info(string fullFilePath)
@@ -179,7 +183,7 @@ namespace starsky.Services
                     fullFilePath = xmpFullFilePath;
                 
                 // When change also update class 'Update'
-                return _parseJson(_baseCommmand("-Keywords -Caption-Abstract -Prefs -json", fullFilePath));
+                return _parseJson(_baseCommmand("-Keywords \"-xmp:subject\" -Caption-Abstract -Prefs -json", fullFilePath));
             }
 
         }
