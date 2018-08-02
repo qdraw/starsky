@@ -78,7 +78,8 @@ namespace starsky.Models
         }
 
         [System.ComponentModel.DefaultValue("")]
-        public string Description { get; set; }
+        // add default value (6#+)
+        public string Description { get; set; } = string.Empty;
         
         // Do not save null in database for Title
         private string _title;
