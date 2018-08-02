@@ -1,6 +1,5 @@
 ﻿@using System.Globalization
 @using System.Linq
-@using System.Text
 @using Microsoft.AspNetCore.Mvc
 @using starsky.ViewModels
 @model DetailView
@@ -13,7 +12,7 @@
 <div class="sidebar">
     <div class="close" onclick="toggleSideMenu()"></div>
     <div class="content">
-        
+
         <h4 class="nextprev">
             &nbsp;
             @if (@Model.RelativeObjects.PrevFilePath != null)
@@ -119,7 +118,7 @@
             <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende</a>
         }
     </h4>
-    
+
     <h1 class="breadcrumb">
         @foreach (var item in Model.Breadcrumb)
         {
@@ -135,19 +134,9 @@
             @Model.FileIndexItem.FileName
         </span>
     </h1>
-    
+
     <img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
 </div>
-
-@{
-    //        var infoFilePaths = @Model.FileIndexItem.CollectionPaths.ToArray();
-    //        var filePathsAsStringBuilder = new StringBuilder(); 
-    //        foreach (var filePath in infoFilePaths)
-    //        {
-    //            filePathsAsStringBuilder.Append(filePath);
-    //            filePathsAsStringBuilder.Append(";");
-    //        }
-}
 
 <script type="text/javascript">
     var thumbnailApiBase = "@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, json = true})";
