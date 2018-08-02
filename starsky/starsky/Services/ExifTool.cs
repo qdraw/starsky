@@ -147,12 +147,14 @@ namespace starsky.Services
                 // Currently it does not allow emthy strings
                 if (!string.IsNullOrWhiteSpace(updateModel.Tags))
                 {
-                    command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags + "\" -Keywords=\"" + updateModel.Tags + "\" ";
+                    command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags 
+                                                                  + "\" -Keywords=\"" + updateModel.Tags + "\" ";
                 }
                 
                 if (!string.IsNullOrWhiteSpace(updateModel.CaptionAbstract))
                 {
-                    command += " -Caption-Abstract=\"" + updateModel.CaptionAbstract + "\" -Description=\"" + updateModel.CaptionAbstract + "\"";
+                    command += " -Caption-Abstract=\"" + updateModel.CaptionAbstract 
+                                                       + "\" -Description=\"" + updateModel.CaptionAbstract + "\"";
                 }
 
                
@@ -160,12 +162,9 @@ namespace starsky.Services
                 {
                     var intColorClass = (int) updateModel.ColorClass;
 
-                    var color = FileIndexItem.GetDisplayName(updateModel.ColorClass);
-                    Console.WriteLine(">> color");
-
-                    Console.WriteLine(color);    
-
-                    command += " -ColorClass=\""+ intColorClass + "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
+                    var colorDisplayName = FileIndexItem.GetDisplayName(updateModel.ColorClass);
+                    command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\""+ intColorClass + 
+                               "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
                 }
 
                 if (updateModel.AllDatesDateTime.Year > 2)
