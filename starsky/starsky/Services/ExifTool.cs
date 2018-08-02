@@ -150,7 +150,7 @@ namespace starsky.Services
                 
                 if (!string.IsNullOrWhiteSpace(updateModel.CaptionAbstract))
                 {
-                    command += " -Caption-Abstract=\"" + updateModel.CaptionAbstract + "\" ";
+                    command += " -Caption-Abstract=\"" + updateModel.CaptionAbstract + "\" -Description=\"" + updateModel.CaptionAbstract + "\"";
                 }
 
                 if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
@@ -171,7 +171,7 @@ namespace starsky.Services
                 }
 
                 // Also update class info
-                return _parseJson(_baseCommmand("-Keywords \"-xmp:subject\" -Prefs -Caption-Abstract -json", fullFilePath));
+                return _parseJson(_baseCommmand("-Keywords -Description \"-xmp:subject\" -Prefs -Caption-Abstract -json", fullFilePath));
             }
 
             public ExifToolModel Info(string fullFilePath)
@@ -183,7 +183,9 @@ namespace starsky.Services
                     fullFilePath = xmpFullFilePath;
                 
                 // When change also update class 'Update'
-                return _parseJson(_baseCommmand("-Keywords \"-xmp:subject\" -Caption-Abstract -Prefs -json", fullFilePath));
+                // xmp:Subject == Keywords
+                // Caption-Abstract == Description
+                return _parseJson(_baseCommmand("-Keywords -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", fullFilePath));
             }
 
         }

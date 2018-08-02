@@ -13,6 +13,18 @@ namespace starsky.Models
         [JsonProperty(PropertyName="Caption-Abstract")]
         public string CaptionAbstract { get; set; }
         
+        // overwrite "-xmp:Description" over -CaptionAbstract
+        public string Description
+        {
+            set {
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    CaptionAbstract = value;
+                }
+            }
+        }
+        
+        
         public string Prefs
         {
             get { return null; }
