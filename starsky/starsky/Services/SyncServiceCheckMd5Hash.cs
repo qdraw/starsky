@@ -35,15 +35,11 @@ namespace starsky.Services
                     {
                         _query.RemoveItem(dbItem);
 
-//                        var fullFilePath = Files.GetXmpSidecarFileWhenRequired(
-//                            _appSettings.DatabasePathToFilePath(itemLocal), _appSettings.ExifToolXmpPrefix);
-//                        if (Files.IsXmpSidecarRequired(fullFilePath))
-//                        {
-//                        }
-                        
                         var fullFilePath = _appSettings.DatabasePathToFilePath(itemLocal);
                         var updatedDatabaseItem = ExifRead.ReadExifFromFile(fullFilePath);
                         
+                        dbItem = new XmpReadHelper(_appSettings).XmpSelectSidecarFile(dbItem, fullFilePath);
+
                         updatedDatabaseItem.FileHash = localHash;
                         updatedDatabaseItem.FileName = dbItem.FileName;
                         updatedDatabaseItem.AddToDatabase = DateTime.Now;

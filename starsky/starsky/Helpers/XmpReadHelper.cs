@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Runtime.Serialization;
 using System.Text;
 using starsky.Models;
 using starsky.Services;
@@ -7,10 +8,41 @@ using XmpCore;
 
 namespace starsky.Helpers
 {
-    public static class XmpReadHelper
+    public class XmpReadHelper
     {
-        public static FileIndexItem GetDataFromString(string xmpDataAsString)
+        private readonly AppSettings _appSettings;
+
+        public XmpReadHelper(AppSettings appSettings = null)
         {
+            _appSettings = appSettings;
+        }
+        
+        public FileIndexItem XmpSelectSidecarFile(FileIndexItem databaseItem, string singleFilePath)
+        {
+            if(_appSettings == null) throw new InvalidDataContractException("AppSettings in XmpSelectSidecarFile is null");
+            
+            // Read content from sidecar xmp file
+            if (Files.IsXmpSidecarRequired(singleFilePath))
+            {
+                // Parse an xmp file for this location
+                var xmpFilePath = Files.GetXmpSidecarFileWhenRequired(
+                    singleFilePath,
+                    _appSettings.ExifToolXmpPrefix);
+                if (Files.IsFolderOrFile(xmpFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
+                {
+                    // Read the text-content of the xmp file.
+                    var xmp = new PlainTextFileHelper().ReadFile(xmpFilePath);
+                    // Get the data from the xmp
+                    databaseItem = GetDataFromString(xmp);
+                }
+            }
+            return databaseItem;
+        }
+        
+        public FileIndexItem GetDataFromString(string xmpDataAsString)
+        {
+            // Does not require appsettings
+            
             var item = new FileIndexItem();
             // ContentNameSpace is for example : Namespace=http://...
             item = GetDataContentNameSpaceTypes(xmpDataAsString, item);
@@ -25,7 +57,7 @@ namespace starsky.Helpers
         /// <param name="property">IXmpPropertyInfo read from string</param>
         /// <param name="xmpName">xmpName, for example dc:subject[1]</param>
         /// <returns>value or null</returns>
-        private static string GetNullNameSpace(IXmpPropertyInfo property, string xmpName)
+        private string GetNullNameSpace(IXmpPropertyInfo property, string xmpName)
         {
             if (property.Path == xmpName && !string.IsNullOrEmpty(property.Value) 
                                                      && string.IsNullOrEmpty(property.Namespace) )
@@ -41,7 +73,7 @@ namespace starsky.Helpers
         /// <param name="property">IXmpPropertyInfo read from string</param>
         /// <param name="xmpName">xmpName, for example dc:subject[1]</param>
         /// <returns>value or null</returns>
-        private static string GetContentNameSpace(IXmpPropertyInfo property, string xmpName)
+        private string GetContentNameSpace(IXmpPropertyInfo property, string xmpName)
         {
             if (property.Path == xmpName && !string.IsNullOrEmpty(property.Value) 
                                          && !string.IsNullOrEmpty(property.Namespace) )
@@ -52,14 +84,14 @@ namespace starsky.Helpers
             return null;
         }
 
-        private static double GpsPreParseAndConvertDegreeAngleToDouble(string gpsLatOrLong)
+        private double GpsPreParseAndConvertDegreeAngleToDouble(string gpsLatOrLong)
         {
             // get ref North, South, East West
             string refGps = gpsLatOrLong.Substring(gpsLatOrLong.Length-1, 1);
             return ExifRead.ConvertDegreeMinutesToDouble(gpsLatOrLong, refGps);
         }
                 
-        private static FileIndexItem GetDataNullNameSpaceTypes(string xmpDataAsString, FileIndexItem item)
+        private FileIndexItem GetDataNullNameSpaceTypes(string xmpDataAsString, FileIndexItem item)
         {
             var xmp = XmpMetaFactory.ParseFromString(xmpDataAsString);
             foreach (var property in xmp.Properties)
@@ -106,7 +138,7 @@ namespace starsky.Helpers
             return item;
         }
 
-        private static FileIndexItem GetDataContentNameSpaceTypes(string xmpDataAsString, FileIndexItem item)
+        private FileIndexItem GetDataContentNameSpaceTypes(string xmpDataAsString, FileIndexItem item)
         {
             var xmp = XmpMetaFactory.ParseFromString(xmpDataAsString);
             foreach (var property in xmp.Properties)
