@@ -119,9 +119,11 @@ namespace starsky.Helpers
             get
             {
                 var extensionList = new List<string>();
+                // Bitmap does not support internal xmp
                 extensionList.AddRange(Extensionbmp);
+                // Gif does not support internal xmp
                 extensionList.AddRange(Extensiongif);
-//                extensionList.AddRange(Extensionpng);
+                // Used for raw files >
                 extensionList.AddRange(Extensiontiff);
                 return extensionList;
             }
