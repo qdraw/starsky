@@ -24,21 +24,18 @@ namespace starsky.Services
         {
             // reject emphy requests
             if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
-
-            // A direct query to check if the file exist
-            var singleItemDbPathFromDirectQuery = CacheSingleFileIndex(singleItemDbPath);
-            if (singleItemDbPathFromDirectQuery == null) return null;
-
+            
             var parentFolder = Breadcrumbs.BreadcrumbHelper(singleItemDbPath).LastOrDefault();
 
             var fileIndexItemsList = DisplayFileFolders(parentFolder,colorClassFilterList,false,false).ToList();
             // disable collections here;
-            
+
             // RemoveLatestSlash is for '/' folder
             var fileName = singleItemDbPath.Replace(ConfigRead.RemoveLatestSlash(parentFolder) + "/", string.Empty);
 
             var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
             if (currentFileIndexItem == null) return null;
+            if(currentFileIndexItem.IsDirectory) return null;
 
             if (currentFileIndexItem.Tags.Contains("!delete!")) hideDeleted = false;
             
@@ -56,7 +53,7 @@ namespace starsky.Services
             
             itemResult.FileIndexItem.CollectionPaths = new List<string>();
             itemResult.FileIndexItem.CollectionPaths.AddRange(fileIndexItemsList
-                .Where(p => p.FileCollectionName == singleItemDbPathFromDirectQuery.FileCollectionName)
+                .Where(p => p.FileCollectionName == currentFileIndexItem.FileCollectionName)
                 .Select(p => p.FilePath));
             
             return itemResult;
