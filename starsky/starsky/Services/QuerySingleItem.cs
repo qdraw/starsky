@@ -81,27 +81,27 @@ namespace starsky.Services
         }
         
         
-        private FileIndexItem CacheSingleFileIndex(string singleItemDbPath)
-        {
-            // The CLI programs uses no cache
-            if (_cache == null) return _context.FileIndex.FirstOrDefault(
-                p => p.FilePath == singleItemDbPath && !p.IsDirectory);
-
-            // Return values from IMemoryCache
-            var queryCacheName = CachingDbName(typeof(FileIndexItem).Name, 
-                singleItemDbPath); // no need to specify colorClassFilterList
-
-            object queryResult;
-            if (!_cache.TryGetValue(queryCacheName, out queryResult))
-            {
-                queryResult = _context.FileIndex.FirstOrDefault(
-                    p => p.FilePath == singleItemDbPath && !p.IsDirectory);
-                
-                _cache.Set(queryCacheName, queryResult, new TimeSpan(1,0,0));
-            }
-
-            return queryResult as FileIndexItem;
-        }
+//        private FileIndexItem CacheSingleFileIndex(string singleItemDbPath)
+//        {
+//            // The CLI programs uses no cache
+//            if (_cache == null) return _context.FileIndex.FirstOrDefault(
+//                p => p.FilePath == singleItemDbPath && !p.IsDirectory);
+//
+//            // Return values from IMemoryCache
+//            var queryCacheName = CachingDbName(typeof(FileIndexItem).Name, 
+//                singleItemDbPath); // no need to specify colorClassFilterList
+//
+//            object queryResult;
+//            if (!_cache.TryGetValue(queryCacheName, out queryResult))
+//            {
+//                queryResult = _context.FileIndex.FirstOrDefault(
+//                    p => p.FilePath == singleItemDbPath && !p.IsDirectory);
+//                
+//                _cache.Set(queryCacheName, queryResult, new TimeSpan(1,0,0));
+//            }
+//
+//            return queryResult as FileIndexItem;
+//        }
         
         
         

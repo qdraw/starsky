@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Newtonsoft.Json;
 using starsky.Models;
 using System.Runtime.InteropServices;
@@ -101,11 +99,13 @@ namespace starsky.Services
 
             return text;
         }
+        
+        
 
         private ExifToolModel parseJson(string text) {
             if (string.IsNullOrEmpty(text)) return null;
             text = text.Replace("\r", "");
-            text = text.Replace($"\\", "");
+//            text = text.Replace($"\\", "");
 
             Console.WriteLine("apply fix");
             text = FixingJsonKeywordString(text); // "Keywords"
