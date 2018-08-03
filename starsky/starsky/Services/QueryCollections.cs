@@ -61,7 +61,7 @@ namespace starsky.Services
                 }
             }
             
-            return querySubFolderList;
+            return querySubFolderList.OrderBy(p => p.FileName).ToList();
         }
     }
 }

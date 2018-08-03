@@ -111,8 +111,7 @@ namespace starsky.Services
             _context.Attach(updateStatusContent).State = EntityState.Modified;
             _context.SaveChanges();
             
-//            CacheUpdateItem(updateStatusContent,true);
-//            CacheUpdateItem(updateStatusContent,false);
+            CacheUpdateItem(updateStatusContent);
 
             return updateStatusContent;
         }
@@ -178,9 +177,7 @@ namespace starsky.Services
                 throw;
             }
             
-            // There are two caches
-//            AddCacheItem(updateStatusContent,true);
-//            AddCacheItem(updateStatusContent,false);
+            AddCacheItem(updateStatusContent);
 
             return updateStatusContent;
         }

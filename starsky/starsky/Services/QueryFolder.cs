@@ -24,23 +24,23 @@ namespace starsky.Services
 
             var queryItems = CacheQueryDisplayFileFolders(subPath);
 
-//            if (colorClassFilterList.Any())
-//            {
-//                queryItems = queryItems.Where(p => colorClassFilterList.Contains(p.ColorClass)).ToList();
-//            }
-//
-//            if (!queryItems.Any())
-//            {
-//                return new List<FileIndexItem>();
-//            }
-//            
+            if (colorClassFilterList.Any())
+            {
+                queryItems = queryItems.Where(p => colorClassFilterList.Contains(p.ColorClass)).ToList();
+            }
+
+            if (!queryItems.Any())
+            {
+                return new List<FileIndexItem>();
+            }
+            
             if (enableCollections)
             {
                 // Query Collections
                 queryItems =  StackCollections(queryItems);         
             }
             
-//            if(hideDeleted) return HideDeletedFileFolderList(queryItems);
+            if(hideDeleted) return HideDeletedFileFolderList(queryItems);
             return queryItems;
         }
 

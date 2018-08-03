@@ -11,6 +11,7 @@ public class ApplicationDbContext : DbContext
 {
 public ApplicationDbContext(DbContextOptions options) : base(options)
 {
+
 }
 public DbSet<FileIndexItem> FileIndex { get; set; }
 public DbSet<ImportIndexItem> ImportIndex { get; set; }
@@ -23,8 +24,15 @@ public DbSet<UserRole> UserRoles { get; set; }
 public DbSet<Permission> Permissions { get; set; }
 public DbSet<RolePermission> RolePermissions { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.EnableSensitiveDataLogging();
+    }
+    
 protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
+    
+        
 base.OnModelCreating(modelBuilder);
 modelBuilder.Entity<User>(etb =>
 {

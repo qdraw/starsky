@@ -22,7 +22,7 @@ namespace starsky.Services
             bool enableCollections = true,
             bool hideDeleted = true)
         {
-            // reject emphy requests // --- || singleItemDbPath == "/"
+            // reject emphy requests
             if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
 
             // A direct query to check if the file exist
@@ -31,18 +31,19 @@ namespace starsky.Services
 
             var parentFolder = Breadcrumbs.BreadcrumbHelper(singleItemDbPath).LastOrDefault();
 
-            var fileIndexItemsList = DisplayFileFolders(parentFolder,colorClassFilterList,enableCollections).ToList();
+            var fileIndexItemsList = DisplayFileFolders(parentFolder,colorClassFilterList,false,false).ToList();
+            // disable collections here;
             var fileName = singleItemDbPath.Replace(parentFolder + "/", string.Empty);
             var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
             
-            // When loading a raw file == next prev is using a jpeg file
-            var directAccessAnNonExtensionThumbSupported = false;
-            if (currentFileIndexItem == null)
-            {
-                directAccessAnNonExtensionThumbSupported = true;
-                currentFileIndexItem = fileIndexItemsList.FirstOrDefault(
-                    p => p.FileCollectionName == singleItemDbPathFromDirectQuery.FileCollectionName);
-            }
+//            // When loading a raw file == next prev is using a jpeg file
+//            var directAccessAnNonExtensionThumbSupported = false;
+//            if (currentFileIndexItem == null)
+//            {
+//                directAccessAnNonExtensionThumbSupported = true;
+//                currentFileIndexItem = fileIndexItemsList.FirstOrDefault(
+//                    p => p.FileCollectionName == singleItemDbPathFromDirectQuery.FileCollectionName);
+//            }
             
             var itemResult = new DetailView
             {
@@ -53,18 +54,18 @@ namespace starsky.Services
                 ColorClassFilterList = colorClassFilterList
             };
             
-            // Search for collectionItems need to add a duplicate of the cache
-            // This one is always false => due need to check for raw files in db
-            var collectionItemsDirectory = DisplayFileFolders(parentFolder,colorClassFilterList,false).ToList();
-
-            if (directAccessAnNonExtensionThumbSupported)
-            {
-                itemResult.FileIndexItem = singleItemDbPathFromDirectQuery;
-            }
+//            // Search for collectionItems need to add a duplicate of the cache
+//            // This one is always false => due need to check for raw files in db
+//            var collectionItemsDirectory = DisplayFileFolders(parentFolder,colorClassFilterList,false,false).ToList();
+//
+//            if (directAccessAnNonExtensionThumbSupported)
+//            {
+//                itemResult.FileIndexItem = singleItemDbPathFromDirectQuery;
+//            }
             
             
             itemResult.FileIndexItem.CollectionPaths = new List<string>();
-            itemResult.FileIndexItem.CollectionPaths.AddRange(collectionItemsDirectory
+            itemResult.FileIndexItem.CollectionPaths.AddRange(fileIndexItemsList
                 .Where(p => p.FileCollectionName == singleItemDbPathFromDirectQuery.FileCollectionName)
                 .Select(p => p.FilePath));
             
