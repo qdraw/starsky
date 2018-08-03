@@ -103,7 +103,6 @@ namespace starskytests
             var folder2 = _query.AddItem(new FileIndexItem
             {
                 FileName = "folder2",
-                //FilePath = "/test/folder2",
                 ParentDirectory = "/test/",
                 IsDirectory = true
             });
@@ -182,6 +181,8 @@ namespace starskytests
         [TestMethod]
         public void SyncServiceSingleFileTest()
         {
+            // Test to do a sync with one single file
+            // used in importer or web api.
             var newImage = new CreateAnImage();
             
             _appSettings.StorageFolder = newImage.BasePath;
@@ -189,11 +190,14 @@ namespace starskytests
             _syncservice.SingleFile(newImage.DbPath);
 
             // Run twice >= result is one image in database
-            _syncservice.SingleFile(newImage.DbPath);
+            var t = _syncservice.SingleFile(newImage.DbPath);
 
             // todo: Need to check if there is only one image with the same name
-                
+
+            var all = _query.GetAllRecursive("/");
+            
             var item = _query.SingleItem(newImage.DbPath).FileIndexItem;
+            
             Assert.AreEqual(item.FileHash.Length >= 5,true);
             _query.RemoveItem(item);
             

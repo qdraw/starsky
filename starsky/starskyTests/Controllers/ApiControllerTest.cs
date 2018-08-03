@@ -77,7 +77,7 @@ namespace starskytests.Controllers
             var fileHashCode = FileHash.GetHashCode(_createAnImage.FullFilePath);
             if (string.IsNullOrEmpty(_query.GetItemByHash(fileHashCode)))
             {
-                var q = _query.AddItem(new FileIndexItem
+                _query.AddItem(new FileIndexItem
                 {
                     FileName = _createAnImage.DbPath.Replace("/",string.Empty),
                     ParentDirectory = "/",
@@ -92,6 +92,7 @@ namespace starskytests.Controllers
         public void ApiController_Delete_API_HappyFlow_Test()
         {
             var createAnImage = InsertSearchData();
+            _appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
             var controller = new ApiController(_query,_exiftool,_appSettings);
 
             Console.WriteLine("createAnImage.FilePath");

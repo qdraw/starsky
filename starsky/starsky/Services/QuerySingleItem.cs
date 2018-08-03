@@ -33,7 +33,10 @@ namespace starsky.Services
 
             var fileIndexItemsList = DisplayFileFolders(parentFolder,colorClassFilterList,false,false).ToList();
             // disable collections here;
-            var fileName = singleItemDbPath.Replace(parentFolder + "/", string.Empty);
+            
+            // RemoveLatestSlash is for '/' folder
+            var fileName = singleItemDbPath.Replace(ConfigRead.RemoveLatestSlash(parentFolder) + "/", string.Empty);
+
             var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
             if (currentFileIndexItem == null) return null;
 

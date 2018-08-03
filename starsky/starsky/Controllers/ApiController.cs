@@ -208,12 +208,12 @@ namespace starsky.Controllers
         {
             if (_isReadOnly(f)) return NotFound("afbeelding is in lees-only mode en kan niet worden verwijderd");
 
-            var singleItem = _query.SingleItem(f);
+            var singleItem = _query.SingleItem(f,null,false,false);
             if (singleItem == null) return NotFound("not in index");
             if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
                 return NotFound("source image missing " +
                                 _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-            var item = _query.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
+            var item = _query.SingleItem(singleItem.FileIndexItem.FilePath,null,false,false).FileIndexItem;
 
             //  Remove Files if exist xmp file
             var fullFilePath = _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
