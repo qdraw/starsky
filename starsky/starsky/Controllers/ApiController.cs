@@ -63,6 +63,14 @@ namespace starsky.Controllers
             {
                 var fullPathCollection = _appSettings.DatabasePathToFilePath(collectionPath);
                 Console.WriteLine(">> fullPathCollection" + fullPathCollection);
+                
+                //For the situation that the file is not on disk but the only one in the list
+                if (!System.IO.File.Exists(fullPathCollection) 
+                    && detailView.FileIndexItem.CollectionPaths.Count == 1)
+                {
+                    return NotFound("source image missing > "+ fullPathCollection);
+                }
+                // When there are more items in the list
                 if (!System.IO.File.Exists(fullPathCollection))
                 {
                     detailView.FileIndexItem.CollectionPaths.Remove(collectionPath);
@@ -99,6 +107,8 @@ namespace starsky.Controllers
             {
                 var singleItem = _query.SingleItem(detailView.FileIndexItem.CollectionPaths[i],null,false,false);
                 var exifToolResult = _exiftool.Info(collectionFullPaths[i]);
+                // for if exiftool does not anwer the request
+                if (exifToolResult.SourceFile == null) exifToolResult.SourceFile = collectionFullPaths[i];
 
                 singleItem.FileIndexItem.Tags = exifToolResult.Tags;
                 singleItem.FileIndexItem.Description = exifToolResult.CaptionAbstract;
