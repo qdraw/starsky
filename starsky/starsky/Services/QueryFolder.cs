@@ -15,58 +15,63 @@ namespace starsky.Services
         public IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
             List<FileIndexItem.Color> colorClassFilterList = null,
-            bool enableCollections = true)
+            bool enableCollections = true,
+            bool hideDeleted = true)
         {
             if (colorClassFilterList == null) colorClassFilterList = new List<FileIndexItem.Color>();
             
             subPath = SubPathSlashRemove(subPath);
 
-            var queryItems = CacheQueryDisplayFileFolders(subPath, enableCollections);
+            var queryItems = CacheQueryDisplayFileFolders(subPath);
 
-            if (colorClassFilterList.Any())
-            {
-                queryItems = queryItems.Where(p => colorClassFilterList.Contains(p.ColorClass)).ToList();
-            }
-
-            if (!queryItems.Any())
-            {
-                return new List<FileIndexItem>();
-            }
-            return HideDeletedFileFolderList(queryItems);
-        }
-
-        private List<FileIndexItem> QueryDisplayFileFolders(string subPath = "/", bool enableCollections = true)
-        {
-            var queryItems = _context.FileIndex
-                .Where(p => p.ParentDirectory == subPath)
-                .OrderBy(p => p.FileName).ToList();
-
+//            if (colorClassFilterList.Any())
+//            {
+//                queryItems = queryItems.Where(p => colorClassFilterList.Contains(p.ColorClass)).ToList();
+//            }
+//
+//            if (!queryItems.Any())
+//            {
+//                return new List<FileIndexItem>();
+//            }
+//            
             if (enableCollections)
             {
                 // Query Collections
-                return Collections(queryItems);         
+                queryItems =  StackCollections(queryItems);         
             }
-
-            return queryItems.OrderBy(p => p.FileName).ToList();
+            
+//            if(hideDeleted) return HideDeletedFileFolderList(queryItems);
+            return queryItems;
         }
+
+
         
-        private List<FileIndexItem> CacheQueryDisplayFileFolders(string subPath, bool enableCollections)
+        private List<FileIndexItem> CacheQueryDisplayFileFolders(string subPath)
         {
             // The CLI programs uses no cache
-            if( _cache == null || _appSettings?.AddMemoryCache == false) return QueryDisplayFileFolders(subPath, enableCollections);
+            if( _cache == null || _appSettings?.AddMemoryCache == false) return QueryDisplayFileFolders(subPath);
             
             // Return values from IMemoryCache
-            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name + enableCollections, 
+            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
                 subPath);
 
             if (_cache.TryGetValue(queryCacheName, out var objectFileFolders))
                 return objectFileFolders as List<FileIndexItem>;
             
-            objectFileFolders = QueryDisplayFileFolders(subPath, enableCollections);
+            objectFileFolders = QueryDisplayFileFolders(subPath);
             _cache.Set(queryCacheName, objectFileFolders, new TimeSpan(1,0,0));
             return (List<FileIndexItem>) objectFileFolders;
         }
 
+        private List<FileIndexItem> QueryDisplayFileFolders(string subPath = "/")
+        {
+            var queryItems = _context.FileIndex
+                .Where(p => p.ParentDirectory == subPath)
+                .OrderBy(p => p.FileName).ToList();
+
+            return queryItems.OrderBy(p => p.FileName).ToList();
+        }
+        
         // Hide Deleted items in folder
         private IEnumerable<FileIndexItem> HideDeletedFileFolderList(List<FileIndexItem> queryItems){
             // temp feature to hide deleted items

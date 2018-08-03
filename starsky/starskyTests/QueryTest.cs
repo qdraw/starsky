@@ -442,5 +442,37 @@ namespace starskytests
             Assert.AreEqual(displayFileFolders.FirstOrDefault(p => p.FileName == "cache").Tags,"hi");
         }
 
+        [TestMethod]
+        public void DisplayFileFolders_StackCollection()
+        {
+            
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "StackCollection001.jpg",
+                ParentDirectory = "/StackCollection",
+                FileHash = "9876789",
+                Tags = string.Empty,
+                IsDirectory = false
+            });
+            
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "StackCollection001.dng",
+                ParentDirectory = "/StackCollection",
+                FileHash = "9876789",
+                Tags = string.Empty,
+                IsDirectory = false
+            });
+
+
+            var dp1 = _query.DisplayFileFolders("/StackCollection");
+            Assert.AreEqual(1,dp1.Count());
+            
+            var dp2 = _query.DisplayFileFolders("/StackCollection",null,false);
+            Assert.AreEqual(2,dp2.Count());
+
+
+        }
+
     }
 }

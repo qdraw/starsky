@@ -18,7 +18,9 @@ namespace starsky.Services
         // With Caching feature :)
         
         public DetailView SingleItem(string singleItemDbPath,
-            List<FileIndexItem.Color> colorClassFilterList = null)
+            List<FileIndexItem.Color> colorClassFilterList = null,
+            bool enableCollections = true,
+            bool hideDeleted = true)
         {
             // reject emphy requests // --- || singleItemDbPath == "/"
             if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
@@ -29,7 +31,7 @@ namespace starsky.Services
 
             var parentFolder = Breadcrumbs.BreadcrumbHelper(singleItemDbPath).LastOrDefault();
 
-            var fileIndexItemsList = DisplayFileFolders(parentFolder,colorClassFilterList).ToList();
+            var fileIndexItemsList = DisplayFileFolders(parentFolder,colorClassFilterList,enableCollections).ToList();
             var fileName = singleItemDbPath.Replace(parentFolder + "/", string.Empty);
             var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
             
@@ -52,6 +54,7 @@ namespace starsky.Services
             };
             
             // Search for collectionItems need to add a duplicate of the cache
+            // This one is always false => due need to check for raw files in db
             var collectionItemsDirectory = DisplayFileFolders(parentFolder,colorClassFilterList,false).ToList();
 
             if (directAccessAnNonExtensionThumbSupported)
@@ -68,11 +71,15 @@ namespace starsky.Services
             return itemResult;
         }
         
-        private RelativeObjects GetNextPrevInSubFolder(FileIndexItem currentFileIndexItem, List<FileIndexItem> fileIndexItemsList)
+        private RelativeObjects GetNextPrevInSubFolder(FileIndexItem currentFileIndexItem, 
+            List<FileIndexItem> fileIndexItemsList)
         {
+            // Check if this is item is not !deleted! yet;
+            if (currentFileIndexItem == null) return new RelativeObjects();;
+            
             var currentIndex = fileIndexItemsList.FindIndex(p => p.FilePath == currentFileIndexItem.FilePath);
             var relativeObject = new RelativeObjects();
-            
+
             if (currentIndex != fileIndexItemsList.Count - 1)
             {
                 relativeObject.NextFilePath = fileIndexItemsList[currentIndex + 1].FilePath;

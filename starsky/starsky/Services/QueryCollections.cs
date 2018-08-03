@@ -9,12 +9,13 @@ namespace starsky.Services
 {
     public partial class Query
     {
-        public List<FileIndexItem> Collections(List<FileIndexItem> databaseSubFolderList)
+        public List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList)
         {
             
             // Get a list of duplicate items
-            var duplicateItemsByFilePath = databaseSubFolderList.GroupBy(item => item.FileCollectionName)
+            var duplicateItemsByFileCollectionName = databaseSubFolderList.GroupBy(item => item.FileCollectionName)
                 .SelectMany(grp => grp.Skip(1).Take(1)).ToList();
+            
             
             // duplicateItemsByFilePath > 
             // If you have 3 item with the same name it will include 1 name;
@@ -22,24 +23,45 @@ namespace starsky.Services
             // We keep the first item
             // And Delete duplicate items
             
-            foreach (var duplicateItemByName in duplicateItemsByFilePath)
+            var querySubFolderList = new List<FileIndexItem>();
+            // Do not remove it from: databaseSubFolderList otherwise it will be deleted from cache
+
+            foreach (var duplicateItemByName in duplicateItemsByFileCollectionName)
             {
-                var duplicateItems = databaseSubFolderList.Where(p => p.FileCollectionName == duplicateItemByName.FileCollectionName).ToList();
+                var duplicateItems = databaseSubFolderList.Where(p => 
+                    p.FileCollectionName == duplicateItemByName.FileCollectionName).ToList();
                 // The idea to pick thumbnail based images first, followed by non-thumb supported
                 // when not pick alphabetaly > todo implement this
 
                 for (int i = 0; i < duplicateItems.Count(); i++)
                 {
                     var fileExtension = Path.GetExtension(duplicateItems[i].FileName).Replace(".",string.Empty);
-
-                    if (!Files.ExtensionThumbSupportedList.Contains(fileExtension))
+                    
+                    if (Files.ExtensionThumbSupportedList.Contains(fileExtension))
                     {
-                        databaseSubFolderList.Remove(duplicateItems[i]);
+                        querySubFolderList.Add(duplicateItems[i]);
                     }
                 }
 
+                if (querySubFolderList.Any(p => p.FileCollectionName == duplicateItemByName.FileCollectionName))
+                {
+                    Console.WriteLine(">> Error code 4567890-098765");
+                }
+
             }
-            return databaseSubFolderList;
+
+            // Then add the items that are non duplicate back to the list
+            foreach (var dbItem in databaseSubFolderList)
+            {
+                /// check if any item is duplicate
+                if (duplicateItemsByFileCollectionName.All(p => 
+                    p.FileCollectionName != dbItem.FileCollectionName))
+                {
+                    querySubFolderList.Add(dbItem);
+                }
+            }
+            
+            return querySubFolderList;
         }
     }
 }
