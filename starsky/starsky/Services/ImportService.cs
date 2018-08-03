@@ -133,9 +133,12 @@ namespace starsky.Services
             // Only accept files with correct meta data
             var fileIndexItem = ExifRead.ReadExifFromFile(inputFileFullPath);
 
+            // Check if there is a xmp file that contains data
+            fileIndexItem = new XmpReadHelper(_appSettings).XmpSelectSidecarFile(fileIndexItem, inputFileFullPath);
+
             // Parse the filename and create a new importIndexItem object
             var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem, importSettings.Structure);
-            
+
 
             
             // Parse DateTime from filename

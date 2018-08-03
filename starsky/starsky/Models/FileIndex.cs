@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using starsky.Helpers;
 using starsky.Services;
 
 namespace starsky.Models
@@ -41,6 +43,14 @@ namespace starsky.Models
         }
 
         public string FileHash { get; set; }
+        
+        [NotMapped]
+        public string FileCollectionName {
+            get
+            {
+                return Path.GetFileNameWithoutExtension(FileName);
+            } 
+        }
 
         // Do not save null in database for Parent Directory
         private string _parentDirectory;
@@ -77,7 +87,8 @@ namespace starsky.Models
         }
 
         [System.ComponentModel.DefaultValue("")]
-        public string Description { get; set; }
+        // add default value (6#+)
+        public string Description { get; set; } = string.Empty;
         
         // Do not save null in database for Title
         private string _title;
@@ -191,17 +202,37 @@ namespace starsky.Models
 
         public enum Color
         {
+            // Display name: used in -xmp:Label
+            [Display(Name = "Winner")]
             Winner = 1, // Paars - purple
+            [Display(Name = "Winner Alt")]
             WinnerAlt = 2, // rood - Red -
+            [Display(Name = "Superior")]
             Superior = 3, // Oranje - orange
+            [Display(Name = "Superior Alt")]
             SuperiorAlt = 4, //Geel - yellow
+            [Display(Name = "Typical")]
             Typical = 5, // Groen - groen
+            [Display(Name = "Typical Alt")]
             TypicalAlt = 6, // Turquoise
+            [Display(Name = "Extras")]
             Extras = 7, // Blauw - blue
+            [Display(Name = "")]
             Trash = 8, // grijs - Grey
             None = 0, // donkergrijs Dark Grey
             DoNotChange = -1
         }
+
+        public static string GetDisplayName(Enum enumValue)
+        {
+            var name = enumValue.GetType()?
+                .GetMember(enumValue.ToString())?
+                .First()?
+                .GetCustomAttribute<DisplayAttribute>()?
+                .Name;
+            return name;
+        }
+        
       
         public static IEnumerable<Color> GetAllColor()
         {
@@ -226,6 +257,12 @@ namespace starsky.Models
         {
             return Enum.GetValues(typeof(ColorUserInterface)).Cast<ColorUserInterface>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
         }
+        
+        public Files.ImageFormat ImageFormat { get; set; }
+        
+        [NotMapped]
+        public List<string> CollectionPaths { get; set; } = new List<string>();
+
         
     }
 }

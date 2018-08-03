@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using starsky.Helpers;
 using starsky.Models;
 
 namespace starsky.Services
@@ -32,7 +34,12 @@ namespace starsky.Services
                     if (localHash != dbItem.FileHash)
                     {
                         _query.RemoveItem(dbItem);
-                        var updatedDatabaseItem = ExifRead.ReadExifFromFile(_appSettings.DatabasePathToFilePath(itemLocal));
+
+                        var fullFilePath = _appSettings.DatabasePathToFilePath(itemLocal);
+                        var updatedDatabaseItem = ExifRead.ReadExifFromFile(fullFilePath);
+                        
+                        dbItem = new XmpReadHelper(_appSettings).XmpSelectSidecarFile(dbItem, fullFilePath);
+
                         updatedDatabaseItem.FileHash = localHash;
                         updatedDatabaseItem.FileName = dbItem.FileName;
                         updatedDatabaseItem.AddToDatabase = DateTime.Now;

@@ -109,10 +109,10 @@ namespace starskytests
          [TestMethod]
          public void ExifRead_ParseGpsTest()
          {
-             var latitude = ExifRead.ConvertDegreeAngleToDouble("52° 18' 29.54\"", "N");
+             var latitude = ExifRead.ConvertDegreeMinutesSecondsToDouble("52° 18' 29.54\"", "N");
              Assert.AreEqual(latitude,  52.308205555500003, 0.000001);
              
-             var longitude = ExifRead.ConvertDegreeAngleToDouble("6° 11' 36.8\"", "E");
+             var longitude = ExifRead.ConvertDegreeMinutesSecondsToDouble("6° 11' 36.8\"", "E");
              Assert.AreEqual(longitude,  6.1935555554999997, 0.000001);
 
          }
@@ -129,7 +129,23 @@ namespace starskytests
              Assert.AreEqual(item.Tags, "test, sion");
              Assert.AreEqual(item.Latitude,  52.308205555500003, 0.000001);
              Assert.AreEqual(item.Longitude, 6.1935555554999997, 0.000001);
-//             Assert.AreEqual(item.Title, "");
+         }
+         
+         [TestMethod]
+         public void ExifRead_ConvertDegreeMinutesToDouble_ConvertLongLat()
+         {
+
+             var input = "52,20.708N";
+             string refGps = input.Substring(input.Length-1, 1);
+             var data = ExifRead.ConvertDegreeMinutesToDouble(input, refGps);
+             Assert.AreEqual(52.3451333333,data,0.001);
+
+            
+             var input1 = "5,55.840E";
+             string refGps1 = input1.Substring(input1.Length-1, 1);
+             var data1 = ExifRead.ConvertDegreeMinutesToDouble(input1, refGps1);
+             Assert.AreEqual(5.930,data1,0.001);
+
          }
 
      }

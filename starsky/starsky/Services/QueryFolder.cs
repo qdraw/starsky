@@ -12,8 +12,11 @@ namespace starsky.Services
         // Class for displaying folder content
         
         // Display File folder displays content of the folder
-        public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/", 
-            List<FileIndexItem.Color> colorClassFilterList = null)
+        public IEnumerable<FileIndexItem> DisplayFileFolders(
+            string subPath = "/", 
+            List<FileIndexItem.Color> colorClassFilterList = null,
+            bool enableCollections = true,
+            bool hideDeleted = true)
         {
             if (colorClassFilterList == null) colorClassFilterList = new List<FileIndexItem.Color>();
             
@@ -30,16 +33,18 @@ namespace starsky.Services
             {
                 return new List<FileIndexItem>();
             }
-            return HideDeletedFileFolderList(queryItems);
-        }
-
-        private List<FileIndexItem> QueryDisplayFileFolders(string subPath = "/")
-        {
-            var queryItems = _context.FileIndex
-                .Where(p => p.ParentDirectory == subPath)
-                .OrderBy(p => p.FileName).ToList();     
+            
+            if (enableCollections)
+            {
+                // Query Collections
+                queryItems =  StackCollections(queryItems);         
+            }
+            
+            if(hideDeleted) return HideDeletedFileFolderList(queryItems);
             return queryItems;
         }
+
+
         
         private List<FileIndexItem> CacheQueryDisplayFileFolders(string subPath)
         {
@@ -58,6 +63,15 @@ namespace starsky.Services
             return (List<FileIndexItem>) objectFileFolders;
         }
 
+        private List<FileIndexItem> QueryDisplayFileFolders(string subPath = "/")
+        {
+            var queryItems = _context.FileIndex
+                .Where(p => p.ParentDirectory == subPath)
+                .OrderBy(p => p.FileName).ToList();
+
+            return queryItems.OrderBy(p => p.FileName).ToList();
+        }
+        
         // Hide Deleted items in folder
         private IEnumerable<FileIndexItem> HideDeletedFileFolderList(List<FileIndexItem> queryItems){
             // temp feature to hide deleted items

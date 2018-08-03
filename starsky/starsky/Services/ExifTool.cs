@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
 using starsky.Models;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using starsky.Helpers;
 using starsky.Interfaces;
 
 namespace starsky.Services
@@ -25,10 +28,9 @@ namespace starsky.Services
             _appSettings = appSettings;
         }
         
-        private string _baseCommmand(string options,string fullFilePath)
+        private string BaseCommmand(string options, string fullFilePathSpaceSeperated)
         {
-            fullFilePath = $"\"" + fullFilePath + $"\"";
-            options = " " + options + " " + fullFilePath;
+            options = " " + options + " " + fullFilePathSpaceSeperated;
 
             Console.WriteLine(_appSettings.ExifToolPath);
 
@@ -59,7 +61,7 @@ namespace starsky.Services
             return strOutput;
         }
         
-        public string FixingJsonKeywordString(string text)
+        public string FixingJsonKeywordString(string text, string nameInJson = "Keywords")
         {
 
             // Not Single Keyword
@@ -68,15 +70,15 @@ namespace starsky.Services
 
             var splitArray = text.Split("\n");
 
-            var keywordsIndex = text.IndexOf("Keywords", StringComparison.InvariantCulture);
+            var keywordsIndex = text.IndexOf(nameInJson, StringComparison.InvariantCulture);
             if (keywordsIndex >= 0)
             {
                 var updatedTextStringBuilder = new StringBuilder();
                 foreach (var item in splitArray)
                 {
-                    if (item.Contains("Keywords") && !item.Contains("["))
+                    if (item.Contains(nameInJson) && !item.Contains("["))
                     {
-                        var key = item.Replace("\"Keywords\":", "");
+                        var key = item.Replace("\"" + nameInJson + "\":", "");
                         key = key.Replace("\"", "");
                         
                         // Remove commas at end
@@ -84,7 +86,7 @@ namespace starsky.Services
                         key = commaEndRegex.Replace(key, "");
                         
                         key = key.Trim();
-                        var newItem = "\"Keywords\": [\"" + key + "\"],"; 
+                        var newItem = "\""+ nameInJson +"\": [\"" + key + "\"],"; 
                         // bug potential: Could give a bug if the next line does not contain any values
                         updatedTextStringBuilder.Append(newItem + "\n");
                     }
@@ -100,15 +102,19 @@ namespace starsky.Services
             return text;
         }
 
-        private ExifToolModel _parseJson(string text) {
+        private ExifToolModel parseJson(string text) {
             if (string.IsNullOrEmpty(text)) return null;
             text = text.Replace("\r", "");
             text = text.Replace($"\\", "");
 
             Console.WriteLine("apply fix");
-            text = FixingJsonKeywordString(text);
-            
+            text = FixingJsonKeywordString(text); // "Keywords"
+            text = FixingJsonKeywordString(text,"Subject");
+
             Console.WriteLine("read from exiftool with fix applied");
+
+            Console.WriteLine(text);
+            Console.WriteLine("-----");
 
             var exifData = JsonConvert.DeserializeObject<IEnumerable<ExifToolModel>>(text).FirstOrDefault();
 
@@ -117,26 +123,59 @@ namespace starsky.Services
 
         }
 
-        public ExifToolModel Update(ExifToolModel updateModel, string fullFilePath)
+        public void Update(ExifToolModel updateModel, string inputFullFilePath)
+        {
+            Update(updateModel, new List<string> {inputFullFilePath});
+        }
+        
+        // Does not check in c# code if file exist
+        public void Update(ExifToolModel updateModel, List<string> inputFullFilePaths)
             {
                 var command = "-json -overwrite_original";
                 var initCommand = command; // to check if nothing
 
-                // Currently it does not allow emty strings
+                // Create an XMP File -> as those files don't support those tags
+                // Check first if it is needed
+
+                var fullFilePathsList = new List<string>();
+                foreach (var fullFilePath in inputFullFilePaths)
+                {
+                    if(Files.IsXmpSidecarRequired(fullFilePath))
+                    {
+                        var xmpFullPath = Files.GetXmpSidecarFileWhenRequired(fullFilePath, _appSettings.ExifToolXmpPrefix);
+                    
+                        if (Files.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+                        {
+                            BaseCommmand(" -overwrite_original -TagsFromFile \""  + fullFilePath + "\"", xmpFullPath);
+                        }
+                        // to continue as xmp file
+                        fullFilePathsList.Add(xmpFullPath);
+                        continue;
+                    }
+                    fullFilePathsList.Add(fullFilePath);
+                }
+                
+                // Currently it does not allow emthy strings
                 if (!string.IsNullOrWhiteSpace(updateModel.Tags))
                 {
-                    command += " -sep \", \" -Keywords=\"" + updateModel.Tags + "\" ";
+                    command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags 
+                                                                  + "\" -Keywords=\"" + updateModel.Tags + "\" ";
                 }
                 
                 if (!string.IsNullOrWhiteSpace(updateModel.CaptionAbstract))
                 {
-                    command += " -Caption-Abstract=\"" + updateModel.CaptionAbstract + "\" ";
+                    command += " -Caption-Abstract=\"" + updateModel.CaptionAbstract 
+                                                       + "\" -Description=\"" + updateModel.CaptionAbstract + "\"";
                 }
 
+               
                 if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
                 {
                     var intColorClass = (int) updateModel.ColorClass;
-                    command += " -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
+
+                    var colorDisplayName = FileIndexItem.GetDisplayName(updateModel.ColorClass);
+                    command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\""+ intColorClass + 
+                               "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
                 }
 
                 if (updateModel.AllDatesDateTime.Year > 2)
@@ -144,20 +183,53 @@ namespace starsky.Services
                     var exifToolString = updateModel.AllDatesDateTime.ToString("yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
                     command += " -AllDates=\""+ exifToolString + "\" ";
                 }
-
+                
                 if (command != initCommand)
                 {
-                    _baseCommmand(command, fullFilePath);
+                    var exifBaseInputStringBuilder = new StringBuilder();
+                    foreach (var fullFilePath in fullFilePathsList)
+                    {
+                        exifBaseInputStringBuilder = Quoted(exifBaseInputStringBuilder,fullFilePath);
+                        exifBaseInputStringBuilder.Append($" ");
+                    }
+                    
+                    BaseCommmand(command, exifBaseInputStringBuilder.ToString());
                 }
 
-                // Also update class info
-                return _parseJson(_baseCommmand("-Keywords -Prefs -Caption-Abstract -json", fullFilePath));
             }
+
+        private StringBuilder Quoted(StringBuilder inputStringBuilder, string fullFilePath)
+        {
+            if (inputStringBuilder == null)
+            {
+                inputStringBuilder = new StringBuilder();
+            }
+            inputStringBuilder.Append($"\"");
+            inputStringBuilder.Append(fullFilePath);
+            inputStringBuilder.Append($"\"");
+            return inputStringBuilder;
+        }
 
             public ExifToolModel Info(string fullFilePath)
             {
-                // Also update class 'Update'
-                return _parseJson(_baseCommmand("-Keywords -Caption-Abstract -Prefs -json", fullFilePath));
+                // Add parentes around this file
+
+
+                var xmpFullFilePath = Files.GetXmpSidecarFileWhenRequired(
+                    fullFilePath,
+                    _appSettings.ExifToolXmpPrefix);
+                
+                // only overwrite when a xmp file exist
+                if (Files.IsFolderOrFile(xmpFullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
+                    fullFilePath = xmpFullFilePath;
+                
+                // When change also update class 'Update'
+                // xmp:Subject == Keywords
+                // Caption-Abstract == Description
+                var fullFilePathStringBuilder = Quoted(null,fullFilePath);
+
+                return parseJson(BaseCommmand("-Keywords -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
+                    fullFilePathStringBuilder.ToString()));
             }
 
         }

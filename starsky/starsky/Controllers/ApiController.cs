@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Helpers;
@@ -45,23 +46,44 @@ namespace starsky.Controllers
             var result = _appSettings.ReadOnlyFolders.FirstOrDefault(f.Contains);
             return result != null;
         }
-        
+
         [HttpPost]
-        public IActionResult Update(string tags, string colorClass, string captionAbstract, string f = "dbStylePath")
+        public IActionResult Update(string tags, string colorClass,
+            string captionAbstract, string f, bool collections = true)
         {
-            if (_isReadOnly(f)) return StatusCode(203,"read only");
-            
-            var singleItem = _query.SingleItem(f);
-            if (singleItem == null) return NotFound("not in index " + f);
-            var oldHashCode = singleItem.FileIndexItem.FileHash;
-            if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
-                return NotFound("source image missing " +
-                                _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            var detailView = _query.SingleItem(f,null,collections,false);
+            if (detailView == null)
+            {
+                return NotFound("not in index " + f);
+            }
 
+            if (_isReadOnly(detailView.FileIndexItem.ParentDirectory)) return StatusCode(203, "read only");
+
+            foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths)
+            {
+                var fullPathCollection = _appSettings.DatabasePathToFilePath(collectionPath);
+                Console.WriteLine(">> fullPathCollection" + fullPathCollection);
+                
+                //For the situation that the file is not on disk but the only one in the list
+                if (!System.IO.File.Exists(fullPathCollection) 
+                    && detailView.FileIndexItem.CollectionPaths.Count == 1)
+                {
+                    return NotFound("source image missing > "+ fullPathCollection);
+                }
+                // When there are more items in the list
+                if (!System.IO.File.Exists(fullPathCollection))
+                {
+                    detailView.FileIndexItem.CollectionPaths.Remove(collectionPath);
+                }
+            }
+
+            if (detailView.FileIndexItem.CollectionPaths.Count == 0)
+            {
+                return NotFound("source image missing");
+            }
+
+            // First create an update model
             var updateModel = new ExifToolModel();
-
-            Console.WriteLine("tags>>>>");
-            Console.WriteLine(tags);
             if (tags != null)
             {
                 updateModel.Tags = tags;
@@ -71,30 +93,108 @@ namespace starsky.Controllers
             {
                 updateModel.CaptionAbstract = captionAbstract;
             }
+            detailView.FileIndexItem.SetColorClass(colorClass);
+            updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
 
-            // Enum get always one value and no null
-            singleItem.FileIndexItem.SetColorClass(colorClass);
-            updateModel.ColorClass = singleItem.FileIndexItem.ColorClass;
+            var collectionFullPaths = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.CollectionPaths);
+            var oldHashCodes = FileHash.GetHashCode(collectionFullPaths.ToArray());
+                
+            
+            _exiftool.Update(updateModel, collectionFullPaths);
 
-            // Run ExifTool updater
-            var exifToolResults = _exiftool.Update(updateModel,
-                _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            var exifToolResultsList = new List<ExifToolModel>();
+            for (int i = 0; i < detailView.FileIndexItem.CollectionPaths.Count; i++)
+            {
+                var singleItem = _query.SingleItem(detailView.FileIndexItem.CollectionPaths[i],null,false,false);
+                var exifToolResult = _exiftool.Info(collectionFullPaths[i]);
+                // for if exiftool does not anwer the request
+                if (exifToolResult.SourceFile == null) exifToolResult.SourceFile = collectionFullPaths[i];
 
-            // Update Database with results
-            singleItem.FileIndexItem.FileHash =
-                FileHash.GetHashCode(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-            singleItem.FileIndexItem.AddToDatabase = DateTime.Now;
-            singleItem.FileIndexItem.Tags = exifToolResults.Tags;
-            singleItem.FileIndexItem.Description = exifToolResults.CaptionAbstract;
-            singleItem.FileIndexItem.ColorClass = exifToolResults.ColorClass;
-            _query.UpdateItem(singleItem.FileIndexItem);
+                singleItem.FileIndexItem.Tags = exifToolResult.Tags;
+                singleItem.FileIndexItem.Description = exifToolResult.CaptionAbstract;
+                singleItem.FileIndexItem.ColorClass = exifToolResult.ColorClass;
+                
+                exifToolResultsList.Add(exifToolResult);
 
-            // Rename Thumbnail
-            new Thumbnail(_appSettings).RenameThumb(oldHashCode, singleItem.FileIndexItem.FileHash);
+                singleItem.FileIndexItem.FileHash = FileHash.GetHashCode(collectionFullPaths[i]);
+                // Rename Thumbnail
+                new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItem.FileIndexItem.FileHash);
+                _query.UpdateItem(singleItem.FileIndexItem);
+            }
+         
+            
+            var getFullPathExifToolFileName = Files.GetXmpSidecarFileWhenRequired(_appSettings.DatabasePathToFilePath(
+                detailView.FileIndexItem.FilePath), _appSettings.ExifToolXmpPrefix);
+                
+            return Json(exifToolResultsList.
+                FirstOrDefault(p => p.SourceFile == getFullPathExifToolFileName));
+        }   
+        
+        
+//            var oldHashCodes = new List<string>();
+//
+//            var listOfSubPaths = new List<string> {f};
+//            if (f.Contains(";"))
+//            {
+//                listOfSubPaths = ConfigRead.RemoveLatestDotComma(f).Split(";").ToList();
+//            }
+//
+//            var singleItemList = new List<DetailView>();
+//            foreach (var item in listOfSubPaths)
+//            {
+//                if (_isReadOnly(item)) return StatusCode(203,"read only");
+//                var singleItem = _query.SingleItem(item);
+//                if (singleItem == null) return NotFound("not in index " + item);
+//                singleItemList.Add(singleItem);
+//                
+//                oldHashCodes.Add(singleItem.FileIndexItem.FileHash);
+//                if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
+//                    return NotFound("source image missing " +
+//                                    _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+//            }
+//
+//            var updateModel = new ExifToolModel();
+//            if (tags != null)
+//            {
+//                updateModel.Tags = tags;
+//            }
+//
+//            if (captionAbstract != null)
+//            {
+//                updateModel.CaptionAbstract = captionAbstract;
+//            }
+//
+//            var exiftoolPathsBuilder = new StringBuilder();
+//            foreach (var singleItem in singleItemList)
+//            {
+//                // Enum get always one value and no null
+//                singleItem.FileIndexItem.SetColorClass(colorClass);
+//                updateModel.ColorClass = singleItem.FileIndexItem.ColorClass;
+//
+//                // Update Database with results
+//                singleItem.FileIndexItem.FileHash =
+//                    FileHash.GetHashCode(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+//                singleItem.FileIndexItem.AddToDatabase = DateTime.Now;
+//
+//                exiftoolPathsBuilder.Append($"\"");
+//                exiftoolPathsBuilder.Append(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)); 
+//                exiftoolPathsBuilder.Append($"\"");
+//                exiftoolPathsBuilder.Append($" "); // space
+//                _query.UpdateItem(singleItem.FileIndexItem);
+//            }
+//            
+//            // Run ExifTool updater
+//            var exifToolResults = _exiftool.Update(updateModel,exiftoolPathsBuilder.ToString() );
+//
+//            for (int i = 0; i < singleItemList.Count; i++)
+//            {
+//                singleItemList[i].FileIndexItem.Tags = exifToolResults.Tags;
+//                singleItemList[i].FileIndexItem.Description = exifToolResults.CaptionAbstract;
+//                singleItemList[i].FileIndexItem.ColorClass = exifToolResults.ColorClass;
+//                // Rename Thumbnail
+//                new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItemList[i].FileIndexItem.FileHash);
+//            }
 
-
-            return Json(exifToolResults);
-        }
 
         [ResponseCache(Duration = 30, VaryByQueryKeys = new [] { "f" } )]
         public IActionResult Info(string f = "dbStyleFilepath")
@@ -118,25 +218,21 @@ namespace starsky.Controllers
         {
             if (_isReadOnly(f)) return NotFound("afbeelding is in lees-only mode en kan niet worden verwijderd");
 
-            var singleItem = _query.SingleItem(f);
+            var singleItem = _query.SingleItem(f,null,false,false);
             if (singleItem == null) return NotFound("not in index");
             if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
                 return NotFound("source image missing " +
                                 _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-            var item = _query.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
+            var item = _query.SingleItem(singleItem.FileIndexItem.FilePath,null,false,false).FileIndexItem;
 
-            //  Remove Files if exist and RAW file
+            //  Remove Files if exist xmp file
             var fullFilePath = _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
             var toDeletePaths =
                 new List<string>
                 {
                     fullFilePath,
-                    fullFilePath.Replace(".jpg", ".arw"), 
-                    fullFilePath.Replace(".jpg", ".dng"),
-                    fullFilePath.Replace(".jpg", ".ARW"), 
-                    fullFilePath.Replace(".jpg", ".DNG"),
-                    fullFilePath.Replace(".jpg", ".xmp"),
-                    fullFilePath.Replace(".jpg", ".XMP")
+                    fullFilePath.Replace(Path.GetExtension(fullFilePath), ".xmp"),
+                    fullFilePath.Replace(Path.GetExtension(fullFilePath), ".XMP")
                 };
 
             foreach (var toDelPath in toDeletePaths)
@@ -167,7 +263,7 @@ namespace starsky.Controllers
             // isSingleItem => detailview
             // Retry thumbnail => is when you press reset thumbnail
             // json, => to don't waste the users bandwith.
-            
+
             var sourcePath = _query.GetItemByHash(f);
 
             if (sourcePath == null) return NotFound("not in index");
@@ -197,6 +293,7 @@ namespace starsky.Controllers
                     SetExpiresResponseHeadersToZero();
                     return NoContent();
                 }
+                // todo: add filter for raw files
                 FileStream fs1 = System.IO.File.OpenRead(sourceFullPath);
                 return File(fs1, "image/jpeg");
             }
@@ -264,7 +361,8 @@ namespace starsky.Controllers
                     var searchItem = new FileIndexItem
                     {
                         FileName = _appSettings.FullPathToDatabaseStyle(sourceFullPath).Split("/").LastOrDefault(),
-                        ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
+                        ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.
+                            FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
                         FileHash = FileHash.GetHashCode(sourceFullPath)
                     };
                     

@@ -104,6 +104,7 @@ namespace starsky.Models
                 StructureCheck(_structure);
             }
         }
+        
 
         public string StructureExampleNoSetting
         {
@@ -116,6 +117,7 @@ namespace starsky.Models
             }
         }
 
+        // To Check if the structure is any good
         public static void StructureCheck(string structure)
         {
             // Unescaped regex:
@@ -141,14 +143,24 @@ namespace starsky.Models
                 _thumbnailTempFolder = ConfigRead.AddBackslash(value);
             }
         }
+        
+
 
         public string ExifToolPath { get; set; }
+        
+        // C# 6+ required for this
+        public string ExifToolXmpPrefix { get; set; } = ""; //zz__
         
         // fallback in contructor
         public List<string> ReadOnlyFolders { get; set; }
 
         // C# 6+ required for this
         public bool AddMemoryCache { get; set; } = true;
+
+        
+        // -------------------------------------------------
+        // ------------------- Modifiers -------------------
+        // -------------------------------------------------
 
         public string FullPathToDatabaseStyle(string subpath)
         {
@@ -177,6 +189,15 @@ namespace starsky.Models
             return subPath;
         }
 
+        public List<string> DatabasePathToFilePath(List<string> databaseFilePathList, bool checkIfExist = true)
+        {
+            var fullFilePathLists = new List<string>();
+            foreach (var databaseFilePath in databaseFilePathList)
+            {
+                fullFilePathLists.Add(DatabasePathToFilePath(databaseFilePath, checkIfExist));
+            }
+            return fullFilePathLists;
+        }
 
         // from relative database path => file location path 
         public string DatabasePathToFilePath(string databaseFilePath, bool checkIfExist = true)

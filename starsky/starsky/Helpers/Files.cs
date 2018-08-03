@@ -9,7 +9,7 @@ namespace starsky.Helpers
 {
     public static class Files
     {
-        
+
         // is the subpath a folder or file
         public static FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string fullFilePath = "")
         {
@@ -46,32 +46,118 @@ namespace starsky.Helpers
             if (fullFilePath == null) return Enumerable.Empty<string>().ToArray();
 
             string[] allFiles = Directory.GetFiles(fullFilePath);
-            
-            // Used for jpeg files
 
-            var jpgFiles = new List<string>();
+            var imageFilesList = new List<string>();
             foreach (var file in allFiles)
             {
-                if (file.ToLower().EndsWith("jpg"))
+                // Path.GetExtension uses (.ext)
+                // the same check in SingleFile
+                // Recruisive >= same check
+                // GetFilesInDirectory
+                var extension = Path.GetExtension(file).ToLower().Replace(".",string.Empty);
+                if (ExtensionSyncSupportedList.Contains(extension))
                 {
-                    jpgFiles.Add(file); // change behavior
+                    imageFilesList.Add(file);
                 }
             }
-            return jpgFiles.ToArray();
-        }
-        
-        public enum ImageFormat
-        {
-            bmp,
-            jpg,
-            gif,
-            tiff,
-            png,
-            unknown,
-            notfound
+
+            return imageFilesList.ToArray();
         }
 
-     
+        public enum ImageFormat
+        {
+            notfound = -1,
+            unknown = 0,
+
+            // Viewable types
+            jpg = 10,
+            tiff = 12,
+            bmp = 13,
+            gif = 14,
+            png = 15,
+
+            // Sitecare files
+            xmp = 30
+        }
+
+        // General list of the extensions
+        private static readonly List<string> Extensionjpg = new List<string> {"jpg", "jpeg"};
+        private static readonly List<string> Extensiontiff = new List<string> {"tiff", "arw", "dng" };
+        private static readonly List<string> Extensionbmp = new List<string> {"bmp"};
+        private static readonly List<string> Extensiongif = new List<string> {"gif"};
+        private static readonly List<string> Extensionpng = new List<string> {"png"};
+
+        public static List<string> ExtensionSyncSupportedList
+        {
+            get
+            {
+                var extensionList = new List<string>();
+                extensionList.AddRange(Extensionjpg);
+                extensionList.AddRange(Extensiontiff);
+                extensionList.AddRange(Extensionbmp);
+                extensionList.AddRange(Extensiongif);
+                extensionList.AddRange(Extensionpng);
+                return extensionList;
+            }
+        }
+        
+        // ImageSharp => The IImageFormat interface, Jpeg, Png, Bmp, and Gif formats.
+        // Tiff based images are not supported by the thumbnail application 
+        public static List<string> ExtensionThumbSupportedList
+        {
+            get
+            {
+                var extensionList = new List<string>();
+                extensionList.AddRange(Extensionjpg);
+                extensionList.AddRange(Extensionbmp);
+                extensionList.AddRange(Extensiongif);
+                extensionList.AddRange(Extensionpng);
+                return extensionList;
+            }
+        }
+        
+        // List of extension that are forced to use sitecar xmp files
+        public static List<string> ExtensionForceXmpUseList
+        {
+            get
+            {
+                var extensionList = new List<string>();
+                // Bitmap does not support internal xmp
+                extensionList.AddRange(Extensionbmp);
+                // Gif does not support internal xmp
+                extensionList.AddRange(Extensiongif);
+                // Used for raw files >
+                extensionList.AddRange(Extensiontiff);
+                return extensionList;
+            }
+        }
+
+        public static bool IsXmpSidecarRequired(string fullFilePath)
+        {
+            // Use an XMP File -> as those files don't support those tags
+            if (ExtensionForceXmpUseList.Contains(Path.GetExtension(fullFilePath).Replace(".", string.Empty).ToLower()))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static string GetXmpSidecarFileWhenRequired(string fullFilePath, string exifToolXmpPrefix)
+        {
+            // Use an XMP File -> as those files don't support those tags
+            if(IsXmpSidecarRequired(fullFilePath))
+            {
+                // Overwrite to use xmp files
+                fullFilePath = Path.Combine(Path.GetDirectoryName(fullFilePath), 
+                    exifToolXmpPrefix
+                    + Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
+            }
+            return fullFilePath;
+        }
+        
+
+
+
         public static ImageFormat GetImageFormat(string filePath)
         {
             if (!File.Exists(filePath)) return ImageFormat.notfound;
@@ -103,6 +189,7 @@ namespace starsky.Helpers
             var tiff2  = new byte[] { 77, 77, 42 };         // TIFF
             var jpeg   = new byte[] { 255, 216, 255, 224 }; // jpeg
             var jpeg2  = new byte[] { 255, 216, 255, 225 }; // jpeg canon
+            var xmp    = Encoding.ASCII.GetBytes("<x:xmpmeta");    // xmp
 
             if (bmp.SequenceEqual(bytes.Take(bmp.Length)))
                 return ImageFormat.bmp;
@@ -124,6 +211,9 @@ namespace starsky.Helpers
 
             if (jpeg2.SequenceEqual(bytes.Take(jpeg2.Length)))
                 return ImageFormat.jpg;
+            
+            if (xmp.SequenceEqual(bytes.Take(xmp.Length)))
+                return ImageFormat.xmp;
 
             return ImageFormat.unknown;
         }
@@ -163,7 +253,22 @@ namespace starsky.Helpers
              */
             RecurseFind( fullFilePath, findlist );
 
-            return findlist;
+            // Add filter for file types
+            var imageFilesList = new List<string>();
+            foreach (var file in findlist)
+            {
+                // Path.GetExtension uses (.ext)
+                //  GetFilesInDirectory
+                // the same check in SingleFile
+                // Recruisive >= same check
+                var extension = Path.GetExtension(file).ToLower().Replace(".",string.Empty);
+                if (ExtensionSyncSupportedList.Contains(extension))
+                {
+                    imageFilesList.Add(file);
+                }
+            }
+            
+            return imageFilesList;
         }
 
         private static void RecurseFind( string path, List<string> list )
@@ -175,7 +280,7 @@ namespace starsky.Helpers
                 //I begin with the files, and store all of them in the list
                 foreach(string s in fl)
                     list.Add(s);
-                //I then add the directory and recurse that directory, the process will repeat until there are no more files and directories to recurse
+                // I then add the directory and recurse that directory, the process will repeat until there are no more files and directories to recurse
                 foreach(string s in dl)
                 {
                     list.Add(s);

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using starsky.Helpers;
 using starsky.Models;
 
@@ -24,10 +25,12 @@ namespace starsky.Services
             {
                 // File check if jpg #not corrupt
                 var imageFormat = Files.GetImageFormat(fullFilePath);
-                if(imageFormat != Files.ImageFormat.jpg) return true;
-                // todo: make fix for non-jpeg files
-                // if(imageFormat != Files.ImageFormat.jpg) throw new BadImageFormatException("img != jpeg");
+                if(imageFormat == Files.ImageFormat.unknown) return true;
                 
+                // The same check as in GetFilesInDirectory
+                var extension = Path.GetExtension(fullFilePath).ToLower().Replace(".",string.Empty);
+                if (!Files.ExtensionSyncSupportedList.Contains(extension)) return true;
+                 
                 // single file -- update or adding
                 var dbListWithOneFile = new List<FileIndexItem>();
                 var dbItem = _query.GetObjectByFilePath(subPath);
@@ -37,8 +40,7 @@ namespace starsky.Services
                     dbListWithOneFile.Add(dbItem);
                 }
 
-                var localListWithOneFileDbStyle = new List<string>();
-                localListWithOneFileDbStyle.Add(subPath);
+                var localListWithOneFileDbStyle = new List<string> {subPath};
 
                 CheckMd5Hash(localListWithOneFileDbStyle, dbListWithOneFile);
                 AddPhotoToDatabase(localListWithOneFileDbStyle, dbListWithOneFile);

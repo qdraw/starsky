@@ -41,7 +41,7 @@ namespace starsky.Helpers
 
             if (!MultipartRequestHelper.IsMultipartContentType(contentType))
             {
-                if (contentType != "image/jpeg")
+                if (contentType != "image/jpeg" && contentType != "application/octet-stream") 
                     throw new FileLoadException($"Expected a multipart request, but got {contentType}");
                 
                 var fullFilePath = GetTempFilePath(headerFileName,_appSettings);
@@ -97,7 +97,7 @@ namespace starsky.Helpers
             
             if (string.IsNullOrEmpty(baseFileName))
             {
-                var guid = "_import_" + Guid.NewGuid().ToString().Substring(0, 5) + ".jpg";
+                var guid = "_import_" + Guid.NewGuid().ToString().Substring(0, 5) + ".unknown";
                 guid = guid.Replace("=", string.Empty);
                 var path = Path.Combine(appSettings.ThumbnailTempFolder, guid);
                 return path;

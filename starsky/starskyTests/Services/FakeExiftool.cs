@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
@@ -8,9 +9,12 @@ namespace starskytests.Services
 {
     public class FakeExiftool : IExiftool
     {
-        public ExifToolModel Update(ExifToolModel updateModel, string fullFilePath)
+        public void Update(ExifToolModel updateModel, List<string> inputFullFilePaths)
         {
-            return updateModel;
+        }
+
+        public void Update(ExifToolModel updateModel, string fullFilePath)
+        {
         }
 
         public ExifToolModel Info(string fullFilePath)

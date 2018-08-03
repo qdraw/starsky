@@ -1,10 +1,12 @@
-﻿using starsky.Models;
+﻿using System.Collections.Generic;
+using starsky.Models;
 
 namespace starsky.Interfaces
 {
     public interface IExiftool
     {
-        ExifToolModel Update(ExifToolModel updateModel, string fullFilePath);
+        void Update(ExifToolModel updateModel, List<string> inputFullFilePaths);
+        void Update(ExifToolModel updateModel, string inputFullFilePath);
         ExifToolModel Info(string fullFilePath);
     }
 }

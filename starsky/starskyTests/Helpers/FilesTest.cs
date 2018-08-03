@@ -93,5 +93,24 @@ namespace starskytests
             Assert.AreEqual(true, content.Count() >= 5);            
 
         }
+
+        [TestMethod]
+        public void Files_ExtensionThumbSupportedList_TiffMp4MovXMPCheck()
+        {
+            var extensionThumbSupportedList = Files.ExtensionThumbSupportedList;
+            Assert.AreEqual(false,extensionThumbSupportedList.Contains("tiff"));
+            Assert.AreEqual(false,extensionThumbSupportedList.Contains("mp4"));
+            Assert.AreEqual(false,extensionThumbSupportedList.Contains("mov"));
+            Assert.AreEqual(false,extensionThumbSupportedList.Contains("xmp"));
+        }
+        
+        [TestMethod]
+        public void Files_ExtensionSyncSupportedList_TiffCheck()
+        {
+            var extensionSyncSupportedList = Files.ExtensionSyncSupportedList;
+            Assert.AreEqual(true,extensionSyncSupportedList.Contains("tiff"));
+            Assert.AreEqual(true,extensionSyncSupportedList.Contains("jpg"));
+
+        }
     }
 }

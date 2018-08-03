@@ -156,6 +156,19 @@ namespace starsky.Services
             }
             return basePath;
         }
+        
+        public static string RemoveLatestDotComma(string basePath)
+        {
+            // on all platforms the same
+            if (string.IsNullOrWhiteSpace(basePath) || basePath == ";" ) return string.Empty;
+
+            // remove latest slash
+            if (basePath.Substring(basePath.Length - 1, 1) == ";")
+            {
+                basePath = basePath.Substring(0, basePath.Length - 1);
+            }
+            return basePath;
+        }
 
         public static string AddBackslash(string thumbnailTempFolder) { 
             // Add backSlash to configuration // or \\
