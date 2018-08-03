@@ -50,8 +50,9 @@ namespace starsky.Helpers
             var imageFilesList = new List<string>();
             foreach (var file in allFiles)
             {
-                var extension = Path.GetExtension(file).ToLower().Replace(".",string.Empty);
                 // Path.GetExtension uses (.ext)
+                // the same check in SingleFile
+                var extension = Path.GetExtension(file).ToLower().Replace(".",string.Empty);
                 if (ExtensionSyncSupportedList.Contains(extension))
                 {
                     imageFilesList.Add(file);
