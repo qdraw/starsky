@@ -52,6 +52,8 @@ namespace starsky.Helpers
             {
                 // Path.GetExtension uses (.ext)
                 // the same check in SingleFile
+                // Recruisive >= same check
+                // GetFilesInDirectory
                 var extension = Path.GetExtension(file).ToLower().Replace(".",string.Empty);
                 if (ExtensionSyncSupportedList.Contains(extension))
                 {
@@ -251,7 +253,22 @@ namespace starsky.Helpers
              */
             RecurseFind( fullFilePath, findlist );
 
-            return findlist;
+            // Add filter for file types
+            var imageFilesList = new List<string>();
+            foreach (var file in findlist)
+            {
+                // Path.GetExtension uses (.ext)
+                //  GetFilesInDirectory
+                // the same check in SingleFile
+                // Recruisive >= same check
+                var extension = Path.GetExtension(file).ToLower().Replace(".",string.Empty);
+                if (ExtensionSyncSupportedList.Contains(extension))
+                {
+                    imageFilesList.Add(file);
+                }
+            }
+            
+            return imageFilesList;
         }
 
         private static void RecurseFind( string path, List<string> list )
