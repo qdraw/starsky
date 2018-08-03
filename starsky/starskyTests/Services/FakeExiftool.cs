@@ -9,14 +9,12 @@ namespace starskytests.Services
 {
     public class FakeExiftool : IExiftool
     {
-        public ExifToolModel Update(ExifToolModel updateModel, List<string> inputFullFilePaths)
+        public void Update(ExifToolModel updateModel, List<string> inputFullFilePaths)
         {
-            return updateModel;
         }
 
-        public ExifToolModel Update(ExifToolModel updateModel, string fullFilePath)
+        public void Update(ExifToolModel updateModel, string fullFilePath)
         {
-            return updateModel;
         }
 
         public ExifToolModel Info(string fullFilePath)

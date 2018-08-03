@@ -8,6 +8,8 @@ namespace starsky.Models
 {
     public class ExifToolModel
     {
+        public string SourceFile { get; set; }
+        
         public FileIndexItem.Color ColorClass { get; set; }
 
         [JsonProperty(PropertyName="Caption-Abstract")]

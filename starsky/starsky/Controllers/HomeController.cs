@@ -45,7 +45,7 @@ namespace starsky.Controllers
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath)
             };
 
-            var singleItem = _query.SingleItem(subpath,colorClassFilterList);
+            var singleItem = _query.SingleItem(subpath,colorClassFilterList,collections);
             
             if (!model.FileIndexItems.Any())
             {

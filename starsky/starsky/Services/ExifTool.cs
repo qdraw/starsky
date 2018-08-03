@@ -123,13 +123,13 @@ namespace starsky.Services
 
         }
 
-        public ExifToolModel Update(ExifToolModel updateModel, string inputFullFilePath)
+        public void Update(ExifToolModel updateModel, string inputFullFilePath)
         {
-            return Update(updateModel, new List<string> {inputFullFilePath});
+            Update(updateModel, new List<string> {inputFullFilePath});
         }
         
         // Does not check in c# code if file exist
-        public ExifToolModel Update(ExifToolModel updateModel, List<string> inputFullFilePaths)
+        public void Update(ExifToolModel updateModel, List<string> inputFullFilePaths)
             {
                 var command = "-json -overwrite_original";
                 var initCommand = command; // to check if nothing
@@ -154,7 +154,6 @@ namespace starsky.Services
                     }
                     fullFilePathsList.Add(fullFilePath);
                 }
-                
                 
                 // Currently it does not allow emthy strings
                 if (!string.IsNullOrWhiteSpace(updateModel.Tags))
@@ -190,25 +189,25 @@ namespace starsky.Services
                     var exifBaseInputStringBuilder = new StringBuilder();
                     foreach (var fullFilePath in fullFilePathsList)
                     {
-                        exifBaseInputStringBuilder = Quoted(fullFilePath);
+                        exifBaseInputStringBuilder = Quoted(exifBaseInputStringBuilder,fullFilePath);
                         exifBaseInputStringBuilder.Append($" ");
                     }
+                    
                     BaseCommmand(command, exifBaseInputStringBuilder.ToString());
                 }
 
-                // Also update class info
-                var exifFirstItem = Quoted(fullFilePathsList.FirstOrDefault());
-
-                return parseJson(BaseCommmand("-Keywords -Description \"-xmp:subject\" -Prefs -Caption-Abstract -json", exifFirstItem.ToString() ));
             }
 
-        private StringBuilder Quoted(string fullFilePath)
+        private StringBuilder Quoted(StringBuilder inputStringBuilder, string fullFilePath)
         {
-            var exifBaseInputStringBuilder = new StringBuilder();
-            exifBaseInputStringBuilder.Append($"\"");
-            exifBaseInputStringBuilder.Append(fullFilePath);
-            exifBaseInputStringBuilder.Append($"\"");
-            return exifBaseInputStringBuilder;
+            if (inputStringBuilder == null)
+            {
+                inputStringBuilder = new StringBuilder();
+            }
+            inputStringBuilder.Append($"\"");
+            inputStringBuilder.Append(fullFilePath);
+            inputStringBuilder.Append($"\"");
+            return inputStringBuilder;
         }
 
             public ExifToolModel Info(string fullFilePath)
@@ -227,7 +226,7 @@ namespace starsky.Services
                 // When change also update class 'Update'
                 // xmp:Subject == Keywords
                 // Caption-Abstract == Description
-                var fullFilePathStringBuilder = Quoted(fullFilePath);
+                var fullFilePathStringBuilder = Quoted(null,fullFilePath);
 
                 return parseJson(BaseCommmand("-Keywords -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
                     fullFilePathStringBuilder.ToString()));

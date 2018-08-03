@@ -91,22 +91,33 @@ namespace starsky.Controllers
             var collectionFullPaths = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.CollectionPaths);
             var oldHashCodes = FileHash.GetHashCode(collectionFullPaths.ToArray());
                 
-            var exifToolResults = _exiftool.Update(updateModel, collectionFullPaths);
+            
+            _exiftool.Update(updateModel, collectionFullPaths);
 
-            var listOfUpdateFileIndexItems = new List<FileIndexItem>();
+            var exifToolResultsList = new List<ExifToolModel>();
             for (int i = 0; i < detailView.FileIndexItem.CollectionPaths.Count; i++)
             {
                 var singleItem = _query.SingleItem(detailView.FileIndexItem.CollectionPaths[i],null,false,false);
-                singleItem.FileIndexItem.Tags = exifToolResults.Tags;
-                singleItem.FileIndexItem.Description = exifToolResults.CaptionAbstract;
-                singleItem.FileIndexItem.ColorClass = exifToolResults.ColorClass;
+                var exifToolResult = _exiftool.Info(collectionFullPaths[i]);
+
+                singleItem.FileIndexItem.Tags = exifToolResult.Tags;
+                singleItem.FileIndexItem.Description = exifToolResult.CaptionAbstract;
+                singleItem.FileIndexItem.ColorClass = exifToolResult.ColorClass;
+                
+                exifToolResultsList.Add(exifToolResult);
+
                 singleItem.FileIndexItem.FileHash = FileHash.GetHashCode(collectionFullPaths[i]);
                 // Rename Thumbnail
                 new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItem.FileIndexItem.FileHash);
                 _query.UpdateItem(singleItem.FileIndexItem);
             }
          
-            return Json(exifToolResults);
+            
+            var getFullPathExifToolFileName = Files.GetXmpSidecarFileWhenRequired(_appSettings.DatabasePathToFilePath(
+                detailView.FileIndexItem.FilePath), _appSettings.ExifToolXmpPrefix);
+                
+            return Json(exifToolResultsList.
+                FirstOrDefault(p => p.SourceFile == getFullPathExifToolFileName));
         }   
         
         
@@ -272,6 +283,7 @@ namespace starsky.Controllers
                     SetExpiresResponseHeadersToZero();
                     return NoContent();
                 }
+                // todo: add filter for raw files
                 FileStream fs1 = System.IO.File.OpenRead(sourceFullPath);
                 return File(fs1, "image/jpeg");
             }
@@ -339,7 +351,8 @@ namespace starsky.Controllers
                     var searchItem = new FileIndexItem
                     {
                         FileName = _appSettings.FullPathToDatabaseStyle(sourceFullPath).Split("/").LastOrDefault(),
-                        ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
+                        ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.
+                            FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
                         FileHash = FileHash.GetHashCode(sourceFullPath)
                     };
                     

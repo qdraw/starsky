@@ -35,34 +35,21 @@ namespace starsky.Services
             // disable collections here;
             var fileName = singleItemDbPath.Replace(parentFolder + "/", string.Empty);
             var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
+            if (currentFileIndexItem == null) return null;
+
+            if (currentFileIndexItem.Tags.Contains("!delete!")) hideDeleted = false;
             
-//            // When loading a raw file == next prev is using a jpeg file
-//            var directAccessAnNonExtensionThumbSupported = false;
-//            if (currentFileIndexItem == null)
-//            {
-//                directAccessAnNonExtensionThumbSupported = true;
-//                currentFileIndexItem = fileIndexItemsList.FirstOrDefault(
-//                    p => p.FileCollectionName == singleItemDbPathFromDirectQuery.FileCollectionName);
-//            }
-            
+            var fileIndexItemsForPrevNextList = DisplayFileFolders(
+                parentFolder,colorClassFilterList,enableCollections,hideDeleted).ToList();
+
             var itemResult = new DetailView
             {
                 FileIndexItem = currentFileIndexItem,
-                RelativeObjects = GetNextPrevInSubFolder(currentFileIndexItem,fileIndexItemsList),
+                RelativeObjects = GetNextPrevInSubFolder(currentFileIndexItem,fileIndexItemsForPrevNextList),
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(singleItemDbPath),
                 GetAllColor = FileIndexItem.GetAllColorUserInterface(),
                 ColorClassFilterList = colorClassFilterList
             };
-            
-//            // Search for collectionItems need to add a duplicate of the cache
-//            // This one is always false => due need to check for raw files in db
-//            var collectionItemsDirectory = DisplayFileFolders(parentFolder,colorClassFilterList,false,false).ToList();
-//
-//            if (directAccessAnNonExtensionThumbSupported)
-//            {
-//                itemResult.FileIndexItem = singleItemDbPathFromDirectQuery;
-//            }
-            
             
             itemResult.FileIndexItem.CollectionPaths = new List<string>();
             itemResult.FileIndexItem.CollectionPaths.AddRange(fileIndexItemsList
