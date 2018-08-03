@@ -15,10 +15,13 @@ namespace starsky.Interfaces
         IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
             List<FileIndexItem.Color> colorClassFilterList = null,
-            bool enableCollections = true);
+            bool enableCollections = true,
+            bool hideDeleted = true);
 
         DetailView SingleItem(string singleItemDbPath, 
-            List<FileIndexItem.Color> colorClassFilterList = null);
+            List<FileIndexItem.Color> colorClassFilterList = null,
+            bool enableCollections = true,
+            bool hideDeleted = true);
 
         FileIndexItem GetObjectByFilePath(string filePath);
 
@@ -34,6 +37,6 @@ namespace starsky.Interfaces
 
         RelativeObjects GetNextPrevInFolder(string currentFolder);
 
-        List<FileIndexItem> Collections(List<FileIndexItem> databaseSubFolderList);
+        List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList);
     }
 }

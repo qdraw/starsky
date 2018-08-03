@@ -190,21 +190,35 @@ namespace starsky.Services
                     var exifBaseInputStringBuilder = new StringBuilder();
                     foreach (var fullFilePath in fullFilePathsList)
                     {
-                        exifBaseInputStringBuilder.Append($"\"");
-                        exifBaseInputStringBuilder.Append(fullFilePath);
-                        exifBaseInputStringBuilder.Append($"\"");
+                        exifBaseInputStringBuilder = Quoted(fullFilePath);
                         exifBaseInputStringBuilder.Append($" ");
                     }
                     BaseCommmand(command, exifBaseInputStringBuilder.ToString());
                 }
 
                 // Also update class info
-                return parseJson(BaseCommmand("-Keywords -Description \"-xmp:subject\" -Prefs -Caption-Abstract -json", fullFilePathsList.FirstOrDefault()));
+                var exifFirstItem = Quoted(fullFilePathsList.FirstOrDefault());
+
+                return parseJson(BaseCommmand("-Keywords -Description \"-xmp:subject\" -Prefs -Caption-Abstract -json", exifFirstItem.ToString() ));
             }
+
+        private StringBuilder Quoted(string fullFilePath)
+        {
+            var exifBaseInputStringBuilder = new StringBuilder();
+            exifBaseInputStringBuilder.Append($"\"");
+            exifBaseInputStringBuilder.Append(fullFilePath);
+            exifBaseInputStringBuilder.Append($"\"");
+            return exifBaseInputStringBuilder;
+        }
 
             public ExifToolModel Info(string fullFilePath)
             {
-                var xmpFullFilePath = Files.GetXmpSidecarFileWhenRequired(fullFilePath, _appSettings.ExifToolXmpPrefix);
+                // Add parentes around this file
+
+
+                var xmpFullFilePath = Files.GetXmpSidecarFileWhenRequired(
+                    fullFilePath,
+                    _appSettings.ExifToolXmpPrefix);
                 
                 // only overwrite when a xmp file exist
                 if (Files.IsFolderOrFile(xmpFullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
@@ -213,7 +227,10 @@ namespace starsky.Services
                 // When change also update class 'Update'
                 // xmp:Subject == Keywords
                 // Caption-Abstract == Description
-                return parseJson(BaseCommmand("-Keywords -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", fullFilePath));
+                var fullFilePathStringBuilder = Quoted(fullFilePath);
+
+                return parseJson(BaseCommmand("-Keywords -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
+                    fullFilePathStringBuilder.ToString()));
             }
 
         }

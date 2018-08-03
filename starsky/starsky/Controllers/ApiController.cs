@@ -51,7 +51,7 @@ namespace starsky.Controllers
         public IActionResult Update(string tags, string colorClass,
             string captionAbstract, string f, bool collections = true)
         {
-            var detailView = _query.SingleItem(f);
+            var detailView = _query.SingleItem(f,null,collections,false);
             if (detailView == null)
             {
                 return NotFound("not in index " + f);
@@ -62,6 +62,7 @@ namespace starsky.Controllers
             foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths)
             {
                 var fullPathCollection = _appSettings.DatabasePathToFilePath(collectionPath);
+                Console.WriteLine(">> fullPathCollection" + fullPathCollection);
                 if (!System.IO.File.Exists(fullPathCollection))
                 {
                     detailView.FileIndexItem.CollectionPaths.Remove(collectionPath);
@@ -95,14 +96,13 @@ namespace starsky.Controllers
             var listOfUpdateFileIndexItems = new List<FileIndexItem>();
             for (int i = 0; i < detailView.FileIndexItem.CollectionPaths.Count; i++)
             {
-                var singleItem = _query.SingleItem(detailView.FileIndexItem.CollectionPaths[i]);
+                var singleItem = _query.SingleItem(detailView.FileIndexItem.CollectionPaths[i],null,false,false);
                 singleItem.FileIndexItem.Tags = exifToolResults.Tags;
                 singleItem.FileIndexItem.Description = exifToolResults.CaptionAbstract;
                 singleItem.FileIndexItem.ColorClass = exifToolResults.ColorClass;
                 singleItem.FileIndexItem.FileHash = FileHash.GetHashCode(collectionFullPaths[i]);
                 // Rename Thumbnail
                 new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItem.FileIndexItem.FileHash);
-                listOfUpdateFileIndexItems.Add(singleItem.FileIndexItem);
                 _query.UpdateItem(singleItem.FileIndexItem);
             }
          
@@ -204,18 +204,14 @@ namespace starsky.Controllers
                                 _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
             var item = _query.SingleItem(singleItem.FileIndexItem.FilePath).FileIndexItem;
 
-            //  Remove Files if exist and RAW file
+            //  Remove Files if exist xmp file
             var fullFilePath = _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
             var toDeletePaths =
                 new List<string>
                 {
                     fullFilePath,
-                    fullFilePath.Replace(".jpg", ".arw"), 
-                    fullFilePath.Replace(".jpg", ".dng"),
-                    fullFilePath.Replace(".jpg", ".ARW"), 
-                    fullFilePath.Replace(".jpg", ".DNG"),
-                    fullFilePath.Replace(".jpg", ".xmp"),
-                    fullFilePath.Replace(".jpg", ".XMP")
+                    fullFilePath.Replace(Path.GetExtension(fullFilePath), ".xmp"),
+                    fullFilePath.Replace(Path.GetExtension(fullFilePath), ".XMP")
                 };
 
             foreach (var toDelPath in toDeletePaths)
@@ -232,8 +228,7 @@ namespace starsky.Controllers
             return Json(item);
         }
 
-        // DEBUG
-//        [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f"} )]
+        [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f"} )]
         [HttpGet("/api/thumbnail/{f}")]
         [HttpHead("/api/thumbnail/{f}")]
         [IgnoreAntiforgeryToken]
