@@ -93,8 +93,20 @@ namespace starsky.Controllers
             {
                 updateModel.CaptionAbstract = captionAbstract;
             }
-            detailView.FileIndexItem.SetColorClass(colorClass);
-            updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
+
+            // ColorClass
+            var colorClassEnum = new FileIndexItem().SetColorClass(colorClass);
+            if (colorClassEnum != FileIndexItem.Color.DoNotChange)
+            {
+                // Anything else than do not change
+                detailView.FileIndexItem.SetColorClass(colorClass);
+                updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
+            }
+            if (colorClassEnum == FileIndexItem.Color.DoNotChange)
+            {
+                // Restore the old value; so don't change the value
+                updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
+            }
 
             var collectionFullPaths = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.CollectionPaths);
             var oldHashCodes = FileHash.GetHashCode(collectionFullPaths.ToArray());

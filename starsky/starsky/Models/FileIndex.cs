@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using starsky.Helpers;
 using starsky.Services;
 
@@ -193,7 +195,7 @@ namespace starsky.Models
         }
 
       
-
+        // Always display int, because the Update api uses ints to parse
         public Color ColorClass { 
             get => _colorClass;
             set => _colorClass = value;
@@ -258,6 +260,7 @@ namespace starsky.Models
             return Enum.GetValues(typeof(ColorUserInterface)).Cast<ColorUserInterface>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
         }
         
+        [JsonConverter(typeof(StringEnumConverter))]
         public Files.ImageFormat ImageFormat { get; set; }
         
         [NotMapped]
