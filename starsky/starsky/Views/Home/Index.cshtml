@@ -1,6 +1,5 @@
 ﻿@using System.Linq
 @using Microsoft.AspNetCore.Mvc
-@using starsky.ViewModels
 @model starsky.ViewModels.ArchiveViewModel
 @{
     ViewData["Title"] = Model.SearchQuery + " Index view ";
@@ -35,7 +34,7 @@
     {
         <span> &raquo;</span>
         <span> <a class="removecache" asp-controller="Api" asp-action="RemoveCache" 
-                  asp-route-f="@Model.Breadcrumb.LastOrDefault()/@Model.SearchQuery">@Model.SearchQuery</a></span>
+                  asp-route-f="@Model.SubPath">@Model.SearchQuery</a></span>
     }
 
 </h1>

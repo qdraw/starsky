@@ -69,7 +69,8 @@ namespace starsky.Controllers
                 FileIndexItems = _query.DisplayFileFolders(subpath),
                 RelativeObjects = _query.GetNextPrevInFolder(subpath),
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath),
-                SearchQuery = subpath.Split("/").LastOrDefault()
+                SearchQuery = subpath.Split("/").LastOrDefault(),
+                SubPath = subpath
             };
 
             if (singleItem == null)

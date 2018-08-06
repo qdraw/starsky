@@ -11,5 +11,6 @@ namespace starsky.ViewModels
         public string SearchQuery { get; set; }
         // Used PageType by react client
         public string PageType => PageViewType.PageType.Archive.ToString();
+        public string SubPath { get; set; } = string.Empty;
     }
 }
