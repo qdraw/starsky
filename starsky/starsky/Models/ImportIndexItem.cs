@@ -55,7 +55,7 @@ namespace starsky.Models
             if (string.IsNullOrWhiteSpace(SourceFullFilePath)) return string.Empty;
             var imageFormatExtenstion = Files.GetImageFormat(SourceFullFilePath);
             
-            var fileExtension = Path.GetExtension(SourceFullFilePath).Replace(".",string.Empty);
+            var fileExtension = Path.GetExtension(SourceFullFilePath).Replace(".",string.Empty).ToLower();
 
             if (imageFormatExtenstion == Files.ImageFormat.notfound)
             {
