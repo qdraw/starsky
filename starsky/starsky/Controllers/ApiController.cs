@@ -263,25 +263,34 @@ namespace starsky.Controllers
             // isSingleItem => detailview
             // Retry thumbnail => is when you press reset thumbnail
             // json, => to don't waste the users bandwith.
-
-            var sourcePath = _query.GetItemByHash(f);
-
-            if (sourcePath == null) return NotFound("not in index");
-
+            
             var thumbPath = _appSettings.ThumbnailTempFolder + f + ".jpg";
 
-            // When a file is corrupt show error + Delete
-            if (Files.GetImageFormat(thumbPath) == Files.ImageFormat.unknown)
+            if (Files.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
             {
-                if (!retryThumbnail)
+                // When a file is corrupt show error + Delete
+                if (Files.GetImageFormat(thumbPath) == Files.ImageFormat.unknown)
                 {
-                    Console.WriteLine("image is corrupt");
-                    SetExpiresResponseHeadersToZero();
-                    return NoContent();
+                    if (!retryThumbnail)
+                    {
+                        Console.WriteLine("image is corrupt");
+                        SetExpiresResponseHeadersToZero();
+                        return NoContent();
+                    }
+                    System.IO.File.Delete(thumbPath);
                 }
-                System.IO.File.Delete(thumbPath);
-            }
+                
+                // When using the api to check using javascript
+                if (json) return Json("OK");
 
+                FileStream fs = System.IO.File.OpenRead(thumbPath);
+                return File(fs, "image/jpeg");
+            }
+            
+            
+            var sourcePath = _query.GetItemByHash(f);
+            if (sourcePath == null) return NotFound("not in index");
+            
             var sourceFullPath = _appSettings.DatabasePathToFilePath(sourcePath);
 
             if (!System.IO.File.Exists(thumbPath) &&
@@ -306,17 +315,7 @@ namespace starsky.Controllers
                 return Json("Thumbnail is not supported; for example you try to view a raw file");
             }
 
-            if (!System.IO.File.Exists(thumbPath) && 
-                !System.IO.File.Exists(sourceFullPath))
-            {
-                return NotFound("There is no thumbnail image and no source image");
-            }
-            
-            // When using the api to check using javascript
-            if (json) return Json("OK");
-
-            FileStream fs = System.IO.File.OpenRead(thumbPath);
-            return File(fs, "image/jpeg");
+            return NotFound("There is no thumbnail image and no source image");
         }
 
         public void SetExpiresResponseHeadersToZero()
