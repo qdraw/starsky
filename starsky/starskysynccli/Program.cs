@@ -45,7 +45,7 @@ namespace starskysynccli
                 Console.WriteLine("BaseDirectoryProject (where the exe is located) " + appSettings.BaseDirectoryProject);
                 return;
             }
-
+            
             // Using both options
             string subpath;
             // -s = ifsubpath || -p is path
@@ -55,9 +55,17 @@ namespace starskysynccli
             }
             else
             {
-                subpath = new ArgsHelper((appSettings)).GetPathFormArgs(args);
+                subpath = new ArgsHelper(appSettings).GetPathFormArgs(args);
             }
-           
+            
+            // overwrite subpath with relative days
+            // use -n or --SubpathRelative to use it.
+            // envs are not supported
+            var getSubpathRelative = new ArgsHelper(appSettings).GetSubpathRelative(args);
+            if (getSubpathRelative != null)
+            {
+                subpath = getSubpathRelative;
+            }
 
             if (new ArgsHelper().GetIndexMode(args))
             {

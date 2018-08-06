@@ -19,6 +19,7 @@ namespace starsky.Helpers
         // --index -i
         // --path -p
         // --subpath -s
+        // --subpathrelative -n
         // --thumbnail -t
         // --orphanfolder -o
         // --move -m
@@ -29,7 +30,6 @@ namespace starsky.Helpers
 
         public ArgsHelper()
         {
-            // 
         }
         
         public ArgsHelper(AppSettings appSettings)
@@ -60,18 +60,20 @@ namespace starsky.Helpers
         
         public readonly IEnumerable<string> ShortNameList = new List<string>
             {
-                "-d","-c","-b","-f","-e","-u"
+                "-d","-c","-b","-f","-e","-u","-n"
             }.AsReadOnly();
         
         public readonly IEnumerable<string> LongNameList = new List<string>
             {
-            "--databasetype","--connection","--basepath","--thumbnailtempfolder","--exiftoolpath","--structure"
+                "--databasetype","--connection","--basepath","--thumbnailtempfolder",
+                "--exiftoolpath","--structure","--subpathrelative"
             }
             .AsReadOnly();
         
         public readonly IEnumerable<string> EnvNameList = new List<string>
             {
-                "app__DatabaseType","app__DatabaseConnection","app__StorageFolder","app__ThumbnailTempFolder","app__ExifToolPath", "app__Structure"
+                "app__DatabaseType","app__DatabaseConnection","app__StorageFolder","app__ThumbnailTempFolder",
+                "app__ExifToolPath", "app__Structure", "app__subpathrelative"
             }.AsReadOnly();
 
 
@@ -160,7 +162,37 @@ namespace starsky.Helpers
             }
             return subpath;
         }
+
+        public string GetSubpathRelative(IReadOnlyList<string> args)
+        {
+            if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
+
+            string subpathRelative = null;
         
+            for (int arg = 0; arg < args.Count; arg++)
+            {
+                if ((args[arg].ToLower() == "--subpathrelative" || args[arg].ToLower() == "-n") && (arg + 1) != args.Count)
+                {
+                    subpathRelative = args[arg + 1];
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(subpathRelative))
+            {
+                int.TryParse(subpathRelative, out var subPathInt);
+                if(subPathInt >= 1) subPathInt = subPathInt * -1; //always in the past
+                
+                var importmodel = new ImportIndexItem(_appSettings)
+                {
+                    DateTime = DateTime.Today.AddDays(subPathInt), 
+                    SourceFullFilePath = "notimplemented.jpg"
+                };
+                return importmodel.ParseSubfolders(false);
+            }
+            
+            return subpathRelative; // null
+        }
+
         public bool IfSubpathOrPath(IReadOnlyList<string> args)
         {
             // Detect if a input is a fullpath or a subpath.
