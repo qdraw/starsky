@@ -31,7 +31,6 @@ namespace starsky.Controllers
             bool collections = true
             )
         {
-
             // Trick for avoiding spaces for behind proxy
             f = f.Replace("$20", " ");
             
@@ -45,6 +44,8 @@ namespace starsky.Controllers
             
             if (singleItem?.IsDirectory == false)
             {
+                // HTTP2 push
+                Response.Headers["Link"] = "<" + "/api/thumbnail/" + singleItem.FileIndexItem.FileHash + ">; rel=preload; as=image";
                 if (json) return Json(singleItem);
                 return View("SingleItem", singleItem);
             }

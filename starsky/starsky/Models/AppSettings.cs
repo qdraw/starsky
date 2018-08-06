@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using starsky.Services;
 
 namespace starsky.Models
@@ -45,6 +46,7 @@ namespace starsky.Models
         
         // Database
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public DatabaseTypeList DatabaseType { get; set; }
         public enum DatabaseTypeList
         {
