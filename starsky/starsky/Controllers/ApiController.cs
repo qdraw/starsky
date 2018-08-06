@@ -106,15 +106,16 @@ namespace starsky.Controllers
             for (int i = 0; i < detailView.FileIndexItem.CollectionPaths.Count; i++)
             {
                 var singleItem = _query.SingleItem(detailView.FileIndexItem.CollectionPaths[i],null,false,false);
-                var exifToolResult = _exiftool.Info(collectionFullPaths[i]);
-                // for if exiftool does not anwer the request
-                if (exifToolResult.SourceFile == null) exifToolResult.SourceFile = collectionFullPaths[i];
-
-                singleItem.FileIndexItem.Tags = exifToolResult.Tags;
-                singleItem.FileIndexItem.Description = exifToolResult.CaptionAbstract;
-                singleItem.FileIndexItem.ColorClass = exifToolResult.ColorClass;
                 
-                exifToolResultsList.Add(exifToolResult);
+                //  var exifToolResult = _exiftool.Info(collectionFullPaths[i]);
+                // for if exiftool does not anwer the request
+                updateModel.SourceFile = collectionFullPaths[i];
+
+                singleItem.FileIndexItem.Tags = updateModel.Tags;
+                singleItem.FileIndexItem.Description = updateModel.CaptionAbstract;
+                singleItem.FileIndexItem.ColorClass = updateModel.ColorClass;
+                
+                exifToolResultsList.Add(updateModel);
 
                 singleItem.FileIndexItem.FileHash = FileHash.GetHashCode(collectionFullPaths[i]);
                 // Rename Thumbnail
