@@ -161,12 +161,13 @@ namespace starsky.Services
                                                                   + "\" -Keywords=\"" + updateModel.Tags + "\" ";
                 }
                 
+//                exiftool -Orientation#=5
+                
                 if (!string.IsNullOrWhiteSpace(updateModel.CaptionAbstract))
                 {
                     command += " -Caption-Abstract=\"" + updateModel.CaptionAbstract 
                                                        + "\" -Description=\"" + updateModel.CaptionAbstract + "\"";
                 }
-
                
                 if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
                 {
