@@ -104,8 +104,7 @@ namespace starsky.Services
 
         private ExifToolModel parseJson(string text) {
             if (string.IsNullOrEmpty(text)) return null;
-            text = text.Replace("\r", "");
-//            text = text.Replace($"\\", "");
+            text = text.Replace("\r", string.Empty);
 
             Console.WriteLine("apply fix");
             text = FixingJsonKeywordString(text); // "Keywords"

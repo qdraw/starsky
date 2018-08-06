@@ -12,8 +12,20 @@ namespace starsky.Models
         
         public FileIndexItem.Color ColorClass { get; set; }
 
+        
+        // Replace user Quoted input with single quote to avoid SQL Injection.
+        private string _captionabstract;
         [JsonProperty(PropertyName="Caption-Abstract")]
-        public string CaptionAbstract { get; set; }
+        public string CaptionAbstract {
+            get { 
+                    return _captionabstract;
+                }
+            set
+            {
+                if(string.IsNullOrWhiteSpace(value)) return;
+                _captionabstract = value.Replace("\"", "\'");
+            } 
+        }
         
         // overwrite "-xmp:Description" over -CaptionAbstract
         public string Description
