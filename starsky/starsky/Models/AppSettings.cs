@@ -158,6 +158,9 @@ namespace starsky.Models
 
         // C# 6+ required for this
         public bool AddMemoryCache { get; set; } = true;
+        
+        // For using <Link> in headers
+        public bool AddHttp2Optimizations  { get; set; } = true;
 
         
         // -------------------------------------------------

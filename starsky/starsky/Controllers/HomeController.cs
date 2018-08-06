@@ -17,10 +17,12 @@ namespace starsky.Controllers
     {
         
         private readonly IQuery _query;
+        private readonly AppSettings _appsettings;
 
-        public HomeController(IQuery query)
+        public HomeController(IQuery query, AppSettings appsettings = null)
         {
             _query = query;
+            _appsettings = appsettings;
         }
 
         [HttpGet]
@@ -45,14 +47,17 @@ namespace starsky.Controllers
             
             if (singleItem?.IsDirectory == false)
             {
-                // HTTP2 push
-                Response.Headers["Link"] =
-                    "<" + Url.Action("Thumbnail", "Api", new {f = singleItem.FileIndexItem.FileHash}) +
-                    "?issingleitem=True>; rel=preload; as=image"; 
-                Response.Headers["Link"] += ",";
-                Response.Headers["Link"] += "<"
-                        + Url.Action("Info", "Api", new {f = singleItem.FileIndexItem.FilePath}) +
-                        ">; rel=preload; as=fetch";
+                if (_appsettings != null && _appsettings.AddHttp2Optimizations)
+                {
+                    // HTTP2 push
+                    Response.Headers["Link"] =
+                        "<" + Url.Action("Thumbnail", "Api", new {f = singleItem.FileIndexItem.FileHash}) +
+                        "?issingleitem=True>; rel=preload; as=image"; 
+                    Response.Headers["Link"] += ",";
+                    Response.Headers["Link"] += "<"
+                                                + Url.Action("Info", "Api", new {f = singleItem.FileIndexItem.FilePath}) +
+                                                ">; rel=preload; as=fetch";
+                }
                 
                 if (json) return Json(singleItem);
                 return View("SingleItem", singleItem);

@@ -1,8 +1,11 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
@@ -11,6 +14,7 @@ using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
 using starsky.ViewModels;
+using starskytests.FakeMocks;
 
 namespace starskytests.Controllers
 {
@@ -26,11 +30,29 @@ namespace starskytests.Controllers
                 .BuildServiceProvider();
             var memoryCache = provider.GetService<IMemoryCache>();
             
-            var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            builder.UseInMemoryDatabase("test");
-            var options = builder.Options;
-            var context = new ApplicationDbContext(options);
-            _query = new Query(context,memoryCache);
+            var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
+            builderDb.UseInMemoryDatabase("test");
+            var options = builderDb.Options;
+            var contextDb = new ApplicationDbContext(options);
+            _query = new Query(contextDb,memoryCache);
+
+            // Create a new http context
+//            var context = new DefaultHttpContext();
+//            services.AddSingleton<IHttpContextAccessor>(
+//                new HttpContextAccessor()
+//                {
+//                    HttpContext = context,
+//                });
+            
+//            services.AddScoped<IUrlHelper>(x => {
+//                var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+//                var factory = x.GetRequiredService<IUrlHelperFactory>();
+//                return factory.GetUrlHelper(actionContext);
+//            });
+            var services = new ServiceCollection();
+//            services.AddSingleton<IUrlHelper , FakeUrlHelper>();    
+
+            
         }
 
         private void InsertSearchData()
@@ -60,6 +82,7 @@ namespace starskytests.Controllers
         {
             InsertSearchData();
             var controller = new HomeController(_query);
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
             var actionResult = controller.Index("/homecontrollertest/hi.jpg",null,true) as JsonResult;
             Assert.AreNotEqual(actionResult,null);
             var jsonCollection = actionResult.Value as DetailView;
