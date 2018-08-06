@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using MetadataExtractor;
 using starsky.Helpers;
 using starsky.Models;
+using Directory = MetadataExtractor.Directory;
 
 namespace starsky.Services
 {
@@ -82,9 +83,19 @@ namespace starsky.Services
                 {
                     item.DateTime = dateTime;
                 }
+                
+                // DateTime of image
+                var orientation = GetOrientation(exifItem);
+                item.Orientation = orientation;
+
             }
             
             return item;
+        }
+
+        private static FileIndexItem.Rotation GetOrientation(Directory exifItem)
+        {
+            return FileIndexItem.Rotation.DoNotChange;
         }
 
         private static void DisplayAllExif(IEnumerable<MetadataExtractor.Directory> allExifItems)
