@@ -12,5 +12,6 @@ namespace starsky.ViewModels
         public List<FileIndexItem.Color> ColorClassFilterList { get; set; }
         // Used by react client
         public string PageType => PageViewType.PageType.DetailView.ToString();
+        public bool IsDirectory { get; set; }
     }
 }

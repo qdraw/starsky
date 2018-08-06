@@ -76,7 +76,7 @@ namespace starsky.Helpers
             gif = 14,
             png = 15,
 
-            // Sitecare files
+            // Sitecar files
             xmp = 30
         }
 

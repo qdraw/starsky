@@ -10,26 +10,38 @@ namespace starsky.Services
     public partial class Query // For folder displays only
     {
         // Class for displaying folder content
-        
-        // Display File folder displays content of the folder
+        // This is the query part
         public IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
             List<FileIndexItem.Color> colorClassFilterList = null,
             bool enableCollections = true,
             bool hideDeleted = true)
         {
-            if (colorClassFilterList == null) colorClassFilterList = new List<FileIndexItem.Color>();
-            
             subPath = SubPathSlashRemove(subPath);
+            var fileIndexItems = CacheQueryDisplayFileFolders(subPath);
+            
+            return DisplayFileFolders(fileIndexItems, 
+                colorClassFilterList,
+                enableCollections,
+                hideDeleted);
+        }
 
-            var queryItems = CacheQueryDisplayFileFolders(subPath);
-
+        // Display File folder displays content of the folder
+        // without any query in this method
+        public IEnumerable<FileIndexItem> DisplayFileFolders(
+            List<FileIndexItem> fileIndexItems,
+            List<FileIndexItem.Color> colorClassFilterList = null,
+            bool enableCollections = true,
+            bool hideDeleted = true)
+        {
+            
+            if (colorClassFilterList == null) colorClassFilterList = new List<FileIndexItem.Color>();
             if (colorClassFilterList.Any())
             {
-                queryItems = queryItems.Where(p => colorClassFilterList.Contains(p.ColorClass)).ToList();
+                fileIndexItems = fileIndexItems.Where(p => colorClassFilterList.Contains(p.ColorClass)).ToList();
             }
 
-            if (!queryItems.Any())
+            if (!fileIndexItems.Any())
             {
                 return new List<FileIndexItem>();
             }
@@ -37,11 +49,11 @@ namespace starsky.Services
             if (enableCollections)
             {
                 // Query Collections
-                queryItems =  StackCollections(queryItems);         
+                fileIndexItems =  StackCollections(fileIndexItems);         
             }
             
-            if(hideDeleted) return HideDeletedFileFolderList(queryItems);
-            return queryItems;
+            if(hideDeleted) return HideDeletedFileFolderList(fileIndexItems);
+            return fileIndexItems;
         }
 
 

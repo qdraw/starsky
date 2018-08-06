@@ -12,17 +12,35 @@ namespace starsky.Interfaces
         
         List<FileIndexItem> GetAllRecursive(string subPath = "");
 
+        // to do the query and return object
         IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
             List<FileIndexItem.Color> colorClassFilterList = null,
             bool enableCollections = true,
             bool hideDeleted = true);
 
-        DetailView SingleItem(string singleItemDbPath, 
+        // To make an object without any query
+        IEnumerable<FileIndexItem> DisplayFileFolders(
+            List<FileIndexItem> fileIndexItems,
             List<FileIndexItem.Color> colorClassFilterList = null,
             bool enableCollections = true,
             bool hideDeleted = true);
 
+        // to do the query and return object
+        DetailView SingleItem(
+            string singleItemDbPath, 
+            List<FileIndexItem.Color> colorClassFilterList = null,
+            bool enableCollections = true,
+            bool hideDeleted = true);
+
+        // To make an object without any query
+        DetailView SingleItem(
+            List<FileIndexItem> fileIndexItems, 
+            string singleItemDbPath, 
+            List<FileIndexItem.Color> colorClassFilterList = null,
+            bool enableCollections = true,
+            bool hideDeleted = true);
+        
         FileIndexItem GetObjectByFilePath(string filePath);
 
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);

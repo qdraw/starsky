@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
@@ -38,27 +39,37 @@ namespace starsky.Controllers
             var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
             var subpath = _query.SubPathSlashRemove(f);
 
-            var model = new ArchiveViewModel
+            // First check if it is a single Item
+            var singleItem = _query.SingleItem(subpath, colorClassFilterList,collections);
+            // returns no object when it a directory
+            
+            if (singleItem?.IsDirectory == false)
             {
-                FileIndexItems = _query.DisplayFileFolders(subpath, colorClassFilterList,collections),
-                RelativeObjects = new RelativeObjects(),
-                Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath)
+                if (json) return Json(singleItem);
+                return View("SingleItem", singleItem);
+            }
+            
+            // (singleItem.IsDirectory) or not found
+            var directoryModel = new ArchiveViewModel
+            {
+                FileIndexItems = _query.DisplayFileFolders(subpath),
+                RelativeObjects = _query.GetNextPrevInFolder(subpath),
+                Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath),
+                SearchQuery = subpath.Split("/").LastOrDefault()
             };
 
-            var singleItem = _query.SingleItem(subpath,colorClassFilterList,collections);
-            
-            if (!model.FileIndexItems.Any())
+            if (singleItem == null)
             {
-                // is directory is emthy 
+                // For showing a new database
                 var queryIfFolder = _query.GetObjectByFilePath(subpath);
 
                 // For showing a new database
                 switch (f)
                 {
                     case "/" when !json && queryIfFolder == null:
-                        return View(model);
+                        return View(directoryModel);
                     case "/" when queryIfFolder == null:
-                        return Json(model);
+                        return Json(directoryModel);
                 }
 
                 if (singleItem?.FileIndexItem.FilePath == null && queryIfFolder == null)
@@ -68,18 +79,10 @@ namespace starsky.Controllers
                     return View("Error");
                 }
             }
-
-            if (singleItem?.FileIndexItem.FilePath != null)
-            {
-                if (json) return Json(singleItem);
-                return View("SingleItem", singleItem);
-            }
             
-            model.SearchQuery = subpath.Split("/").LastOrDefault();                
-            model.RelativeObjects = _query.GetNextPrevInFolder(subpath);
-
-            if (json) return Json(model);
-            return View(model);
+            
+            if (json) return Json(directoryModel);
+            return View(directoryModel);
         }
 
         public IActionResult Error()

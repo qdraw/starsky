@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -39,10 +40,17 @@ namespace starskytests.Controllers
                 _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi.jpg",
-                    //FilePath = "/homecontrollertest/hi.jpg",
                     ParentDirectory = "/homecontrollertest",
                     FileHash = "home0012304590",
                     ColorClass = FileIndexItem.Color.Winner // 1
+                });
+                
+                // There must be a parent folder
+                _query.AddItem(new FileIndexItem
+                {
+                    FileName = "homecontrollertest",
+                    ParentDirectory = "",
+                    IsDirectory = true
                 });
             }
         }
@@ -63,22 +71,23 @@ namespace starskytests.Controllers
         {
             InsertSearchData();
             var controller = new HomeController(_query);
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
             var actionResult = controller.Index("/homecontrollertest",null,true) as JsonResult;
             Assert.AreNotEqual(actionResult,null);
             var jsonCollection = actionResult.Value as ArchiveViewModel;
             Assert.AreEqual("home0012304590",jsonCollection.FileIndexItems.FirstOrDefault().FileHash);
         }
 
-//        [TestMethod]
-//        public void HomeControllerIndex404Test()
-//        {
-////            var controller = new HomeController(_query);
-//            
-//            // Act
-////            var actionResult = controller.Index("/not-found-test",null,true) as JsonResult;
-////            Assert.AreEqual(404, actionResult.StatusCode);
-//  
-//        }
+        [TestMethod]
+        public void HomeControllerIndex404Test()
+        {
+            var controller = new HomeController(_query);
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+            // Act
+            var actionResult = controller.Index("/not-found-test",null,true) as JsonResult;
+            Assert.AreEqual("not found", actionResult.Value);
+        }
 
     }
 }

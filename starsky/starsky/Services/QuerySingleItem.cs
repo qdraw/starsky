@@ -16,26 +16,48 @@ namespace starsky.Services
         // Display feature only?!
         // input: Name of item by db style path
         // With Caching feature :)
-        
-        public DetailView SingleItem(string singleItemDbPath,
+
+        // do the query for singleitem + return detailview object
+        public DetailView SingleItem(
+            string singleItemDbPath,
+            List<FileIndexItem.Color> colorClassFilterList = null,
+            bool enableCollections = true,
+            bool hideDeleted = true)
+        {
+            if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
+            var parentFolder = Breadcrumbs.BreadcrumbHelper(singleItemDbPath).LastOrDefault();
+            var fileIndexItemsList = DisplayFileFolders(parentFolder,colorClassFilterList,false,false).ToList();
+
+            return SingleItem(
+                fileIndexItemsList,
+                singleItemDbPath,
+                colorClassFilterList,
+                enableCollections,
+                hideDeleted);
+        }
+
+        // Create an detailview object
+        public DetailView SingleItem(
+            List<FileIndexItem> fileIndexItemsList, 
+            string singleItemDbPath,
             List<FileIndexItem.Color> colorClassFilterList = null,
             bool enableCollections = true,
             bool hideDeleted = true)
         {
             // reject emphy requests
             if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
-            
             var parentFolder = Breadcrumbs.BreadcrumbHelper(singleItemDbPath).LastOrDefault();
-
-            var fileIndexItemsList = DisplayFileFolders(parentFolder,colorClassFilterList,false,false).ToList();
-            // disable collections here;
 
             // RemoveLatestSlash is for '/' folder
             var fileName = singleItemDbPath.Replace(ConfigRead.RemoveLatestSlash(parentFolder) + "/", string.Empty);
 
             var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
             if (currentFileIndexItem == null) return null;
-            if(currentFileIndexItem.IsDirectory) return null;
+
+            if(currentFileIndexItem.IsDirectory) return new DetailView
+            {
+                IsDirectory = true
+            };
 
             if (currentFileIndexItem.Tags.Contains("!delete!")) hideDeleted = false;
             
@@ -48,7 +70,8 @@ namespace starsky.Services
                 RelativeObjects = GetNextPrevInSubFolder(currentFileIndexItem,fileIndexItemsForPrevNextList),
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(singleItemDbPath),
                 GetAllColor = FileIndexItem.GetAllColorUserInterface(),
-                ColorClassFilterList = colorClassFilterList
+                ColorClassFilterList = colorClassFilterList,
+                IsDirectory = false
             };
             
             itemResult.FileIndexItem.CollectionPaths = new List<string>();
