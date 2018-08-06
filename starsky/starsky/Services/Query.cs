@@ -163,6 +163,7 @@ namespace starsky.Services
         }
         
         // Private api within Query to remove cached items
+        // This Does remove a SINGLE item from the cache NOT from the database
         public void RemoveCacheItem(FileIndexItem updateStatusContent)
         {
             // Add protection for disabeling caching
@@ -182,6 +183,17 @@ namespace starsky.Services
             _cache.Set(queryCacheName, displayFileFolders);
         }
 
+        public void RemoveCacheParentItem(IEnumerable<FileIndexItem> fileIndexItemList, string directoryName)
+        {
+            // Add protection for disabeling caching
+            if( _cache == null || _appSettings?.AddMemoryCache == false) return;
+            
+            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+                directoryName);
+            if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
+            
+            _cache.Remove(queryCacheName);
+        }
 
         // Add a new item to the database
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)

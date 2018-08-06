@@ -44,6 +44,7 @@ namespace starsky.Interfaces
         FileIndexItem GetObjectByFilePath(string filePath);
 
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
+        void RemoveCacheParentItem(IEnumerable<FileIndexItem> fileIndexItemList, string directoryName);
 
         string GetItemByHash(string fileHash);
 

@@ -393,5 +393,33 @@ namespace starsky.Controllers
             FileStream fs1 = System.IO.File.OpenRead(thumbPath);
             return File(fs1, "image/jpeg");
         }
+
+        [HttpGet]
+        [HttpPost]
+        public IActionResult RemoveCache(string f = "/", bool json = false)
+        {
+            //For folder paths only
+            if (_appSettings.AddMemoryCache == false)
+            {
+                Response.StatusCode = 412;
+                if(!json) return RedirectToAction("Index", "Home", new { f = f });
+                return Json("cache disabled in config");
+            }
+
+            var singleItem = _query.SingleItem(f);
+            if (singleItem != null && singleItem.IsDirectory)
+            {
+                var displayFileFolders = _query.DisplayFileFolders(f);
+                _query.RemoveCacheParentItem(displayFileFolders,f);
+                if(!json) return RedirectToAction("Index", "Home", new { f = f });
+                return Json("cache succesfull cleared");
+            }
+
+            Response.StatusCode = 400;
+            if(!json) return RedirectToAction("Index", "Home", new { f = f });
+            return Json("ignored, please check if the 'f' path exist or use a folder string to clear the cache");
+        }
+        
+        
     }
 }

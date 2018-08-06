@@ -34,7 +34,7 @@
     @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
     {
         <span> &raquo;</span>
-        <span> @Model.SearchQuery</span>
+        <span> <a class="removecache" asp-controller="Api" asp-action="RemoveCache" asp-route-f="@Model.FileIndexItems.FirstOrDefault()?.ParentDirectory"> @Model.SearchQuery</a></span>
     }
 
 </h1>

@@ -917,3 +917,7 @@ footer {
 .paginationbase .rightarrow {
     float: right;
 }
+.removecache { 
+    text-decoration: none;
+    cursor:text;
+}
