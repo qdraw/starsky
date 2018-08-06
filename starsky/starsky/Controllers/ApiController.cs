@@ -269,7 +269,8 @@ namespace starsky.Controllers
             if (Files.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
             {
                 // When a file is corrupt show error + Delete
-                if (Files.GetImageFormat(thumbPath) == Files.ImageFormat.unknown)
+                var imageFormat = Files.GetImageFormat(thumbPath);
+                if (imageFormat == Files.ImageFormat.unknown)
                 {
                     if (!retryThumbnail)
                     {
@@ -281,10 +282,15 @@ namespace starsky.Controllers
                 }
                 
                 // When using the api to check using javascript
-                if (json) return Json("OK");
+                // use the cached version of imageFormat, otherwise you have to check if it deleted
+                if (imageFormat != Files.ImageFormat.unknown)
+                {
+                    if (json) return Json("OK");
 
-                FileStream fs = System.IO.File.OpenRead(thumbPath);
-                return File(fs, "image/jpeg");
+                    // thumbs are always in jpeg
+                    FileStream fs = System.IO.File.OpenRead(thumbPath);
+                    return File(fs, "image/jpeg");
+                }
             }
             
             

@@ -163,9 +163,9 @@ namespace starskytests.Controllers
             var controller = new ApiController(_query,_exiftool,_appSettings);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-            var actionResult = controller.Thumbnail(createAnImage.FileHash, false, true) as NoContentResult;
-            var thumbnailAnswer = actionResult.StatusCode;
-            Assert.AreNotEqual(200,thumbnailAnswer);
+            var actionResult = controller.Thumbnail(createAnImage.FileHash, false, true) as JsonResult;
+            var thumbnailAnswer = actionResult.StatusCode; // always null for some reason ?!
+            Assert.AreEqual("Thumbnail is not ready yet",actionResult.Value);
         }
 
         [TestMethod]
