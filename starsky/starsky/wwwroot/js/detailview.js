@@ -208,19 +208,27 @@ function queryCaptionAbstract(queryItem) {
 
 function updateKeywords() {
     if (document.querySelectorAll("#js-keywords-update").length === 1){
-        var keywords = document.querySelector('.js-keywords').textContent;
-        console.log(keywords);
+        var keywords = document.querySelector('.js-keywords');
+
+        // check if content already is send to the server
+        if (keywords.textContent !== keywords.dataset.previouscontent) {
+            queryKeywords(keywords.textContent);
+            keywords.dataset.previouscontent = keywords.textContent;
+        }
         
-        queryKeywords(keywords);
     } 
 }
 
 function updateCaptionAbstract() {
     if (document.querySelectorAll("#js-captionabstract-update").length === 1){
-        var captionabstract = document.querySelector('.js-captionabstract').textContent;
-        console.log(captionabstract);
+        var captionabstract = document.querySelector('.js-captionabstract');
+               
+        // check if content already is send to the server
+        if (captionabstract.textContent !== captionabstract.dataset.previouscontent) {
+            queryCaptionAbstract(captionabstract.textContent);
+            captionabstract.dataset.previouscontent = captionabstract.textContent;
+        }
 
-        queryCaptionAbstract(captionabstract);
     }
 }
 
