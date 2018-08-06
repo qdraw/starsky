@@ -291,11 +291,19 @@ namespace starsky.Controllers
                 {
                     // "Photo exist in database but " + "isSingleItem flag is Missing"
                     SetExpiresResponseHeadersToZero();
-                    return NoContent();
+                    Response.StatusCode = 409; // A conflict, that the thumb is not generated yet
+                    return Json("Thumbnail is not ready yet");
                 }
-                // todo: add filter for raw files
-                FileStream fs1 = System.IO.File.OpenRead(sourceFullPath);
-                return File(fs1, "image/jpeg");
+                
+                var fileExtensionWithoutDot = Path.GetExtension(sourceFullPath).Remove(0, 1);
+                    
+                if (Files.ExtensionThumbSupportedList.Contains(fileExtensionWithoutDot))
+                {
+                    FileStream fs1 = System.IO.File.OpenRead(sourceFullPath);
+                    return File(fs1, MimeHelper.GetMimeType(fileExtensionWithoutDot));
+                }
+                Response.StatusCode = 409; // A conflict, that the thumb is not generated yet
+                return Json("Thumbnail is not supported; for example you try to view a raw file");
             }
 
             if (!System.IO.File.Exists(thumbPath) && 
@@ -341,7 +349,8 @@ namespace starsky.Controllers
             if (!isThumbnail)
             {
                 FileStream fs = System.IO.File.OpenRead(sourceFullPath);
-                return File(fs, "image/jpeg");
+                // Return the right mime type
+                return File(fs, MimeHelper.GetMimeTypeByFileName(sourceFullPath));
             }
 
             // Return Thumbnail
