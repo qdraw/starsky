@@ -32,7 +32,8 @@ namespace starskysynccli
                 Console.WriteLine("--connection or -c == Overwrite EnvironmentVariable for DatabaseConnection");
                 Console.WriteLine("--thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder");
                 Console.WriteLine("--exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath");
-                Console.WriteLine("--subpathrelative or -n == Overwrite subpath to use relative days to select a folder");
+                Console.WriteLine("--subpathrelative or -n == Overwrite subpath to use relative days to select a folder" +
+                                  ", use for example '1' to select yesterday. (structure is required)");
                 Console.WriteLine("  use -v -help to show settings: ");
                 if (!appSettings.Verbose) return;
                 Console.WriteLine("");
