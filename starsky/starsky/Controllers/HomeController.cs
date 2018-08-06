@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
@@ -45,7 +46,14 @@ namespace starsky.Controllers
             if (singleItem?.IsDirectory == false)
             {
                 // HTTP2 push
-                Response.Headers["Link"] = "<" + "/api/thumbnail/" + singleItem.FileIndexItem.FileHash + ">; rel=preload; as=image";
+                Response.Headers["Link"] =
+                    "<" + Url.Action("Thumbnail", "Api", new {f = singleItem.FileIndexItem.FileHash}) +
+                    "?issingleitem=True>; rel=preload; as=image"; 
+                Response.Headers["Link"] += ",";
+                Response.Headers["Link"] += "<"
+                        + Url.Action("Info", "Api", new {f = singleItem.FileIndexItem.FilePath}) +
+                        ">; rel=preload; as=fetch";
+                
                 if (json) return Json(singleItem);
                 return View("SingleItem", singleItem);
             }
