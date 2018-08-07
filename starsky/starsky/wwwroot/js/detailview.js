@@ -26,6 +26,7 @@ function loadJSON(path, success, error, type)
         }
     };
     xhr.open(type, path, true);
+    xhr.setRequestHeader("Cache-Control", "max-age=0");
     xhr.send();
 }
 
@@ -472,7 +473,7 @@ document.addEventListener('keydown', (event) => {
 });
 
 
-function checkIfContentIsNot204() {
+function checkIfContentIsNot204or409() {
     
     if (thumbnailApiBase === undefined) return;
     
@@ -484,23 +485,44 @@ function checkIfContentIsNot204() {
                 document.querySelector(".status204button").classList.remove("hide");
             }
             if (xhr.status === 409 && document.querySelectorAll(".main-image").length >= 1) {
-                // var classList = document.querySelector(".main-image").classList;
-                // console.log(classList);
-                // if (classList.contains("disabled-Rotate90Cw")) {
-                //     document.querySelector(".main-image").classList.remove("disabled-Rotate90Cw");
-                //     document.querySelector(".main-image").classList.add("Rotate90Cw");
-                // }
-                
-                // document.querySelector(".main-image").classList.remove("disabled-Rotate180");
-                // document.querySelector(".main-image").classList.remove("disabled-Rotate270Cw");
-                // document.querySelector(".main-image").classList.add("Rotate180");
-                // document.querySelector(".main-image").classList.add("Rotate270Cw");
+                rotateOn409();
             }
         },
         "GET"
     );
 }
-checkIfContentIsNot204();
+checkIfContentIsNot204or409();
+
+function rotateOn409() {
+
+    var classList = document.querySelector(".main-image").classList;
+    if (classList.contains("disabled-Rotate90Cw")) {
+        document.querySelector(".main-image").classList.remove("disabled-Rotate90Cw");
+        document.querySelector(".main-image").classList.add("Rotate90Cw");
+        if (document.querySelectorAll(".sidebar .content img").length >= 1) {
+            document.querySelector(".sidebar .content img").classList.add("Rotate90Cw");
+        }
+    }
+    
+    if (classList.contains("disabled-Rotate270Cw")) {
+        document.querySelector(".main-image").classList.remove("disabled-Rotate270Cw");
+        document.querySelector(".main-image").classList.add("Rotate270Cw");
+        if (document.querySelectorAll(".sidebar .content img").length >= 1) {
+            document.querySelector(".sidebar .content img").classList.add("Rotate270Cw");
+        }
+    }
+
+    if (classList.contains("disabled-Rotate180")) {
+        document.querySelector(".main-image").classList.remove("disabled-Rotate180");
+        document.querySelector(".main-image").classList.add("Rotate180");
+        if (document.querySelectorAll(".sidebar .content img").length >= 1) {
+            document.querySelector(".sidebar .content img").classList.add("Rotate180");
+        }
+    }
+}
+rotateOn409();
+
+
 
 function retry204() {
     showPreloader();
@@ -515,3 +537,12 @@ function retry204() {
         "GET"
     );  
 }
+
+
+
+
+
+
+
+
+

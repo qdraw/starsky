@@ -763,18 +763,26 @@ float: left;
 }
 /* Sorry for firefox and mobile safari only */
 /*disabled-*/
+
+.sidebar .content img.Rotate90Cw,
 .main-image.Rotate90Cw {
     image-orientation: 90deg;
 }
-
+.sidebar .content img.Rotate180,
 .main-image.Rotate180 {
     image-orientation: 180deg;
 }
 
+.sidebar .content img.Rotate270Cw,
 .main-image.Rotate270Cw {
     image-orientation: 270deg;
 }
 
+.sidebar .content img.Rotate90Cw,
+.sidebar .content img.Rotate180,
+.sidebar .content img.Rotate270Cw {
+    background-color: #dde;
+}
 
 
 .main-image.collapsed {
