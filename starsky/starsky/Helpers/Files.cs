@@ -187,6 +187,7 @@ namespace starsky.Helpers
             var png    = new byte[] { 137, 80, 78, 71 };    // PNG
             var tiff   = new byte[] { 73, 73, 42 };         // TIFF
             var tiff2  = new byte[] { 77, 77, 42 };         // TIFF
+            var tiff3  = new byte[] { 77, 77, 0 };         // DNG? //0
             var jpeg   = new byte[] { 255, 216, 255, 224 }; // jpeg
             var jpeg2  = new byte[] { 255, 216, 255, 225 }; // jpeg canon
             var xmp    = Encoding.ASCII.GetBytes("<x:xmpmeta");    // xmp
@@ -206,6 +207,9 @@ namespace starsky.Helpers
             if (tiff2.SequenceEqual(bytes.Take(tiff2.Length)))
                 return ImageFormat.tiff;
 
+            if (tiff3.SequenceEqual(bytes.Take(tiff3.Length)))
+                return ImageFormat.tiff;
+            
             if (jpeg.SequenceEqual(bytes.Take(jpeg.Length)))
                 return ImageFormat.jpg;
 

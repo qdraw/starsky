@@ -38,7 +38,7 @@ namespace starsky.Services
         {
             // Handle single files
             if (Deleted(subPath)) return null;
-            if (SingleFile(subPath)) return null;
+            if (!string.IsNullOrEmpty(SingleFile(subPath))) return new List<string>{subPath};
 
             // Handle folder Get a list of all local folders and rename it to database style.
             // Db Style is a relative path

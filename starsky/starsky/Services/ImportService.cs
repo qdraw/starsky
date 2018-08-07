@@ -197,7 +197,9 @@ namespace starsky.Services
                 _exiftool.Update(exiftoolmodel, destinationFullPath);
             }
             
-            _isync.SyncFiles(fileIndexItem.FilePath);
+            var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath);
+            // import has failed when it has null
+            if (syncFiles == null) return null;
             
             AddItem(importIndexItem);
 
