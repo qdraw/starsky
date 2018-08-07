@@ -125,7 +125,7 @@ namespace starsky.Services
             displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
             
             _cache.Remove(queryCacheName);
-            _cache.Set(queryCacheName, displayFileFolders);
+            _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
         }
 
         // Private api within Query to update cached items
@@ -149,8 +149,7 @@ namespace starsky.Services
             displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
             
             _cache.Remove(queryCacheName);
-            _cache.Set(queryCacheName, displayFileFolders);
-
+            _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
         }
         
         // Private api within Query to remove cached items
@@ -171,7 +170,7 @@ namespace starsky.Services
             
             _cache.Remove(queryCacheName);
             // generate list agian
-            _cache.Set(queryCacheName, displayFileFolders);
+            _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
         }
 
         public void RemoveCacheParentItem(IEnumerable<FileIndexItem> fileIndexItemList, string directoryName)
