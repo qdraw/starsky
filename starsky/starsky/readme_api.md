@@ -537,6 +537,7 @@ When using cache is might sometimes useful to reset the cache.
 	-  "ignored, please check if the 'f' path exist or use a  
    folder string to clear the cache"
 	-  cache is disabled in config  
+
 ## Environment info
 
 To get information about the configuration.
