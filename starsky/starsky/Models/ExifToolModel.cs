@@ -38,7 +38,7 @@ namespace starsky.Models
             }
         }
         
-        [JsonIgnore]
+        // Don't ignore this one, when setting it will also ignored
         public string Prefs
         {
             get { return null; }
