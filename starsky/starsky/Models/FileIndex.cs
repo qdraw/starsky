@@ -225,6 +225,57 @@ namespace starsky.Models
             DoNotChange = -1
         }
 
+        
+        private Rotation _orientation;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public Rotation Orientation
+        {
+            get { return _orientation; }
+            set { _orientation = value; }
+        }
+
+        public enum Rotation
+        {
+            [Display(Name = "Do Not Change")]
+            DoNotChange = 0,
+            // There are more types:
+            // https://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
+            [Display(Name = "Horizontal (normal)")]
+            Horizontal = 1,
+            [Display(Name = "Rotate 90 CW")]
+            Rotate90Cw = 6,
+            [Display(Name = "Rotate 180")]
+            Rotate180 = 3,  
+            [Display(Name = "Rotate 270 CW")]
+            Rotate270Cw = 8
+        }
+        
+        public Rotation SetOrientation(string orientationString = "0")
+        {
+
+            switch (orientationString)
+            {
+                case "0":
+                    _orientation = Rotation.DoNotChange;
+                    return _orientation;
+                case "1":
+                    _orientation = Rotation.Horizontal;
+                    return _orientation;
+                case "6":
+                    _orientation = Rotation.Rotate90Cw;
+                    return _orientation;
+                case "3":
+                    _orientation = Rotation.Rotate180;
+                    return _orientation;
+                case "8":
+                    _orientation = Rotation.Rotate270Cw;
+                    return _orientation;
+                default:
+                    _orientation = Rotation.Horizontal;
+                    return _orientation;
+            }
+        }
+
         public static string GetDisplayName(Enum enumValue)
         {
             var name = enumValue.GetType()?

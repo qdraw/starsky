@@ -49,7 +49,7 @@ namespace starsky.Controllers
 
         [HttpPost]
         public IActionResult Update(string tags, string colorClass,
-            string captionAbstract, string f, bool collections = true)
+            string captionAbstract, string f, string orientation, bool collections = true)
         {
             var detailView = _query.SingleItem(f,null,collections,false);
             if (detailView == null)
@@ -107,6 +107,22 @@ namespace starsky.Controllers
                 // Restore the old value; so don't change the value
                 updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
             }
+            
+            // Rotation
+            var orientationEnum = new FileIndexItem().SetOrientation(orientation);
+            if (orientationEnum != FileIndexItem.Rotation.DoNotChange)
+            {
+                // Anything else than do not change
+                detailView.FileIndexItem.SetOrientation(orientation);
+                updateModel.Orientation = detailView.FileIndexItem.Orientation;
+            }
+            if (orientationEnum == FileIndexItem.Rotation.DoNotChange)
+            {
+                // Restore the old value; so don't change the value
+                updateModel.Orientation = detailView.FileIndexItem.Orientation;
+            }
+            
+            
 
             var collectionFullPaths = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.CollectionPaths);
             var oldHashCodes = FileHash.GetHashCode(collectionFullPaths.ToArray());
@@ -121,11 +137,13 @@ namespace starsky.Controllers
                 
                 //  var exifToolResult = _exiftool.Info(collectionFullPaths[i]);
                 // for if exiftool does not anwer the request
-                updateModel.SourceFile = collectionFullPaths[i];
+                updateModel.SourceFile = Files.GetXmpSidecarFileWhenRequired(_appSettings.DatabasePathToFilePath(
+                    detailView.FileIndexItem.FilePath), _appSettings.ExifToolXmpPrefix);;
 
                 singleItem.FileIndexItem.Tags = updateModel.Tags;
                 singleItem.FileIndexItem.Description = updateModel.CaptionAbstract;
                 singleItem.FileIndexItem.ColorClass = updateModel.ColorClass;
+                singleItem.FileIndexItem.Orientation = updateModel.Orientation;
                 
                 exifToolResultsList.Add(updateModel);
 
@@ -334,9 +352,11 @@ namespace starsky.Controllers
                 return Json("Thumbnail is not supported; for example you try to view a raw file");
             }
 
-            return NotFound("There is no thumbnail image and no source image");
+            return NotFound("There is no thumbnail image " + thumbPath + " and no source image "+ sourcePath );
+            // When you have duplicate files and one of them is removed and there is no thumbnail generated yet you might get an false error
         }
 
+        
         public void SetExpiresResponseHeadersToZero()
         {
             Request.HttpContext.Response.Headers.Remove("Cache-Control");

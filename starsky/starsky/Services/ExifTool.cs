@@ -9,6 +9,7 @@ using starsky.Models;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.Helpers;
 using starsky.Interfaces;
 
@@ -20,10 +21,12 @@ namespace starsky.Services
         // This is a exiftool wrapper
 
         private readonly AppSettings _appSettings;
+        private readonly IMemoryCache _cache;
 
-        public ExifTool(AppSettings appSettings)
+        public ExifTool(AppSettings appSettings, IMemoryCache memoryCache = null)
         {
             _appSettings = appSettings;
+            _cache = memoryCache;
         }
         
         private string BaseCommmand(string options, string fullFilePathSpaceSeperated)
@@ -161,12 +164,12 @@ namespace starsky.Services
                                                                   + "\" -Keywords=\"" + updateModel.Tags + "\" ";
                 }
                 
+  
                 if (!string.IsNullOrWhiteSpace(updateModel.CaptionAbstract))
                 {
                     command += " -Caption-Abstract=\"" + updateModel.CaptionAbstract 
                                                        + "\" -Description=\"" + updateModel.CaptionAbstract + "\"";
                 }
-
                
                 if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
                 {
@@ -175,6 +178,13 @@ namespace starsky.Services
                     var colorDisplayName = FileIndexItem.GetDisplayName(updateModel.ColorClass);
                     command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\""+ intColorClass + 
                                "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
+                }
+                
+                // // exiftool -Orientation#=5
+                if (updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
+                {
+                    var intOrientation = (int) updateModel.Orientation;
+                    command += " \"-Orientation#="+ intOrientation +"\" ";
                 }
 
                 if (updateModel.AllDatesDateTime.Year > 2)
@@ -190,6 +200,7 @@ namespace starsky.Services
                     {
                         exifBaseInputStringBuilder = Quoted(exifBaseInputStringBuilder,fullFilePath);
                         exifBaseInputStringBuilder.Append($" ");
+                        RemoveCache(fullFilePath);
                     }
                     
                     BaseCommmand(command, exifBaseInputStringBuilder.ToString());
@@ -197,19 +208,54 @@ namespace starsky.Services
 
             }
 
-        private StringBuilder Quoted(StringBuilder inputStringBuilder, string fullFilePath)
-        {
-            if (inputStringBuilder == null)
+            private StringBuilder Quoted(StringBuilder inputStringBuilder, string fullFilePath)
             {
-                inputStringBuilder = new StringBuilder();
+                if (inputStringBuilder == null)
+                {
+                    inputStringBuilder = new StringBuilder();
+                }
+                inputStringBuilder.Append($"\"");
+                inputStringBuilder.Append(fullFilePath);
+                inputStringBuilder.Append($"\"");
+                return inputStringBuilder;
             }
-            inputStringBuilder.Append($"\"");
-            inputStringBuilder.Append(fullFilePath);
-            inputStringBuilder.Append($"\"");
-            return inputStringBuilder;
-        }
 
+            // Cached view >> IMemoryCache
+            // Short living cache Max 10. minutes
             public ExifToolModel Info(string fullFilePath)
+            {
+                // The CLI programs uses no cache
+                if( _cache == null || _appSettings?.AddMemoryCache == false) return QueryInfo(fullFilePath);
+                
+                // Return values from IMemoryCache
+                var queryCacheName = "info_" + fullFilePath;
+                
+                // Return Cached object if it exist
+                if (_cache.TryGetValue(queryCacheName, out var objectExifToolModel))
+                    return objectExifToolModel as ExifToolModel;
+                
+                // Try to catch a new object
+                objectExifToolModel = QueryInfo(fullFilePath);
+                _cache.Set(queryCacheName, objectExifToolModel, new TimeSpan(0,10,0));
+                return (ExifToolModel) objectExifToolModel;
+            }
+
+            // only for exiftool!
+            // Why removing, The Update command does not update the entire object.
+            // When you update tags, other tags will be null 
+            private void RemoveCache(string fullFilePath)
+            {
+                if (_cache == null || _appSettings?.AddMemoryCache == false) return;
+                var queryCacheName = "info_" + fullFilePath;
+    
+                if (!_cache.TryGetValue(queryCacheName, out var _)) return;
+                _cache.Remove(queryCacheName);
+            }
+
+
+
+            // The actual query
+            private ExifToolModel QueryInfo(string fullFilePath)
             {
                 // Add parentes around this file
 
@@ -227,7 +273,8 @@ namespace starsky.Services
                 // Caption-Abstract == Description
                 var fullFilePathStringBuilder = Quoted(null,fullFilePath);
 
-                return parseJson(BaseCommmand("-Keywords -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
+                // -Orientation# <= hashtag is that exiftool must output a int and not a human readable string
+                return parseJson(BaseCommmand("-Keywords \"-Orientation#\" -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
                     fullFilePathStringBuilder.ToString()));
             }
 

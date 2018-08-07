@@ -61,11 +61,14 @@
                     var enumValue = (int) item;
                     if ((int) @Model.FileIndexItem.ColorClass == enumValue)
                     {
-                        <a class="colorclass-@enumValue on" data-colorclass="@enumValue" onclick="updateColorClass(this)"><span class='checkbox'></span>@item.ToString()</a>
+                        <a class="colorclass-@enumValue on" data-colorclass="@enumValue" 
+                           onclick="updateColorClass(this)"><span class='checkbox'></span>@item.ToString()</a>
                     }
                     else
                     {
-                        <a class="colorclass-@enumValue" data-colorclass="@enumValue" onclick="updateColorClass(this)"><span class='checkbox'></span>@item.ToString()</a>
+                        <a class="colorclass-@enumValue" data-colorclass="@enumValue" onclick="updateColorClass(this)">
+                            <span class='checkbox'></span>@item.ToString()
+                        </a>
                     }
                 }
             }
@@ -73,13 +76,26 @@
         <div class="download-sidebar">
             <h4>Downloads:</h4>
 
-            <a class="btn-sm btn btn-secondary" href="@Url.Action("DownloadPhoto", "Api", new {f = @Model.FileIndexItem.FilePath, isThumbnail = true})" download="@Model.FileIndexItem.FileName.Replace(".jpg", "")-th.jpg">
+            <a class="btn-sm btn btn-secondary" 
+               href="@Url.Action("DownloadPhoto", "Api", new {f = @Model.FileIndexItem.FilePath, isThumbnail = true})" 
+               download="@Model.FileIndexItem.FileName.Replace(".jpg", "")-th.jpg">
                 Thumbnail
             </a>
-            <a class="btn-sm btn btn-secondary" href="@Url.Action("DownloadPhoto", "Api", new {f = @Model.FileIndexItem.FilePath, isThumbnail = false})" download="@Model.FileIndexItem.FileName">
+            <a class="btn-sm btn btn-secondary" 
+               href="@Url.Action("DownloadPhoto", "Api", new {f = @Model.FileIndexItem.FilePath, isThumbnail = false})" 
+               download="@Model.FileIndexItem.FileName">
                 Full
             </a>
         </div>
+@*        <div class="rotation-sidebar">*@
+@*            <h4>Rotatie:</h4>*@
+@*            <a class="btn-sm btn btn-secondary">*@
+@*                [*@
+@*            </a>*@
+@*            <a class="btn-sm btn btn-secondary">*@
+@*                ]*@
+@*            </a>*@
+@*        </div>*@
 
         <div class="addDeleteTag disabled">
             <h4>Danger zone:</h4>
@@ -137,7 +153,8 @@
         </span>
     </h1>
 
-    <img class="main-image" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
+    <img class="main-image disabled-@Model.FileIndexItem.Orientation" 
+         src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
 </div>
 
 <script type="text/javascript">

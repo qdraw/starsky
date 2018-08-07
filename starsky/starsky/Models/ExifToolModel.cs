@@ -38,7 +38,7 @@ namespace starsky.Models
             }
         }
         
-        
+        [JsonIgnore]
         public string Prefs
         {
             get { return null; }
@@ -87,6 +87,10 @@ namespace starsky.Models
 
 
         public DateTime AllDatesDateTime { get; set; }
+        
+        //  Orientation   : 6
+        public FileIndexItem.Rotation Orientation { get; set; }
+
 
         private static HashSet<string> stringToHashSet(string inputKeywords)
         {

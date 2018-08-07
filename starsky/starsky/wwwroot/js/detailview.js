@@ -26,6 +26,7 @@ function loadJSON(path, success, error, type)
         }
     };
     xhr.open(type, path, true);
+    xhr.setRequestHeader("Cache-Control", "max-age=0");
     xhr.send();
 }
 
@@ -472,23 +473,113 @@ document.addEventListener('keydown', (event) => {
 });
 
 
-function checkIfContentIsNot204() {
+function checkIfContentIsNot204or409() {
     
     if (thumbnailApiBase === undefined) return;
     
     loadJSON(thumbnailApiBase,
         function (data) {},
         function (xhr) { 
-            if (xhr.status === 204 && 
-                document.querySelectorAll(".status204button").length >= 0) 
+            if (xhr.status === 204 && document.querySelectorAll(".status204button").length >= 0) 
             {
                 document.querySelector(".status204button").classList.remove("hide");
+            }
+            if (xhr.status === 409 && document.querySelectorAll(".main-image").length >= 1) {
+                rotateOn409();
             }
         },
         "GET"
     );
 }
-checkIfContentIsNot204();
+checkIfContentIsNot204or409();
+
+function rotateOn409() {
+
+    var classList = document.querySelector(".main-image").classList;
+    if (classList.contains("disabled-Rotate90Cw")) {
+        document.querySelector(".main-image").classList.remove("disabled-Rotate90Cw");
+        document.querySelector(".main-image").classList.add("Rotate90Cw");
+        if (document.querySelectorAll(".sidebar .content img").length >= 1) {
+            document.querySelector(".sidebar .content img").classList.add("Rotate90Cw");
+        }
+    }
+    
+    if (classList.contains("disabled-Rotate270Cw")) {
+        document.querySelector(".main-image").classList.remove("disabled-Rotate270Cw");
+        document.querySelector(".main-image").classList.add("Rotate270Cw");
+        if (document.querySelectorAll(".sidebar .content img").length >= 1) {
+            document.querySelector(".sidebar .content img").classList.add("Rotate270Cw");
+        }
+    }
+
+    if (classList.contains("disabled-Rotate180")) {
+        document.querySelector(".main-image").classList.remove("disabled-Rotate180");
+        document.querySelector(".main-image").classList.add("Rotate180");
+        if (document.querySelectorAll(".sidebar .content img").length >= 1) {
+            document.querySelector(".sidebar .content img").classList.add("Rotate180");
+        }
+    }
+}
+
+// function imageToDataUri(img, width, height) {
+//
+//     // create an off-screen canvas
+//     var canvas = document.createElement('canvas'),
+//         ctx = canvas.getContext('2d');
+//
+//     // set its dimension to target size
+//     canvas.width = width;
+//     canvas.height = height;
+//
+//     // draw source image into the off-screen canvas:
+//     ctx.drawImage(img, 0, 0, width, height);
+//
+//     // encode image to data-uri with base64 version of compressed image
+//     return canvas.toDataURL();
+// }
+//
+// function rotateImage(srcBase64, srcOrientation, callback) {
+//     var img = new Image();
+//
+//     img.onload = function() {
+//         var width = img.width,
+//             height = img.height,
+//             canvas = document.createElement('canvas'),
+//             ctx = canvas.getContext("2d");
+//
+//         // set proper canvas dimensions before transform & export
+//         if (4 < srcOrientation && srcOrientation < 9) {
+//             canvas.width = height;
+//             canvas.height = width;
+//         } else {
+//             canvas.width = width;
+//             canvas.height = height;
+//         }
+//
+//         // transform context before drawing image
+//         switch (srcOrientation) {
+//             case 2: ctx.transform(-1, 0, 0, 1, width, 0); break;
+//             case 3: ctx.transform(-1, 0, 0, -1, width, height ); break;
+//             case 4: ctx.transform(1, 0, 0, -1, 0, height ); break;
+//             case 5: ctx.transform(0, 1, 1, 0, 0, 0); break;
+//             case 6: ctx.transform(0, 1, -1, 0, height , 0); break;
+//             case 7: ctx.transform(0, -1, -1, 0, height , width); break;
+//             case 8: ctx.transform(0, -1, 1, 0, 0, width); break;
+//             default: break;
+//         }
+//
+//         // draw image
+//         ctx.drawImage(img, 0, 0);
+//
+//         // export base64
+//         callback(canvas.toDataURL());
+//     };
+//
+//     img.src = srcBase64;
+// }
+
+
+
 
 function retry204() {
     showPreloader();
@@ -503,3 +594,12 @@ function retry204() {
         "GET"
     );  
 }
+
+
+
+
+
+
+
+
+

@@ -33,22 +33,22 @@ namespace starsky.Helpers
                     // Read the text-content of the xmp file.
                     var xmp = new PlainTextFileHelper().ReadFile(xmpFilePath);
                     // Get the data from the xmp
-                    databaseItem = GetDataFromString(xmp);
+                    databaseItem = GetDataFromString(xmp,databaseItem);
                 }
             }
             return databaseItem;
         }
         
-        public FileIndexItem GetDataFromString(string xmpDataAsString)
+        public FileIndexItem GetDataFromString(string xmpDataAsString, FileIndexItem databaseItem = null)
         {
             // Does not require appsettings
             
-            var item = new FileIndexItem();
+            if(databaseItem == null) databaseItem = new FileIndexItem();
             // ContentNameSpace is for example : Namespace=http://...
-            item = GetDataContentNameSpaceTypes(xmpDataAsString, item);
+            databaseItem = GetDataContentNameSpaceTypes(xmpDataAsString, databaseItem);
             // NullNameSpace is for example : string.Empty
-            item = GetDataNullNameSpaceTypes(xmpDataAsString, item);
-            return item;
+            databaseItem = GetDataNullNameSpaceTypes(xmpDataAsString, databaseItem);
+            return databaseItem;
         }
 
         /// <summary>
@@ -172,6 +172,13 @@ namespace starsky.Helpers
                 if (colorClass != null)
                 {
                     item.SetColorClass(colorClass);
+                }
+                
+                // Path=tiff:Orientation Namespace=http://ns.adobe.com/tiff/1.0/ Value=6
+                var rotation = GetContentNameSpace(property, "tiff:Orientation");
+                if (rotation != null)
+                {
+                    item.SetOrientation(rotation);
                 }
 
             }
