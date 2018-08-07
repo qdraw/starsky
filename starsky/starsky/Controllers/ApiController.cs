@@ -352,7 +352,8 @@ namespace starsky.Controllers
                 return Json("Thumbnail is not supported; for example you try to view a raw file");
             }
 
-            return NotFound("There is no thumbnail image and no source image");
+            return NotFound("There is no thumbnail image " + thumbPath + " and no source image "+ sourcePath );
+            // When you have duplicate files and one of them is removed and there is no thumbnail generated yet you might get an false error
         }
 
         public void SetExpiresResponseHeadersToZero()

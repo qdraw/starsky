@@ -479,10 +479,22 @@ function checkIfContentIsNot204() {
     loadJSON(thumbnailApiBase,
         function (data) {},
         function (xhr) { 
-            if (xhr.status === 204 && 
-                document.querySelectorAll(".status204button").length >= 0) 
+            if (xhr.status === 204 && document.querySelectorAll(".status204button").length >= 0) 
             {
                 document.querySelector(".status204button").classList.remove("hide");
+            }
+            if (xhr.status === 409 && document.querySelectorAll(".main-image").length >= 1) {
+                // var classList = document.querySelector(".main-image").classList;
+                // console.log(classList);
+                // if (classList.contains("disabled-Rotate90Cw")) {
+                //     document.querySelector(".main-image").classList.remove("disabled-Rotate90Cw");
+                //     document.querySelector(".main-image").classList.add("Rotate90Cw");
+                // }
+                
+                // document.querySelector(".main-image").classList.remove("disabled-Rotate180");
+                // document.querySelector(".main-image").classList.remove("disabled-Rotate270Cw");
+                // document.querySelector(".main-image").classList.add("Rotate180");
+                // document.querySelector(".main-image").classList.add("Rotate270Cw");
             }
         },
         "GET"

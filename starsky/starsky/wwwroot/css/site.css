@@ -754,12 +754,28 @@ float: left;
 .detailview .nextprev .next {
     padding-right: 15px;
 }
+
 .main-image {
     width: auto;
     max-height: 80vh;
     max-width: calc(100vw - 30px);
     transition: max-width 0.5s ease-in-out;
 }
+/* Sorry for firefox and mobile safari only */
+/*disabled-*/
+.main-image.Rotate90Cw {
+    image-orientation: 90deg;
+}
+
+.main-image.Rotate180 {
+    image-orientation: 180deg;
+}
+
+.main-image.Rotate270Cw {
+    image-orientation: 270deg;
+}
+
+
 
 .main-image.collapsed {
     max-width: calc(100vw - 340px);
