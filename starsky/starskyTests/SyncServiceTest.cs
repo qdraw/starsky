@@ -202,7 +202,7 @@ namespace starskytests
             _query.RemoveItem(item);
             
             // The Base Directory will be ignored
-            Assert.AreEqual(_syncservice.SingleFile(),false);
+            Assert.AreEqual(_syncservice.SingleFile(),SyncService.SingleFileSuccess.Ignore);
 
         }
         
