@@ -312,7 +312,7 @@ namespace starsky.Services
 
         public static double ConvertDegreeMinutesToDouble(string point, string refGps)
         {
-            // "5,55.840E";
+            // "5,55.840E"
             var multiplier = (refGps.Contains("S") || refGps.Contains("W")) ? -1 : 1; //handle south and west
 
             point = point.Replace(",", " ");
