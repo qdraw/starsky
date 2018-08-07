@@ -25,5 +25,15 @@ namespace starskytests
             var q = FileHash.GetHashCode(new CreateAnImage().FullFilePath,0);
             Assert.AreEqual(true, q.Contains("_T"));
         }
+        
+        [TestMethod]
+        public void FileHash_CreateAnImage_Test()
+        {
+            // Give the hasher 0 seconds to calc a hash; so timeout is activated
+            var q = FileHash.GetHashCode(new CreateAnImage().FullFilePath);
+        }
+        
+        
+        
     }
 }

@@ -16,4 +16,5 @@ dotnet ef migrations add ExifOrientation
 6.	Check the ApiController for update, and add the feature
 7.	In `ExifTool` add the `Update` and `Info`
 	Update is used to write and Info is read the write data realtime
-	
+
+8. Implement feature on the GUI
