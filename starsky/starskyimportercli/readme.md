@@ -26,7 +26,6 @@ The default structure in `appsettings.json` is:
     "ExifToolPath": "/usr/local/bin/exiftool",
     "Structure": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext",
     "ReadOnlyFolders": ["/2015","/2018"],
-    "AddMemoryCache": false
   }
 }
 
@@ -49,7 +48,7 @@ The default structure in `appsettings.json` is:
 - `.ext`   -       (dot ext); extension for example: .jpg
 - `{filenamebase}` - use the orginal filename without extension
 - `*`      -     (asterisk); match anything
-- `*starksy*    -   Match the folder match that contains the word 'starksy' 
+- `*starksy*`    -   Match the folder match that contains the word 'starksy' 
 
 Check for more date conversions:
 https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
