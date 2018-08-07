@@ -7,12 +7,17 @@
  ```
 bash ./readme-listoftests-update.sh 
 ``` 
-Last updated:  2018-07-31
+Last updated:  2018-08-07
 ```
-    AppSettingsProviderTest_SqliteFullPathTest
-    AppSettingsProviderTest_SqliteFullPathstarskycliTest
     AppSettingsProviderTest_SQLite_ExpectException
     AppSettingsProviderTest_MySQL_ExpectException
+    AppSettingsProviderTest_StructureFails_withoutExtAndNoSlash
+    AppSettingsProviderTest_StructureFails_withExtAndNoSlash
+    AppSettingsProviderTest_StructureCheck_MissingFirstSlash
+    AppSettingsProviderTest_FolderWithFirstSlash
+    AppSettingsProviderTest_NoFolderWithFirstSlash
+    AppSettingsProviderTest_NoFolderMissingFirstSlash
+    AppSettingsStructureExampleNoSetting
     ArgsHelper_NeedVerboseTest
     ArgsHelper_NeedRecruisiveTest
     ArgsHelper_GetIndexModeTest
@@ -38,6 +43,7 @@ Last updated:  2018-07-31
     ExifRead_GetExifDateTimeTest
     ExifRead_ParseGpsTest
     ExifRead_ReadExifFromFileTest
+    ExifRead_ConvertDegreeMinutesToDouble_ConvertLongLat
     ExifToolModelColorClassTest
     ExifToolCAllDatesDateTimeTest
     ExifToolCaptionAbstractTest
@@ -85,7 +91,8 @@ Last updated:  2018-07-31
     Files_GetAllFilesDirectoryTest
     Files_GetFilesInDirectoryTest1
     Files_GetFilesRecrusiveTest
-    Test
+    Files_ExtensionThumbSupportedList_TiffMp4MovXMPCheck
+    Files_ExtensionSyncSupportedList_TiffCheck
     ImportService_NoSubPath_slashyyyyMMdd_HHmmss_ImportTest
     ImportService_AsteriskTRFolderHHmmss_ImportTest
     ImportService_NonExistingFolder_HHmmssImportTest
@@ -97,6 +104,9 @@ Last updated:  2018-07-31
     ImportService_EntireBasePath_Folder_Import_ToFolderExist_Test
     ImportService_Import_NotFound_Test
     ImportService_inputFullPathList_ListInput_ImportTest
+    ImportService_overWriteStructure_MatchItem_ObjectCreateIndexItem
+    ImportService_overWriteStructure_NullIgnore_ObjectCreateIndexItem
+    ImportService_ImportAndIgnore_ImportTest
     IndexViewModelPageTypeTest
     MigrationsTest_contextDatabaseMigrate
     MultipartRequestHelperTest_Missingcontenttypeboundary
@@ -122,6 +132,7 @@ Last updated:  2018-07-31
     QueryTest_PrevFilePathCachingConflicts_Deleted
     QueryTest_CachingDirectoryConflicts_CheckIfContentIsInCacheUpdated
     QueryFolder_Add_And_UpdateFolderCache_UpdateCacheItemTest
+    DisplayFileFolders_StackCollection
     QueryNoCache_SingleItem_Test
     SearchService_SearchNull
     SearchService_SearchCountStationTest
@@ -185,6 +196,11 @@ Last updated:  2018-07-31
     ImportIndexItemParse_ParseDateTimeFromFileName_Test
     ImportIndexItemParse_ParseDateTimeFromFileNameWithExtraFileNameBase_Test
     ImportIndexItemParse_ParseDateTimeFromFileName_WithExtraDotsInName_Test
+    ImportIndexItem_CtorRequest_ColorClass
+    ImportIndexItemParse_OverWriteStructureFeature_Test
+    ImportFileSettingsModel_DefaultsToZero_Test
+    ImportSettingsModel_toDefaults_Test
+    ImportSettingsModel_FailingInput_Test
     CredentialSetupTest
     CredentialTypeSetup_Test
     CredentialSetupTest
@@ -199,6 +215,7 @@ Last updated:  2018-07-31
     MiddlewareBasicAuthenticationHeaderValueCtor_ReadUserPassword_Test
     MiddlewareBasicAuthenticationHeaderValueCtor_FormatException_Test
     MiddlewareExtensionsBasicAuthenticationMiddlewareNotSignedIn
+    XmpReadHelperTest_GetData_usingStringExample
     AccountController_NoLogin_Login_And_newAccount_Test
     AccountController_Model_is_not_correct
     AccountController_LogInGet
@@ -226,6 +243,7 @@ Last updated:  2018-07-31
     ApiController_DownloadPhoto_Thumb_base_folder_not_found_Test
     HomeControllerIndexDetailViewTest
     HomeControllerIndexIndexViewModelTest
+    HomeControllerIndex404Test
     SearchControllerTest_IndexPost
     SearchControllerTest_ZeroItems_Index
     SearchControllerTest_TrashZeroItems

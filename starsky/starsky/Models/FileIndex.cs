@@ -251,23 +251,23 @@ namespace starsky.Models
             switch (orientationString)
             {
                 case "0":
-                    _orientation = Rotation.DoNotChange;
-                    return _orientation;
+                    Orientation = Rotation.DoNotChange;
+                    return Orientation;
                 case "1":
-                    _orientation = Rotation.Horizontal;
-                    return _orientation;
+                    Orientation = Rotation.Horizontal;
+                    return Orientation;
                 case "6":
-                    _orientation = Rotation.Rotate90Cw;
-                    return _orientation;
+                    Orientation = Rotation.Rotate90Cw;
+                    return Orientation;
                 case "3":
-                    _orientation = Rotation.Rotate180;
-                    return _orientation;
+                    Orientation = Rotation.Rotate180;
+                    return Orientation;
                 case "8":
-                    _orientation = Rotation.Rotate270Cw;
-                    return _orientation;
+                    Orientation = Rotation.Rotate270Cw;
+                    return Orientation;
                 default:
-                    _orientation = Rotation.Horizontal;
-                    return _orientation;
+                    Orientation = Rotation.Horizontal;
+                    return Orientation;
             }
         }
 
