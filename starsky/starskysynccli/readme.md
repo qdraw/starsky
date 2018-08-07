@@ -27,10 +27,11 @@ When you start this application at first please update the `appsettings.json`
     "ExifToolPath": "C:\\exiftool.exe",
     "Structure": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext",
     "ReadOnlyFolders": ["/2015","/2018"],
-    "AddMemoryCache": false
+    "AddMemoryCache": "true"
   }
 }
 ```
+>    When using a boolean in the json add quotes. Booleans without quotes are ignored
 
 #### Appsettings Notes
 1)   The `Structure`-setting is used by the `StarskyImporterCli` and the `/import` endpoint. 
