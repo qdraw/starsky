@@ -226,13 +226,8 @@ namespace starsky.Models
         }
 
         
-        private Rotation _orientation;
         [JsonConverter(typeof(StringEnumConverter))]
-        public Rotation Orientation
-        {
-            get { return _orientation; }
-            set { _orientation = value; }
-        }
+        public Rotation Orientation { get; set; }
 
         public enum Rotation
         {

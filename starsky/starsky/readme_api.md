@@ -18,6 +18,7 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 - [Form import](#form-import)
 - [Import Exif Overwrites (shared feature)](#import-exif-overwrites-shared-feature)
 - [Search](#search)
+- Cache delete
 - [Environment info](#environment-info)
 
 ## Get PageType	"Archive" 
@@ -55,7 +56,9 @@ The querystring name `f` is used for the file path in releative/subpath style
       "addToDatabase": "2018-07-13T11:52:42.942471",
       "latitude": 0,
       "longitude": 0,
-      "colorClass": 0
+      "colorClass": 0,
+      "orientation": "DoNotChange",
+      "imageFormat": "unknown",
     }
   ],
   "breadcrumb": [
@@ -66,7 +69,8 @@ The querystring name `f` is used for the file path in releative/subpath style
     "prevFilePath": "/2013"
   },
   "searchQuery": "2018",
-  "pageType": "Archive"
+  "pageType": "Archive",
+  "subPath": "/"
 }
 ```
 
@@ -89,35 +93,44 @@ Endpoint: `/starsky/?f=/image.jpg`
 }
 ```
 
-### Expected `/starsky/?f=/image.jpg` response:
+### Expected `/starsky/?f=/2018/t/image.dng` response:
 
 ```json
 {
-  "fileIndexItem": {
-    "id": 2837,
-    "filePath": "/image.jpg",
-    "fileName": "image.jpg",
-    "fileHash": "W7Y65KYA5YDU43CRKZKJSAURMI",
-    "parentDirectory": "/",
-    "isDirectory": false,
-    "tags": "",
-    "description": "Date and Time based on filename",
-    "title": "",
-    "dateTime": "2018-01-23T13:24:04",
-    "addToDatabase": "2018-07-20T16:24:04.942452",
-    "latitude": 0,
-    "longitude": 0,
-    "colorClass": 0
-  },
-  "relativeObjects": {
-    "nextFilePath": null,
-    "prevFilePath": null
-  },
-  "breadcrumb": [
-    "/"
-  ],
-  "colorClassFilterList": [],
-  "pageType": "DetailView"
+    "fileIndexItem": {
+        "id": 13611,
+        "filePath": "/2018/t/image.dng",
+        "fileName": "image.dng",
+        "fileHash": "NKY7U4WGIK6NFYNIKOW7IZ56GI",
+        "fileCollectionName": "image",
+        "parentDirectory": "/2018/t",
+        "isDirectory": false,
+        "tags": "",
+        "description": "",
+        "title": "",
+        "dateTime": "2018-08-06T21:11:10",
+        "addToDatabase": "2018-08-07T15:06:44.616725",
+        "latitude": 52.8214,
+        "longitude": 7.0474805555,
+        "colorClass": 0,
+        "orientation": "Horizontal",
+        "imageFormat": "tiff",
+        "collectionPaths": [
+            "/2018/t/image.dng"
+        ]
+    },
+    "relativeObjects": {
+        "nextFilePath": null,
+        "prevFilePath": null
+    },
+    "breadcrumb": [
+        "/",
+        "/2018",
+        "/2018/t"
+    ],
+    "colorClassFilterList": [],
+    "pageType": "DetailView",
+    "isDirectory": false
 }
 ```
 
@@ -141,6 +154,25 @@ Endpoint: `/starsky/Api/Info?f=/image.jpg` The querystring name `f` is used for 
 - Statuscode 203 with the content `read only` when readonly mode is active
 - Gives a list of names that are used by exiftool
 - The querystring name `f` is used for the file path in releative/subpath style
+- Ignore `Prefs` those are used to set `ColorClass` with Exiftool
+
+The response by the info request
+```json
+{
+    "sourceFile": "/data/isight//2018/01-dif/20180705_160335_DSC01991 kopie 2.jpg",
+    "colorClass": 0,
+    "Caption-Abstract": "captipn123444",
+    "prefs": null,
+    "keywords": [
+        "okay1",
+        "okay2"
+    ],
+    "tags": "okay1, okay2",
+    "allDatesDateTime": "0001-01-01T00:00:00",
+    "orientation": 1
+}
+```
+### Colorclass types
 - Colorclass is a enum, and the values are:      
 ```cs
 case "0":
@@ -162,7 +194,18 @@ case "2":
 case "1":
     _colorClass = Color.Winner; // Purple
 ```
-
+### Rotation types
+```cs
+public enum Rotation
+{
+    DoNotChange = 0,
+    Horizontal = 1,
+    Rotate90Cw = 6,
+    Rotate180 = 3,  
+    Rotate270Cw = 8
+}
+```
+Check for more types: https://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
 
 
 ## Exif Update
@@ -170,9 +213,12 @@ To update please request first [Exif Info](#exif-info).
 Endpoint: `/starsky/Api/Update?f=/image.jpg`
 
 For now this api end point is using this method:
-`Update(string tags, string colorClass, string captionAbstract, string f = "dbStylePath")`
+`Update(string tags, string colorClass,
+            string captionAbstract, string f, string orientation, bool collections = true)`
 - The querystring name `f` is used for the file path in releative/subpath style
 - Empty tags are always ignored
+- Stack collections or Collections is a feature to update multiple files with the same name. This feature is not completely implemented yet.
+- `orientation` is using a enum to rotate the image 
 
 ```json
 {
@@ -194,16 +240,21 @@ For now this api end point is using this method:
 ### Expected `/starsky/Api/Update?f=/image.jpg` response:
 ```json
 {
-  "colorClass": 0,
-  "Caption-Abstract": null,
-  "keywords": null,
-  "tags": "",
-  "allDatesDateTime": "0001-01-01T00:00:00"
+    "sourceFile": "/image.jpg",
+    "colorClass": 0,
+    "Caption-Abstract": null,
+    "keywords": [
+        "okay2"
+    ],
+    "tags": "okay2",
+    "allDatesDateTime": "0001-01-01T00:00:00",
+    "orientation": 1
 }
 ```
 -  Statuscode 203. When trying to update a `read only` image. With the content `read only`
 -  Error 404 When a image is `not in index`
-
+-  Only the values that are request are return. In this example Caption-Abstract has a value but it is not requested.
+> Update replied only the values that are request to update. To get all Info do a request to the Info-endpoint
 
 ## File Delete
 To permanent delete a file from the file system and the database.
