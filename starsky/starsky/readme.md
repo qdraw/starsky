@@ -47,10 +47,12 @@ The commandline arguments are shortcuts to set an in-app environment variable
     "ExifToolPath": "C:\\exiftool.exe",
     "Structure": "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext",
     "ReadOnlyFolders": ["/2015","/2018"],
-    "AddMemoryCache": false
+    "AddMemoryCache": "true"
   }
 }
 ```
+> When using a boolean in the json add quotes. Booleans without quotes are ignored
+
 #### Appsettings Notes
 1)   Structure uses slash as directory separators for Linux and Windows
 2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `StorageFolder` uses the system path directory separators
