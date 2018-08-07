@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MetadataExtractor;
-using starsky.Helpers;
 using starsky.Models;
-using Directory = MetadataExtractor.Directory;
 
 namespace starsky.Services
 {
@@ -86,16 +83,38 @@ namespace starsky.Services
                 
                 // DateTime of image
                 var orientation = GetOrientation(exifItem);
-                item.Orientation = orientation;
+                if (orientation != FileIndexItem.Rotation.DoNotChange)
+                {
+                    item.Orientation = orientation;
+                }
 
             }
             
             return item;
         }
 
-        private static FileIndexItem.Rotation GetOrientation(Directory exifItem)
+        private static FileIndexItem.Rotation GetOrientation(MetadataExtractor.Directory exifItem)
         {
-            return FileIndexItem.Rotation.DoNotChange;
+            var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif IFD0" && p.Name == "Orientation");
+            if (tCounts < 1) return FileIndexItem.Rotation.DoNotChange;
+            
+            var caption = exifItem.Tags.FirstOrDefault(
+                p => p.DirectoryName == "Exif IFD0" 
+                     && p.Name == "Orientation")?.Description;
+
+            switch (caption)
+            {
+                case "Top, left side (Horizontal / normal)":
+                    return FileIndexItem.Rotation.Horizontal;
+                case "Right side, top (Rotate 90 CW)":
+                    return FileIndexItem.Rotation.Rotate90Cw;
+                case "Bottom, right side (Rotate 180)":
+                    return FileIndexItem.Rotation.Rotate180;
+                case "Left side, bottom (Rotate 270 CW)":
+                    return FileIndexItem.Rotation.Rotate270Cw;
+                default:
+                    return FileIndexItem.Rotation.Horizontal;
+            }
         }
 
         private static void DisplayAllExif(IEnumerable<MetadataExtractor.Directory> allExifItems)
