@@ -9,6 +9,7 @@ using starsky.Models;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.Helpers;
 using starsky.Interfaces;
 
@@ -20,10 +21,12 @@ namespace starsky.Services
         // This is a exiftool wrapper
 
         private readonly AppSettings _appSettings;
+        private readonly IMemoryCache _cache;
 
-        public ExifTool(AppSettings appSettings)
+        public ExifTool(AppSettings appSettings, IMemoryCache memoryCache = null)
         {
             _appSettings = appSettings;
+            _cache = memoryCache;
         }
         
         private string BaseCommmand(string options, string fullFilePathSpaceSeperated)
@@ -197,6 +200,7 @@ namespace starsky.Services
                     {
                         exifBaseInputStringBuilder = Quoted(exifBaseInputStringBuilder,fullFilePath);
                         exifBaseInputStringBuilder.Append($" ");
+                        RemoveCache(fullFilePath);
                     }
                     
                     BaseCommmand(command, exifBaseInputStringBuilder.ToString());
@@ -204,19 +208,54 @@ namespace starsky.Services
 
             }
 
-        private StringBuilder Quoted(StringBuilder inputStringBuilder, string fullFilePath)
-        {
-            if (inputStringBuilder == null)
+            private StringBuilder Quoted(StringBuilder inputStringBuilder, string fullFilePath)
             {
-                inputStringBuilder = new StringBuilder();
+                if (inputStringBuilder == null)
+                {
+                    inputStringBuilder = new StringBuilder();
+                }
+                inputStringBuilder.Append($"\"");
+                inputStringBuilder.Append(fullFilePath);
+                inputStringBuilder.Append($"\"");
+                return inputStringBuilder;
             }
-            inputStringBuilder.Append($"\"");
-            inputStringBuilder.Append(fullFilePath);
-            inputStringBuilder.Append($"\"");
-            return inputStringBuilder;
-        }
 
+            // Cached view >> IMemoryCache
+            // Short living cache Max 10. minutes
             public ExifToolModel Info(string fullFilePath)
+            {
+                // The CLI programs uses no cache
+                if( _cache == null || _appSettings?.AddMemoryCache == false) return QueryInfo(fullFilePath);
+                
+                // Return values from IMemoryCache
+                var queryCacheName = "info_" + fullFilePath;
+                
+                // Return Cached object if it exist
+                if (_cache.TryGetValue(queryCacheName, out var objectExifToolModel))
+                    return objectExifToolModel as ExifToolModel;
+                
+                // Try to catch a new object
+                objectExifToolModel = QueryInfo(fullFilePath);
+                _cache.Set(queryCacheName, objectExifToolModel, new TimeSpan(0,10,0));
+                return (ExifToolModel) objectExifToolModel;
+            }
+
+            // only for exiftool!
+            // Why removing, The Update command does not update the entire object.
+            // When you update tags, other tags will be null 
+            private void RemoveCache(string fullFilePath)
+            {
+                if (_cache == null || _appSettings?.AddMemoryCache == false) return;
+                var queryCacheName = "info_" + fullFilePath;
+    
+                if (!_cache.TryGetValue(queryCacheName, out var _)) return;
+                _cache.Remove(queryCacheName);
+            }
+
+
+
+            // The actual query
+            private ExifToolModel QueryInfo(string fullFilePath)
             {
                 // Add parentes around this file
 
