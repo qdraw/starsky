@@ -161,8 +161,7 @@ namespace starsky.Services
                                                                   + "\" -Keywords=\"" + updateModel.Tags + "\" ";
                 }
                 
-//                exiftool -Orientation#=5
-                
+  
                 if (!string.IsNullOrWhiteSpace(updateModel.CaptionAbstract))
                 {
                     command += " -Caption-Abstract=\"" + updateModel.CaptionAbstract 
@@ -176,6 +175,13 @@ namespace starsky.Services
                     var colorDisplayName = FileIndexItem.GetDisplayName(updateModel.ColorClass);
                     command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\""+ intColorClass + 
                                "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
+                }
+                
+                // // exiftool -Orientation#=5
+                if (updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
+                {
+                    var intOrientation = (int) updateModel.Orientation;
+                    command += " \"-Orientation#="+ intOrientation +"\" ";
                 }
 
                 if (updateModel.AllDatesDateTime.Year > 2)
@@ -228,7 +234,8 @@ namespace starsky.Services
                 // Caption-Abstract == Description
                 var fullFilePathStringBuilder = Quoted(null,fullFilePath);
 
-                return parseJson(BaseCommmand("-Keywords -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
+                // -Orientation# <= hashtag is that exiftool must output a int and not a human readable string
+                return parseJson(BaseCommmand("-Keywords \"-Orientation#\" -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
                     fullFilePathStringBuilder.ToString()));
             }
 
