@@ -5,17 +5,28 @@ const fs = require('fs');
 function base32File(fullFilePath) {
 	return new Promise(function(resolve, reject) {
 
-        var hash = crypto.createHash('md5'),
-            stream = fs.createReadStream(fullFilePath);
+        var hash = crypto.createHash('md5');
+        const chunks = [];
+        var hexs = [];
+
+        var stream = fs.createReadStream(fullFilePath, { start: 0, end: 10000 })
 
         stream.on('data', function (data) {
-            hash.update(data, 'utf8');
+            chunks.push(data);
+            hash.update(data)
         });
 
         stream.on('end', function () {
-            var hex = hash.digest('Uint8Array');
+            // var concatBuffer = Buffer.concat(chunks);
+            // console.log(concatBuffer);
+
+            var hex = hash.digest('ArrayBuffer');
+
+            // hash.update(concatBuffer)
+            // var hex = hash.digest('ArrayBuffer');
+            // var hex = hash.digest('Uint8Array');
+            // console.log(hex);
         	var t = base32.encode(hex);
-        	t = t.replace(/=/ig,"");
         	resolve(t);
         });
 
