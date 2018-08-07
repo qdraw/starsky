@@ -75,4 +75,5 @@ Starsky has a Json and Razorview restfull API. Please read the documentation
 - [Form import](readme_api.md#form-import)
 - [Import Exif Overwrites (shared feature)](readme_api.md#import-exif-overwrites-shared-feature)
 - [Search](readme_api.md#search)
+- [Remove cache](readme_api.md#remove-cache)
 - [Environment info](readme_api.md#environment-info)
