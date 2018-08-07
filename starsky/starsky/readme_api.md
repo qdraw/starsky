@@ -18,7 +18,7 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 - [Form import](#form-import)
 - [Import Exif Overwrites (shared feature)](#import-exif-overwrites-shared-feature)
 - [Search](#search)
-- Cache delete
+- [Remove cache](#remove-cache)
 - [Environment info](#environment-info)
 
 ## Get PageType	"Archive" 
@@ -258,7 +258,7 @@ For now this api end point is using this method:
 
 ## File Delete
 To permanent delete a file from the file system and the database.
-The tag: `!delete!` is used to mark a file that is in the Trash.
+The tag: `!delete!` is used to mark a file that is in the Trash. This is not required by this api.
 
 ```json
 {
@@ -306,6 +306,7 @@ Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
 - A jpeg image
 - A 204 / `NoContent()` result when a thumbnail is corrupt
 - A 404 Error page, when the base32 hash does not exist
+- A 409 Error when "Thumbnail is not ready yet"
 
 ## Thumbnail Json
 Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU&json=true`
@@ -328,6 +329,7 @@ For checking if a thumbnail exist without loading the entire image
 - A 200 result with no content if the request is successfull
 - A 204 / `NoContent()` result when a thumbnail is corrupt
 - A 404 Error page, when the base32 hash does not exist
+- A 409 Error when "Thumbnail is not ready yet"
 
 ## Download Photo
 To get an orginal or to regenerate a thumbnail.
@@ -420,7 +422,7 @@ When using a form, the filename is extracted from the multipart. For the filenam
 - An array with the added items:
 ```json
 [
-    "/2018/07/2018_07_22/20180722_220442__import_20180720_201452_2018-07-20 20.14.52.jpg"
+    "/2018/07/2018_07_22/20180722_220442.jpg"
 ]
 ```
 
@@ -457,7 +459,7 @@ This is a feature that is used by:
 ### Expected _Import Exif Overwrites_ result: 
 - Do overwrites using exiftool and update it in the database
 
-# Search
+## Search
 To search in the database.
 
 - Querystring `t` is used for the search query
@@ -465,10 +467,10 @@ To search in the database.
 - Querystring `json` is to render json.
 Endpoint: `/Starky/Search?t=searchword&p=0&json=true` 
 
-## Search using POST
+### Search using POST
 The POST-request is a redirect to a get query with the same searchquery and the same pagenumber
 
-## Search using GET
+### Search using GET
 ```json
 {
     "uri":"/Starky/Search?t=searchword&p=0&json=true",
@@ -525,6 +527,16 @@ The POST-request is a redirect to a get query with the same searchquery and the 
 
 - When there are no search results:  `"searchCount": 1` will be `0` and the `fileIndexItems` will be a empty array
 
+## Remove cache
+When using cache is might sometimes useful to reset the cache.
+
+### Expected `/starsky/api/removecache?f=/folder` response: 
+- A 302 redirect to `?/folder` even if cache is disabled.
+- With `&json=true`
+	-	"cache succesfull cleared"
+	-  "ignored, please check if the 'f' path exist or use a  
+   folder string to clear the cache"
+	-  cache is disabled in config  
 ## Environment info
 
 To get information about the configuration.
