@@ -781,7 +781,7 @@ float: left;
 .sidebar .content img.Rotate90Cw,
 .sidebar .content img.Rotate180,
 .sidebar .content img.Rotate270Cw {
-    background-color: #dde;
+    background-color: rgba(109, 199, 256, 0.1);
 }
 
 
