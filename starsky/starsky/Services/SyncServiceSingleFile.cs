@@ -17,7 +17,14 @@ namespace starsky.Services
         
         // Has support for subPaths in the index
         
-        public string SingleFile(string subPath = "")
+        public enum SingleFileSuccess
+        {
+            Success,
+            Fail,
+            Ignore
+        }
+        
+        public SingleFileSuccess SingleFile(string subPath = "")
         {
             var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
             
@@ -25,11 +32,11 @@ namespace starsky.Services
             {
                 // File check if jpg #not corrupt
                 var imageFormat = Files.GetImageFormat(fullFilePath);
-                if(imageFormat == Files.ImageFormat.unknown) return string.Empty;
+                if(imageFormat == Files.ImageFormat.unknown) return SingleFileSuccess.Fail;
                 
                 // The same check as in GetFilesInDirectory
                 var extension = Path.GetExtension(fullFilePath).ToLower().Replace(".",string.Empty);
-                if (!Files.ExtensionSyncSupportedList.Contains(extension)) return string.Empty;
+                if (!Files.ExtensionSyncSupportedList.Contains(extension)) return SingleFileSuccess.Fail;
                  
                 // single file -- update or adding
                 var dbListWithOneFile = new List<FileIndexItem>();
@@ -48,9 +55,9 @@ namespace starsky.Services
                 // add subpath
                 AddSubPathFolder(subPath);
                 
-                return subPath;
+                return SingleFileSuccess.Success;
             }
-            return string.Empty;
+            return SingleFileSuccess.Ignore;
         }
     }
 }

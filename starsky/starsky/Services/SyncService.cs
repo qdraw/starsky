@@ -38,7 +38,16 @@ namespace starsky.Services
         {
             // Handle single files
             if (Deleted(subPath)) return null;
-            if (!string.IsNullOrEmpty(SingleFile(subPath))) return new List<string>{subPath};
+            
+            // Return values when importing a single file
+            var singleFile = SingleFile(subPath);
+            switch (singleFile)
+            {
+                case SingleFileSuccess.Fail:
+                    return new List<string>{string.Empty};
+                case SingleFileSuccess.Success:
+                    return new List<string>{subPath};
+            }
 
             // Handle folder Get a list of all local folders and rename it to database style.
             // Db Style is a relative path
