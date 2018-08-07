@@ -40,6 +40,7 @@ namespace starsky.Services
                         
                         dbItem = new XmpReadHelper(_appSettings).XmpSelectSidecarFile(dbItem, fullFilePath);
 
+                        updatedDatabaseItem.ImageFormat = Files.GetImageFormat(fullFilePath);
                         updatedDatabaseItem.FileHash = localHash;
                         updatedDatabaseItem.FileName = dbItem.FileName;
                         updatedDatabaseItem.AddToDatabase = DateTime.Now;
