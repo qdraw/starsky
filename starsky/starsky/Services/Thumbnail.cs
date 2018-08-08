@@ -46,7 +46,13 @@ namespace starsky.Services
         }
         
         
-        
+        // Create a new thumbnail
+        // used by Thumb.dir / web ui
+        public bool CreateThumb(FileIndexItem item)
+        {
+            if(string.IsNullOrEmpty(item.FilePath) || string.IsNullOrEmpty(item.FileHash)) throw new FileNotFoundException("FilePath or FileHash == null");
+            return CreateThumb(item.FilePath, item.FileHash);
+        }
         
         // Feature used by the cli tool
         // Use FileIndexItem or database style path
@@ -94,12 +100,7 @@ namespace starsky.Services
             return false; // not succesfull
         }
 
-        // Create a new thumbnail
-        public bool CreateThumb(FileIndexItem item)
-        {
-            if(string.IsNullOrEmpty(item.FilePath) || string.IsNullOrEmpty(item.FileHash)) throw new FileNotFoundException("FilePath or FileHash == null");
-            return CreateThumb(item.FilePath, item.FileHash);
-        }
+
 
         // Wrapper to Make a sync task sync
         private async Task<bool> ResizeThumbnailTimeoutWrap(string fullSourceImage, string thumbPath)
@@ -129,10 +130,10 @@ namespace starsky.Services
         }
         
         // Resize the thumbnail
-        // Is successfull?
-        private bool ResizeThumbnailPlain(string fullSourceImage, string thumbPath)
+        // Is successfull? // private feature
+        public bool ResizeThumbnailPlain(string fullSourceImage, string thumbPath)
         {
-            Console.WriteLine("fullSourceImage >> " + fullSourceImage);
+            Console.WriteLine("fullSourceImage >> " + fullSourceImage + " " + thumbPath);
             try
             {
                 // resize the image and save it to the output stream
@@ -147,9 +148,10 @@ namespace starsky.Services
                     image.SaveAsJpeg(outputStream);
                 }
             }
-            catch (ImageFormatException e)
+            catch (Exception ex)            
             {
-                Console.WriteLine(e);
+                 if (!(ex is ImageFormatException) && !(ex is ArgumentException)) throw;
+                Console.WriteLine(ex);
                 return false;
             }
             
