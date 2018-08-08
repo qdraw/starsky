@@ -50,7 +50,7 @@ namespace starsky.Services
         
         // Feature used by the cli tool
         // Use FileIndexItem or database style path
-        public void CreateThumb(string subpath = "/", string fileHash = null)
+        public bool CreateThumb(string subpath = "/", string fileHash = null)
         {
             if (!Directory.Exists(_appSettings.ThumbnailTempFolder))
             {
@@ -68,7 +68,7 @@ namespace starsky.Services
                 if(!Files.ExtensionThumbSupportedList.Contains(Path.GetExtension(fullFilePath).Replace(".",string.Empty)))
                 {
                     Console.WriteLine("File not supported (and ignored) > " + fullFilePath );
-                    return;
+                    return false; // creating is not succesfull
                 }
 
                 if(fileHash == null) fileHash = FileHash.GetHashCode(fullFilePath);
@@ -76,25 +76,29 @@ namespace starsky.Services
                 if (Files.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
                 {
                     Console.WriteLine("The file " + thumbPath + " already exists.");
-                    return;
+                    return true; // creating is succesfull; already exist
                 }
 
-                if (!_isErrorItem(_appSettings.DatabasePathToFilePath(subpath))) return;
+                if (!_isErrorItem(_appSettings.DatabasePathToFilePath(subpath))) return false;
+                // File is already tested
+                
 
                 // Wrapper to check if the thumbservice is not waiting forever
                 // In some scenarios thumbservice is waiting for days
                 // Need to add var => else it will not await
-                var wrap = ResizeThumbnailTimeoutWrap(fullFilePath,thumbPath).Result;
-                if(wrap) Console.WriteLine(".");
+                var isSuccesResult = ResizeThumbnailTimeoutWrap(fullFilePath,thumbPath).Result;
+                if(isSuccesResult) {Console.WriteLine(".");}
                 RemoveCorruptImage(thumbPath);
+                return isSuccesResult;
             }
+            return false; // not succesfull
         }
 
         // Create a new thumbnail
-        public void CreateThumb(FileIndexItem item)
+        public bool CreateThumb(FileIndexItem item)
         {
             if(string.IsNullOrEmpty(item.FilePath) || string.IsNullOrEmpty(item.FileHash)) throw new FileNotFoundException("FilePath or FileHash == null");
-            CreateThumb(item.FilePath, item.FileHash);
+            return CreateThumb(item.FilePath, item.FileHash);
         }
 
         // Wrapper to Make a sync task sync
@@ -125,22 +129,31 @@ namespace starsky.Services
         }
         
         // Resize the thumbnail
+        // Is successfull?
         private bool ResizeThumbnailPlain(string fullSourceImage, string thumbPath)
         {
             Console.WriteLine("fullSourceImage >> " + fullSourceImage);
-            
-            // resize the image and save it to the output stream
-            using (var outputStream = new FileStream(thumbPath, FileMode.CreateNew))
-            using (var inputStream = File.OpenRead(fullSourceImage))
-            using (var image = Image.Load(inputStream))
+            try
             {
-                image.Mutate(x => x.AutoOrient());
-                image.Mutate(x => x
-                    .Resize(1000, 0)
-                );
-                image.SaveAsJpeg(outputStream);
+                // resize the image and save it to the output stream
+                using (var outputStream = new FileStream(thumbPath, FileMode.CreateNew))
+                using (var inputStream = File.OpenRead(fullSourceImage))
+                using (var image = Image.Load(inputStream))
+                {
+                    image.Mutate(x => x.AutoOrient());
+                    image.Mutate(x => x
+                        .Resize(1000, 0)
+                    );
+                    image.SaveAsJpeg(outputStream);
+                }
             }
-            return false;
+            catch (ImageFormatException e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+            
+            return true;
         }
 
         

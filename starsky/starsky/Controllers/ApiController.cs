@@ -403,26 +403,29 @@ namespace starsky.Controllers
 
             if (Files.GetImageFormat(thumbPath) == Files.ImageFormat.notfound)
             {
-                try
+                if (Files.IsFolderOrFile(_appSettings.ThumbnailTempFolder) ==
+                    FolderOrFileModel.FolderOrFileTypeList.Deleted)
                 {
-                    var searchItem = new FileIndexItem
-                    {
-                        FileName = _appSettings.FullPathToDatabaseStyle(sourceFullPath).Split("/").LastOrDefault(),
-                        ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.
-                            FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
-                        FileHash = FileHash.GetHashCode(sourceFullPath)
-                    };
+                    return NotFound("Thumb base folder " + _appSettings.ThumbnailTempFolder + " not found");
+                }
+                
+                var searchItem = new FileIndexItem
+                {
+                    FileName = _appSettings.FullPathToDatabaseStyle(sourceFullPath).Split("/").LastOrDefault(),
+                    ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.
+                        FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
+                    FileHash = FileHash.GetHashCode(sourceFullPath)
+                };
                     
-                    new Thumbnail(_appSettings).CreateThumb(searchItem);
-
-                    FileStream fs2 = System.IO.File.OpenRead(thumbPath);
-                    return File(fs2, "image/jpeg");
-
-                }
-                catch (FileNotFoundException)
+                var isSuccesCreateAThumb = new Thumbnail(_appSettings).CreateThumb(searchItem);
+                if (!isSuccesCreateAThumb)
                 {
-                    return NotFound("Thumb base folder not found");
+                    Response.StatusCode = 500;
+                    return Json("Thumbnail generation failed");
                 }
+
+                FileStream fs2 = System.IO.File.OpenRead(thumbPath);
+                return File(fs2, "image/jpeg");
             }
 
             var getExiftool = _exiftool.Info(sourceFullPath);
