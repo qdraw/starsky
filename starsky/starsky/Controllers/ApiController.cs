@@ -9,6 +9,7 @@ using starsky.Helpers;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
+using starsky.ViewModels;
 
 namespace starsky.Controllers
 {
@@ -45,29 +46,33 @@ namespace starsky.Controllers
             var result = _appSettings.ReadOnlyFolders.FirstOrDefault(f.Contains);
             return result != null;
         }
-
-        [HttpPost]
-        public IActionResult Update(string tags, string colorClass,
-            string captionAbstract, string f, string orientation, bool collections = true)
+        
+        public enum UpdateStatus
         {
-            var detailView = _query.SingleItem(f,null,collections,false);
+            NotFoundNotInIndex,
+            NotFoundSourceMissing,
+            ReadOnly,
+            Ok
+        }
+
+        private UpdateStatus FileCollectionsCheck(DetailView detailView)
+        {
             if (detailView == null)
             {
-                return NotFound("not in index " + f);
+                return UpdateStatus.NotFoundNotInIndex;
             }
 
-            if (_isReadOnly(detailView.FileIndexItem.ParentDirectory)) return StatusCode(203, "read only");
+            if (_isReadOnly(detailView.FileIndexItem.ParentDirectory)) return  UpdateStatus.ReadOnly;
 
             foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths)
             {
                 var fullPathCollection = _appSettings.DatabasePathToFilePath(collectionPath);
-                Console.WriteLine(">> fullPathCollection" + fullPathCollection);
                 
                 //For the situation that the file is not on disk but the only one in the list
                 if (!System.IO.File.Exists(fullPathCollection) 
                     && detailView.FileIndexItem.CollectionPaths.Count == 1)
                 {
-                    return NotFound("source image missing > "+ fullPathCollection);
+                    return UpdateStatus.NotFoundSourceMissing;  //
                 }
                 // When there are more items in the list
                 if (!System.IO.File.Exists(fullPathCollection))
@@ -78,20 +83,34 @@ namespace starsky.Controllers
 
             if (detailView.FileIndexItem.CollectionPaths.Count == 0)
             {
-                return NotFound("source image missing");
+                return UpdateStatus.NotFoundSourceMissing; // NotFound("source image missing");
+            }
+
+            return UpdateStatus.Ok;
+        }
+
+
+        [HttpPost]
+        public IActionResult Update(string tags, string colorClass,
+            string captionAbstract, string f, string orientation, bool collections = true)
+        {
+            var detailView = _query.SingleItem(f,null,collections,false);
+            var results = FileCollectionsCheck(detailView);
+            switch (results)
+            {
+                case UpdateStatus.NotFoundNotInIndex:
+                    return NotFound("Not In Index");
+                case UpdateStatus.NotFoundSourceMissing:
+                    return NotFound("source image missing");
+                case UpdateStatus.ReadOnly:
+                    return StatusCode(203, "read only");
             }
 
             // First create an update model
             var updateModel = new ExifToolModel();
-            if (tags != null)
-            {
-                updateModel.Tags = tags;
-            }
 
-            if (captionAbstract != null)
-            {
-                updateModel.CaptionAbstract = captionAbstract;
-            }
+            updateModel.Tags = tags;
+            updateModel.CaptionAbstract = captionAbstract;
 
             // Parse ColorClass and add it
             detailView.FileIndexItem.SetColorClass(colorClass);

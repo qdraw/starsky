@@ -71,7 +71,13 @@ namespace starsky.Models
         public string Tags
         {
             get { return hashSetToString(keywords); }
-            set { keywords = stringToHashSet(value); }
+            set
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    keywords = stringToHashSet(value);
+                }
+            }
         }
 
         // overwrite "-xmp:subject" over -Keywords

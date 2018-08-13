@@ -147,7 +147,6 @@ namespace starsky.Services
                         var isOrientThere = image.MetaData.ExifProfile.TryGetValue(ExifTag.Orientation, out var sourceOrientation);
                         if(isOrientThere) image.MetaData.ExifProfile.SetValue(ExifTag.ImageDescription, "{ \"sourceOrientation\": \""+ sourceOrientation +"\"}");
                     }
-
                     
                     image.Mutate(x => x.AutoOrient());
                     image.Mutate(x => x
