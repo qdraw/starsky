@@ -87,15 +87,15 @@
                 Full
             </a>
         </div>
-@*        <div class="rotation-sidebar">*@
-@*            <h4>Rotatie:</h4>*@
-@*            <a class="btn-sm btn btn-secondary">*@
-@*                [*@
-@*            </a>*@
-@*            <a class="btn-sm btn btn-secondary">*@
-@*                ]*@
-@*            </a>*@
-@*        </div>*@
+        <div class="rotation-sidebar">
+            <h4>Rotatie:</h4>
+            <a class="btn-sm btn btn-secondary" onClick="rotateImageRight('@Model.FileIndexItem.Orientation',-1)">
+                [
+            </a>
+            <a class="btn-sm btn btn-secondary" onClick="rotateImageRight('@Model.FileIndexItem.Orientation',1)">
+                ]
+            </a>
+        </div>
 
         <div class="addDeleteTag disabled">
             <h4>Danger zone:</h4>
