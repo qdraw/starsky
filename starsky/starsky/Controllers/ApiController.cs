@@ -93,21 +93,11 @@ namespace starsky.Controllers
                 updateModel.CaptionAbstract = captionAbstract;
             }
 
-            // ColorClass
-            var colorClassEnum = new FileIndexItem().SetColorClass(colorClass);
-            if (colorClassEnum != FileIndexItem.Color.DoNotChange)
-            {
-                // Anything else than do not change
-                detailView.FileIndexItem.SetColorClass(colorClass);
-                updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
-            }
-            if (colorClassEnum == FileIndexItem.Color.DoNotChange)
-            {
-                // Restore the old value; so don't change the value
-                updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
-            }
+            // Parse ColorClass and add it
+            detailView.FileIndexItem.SetColorClass(colorClass);
+            updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
             
-            // Rotation
+            // Parse Rotation; do not add due errors with syncing
             var orientationEnum = new FileIndexItem().SetOrientation(orientation);
             if (orientationEnum != FileIndexItem.Rotation.DoNotChange)
             {
@@ -115,12 +105,7 @@ namespace starsky.Controllers
                 detailView.FileIndexItem.SetOrientation(orientation);
                 updateModel.Orientation = detailView.FileIndexItem.Orientation;
             }
-            if (orientationEnum == FileIndexItem.Rotation.DoNotChange)
-            {
-                // Restore the old value; so don't change the value
-                updateModel.Orientation = detailView.FileIndexItem.Orientation;
-            }
-            
+         
             
 
             var collectionFullPaths = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.CollectionPaths);
@@ -142,8 +127,13 @@ namespace starsky.Controllers
                 singleItem.FileIndexItem.Tags = updateModel.Tags;
                 singleItem.FileIndexItem.Description = updateModel.CaptionAbstract;
                 singleItem.FileIndexItem.ColorClass = updateModel.ColorClass;
-                singleItem.FileIndexItem.Orientation = updateModel.Orientation;
                 
+                // Don't update this when it not has changed
+                if (orientationEnum != FileIndexItem.Rotation.DoNotChange)
+                {
+                    singleItem.FileIndexItem.Orientation = updateModel.Orientation;
+                }
+
                 exifToolResultsList.Add(updateModel);
 
                 singleItem.FileIndexItem.FileHash = FileHash.GetHashCode(collectionFullPaths[i]);

@@ -265,8 +265,8 @@ namespace starsky.Models
                 case "8":
                     Orientation = Rotation.Rotate270Cw;
                     return Orientation;
-                default:
-                    Orientation = Rotation.Horizontal;
+                default: // Fallback by for example 'null'
+                    Orientation = Rotation.DoNotChange;
                     return Orientation;
             }
         }

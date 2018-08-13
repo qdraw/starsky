@@ -148,7 +148,7 @@ namespace starsky.Services
                     
                         if (Files.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
                         {
-                            BaseCommmand(" -overwrite_original -TagsFromFile \""  + fullFilePath + "\"", xmpFullPath);
+                            BaseCommmand(" -overwrite_original -TagsFromFile \""  + fullFilePath + "\"",  "\""+ xmpFullPath +  "\"");
                         }
                         // to continue as xmp file
                         fullFilePathsList.Add(xmpFullPath);
