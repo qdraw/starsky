@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Helpers;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
-using starsky.ViewModels;
 
 namespace starsky.Controllers
 {
@@ -127,8 +126,8 @@ namespace starsky.Controllers
             var collectionFullPaths = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.CollectionPaths);
             var oldHashCodes = FileHash.GetHashCode(collectionFullPaths.ToArray());
                 
-            
-            _exiftool.Update(updateModel, collectionFullPaths);
+            // Run as non-blocking task to avoid files not being updated or corrupt
+            Task.Run(() => { _exiftool.Update(updateModel, collectionFullPaths); });
 
             var exifToolResultsList = new List<ExifToolModel>();
             for (int i = 0; i < detailView.FileIndexItem.CollectionPaths.Count; i++)
@@ -152,7 +151,6 @@ namespace starsky.Controllers
                 new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItem.FileIndexItem.FileHash);
                 _query.UpdateItem(singleItem.FileIndexItem);
             }
-         
             
             var getFullPathExifToolFileName = Files.GetXmpSidecarFileWhenRequired(_appSettings.DatabasePathToFilePath(
                 detailView.FileIndexItem.FilePath), _appSettings.ExifToolXmpPrefix);
