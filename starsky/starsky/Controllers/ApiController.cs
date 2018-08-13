@@ -169,8 +169,10 @@ namespace starsky.Controllers
                 if (updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
                 {
                     singleItem.FileIndexItem.Orientation = updateModel.Orientation;
+                    
+                    var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
+                    new Thumbnail(null).RotateThumbnail(thumbPath,orientation);
                 }
-                
                 _query.UpdateItem(singleItem.FileIndexItem);
             }
             

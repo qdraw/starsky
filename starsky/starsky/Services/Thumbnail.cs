@@ -5,6 +5,7 @@ using starsky.Helpers;
 using starsky.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.MetaData.Profiles.Exif;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
 namespace starsky.Services
@@ -192,6 +193,41 @@ namespace starsky.Services
                     break;
             }
         }
+        
+        // Resize the thumbnail
+        // Is successfull? // private feature
+        public bool RotateThumbnail(string fullPath, int orientation)
+        {
+            if (!File.Exists(fullPath)) return false;
+
+            // the orientation is -1 or 1
+            var rotateMode = RotateMode.Rotate90;
+            if (orientation == -1) rotateMode = RotateMode.Rotate270; 
+
+            try
+            {
+                using (Image<Rgba32> image = Image.Load(fullPath))
+                {
+                    image.Mutate(x => x
+                        .Resize(1000, 0)
+                    );
+                    image.Mutate(x => x
+                        .Rotate(rotateMode));
+                    image.Save(fullPath); // Automatic encoder selected based on extension.
+                }
+            }
+            catch (Exception ex)            
+            {
+                if (!(ex is ImageFormatException) && !(ex is ArgumentException)) throw;
+                Console.WriteLine(ex);
+                return false;
+            }
+            
+            return true;
+        }
+        
+        
+        
         
         
         private static readonly string _thumbnailErrorMessage = "Thumbnail error";

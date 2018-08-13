@@ -263,9 +263,13 @@ namespace starsky.Models
         public Rotation RelativeOrientation(int relativeRotation = 0)
         {
             if (relativeRotation == 0) return Rotation.DoNotChange;
+            
 
             var currentOrentation = _orderRotation.FindIndex(i => i == Orientation);
             
+            // fallback if database is Do Not Change
+            if (Orientation == Rotation.DoNotChange) currentOrentation = 0; // Rotation.Horizontal
+
             if (currentOrentation >= 0 && currentOrentation+relativeRotation < _orderRotation.Count && currentOrentation+relativeRotation >= 0)
             {
                 return _orderRotation[currentOrentation + relativeRotation];
