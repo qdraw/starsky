@@ -428,6 +428,9 @@ namespace starsky.Controllers
                         FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
                     FileHash = FileHash.GetHashCode(sourceFullPath)
                 };
+                
+                // When you have a different tag in the database than on disk
+                thumbPath = _appSettings.ThumbnailTempFolder + searchItem.FileHash + ".jpg";
                     
                 var isSuccesCreateAThumb = new Thumbnail(_appSettings).CreateThumb(searchItem);
                 if (!isSuccesCreateAThumb)
