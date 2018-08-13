@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using starsky.Helpers;
 using starsky.Models;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.MetaData.Profiles.Exif;
 using SixLabors.ImageSharp.Processing;
 
 namespace starsky.Services
@@ -139,10 +140,20 @@ namespace starsky.Services
                 using (var inputStream = File.OpenRead(fullSourceImage))
                 using (var image = Image.Load(inputStream))
                 {
-                    // image.Mutate(x => x.AutoOrient());
+                    // Add orginal rotation to the image as json
+                    if (image.MetaData.ExifProfile != null)
+                    {
+                        image.MetaData.ExifProfile.SetValue(ExifTag.Software, "Starsky");
+                        var isOrientThere = image.MetaData.ExifProfile.TryGetValue(ExifTag.Orientation, out var sourceOrientation);
+                        if(isOrientThere) image.MetaData.ExifProfile.SetValue(ExifTag.ImageDescription, "{ \"sourceOrientation\": \""+ sourceOrientation +"\"}");
+                    }
+
+                    
+                    image.Mutate(x => x.AutoOrient());
                     image.Mutate(x => x
                         .Resize(1000, 0)
                     );
+
                     image.SaveAsJpeg(outputStream);
                 }
             }

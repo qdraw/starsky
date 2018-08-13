@@ -84,18 +84,18 @@ namespace starsky.Services
         }
 
         /// <summary>
-        ///  Calculate the hash based on the first 0.5 Mb of the file
+        ///  Calculate the hash based on the first 0.05 Mb of the file
         /// </summary>
         /// <param name="fullFileName"></param>
         /// <returns></returns>
         private static async Task<string> CalculateMd5Async(string fullFileName)
         {
-            var block = ArrayPool<byte>.Shared.Rent(500000); // 0,5 Mb
+            var block = ArrayPool<byte>.Shared.Rent(50000); // 0,05 Mb
             try
             {
                 using (var md5 = MD5.Create())
                 {
-                    using (var stream = new FileStream(fullFileName, FileMode.Open, FileAccess.Read, FileShare.Read, 500000, true))
+                    using (var stream = new FileStream(fullFileName, FileMode.Open, FileAccess.Read, FileShare.Read, 50000, true))
                     {
                         int length;
                         while ((length = await stream.ReadAsync(block, 0, block.Length).ConfigureAwait(false)) > 0)
