@@ -279,6 +279,7 @@ namespace starsky.Models
             return Rotation.DoNotChange;
         }
         
+        // Set Rotation value
         public Rotation SetAbsoluteOrientation(string orientationString = "0")
         {
 
