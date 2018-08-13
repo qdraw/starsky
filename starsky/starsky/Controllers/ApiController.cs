@@ -139,17 +139,22 @@ namespace starsky.Controllers
                     singleItem.FileIndexItem.ColorClass = updateModel.ColorClass;
                 }
 
-                // Don't update this when it not has changed
-                if (orientationEnum != FileIndexItem.Rotation.DoNotChange)
-                {
-                    singleItem.FileIndexItem.Orientation = updateModel.Orientation;
-                }
-
                 exifToolResultsList.Add(updateModel);
 
                 singleItem.FileIndexItem.FileHash = FileHash.GetHashCode(collectionFullPaths[i]);
                 // Rename Thumbnail
                 new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItem.FileIndexItem.FileHash);
+                
+                // Don't update this when it not has changed
+                if (orientationEnum != FileIndexItem.Rotation.DoNotChange)
+                {
+                    singleItem.FileIndexItem.Orientation = updateModel.Orientation;
+                    
+                    // Do exif rotation on thumbnails
+                    var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
+                    Task.Run(() => { _exiftool.Update(updateModel, thumbPath); });
+                }
+                
                 _query.UpdateItem(singleItem.FileIndexItem);
             }
             

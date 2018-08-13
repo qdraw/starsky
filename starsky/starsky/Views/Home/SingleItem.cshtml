@@ -153,7 +153,7 @@
         </span>
     </h1>
 
-    <img class="main-image disabled-@Model.FileIndexItem.Orientation" 
+    <img class="main-image @Model.FileIndexItem.Orientation" 
          src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
 </div>
 

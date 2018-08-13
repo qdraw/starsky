@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using starsky.Helpers;
 using starsky.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Processing.Transforms;
 
 namespace starsky.Services
 {
@@ -141,7 +139,7 @@ namespace starsky.Services
                 using (var inputStream = File.OpenRead(fullSourceImage))
                 using (var image = Image.Load(inputStream))
                 {
-                    image.Mutate(x => x.AutoOrient());
+                    // image.Mutate(x => x.AutoOrient());
                     image.Mutate(x => x
                         .Resize(1000, 0)
                     );
