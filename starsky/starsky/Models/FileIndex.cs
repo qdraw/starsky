@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using starsky.Attributes;
 using starsky.Helpers;
 using starsky.Services;
 
@@ -233,19 +234,52 @@ namespace starsky.Models
         {
             [Display(Name = "Do Not Change")]
             DoNotChange = 0,
+
             // There are more types:
             // https://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
+            
             [Display(Name = "Horizontal (normal)")]
             Horizontal = 1,
+
             [Display(Name = "Rotate 90 CW")]
             Rotate90Cw = 6,
+
             [Display(Name = "Rotate 180")]
             Rotate180 = 3,  
+
             [Display(Name = "Rotate 270 CW")]
             Rotate270Cw = 8
         }
+
+        // More than 1 and order by logic order instead of exif order
+        private readonly List<Rotation> _orderRotation = new List<Rotation>
+        {
+            Rotation.Horizontal,
+            Rotation.Rotate90Cw,
+            Rotation.Rotate180,
+            Rotation.Rotate270Cw
+        };
+
+        public Rotation RelativeOrientation(int relativeRotation = 0)
+        {
+            if (relativeRotation == 0) return Rotation.DoNotChange;
+
+            var currentOrentation = _orderRotation.FindIndex(i => i == Orientation);
+            
+            if (currentOrentation+relativeRotation <= _orderRotation.Count && currentOrentation+relativeRotation >= 0)
+            {
+                return _orderRotation[currentOrentation + relativeRotation];
+            }
+            if (currentOrentation + relativeRotation == -1) {
+                return _orderRotation[_orderRotation.Count-1];
+            }
+            if (currentOrentation+relativeRotation >= _orderRotation.Count) {
+                return _orderRotation[0];
+            }
+            return Rotation.DoNotChange;
+        }
         
-        public Rotation SetOrientation(string orientationString = "0")
+        public Rotation SetAbsoluteOrientation(string orientationString = "0")
         {
 
             switch (orientationString)

@@ -178,7 +178,7 @@ namespace starsky.Helpers
                 var rotation = GetContentNameSpace(property, "tiff:Orientation");
                 if (rotation != null)
                 {
-                    item.SetOrientation(rotation);
+                    item.SetAbsoluteOrientation(rotation);
                 }
 
             }

@@ -89,10 +89,19 @@ namespace starsky.Controllers
             return UpdateStatus.Ok;
         }
 
-
+        /// <summary>
+        /// Update API
+        /// </summary>
+        /// <param name="tags">use for keywords</param>
+        /// <param name="colorClass">int 0-9, the colorclass to fast select images</param>
+        /// <param name="captionAbstract">string to update description/caption abstract, emthy will be ignored</param>
+        /// <param name="f">subpath filepath to file</param>
+        /// <param name="orientation">relative orentation -1 or 1</param>
+        /// <param name="collections">StackCollections bool</param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult Update(string tags, string colorClass,
-            string captionAbstract, string f, string orientation, bool collections = true)
+            string captionAbstract, string f, int orientation, bool collections = true)
         {
             var detailView = _query.SingleItem(f,null,collections,false);
             var results = FileCollectionsCheck(detailView);
@@ -116,15 +125,9 @@ namespace starsky.Controllers
             detailView.FileIndexItem.SetColorClass(colorClass);
             updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
             
-//            // Parse Rotation; do not add due errors with syncing
-//            var orientationEnum = new FileIndexItem().SetOrientation(orientation);
-//            if (orientationEnum != FileIndexItem.Rotation.DoNotChange)
-//            {
-//                // Anything else than do not change
-//                detailView.FileIndexItem.SetOrientation(orientation);
-//                updateModel.Orientation = detailView.FileIndexItem.Orientation;
-//            }
-         
+            // Parse Rotation; 
+            detailView.FileIndexItem.RelativeOrientation(orientation);
+            updateModel.Orientation = detailView.FileIndexItem.Orientation;
             
 
             var collectionFullPaths = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.CollectionPaths);
