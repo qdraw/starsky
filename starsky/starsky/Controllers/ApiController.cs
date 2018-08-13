@@ -354,7 +354,7 @@ namespace starsky.Controllers
                 
                 var fileExtensionWithoutDot = Path.GetExtension(sourceFullPath).Remove(0, 1).ToLower();
                     
-                if (Files.ExtensionThumbSupportedList.Contains(fileExtensionWithoutDot))
+                if (Files.ExtensionThumbSupportedList.Contains(fileExtensionWithoutDot.ToLower()))
                 {
                     FileStream fs1 = System.IO.File.OpenRead(sourceFullPath);
                     return File(fs1, MimeHelper.GetMimeType(fileExtensionWithoutDot));

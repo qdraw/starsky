@@ -37,7 +37,7 @@ namespace starsky.Services
                 {
                     var fileExtension = Path.GetExtension(duplicateItems[i].FileName).Replace(".",string.Empty);
                     
-                    if (Files.ExtensionThumbSupportedList.Contains(fileExtension))
+                    if (Files.ExtensionThumbSupportedList.Contains(fileExtension.ToLower()))
                     {
                         querySubFolderList.Add(duplicateItems[i]);
                     }
