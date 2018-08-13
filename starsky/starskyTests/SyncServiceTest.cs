@@ -354,7 +354,7 @@ namespace starskytests
             var createAnImage = new CreateAnImage();
             var testjpg = new FileIndexItem
             {
-                Id = 200,
+                Id = 300,
                 FileName = createAnImage.DbPath.Replace("/",string.Empty),
                 ParentDirectory = "/",
                 IsDirectory = false
@@ -392,7 +392,7 @@ namespace starskytests
             
             var existFolder = new FileIndexItem
             {
-                Id = 200,
+                Id = 500,
                 FileName = "exist",
                 ParentDirectory = "/",
                 IsDirectory = true
