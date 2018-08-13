@@ -124,10 +124,21 @@ namespace starsky.Controllers
                 updateModel.SourceFile = Files.GetXmpSidecarFileWhenRequired(_appSettings.DatabasePathToFilePath(
                     detailView.FileIndexItem.FilePath), _appSettings.ExifToolXmpPrefix);;
 
-                singleItem.FileIndexItem.Tags = updateModel.Tags;
-                singleItem.FileIndexItem.Description = updateModel.CaptionAbstract;
-                singleItem.FileIndexItem.ColorClass = updateModel.ColorClass;
+                if (!string.IsNullOrEmpty(updateModel.Tags))
+                {
+                    singleItem.FileIndexItem.Tags = updateModel.Tags;
+                }
+
+                if (!string.IsNullOrEmpty(updateModel.CaptionAbstract))
+                {
+                    singleItem.FileIndexItem.Description = updateModel.CaptionAbstract;
+                }
                 
+                if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
+                {
+                    singleItem.FileIndexItem.ColorClass = updateModel.ColorClass;
+                }
+
                 // Don't update this when it not has changed
                 if (orientationEnum != FileIndexItem.Rotation.DoNotChange)
                 {

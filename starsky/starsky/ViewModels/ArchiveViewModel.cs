@@ -12,5 +12,6 @@ namespace starsky.ViewModels
         // Used PageType by react client
         public string PageType => PageViewType.PageType.Archive.ToString();
         public string SubPath { get; set; } = string.Empty;
+        public bool IsDirectory { get; set; } = true;
     }
 }
