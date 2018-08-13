@@ -352,7 +352,7 @@ namespace starsky.Controllers
                     return Json("Thumbnail is not ready yet");
                 }
                 
-                var fileExtensionWithoutDot = Path.GetExtension(sourceFullPath).Remove(0, 1);
+                var fileExtensionWithoutDot = Path.GetExtension(sourceFullPath).Remove(0, 1).ToLower();
                     
                 if (Files.ExtensionThumbSupportedList.Contains(fileExtensionWithoutDot))
                 {
