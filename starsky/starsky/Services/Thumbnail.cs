@@ -85,7 +85,7 @@ namespace starsky.Services
                     return true; // creating is succesfull; already exist
                 }
 
-                if (!_isErrorItem(_appSettings.DatabasePathToFilePath(subpath))) return false;
+                if (!_isErrorItem(GetErrorLogItemFullPath(fullFilePath))) return false;
                 // File is already tested
                 
 
@@ -93,8 +93,11 @@ namespace starsky.Services
                 // In some scenarios thumbservice is waiting for days
                 // Need to add var => else it will not await
                 var isSuccesResult = ResizeThumbnailTimeoutWrap(fullFilePath,thumbPath).Result;
-                if(isSuccesResult) {Console.WriteLine(".");}
+                if(isSuccesResult) Console.WriteLine(".");
                 RemoveCorruptImage(thumbPath);
+                // Log the corrupt image
+                if(!isSuccesResult) CreateErrorLogItem(GetErrorLogItemFullPath(fullFilePath));
+                
                 return isSuccesResult;
             }
             return false; // not succesfull
@@ -122,10 +125,7 @@ namespace starsky.Services
             Console.WriteLine(">>>>>>>>>>>            Timeout ThumbService "
                               + fullSourceImage 
                               + "            <<<<<<<<<<<<");
-            
-            // Log the corrupt image
-            CreateErrorLogItem(fullSourceImage);
-            
+              
             return false;
         }
         
@@ -192,17 +192,13 @@ namespace starsky.Services
 
 //        // todo: replace this code with something good
         
-        private string _GetErrorLogItemFullPath(string inputDatabaseFilePath)
+        private string GetErrorLogItemFullPath(string inputFullFilePath)
         {
-            var parentDatabaseFolder = Breadcrumbs.BreadcrumbHelper(inputDatabaseFilePath).LastOrDefault();
-            var fileName = inputDatabaseFilePath.Replace(parentDatabaseFolder, "");
-            fileName = fileName.Replace(".jpg", _thumbnailSuffix);
-            fileName = fileName.Replace("/", "");
-            var logFileDatabasePath = parentDatabaseFolder + "/" + _thumbnailPrefix + fileName;
-
-            
-            var logFile = _appSettings.DatabasePathToFilePath(logFileDatabasePath,false);
-            return logFile;
+             return Path.GetDirectoryName(inputFullFilePath) 
+                  + Path.DirectorySeparatorChar 
+                  + _thumbnailPrefix
+                  + Path.GetFileNameWithoutExtension(inputFullFilePath)
+                  + ".log";
         }
 
         public void CreateErrorLogItem(string path)
@@ -219,7 +215,7 @@ namespace starsky.Services
         // todo: Use PlainTextFileHelper
         private bool _isErrorItem(string inputDatabaseFilePath)
         {
-            var path = _GetErrorLogItemFullPath(inputDatabaseFilePath);
+            var path = GetErrorLogItemFullPath(inputDatabaseFilePath);
             if (!File.Exists(path)) return true;
             
             using (StreamReader sr = File.OpenText(path)) 
