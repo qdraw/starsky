@@ -125,11 +125,9 @@ namespace starsky.Controllers
             detailView.FileIndexItem.SetColorClass(colorClass);
             updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
             
-            // Parse Rotation; 
-            detailView.FileIndexItem.RelativeOrientation(orientation);
-            updateModel.Orientation = detailView.FileIndexItem.Orientation;
+            // Parse Rotation; by reading it relative
+            updateModel.Orientation = detailView.FileIndexItem.RelativeOrientation(orientation);
             
-
             var collectionFullPaths = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.CollectionPaths);
             var oldHashCodes = FileHash.GetHashCode(collectionFullPaths.ToArray());
                 
@@ -167,15 +165,11 @@ namespace starsky.Controllers
                 // Rename Thumbnail
                 new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItem.FileIndexItem.FileHash);
                 
-//                // Don't update this when it not has changed
-//                if (orientationEnum != FileIndexItem.Rotation.DoNotChange)
-//                {
-//                    singleItem.FileIndexItem.Orientation = updateModel.Orientation;
-//                    
-//                    // Do exif rotation on thumbnails
-//                    var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
-//                    Task.Run(() => { _exiftool.Update(updateModel, thumbPath); });
-//                }
+                //  // Don't update this when it not has changed
+                if (updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
+                {
+                    singleItem.FileIndexItem.Orientation = updateModel.Orientation;
+                }
                 
                 _query.UpdateItem(singleItem.FileIndexItem);
             }

@@ -600,47 +600,47 @@ function retry204() {
 
 
 
-function rotateImageRight(currentOrientation,relativeRotation) {
-    // document.querySelector()
-    console.log(currentOrientation);
-    console.log(relativeRotation);
-    console.log("--");
-
-    // should not happen =>
-    currentOrientation = currentOrientation.replace("DoNotChange","Horizontal");
-    
-    
-    var typesOrRotation = [
-        "Horizontal",
-        "Rotate90Cw",
-        "Rotate180",
-        "Rotate270Cw"
-    ];
-    var intForRotation = [
-        1,
-        6,
-        3,
-        8
-    ];
-
-    var currentOrentation = typesOrRotation.indexOf(currentOrientation);
-    var transformToInt = null;
-    if (currentOrentation >= 0 && currentOrentation+relativeRotation <= typesOrRotation.length && currentOrentation+relativeRotation >= 0) {
-        transformToInt = intForRotation[currentOrentation+relativeRotation]
-    }
-    if (currentOrentation+relativeRotation === -1) {
-        transformToInt = intForRotation[typesOrRotation.length-1]
-    }
-    if (currentOrentation+relativeRotation >= typesOrRotation.length) {
-        transformToInt = intForRotation[0]
-    }
-    
-    if (transformToInt !== null) {
-        queryRotate(transformToInt);
-    }
-    console.log(transformToInt);
-
-}
+// function rotateImageRight(currentOrientation,relativeRotation) {
+//     // document.querySelector()
+//     console.log(currentOrientation);
+//     console.log(relativeRotation);
+//     console.log("--");
+//
+//     // should not happen =>
+//     currentOrientation = currentOrientation.replace("DoNotChange","Horizontal");
+//    
+//    
+//     var typesOrRotation = [
+//         "Horizontal",
+//         "Rotate90Cw",
+//         "Rotate180",
+//         "Rotate270Cw"
+//     ];
+//     var intForRotation = [
+//         1,
+//         6,
+//         3,
+//         8
+//     ];
+//
+//     var currentOrentation = typesOrRotation.indexOf(currentOrientation);
+//     var transformToInt = null;
+//     if (currentOrentation >= 0 && currentOrentation+relativeRotation <= typesOrRotation.length && currentOrentation+relativeRotation >= 0) {
+//         transformToInt = intForRotation[currentOrentation+relativeRotation]
+//     }
+//     if (currentOrentation+relativeRotation === -1) {
+//         transformToInt = intForRotation[typesOrRotation.length-1]
+//     }
+//     if (currentOrentation+relativeRotation >= typesOrRotation.length) {
+//         transformToInt = intForRotation[0]
+//     }
+//    
+//     if (transformToInt !== null) {
+//         queryRotate(transformToInt);
+//     }
+//     console.log(transformToInt);
+//
+// }
 
 function queryRotate(queryItem) {
     // reload afterwards
