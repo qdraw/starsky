@@ -97,14 +97,14 @@ namespace starsky.Controllers
             detailView.FileIndexItem.SetColorClass(colorClass);
             updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
             
-            // Parse Rotation; do not add due errors with syncing
-            var orientationEnum = new FileIndexItem().SetOrientation(orientation);
-            if (orientationEnum != FileIndexItem.Rotation.DoNotChange)
-            {
-                // Anything else than do not change
-                detailView.FileIndexItem.SetOrientation(orientation);
-                updateModel.Orientation = detailView.FileIndexItem.Orientation;
-            }
+//            // Parse Rotation; do not add due errors with syncing
+//            var orientationEnum = new FileIndexItem().SetOrientation(orientation);
+//            if (orientationEnum != FileIndexItem.Rotation.DoNotChange)
+//            {
+//                // Anything else than do not change
+//                detailView.FileIndexItem.SetOrientation(orientation);
+//                updateModel.Orientation = detailView.FileIndexItem.Orientation;
+//            }
          
             
 
@@ -145,15 +145,15 @@ namespace starsky.Controllers
                 // Rename Thumbnail
                 new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItem.FileIndexItem.FileHash);
                 
-                // Don't update this when it not has changed
-                if (orientationEnum != FileIndexItem.Rotation.DoNotChange)
-                {
-                    singleItem.FileIndexItem.Orientation = updateModel.Orientation;
-                    
-                    // Do exif rotation on thumbnails
-                    var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
-                    Task.Run(() => { _exiftool.Update(updateModel, thumbPath); });
-                }
+//                // Don't update this when it not has changed
+//                if (orientationEnum != FileIndexItem.Rotation.DoNotChange)
+//                {
+//                    singleItem.FileIndexItem.Orientation = updateModel.Orientation;
+//                    
+//                    // Do exif rotation on thumbnails
+//                    var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
+//                    Task.Run(() => { _exiftool.Update(updateModel, thumbPath); });
+//                }
                 
                 _query.UpdateItem(singleItem.FileIndexItem);
             }
@@ -165,71 +165,6 @@ namespace starsky.Controllers
                 FirstOrDefault(p => p.SourceFile == getFullPathExifToolFileName));
         }   
         
-        
-//            var oldHashCodes = new List<string>();
-//
-//            var listOfSubPaths = new List<string> {f};
-//            if (f.Contains(";"))
-//            {
-//                listOfSubPaths = ConfigRead.RemoveLatestDotComma(f).Split(";").ToList();
-//            }
-//
-//            var singleItemList = new List<DetailView>();
-//            foreach (var item in listOfSubPaths)
-//            {
-//                if (_isReadOnly(item)) return StatusCode(203,"read only");
-//                var singleItem = _query.SingleItem(item);
-//                if (singleItem == null) return NotFound("not in index " + item);
-//                singleItemList.Add(singleItem);
-//                
-//                oldHashCodes.Add(singleItem.FileIndexItem.FileHash);
-//                if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
-//                    return NotFound("source image missing " +
-//                                    _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-//            }
-//
-//            var updateModel = new ExifToolModel();
-//            if (tags != null)
-//            {
-//                updateModel.Tags = tags;
-//            }
-//
-//            if (captionAbstract != null)
-//            {
-//                updateModel.CaptionAbstract = captionAbstract;
-//            }
-//
-//            var exiftoolPathsBuilder = new StringBuilder();
-//            foreach (var singleItem in singleItemList)
-//            {
-//                // Enum get always one value and no null
-//                singleItem.FileIndexItem.SetColorClass(colorClass);
-//                updateModel.ColorClass = singleItem.FileIndexItem.ColorClass;
-//
-//                // Update Database with results
-//                singleItem.FileIndexItem.FileHash =
-//                    FileHash.GetHashCode(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-//                singleItem.FileIndexItem.AddToDatabase = DateTime.Now;
-//
-//                exiftoolPathsBuilder.Append($"\"");
-//                exiftoolPathsBuilder.Append(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)); 
-//                exiftoolPathsBuilder.Append($"\"");
-//                exiftoolPathsBuilder.Append($" "); // space
-//                _query.UpdateItem(singleItem.FileIndexItem);
-//            }
-//            
-//            // Run ExifTool updater
-//            var exifToolResults = _exiftool.Update(updateModel,exiftoolPathsBuilder.ToString() );
-//
-//            for (int i = 0; i < singleItemList.Count; i++)
-//            {
-//                singleItemList[i].FileIndexItem.Tags = exifToolResults.Tags;
-//                singleItemList[i].FileIndexItem.Description = exifToolResults.CaptionAbstract;
-//                singleItemList[i].FileIndexItem.ColorClass = exifToolResults.ColorClass;
-//                // Rename Thumbnail
-//                new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItemList[i].FileIndexItem.FileHash);
-//            }
-
 
         [ResponseCache(Duration = 30, VaryByQueryKeys = new [] { "f" } )]
         public IActionResult Info(string f = "dbStyleFilepath")

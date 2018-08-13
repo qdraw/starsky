@@ -246,7 +246,7 @@ namespace starskytests.Controllers
             var controller = new ApiController(_query,_exiftool,_appSettings);
             var jsonResult = controller.Info(createAnImage.DbPath) as JsonResult;
             var exiftoolModel = jsonResult.Value as ExifToolModel;
-            Assert.AreEqual(string.Empty,exiftoolModel.Tags);            
+            Assert.AreNotEqual(string.Empty,exiftoolModel.Tags);            
         }
 
         [TestMethod]
