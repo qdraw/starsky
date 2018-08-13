@@ -34,8 +34,7 @@ namespace starsky.Services
 
                     var singleFilePath = _appSettings.DatabasePathToFilePath(singleFolderDbStyle);
                     var databaseItem = ExifRead.ReadExifFromFile(singleFilePath);
-
-                    databaseItem = new XmpReadHelper(_appSettings).XmpSelectSidecarFile(databaseItem, singleFilePath);
+                    databaseItem = new XmpReadHelper(_appSettings).XmpGetSidecarFile(databaseItem, singleFilePath);
 
                     // Check the headers of a file to match a type
                     databaseItem.ImageFormat = Files.GetImageFormat(singleFilePath);

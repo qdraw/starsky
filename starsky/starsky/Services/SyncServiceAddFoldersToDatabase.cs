@@ -28,7 +28,6 @@ namespace starsky.Services
                 {
                     var folderItem = new FileIndexItem
                     {
-                        // FilePath = singleFolderDbStyle,
                         IsDirectory = true,
                         AddToDatabase = DateTime.UtcNow,
                         FileName = singleFolderDbStyle.Split("/").LastOrDefault(),

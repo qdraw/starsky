@@ -234,12 +234,25 @@ namespace starsky.Controllers
             
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index");
-            if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
-                return NotFound("source image missing " +
-                                _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+            var fullFilePath = _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
+            if (!System.IO.File.Exists(fullFilePath))
+                return NotFound("source image missing " +fullFilePath);
 
-            var getExiftool = _exiftool.Info(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-            return Json(getExiftool);
+//            var getExiftool = _exiftool.Info(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+//            return Json(getExiftool);
+
+            // Get Info from C# code
+            var databaseItem = ExifRead.ReadExifFromFile(fullFilePath);
+            databaseItem = new XmpReadHelper(_appSettings).XmpGetSidecarFile(databaseItem, fullFilePath);
+
+            var infoModel = new ExifToolModel
+            {
+                CaptionAbstract = databaseItem.Description,
+                ColorClass = databaseItem.ColorClass,
+                Tags = databaseItem.Tags,
+                Orientation = databaseItem.Orientation
+            };
+            return Json(infoModel);
         }
 
         [HttpDelete]

@@ -17,7 +17,7 @@ namespace starsky.Helpers
             _appSettings = appSettings;
         }
         
-        public FileIndexItem XmpSelectSidecarFile(FileIndexItem databaseItem, string singleFilePath)
+        public FileIndexItem XmpGetSidecarFile(FileIndexItem databaseItem, string singleFilePath)
         {
             if(_appSettings == null) throw new InvalidDataContractException("AppSettings in XmpSelectSidecarFile is null");
             

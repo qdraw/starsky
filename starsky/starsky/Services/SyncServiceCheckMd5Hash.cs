@@ -38,7 +38,7 @@ namespace starsky.Services
                         var fullFilePath = _appSettings.DatabasePathToFilePath(itemLocal);
                         var updatedDatabaseItem = ExifRead.ReadExifFromFile(fullFilePath);
                         
-                        dbItem = new XmpReadHelper(_appSettings).XmpSelectSidecarFile(dbItem, fullFilePath);
+                        dbItem = new XmpReadHelper(_appSettings).XmpGetSidecarFile(dbItem, fullFilePath);
 
                         updatedDatabaseItem.ImageFormat = Files.GetImageFormat(fullFilePath);
                         updatedDatabaseItem.FileHash = localHash;

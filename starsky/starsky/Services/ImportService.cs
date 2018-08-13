@@ -134,7 +134,7 @@ namespace starsky.Services
             var fileIndexItem = ExifRead.ReadExifFromFile(inputFileFullPath);
 
             // Check if there is a xmp file that contains data
-            fileIndexItem = new XmpReadHelper(_appSettings).XmpSelectSidecarFile(fileIndexItem, inputFileFullPath);
+            fileIndexItem = new XmpReadHelper(_appSettings).XmpGetSidecarFile(fileIndexItem, inputFileFullPath);
 
             // Parse the filename and create a new importIndexItem object
             var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem, importSettings.Structure);
