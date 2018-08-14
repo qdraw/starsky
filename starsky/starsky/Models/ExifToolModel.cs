@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace starsky.Models
 {
@@ -16,6 +17,7 @@ namespace starsky.Models
             CaptionAbstract = model.CaptionAbstract;
             Keywords = model.Keywords;
             Orientation = model.Orientation;
+            Status = model.Status;
         }
         
         public string SourceFile { get; set; }
@@ -106,6 +108,18 @@ namespace starsky.Models
         
         //  Orientation   : 6
         public FileIndexItem.Rotation Orientation { get; set; }
+        
+        
+        public enum ExifStatus
+        {
+            NotFoundNotInIndex,
+            NotFoundSourceMissing,
+            ReadOnly,
+            Ok
+        }
+        
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ExifStatus Status { get; set; }
 
 
         private static HashSet<string> stringToHashSet(string inputKeywords)
@@ -137,6 +151,9 @@ namespace starsky.Models
 
             return toBeAddedKeywords;
         }
+        
+        
+
 
     }
 }

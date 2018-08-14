@@ -49,22 +49,16 @@ namespace starsky.Controllers
             return result != null;
         }
         
-        public enum UpdateStatus
-        {
-            NotFoundNotInIndex,
-            NotFoundSourceMissing,
-            ReadOnly,
-            Ok
-        }
+        
 
-        private UpdateStatus FileCollectionsCheck(DetailView detailView)
+        private ExifToolModel.ExifStatus FileCollectionsCheck(DetailView detailView)
         {
             if (detailView == null)
             {
-                return UpdateStatus.NotFoundNotInIndex;
+                return ExifToolModel.ExifStatus.NotFoundNotInIndex;
             }
 
-            if (_isReadOnly(detailView.FileIndexItem.ParentDirectory)) return  UpdateStatus.ReadOnly;
+            if (_isReadOnly(detailView.FileIndexItem.ParentDirectory)) return  ExifToolModel.ExifStatus.ReadOnly;
 
             foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths)
             {
@@ -74,7 +68,7 @@ namespace starsky.Controllers
                 if (!System.IO.File.Exists(fullPathCollection) 
                     && detailView.FileIndexItem.CollectionPaths.Count == 1)
                 {
-                    return UpdateStatus.NotFoundSourceMissing;  //
+                    return ExifToolModel.ExifStatus.NotFoundSourceMissing;  //
                 }
                 // When there are more items in the list
                 if (!System.IO.File.Exists(fullPathCollection))
@@ -85,10 +79,10 @@ namespace starsky.Controllers
 
             if (detailView.FileIndexItem.CollectionPaths.Count == 0)
             {
-                return UpdateStatus.NotFoundSourceMissing; // NotFound("source image missing");
+                return ExifToolModel.ExifStatus.NotFoundSourceMissing; // NotFound("source image missing");
             }
 
-            return UpdateStatus.Ok;
+            return ExifToolModel.ExifStatus.Ok;
         }
 
         /// <summary>
@@ -111,27 +105,38 @@ namespace starsky.Controllers
             
             // the result list
             var exifToolResultsList = new List<ExifToolModel>();
-
+                
             foreach (var subPath in inputFilePaths)
             {
                 var detailView = _query.SingleItem(subPath,null,collections,false);
                 var results = FileCollectionsCheck(detailView);
-                switch (results)
-                {
-                    case UpdateStatus.NotFoundNotInIndex:
-                        return NotFound("Not In Index " + subPath);
-                    case UpdateStatus.NotFoundSourceMissing:
-                        return NotFound("source image missing" + subPath);
-                    case UpdateStatus.ReadOnly:
-                        return StatusCode(203, "read only" + subPath);
-                }
-    
+                
                 // First create an update model
                 var updateModel = new ExifToolModel
                 {
-                    Tags = tags,
-                    CaptionAbstract = captionAbstract
+                    SourceFile = subPath,
+                    Status = ExifToolModel.ExifStatus.Ok
                 };
+                
+                // if one item fails, the status will added
+                switch (results)
+                {
+                    case ExifToolModel.ExifStatus.NotFoundNotInIndex:
+                        updateModel.Status = ExifToolModel.ExifStatus.NotFoundNotInIndex;
+                        exifToolResultsList.Add(updateModel);
+                        continue;
+                    case ExifToolModel.ExifStatus.NotFoundSourceMissing:
+                        updateModel.Status = ExifToolModel.ExifStatus.NotFoundSourceMissing;
+                        exifToolResultsList.Add(updateModel);
+                        continue;
+                    case ExifToolModel.ExifStatus.ReadOnly:
+                        updateModel.Status = ExifToolModel.ExifStatus.ReadOnly;
+                        exifToolResultsList.Add(updateModel);
+                        continue;
+                }
+    
+                updateModel.Tags = tags;
+                updateModel.CaptionAbstract = captionAbstract;
     
                 // Parse ColorClass and add it
                 detailView.FileIndexItem.SetColorClass(colorClass);
@@ -155,10 +160,12 @@ namespace starsky.Controllers
                     Console.WriteLine("collectionFullPaths " + collectionFullPaths);
                 });
     
+                // loop though the collection paths; even if it is one item
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
                     var singleItem = _query.SingleItem(collectionSubPathList[i],null,false,false);
     
+                    // make a new object to avoid references
                     var displayUpdateModel = new ExifToolModel(updateModel); 
                     displayUpdateModel.SourceFile = collectionSubPathList[i];
     
