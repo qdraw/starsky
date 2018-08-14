@@ -1,7 +1,7 @@
 
 // Req: base url = > updateApiBase
 updateApiBase = updateApiBase.replace("&amp;", "&");
-infoApiBase = infoApiBase.replace("&amp;", "&");
+infoApiBase = infoApiBase.replace("&amp;", "&") + "&collections=false";
 thumbnailApiBase = thumbnailApiBase.replace("&amp;", "&");
     
 function loadJSON(path, success, error, type)
