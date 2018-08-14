@@ -836,6 +836,11 @@ float: left;
     height: 100vh;
     width: 300px;
 }
+
+.sidebar .content div:last-child {
+    margin-bottom: 30px;
+}
+
 @media screen and (max-width: 600px) {
     .sidebar .content {
         height: initial;

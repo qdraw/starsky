@@ -125,9 +125,9 @@ if (document.querySelectorAll("#js-keywords-update").length === 1 &&
    loadJSON(infoApiBase,
        function(data) {
            
-           updateDeletedKeywordElement(data);
-           updateColorClassButtons(data.colorClass);
-           updateCaptionAbstractFromInput(data);
+           updateDeletedKeywordElement(data[0]);
+           updateColorClassButtons(data[0].colorClass);
+           updateCaptionAbstractFromInput(data[0]);
            hidePreloader();
        },
        function (xhr) {
