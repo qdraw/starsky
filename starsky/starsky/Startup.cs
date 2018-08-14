@@ -5,13 +5,14 @@ using starsky.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Data;
 using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
+using Microsoft.Extensions.Hosting;
+
 
 namespace starsky
 {
@@ -85,6 +86,10 @@ namespace starsky
             services.AddScoped<IImport, ImportService>();
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IExiftool, ExifTool>();
+            
+            // AddHostedService in .NET Core 2.1
+            services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             
             services.AddAntiforgery(
                 options =>
