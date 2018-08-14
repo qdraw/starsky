@@ -512,9 +512,8 @@ namespace starsky.Controllers
                 return Json("cache succesfull cleared");
             }
 
-            Response.StatusCode = 400;
             if(!json) return RedirectToAction("Index", "Home", new { f = f });
-            return Json("ignored, please check if the 'f' path exist or use a folder string to clear the cache");
+            return BadRequest("ignored, please check if the 'f' path exist or use a folder string to clear the cache");
         }
         
         

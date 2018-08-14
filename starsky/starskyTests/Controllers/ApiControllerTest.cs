@@ -537,7 +537,7 @@ namespace starskytests.Controllers
         }
 
         [TestMethod]
-        public void ApiController_CleanCache()
+        public void ApiController_CheckIfCacheIsRemoved_CleanCache()
         {
             // Act
             var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
@@ -586,5 +586,28 @@ namespace starskytests.Controllers
             Assert.AreEqual(2, newQuery.Count());
         }
 
+        [TestMethod]
+        public void ApiController_NonExistingCacheRemove()
+        {
+            // Act
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+            
+            var actionResult = controller.RemoveCache("/404page",true) as BadRequestObjectResult;
+            Assert.AreEqual(400,actionResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void ApiController_CacheDisabled()
+        {
+            var appsettings = new AppSettings {AddMemoryCache = false};
+            var controller =
+                new ApiController(_query, _exiftool, appsettings, _bgTaskQueue)
+                {
+                    ControllerContext = {HttpContext = new DefaultHttpContext()}
+                };
+            var actionResult = controller.RemoveCache("/404page", true) as JsonResult;
+            Assert.AreEqual("cache disabled in config",actionResult.Value);
+        }
     }
 }
