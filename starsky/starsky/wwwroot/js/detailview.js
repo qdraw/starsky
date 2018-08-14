@@ -43,7 +43,7 @@ function updateColorClass(those) {
         function(data) {
             hideUnloadWarning();
             hidePreloader();
-            updateColorClassButtons(data.colorClass);
+            updateColorClassButtons(data[0].colorClass);
         },
         function (xhr) { console.error(xhr); },
         "POST"
@@ -184,7 +184,7 @@ function queryKeywords(queryItem) {
         function (data) {
             hideUnloadWarning();
             hidePreloader();
-            updateDeletedKeywordElement(data);
+            updateDeletedKeywordElement(data[0]);
         },
         function (xhr) { console.error(xhr); },
         "POST"

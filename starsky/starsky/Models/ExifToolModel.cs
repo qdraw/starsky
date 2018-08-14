@@ -8,6 +8,16 @@ namespace starsky.Models
 {
     public class ExifToolModel
     {
+        public ExifToolModel(ExifToolModel model = null)
+        {
+            if (model == null) return;
+            SourceFile = model.SourceFile;
+            ColorClass = model.ColorClass;
+            CaptionAbstract = model.CaptionAbstract;
+            Keywords = model.Keywords;
+            Orientation = model.Orientation;
+        }
+        
         public string SourceFile { get; set; }
         
         public FileIndexItem.Color ColorClass { get; set; }

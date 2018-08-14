@@ -19,12 +19,14 @@ namespace starsky.Controllers
         private readonly IQuery _query;
         private readonly IExiftool _exiftool;
         private readonly AppSettings _appSettings;
+        private readonly IBackgroundTaskQueue _bgTaskQueue;
 
-        public ApiController(IQuery query, IExiftool exiftool, AppSettings appSettings)
+        public ApiController(IQuery query, IExiftool exiftool, AppSettings appSettings, IBackgroundTaskQueue queue)
         {
             _appSettings = appSettings;
             _query = query;
             _exiftool = exiftool;
+            _bgTaskQueue = queue;
         }
         
 
@@ -103,84 +105,97 @@ namespace starsky.Controllers
         public IActionResult Update(string tags, string colorClass,
             string captionAbstract, string f, int orientation, bool collections = true)
         {
-            var detailView = _query.SingleItem(f,null,collections,false);
-            var results = FileCollectionsCheck(detailView);
-            switch (results)
-            {
-                case UpdateStatus.NotFoundNotInIndex:
-                    return NotFound("Not In Index");
-                case UpdateStatus.NotFoundSourceMissing:
-                    return NotFound("source image missing");
-                case UpdateStatus.ReadOnly:
-                    return StatusCode(203, "read only");
-            }
-
-            // First create an update model
-            var updateModel = new ExifToolModel();
-
-            updateModel.Tags = tags;
-            updateModel.CaptionAbstract = captionAbstract;
-
-            // Parse ColorClass and add it
-            detailView.FileIndexItem.SetColorClass(colorClass);
-            updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
+            // input devided by dot comma and blank values are removed
+            var inputFilePaths = f.Split(";");
+            inputFilePaths = inputFilePaths.Where(x => !string.IsNullOrEmpty(x)).ToArray();
             
-            // Parse Rotation; by reading it relative
-            updateModel.Orientation = detailView.FileIndexItem.RelativeOrientation(orientation);
-            
-            var collectionFullPaths = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.CollectionPaths);
-            var oldHashCodes = FileHash.GetHashCode(collectionFullPaths.ToArray());
-                
-            // Run as non-blocking task to avoid files not being updated or corrupt
-            Task.Run(() => { _exiftool.Update(updateModel, collectionFullPaths); });
-
+            // the result list
             var exifToolResultsList = new List<ExifToolModel>();
-            for (int i = 0; i < detailView.FileIndexItem.CollectionPaths.Count; i++)
+
+            foreach (var subPath in inputFilePaths)
             {
-                var singleItem = _query.SingleItem(detailView.FileIndexItem.CollectionPaths[i],null,false,false);
-                
-                //  var exifToolResult = _exiftool.Info(collectionFullPaths[i]);
-                // for if exiftool does not anwer the request
-                updateModel.SourceFile = Files.GetXmpSidecarFileWhenRequired(_appSettings.DatabasePathToFilePath(
-                    detailView.FileIndexItem.FilePath), _appSettings.ExifToolXmpPrefix);;
-
-                if (!string.IsNullOrEmpty(updateModel.Tags))
+                var detailView = _query.SingleItem(subPath,null,collections,false);
+                var results = FileCollectionsCheck(detailView);
+                switch (results)
                 {
-                    singleItem.FileIndexItem.Tags = updateModel.Tags;
+                    case UpdateStatus.NotFoundNotInIndex:
+                        return NotFound("Not In Index " + subPath);
+                    case UpdateStatus.NotFoundSourceMissing:
+                        return NotFound("source image missing" + subPath);
+                    case UpdateStatus.ReadOnly:
+                        return StatusCode(203, "read only" + subPath);
                 }
-
-                if (!string.IsNullOrEmpty(updateModel.CaptionAbstract))
+    
+                // First create an update model
+                var updateModel = new ExifToolModel
                 {
-                    singleItem.FileIndexItem.Description = updateModel.CaptionAbstract;
-                }
+                    Tags = tags,
+                    CaptionAbstract = captionAbstract
+                };
+    
+                // Parse ColorClass and add it
+                detailView.FileIndexItem.SetColorClass(colorClass);
+                updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
                 
-                if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
-                {
-                    singleItem.FileIndexItem.ColorClass = updateModel.ColorClass;
-                }
-
-                exifToolResultsList.Add(updateModel);
-
-                singleItem.FileIndexItem.FileHash = FileHash.GetHashCode(collectionFullPaths[i]);
-                // Rename Thumbnail
-                new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItem.FileIndexItem.FileHash);
+                // Parse Rotation; by reading it relative
+                updateModel.Orientation = detailView.FileIndexItem.RelativeOrientation(orientation);
                 
-                //  // Don't update this when it not has changed
-                if (updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
-                {
-                    singleItem.FileIndexItem.Orientation = updateModel.Orientation;
+                // Run Update program
+                var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
+                // when not running in collections mode only update one file
+                if(!collections) collectionSubPathList = new List<string> {subPath};
+                
+                var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
+                var oldHashCodes = FileHash.GetHashCode(collectionFullPaths.ToArray());
                     
-                    var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
-                    new Thumbnail(null).RotateThumbnail(thumbPath,orientation);
+                // Run as non-blocking task to avoid files not being updated or corrupt
+                _bgTaskQueue.QueueBackgroundWorkItem(async token =>
+                {
+                    _exiftool.Update(updateModel, collectionFullPaths);
+                    Console.WriteLine("collectionFullPaths " + collectionFullPaths);
+                });
+    
+                for (int i = 0; i < collectionSubPathList.Count; i++)
+                {
+                    var singleItem = _query.SingleItem(collectionSubPathList[i],null,false,false);
+    
+                    var displayUpdateModel = new ExifToolModel(updateModel); 
+                    displayUpdateModel.SourceFile = collectionSubPathList[i];
+    
+                    if (!string.IsNullOrEmpty(updateModel.Tags))
+                    {
+                        singleItem.FileIndexItem.Tags = updateModel.Tags;
+                    }
+    
+                    if (!string.IsNullOrEmpty(updateModel.CaptionAbstract))
+                    {
+                        singleItem.FileIndexItem.Description = updateModel.CaptionAbstract;
+                    }
+                    
+                    if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
+                    {
+                        singleItem.FileIndexItem.ColorClass = updateModel.ColorClass;
+                    }
+    
+                    exifToolResultsList.Add(displayUpdateModel);
+    
+                    singleItem.FileIndexItem.FileHash = FileHash.GetHashCode(collectionFullPaths[i]);
+                    // Rename Thumbnail
+                    new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItem.FileIndexItem.FileHash);
+                    
+                    //  // Don't update this when it not has changed
+                    if (updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
+                    {
+                        singleItem.FileIndexItem.Orientation = updateModel.Orientation;
+                        
+                        var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
+                        new Thumbnail(null).RotateThumbnail(thumbPath,orientation);
+                    }
+                    _query.UpdateItem(singleItem.FileIndexItem);
                 }
-                _query.UpdateItem(singleItem.FileIndexItem);
             }
             
-            var getFullPathExifToolFileName = Files.GetXmpSidecarFileWhenRequired(_appSettings.DatabasePathToFilePath(
-                detailView.FileIndexItem.FilePath), _appSettings.ExifToolXmpPrefix);
-                
-            return Json(exifToolResultsList.
-                FirstOrDefault(p => p.SourceFile == getFullPathExifToolFileName));
+            return Json(exifToolResultsList);
         }   
         
 

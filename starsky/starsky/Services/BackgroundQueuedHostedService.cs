@@ -14,7 +14,6 @@ namespace starsky.Services
             ILoggerFactory loggerFactory)
         {
             TaskQueue = taskQueue;
-//            _logger = loggerFactory.CreateLogger<QueuedHostedService>();
         }
 
         public IBackgroundTaskQueue TaskQueue { get; }
@@ -22,7 +21,6 @@ namespace starsky.Services
         protected override async Task ExecuteAsync(
             CancellationToken cancellationToken)
         {
-//            _logger.LogInformation("Queued Hosted Service is starting.");
 
             Console.WriteLine("Queued Hosted Service is starting.");
             
@@ -37,14 +35,10 @@ namespace starsky.Services
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error occurred executing {nameof(workItem)}.");
-                    
-//                    _logger.LogError(ex, 
-//                        $"Error occurred executing {nameof(workItem)}.");
                 }
             }
 
             Console.WriteLine("Queued Hosted Service is stopping.");
-//            _logger.LogInformation("Queued Hosted Service is stopping.");
         }
     }
     #endregion
