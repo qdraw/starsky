@@ -29,6 +29,7 @@ namespace starskytests.Controllers
         private readonly AppSettings _appSettings;
         private readonly CreateAnImage _createAnImage;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
+        private ApplicationDbContext _context;
 
         public ApiControllerTest()
         {
@@ -40,8 +41,8 @@ namespace starskytests.Controllers
             var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
             builderDb.UseInMemoryDatabase("test1234");
             var options = builderDb.Options;
-            var context = new ApplicationDbContext(options);
-            _query = new Query(context,memoryCache);
+            _context = new ApplicationDbContext(options);
+            _query = new Query(_context,memoryCache);
             
             // Inject Fake Exiftool; dependency injection
             var services = new ServiceCollection();
@@ -533,6 +534,56 @@ namespace starskytests.Controllers
             Assert.AreNotEqual(null,actionResult);
             Assert.AreEqual(404,actionResult.StatusCode);
 
+        }
+
+        [TestMethod]
+        public void ApiController_CleanCache()
+        {
+            // Act
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "cacheDeleteTest",
+                ParentDirectory = "/",
+                IsDirectory = true
+            });
+            
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "file.jpg",
+                ParentDirectory = "/cacheDeleteTest",
+                IsDirectory = false
+            });
+
+            Assert.AreEqual(true,_query.DisplayFileFolders("/cacheDeleteTest").Any());
+            
+            // Ask the cache
+            _query.DisplayFileFolders("/cacheDeleteTest");
+
+            // Don't notify the cache that there is an update
+            var newItem = new FileIndexItem
+            {
+                FileName = "file2.jpg",
+                ParentDirectory = "/cacheDeleteTest",
+                IsDirectory = false
+            };
+            _context.FileIndex.Add(newItem);
+            _context.SaveChanges();
+            // Write changes to database
+            
+            // Check if there is one item in the cache
+            var beforeQuery = _query.DisplayFileFolders("/cacheDeleteTest");
+            Assert.AreEqual(1, beforeQuery.Count());
+
+            // Act, remove content from cache
+            var actionResult = controller.RemoveCache("/cacheDeleteTest",true) as JsonResult;
+            Assert.AreEqual("cache succesfull cleared", actionResult.Value);
+            
+            // Check if there are now two items in the cache
+            var newQuery = _query.DisplayFileFolders("/cacheDeleteTest");
+            Assert.AreEqual(2, newQuery.Count());
         }
 
     }
