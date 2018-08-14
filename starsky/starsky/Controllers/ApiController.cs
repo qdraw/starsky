@@ -202,6 +202,10 @@ namespace starsky.Controllers
                 }
             }
             
+            // When all items are not found
+            if (exifToolResultsList.Count(p => p.Status == ExifToolModel.ExifStatus.Ok) == 0)
+                return NotFound(exifToolResultsList);
+            
             return Json(exifToolResultsList);
         }   
         

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -221,9 +222,9 @@ namespace starskytests.Controllers
             
             var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             var jsonResult = controller.Update("test", "1", "test", createAnImage.DbPath,0) as JsonResult;
-            var exiftoolModel = jsonResult.Value as ExifToolModel;
+            var exiftoolModel = jsonResult.Value as List<ExifToolModel>;
             //you could not test because exiftool is an external dependency
-            Assert.AreNotEqual(null,exiftoolModel.Tags);            
+            Assert.AreNotEqual(null,exiftoolModel.FirstOrDefault().Tags);            
 
 //            Assert.AreEqual("test",exiftoolModel.Tags);            
         }
@@ -237,8 +238,13 @@ namespace starskytests.Controllers
                 ParentDirectory = "/",
                 FileHash = "345678765434567"
             });
-            
-            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
+
+            var controller =
+                new ApiController(_query, _exiftool, _appSettings, _bgTaskQueue)
+                {
+                    ControllerContext = {HttpContext = new DefaultHttpContext()}
+                };
+
             var notFoundResult = controller.Update(
                 "test", "1", "test", "/345678765434567.jpg",0) as NotFoundObjectResult;
             Assert.AreEqual(404,notFoundResult.StatusCode);
