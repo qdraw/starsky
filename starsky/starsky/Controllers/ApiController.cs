@@ -289,34 +289,13 @@ namespace starsky.Controllers
 
             } //e/for
             
+            // When all items are not found
+            if (exifToolResultsList.All(p => p.Status != ExifToolModel.ExifStatus.Ok))
+                return NotFound(exifToolResultsList);
+            
             return Json(exifToolResultsList);
         }
 
-//        public IActionResult Info(string f = "dbStyleFilepath")
-//        {
-//            if (f.Contains("?t=")) return NotFound("please use &t= instead of ?t=");
-//            
-//            if (_isReadOnly(f)) return StatusCode(203,"read only");
-//            
-//            var singleItem = _query.SingleItem(f);
-//            if (singleItem == null) return NotFound("not in index");
-//            var fullFilePath = _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
-//            if (!System.IO.File.Exists(fullFilePath))
-//                return NotFound("source image missing " +fullFilePath);
-//
-//            // Get Info from C# code
-//            var databaseItem = ExifRead.ReadExifFromFile(fullFilePath);
-//            databaseItem = new XmpReadHelper(_appSettings).XmpGetSidecarFile(databaseItem, fullFilePath);
-//
-//            var infoModel = new ExifToolModel
-//            {
-//                CaptionAbstract = databaseItem.Description,
-//                ColorClass = databaseItem.ColorClass,
-//                Tags = databaseItem.Tags,
-//                Orientation = databaseItem.Orientation
-//            };
-//            return Json(infoModel);
-//        }
 
         [HttpDelete]
         public IActionResult Delete(string f = "dbStyleFilepath")
