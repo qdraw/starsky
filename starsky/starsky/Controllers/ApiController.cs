@@ -91,7 +91,7 @@ namespace starsky.Controllers
         /// <param name="tags">use for keywords</param>
         /// <param name="colorClass">int 0-9, the colorclass to fast select images</param>
         /// <param name="captionAbstract">string to update description/caption abstract, emthy will be ignored</param>
-        /// <param name="f">subpath filepath to file</param>
+        /// <param name="f">subpath filepath to file, split by dot comma (;)</param>
         /// <param name="orientation">relative orentation -1 or 1</param>
         /// <param name="collections">StackCollections bool</param>
         /// <returns></returns>
