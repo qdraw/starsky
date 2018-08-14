@@ -154,23 +154,43 @@ Endpoint: `/starsky/Api/Info?f=/image.jpg` The querystring name `f` is used for 
 - Statuscode 203 with the content `read only` when readonly mode is active
 - Gives a list of names that are used by exiftool
 - The querystring name `f` is used for the file path in releative/subpath style
+- The querystring can be seperated by a `;`
 - Ignore `Prefs` those are used to set `ColorClass` with Exiftool
+- Uses  `Status` to tell if a file exist in the database 
+    - `Ok` is file loaded
+    - `NotFoundNotInIndex` File does not exist in index
+    - `NotFoundSourceMissing` The source file is missing
+    - `ReadOnly` not allowed to overwrite this file
 
 The response by the info request
 ```json
-{
-    "sourceFile": "/data/isight//2018/01-dif/20180705_160335_DSC01991 kopie 2.jpg",
-    "colorClass": 0,
-    "Caption-Abstract": "captipn123444",
-    "prefs": null,
-    "keywords": [
-        "okay1",
-        "okay2"
-    ],
-    "tags": "okay1, okay2",
-    "allDatesDateTime": "0001-01-01T00:00:00",
-    "orientation": 1
-}
+[
+    {
+        "sourceFile": "/2018/01-dif/20180705_160335_DSC01991 kopie 2.jpg",
+        "colorClass": 4,
+        "Caption-Abstract": "t3",
+        "prefs": null,
+        "keywords": [
+            "test",
+            "keyword"
+        ],
+        "tags": "test, keyword",
+        "allDatesDateTime": "0001-01-01T00:00:00",
+        "orientation": 3,
+        "status": "Ok"
+    },
+    {
+        "sourceFile": "/image.notfound",
+        "colorClass": 0,
+        "Caption-Abstract": null,
+        "prefs": null,
+        "keywords": [],
+        "tags": "",
+        "allDatesDateTime": "0001-01-01T00:00:00",
+        "orientation": 0,
+        "status": "NotFoundNotInIndex"
+    }
+]
 ```
 ### Colorclass types
 - Colorclass is a enum, and the values are:      
@@ -194,7 +214,7 @@ case "2":
 case "1":
     _colorClass = Color.Winner; // Purple
 ```
-### Rotation types
+### Rotation types (only for reference)
 ```cs
 public enum Rotation
 {
@@ -214,12 +234,14 @@ Endpoint: `/starsky/Api/Update?f=/image.jpg`
 
 For now this api end point is using this method:
 `Update(string tags, string colorClass,
-            string captionAbstract, string f, string orientation, bool collections = true)`
+            string captionAbstract, string f, int orientation, bool collections = true)`
 - The querystring name `f` is used for the file path in releative/subpath style
+- The querystring support `;` file sepeartion for selecting multiple files
 - Empty tags are always ignored
-- Stack collections or Collections is a feature to update multiple files with the same name. This feature is not completely implemented yet.
-- `orientation` is using a enum to rotate the image 
-
+- Stack collections or Collections is a feature to update multiple files with the same name _(before the extension)_. 
+- `orientation` is using `-1` or `1` to rotate the image 
+    -   `-1` is rotate image 270 degrees
+    -   `1` is rotate image 90 degrees
 ```json
 {
     "uri":"/starsky/Api/Update?f=/image.jpg",
@@ -239,23 +261,31 @@ For now this api end point is using this method:
 
 ### Expected `/starsky/Api/Update?f=/image.jpg` response:
 ```json
-{
-    "sourceFile": "/image.jpg",
-    "colorClass": 0,
-    "Caption-Abstract": null,
-    "keywords": [
-        "okay2"
-    ],
-    "tags": "okay2",
-    "allDatesDateTime": "0001-01-01T00:00:00",
-    "orientation": 1
-}
+[
+    {
+        "sourceFile": "/image.jpg",
+        "colorClass": 0,
+        "Caption-Abstract": null,
+        "keywords": [
+            "okay2"
+        ],
+        "tags": "okay2",
+        "allDatesDateTime": "0001-01-01T00:00:00",
+        "orientation": 1,
+        "status": "Ok"
+    }
+]
 ```
 -  Statuscode 203. When trying to update a `read only` image. With the content `read only`
 -  Error 404 When a image is `not in index`
 -  Only the values that are request are return. In this example Caption-Abstract has a value but it is not requested.
 > Update replied only the values that are request to update. To get all Info do a request to the Info-endpoint
-
+- This Endpoint uses  `Status` to show if a file is updated. The file is only updated when the status is `Ok`
+    - `Ok` is file updated
+    - `NotFoundNotInIndex` File does not exist in index and the request failed
+    - `NotFoundSourceMissing` The source file is missing and the request failed
+    - `ReadOnly` not allowed to overwrite this file and the request failed
+    
 ## File Delete
 To permanent delete a file from the file system and the database.
 The tag: `!delete!` is used to mark a file that is in the Trash. This is not required by this api.
@@ -280,6 +310,7 @@ The tag: `!delete!` is used to mark a file that is in the Trash. This is not req
 ## Thumbnail
 To get an thumbnail of the image, the thumbnail is 1000px width.
 - The querystring after `Thumbnail/` is used for the base32 hash of the orginal image
+- This endpoint supports only 1 file per request
 
 Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
 ```json
@@ -301,6 +332,7 @@ Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
 - The `retryThumbnail` is removing a thumbnail image. When this is used in combination with
  `isSingleItem` a orginal image is loaded. The query string is  `?retryThumbnail=True`. 
 - Check [Thumbnail Json](#thumbnail-json) for more information
+- This endpoint supports only 1 file per request
 
 ### Expected `/starsky/Api/Thumbnail` response:
 - A jpeg image
@@ -311,6 +343,7 @@ Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
 ## Thumbnail Json
 Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU&json=true`
 For checking if a thumbnail exist without loading the entire image
+- This endpoint supports only 1 file per request
 
 ```json
 {
@@ -335,6 +368,7 @@ For checking if a thumbnail exist without loading the entire image
 To get an orginal or to regenerate a thumbnail.
 - The querystring  `f` is used for the filepath of the orginal image
 - When the querystring `isThumbnail` is used `true` a thumbnail we used or generated
+- This endpoint supports only 1 file per request
 
 Endpoint: `/starsky/Api/DownloadPhoto?f=/image.jpg`
 ```json
