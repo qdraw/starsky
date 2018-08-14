@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.Data;
@@ -26,6 +28,7 @@ namespace starskytests.Controllers
         private readonly IExiftool _exiftool;
         private readonly AppSettings _appSettings;
         private readonly CreateAnImage _createAnImage;
+        private readonly IBackgroundTaskQueue _bgTaskQueue;
 
         public ApiControllerTest()
         {
@@ -62,6 +65,11 @@ namespace starskytests.Controllers
             var configuration = builder.Build();
             // inject config as object to a service
             services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+            
+            // Add Background services
+            services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            
             // build the service
             var serviceProvider = services.BuildServiceProvider();
             // get the service
@@ -69,6 +77,10 @@ namespace starskytests.Controllers
            
             // inject exiftool
             _exiftool = serviceProvider.GetRequiredService<IExiftool>();
+            
+
+            
+            _bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();;
         }
         
         private FileIndexItem InsertSearchData()
@@ -93,7 +105,7 @@ namespace starskytests.Controllers
         {
             var createAnImage = InsertSearchData();
             _appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
 
             Console.WriteLine("createAnImage.FilePath");
             Console.WriteLine(createAnImage.FilePath);
@@ -109,7 +121,7 @@ namespace starskytests.Controllers
         public void ApiController_Thumbnail_HappyFlowDisplayJson_API_Test()
         {
             var createAnImage = InsertSearchData();
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             
             new Thumbnail(_appSettings).CreateThumb(createAnImage);
             
@@ -127,7 +139,7 @@ namespace starskytests.Controllers
         public void ApiController_Thumbnail_HappyFlowFileStreamResult_API_Test()
         {
             var createAnImage = InsertSearchData();
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             
             new Thumbnail(_appSettings).CreateThumb(createAnImage);
 
@@ -145,7 +157,7 @@ namespace starskytests.Controllers
         public void ApiController_Thumbnail_ShowOrginalImage_API_Test()
         {
             var createAnImage = InsertSearchData();
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
 
             var actionResult = controller.Thumbnail(createAnImage.FileHash, true) as FileStreamResult;
             var thumbnailAnswer = actionResult.ContentType;
@@ -160,7 +172,7 @@ namespace starskytests.Controllers
             // Photo exist in database but " + "isSingleItem flag is Missing
             var createAnImage = InsertSearchData();
 
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
             var actionResult = controller.Thumbnail(createAnImage.FileHash, false, true) as JsonResult;
@@ -178,7 +190,7 @@ namespace starskytests.Controllers
                 FileName = "fake.jpg",
                 FileHash = "0986524678765456786543"
             });
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             var actionResult = controller.Thumbnail(item.FileHash, false, true) as NotFoundObjectResult;
             var thumbnailAnswer = actionResult.StatusCode;
             Assert.AreEqual(404,thumbnailAnswer);
@@ -188,7 +200,7 @@ namespace starskytests.Controllers
         [TestMethod]
         public void ApiController_NonExistingFile_API_Test()
         {
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             var actionResult = controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
             var thumbnailAnswer = actionResult.StatusCode;
             Assert.AreEqual(404,thumbnailAnswer);
@@ -197,7 +209,7 @@ namespace starskytests.Controllers
         [TestMethod]
         public void ApiController_starskyTestEnv()
         {
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             controller.Env();
         }
         
@@ -208,11 +220,11 @@ namespace starskytests.Controllers
             var imageToUpdate = createAnImage.DbPath.Replace("/", string.Empty);
             InsertSearchData();
             
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             var jsonResult = controller.Update("test", "1", "test", createAnImage.DbPath,0) as JsonResult;
-            var exiftoolModel = jsonResult.Value as ExifToolModel;
+            var exiftoolModel = jsonResult.Value as List<ExifToolModel>;
             //you could not test because exiftool is an external dependency
-            Assert.AreNotEqual(null,exiftoolModel.Tags);            
+            Assert.AreNotEqual(null,exiftoolModel.FirstOrDefault().Tags);            
 
 //            Assert.AreEqual("test",exiftoolModel.Tags);            
         }
@@ -226,8 +238,13 @@ namespace starskytests.Controllers
                 ParentDirectory = "/",
                 FileHash = "345678765434567"
             });
-            
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+
+            var controller =
+                new ApiController(_query, _exiftool, _appSettings, _bgTaskQueue)
+                {
+                    ControllerContext = {HttpContext = new DefaultHttpContext()}
+                };
+
             var notFoundResult = controller.Update(
                 "test", "1", "test", "/345678765434567.jpg",0) as NotFoundObjectResult;
             Assert.AreEqual(404,notFoundResult.StatusCode);
@@ -243,7 +260,7 @@ namespace starskytests.Controllers
             var imageToUpdate = createAnImage.DbPath.Replace("/", string.Empty);
             InsertSearchData();
             
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             var jsonResult = controller.Info(createAnImage.DbPath) as JsonResult;
             var exiftoolModel = jsonResult.Value as ExifToolModel;
             Assert.AreNotEqual(string.Empty,exiftoolModel.Tags);            
@@ -259,7 +276,7 @@ namespace starskytests.Controllers
                 FileHash = "345678765434567"
             });
             
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             var notFoundResult = controller.Info("/345678765434567.jpg") as NotFoundObjectResult;
             Assert.AreEqual(404,notFoundResult.StatusCode);
             
@@ -276,7 +293,7 @@ namespace starskytests.Controllers
                 FileHash = "345678765434567"
             });
             
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             var notFoundResult = controller.Delete("/345678765434567.jpg") as NotFoundObjectResult;
             Assert.AreEqual(404,notFoundResult.StatusCode);
 
@@ -286,7 +303,7 @@ namespace starskytests.Controllers
         [TestMethod]
         public void ApiController_Thumbnail_NonExistingFile_API_Test()
         {
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             var actionResult = controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
             var thumbnailAnswer = actionResult.StatusCode;
             Assert.AreEqual(404,thumbnailAnswer);
@@ -314,7 +331,7 @@ namespace starskytests.Controllers
             });
             
             // Act
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
             var actionResult = controller.Thumbnail(thumbHash, false, true) as NoContentResult;
@@ -350,7 +367,7 @@ namespace starskytests.Controllers
             });
             
             // Act
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
             // The only difference between ApiController_Thumbnail_CorruptImage_NoContentResult_Test
@@ -382,7 +399,7 @@ namespace starskytests.Controllers
             }
             
             // Act
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             var actionResult =  controller.DownloadPhoto(fileIndexItem.FilePath)  as FileStreamResult;
             Assert.AreNotEqual(null,actionResult);
@@ -414,7 +431,7 @@ namespace starskytests.Controllers
             }
             
             // Act
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             var actionResult =  controller.DownloadPhoto(fileIndexItem.FilePath,false)  as FileStreamResult;
             Assert.AreNotEqual(null,actionResult);
@@ -444,7 +461,7 @@ namespace starskytests.Controllers
             }
             
             // Act
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
             // Run once
@@ -480,7 +497,7 @@ namespace starskytests.Controllers
             });
 
             // Act
-            var controller = new ApiController(_query,_exiftool,_appSettings);
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue);
             var actionResult =  controller.DownloadPhoto("/" + thumbHash)  as NotFoundObjectResult;
             Assert.AreNotEqual(null,actionResult);
             Assert.AreEqual(404,actionResult.StatusCode);
@@ -508,7 +525,7 @@ namespace starskytests.Controllers
             appSettingsthumbtest.ThumbnailTempFolder = null;
             
             // Act
-            var controller = new ApiController(_query,_exiftool,appSettingsthumbtest);
+            var controller = new ApiController(_query,_exiftool,appSettingsthumbtest,_bgTaskQueue);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             
             // Run once

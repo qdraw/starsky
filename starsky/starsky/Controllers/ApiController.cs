@@ -19,12 +19,14 @@ namespace starsky.Controllers
         private readonly IQuery _query;
         private readonly IExiftool _exiftool;
         private readonly AppSettings _appSettings;
+        private readonly IBackgroundTaskQueue _bgTaskQueue;
 
-        public ApiController(IQuery query, IExiftool exiftool, AppSettings appSettings)
+        public ApiController(IQuery query, IExiftool exiftool, AppSettings appSettings, IBackgroundTaskQueue queue)
         {
             _appSettings = appSettings;
             _query = query;
             _exiftool = exiftool;
+            _bgTaskQueue = queue;
         }
         
 
@@ -47,22 +49,16 @@ namespace starsky.Controllers
             return result != null;
         }
         
-        public enum UpdateStatus
-        {
-            NotFoundNotInIndex,
-            NotFoundSourceMissing,
-            ReadOnly,
-            Ok
-        }
+        
 
-        private UpdateStatus FileCollectionsCheck(DetailView detailView)
+        private ExifToolModel.ExifStatus FileCollectionsCheck(DetailView detailView)
         {
             if (detailView == null)
             {
-                return UpdateStatus.NotFoundNotInIndex;
+                return ExifToolModel.ExifStatus.NotFoundNotInIndex;
             }
 
-            if (_isReadOnly(detailView.FileIndexItem.ParentDirectory)) return  UpdateStatus.ReadOnly;
+            if (_isReadOnly(detailView.FileIndexItem.ParentDirectory)) return  ExifToolModel.ExifStatus.ReadOnly;
 
             foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths)
             {
@@ -72,7 +68,7 @@ namespace starsky.Controllers
                 if (!System.IO.File.Exists(fullPathCollection) 
                     && detailView.FileIndexItem.CollectionPaths.Count == 1)
                 {
-                    return UpdateStatus.NotFoundSourceMissing;  //
+                    return ExifToolModel.ExifStatus.NotFoundSourceMissing;  //
                 }
                 // When there are more items in the list
                 if (!System.IO.File.Exists(fullPathCollection))
@@ -83,10 +79,10 @@ namespace starsky.Controllers
 
             if (detailView.FileIndexItem.CollectionPaths.Count == 0)
             {
-                return UpdateStatus.NotFoundSourceMissing; // NotFound("source image missing");
+                return ExifToolModel.ExifStatus.NotFoundSourceMissing; // NotFound("source image missing");
             }
 
-            return UpdateStatus.Ok;
+            return ExifToolModel.ExifStatus.Ok;
         }
 
         /// <summary>
@@ -95,7 +91,7 @@ namespace starsky.Controllers
         /// <param name="tags">use for keywords</param>
         /// <param name="colorClass">int 0-9, the colorclass to fast select images</param>
         /// <param name="captionAbstract">string to update description/caption abstract, emthy will be ignored</param>
-        /// <param name="f">subpath filepath to file</param>
+        /// <param name="f">subpath filepath to file, split by dot comma (;)</param>
         /// <param name="orientation">relative orentation -1 or 1</param>
         /// <param name="collections">StackCollections bool</param>
         /// <returns></returns>
@@ -103,84 +99,114 @@ namespace starsky.Controllers
         public IActionResult Update(string tags, string colorClass,
             string captionAbstract, string f, int orientation, bool collections = true)
         {
-            var detailView = _query.SingleItem(f,null,collections,false);
-            var results = FileCollectionsCheck(detailView);
-            switch (results)
-            {
-                case UpdateStatus.NotFoundNotInIndex:
-                    return NotFound("Not In Index");
-                case UpdateStatus.NotFoundSourceMissing:
-                    return NotFound("source image missing");
-                case UpdateStatus.ReadOnly:
-                    return StatusCode(203, "read only");
-            }
-
-            // First create an update model
-            var updateModel = new ExifToolModel();
-
-            updateModel.Tags = tags;
-            updateModel.CaptionAbstract = captionAbstract;
-
-            // Parse ColorClass and add it
-            detailView.FileIndexItem.SetColorClass(colorClass);
-            updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
+            // input devided by dot comma and blank values are removed
+            var inputFilePaths = f.Split(";");
+            inputFilePaths = inputFilePaths.Where(x => !string.IsNullOrEmpty(x)).ToArray();
             
-            // Parse Rotation; by reading it relative
-            updateModel.Orientation = detailView.FileIndexItem.RelativeOrientation(orientation);
-            
-            var collectionFullPaths = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.CollectionPaths);
-            var oldHashCodes = FileHash.GetHashCode(collectionFullPaths.ToArray());
-                
-            // Run as non-blocking task to avoid files not being updated or corrupt
-            Task.Run(() => { _exiftool.Update(updateModel, collectionFullPaths); });
-
+            // the result list
             var exifToolResultsList = new List<ExifToolModel>();
-            for (int i = 0; i < detailView.FileIndexItem.CollectionPaths.Count; i++)
+                
+            foreach (var subPath in inputFilePaths)
             {
-                var singleItem = _query.SingleItem(detailView.FileIndexItem.CollectionPaths[i],null,false,false);
+                var detailView = _query.SingleItem(subPath,null,collections,false);
+                var results = FileCollectionsCheck(detailView);
                 
-                //  var exifToolResult = _exiftool.Info(collectionFullPaths[i]);
-                // for if exiftool does not anwer the request
-                updateModel.SourceFile = Files.GetXmpSidecarFileWhenRequired(_appSettings.DatabasePathToFilePath(
-                    detailView.FileIndexItem.FilePath), _appSettings.ExifToolXmpPrefix);;
-
-                if (!string.IsNullOrEmpty(updateModel.Tags))
+                // First create an update model
+                var updateModel = new ExifToolModel
                 {
-                    singleItem.FileIndexItem.Tags = updateModel.Tags;
-                }
-
-                if (!string.IsNullOrEmpty(updateModel.CaptionAbstract))
-                {
-                    singleItem.FileIndexItem.Description = updateModel.CaptionAbstract;
-                }
+                    SourceFile = subPath,
+                    Status = ExifToolModel.ExifStatus.Ok
+                };
                 
-                if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
+                // if one item fails, the status will added
+                switch (results)
                 {
-                    singleItem.FileIndexItem.ColorClass = updateModel.ColorClass;
+                    case ExifToolModel.ExifStatus.NotFoundNotInIndex:
+                        updateModel.Status = ExifToolModel.ExifStatus.NotFoundNotInIndex;
+                        exifToolResultsList.Add(updateModel);
+                        continue;
+                    case ExifToolModel.ExifStatus.NotFoundSourceMissing:
+                        updateModel.Status = ExifToolModel.ExifStatus.NotFoundSourceMissing;
+                        exifToolResultsList.Add(updateModel);
+                        continue;
+                    case ExifToolModel.ExifStatus.ReadOnly:
+                        updateModel.Status = ExifToolModel.ExifStatus.ReadOnly;
+                        exifToolResultsList.Add(updateModel);
+                        continue;
                 }
-
-                exifToolResultsList.Add(updateModel);
-
-                singleItem.FileIndexItem.FileHash = FileHash.GetHashCode(collectionFullPaths[i]);
-                // Rename Thumbnail
-                new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItem.FileIndexItem.FileHash);
+    
+                updateModel.Tags = tags;
+                updateModel.CaptionAbstract = captionAbstract;
+    
+                // Parse ColorClass and add it
+                detailView.FileIndexItem.SetColorClass(colorClass);
+                updateModel.ColorClass = detailView.FileIndexItem.ColorClass;
                 
-                //  // Don't update this when it not has changed
-                if (updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
-                {
-                    singleItem.FileIndexItem.Orientation = updateModel.Orientation;
+                // Parse Rotation; by reading it relative
+                updateModel.Orientation = detailView.FileIndexItem.RelativeOrientation(orientation);
+                
+                // Run Update program
+                var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
+                // when not running in collections mode only update one file
+                if(!collections) collectionSubPathList = new List<string> {subPath};
+                
+                var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
+                var oldHashCodes = FileHash.GetHashCode(collectionFullPaths.ToArray());
                     
-                    var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
-                    new Thumbnail(null).RotateThumbnail(thumbPath,orientation);
+                // Run as non-blocking task to avoid files not being updated or corrupt
+                _bgTaskQueue.QueueBackgroundWorkItem(async token =>
+                {
+                    _exiftool.Update(updateModel, collectionFullPaths);
+                    Console.WriteLine("collectionFullPaths " + collectionFullPaths);
+                });
+    
+                // loop though the collection paths; even if it is one item
+                for (int i = 0; i < collectionSubPathList.Count; i++)
+                {
+                    var singleItem = _query.SingleItem(collectionSubPathList[i],null,false,false);
+    
+                    // make a new object to avoid references
+                    var displayUpdateModel = new ExifToolModel(updateModel); 
+                    displayUpdateModel.SourceFile = collectionSubPathList[i];
+    
+                    if (!string.IsNullOrEmpty(updateModel.Tags))
+                    {
+                        singleItem.FileIndexItem.Tags = updateModel.Tags;
+                    }
+    
+                    if (!string.IsNullOrEmpty(updateModel.CaptionAbstract))
+                    {
+                        singleItem.FileIndexItem.Description = updateModel.CaptionAbstract;
+                    }
+                    
+                    if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
+                    {
+                        singleItem.FileIndexItem.ColorClass = updateModel.ColorClass;
+                    }
+    
+                    exifToolResultsList.Add(displayUpdateModel);
+    
+                    singleItem.FileIndexItem.FileHash = FileHash.GetHashCode(collectionFullPaths[i]);
+                    // Rename Thumbnail
+                    new Thumbnail(_appSettings).RenameThumb(oldHashCodes[i], singleItem.FileIndexItem.FileHash);
+                    
+                    //  // Don't update this when it not has changed
+                    if (updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
+                    {
+                        singleItem.FileIndexItem.Orientation = updateModel.Orientation;
+                        
+                        var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
+                        new Thumbnail(null).RotateThumbnail(thumbPath,orientation);
+                    }
+                    _query.UpdateItem(singleItem.FileIndexItem);
                 }
-                _query.UpdateItem(singleItem.FileIndexItem);
             }
             
-            var getFullPathExifToolFileName = Files.GetXmpSidecarFileWhenRequired(_appSettings.DatabasePathToFilePath(
-                detailView.FileIndexItem.FilePath), _appSettings.ExifToolXmpPrefix);
-                
-            return Json(exifToolResultsList.
-                FirstOrDefault(p => p.SourceFile == getFullPathExifToolFileName));
+            // When all items are not found
+            if (exifToolResultsList.Count(p => p.Status == ExifToolModel.ExifStatus.Ok) == 0)
+                return NotFound(exifToolResultsList);
+            
+            return Json(exifToolResultsList);
         }   
         
 

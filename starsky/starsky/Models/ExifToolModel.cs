@@ -3,11 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace starsky.Models
 {
     public class ExifToolModel
     {
+        public ExifToolModel(ExifToolModel model = null)
+        {
+            if (model == null) return;
+            SourceFile = model.SourceFile;
+            ColorClass = model.ColorClass;
+            CaptionAbstract = model.CaptionAbstract;
+            Keywords = model.Keywords;
+            Orientation = model.Orientation;
+            Status = model.Status;
+        }
+        
         public string SourceFile { get; set; }
         
         public FileIndexItem.Color ColorClass { get; set; }
@@ -96,6 +108,18 @@ namespace starsky.Models
         
         //  Orientation   : 6
         public FileIndexItem.Rotation Orientation { get; set; }
+        
+        
+        public enum ExifStatus
+        {
+            NotFoundNotInIndex,
+            NotFoundSourceMissing,
+            ReadOnly,
+            Ok
+        }
+        
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ExifStatus Status { get; set; }
 
 
         private static HashSet<string> stringToHashSet(string inputKeywords)
@@ -127,6 +151,9 @@ namespace starsky.Models
 
             return toBeAddedKeywords;
         }
+        
+        
+
 
     }
 }

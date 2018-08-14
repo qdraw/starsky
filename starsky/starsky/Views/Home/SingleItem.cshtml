@@ -73,6 +73,14 @@
                 }
             }
         </div>
+        
+        <div class="addDeleteTag disabled">
+            <h4>Danger zone:</h4>
+            <a onClick="addDeleteTag()" class="btn-sm btn btn-danger delete">Verwijderen niet beschikbaar</a>
+            <a asp-controller="Search" asp-action="Trash" class="btn-sm btn btn-info">Bekijk prullenmand</a>
+            <a class="btn-sm btn btn-danger status204button hide" onclick="retry204()">Reset Thumbnail</a>
+        </div>
+        
         <div class="download-sidebar">
             <h4>Downloads:</h4>
 
@@ -97,13 +105,7 @@
             </a>
         </div>
 
-        <div class="addDeleteTag disabled">
-            <h4>Danger zone:</h4>
-            <a onClick="addDeleteTag()" class="btn-sm btn btn-danger delete">Verwijderen niet beschikbaar</a>
-            <a asp-controller="Search" asp-action="Trash" class="btn-sm btn btn-info">Bekijk prullenmand</a>
-            <a class="btn-sm btn btn-danger status204button hide" onclick="retry204()">Reset Thumbnail</a>
 
-        </div>
 
     </div>
 </div>
