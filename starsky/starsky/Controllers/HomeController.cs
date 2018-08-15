@@ -47,17 +47,7 @@ namespace starsky.Controllers
             
             if (singleItem?.IsDirectory == false)
             {
-                if (_appsettings != null && _appsettings.AddHttp2Optimizations)
-                {
-                    // HTTP2 push
-                    Response.Headers["Link"] =
-                        "<" + Url.Action("Thumbnail", "Api", new {f = singleItem.FileIndexItem.FileHash}) +
-                        "?issingleitem=True>; rel=preload; as=image"; 
-                    Response.Headers["Link"] += ",";
-                    Response.Headers["Link"] += "<"
-                                                + Url.Action("Info", "Api", new {f = singleItem.FileIndexItem.FilePath}) +
-                                                ">; rel=preload; as=fetch";
-                }
+                AddHttp2SingleFile(SingleItemThumbnailHttpUrl(singleItem));
                 
                 if (json) return Json(singleItem);
                 return View("SingleItem", singleItem);
@@ -98,6 +88,29 @@ namespace starsky.Controllers
             
             if (json) return Json(directoryModel);
             return View(directoryModel);
+        }
+
+        // For returning the Url of the webpage, this has a dependency
+        public string SingleItemThumbnailHttpUrl(DetailView singleItem)
+        {
+            // when using a unit test appSettings will be null
+            if (_appsettings == null || !_appsettings.AddHttp2Optimizations) return string.Empty;
+            return Url.Action("Thumbnail", "Api", new {f = singleItem.FileIndexItem.FileHash});
+        }
+
+        // Feature to Add Http2 push to the response headers
+        public void AddHttp2SingleFile(string singleItemWebUrl)
+        {
+            if (_appsettings == null || !_appsettings.AddHttp2Optimizations) return;
+            
+            // HTTP2 push
+            Response.Headers["Link"] =
+                "<" + singleItemWebUrl  +
+                "?issingleitem=True>; rel=preload; as=image"; 
+            Response.Headers["Link"] += ",";
+            Response.Headers["Link"] += "<"
+                                        + singleItemWebUrl +
+                                        ">; rel=preload; as=fetch";
         }
 
         public IActionResult Error()
