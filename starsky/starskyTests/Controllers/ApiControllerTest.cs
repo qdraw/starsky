@@ -79,8 +79,7 @@ namespace starskytests.Controllers
             // inject exiftool
             _exiftool = serviceProvider.GetRequiredService<IExiftool>();
             
-
-            
+            // get the background helper
             _bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();;
         }
         
