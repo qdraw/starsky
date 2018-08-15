@@ -294,9 +294,6 @@ namespace starsky.Models
 
             switch (orientationString)
             {
-                case "0":
-                    Orientation = Rotation.DoNotChange;
-                    return Orientation;
                 case "1":
                     Orientation = Rotation.Horizontal;
                     return Orientation;

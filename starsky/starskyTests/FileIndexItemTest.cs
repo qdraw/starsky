@@ -179,12 +179,34 @@ namespace starskytests
         }
 
         [TestMethod]
-        public void FileIndexItemTest_SetAbsoluteOrientation()
+        public void FileIndexItemTest_SetAbsoluteOrientation_DoNotChange()
         {
-            
+            var rotationItem = new FileIndexItem().SetAbsoluteOrientation("0");
+            Assert.AreEqual(FileIndexItem.Rotation.DoNotChange,rotationItem);
         }
 
+        [TestMethod]
+        public void FileIndexItemTest_SetAbsoluteOrientation_Rotate90Cw()
+        {
+            var rotationItem = new FileIndexItem().SetAbsoluteOrientation("6");
+            Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw,rotationItem);
+        }
 
+        [TestMethod]
+        public void FileIndexItemTest_SetAbsoluteOrientation_Rotate270Cw()
+        {
+            var rotationItem = new FileIndexItem().SetAbsoluteOrientation("8");
+            Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw,rotationItem);
+        }
+
+        [TestMethod]
+        public void FileIndexItemTest_colorDisplayName_WinnerAlt()
+        {
+            var colorDisplayName = FileIndexItem.GetDisplayName(FileIndexItem.Color.WinnerAlt);
+            Assert.AreEqual("Winner Alt",colorDisplayName);
+        }
+
+        
 
 //        [TestMethod]
 //        public void FileIndexItemParseFileNameTest()
