@@ -45,6 +45,13 @@
     <Compile Remove="Migrations\20180322104602_ColorClassFeature.Designer.cs" />
     <Compile Remove="Migrations\20180717164601_userAccountStorage.cs" />
     <Compile Remove="Migrations\20180717164601_userAccountStorage.Designer.cs" />
+    <Compile Remove="Migrations\20180308103923_initDatabase.cs" />
+    <Compile Remove="Migrations\20180308103923_initDatabase.Designer.cs" />
+    <Compile Remove="Migrations\20180801084111_ImageFormatToFileIndexItem.cs" />
+    <Compile Remove="Migrations\20180801084111_ImageFormatToFileIndexItem.Designer.cs" />
+    <Compile Remove="Migrations\20180806181225_ExifOrientation.cs" />
+    <Compile Remove="Migrations\20180806181225_ExifOrientation.Designer.cs" />
+
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />

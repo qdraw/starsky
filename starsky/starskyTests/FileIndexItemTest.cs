@@ -178,6 +178,15 @@ namespace starskytests
             Assert.AreEqual(FileIndexItem.Rotation.Horizontal,t.RelativeOrientation(1));
         }
 
+
+        [TestMethod]
+        public void FileIndexItemTest_SetOrientationrelativeRelativeOrientation_Plus5()
+        {
+            // test not very good
+            var t = new FileIndexItem {Orientation = FileIndexItem.Rotation.Rotate270Cw};
+            Assert.AreEqual(FileIndexItem.Rotation.Horizontal,t.RelativeOrientation(5));
+        }
+
         [TestMethod]
         public void FileIndexItemTest_SetAbsoluteOrientation_DoNotChange()
         {
@@ -192,6 +201,13 @@ namespace starskytests
             Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw,rotationItem);
         }
 
+        [TestMethod]
+        public void FileIndexItemTest_SetAbsoluteOrientation_Rotate180()
+        {
+            var rotationItem = new FileIndexItem().SetAbsoluteOrientation("3");
+            Assert.AreEqual(FileIndexItem.Rotation.Rotate180,rotationItem);
+        }
+        
         [TestMethod]
         public void FileIndexItemTest_SetAbsoluteOrientation_Rotate270Cw()
         {
