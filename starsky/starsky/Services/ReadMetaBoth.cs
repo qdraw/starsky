@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.Interfaces;
 using starsky.Models;
@@ -47,13 +48,16 @@ namespace starsky.Services
         //     only for ReadMeta!
         //     Why removing, The Update command does not update the entire object.
         //     When you update tags, other tags will be null 
-        public void RemoveReadMetaCache(string fullFilePath)
+        public void RemoveReadMetaCache(List<string> fullFilePathList)
         {
             if (_cache == null || _appSettings?.AddMemoryCache == false) return;
-            var queryCacheName = "info_" + fullFilePath;
+            foreach (var fullFilePath in fullFilePathList)
+            {
+                var queryCacheName = "info_" + fullFilePath;
 
-            if (!_cache.TryGetValue(queryCacheName, out var _)) return;
-            _cache.Remove(queryCacheName);
+                if (!_cache.TryGetValue(queryCacheName, out var _)) return;
+                _cache.Remove(queryCacheName);
+            }
         }
     }
 }

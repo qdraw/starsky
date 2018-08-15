@@ -1,4 +1,5 @@
-﻿using starsky.Interfaces;
+﻿using System.Collections.Generic;
+using starsky.Interfaces;
 using starsky.Models;
 
 namespace starskytests.FakeMocks
@@ -10,7 +11,7 @@ namespace starskytests.FakeMocks
             return new FileIndexItem{Tags = "test"};
         }
 
-        public void RemoveReadMetaCache(string fullFilePath)
+        public void RemoveReadMetaCache(List<string> fullFilePathArray)
         {
             // dont do anything
         }
