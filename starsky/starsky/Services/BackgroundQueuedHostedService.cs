@@ -8,15 +8,12 @@ namespace starsky.Services
     #region snippet1
     public class BackgroundQueuedHostedService : BackgroundService
     {
-        private readonly ILogger _logger;
-
-        public BackgroundQueuedHostedService(IBackgroundTaskQueue taskQueue, 
-            ILoggerFactory loggerFactory)
+        public BackgroundQueuedHostedService(IBackgroundTaskQueue taskQueue)
         {
             TaskQueue = taskQueue;
         }
 
-        public IBackgroundTaskQueue TaskQueue { get; }
+        private IBackgroundTaskQueue TaskQueue { get; }
 
         protected override async Task ExecuteAsync(
             CancellationToken cancellationToken)
