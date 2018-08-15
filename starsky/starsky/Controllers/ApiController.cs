@@ -164,7 +164,7 @@ namespace starsky.Controllers
                 _bgTaskQueue.QueueBackgroundWorkItem(async token =>
                 {
                     _exiftool.Update(updateModel, collectionFullPaths);
-                    // > this one is async > force you to read the file again
+                    // > async > force you to read the file again
                     _readMeta.RemoveReadMetaCache(collectionFullPaths);
                 });
     
@@ -178,9 +178,6 @@ namespace starsky.Controllers
                         oldHashCodes[i],
                         orientation);
                 }
-                
-                // force you to read the file again after loading < sync process
-                _readMeta.RemoveReadMetaCache(collectionFullPaths);
             }
             
             // When all items are not found

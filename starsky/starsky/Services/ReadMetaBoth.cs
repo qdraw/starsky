@@ -55,7 +55,7 @@ namespace starsky.Services
             {
                 var queryCacheName = "info_" + fullFilePath;
 
-                if (!_cache.TryGetValue(queryCacheName, out var _)) return;
+                if (!_cache.TryGetValue(queryCacheName, out var _)) continue;
                 _cache.Remove(queryCacheName);
             }
         }
