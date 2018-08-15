@@ -7,6 +7,5 @@ namespace starsky.Interfaces
     {
         void Update(ExifToolModel updateModel, List<string> inputFullFilePaths);
         void Update(ExifToolModel updateModel, string inputFullFilePath);
-        ExifToolModel Info(string fullFilePath);
     }
 }

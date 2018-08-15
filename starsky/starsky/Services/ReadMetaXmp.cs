@@ -10,15 +10,10 @@ using XmpCore;
 namespace starsky.Services
 {
     
-    public partial class ReadMeta : IReadMeta
+    public partial class ReadMeta // IReadMeta
     {
-        private readonly AppSettings _appSettings;
 
-        public ReadMeta(AppSettings appSettings = null)
-        {
-            _appSettings = appSettings;
-        }
-        
+        // AppSetting is dependency here        
         public FileIndexItem XmpGetSidecarFile(FileIndexItem databaseItem, string singleFilePath)
         {
             if(_appSettings == null) throw new InvalidDataContractException("AppSettings in XmpSelectSidecarFile is null");

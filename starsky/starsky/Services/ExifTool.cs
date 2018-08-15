@@ -219,65 +219,6 @@ namespace starsky.Services
                 return inputStringBuilder;
             }
 
-//            // Cached view >> IMemoryCache
-//            // Short living cache Max 10. minutes
-//            public ExifToolModel Info(string fullFilePath)
-//            {
-//                // The CLI programs uses no cache
-//                if( _cache == null || _appSettings?.AddMemoryCache == false) return QueryInfo(fullFilePath);
-//                
-//                // Return values from IMemoryCache
-//                var queryCacheName = "info_" + fullFilePath;
-//                
-//                // Return Cached object if it exist
-//                if (_cache.TryGetValue(queryCacheName, out var objectExifToolModel))
-//                    return objectExifToolModel as ExifToolModel;
-//                
-//                // Try to catch a new object
-//                objectExifToolModel = QueryInfo(fullFilePath);
-//                _cache.Set(queryCacheName, objectExifToolModel, new TimeSpan(0,10,0));
-//                return (ExifToolModel) objectExifToolModel;
-//            }
-
-            // only for exiftool!
-            // Why removing, The Update command does not update the entire object.
-            // When you update tags, other tags will be null 
-//            private void RemoveCache(string fullFilePath)
-//            {
-//                if (_cache == null || _appSettings?.AddMemoryCache == false) return;
-//                var queryCacheName = "info_" + fullFilePath;
-//    
-//                if (!_cache.TryGetValue(queryCacheName, out var _)) return;
-//                _cache.Remove(queryCacheName);
-//            }
-
-
-
-            // The actual query
-            // will be removed very soon 
-            public ExifToolModel Info(string fullFilePath)
-            {
-                // Add parentes around this file
-
-
-                var xmpFullFilePath = Files.GetXmpSidecarFileWhenRequired(
-                    fullFilePath,
-                    _appSettings.ExifToolXmpPrefix);
-                
-                // only overwrite when a xmp file exist
-                if (Files.IsFolderOrFile(xmpFullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
-                    fullFilePath = xmpFullFilePath;
-                
-                // When change also update class 'Update'
-                // xmp:Subject == Keywords
-                // Caption-Abstract == Description
-                var fullFilePathStringBuilder = Quoted(null,fullFilePath);
-
-                // -Orientation# <= hashtag is that exiftool must output a int and not a human readable string
-                return parseJson(BaseCommmand("-Keywords \"-Orientation#\" -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
-                    fullFilePathStringBuilder.ToString()));
-            }
-
         }
 
     }

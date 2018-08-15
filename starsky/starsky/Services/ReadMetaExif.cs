@@ -10,7 +10,7 @@ using starsky.Models;
 namespace starsky.Services
 {
     // Reading Exif using MetadataExtractor
-    public partial class ReadMeta : IReadMeta
+    public partial class ReadMeta // IReadMeta
     {
         
         public FileIndexItem ReadExifFromFile(string fileFullPath, FileIndexItem existingFileIndexItem = null) // use null to create an object

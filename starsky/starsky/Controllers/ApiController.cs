@@ -227,6 +227,9 @@ namespace starsky.Controllers
                 var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
                 new Thumbnail(null).RotateThumbnail(thumbPath,orientation);
             }
+            
+            // force you to read the file again after loading
+            _readMeta.RemoveReadMetaCache(collectionFullPath);
             _query.UpdateItem(singleItem.FileIndexItem);
         }
 

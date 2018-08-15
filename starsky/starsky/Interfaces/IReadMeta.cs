@@ -5,7 +5,6 @@ namespace starsky.Interfaces
     public interface IReadMeta
     {
         FileIndexItem ReadExifAndXmpFromFile(string singleFilePath);
-//        FileIndexItem XmpGetSidecarFile(FileIndexItem databaseItem, string singleFilePath);
-//        FileIndexItem ReadExifFromFile(string fileFullPath, FileIndexItem existingFileIndexItem = null);
+        void RemoveReadMetaCache(string fullFilePath);
     }
 }

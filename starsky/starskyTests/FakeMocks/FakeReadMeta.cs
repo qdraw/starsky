@@ -9,5 +9,10 @@ namespace starskytests.FakeMocks
         {
             return new FileIndexItem{Tags = "test"};
         }
+
+        public void RemoveReadMetaCache(string fullFilePath)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -160,7 +160,8 @@ namespace starskytests
                 SourceFullFilePath = createAnImage.FullFilePath,  
                 DateTime = fileIndexItem.DateTime
             };
-            File.Delete(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
+            File.Delete(_appSettings.DatabasePathToFilePath(
+                importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
         }
         
@@ -230,7 +231,10 @@ namespace starskytests
 
             // Clean file after succesfull run;
             var fileIndexItem = _readmeta.ReadExifFromFile(createAnImage.FullFilePath);
-            var importIndexItem = new ImportIndexItem(_appSettings) {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
+            var importIndexItem = new ImportIndexItem(_appSettings)
+            {
+                SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime
+            };
             File.Delete(_appSettings.DatabasePathToFilePath(
                 importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
             ));
@@ -267,7 +271,10 @@ namespace starskytests
 
             // Clean file after succesfull run;
             var fileIndexItem = _readmeta.ReadExifFromFile(createAnImage.FullFilePath);
-            var importIndexItem = new ImportIndexItem(_appSettings){SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
+            var importIndexItem = new ImportIndexItem(_appSettings)
+            {
+                SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime
+            };
             File.Delete(_appSettings.DatabasePathToFilePath(
                 importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
             ));
@@ -343,7 +350,8 @@ namespace starskytests
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
             
             
-            // >>>> ParentDirectory ===  /Users/dionvanvelde/.nuget/packages/microsoft.testplatform.testhost/15.7.2/lib/netstandard1.5
+            // >>>> ParentDirectory ===
+            // /Users/dionvanvelde/.nuget/packages/microsoft.testplatform.testhost/15.7.2/lib/netstandard1.5
                 
             // Search on filename in database
             var allXuXuFiles = _query.GetAllRecursive().Where(p => p.FileName.Contains("xux99999xxxx_")).ToList();
@@ -444,7 +452,8 @@ namespace starskytests
                 DeleteAfter = false,
                 AgeFileFilter = false
             };
-            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());  // So testing the folder feature
+            Assert.AreNotEqual(string.Empty,_import.Import(
+                createAnImage.BasePath,importSettings).FirstOrDefault());  // So testing the folder feature
 
             Assert.AreEqual(File.Exists(createAnImage.FullFilePath), true);
 
