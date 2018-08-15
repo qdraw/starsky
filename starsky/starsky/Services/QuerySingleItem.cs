@@ -26,7 +26,8 @@ namespace starsky.Services
         {
             if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
             var parentFolder = Breadcrumbs.BreadcrumbHelper(singleItemDbPath).LastOrDefault();
-            var fileIndexItemsList = DisplayFileFolders(parentFolder,colorClassFilterList,false,false).ToList();
+            var fileIndexItemsList = DisplayFileFolders(
+                parentFolder,null,false,false).ToList();
 
             return SingleItem(
                 fileIndexItemsList,
@@ -49,7 +50,8 @@ namespace starsky.Services
             var parentFolder = Breadcrumbs.BreadcrumbHelper(singleItemDbPath).LastOrDefault();
 
             // RemoveLatestSlash is for '/' folder
-            var fileName = singleItemDbPath.Replace(ConfigRead.RemoveLatestSlash(parentFolder) + "/", string.Empty);
+            var fileName = singleItemDbPath.Replace(
+                ConfigRead.RemoveLatestSlash(parentFolder) + "/", string.Empty);
 
             var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
             if (currentFileIndexItem == null) return null;
@@ -102,177 +104,7 @@ namespace starsky.Services
             
             return relativeObject;
         }
-        
-        
-//        private FileIndexItem CacheSingleFileIndex(string singleItemDbPath)
-//        {
-//            // The CLI programs uses no cache
-//            if (_cache == null) return _context.FileIndex.FirstOrDefault(
-//                p => p.FilePath == singleItemDbPath && !p.IsDirectory);
-//
-//            // Return values from IMemoryCache
-//            var queryCacheName = CachingDbName(typeof(FileIndexItem).Name, 
-//                singleItemDbPath); // no need to specify colorClassFilterList
-//
-//            object queryResult;
-//            if (!_cache.TryGetValue(queryCacheName, out queryResult))
-//            {
-//                queryResult = _context.FileIndex.FirstOrDefault(
-//                    p => p.FilePath == singleItemDbPath && !p.IsDirectory);
-//                
-//                _cache.Set(queryCacheName, queryResult, new TimeSpan(1,0,0));
-//            }
-//
-//            return queryResult as FileIndexItem;
-//        }
-        
-        
-        
-//        public DetailView SingleItem(string singleItemDbPath,
-//            List<FileIndexItem.Color> colorClassFilterList = null)
-//        {
-//            if (string.IsNullOrWhiteSpace(singleItemDbPath)) return null;
-//
-//            var query = CacheSingleFileIndex(singleItemDbPath);
-//            
-//            if (query == null) return null;
-//
-//            var relativeObject = CacheGetNextPrevInSubFolder(
-//                query.ParentDirectory, singleItemDbPath, colorClassFilterList);
-//                
-//            var itemResult = new DetailView
-//            {
-//                FileIndexItem = query,
-//                RelativeObjects = relativeObject,
-//                Breadcrumb = Breadcrumbs.BreadcrumbHelper(singleItemDbPath),
-//                GetAllColor = FileIndexItem.GetAllColorUserInterface(),
-//                ColorClassFilterList = colorClassFilterList
-//            };
-//            
-//            return itemResult;
-//        }
-//
-//        private RelativeObjects CacheGetNextPrevInSubFolder(string parentDirectory, string singleItemDbPath,
-//            List<FileIndexItem.Color> colorClassFilterList = null)
-//        {
-//            // The CLI programs uses no cache
-//            if (_cache == null) return GetNextPrevInSubFolder(
-//                parentDirectory, singleItemDbPath, colorClassFilterList);
-//            
-//            // Return values from IMemoryCache
-//            var queryCacheName = CachingDbName(typeof(RelativeObjects).Name, 
-//                singleItemDbPath, colorClassFilterList);
-//
-//            object objectRelativeObject;
-//            if (!_cache.TryGetValue(queryCacheName, out objectRelativeObject))
-//            {
-//                objectRelativeObject = GetNextPrevInSubFolder(parentDirectory, singleItemDbPath, colorClassFilterList);
-//                _cache.Set(queryCacheName, objectRelativeObject, new TimeSpan(1,0,0));
-//            }
-//
-//            var relativeObject = (RelativeObjects) objectRelativeObject;
-//
-//            // It will be removed when you update this. !delete does not exist in .nextfilePath
-//            // For the NextFilePath check if it is not deleted
-//            if (relativeObject.NextFilePath != null)
-//            {
-//                if (CacheSingleFileIndex(relativeObject.NextFilePath).Tags.Contains("!delete"))
-//                {
-//                    _cache.Remove(queryCacheName);
-//                    objectRelativeObject = GetNextPrevInSubFolder(parentDirectory,
-//                        singleItemDbPath, colorClassFilterList);
-//                    _cache.Set(queryCacheName, objectRelativeObject, new TimeSpan(1,0,0));
-//                    relativeObject = (RelativeObjects) objectRelativeObject;
-//                }
-//            }
-//
-//            // Check if item is deleted in prev path before showing
-//            if (relativeObject.PrevFilePath == null) return relativeObject;
-//            if (!CacheSingleFileIndex(relativeObject.PrevFilePath).Tags.Contains("!delete")) 
-//                return relativeObject;
-//            
-//            _cache.Remove(queryCacheName);
-//            objectRelativeObject = GetNextPrevInSubFolder(parentDirectory,
-//                singleItemDbPath, colorClassFilterList);
-//            _cache.Set(queryCacheName, objectRelativeObject, new TimeSpan(1,0,0));
-//            relativeObject = (RelativeObjects) objectRelativeObject;
-//            
-//            return relativeObject;
-//        }
-//        
-//        private FileIndexItem CacheSingleFileIndex(string singleItemDbPath)
-//        {
-//            // The CLI programs uses no cache
-//            if (_cache == null) return _context.FileIndex.FirstOrDefault(
-//                p => p.FilePath == singleItemDbPath && !p.IsDirectory);
-//
-//            // Return values from IMemoryCache
-//            var queryCacheName = CachingDbName(typeof(FileIndexItem).Name, 
-//                singleItemDbPath); // no need to specify colorClassFilterList
-//
-//            object queryResult;
-//            if (!_cache.TryGetValue(queryCacheName, out queryResult))
-//            {
-//                queryResult = _context.FileIndex.FirstOrDefault(
-//                    p => p.FilePath == singleItemDbPath && !p.IsDirectory);
-//                
-//                _cache.Set(queryCacheName, queryResult, new TimeSpan(1,0,0));
-//            }
-//
-//            return queryResult as FileIndexItem;
-//        }
-//
-//        
-//        // Show previous en next items in the singleitem view.
-//        // There is equivalent class (GetNextPrevInFolder) for prev next in the folder view
-//        private RelativeObjects GetNextPrevInSubFolder(
-//            string parrentFolderPath, string fullImageFilePath,
-//            List<FileIndexItem.Color> colorClassFilterList = null
-//            )
-//        {
-//            if (colorClassFilterList == null) colorClassFilterList = new List<FileIndexItem.Color>();
-//
-//            List<FileIndexItem> itemsInSubFolder;
-//            // Filter usage colorClassFilterList
-//            if (!colorClassFilterList.Any())
-//            {
-//                itemsInSubFolder = CacheQueryDisplayFileFolders(parrentFolderPath,true).
-//                    OrderBy(
-//                        p => p.FileName
-//                    ).ToList();
-//            }
-//            else
-//            {
-//                itemsInSubFolder = CacheQueryDisplayFileFolders(parrentFolderPath,true).Where(
-//                        p => colorClassFilterList.Contains(p.ColorClass) 
-//                ).OrderBy(
-//                    p => p.FileName).ToList();
-//            }
-//            
-//            // todo: if image it self is deleted and page is refreshed
-//            // Use only if you are sure that there are no nulls
-//            if (itemsInSubFolder.Count >= 1)
-//            {
-//                itemsInSubFolder =
-//                    itemsInSubFolder
-//                        .Where(p => !p.Tags.Contains("!delete!"))
-//                        .ToList(); // Hide Deleted items from prev/next
-//            }
-//            
-//            var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == fullImageFilePath);
-//            var relativeObject = new RelativeObjects();
-//            if (photoIndexOfSubFolder != itemsInSubFolder.Count - 1)
-//            {
-//                relativeObject.NextFilePath = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FilePath;
-//            }
-//
-//            if (photoIndexOfSubFolder >= 1)
-//            {
-//                relativeObject.PrevFilePath = itemsInSubFolder[photoIndexOfSubFolder - 1]?.FilePath;
-//            }
-//            return relativeObject;
-//        }
-        
+  
         
     }
 }
