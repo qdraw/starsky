@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using starsky.Attributes;
 using starsky.Helpers;
 using starsky.Services;
 
@@ -113,10 +110,10 @@ namespace starsky.Models
 
         public DateTime AddToDatabase { get; set; }
         
-        private Color _colorClass;
-        
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        
+        private Color _colorClass;
 
         public Color SetColorClass(string colorclassString = "0")
         {
@@ -198,8 +195,16 @@ namespace starsky.Models
       
         // Always display int, because the Update api uses ints to parse
         public Color ColorClass { 
-            get => _colorClass;
-            set => _colorClass = value;
+            get
+            {
+                if (_colorClass == Color.DoNotChange) return Color.None;
+                return  _colorClass;
+            }
+            set
+            {
+                if (value == Color.DoNotChange) return;
+                _colorClass = value;
+            }
         }
 
 

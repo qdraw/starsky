@@ -171,9 +171,20 @@ namespace starskytests
             Assert.AreEqual(FileIndexItem.Rotation.Rotate90Cw,t.RelativeOrientation(1));
         }
         
-        
-        
-        
+        [TestMethod]
+        public void FileIndexItemTest_SetOrientationrelativeRotation_Rotate270Cw_Plus1()
+        {
+            var t = new FileIndexItem {Orientation = FileIndexItem.Rotation.Rotate270Cw};
+            Assert.AreEqual(FileIndexItem.Rotation.Horizontal,t.RelativeOrientation(1));
+        }
+
+        [TestMethod]
+        public void FileIndexItemTest_SetAbsoluteOrientation()
+        {
+            
+        }
+
+
 
 //        [TestMethod]
 //        public void FileIndexItemParseFileNameTest()
