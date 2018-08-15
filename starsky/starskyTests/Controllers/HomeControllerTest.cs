@@ -112,5 +112,13 @@ namespace starskytests.Controllers
             Assert.AreEqual("not found", actionResult.Value);
         }
 
+        [TestMethod]
+        public void HomeController_AddHttp2SingleFile()
+        {
+            var controller = new HomeController(_query) {ControllerContext = {HttpContext = new DefaultHttpContext()}};
+            controller.AddHttp2SingleFile("test");
+            // can realy test this :(
+        }
+
     }
 }
