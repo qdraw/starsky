@@ -86,7 +86,8 @@ namespace starsky
             services.AddScoped<IImport, ImportService>();
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IExiftool, ExifTool>();
-            
+            services.AddScoped<IReadMeta, ReadMeta>();
+
             // AddHostedService in .NET Core 2.1 / background service
             services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();

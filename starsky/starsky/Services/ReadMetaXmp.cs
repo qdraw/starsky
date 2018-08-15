@@ -2,17 +2,19 @@
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
+using starsky.Helpers;
+using starsky.Interfaces;
 using starsky.Models;
-using starsky.Services;
 using XmpCore;
 
-namespace starsky.Helpers
+namespace starsky.Services
 {
-    public class XmpReadHelper
+    
+    public partial class ReadMeta : IReadMeta
     {
         private readonly AppSettings _appSettings;
 
-        public XmpReadHelper(AppSettings appSettings = null)
+        public ReadMeta(AppSettings appSettings = null)
         {
             _appSettings = appSettings;
         }
@@ -88,7 +90,7 @@ namespace starsky.Helpers
         {
             // get ref North, South, East West
             string refGps = gpsLatOrLong.Substring(gpsLatOrLong.Length-1, 1);
-            return ExifRead.ConvertDegreeMinutesToDouble(gpsLatOrLong, refGps);
+            return ConvertDegreeMinutesToDouble(gpsLatOrLong, refGps);
         }
                 
         private FileIndexItem GetDataNullNameSpaceTypes(string xmpDataAsString, FileIndexItem item)

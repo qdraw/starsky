@@ -57,8 +57,10 @@ namespace starskytests
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();
             // Activate Query
             _query = new Query(context,memoryCache);
+            
+            var readmeta = new ReadMeta(_appSettings);
             // Activate SyncService
-            _syncservice = new SyncService(context, _query,_appSettings);
+            _syncservice = new SyncService(context, _query,_appSettings,readmeta);
         }
 
         private readonly Query _query;

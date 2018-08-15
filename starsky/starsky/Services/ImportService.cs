@@ -15,13 +15,16 @@ namespace starsky.Services
         private readonly ISync _isync;
         private readonly IExiftool _exiftool;
         private readonly AppSettings _appSettings;
+        private readonly IReadMeta _readmeta;
 
-        public ImportService(ApplicationDbContext context, ISync isync, IExiftool exiftool, AppSettings appSettings)
+        public ImportService(ApplicationDbContext context, 
+            ISync isync, IExiftool exiftool, AppSettings appSettings, IReadMeta readMeta)
         {
             _context = context;
             _isync = isync;
             _exiftool = exiftool;
             _appSettings = appSettings;
+            _readmeta = readMeta;
         }
 
 
@@ -131,10 +134,8 @@ namespace starsky.Services
             if (IsHashInImportDb(fileHashCode)) return string.Empty;
 
             // Only accept files with correct meta data
-            var fileIndexItem = ExifRead.ReadExifFromFile(inputFileFullPath);
-
             // Check if there is a xmp file that contains data
-            fileIndexItem = new XmpReadHelper(_appSettings).XmpGetSidecarFile(fileIndexItem, inputFileFullPath);
+            var fileIndexItem = _readmeta.ReadExifAndXmpFromFile(inputFileFullPath);
 
             // Parse the filename and create a new importIndexItem object
             var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem, importSettings.Structure);

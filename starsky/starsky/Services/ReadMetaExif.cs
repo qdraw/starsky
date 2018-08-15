@@ -4,15 +4,16 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MetadataExtractor;
+using starsky.Interfaces;
 using starsky.Models;
 
 namespace starsky.Services
 {
     // Reading Exif using MetadataExtractor
-    public static class ExifRead
+    public partial class ReadMeta : IReadMeta
     {
         
-        public static FileIndexItem ReadExifFromFile(string fileFullPath, FileIndexItem existingFileIndexItem = null) // use null to create an object
+        public FileIndexItem ReadExifFromFile(string fileFullPath, FileIndexItem existingFileIndexItem = null) // use null to create an object
         {
             List<MetadataExtractor.Directory> allExifItems;
             
@@ -30,7 +31,7 @@ namespace starsky.Services
             return ParseExifDirectory(allExifItems, existingFileIndexItem);
         }
 
-        public static FileIndexItem ParseExifDirectory(List<MetadataExtractor.Directory> allExifItems, FileIndexItem item)
+        private FileIndexItem ParseExifDirectory(List<MetadataExtractor.Directory> allExifItems, FileIndexItem item)
         {
             // Used to overwrite feature
             if (item == null)
@@ -124,7 +125,7 @@ namespace starsky.Services
             }
         }
 
-        public static string GetObjectName (MetadataExtractor.Directory exifItem)
+        public string GetObjectName (MetadataExtractor.Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Object Name");
             if (tCounts < 1) return null;
@@ -136,7 +137,7 @@ namespace starsky.Services
         }
 
         
-        public static string GetCaptionAbstract(MetadataExtractor.Directory exifItem)
+        public string GetCaptionAbstract(MetadataExtractor.Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Caption/Abstract");
             if (tCounts < 1) return null;
@@ -147,7 +148,7 @@ namespace starsky.Services
             return caption;
         }
         
-        public static string GetExifKeywords(MetadataExtractor.Directory exifItem)
+        public string GetExifKeywords(MetadataExtractor.Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Keywords");
             if (tCounts >= 1)
@@ -189,7 +190,7 @@ namespace starsky.Services
             return null;
         }
 
-        public static DateTime GetExifDateTime(MetadataExtractor.Directory exifItem)
+        public DateTime GetExifDateTime(MetadataExtractor.Directory exifItem)
         {
             var itemDateTime = new DateTime();
             
@@ -214,7 +215,7 @@ namespace starsky.Services
             return itemDateTime;
         }
         
-        private static double GetGeoLocationLatitude(List<MetadataExtractor.Directory> allExifItems)
+        private  double GetGeoLocationLatitude(List<MetadataExtractor.Directory> allExifItems)
         {
             var latitudeString = string.Empty;
             var latitudeRef = string.Empty;
@@ -249,7 +250,7 @@ namespace starsky.Services
             return 0;
         }
         
-         private static double GetGeoLocationLongitude(List<MetadataExtractor.Directory> allExifItems)
+         private double GetGeoLocationLongitude(List<MetadataExtractor.Directory> allExifItems)
         {
             var longitudeString = string.Empty;
             var longitudeRef = string.Empty;
@@ -284,7 +285,7 @@ namespace starsky.Services
             return 0;
         }
 
-        public static double ConvertDegreeMinutesSecondsToDouble(string point, string refGps)
+        public double ConvertDegreeMinutesSecondsToDouble(string point, string refGps)
         {
             //Example: 17.21.18S
             // DD°MM’SS.s” usage
@@ -310,7 +311,7 @@ namespace starsky.Services
             return (degrees + minutes + seconds) * multiplier;
         }
 
-        public static double ConvertDegreeMinutesToDouble(string point, string refGps)
+        public double ConvertDegreeMinutesToDouble(string point, string refGps)
         {
             // "5,55.840E"
             var multiplier = (refGps.Contains("S") || refGps.Contains("W")) ? -1 : 1; //handle south and west

@@ -33,8 +33,9 @@ namespace starsky.Services
                     if(_appSettings.Verbose) Console.WriteLine("\nAddPhotoToDatabase: " + singleFolderDbStyle);
 
                     var singleFilePath = _appSettings.DatabasePathToFilePath(singleFolderDbStyle);
-                    var databaseItem = ExifRead.ReadExifFromFile(singleFilePath);
-                    databaseItem = new XmpReadHelper(_appSettings).XmpGetSidecarFile(databaseItem, singleFilePath);
+
+                    // Read data from file
+                    var databaseItem = _readMeta.ReadExifAndXmpFromFile(singleFilePath);
 
                     // Check the headers of a file to match a type
                     databaseItem.ImageFormat = Files.GetImageFormat(singleFilePath);

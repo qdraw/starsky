@@ -20,13 +20,18 @@ namespace starsky.Controllers
         private readonly IExiftool _exiftool;
         private readonly AppSettings _appSettings;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
+        private readonly IReadMeta _readMeta;
 
-        public ApiController(IQuery query, IExiftool exiftool, AppSettings appSettings, IBackgroundTaskQueue queue)
+        public ApiController(IQuery query, IExiftool exiftool, 
+            AppSettings appSettings, IBackgroundTaskQueue queue,
+            IReadMeta readMeta
+            )
         {
             _appSettings = appSettings;
             _query = query;
             _exiftool = exiftool;
             _bgTaskQueue = queue;
+            _readMeta = readMeta;
         }
         
 
@@ -271,8 +276,7 @@ namespace starsky.Controllers
                 // loop though the collection paths; even if it is one item
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
-                    var databaseItem = ExifRead.ReadExifFromFile(collectionFullPaths[i]);
-                    databaseItem = new XmpReadHelper(_appSettings).XmpGetSidecarFile(databaseItem, collectionFullPaths[i]);
+                    var databaseItem = _readMeta.ReadExifAndXmpFromFile(collectionFullPaths[i]);
                     var infoModel = new ExifToolModel
                     {
                         SourceFile = collectionSubPathList[i],

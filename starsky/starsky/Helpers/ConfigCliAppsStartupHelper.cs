@@ -83,14 +83,17 @@ namespace starsky.Helpers
             var context = new ApplicationDbContext(options);
             var query = new Query(context);
             
-            _isync = new SyncService(context, query, appSettings);
+            var readmeta = new ReadMeta(appSettings);
+            
+            _isync = new SyncService(context, query, appSettings,readmeta);
 
             // TOC:
             //   _context = context
             //   _isync = isync
             //   _exiftool = exiftool
             //   _appSettings = appSettings
-            _import = new ImportService(context, _isync, exiftool, appSettings);
+            //   _readmeta = readmeta
+            _import = new ImportService(context, _isync, exiftool, appSettings, readmeta);
         }
         
         public AppSettings AppSettings()

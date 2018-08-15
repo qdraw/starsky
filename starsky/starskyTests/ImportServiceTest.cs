@@ -26,6 +26,7 @@ namespace starskytests
         private IExiftool _exiftool;
         private readonly AppSettings _appSettings;
         private CreateAnImage _createAnImage;
+        private ReadMeta _readmeta;
 
         public ImportServiceTest()
         {
@@ -70,13 +71,15 @@ namespace starskytests
             // inject exiftool
             _exiftool = serviceProvider.GetRequiredService<IExiftool>();
             
-            _isync = new SyncService(context, _query,_appSettings);
+            _readmeta = new ReadMeta(_appSettings);
+
+            _isync = new SyncService(context, _query,_appSettings,_readmeta);
             
             //   _context = context
             //   _isync = isync
             //   _exiftool = exiftool
             //   _appSettings = appSettings
-            _import = new ImportService(context,_isync,_exiftool,_appSettings);
+            _import = new ImportService(context,_isync,_exiftool,_appSettings,_readmeta);
         }
         
 //        public ImportServiceTest()
@@ -151,7 +154,7 @@ namespace starskytests
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after succesfull run;
-            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+            var fileIndexItem = _readmeta.ReadExifFromFile(createAnImage.FullFilePath);
             var importIndexItem = new ImportIndexItem(_appSettings)
             {
                 SourceFullFilePath = createAnImage.FullFilePath,  
@@ -180,7 +183,7 @@ namespace starskytests
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after succesfull run;
-            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+            var fileIndexItem = _readmeta.ReadExifFromFile(createAnImage.FullFilePath);
             var importIndexItem = new ImportIndexItem(_appSettings)
             {
                 SourceFullFilePath = createAnImage.FullFilePath,  
@@ -226,7 +229,7 @@ namespace starskytests
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after succesfull run;
-            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+            var fileIndexItem = _readmeta.ReadExifFromFile(createAnImage.FullFilePath);
             var importIndexItem = new ImportIndexItem(_appSettings) {SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
             File.Delete(_appSettings.DatabasePathToFilePath(
                 importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
@@ -263,7 +266,7 @@ namespace starskytests
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after succesfull run;
-            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+            var fileIndexItem = _readmeta.ReadExifFromFile(createAnImage.FullFilePath);
             var importIndexItem = new ImportIndexItem(_appSettings){SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime};
             File.Delete(_appSettings.DatabasePathToFilePath(
                 importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
@@ -490,7 +493,7 @@ namespace starskytests
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after succesfull run;
-            var fileIndexItem = ExifRead.ReadExifFromFile(createAnImage.FullFilePath);
+            var fileIndexItem = _readmeta.ReadExifFromFile(createAnImage.FullFilePath);
             var importIndexItem = new ImportIndexItem(_appSettings)
             {
                 SourceFullFilePath = createAnImage.FullFilePath,  

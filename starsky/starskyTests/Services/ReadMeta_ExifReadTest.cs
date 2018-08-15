@@ -29,7 +29,7 @@ namespace starskytests
          [ExcludeFromCoverage]
          public void ExifRead_GetObjectNameNull()
          {
-             var t = ExifRead.GetObjectName(new MockDirectory());
+             var t = new ReadMeta().GetObjectName(new MockDirectory());
              Assert.AreEqual(t, null);
          }
 
@@ -39,7 +39,7 @@ namespace starskytests
          {
              var dir = new IptcDirectory();
              dir.Set(IptcDirectory.TagObjectName, "test" );
-             var t = ExifRead.GetObjectName(dir);
+             var t = new ReadMeta().GetObjectName(dir);
              Assert.AreEqual(t, "test");
              Assert.AreNotEqual(t,null);
          }
@@ -50,7 +50,7 @@ namespace starskytests
         {
             var dir = new IptcDirectory();
             dir.Set(IptcDirectory.TagCaption, "test123");
-            var t = ExifRead.GetCaptionAbstract(dir);
+            var t = new ReadMeta().GetCaptionAbstract(dir);
             Assert.AreEqual(t, "test123");
             Assert.AreNotEqual(t,string.Empty);
             Assert.AreNotEqual(t,null);
@@ -62,7 +62,7 @@ namespace starskytests
          {
              var dir = new IptcDirectory();
              dir.Set(IptcDirectory.TagKeywords, "test123");
-             var t = ExifRead.GetExifKeywords(dir);
+             var t = new ReadMeta().GetExifKeywords(dir);
              Assert.AreEqual(t, "test123");
              Assert.AreNotEqual(t,null);
          }
@@ -73,7 +73,7 @@ namespace starskytests
          {
              var dir = new IptcDirectory();
              dir.Set(IptcDirectory.TagKeywords, "test123;test12");
-             var t = ExifRead.GetExifKeywords(dir);
+             var t = new ReadMeta().GetExifKeywords(dir);
              Assert.AreEqual(t, "test123, test12"); //with space
              Assert.AreNotEqual(t, "test123,test12"); // without space
              Assert.AreNotEqual(t, "test123;test12");
@@ -93,7 +93,7 @@ namespace starskytests
              dir2.Set(ExifDirectoryBase.TagDateTimeOriginal, "2010:12:12 12:41:35");
              dir2.Set(ExifDirectoryBase.TagDateTime, "2010:12:12 12:41:35");
              
-             var t = ExifRead.GetExifDateTime(dir2);
+             var t = new ReadMeta().GetExifDateTime(dir2);
 
              var date2 = new DateTime(2010, 12, 12, 12, 41, 35);
              var date = new DateTime();
@@ -109,10 +109,10 @@ namespace starskytests
          [TestMethod]
          public void ExifRead_ParseGpsTest()
          {
-             var latitude = ExifRead.ConvertDegreeMinutesSecondsToDouble("52° 18' 29.54\"", "N");
+             var latitude = new ReadMeta().ConvertDegreeMinutesSecondsToDouble("52° 18' 29.54\"", "N");
              Assert.AreEqual(latitude,  52.308205555500003, 0.000001);
              
-             var longitude = ExifRead.ConvertDegreeMinutesSecondsToDouble("6° 11' 36.8\"", "E");
+             var longitude = new ReadMeta().ConvertDegreeMinutesSecondsToDouble("6° 11' 36.8\"", "E");
              Assert.AreEqual(longitude,  6.1935555554999997, 0.000001);
 
          }
@@ -121,7 +121,7 @@ namespace starskytests
          public void ExifRead_ReadExifFromFileTest()
          {
              var newImage = new CreateAnImage();
-             var item = ExifRead.ReadExifFromFile(newImage.FullFilePath);
+             var item = new ReadMeta().ReadExifFromFile(newImage.FullFilePath);
              
              Assert.AreEqual(item.ColorClass,FileIndexItem.Color.None);
              Assert.AreEqual(item.Description, "caption");
@@ -137,13 +137,13 @@ namespace starskytests
 
              var input = "52,20.708N";
              string refGps = input.Substring(input.Length-1, 1);
-             var data = ExifRead.ConvertDegreeMinutesToDouble(input, refGps);
+             var data = new ReadMeta().ConvertDegreeMinutesToDouble(input, refGps);
              Assert.AreEqual(52.3451333333,data,0.001);
 
             
              var input1 = "5,55.840E";
              string refGps1 = input1.Substring(input1.Length-1, 1);
-             var data1 = ExifRead.ConvertDegreeMinutesToDouble(input1, refGps1);
+             var data1 = new ReadMeta().ConvertDegreeMinutesToDouble(input1, refGps1);
              Assert.AreEqual(5.930,data1,0.001);
 
          }

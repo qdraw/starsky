@@ -14,12 +14,14 @@ namespace starsky.Services
         private readonly ApplicationDbContext _context;
         private readonly IQuery _query;
         private readonly AppSettings _appSettings;
+        private readonly IReadMeta _readMeta;
 
-        public SyncService(ApplicationDbContext context, IQuery query, AppSettings appSettings)
+        public SyncService(ApplicationDbContext context, IQuery query, AppSettings appSettings, IReadMeta readMeta)
         {
             _context = context;
             _query = query;
             _appSettings = appSettings;
+            _readMeta = readMeta;
         }
         
         /* Base feature to sync files and folders
