@@ -127,8 +127,16 @@
                     var enumValue = (int) item;
                     <span class="sqbox on colorclass-@enumValue"></span>
                 }
+                
             }
         </span>
+        
+        @if (@Model.ColorClassFilterList.Any() && !Model.ColorClassFilterList.Contains(
+            @Model.FileIndexItem.ColorClass))
+        {
+            <span>&nbsp;&nbsp;Deze file is buiten de ColorClass selectie</span>
+        }
+        
         @if (@Model.FileIndexItem.Tags.Contains("!delete!"))
         {
             <span>Verwijderd bestand!</span>
