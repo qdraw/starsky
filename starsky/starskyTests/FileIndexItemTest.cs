@@ -20,7 +20,7 @@ namespace starskytests
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTestDefault()
         {
-            var input = new FileIndexItem().SetColorClass();
+            var input = new FileIndexItem().GetColorClass();
             var output = FileIndexItem.Color.None;
             Assert.AreEqual(input,output);
         }
@@ -28,7 +28,7 @@ namespace starskytests
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTestMin1()
         {
-            var input = new FileIndexItem().SetColorClass("-1");
+            var input = new FileIndexItem().GetColorClass("-1");
             var output = FileIndexItem.Color.DoNotChange;
             Assert.AreEqual(input,output);
         }
@@ -36,7 +36,7 @@ namespace starskytests
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest0()
         {
-            var input = new FileIndexItem().SetColorClass("0");
+            var input = new FileIndexItem().GetColorClass("0");
             var output = FileIndexItem.Color.None;
             Assert.AreEqual(input,output);
         }
@@ -44,7 +44,7 @@ namespace starskytests
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest1()
         {
-            var input = new FileIndexItem().SetColorClass("1");
+            var input = new FileIndexItem().GetColorClass("1");
             var output = FileIndexItem.Color.Winner;
             Assert.AreEqual(input,output);
         }
@@ -52,7 +52,7 @@ namespace starskytests
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest2()
         {
-            var input = new FileIndexItem().SetColorClass("2");
+            var input = new FileIndexItem().GetColorClass("2");
             var output = FileIndexItem.Color.WinnerAlt;
             Assert.AreEqual(input,output);
         }
@@ -60,7 +60,7 @@ namespace starskytests
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest3()
         {
-            var input = new FileIndexItem().SetColorClass("3");
+            var input = new FileIndexItem().GetColorClass("3");
             var output = FileIndexItem.Color.Superior;
             Assert.AreEqual(input,output);
         }
@@ -68,7 +68,7 @@ namespace starskytests
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest4()
         {
-            var input = new FileIndexItem().SetColorClass("4");
+            var input = new FileIndexItem().GetColorClass("4");
             var output = FileIndexItem.Color.SuperiorAlt;
             Assert.AreEqual(input,output);
         }
@@ -76,7 +76,7 @@ namespace starskytests
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest5()
         {
-            var input = new FileIndexItem().SetColorClass("5");
+            var input = new FileIndexItem().GetColorClass("5");
             var output = FileIndexItem.Color.Typical;
             Assert.AreEqual(input,output);
         }
@@ -84,7 +84,7 @@ namespace starskytests
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest6()
         {
-            var input = new FileIndexItem().SetColorClass("6");
+            var input = new FileIndexItem().GetColorClass("6");
             var output = FileIndexItem.Color.TypicalAlt;
             Assert.AreEqual(input,output);
         }
@@ -92,7 +92,7 @@ namespace starskytests
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest7()
         {
-            var input = new FileIndexItem().SetColorClass("7");
+            var input = new FileIndexItem().GetColorClass("7");
             var output = FileIndexItem.Color.Extras;
             Assert.AreEqual(input,output);
         }
@@ -100,7 +100,7 @@ namespace starskytests
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest8()
         {
-            var input = new FileIndexItem().SetColorClass("8");
+            var input = new FileIndexItem().GetColorClass("8");
             var output = FileIndexItem.Color.Trash;
             Assert.AreEqual(input,output);
         }

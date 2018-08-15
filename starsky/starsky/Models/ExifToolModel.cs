@@ -62,7 +62,7 @@ namespace starsky.Models
                 if (firstColorClass != null)
                 {
                     var stringColorClassItem = firstColorClass.Replace("ColorClass:", "");
-                    ColorClass = new FileIndexItem().SetColorClass(stringColorClassItem);
+                    ColorClass = new FileIndexItem().GetColorClass(stringColorClassItem);
                 }
             }
         }

@@ -168,7 +168,7 @@ namespace starsky.Services
                 var colorClass = GetContentNameSpace(property, "photomechanic:ColorClass");
                 if (colorClass != null)
                 {
-                    item.SetColorClass(colorClass);
+                    item.ColorClass = item.GetColorClass(colorClass);
                 }
                 
                 // Path=tiff:Orientation Namespace=http://ns.adobe.com/tiff/1.0/ Value=6

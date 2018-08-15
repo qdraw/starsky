@@ -115,41 +115,31 @@ namespace starsky.Models
         
         private Color _colorClass;
 
-        public Color SetColorClass(string colorclassString = "0")
+        public Color GetColorClass(string colorclassString = "0")
         {
 
             switch (colorclassString)
             {
                 case "0":
-                    _colorClass = Color.None;
-                    return _colorClass;
+                    return Color.None;
                 case "8":
-                    _colorClass = Color.Trash;
-                    return _colorClass;
+                    return  Color.Trash;
                 case "7":
-                    _colorClass = Color.Extras;
-                    return _colorClass;
+                    return Color.Extras;
                 case "6":
-                    _colorClass = Color.TypicalAlt;
-                    return _colorClass;
+                    return Color.TypicalAlt;
                 case "5":
-                    _colorClass = Color.Typical;
-                    return _colorClass;
+                    return Color.Typical;
                 case "4":
-                    _colorClass = Color.SuperiorAlt;
-                    return _colorClass;
+                    return Color.SuperiorAlt;
                 case "3":
-                    _colorClass = Color.Superior;
-                    return _colorClass;
+                    return Color.SuperiorAlt;
                 case "2":
-                    _colorClass = Color.WinnerAlt;
-                    return _colorClass;
+                    return Color.WinnerAlt;
                 case "1":
-                    _colorClass = Color.Winner;
-                    return _colorClass;
+                    return Color.Winner;
                 default:
-                    _colorClass = Color.DoNotChange;
-                    return _colorClass;
+                    return Color.DoNotChange;
             }
         }
 
@@ -170,7 +160,7 @@ namespace starsky.Models
             var colorclassList = new HashSet<Color>();
             foreach (var colorclassStringItem in colorclassStringList)
             {
-                colorclassList.Add(SetColorClass(colorclassStringItem));
+                colorclassList.Add(GetColorClass(colorclassStringItem));
             }
             return colorclassList.ToList();
         }

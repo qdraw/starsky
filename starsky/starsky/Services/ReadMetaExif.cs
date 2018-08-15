@@ -40,7 +40,7 @@ namespace starsky.Services
             }
             
             // Set the default value
-            item.SetColorClass();
+            item.ColorClass = item.GetColorClass();
 
             item.Latitude = GetGeoLocationLatitude(allExifItems);
             item.Longitude = GetGeoLocationLongitude(allExifItems);
@@ -55,10 +55,10 @@ namespace starsky.Services
                     item.Tags = tags;
                 }
                 // Colour Class => ratings
-                var colorClassString = _getColorClassString(exifItem);
+                var colorClassString = GetColorClassString(exifItem);
                 if(colorClassString != null) // null = is not the right tag or emthy tag
                 {
-                    item.SetColorClass(colorClassString);
+                    item.ColorClass = item.GetColorClass(colorClassString);
                 }
                 
                 // [IPTC] Caption/Abstract
@@ -166,7 +166,7 @@ namespace starsky.Services
             return null;
         }
 
-        private static string _getColorClassString(MetadataExtractor.Directory exifItem)
+        private static string GetColorClassString(MetadataExtractor.Directory exifItem)
         {
             var ratingCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"));
             if (ratingCounts >= 1)

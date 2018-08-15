@@ -145,7 +145,7 @@ namespace starsky.Controllers
     
                 // Parse ColorClass and add it
                 // This SetColorClass does return DoNotChange and all other tags
-                updateModel.ColorClass = detailView.FileIndexItem.SetColorClass(colorClass);
+                updateModel.ColorClass = detailView.FileIndexItem.GetColorClass(colorClass);
                 
                 // Parse Rotation; by reading it relative
                 updateModel.Orientation = detailView.FileIndexItem.RelativeOrientation(orientation);
@@ -212,7 +212,10 @@ namespace starsky.Controllers
             }
                     
             // In the model there is a filter
-            singleItem.FileIndexItem.ColorClass = updateModel.ColorClass;
+            if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
+            {
+                singleItem.FileIndexItem.ColorClass = updateModel.ColorClass;                
+            }
     
             exifToolResultsList.Add(displayUpdateModel);
     

@@ -170,7 +170,7 @@ namespace starsky.Services
             
             // Feature to overwrite default ColorClass Setting
             // First check and I is defferent than default enable sync
-            fileIndexItem.SetColorClass(importSettings.ColorClass.ToString());
+            fileIndexItem.ColorClass = fileIndexItem.GetColorClass(importSettings.ColorClass.ToString());
             if (fileIndexItem.ColorClass != FileIndexItem.Color.None)
                 exifToolSync = true;
 
