@@ -218,6 +218,32 @@ namespace starsky.Services
                 inputStringBuilder.Append($"\"");
                 return inputStringBuilder;
             }
+        
+            // The actual query
+            // will be removed very soon 
+            // Only used by DownloadPhoto
+            public ExifToolModel Info(string fullFilePath)
+            {
+                // Add parentes around this file
+    
+                var xmpFullFilePath = Files.GetXmpSidecarFileWhenRequired(
+                    fullFilePath,
+                    _appSettings.ExifToolXmpPrefix);
+                    
+                // only overwrite when a xmp file exist
+                if (Files.IsFolderOrFile(xmpFullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
+                    fullFilePath = xmpFullFilePath;
+                    
+                // When change also update class 'Update'
+                // xmp:Subject == Keywords
+                // Caption-Abstract == Description
+                var fullFilePathStringBuilder = Quoted(null,fullFilePath);
+    
+                // -Orientation# <= hashtag is that exiftool must output a int and not a human readable string
+                return parseJson(BaseCommmand("-Keywords \"-Orientation#\" -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
+                    fullFilePathStringBuilder.ToString()));
+            }
+
 
         }
 

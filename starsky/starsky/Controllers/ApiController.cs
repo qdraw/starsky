@@ -230,6 +230,7 @@ namespace starsky.Controllers
             
             // force you to read the file again after loading
             _readMeta.RemoveReadMetaCache(collectionFullPath);
+            // update item to the database
             _query.UpdateItem(singleItem.FileIndexItem);
         }
 
