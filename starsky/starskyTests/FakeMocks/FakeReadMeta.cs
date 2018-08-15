@@ -12,7 +12,7 @@ namespace starskytests.FakeMocks
 
         public void RemoveReadMetaCache(string fullFilePath)
         {
-            throw new System.NotImplementedException();
+            // dont do anything
         }
     }
 }

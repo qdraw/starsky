@@ -44,7 +44,7 @@ namespace starsky.Services
             return (FileIndexItem) objectExifToolModel;
         }
 
-        //     only for exiftool!
+        //     only for ReadMeta!
         //     Why removing, The Update command does not update the entire object.
         //     When you update tags, other tags will be null 
         public void RemoveReadMetaCache(string fullFilePath)
