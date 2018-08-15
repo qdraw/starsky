@@ -19,7 +19,7 @@ namespace starsky.Services
         private readonly CancellationTokenSource _stoppingCts =
             new CancellationTokenSource();
 
-        protected abstract Task ExecuteAsync(CancellationToken stoppingToken);
+        protected abstract Task ExecuteAsync(CancellationToken cancellationToken);
 
         public virtual Task StartAsync(CancellationToken cancellationToken)
         {
