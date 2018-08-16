@@ -4,78 +4,98 @@
 @{
     ViewData["Title"] = Model.SearchQuery + " Index view ";
 }
-
-<h4 class="nextprev">
-    @if (@Model.RelativeObjects.PrevFilePath != null)
-    {
-        <a class="prev" asp-controller="Home" asp-action="Index" 
-           asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige (@Model.RelativeObjects.PrevFilePath.Split("/").LastOrDefault())</a>
-    }
-    @if (@Model.RelativeObjects.NextFilePath != null)
-    {
-        <a class="next" asp-controller="Home" asp-action="Index" 
-           asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende (@Model.RelativeObjects.NextFilePath.Split("/").LastOrDefault())</a>
-    }
-    &nbsp;
-</h4>
-
-<h1 class="breadcrumb">
-    @foreach (var item in Model.Breadcrumb)
-    {
-        var name = @item.Split("/")[item.Split("/").Length - 1];
-        if (name == "") {name = "Home";}
-
-        <a asp-controller="Home" asp-action="Index" asp-route-f="@item">@name</a>
-        if (item != Model.Breadcrumb[Model.Breadcrumb.Count - 1])
+<div class="archive">
+    
+    <div class="sidebar">
+        <div class="close" onclick="toggleSideMenu()"></div>
+        <div class="content">
+            <h4 class="nextprev">
+                &nbsp;
+                @if (@Model.RelativeObjects.PrevFilePath != null)
+                {
+                    <a class="prev" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige</a>
+                }
+                @if (@Model.RelativeObjects.NextFilePath != null ) 
+                {
+                    <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende</a>
+                }
+            </h4>
+        </div>
+    </div>
+    
+    <h4 class="nextprev">
+        @if (@Model.RelativeObjects.PrevFilePath != null)
+        {
+            <a class="prev" asp-controller="Home" asp-action="Index" 
+               asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige (@Model.RelativeObjects.PrevFilePath.Split("/").LastOrDefault())</a>
+        }
+        @if (@Model.RelativeObjects.NextFilePath != null)
+        {
+            <a class="next" asp-controller="Home" asp-action="Index" 
+               asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende (@Model.RelativeObjects.NextFilePath.Split("/").LastOrDefault())</a>
+        }
+        &nbsp;
+    </h4>
+    
+    <h1 class="breadcrumb">
+        @foreach (var item in Model.Breadcrumb)
+        {
+            var name = @item.Split("/")[item.Split("/").Length - 1];
+            if (name == "") {name = "Home";}
+    
+            <a asp-controller="Home" asp-action="Index" asp-route-f="@item">@name</a>
+            if (item != Model.Breadcrumb[Model.Breadcrumb.Count - 1])
+            {
+                <span> &raquo;</span>
+            }
+        }
+        
+        @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
         {
             <span> &raquo;</span>
+            <span> <a class="removecache" asp-controller="Api" asp-action="RemoveCache" 
+                      asp-route-f="@Model.SubPath">@Model.SearchQuery</a></span>
         }
+    
+    </h1>
+    
+    <div id="portfolio-filter">
+    
+    </div>
+    
+    @if(!Model.FileIndexItems.Any())
+    {
+        <div class="wrapper">
+            <h2> Er zijn geen afbeeldingen in de map <em>@Model.SearchQuery</em> </h2>
+        </div>
     }
     
-    @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
-    {
-        <span> &raquo;</span>
-        <span> <a class="removecache" asp-controller="Api" asp-action="RemoveCache" 
-                  asp-route-f="@Model.SubPath">@Model.SearchQuery</a></span>
-    }
-
-</h1>
-
-<div id="portfolio-filter">
-
-</div>
-
-@if(!Model.FileIndexItems.Any())
-{
-    <div class="wrapper">
-        <h2> Er zijn geen afbeeldingen in de map <em>@Model.SearchQuery</em> </h2>
+    <div class="wrapper" id="portfolio-data">
+        @foreach (var item in Model.FileIndexItems)
+        {
+            var enumValue = (int) item.ColorClass;
+            var directoryLabel = "directory-" + item.IsDirectory.ToString().ToLower();
+            <a class="halfitem @item.ColorClass colorclass-@enumValue @directoryLabel" data-filename="@item.FileName" data-tag="colorclass-@enumValue"
+               data-tagnl="@FileIndexItem.GetAllColorUserInterface().FirstOrDefault(p => (int) p == enumValue)"
+               asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
+                <div class="caption">
+                    <h2>@item.FileName</h2>
+                    <p>@item.Tags&nbsp;</p>
+                </div>
+                <div class="filter"></div>
+    
+                @if (!string.IsNullOrWhiteSpace(@item.FileHash))
+                {
+                    <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash})" alt=""/>
+                }
+                else
+                {
+                    <img src="#" alt=""/>
+                }
+            </a>
+        }
     </div>
-}
-
-<div class="wrapper" id="portfolio-data">
-    @foreach (var item in Model.FileIndexItems)
-    {
-        var enumValue = (int) item.ColorClass;
-        var directoryLabel = "directory-" + item.IsDirectory.ToString().ToLower();
-        <a class="halfitem @item.ColorClass colorclass-@enumValue @directoryLabel" data-filename="@item.FileName" data-tag="colorclass-@enumValue"
-           data-tagnl="@FileIndexItem.GetAllColorUserInterface().FirstOrDefault(p => (int) p == enumValue)"
-           asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
-            <div class="caption">
-                <h2>@item.FileName</h2>
-                <p>@item.Tags&nbsp;</p>
-            </div>
-            <div class="filter"></div>
-
-            @if (!string.IsNullOrWhiteSpace(@item.FileHash))
-            {
-                <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash})" alt=""/>
-            }
-            else
-            {
-                <img src="#" alt=""/>
-            }
-        </a>
-    }
 </div>
 
 <script type="text/javascript" src="js/portfolio-filter.js"></script>
+<script type="text/javascript" src="js/sidebar.js"></script>
