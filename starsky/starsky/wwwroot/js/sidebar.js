@@ -6,6 +6,7 @@ if (document.querySelectorAll(".sidebar").length === 1) {
         if (document.querySelector(".sidebar .close").className.indexOf("collapsed") === -1) {
             if (!isStartup){
                 window.location.hash = window.location.hash.replace("#sidebar", "");
+                window.location.hash = window.location.hash.replace(";sidebar", "");
             }
             updatePrevNextHash();
 
@@ -35,7 +36,12 @@ if (document.querySelectorAll(".sidebar").length === 1) {
         }
         else {
             if (!isStartup) {
-                window.location.hash = '#sidebar';
+                if (window.location.hash.length === 0) {
+                    window.location.hash = '#sidebar';
+                }
+                else {
+                    window.location.hash += ';sidebar';
+                }
             }
             updatePrevNextHash();
 

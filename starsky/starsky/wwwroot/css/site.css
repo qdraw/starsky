@@ -272,7 +272,7 @@ h2 {
     width: 47vw;
     height: 45vh;
 }
-.collapsed.wrapper .halfitem .filter {
+.collapsed .wrapper .halfitem .filter {
     width: calc(47vw - 150px);
 }
 
