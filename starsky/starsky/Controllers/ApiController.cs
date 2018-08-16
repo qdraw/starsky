@@ -341,7 +341,8 @@ namespace starsky.Controllers
             return Json(item);
         }
 
-        [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f", "json", "retryThumbnail"} )]
+        [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f", "json", 
+            "retryThumbnail", "isSingleitem"} )]
         [HttpGet("/api/thumbnail/{f}")]
         [HttpHead("/api/thumbnail/{f}")]
         [IgnoreAntiforgeryToken]

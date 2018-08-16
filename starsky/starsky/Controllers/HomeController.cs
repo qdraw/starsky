@@ -34,6 +34,8 @@ namespace starsky.Controllers
             bool collections = true
             )
         {
+            f = ConfigRead.PrefixDbSlash(f);
+            
             // Trick for avoiding spaces for behind proxy
             f = f.Replace("$20", " ");
             
