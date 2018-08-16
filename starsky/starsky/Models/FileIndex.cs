@@ -133,7 +133,7 @@ namespace starsky.Models
                 case "4":
                     return Color.SuperiorAlt;
                 case "3":
-                    return Color.SuperiorAlt;
+                    return Color.Superior;
                 case "2":
                     return Color.WinnerAlt;
                 case "1":
