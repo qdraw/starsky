@@ -82,7 +82,19 @@ function writeFilterList (tags) {
             var currentitem_alles = filterarticle.appendChild(li_alles).appendChild(a_alles);
             currentitem_alles.innerHTML = "Reset";
             currentitem_alles.className = "reset";
-            currentitem_alles.addEventListener("click", function(e){ var those = this; resetCheckBoxes(); selectedVar = []; setVariable([]); constructURL(); }, false);
+            currentitem_alles.addEventListener("click", function(e){
+                
+                // dependency on sidebar
+                if (window.location.hash.indexOf("sidebar") >= 0) {
+                    toggleSideMenu(true);
+                }
+                var those = this; 
+                resetCheckBoxes(); 
+                selectedVar = []; 
+                setVariable([]); 
+                constructURL();
+
+                }, false);
             // EINDE ALLES
 
 
@@ -199,6 +211,7 @@ function constructURL() {
 
     if (history.pushState) { // for old browsers like: IE9/IE10
 
+        
         var url = "#colorclass=";
         for (var i = 0; i < selectedVar.length; i++) {
 
@@ -210,11 +223,22 @@ function constructURL() {
             }
         }
         
+        // default add sidebar data
+        if (window.location.hash.indexOf("sidebar") >= 0) {
+            url += ";sidebar=" + GetSidebarWindowHash("sidebar");
+        }
+        
+        // sidebar disabled
         if (selectedVar.length === 0) {
             url = "#";
         }
         
-        // Check if this function isn't repeated excuded;
+        // when the sidebar has items
+        if (selectedVar.length === 0 && window.location.hash.indexOf("sidebar") >= 0) {
+            url += "sidebar=" + GetSidebarWindowHash("sidebar");
+        }
+
+            // Check if this function isn't repeated excuded;
         if (url !== prevURL) {
             var stateObj = { url: url };
             history.pushState(stateObj, "Qdraw", url);
@@ -236,7 +260,7 @@ function setVariable(hashList) {
         }
         
         var object = document.querySelector("#portfolio-data").children;
-        console.log(object);
+        // console.log(object);
         
         for (var i = 0; i < object.length; i++) {
 
@@ -345,7 +369,9 @@ function buildPage() {
             }
             
         }
-    
+
+        if (colorclassurl.indexOf("#colorclass") === -1) return;
+        
         colorclassurl = colorclassurl.replace("#colorclass=","");
 
         if (colorclassurl.indexOf(",") >= 0){
@@ -391,6 +417,8 @@ function buildPage() {
                 // console.log(object[i].children[0].id)
             }
         }
+    // dependecy on sidebar
+    updatePrevNextHash();
 }
 window.onhashchange = function() {
     if (window.innerDocClick) {

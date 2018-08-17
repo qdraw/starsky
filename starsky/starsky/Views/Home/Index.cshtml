@@ -79,7 +79,7 @@
                data-tagnl="@FileIndexItem.GetAllColorUserInterface().FirstOrDefault(p => (int) p == enumValue)"
                asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
                 <div class="caption">
-                    <h2>@item.FileName</h2>
+                    <h2><div class="checkbox"></div> @item.FileName</h2>
                     <p>@item.Tags&nbsp;</p>
                 </div>
                 <div class="filter"></div>
@@ -97,5 +97,7 @@
     </div>
 </div>
 
-<script type="text/javascript" src="js/portfolio-filter.js"></script>
+<script type="text/javascript" src="js/archivesidebar.js"></script>
+<script type="text/javascript" src="js/sidebar-stringhelper.js"></script>
 <script type="text/javascript" src="js/sidebar.js"></script>
+<script type="text/javascript" src="js/portfolio-filter.js"></script>

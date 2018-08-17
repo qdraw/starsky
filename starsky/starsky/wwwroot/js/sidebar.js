@@ -1,12 +1,20 @@
 
+
 var sideBarDefaultWidth;
 if (document.querySelectorAll(".sidebar").length === 1) {
     function toggleSideMenu(isStartup) {
+        if (!isStartup) {
+            if (document.querySelector(".sidebar").className.indexOf("enabled") === -1) {
+                document.querySelector(".sidebar").classList.add("enabled")
+            }
+        }
 
         if (document.querySelector(".sidebar .close").className.indexOf("collapsed") === -1) {
-            if (!isStartup){
-                window.location.hash = window.location.hash.replace("#sidebar", "");
-                window.location.hash = window.location.hash.replace(";sidebar", "");
+            if (!isStartup) {
+                var hash = window.location.hash.replace("#sidebar=" + GetSidebarWindowHash("sidebar"),"");
+                hash = hash.replace(";sidebar=" + GetSidebarWindowHash("sidebar"),"");
+                hash = hash.replace("#sidebar", "");
+                window.location.hash = hash.replace(";sidebar", "");
             }
             updatePrevNextHash();
 
@@ -20,11 +28,11 @@ if (document.querySelectorAll(".sidebar").length === 1) {
             if (document.querySelectorAll(".archive").length === 1) {
                 document.querySelector(".archive").classList.remove("collapsed")
             }
-            
+
             if (document.querySelectorAll(".main-image").length === 1) {
                 document.querySelector(".main-image").classList.remove("collapsed")
             }
-            
+
             if (document.querySelectorAll(".detailview").length === 1) {
                 document.querySelector(".detailview").classList.remove("collapsed")
             }
@@ -36,10 +44,11 @@ if (document.querySelectorAll(".sidebar").length === 1) {
         }
         else {
             if (!isStartup) {
-                if (window.location.hash.length === 0) {
+                if (window.location.hash.indexOf("sidebar") === -1 
+                    && window.location.hash.length === 0) {
                     window.location.hash = '#sidebar';
                 }
-                else {
+                else if (window.location.hash.indexOf("sidebar") === -1){
                     window.location.hash += ';sidebar';
                 }
             }
@@ -71,7 +80,6 @@ if (document.querySelectorAll(".sidebar").length === 1) {
 
         }
     }
-
     // in detailview mode
     if(document.querySelectorAll(".main-image").length === 1) {
         // Default on mobile disabled
@@ -92,7 +100,6 @@ if (document.querySelectorAll(".sidebar").length === 1) {
             toggleSideMenu(true);
         }
     }
-    
 }
 
 
@@ -127,9 +134,15 @@ function updatePrevNextHash() {
         for (var j = 0; j < object.length; j++) {
             if (object[j].href === undefined) return;
 
-            object[j].href = object[j].href.replace("#sidebar","");
-            object[j].href += window.location.hash;
+            // clean up the url, this method runs 5 times
+            // and add everyting behind the #; 
+            // if not don't clean it
+            var indexof = object[j].href.indexOf("#");
+            if (indexof === -1) indexof = object[j].href.length;
+            var href = object[j].href.substr(0, indexof);
+            href += window.location.hash;
+            object[j].href = href;
+            // console.log(href)
         }
     }
-
 }

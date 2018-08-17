@@ -24,7 +24,8 @@ footer, header, hgroup, menu, nav, section, picture {
     display: block; }
 
 body {
-    line-height: 1; }
+    line-height: 1;
+}
 
 ol, ul {
     list-style: none; }
@@ -145,6 +146,7 @@ h1 {
     padding-left: 10px;
 }
 
+#portfolio-data.wrapper .checkbox,
 .add-colorclass .checkbox,
 #portfolio-filter .checkbox {
     float: left;
@@ -160,9 +162,20 @@ h1 {
     margin-top: 8px;
     margin-right: 10px;
 }
+#portfolio-data.wrapper .checkbox{
+    display: none;
+    float: none;
+    margin: 0;
+}
 
+.collapsed #portfolio-data.wrapper .directory-false .checkbox {
+    display: inline-block;
+}
+
+/* selecting the file*/
+.collapsed #portfolio-data.wrapper .on.directory-false .checkbox,
 .add-colorclass .on .checkbox {
-    background-image: url("../images/roundbox.svg");
+    background-image: url("../images/checkbox.svg");
 }
 
 #portfolio-filter .active .checkbox{
@@ -179,9 +192,13 @@ h1 {
     display: block;
     background-color: #ccc;
     position: relative;
-    z-index: 3;
+    /*z-index: 3;*/
     transform-origin: center center;
     transition: all 1.5s ease-in-out;
+}
+
+.collapsed .halfitem {
+    
 }
 @media screen and (max-width: 767px) {
     .wrapper .halfitem {
@@ -272,11 +289,13 @@ h2 {
     width: 47vw;
     height: 45vh;
 }
+
 .collapsed .wrapper .halfitem .filter {
     width: calc(47vw - 150px);
 }
 
 @media screen and (max-height: 550px) and (max-width: 950px) {
+    .collapsed .wrapper .halfitem .filter,
     .wrapper .halfitem .filter {
         width: 85vw;
     }
@@ -296,7 +315,7 @@ h2 {
     height: 15vh;
     background-color: rgba(0, 0, 0, 0.3);
     display: block;
-    z-index: 4;
+    /*z-index: 4;*/
 }
 .wrapper .halfitem.None.directory-true .caption {
     /*// beige*/
@@ -478,14 +497,14 @@ h2 {
         margin-right: 15px;
     }
 }
-.navbar-fixed-top {
-    top: 0;
-    border-width: 0 0 1px;
-    position: fixed;
-    right: 0;
-    left: 0;
-    z-index: 1030;
-}
+/*.navbar-fixed-top {*/
+    /*top: 0;*/
+    /*border-width: 0 0 1px;*/
+    /*position: fixed;*/
+    /*right: 0;*/
+    /*left: 0;*/
+    /*z-index: 1030;*/
+/*}*/
 
 .navbar-inverse {
     background-color: #222;
@@ -749,7 +768,7 @@ float: left;
 .archive.collapsed,
 .detailview.collapsed {
     max-width: calc( 100% - 300px);
- }
+}
 @media screen and (max-width: 600px) {
     .archive.collapsed,
     .detailview.collapsed {
@@ -821,8 +840,11 @@ float: left;
     top: 0px;
     right: 0px;
     position: fixed;
-    transition: width 1.1s ease-in-out;
     background-color: #EBEBEB;
+}
+
+.sidebar.enabled {
+    transition: width 1.1s ease-in-out;
 }
 
 @media screen and (max-width: 600px) {
