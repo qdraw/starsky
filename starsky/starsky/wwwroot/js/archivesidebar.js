@@ -22,15 +22,15 @@ if (portfolioData.length === 1 && archive.length === 1) {
                     var url = "";
                     if (!this.classList.contains("on")) {
                         // This features add it;
-                        console.log(this.className.indexOf("on"));
+                        // console.log(this.className.indexOf("on"));
 
                         this.classList.add("on");
 
                         selectedFiles.push(this.dataset.filename);
-                        console.log(selectedFiles);
+                        // console.log(selectedFiles);
                     }
                     else {
-                        console.log(this.className);
+                        // console.log(this.className);
 
                         this.classList.remove("on");
                         // ES5
@@ -61,10 +61,10 @@ if (portfolioData.length === 1 && archive.length === 1) {
 
                     }
 
-                    console.log(url);
+                    // console.log(url);
                     url = appendArrayToString(url,selectedFiles);
-                    console.log(selectedFiles);
-                    console.log(url);
+                    // console.log(selectedFiles);
+                    // console.log(url);
 
                     // var   
                     if (url !== prevURL) {
@@ -73,8 +73,8 @@ if (portfolioData.length === 1 && archive.length === 1) {
                     }
                     prevURL = url;
 
-
-                    console.log("0")
+                    updateDisplayList();
+                    // console.log("0")
                 }
             }
 
@@ -82,28 +82,6 @@ if (portfolioData.length === 1 && archive.length === 1) {
     }
         
 }
-
-// /**
-//  * @return {string}
-//  */
-// function GetSidebarWindowHash() {
-//     // search and replace sidebar contents
-//     var indexofsidebar = window.location.hash.indexOf("sidebar");
-//     var hashcontent = window.location.hash.substr(indexofsidebar, window.location.hash.length);
-//     var dotcomma = hashcontent.indexOf(";");
-//     if (dotcomma === -1) dotcomma = window.location.hash.length;
-//     hashcontent = window.location.hash.substr(indexofsidebar, dotcomma);
-//     // end
-//
-//     hashcontent = replaceSideBarString(hashcontent);
-//     return hashcontent;
-// }
-//
-// function replaceSideBarString(hashcontent) {
-//     hashcontent = hashcontent.replace("sidebar=","");
-//     hashcontent = hashcontent.replace("#sidebar=","");
-//     return hashcontent.replace("sidebar","");
-// }
 
 function appendArrayToString(url,selectedFiles) {
     for (var i = 0; i < selectedFiles.length; i++) {
@@ -116,4 +94,53 @@ function appendArrayToString(url,selectedFiles) {
         }
     }
     return url;
+}
+
+
+
+function buildSidebarPage() {
+    selectedFiles = [];
+    var prevWindowHash = GetSidebarWindowHash("sidebar");
+    if (prevWindowHash.length >= 1) {
+        var getHashList =  prevWindowHash.split(",");
+        for (var i = 0; i < getHashList.length; i++) {
+            selectedFiles.push(getHashList[i]);
+        }
+    }
+    var halfitems = document.querySelectorAll(".halfitem");
+    
+    // reset
+    for (var i = 0; i < halfitems.length; i++) {
+        if (halfitems[i].classList.contains("on")) {
+            halfitems[i].classList.remove("on");
+        }
+    }
+
+    for (var i = 0; i < selectedFiles.length; i++) {
+        var uri_dec = decodeURIComponent(selectedFiles[i]);
+        
+        var query = ".halfitem[data-filename=\""+ uri_dec +"\"]";
+        if (document.querySelectorAll(query).length === 1 && !document.querySelector(query).classList.contains("on") ) {
+            document.querySelector(query).classList.add("on");
+        }
+    }
+}
+window.addEventListener("hashchange", function (e) {
+    buildSidebarPage();
+    updateDisplayList();
+}, false);
+
+buildSidebarPage();
+updateDisplayList();
+
+function updateDisplayList() {
+    console.log("sdf")
+    if (document.querySelectorAll(".js-selectedimages").length === 1) {
+        var html = "";
+        for (var i = 0; i < selectedFiles.length; i++) {
+            html += selectedFiles[i] + "<br />";
+        }
+        document.querySelector(".js-selectedimages").innerHTML = html;
+    }
+    
 }
