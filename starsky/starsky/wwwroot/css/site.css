@@ -172,12 +172,13 @@ h1 {
     display: inline-block;
 }
 
-/* selecting the file*/
-.collapsed #portfolio-data.wrapper .on.directory-false .checkbox,
+/* this is not a checkbox */
 .add-colorclass .on .checkbox {
-    background-image: url("../images/checkbox.svg");
+    background-image: url("../images/roundbox.svg");
 }
 
+/* selecting multiple files */
+.collapsed #portfolio-data.wrapper .on.directory-false .checkbox,
 #portfolio-filter .active .checkbox{
     background-image: url("../images/checkbox.svg");
 }
@@ -841,6 +842,7 @@ float: left;
     right: 0px;
     position: fixed;
     background-color: #EBEBEB;
+    z-index: 500;
 }
 
 .sidebar.enabled {
@@ -884,7 +886,7 @@ float: left;
 }
 
 
-.sidebar .close {
+.sidebar > .close {
     width: 40px;
     display: block;
     margin-left: -40px;
@@ -982,4 +984,22 @@ footer {
 .removecache { 
     text-decoration: none;
     cursor:text;
+}
+
+
+.js-selectedimages li .close {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: red;
+}
+.js-selectedimages li:first-child {
+    margin-top: 10px;
+}
+.js-selectedimages li{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 23ch;
+    line-height: 20px;
 }

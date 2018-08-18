@@ -33,7 +33,7 @@ if (portfolioData.length === 1 && archive.length === 1) {
                         // console.log(this.className);
 
                         this.classList.remove("on");
-                        // ES5
+                        // ES5 > remove item from array
                         selectedFiles = selectedFiles.filter(item => item !== this.dataset.filename);
                     }
                     var prevWindowHash = GetSidebarWindowHash("sidebar");
@@ -104,7 +104,11 @@ function buildSidebarPage() {
     if (prevWindowHash.length >= 1) {
         var getHashList =  prevWindowHash.split(",");
         for (var i = 0; i < getHashList.length; i++) {
-            selectedFiles.push(getHashList[i]);
+            var filenamefromquery = decodeURIComponent(getHashList[i]);
+            var query = ".halfitem[data-filename=\"" + filenamefromquery + "\"]";
+            if (document.querySelectorAll(query).length === 1) {
+                selectedFiles.push(filenamefromquery);
+            }
         }
     }
     var halfitems = document.querySelectorAll(".halfitem");
@@ -117,11 +121,13 @@ function buildSidebarPage() {
     }
 
     for (var i = 0; i < selectedFiles.length; i++) {
-        var uri_dec = decodeURIComponent(selectedFiles[i]);
-        
-        var query = ".halfitem[data-filename=\""+ uri_dec +"\"]";
-        if (document.querySelectorAll(query).length === 1 && !document.querySelector(query).classList.contains("on") ) {
-            document.querySelector(query).classList.add("on");
+
+        var query1 = ".halfitem[data-filename=\""+ selectedFiles[i] +"\"]";
+        console.log(document.querySelectorAll(query1).length)
+
+        if (document.querySelectorAll(query1).length === 1 && 
+            !document.querySelector(query1).classList.contains("on") ) {
+            document.querySelector(query1).classList.add("on");
         }
     }
 }
@@ -136,10 +142,11 @@ updateDisplayList();
 function updateDisplayList() {
     console.log("sdf")
     if (document.querySelectorAll(".js-selectedimages").length === 1) {
-        var html = "";
+        var html = "<h2>Geselecteerde bestanden</h2><ul>";
         for (var i = 0; i < selectedFiles.length; i++) {
-            html += selectedFiles[i] + "<br />";
+            html += "<li><span class='close'></span> "+ selectedFiles[i] + "</li>";
         }
+        html += "</ul>";
         document.querySelector(".js-selectedimages").innerHTML = html;
     }
     
