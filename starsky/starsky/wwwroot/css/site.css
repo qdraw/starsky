@@ -898,10 +898,11 @@ float: left;
     background-size: cover;
 }
 @media screen and (max-width: 600px) {
-    .sidebar .close {
+    .sidebar > .close {
         right: 0px;
         top: 0px;
         position: fixed;
+        z-index: 500;
     }
 }
 .sidebar .close.collapsed{
