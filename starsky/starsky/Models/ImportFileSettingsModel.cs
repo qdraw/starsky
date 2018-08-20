@@ -19,9 +19,11 @@ namespace starsky.Models
         // Construct model using a request
         public ImportSettingsModel(HttpRequest request)
         {
-            bool.TryParse(request.Headers["AgeFileFilter"], out var ageFileFilter);
-            AgeFileFilter = ageFileFilter;
-            
+
+            AgeFileFilter = true;
+            if(request.Headers["AgeFileFilter"].ToString().ToLower() == "false")
+                AgeFileFilter = false;
+
             int.TryParse(request.Headers["ColorClass"], out var colorClass);
             ColorClass = colorClass;
 
@@ -49,8 +51,8 @@ namespace starsky.Models
         }
 
         public bool DeleteAfter { get; set; }
-        
-        public bool AgeFileFilter { get; set; }
+
+        public bool AgeFileFilter { get; set; } // default true
         
         public bool RecursiveDirectory { get; set; }
 
