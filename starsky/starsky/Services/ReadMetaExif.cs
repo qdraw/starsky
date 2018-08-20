@@ -41,11 +41,15 @@ namespace starsky.Services
             
             // Set the default value
             item.ColorClass = item.GetColorClass();
+            
+            // Set the default value
+            item.Orientation = item.SetAbsoluteOrientation("1");
 
             item.Latitude = GetGeoLocationLatitude(allExifItems);
             item.Longitude = GetGeoLocationLongitude(allExifItems);
             item.SetImageWidth(GetImageWidthHeight(allExifItems,true));
             item.SetImageHeight(GetImageWidthHeight(allExifItems,false));
+            
             
             foreach (var exifItem in allExifItems)
             {
