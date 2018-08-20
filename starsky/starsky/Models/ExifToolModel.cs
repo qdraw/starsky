@@ -138,6 +138,8 @@ namespace starsky.Models
             var toBeAddedKeywordsStringBuilder = new StringBuilder();
             foreach (var keyword in hashSetKeywords)
             {
+                if (string.IsNullOrWhiteSpace(keyword)) continue;
+                
                 if (!string.IsNullOrWhiteSpace(keyword) && keyword != hashSetKeywords.LastOrDefault())
                 {
                     toBeAddedKeywordsStringBuilder.Append(keyword + ", ");

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -142,14 +143,9 @@ namespace starsky.Controllers
                         continue;
                 }
 
-                if (append)
-                {
-                    updateModel.Tags = detailView.FileIndexItem.Tags;
-                    updateModel.CaptionAbstract = detailView.FileIndexItem.Description;
-                }
-                
-                updateModel.Tags += tags;
-                updateModel.CaptionAbstract += captionAbstract;
+                // Feature to add or update the strings
+                updateModel.Tags = AddOrAppendStings(tags,append,true,detailView.FileIndexItem.Tags);
+                updateModel.CaptionAbstract = AddOrAppendStings(captionAbstract,append,false,detailView.FileIndexItem.Description);
     
                 // Parse ColorClass and add it
                 // This SetColorClass does return DoNotChange and all other tags
@@ -193,6 +189,22 @@ namespace starsky.Controllers
                 return NotFound(exifToolResultsList);
             
             return Json(exifToolResultsList);
+        }
+
+        public string AddOrAppendStings(string inputString, bool append, bool commaseperate, string appendedString)
+        {
+            var inputStringBulder = new StringBuilder(inputString);
+            
+            if (append && !commaseperate)
+            {
+                inputStringBulder.Append(appendedString);
+            }
+
+            if (append && commaseperate && !string.IsNullOrEmpty(inputString))
+            {
+                inputStringBulder.Append(", " + appendedString);
+            }
+            return inputStringBulder.ToString();
         }
 
         public void UpdateSingleItemToDatabase(
