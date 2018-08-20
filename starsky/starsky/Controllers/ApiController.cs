@@ -99,10 +99,12 @@ namespace starsky.Controllers
         /// <param name="f">subpath filepath to file, split by dot comma (;)</param>
         /// <param name="orientation">relative orentation -1 or 1</param>
         /// <param name="collections">StackCollections bool</param>
+        /// <param name="append">only for stings, add update to existing items</param>
         /// <returns></returns>
         [HttpPost]
         public IActionResult Update(string tags, string colorClass,
-            string captionAbstract, string f, int orientation, bool collections = true)
+            string captionAbstract, string f, int orientation, 
+            bool collections = true, bool append = false)
         {
             // input devided by dot comma and blank values are removed
             var inputFilePaths = f.Split(";");
@@ -139,9 +141,15 @@ namespace starsky.Controllers
                         exifToolResultsList.Add(updateModel);
                         continue;
                 }
-    
-                updateModel.Tags = tags;
-                updateModel.CaptionAbstract = captionAbstract;
+
+                if (append)
+                {
+                    updateModel.Tags = detailView.FileIndexItem.Tags;
+                    updateModel.CaptionAbstract = detailView.FileIndexItem.Description;
+                }
+                
+                updateModel.Tags += tags;
+                updateModel.CaptionAbstract += captionAbstract;
     
                 // Parse ColorClass and add it
                 // This SetColorClass does return DoNotChange and all other tags
@@ -187,13 +195,13 @@ namespace starsky.Controllers
             return Json(exifToolResultsList);
         }
 
-        public void UpdateSingleItemToDatabase(string collectionSubPath, 
+        public void UpdateSingleItemToDatabase(
+            string collectionSubPath, 
             string collectionFullPath,
             List<ExifToolModel> exifToolResultsList, 
             ExifToolModel updateModel,
             string oldHashCode,
-            int orientation
-            )
+            int orientation)
         {
             var singleItem = _query.SingleItem(collectionSubPath,null,false,false);
     
@@ -205,7 +213,7 @@ namespace starsky.Controllers
             {
                 singleItem.FileIndexItem.Tags = updateModel.Tags;
             }
-    
+            
             if (!string.IsNullOrEmpty(updateModel.CaptionAbstract))
             {
                 singleItem.FileIndexItem.Description = updateModel.CaptionAbstract;
