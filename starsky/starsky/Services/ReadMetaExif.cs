@@ -44,8 +44,8 @@ namespace starsky.Services
 
             item.Latitude = GetGeoLocationLatitude(allExifItems);
             item.Longitude = GetGeoLocationLongitude(allExifItems);
-            item.SetImageWidth(GetImageWidth(allExifItems));
-            item.SetImageHeight(GetImageHeight(allExifItems));
+            item.SetImageWidth(GetImageWidthHeight(allExifItems,true));
+            item.SetImageHeight(GetImageWidthHeight(allExifItems,false));
             
             foreach (var exifItem in allExifItems)
             {
@@ -327,14 +327,20 @@ namespace starsky.Services
             return (degrees + minutes) * multiplier;
         }
         
-        public int GetImageHeight(List<MetadataExtractor.Directory> allExifItems)
+        public int GetImageWidthHeight(List<MetadataExtractor.Directory> allExifItems,bool isWidth)
         {
             // The size lives normaly in the first 5 headers;
-            var directoryNames = new[] {"JPEG", "PNG-IHDR", "BMP Header", "GIF Header"};
+            // > "Exif IFD0" .dng
+            // [Exif SubIFD] > arw; on header place 17&18
+            var directoryNames = new[] {"JPEG", "PNG-IHDR", "BMP Header", "GIF Header", "Exif IFD0", "Exif SubIFD"};
             foreach (var dirName in directoryNames)
             {
                 var typeName = "Image Height";
-                var maxcount = 5;
+                if (isWidth) typeName = "Image Width";
+
+                var maxcount = 6;
+                if(dirName == "Exif SubIFD") maxcount = 30; // on header place 17&18
+                
                 if (allExifItems.Count <= 5) maxcount = allExifItems.Count;
                 for (int i = 0; i < maxcount; i++)
                 {
@@ -356,38 +362,6 @@ namespace starsky.Services
             }
             return 0;
         }
-        
-        public int GetImageWidth(List<MetadataExtractor.Directory> allExifItems)
-        {
-            // The size lives normaly in the first 5 headers;
-            var directoryNames = new[] {"JPEG", "PNG-IHDR", "BMP Header", "GIF Header"};
-            foreach (var dirName in directoryNames)
-            {
-                var typeName = "Image Width";
-                var maxcount = 5;
-                if (allExifItems.Count <= 5) maxcount = allExifItems.Count;
-                for (int i = 0; i < maxcount; i++)
-                {
-                    var exifItem = allExifItems[i];
-
-                    var ratingCountsJpeg =
-                        exifItem.Tags.Count(p => p.DirectoryName == dirName && p.Name.Contains(typeName));
-                    if (ratingCountsJpeg >= 1)
-                    {
-                        var widthTag = exifItem.Tags
-                            .FirstOrDefault(p => p.DirectoryName == dirName && p.Name.Contains(typeName))
-                            ?.Description;
-                        widthTag = widthTag?.Replace(" pixels", string.Empty);
-                        int.TryParse(widthTag, out var widthInt);
-                        if (widthInt >= 1) return widthInt;
-                        return 0;
-                    }
-                }
-            }
-            return 0;
-        }
-        
-        
 
 
     }
