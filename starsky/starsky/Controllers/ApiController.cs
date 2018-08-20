@@ -310,7 +310,9 @@ namespace starsky.Controllers
                         ColorClass = databaseItem.ColorClass,
                         Tags = databaseItem.Tags,
                         Orientation = databaseItem.Orientation,
-                        Status = ExifToolModel.ExifStatus.Ok
+                        Status = ExifToolModel.ExifStatus.Ok,
+                        ImageWidth = databaseItem.ImageWidth,
+                        ImageHeight = databaseItem.ImageHeight
                     };
                     exifToolResultsList.Add(infoModel);
                 }

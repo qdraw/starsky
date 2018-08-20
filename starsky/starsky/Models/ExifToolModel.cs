@@ -109,6 +109,8 @@ namespace starsky.Models
         //  Orientation   : 6
         public FileIndexItem.Rotation Orientation { get; set; }
         
+        public ushort ImageWidth { get; set; }
+        public ushort ImageHeight { get; set; }
         
         public enum ExifStatus
         {

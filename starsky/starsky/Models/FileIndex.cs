@@ -302,6 +302,25 @@ namespace starsky.Models
             }
         }
 
+        // Unexpeted side effect: when rotating; this may not be updated
+        // type > ushort 0-65535
+        public ushort ImageWidth { get; set; }
+        public ushort ImageHeight { get; set; }
+
+        public void SetImageWidth(int imageWidth)
+        {
+            if(imageWidth >= 1 && imageWidth <= ushort.MaxValue ) 
+                ImageWidth = (ushort) imageWidth;
+        }
+        
+        public void SetImageHeight(int imageHeight)
+        {
+            if(imageHeight >= 1 && imageHeight <= ushort.MaxValue ) 
+                ImageHeight = (ushort) imageHeight;
+        }
+        
+        
+
         public static string GetDisplayName(Enum enumValue)
         {
             var name = enumValue.GetType()?
