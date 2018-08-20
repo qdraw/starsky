@@ -307,10 +307,22 @@ namespace starsky.Models
         public ushort ImageWidth { get; set; }
         public ushort ImageHeight { get; set; }
 
+        public void SetImageWidth(string imageWidth)
+        {
+            int.TryParse(imageWidth, out var parsedInt);
+            SetImageWidth(parsedInt);
+        }
+
         public void SetImageWidth(int imageWidth)
         {
             if(imageWidth >= 1 && imageWidth <= ushort.MaxValue ) 
                 ImageWidth = (ushort) imageWidth;
+        }
+
+        public void SetImageHeight(string imageHeight)
+        {
+            int.TryParse(imageHeight, out var parsedInt);
+            SetImageHeight(parsedInt);
         }
         
         public void SetImageHeight(int imageHeight)

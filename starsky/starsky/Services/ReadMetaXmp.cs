@@ -124,7 +124,7 @@ namespace starsky.Services
                 //    Path=dc:title[1]/xml:lang Namespace=http://www.w3...
                 var title = GetNullNameSpace(property, "dc:title[1]");
                 if (title != null) item.Title = title;
-
+                
 //                Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
 
             }
@@ -176,6 +176,20 @@ namespace starsky.Services
                 if (rotation != null)
                 {
                     item.SetAbsoluteOrientation(rotation);
+                }
+                
+                //  Path=tiff:ImageLength Namespace=http://ns.adobe.com/tiff/1.0/ Value=13656
+                var height = GetContentNameSpace(property, "tiff:ImageLength");
+                if (height != null)
+                {
+                    item.SetImageHeight(height);
+                }
+
+                //  Path=tiff:ImageWidth Namespace=http://ns.adobe.com/tiff/1.0/ Value=15504
+                var width = GetContentNameSpace(property, "tiff:ImageWidth");
+                if (width != null)
+                {
+                    item.SetImageWidth(width);
                 }
 
             }
