@@ -158,7 +158,27 @@ namespace starskytests.Models
             
             Assert.AreEqual(anserDateTime,input.DateTime);
         }
-        
+
+        [TestMethod]
+        public void ImportIndexItemParse_ParseDateTimeFromFileNameWithSpaces_Test()
+        {
+            var input = new ImportIndexItem(new AppSettings())
+            {
+                SourceFullFilePath = Path.DirectorySeparatorChar + "2018 08 20 19 03 00.jpg"
+            };
+            
+            input.ParseDateTimeFromFileName();
+
+            DateTime.TryParseExact(
+                "20180820_190300", 
+                "yyyyMMdd_HHmmss",
+                CultureInfo.InvariantCulture, 
+                DateTimeStyles.None, 
+                out var anserDateTime);
+            
+            Assert.AreEqual(anserDateTime,input.DateTime);
+        }
+
         [TestMethod]
         public void ImportIndexItemParse_ParseDateTimeFromFileNameWithExtraFileNameBase_Test()
         {

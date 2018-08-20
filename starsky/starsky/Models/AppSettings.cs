@@ -17,11 +17,16 @@ namespace starsky.Models
             DatabaseType = DatabaseTypeList.Sqlite;
             DatabaseConnection = SqliteFullPath("Data Source=data.db",BaseDirectoryProject);
             
+            // Cache for thumbs
             ThumbnailTempFolder = Path.Combine(BaseDirectoryProject, "thumbnailTempFolder");
             if(!Directory.Exists(ThumbnailTempFolder)) Directory.CreateDirectory(ThumbnailTempFolder);
 
             StorageFolder = Path.Combine(BaseDirectoryProject, "storageFolder");
             if(!Directory.Exists(StorageFolder)) Directory.CreateDirectory(StorageFolder);
+
+            // may be cleaned after restart (not implemented)
+            TempFolder = Path.Combine(BaseDirectoryProject, "temp");
+            if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
             
             // AddMemoryCache defaults in prop
         }
@@ -146,6 +151,15 @@ namespace starsky.Models
             }
         }
         
+        private string _tempFolder;
+        public string TempFolder
+        {
+            get { return _tempFolder; }
+            set
+            {
+                _tempFolder = ConfigRead.AddBackslash(value);
+            }
+        }
 
 
         public string ExifToolPath { get; set; }

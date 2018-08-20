@@ -99,7 +99,7 @@ namespace starsky.Helpers
             {
                 var guid = "_import_" + Guid.NewGuid().ToString().Substring(0, 5) + ".unknown";
                 guid = guid.Replace("=", string.Empty);
-                var path = Path.Combine(appSettings.ThumbnailTempFolder, guid);
+                var path = Path.Combine(appSettings.TempFolder, guid);
                 return path;
             }
             
@@ -120,13 +120,12 @@ namespace starsky.Helpers
             
             importIndexItem.ParseDateTimeFromFileName();
             
-            //  Magic string "_import_"  used in: ParseDateTimeFromFileName()
             
-            // Files that are not good parsed will be _import_00010101_000000.jpg
+            // Files that are not good parsed will be 00010101_000000.jpg
             // By default those files are ignored by the ageing filter
-            
-            
-            return Path.Combine(appSettings.ThumbnailTempFolder, "_import_" + importIndexItem.ParseFileName(false) );
+
+            var filename = importIndexItem.ParseFileName(false);
+            return Path.Combine(appSettings.TempFolder, filename );
         }
 
         
