@@ -99,6 +99,7 @@ namespace starsky.Controllers
         /// <param name="captionAbstract">string to update description/caption abstract, emthy will be ignored</param>
         /// <param name="f">subpath filepath to file, split by dot comma (;)</param>
         /// <param name="orientation">relative orentation -1 or 1</param>
+        /// <param name="title">edit image title</param>
         /// <param name="collections">StackCollections bool</param>
         /// <param name="append">only for stings, add update to existing items</param>
         /// <returns></returns>
@@ -144,9 +145,13 @@ namespace starsky.Controllers
                 }
 
                 // Feature to add or update the strings
-                updateModel.Tags = AddOrAppendStings(tags,append,true,detailView.FileIndexItem.Tags);
-                updateModel.CaptionAbstract = AddOrAppendStings(captionAbstract,append,false,detailView.FileIndexItem.Description);
-    
+                updateModel.Tags = AddOrAppendStings(detailView.FileIndexItem.Tags,append,true,tags);
+                updateModel.CaptionAbstract = AddOrAppendStings(detailView.FileIndexItem.Description,append,
+                    false,captionAbstract);
+                updateModel.ObjectName = AddOrAppendStings(detailView.FileIndexItem.Title,append,
+                    false,title);
+                
+                
                 // Parse ColorClass and add it
                 // This SetColorClass does return DoNotChange and all other tags
                 updateModel.ColorClass = detailView.FileIndexItem.GetColorClass(colorClass);
@@ -217,6 +222,10 @@ namespace starsky.Controllers
         {
             var singleItem = _query.SingleItem(collectionSubPath,null,false,false);
     
+            
+            // When adding new object >> Check ExifToolModel >> 
+            
+            
             // make a new object to avoid references
             var displayUpdateModel = new ExifToolModel(updateModel); 
             displayUpdateModel.SourceFile = collectionSubPath;
@@ -229,6 +238,11 @@ namespace starsky.Controllers
             if (!string.IsNullOrEmpty(updateModel.CaptionAbstract))
             {
                 singleItem.FileIndexItem.Description = updateModel.CaptionAbstract;
+            }
+            
+            if (!string.IsNullOrEmpty(updateModel.ObjectName))
+            {
+                singleItem.FileIndexItem.Title = updateModel.ObjectName;
             }
                     
             // In the model there is a filter
@@ -302,17 +316,18 @@ namespace starsky.Controllers
                 // loop though the collection paths; even if it is one item
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
-                    var databaseItem = _readMeta.ReadExifAndXmpFromFile(collectionFullPaths[i]);
+                    var fileItem = _readMeta.ReadExifAndXmpFromFile(collectionFullPaths[i]);
                     var infoModel = new ExifToolModel
                     {
                         SourceFile = collectionSubPathList[i],
-                        CaptionAbstract = databaseItem.Description,
-                        ColorClass = databaseItem.ColorClass,
-                        Tags = databaseItem.Tags,
-                        Orientation = databaseItem.Orientation,
+                        CaptionAbstract = fileItem.Description,
+                        ColorClass = fileItem.ColorClass,
+                        Tags = fileItem.Tags,
+                        Orientation = fileItem.Orientation,
+                        ImageWidth = fileItem.ImageWidth,
+                        ImageHeight = fileItem.ImageHeight,
+                        ObjectName = fileItem.Title,
                         Status = ExifToolModel.ExifStatus.Ok,
-                        ImageWidth = databaseItem.ImageWidth,
-                        ImageHeight = databaseItem.ImageHeight
                     };
                     exifToolResultsList.Add(infoModel);
                 }

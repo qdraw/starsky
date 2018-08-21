@@ -17,6 +17,7 @@ namespace starsky.Models
             CaptionAbstract = model.CaptionAbstract;
             Keywords = model.Keywords;
             Orientation = model.Orientation;
+            ObjectName = model.ObjectName;
             Status = model.Status;
         }
         
@@ -38,6 +39,8 @@ namespace starsky.Models
                 _captionabstract = value.Replace("\"", "\'");
             } 
         }
+
+        public string ObjectName { get; set; } = string.Empty;
         
         // overwrite "-xmp:Description" over -CaptionAbstract
         public string Description
@@ -122,6 +125,7 @@ namespace starsky.Models
         
         [JsonConverter(typeof(StringEnumConverter))]
         public ExifStatus Status { get; set; }
+
 
 
         private static HashSet<string> stringToHashSet(string inputKeywords)
