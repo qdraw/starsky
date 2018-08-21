@@ -33,7 +33,8 @@ namespace starsky.Models
         
         public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
             .Replace("starskysynccli", "starsky")
-            .Replace("starskyimportercli", "starsky");
+            .Replace("starskyimportercli", "starsky")
+            .Replace("starskywebhtmlcli", "starsky");
         // When adding or updating please also update SqliteFullPath()
 
         private string _storageFolder; // in old versions: basePath 
@@ -175,6 +176,8 @@ namespace starsky.Models
         
         // For using <Link> in headers
         public bool AddHttp2Optimizations  { get; set; } = true;
+
+        public List<AppSettingsPublishProfiles> PublishProfiles { get; set; } = new List<AppSettingsPublishProfiles>();
 
         
         // -------------------------------------------------

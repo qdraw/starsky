@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskyimportercli", "stars
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskytests", "starskytests\starskytests.csproj", "{1E2346C0-67B3-4538-8F76-B152AA65BB1B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskywebhtmlcli", "starskywebhtmlcli\starskywebhtmlcli.csproj", "{AAD17FA3-3D15-442E-8FD1-17CE74A2F20C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{1E2346C0-67B3-4538-8F76-B152AA65BB1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E2346C0-67B3-4538-8F76-B152AA65BB1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E2346C0-67B3-4538-8F76-B152AA65BB1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAD17FA3-3D15-442E-8FD1-17CE74A2F20C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAD17FA3-3D15-442E-8FD1-17CE74A2F20C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAD17FA3-3D15-442E-8FD1-17CE74A2F20C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAD17FA3-3D15-442E-8FD1-17CE74A2F20C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
