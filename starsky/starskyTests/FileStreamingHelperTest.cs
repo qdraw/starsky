@@ -114,20 +114,20 @@ namespace starskytests
         [TestMethod]
         public void FileStreamingHelper_GetTempFilePath_ParseStringSimple_Option()
         {
-            _appSettings.ThumbnailTempFolder = String.Empty;
+            _appSettings.TempFolder = String.Empty;
             _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
 
             var tempFilePath = FileStreamingHelper.GetTempFilePath("20180123_132404.jpg",_appSettings);
-            Assert.AreEqual("_import_20180123_132404.jpg",tempFilePath);
+            Assert.AreEqual("20180123_132404.jpg",tempFilePath);
         }
         
         [TestMethod]
         public void FileStreamingHelper_GetTempFilePath_ParseStringWithDots_Option()
         {
-            _appSettings.ThumbnailTempFolder = string.Empty;
+            _appSettings.TempFolder = string.Empty;
             _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
             var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04.jpg",_appSettings);
-            Assert.AreEqual("_import_20180123_132404.jpg",tempFilePath);
+            Assert.AreEqual("20180123_132404.jpg",tempFilePath);
         }
 
         [TestMethod]
@@ -151,10 +151,10 @@ namespace starskytests
         [TestMethod]
         public void FileStreamingHelper_GetTempFilePath_ParseStringAppendix1_Option()
         {
-            _appSettings.ThumbnailTempFolder = string.Empty;
+            _appSettings.TempFolder = string.Empty;
             _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
             var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04-1.jpg",_appSettings);
-            Assert.AreEqual("_import_20180123_132404.jpg",tempFilePath);
+            Assert.AreEqual("20180123_132404.jpg",tempFilePath);
         }
         
       

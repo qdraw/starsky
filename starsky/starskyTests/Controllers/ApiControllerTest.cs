@@ -229,7 +229,7 @@ namespace starskytests.Controllers
             InsertSearchData();
             
             var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue,_readmeta);
-            var jsonResult = controller.Update("test", "1", "test", createAnImage.DbPath,0) as JsonResult;
+            var jsonResult = controller.Update("test", "1", "test", createAnImage.DbPath,0,string.Empty) as JsonResult;
             var exiftoolModel = jsonResult.Value as List<ExifToolModel>;
             //you could not test because exiftool is an external dependency
             Assert.AreNotEqual(null,exiftoolModel.FirstOrDefault().Tags);            
@@ -254,7 +254,7 @@ namespace starskytests.Controllers
                 };
 
             var notFoundResult = controller.Update(
-                "test", "1", "test", "/345678765434567.jpg",0) as NotFoundObjectResult;
+                "test", "1", "test", "/345678765434567.jpg",0,string.Empty) as NotFoundObjectResult;
             Assert.AreEqual(404,notFoundResult.StatusCode);
 
             _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);

@@ -104,7 +104,7 @@ namespace starsky.Controllers
         /// <returns></returns>
         [HttpPost]
         public IActionResult Update(string tags, string colorClass,
-            string captionAbstract, string f, int orientation, 
+            string captionAbstract, string f, int orientation, string title,
             bool collections = true, bool append = false)
         {
             // input devided by dot comma and blank values are removed
