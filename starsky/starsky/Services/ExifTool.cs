@@ -173,7 +173,8 @@ namespace starsky.Services
                 
                 if (!string.IsNullOrWhiteSpace(updateModel.ObjectName))
                 {
-                    command += " -ObjectName=\"" + updateModel.ObjectName + "\"";
+                    command += " -ObjectName=\"" + updateModel.ObjectName + "\"" 
+                               + " \"-xmp:title\"=" + "\"" + updateModel.ObjectName  + "\"" ;
                 }
                
                 if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
@@ -245,7 +246,7 @@ namespace starsky.Services
                 var fullFilePathStringBuilder = Quoted(null,fullFilePath);
     
                 // -Orientation# <= hashtag is that exiftool must output a int and not a human readable string
-                return parseJson(BaseCommmand("-Keywords -ObjectName \"-Orientation#\" -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
+                return parseJson(BaseCommmand("-Keywords \"-xmp:title\" -ObjectName \"-Orientation#\" -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
                     fullFilePathStringBuilder.ToString()));
             }
 

@@ -39,8 +39,6 @@ namespace starsky.Models
                 _captionabstract = value.Replace("\"", "\'");
             } 
         }
-
-        public string ObjectName { get; set; } = string.Empty;
         
         // overwrite "-xmp:Description" over -CaptionAbstract
         public string Description
@@ -106,6 +104,19 @@ namespace starsky.Models
             }
         }
 
+        public string ObjectName { get; set; } = string.Empty;
+        
+        // overwrite "-xmp:title" over -ObjectName
+        public string Title
+        {
+            set {
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    ObjectName = value;
+                }
+            }
+        }
+        
 
         public DateTime AllDatesDateTime { get; set; }
         
