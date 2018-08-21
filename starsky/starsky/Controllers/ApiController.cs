@@ -145,11 +145,11 @@ namespace starsky.Controllers
                 }
 
                 // Feature to add or update the strings
-                updateModel.Tags = AddOrAppendStings(detailView.FileIndexItem.Tags,append,true,tags);
-                updateModel.CaptionAbstract = AddOrAppendStings(detailView.FileIndexItem.Description,append,
-                    false,captionAbstract);
-                updateModel.ObjectName = AddOrAppendStings(detailView.FileIndexItem.Title,append,
-                    false,title);
+                updateModel.Tags = AddOrAppendStings(tags,append,true,detailView.FileIndexItem.Tags);
+                updateModel.CaptionAbstract = AddOrAppendStings(captionAbstract,append,
+                    false,detailView.FileIndexItem.Description);
+                updateModel.ObjectName = AddOrAppendStings(title,append,
+                    false,detailView.FileIndexItem.Title);
                 
                 
                 // Parse ColorClass and add it
@@ -198,7 +198,11 @@ namespace starsky.Controllers
 
         public string AddOrAppendStings(string inputString, bool append, bool commaseperate, string appendedString)
         {
-            var inputStringBulder = new StringBuilder(inputString);
+            // >>   "objectName": "dion2dion",
+            // todo bug: append is prepend
+            
+            var inputStringBulder = new StringBuilder();
+            inputStringBulder.Append(inputString);
             
             if (append && !commaseperate)
             {

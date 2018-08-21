@@ -41,13 +41,8 @@
                  name="keywords" onfocusout="updateCaptionAbstract()" data-previouscontent="@Model.FileIndexItem.Description">@Model.FileIndexItem.Description</div>
             <a class="btn btn-default disabled" type="submit" onClick="updateCaptionAbstract()">Update</a>
         </div>
+        
         <div>
-            @{
-                if (!string.IsNullOrWhiteSpace(@Model.FileIndexItem.Title))
-                {
-                    <p>Title: <em>@Model.FileIndexItem.Title</em></p>
-                }
-            }
             @{
                 if (Model.FileIndexItem.DateTime.Year >= 2)
                 {
@@ -74,6 +69,12 @@
                     }
                 }
             }
+        </div>
+        <div class="form-inline form-wrapper" id="js-objectname-update">
+            <p>Titel:</p>
+            <div class="form-control js-objectname contenteditable disabled" contenteditable="false" 
+                 name="keywords" onfocusout="updateObjectName()" data-previouscontent="@Model.FileIndexItem.Title">@Model.FileIndexItem.Title</div>
+            <a class="btn btn-default disabled" type="submit" onClick="updateObjectName()">Update</a>
         </div>
         
         <div class="addDeleteTag disabled">

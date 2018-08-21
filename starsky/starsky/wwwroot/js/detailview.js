@@ -103,7 +103,8 @@ function updateDeletedKeywordElement(data) {
                document.querySelector(".js-keywords").classList.add("disabled");
                document.querySelector(".js-captionabstract").classList.add("disabled");
                document.querySelector('.js-captionabstract').contentEditable = false;
-
+               document.querySelector(".js-objectname").classList.add("disabled");
+               document.querySelector('.js-objectname').contentEditable = false;
        } else {
                document.querySelector(".addDeleteTag").classList.remove("fileIsDeleted");
                document.querySelector(".addDeleteTag a").innerHTML = "Verplaats naar prullenmand";
@@ -114,6 +115,8 @@ function updateDeletedKeywordElement(data) {
                document.querySelector('.js-keywords').contentEditable = true;
                document.querySelector(".js-captionabstract").classList.remove("disabled");
                document.querySelector('.js-captionabstract').contentEditable = true;
+               document.querySelector(".js-objectname").classList.remove("disabled");
+               document.querySelector('.js-objectname').contentEditable = true;
        }
    }
 }
@@ -128,6 +131,7 @@ if (document.querySelectorAll("#js-keywords-update").length === 1 &&
            updateDeletedKeywordElement(data[0]);
            updateColorClassButtons(data[0].colorClass);
            updateCaptionAbstractFromInput(data[0]);
+           updateObjectNameFromInput(data[0]);
            hidePreloader();
        },
        function (xhr) {
@@ -229,9 +233,44 @@ function updateCaptionAbstract() {
             queryCaptionAbstract(captionabstract.textContent);
             captionabstract.dataset.previouscontent = captionabstract.textContent;
         }
-
     }
 }
+
+function updateObjectName() {
+    if (document.querySelectorAll("#js-objectname-update").length === 1){
+        var objectname = document.querySelector('.js-objectname');
+
+        // check if content already is send to the server
+        if (objectname.textContent !== objectname.dataset.previouscontent) {
+            queryObjectName(objectname.textContent);
+            objectname.dataset.previouscontent = objectname.textContent;
+        }
+    }
+}
+
+function queryObjectName(queryItem) {
+
+    addUnloadWarning();
+    showPreloader();
+
+    var url = updateApiBase + "&title=" + queryItem;
+    loadJSON(url,
+        function (data) {
+            hideUnloadWarning();
+            hidePreloader();
+        },
+        function (xhr) { console.error(xhr); },
+        "POST"
+    );
+}
+
+function updateObjectNameFromInput(data) {
+    if (document.querySelectorAll("#js-objectname-update").length === 1) {
+        document.querySelector('.js-objectname').textContent = data["objectName"];
+        document.querySelector('#js-objectname-update .btn').classList.remove("disabled");
+    }
+}
+
 
 function updateCaptionAbstractFromInput(data) {
     if (document.querySelectorAll("#js-captionabstract-update").length === 1) {
