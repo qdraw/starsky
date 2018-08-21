@@ -6,6 +6,7 @@
    - [starskysynccli](../../starsky/starskysynccli/readme.md)  _database command line interface [(files)](../../starsky/starskysynccli/)_
    - [starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface [(files)](../../starsky/starskyimportercli/)
    - [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests [(files)](../../starsky/starskyTests)_
+   - [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files [(files)](../../starsky/starskyTests)_
  - starsky-node-client  _(depreciated)_
  - [starskyapp](../../starskyapp) _React-Native app (Pre-alpha code)_
 
