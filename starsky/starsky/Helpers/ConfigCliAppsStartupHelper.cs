@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.AspNetCore.Mvc.Razor.Internal;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -19,14 +25,30 @@ namespace starsky.Helpers
         private readonly ImportService _import;
         private readonly SyncService _isync;
         private readonly ServiceProvider _serviceProvider;
+//        private ViewRenderService _viewRender;
 
-        public ConfigCliAppsStartupHelper()
+
+        public ConfigCliAppsStartupHelper(bool isViewRender = false)
         {
             // Only for CLI apps
 
             // Inject Fake Exiftool; dependency injection
             var services = new ServiceCollection();
             services.AddSingleton<IExiftool, ExifTool>();
+
+//            if (isViewRender)
+//            {
+//                services.AddSingleton<IRazorPageFactoryProvider,DefaultRazorPageFactoryProvider>();
+//                services.AddSingleton<IViewCompilerProvider,RazorViewCompilerProvider>();
+//                services.AddSingleton<IRazorViewEngine,RazorViewEngine>();
+//                services.AddSingleton<ApplicationPartManager>();
+//                services.AddSingleton<RazorTemplateEngine>();
+//                services.AddSingleton<Microsoft.AspNetCore.Razor.Language.RazorEngine>();
+//
+//                
+//                services.AddSingleton<ITempDataProvider,SessionStateTempDataProvider>();
+//                services.AddSingleton<IViewRenderService, ViewRenderService>();
+//            }
 
             // Inject Config helper
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
@@ -87,6 +109,14 @@ namespace starsky.Helpers
             
             _isync = new SyncService(context, query, appSettings,readmeta);
 
+//            if (isViewRender)
+//            {
+//                var razorViewEngine = _serviceProvider.GetRequiredService<IRazorViewEngine>();
+//                var tempDataProvider = _serviceProvider.GetRequiredService<ITempDataProvider>();
+//                _viewRender = new ViewRenderService(razorViewEngine,tempDataProvider,_serviceProvider);
+//            }
+            
+            
             // TOC:
             //   _context = context
             //   _isync = isync

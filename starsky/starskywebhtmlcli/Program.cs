@@ -13,7 +13,7 @@ namespace starskywebhtmlcli
             // Use args in application
              new ArgsHelper().SetEnvironmentByArgs(args);
             
-            var startupHelper = new ConfigCliAppsStartupHelper();
+            var startupHelper = new ConfigCliAppsStartupHelper(true);
             var appSettings = startupHelper.AppSettings();
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
             
@@ -49,7 +49,9 @@ namespace starskywebhtmlcli
                 return;
             }
             
-            new OverlayImage(appSettings).OverlayImageNow();
+            ViewRender.Render();
+            
+//            new OverlayImage(appSettings).OverlayImageNow();
             
 //            // Using both options
 //            string subpath;
