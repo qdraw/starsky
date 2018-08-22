@@ -34,24 +34,43 @@ namespace starskywebhtmlcli.Services
         
         public void Render(List<FileIndexItem> fileIndexItemList)
         {
+
+            var path = CompileDll();
+//            var path = "/data/git/starsky/starsky/starskywebhtmlcli/hello.dll";
+
+            // load the built dll
+            Console.WriteLine(path);
+            var asm = Assembly.LoadFile(path);
+                        
+            // the generated type is defined in our custom namespace, as we asked.
+            // "Template" is the type name that razor uses by default.
+            Console.WriteLine(asm.GetType("starskywebhtmlcli.Services.Template"));
+                        
+            var template = (GenerateStaticPage) Activator.CreateInstance(
+                asm.GetType("starskywebhtmlcli.Services.Template"));
+            
+            // Inject before excuting
+            template.Model = fileIndexItemList;
+            template.AppSettings = _appSettings;
+
+            // run the code.
+            // should display "Hello Killroy, welcome to Razor World!"
+            template.ExecuteAsync().Wait();
+        }
+
+        public string CompileDll(){
             // points to the local path
             var fs = RazorProjectFileSystem.Create(".");
-
+            
+            var item = fs.GetItem("hello.cshtml");
+            
             // customize the default engine a little bit
             var engine = RazorProjectEngine.Create(RazorConfiguration.Default, fs, (builder) =>
             {
                 InheritsDirective.Register(builder);
                 builder.SetNamespace("starskywebhtmlcli.Services"); // define a namespace for the Template class
             });
-
-            // get a razor-templated file. My "hello.txt" template file is defined like this:
-            //
-            // @inherits RazorTemplate.MyTemplate
-            // Hello @Model.Name, welcome to Razor World!
-            //
-
-            var item = fs.GetItem("hello.cshtml");
-
+            
             // parse and generate C# code, outputs it on the console
             var codeDocument = engine.Process(item);
             var cs = codeDocument.GetCSharpDocument();
@@ -97,27 +116,10 @@ namespace starskywebhtmlcli.Services
             if (!result.Success)
             {
                 Console.WriteLine(string.Join(Environment.NewLine, result.Diagnostics));
-                return;
+                return null;
             }
 
-            // load the built dll
-            Console.WriteLine(path);
-            var asm = Assembly.LoadFile(path);
-                        
-            // the generated type is defined in our custom namespace, as we asked.
-            // "Template" is the type name that razor uses by default.
-            Console.WriteLine(asm.GetType("starskywebhtmlcli.Services.Template"));
-                        
-            var template = (GenerateStaticPage) Activator.CreateInstance(
-                asm.GetType("starskywebhtmlcli.Services.Template"));
-            
-            // Inject before excuting
-            template.Model = fileIndexItemList;
-            template.AppSettings = _appSettings;
-
-            // run the code.
-            // should display "Hello Killroy, welcome to Razor World!"
-            template.ExecuteAsync().Wait();
+            return path;
         }
     } 
     
