@@ -41,7 +41,7 @@ namespace starsky.Helpers
         }
 
         // Returns a list of Files in a directory (non-recruisive)
-        public static string[] GetFilesInDirectory(string fullFilePath, AppSettings appSettings)
+        public static string[] GetFilesInDirectory(string fullFilePath)
         {
             if (fullFilePath == null) return Enumerable.Empty<string>().ToArray();
 

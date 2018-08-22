@@ -81,7 +81,7 @@ namespace starsky.Services
 
                 var databaseFileList = _query.GetAllFiles(singleFolder);
                 var singleFolderFullPath = _appSettings.DatabasePathToFilePath(singleFolder);
-                var localFarrayFilesFullFilePathStyle = Files.GetFilesInDirectory(singleFolderFullPath,_appSettings).ToList();
+                var localFarrayFilesFullFilePathStyle = Files.GetFilesInDirectory(singleFolderFullPath).ToList();
                 var localFarrayFilesDbStyle = RenameListItemsToDbStyle(localFarrayFilesFullFilePathStyle); 
                 databaseFileList = RemoveDuplicate(databaseFileList);
                 databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);

@@ -27,7 +27,7 @@ namespace starsky.Services
             
             foreach (var singleFolderFullPath in subFoldersFullPathList)
             {
-                string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath,_appSettings);
+                string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath);
                 var localFileListFileHash = FileHash.GetHashCode(filesInDirectoryFullPath);
 
                 for (int i = 0; i < filesInDirectoryFullPath.Length; i++)

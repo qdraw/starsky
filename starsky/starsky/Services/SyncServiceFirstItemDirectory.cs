@@ -18,7 +18,7 @@ namespace starsky.Services
 
             foreach (var singleFolderFullPath in subFoldersFullPath)
             {
-                string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath,_appSettings);
+                string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath);
 
                 if (filesInDirectoryFullPath.Length >= 1)
                 {

@@ -62,7 +62,7 @@ namespace starsky.Services
             // recursive
             if(importSettings.RecursiveDirectory) filesFullPathList = Files.GetFilesRecrusive(inputFullPath).ToList();
             // non-recursive
-            if(!importSettings.RecursiveDirectory) filesFullPathList = Files.GetFilesInDirectory(inputFullPath,_appSettings).ToList();
+            if(!importSettings.RecursiveDirectory) filesFullPathList = Files.GetFilesInDirectory(inputFullPath).ToList();
 
             var succesfullDirFullPaths = Import(filesFullPathList, importSettings);
                 
