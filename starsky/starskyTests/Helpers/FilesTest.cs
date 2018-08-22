@@ -76,7 +76,7 @@ namespace starskytests
             var newImage = new CreateAnImage();
             _appSettings.ThumbnailTempFolder = newImage.BasePath;
             _appSettings.StorageFolder = newImage.BasePath;
-            var filesInFolder = Files.GetFilesInDirectory(newImage.BasePath,_appSettings);
+            var filesInFolder = Files.GetFilesInDirectory(newImage.BasePath);
             Assert.AreEqual(filesInFolder.Any(),true);
         }
 
