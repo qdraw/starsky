@@ -1,0 +1,6 @@
+@inherits starskywebhtmlcli.Models.GenerateStaticPage 
+@foreach (var item in @Model)
+   {
+       @item.DateTime 
+       @item.FileName
+   }

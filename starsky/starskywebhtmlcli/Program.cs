@@ -1,7 +1,9 @@
 ﻿using System;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
+using starskywebhtmlcli.Models;
 using starskywebhtmlcli.Services;
 
 namespace starskywebhtmlcli
@@ -13,7 +15,7 @@ namespace starskywebhtmlcli
             // Use args in application
              new ArgsHelper().SetEnvironmentByArgs(args);
             
-            var startupHelper = new ConfigCliAppsStartupHelper(true);
+            var startupHelper = new ConfigCliAppsStartupHelper();
             var appSettings = startupHelper.AppSettings();
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
             
@@ -22,19 +24,7 @@ namespace starskywebhtmlcli
                 // Update Readme.md when this change!
                 Console.WriteLine("Starsky Indexer Help:");
                 Console.WriteLine("--help or -h == help (this window)");
-                Console.WriteLine("--subpath or -s == parameter: (string) ; path inside the index, default '/' ");
-                Console.WriteLine("--path or -p == parameter: (string) ; fullpath, search and replace first part of the filename '/' ");
-                Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
-                Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
-                Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder (heavy cpu usage), default false");
-                Console.WriteLine("--verbose or -v == verbose, more detailed info");
-                Console.WriteLine("--databasetype or -d == Overwrite EnvironmentVariable for DatabaseType");
-                Console.WriteLine("--basepath or -b == Overwrite EnvironmentVariable for StorageFolder");
-                Console.WriteLine("--connection or -c == Overwrite EnvironmentVariable for DatabaseConnection");
-                Console.WriteLine("--thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder");
-                Console.WriteLine("--exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath");
-                Console.WriteLine("--subpathrelative or -n == Overwrite subpath to use relative days to select a folder" +
-                                  ", use for example '1' to select yesterday. (structure is required)");
+                Console.WriteLine("--path or -p == parameter: (string) ; fullpath ");
                 Console.WriteLine("  use -v -help to show settings: ");
                 if (!appSettings.Verbose) return;
                 Console.WriteLine("");
@@ -49,7 +39,18 @@ namespace starskywebhtmlcli
                 return;
             }
             
-            ViewRender.Render();
+            var inputPath = new ArgsHelper().GetPathFormArgs(args,false);
+            if(appSettings.Verbose) Console.WriteLine("inputPath " + inputPath);
+            
+            if(Files.IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
+                Console.WriteLine("Folders now are supported " + inputPath);
+
+            var listOfFiles = Files.GetFilesInDirectory(inputPath);
+            var fileIndexItem = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddBasics(listOfFiles);
+
+            new ViewRender(appSettings).Render(fileIndexItem);
+
+            
             
 //            new OverlayImage(appSettings).OverlayImageNow();
             

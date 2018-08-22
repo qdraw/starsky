@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.Interfaces;
 using starsky.Models;
@@ -23,7 +25,22 @@ namespace starsky.Services
             databaseItem = XmpGetSidecarFile(databaseItem, singleFilePath);
             return databaseItem;
         }
-        
+
+        // used by the html generator
+        public List<FileIndexItem> ReadExifAndXmpFromFileAddBasics(string[] fullFilePathArray)
+        {
+            var fileIndexList = new List<FileIndexItem>();
+            foreach (var fullFilePath in fullFilePathArray)
+            {
+                var returnItem = ReadExifAndXmpFromFile(fullFilePath);
+                returnItem.FileName = Path.GetFileName(fullFilePath);
+                returnItem.IsDirectory = false;
+                returnItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(fullFilePath).LastOrDefault();
+                fileIndexList.Add(returnItem);
+            }
+            return fileIndexList;
+        }
+
         // Cached view >> IMemoryCache
         // Short living cache Max 10. minutes
         public FileIndexItem ReadExifAndXmpFromFile(string fullFilePath)

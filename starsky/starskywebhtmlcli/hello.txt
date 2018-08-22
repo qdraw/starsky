@@ -1,3 +1,0 @@
-@inherits starskywebhtmlcli.Services.ToHtml
-
-Hello @Model.Name, welcome to Razor World!

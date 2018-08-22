@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -7,6 +8,8 @@ using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.AspNetCore.Razor.Language.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using starsky.Models;
+using starskywebhtmlcli.Models;
 
 ////
 //    Here is a sample code that only depends on Razor (for parsing and C# code generation)
@@ -21,7 +24,15 @@ namespace starskywebhtmlcli.Services
 {
     public class ViewRender
     {
-        public static void Render()
+        private AppSettings _appSettings;
+
+        // used for linking to starksy.dll
+        public ViewRender(AppSettings appSettings)
+        {
+            _appSettings = appSettings;
+        }
+        
+        public void Render(List<FileIndexItem> fileIndexItemList)
         {
             // points to the local path
             var fs = RazorProjectFileSystem.Create(".");
@@ -39,7 +50,7 @@ namespace starskywebhtmlcli.Services
             // Hello @Model.Name, welcome to Razor World!
             //
 
-            var item = fs.GetItem("hello.txt");
+            var item = fs.GetItem("hello.cshtml");
 
             // parse and generate C# code, outputs it on the console
             var codeDocument = engine.Process(item);
@@ -59,6 +70,15 @@ namespace starskywebhtmlcli.Services
                     MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly()
                         .Location), // this file (that contains the MyTemplate base class)
 
+                    // Reference the base project (FileIndexItem)
+                    MetadataReference.CreateFromFile(_appSettings.BaseDirectoryProject + 
+                                                     Path.DirectorySeparatorChar + "starsky.dll"),
+                    
+                    // Used for List<string>
+                    MetadataReference.CreateFromFile(
+                        Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), 
+                            "System.Collections.dll")),
+                    
                     // for some reason on .NET core, I need to add this... this is not needed with .NET framework
                     MetadataReference.CreateFromFile(
                         Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "System.Runtime.dll")),
@@ -83,45 +103,32 @@ namespace starskywebhtmlcli.Services
             // load the built dll
             Console.WriteLine(path);
             var asm = Assembly.LoadFile(path);
-
+                        
             // the generated type is defined in our custom namespace, as we asked.
             // "Template" is the type name that razor uses by default.
-            var template = (ToHtml) Activator.CreateInstance(asm.GetType("starskywebhtmlcli.Services.Template"));
+            Console.WriteLine(asm.GetType("starskywebhtmlcli.Services.Template"));
+                        
+            var template = (GenerateStaticPage) Activator.CreateInstance(
+                asm.GetType("starskywebhtmlcli.Services.Template"));
+            
+            // Inject before excuting
+            template.Model = fileIndexItemList;
+            template.AppSettings = _appSettings;
 
             // run the code.
             // should display "Hello Killroy, welcome to Razor World!"
             template.ExecuteAsync().Wait();
         }
     } 
+    
         
-    // the model class. this is 100% specific to your context
-    public class MyModel
-    {
-        // this will map to @Model.Name
-        public string Name => "Killroy";
-    }
+//    // the model class. this is 100% specific to your context
+//    public class MyModel
+//    {
+//        // this will map to @Model.Name
+//        public string Name => "Killroy";
+//        public List<string> List { get; set; }
+//    }
 
-    // the sample base template class. It's not mandatory but I think it's much easier.
-    public abstract class ToHtml
-    {
-        // this will map to @Model (property name)
-        public MyModel Model => new MyModel();
-
-        public void WriteLiteral(string literal)
-        {
-            // replace that by a text writer for example
-            Console.Write(literal);
-        }
-
-        public void Write(object obj)
-        {
-            // replace that by a text writer for example
-            Console.Write(obj);
-        }
-
-        public async virtual Task ExecuteAsync()
-        {
-            await Task.Yield(); // whatever, we just need something that compiles...
-        }
-    }
+   
 }
