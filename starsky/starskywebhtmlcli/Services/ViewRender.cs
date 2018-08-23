@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.AspNetCore.Razor.Language.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using starsky.Helpers;
 using starsky.Models;
 using starskywebhtmlcli.Models;
 
@@ -52,7 +53,9 @@ namespace starskywebhtmlcli.Services
             // Inject before excuting
             template.Model = fileIndexItemList;
             template.AppSettings = _appSettings;
-            template.OutputFile = _appSettings.DatabasePathToFilePath(templatePath,false);
+            template.OutputFile = _appSettings.DatabasePathToFilePath(outputPath,false);
+            // overwrite
+            new PlainTextFileHelper().WriteFile(template.OutputFile,string.Empty);
 
             // run the code.
             // should display "Hello Killroy, welcome to Razor World!"
@@ -98,6 +101,9 @@ namespace starskywebhtmlcli.Services
                     MetadataReference.CreateFromFile(
                         Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), 
                             "System.Collections.dll")),
+                    
+                    MetadataReference.CreateFromFile(
+                    Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "Microsoft.AspNetCore.Mvc.Razor.dll")),
                     
                     // for some reason on .NET core, I need to add this... this is not needed with .NET framework
                     MetadataReference.CreateFromFile(

@@ -13,32 +13,29 @@ using starskywebhtmlcli.Services;
 namespace starskywebhtmlcli.Models
 {
     // the sample base template class. It's not mandatory but I think it's much easier.
-    public abstract class GenerateStaticPage
+    public abstract class GenerateStaticPage : Microsoft.AspNetCore.Mvc.Razor.RazorPageBase 
     {
         public List<FileIndexItem> Model;
         public AppSettings AppSettings;
         public string OutputFile;
-
+        
         public void WriteLiteral(string literal)
         {
-            // replace that by a text writer for example
-            Console.Write(literal);
+            // used for header and footer
+            if(OutputFile == null) throw new FileNotFoundException("outputFile missing");
+            File.AppendAllText(OutputFile, literal);
         }
 
         public void Write(object obj)
         {
-            // replace that by a text writer for example
-            Console.Write(obj);
-            
-            
-//            if(OutputFile == null) throw new FileNotFoundException("outputFile missing");
-//
-//            var outputValue = (string) obj;
-//            
-//            new PlainTextFileHelper().WriteFile(OutputFile,outputValue);
+            // used for loop
+            if(OutputFile == null) throw new FileNotFoundException("outputFile missing");
+            string name = obj.ToString();
+            name += Environment.NewLine;
+            File.AppendAllText(OutputFile, name);
         }
 
-        public async virtual Task ExecuteAsync()
+        public override async Task ExecuteAsync()
         {
             await Task.Yield(); // whatever, we just need something that compiles...
         }

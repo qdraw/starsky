@@ -1,8 +1,13 @@
 @inherits starskywebhtmlcli.Models.GenerateStaticPage 
 
-html
+<html>
 @foreach (var item in @Model)
-   {
-       @item.DateTime 
-       @item.FileName
-   }
+{
+    <a href="@item.FilePath" class="lightbox[blog]" 
+       title="@item.Title | foto 1" data-gps="@item.Latitude,@item.Longitude" data-heightratio="">
+        <noscript><img src="@item.FilePath" alt="@item.Title" /></noscript>
+        <img src="base64" title="@item.Title  | foto 1" alt="@item.Title ; @item.Tags" />
+    </a>
+   
+}
+</html>
