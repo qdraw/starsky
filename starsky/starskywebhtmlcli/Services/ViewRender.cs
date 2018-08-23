@@ -32,7 +32,7 @@ namespace starskywebhtmlcli.Services
             _appSettings = appSettings;
         }
         
-        public void Render(List<FileIndexItem> fileIndexItemList)
+        public void RazorRender(List<FileIndexItem> fileIndexItemList, string templatePath, string outputPath)
         {
 
             var path = CompileDll();
@@ -52,6 +52,7 @@ namespace starskywebhtmlcli.Services
             // Inject before excuting
             template.Model = fileIndexItemList;
             template.AppSettings = _appSettings;
+            template.OutputFile = _appSettings.DatabasePathToFilePath(templatePath,false);
 
             // run the code.
             // should display "Hello Killroy, welcome to Razor World!"
@@ -122,15 +123,4 @@ namespace starskywebhtmlcli.Services
             return path;
         }
     } 
-    
-        
-//    // the model class. this is 100% specific to your context
-//    public class MyModel
-//    {
-//        // this will map to @Model.Name
-//        public string Name => "Killroy";
-//        public List<string> List { get; set; }
-//    }
-
-   
 }

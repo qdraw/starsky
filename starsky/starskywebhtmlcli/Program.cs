@@ -46,69 +46,15 @@ namespace starskywebhtmlcli
                 Console.WriteLine("Folders now are supported " + inputPath);
 
             var listOfFiles = Files.GetFilesInDirectory(inputPath);
-            var fileIndexItem = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddBasics(listOfFiles);
+            var fileIndexItemList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddBasics(listOfFiles);
 
-            new ViewRender(appSettings).Render(fileIndexItem);
+            // used in this session to find the files back
+            appSettings.StorageFolder = inputPath;
+            
+            new RenderConfig(appSettings).Render(fileIndexItemList);
+            
+//            new ViewRender(appSettings).Render(fileIndexItem);
 
-            
-            
-//            new OverlayImage(appSettings).OverlayImageNow();
-            
-//            // Using both options
-//            string subpath;
-//            // -s = ifsubpath || -p is path
-//            if (new ArgsHelper(appSettings).IfSubpathOrPath(args))
-//            {
-//                subpath = new ArgsHelper(appSettings).GetSubpathFormArgs(args);
-//            }
-//            else
-//            {
-//                subpath = new ArgsHelper(appSettings).GetPathFormArgs(args);
-//            }
-//            
-//            // overwrite subpath with relative days
-//            // use -n or --SubpathRelative to use it.
-//            // envs are not supported
-//            var getSubpathRelative = new ArgsHelper(appSettings).GetSubpathRelative(args);
-//            if (getSubpathRelative != null)
-//            {
-//                subpath = getSubpathRelative;
-//            }
-//
-//            if (new ArgsHelper().GetIndexMode(args))
-//            {
-//                Console.WriteLine("Start indexing");
-//                startupHelper.SyncService().SyncFiles(subpath);
-//                Console.WriteLine("Done SyncFiles!");
-//            }
-//
-//            if (new ArgsHelper(appSettings).GetThumbnail(args))
-//            {
-//
-//                var fullPath = appSettings.DatabasePathToFilePath(subpath);
-//                var isFolderOrFile = Files.IsFolderOrFile(fullPath);
-//
-//                if (appSettings.Verbose) Console.WriteLine(isFolderOrFile);
-//                
-//                if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
-//                {
-//                    // If single file => create thumbnail
-//                    new Thumbnail(appSettings).CreateThumb(subpath); // <= this uses subpath
-//                }
-//                else
-//                {
-//                    new ThumbnailByDirectory(appSettings).CreateThumb(fullPath); // <= this uses fullpath
-//                }
-//                
-//                Console.WriteLine("Thumbnail Done!");
-//            }
-//            
-//            if (new ArgsHelper(appSettings).GetOrphanFolderCheck(args))
-//            {
-//                Console.WriteLine(">>>>> Heavy CPU Feature => Use with care <<<<< ");
-//                startupHelper.SyncService().OrphanFolder(subpath);
-//            }
-//            Console.WriteLine("Done!");
 
         }
 

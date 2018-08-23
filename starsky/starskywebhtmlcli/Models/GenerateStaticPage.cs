@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Rewrite.Internal.ApacheModRewrite;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +17,7 @@ namespace starskywebhtmlcli.Models
     {
         public List<FileIndexItem> Model;
         public AppSettings AppSettings;
-
+        public string OutputFile;
 
         public void WriteLiteral(string literal)
         {
@@ -28,6 +29,13 @@ namespace starskywebhtmlcli.Models
         {
             // replace that by a text writer for example
             Console.Write(obj);
+            
+            
+//            if(OutputFile == null) throw new FileNotFoundException("outputFile missing");
+//
+//            var outputValue = (string) obj;
+//            
+//            new PlainTextFileHelper().WriteFile(OutputFile,outputValue);
         }
 
         public async virtual Task ExecuteAsync()
