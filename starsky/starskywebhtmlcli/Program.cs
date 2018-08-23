@@ -30,7 +30,7 @@ namespace starskywebhtmlcli
 
         public static void Main(string[] args)
         {
-            var startupHelper = InitializeServices();
+            var startupHelper = InitializeServices(AppDomain.CurrentDomain.BaseDirectory); // AppDomain.CurrentDomain.BaseDirectory
             
             // Use args in application
              new ArgsHelper().SetEnvironmentByArgs(args);

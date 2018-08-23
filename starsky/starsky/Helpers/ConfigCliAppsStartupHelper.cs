@@ -35,7 +35,7 @@ namespace starsky.Helpers
             var builder = new ConfigurationBuilder();
             if (File.Exists(new AppSettings().BaseDirectoryProject + "appsettings.json"))
             {
-                Console.WriteLine("loaded json > " +new AppSettings().BaseDirectoryProject  + "appsettings.json");
+                Console.WriteLine("loaded json > " + new AppSettings().BaseDirectoryProject  + "appsettings.json");
                 builder.AddJsonFile(
                     new AppSettings().BaseDirectoryProject + "appsettings.json", optional: false);
             }
@@ -107,11 +107,6 @@ namespace starsky.Helpers
         public SyncService SyncService()
         {
             return _isync;
-        }
-        
-        public ReadMeta ReadMeta()
-        {
-            return _readmeta;
         }
     }
 }

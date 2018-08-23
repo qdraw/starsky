@@ -19,12 +19,14 @@ namespace starskywebhtmlcli.Services
             _appSettings = appSettings;
         }
         
-        public async void Render(List<FileIndexItem> fileIndexItemsList)
+        public void Render(List<FileIndexItem> fileIndexItemsList)
         {
             if(!_appSettings.PublishProfiles.Any()) Console.WriteLine("There are no config items");
             
             foreach (var profile in _appSettings.PublishProfiles)
             {
+                Console.WriteLine(profile.Path + " " +  profile.ContentType.ToString());
+
                 if (profile.ContentType == TemplateContentType.Html)
                 {
                     var emailContent = Program.RenderViewAsync(_startupHelper,fileIndexItemsList).Result;
