@@ -49,6 +49,7 @@ namespace starsky.Models
                     CaptionAbstract = value;
                 }
             }
+            get => null;
         }
         
         // Don't ignore this one, when setting it will also ignored
@@ -102,6 +103,7 @@ namespace starsky.Models
                     keywords = value;
                 }
             }
+            get => null;
         }
 
         public string ObjectName { get; set; } = string.Empty;
@@ -115,6 +117,7 @@ namespace starsky.Models
                     ObjectName = value;
                 }
             }
+            get => null;
         }
         
 

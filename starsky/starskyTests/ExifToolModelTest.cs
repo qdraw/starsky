@@ -82,5 +82,30 @@ namespace starskytests
             var exifToolModel = new ExifToolModel{Keywords = null};
             Assert.AreEqual(exifToolModel.Keywords.Count,0);
         }
+        
+        [TestMethod]
+        public void ExifToolSubjectOverwrite()
+        {
+            var list = new List<string> {"Schiphol", "Schiphol"};
+            var exifToolModel = new ExifToolModel{Subject = list.ToHashSet()};
+            Assert.AreEqual(exifToolModel.Keywords.Count,1);
+            Assert.AreEqual(null, exifToolModel.Subject);
+        }
+
+        [TestMethod]
+        public void ExifToolTitleOverwrite()
+        {
+            var exifToolModel = new ExifToolModel{Title = "testung"};
+            Assert.AreEqual("testung",exifToolModel.ObjectName);
+            Assert.AreEqual(null, exifToolModel.Title);
+        }
+        
+        [TestMethod]
+        public void ExifToolDescriptionOverwrite()
+        {
+            var exifToolModel = new ExifToolModel{Description = "testung"};
+            Assert.AreEqual("testung",exifToolModel.CaptionAbstract);
+            Assert.AreEqual(null, exifToolModel.Description);
+        }
     }
 }
