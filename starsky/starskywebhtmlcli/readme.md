@@ -13,3 +13,48 @@
 ## starskyWebHtmlCli docs
 
 ### starskyWebHtmlCli Help:
+
+#### Example configuration
+```json
+{
+    "app" :{
+        "publishProfiles":
+            [
+                {
+                    "ContentType":  "html",
+                    "SourceMaxWidth":  0,
+                    "OverlayMaxWidth":  0,
+                    "OverlayFullPath": "",
+                    "Path": "index.html",
+                    "Template": "Autopost",
+                    "Append": ""
+                },
+                {
+                    "ContentType":  "html",
+                    "SourceMaxWidth":  0,
+                    "OverlayMaxWidth":  0,
+                    "OverlayFullPath": "",
+                    "Path": "autopost.txt",
+                    "Template": "Autopost",
+                    "Append": ""
+                },
+                {
+                    "ContentType":  "jpeg",
+                    "SourceMaxWidth":  1000,
+                    "OverlayMaxWidth":  200,
+                    "Path": "/overlay.jpg",
+                    "Folder": "1000",
+                    "Append": "_kl1k"
+                },
+                {
+                    "ContentType":  "jpeg",
+                    "SourceMaxWidth":  500,
+                    "OverlayMaxWidth":  100,
+                    "OverlayFullPath": "/overlay.jpg",
+                    "Folder": "500",
+                    "Append": "_kl"
+                }
+            ]
+    }
+}
+```
