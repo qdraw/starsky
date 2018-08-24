@@ -547,7 +547,7 @@ namespace starskytests
                 Structure = "/HHmmss_yyyyMMdd.ext"
             };
 
-            var result = _import.Import(createAnImage.FullFilePath1,importSettings);
+            var result = _import.Import(createAnImage.FullFilePathWithDate,importSettings);
             
             Assert.AreEqual(string.Empty,result.FirstOrDefault());
         }

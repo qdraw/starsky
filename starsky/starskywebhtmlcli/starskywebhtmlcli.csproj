@@ -7,7 +7,6 @@
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.7</RuntimeFrameworkVersion>
     <LangVersion>7.1</LangVersion>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-
     <!-- <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">2.1.2</RuntimeFrameworkVersion> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
@@ -20,10 +19,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="2.1.2" />
-      <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" Version="2.1.2" />
-      <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.9.0" />
-      <!-- <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" /> -->
-
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" Version="2.1.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.9.0" />
+    <!-- <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" /> -->
   </ItemGroup>
-
 </Project>

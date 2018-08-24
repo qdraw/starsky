@@ -127,6 +127,7 @@ namespace starskytests
              Assert.AreEqual(item.Description, "caption");
              Assert.AreEqual(item.IsDirectory, false);
              Assert.AreEqual(item.Tags, "test, sion");
+             Assert.AreEqual(item.Title, "title");
              Assert.AreEqual(item.Latitude,  52.308205555500003, 0.000001);
              Assert.AreEqual(item.Longitude, 6.1935555554999997, 0.000001);
 

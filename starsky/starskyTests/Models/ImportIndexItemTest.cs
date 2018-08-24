@@ -250,7 +250,7 @@ namespace starskytests.Models
             // Use a strange structure setting to overwrite
             var input = new ImportIndexItem(_appSettings)
             {
-                SourceFullFilePath = createAnImage.FullFilePath1,
+                SourceFullFilePath = createAnImage.FullFilePathWithDate,
                 Structure =  "/HHmmss_yyyyMMdd.ext"
             };
 

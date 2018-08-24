@@ -110,9 +110,11 @@ namespace starskywebhtmlcli
         {
             using (var serviceScope = scopeFactory.CreateScope())
             {
-                var helper = serviceScope.ServiceProvider.GetRequiredService<RazorViewToStringRenderer>();
+                var helper = serviceScope.ServiceProvider.GetRequiredService<IViewRenderService>();
+                return helper.RenderToStringAsync("/Views/Autopost.cshtml", model.AsEnumerable());
 
-                return helper.RenderViewToStringAsync("Views/Autopost.cshtml", model.AsEnumerable());
+//                var helper = serviceScope.ServiceProvider.GetRequiredService<RazorViewToStringRenderer>();
+//                return helper.RenderViewToStringAsync("/Views/Autopost.cshtml", model.AsEnumerable());
             }
         }
 
@@ -147,6 +149,7 @@ namespace starskywebhtmlcli
             services.AddLogging();
             services.AddMvc();
             services.AddTransient<RazorViewToStringRenderer>();
+            services.AddScoped<IViewRenderService, ViewRenderService>();
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
 
@@ -9,10 +10,7 @@ namespace starskytests.Services
     [TestClass]
     public class XmpReadHelperTest
     {
-        [TestMethod]
-        public void XmpReadHelperTest_GetData_usingStringExample()
-        {
-            var input = "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"XMP Core 5.1.2\"> <rdf:RDF xmlns:rdf=\""+
+        private string _input = "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"XMP Core 5.1.2\"> <rdf:RDF xmlns:rdf=\""+
                         "http://www.w3.org/1999/02/22-rdf-syntax-ns#\"> <rdf:Description rdf:about=\"\" "+
                         "xmlns:aux=\"http://ns.adobe.com/exif/1.0/aux/\" xmlns:crs=\"http://ns.adobe.com/camera-raw-settings/1.0/\" "+
                         "xmlns:exif=\"http://ns.adobe.com/exif/1.0/\" xmlns:exifEX=\"http://cipa.jp/exif/1.0/\" xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\" "+
@@ -42,8 +40,12 @@ namespace starskytests.Services
                         "</Iptc4xmpExt:LocationCreated> <Iptc4xmpExt:LocationShown> <rdf:Bag> <rdf:li Iptc4xmpExt:Sublocation=\"\" Iptc4xmpExt:City=\"Epe\" "+
                         "Iptc4xmpExt:ProvinceState=\"Gelderland\" Iptc4xmpExt:CountryName=\"Nederland\" "+
                         "Iptc4xmpExt:CountryCode=\"\" Iptc4xmpExt:WorldRegion=\"\"/> </rdf:Bag> </Iptc4xmpExt:LocationShown> </rdf:Description> </rdf:RDF> </x:xmpmeta>";
-            
-            var data = new ReadMeta().GetDataFromString(input);
+
+
+        [TestMethod]
+        public void XmpReadHelperTest_GetData_usingStringExample()
+        {
+            var data = new ReadMeta().GetDataFromString(_input);
             
             Assert.AreEqual(52.3451333333,data.Latitude,0.001);
             Assert.AreEqual(5.930,data.Longitude,0.001);
@@ -60,6 +62,20 @@ namespace starskytests.Services
             Assert.AreEqual(dateTime, data.DateTime);
         }
 
+        [TestMethod]
+        public void XmpReadHelperTest_XmpGetSidecarFile()
+        {
+            var createAnImage = new CreateAnImage();
+            var xmpPath = createAnImage.FullFilePath.Replace("jpg", "xmp");
+            var fakeRawPath = createAnImage.FullFilePath.Replace("jpg", "dng");
+            new PlainTextFileHelper().WriteFile(xmpPath,_input);
+            
+            var appsettings = new AppSettings();
+
+            var databaseItem = new FileIndexItem();
+            var readXmp = new ReadMeta(appsettings).XmpGetSidecarFile(databaseItem, fakeRawPath);
+            Assert.AreEqual("The object name",readXmp.Title);
+        }
 
     }
 }
