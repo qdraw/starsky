@@ -107,5 +107,12 @@ namespace starskytests
             Assert.AreEqual("testung",exifToolModel.CaptionAbstract);
             Assert.AreEqual(null, exifToolModel.Description);
         }
+
+        [TestMethod]
+        public void ExifToolhashSetToStringNull()
+        {
+            Assert.AreEqual(string.Empty,ExifToolModel.HashSetToString(null));
+        }
+
     }
 }

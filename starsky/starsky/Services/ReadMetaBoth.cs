@@ -27,7 +27,7 @@ namespace starsky.Services
         }
 
         // used by the html generator
-        public List<FileIndexItem> ReadExifAndXmpFromFileAddBasics(string[] fullFilePathArray)
+        public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePath(string[] fullFilePathArray)
         {
             var fileIndexList = new List<FileIndexItem>();
             foreach (var fullFilePath in fullFilePathArray)

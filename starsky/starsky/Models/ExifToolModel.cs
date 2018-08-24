@@ -84,7 +84,7 @@ namespace starsky.Models
 
         public string Tags
         {
-            get { return hashSetToString(keywords); }
+            get { return HashSetToString(keywords); }
             set
             {
                 if (!string.IsNullOrWhiteSpace(value))
@@ -148,7 +148,7 @@ namespace starsky.Models
             return keywordsHashSet;
         }
 
-        private static string hashSetToString(HashSet<string> hashSetKeywords)
+        public static string HashSetToString(HashSet<string> hashSetKeywords)
         {
             if (hashSetKeywords == null)
             {

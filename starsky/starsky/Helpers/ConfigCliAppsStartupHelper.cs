@@ -17,7 +17,6 @@ namespace starsky.Helpers
         private readonly ImportService _import;
         private readonly SyncService _isync;
         private readonly ServiceProvider _serviceProvider;
-        private ReadMeta _readmeta;
 
         public ConfigCliAppsStartupHelper()
         {
@@ -81,9 +80,9 @@ namespace starsky.Helpers
             var context = new ApplicationDbContext(options);
             var query = new Query(context);
             
-            _readmeta = new ReadMeta(appSettings);
+            var readmeta = new ReadMeta(appSettings);
             
-            _isync = new SyncService(context, query, appSettings,_readmeta);
+            _isync = new SyncService(context, query, appSettings,readmeta);
             
             // TOC:
             //   _context = context
@@ -91,7 +90,7 @@ namespace starsky.Helpers
             //   _exiftool = exiftool
             //   _appSettings = appSettings
             //   _readmeta = readmeta
-            _import = new ImportService(context, _isync, exiftool, appSettings, _readmeta);
+            _import = new ImportService(context, _isync, exiftool, appSettings, readmeta);
         }
         
         public AppSettings AppSettings()

@@ -1,7 +1,4 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -64,7 +61,7 @@ namespace starskywebhtmlcli
                 Console.WriteLine("Folders now are supported " + inputPath);
 
             var listOfFiles = Files.GetFilesInDirectory(inputPath);
-            var fileIndexItemList = _readmeta.ReadExifAndXmpFromFileAddBasics(listOfFiles);
+            var fileIndexItemList = _readmeta.ReadExifAndXmpFromFileAddFilePath(listOfFiles);
 
             // used in this session to find the files back
             _appSettings.StorageFolder = inputPath;
@@ -78,7 +75,6 @@ namespace starskywebhtmlcli
         {
             // Initialize the necessary services
             var services = new ServiceCollection();
-            ConfigureDefaultServices(services, customApplicationBasePath);
 
             // Inject Config helper
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
@@ -105,51 +101,6 @@ namespace starskywebhtmlcli
 
             return serviceProvider.GetRequiredService<IServiceScopeFactory>();
         }
-
-        public static Task<string> RenderViewAsync(IServiceScopeFactory scopeFactory, List<FileIndexItem> model)
-        {
-            using (var serviceScope = scopeFactory.CreateScope())
-            {
-                var helper = serviceScope.ServiceProvider.GetRequiredService<IViewRenderService>();
-                return helper.RenderToStringAsync("/Views/Autopost.cshtml", model.AsEnumerable());
-
-//                var helper = serviceScope.ServiceProvider.GetRequiredService<RazorViewToStringRenderer>();
-//                return helper.RenderViewToStringAsync("/Views/Autopost.cshtml", model.AsEnumerable());
-            }
-        }
-
-        private static void ConfigureDefaultServices(IServiceCollection services, string customApplicationBasePath)
-        {
-            string applicationName;
-            IFileProvider fileProvider;
-            if (!string.IsNullOrEmpty(customApplicationBasePath))
-            {
-                applicationName = Path.GetFileName(customApplicationBasePath);
-                fileProvider = new PhysicalFileProvider(customApplicationBasePath);
-            }
-            else
-            {
-                applicationName = Assembly.GetEntryAssembly().GetName().Name;
-                fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
-            }
-
-            services.AddSingleton<IHostingEnvironment>(new HostingEnvironment
-            {
-                ApplicationName =  applicationName,
-                WebRootFileProvider = fileProvider,
-            });
-            services.Configure<RazorViewEngineOptions>(options =>
-            {
-                options.FileProviders.Clear();
-                options.FileProviders.Add(fileProvider);
-            });
-            var diagnosticSource = new DiagnosticListener("Microsoft.AspNetCore");
-            services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
-            services.AddSingleton<DiagnosticSource>(diagnosticSource);
-            services.AddLogging();
-            services.AddMvc();
-            services.AddTransient<RazorViewToStringRenderer>();
-            services.AddScoped<IViewRenderService, ViewRenderService>();
-        }
+        
     }
 }

@@ -30,8 +30,8 @@ namespace starskywebhtmlcli.Services
                 if (profile.ContentType == TemplateContentType.Html)
                 {
                         
-                    var emailContent = Program.RenderViewAsync(_startupHelper,fileIndexItemsList).Result;
-                    Console.WriteLine(emailContent);
+//                    var emailContent = Program.RenderViewAsync(_startupHelper,fileIndexItemsList).Result;
+//                    Console.WriteLine(emailContent);
 
                 }
                 
