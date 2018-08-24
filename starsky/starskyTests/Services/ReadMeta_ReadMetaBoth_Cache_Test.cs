@@ -42,5 +42,16 @@ namespace starskytests.Services
             new ReadMeta(appsettings, _fakeCache)
                     .RemoveReadMetaCache(fakeStringList);
         }
+
+        [TestMethod]
+        public void ReadMeta_ReadMetaBothTest_FakeCreateEntry()
+        {
+            var createAnImage = new CreateAnImage();
+            var appsettings = new AppSettings {StorageFolder = createAnImage.BasePath};
+
+            new ReadMeta(appsettings, _fakeCache).ReadExifAndXmpFromFile(createAnImage.FullFilePath);
+            
+
+        }
     }
 }

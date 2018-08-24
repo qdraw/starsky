@@ -1,24 +1,35 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.Models;
 
 namespace starskytests.FakeMocks
 {
     public class FakeMemoryCache :IMemoryCache
     {
+        private readonly ICacheEntry _fakeCacheEntry;
+
+        public FakeMemoryCache()
+        {
+            var services = new ServiceCollection();
+            services.AddSingleton<ICacheEntry,FakeICacheEntry>();
+            var serviceProvider = services.BuildServiceProvider();
+            _fakeCacheEntry = serviceProvider.GetRequiredService<ICacheEntry>();
+        }
         public void Dispose()
         {
-            throw new System.NotImplementedException();
         }
 
         public bool TryGetValue(object key, out object value)
         {
             value = new FileIndexItem{Tags = "test"};
-            return true;
+            // this item does never exist in cache :)
+            if (key.ToString() == "info_" + new CreateAnImage().FullFilePath) return false;
+            return true ;
         }
 
         public ICacheEntry CreateEntry(object key)
         {
-            throw new System.NotImplementedException();
+            return _fakeCacheEntry;
         }
 
         public void Remove(object key)
