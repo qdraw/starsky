@@ -61,6 +61,6 @@ When using Windows please escape the backslash, otherwise the application will c
 --connection or -c == Overwrite EnvironmentVariable for DatabaseConnection
 --thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder
 --exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath
---subpathrelative or -n == Overwrite subpath to use relative days to select a folder, use for example '1' to select yesterday. (structure is required)
+--subpathrelative or -g == Overwrite subpath to use relative days to select a folder, use for example '1' to select yesterday. (structure is required)
   use -v -help to show settings:
 ```

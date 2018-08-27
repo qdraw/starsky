@@ -14,7 +14,12 @@ namespace starskywebhtmlcli.Services
         public ParseRazor()
         {
             _engine = new RazorLightEngineBuilder()
+                .UseEmbeddedResourcesProject(typeof(Program))
+                .UseEmbeddedResourcesProject(typeof(starskywebhtmlcli.ViewModels.WebHtmlViewModel))
                 .UseEmbeddedResourcesProject(typeof(starsky.Program))
+                .UseEmbeddedResourcesProject(typeof(System.Linq.Enumerable))
+                .UseEmbeddedResourcesProject(typeof(starsky.Models.AppSettingsPublishProfiles))
+
                 .UseFilesystemProject(AppDomain.CurrentDomain.BaseDirectory )
                         // > starskywebhtmlcli/bin folder
                 .UseMemoryCachingProvider()

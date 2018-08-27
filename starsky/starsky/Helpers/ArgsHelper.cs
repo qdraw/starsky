@@ -19,7 +19,7 @@ namespace starsky.Helpers
         // --index -i
         // --path -p
         // --subpath -s
-        // --subpathrelative -n
+        // --subpathrelative -g
         // --thumbnail -t
         // --orphanfolder -o
         // --move -m
@@ -27,6 +27,7 @@ namespace starsky.Helpers
         // --recruisive -r 
         // -rf --readonlyfolders // no need to use in cli/importercli
         // -u --structure
+        // -n --name
 
         public ArgsHelper()
         {
@@ -60,20 +61,20 @@ namespace starsky.Helpers
         
         public readonly IEnumerable<string> ShortNameList = new List<string>
             {
-                "-d","-c","-b","-f","-e","-u","-n"
+                "-d","-c","-b","-f","-e","-u","-g","-n"
             }.AsReadOnly();
         
         public readonly IEnumerable<string> LongNameList = new List<string>
             {
                 "--databasetype","--connection","--basepath","--thumbnailtempfolder",
-                "--exiftoolpath","--structure","--subpathrelative"
+                "--exiftoolpath","--structure","--subpathrelative","--name"
             }
             .AsReadOnly();
         
         public readonly IEnumerable<string> EnvNameList = new List<string>
             {
                 "app__DatabaseType","app__DatabaseConnection","app__StorageFolder","app__ThumbnailTempFolder",
-                "app__ExifToolPath", "app__Structure", "app__subpathrelative"
+                "app__ExifToolPath", "app__Structure", "app__subpathrelative", "app__name"
             }.AsReadOnly();
 
 
@@ -133,7 +134,7 @@ namespace starsky.Helpers
         
         public string GetPathFormArgs(IReadOnlyList<string> args, bool dbStyle = true)
         {
-            var path = "";
+            var path = string.Empty;
         
             for (int arg = 0; arg < args.Count; arg++)
             {
@@ -171,7 +172,8 @@ namespace starsky.Helpers
         
             for (int arg = 0; arg < args.Count; arg++)
             {
-                if ((args[arg].ToLower() == "--subpathrelative" || args[arg].ToLower() == "-n") && (arg + 1) != args.Count)
+                if ((args[arg].ToLower() == "--subpathrelative" || 
+                     args[arg].ToLower() == "-g") && (arg + 1) != args.Count)
                 {
                     subpathRelative = args[arg + 1];
                 }

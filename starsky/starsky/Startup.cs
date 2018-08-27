@@ -21,6 +21,7 @@ namespace starsky
     {
         private readonly IConfigurationRoot _configuration;
         private ServiceProvider _serviceProvider;
+        private AppSettings _appSettings;
 
         public Startup()
         {
@@ -40,26 +41,26 @@ namespace starsky
             services.ConfigurePoco<AppSettings>(_configuration.GetSection("App"));
             _serviceProvider = services.BuildServiceProvider();
             
-            var appSettings = _serviceProvider.GetRequiredService<AppSettings>();
+            _appSettings = _serviceProvider.GetRequiredService<AppSettings>();
 
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
             
             services.AddResponseCaching();
             
-            switch (appSettings.DatabaseType)
+            switch (_appSettings.DatabaseType)
             {
                 case (AppSettings.DatabaseTypeList.Mysql):
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(appSettings.DatabaseConnection));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection));
                     break;
                 case AppSettings.DatabaseTypeList.InMemoryDatabase:
                     services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
                     break;
                 case AppSettings.DatabaseTypeList.Sqlite:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(appSettings.DatabaseConnection));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection));
                     break;
                 default:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(appSettings.DatabaseConnection));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection));
                     break;
             }
             
@@ -109,7 +110,7 @@ namespace starsky
         {
             app.UseResponseCaching();
 
-            app.UsePathBase("/starsky");
+            app.UsePathBase("/" + _appSettings.Name.ToLowerInvariant() );
             
             if (env.IsDevelopment())
             {

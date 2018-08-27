@@ -61,7 +61,7 @@ namespace starskysynccli
             }
             
             // overwrite subpath with relative days
-            // use -n or --SubpathRelative to use it.
+            // use -g or --SubpathRelative to use it.
             // envs are not supported
             var getSubpathRelative = new ArgsHelper(appSettings).GetSubpathRelative(args);
             if (getSubpathRelative != null)

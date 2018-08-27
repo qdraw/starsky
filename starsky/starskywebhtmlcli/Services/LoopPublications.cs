@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
 using starskywebhtmlcli;
+using starskywebhtmlcli.ViewModels;
 
 namespace starskywebhtmlcli.Services
 {
     public class LoopPublications
     {
         private readonly AppSettings _appSettings;
-        private readonly IServiceScopeFactory _startupHelper;
 
-        public LoopPublications(AppSettings appSettings, IServiceScopeFactory startupHelper)
+        public LoopPublications(AppSettings appSettings)
         {
-            _startupHelper = startupHelper;
             _appSettings = appSettings;
         }
         
@@ -29,9 +29,16 @@ namespace starskywebhtmlcli.Services
                 Console.WriteLine(profile.Path + " " +  profile.ContentType.ToString());
 
                 if (profile.ContentType == TemplateContentType.Html)
-                {                   
-                    var embeddedResult = new ParseRazor().EmbeddedViews(profile.Template,fileIndexItemsList).Result;
-                    new PlainTextFileHelper().WriteFile(_appSettings.StorageFolder + profile.Path,embeddedResult);
+                {
+                    var viewModel = new WebHtmlViewModel
+                    {
+                        FileIndexItems = fileIndexItemsList,
+                        AppSettings = _appSettings,
+                        Profile = profile
+                    };
+                    
+                    var embeddedResult = new ParseRazor().EmbeddedViews(profile.Template,viewModel).Result;
+                    new PlainTextFileHelper().WriteFile(_appSettings.StorageFolder + profile.Path, embeddedResult);
                     Console.WriteLine(embeddedResult);
                 }
                 
@@ -39,8 +46,9 @@ namespace starskywebhtmlcli.Services
                 {
                     foreach (var item in fileIndexItemsList)
                     {
+                        
                         new OverlayImage(_appSettings).ResizeOverlayImage(
-                            _appSettings.DatabasePathToFilePath(item.FilePath), profile);
+                            item.FilePath, profile);
                     }
                 }
 

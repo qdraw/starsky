@@ -11,7 +11,8 @@ namespace starsky.Models
     
     public class AppSettingsPublishProfiles
     {
-        public TemplateContentType ContentType { get; set; }
+        public TemplateContentType ContentType { get; set; } = TemplateContentType.None;
+        
 
         private int _sourceMaxWith;
         public int SourceMaxWidth
@@ -26,9 +27,10 @@ namespace starsky.Models
 
         public int OverlayMaxWidth { get; set; }
         public string Path { get; set; } // used for template url or overlay image
-        public string Folder { get; set; }
+        public string Folder { get; set; } = string.Empty;
         public string Append { get; set; }
         public string Template { get; set; } // index.cshtml for example
+        public string Prepend { get; set; } = string.Empty;
     }
 
     public enum TemplateContentType

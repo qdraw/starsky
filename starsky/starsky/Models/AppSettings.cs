@@ -48,10 +48,25 @@ namespace starsky.Models
         }
 
         public bool Verbose { get; set; }
-                
-        
-        // Database
 
+        // Used in the webhtmlcli to store the log item name
+        // used for the url
+        private string _name;
+        public string Name
+        {
+            get => _name ?? "Starsky"; // defaults to this
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _name = string.Empty;
+                    return;
+                }
+                _name = value;
+            }
+        }
+
+        // Database
         [JsonConverter(typeof(StringEnumConverter))]
         public DatabaseTypeList DatabaseType { get; set; }
         public enum DatabaseTypeList
