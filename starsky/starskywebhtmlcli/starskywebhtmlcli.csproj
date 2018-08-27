@@ -13,14 +13,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup>
     <ProjectReference Include="..\starsky\starsky.csproj" />
-    <None Update="Views\**" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="EmbeddedViews\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="2.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" Version="2.1.2" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.9.0" />
-    <!-- <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" /> -->
+    <PackageReference Include="RazorLight" Version="2.0.0-beta1" />
   </ItemGroup>
 </Project>

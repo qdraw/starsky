@@ -29,10 +29,8 @@ namespace starskywebhtmlcli.Services
 
                 if (profile.ContentType == TemplateContentType.Html)
                 {
-                        
-//                    var emailContent = Program.RenderViewAsync(_startupHelper,fileIndexItemsList).Result;
-//                    Console.WriteLine(emailContent);
-
+                    var result = new ParseRazor().EmbeddedViews(profile.Template,fileIndexItemsList).Result;
+                    Console.WriteLine(result);
                 }
                 
                 if (profile.ContentType == TemplateContentType.Jpeg)
