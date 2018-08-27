@@ -1,14 +1,17 @@
+@using System
 @using System.Collections.Generic
-@model IEnumerable<starsky.Models.FileIndexItem>
+@using System.Linq
+@model List<starsky.Models.FileIndexItem>
 
-<html>
-@foreach (var item in @Model)
+@for (int i = 0; i < @Model.Count(); i++)
 {
+    var item = @Model[i];
+    var count = i + 1;
+    var heightratio = Math.Round((double) @item.ImageHeight /@item.ImageWidth, 3);
+    
     <a href="@item.FilePath" class="lightbox[blog]"
-       title="@item.Title | foto 1" data-gps="@item.Latitude,@item.Longitude" data-heightratio="">
-        <noscript><img src="@item.FilePath" alt="@item.Title" /></noscript>
-        <img src="base64" title="@item.Title  | foto 1" alt="@item.Title ; @item.Tags" />
+       title="@item.Title | foto @count" data-gps="@item.Latitude,@item.Longitude" data-heightratio="@heightratio">
+        <noscript><img src="@item.FilePath" alt="@item.Title"/></noscript>
+        <img src="base64" title="@item.Title  | foto @count" alt="@item.Title ; @item.Tags"/>
     </a>
-
 }
-</html>

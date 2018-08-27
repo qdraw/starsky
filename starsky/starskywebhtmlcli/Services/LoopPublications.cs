@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
 using starskywebhtmlcli;
@@ -28,9 +29,10 @@ namespace starskywebhtmlcli.Services
                 Console.WriteLine(profile.Path + " " +  profile.ContentType.ToString());
 
                 if (profile.ContentType == TemplateContentType.Html)
-                {
-                    var result = new ParseRazor().EmbeddedViews(profile.Template,fileIndexItemsList).Result;
-                    Console.WriteLine(result);
+                {                   
+                    var embeddedResult = new ParseRazor().EmbeddedViews(profile.Template,fileIndexItemsList).Result;
+                    new PlainTextFileHelper().WriteFile(_appSettings.StorageFolder + profile.Path,embeddedResult);
+                    Console.WriteLine(embeddedResult);
                 }
                 
                 if (profile.ContentType == TemplateContentType.Jpeg)
