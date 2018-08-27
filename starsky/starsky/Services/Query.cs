@@ -27,7 +27,7 @@ namespace starsky.Services
 
         // Get a list of all files inside an folder
         // But this uses a database as source
-        public List<FileIndexItem> GetAllFiles(string subPath = "/")
+        public List<FileIndexItem> GetAllFiles(string subPath)
         {
             subPath = SubPathSlashRemove(subPath);
 

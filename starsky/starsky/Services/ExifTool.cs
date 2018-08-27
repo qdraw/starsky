@@ -21,12 +21,10 @@ namespace starsky.Services
         // This is a exiftool wrapper
 
         private readonly AppSettings _appSettings;
-        private readonly IMemoryCache _cache;
 
-        public ExifTool(AppSettings appSettings, IMemoryCache memoryCache = null)
+        public ExifTool(AppSettings appSettings)
         {
             _appSettings = appSettings;
-            _cache = memoryCache;
         }
         
         private string BaseCommmand(string options, string fullFilePathSpaceSeperated)

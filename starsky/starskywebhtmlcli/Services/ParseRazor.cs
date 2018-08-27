@@ -9,7 +9,7 @@ namespace starskywebhtmlcli.Services
 {
     public class ParseRazor
     {
-        private RazorLightEngine _engine;
+        private readonly RazorLightEngine _engine;
 
         public ParseRazor()
         {

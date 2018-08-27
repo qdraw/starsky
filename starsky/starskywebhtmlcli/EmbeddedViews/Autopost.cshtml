@@ -31,8 +31,8 @@
         <a href="@filePath1000" class="lightbox[blog]"
            title="@Model.AppSettings.Name - @item.Title | foto @count" 
            data-gps="@latitude,@longitude" data-heightratio="@heightratio">
-            <noscript><img src="@filePath500" alt="@item.Title"/></noscript>
-            <img src="base64" title="@item.Title  | foto @count" 
+            <noscript><img src="@filePath500" alt="@Model.AppSettings.Name @item.Title"/></noscript>
+            <img src="base64" title="@item.Title | foto @count" 
                  alt="@Model.AppSettings.Name @item.Title ; @item.Tags"/>
         </a>
     }
