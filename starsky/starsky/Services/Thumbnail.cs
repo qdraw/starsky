@@ -1,12 +1,20 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Net.Http.Headers;
 using starsky.Helpers;
 using starsky.Models;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Gif;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.MetaData.Profiles.Exif;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.Primitives;
 
 namespace starsky.Services
 {
@@ -176,7 +184,10 @@ namespace starsky.Services
 
         
         // Resize the thumbnail to object
-        public MemoryStream ResizeThumbnailToStream(string fullSourceImage, int width, int height = 0)
+        // quality = value 0,100
+        public MemoryStream ResizeThumbnailToStream(string fullSourceImage, int width, 
+            int height = 0, int quality = 75, bool removeExif = false, 
+            Files.ImageFormat imageFormat = Files.ImageFormat.jpg)
         {
             var outputStream = new MemoryStream();
             try
@@ -186,20 +197,33 @@ namespace starsky.Services
                 using (var image = Image.Load(inputStream))
                 {
                     // Add orginal rotation to the image as json
-                    if (image.MetaData.ExifProfile != null)
+                    if (image.MetaData.ExifProfile != null && removeExif == false)
                     {
                         image.MetaData.ExifProfile.SetValue(ExifTag.Software, "Starsky");
                         var isOrientThere = image.MetaData.ExifProfile.TryGetValue(ExifTag.Orientation, out var sourceOrientation);
                         if(isOrientThere) image.MetaData.ExifProfile.SetValue(ExifTag.ImageDescription, "{ \"sourceOrientation\": \""+ sourceOrientation +"\"}");
+                    }
+
+                    if (image.MetaData.ExifProfile != null && removeExif)
+                    {
+                        image.MetaData.ExifProfile = null;
+                        image.MetaData.IccProfile?.Entries.Clear();
                     }
                     
                     image.Mutate(x => x.AutoOrient());
                     image.Mutate(x => x
                         .Resize(width, height)
                     );
-
-                    image.SaveAsJpeg(outputStream);
+                    if (imageFormat == Files.ImageFormat.png)
+                    {
+                        image.SaveAsPng(outputStream, new PngEncoder{ColorType = PngColorType.Rgb, CompressionLevel = 9, WriteGamma =false });
+                    }
+                    else
+                    {
+                        image.SaveAsJpeg(outputStream, new JpegEncoder{IgnoreMetadata = removeExif,Quality = quality});
+                    }
                 }
+
             }
             catch (Exception ex)            
             {
@@ -210,6 +234,8 @@ namespace starsky.Services
             
             return outputStream;
         }
+        
+
         
         
         

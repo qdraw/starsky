@@ -39,7 +39,7 @@
            title="@Model.AppSettings.Name - @item.Title | foto @count" 
            data-gps="@latitude,@longitude" data-heightratio="@heightratio">
             <noscript><img src="@filePath500" alt="@Model.AppSettings.Name @item.Title"/></noscript>
-            <img src="base64" title="@item.Title | foto @count" 
+            <img src="data:image/png;base64,@Model.Base64ImageArray[i]" title="@item.Title | foto @count" 
                  alt="@Model.AppSettings.Name @item.Title ; @item.Tags"/>
         </a>
     }
@@ -50,8 +50,8 @@
             var noscriptItem = bigimages[i].parentNode.getElementsByTagName('noscript')[0]
             if ( noscriptItem.innerHTML.length >= 10 ) {
                 var url = noscriptItem.innerHTML.match(/\"(.*?)\"/);
-                url = url[0].replace(/\"/ig,"")
-                bigimages[i].src = url
+                url = url[0].replace(/\"/ig, "");
+                bigimages[i].src = url;
             }
         }
     </script>

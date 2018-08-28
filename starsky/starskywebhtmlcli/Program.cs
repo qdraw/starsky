@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -71,12 +72,16 @@ namespace starskywebhtmlcli
             // Create thumbnails from the source images 
             new ThumbnailByDirectory(appSettings).CreateThumb(inputPath);
 
-//            foreach (var item in fileIndexItemList)
-//            {
-//                item.FileHash = Base64Helper
-//                    .ToBase64(new Thumbnail(null).ResizeThumbnailToStream(item.FilePath, 4));
-//            }
-            new LoopPublications(appSettings).Render(fileIndexItemList);
+            var base64ImageArray = new string[fileIndexItemList.Count];
+            for (int i = 0; i < fileIndexItemList.Count; i++)
+            {
+                var item = fileIndexItemList[i];
+                var fullFilePath = appSettings.DatabasePathToFilePath(item.FilePath);
+                base64ImageArray[i] = Base64Helper
+                    .ToBase64(new Thumbnail(null).ResizeThumbnailToStream(fullFilePath, 4, 0, 2, true, Files.ImageFormat.png));
+            }
+
+            new LoopPublications(appSettings).Render(fileIndexItemList,base64ImageArray);
             
 
         }

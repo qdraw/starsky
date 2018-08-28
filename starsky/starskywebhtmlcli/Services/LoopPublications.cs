@@ -20,7 +20,7 @@ namespace starskywebhtmlcli.Services
             _appSettings = appSettings;
         }
         
-        public void Render(List<FileIndexItem> fileIndexItemsList)
+        public void Render(List<FileIndexItem> fileIndexItemsList, string[] base64ImageArray)
         {
             if(!_appSettings.PublishProfiles.Any()) Console.WriteLine("There are no config items");
             
@@ -34,7 +34,8 @@ namespace starskywebhtmlcli.Services
                     {
                         FileIndexItems = fileIndexItemsList,
                         AppSettings = _appSettings,
-                        Profile = profile
+                        Profile = profile,
+                        Base64ImageArray = base64ImageArray
                     };
                     
                     var embeddedResult = new ParseRazor().EmbeddedViews(profile.Template,viewModel).Result;
