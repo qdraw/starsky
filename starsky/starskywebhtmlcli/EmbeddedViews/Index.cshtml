@@ -2,6 +2,17 @@
 @using System.Linq
 @model starskywebhtmlcli.ViewModels.WebHtmlViewModel
 
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>@Model.AppSettings.Name</title>
+    <meta name="generator" content="Qdraw 2.0">
+</head>
+<body>
+<div style="width:500px; margin: 0 auto 0 auto;">
+
+
     @{
         var profile500 = Model.AppSettings.PublishProfiles.FirstOrDefault(p => p.SourceMaxWidth == 500);
         var fileFolder500 = profile500?.Folder ?? "500/";
@@ -33,5 +44,20 @@
         </a>
     }
 
+    <script type="text/javascript">
+        var bigimages = document.querySelectorAll('a[class^=\'lightbox\'] img');
+        for (var i = 0; i < bigimages.length; i++) {
+            var noscriptItem = bigimages[i].parentNode.getElementsByTagName('noscript')[0]
+            if ( noscriptItem.innerHTML.length >= 10 ) {
+                var url = noscriptItem.innerHTML.match(/\"(.*?)\"/);
+                url = url[0].replace(/\"/ig,"")
+                bigimages[i].src = url
+            }
+        }
+    </script>
+
+</div>
+</body>
+</html>
 
 

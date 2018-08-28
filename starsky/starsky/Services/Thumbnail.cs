@@ -53,6 +53,12 @@ namespace starsky.Services
             if(string.IsNullOrEmpty(item.FilePath) || string.IsNullOrEmpty(item.FileHash)) throw new FileNotFoundException("FilePath or FileHash == null");
             return CreateThumb(item.FilePath, item.FileHash);
         }
+
+        public string GetThumbnailPath(string fileHash)
+        {
+            if (_appSettings == null) throw new NullReferenceException("add appsettings"); 
+            return _appSettings.ThumbnailTempFolder + fileHash + ".jpg"; //<<full
+        }
         
         // Feature used by the cli tool
         // Use FileIndexItem or database style path
@@ -78,7 +84,8 @@ namespace starsky.Services
                 }
 
                 if(fileHash == null) fileHash = FileHash.GetHashCode(fullFilePath);
-                var thumbPath = _appSettings.ThumbnailTempFolder + fileHash + ".jpg"; //<<full
+                var thumbPath = GetThumbnailPath(fileHash); //<<full
+                
                 if (Files.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
                 {
                     Console.WriteLine("The file " + thumbPath + " already exists.");
@@ -167,6 +174,42 @@ namespace starsky.Services
             return true;
         }
 
+        
+        // Resize the thumbnail to object
+        public MemoryStream ResizeThumbnailToStream(string fullSourceImage, int width, int height = 0)
+        {
+            var outputStream = new MemoryStream();
+            try
+            {
+                // resize the image and save it to the output stream
+                using (var inputStream = File.OpenRead(fullSourceImage))
+                using (var image = Image.Load(inputStream))
+                {
+                    // Add orginal rotation to the image as json
+                    if (image.MetaData.ExifProfile != null)
+                    {
+                        image.MetaData.ExifProfile.SetValue(ExifTag.Software, "Starsky");
+                        var isOrientThere = image.MetaData.ExifProfile.TryGetValue(ExifTag.Orientation, out var sourceOrientation);
+                        if(isOrientThere) image.MetaData.ExifProfile.SetValue(ExifTag.ImageDescription, "{ \"sourceOrientation\": \""+ sourceOrientation +"\"}");
+                    }
+                    
+                    image.Mutate(x => x.AutoOrient());
+                    image.Mutate(x => x
+                        .Resize(width, height)
+                    );
+
+                    image.SaveAsJpeg(outputStream);
+                }
+            }
+            catch (Exception ex)            
+            {
+                if (!(ex is ImageFormatException) && !(ex is ArgumentException)) throw;
+                Console.WriteLine(ex);
+                return null;
+            }
+            
+            return outputStream;
+        }
         
         
         

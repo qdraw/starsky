@@ -29,17 +29,7 @@ namespace starskywebhtmlcli
                 Console.WriteLine("--help or -h == help (this window)");
                 Console.WriteLine("--path or -p == parameter: (string) ; fullpath ");
                 Console.WriteLine("--name or -n == parameter: (string) ; name of item ");
-                Console.WriteLine("  use -v -help to show settings: ");
-                if (!appSettings.Verbose) return;
-                Console.WriteLine("");
-                Console.WriteLine("AppSettings:");
-                Console.WriteLine("Database Type (-d --databasetype) "+ appSettings.DatabaseType);
-                Console.WriteLine("DatabaseConnection (-c --connection) " + appSettings.DatabaseConnection);
-                Console.WriteLine("StorageFolder (-b --basepath) " + appSettings.StorageFolder);
-                Console.WriteLine("ThumbnailTempFolder (-f --thumbnailtempfolder) "+ appSettings.ThumbnailTempFolder);
-                Console.WriteLine("ExifToolPath  (-e --exiftoolpath) "+ appSettings.ExifToolPath);
-                Console.WriteLine("Structure  (-u --structure) "+ appSettings.Structure);
-                Console.WriteLine("BaseDirectoryProject (where the exe is located) " + appSettings.BaseDirectoryProject);
+                Console.WriteLine("  use -v -help");
                 return;
             }
             
@@ -70,12 +60,22 @@ namespace starskywebhtmlcli
             if(appSettings.Verbose) Console.WriteLine("Name: " + appSettings.Name);
             if(appSettings.Verbose) Console.WriteLine("inputPath " + inputPath);
 
-            var listOfFiles = Files.GetFilesInDirectory(inputPath);
-            var fileIndexItemList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePath(listOfFiles);
-
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;
             
+            var listOfFiles = Files.GetFilesInDirectory(inputPath);
+            var fileIndexItemList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
+            
+
+            
+            // Create thumbnails from the source images 
+            new ThumbnailByDirectory(appSettings).CreateThumb(inputPath);
+
+//            foreach (var item in fileIndexItemList)
+//            {
+//                item.FileHash = Base64Helper
+//                    .ToBase64(new Thumbnail(null).ResizeThumbnailToStream(item.FilePath, 4));
+//            }
             new LoopPublications(appSettings).Render(fileIndexItemList);
             
 

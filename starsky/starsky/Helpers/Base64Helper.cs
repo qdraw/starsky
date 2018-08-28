@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace starsky.Helpers
@@ -15,5 +16,11 @@ namespace starsky.Helpers
         private static readonly Regex _rx = new Regex(
             @"^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}[AEIMQUYcgkosw048]=|[A-Za-z0-9+/][AQgw]==)?$",
             RegexOptions.Compiled);
+
+        public static string ToBase64(MemoryStream outputStream)
+        {
+            var bytes = outputStream.ToArray();
+            return Convert.ToBase64String(bytes);
+        }
     }
 }

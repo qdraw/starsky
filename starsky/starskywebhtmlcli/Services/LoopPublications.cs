@@ -38,7 +38,8 @@ namespace starskywebhtmlcli.Services
                     };
                     
                     var embeddedResult = new ParseRazor().EmbeddedViews(profile.Template,viewModel).Result;
-                    new PlainTextFileHelper().WriteFile(_appSettings.StorageFolder + profile.Path, embeddedResult);
+                    new PlainTextFileHelper().WriteFile(_appSettings.StorageFolder 
+                                                        + profile.Path, embeddedResult);
                     Console.WriteLine(embeddedResult);
                 }
                 
@@ -46,9 +47,36 @@ namespace starskywebhtmlcli.Services
                 {
                     foreach (var item in fileIndexItemsList)
                     {
+                        var overlayImage = new OverlayImage(_appSettings);
+
+                        var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
+
+                        var outputFilePath = overlayImage.FilePathOverlayImage(fullFilePath, profile);
                         
-                        new OverlayImage(_appSettings).ResizeOverlayImage(
-                            item.FilePath, profile);
+                        // check if subfolder '1000' exist on disk
+                        var toCreateSubfolder = _appSettings.DatabasePathToFilePath(profile.Folder, false);
+
+                        if (Files.IsFolderOrFile(toCreateSubfolder) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+                        {
+                            Directory.CreateDirectory(toCreateSubfolder);
+                        }
+                        
+                        
+                        // for less than 1000px
+                        if (profile.SourceMaxWidth <= 1000)
+                        {
+                            var inputFullFilePath = new Thumbnail(_appSettings).GetThumbnailPath(item.FileHash);
+                            new OverlayImage(_appSettings).ResizeOverlayImage(
+                                inputFullFilePath, outputFilePath, profile);
+                        }
+                            
+                        // Thumbs are 1000 px
+                        if (profile.SourceMaxWidth > 1000)
+                        {
+                            overlayImage.ResizeOverlayImage(fullFilePath, outputFilePath, profile);
+                        }
+                        
+
                     }
                 }
 

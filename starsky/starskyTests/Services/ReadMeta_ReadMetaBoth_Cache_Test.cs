@@ -29,7 +29,7 @@ namespace starskytests.Services
             var appsettings = new AppSettings {StorageFolder = new CreateAnImage().BasePath};
             var listofFiles = new string[]{ new CreateAnImage().FullFilePath};
             var listOfMetas = new ReadMeta(appsettings,_fakeCache)
-                .ReadExifAndXmpFromFileAddFilePath(listofFiles);
+                .ReadExifAndXmpFromFileAddFilePathHash(listofFiles);
             Assert.AreEqual(new CreateAnImage().DbPath.Remove(0,1), 
                 listOfMetas.FirstOrDefault().FileName);
         }

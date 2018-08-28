@@ -1,4 +1,6 @@
 ﻿
+using starsky.Services;
+
 namespace starsky.Models
 {
     //"ContentType":  "html",
@@ -27,7 +29,19 @@ namespace starsky.Models
 
         public int OverlayMaxWidth { get; set; }
         public string Path { get; set; } // used for template url or overlay image
-        public string Folder { get; set; } = string.Empty;
+
+        private string _folder = string.Empty;
+        public string Folder
+        {
+            get { return _folder; }
+            set
+            {
+                // Append slash after
+                if (string.IsNullOrEmpty(value)) _folder = string.Empty;
+                _folder = ConfigRead.AddSlash(value);
+            }
+        }
+
         public string Append { get; set; }
         public string Template { get; set; } // index.cshtml for example
         public string Prepend { get; set; } = string.Empty;

@@ -27,15 +27,17 @@ namespace starsky.Services
         }
 
         // used by the html generator
-        public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePath(string[] fullFilePathArray)
+        public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(string[] fullFilePathArray)
         {
             var fileIndexList = new List<FileIndexItem>();
             foreach (var fullFilePath in fullFilePathArray)
             {
+                var subPath = _appSettings.FullPathToDatabaseStyle(fullFilePath);
                 var returnItem = ReadExifAndXmpFromFile(fullFilePath);
                 returnItem.FileName = Path.GetFileName(fullFilePath);
                 returnItem.IsDirectory = false;
-                returnItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(fullFilePath).LastOrDefault();
+                returnItem.FileHash = FileHash.GetHashCode(fullFilePath);
+                returnItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault();
                 fileIndexList.Add(returnItem);
             }
             return fileIndexList;

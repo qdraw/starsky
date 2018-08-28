@@ -16,7 +16,18 @@ namespace starskywebhtmlcli.Services
         {
             _appSettings = appSettings;
         }
-        public void ResizeOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
+
+        public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
+        {
+            var outputFilePath = Path.Combine(Path.GetDirectoryName(sourceFilePath),
+                profile.Folder,
+                Path.GetFileNameWithoutExtension(sourceFilePath) +
+                profile.Append + Path.GetExtension(sourceFilePath));
+            return outputFilePath;
+        }
+
+        
+        public void ResizeOverlayImage(string sourceFilePath, string outputFilePath, AppSettingsPublishProfiles profile)
         {
             if (Files.IsFolderOrFile(profile.Path) //< used for image overlay 
                 != FolderOrFileModel.FolderOrFileTypeList.File) 
@@ -25,12 +36,11 @@ namespace starskywebhtmlcli.Services
             if (Files.IsFolderOrFile(sourceFilePath) 
                 != FolderOrFileModel.FolderOrFileTypeList.File) 
                 throw new FileNotFoundException("sourceFilePath " + sourceFilePath);
-
-            var outputFile = Path.Combine(Path.GetDirectoryName(sourceFilePath),
-                profile.Folder,
-                Path.GetFileNameWithoutExtension(sourceFilePath)+ profile.Append + Path.GetExtension(sourceFilePath));
+            
+            if (Files.IsFolderOrFile(outputFilePath) 
+                == FolderOrFileModel.FolderOrFileTypeList.File) return;
                 
-            using (var outputStream = new FileStream(outputFile, FileMode.CreateNew))
+            using (var outputStream = new FileStream(outputFilePath, FileMode.CreateNew))
             using (var inputStream = File.OpenRead(sourceFilePath))
             using (var overlayLogoStream = File.OpenRead(profile.Path))
             using (var image = Image.Load(inputStream))
