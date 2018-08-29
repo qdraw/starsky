@@ -64,60 +64,14 @@ namespace starskywebhtmlcli
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;
             
-            
-            
             var listOfFiles = Files.GetFilesInDirectory(inputPath);
             var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
             
-
-            
             // Create thumbnails from the source images 
-            new ThumbnailByDirectory(appSettings).CreateThumb(inputPath);
-
-            var base64ImageArray = new string[fileIndexList.Count];
-            for (int i = 0; i < fileIndexList.Count; i++)
-            {
-                var item = fileIndexList[i];
-                var fullFilePath = appSettings.DatabasePathToFilePath(item.FilePath);
-                base64ImageArray[i] = Base64Helper
-                    .ToBase64(new Thumbnail(null).ResizeThumbnailToStream(fullFilePath, 4, 0, 0, true, Files.ImageFormat.png));
-            }
-
-            new LoopPublications(appSettings).Render(fileIndexList,base64ImageArray);
-            
-
+            var thumbByDir = new ThumbnailByDirectory(appSettings);
+            thumbByDir.CreateThumb(inputPath);
+            new LoopPublications(appSettings).Render(fileIndexList,thumbByDir.ToBase64DataUriList(fileIndexList));
         }
-
-//        public static IServiceScopeFactory InitializeServices(string customApplicationBasePath = null)
-//        {
-//            // Initialize the necessary services
-//            var services = new ServiceCollection();
-//
-//            // Inject Config helper
-//            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-//            var builder = new ConfigurationBuilder();
-//            if (File.Exists(new AppSettings().BaseDirectoryProject + "appsettings.json"))
-//            {
-//                Console.WriteLine("loaded json > " +new AppSettings().BaseDirectoryProject  + "appsettings.json");
-//                builder.AddJsonFile(
-//                    new AppSettings().BaseDirectoryProject + "appsettings.json", optional: false);
-//            }
-//            // overwrite envs
-//            builder.AddEnvironmentVariables();
-//            // build config
-//            var configuration = builder.Build();
-//            // inject config as object to a service
-//            services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
-//            // end config
-//            
-//            var serviceProvider = services.BuildServiceProvider();
-//            
-//            appSettings = serviceProvider.GetRequiredService<AppSettings>();
-//            
-//            _readmeta = new ReadMeta(appSettings);
-//
-//            return serviceProvider.GetRequiredService<IServiceScopeFactory>();
-//        }
         
     }
 }

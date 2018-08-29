@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using starsky.Helpers;
@@ -14,6 +15,20 @@ namespace starsky.Services
         public ThumbnailByDirectory(AppSettings appSettings)
         {
             _appSettings = appSettings;
+        }
+        
+        public string[] ToBase64DataUriList(List<FileIndexItem> fileIndexList)
+        {
+            var base64ImageArray = new string[fileIndexList.Count];
+            for (var i = 0; i<fileIndexList.Count; i++)
+            {
+                var item = fileIndexList[i];
+                var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
+                base64ImageArray[i] = "data:image/png;base64," + Base64Helper
+                                          .ToBase64(new Thumbnail(null).ResizeThumbnailToStream(fullFilePath, 4, 0, 0, true,
+                                              Files.ImageFormat.png));
+            }
+            return base64ImageArray;
         }
 
         public void CreateThumb(string parentFolderFullPath = "/")
