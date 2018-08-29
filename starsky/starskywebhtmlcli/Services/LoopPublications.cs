@@ -21,25 +21,6 @@ namespace starskywebhtmlcli.Services
             _appSettings = appSettings;
         }
 
-        public void ToCreateSubfolder(AppSettingsPublishProfiles profile, string parentFolder)
-        {
-            // check if subfolder '1000' exist on disk
-            // used for moving subfolders first
-            var profileFolderStringBuilder = new StringBuilder();
-            if (!string.IsNullOrEmpty(parentFolder))
-            {
-                profileFolderStringBuilder.Append(parentFolder);
-                profileFolderStringBuilder.Append("/");
-            }
-            profileFolderStringBuilder.Append(profile.Folder);
-            var toCreateSubfolder = _appSettings.DatabasePathToFilePath(profileFolderStringBuilder.ToString(), false);
-
-            if (Files.IsFolderOrFile(toCreateSubfolder) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
-            {
-                Directory.CreateDirectory(toCreateSubfolder);
-            }
-        }
-        
         public void Render(List<FileIndexItem> fileIndexItemsList, string[] base64ImageArray)
         {
             if(!_appSettings.PublishProfiles.Any()) Console.WriteLine("There are no config items");
@@ -120,5 +101,26 @@ namespace starskywebhtmlcli.Services
 
             }
         }
+        
+        private void ToCreateSubfolder(AppSettingsPublishProfiles profile, string parentFolder)
+        {
+            // check if subfolder '1000' exist on disk
+            // used for moving subfolders first
+            var profileFolderStringBuilder = new StringBuilder();
+            if (!string.IsNullOrEmpty(parentFolder))
+            {
+                profileFolderStringBuilder.Append(parentFolder);
+                profileFolderStringBuilder.Append("/");
+            }
+            profileFolderStringBuilder.Append(profile.Folder);
+            var toCreateSubfolder = _appSettings.DatabasePathToFilePath(profileFolderStringBuilder.ToString(), false);
+
+            if (Files.IsFolderOrFile(toCreateSubfolder) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+            {
+                Directory.CreateDirectory(toCreateSubfolder);
+            }
+        }
+
+        
     }
 }
