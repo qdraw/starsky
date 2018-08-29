@@ -48,6 +48,7 @@ namespace starskywebhtmlcli.Services
             {
                 Console.WriteLine(profile.Path + " " +  profile.ContentType.ToString());
 
+                // Generates html by razorLight
                 if (profile.ContentType == TemplateContentType.Html)
                 {
                     var viewModel = new WebHtmlViewModel
@@ -98,7 +99,6 @@ namespace starskywebhtmlcli.Services
                         {
                             overlayImage.ResizeOverlayImage(fullFilePath, outputFilePath, profile);
                         }
-                        
 
                     }
                 }
