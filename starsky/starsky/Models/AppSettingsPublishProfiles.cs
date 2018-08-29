@@ -52,6 +52,7 @@ namespace starsky.Models
     {
         None = 0,
         Html = 1,
-        Jpeg = 2
+        Jpeg = 2,
+        MoveSourceFiles = 3
     }
 }

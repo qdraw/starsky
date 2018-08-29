@@ -26,8 +26,17 @@
                     "OverlayMaxWidth":  0,
                     "OverlayFullPath": "",
                     "Path": "index.html",
-                    "Template": "Autopost",
-                    "Append": ""
+                    "Template": "Index.cshtml",
+                    "Prepend": ""
+                },
+                {
+                    "ContentType":  "html",
+                    "SourceMaxWidth":  0,
+                    "OverlayMaxWidth":  0,
+                    "OverlayFullPath": "",
+                    "Path": "index.web.html",
+                    "Template": "Index.cshtml",
+                    "Prepend": "https://media.qdraw.nl/log/{name}"
                 },
                 {
                     "ContentType":  "html",
@@ -35,24 +44,28 @@
                     "OverlayMaxWidth":  0,
                     "OverlayFullPath": "",
                     "Path": "autopost.txt",
-                    "Template": "Autopost",
-                    "Append": ""
+                    "Template": "Autopost.cshtml",
+                    "Prepend": "https://media.qdraw.nl/log/{name}"
                 },
                 {
                     "ContentType":  "jpeg",
                     "SourceMaxWidth":  1000,
-                    "OverlayMaxWidth":  200,
-                    "Path": "/overlay.jpg",
+                    "OverlayMaxWidth":  380,
+                    "Path": "/data/git/starsky/starsky/starskywebhtmlcli/EmbeddedViews/qdrawlarge.png",
                     "Folder": "1000",
                     "Append": "_kl1k"
                 },
                 {
                     "ContentType":  "jpeg",
                     "SourceMaxWidth":  500,
-                    "OverlayMaxWidth":  100,
-                    "OverlayFullPath": "/overlay.jpg",
+                    "OverlayMaxWidth":  200,
+                    "Path": "/data/git/starsky/starsky/starskywebhtmlcli/EmbeddedViews/qdrawsmall.png",
                     "Folder": "500",
                     "Append": "_kl"
+                },
+                {
+                    "ContentType":  "moveSourceFiles",
+                    "Folder": "orgineel"
                 }
             ]
     }

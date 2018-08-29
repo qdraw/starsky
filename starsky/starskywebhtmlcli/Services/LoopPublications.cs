@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Helpers;
 using starsky.Models;
@@ -18,6 +19,25 @@ namespace starskywebhtmlcli.Services
         public LoopPublications(AppSettings appSettings)
         {
             _appSettings = appSettings;
+        }
+
+        public void ToCreateSubfolder(AppSettingsPublishProfiles profile, string parentFolder)
+        {
+            // check if subfolder '1000' exist on disk
+            // used for moving subfolders first
+            var profileFolderStringBuilder = new StringBuilder();
+            if (!string.IsNullOrEmpty(parentFolder))
+            {
+                profileFolderStringBuilder.Append(parentFolder);
+                profileFolderStringBuilder.Append("/");
+            }
+            profileFolderStringBuilder.Append(profile.Folder);
+            var toCreateSubfolder = _appSettings.DatabasePathToFilePath(profileFolderStringBuilder.ToString(), false);
+
+            if (Files.IsFolderOrFile(toCreateSubfolder) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+            {
+                Directory.CreateDirectory(toCreateSubfolder);
+            }
         }
         
         public void Render(List<FileIndexItem> fileIndexItemsList, string[] base64ImageArray)
@@ -55,21 +75,15 @@ namespace starskywebhtmlcli.Services
                 
                 if (profile.ContentType == TemplateContentType.Jpeg)
                 {
+                    ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
+                    var overlayImage = new OverlayImage(_appSettings);
+
                     foreach (var item in fileIndexItemsList)
                     {
-                        var overlayImage = new OverlayImage(_appSettings);
 
                         var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
 
                         var outputFilePath = overlayImage.FilePathOverlayImage(fullFilePath, profile);
-                        
-                        // check if subfolder '1000' exist on disk
-                        var toCreateSubfolder = _appSettings.DatabasePathToFilePath(profile.Folder, false);
-
-                        if (Files.IsFolderOrFile(toCreateSubfolder) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
-                        {
-                            Directory.CreateDirectory(toCreateSubfolder);
-                        }
                         
                         // for less than 1000px
                         if (profile.SourceMaxWidth <= 1000)
@@ -89,7 +103,20 @@ namespace starskywebhtmlcli.Services
                     }
                 }
 
-                
+                if (profile.ContentType == TemplateContentType.MoveSourceFiles)
+                {
+                    ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
+                    var overlayImage = new OverlayImage(_appSettings);
+
+                    foreach (var item in fileIndexItemsList)
+                    {
+                        var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
+                        var outputFilePath = overlayImage.FilePathOverlayImage(fullFilePath, profile);
+
+                        File.Move(fullFilePath, outputFilePath);
+                        item.ParentDirectory = profile.Folder;
+                    }
+                }
 
             }
         }
