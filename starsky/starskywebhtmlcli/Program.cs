@@ -64,24 +64,26 @@ namespace starskywebhtmlcli
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;
             
+            
+            
             var listOfFiles = Files.GetFilesInDirectory(inputPath);
-            var fileIndexItemList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
+            var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
             
 
             
             // Create thumbnails from the source images 
             new ThumbnailByDirectory(appSettings).CreateThumb(inputPath);
 
-            var base64ImageArray = new string[fileIndexItemList.Count];
-            for (int i = 0; i < fileIndexItemList.Count; i++)
+            var base64ImageArray = new string[fileIndexList.Count];
+            for (int i = 0; i < fileIndexList.Count; i++)
             {
-                var item = fileIndexItemList[i];
+                var item = fileIndexList[i];
                 var fullFilePath = appSettings.DatabasePathToFilePath(item.FilePath);
                 base64ImageArray[i] = Base64Helper
-                    .ToBase64(new Thumbnail(null).ResizeThumbnailToStream(fullFilePath, 4, 0, 2, true, Files.ImageFormat.png));
+                    .ToBase64(new Thumbnail(null).ResizeThumbnailToStream(fullFilePath, 4, 0, 0, true, Files.ImageFormat.png));
             }
 
-            new LoopPublications(appSettings).Render(fileIndexItemList,base64ImageArray);
+            new LoopPublications(appSettings).Render(fileIndexList,base64ImageArray);
             
 
         }

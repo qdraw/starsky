@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Server.Kestrel.Internal.System.Runtime;
 using RazorLight;
 using starsky.Helpers;
 using starsky.Models;
@@ -26,19 +27,22 @@ namespace starskywebhtmlcli.Services
                 .Build();
         }
 
+        public string GetViewFullpath(string viewName)
+        {
+            return AppDomain.CurrentDomain.BaseDirectory +
+                   Path.DirectorySeparatorChar +
+                   "EmbeddedViews" +
+                   Path.DirectorySeparatorChar + viewName;
+        }
+        
         public async Task<string> EmbeddedViews(string viewName, object viewModel)
         {
-            var viewPath = AppDomain.CurrentDomain.BaseDirectory +
-                           Path.DirectorySeparatorChar +
-                           "EmbeddedViews" +
-                           Path.DirectorySeparatorChar + viewName;
-
-            if (Files.IsFolderOrFile(viewPath) 
+            if (Files.IsFolderOrFile(GetViewFullpath(viewName)) 
                 == FolderOrFileModel.FolderOrFileTypeList.Deleted)
             {
-                Console.WriteLine("View Not Exist");
+                Console.WriteLine("View Not Exist " + GetViewFullpath(viewName));
             }
-            else if (Files.IsFolderOrFile(viewPath) 
+            else if (Files.IsFolderOrFile(GetViewFullpath(viewName)) 
                      == FolderOrFileModel.FolderOrFileTypeList.File)
             {
                 return await 

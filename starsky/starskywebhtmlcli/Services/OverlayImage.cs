@@ -21,7 +21,7 @@ namespace starskywebhtmlcli.Services
         {
             var outputFilePath = Path.Combine(Path.GetDirectoryName(sourceFilePath),
                 profile.Folder,
-                Path.GetFileNameWithoutExtension(sourceFilePath) +
+                _appSettings.GenerateSlug( Path.GetFileNameWithoutExtension(sourceFilePath) ) +
                 profile.Append + Path.GetExtension(sourceFilePath));
             return outputFilePath;
         }
@@ -36,6 +36,8 @@ namespace starskywebhtmlcli.Services
             if (Files.IsFolderOrFile(sourceFilePath) 
                 != FolderOrFileModel.FolderOrFileTypeList.File) 
                 throw new FileNotFoundException("sourceFilePath " + sourceFilePath);
+
+            var path = profile.Path;
             
             if (Files.IsFolderOrFile(outputFilePath) 
                 == FolderOrFileModel.FolderOrFileTypeList.File) return;

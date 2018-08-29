@@ -32,11 +32,20 @@ namespace starskywebhtmlcli.Services
                 {
                     var viewModel = new WebHtmlViewModel
                     {
-                        FileIndexItems = fileIndexItemsList,
                         AppSettings = _appSettings,
                         Profile = profile,
-                        Base64ImageArray = base64ImageArray
+                        Base64ImageArray = base64ImageArray,
+                        // apply slug to items, but use it only in the copy
+                        FileIndexItems = fileIndexItemsList.Select(c => c.Clone()).ToList(),
                     };
+
+                    // add to IClonable
+                    foreach (var item in viewModel.FileIndexItems)
+                    {
+                        item.FileName = _appSettings.GenerateSlug(item.FileCollectionName) + Path.GetExtension(item.FileName);
+                    }
+
+//                    Files.DeleteFile(profile.Path);
                     
                     var embeddedResult = new ParseRazor().EmbeddedViews(profile.Template,viewModel).Result;
                     new PlainTextFileHelper().WriteFile(_appSettings.StorageFolder 
@@ -62,13 +71,12 @@ namespace starskywebhtmlcli.Services
                             Directory.CreateDirectory(toCreateSubfolder);
                         }
                         
-                        
                         // for less than 1000px
                         if (profile.SourceMaxWidth <= 1000)
                         {
                             var inputFullFilePath = new Thumbnail(_appSettings).GetThumbnailPath(item.FileHash);
                             new OverlayImage(_appSettings).ResizeOverlayImage(
-                                inputFullFilePath, outputFilePath, profile);
+                                inputFullFilePath, outputFilePath,profile);
                         }
                             
                         // Thumbs are 1000 px

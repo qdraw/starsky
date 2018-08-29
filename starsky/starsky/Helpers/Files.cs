@@ -246,7 +246,15 @@ namespace starsky.Helpers
                 Directory.Delete(path, true);
             }
         }
-        
+
+        public static void DeleteFile(string path)
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
+
         public static IEnumerable<string> GetFilesRecrusive(string fullFilePath)
         {
             List<string> findlist = new List<string>();

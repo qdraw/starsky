@@ -66,6 +66,28 @@ namespace starsky.Models
             }
         }
 
+        // Used to template config > appsettingsPubProfile
+        public string GetWebSafeReplacedName(string input)
+        {
+            return ConfigRead.AddSlash(input.Replace("{name}", GenerateSlug(Name)));
+        }
+        
+        /// <summary>
+        /// Generates a permalink slug for passed string
+        /// </summary>
+        /// <param name="phrase"></param>
+        /// <returns>clean slug string (ex. "some-cool-topic")</returns>
+        public string GenerateSlug(string phrase)
+        {
+            var s = phrase.ToLowerInvariant();
+            s = Regex.Replace(s, @"[^a-z0-9\s-]", "");                      // remove invalid characters
+            s = Regex.Replace(s, @"\s+", " ").Trim();                       // single space
+            s = s.Substring(0, s.Length <= 45 ? s.Length : 45).Trim();      // cut and trim
+            s = Regex.Replace(s, @"\s", "-");                               // insert hyphens
+            return s.ToLower();
+        }
+        
+
         // Database
         [JsonConverter(typeof(StringEnumConverter))]
         public DatabaseTypeList DatabaseType { get; set; }
