@@ -172,7 +172,7 @@ namespace starsky.Services
                 if (!string.IsNullOrWhiteSpace(updateModel.ObjectName))
                 {
                     command += " -ObjectName=\"" + updateModel.ObjectName + "\"" 
-                               + " \"-xmp:title\"=" + "\"" + updateModel.ObjectName  + "\"" ;
+                               + " \"-title\"=" + "\"" + updateModel.ObjectName  + "\"" ;
                 }
                
                 if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)

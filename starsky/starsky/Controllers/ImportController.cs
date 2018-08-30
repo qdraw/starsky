@@ -32,7 +32,7 @@ namespace starsky.Controllers
         [HttpPost]
         [ActionName("Index")]
         [DisableFormValueModelBinding]
-        [RequestSizeLimit(50000000)] // in bytes, 50mb
+        [RequestSizeLimit(160000000)] // in bytes, 160mb
         public async Task<IActionResult> IndexPost()
         {
             var tempImportPaths = await Request.StreamFile(_appSettings);
