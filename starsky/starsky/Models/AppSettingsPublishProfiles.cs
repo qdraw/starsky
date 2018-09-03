@@ -32,10 +32,10 @@ namespace starsky.Models
         {
             get
             {
-                if (_sourceMaxWith >= 100) return _sourceMaxWith;
+                if (_overlayMaxWidth >= 100) return _overlayMaxWidth;
                 return 100;
             }
-            set => _sourceMaxWith = value;
+            set => _overlayMaxWidth = value;
         }
         
         public string Path { get; set; } // used for template url or overlay image

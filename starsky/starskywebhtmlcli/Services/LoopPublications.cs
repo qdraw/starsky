@@ -25,85 +25,97 @@ namespace starskywebhtmlcli.Services
         {
             if(!_appSettings.PublishProfiles.Any()) Console.WriteLine("There are no config items");
             if(base64ImageArray == null) base64ImageArray = new string[fileIndexItemsList.Count];
-
+            
+            // Order alphabetcly
+            fileIndexItemsList = fileIndexItemsList.OrderBy(p => p.FileName).ToList();
             
             foreach (var profile in _appSettings.PublishProfiles)
             {
-                Console.WriteLine(profile.Path + " " +  profile.ContentType.ToString());
-
-                // Generates html by razorLight
-                if (profile.ContentType == TemplateContentType.Html)
+                switch (profile.ContentType)
                 {
-                    var viewModel = new WebHtmlViewModel
-                    {
-                        AppSettings = _appSettings,
-                        Profile = profile,
-                        Base64ImageArray = base64ImageArray,
-                        // apply slug to items, but use it only in the copy
-                        FileIndexItems = fileIndexItemsList.Select(c => c.Clone()).ToList(),
-                    };
+                    case TemplateContentType.Html:
+                        GenerateWebHtml(profile,base64ImageArray,fileIndexItemsList);
+                        break;
+                    case TemplateContentType.Jpeg:
+                        GenerateJpeg(profile,fileIndexItemsList);
+                        break;
+                    case TemplateContentType.MoveSourceFiles:
+                        GenerateMoveSourceFiles(profile,fileIndexItemsList);
+                        break;
+                }
+            }
+        }
 
-                    // add to IClonable
-                    foreach (var item in viewModel.FileIndexItems)
-                    {
-                        item.FileName = _appSettings.GenerateSlug(item.FileCollectionName) + Path.GetExtension(item.FileName);
-                    }
+        private void GenerateWebHtml(AppSettingsPublishProfiles profile,string[] base64ImageArray, List<FileIndexItem> fileIndexItemsList)
+        {
+            // Generates html by razorLight
+            var viewModel = new WebHtmlViewModel
+            {
+                AppSettings = _appSettings,
+                Profile = profile,
+                Base64ImageArray = base64ImageArray,
+                // apply slug to items, but use it only in the copy
+                FileIndexItems = fileIndexItemsList.Select(c => c.Clone()).ToList(),
+            };
 
-//                    Files.DeleteFile(profile.Path);
+            // add to IClonable
+            foreach (var item in viewModel.FileIndexItems)
+            {
+                item.FileName = _appSettings.GenerateSlug(item.FileCollectionName) + Path.GetExtension(item.FileName);
+            }
+
+            // Files.DeleteFile(profile.Path);
                     
-                    var embeddedResult = new ParseRazor().EmbeddedViews(profile.Template,viewModel).Result;
-                    new PlainTextFileHelper().WriteFile(_appSettings.StorageFolder 
-                                                        + profile.Path, embeddedResult);
-                    Console.WriteLine(embeddedResult);
-                }
-                
-                if (profile.ContentType == TemplateContentType.Jpeg)
-                {
-                    ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-                    var overlayImage = new OverlayImage(_appSettings);
+            var embeddedResult = new ParseRazor().EmbeddedViews(profile.Template,viewModel).Result;
+            new PlainTextFileHelper().WriteFile(_appSettings.StorageFolder 
+                                                + profile.Path, embeddedResult);
+            Console.WriteLine(embeddedResult);
+        }
 
-                    foreach (var item in fileIndexItemsList)
-                    {
+        private void GenerateJpeg(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
+        {
+            ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
+            var overlayImage = new OverlayImage(_appSettings);
 
-                        var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
+            foreach (var item in fileIndexItemsList)
+            {
 
-                        var outputFilePath = overlayImage.FilePathOverlayImage(fullFilePath, profile);
+                var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
+
+                var outputFilePath = overlayImage.FilePathOverlayImage(fullFilePath, profile);
                         
-                        // for less than 1000px
-                        if (profile.SourceMaxWidth <= 1000)
-                        {
-                            var inputFullFilePath = new Thumbnail(_appSettings).GetThumbnailPath(item.FileHash);
-                            new OverlayImage(_appSettings).ResizeOverlayImage(
-                                inputFullFilePath, outputFilePath,profile);
-                        }
-                            
-                        // Thumbs are 1000 px
-                        if (profile.SourceMaxWidth > 1000)
-                        {
-                            overlayImage.ResizeOverlayImage(fullFilePath, outputFilePath, profile);
-                        }
-
-                    }
-                }
-
-                if (profile.ContentType == TemplateContentType.MoveSourceFiles)
+                // for less than 1000px
+                if (profile.SourceMaxWidth <= 1000)
                 {
-                    ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-                    var overlayImage = new OverlayImage(_appSettings);
-
-                    foreach (var item in fileIndexItemsList)
-                    {
-                        var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
-                        var outputFilePath = overlayImage.FilePathOverlayImage(fullFilePath, profile);
-
-                        File.Move(fullFilePath, outputFilePath);
-                        item.ParentDirectory = profile.Folder;
-                    }
+                    var inputFullFilePath = new Thumbnail(_appSettings).GetThumbnailPath(item.FileHash);
+                    new OverlayImage(_appSettings).ResizeOverlayImage(
+                        inputFullFilePath, outputFilePath,profile);
+                }
+                            
+                // Thumbs are 1000 px
+                if (profile.SourceMaxWidth > 1000)
+                {
+                    overlayImage.ResizeOverlayImage(fullFilePath, outputFilePath, profile);
                 }
 
             }
         }
-        
+
+        private void GenerateMoveSourceFiles(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
+        {
+            ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
+            var overlayImage = new OverlayImage(_appSettings);
+
+            foreach (var item in fileIndexItemsList)
+            {
+                var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
+                var outputFilePath = overlayImage.FilePathOverlayImage(fullFilePath, profile);
+
+                File.Move(fullFilePath, outputFilePath);
+                item.ParentDirectory = profile.Folder;
+            }
+        }
+
         private void ToCreateSubfolder(AppSettingsPublishProfiles profile, string parentFolder)
         {
             // check if subfolder '1000' exist on disk

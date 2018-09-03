@@ -33,7 +33,7 @@ namespace starsky.Services
                 // The idea to pick thumbnail based images first, followed by non-thumb supported
                 // when not pick alphabetaly > todo implement this
 
-                for (int i = 0; i < duplicateItems.Count(); i++)
+                for (int i = 0; i < duplicateItems.Count; i++)
                 {
                     var fileExtension = Path.GetExtension(duplicateItems[i].FileName).Replace(".",string.Empty);
                     

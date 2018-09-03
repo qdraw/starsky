@@ -35,7 +35,7 @@ namespace starsky.Interfaces
 
         // To make an object without any query
         DetailView SingleItem(
-            List<FileIndexItem> fileIndexItems, 
+            List<FileIndexItem> fileIndexItemsList, 
             string singleItemDbPath, 
             List<FileIndexItem.Color> colorClassFilterList = null,
             bool enableCollections = true,

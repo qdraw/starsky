@@ -87,7 +87,7 @@ namespace starsky.Services
         private RelativeObjects GetNextPrevInSubFolder(FileIndexItem currentFileIndexItem, 
             List<FileIndexItem> fileIndexItemsList)
         {
-            // Check if this is item is not !deleted! yet;
+            // Check if this is item is not !deleted! yet
             if (currentFileIndexItem == null) return new RelativeObjects();;
             
             var currentIndex = fileIndexItemsList.FindIndex(p => p.FilePath == currentFileIndexItem.FilePath);
