@@ -24,6 +24,8 @@ namespace starskywebhtmlcli.Services
         public void Render(List<FileIndexItem> fileIndexItemsList, string[] base64ImageArray)
         {
             if(!_appSettings.PublishProfiles.Any()) Console.WriteLine("There are no config items");
+            if(base64ImageArray == null) base64ImageArray = new string[fileIndexItemsList.Count];
+
             
             foreach (var profile in _appSettings.PublishProfiles)
             {

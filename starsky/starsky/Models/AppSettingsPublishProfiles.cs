@@ -21,13 +21,23 @@ namespace starsky.Models
         {
             get
             {
-                if (_sourceMaxWith >= 2) return _sourceMaxWith;
-                return 2;
+                if (_sourceMaxWith >= 100) return _sourceMaxWith;
+                return 100;
             }
             set => _sourceMaxWith = value;
         }
 
-        public int OverlayMaxWidth { get; set; }
+        private int _overlayMaxWidth;
+        public int OverlayMaxWidth
+        {
+            get
+            {
+                if (_sourceMaxWith >= 100) return _sourceMaxWith;
+                return 100;
+            }
+            set => _sourceMaxWith = value;
+        }
+        
         public string Path { get; set; } // used for template url or overlay image
 
         private string _folder = string.Empty;

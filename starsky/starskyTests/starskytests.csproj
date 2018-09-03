@@ -6,6 +6,8 @@
     <!-- <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">2.1.2</RuntimeFrameworkVersion>     -->
     <DebugType>Full</DebugType>
     <IsPackable>false</IsPackable>
+    <!-- used for RazorLight -->
+    <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />

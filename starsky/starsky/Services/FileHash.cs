@@ -14,11 +14,24 @@ namespace starsky.Services
         // Returns list of hashcodes
         // or one hashcode (base32)
         
+        
+        /// <summary>
+        /// Get the hashcodes of a array of files
+        /// Uses the default timeout
+        /// </summary>
+        /// <param name="filesInDirectoryFullPath">array</param>
+        /// <returns>array of base32 hashes</returns>
         public static List<string> GetHashCode(string[] filesInDirectoryFullPath)
         {
             return filesInDirectoryFullPath.Select(fileFullPath => _calcHashCode(fileFullPath)).ToList();
         }
 
+        /// <summary>
+        /// Returns a Base32 case insensitive filehash, used with the default timeout of 8 seconds
+        /// </summary>
+        /// <param name="filename">FullFilePath</param>
+        /// <param name="timeoutSeconds">Timeout in seconds, before a random string will be returned</param>
+        /// <returns>base32 hash</returns>
         public static string GetHashCode(string filename, int timeoutSeconds = 8)
         {
             return _calcHashCode(filename,timeoutSeconds);

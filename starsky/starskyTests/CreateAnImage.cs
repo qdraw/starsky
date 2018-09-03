@@ -7,13 +7,14 @@ namespace starskytests
     public class CreateAnImage
     {
 
-        private static readonly string fileName = "0000000000aaaaa__exifreadingtest00.jpg";
+        private static readonly string _fileName = "0000000000aaaaa__exifreadingtest00.jpg";
         // There is an unit test for using directory thumbnails that uses the first image;
         // starskytests.SyncServiceTest.SyncServiceFirstItemDirectoryTest
 
-        public readonly string DbPath = "/" + fileName;
+        public string FileName => _fileName;
+        public readonly string DbPath = "/" + _fileName;
         public readonly string FullFilePath = 
-            Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + fileName;
+            Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + _fileName;
         public readonly string BasePath =
             Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
 
