@@ -10,7 +10,7 @@ namespace starskytests.starskyWebHtmlCli.Services
     public class LoopPublicationsTest
     {
         [TestMethod]
-        public void LoopPublicationsTestRunVoid()
+        public void LoopPublicationsTestRunRenderVoid()
         {
             var appSettings = new AppSettings
             {
@@ -31,6 +31,12 @@ namespace starskytests.starskyWebHtmlCli.Services
                 ContentType = TemplateContentType.Jpeg,
                 Path = createAnImage.FullFilePath, 
                 // Folder = ""
+            });
+
+            // Move to the same folder
+            appSettings.PublishProfiles.Add(new AppSettingsPublishProfiles
+            {
+                ContentType = TemplateContentType.MoveSourceFiles,
             });
 
             appSettings.StorageFolder = createAnImage.BasePath;

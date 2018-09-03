@@ -25,10 +25,7 @@ namespace starskytests.starskyWebHtmlCli
             // There is a console log
         }
 
-        [TestMethod]
-        public void starskyWebHtmlCli_IntegrationTes1t_NoPath()
-        {
-        }
+
 
 
     }
