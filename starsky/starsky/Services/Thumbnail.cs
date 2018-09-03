@@ -160,8 +160,8 @@ namespace starsky.Services
                     if (image.MetaData.ExifProfile != null)
                     {
                         image.MetaData.ExifProfile.SetValue(ExifTag.Software, "Starsky");
-                        var isOrientThere = image.MetaData.ExifProfile.TryGetValue(ExifTag.Orientation, out var sourceOrientation);
-                        if(isOrientThere) image.MetaData.ExifProfile.SetValue(ExifTag.ImageDescription, "{ \"sourceOrientation\": \""+ sourceOrientation +"\"}");
+//                        var isOrientThere = image.MetaData.ExifProfile.TryGetValue(ExifTag.Orientation, out var sourceOrientation);
+//                        if(isOrientThere) image.MetaData.ExifProfile.SetValue(ExifTag.ImageDescription, "{ \"sourceOrientation\": \""+ sourceOrientation +"\"}");
                     }
                     
                     image.Mutate(x => x.AutoOrient());
@@ -200,8 +200,6 @@ namespace starsky.Services
                     if (image.MetaData.ExifProfile != null && removeExif == false)
                     {
                         image.MetaData.ExifProfile.SetValue(ExifTag.Software, "Starsky");
-                        var isOrientThere = image.MetaData.ExifProfile.TryGetValue(ExifTag.Orientation, out var sourceOrientation);
-                        if(isOrientThere) image.MetaData.ExifProfile.SetValue(ExifTag.ImageDescription, "{ \"sourceOrientation\": \""+ sourceOrientation +"\"}");
                     }
 
                     if (image.MetaData.ExifProfile != null && removeExif)
@@ -216,11 +214,18 @@ namespace starsky.Services
                     );
                     if (imageFormat == Files.ImageFormat.png)
                     {
-                        image.SaveAsPng(outputStream, new PngEncoder{ColorType = PngColorType.Rgb, CompressionLevel = 9, WriteGamma =false });
+                        image.SaveAsPng(outputStream, new PngEncoder{
+                            ColorType = PngColorType.Rgb, 
+                            CompressionLevel = 9, 
+                            WriteGamma = false 
+                        });
                     }
                     else
                     {
-                        image.SaveAsJpeg(outputStream, new JpegEncoder{IgnoreMetadata = removeExif,Quality = quality});
+                        image.SaveAsJpeg(outputStream, new JpegEncoder{
+                            IgnoreMetadata = removeExif,
+                            Quality = quality
+                        });
                     }
                 }
 
