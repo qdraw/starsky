@@ -4,12 +4,13 @@ using starsky.ViewModels;
 namespace starskytests
 {
     [TestClass]
-    public class IndexViewModelTest
+    public class ArchiveViewModelTest
     {
         [TestMethod]
-        public void IndexViewModelPageTypeTest()
+        public void ArchiveViewModelPageTypeTest()
         {
-            var t = new ArchiveViewModel();
+            var t = new ArchiveViewModel {IsDirectory = true}; // IsDirectory= not used
+            
             Assert.AreEqual(t.PageType, PageViewType.PageType.Archive.ToString());            
         }
     }
