@@ -158,6 +158,14 @@ namespace starskytests
             Assert.AreEqual(fileType,Files.ImageFormat.gif);
         }
         
+        [TestMethod]
+        public void Files_GetImageFormat_xmp_Test()
+        {
+            byte[] bmBytes = Encoding.ASCII.GetBytes("<x:xmpmeta");
+            var fileType = Files.GetImageFormat(bmBytes);
+            Assert.AreEqual(fileType,Files.ImageFormat.xmp);
+        }
+        
         
     }
 }
