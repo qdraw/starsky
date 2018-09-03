@@ -25,12 +25,8 @@ namespace starskywebhtmlcli
             
             if (new ArgsHelper().NeedHelp(args))
             {
-                // Update Readme.md when this change!
-                Console.WriteLine("Starsky WebHtml Cli Help:");
-                Console.WriteLine("--help or -h == help (this window)");
-                Console.WriteLine("--path or -p == parameter: (string) ; fullpath ");
-                Console.WriteLine("--name or -n == parameter: (string) ; name of item ");
-                Console.WriteLine("  use -v -help");
+                appSettings.ApplicationType = AppSettings.StarskyAppType.WebHtml;
+                new ArgsHelper(appSettings).NeedHelpShowDialog();
                 return;
             }
             

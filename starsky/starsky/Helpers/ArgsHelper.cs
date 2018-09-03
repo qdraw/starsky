@@ -115,7 +115,60 @@ namespace starsky.Helpers
 
             return needHelp;
        }
-        
+
+        public void NeedHelpShowDialog()
+        {
+            if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
+            
+            Console.WriteLine("Starksy " + _appSettings.ApplicationType + " Cli ~ Help:");
+            Console.WriteLine("--help or -h == help (this window)");
+
+            switch (_appSettings.ApplicationType)
+            {
+                case AppSettings.StarskyAppType.WebHtml:
+                    // When this change please update ./readme.md
+                    Console.WriteLine("--path or -p == parameter: (string) ; fullpath ");
+                    Console.WriteLine("--name or -n == parameter: (string) ; name of item ");
+                    break;
+
+                case AppSettings.StarskyAppType.Importer:
+                    // When this change please update ./readme.md
+                    Console.WriteLine("--path or -p == parameter: (string) ; fullpath");
+                    Console.WriteLine("                can be an folder or file");
+                    Console.WriteLine("--move or -m == delete file after importing (default false / copy file)");
+                    Console.WriteLine("--all or -a == import all files including files older than 2 years (default: false / ignore old files) ");
+                    Console.WriteLine("--recursive or -r == Import Directory recursive (default: false / only the selected folder) ");
+                    break;
+                case AppSettings.StarskyAppType.Sync:
+                    // When this change please update ./readme.md
+                    Console.WriteLine("--path or -p == parameter: (string) ; fullpath, search and replace first part of the filename '/' ");
+                    Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
+                    Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
+                    Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder (heavy cpu usage), default false");
+                    Console.WriteLine("--verbose or -v == verbose, more detailed info");
+                    Console.WriteLine("--databasetype or -d == Overwrite EnvironmentVariable for DatabaseType");
+                    Console.WriteLine("--basepath or -b == Overwrite EnvironmentVariable for StorageFolder");
+                    Console.WriteLine("--connection or -c == Overwrite EnvironmentVariable for DatabaseConnection");
+                    Console.WriteLine("--thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder");
+                    Console.WriteLine("--exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath");
+                    Console.WriteLine("--subpathrelative or -n == Overwrite subpath to use relative days to select a folder" +
+                                      ", use for example '1' to select yesterday. (structure is required)");
+                    break;
+            }
+
+            Console.WriteLine("--verbose or -v == verbose, more detailed info");
+            Console.WriteLine("  use -v -help to show settings: ");
+            if (!_appSettings.Verbose) return;
+            Console.WriteLine("");
+            Console.WriteLine("AppSettings:");
+            Console.WriteLine("Database Type (-d --databasetype) "+ _appSettings.DatabaseType);
+            Console.WriteLine("DatabaseConnection (-c --connection) " + _appSettings.DatabaseConnection);
+            Console.WriteLine("StorageFolder (-b --basepath) " + _appSettings.StorageFolder);
+            Console.WriteLine("ThumbnailTempFolder (-f --thumbnailtempfolder) "+ _appSettings.ThumbnailTempFolder);
+            Console.WriteLine("ExifToolPath  (-e --exiftoolpath) "+ _appSettings.ExifToolPath);
+            Console.WriteLine("Structure  (-u --structure) "+ _appSettings.Structure);
+        }
+
         // Default On
         public bool GetIndexMode(IReadOnlyList<string> args)
         {

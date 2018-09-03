@@ -36,6 +36,16 @@ namespace starsky.Models
             .Replace("starskyimportercli", "starsky")
             .Replace("starskywebhtmlcli", "starsky");
         // When adding or updating please also update SqliteFullPath()
+        
+        public StarskyAppType ApplicationType { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum StarskyAppType
+        {
+            WebController = 0,
+            Importer = 1,
+            Sync = 2,
+            WebHtml = 3
+        }
 
         private string _storageFolder; // in old versions: basePath 
         public string StorageFolder
@@ -65,7 +75,7 @@ namespace starsky.Models
                 _name = value;
             }
         }
-
+        
         // Used to template config > appsettingsPubProfile
         public string GetWebSafeReplacedName(string input)
         {
@@ -311,4 +321,5 @@ namespace starsky.Models
         }
 
     }
+
 }
