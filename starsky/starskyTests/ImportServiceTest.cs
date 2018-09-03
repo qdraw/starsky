@@ -26,7 +26,7 @@ namespace starskytests
         private IExiftool _exiftool;
         private readonly AppSettings _appSettings;
         private CreateAnImage _createAnImage;
-        private ReadMeta _readmeta;
+        private readonly ReadMeta _readmeta;
 
         public ImportServiceTest()
         {

@@ -37,8 +37,6 @@ namespace starskywebhtmlcli.Services
                 != FolderOrFileModel.FolderOrFileTypeList.File) 
                 throw new FileNotFoundException("sourceFilePath " + sourceFilePath);
 
-            var path = profile.Path;
-            
             if (Files.IsFolderOrFile(outputFilePath) 
                 == FolderOrFileModel.FolderOrFileTypeList.File) return;
                 

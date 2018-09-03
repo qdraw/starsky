@@ -167,22 +167,15 @@ namespace starsky.Models
             childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
             return childDirectories;
         }
-        
-       
-        // Depends on App Settings /BasePathConfig
-        public string ParseSubfolders(bool createFolder = true)
-        {
-            if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
 
-            // If command running twiche you will get /tr/tr (when tr is your single folder name)
-            SubFolder = string.Empty;
-            
+        private IEnumerable<string> ListParser()
+        {
             var patternList = Structure.Split("/").ToList();
             var parsedList = ParseListBasePathAndDateFormat(patternList, DateTime);
 
             if (parsedList.Count == 1)
             {
-                return string.Empty;
+                return new List<string>{string.Empty};
             }
                 
             if (parsedList.Count >= 2)
@@ -192,6 +185,18 @@ namespace starsky.Models
 
             // database slash to first item
             parsedList[0] = "/" + parsedList[0];
+            return parsedList;
+        }
+       
+        // Depends on App Settings /BasePathConfig
+        public string ParseSubfolders(bool createFolder = true)
+        {
+            if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
+
+            // If command running twiche you will get /tr/tr (when tr is your single folder name)
+            SubFolder = string.Empty;
+
+            var parsedList = ListParser();
             
             foreach (var parsedItem in parsedList)
             {

@@ -17,7 +17,7 @@ namespace starsky.Helpers
         private readonly ImportService _import;
         private readonly SyncService _isync;
         private readonly ServiceProvider _serviceProvider;
-        private ReadMeta _readmeta;
+        private readonly ReadMeta _readmeta;
 
         public ConfigCliAppsStartupHelper()
         {
