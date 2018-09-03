@@ -21,7 +21,7 @@ namespace starskywebhtmlcli.Services
         {
             var outputFilePath = Path.Combine(Path.GetDirectoryName(sourceFilePath),
                 profile.Folder,
-                _appSettings.GenerateSlug( Path.GetFileNameWithoutExtension(sourceFilePath) ) +
+                _appSettings.GenerateSlug( Path.GetFileNameWithoutExtension(sourceFilePath),true ) +
                 profile.Append + Path.GetExtension(sourceFilePath));
             return outputFilePath;
         }

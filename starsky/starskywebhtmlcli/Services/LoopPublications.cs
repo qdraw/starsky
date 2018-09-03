@@ -61,7 +61,7 @@ namespace starskywebhtmlcli.Services
             // add to IClonable
             foreach (var item in viewModel.FileIndexItems)
             {
-                item.FileName = _appSettings.GenerateSlug(item.FileCollectionName) + Path.GetExtension(item.FileName);
+                item.FileName = _appSettings.GenerateSlug(item.FileCollectionName, true) + Path.GetExtension(item.FileName);
             }
 
             // Files.DeleteFile(profile.Path);

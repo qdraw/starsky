@@ -69,18 +69,23 @@ namespace starsky.Models
         // Used to template config > appsettingsPubProfile
         public string GetWebSafeReplacedName(string input)
         {
-            return ConfigRead.AddSlash(input.Replace("{name}", GenerateSlug(Name)));
+            return ConfigRead.AddSlash(input.Replace("{name}", GenerateSlug(Name,true)));
         }
         
         /// <summary>
         /// Generates a permalink slug for passed string
         /// </summary>
         /// <param name="phrase"></param>
+        /// <param name="allowUnderScore">to allow underscores in slug</param>
         /// <returns>clean slug string (ex. "some-cool-topic")</returns>
-        public string GenerateSlug(string phrase)
+        public string GenerateSlug(string phrase, bool allowUnderScore = false)
         {
             var s = phrase.ToLowerInvariant();
-            s = Regex.Replace(s, @"[^a-z0-9\s-]", "");                      // remove invalid characters
+            
+            var matchNotRegexString = @"[^a-z0-9\s-]";
+            if(allowUnderScore) matchNotRegexString = @"[^a-z0-9\s-_]";     // allow underscores
+            
+            s = Regex.Replace(s,matchNotRegexString, "");                   // remove invalid characters
             s = Regex.Replace(s, @"\s+", " ").Trim();                       // single space
             s = s.Substring(0, s.Length <= 45 ? s.Length : 45).Trim();      // cut and trim
             s = Regex.Replace(s, @"\s", "-");                               // insert hyphens
