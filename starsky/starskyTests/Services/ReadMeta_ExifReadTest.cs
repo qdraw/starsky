@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -151,6 +153,30 @@ namespace starskytests
              Assert.AreEqual(5.930,data1,0.001);
 
          }
+
+         [TestMethod]
+         public void ExifRead_GetImageWidthHeight_returnNothing()
+         {
+             var directory = new List<Directory> {BuildDirectory(new List<object>())};
+             var returnNothing = new ReadMeta().GetImageWidthHeight(directory,true);
+             Assert.AreEqual(returnNothing,0);
+             
+             var returnNothingFalse = new ReadMeta().GetImageWidthHeight(directory,false);
+             Assert.AreEqual(returnNothingFalse,0);
+         }
+
+         // https://github.com/drewnoakes/metadata-extractor-dotnet/blob/master/MetadataExtractor.Tests/DirectoryExtensionsTest.cs
+         private static Directory BuildDirectory(IEnumerable<object> values)
+         {
+             var directory = new MockDirectory();
+
+             foreach (var pair in Enumerable.Range(1, int.MaxValue).Zip(values, Tuple.Create))
+                 directory.Set(pair.Item1, pair.Item2);
+
+             return directory;
+         }
+         
+         
 
      }
  }

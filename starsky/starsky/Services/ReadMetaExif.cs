@@ -330,10 +330,18 @@ namespace starsky.Services
             
             return (degrees + minutes) * multiplier;
         }
-        
-        public int GetImageWidthHeight(List<MetadataExtractor.Directory> allExifItems,bool isWidth)
+
+        private int GetImageWidthHeightMaxCount(string dirName, List<MetadataExtractor.Directory> allExifItems)
         {
-            // The size lives normaly in the first 5 headers;
+            var maxcount =  6;
+            if(dirName == "Exif SubIFD") maxcount = 30; // on header place 17&18
+            if (allExifItems.Count <= 5) maxcount = allExifItems.Count;
+            return maxcount;
+        }
+            
+        public int GetImageWidthHeight(List<MetadataExtractor.Directory> allExifItems, bool isWidth)
+        {
+            // The size lives normaly in the first 5 headers
             // > "Exif IFD0" .dng
             // [Exif SubIFD] > arw; on header place 17&18
             var directoryNames = new[] {"JPEG", "PNG-IHDR", "BMP Header", "GIF Header", "Exif IFD0", "Exif SubIFD"};
@@ -342,10 +350,8 @@ namespace starsky.Services
                 var typeName = "Image Height";
                 if (isWidth) typeName = "Image Width";
 
-                var maxcount = 6;
-                if(dirName == "Exif SubIFD") maxcount = 30; // on header place 17&18
+                var maxcount = GetImageWidthHeightMaxCount(dirName, allExifItems);
                 
-                if (allExifItems.Count <= 5) maxcount = allExifItems.Count;
                 for (int i = 0; i < maxcount; i++)
                 {
                     var exifItem = allExifItems[i];
@@ -359,8 +365,7 @@ namespace starsky.Services
                             ?.Description;
                         widthTag = widthTag?.Replace(" pixels", string.Empty);
                         int.TryParse(widthTag, out var widthInt);
-                        if (widthInt >= 1) return widthInt;
-                        return 0;
+                        return widthInt >= 1 ? widthInt : 0; // (widthInt >= 1) return widthInt)
                     }
                 }
             }
