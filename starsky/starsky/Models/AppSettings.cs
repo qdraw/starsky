@@ -69,6 +69,7 @@ namespace starsky.Models
         // Used to template config > appsettingsPubProfile
         public string GetWebSafeReplacedName(string input)
         {
+            // Included slash dd the end of this file
             return ConfigRead.AddSlash(input.Replace("{name}", GenerateSlug(Name,true)));
         }
         

@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Middleware;
 using starsky.Models;
 
-namespace starskytests
+namespace starskytests.Models
 {
     [TestClass]
     public class AppSettingsProviderTest
@@ -133,6 +133,21 @@ namespace starskytests
         {
             var content = _appSettings.StructureExampleNoSetting;
             Assert.AreEqual(content.Contains(DateTime.Now.Year.ToString()), true );
+        }
+
+        [TestMethod]
+        public void AppSettingsNameNullTest()
+        {
+            var appSettings = new AppSettings{Name = null};
+            Assert.AreEqual(string.Empty,appSettings.Name);
+        }
+        
+        [TestMethod]
+        public void AppSettingsNameNoWebSafeNameTest()
+        {
+            var appSettings = new AppSettings{Name = "Non websafe name"};
+            Assert.AreEqual("non-websafe-name/",appSettings.GetWebSafeReplacedName("{name}"));
+            
         }
     }
 }
