@@ -179,20 +179,18 @@ namespace starsky.Helpers
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(subpathRelative))
-            {
-                int.TryParse(subpathRelative, out var subPathInt);
-                if(subPathInt >= 1) subPathInt = subPathInt * -1; //always in the past
-                
-                var importmodel = new ImportIndexItem(_appSettings)
-                {
-                    DateTime = DateTime.Today.AddDays(subPathInt), 
-                    SourceFullFilePath = "notimplemented.jpg"
-                };
-                return importmodel.ParseSubfolders(false);
-            }
+            if (string.IsNullOrWhiteSpace(subpathRelative)) return subpathRelative; // null
             
-            return subpathRelative; // null
+            int.TryParse(subpathRelative, out var subPathInt);
+            if(subPathInt >= 1) subPathInt = subPathInt * -1; //always in the past
+                
+            var importmodel = new ImportIndexItem(_appSettings)
+            {
+                DateTime = DateTime.Today.AddDays(subPathInt), 
+                SourceFullFilePath = "notimplemented.jpg"
+            };
+            // expect something like this: /2018/09/2018_09_02/
+            return importmodel.ParseSubfolders(false);
         }
 
         public bool IfSubpathOrPath(IReadOnlyList<string> args)
