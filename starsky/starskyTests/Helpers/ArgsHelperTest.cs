@@ -231,6 +231,17 @@ namespace starskytests
             Assert.AreEqual(true, relative.Contains(yesterdayString));
         }
 
+        [TestMethod]
+        public void ArgsHelper_NeedHelpShowDialog()
+        {
+                // Just simple show a console dialog
+            new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.WebHtml})
+                .NeedHelpShowDialog();
+            new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Importer})
+                .NeedHelpShowDialog();
+            
+        }
+
 
     }
 }
