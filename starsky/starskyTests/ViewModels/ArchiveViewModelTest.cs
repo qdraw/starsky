@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.ViewModels;
 
-namespace starskytests
+namespace starskytests.ViewModels
 {
     [TestClass]
     public class ArchiveViewModelTest
