@@ -132,6 +132,8 @@ namespace starskytests
              Assert.AreEqual(item.Title, "title");
              Assert.AreEqual(item.Latitude,  52.308205555500003, 0.000001);
              Assert.AreEqual(item.Longitude, 6.1935555554999997, 0.000001);
+             Assert.AreEqual(item.ImageHeight, 2);
+             Assert.AreEqual(item.ImageWidth, 3);
 
          }
          
