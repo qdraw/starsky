@@ -177,8 +177,17 @@ namespace starskytests
 
              return directory;
          }
-         
-         
+
+//         [TestMethod]
+//         public void ExifRead_GetOrientationTest()
+//         {
+//             var subDir =  new ExifIfd0Directory();
+//             subDir.Set(ExifDirectoryBase.TagOrientation, 9999);
+//             var directory = BuildDirectory(new List<ExifIfd0Directory> {subDir});
+//             var returnNothingFalse = new ReadMeta().GetOrientation(directory);
+//             Console.WriteLine();
+//         }
+
 
      }
  }

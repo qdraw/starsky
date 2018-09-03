@@ -99,7 +99,7 @@ namespace starsky.Services
             return item;
         }
 
-        private static FileIndexItem.Rotation GetOrientation(MetadataExtractor.Directory exifItem)
+        private FileIndexItem.Rotation GetOrientation(MetadataExtractor.Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif IFD0" && p.Name == "Orientation");
             if (tCounts < 1) return FileIndexItem.Rotation.DoNotChange;
@@ -108,6 +108,7 @@ namespace starsky.Services
                 p => p.DirectoryName == "Exif IFD0" 
                      && p.Name == "Orientation")?.Description;
 
+            // Not unit tested :(
             switch (caption)
             {
                 case "Top, left side (Horizontal / normal)":
