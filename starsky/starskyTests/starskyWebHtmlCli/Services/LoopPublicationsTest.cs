@@ -33,6 +33,16 @@ namespace starskytests.starskyWebHtmlCli.Services
                 // Folder = ""
             });
 
+            // Add large image
+            appSettings.PublishProfiles.Add(new AppSettingsPublishProfiles
+            {
+                ContentType = TemplateContentType.Jpeg,
+                Path = createAnImage.FullFilePath, 
+                SourceMaxWidth = 1001
+            });
+            
+            
+
             // Move to the same folder
             appSettings.PublishProfiles.Add(new AppSettingsPublishProfiles
             {
