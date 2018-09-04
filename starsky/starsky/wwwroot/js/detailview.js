@@ -358,6 +358,7 @@ document.addEventListener('keydown', (event) => {
         if (keyName === "Escape" && document.querySelectorAll(".breadcrumb").length === 1){
             var breadcrumbObjectKey = document.querySelector(".breadcrumb").children;
             if (breadcrumbObjectKey.length >= 4) {
+                // :not(.removecache)
                 for (var i = 0; i < breadcrumbObjectKey.length; i++) {
                     if (i === breadcrumbObjectKey.length - 3) {
                         console.log("esc");

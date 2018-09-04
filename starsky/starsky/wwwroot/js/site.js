@@ -44,6 +44,7 @@ function handleTouchStart(evt) {
     yDown = evt.touches[0].clientY;
 }//e/handleTouchStart
 
+
 function handleTouchMove(evt) {
     if (!xDown || !yDown) {
         return;
@@ -59,13 +60,14 @@ function handleTouchMove(evt) {
         if (Math.abs(xDiff) > Math.abs(yDiff)) {/*most significant*/
             if (xDiff > 0) {/* left swipe */
                 console.log('left!');
-                if (prev != null && document.activeElement.className.indexOf("form-control") === -1) {
-                    window.location.href = prev;
-                }
-            } else {/* right swipe */
-                console.log('right!');
                 if (next != null && document.activeElement.className.indexOf("form-control") === -1) {
                     window.location.href = next;
+                }
+                
+            } else {/* right swipe */
+                console.log('right!');
+                if (prev != null && document.activeElement.className.indexOf("form-control") === -1) {
+                    window.location.href = prev;
                 }
             }
         } else {
