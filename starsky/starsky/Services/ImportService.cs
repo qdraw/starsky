@@ -195,7 +195,7 @@ namespace starsky.Services
                     ColorClass = fileIndexItem.ColorClass
                 };
                     
-                _exiftool.Update(exiftoolmodel, destinationFullPath);
+//                _exiftool.Update(exiftoolmodel, destinationFullPath);
             }
             
             var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();

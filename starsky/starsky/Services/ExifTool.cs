@@ -123,13 +123,14 @@ namespace starsky.Services
 
         }
 
-        public void Update(ExifToolModel updateModel, string inputFullFilePath)
+        public void Update(FileIndexItem updateModel, string inputFullFilePath)
         {
             Update(updateModel, new List<string> {inputFullFilePath});
         }
+
         
         // Does not check in c# code if file exist
-        public void Update(ExifToolModel updateModel, List<string> inputFullFilePaths)
+        public void Update(FileIndexItem updateModel, List<string> inputFullFilePaths)
             {
                 var command = "-json -overwrite_original";
                 var initCommand = command; // to check if nothing
@@ -163,16 +164,16 @@ namespace starsky.Services
                 }
                 
   
-                if (!string.IsNullOrWhiteSpace(updateModel.CaptionAbstract))
+                if (!string.IsNullOrWhiteSpace(updateModel.Description))
                 {
-                    command += " -Caption-Abstract=\"" + updateModel.CaptionAbstract 
-                                                       + "\" -Description=\"" + updateModel.CaptionAbstract + "\"";
+                    command += " -Caption-Abstract=\"" + updateModel.Description 
+                                                       + "\" -Description=\"" + updateModel.Description + "\"";
                 }
                 
-                if (!string.IsNullOrWhiteSpace(updateModel.ObjectName))
+                if (!string.IsNullOrWhiteSpace(updateModel.Title))
                 {
-                    command += " -ObjectName=\"" + updateModel.ObjectName + "\"" 
-                               + " \"-title\"=" + "\"" + updateModel.ObjectName  + "\"" ;
+                    command += " -ObjectName=\"" + updateModel.Title + "\"" 
+                               + " \"-title\"=" + "\"" + updateModel.Title  + "\"" ;
                 }
                
                 if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
@@ -191,9 +192,9 @@ namespace starsky.Services
                     command += " \"-Orientation#="+ intOrientation +"\" ";
                 }
 
-                if (updateModel.AllDatesDateTime.Year > 2)
+                if (updateModel.DateTime.Year > 2)
                 {
-                    var exifToolString = updateModel.AllDatesDateTime.ToString("yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
+                    var exifToolString = updateModel.DateTime.ToString("yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
                     command += " -AllDates=\""+ exifToolString + "\" ";
                 }
                 

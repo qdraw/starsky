@@ -221,44 +221,44 @@ namespace starskytests.Controllers
             controller.Env();
         }
         
-        [TestMethod]
-        public void ApiController_Update_AllDataIncluded_WithFakeExiftool()
-        {
-            var createAnImage = new CreateAnImage();
-            var imageToUpdate = createAnImage.DbPath.Replace("/", string.Empty);
-            InsertSearchData();
-            
-            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue,_readmeta);
-            var jsonResult = controller.Update("test", "1", "test", createAnImage.DbPath,0,string.Empty) as JsonResult;
-            var exiftoolModel = jsonResult.Value as List<ExifToolModel>;
-            //you could not test because exiftool is an external dependency
-            Assert.AreNotEqual(null,exiftoolModel.FirstOrDefault().Tags);            
-
-//            Assert.AreEqual("test",exiftoolModel.Tags);            
-        }
+//        [TestMethod]
+//        public void ApiController_Update_AllDataIncluded_WithFakeExiftool()
+//        {
+//            var createAnImage = new CreateAnImage();
+//            var imageToUpdate = createAnImage.DbPath.Replace("/", string.Empty);
+//            InsertSearchData();
+//            
+//            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue,_readmeta);
+//            var jsonResult = controller.Update("test", "1", "test", createAnImage.DbPath,0,string.Empty) as JsonResult;
+//            var exiftoolModel = jsonResult.Value as List<ExifToolModel>;
+//            //you could not test because exiftool is an external dependency
+//            Assert.AreNotEqual(null,exiftoolModel.FirstOrDefault().Tags);            
+//
+////            Assert.AreEqual("test",exiftoolModel.Tags);            
+//        }
         
-        [TestMethod]
-        public void ApiController_Update_SourceImageMissingOnDisk_WithFakeExiftool()
-        {
-            _query.AddItem(new FileIndexItem
-            {
-                FileName = "345678765434567.jpg",
-                ParentDirectory = "/",
-                FileHash = "345678765434567"
-            });
-
-            var controller =
-                new ApiController(_query, _exiftool, _appSettings, _bgTaskQueue,_readmeta)
-                {
-                    ControllerContext = {HttpContext = new DefaultHttpContext()}
-                };
-
-            var notFoundResult = controller.Update(
-                "test", "1", "test", "/345678765434567.jpg",0,string.Empty) as NotFoundObjectResult;
-            Assert.AreEqual(404,notFoundResult.StatusCode);
-
-            _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
-        }
+//        [TestMethod]
+//        public void ApiController_Update_SourceImageMissingOnDisk_WithFakeExiftool()
+//        {
+//            _query.AddItem(new FileIndexItem
+//            {
+//                FileName = "345678765434567.jpg",
+//                ParentDirectory = "/",
+//                FileHash = "345678765434567"
+//            });
+//
+//            var controller =
+//                new ApiController(_query, _exiftool, _appSettings, _bgTaskQueue,_readmeta)
+//                {
+//                    ControllerContext = {HttpContext = new DefaultHttpContext()}
+//                };
+//
+//            var notFoundResult = controller.Update(
+//                "test", "1", "test", "/345678765434567.jpg",0,string.Empty) as NotFoundObjectResult;
+//            Assert.AreEqual(404,notFoundResult.StatusCode);
+//
+//            _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
+//        }
         
         [TestMethod]
         public void ApiController_Info_AllDataIncluded_WithFakeExiftool()

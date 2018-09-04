@@ -21,7 +21,17 @@ namespace starsky.Models
         public string FilePath
         {
             get { return ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName); }
-            set {_filePath = ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName);} // For legacy reasons
+            set
+            {
+                // For legacy reasons
+                _filePath = ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName);
+            } 
+        }
+
+        public void SetFilePath(string value)
+        {
+                _parentDirectory = Breadcrumbs.BreadcrumbHelper(value).LastOrDefault();
+                _fileName = value.Replace(Breadcrumbs.BreadcrumbHelper(value).LastOrDefault(),string.Empty);
         }
         
         // Do not save null in database for FileName
@@ -50,6 +60,20 @@ namespace starsky.Models
                 return Path.GetFileNameWithoutExtension(FileName);
             } 
         }
+        
+        public enum ExifStatus
+        {
+            Default,
+            NotFoundNotInIndex,
+            NotFoundSourceMissing,
+            ReadOnly,
+            Ok
+        }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        [NotMapped]
+        public ExifStatus Status { get; set; } = ExifStatus.Default;
+        
 
         // Do not save null in database for Parent Directory
         private string _parentDirectory;
@@ -112,9 +136,13 @@ namespace starsky.Models
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         
+        
+
+        
+        
         private Color _colorClass;
 
-        public Color GetColorClass(string colorclassString = "0")
+        public Color GetColorClass(string colorclassString = "-1")
         {
 
             switch (colorclassString)
@@ -186,12 +214,12 @@ namespace starsky.Models
         public Color ColorClass { 
             get
             {
-                if (_colorClass == Color.DoNotChange) return Color.None;
+//                if (_colorClass == Color.DoNotChange) return Color.None;
                 return  _colorClass;
             }
             set
             {
-                if (value == Color.DoNotChange) return;
+//                if (value == Color.DoNotChange) return;
                 _colorClass = value;
             }
         }
@@ -226,13 +254,14 @@ namespace starsky.Models
 
         public enum Rotation
         {
+           
             [Display(Name = "Do Not Change")]
             DoNotChange = 0,
 
             // There are more types:
             // https://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
             
-            [Display(Name = "Horizontal (normal)")]
+            [Display(Name = "Horizontal (normal)")] 
             Horizontal = 1,
 
             [Display(Name = "Rotate 90 CW")]

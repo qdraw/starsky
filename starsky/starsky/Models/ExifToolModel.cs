@@ -9,17 +9,6 @@ namespace starsky.Models
 {
     public class ExifToolModel
     {
-        public ExifToolModel(ExifToolModel model = null)
-        {
-            if (model == null) return;
-            SourceFile = model.SourceFile;
-            ColorClass = model.ColorClass;
-            CaptionAbstract = model.CaptionAbstract;
-            Keywords = model.Keywords;
-            Orientation = model.Orientation;
-            ObjectName = model.ObjectName;
-            Status = model.Status;
-        }
         
         public string SourceFile { get; set; }
         
@@ -129,19 +118,6 @@ namespace starsky.Models
         public ushort ImageWidth { get; set; }
         public ushort ImageHeight { get; set; }
         
-        public enum ExifStatus
-        {
-            NotFoundNotInIndex,
-            NotFoundSourceMissing,
-            ReadOnly,
-            Ok
-        }
-        
-        [JsonConverter(typeof(StringEnumConverter))]
-        public ExifStatus Status { get; set; }
-
-
-
         private static HashSet<string> stringToHashSet(string inputKeywords)
         {
             HashSet<string> keywordsHashSet = inputKeywords.Split(", ").ToHashSet();

@@ -17,6 +17,16 @@ namespace starskytests.Services
         {
         }
 
+        public void Update(FileIndexItem updateModel, List<string> inputFullFilePaths)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Update(FileIndexItem updateModel, string inputFullFilePath)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public ExifToolModel Info(string fullFilePath)
         {
             return new ExifToolModel();
