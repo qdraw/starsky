@@ -370,12 +370,58 @@ namespace starsky.Controllers
 //            // update item to the database
 //            _query.UpdateItem(singleItem.FileIndexItem);
 //        }
-        
-        
+
+
         [ResponseCache(Duration = 30, VaryByQueryKeys = new[] {"f"})]
         public IActionResult Info(string f, bool collections = true)
         {
-            return Json("f");
+            // input devided by dot comma and blank values are removed
+            var inputFilePaths = f.Split(";");
+            inputFilePaths = inputFilePaths.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+            // the result list
+            var fileIndexResultsList = new List<FileIndexItem>();
+
+            foreach (var subPath in inputFilePaths)
+            {
+                var detailView = _query.SingleItem(subPath, null, collections, false);
+                var statusResults = FileCollectionsCheck(detailView);
+
+                var statusModel = new FileIndexItem();
+                statusModel.SetFilePath(subPath);
+                statusModel.IsDirectory = false;
+
+                // if one item fails, the status will added
+                switch (statusResults)
+                {
+                    case FileIndexItem.ExifStatus.NotFoundNotInIndex:
+                        statusModel.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
+                        fileIndexResultsList.Add(statusModel);
+                        continue;
+                    case FileIndexItem.ExifStatus.NotFoundSourceMissing:
+                        statusModel.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
+                        fileIndexResultsList.Add(statusModel);
+                        continue;
+                    case FileIndexItem.ExifStatus.ReadOnly:
+                        statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
+                        fileIndexResultsList.Add(statusModel);
+                        continue;
+                }
+
+                // Paths that are used
+                var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
+                // when not running in collections mode only update one file
+                if (!collections) collectionSubPathList = new List<string> {subPath};
+                var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
+
+                fileIndexResultsList.AddRange(_readMeta.
+                    ReadExifAndXmpFromFileAddFilePathHash(collectionFullPaths.ToArray()));
+            }
+
+            // When all items are not found
+            if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+                return NotFound(fileIndexResultsList);
+            
+            return Json(fileIndexResultsList);
         }
         
 
@@ -618,7 +664,8 @@ namespace starsky.Controllers
                 
                 var searchItem = new FileIndexItem
                 {
-                    FileName = _appSettings.FullPathToDatabaseStyle(sourceFullPath).Split("/").LastOrDefault(),
+                    FileName = _appSettings.FullPathToDatabaseStyle(sourceFullPath)
+                        .Split("/").LastOrDefault(),
                     ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.
                         FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
                     FileHash = FileHash.GetHashCode(sourceFullPath)

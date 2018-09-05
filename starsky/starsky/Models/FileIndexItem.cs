@@ -60,21 +60,6 @@ namespace starsky.Models
                 return Path.GetFileNameWithoutExtension(FileName);
             } 
         }
-        
-        public enum ExifStatus
-        {
-            Default,
-            NotFoundNotInIndex,
-            NotFoundSourceMissing,
-            ReadOnly,
-            Ok
-        }
-
-        [JsonConverter(typeof(StringEnumConverter))]
-        [NotMapped]
-        public ExifStatus Status { get; set; } = ExifStatus.Default;
-        
-
         // Do not save null in database for Parent Directory
         private string _parentDirectory;
         public string ParentDirectory
@@ -108,6 +93,21 @@ namespace starsky.Models
                 _tags = value;
             }
         }
+        
+        // Used to display file status
+        public enum ExifStatus
+        {
+            Default,
+            NotFoundNotInIndex,
+            NotFoundSourceMissing,
+            ReadOnly,
+            Ok
+        }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        [NotMapped]
+        public ExifStatus Status { get; set; } = ExifStatus.Default;
+        
 
         [System.ComponentModel.DefaultValue("")]
         // add default value (6#+)
@@ -142,7 +142,7 @@ namespace starsky.Models
         
         private Color _colorClass;
 
-        public Color GetColorClass(string colorclassString = "-1")
+        public Color GetColorClass(string colorclassString = "0")
         {
 
             switch (colorclassString)

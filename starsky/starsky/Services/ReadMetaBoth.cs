@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
+using starsky.Helpers;
 using starsky.Interfaces;
 using starsky.Models;
 
@@ -36,6 +37,9 @@ namespace starsky.Services
                 var returnItem = ReadExifAndXmpFromFile(fullFilePath);
                 returnItem.FileName = Path.GetFileName(fullFilePath);
                 returnItem.IsDirectory = false;
+                returnItem.Id = -1;
+                returnItem.Status = FileIndexItem.ExifStatus.Ok;
+                returnItem.ImageFormat = Files.GetImageFormat(fullFilePath); 
                 returnItem.FileHash = FileHash.GetHashCode(fullFilePath);
                 returnItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault();
                 fileIndexList.Add(returnItem);
