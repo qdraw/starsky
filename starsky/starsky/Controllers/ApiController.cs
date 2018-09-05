@@ -141,44 +141,39 @@ namespace starsky.Controllers
                 var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
                 // when not running in collections mode only update one file
                 if(!collections) collectionSubPathList = new List<string> {subPath};
-                var updatedExifFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
                 
+                var updatedExifFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
 
 //                
 //                // old hash codes
 //                var oldHashCodes = FileHash.GetHashCode(updatedExifFullPaths.ToArray());
 //                    
-//                // Run Update program
-//                // Run as non-blocking task to avoid files not being updated or corrupt
-//                _bgTaskQueue.QueueBackgroundWorkItem(async token =>
-//                {
-//                    _exiftool.Update(statusModel, updatedExifFullPaths);
-//                    // > async > force you to read the file again
-//                    _readMeta.RemoveReadMetaCache(updatedExifFullPaths);
-//                });
-    
                 
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
-                    var collectionStatusModel = statusModel.Clone();
-                    var dif = FileIndexCompareHelper.Compare(detailView.FileIndexItem, collectionStatusModel);
+                    var comparedNamesList = FileIndexCompareHelper.Compare(detailView.FileIndexItem, statusModel);
+                    // this one is good :)
+                    detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+                    detailView.FileIndexItem.RelativeOrientation(orientation);
                     
-                    Console.WriteLine();
-//                    // copy data from singlefile
-//                    collectionStatusModel.Id = detailView.FileIndexItem.Id;
-//                    collectionStatusModel.Status = FileIndexItem.ExifStatus.Ok;
-//                    collectionStatusModel.FileName = detailView.FileIndexItem.FileName;
-//                    collectionStatusModel.FileHash = detailView.FileIndexItem.FileHash;
-//                    collectionStatusModel.ParentDirectory = detailView.FileIndexItem.ParentDirectory;
-//                    collectionStatusModel.ImageFormat = detailView.FileIndexItem.ImageFormat;
-//                    collectionStatusModel.CollectionPaths = collectionSubPathList;
-//                    collectionStatusModel.Orientation = detailView.FileIndexItem.RelativeOrientation(orientation);
-//                    
-//                    
-//                    Console.WriteLine(orientation);
-//
-//                    fileIndexResultsList.Add(collectionStatusModel);
+                    fileIndexResultsList.Add(detailView.FileIndexItem);
+                    
+                    // Update >
+                    _bgTaskQueue.QueueBackgroundWorkItem(async token =>
+                    {
+                        var exiftool = new ExifToolCmdHelper(_appSettings,_exiftool);
+                        var exifUpdateFilePaths = new List<string>
+                        {
+                            _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.FilePath)
+                        };
+                        exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
+                        // > async > force you to read the file again
+                         _readMeta.RemoveReadMetaCache(updatedExifFullPaths);
+                    });
+                    
                 }
+                _query.UpdateItem(fileIndexResultsList);
+                
             }
             
             // When all items are not found

@@ -99,7 +99,7 @@ namespace starskytests.Controllers
             {
                 _query.AddItem(new FileIndexItem
                 {
-                    FileName = _createAnImage.DbPath.Replace("/",string.Empty),
+                    FileName = _createAnImage.FileName,
                     ParentDirectory = "/",
                     FileHash = fileHashCode,
                     ColorClass = FileIndexItem.Color.Winner, // 1
@@ -221,21 +221,22 @@ namespace starskytests.Controllers
             controller.Env();
         }
         
-//        [TestMethod]
-//        public void ApiController_Update_AllDataIncluded_WithFakeExiftool()
-//        {
-//            var createAnImage = new CreateAnImage();
-//            var imageToUpdate = createAnImage.DbPath.Replace("/", string.Empty);
-//            InsertSearchData();
-//            
-//            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue,_readmeta);
-//            var jsonResult = controller.Update("test", "1", "test", createAnImage.DbPath,0,string.Empty) as JsonResult;
-//            var exiftoolModel = jsonResult.Value as List<ExifToolModel>;
-//            //you could not test because exiftool is an external dependency
-//            Assert.AreNotEqual(null,exiftoolModel.FirstOrDefault().Tags);            
-//
-////            Assert.AreEqual("test",exiftoolModel.Tags);            
-//        }
+        [TestMethod]
+        public void ApiController_Update_AllDataIncluded_WithFakeExiftool()
+        {
+            var createAnImage = new CreateAnImage();
+            InsertSearchData();
+            
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue,_readmeta);
+            var input = new FileIndexItem
+            {
+                Tags = "test"
+            };
+            var jsonResult = controller.Update(input, createAnImage.DbPath,false,false) as JsonResult;
+            var fileModel = jsonResult.Value as List<FileIndexItem>;
+            //you could not test because exiftool is an external dependency
+            Assert.AreNotEqual(null,fileModel.FirstOrDefault().Tags);
+        }
         
 //        [TestMethod]
 //        public void ApiController_Update_SourceImageMissingOnDisk_WithFakeExiftool()

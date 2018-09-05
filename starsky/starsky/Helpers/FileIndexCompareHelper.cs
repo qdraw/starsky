@@ -24,7 +24,7 @@ namespace starsky.Helpers
                         var newStringValue = (string)propertiesB[i].GetValue(updateObject, null);
                         if(oldStringValue != newStringValue && (!string.IsNullOrEmpty(newStringValue) || newStringValue == "/") )
                         {
-                            if (propertiesB[i].Name != "FileName" )
+                            if (propertiesB[i].Name != "FileName")
                             {
                                 var propertyObject = sourceIndexItem.GetType().GetProperty(propertiesB[i].Name);
                                 

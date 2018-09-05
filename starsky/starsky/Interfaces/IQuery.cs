@@ -50,7 +50,9 @@ namespace starsky.Interfaces
 
 
         FileIndexItem AddItem(FileIndexItem updateStatusContent);
+
         FileIndexItem UpdateItem(FileIndexItem updateStatusContent);
+        List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList);
 
         string SubPathSlashRemove(string subPath = "/");
 
