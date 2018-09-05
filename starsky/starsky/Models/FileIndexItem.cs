@@ -100,8 +100,9 @@ namespace starsky.Models
             Default,
             NotFoundNotInIndex,
             NotFoundSourceMissing,
+            NotFoundIsDir,
             ReadOnly,
-            Ok
+            Ok,
         }
 
         [JsonConverter(typeof(StringEnumConverter))]

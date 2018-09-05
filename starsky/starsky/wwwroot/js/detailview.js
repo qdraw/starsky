@@ -421,6 +421,9 @@ function checkIfContentIsNot204or409() {
             }
             if (xhr.status === 409 && document.querySelectorAll(".main-image").length >= 1) {
                 rotateOn409();
+                if(document.querySelectorAll(".breadcrumb").length >= 1) {
+                    document.querySelector(".breadcrumb").classList.add("nothumbnail");
+                }
             }
         },
         "GET"

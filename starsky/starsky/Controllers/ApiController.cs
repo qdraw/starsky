@@ -63,6 +63,11 @@ namespace starsky.Controllers
                 return FileIndexItem.ExifStatus.NotFoundNotInIndex;
             }
 
+            if (detailView.IsDirectory)
+            {
+                return FileIndexItem.ExifStatus.NotFoundIsDir;
+            }
+
             if (_isReadOnly(detailView.FileIndexItem.ParentDirectory)) return  FileIndexItem.ExifStatus.ReadOnly;
 
             foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths)
@@ -123,6 +128,11 @@ namespace starsky.Controllers
                 // if one item fails, the status will added
                 switch (statusResults)
                 {
+                    case FileIndexItem.ExifStatus.NotFoundIsDir:
+                        statusModel.IsDirectory = true;
+                        statusModel.Status = FileIndexItem.ExifStatus.NotFoundIsDir;
+                        fileIndexResultsList.Add(statusModel);
+                        continue;
                     case FileIndexItem.ExifStatus.NotFoundNotInIndex:
                         statusModel.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
                         fileIndexResultsList.Add(statusModel);
@@ -144,10 +154,10 @@ namespace starsky.Controllers
                 
                 var updatedExifFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
 
-//                
-//                // old hash codes
-//                var oldHashCodes = FileHash.GetHashCode(updatedExifFullPaths.ToArray());
-//                    
+                
+                // old hash codes
+                var oldHashCodes = FileHash.GetHashCode(updatedExifFullPaths.ToArray());
+                    
                 
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
@@ -169,6 +179,8 @@ namespace starsky.Controllers
                         exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
                         // > async > force you to read the file again
                          _readMeta.RemoveReadMetaCache(updatedExifFullPaths);
+                        
+                        // update thumbnails
                     });
                     
                 }
@@ -393,6 +405,11 @@ namespace starsky.Controllers
                 // if one item fails, the status will added
                 switch (statusResults)
                 {
+                    case FileIndexItem.ExifStatus.NotFoundIsDir:
+                        statusModel.IsDirectory = true;
+                        statusModel.Status = FileIndexItem.ExifStatus.NotFoundIsDir;
+                        fileIndexResultsList.Add(statusModel);
+                        continue;
                     case FileIndexItem.ExifStatus.NotFoundNotInIndex:
                         statusModel.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
                         fileIndexResultsList.Add(statusModel);
@@ -627,7 +644,8 @@ namespace starsky.Controllers
         public IActionResult DownloadPhoto(string f, bool isThumbnail = true)
         {
             // f = subpath/filepath
-            if (f.Contains("?isthumbnail")) return NotFound("please use &isthumbnail= instead of ?isthumbnail=");
+            if (f.Contains("?isthumbnail")) return NotFound("please use &isthumbnail = "+
+                                                            "instead of ?isthumbnail= ");
 
             var singleItem = _query.SingleItem(f);
             if (singleItem == null) return NotFound("not in index " + f);
@@ -685,7 +703,7 @@ namespace starsky.Controllers
                 return File(fs2, "image/jpeg");
             }
 
-            var getExiftool = _exiftool.Info(sourceFullPath);
+//            var getExiftool = _exiftool.Info(sourceFullPath);
 //            _exiftool.Update(getExiftool, sourceFullPath);
 
             FileStream fs1 = System.IO.File.OpenRead(thumbPath);

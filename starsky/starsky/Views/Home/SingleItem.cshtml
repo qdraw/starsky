@@ -90,12 +90,12 @@
             <a class="btn-sm btn btn-secondary" 
                href="@Url.Action("DownloadPhoto", "Api", new {f = @Model.FileIndexItem.FilePath, isThumbnail = true})" 
                download="@Model.FileIndexItem.FileName.Replace(".jpg", "")-th.jpg">
-                Thumbnail
+                Klein
             </a>
             <a class="btn-sm btn btn-secondary" 
                href="@Url.Action("DownloadPhoto", "Api", new {f = @Model.FileIndexItem.FilePath, isThumbnail = false})" 
                download="@Model.FileIndexItem.FileName">
-                Full
+                Orgineel
             </a>
         </div>
         <div class="rotation-sidebar">
