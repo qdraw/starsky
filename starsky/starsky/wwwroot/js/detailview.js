@@ -200,7 +200,7 @@ function queryCaptionAbstract(queryItem) {
     addUnloadWarning();
     showPreloader();
 
-    var url = updateApiBase + "&captionabstract=" + queryItem;
+    var url = updateApiBase + "&description=" + queryItem;
     loadJSON(url,
         function (data) {
             hideUnloadWarning();
@@ -266,7 +266,7 @@ function queryObjectName(queryItem) {
 
 function updateObjectNameFromInput(data) {
     if (document.querySelectorAll("#js-objectname-update").length === 1) {
-        document.querySelector('.js-objectname').textContent = data["objectName"];
+        document.querySelector('.js-objectname').textContent = data["title"];
         document.querySelector('#js-objectname-update .btn').classList.remove("disabled");
     }
 }
@@ -274,7 +274,7 @@ function updateObjectNameFromInput(data) {
 
 function updateCaptionAbstractFromInput(data) {
     if (document.querySelectorAll("#js-captionabstract-update").length === 1) {
-        document.querySelector('.js-captionabstract').textContent = data["Caption-Abstract"];
+        document.querySelector('.js-captionabstract').textContent = data["description"];
         document.querySelector('#js-captionabstract-update .btn').classList.remove("disabled");
     }
 }
@@ -408,7 +408,7 @@ document.addEventListener('keydown', (event) => {
 });
 
 
-function checkIfContentIsNot204or409() {
+function checkIfContentIsNot204or202() {
     
     if (thumbnailApiBase === undefined) return;
     
@@ -419,8 +419,8 @@ function checkIfContentIsNot204or409() {
             {
                 document.querySelector(".status204button").classList.remove("hide");
             }
-            if (xhr.status === 409 && document.querySelectorAll(".main-image").length >= 1) {
-                rotateOn409();
+            if (xhr.status === 202 && document.querySelectorAll(".main-image").length >= 1) {
+                rotateOn202();
                 if(document.querySelectorAll(".breadcrumb").length >= 1) {
                     document.querySelector(".breadcrumb").classList.add("nothumbnail");
                 }
@@ -429,9 +429,9 @@ function checkIfContentIsNot204or409() {
         "GET"
     );
 }
-checkIfContentIsNot204or409();
+checkIfContentIsNot204or202();
 
-function rotateOn409() {
+function rotateOn202() {
 
     var classList = document.querySelector(".main-image").classList;
     if (classList.contains("disabled-Rotate90Cw")) {

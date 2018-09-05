@@ -607,7 +607,7 @@ namespace starsky.Controllers
                 {
                     // "Photo exist in database but " + "isSingleItem flag is Missing"
                     SetExpiresResponseHeadersToZero();
-                    Response.StatusCode = 409; // A conflict, that the thumb is not generated yet
+                    Response.StatusCode = 202; // A conflict, that the thumb is not generated yet
                     return Json("Thumbnail is not ready yet");
                 }
                 

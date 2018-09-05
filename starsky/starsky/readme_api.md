@@ -168,7 +168,7 @@ The response by the info request
     {
         "sourceFile": "/2018/01-dif/20180705_160335_DSC01991 kopie 2.jpg",
         "colorClass": 4,
-        "Caption-Abstract": "t3",
+        "description": "t3",
         "prefs": null,
         "keywords": [
             "test",
@@ -182,7 +182,7 @@ The response by the info request
     {
         "sourceFile": "/image.notfound",
         "colorClass": 0,
-        "Caption-Abstract": null,
+        "description": null,
         "prefs": null,
         "keywords": [],
         "tags": "",
@@ -234,7 +234,7 @@ Endpoint: `/starsky/Api/Update?f=/image.jpg`
 
 For now this api end point is using this method:
 `Update(string tags, string colorClass,
-            string captionAbstract, string f, int orientation, bool collections = true)`
+            string title, string f, int orientation, bool collections = true)`
 - The querystring name `f` is used for the file path in releative/subpath style
 - The querystring support `;` file sepeartion for selecting multiple files
 - Empty tags are always ignored
@@ -265,7 +265,7 @@ For now this api end point is using this method:
     {
         "sourceFile": "/image.jpg",
         "colorClass": 0,
-        "Caption-Abstract": null,
+        "title": null,
         "keywords": [
             "okay2"
         ],
@@ -278,7 +278,7 @@ For now this api end point is using this method:
 ```
 -  Statuscode 203. When trying to update a `read only` image. With the content `read only`
 -  Error 404 When a image is `not in index`
--  Only the values that are request are return. In this example Caption-Abstract has a value but it is not requested.
+-  Only the values that are request are return. In this example `title` has a value but it is not requested.
 > Update replied only the values that are request to update. To get all Info do a request to the Info-endpoint
 - This Endpoint uses  `Status` to show if a file is updated. The file is only updated when the status is `Ok`
     - `Ok` is file updated
@@ -338,7 +338,7 @@ Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
 - A jpeg image
 - A 204 / `NoContent()` result when a thumbnail is corrupt
 - A 404 Error page, when the base32 hash does not exist
-- A 409 Error when "Thumbnail is not ready yet"
+- A 202 Error when "Thumbnail is not ready yet"
 
 ## Thumbnail Json
 Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU&json=true`
