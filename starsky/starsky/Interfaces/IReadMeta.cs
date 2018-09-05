@@ -9,5 +9,7 @@ namespace starsky.Interfaces
         FileIndexItem ReadExifAndXmpFromFile(string fullFilePath);
         List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(string[] fullFilePathArray);
         void RemoveReadMetaCache(List<string> fullFilePathList);
+        void RemoveReadMetaCache(string fullFilePath);
+
     }
 }

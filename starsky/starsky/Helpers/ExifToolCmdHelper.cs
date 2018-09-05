@@ -17,8 +17,17 @@ namespace starsky.Helpers
             _exiftool = exiftool;
             _appSettings = appSettings;
         }
-        
-         // Does not check in c# code if file exist
+
+        public string Update(FileIndexItem updateModel, string inputFullFilePath, List<string> comparedNames)
+        {
+            var exifUpdateFilePaths = new List<string>
+            {
+                inputFullFilePath           
+            };
+            return Update(updateModel, exifUpdateFilePaths, comparedNames);
+        }
+
+        // Does not check in c# code if file exist
         public string Update(FileIndexItem updateModel, List<string> inputFullFilePaths, List<string> comparedNames )
         {
             if(_exiftool == null) throw new ArgumentException("add exiftool please");

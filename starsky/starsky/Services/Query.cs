@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
 using starsky.Interfaces;
 using starsky.Models;
@@ -83,7 +85,6 @@ namespace starsky.Services
             return subPath;
         }
 
-
         private string CachingDbName(string functionName, string singleItemDbPath)
         {
             // For creating an unique name: DetailView_/2018/01/1.jpg
@@ -106,9 +107,11 @@ namespace starsky.Services
             return updateStatusContentList;
         }
 
+
         // For the API/update endpoint
-        public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
+        public FileIndexItem UpdateItem( FileIndexItem updateStatusContent)
         {
+
             _context.Attach(updateStatusContent).State = EntityState.Modified;
             _context.SaveChanges();
             

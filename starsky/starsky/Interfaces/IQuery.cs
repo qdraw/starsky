@@ -59,5 +59,6 @@ namespace starsky.Interfaces
         RelativeObjects GetNextPrevInFolder(string currentFolder);
 
         List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList);
+        void CacheUpdateItem(IEnumerable<FileIndexItem> fileIndexItems);
     }
 }

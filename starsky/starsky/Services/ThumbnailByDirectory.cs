@@ -56,7 +56,7 @@ namespace starsky.Services
 
                     if (_appSettings.Verbose) Console.WriteLine("localFileListFileHash[i] " + localFileListFileHash[i]); 
                     
-                    new Thumbnail(_appSettings).CreateThumb(value);
+                    new Thumbnail(_appSettings,_exiftool).CreateThumb(value);
                 }
 
                 if (filesInDirectoryFullPath.Length >= 1)

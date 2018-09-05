@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.Helpers;
 using starsky.Interfaces;
 using starsky.Models;
@@ -21,10 +22,11 @@ namespace starsky.Controllers
         private readonly AppSettings _appSettings;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
         private readonly IReadMeta _readMeta;
+        private readonly IServiceScopeFactory _scopeFactory;
 
         public ApiController(IQuery query, IExiftool exiftool, 
             AppSettings appSettings, IBackgroundTaskQueue queue,
-            IReadMeta readMeta
+            IReadMeta readMeta, IServiceScopeFactory scopeFactory
             )
         {
             _appSettings = appSettings;
@@ -32,6 +34,7 @@ namespace starsky.Controllers
             _exiftool = exiftool;
             _bgTaskQueue = queue;
             _readMeta = readMeta;
+            _scopeFactory = scopeFactory;
         }
         
 
@@ -152,13 +155,6 @@ namespace starsky.Controllers
                 // when not running in collections mode only update one file
                 if(!collections) collectionSubPathList = new List<string> {subPath};
                 
-                var updatedExifFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
-
-                
-                // old hash codes
-                var oldHashCodes = FileHash.GetHashCode(updatedExifFullPaths.ToArray());
-                    
-                
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
                     var comparedNamesList = FileIndexCompareHelper.Compare(detailView.FileIndexItem, statusModel);
@@ -166,33 +162,62 @@ namespace starsky.Controllers
                     detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
                     detailView.FileIndexItem.RelativeOrientation(orientation);
                     
-                    fileIndexResultsList.Add(detailView.FileIndexItem);
                     
                     // Update >
                     _bgTaskQueue.QueueBackgroundWorkItem(async token =>
                     {
                         var exiftool = new ExifToolCmdHelper(_appSettings,_exiftool);
+                        var toUpdateFilePath = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.FilePath);
+                        
+                        // To Add an Thumbnail to the 'to update list for exiftool'
                         var exifUpdateFilePaths = new List<string>
                         {
-                            _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.FilePath)
+                            toUpdateFilePath           
                         };
-                        exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
-                        // > async > force you to read the file again
-                         _readMeta.RemoveReadMetaCache(updatedExifFullPaths);
+                        var thumbnailFullPath =
+                            new Thumbnail(_appSettings).GetThumbnailPath(detailView.FileIndexItem.FileHash);
+                        if (Files.IsFolderOrFile(thumbnailFullPath) == FolderOrFileModel.FolderOrFileTypeList.File)
+                        {
+                            exifUpdateFilePaths.Add(thumbnailFullPath);
+                        }
                         
-                        // update thumbnails
+                        // Do an Exif Sync for all files
+                        exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths , comparedNamesList);
+                        
+                        // change thumbnail names after the orginal is changed
+                        var newFileHash = FileHash.GetHashCode(toUpdateFilePath);
+                        new Thumbnail(_appSettings).RenameThumb(detailView.FileIndexItem.FileHash,newFileHash);
+                        // Update the hash
+                        detailView.FileIndexItem.FileHash = newFileHash;
+                        
+                        // Do a database sync
+                        new QueryBackgroundTask(_scopeFactory,_query).UpdateItem(detailView.FileIndexItem);
+                        
+                        // > async > force you to read the file again
+                        // do not include thumbs in MetaCache
+                        // only the full path url of the source image
+                        _readMeta.RemoveReadMetaCache(toUpdateFilePath);
                     });
                     
+                    // The hash is not correct
+                    fileIndexResultsList.Add(detailView.FileIndexItem);
                 }
-                _query.UpdateItem(fileIndexResultsList);
-                
             }
             
             // When all items are not found
             if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
                 return NotFound(fileIndexResultsList);
-            
-            return Json(fileIndexResultsList);
+
+            // Clone an new item in the list to display
+            var returnNewResultList = new List<FileIndexItem>();
+            foreach (var item in fileIndexResultsList)
+            {
+                var citem = item.Clone();
+                citem.FileHash = null;
+                returnNewResultList.Add(citem);
+            }
+                        
+            return Json(returnNewResultList);
         }
 
 
@@ -692,7 +717,7 @@ namespace starsky.Controllers
                 // When you have a different tag in the database than on disk
                 thumbPath = _appSettings.ThumbnailTempFolder + searchItem.FileHash + ".jpg";
                     
-                var isSuccesCreateAThumb = new Thumbnail(_appSettings).CreateThumb(searchItem);
+                var isSuccesCreateAThumb = new Thumbnail(_appSettings,_exiftool).CreateThumb(searchItem);
                 if (!isSuccesCreateAThumb)
                 {
                     Response.StatusCode = 500;
