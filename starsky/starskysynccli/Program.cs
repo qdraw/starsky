@@ -58,15 +58,16 @@ namespace starskysynccli
                 var isFolderOrFile = Files.IsFolderOrFile(fullPath);
 
                 if (appSettings.Verbose) Console.WriteLine(isFolderOrFile);
+                var exiftool = startupHelper.ExifTool();
                 
                 if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
                 {
                     // If single file => create thumbnail
-                    new Thumbnail(appSettings).CreateThumb(subpath); // <= this uses subpath
+                    new Thumbnail(appSettings,exiftool).CreateThumb(subpath); // <= this uses subpath
                 }
                 else
                 {
-                    new ThumbnailByDirectory(appSettings).CreateThumb(fullPath); // <= this uses fullpath
+                    new ThumbnailByDirectory(appSettings,exiftool).CreateThumb(fullPath); // <= this uses fullpath
                 }
                 
                 Console.WriteLine("Thumbnail Done!");

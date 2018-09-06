@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using starsky.Helpers;
+using starsky.Interfaces;
 using starsky.Models;
 
 namespace starsky.Services
@@ -11,10 +12,12 @@ namespace starsky.Services
     public class ThumbnailByDirectory
     {
         private readonly AppSettings _appSettings;
+        private readonly IExiftool _exiftool;
 
-        public ThumbnailByDirectory(AppSettings appSettings)
+        public ThumbnailByDirectory(AppSettings appSettings, IExiftool exiftool)
         {
             _appSettings = appSettings;
+            _exiftool = exiftool;
         }
         
         public string[] ToBase64DataUriList(List<FileIndexItem> fileIndexList)
@@ -25,7 +28,7 @@ namespace starsky.Services
                 var item = fileIndexList[i];
                 var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
                 base64ImageArray[i] = "data:image/png;base64," + Base64Helper
-                                          .ToBase64(new Thumbnail(null).ResizeThumbnailToStream(fullFilePath, 4, 0, 0, true,
+                                          .ToBase64(new Thumbnail(null,null).ResizeThumbnailToStream(fullFilePath, 4, 0, 0, true,
                                               Files.ImageFormat.png));
             }
             return base64ImageArray;
@@ -56,7 +59,7 @@ namespace starsky.Services
 
                     if (_appSettings.Verbose) Console.WriteLine("localFileListFileHash[i] " + localFileListFileHash[i]); 
                     
-                    new Thumbnail(_appSettings,_exiftool).CreateThumb(value);
+                    new Thumbnail(_appSettings, _exiftool).CreateThumb(value);
                 }
 
                 if (filesInDirectoryFullPath.Length >= 1)

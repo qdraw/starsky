@@ -18,6 +18,7 @@ namespace starsky.Helpers
         private readonly SyncService _isync;
         private readonly ServiceProvider _serviceProvider;
         private readonly ReadMeta _readmeta;
+        private readonly IExiftool _exiftool;
 
         public ConfigCliAppsStartupHelper()
         {
@@ -53,7 +54,7 @@ namespace starsky.Helpers
             var appSettings = _serviceProvider.GetRequiredService<AppSettings>();
 
             // inject exiftool
-            var exiftool = _serviceProvider.GetRequiredService<IExiftool>();
+            _exiftool = _serviceProvider.GetRequiredService<IExiftool>();
 
             // Build Datbase Context
             var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
@@ -91,7 +92,7 @@ namespace starsky.Helpers
             //   _exiftool = exiftool
             //   _appSettings = appSettings
             //   _readmeta = readmeta
-            _import = new ImportService(context, _isync, exiftool, appSettings, _readmeta);
+            _import = new ImportService(context, _isync, _exiftool, appSettings, _readmeta);
         }
         
         public AppSettings AppSettings()
@@ -112,6 +113,11 @@ namespace starsky.Helpers
         public ReadMeta ReadMeta()
         {
             return _readmeta;
+        }
+        
+        public IExiftool ExifTool()
+        {
+            return _exiftool;
         }
     }
 }

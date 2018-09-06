@@ -24,7 +24,7 @@ namespace starsky.Services
         private readonly AppSettings _appSettings;
         private readonly IExiftool _exiftool;
 
-        public Thumbnail(AppSettings appSettings, IExiftool exiftool)
+        public Thumbnail(AppSettings appSettings, IExiftool exiftool = null)
         {
             _appSettings = appSettings;
             _exiftool = exiftool;
@@ -172,9 +172,12 @@ namespace starsky.Services
 
                     image.Save(outputStream,new JpegEncoder{Quality = 90, IgnoreMetadata = false});
                 }
+                
 
                 // Do an ExifTool exif sync for the file
-                _exiftool?.BaseCommmand(" -overwrite_original -TagsFromFile \""  + fullSourceImage + "\"",  "\""+ thumbPath +  "\"");
+                if(_exiftool == null && _appSettings.Verbose) Console.WriteLine("Exiftool disabled");
+                _exiftool?.BaseCommmand(" -overwrite_original -TagsFromFile \"" + fullSourceImage + "\"",
+                    "\"" + thumbPath + "\"");
 
             }
             catch (Exception ex)            
