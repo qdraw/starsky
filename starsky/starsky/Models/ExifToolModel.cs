@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using starsky.Helpers;
 
 namespace starsky.Models
 {
@@ -73,12 +74,12 @@ namespace starsky.Models
 
         public string Tags
         {
-            get { return HashSetToString(keywords); }
+            get { return HashSetHelper.HashSetToString(keywords); }
             set
             {
                 if (!string.IsNullOrWhiteSpace(value))
                 {
-                    keywords = stringToHashSet(value);
+                    keywords = HashSetHelper.StringToHashSet(value);
                 }
             }
         }
@@ -117,41 +118,5 @@ namespace starsky.Models
         
         public ushort ImageWidth { get; set; }
         public ushort ImageHeight { get; set; }
-        
-        private static HashSet<string> stringToHashSet(string inputKeywords)
-        {
-            HashSet<string> keywordsHashSet = inputKeywords.Split(", ").ToHashSet();
-            return keywordsHashSet;
-        }
-
-        public static string HashSetToString(HashSet<string> hashSetKeywords)
-        {
-            if (hashSetKeywords == null)
-            {
-                return string.Empty;
-            }
-            
-            var toBeAddedKeywordsStringBuilder = new StringBuilder();
-            foreach (var keyword in hashSetKeywords)
-            {
-                if (string.IsNullOrWhiteSpace(keyword)) continue;
-                
-                if (!string.IsNullOrWhiteSpace(keyword) && keyword != hashSetKeywords.LastOrDefault())
-                {
-                    toBeAddedKeywordsStringBuilder.Append(keyword + ", ");
-                }
-                if (!string.IsNullOrWhiteSpace(keyword) && keyword == hashSetKeywords.LastOrDefault())
-                {
-                    toBeAddedKeywordsStringBuilder.Append(keyword);
-                }
-            }
-            var toBeAddedKeywords = toBeAddedKeywordsStringBuilder.ToString();
-
-            return toBeAddedKeywords;
-        }
-        
-        
-
-
     }
 }

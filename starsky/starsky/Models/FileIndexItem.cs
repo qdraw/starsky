@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using starsky.Helpers;
@@ -78,6 +79,10 @@ namespace starsky.Models
         
         public bool IsDirectory { get; set; }
 
+        [NotMapped]
+        public HashSet<string> Keywords { get; set; } = new HashSet<string>();
+
+        
         // Do not save null in database for tags
         private string _tags;
         public string Tags
@@ -90,7 +95,9 @@ namespace starsky.Models
                     _tags = string.Empty;
                     return;
                 }
-                _tags = value;
+                // So remove duplicate keywords
+                Keywords = HashSetHelper.StringToHashSet(value);
+                _tags = HashSetHelper.HashSetToString(Keywords);
             }
         }
         

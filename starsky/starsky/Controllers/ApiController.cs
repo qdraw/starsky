@@ -99,6 +99,38 @@ namespace starsky.Controllers
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="statusModel"></param>
+        /// <param name="statusResults"></param>
+        /// <param name="fileIndexResultsList"></param>
+        /// <returns>If true skip the next code</returns>
+        public bool ReturnExifStatusError(FileIndexItem statusModel, FileIndexItem.ExifStatus statusResults, List<FileIndexItem> fileIndexResultsList )
+        {
+            switch (statusResults)
+            {
+                case FileIndexItem.ExifStatus.NotFoundIsDir:
+                    statusModel.IsDirectory = true;
+                    statusModel.Status = FileIndexItem.ExifStatus.NotFoundIsDir;
+                    fileIndexResultsList.Add(statusModel);
+                    return true;
+                case FileIndexItem.ExifStatus.NotFoundNotInIndex:
+                    statusModel.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
+                    fileIndexResultsList.Add(statusModel);
+                    return true;
+                case FileIndexItem.ExifStatus.NotFoundSourceMissing:
+                    statusModel.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
+                    fileIndexResultsList.Add(statusModel);
+                    return true;
+                case FileIndexItem.ExifStatus.ReadOnly:
+                    statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
+                    fileIndexResultsList.Add(statusModel);
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Update Exif and Rotation API
         /// </summary>
         /// <param name="f">subpath filepath to file, split by dot comma (;)</param>
@@ -129,27 +161,9 @@ namespace starsky.Controllers
                 statusModel.IsDirectory = false;
                 
                 // if one item fails, the status will added
-                switch (statusResults)
-                {
-                    case FileIndexItem.ExifStatus.NotFoundIsDir:
-                        statusModel.IsDirectory = true;
-                        statusModel.Status = FileIndexItem.ExifStatus.NotFoundIsDir;
-                        fileIndexResultsList.Add(statusModel);
-                        continue;
-                    case FileIndexItem.ExifStatus.NotFoundNotInIndex:
-                        statusModel.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
-                        fileIndexResultsList.Add(statusModel);
-                        continue;
-                    case FileIndexItem.ExifStatus.NotFoundSourceMissing:
-                        statusModel.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
-                        fileIndexResultsList.Add(statusModel);
-                        continue;
-                    case FileIndexItem.ExifStatus.ReadOnly:
-                        statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
-                        fileIndexResultsList.Add(statusModel);
-                        continue;
-                }
-                
+                if(ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                    // todo: copy to other class
+                    
                 // Paths that are used
                 var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
                 // when not running in collections mode only update one file
@@ -238,27 +252,8 @@ namespace starsky.Controllers
                 statusModel.SetFilePath(subPath);
                 statusModel.IsDirectory = false;
 
-                // if one item fails, the status will added
-                switch (statusResults)
-                {
-                    case FileIndexItem.ExifStatus.NotFoundIsDir:
-                        statusModel.IsDirectory = true;
-                        statusModel.Status = FileIndexItem.ExifStatus.NotFoundIsDir;
-                        fileIndexResultsList.Add(statusModel);
-                        continue;
-                    case FileIndexItem.ExifStatus.NotFoundNotInIndex:
-                        statusModel.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
-                        fileIndexResultsList.Add(statusModel);
-                        continue;
-                    case FileIndexItem.ExifStatus.NotFoundSourceMissing:
-                        statusModel.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
-                        fileIndexResultsList.Add(statusModel);
-                        continue;
-                    case FileIndexItem.ExifStatus.ReadOnly:
-                        statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
-                        fileIndexResultsList.Add(statusModel);
-                        continue;
-                }                
+                if(ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                            
                 // Paths that are used
                 var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
                 // when not running in collections mode only update one file

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Helpers;
 using starsky.Models;
 
 namespace starskytests
@@ -111,7 +112,7 @@ namespace starskytests
         [TestMethod]
         public void ExifToolhashSetToStringNull()
         {
-            Assert.AreEqual(string.Empty,ExifToolModel.HashSetToString(null));
+            Assert.AreEqual(string.Empty,HashSetHelper.HashSetToString(null));
         }
 
     }
