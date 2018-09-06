@@ -241,28 +241,28 @@ namespace starskytests.Controllers
             Assert.AreNotEqual(null,fileModel.FirstOrDefault().Tags);
         }
         
-//        [TestMethod]
-//        public void ApiController_Update_SourceImageMissingOnDisk_WithFakeExiftool()
-//        {
-//            _query.AddItem(new FileIndexItem
-//            {
-//                FileName = "345678765434567.jpg",
-//                ParentDirectory = "/",
-//                FileHash = "345678765434567"
-//            });
-//
-//            var controller =
-//                new ApiController(_query, _exiftool, _appSettings, _bgTaskQueue,_readmeta)
-//                {
-//                    ControllerContext = {HttpContext = new DefaultHttpContext()}
-//                };
-//
-//            var notFoundResult = controller.Update(
-//                "test", "1", "test", "/345678765434567.jpg",0,string.Empty) as NotFoundObjectResult;
-//            Assert.AreEqual(404,notFoundResult.StatusCode);
-//
-//            _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
-//        }
+        [TestMethod]
+        public void ApiController_Update_SourceImageMissingOnDisk_WithFakeExiftool()
+        {
+            _query.AddItem(new FileIndexItem
+            {
+                FileName = "345678765434567.jpg",
+                ParentDirectory = "/",
+                FileHash = "345678765434567"
+            });
+
+            var controller =
+                new ApiController(_query, _exiftool, _appSettings, _bgTaskQueue,_readmeta,_scopeFactory)
+                {
+                    ControllerContext = {HttpContext = new DefaultHttpContext()}
+                };
+
+            var testElement = new FileIndexItem();
+            var notFoundResult = controller.Update(testElement, "/345678765434567.jpg",false,false) as NotFoundObjectResult;
+            Assert.AreEqual(404,notFoundResult.StatusCode);
+
+            _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
+        }
         
         [TestMethod]
         public void ApiController_Info_AllDataIncluded_WithFakeExiftool()
