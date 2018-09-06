@@ -29,7 +29,7 @@ namespace starskytests.Helpers
             var source = new FileIndexItem {Description = "hi"};
             var update = new FileIndexItem {Description = "update"};
             FileIndexCompareHelper.Compare(source, update,true);
-            Assert.AreEqual("hiupdate",source.Description);
+            Assert.AreEqual("hi update",source.Description);
         }
 
         [TestMethod]
@@ -39,6 +39,15 @@ namespace starskytests.Helpers
             var update = new FileIndexItem {ColorClass = FileIndexItem.Color.Winner};
             FileIndexCompareHelper.Compare(source, update);
             Assert.AreEqual(FileIndexItem.Color.Winner,source.ColorClass);
+        }
+        
+        [TestMethod]
+        public void FileIndexCompareHelperTest_bool_Compare()
+        {
+            var source = new FileIndexItem {IsDirectory = false};
+            var update = new FileIndexItem {IsDirectory = true};
+            FileIndexCompareHelper.Compare(source, update);
+            Assert.AreEqual(true,source.IsDirectory);
         }
     }
 }
