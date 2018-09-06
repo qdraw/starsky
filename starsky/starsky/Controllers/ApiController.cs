@@ -49,6 +49,11 @@ namespace starsky.Controllers
             return Json(_appSettings);
         }
 
+        /// <summary>
+        /// Is the file read only
+        /// </summary>
+        /// <param name="f">filepath</param>
+        /// <returns>true = don't edit</returns>
         private bool _isReadOnly(string f)
         {
             if (_appSettings.ReadOnlyFolders == null) return false;
@@ -58,7 +63,11 @@ namespace starsky.Controllers
         }
         
         
-
+        /// <summary>
+        /// Check the status of a file based on DetailView object
+        /// </summary>
+        /// <param name="detailView">The element used on the web</param>
+        /// <returns>ExifStatus enum</returns>
         private FileIndexItem.ExifStatus FileCollectionsCheck(DetailView detailView)
         {
             if (detailView == null)
@@ -99,7 +108,8 @@ namespace starsky.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Does deside if the loop should be stopped, true = stop
+        /// Uses FileCollectionsCheck
         /// </summary>
         /// <param name="statusModel"></param>
         /// <param name="statusResults"></param>
@@ -162,7 +172,6 @@ namespace starsky.Controllers
                 
                 // if one item fails, the status will added
                 if(ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
-                    // todo: copy to other class
                     
                 // Paths that are used
                 var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
@@ -307,6 +316,14 @@ namespace starsky.Controllers
             return Json(item);
         }
 
+        /// <summary>
+        /// Http Endpoint to get fullsize image or thumbnail
+        /// </summary>
+        /// <param name="f">one single file</param>
+        /// <param name="isSingleitem">true = load orginal</param>
+        /// <param name="json">text as output</param>
+        /// <param name="retryThumbnail">true = remove thumbnail if corrupt</param>
+        /// <returns></returns>
         [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f", "json", 
             "retryThumbnail", "isSingleitem"} )]
         [HttpGet("/api/thumbnail/{f}")]
@@ -384,7 +401,9 @@ namespace starsky.Controllers
             // When you have duplicate files and one of them is removed and there is no thumbnail generated yet you might get an false error
         }
 
-        
+        /// <summary>
+        /// Force Http context to no browser cache
+        /// </summary>
         public void SetExpiresResponseHeadersToZero()
         {
             Request.HttpContext.Response.Headers.Remove("Cache-Control");
@@ -397,6 +416,12 @@ namespace starsky.Controllers
             Request.HttpContext.Response.Headers.Add("Expires", "0");
         }
 
+        /// <summary>
+        /// Select manualy the orginal or thumbnail
+        /// </summary>
+        /// <param name="f">string, subpath to find the file</param>
+        /// <param name="isThumbnail">true = 1000px thumb (if supported)</param>
+        /// <returns>FileStream with image</returns>
         [HttpGet]
         [HttpHead]
         public IActionResult DownloadPhoto(string f, bool isThumbnail = true)
@@ -461,13 +486,16 @@ namespace starsky.Controllers
                 return File(fs2, "image/jpeg");
             }
 
-//            var getExiftool = _exiftool.Info(sourceFullPath);
-//            _exiftool.Update(getExiftool, sourceFullPath);
-
             FileStream fs1 = System.IO.File.OpenRead(thumbPath);
             return File(fs1, "image/jpeg");
         }
 
+        /// <summary>
+        /// Delete Database Cache
+        /// </summary>
+        /// <param name="f">subpath</param>
+        /// <param name="json">return status</param>
+        /// <returns>redirect or if json enabled a status</returns>
         [HttpGet]
         [HttpPost]
         public IActionResult RemoveCache(string f = "/", bool json = false)

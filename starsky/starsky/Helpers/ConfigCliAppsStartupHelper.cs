@@ -20,6 +20,9 @@ namespace starsky.Helpers
         private readonly ReadMeta _readmeta;
         private readonly IExiftool _exiftool;
 
+        /// <summary>
+        /// Inject all services for the CLI applications
+        /// </summary>
         public ConfigCliAppsStartupHelper()
         {
             // Only for CLI apps
@@ -95,26 +98,46 @@ namespace starsky.Helpers
             _import = new ImportService(context, _isync, _exiftool, appSettings, _readmeta);
         }
         
+        /// <summary>
+        /// Returns an filled AppSettings Interface
+        /// </summary>
+        /// <returns>AppSettings</returns>
         public AppSettings AppSettings()
         {
             return _serviceProvider.GetRequiredService<AppSettings>();
         }
         
+        /// <summary>
+        /// Returns an filled ImportService Interface
+        /// </summary>
+        /// <returns>ImportService</returns>
         public ImportService ImportService()
         {
             return _import;
         }
         
+        /// <summary>
+        /// Returns an filled SyncService Interface
+        /// </summary>
+        /// <returns>SyncService</returns>
         public SyncService SyncService()
         {
             return _isync;
         }
 
+        /// <summary>
+        /// Returns an filled ReadMeta Interface
+        /// </summary>
+        /// <returns>ReadMeta</returns>
         public ReadMeta ReadMeta()
         {
             return _readmeta;
         }
-        
+    
+        /// <summary>
+        /// Returns an filled ExifTool Interface
+        /// </summary>
+        /// <returns>ExifTool</returns>
         public IExiftool ExifTool()
         {
             return _exiftool;
