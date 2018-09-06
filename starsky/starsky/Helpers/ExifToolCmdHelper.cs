@@ -132,6 +132,7 @@ namespace starsky.Helpers
             if(_exiftool == null && _appSettings.Verbose) Console.WriteLine("Exiftool disabled");
             _exiftool?.BaseCommmand(" -overwrite_original -TagsFromFile \"" + fullSourceImage + "\"",
                 "\"" + thumbPath + "\"" + " -Orientation=");
+            // Reset orentation
         }
     }
 }

@@ -8,12 +8,13 @@ namespace starskytests.FakeMocks
     {
         public FileIndexItem ReadExifAndXmpFromFile(string singleFilePath)
         {
-            return new FileIndexItem{Tags = "test"};
+            return new FileIndexItem{Status = FileIndexItem.ExifStatus.Ok, Tags = "test", FileHash = "test", FileName = "t", ParentDirectory = "d"};
         }
 
         public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(string[] fullFilePathArray)
         {
-            return new List<FileIndexItem>();
+            var createAnImage = new CreateAnImage();
+            return new List<FileIndexItem> {new FileIndexItem{Status = FileIndexItem.ExifStatus.Ok, FileName = createAnImage.FileName}};
         }
 
         public void RemoveReadMetaCache(List<string> fullFilePathArray)

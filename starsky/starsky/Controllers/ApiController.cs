@@ -447,16 +447,15 @@ namespace starsky.Controllers
                         statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
                         fileIndexResultsList.Add(statusModel);
                         continue;
-                }
-
+                }                
                 // Paths that are used
                 var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
                 // when not running in collections mode only update one file
                 if (!collections) collectionSubPathList = new List<string> {subPath};
                 var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
 
-                fileIndexResultsList.AddRange(_readMeta.
-                    ReadExifAndXmpFromFileAddFilePathHash(collectionFullPaths.ToArray()));
+                var fileCompontentList = _readMeta.ReadExifAndXmpFromFileAddFilePathHash(collectionFullPaths.ToArray());
+                fileIndexResultsList.AddRange(fileCompontentList);
             }
 
             // When all items are not found
