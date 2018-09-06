@@ -123,6 +123,15 @@ namespace starsky.Helpers
             inputStringBuilder.Append($"\"");
             return inputStringBuilder;
         }
-        
+
+        public void CopyExif(string fullSourceImage, string thumbPath)
+        {
+            // Reset Orientation on thumbpath
+            
+            // Do an ExifTool exif sync for the file
+            if(_exiftool == null && _appSettings.Verbose) Console.WriteLine("Exiftool disabled");
+            _exiftool?.BaseCommmand(" -overwrite_original -TagsFromFile \"" + fullSourceImage + "\"",
+                "\"" + thumbPath + "\"" + " -Orientation=");
+        }
     }
 }

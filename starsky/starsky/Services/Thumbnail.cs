@@ -172,12 +172,8 @@ namespace starsky.Services
 
                     image.Save(outputStream,new JpegEncoder{Quality = 90, IgnoreMetadata = false});
                 }
-                
 
-                // Do an ExifTool exif sync for the file
-                if(_exiftool == null && _appSettings.Verbose) Console.WriteLine("Exiftool disabled");
-                _exiftool?.BaseCommmand(" -overwrite_original -TagsFromFile \"" + fullSourceImage + "\"",
-                    "\"" + thumbPath + "\"");
+                new ExifToolCmdHelper(_appSettings, _exiftool).CopyExif(fullSourceImage, thumbPath);
 
             }
             catch (Exception ex)            
