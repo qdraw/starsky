@@ -586,7 +586,7 @@ function queryRotate(queryItem) {
     addUnloadWarning();
     showPreloader();
 
-    var url = updateApiBase + "&orientation=" + queryItem;
+    var url = updateApiBase + "&rotateClock=" + queryItem;
     loadJSON(url,
         function (data) {
             hideUnloadWarning();

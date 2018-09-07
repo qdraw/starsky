@@ -61,7 +61,7 @@ namespace starsky.Helpers
         private static void CompareRotation(string propertyName, FileIndexItem sourceIndexItem, FileIndexItem.Rotation oldRotationValue,
             FileIndexItem.Rotation newRotationValue, List<string> differenceList)
         {
-            if (oldRotationValue == newRotationValue) return;
+            if (oldRotationValue == newRotationValue || newRotationValue == FileIndexItem.Rotation.DoNotChange) return;
             sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newRotationValue, null);
             differenceList.Add(propertyName);
         }

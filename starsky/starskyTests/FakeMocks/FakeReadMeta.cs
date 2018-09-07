@@ -26,5 +26,10 @@ namespace starskytests.FakeMocks
         {
             // dont do anything
         }
+
+        public void UpdateReadMetaCache(string fullFilePath, FileIndexItem objectExifToolModel)
+        {
+            // dont do anything
+        }
     }
 }

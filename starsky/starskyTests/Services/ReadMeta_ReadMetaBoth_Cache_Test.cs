@@ -38,9 +38,8 @@ namespace starskytests.Services
         public void ReadMeta_ReadMetaBothTest_RemoveCache()
         {
             var appsettings = new AppSettings {StorageFolder = new CreateAnImage().BasePath};
-            var fakeStringList = new List<string> {"fakeString"};
             new ReadMeta(appsettings, _fakeCache)
-                    .RemoveReadMetaCache(fakeStringList);
+                    .RemoveReadMetaCache("fakeString");
         }
 
         [TestMethod]

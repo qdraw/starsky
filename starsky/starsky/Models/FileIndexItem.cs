@@ -252,16 +252,14 @@ namespace starsky.Models
             DoNotChange = -1
         }
 
-        
+
         [JsonConverter(typeof(StringEnumConverter))]
-        public Rotation Orientation { get; set; }
+        public Rotation Orientation { get; set; } = Rotation.DoNotChange;
 
         public enum Rotation
         {
-           
-            [Display(Name = "Do Not Change")]
-            DoNotChange = 0,
-
+            DoNotChange = -1,
+            
             // There are more types:
             // https://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
             
@@ -287,35 +285,33 @@ namespace starsky.Models
             Rotation.Rotate270Cw
         };
 
-        public static bool IsRelativeOrientation(int orientation)
+        public static bool IsRelativeOrientation(int rotateClock)
         {
-            return orientation == -1 || orientation == 1; // orientation == -1 || orientation == 1 true
+            return rotateClock == -1 || rotateClock == 1; // rotateClock == -1 || rotateClock == 1 true
         }
 
         public void SetRelativeOrientation(int relativeRotation = 0)
         {
             Orientation = RelativeOrientation(relativeRotation);
         }
+        
         public Rotation RelativeOrientation(int relativeRotation = 0)
         {
-            if (relativeRotation == 0) return Rotation.DoNotChange;
+            if (Orientation == Rotation.DoNotChange) Orientation = Rotation.Horizontal;
             
-
             var currentOrentation = _orderRotation.FindIndex(i => i == Orientation);
             
-            // fallback if database is Do Not Change
-            if (Orientation == Rotation.DoNotChange) currentOrentation = 0; // Rotation.Horizontal
-
             if (currentOrentation >= 0 && currentOrentation+relativeRotation < _orderRotation.Count && currentOrentation+relativeRotation >= 0)
             {
                 return _orderRotation[currentOrentation + relativeRotation];
             }
             if (currentOrentation + relativeRotation == -1) {
-                return _orderRotation[_orderRotation.Count-1];
+                return _orderRotation[_orderRotation.Count-1]; //changed
             }
             if (currentOrentation+relativeRotation >= _orderRotation.Count) {
                 return _orderRotation[0];
             }
+            
             return Rotation.DoNotChange;
         }
         

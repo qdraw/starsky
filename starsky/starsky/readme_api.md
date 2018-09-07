@@ -259,7 +259,7 @@ _Defined in the class `ExifToolCmdHelper`_
 - Description
 - Title
 - ColorClass
-- `orientation` is using `-1` or `1` to rotate the image 
+- `rotateClock` is using `-1` or `1` to rotate the image 
     -   `-1` is rotate image 270 degrees
     -   `1` is rotate image 90 degrees
 - DateTime _(use this format: &DateTime=2018-05-05T16:03:35)_

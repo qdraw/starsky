@@ -147,13 +147,13 @@ namespace starsky.Controllers
         /// <param name="tags">use for keywords</param>
         /// <param name="colorClass">int 0-9, the colorclass to fast select images</param>
         /// <param name="description">string to update description/caption abstract, emthy will be ignored</param>
-        /// <param name="orientation">relative orentation -1 or 1</param>
+        /// <param name="rotateClock">relative orentation -1 or 1</param>
         /// <param name="title">edit image title</param>
         /// <param name="collections">StackCollections bool</param>
         /// <param name="append">only for stings, add update to existing items</param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Update(FileIndexItem inputModel, string f, bool append, bool collections, int orientation = 0)
+        public IActionResult Update(FileIndexItem inputModel, string f, bool append, bool collections,  int rotateClock = 0)
         {
             // input devided by dot comma and blank values are removed
             var inputFilePaths = f.Split(";");
@@ -181,16 +181,22 @@ namespace starsky.Controllers
                 
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
+                    // Do orientation / Rotate if needed (after compare)
+                    if (FileIndexItem.IsRelativeOrientation(rotateClock))
+                    {
+                        statusModel.SetRelativeOrientation(rotateClock);
+                        //detailView.FileIndexItem.Orientation = statusModel.Orientation;
+                    }
+                    
                     var comparedNamesList = FileIndexCompareHelper.Compare(detailView.FileIndexItem, statusModel, append);
+
                     // this one is good :)
                     detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-                    
-                    // Do orientation / Rotate if needed
-                    if (FileIndexItem.IsRelativeOrientation(orientation)) detailView.FileIndexItem.SetRelativeOrientation(orientation);
 
                     // When it done this will be removed,
                     // to avoid conflicts
                     _readMeta.UpdateReadMetaCache(collectionFullPaths[i],detailView.FileIndexItem);
+                    _query.CacheUpdateItem(new List<FileIndexItem>{detailView.FileIndexItem.Clone()});
                     
                     // Update >
                     _bgTaskQueue.QueueBackgroundWorkItem(async token =>
@@ -211,7 +217,7 @@ namespace starsky.Controllers
                         }
                         
                         // Do orientation
-                        if(FileIndexItem.IsRelativeOrientation(orientation)) new Thumbnail(null).RotateThumbnail(thumbnailFullPath,orientation);
+                        if(FileIndexItem.IsRelativeOrientation(rotateClock)) new Thumbnail(null).RotateThumbnail(thumbnailFullPath,rotateClock);
                         
                         // Do an Exif Sync for all files
                         exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths , comparedNamesList);
