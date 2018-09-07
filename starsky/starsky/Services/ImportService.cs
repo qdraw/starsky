@@ -94,14 +94,29 @@ namespace starsky.Services
             return importIndexItem;
         }
 
+        /// <summary>
+        /// Checks if file exist in storagefolder - or suggest a `-102` or -909` appendex
+        /// </summary>
+        /// <param name="inputFileFullPath">the source file</param>
+        /// <param name="fileIndexItem">the object with the data</param>
+        /// <param name="tryagain">to avoid an endless loop</param>
+        /// <returns>string with DestionationFullPath</returns>
         public string DestionationFullPathDuplicate(
             string inputFileFullPath, 
             FileIndexItem fileIndexItem, 
             bool tryagain)
         {
 
+            // To support direct imported files > without filename
+            if (fileIndexItem.FileName.Contains(".unknown"))
+            {
+                fileIndexItem.FileName = fileIndexItem.FileName.Replace(".unknown", 
+                    "." + Files.GetImageFormat(inputFileFullPath));
+            }
+            
             var destinationFullPath = _appSettings.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
                                       + fileIndexItem.FileName;
+            
             // When a file already exist, when you have multiple files with the same datetime
             if (inputFileFullPath != destinationFullPath
                 && File.Exists(destinationFullPath) )
