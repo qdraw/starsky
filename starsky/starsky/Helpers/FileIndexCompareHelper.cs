@@ -53,7 +53,7 @@ namespace starsky.Helpers
         private static void CompareDateTime(string propertyName, FileIndexItem sourceIndexItem, DateTime oldDateValue, DateTime newDateValue, List<string> differenceList)
         {
             // Dont allow to overwrite with default year 0001
-            if (oldDateValue == newDateValue && newDateValue.Year < 2) return;
+            if (oldDateValue == newDateValue || newDateValue.Year < 2) return;
             sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newDateValue, null);
             differenceList.Add(propertyName);
         }

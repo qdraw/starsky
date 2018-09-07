@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
 using starsky.Models;
 
@@ -48,6 +49,15 @@ namespace starskytests.Helpers
             var update = new FileIndexItem {IsDirectory = true};
             FileIndexCompareHelper.Compare(source, update);
             Assert.AreEqual(true,source.IsDirectory);
+        }
+
+        [TestMethod]
+        public void FileIndexCompareHelperTest_DateTime_Compare()
+        {
+            var source = new FileIndexItem {DateTime = DateTime.Now};
+            var update = new FileIndexItem {DateTime = new DateTime()};
+            FileIndexCompareHelper.Compare(source, update);
+            Assert.AreNotEqual(update.DateTime,source.DateTime); 
         }
     }
 }
