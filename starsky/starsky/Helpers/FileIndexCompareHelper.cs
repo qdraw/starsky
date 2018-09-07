@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using starsky.Models;
 
@@ -6,8 +7,9 @@ namespace starsky.Helpers
 {
     public static class FileIndexCompareHelper
     {
-        public static List<string> Compare(FileIndexItem sourceIndexItem, FileIndexItem updateObject, bool append = false)
+        public static List<string> Compare(FileIndexItem sourceIndexItem, FileIndexItem updateObject = null, bool append = false)
         {
+            if(updateObject == null) updateObject = new FileIndexItem();
             PropertyInfo[] propertiesA = sourceIndexItem.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             PropertyInfo[] propertiesB = updateObject.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
@@ -37,10 +39,25 @@ namespace starsky.Helpers
                     var newColorValue = (FileIndexItem.Color)propertiesB [i].GetValue(updateObject, null);
                     CompareColor(propertiesB[i].Name, sourceIndexItem, oldColorValue, newColorValue, differenceList);
                 }
+
+                if (propertiesA[i].PropertyType == typeof(DateTime))
+                {
+                    var oldDateValue = (DateTime)propertiesA [i].GetValue(sourceIndexItem, null);
+                    var newDateValue = (DateTime)propertiesB [i].GetValue(updateObject, null);
+                    CompareDateTime(propertiesB[i].Name, sourceIndexItem, oldDateValue, newDateValue, differenceList); 
+                }
             }
             return differenceList;
         }
 
+        private static void CompareDateTime(string propertyName, FileIndexItem sourceIndexItem, DateTime oldDateValue, DateTime newDateValue, List<string> differenceList)
+        {
+            // Dont allow to overwrite with default year 0001
+            if (oldDateValue == newDateValue && newDateValue.Year < 2) return;
+            sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newDateValue, null);
+            differenceList.Add(propertyName);
+        }
+        
         private static void CompareColor(string propertyName, FileIndexItem sourceIndexItem, FileIndexItem.Color oldColorValue, FileIndexItem.Color newColorValue, List<string> differenceList)
         {
             if (oldColorValue == newColorValue) return;

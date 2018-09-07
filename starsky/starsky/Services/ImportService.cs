@@ -188,14 +188,16 @@ namespace starsky.Services
             // Update the contents to the file the imported item
             if (exifToolSync)
             {
-                var exiftoolmodel = new ExifToolModel
+                Console.WriteLine("Do a exiftoolSync");
+                var comparedNamesList = new List<string>
                 {
-                    AllDatesDateTime = fileIndexItem.DateTime,
-                    CaptionAbstract = fileIndexItem.Description,
-                    ColorClass = fileIndexItem.ColorClass
+                    nameof(FileIndexItem.DateTime),
+                    nameof(FileIndexItem.ColorClass),
+                    nameof(FileIndexItem.Description),
                 };
-                    
-//                _exiftool.Update(exiftoolmodel, destinationFullPath);
+
+                new ExifToolCmdHelper(_appSettings, _exiftool).Update(fileIndexItem, destinationFullPath,
+                    comparedNamesList);
             }
             
             var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
@@ -216,7 +218,6 @@ namespace starsky.Services
         // Add a new item to the database
         private void AddItem(ImportIndexItem updateStatusContent)
         {
-//            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
             updateStatusContent.AddToDatabase = DateTime.UtcNow;
             
             _context.ImportIndex.Add(updateStatusContent);
@@ -227,8 +228,6 @@ namespace starsky.Services
         // Remove a new item from the database
         public ImportIndexItem RemoveItem(ImportIndexItem updateStatusContent)
         {
-//            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
-
             _context.ImportIndex.Remove(updateStatusContent);
             _context.SaveChanges();
             return updateStatusContent;
