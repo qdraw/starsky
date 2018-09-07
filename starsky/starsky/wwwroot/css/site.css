@@ -193,9 +193,8 @@ h1 {
     display: block;
     background-color: #ccc;
     position: relative;
-    /*z-index: 3;*/
     transform-origin: center center;
-    transition: all 1.5s ease-in-out;
+    /*transition: all 1.5s ease-in-out;*/
 }
 
 .collapsed .halfitem {
@@ -273,7 +272,7 @@ h2 {
     height: 45vh;
     object-fit: cover;
     object-position: center;
-    /*font-family: 'object-fit: cover';*/
+    font-family: 'object-fit: cover';
     transition: transform .5s ease-in-out;
     overflow: hidden;
     position: relative;
@@ -843,6 +842,7 @@ float: left;
     object-fit: contain;
     object-position: center;
     background-color: #ddd;
+    font-family: "object-fit: cover";
 }
 .sidebar {
     width: 300px;
@@ -996,13 +996,36 @@ footer {
     cursor:text;
 }
 
-
+.js-selectedimages li:nth-child(2n-1) {
+    background-color: #DFEAEB;
+}
 .js-selectedimages li .close {
     display: inline-block;
-    width: 20px;
-    height: 20px;
-    background-color: red;
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+    opacity: 0.5;
+    position: relative;
 }
+.js-selectedimages li .close:before, .js-selectedimages li .close:after {
+    position: absolute;
+    margin-top: 4px;
+    left: 13px;
+    content: ' ';
+    height: 28px;
+    width: 2px;
+    background-color: #333;
+}
+.js-selectedimages li .close:hover {
+    opacity: 1;
+}
+.js-selectedimages li .close:before {
+    transform: rotate(45deg);
+}
+.js-selectedimages li .close:after {
+    transform: rotate(-45deg);
+}
+
 .js-selectedimages li:first-child {
     margin-top: 10px;
 }
@@ -1011,7 +1034,7 @@ footer {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 23ch;
-    line-height: 20px;
+    line-height: 30px;
 }
 
 .js-controls {

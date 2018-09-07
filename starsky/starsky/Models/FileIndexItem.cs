@@ -81,8 +81,12 @@ namespace starsky.Models
 
         [NotMapped]
         public HashSet<string> Keywords {
-            get => HashSetHelper.StringToHashSet(_tags);
-            set => _tags = HashSetHelper.HashSetToString(value);
+            get => HashSetHelper.StringToHashSet(Tags);
+            set
+            {
+                if (value == null) return;
+                _tags = HashSetHelper.HashSetToString(value);
+            } 
         }
 
         

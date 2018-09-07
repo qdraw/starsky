@@ -1,3 +1,4 @@
+
 var prevURL = "";
 var selectedFiles = [];
 
@@ -33,8 +34,13 @@ function buildArchiveSidebar() {
                             // console.log(this.className);
 
                             this.classList.remove("on");
+                            // work around for IE11
+                            var those = this;
+                            selectedFiles = selectedFiles.filter(function(item) {
+                                return item !== those.getAttribute('data-filename');
+                            });
                             // ES5 > remove item from array
-                            selectedFiles = selectedFiles.filter(item => item !== this.dataset.filename);
+                            // selectedFiles = selectedFiles.filter(item => item !== this.dataset.filename);
                         }
                         var prevWindowHash = GetSidebarWindowHash("sidebar");
 
@@ -239,7 +245,10 @@ function removeThisItem (fileName) {
     // to replace afterwards in the url
     var getSidebarWindowHashUrl = GetSidebarWindowHash("sidebar");
 
-    selectedFiles = selectedFiles.filter(item => item !== fileName);
+    // selectedFiles = selectedFiles.filter(item => item !== fileName);
+    selectedFiles = selectedFiles.filter(function(item) {
+        return item !== fileName;
+    });
     
     // update the hashlist
     var toreplaceUrl = "";

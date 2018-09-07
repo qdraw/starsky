@@ -326,10 +326,11 @@ if (document.querySelectorAll(".breadcrumb").length >= 1) {
 }
 
 
-document.addEventListener('keydown', (event) => {
+document.addEventListener('keydown', function () {
+    
     if (document.activeElement.className.indexOf("form-control") === -1) {
         const keyName = event.key;
-
+    
         if (keyName === "Escape" && document.querySelectorAll(".breadcrumb").length === 1){
             var breadcrumbObjectKey = document.querySelector(".breadcrumb").children;
             if (breadcrumbObjectKey.length >= 4) {
@@ -342,7 +343,7 @@ document.addEventListener('keydown', (event) => {
                 }
             }
         }
-        
+    
         if (keyName === "8" && document.querySelectorAll(".add-colorclass .colorclass-8").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-8"));
         }
@@ -350,14 +351,14 @@ document.addEventListener('keydown', (event) => {
         if (keyName === "7" && document.querySelectorAll(".add-colorclass .colorclass-7").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-7"));
         }
-
+    
         if (keyName === "6" && document.querySelectorAll(".add-colorclass .colorclass-6").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-6"));
         }
         if (keyName === "5" && document.querySelectorAll(".add-colorclass .colorclass-5").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-5"));
         }
-
+    
         if (keyName === "4" && document.querySelectorAll(".add-colorclass .colorclass-4").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-4"));
         }
@@ -380,7 +381,9 @@ document.addEventListener('keydown', (event) => {
             document.querySelector(".js-keywords").focus();
         }
     }
-});
+},false);    
+
+
 
 
 function checkIfContentIsNot204or202() {

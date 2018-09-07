@@ -59,7 +59,7 @@
 </h4>
 
 
-<script type="text/javascript" src="js/loadjson.js"></script>
+<script type="text/javascript" src="../js/loadjson.js"></script>
 
 <script type="text/javascript">
 
@@ -74,10 +74,13 @@
                 if (xhr.status === 404) {
                     alert(xhr.response);
                 }
-                 console.error(xhr);
+                console.error(xhr);
             },
             "DELETE"
         );
     }
 
 </script>
+
+@*For IE/IE-Edge "object-fit: cover" *@
+<script type="text/javascript" src="js/vendor/ofi.min.js" defer></script>
