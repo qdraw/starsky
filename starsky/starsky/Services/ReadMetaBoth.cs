@@ -68,29 +68,30 @@ namespace starsky.Services
             return (FileIndexItem) objectExifToolModel;
         }
 
-        public void RemoveReadMetaCache(string fullFilePath)
+        
+        //     Update only for ReadMeta!
+        public void UpdateReadMetaCache(string fullFilePath, FileIndexItem objectExifToolModel)
         {
-            var exifUpdateFilePaths = new List<string>
-            {
-                fullFilePath           
-            };
-            RemoveReadMetaCache(exifUpdateFilePaths);
+            if (_cache == null || _appSettings?.AddMemoryCache == false) return;
+
+            var toUpdateObject = objectExifToolModel.Clone();
+            var queryCacheName = "info_" + fullFilePath;
+            RemoveReadMetaCache(fullFilePath);
+            _cache.Set(queryCacheName, toUpdateObject, new TimeSpan(0,10,0));
         }
+        
 
         //     only for ReadMeta!
         //     Why removing, The Update command does not update the entire object.
         //     When you update tags, other tags will be null 
-        public void RemoveReadMetaCache(List<string> fullFilePathList)
+        public void RemoveReadMetaCache(string fullFilePath)
         {
             if (_cache == null || _appSettings?.AddMemoryCache == false) return;
-            foreach (var fullFilePath in fullFilePathList)
-            {
-                var queryCacheName = "info_" + fullFilePath;
+            var queryCacheName = "info_" + fullFilePath;
 
-                if (!_cache.TryGetValue(queryCacheName, out var _)) continue; 
-                // continue = go to the next item in the list
-                _cache.Remove(queryCacheName);
-            }
+            if (!_cache.TryGetValue(queryCacheName, out var _)) return; 
+            // continue = go to the next item in the list
+            _cache.Remove(queryCacheName);
         }
     }
 }

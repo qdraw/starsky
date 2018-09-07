@@ -177,14 +177,20 @@ namespace starsky.Controllers
                 var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
                 // when not running in collections mode only update one file
                 if(!collections) collectionSubPathList = new List<string> {subPath};
+                var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
                 
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
                     var comparedNamesList = FileIndexCompareHelper.Compare(detailView.FileIndexItem, statusModel, append);
                     // this one is good :)
                     detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-                    detailView.FileIndexItem.RelativeOrientation(orientation);
                     
+                    // Do orientation / Rotate if needed
+                    if (FileIndexItem.IsRelativeOrientation(orientation)) detailView.FileIndexItem.SetRelativeOrientation(orientation);
+
+                    // When it done this will be removed,
+                    // to avoid conflicts
+                    _readMeta.UpdateReadMetaCache(collectionFullPaths[i],detailView.FileIndexItem);
                     
                     // Update >
                     _bgTaskQueue.QueueBackgroundWorkItem(async token =>
@@ -203,6 +209,9 @@ namespace starsky.Controllers
                         {
                             exifUpdateFilePaths.Add(thumbnailFullPath);
                         }
+                        
+                        // Do orientation
+                        if(FileIndexItem.IsRelativeOrientation(orientation)) new Thumbnail(null).RotateThumbnail(thumbnailFullPath,orientation);
                         
                         // Do an Exif Sync for all files
                         exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths , comparedNamesList);

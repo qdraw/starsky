@@ -7,6 +7,7 @@ namespace starsky.Helpers
 {
     public static class FileIndexCompareHelper
     {
+        
         public static List<string> Compare(FileIndexItem sourceIndexItem, FileIndexItem updateObject = null, bool append = false)
         {
             if(updateObject == null) updateObject = new FileIndexItem();
@@ -46,8 +47,23 @@ namespace starsky.Helpers
                     var newDateValue = (DateTime)propertiesB [i].GetValue(updateObject, null);
                     CompareDateTime(propertiesB[i].Name, sourceIndexItem, oldDateValue, newDateValue, differenceList); 
                 }
+                
+                if (propertiesA[i].PropertyType == typeof(FileIndexItem.Rotation))
+                {
+                    var oldRotationValue = (FileIndexItem.Rotation)propertiesA [i].GetValue(sourceIndexItem, null);
+                    var newRotationValue = (FileIndexItem.Rotation)propertiesB [i].GetValue(updateObject, null);
+                    CompareRotation(propertiesB[i].Name, sourceIndexItem, oldRotationValue, newRotationValue, differenceList); 
+                }
             }
             return differenceList;
+        }
+
+        private static void CompareRotation(string propertyName, FileIndexItem sourceIndexItem, FileIndexItem.Rotation oldRotationValue,
+            FileIndexItem.Rotation newRotationValue, List<string> differenceList)
+        {
+            if (oldRotationValue == newRotationValue) return;
+            sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newRotationValue, null);
+            differenceList.Add(propertyName);
         }
 
         private static void CompareDateTime(string propertyName, FileIndexItem sourceIndexItem, DateTime oldDateValue, DateTime newDateValue, List<string> differenceList)

@@ -287,6 +287,15 @@ namespace starsky.Models
             Rotation.Rotate270Cw
         };
 
+        public static bool IsRelativeOrientation(int orientation)
+        {
+            return orientation == -1 || orientation == 1; // orientation == -1 || orientation == 1 true
+        }
+
+        public void SetRelativeOrientation(int relativeRotation = 0)
+        {
+            Orientation = RelativeOrientation(relativeRotation);
+        }
         public Rotation RelativeOrientation(int relativeRotation = 0)
         {
             if (relativeRotation == 0) return Rotation.DoNotChange;
