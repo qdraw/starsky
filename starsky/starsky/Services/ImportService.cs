@@ -95,7 +95,7 @@ namespace starsky.Services
         }
 
         /// <summary>
-        /// Checks if file exist in storagefolder - or suggest a `-102` or -909` appendex
+        /// Checks if file exist in storagefolder - or suggest a `-102` or `-909` appendex
         /// </summary>
         /// <param name="inputFileFullPath">the source file</param>
         /// <param name="fileIndexItem">the object with the data</param>
