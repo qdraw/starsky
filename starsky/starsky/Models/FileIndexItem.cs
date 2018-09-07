@@ -96,7 +96,7 @@ namespace starsky.Models
                     return;
                 }
                 // So remove duplicate keywords
-                Keywords = HashSetHelper.StringToHashSet(value);
+                Keywords = HashSetHelper.StringToHashSet(value.Trim());
                 _tags = HashSetHelper.HashSetToString(Keywords);
             }
         }
@@ -133,7 +133,7 @@ namespace starsky.Models
                     _title = string.Empty;
                     return;
                 }
-                _title = value;
+                _title = value.Trim();
             }
         }
         
