@@ -80,7 +80,10 @@ namespace starsky.Models
         public bool IsDirectory { get; set; }
 
         [NotMapped]
-        public HashSet<string> Keywords { get; set; } = new HashSet<string>();
+        public HashSet<string> Keywords {
+            get => HashSetHelper.StringToHashSet(_tags);
+            set => _tags = HashSetHelper.HashSetToString(value);
+        }
 
         
         // Do not save null in database for tags

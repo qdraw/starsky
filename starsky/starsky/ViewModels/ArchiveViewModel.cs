@@ -13,5 +13,6 @@ namespace starsky.ViewModels
         public string PageType => PageViewType.PageType.Archive.ToString();
         public string SubPath { get; set; } = string.Empty;
         public bool IsDirectory { get; set; } = true;
+        public int CollectionsCount = 0;
     }
 }

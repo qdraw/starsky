@@ -1,88 +1,84 @@
 var prevURL = "";
 var selectedFiles = [];
 
-var portfolioData = document.querySelectorAll("#portfolio-data");
-var archive = document.querySelectorAll(".archive");
-if (portfolioData.length === 1 && archive.length === 1) {
-    for (var i = 0; i < portfolioData[0].children.length; i++) {
-        // console.log(portfolioData[0].children[i]);
-        portfolioData[0].children[i].addEventListener("click", function(e){
+function buildArchiveSidebar() {
+    var portfolioData = document.querySelectorAll("#portfolio-data");
+    var archive = document.querySelectorAll(".archive");
+    if (portfolioData.length === 1 && archive.length === 1) {
+        for (var i = 0; i < portfolioData[0].children.length; i++) {
+            // console.log(portfolioData[0].children[i]);
+            portfolioData[0].children[i].addEventListener("click", function(e){
 
-            if(archive.length === 1) {
-                if(archive[0].className.indexOf("collapsed") >= 0 
-                    && this.className.indexOf("directory-false") >= 0) {
-                    e.preventDefault();
-                    
-                    if (window.location.hash.indexOf("anchor=") >= 0) {
-                        window.location.hash = window.location.hash.replace(GetSidebarWindowHash("anchor"),"");
-                        
-                    }
+                if(archive.length === 1) {
+                    if(archive[0].className.indexOf("collapsed") >= 0
+                        && this.className.indexOf("directory-false") >= 0) {
+                        e.preventDefault();
 
-
-                    var url = "";
-                    if (!this.classList.contains("on")) {
-                        // This features add it;
-                        // console.log(this.className.indexOf("on"));
-
-                        this.classList.add("on");
-
-                        selectedFiles.push(this.dataset.filename);
-                        // console.log(selectedFiles);
-                    }
-                    else {
-                        // console.log(this.className);
-
-                        this.classList.remove("on");
-                        // ES5 > remove item from array
-                        selectedFiles = selectedFiles.filter(item => item !== this.dataset.filename);
-                    }
-                    var prevWindowHash = GetSidebarWindowHash("sidebar");
-
-                    if (prevWindowHash.length >= 1) {
-                        url = window.location.hash.replace(prevWindowHash,"");
-                    }
-                    if (prevWindowHash.length === 0) {
-                        url = window.location.hash = replaceSideBarString(window.location.hash);
-                        // when using anchors
-                        if (url === "#;") {
-                            url = url.replace("#;","");
+                        if (window.location.hash.indexOf("anchor=") >= 0) {
+                            window.location.hash =
+                                window.location.hash.replace(GetSidebarWindowHash("anchor"),"");
                         }
-                        if (url === "#") {
-                            url += "sidebar="
-                        }
-                        if (url.length === 0) {
-                            url += "#sidebar="
-                        }
-                        
-                        if (url !== "#;" && url !== "#" && url.length !== 0 && url.indexOf("sidebar") === -1) {
-                            url += "sidebar="
-                        }
-            
 
+                        var url = "";
+                        if (!this.classList.contains("on")) {
+                            // This features add it;
+                            // console.log(this.className.indexOf("on"));
+
+                            this.classList.add("on");
+
+                            selectedFiles.push(this.dataset.filename);
+                            // console.log(selectedFiles);
+                        }
+                        else {
+                            // console.log(this.className);
+
+                            this.classList.remove("on");
+                            // ES5 > remove item from array
+                            selectedFiles = selectedFiles.filter(item => item !== this.dataset.filename);
+                        }
+                        var prevWindowHash = GetSidebarWindowHash("sidebar");
+
+                        if (prevWindowHash.length >= 1) {
+                            url = window.location.hash.replace(prevWindowHash,"");
+                        }
+                        if (prevWindowHash.length === 0) {
+                            url = window.location.hash = replaceSideBarString(window.location.hash);
+                            // when using anchors
+                            if (url === "#;") {
+                                url = url.replace("#;","");
+                            }
+                            if (url === "#") {
+                                url += "sidebar="
+                            }
+                            if (url.length === 0) {
+                                url += "#sidebar="
+                            }
+
+                            if (url !== "#;" && url !== "#" && url.length !== 0 && url.indexOf("sidebar") === -1) {
+                                url += "sidebar="
+                            }
+                        }
+
+                        url = appendArrayToString(url,selectedFiles,",");
+
+                        // var   
+                        if (url !== prevURL) {
+                            var stateObj = { url: url };
+                            history.pushState(stateObj, "Qdraw", url);
+                        }
+                        prevURL = url;
+
+                        updateDisplayList();
+                        updateControls();
+                        // console.log("0")
                     }
-
-                    // console.log(url);
-                    url = appendArrayToString(url,selectedFiles,",");
-                    // console.log(selectedFiles);
-                    // console.log(url);
-
-                    // var   
-                    if (url !== prevURL) {
-                        var stateObj = { url: url };
-                        history.pushState(stateObj, "Qdraw", url);
-                    }
-                    prevURL = url;
-
-                    updateDisplayList();
-                    updateControls();
-                    // console.log("0")
                 }
-            }
 
-        }, false);
+            }, false);
+        }
     }
-        
 }
+buildArchiveSidebar();
 
 function appendArrayToString(url,selectedFiles,splitter) {
     for (var i = 0; i < selectedFiles.length; i++) {
@@ -97,7 +93,16 @@ function appendArrayToString(url,selectedFiles,splitter) {
     return url;
 }
 
+function seletedItemsOn() {
+    // reset
+    var halfitems = document.querySelectorAll(".halfitem");
 
+    for (var i = 0; i < halfitems.length; i++) {
+        if (halfitems[i].classList.contains("on")) {
+            halfitems[i].classList.remove("on");
+        }
+    }  
+}
 
 function buildSidebarPage() {
     selectedFiles = [];
@@ -112,14 +117,8 @@ function buildSidebarPage() {
             }
         }
     }
-    var halfitems = document.querySelectorAll(".halfitem");
-    
-    // reset
-    for (var i = 0; i < halfitems.length; i++) {
-        if (halfitems[i].classList.contains("on")) {
-            halfitems[i].classList.remove("on");
-        }
-    }
+
+    seletedItemsOn();
 
     for (var i = 0; i < selectedFiles.length; i++) {
 
@@ -132,6 +131,7 @@ function buildSidebarPage() {
         }
     }
 }
+
 window.addEventListener("hashchange", function (e) {
     buildSidebarPage();
     updateDisplayList();
@@ -146,7 +146,7 @@ function updateDisplayList() {
     if (document.querySelectorAll(".js-selectedimages").length === 1) {
         var html = "<h2>Geselecteerde bestanden</h2><ul>";
         for (var i = 0; i < selectedFiles.length; i++) {
-            html += "<li><span class='close'></span> "+ selectedFiles[i] + "</li>";
+            html += "<li><a class='close' onclick='removeThisItem(\""+ selectedFiles[i] +"\")'></a> "+ selectedFiles[i] + "</li>";
         }
         html += "</ul>";
         document.querySelector(".js-selectedimages").innerHTML = html;
@@ -229,3 +229,47 @@ function queryCaptionAbstract(queryItem) {
         "POST"
     );
 }
+
+
+document.addEventListener("DOMContentLoaded", function(event) {
+    loadResetButton();
+});
+
+function removeThisItem (fileName) {
+    // to replace afterwards in the url
+    var getSidebarWindowHashUrl = GetSidebarWindowHash("sidebar");
+
+    selectedFiles = selectedFiles.filter(item => item !== fileName);
+    
+    // update the hashlist
+    var toreplaceUrl = "";
+    toreplaceUrl = appendArrayToString(toreplaceUrl,selectedFiles,",");
+
+    var url =  window.location.hash.replace(getSidebarWindowHashUrl,toreplaceUrl);
+
+    if (url !== prevURL) {
+        var stateObj = { url: url };
+        history.pushState(stateObj, "Qdraw", url);
+    }
+    prevURL = url;
+    
+    // do other stuff
+    updateDisplayList();
+    updateControls();
+}
+
+function loadResetButton() {
+    console.log(document.querySelectorAll(".reset"));
+    if (document.querySelectorAll(".reset").length === 1) {
+
+        document.querySelector(".reset").addEventListener("click", function(e){
+            buildSidebarPage();
+            selectedFiles = [];
+            updateDisplayList();
+            updateControls();
+            window.location.hash = window.location.hash.replace(GetSidebarWindowHash("sidebar"),"");
+        }, false);
+
+    }
+}
+
