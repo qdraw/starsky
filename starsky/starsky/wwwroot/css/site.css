@@ -1013,3 +1013,10 @@ footer {
     max-width: 23ch;
     line-height: 20px;
 }
+
+.js-controls {
+    margin-top: 15px;
+}
+.js-controls.hidden {
+    display: none;
+}

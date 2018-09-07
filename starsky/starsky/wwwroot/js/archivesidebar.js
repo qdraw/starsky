@@ -62,7 +62,7 @@ if (portfolioData.length === 1 && archive.length === 1) {
                     }
 
                     // console.log(url);
-                    url = appendArrayToString(url,selectedFiles);
+                    url = appendArrayToString(url,selectedFiles,",");
                     // console.log(selectedFiles);
                     // console.log(url);
 
@@ -74,6 +74,7 @@ if (portfolioData.length === 1 && archive.length === 1) {
                     prevURL = url;
 
                     updateDisplayList();
+                    updateControls();
                     // console.log("0")
                 }
             }
@@ -83,14 +84,14 @@ if (portfolioData.length === 1 && archive.length === 1) {
         
 }
 
-function appendArrayToString(url,selectedFiles) {
+function appendArrayToString(url,selectedFiles,splitter) {
     for (var i = 0; i < selectedFiles.length; i++) {
 
         if (i === selectedFiles.length-1) {
             url += selectedFiles[i];
         }
         else {
-            url += selectedFiles[i] + ",";
+            url += selectedFiles[i] + splitter;
         }
     }
     return url;
@@ -134,13 +135,14 @@ function buildSidebarPage() {
 window.addEventListener("hashchange", function (e) {
     buildSidebarPage();
     updateDisplayList();
+    updateControls();
 }, false);
 
 buildSidebarPage();
 updateDisplayList();
+updateControls();
 
 function updateDisplayList() {
-    console.log("sdf")
     if (document.querySelectorAll(".js-selectedimages").length === 1) {
         var html = "<h2>Geselecteerde bestanden</h2><ul>";
         for (var i = 0; i < selectedFiles.length; i++) {
@@ -149,5 +151,81 @@ function updateDisplayList() {
         html += "</ul>";
         document.querySelector(".js-selectedimages").innerHTML = html;
     }
+}
+
+function updateControls() {
+    console.log(selectedFiles);
+    console.log(document.querySelectorAll(".js-controls"));
+
+    if (selectedFiles.length === 0 && document.querySelectorAll(".js-controls").length === 1) {
+        document.querySelector(".js-controls").classList.add("hidden");
+    }
+
+    if (selectedFiles.length >= 1 && document.querySelectorAll(".js-controls").length === 1) {
+        document.querySelector(".js-controls").classList.remove("hidden");
+
+    }
+}
+
+function updateKeywords() {
+    if (document.querySelectorAll("#js-keywords-update").length === 1){
+        var keywords = document.querySelector('.js-keywords');
+
+        // check if content already is send to the server
+        if (keywords.textContent !== keywords.dataset.previouscontent) {
+            queryKeywords(keywords.textContent);
+            keywords.dataset.previouscontent = keywords.textContent;
+        }
+    }
+}
+
+function updateCaptionAbstract() {
+    if (document.querySelectorAll("#js-captionabstract-update").length === 1){
+        var captionabstract = document.querySelector('.js-captionabstract');
+
+        // check if content already is send to the server
+        if (captionabstract.textContent !== captionabstract.dataset.previouscontent) {
+            queryCaptionAbstract(captionabstract.textContent);
+            captionabstract.dataset.previouscontent = captionabstract.textContent;
+        }
+    }
+}
+
+
+
+function toSubpath() {
+    var selectedFilesSubPath = [];
+    for (i = 0; i < selectedFiles.length; i++) {
+        selectedFilesSubPath.push(subPath +"/" + selectedFiles[i])
+    }
+    return appendArrayToString("", selectedFilesSubPath, ";");
+}
+
+function queryKeywords(queryItem) {
+
+    var toupdateFiles = toSubpath();
     
+    var url = updateApiBase + "?f=" + toupdateFiles + "&tags=" + queryItem + "&append=true";
+    loadJSON(url,
+        function (data) {
+            location.reload();
+        },
+        function (xhr) { console.error(xhr); },
+        "POST"
+    );
+}
+
+function queryCaptionAbstract(queryItem) {
+
+    var toupdateFiles = toSubpath();
+
+    var url = updateApiBase + "?f=" + toupdateFiles + "&description=" + queryItem + "&append=true";
+
+    loadJSON(url,
+        function (data) {
+            location.reload();
+        },
+        function (xhr) { console.error(xhr); },
+        "POST"
+    );
 }
