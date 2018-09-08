@@ -996,6 +996,7 @@ footer {
     cursor:text;
 }
 
+
 .js-selectedimages li:nth-child(2n-1) {
     background-color: #DFEAEB;
 }
@@ -1042,4 +1043,9 @@ footer {
 }
 .js-controls.hidden {
     display: none;
+}
+
+.js-selectallnone {
+    text-decoration: underline;
+    cursor: pointer;
 }

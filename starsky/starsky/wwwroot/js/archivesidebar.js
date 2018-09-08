@@ -149,8 +149,11 @@ updateDisplayList();
 updateControls();
 
 function updateDisplayList() {
+
     if (document.querySelectorAll(".js-selectedimages").length === 1) {
-        var html = "<h2><span class='js-selectedcount'>Geen bestanden geselecteerd</span></h2><ul>";
+        var html = "<h2><span class='js-selectedcount'>Geen bestanden geselecteerd</span></h2>";
+        html +=    "<h2><a class='js-selectallnone selectall' onclick='toggleSelectAll()'>Selecteer alles</a></h2>";
+        html +=    "<ul>";
         for (var i = 0; i < selectedFiles.length; i++) {
             html += "<li><a class='close' onclick='removeThisItem(\"" + selectedFiles[i] + "\")'></a> " + selectedFiles[i] + "</li>";
         }
@@ -167,6 +170,26 @@ function updateDisplayList() {
         }
         else {
             selectedcountElement.innerHTML = selectedFiles.length + " geselecteerde bestanden";
+        }
+
+    }
+    if (document.querySelectorAll(".js-selectedcount").length === 1 &&
+        document.querySelectorAll(".js-selectallnone").length === 1 &&
+        document.querySelectorAll(".js-collectionscount").length === 1
+    ) {
+
+        // to switch select all, select none
+        var collectionscount = parseInt(document.querySelector(".js-collectionscount").innerHTML);
+        
+        if (collectionscount === selectedFiles.length) {
+            document.querySelector(".js-selectallnone").classList.remove("selectall");
+            document.querySelector(".js-selectallnone").classList.add("selectnone");
+            document.querySelector(".js-selectallnone").innerHTML = "Selectie ongedaan maken";
+        }
+        else {
+            document.querySelector(".js-selectallnone").classList.remove("selectnone");
+            document.querySelector(".js-selectallnone").classList.add("selectall");
+            document.querySelector(".js-selectallnone").innerHTML = "Selecteer alles";
         }
     }
 }
@@ -247,6 +270,54 @@ function queryCaptionAbstract(queryItem) {
     );
 }
 
+function toggleSelectAll() {
+    if (document.querySelectorAll(".js-selectallnone").length === 1) {
+        var className = document.querySelector(".js-selectallnone");
+        if (className.className.indexOf("selectnone") === -1) {
+            console.log("1");
+            selectAllCurrentVisableItems();
+        }
+        else {
+            console.log("0");
+            resetSelection();
+        }
+    }
+}
+
+function selectAllCurrentVisableItems() {
+    selectedFiles = [];
+    var getSidebarWindowHashUrl = GetSidebarWindowHash("sidebar");
+
+    var halfitems = document.querySelectorAll(".halfitem");
+
+    for (var i = 0; i < halfitems.length; i++) {
+        if (halfitems[i].className.indexOf("hide") === -1) {
+            selectedFiles.push(halfitems[i].dataset.filename);
+            halfitems[i].classList.add("on");
+        }
+    }
+    var toreplaceUrl = "";
+    toreplaceUrl = appendArrayToString(toreplaceUrl,selectedFiles,",");
+    console.log(toreplaceUrl);
+    console.log(getSidebarWindowHashUrl);
+    var url =  window.location.hash.replace(getSidebarWindowHashUrl, toreplaceUrl);
+
+    // overwrite when no items are selected
+    if (getSidebarWindowHashUrl === ""){
+        url = window.location.hash + toreplaceUrl;
+    }
+
+    if (url !== prevURL) {
+        var stateObj = { url: url };
+        history.pushState(stateObj, "Qdraw", url);
+    }
+    prevURL = url;
+    
+    updateDisplayList();
+    updateControls();
+
+}
+
 
 document.addEventListener("DOMContentLoaded", function(event) {
     loadResetButton();
@@ -284,18 +355,27 @@ function removeThisItem (fileName) {
     updateControls();
 }
 
+
 function loadResetButton() {
-    console.log(document.querySelectorAll(".reset"));
     if (document.querySelectorAll(".reset").length === 1) {
-
         document.querySelector(".reset").addEventListener("click", function(e){
-            buildSidebarPage();
-            selectedFiles = [];
-            updateDisplayList();
-            updateControls();
-            window.location.hash = window.location.hash.replace(GetSidebarWindowHash("sidebar"),"");
+            resetSelection();
         }, false);
-
     }
+}
+function resetSelection() {
+    buildSidebarPage();
+    selectedFiles = [];
+    updateControls();
+
+    // Push to history
+    var url = window.location.hash.replace(GetSidebarWindowHash("sidebar"),"");
+    if (url !== prevURL) {
+        var stateObj = { url: url };
+        history.pushState(stateObj, "Qdraw", url);
+    }
+    prevURL = url;
+    
+    updateDisplayList();
 }
 
