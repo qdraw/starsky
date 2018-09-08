@@ -34,7 +34,7 @@ function buildArchiveSidebar() {
                             // console.log(this.className);
 
                             this.classList.remove("on");
-                            // work around for IE11
+                            // workaround for IE11
                             var those = this;
                             selectedFiles = selectedFiles.filter(function(item) {
                                 return item !== those.getAttribute('data-filename');
@@ -249,6 +249,12 @@ function removeThisItem (fileName) {
     selectedFiles = selectedFiles.filter(function(item) {
         return item !== fileName;
     });
+    
+    // remove this checkbox in the item itself
+    var halfitemFilename = document.querySelectorAll(".halfitem[data-filename=\""+ fileName +"\"]");
+    if (document.querySelectorAll(".halfitem[data-filename=\""+ fileName +"\"]").length === 1){
+        halfitemFilename[0].classList.remove("on");
+    }
     
     // update the hashlist
     var toreplaceUrl = "";
