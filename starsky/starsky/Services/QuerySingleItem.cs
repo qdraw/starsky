@@ -73,7 +73,8 @@ namespace starsky.Services
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(singleItemDbPath),
                 GetAllColor = FileIndexItem.GetAllColorUserInterface(),
                 ColorClassFilterList = colorClassFilterList,
-                IsDirectory = false
+                IsDirectory = false,
+                SubPath = singleItemDbPath,
             };
             
             itemResult.FileIndexItem.CollectionPaths = new List<string>();

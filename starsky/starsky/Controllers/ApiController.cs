@@ -49,18 +49,7 @@ namespace starsky.Controllers
             return Json(_appSettings);
         }
 
-        /// <summary>
-        /// Is the file read only
-        /// </summary>
-        /// <param name="f">filepath</param>
-        /// <returns>true = don't edit</returns>
-        private bool _isReadOnly(string f)
-        {
-            if (_appSettings.ReadOnlyFolders == null) return false;
-            
-            var result = _appSettings.ReadOnlyFolders.FirstOrDefault(f.Contains);
-            return result != null;
-        }
+        
         
         
         /// <summary>
@@ -75,12 +64,17 @@ namespace starsky.Controllers
                 return FileIndexItem.ExifStatus.NotFoundNotInIndex;
             }
 
+            if (detailView.IsDirectory && _appSettings.IsReadOnly(detailView.SubPath))
+            {
+                return FileIndexItem.ExifStatus.DirReadOnly;
+            }
+
             if (detailView.IsDirectory)
             {
                 return FileIndexItem.ExifStatus.NotFoundIsDir;
             }
 
-            if (_isReadOnly(detailView.FileIndexItem.ParentDirectory)) return  FileIndexItem.ExifStatus.ReadOnly;
+            if (_appSettings.IsReadOnly(detailView.FileIndexItem.ParentDirectory)) return  FileIndexItem.ExifStatus.ReadOnly;
 
             foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths)
             {
@@ -124,6 +118,11 @@ namespace starsky.Controllers
                     statusModel.Status = FileIndexItem.ExifStatus.NotFoundIsDir;
                     fileIndexResultsList.Add(statusModel);
                     return true;
+                case FileIndexItem.ExifStatus.DirReadOnly:
+                    statusModel.IsDirectory = true;
+                    statusModel.Status = FileIndexItem.ExifStatus.DirReadOnly;
+                    fileIndexResultsList.Add(statusModel);
+                    return true;
                 case FileIndexItem.ExifStatus.NotFoundNotInIndex:
                     statusModel.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
                     fileIndexResultsList.Add(statusModel);
@@ -136,6 +135,8 @@ namespace starsky.Controllers
                     statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
                     fileIndexResultsList.Add(statusModel);
                     return true;
+
+
             }
             return false;
         }
@@ -298,7 +299,7 @@ namespace starsky.Controllers
         [HttpDelete]
         public IActionResult Delete(string f = "dbStyleFilepath")
         {
-            if (_isReadOnly(f)) return NotFound("afbeelding is in lees-only mode en kan niet worden verwijderd");
+            if (_appSettings.IsReadOnly(f)) return NotFound("afbeelding is in lees-only mode en kan niet worden verwijderd");
 
             var singleItem = _query.SingleItem(f,null,false,false);
             if (singleItem == null) return NotFound("not in index");

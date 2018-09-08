@@ -72,11 +72,11 @@ function updateDeletedKeywordElement(data) {
        if (data.tags.indexOf("!delete!") >= 0) {
                document.querySelector(".addDeleteTag").classList.add("fileIsDeleted");
                document.querySelector(".addDeleteTag a").innerHTML = "Zet terug uit prullenmand";
-               document.querySelector("#js-keywords-update a").classList.add("disabled"); //
-               document.querySelector('.js-keywords').contentEditable = false;
                document.querySelector(".addDeleteTag a").classList.remove("btn-danger");
                document.querySelector(".addDeleteTag a").classList.add("btn-warning");
                document.querySelector(".js-keywords").classList.add("disabled");
+               document.querySelector("#js-keywords-update a").classList.add("disabled"); //
+               document.querySelector('.js-keywords').contentEditable = false;
                document.querySelector(".js-captionabstract").classList.add("disabled");
                document.querySelector('.js-captionabstract').contentEditable = false;
                document.querySelector(".js-objectname").classList.add("disabled");

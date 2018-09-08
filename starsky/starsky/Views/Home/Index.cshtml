@@ -7,7 +7,7 @@
 }
 <div class="archive">
     
-    <div class="sidebar">
+    <div class="sidebar readonly-@{@Model.IsReadOnly.ToString().ToLower()}">
         <div class="close" onclick="toggleSideMenu()"></div>
         <div class="content">
             <h4 class="nextprev">

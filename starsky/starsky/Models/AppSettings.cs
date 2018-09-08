@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
@@ -224,6 +225,19 @@ namespace starsky.Models
         // fallback in contructor
         public List<string> ReadOnlyFolders { get; set; }
 
+        /// <summary>
+        /// Is the file read only
+        /// </summary>
+        /// <param name="f">filepath</param>
+        /// <returns>true = don't edit</returns>
+        public bool IsReadOnly(string f)
+        {
+            if (ReadOnlyFolders == null) return false;
+            
+            var result = ReadOnlyFolders.FirstOrDefault(f.Contains);
+            return result != null;
+        }
+        
         // C# 6+ required for this
         public bool AddMemoryCache { get; set; } = true;
         

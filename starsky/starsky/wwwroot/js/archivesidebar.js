@@ -246,6 +246,8 @@ function queryKeywords(queryItem) {
     var toupdateFiles = toSubpath();
     
     var url = updateApiBase + "?f=" + toupdateFiles + "&tags=" + queryItem + "&append=true";
+    addNoClickToSidebar();
+
     loadJSON(url,
         function (data) {
             location.reload();
@@ -260,6 +262,7 @@ function queryCaptionAbstract(queryItem) {
     var toupdateFiles = toSubpath();
 
     var url = updateApiBase + "?f=" + toupdateFiles + "&description=" + queryItem + "&append=true";
+    addNoClickToSidebar();
 
     loadJSON(url,
         function (data) {
@@ -379,13 +382,30 @@ function resetSelection() {
     updateDisplayList();
 }
 
+function addNoClickToSidebar() {
+    if (document.querySelectorAll(".sidebar").length === 1) {
+        console.log("noclick")
+        document.querySelector(".sidebar").classList.add("noclick");
 
+        // hide buttons
+        document.querySelector(".js-keywords").classList.add("disabled");
+        document.querySelector("#js-keywords-update a").classList.add("disabled");
+        document.querySelector('.js-keywords').contentEditable = false;
+        document.querySelector("#js-captionabstract-update a").classList.add("disabled"); //
+        document.querySelector(".js-captionabstract").classList.add("disabled");
+        document.querySelector('.js-captionabstract').contentEditable = false;
+        if (document.querySelectorAll(".js-objectname").length === 1){
+            document.querySelector(".js-objectname").classList.add("disabled");
+            document.querySelector('.js-objectname').contentEditable = false;     
+        }
+    }
+}
 
 // Used in <div class="add-colorclass">
 function updateColorClass(those) {
     var toupdateFiles = toSubpath();
     var url = updateApiBase + "?f=" + toupdateFiles + "&colorClass=" + those.dataset.colorclass;
-
+    addNoClickToSidebar();
     loadJSON(url,
         function(data) {
             location.reload();
@@ -393,5 +413,11 @@ function updateColorClass(those) {
         function (xhr) { console.error(xhr); },
         "POST"
     );
+}
+
+if (document.querySelectorAll(".sidebar").length === 1) {
+    if (document.querySelector(".sidebar").className.indexOf("readonly-true")) {
+        addNoClickToSidebar(); 
+    }
 }
 

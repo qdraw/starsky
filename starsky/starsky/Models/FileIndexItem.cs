@@ -115,6 +115,7 @@ namespace starsky.Models
             NotFoundNotInIndex,
             NotFoundSourceMissing,
             NotFoundIsDir,
+            DirReadOnly,
             ReadOnly,
             Ok,
         }
