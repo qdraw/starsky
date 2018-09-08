@@ -76,7 +76,7 @@ namespace starsky.Helpers
         
         private static void CompareColor(string propertyName, FileIndexItem sourceIndexItem, FileIndexItem.Color oldColorValue, FileIndexItem.Color newColorValue, List<string> differenceList)
         {
-            if (oldColorValue == newColorValue) return;
+            if (oldColorValue == newColorValue || newColorValue == FileIndexItem.Color.DoNotChange) return;
             sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newColorValue, null);
             differenceList.Add(propertyName);
         }

@@ -226,14 +226,8 @@ namespace starsky.Models
 
       
         // Always display int, because the Update api uses ints to parse
-        public Color ColorClass { 
-            get => _colorClass == Color.DoNotChange ? Color.None : _colorClass;
-            set
-            {
-                if (value == Color.DoNotChange) return;
-                _colorClass = value;
-            }
-        }
+        // allow all types
+        public Color ColorClass { get; set; } = Color.DoNotChange;
 
 
         public enum Color
