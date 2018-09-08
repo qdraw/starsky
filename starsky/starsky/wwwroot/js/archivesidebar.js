@@ -416,7 +416,7 @@ function updateColorClass(those) {
 }
 
 if (document.querySelectorAll(".sidebar").length === 1) {
-    if (document.querySelector(".sidebar").className.indexOf("readonly-true")) {
+    if (document.querySelector(".sidebar").className.indexOf("readonly-true") >= 1) {
         addNoClickToSidebar(); 
     }
 }

@@ -15,6 +15,5 @@ namespace starsky.ViewModels
         public bool IsDirectory { get; set; } = true;
         public int CollectionsCount = 0;
         public bool IsReadOnly { get; set; }
-
     }
 }

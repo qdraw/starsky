@@ -65,7 +65,7 @@ namespace starsky.Controllers
                 SearchQuery = subpath.Split("/").LastOrDefault(),
                 SubPath = subpath,
                 CollectionsCount = _query.DisplayFileFolders(subpath,null,false,hidedelete).Count(),
-                IsReadOnly = _appsettings.IsReadOnly(subpath)
+                IsReadOnly = true // update later
             };
 
             if (singleItem == null)
@@ -90,6 +90,9 @@ namespace starsky.Controllers
                 }
             }
             
+            // now update
+            if (_appsettings != null) directoryModel.IsReadOnly = _appsettings.IsReadOnly(subpath);
+
             if (json) return Json(directoryModel);
             return View(directoryModel);
         }
