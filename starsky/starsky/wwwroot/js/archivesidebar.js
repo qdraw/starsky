@@ -150,15 +150,26 @@ updateControls();
 
 function updateDisplayList() {
     if (document.querySelectorAll(".js-selectedimages").length === 1) {
-        var html = "<h2>Geselecteerde bestanden</h2><ul>";
+        var html = "<h2><span class='js-selectedcount'>Geen bestanden geselecteerd</span></h2><ul>";
         for (var i = 0; i < selectedFiles.length; i++) {
-            html += "<li><a class='close' onclick='removeThisItem(\""+ selectedFiles[i] +"\")'></a> "+ selectedFiles[i] + "</li>";
+            html += "<li><a class='close' onclick='removeThisItem(\"" + selectedFiles[i] + "\")'></a> " + selectedFiles[i] + "</li>";
         }
         html += "</ul>";
         document.querySelector(".js-selectedimages").innerHTML = html;
     }
+    if (document.querySelectorAll(".js-selectedcount").length === 1) {
+        var selectedcountElement = document.querySelector(".js-selectedcount");
+        if (selectedFiles.length === 0) {
+            selectedcountElement.innerHTML = "Geen bestanden geselecteerd";
+        }
+        else if (selectedFiles.length === 1) {
+            selectedcountElement.innerHTML = "1 geselecteerd bestand";
+        }
+        else {
+            selectedcountElement.innerHTML = selectedFiles.length + " geselecteerde bestanden";
+        }
+    }
 }
-
 function updateControls() {
     console.log(selectedFiles);
     console.log(document.querySelectorAll(".js-controls"));
