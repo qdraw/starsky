@@ -219,6 +219,18 @@ function updateKeywords() {
     }
 }
 
+function updateObjectName() {
+    if (document.querySelectorAll("#js-objectname-update").length === 1){
+        var keywords = document.querySelector('.js-objectname');
+
+        // check if content already is send to the server
+        if (keywords.textContent !== keywords.dataset.previouscontent) {
+            queryObjectName(keywords.textContent);
+            keywords.dataset.previouscontent = keywords.textContent;
+        }
+    }
+}
+
 function updateCaptionAbstract() {
     if (document.querySelectorAll("#js-captionabstract-update").length === 1){
         var captionabstract = document.querySelector('.js-captionabstract');
@@ -273,6 +285,22 @@ function queryCaptionAbstract(queryItem) {
     );
 }
 
+function queryObjectName(queryItem) {
+
+    var toupdateFiles = toSubpath();
+
+    var url = updateApiBase + "?f=" + toupdateFiles + "&title=" + queryItem + "&append=true";
+    addNoClickToSidebar();
+
+    loadJSON(url,
+        function (data) {
+            location.reload();
+        },
+        function (xhr) { console.error(xhr); },
+        "POST"
+    );
+    
+}
 function toggleSelectAll() {
     if (document.querySelectorAll(".js-selectallnone").length === 1) {
         var className = document.querySelector(".js-selectallnone");
@@ -396,6 +424,7 @@ function addNoClickToSidebar() {
         document.querySelector(".js-captionabstract").classList.add("disabled");
         document.querySelector('.js-captionabstract').contentEditable = false;
         if (document.querySelectorAll(".js-objectname").length === 1){
+            document.querySelector("#js-objectname-update a").classList.add("disabled");
             document.querySelector(".js-objectname").classList.add("disabled");
             document.querySelector('.js-objectname').contentEditable = false;     
         }
