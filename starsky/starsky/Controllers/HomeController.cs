@@ -64,7 +64,7 @@ namespace starsky.Controllers
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath),
                 SearchQuery = subpath.Split("/").LastOrDefault(),
                 SubPath = subpath,
-                CollectionsCount = _query.DisplayFileFolders(subpath,null,false,hidedelete).Count(),
+                CollectionsCount = _query.DisplayFileFolders(subpath,null,false,hidedelete).Count(p => !p.IsDirectory),
                 IsReadOnly = true // update later
             };
 

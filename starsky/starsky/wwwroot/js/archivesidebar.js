@@ -294,7 +294,8 @@ function selectAllCurrentVisableItems() {
     var halfitems = document.querySelectorAll(".halfitem");
 
     for (var i = 0; i < halfitems.length; i++) {
-        if (halfitems[i].className.indexOf("hide") === -1) {
+        if (halfitems[i].className.indexOf("hide") === -1 
+            && halfitems[i].className.indexOf("directory-false") >= 1) {
             selectedFiles.push(halfitems[i].dataset.filename);
             halfitems[i].classList.add("on");
         }
