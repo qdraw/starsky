@@ -579,3 +579,8 @@ function queryRotate(queryItem) {
 
 
 
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.querySelectorAll(".main-image").length === 1){
+        document.querySelector(".main-image").classList.add("contentloaded");
+    }
+});

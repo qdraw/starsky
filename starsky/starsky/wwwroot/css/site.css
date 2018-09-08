@@ -797,8 +797,11 @@ float: left;
     width: auto;
     max-height: 80vh;
     max-width: calc(100vw - 30px);
+}
+.main-image.contentloaded {
     transition: max-width 0.5s ease-in-out;
 }
+
 /* Sorry for firefox and mobile safari only */
 /*disabled-*/
 
