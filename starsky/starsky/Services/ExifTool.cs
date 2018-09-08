@@ -27,7 +27,7 @@ namespace starsky.Services
             _appSettings = appSettings;
         }
         
-        private string BaseCommmand(string options, string fullFilePathSpaceSeperated)
+        public string BaseCommmand(string options, string fullFilePathSpaceSeperated)
         {
             options = " " + options + " " + fullFilePathSpaceSeperated;
 
@@ -102,7 +102,7 @@ namespace starsky.Services
         }
         
         
-
+    
         private ExifToolModel parseJson(string text) {
             if (string.IsNullOrEmpty(text)) return null;
             text = text.Replace("\r", string.Empty);
@@ -123,132 +123,41 @@ namespace starsky.Services
 
         }
 
-        public void Update(ExifToolModel updateModel, string inputFullFilePath)
+//        public void Update(FileIndexItem updateModel, string inputFullFilePath)
+//        {
+//            Update(updateModel, new List<string> {inputFullFilePath});
+//        }
+
+        
+       
+
+            
+        
+        // The actual query
+        // will be removed very soon 
+        // Only used by DownloadPhoto
+        public ExifToolModel Info(string fullFilePath)
         {
-            Update(updateModel, new List<string> {inputFullFilePath});
-        }
-        
-        // Does not check in c# code if file exist
-        public void Update(ExifToolModel updateModel, List<string> inputFullFilePaths)
-            {
-                var command = "-json -overwrite_original";
-                var initCommand = command; // to check if nothing
+            // Add parentes around this file
 
-                // Create an XMP File -> as those files don't support those tags
-                // Check first if it is needed
-
-                var fullFilePathsList = new List<string>();
-                foreach (var fullFilePath in inputFullFilePaths)
-                {
-                    if(Files.IsXmpSidecarRequired(fullFilePath))
-                    {
-                        var xmpFullPath = Files.GetXmpSidecarFileWhenRequired(fullFilePath, _appSettings.ExifToolXmpPrefix);
-                    
-                        if (Files.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
-                        {
-                            BaseCommmand(" -overwrite_original -TagsFromFile \""  + fullFilePath + "\"",  "\""+ xmpFullPath +  "\"");
-                        }
-                        // to continue as xmp file
-                        fullFilePathsList.Add(xmpFullPath);
-                        continue;
-                    }
-                    fullFilePathsList.Add(fullFilePath);
-                }
+            var xmpFullFilePath = Files.GetXmpSidecarFileWhenRequired(
+                fullFilePath,
+                _appSettings.ExifToolXmpPrefix);
                 
-                // Currently it does not allow emthy strings
-                if (!string.IsNullOrWhiteSpace(updateModel.Tags))
-                {
-                    command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags 
-                                                                  + "\" -Keywords=\"" + updateModel.Tags + "\" ";
-                }
+            // only overwrite when a xmp file exist
+            if (Files.IsFolderOrFile(xmpFullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
+                fullFilePath = xmpFullFilePath;
                 
-  
-                if (!string.IsNullOrWhiteSpace(updateModel.CaptionAbstract))
-                {
-                    command += " -Caption-Abstract=\"" + updateModel.CaptionAbstract 
-                                                       + "\" -Description=\"" + updateModel.CaptionAbstract + "\"";
-                }
-                
-                if (!string.IsNullOrWhiteSpace(updateModel.ObjectName))
-                {
-                    command += " -ObjectName=\"" + updateModel.ObjectName + "\"" 
-                               + " \"-title\"=" + "\"" + updateModel.ObjectName  + "\"" ;
-                }
-               
-                if (updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
-                {
-                    var intColorClass = (int) updateModel.ColorClass;
+            // When change also update class 'Update'
+            // xmp:Subject == Keywords
+            // Caption-Abstract == Description
+            var fullFilePathStringBuilder = new ExifToolCmdHelper().Quoted(null,fullFilePath);
 
-                    var colorDisplayName = FileIndexItem.GetDisplayName(updateModel.ColorClass);
-                    command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\""+ intColorClass + 
-                               "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
-                }
-                
-                // // exiftool -Orientation#=5
-                if (updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
-                {
-                    var intOrientation = (int) updateModel.Orientation;
-                    command += " \"-Orientation#="+ intOrientation +"\" ";
-                }
-
-                if (updateModel.AllDatesDateTime.Year > 2)
-                {
-                    var exifToolString = updateModel.AllDatesDateTime.ToString("yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
-                    command += " -AllDates=\""+ exifToolString + "\" ";
-                }
-                
-                if (command != initCommand)
-                {
-                    var exifBaseInputStringBuilder = new StringBuilder();
-                    foreach (var fullFilePath in fullFilePathsList)
-                    {
-                        exifBaseInputStringBuilder = Quoted(exifBaseInputStringBuilder,fullFilePath);
-                        exifBaseInputStringBuilder.Append($" ");
-                    }
-                    
-                    BaseCommmand(command, exifBaseInputStringBuilder.ToString());
-                }
-
-            }
-
-            private StringBuilder Quoted(StringBuilder inputStringBuilder, string fullFilePath)
-            {
-                if (inputStringBuilder == null)
-                {
-                    inputStringBuilder = new StringBuilder();
-                }
-                inputStringBuilder.Append($"\"");
-                inputStringBuilder.Append(fullFilePath);
-                inputStringBuilder.Append($"\"");
-                return inputStringBuilder;
-            }
-        
-            // The actual query
-            // will be removed very soon 
-            // Only used by DownloadPhoto
-            public ExifToolModel Info(string fullFilePath)
-            {
-                // Add parentes around this file
-    
-                var xmpFullFilePath = Files.GetXmpSidecarFileWhenRequired(
-                    fullFilePath,
-                    _appSettings.ExifToolXmpPrefix);
-                    
-                // only overwrite when a xmp file exist
-                if (Files.IsFolderOrFile(xmpFullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
-                    fullFilePath = xmpFullFilePath;
-                    
-                // When change also update class 'Update'
-                // xmp:Subject == Keywords
-                // Caption-Abstract == Description
-                var fullFilePathStringBuilder = Quoted(null,fullFilePath);
-    
-                // -Orientation# <= hashtag is that exiftool must output a int and not a human readable string
-                return parseJson(BaseCommmand("-Keywords \"-xmp:title\" -ObjectName \"-Orientation#\" -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
-                    fullFilePathStringBuilder.ToString()));
-            }
-
-
+            // -Orientation# <= hashtag is that exiftool must output a int and not a human readable string
+            return parseJson(BaseCommmand("-Keywords \"-xmp:title\" -ObjectName \"-Orientation#\" -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
+                fullFilePathStringBuilder.ToString()));
         }
 
     }
+
+}

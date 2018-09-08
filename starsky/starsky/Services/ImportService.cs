@@ -94,14 +94,29 @@ namespace starsky.Services
             return importIndexItem;
         }
 
+        /// <summary>
+        /// Checks if file exist in storagefolder - or suggest a `-102` or `-909` appendex
+        /// </summary>
+        /// <param name="inputFileFullPath">the source file</param>
+        /// <param name="fileIndexItem">the object with the data</param>
+        /// <param name="tryagain">to avoid an endless loop</param>
+        /// <returns>string with DestionationFullPath</returns>
         public string DestionationFullPathDuplicate(
             string inputFileFullPath, 
             FileIndexItem fileIndexItem, 
             bool tryagain)
         {
 
+            // To support direct imported files > without filename
+            if (fileIndexItem.FileName.Contains(".unknown"))
+            {
+                fileIndexItem.FileName = fileIndexItem.FileName.Replace(".unknown", 
+                    "." + Files.GetImageFormat(inputFileFullPath));
+            }
+            
             var destinationFullPath = _appSettings.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
                                       + fileIndexItem.FileName;
+            
             // When a file already exist, when you have multiple files with the same datetime
             if (inputFileFullPath != destinationFullPath
                 && File.Exists(destinationFullPath) )
@@ -188,14 +203,16 @@ namespace starsky.Services
             // Update the contents to the file the imported item
             if (exifToolSync)
             {
-                var exiftoolmodel = new ExifToolModel
+                Console.WriteLine("Do a exiftoolSync");
+                var comparedNamesList = new List<string>
                 {
-                    AllDatesDateTime = fileIndexItem.DateTime,
-                    CaptionAbstract = fileIndexItem.Description,
-                    ColorClass = fileIndexItem.ColorClass
+                    nameof(FileIndexItem.DateTime),
+                    nameof(FileIndexItem.ColorClass),
+                    nameof(FileIndexItem.Description),
                 };
-                    
-                _exiftool.Update(exiftoolmodel, destinationFullPath);
+
+                new ExifToolCmdHelper(_appSettings, _exiftool).Update(fileIndexItem, destinationFullPath,
+                    comparedNamesList);
             }
             
             var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
@@ -216,7 +233,6 @@ namespace starsky.Services
         // Add a new item to the database
         private void AddItem(ImportIndexItem updateStatusContent)
         {
-//            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
             updateStatusContent.AddToDatabase = DateTime.UtcNow;
             
             _context.ImportIndex.Add(updateStatusContent);
@@ -227,8 +243,6 @@ namespace starsky.Services
         // Remove a new item from the database
         public ImportIndexItem RemoveItem(ImportIndexItem updateStatusContent)
         {
-//            if (!SqliteHelper.IsReady()) throw new ArgumentException("database error");
-
             _context.ImportIndex.Remove(updateStatusContent);
             _context.SaveChanges();
             return updateStatusContent;

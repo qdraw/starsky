@@ -434,7 +434,7 @@ namespace starskytests
             _query.AddCacheItem(item);
             
             var item1 = new FileIndexItem {Id = 400, Tags = "hi", FileName = "cache"};
-            _query.CacheUpdateItem(item1);
+            _query.CacheUpdateItem(new List<FileIndexItem>{item1});
 
            if (!_memoryCache.TryGetValue("List`1_", out var objectFileFolders));
             var displayFileFolders = (List<FileIndexItem>) objectFileFolders;

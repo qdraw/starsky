@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
 using starsky.Interfaces;
 using starsky.Models;
@@ -83,7 +85,6 @@ namespace starsky.Services
             return subPath;
         }
 
-
         private string CachingDbName(string functionName, string singleItemDbPath)
         {
             // For creating an unique name: DetailView_/2018/01/1.jpg
@@ -93,19 +94,32 @@ namespace starsky.Services
             return uniqueSingleDbCacheNameBuilder.ToString();
         }
 
-     
-      
 
         // For the API/update endpoint
-        public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
+        public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
         {
+            foreach (var item in updateStatusContentList)
+            {
+                _context.Attach(item).State = EntityState.Modified;
+            }
+            _context.SaveChanges();
+            CacheUpdateItem(updateStatusContentList);
+            return updateStatusContentList;
+        }
+
+
+        // For the API/update endpoint
+        public FileIndexItem UpdateItem( FileIndexItem updateStatusContent)
+        {
+
             _context.Attach(updateStatusContent).State = EntityState.Modified;
             _context.SaveChanges();
             
-            CacheUpdateItem(updateStatusContent);
+            CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
 
             return updateStatusContent;
         }
+        
 
         // Private api within Query to add cached items
         public void AddCacheItem(FileIndexItem updateStatusContent)
@@ -129,27 +143,30 @@ namespace starsky.Services
         }
 
         // Private api within Query to update cached items
-        public void CacheUpdateItem(FileIndexItem updateStatusContent)
+        public void CacheUpdateItem(IEnumerable<FileIndexItem> updateStatusContent)
         {
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
-            
-            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-                updateStatusContent.ParentDirectory);
+            foreach (var item in updateStatusContent)
+            {
+                var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+                    item.ParentDirectory);
 
-            if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
+                if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
             
-            var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
+                var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
                 
-            var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == updateStatusContent.FilePath);
-            if (obj == null) return;
-            displayFileFolders.Remove(obj);
-            // Add here item to cached index
-            displayFileFolders.Add(updateStatusContent);
-            // Order by filename
-            displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
+                var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
+                if (obj == null) return;
+                displayFileFolders.Remove(obj);
+                // Add here item to cached index
+                displayFileFolders.Add(item);
+                // Order by filename
+                displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
             
-            _cache.Remove(queryCacheName);
-            _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
+                _cache.Remove(queryCacheName);
+                _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
+            }
+            
         }
         
         // Private api within Query to remove cached items

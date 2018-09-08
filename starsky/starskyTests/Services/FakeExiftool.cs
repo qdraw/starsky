@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Interfaces;
 using starsky.Models;
@@ -15,6 +16,23 @@ namespace starskytests.Services
 
         public void Update(ExifToolModel updateModel, string fullFilePath)
         {
+        }
+
+        public void Update(FileIndexItem updateModel, List<string> inputFullFilePaths)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Update(FileIndexItem updateModel, string inputFullFilePath)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public string BaseCommmand(string options, string fullFilePathSpaceSeperated)
+        {
+            Console.WriteLine(options);
+            Console.WriteLine(fullFilePathSpaceSeperated);
+            return string.Empty;
         }
 
         public ExifToolModel Info(string fullFilePath)

@@ -126,6 +126,7 @@ h1 {
     text-align: left;
 }
 
+.colorbutton,
 .add-colorclass a,
 #portfolio-filter ul > li > a {
     margin-right: 10px;
@@ -146,6 +147,7 @@ h1 {
     padding-left: 10px;
 }
 
+.colorbutton .checkbox,
 #portfolio-data.wrapper .checkbox,
 .add-colorclass .checkbox,
 #portfolio-filter .checkbox {
@@ -178,6 +180,7 @@ h1 {
 }
 
 /* selecting multiple files */
+.colorbutton.on .checkbox,
 .collapsed #portfolio-data.wrapper .on.directory-false .checkbox,
 #portfolio-filter .active .checkbox{
     background-image: url("../images/checkbox.svg");
@@ -193,9 +196,8 @@ h1 {
     display: block;
     background-color: #ccc;
     position: relative;
-    /*z-index: 3;*/
     transform-origin: center center;
-    transition: all 1.5s ease-in-out;
+    /*transition: all 1.5s ease-in-out;*/
 }
 
 .collapsed .halfitem {
@@ -273,7 +275,7 @@ h2 {
     height: 45vh;
     object-fit: cover;
     object-position: center;
-    /*font-family: 'object-fit: cover';*/
+    font-family: 'object-fit: cover';
     transition: transform .5s ease-in-out;
     overflow: hidden;
     position: relative;
@@ -652,10 +654,15 @@ h2 {
     margin-bottom: 15px;
 }
 
+.form-wrapper .form-control.space,
 .form-wrapper .form-control{
     width: calc( 100% - 80px );
     display: inline-block;
 }
+.form-wrapper .form-control.space{
+    width: calc( 100% - 100px );
+}
+
 .form-wrapper .btn {
     display: inline-block;
     float: right;
@@ -766,6 +773,15 @@ float: left;
     color: red;
 }
 
+.breadcrumb.nothumbnail::after {
+    display: inline-block;
+    background-image: url("data:image/jpg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAQEBAQFBAUGBgUHCAcIBwoKCQkKChALDAsMCxAYDxEPDxEPGBUZFRMVGRUmHhoaHiYsJSMlLDUvLzVDP0NXV3UBBAQEBAUEBQYGBQcIBwgHCgoJCQoKEAsMCwwLEBgPEQ8PEQ8YFRkVExUZFSYeGhoeJiwlIyUsNS8vNUM/Q1dXdf/CABEIABIAEAMBIgACEQEDEQH/xAAXAAEAAwAAAAAAAAAAAAAAAAAGBQcI/9oACAEBAAAAANbQ4l1QKb//xAAVAQEBAAAAAAAAAAAAAAAAAAACBf/aAAgBAhAAAABQv//EABUBAQEAAAAAAAAAAAAAAAAAAAMF/9oACAEDEAAAAJwf/8QAJRAAAgIBAwMEAwAAAAAAAAAAAQIDBAUAESIGEyEVFjJBB1Fh/9oACAEBAAE/AMDicRNiack8WPVjWj+ccZckqOTbjfSW7+Ge/aq4tjEJRNuk6RwmFY0Eg7O/y4kggb6yvVvp1arWrxq84q1yS3lVBT9D71hJm9r+sZavFyhmaOseInCqSNw/0wBO3nj5102BY6lwyTDuI9+srq/IMpcAgg6/KU8/vrKDvPtGsKJyPFTEDsP5udf/xAAdEQABBAIDAAAAAAAAAAAAAAABAgMEEQAhMnOx/9oACAECAQE/ABNgOPrjpcJcSLNJ0CNVeN8ne5Huf//EAB8RAQAABAcAAAAAAAAAAAAAAAIAAwQREiExQ1Fzsf/aAAgBAwEBPwCVWh1KlHNG+LjWBu9p9j//2Q==");
+    width: 16px;
+    height: 16px;
+    background-size: cover;
+    content: "";
+}
+
 .archive.collapsed,
 .detailview.collapsed {
     max-width: calc( 100% - 300px);
@@ -789,8 +805,11 @@ float: left;
     width: auto;
     max-height: 80vh;
     max-width: calc(100vw - 30px);
+}
+.main-image.contentloaded {
     transition: max-width 0.5s ease-in-out;
 }
+
 /* Sorry for firefox and mobile safari only */
 /*disabled-*/
 
@@ -834,6 +853,7 @@ float: left;
     object-fit: contain;
     object-position: center;
     background-color: #ddd;
+    font-family: "object-fit: cover";
 }
 .sidebar {
     width: 300px;
@@ -918,11 +938,18 @@ footer {
 .sidebar.readonly .add-colorclass a{
     display: none;
 }
+
+.sidebar.noclick .add-colorclass a,
+.sidebar.readonly-true .add-colorclass,
 .sidebar.readonly .add-colorclass a.on{
     display: inline-block;
     pointer-events: none;
 }
 
+.sidebar.readonly-true .add-colorclass a,
+.sidebar.noclick .add-colorclass a {
+    opacity: 0.5;
+}
 
 
 
@@ -988,12 +1015,36 @@ footer {
 }
 
 
+.js-selectedimages li:nth-child(2n-1) {
+    background-color: #DFEAEB;
+}
 .js-selectedimages li .close {
     display: inline-block;
-    width: 20px;
-    height: 20px;
-    background-color: red;
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+    opacity: 0.5;
+    position: relative;
 }
+.js-selectedimages li .close:before, .js-selectedimages li .close:after {
+    position: absolute;
+    margin-top: 4px;
+    left: 13px;
+    content: ' ';
+    height: 28px;
+    width: 2px;
+    background-color: #333;
+}
+.js-selectedimages li .close:hover {
+    opacity: 1;
+}
+.js-selectedimages li .close:before {
+    transform: rotate(45deg);
+}
+.js-selectedimages li .close:after {
+    transform: rotate(-45deg);
+}
+
 .js-selectedimages li:first-child {
     margin-top: 10px;
 }
@@ -1002,5 +1053,17 @@ footer {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 23ch;
-    line-height: 20px;
+    line-height: 30px;
+}
+
+.js-controls {
+    margin-top: 15px;
+}
+.js-controls.hidden {
+    display: none;
+}
+
+.js-selectallnone {
+    text-decoration: underline;
+    cursor: pointer;
 }

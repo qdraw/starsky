@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using starsky.Helpers;
@@ -21,7 +22,17 @@ namespace starsky.Models
         public string FilePath
         {
             get { return ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName); }
-            set {_filePath = ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName);} // For legacy reasons
+            set
+            {
+                // For legacy reasons
+                _filePath = ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName);
+            } 
+        }
+
+        public void SetFilePath(string value)
+        {
+                _parentDirectory = Breadcrumbs.BreadcrumbHelper(value).LastOrDefault();
+                _fileName = value.Replace(Breadcrumbs.BreadcrumbHelper(value).LastOrDefault(),string.Empty);
         }
         
         // Do not save null in database for FileName
@@ -50,7 +61,6 @@ namespace starsky.Models
                 return Path.GetFileNameWithoutExtension(FileName);
             } 
         }
-
         // Do not save null in database for Parent Directory
         private string _parentDirectory;
         public string ParentDirectory
@@ -69,6 +79,17 @@ namespace starsky.Models
         
         public bool IsDirectory { get; set; }
 
+        [NotMapped]
+        public HashSet<string> Keywords {
+            get => HashSetHelper.StringToHashSet(Tags);
+            set
+            {
+                if (value == null) return;
+                _tags = HashSetHelper.HashSetToString(value);
+            } 
+        }
+
+        
         // Do not save null in database for tags
         private string _tags;
         public string Tags
@@ -81,9 +102,28 @@ namespace starsky.Models
                     _tags = string.Empty;
                     return;
                 }
-                _tags = value;
+                // So remove duplicate keywords
+                Keywords = HashSetHelper.StringToHashSet(value.Trim());
+                _tags = HashSetHelper.HashSetToString(Keywords);
             }
         }
+        
+        // Used to display file status
+        public enum ExifStatus
+        {
+            Default,
+            NotFoundNotInIndex,
+            NotFoundSourceMissing,
+            NotFoundIsDir,
+            DirReadOnly,
+            ReadOnly,
+            Ok,
+        }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        [NotMapped]
+        public ExifStatus Status { get; set; } = ExifStatus.Default;
+        
 
         [System.ComponentModel.DefaultValue("")]
         // add default value (6#+)
@@ -101,7 +141,7 @@ namespace starsky.Models
                     _title = string.Empty;
                     return;
                 }
-                _title = value;
+                _title = value.Trim();
             }
         }
         
@@ -111,6 +151,10 @@ namespace starsky.Models
         
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        
+        
+
+        
         
         private Color _colorClass;
 
@@ -183,18 +227,8 @@ namespace starsky.Models
 
       
         // Always display int, because the Update api uses ints to parse
-        public Color ColorClass { 
-            get
-            {
-                if (_colorClass == Color.DoNotChange) return Color.None;
-                return  _colorClass;
-            }
-            set
-            {
-                if (value == Color.DoNotChange) return;
-                _colorClass = value;
-            }
-        }
+        // allow all types
+        public Color ColorClass { get; set; } = Color.DoNotChange;
 
 
         public enum Color
@@ -220,19 +254,18 @@ namespace starsky.Models
             DoNotChange = -1
         }
 
-        
+
         [JsonConverter(typeof(StringEnumConverter))]
-        public Rotation Orientation { get; set; }
+        public Rotation Orientation { get; set; } = Rotation.DoNotChange;
 
         public enum Rotation
         {
-            [Display(Name = "Do Not Change")]
-            DoNotChange = 0,
-
+            DoNotChange = -1,
+            
             // There are more types:
             // https://www.daveperrett.com/articles/2012/07/28/exif-orientation-handling-is-a-ghetto/
             
-            [Display(Name = "Horizontal (normal)")]
+            [Display(Name = "Horizontal (normal)")] 
             Horizontal = 1,
 
             [Display(Name = "Rotate 90 CW")]
@@ -254,26 +287,33 @@ namespace starsky.Models
             Rotation.Rotate270Cw
         };
 
+        public static bool IsRelativeOrientation(int rotateClock)
+        {
+            return rotateClock == -1 || rotateClock == 1; // rotateClock == -1 || rotateClock == 1 true
+        }
+
+        public void SetRelativeOrientation(int relativeRotation = 0)
+        {
+            Orientation = RelativeOrientation(relativeRotation);
+        }
+        
         public Rotation RelativeOrientation(int relativeRotation = 0)
         {
-            if (relativeRotation == 0) return Rotation.DoNotChange;
+            if (Orientation == Rotation.DoNotChange) Orientation = Rotation.Horizontal;
             
-
             var currentOrentation = _orderRotation.FindIndex(i => i == Orientation);
             
-            // fallback if database is Do Not Change
-            if (Orientation == Rotation.DoNotChange) currentOrentation = 0; // Rotation.Horizontal
-
             if (currentOrentation >= 0 && currentOrentation+relativeRotation < _orderRotation.Count && currentOrentation+relativeRotation >= 0)
             {
                 return _orderRotation[currentOrentation + relativeRotation];
             }
             if (currentOrentation + relativeRotation == -1) {
-                return _orderRotation[_orderRotation.Count-1];
+                return _orderRotation[_orderRotation.Count-1]; //changed
             }
             if (currentOrentation+relativeRotation >= _orderRotation.Count) {
                 return _orderRotation[0];
             }
+            
             return Rotation.DoNotChange;
         }
         

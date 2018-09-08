@@ -50,12 +50,15 @@ namespace starsky.Interfaces
 
 
         FileIndexItem AddItem(FileIndexItem updateStatusContent);
+
         FileIndexItem UpdateItem(FileIndexItem updateStatusContent);
+        List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList);
 
         string SubPathSlashRemove(string subPath = "/");
 
         RelativeObjects GetNextPrevInFolder(string currentFolder);
 
         List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList);
+        void CacheUpdateItem(IEnumerable<FileIndexItem> fileIndexItems);
     }
 }

@@ -4,22 +4,12 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using starsky.Helpers;
 
 namespace starsky.Models
 {
     public class ExifToolModel
     {
-        public ExifToolModel(ExifToolModel model = null)
-        {
-            if (model == null) return;
-            SourceFile = model.SourceFile;
-            ColorClass = model.ColorClass;
-            CaptionAbstract = model.CaptionAbstract;
-            Keywords = model.Keywords;
-            Orientation = model.Orientation;
-            ObjectName = model.ObjectName;
-            Status = model.Status;
-        }
         
         public string SourceFile { get; set; }
         
@@ -84,12 +74,12 @@ namespace starsky.Models
 
         public string Tags
         {
-            get { return HashSetToString(keywords); }
+            get { return HashSetHelper.HashSetToString(keywords); }
             set
             {
                 if (!string.IsNullOrWhiteSpace(value))
                 {
-                    keywords = stringToHashSet(value);
+                    keywords = HashSetHelper.StringToHashSet(value);
                 }
             }
         }
@@ -128,54 +118,5 @@ namespace starsky.Models
         
         public ushort ImageWidth { get; set; }
         public ushort ImageHeight { get; set; }
-        
-        public enum ExifStatus
-        {
-            NotFoundNotInIndex,
-            NotFoundSourceMissing,
-            ReadOnly,
-            Ok
-        }
-        
-        [JsonConverter(typeof(StringEnumConverter))]
-        public ExifStatus Status { get; set; }
-
-
-
-        private static HashSet<string> stringToHashSet(string inputKeywords)
-        {
-            HashSet<string> keywordsHashSet = inputKeywords.Split(", ").ToHashSet();
-            return keywordsHashSet;
-        }
-
-        public static string HashSetToString(HashSet<string> hashSetKeywords)
-        {
-            if (hashSetKeywords == null)
-            {
-                return string.Empty;
-            }
-            
-            var toBeAddedKeywordsStringBuilder = new StringBuilder();
-            foreach (var keyword in hashSetKeywords)
-            {
-                if (string.IsNullOrWhiteSpace(keyword)) continue;
-                
-                if (!string.IsNullOrWhiteSpace(keyword) && keyword != hashSetKeywords.LastOrDefault())
-                {
-                    toBeAddedKeywordsStringBuilder.Append(keyword + ", ");
-                }
-                if (!string.IsNullOrWhiteSpace(keyword) && keyword == hashSetKeywords.LastOrDefault())
-                {
-                    toBeAddedKeywordsStringBuilder.Append(keyword);
-                }
-            }
-            var toBeAddedKeywords = toBeAddedKeywordsStringBuilder.ToString();
-
-            return toBeAddedKeywords;
-        }
-        
-        
-
-
     }
 }

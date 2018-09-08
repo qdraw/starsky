@@ -58,7 +58,7 @@ The querystring name `f` is used for the file path in releative/subpath style
       "longitude": 0,
       "colorClass": 0,
       "orientation": "DoNotChange",
-      "imageFormat": "unknown",
+      "imageFormat": "jpg"
     }
   ],
   "breadcrumb": [
@@ -166,30 +166,51 @@ The response by the info request
 ```json
 [
     {
-        "sourceFile": "/2018/01-dif/20180705_160335_DSC01991 kopie 2.jpg",
-        "colorClass": 4,
-        "Caption-Abstract": "t3",
-        "prefs": null,
-        "keywords": [
-            "test",
-            "keyword"
-        ],
-        "tags": "test, keyword",
-        "allDatesDateTime": "0001-01-01T00:00:00",
-        "orientation": 3,
-        "status": "Ok"
-    },
-    {
-        "sourceFile": "/image.notfound",
-        "colorClass": 0,
-        "Caption-Abstract": null,
-        "prefs": null,
-        "keywords": [],
-        "tags": "",
-        "allDatesDateTime": "0001-01-01T00:00:00",
-        "orientation": 0,
-        "status": "NotFoundNotInIndex"
-    }
+            "id": -1,
+            "filePath": "/2018/01-dif/20180705_160335_DSC01991 kopie 2.jpg",
+            "fileName": "20180705_160335_DSC01991 kopie 2.jpg",
+            "fileHash": "UKLH326XKEXI6A2ITYP7X3ST6Q",
+            "fileCollectionName": "20180705_160335_DSC01991 kopie 2",
+            "parentDirectory": "/2018/01-dif",
+            "isDirectory": false,
+            "tags": "test, 123",
+            "status": "Ok",
+            "description": "t6",
+            "title": "some title",
+            "dateTime": "2018-07-05T16:03:35",
+            "addToDatabase": "0001-01-01T00:00:00",
+            "latitude": 0,
+            "longitude": 0,
+            "colorClass": 0,
+            "orientation": "Rotate180",
+            "imageWidth": 5456,
+            "imageHeight": 3632,
+            "imageFormat": "jpg",
+            "collectionPaths": []
+        },
+        {
+            "id": -1,
+            "filePath": "/2018/01-dif/20180705_160335_DSC01991 kopie 2.arw",
+            "fileName": "20180705_160335_DSC01991 kopie 2.arw",
+            "fileHash": "IF4BWCGCTQXGBOF4F4HJSDCAVI",
+            "fileCollectionName": "20180705_160335_DSC01991 kopie 2",
+            "parentDirectory": "/2018/01-dif",
+            "isDirectory": false,
+            "tags": "test, 123",
+            "status": "Ok",
+            "description": "t3",
+            "title": "object name",
+            "dateTime": "2018-07-05T16:03:35",
+            "addToDatabase": "0001-01-01T00:00:00",
+            "latitude": 0,
+            "longitude": 0,
+            "colorClass": 0,
+            "orientation": "DoNotChange",
+            "imageWidth": 5504,
+            "imageHeight": 3656,
+            "imageFormat": "tiff",
+            "collectionPaths": []
+        }
 ]
 ```
 ### Colorclass types
@@ -232,16 +253,24 @@ Check for more types: https://www.daveperrett.com/articles/2012/07/28/exif-orien
 To update please request first [Exif Info](#exif-info).
 Endpoint: `/starsky/Api/Update?f=/image.jpg`
 
-For now this api end point is using this method:
-`Update(string tags, string colorClass,
-            string captionAbstract, string f, int orientation, bool collections = true)`
+### Supported types:
+_Defined in the class `ExifToolCmdHelper`_
+- Tags
+- Description
+- Title
+- ColorClass
+- `rotateClock` is using `-1` or `1` to rotate the image 
+    -   `-1` is rotate image 270 degrees
+    -   `1` is rotate image 90 degrees
+- DateTime _(use this format: &DateTime=2018-05-05T16:03:35)_
+    - There is no timezone support
+
+### Notes
 - The querystring name `f` is used for the file path in releative/subpath style
 - The querystring support `;` file sepeartion for selecting multiple files
 - Empty tags are always ignored
 - Stack collections or Collections is a feature to update multiple files with the same name _(before the extension)_. 
-- `orientation` is using `-1` or `1` to rotate the image 
-    -   `-1` is rotate image 270 degrees
-    -   `1` is rotate image 90 degrees
+
 ```json
 {
     "uri":"/starsky/Api/Update?f=/image.jpg",
@@ -263,22 +292,65 @@ For now this api end point is using this method:
 ```json
 [
     {
-        "sourceFile": "/image.jpg",
+        "id": 13702,
+        "filePath": "/2018/01-dif/20180705_160335_DSC01991 kopie 2.jpg",
+        "fileName": "20180705_160335_DSC01991 kopie 2.jpg",
+        "fileHash": null,
+        "fileCollectionName": "20180705_160335_DSC01991 kopie 2",
+        "parentDirectory": "/2018/01-dif",
+        "isDirectory": false,
+        "keywords": [],
+        "tags": "dion, twello, test2",
+        "status": "Ok",
+        "description": "dion",
+        "title": "dion2",
+        "dateTime": "0001-01-01T00:00:00",
+        "addToDatabase": "0001-01-01T00:00:00",
+        "latitude": 0,
+        "longitude": 0,
         "colorClass": 0,
-        "Caption-Abstract": null,
+        "orientation": "Rotate180",
+        "imageWidth": 5456,
+        "imageHeight": 3632,
+        "imageFormat": "jpg",
+        "collectionPaths": [
+            "/2018/01-dif/20180705_160335_DSC01991 kopie 2.arw",
+            "/2018/01-dif/20180705_160335_DSC01991 kopie 2.jpg"
+        ]
+    },
+    {
+        "id": 0,
+        "filePath": "/2018/01-dif/20180705_160335_DSC01991 kopie 2.ar1w",
+        "fileName": "/20180705_160335_DSC01991 kopie 2.ar1w",
+        "fileHash": null,
+        "fileCollectionName": "20180705_160335_DSC01991 kopie 2",
+        "parentDirectory": "/2018/01-dif",
+        "isDirectory": false,
         "keywords": [
-            "okay2"
+            "dion",
+            "twello",
+            "test2"
         ],
-        "tags": "okay2",
-        "allDatesDateTime": "0001-01-01T00:00:00",
-        "orientation": 1,
-        "status": "Ok"
+        "tags": "dion, twello, test2",
+        "status": "NotFoundNotInIndex",
+        "description": "dion",
+        "title": "",
+        "dateTime": "0001-01-01T00:00:00",
+        "addToDatabase": "0001-01-01T00:00:00",
+        "latitude": 0,
+        "longitude": 0,
+        "colorClass": 0,
+        "orientation": -1,
+        "imageWidth": 0,
+        "imageHeight": 0,
+        "imageFormat": "unknown",
+        "collectionPaths": []
     }
 ]
 ```
 -  Statuscode 203. When trying to update a `read only` image. With the content `read only`
 -  Error 404 When a image is `not in index`
--  Only the values that are request are return. In this example Caption-Abstract has a value but it is not requested.
+-  Only the values that are request are return. In this example `title` has a value but it is not requested.
 > Update replied only the values that are request to update. To get all Info do a request to the Info-endpoint
 - This Endpoint uses  `Status` to show if a file is updated. The file is only updated when the status is `Ok`
     - `Ok` is file updated
@@ -338,7 +410,7 @@ Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
 - A jpeg image
 - A 204 / `NoContent()` result when a thumbnail is corrupt
 - A 404 Error page, when the base32 hash does not exist
-- A 409 Error when "Thumbnail is not ready yet"
+- A 202 Error when "Thumbnail is not ready yet"
 
 ## Thumbnail Json
 Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU&json=true`
@@ -362,7 +434,7 @@ For checking if a thumbnail exist without loading the entire image
 - A 200 result with no content if the request is successfull
 - A 204 / `NoContent()` result when a thumbnail is corrupt
 - A 404 Error page, when the base32 hash does not exist
-- A 409 Error when "Thumbnail is not ready yet"
+- A 202 Error when "Thumbnail is not ready yet"
 
 ## Download Photo
 To get an orginal or to regenerate a thumbnail.
@@ -419,7 +491,7 @@ The filename-header can be added in `base64` or as `string`.
 }
 ```
 ### Expected `/starsky/import` response:
-- Error 409 when the response array is empty. The response array is empty when there are no items added.
+- Error 206 when the response array is empty. The response array is empty when there are no items added.
 - An array with the added items: (with direct input this is always one item)
 ```json
 [
@@ -451,7 +523,7 @@ When using a form, the filename is extracted from the multipart. For the filenam
 }
 ```
 ### Expected `/starsky/import` response: 
-- Error 409 when the response array is empty. The response array is empty when there are no items added.
+- Error 206 when the response array is empty. The response array is empty when there are no items added.
 - When you have try to add duplicate items, those are not included in the list 
 - An array with the added items:
 ```json

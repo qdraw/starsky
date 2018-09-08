@@ -1,4 +1,5 @@
 ﻿@using System.Linq
+@using System.Web
 @using Microsoft.AspNetCore.Mvc
 @model starsky.ViewModels.ArchiveViewModel
 @{
@@ -6,7 +7,7 @@
 }
 <div class="archive">
     
-    <div class="sidebar">
+    <div class="sidebar readonly-@{@Model.IsReadOnly.ToString().ToLower()}">
         <div class="close" onclick="toggleSideMenu()"></div>
         <div class="content">
             <h4 class="nextprev">
@@ -20,7 +21,49 @@
                     <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende</a>
                 }
             </h4>
-            <div class="js-selectedimages"></div>
+            <div class="selections">
+                <h1>Selecties</h1>
+                <h2>Aantal: <span class="js-collectionscount">@Model.FileIndexItems.Count(p => !p.IsDirectory)</span> / @Model?.CollectionsCount files</h2>
+                <div class="js-selectedimages"></div>
+            </div>
+            <div class="js-controls">
+                <h1>Tekst <span class="js-title-addorreplace">toevoegen</span></h1>
+                <div class="js-toggle-addorreplace"><a class="colorbutton" onclick="toggleOverwriteText()"><span class="checkbox"></span> Overschrijf tekst</a></div>
+                <div class="form-inline form-wrapper" id="js-keywords-update">
+                    <p>Tags: <em>(komma gescheiden)</em></p>
+                    <div class="form-control space js-keywords contenteditable" contenteditable="true"
+                         name="keywords" data-previouscontent=""></div>
+                    <a class="btn btn-default" type="submit" onClick="updateKeywords()">Toevoegen</a>
+                </div>
+
+                <div class="form-inline form-wrapper" id="js-captionabstract-update">
+                    <p>Info:</p>
+                    <div class="form-control space js-captionabstract contenteditable" contenteditable="true"
+                         name="keywords" data-previouscontent=""></div>
+                    <a class="btn btn-default" type="submit" onClick="updateCaptionAbstract()">Toevoegen</a>
+                </div>
+                
+                <div class="form-inline form-wrapper" id="js-objectname-update">
+                    <p>Titel:</p>
+                    <div class="form-control space js-objectname contenteditable" contenteditable="true" 
+                         name="keywords" data-previouscontent=""></div>
+                    <a class="btn btn-default" type="submit" onClick="updateObjectName()">Toevoegen</a>
+                </div>
+                
+                <h1>Kleur overschrijven</h1>
+                <div class="add-colorclass">
+                    @{
+                        foreach (var item in @FileIndexItem.GetAllColorUserInterface())
+                        {
+                            var enumValue = (int) item;
+                            <a class="colorclass-@enumValue" data-colorclass="@enumValue" onclick="updateColorClass(this)">
+                                <span class='checkbox'></span>@item.ToString()
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+
         </div>
     </div>
     
@@ -61,7 +104,6 @@
     </h1>
     
     <div id="portfolio-filter">
-    
     </div>
     
     @if(!Model.FileIndexItems.Any())
@@ -98,7 +140,24 @@
     </div>
 </div>
 
+<script type="text/javascript">
+    @{
+        // Javascript don't accept decoded slashes
+        var updateApiBase = Url.Action("Update", "Api");
+        updateApiBase = HttpUtility.UrlDecode(updateApiBase);
+        var infoApiBase = @Url.Action("Info", "Api");
+        infoApiBase = HttpUtility.UrlDecode(infoApiBase);
+    }
+    var updateApiBase = "@updateApiBase";
+    var infoApiBase = "@infoApiBase";
+    var subPath = "@Model.SubPath";
+
+</script>
+<script type="text/javascript" src="js/loadjson.js"></script>
 <script type="text/javascript" src="js/sidebar-stringhelper.js"></script>
 <script type="text/javascript" src="js/archivesidebar.js"></script>
 <script type="text/javascript" src="js/sidebar.js"></script>
 <script type="text/javascript" src="js/portfolio-filter.js"></script>
+
+@*For IE/IE-Edge "object-fit: cover" *@
+<script type="text/javascript" src="js/vendor/ofi.min.js" defer></script>

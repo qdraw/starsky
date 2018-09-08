@@ -31,7 +31,8 @@ namespace starsky.Controllers
             string f = "/", 
             string colorClass = null,
             bool json = false,
-            bool collections = true
+            bool collections = true,
+            bool hidedelete = true
             )
         {
             f = ConfigRead.PrefixDbSlash(f);
@@ -58,11 +59,13 @@ namespace starsky.Controllers
             // (singleItem.IsDirectory) or not found
             var directoryModel = new ArchiveViewModel
             {
-                FileIndexItems = _query.DisplayFileFolders(subpath,colorClassFilterList),
+                FileIndexItems = _query.DisplayFileFolders(subpath,colorClassFilterList,collections,hidedelete),
                 RelativeObjects = _query.GetNextPrevInFolder(subpath),
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath),
                 SearchQuery = subpath.Split("/").LastOrDefault(),
-                SubPath = subpath
+                SubPath = subpath,
+                CollectionsCount = _query.DisplayFileFolders(subpath,null,false,hidedelete).Count(p => !p.IsDirectory),
+                IsReadOnly = true // update later
             };
 
             if (singleItem == null)
@@ -87,7 +90,9 @@ namespace starsky.Controllers
                 }
             }
             
-            
+            // now update
+            if (_appsettings != null) directoryModel.IsReadOnly = _appsettings.IsReadOnly(subpath);
+
             if (json) return Json(directoryModel);
             return View(directoryModel);
         }

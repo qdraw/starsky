@@ -18,7 +18,11 @@ namespace starsky.Helpers
         private readonly SyncService _isync;
         private readonly ServiceProvider _serviceProvider;
         private readonly ReadMeta _readmeta;
+        private readonly IExiftool _exiftool;
 
+        /// <summary>
+        /// Inject all services for the CLI applications
+        /// </summary>
         public ConfigCliAppsStartupHelper()
         {
             // Only for CLI apps
@@ -53,7 +57,7 @@ namespace starsky.Helpers
             var appSettings = _serviceProvider.GetRequiredService<AppSettings>();
 
             // inject exiftool
-            var exiftool = _serviceProvider.GetRequiredService<IExiftool>();
+            _exiftool = _serviceProvider.GetRequiredService<IExiftool>();
 
             // Build Datbase Context
             var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
@@ -91,27 +95,52 @@ namespace starsky.Helpers
             //   _exiftool = exiftool
             //   _appSettings = appSettings
             //   _readmeta = readmeta
-            _import = new ImportService(context, _isync, exiftool, appSettings, _readmeta);
+            _import = new ImportService(context, _isync, _exiftool, appSettings, _readmeta);
         }
         
+        /// <summary>
+        /// Returns an filled AppSettings Interface
+        /// </summary>
+        /// <returns>AppSettings</returns>
         public AppSettings AppSettings()
         {
             return _serviceProvider.GetRequiredService<AppSettings>();
         }
         
+        /// <summary>
+        /// Returns an filled ImportService Interface
+        /// </summary>
+        /// <returns>ImportService</returns>
         public ImportService ImportService()
         {
             return _import;
         }
         
+        /// <summary>
+        /// Returns an filled SyncService Interface
+        /// </summary>
+        /// <returns>SyncService</returns>
         public SyncService SyncService()
         {
             return _isync;
         }
 
+        /// <summary>
+        /// Returns an filled ReadMeta Interface
+        /// </summary>
+        /// <returns>ReadMeta</returns>
         public ReadMeta ReadMeta()
         {
             return _readmeta;
+        }
+    
+        /// <summary>
+        /// Returns an filled ExifTool Interface
+        /// </summary>
+        /// <returns>ExifTool</returns>
+        public IExiftool ExifTool()
+        {
+            return _exiftool;
         }
     }
 }

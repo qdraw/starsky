@@ -5,8 +5,9 @@ namespace starsky.Interfaces
 {
     public interface IExiftool
     {
-        void Update(ExifToolModel updateModel, List<string> inputFullFilePaths);
-        void Update(ExifToolModel updateModel, string inputFullFilePath);
+        string BaseCommmand(string options, string fullFilePathSpaceSeperated);
+//        void Update(FileIndexItem updateModel, List<string> inputFullFilePaths);
+//        void Update(FileIndexItem updateModel, string inputFullFilePath);
         ExifToolModel Info(string fullFilePath);
     }
 }

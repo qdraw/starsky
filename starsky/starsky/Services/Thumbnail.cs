@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Net.Http.Headers;
 using starsky.Helpers;
+using starsky.Interfaces;
 using starsky.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
@@ -21,10 +22,12 @@ namespace starsky.Services
     public class Thumbnail
     {
         private readonly AppSettings _appSettings;
+        private readonly IExiftool _exiftool;
 
-        public Thumbnail(AppSettings appSettings)
+        public Thumbnail(AppSettings appSettings, IExiftool exiftool = null)
         {
             _appSettings = appSettings;
+            _exiftool = exiftool;
         }
         
         // Rename a thumbnail, used when you change exifdata,
@@ -159,9 +162,7 @@ namespace starsky.Services
                     // Add orginal rotation to the image as json
                     if (image.MetaData.ExifProfile != null)
                     {
-                        image.MetaData.ExifProfile.SetValue(ExifTag.Software, "Starsky");
-//                        var isOrientThere = image.MetaData.ExifProfile.TryGetValue(ExifTag.Orientation, out var sourceOrientation);
-//                        if(isOrientThere) image.MetaData.ExifProfile.SetValue(ExifTag.ImageDescription, "{ \"sourceOrientation\": \""+ sourceOrientation +"\"}");
+                        image.MetaData.ExifProfile.SetValue(ExifTag.Software, _appSettings.Name + " ");
                     }
                     
                     image.Mutate(x => x.AutoOrient());
@@ -169,8 +170,11 @@ namespace starsky.Services
                         .Resize(1000, 0)
                     );
 
-                    image.SaveAsJpeg(outputStream);
+                    image.Save(outputStream,new JpegEncoder{Quality = 90, IgnoreMetadata = false});
                 }
+
+                new ExifToolCmdHelper(_appSettings, _exiftool).CopyExif(fullSourceImage, thumbPath);
+
             }
             catch (Exception ex)            
             {

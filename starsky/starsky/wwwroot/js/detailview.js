@@ -4,31 +4,7 @@ updateApiBase = updateApiBase.replace("&amp;", "&");
 infoApiBase = infoApiBase.replace("&amp;", "&") + "&collections=false";
 thumbnailApiBase = thumbnailApiBase.replace("&amp;", "&");
     
-function loadJSON(path, success, error, type)
-{
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function()
-    {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-                if (success) {
-                    try {
-                        success(JSON.parse(xhr.responseText));
-                    }
-                    catch(e) {
-                        error(xhr)
-                    }
-                };
-            } else {
-                if (error)
-                    error(xhr);
-            }
-        }
-    };
-    xhr.open(type, path, true);
-    xhr.setRequestHeader("Cache-Control", "max-age=0");
-    xhr.send();
-}
+
 
 // Used in <div class="add-colorclass">
 function updateColorClass(those) {
@@ -96,11 +72,11 @@ function updateDeletedKeywordElement(data) {
        if (data.tags.indexOf("!delete!") >= 0) {
                document.querySelector(".addDeleteTag").classList.add("fileIsDeleted");
                document.querySelector(".addDeleteTag a").innerHTML = "Zet terug uit prullenmand";
-               document.querySelector("#js-keywords-update a").classList.add("disabled"); //
-               document.querySelector('.js-keywords').contentEditable = false;
                document.querySelector(".addDeleteTag a").classList.remove("btn-danger");
                document.querySelector(".addDeleteTag a").classList.add("btn-warning");
                document.querySelector(".js-keywords").classList.add("disabled");
+               document.querySelector("#js-keywords-update a").classList.add("disabled"); //
+               document.querySelector('.js-keywords').contentEditable = false;
                document.querySelector(".js-captionabstract").classList.add("disabled");
                document.querySelector('.js-captionabstract').contentEditable = false;
                document.querySelector(".js-objectname").classList.add("disabled");
@@ -200,7 +176,7 @@ function queryCaptionAbstract(queryItem) {
     addUnloadWarning();
     showPreloader();
 
-    var url = updateApiBase + "&captionabstract=" + queryItem;
+    var url = updateApiBase + "&description=" + queryItem;
     loadJSON(url,
         function (data) {
             hideUnloadWarning();
@@ -220,7 +196,6 @@ function updateKeywords() {
             queryKeywords(keywords.textContent);
             keywords.dataset.previouscontent = keywords.textContent;
         }
-        
     } 
 }
 
@@ -266,7 +241,7 @@ function queryObjectName(queryItem) {
 
 function updateObjectNameFromInput(data) {
     if (document.querySelectorAll("#js-objectname-update").length === 1) {
-        document.querySelector('.js-objectname').textContent = data["objectName"];
+        document.querySelector('.js-objectname').textContent = data["title"];
         document.querySelector('#js-objectname-update .btn').classList.remove("disabled");
     }
 }
@@ -274,7 +249,7 @@ function updateObjectNameFromInput(data) {
 
 function updateCaptionAbstractFromInput(data) {
     if (document.querySelectorAll("#js-captionabstract-update").length === 1) {
-        document.querySelector('.js-captionabstract').textContent = data["Caption-Abstract"];
+        document.querySelector('.js-captionabstract').textContent = data["description"];
         document.querySelector('#js-captionabstract-update .btn').classList.remove("disabled");
     }
 }
@@ -351,10 +326,11 @@ if (document.querySelectorAll(".breadcrumb").length >= 1) {
 }
 
 
-document.addEventListener('keydown', (event) => {
+document.addEventListener('keydown', function (event) {
+    
     if (document.activeElement.className.indexOf("form-control") === -1) {
         const keyName = event.key;
-
+    
         if (keyName === "Escape" && document.querySelectorAll(".breadcrumb").length === 1){
             var breadcrumbObjectKey = document.querySelector(".breadcrumb").children;
             if (breadcrumbObjectKey.length >= 4) {
@@ -367,7 +343,7 @@ document.addEventListener('keydown', (event) => {
                 }
             }
         }
-        
+    
         if (keyName === "8" && document.querySelectorAll(".add-colorclass .colorclass-8").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-8"));
         }
@@ -375,14 +351,14 @@ document.addEventListener('keydown', (event) => {
         if (keyName === "7" && document.querySelectorAll(".add-colorclass .colorclass-7").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-7"));
         }
-
+    
         if (keyName === "6" && document.querySelectorAll(".add-colorclass .colorclass-6").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-6"));
         }
         if (keyName === "5" && document.querySelectorAll(".add-colorclass .colorclass-5").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-5"));
         }
-
+    
         if (keyName === "4" && document.querySelectorAll(".add-colorclass .colorclass-4").length === 1){
             updateColorClass(document.querySelector(".add-colorclass .colorclass-4"));
         }
@@ -405,10 +381,12 @@ document.addEventListener('keydown', (event) => {
             document.querySelector(".js-keywords").focus();
         }
     }
-});
+},false);    
 
 
-function checkIfContentIsNot204or409() {
+
+
+function checkIfContentIsNot204or202() {
     
     if (thumbnailApiBase === undefined) return;
     
@@ -419,16 +397,19 @@ function checkIfContentIsNot204or409() {
             {
                 document.querySelector(".status204button").classList.remove("hide");
             }
-            if (xhr.status === 409 && document.querySelectorAll(".main-image").length >= 1) {
-                rotateOn409();
+            if (xhr.status === 202 && document.querySelectorAll(".main-image").length >= 1) {
+                rotateOn202();
+                if(document.querySelectorAll(".breadcrumb").length >= 1) {
+                    document.querySelector(".breadcrumb").classList.add("nothumbnail");
+                }
             }
         },
         "GET"
     );
 }
-checkIfContentIsNot204or409();
+checkIfContentIsNot204or202();
 
-function rotateOn409() {
+function rotateOn202() {
 
     var classList = document.querySelector(".main-image").classList;
     if (classList.contains("disabled-Rotate90Cw")) {
@@ -583,7 +564,7 @@ function queryRotate(queryItem) {
     addUnloadWarning();
     showPreloader();
 
-    var url = updateApiBase + "&orientation=" + queryItem;
+    var url = updateApiBase + "&rotateClock=" + queryItem;
     loadJSON(url,
         function (data) {
             hideUnloadWarning();
@@ -598,3 +579,8 @@ function queryRotate(queryItem) {
 
 
 
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.querySelectorAll(".main-image").length === 1){
+        document.querySelector(".main-image").classList.add("contentloaded");
+    }
+});

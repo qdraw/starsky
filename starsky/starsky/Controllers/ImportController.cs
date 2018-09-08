@@ -49,7 +49,7 @@ namespace starsky.Controllers
                 } 
             }
             
-            if(importedFiles.Count == 0) Response.StatusCode = 409;
+            if(importedFiles.Count == 0) Response.StatusCode = 206;
             
             return Json(importedFiles);
         }

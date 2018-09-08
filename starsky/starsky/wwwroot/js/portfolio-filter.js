@@ -16,7 +16,7 @@ tagList = removeArrayDuplicate(tagList);
 writeFilterList (tagList);
 
 
-// Write down a list of portfolio catogories
+// Write down a list of colorclass catogories
 function makeTagList() {
     if (document.querySelectorAll("#portfolio-data").length === 1 && document.querySelectorAll("#portfolio-filter").length === 1){
         // var data = {};
@@ -59,6 +59,7 @@ function removeArrayDuplicate (array) {
 
 }//e//arrayDuplicate
 
+
 // Writing filter for portfolio page
 function writeFilterList (tags) {
     tags.sort();
@@ -73,7 +74,7 @@ function writeFilterList (tags) {
         ul.className = "tags";
         document.querySelector("#portfolio-filter").appendChild(ul);
 
-        var filterarticle = document.querySelector("#portfolio-filter ul")
+        var filterarticle = document.querySelector("#portfolio-filter ul");
 
         if(tags.length >= 2){
             // ALLES!! nu RESET
@@ -93,8 +94,9 @@ function writeFilterList (tags) {
                 selectedVar = []; 
                 setVariable([]); 
                 constructURL();
+                updateCollectionscount();
 
-                }, false);
+            }, false);
             // EINDE ALLES
 
 
@@ -116,8 +118,9 @@ function writeFilterList (tags) {
                 }
                 
                 //"<span class='checkbox'></span>"
-            }
+            }//e/for
             
+            //updateCollectionscount();
         }
     }
 
@@ -202,8 +205,25 @@ function readVariable (those) {
     }
 
     setVariable(selectedVar);
+
+    updateCollectionscount();
+
 }
 
+function updateCollectionscount() {
+    var portfoliodata = document.querySelectorAll("#portfolio-data");
+    if (portfoliodata.length === 1 &&
+        document.querySelectorAll(".js-collectionscount").length === 1) {
+
+        var counter = 0;
+        for (var i = 0; i < portfoliodata[0].children.length; i++) {
+            if(portfoliodata[0].children[i].className.indexOf("show") >= 0){
+                counter++;
+            }
+        }
+        document.querySelector(".js-collectionscount").innerHTML = counter;
+    }
+}
 
 var prevURL;
 function constructURL() {
@@ -319,106 +339,108 @@ function setVariable(hashList) {
 }
 
 function buildPage() {
-    
-    if (document.querySelectorAll(".preloader").length === 1){
+
+    if (document.querySelectorAll(".preloader").length === 1) {
         document.querySelector(".preloader").style.display = "none";
     }
 
-        // read from url
-        console.log(window.location.hash);
-    
-        var urlsubject = [];
+    // read from url
+    console.log(window.location.hash);
 
-        var colorclassurl = window.location.hash;
-        var anchorurl = null;
-        if (colorclassurl.indexOf(";") >= 0) {
-            var hashSplit = window.location.hash.split(";"); // ;
-            for (var i = 0; i < hashSplit.length; i++) {
-                if (hashSplit[i].indexOf("colorclass") >= 0){
-                    colorclassurl = hashSplit[i];
-                    break; 
-                }
-            }
-            for (var i = 0; i < hashSplit.length; i++) {
-                if (hashSplit[i].indexOf("anchor") >= 0){
-                    anchorurl = hashSplit[i];
-                    break;
-                }
-            }
-            // console.log(anchorurl)
-            // colorclassurl = window.location.hash.split(";")[colorClassIndex];
-        }
-        // single file
-        if (colorclassurl.indexOf(";") === -1) {
-            if (colorclassurl.indexOf("anchor") >= 0){
-                anchorurl = colorclassurl;
+    var urlsubject = [];
+
+    var colorclassurl = window.location.hash;
+    var anchorurl = null;
+    if (colorclassurl.indexOf(";") >= 0) {
+        var hashSplit = window.location.hash.split(";"); // ;
+        for (var i = 0; i < hashSplit.length; i++) {
+            if (hashSplit[i].indexOf("colorclass") >= 0) {
+                colorclassurl = hashSplit[i];
+                break;
             }
         }
-
-
-
-        // console.log(colorclassurl)
-        console.log(anchorurl)
-
-        if (anchorurl != null) {
-            anchorurl = anchorurl.replace(/(#a|a)nchor=/ig,"");
-            if (document.querySelectorAll('a[data-filename="' + anchorurl + '"]').length >= 1) {
-                var positionx = document.querySelector('a[data-filename="' + anchorurl + '"]').offsetTop;
-                console.log(positionx)
-                window.scrollTo(0, positionx);
-            }
-            
-        }
-
-        if (colorclassurl.indexOf("#colorclass") === -1) return;
-        
-        colorclassurl = colorclassurl.replace("#colorclass=","");
-
-        if (colorclassurl.indexOf(",") >= 0){
-            urlsubject = colorclassurl.split(",");
-        }
-        else {
-            if (colorclassurl.indexOf("colorclass") >= 0) {
-                urlsubject.push(colorclassurl)
+        for (var i = 0; i < hashSplit.length; i++) {
+            if (hashSplit[i].indexOf("anchor") >= 0) {
+                anchorurl = hashSplit[i];
+                break;
             }
         }
+        // console.log(anchorurl)
+        // colorclassurl = window.location.hash.split(";")[colorClassIndex];
+    }
+    // single file
+    if (colorclassurl.indexOf(";") === -1) {
+        if (colorclassurl.indexOf("anchor") >= 0) {
+            anchorurl = colorclassurl;
+        }
+    }
 
-        selectedVar = urlsubject;
 
+    // console.log(colorclassurl)
+    // console.log(anchorurl)
+
+    if (anchorurl != null) {
+        anchorurl = anchorurl.replace(/(#a|a)nchor=/ig, "");
+        if (document.querySelectorAll('a[data-filename="' + anchorurl + '"]').length >= 1) {
+            var positionx = document.querySelector('a[data-filename="' + anchorurl + '"]').offsetTop;
+            console.log(positionx)
+            window.scrollTo(0, positionx);
+        }
+
+    }
+
+    if (colorclassurl.indexOf("#colorclass") === -1) return;
+
+    colorclassurl = colorclassurl.replace("#colorclass=", "");
+
+    if (colorclassurl.indexOf(",") >= 0) {
+        urlsubject = colorclassurl.split(",");
+    }
+    else {
+        if (colorclassurl.indexOf("colorclass") >= 0) {
+            urlsubject.push(colorclassurl)
+        }
+    }
+
+    selectedVar = urlsubject;
+
+
+    var object = document.querySelector("#portfolio-filter .tags").children;
+
+    console.log("urlsubject");
+
+    console.log(urlsubject);
+
+    for (var i = 0; i < object.length; i++) {
+        object[i].children[0].classList.remove("active");
+    }
+
+    setVariable(urlsubject);
+
+    if (urlsubject.length >= 1 && urlsubject[0] !== "") {
+
+        for (var i = 0; i < urlsubject.length; i++) {
+            if (document.querySelectorAll("#portfolio-filter #" + urlsubject[i]).length === 1) {
+                (document.querySelector("#portfolio-filter #" + urlsubject[i]).classList.remove("active"));
+            }
+        }
+
+        for (var i = 0; i < urlsubject.length; i++) {
+            if (document.querySelectorAll("#portfolio-filter #" + urlsubject[i]).length === 1) {
+                (document.querySelector("#portfolio-filter #" + urlsubject[i]).classList.add("active"));
+            }
+        }
 
         var object = document.querySelector("#portfolio-filter .tags").children;
-        
-        console.log("urlsubject");
-
-        console.log(urlsubject);
-    
         for (var i = 0; i < object.length; i++) {
-            object[i].children[0].classList.remove("active");
+            // console.log(object[i].children[0].id)
         }
-        
-        setVariable(urlsubject);
-    
-        if (urlsubject.length >= 1 && urlsubject[0] !== ""){
-        
-            for (var i = 0; i < urlsubject.length; i++) {
-                if (document.querySelectorAll("#portfolio-filter #" + urlsubject[i]).length === 1){
-                    (document.querySelector("#portfolio-filter #" + urlsubject[i]).classList.remove("active"));
-                }
-            }
-            
-            for (var i = 0; i < urlsubject.length; i++) {
-                if (document.querySelectorAll("#portfolio-filter #" + urlsubject[i]).length === 1){
-                    (document.querySelector("#portfolio-filter #" + urlsubject[i]).classList.add("active"));
-                }
-            }
-            
-            var object = document.querySelector("#portfolio-filter .tags").children;
-            for (var i = 0; i < object.length; i++) {
-                // console.log(object[i].children[0].id)
-            }
-        }
+    }
     // dependecy on sidebar
     updatePrevNextHash();
+    updateCollectionscount();
+
+
 }
 window.onhashchange = function() {
     if (window.innerDocClick) {
@@ -434,7 +456,7 @@ window.onhashchange = function() {
             
 
         } else {
-            // Go back to (for expample) Google;
+            // Go back to (for example) Google;
             history.pushState("", document.title, window.location.pathname);
             location.reload();
         }
