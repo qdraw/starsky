@@ -27,26 +27,27 @@
                 <div class="js-selectedimages"></div>
             </div>
             <div class="js-controls">
-                <h1>Tekst toevoegen</h1>
+                <h1>Tekst <span class="js-title-addorreplace">toevoegen</span></h1>
+                <div class="js-toggle-addorreplace"><a class="colorbutton" onclick="toggleOverwriteText()"><span class="checkbox"></span> Overschrijf tekst</a></div>
                 <div class="form-inline form-wrapper" id="js-keywords-update">
                     <p>Tags: <em>(komma gescheiden)</em></p>
-                    <div class="form-control js-keywords contenteditable" contenteditable="true"
+                    <div class="form-control space js-keywords contenteditable" contenteditable="true"
                          name="keywords" data-previouscontent=""></div>
-                    <a class="btn btn-default" type="submit" onClick="updateKeywords()">Update</a>
+                    <a class="btn btn-default" type="submit" onClick="updateKeywords()">Toevoegen</a>
                 </div>
 
                 <div class="form-inline form-wrapper" id="js-captionabstract-update">
                     <p>Info:</p>
-                    <div class="form-control js-captionabstract contenteditable" contenteditable="true"
+                    <div class="form-control space js-captionabstract contenteditable" contenteditable="true"
                          name="keywords" data-previouscontent=""></div>
-                    <a class="btn btn-default" type="submit" onClick="updateCaptionAbstract()">Update</a>
+                    <a class="btn btn-default" type="submit" onClick="updateCaptionAbstract()">Toevoegen</a>
                 </div>
                 
                 <div class="form-inline form-wrapper" id="js-objectname-update">
                     <p>Titel:</p>
-                    <div class="form-control js-objectname contenteditable" contenteditable="true" 
+                    <div class="form-control space js-objectname contenteditable" contenteditable="true" 
                          name="keywords" data-previouscontent=""></div>
-                    <a class="btn btn-default" type="submit" onClick="updateObjectName()">Update</a>
+                    <a class="btn btn-default" type="submit" onClick="updateObjectName()">Toevoegen</a>
                 </div>
                 
                 <h1>Kleur overschrijven</h1>

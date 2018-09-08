@@ -192,6 +192,7 @@ function updateDisplayList() {
             document.querySelector(".js-selectallnone").innerHTML = "Selecteer alles";
         }
     }
+   
 }
 function updateControls() {
     console.log(selectedFiles);
@@ -253,11 +254,23 @@ function toSubpath() {
     return appendArrayToString("", selectedFilesSubPath, ";");
 }
 
+function appendOrOverwriteByToggle() {
+    var addOrReplaceObject = document.querySelectorAll(".js-toggle-addorreplace .colorbutton");
+    if (addOrReplaceObject.length === 1){
+        if (addOrReplaceObject[0].className.indexOf(" on") >= 1){
+            return "false"; //overwrite or not append
+        }
+        else {
+            return "true"; //overwrite or not append
+        }
+    }
+}
+
 function queryKeywords(queryItem) {
 
     var toupdateFiles = toSubpath();
-    
-    var url = updateApiBase + "?f=" + toupdateFiles + "&tags=" + queryItem + "&append=true";
+
+    var url = updateApiBase + "?f=" + toupdateFiles + "&tags=" + queryItem + "&append=" + appendOrOverwriteByToggle();
     addNoClickToSidebar();
 
     loadJSON(url,
@@ -273,7 +286,7 @@ function queryCaptionAbstract(queryItem) {
 
     var toupdateFiles = toSubpath();
 
-    var url = updateApiBase + "?f=" + toupdateFiles + "&description=" + queryItem + "&append=true";
+    var url = updateApiBase + "?f=" + toupdateFiles + "&description=" + queryItem + "&append=" + appendOrOverwriteByToggle();
     addNoClickToSidebar();
 
     loadJSON(url,
@@ -289,7 +302,7 @@ function queryObjectName(queryItem) {
 
     var toupdateFiles = toSubpath();
 
-    var url = updateApiBase + "?f=" + toupdateFiles + "&title=" + queryItem + "&append=true";
+    var url = updateApiBase + "?f=" + toupdateFiles + "&title=" + queryItem + "&append=" + appendOrOverwriteByToggle();
     addNoClickToSidebar();
 
     loadJSON(url,
@@ -445,9 +458,49 @@ function updateColorClass(those) {
     );
 }
 
+// For readonly folder >= you can't edit them anyway
 if (document.querySelectorAll(".sidebar").length === 1) {
     if (document.querySelector(".sidebar").className.indexOf("readonly-true") >= 1) {
         addNoClickToSidebar(); 
     }
 }
 
+
+function toggleOverwriteText() {
+    if (document.querySelectorAll(".js-toggle-addorreplace .colorbutton").length === 1) {
+
+        var addOrReplaceObject = document.querySelector(".js-toggle-addorreplace .colorbutton");
+
+        if (addOrReplaceObject.className.indexOf(" on") >= 0) { // with space, butt{on}
+
+            addOrReplaceObject.classList.remove("on");
+            if (document.querySelectorAll(".js-title-addorreplace").length === 1){
+                document.querySelector(".js-title-addorreplace").innerHTML = "toevoegen"
+            }
+            document.querySelector("#js-keywords-update > a").innerHTML = "Toevoegen";
+            document.querySelector("#js-keywords-update > a").classList.remove("btn-warning");
+            document.querySelector("#js-captionabstract-update > a").innerHTML = "Toevoegen";
+            document.querySelector("#js-captionabstract-update > a").classList.remove("btn-warning");
+            document.querySelector("#js-objectname-update > a").innerHTML = "Toevoegen";
+            document.querySelector("#js-objectname-update > a").classList.remove("btn-warning");
+        }
+        else {
+            addOrReplaceObject.classList.add("on");
+            if (document.querySelectorAll(".js-title-addorreplace").length === 1){
+                document.querySelector(".js-title-addorreplace").innerHTML = "overschrijven"
+            }
+            document.querySelector("#js-keywords-update > a").innerHTML = "Overschrijf";
+            document.querySelector("#js-keywords-update > a").classList.add("btn-warning");
+            document.querySelector("#js-captionabstract-update > a").innerHTML = "Overschrijf";
+            document.querySelector("#js-captionabstract-update > a").classList.add("btn-warning");
+            document.querySelector("#js-objectname-update > a").innerHTML = "Overschrijf";
+            document.querySelector("#js-objectname-update > a").classList.add("btn-warning");
+
+            
+            
+
+        }
+        console.log(addOrReplaceObject)
+
+    }
+}

@@ -126,6 +126,7 @@ h1 {
     text-align: left;
 }
 
+.colorbutton,
 .add-colorclass a,
 #portfolio-filter ul > li > a {
     margin-right: 10px;
@@ -146,6 +147,7 @@ h1 {
     padding-left: 10px;
 }
 
+.colorbutton .checkbox,
 #portfolio-data.wrapper .checkbox,
 .add-colorclass .checkbox,
 #portfolio-filter .checkbox {
@@ -178,6 +180,7 @@ h1 {
 }
 
 /* selecting multiple files */
+.colorbutton.on .checkbox,
 .collapsed #portfolio-data.wrapper .on.directory-false .checkbox,
 #portfolio-filter .active .checkbox{
     background-image: url("../images/checkbox.svg");
@@ -651,10 +654,15 @@ h2 {
     margin-bottom: 15px;
 }
 
+.form-wrapper .form-control.space,
 .form-wrapper .form-control{
     width: calc( 100% - 80px );
     display: inline-block;
 }
+.form-wrapper .form-control.space{
+    width: calc( 100% - 100px );
+}
+
 .form-wrapper .btn {
     display: inline-block;
     float: right;
