@@ -379,3 +379,19 @@ function resetSelection() {
     updateDisplayList();
 }
 
+
+
+// Used in <div class="add-colorclass">
+function updateColorClass(those) {
+    var toupdateFiles = toSubpath();
+    var url = updateApiBase + "?f=" + toupdateFiles + "&colorClass=" + those.dataset.colorclass;
+
+    loadJSON(url,
+        function(data) {
+            location.reload();
+        },
+        function (xhr) { console.error(xhr); },
+        "POST"
+    );
+}
+

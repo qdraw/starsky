@@ -53,7 +53,7 @@
         </div>
         <div class="add-colorclass">
             @{
-                foreach (var item in @Model.GetAllColor)
+                foreach (var item in @FileIndexItem.GetAllColorUserInterface())
                 {
                     var enumValue = (int) item;
                     if ((int) @Model.FileIndexItem.ColorClass == enumValue)

@@ -41,6 +41,18 @@
                          name="keywords" data-previouscontent=""></div>
                     <a class="btn btn-default" type="submit" onClick="updateCaptionAbstract()">Update</a>
                 </div>
+                <h1>Kleur overschrijven</h1>
+                <div class="add-colorclass">
+                    @{
+                        foreach (var item in @FileIndexItem.GetAllColorUserInterface())
+                        {
+                            var enumValue = (int) item;
+                            <a class="colorclass-@enumValue" data-colorclass="@enumValue" onclick="updateColorClass(this)">
+                                <span class='checkbox'></span>@item.ToString()
+                            </a>
+                        }
+                    }
+                </div>
             </div>
 
         </div>
