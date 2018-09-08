@@ -326,7 +326,7 @@ if (document.querySelectorAll(".breadcrumb").length >= 1) {
 }
 
 
-document.addEventListener('keydown', function () {
+document.addEventListener('keydown', function (event) {
     
     if (document.activeElement.className.indexOf("form-control") === -1) {
         const keyName = event.key;
