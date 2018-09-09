@@ -378,7 +378,22 @@ document.addEventListener('keydown', function (event) {
             addDeleteTag()
         }
         if (keyName === "i" && document.querySelectorAll(".js-keywords").length === 1){
-            document.querySelector(".js-keywords").focus();
+            event.preventDefault();
+            // Set the selection to the end of the input field
+            var content = document.querySelector(".js-keywords");
+            content.focus();
+            var selection;
+            var char = document.querySelector(".js-keywords").innerHTML.length;
+            if (document.selection) {
+                selection = document.selection.createRange();
+                selection.moveStart('character', char);
+                selection.select();
+            }
+            else {
+                selection = window.getSelection();
+                selection.collapse(content.firstChild, char);
+            }
+
         }
     }
 },false);    
@@ -567,9 +582,11 @@ function queryRotate(queryItem) {
     var url = updateApiBase + "&rotateClock=" + queryItem;
     loadJSON(url,
         function (data) {
-            hideUnloadWarning();
-            hidePreloader();
-            location.reload();
+            setTimeout(function(){
+                hideUnloadWarning();
+                hidePreloader();
+                location.reload();
+            }, 1000);
         },
         function (xhr) { console.error(xhr); },
         "POST"

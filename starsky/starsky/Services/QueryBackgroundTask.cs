@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,14 +24,24 @@ namespace starsky.Services
         {
             // Get Depedency injection from scope
             // In a background task it will fail without scope
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                dbContext.Attach(updateStatusContent).State = EntityState.Modified;
-                dbContext.SaveChanges();
-                _query.CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
-            }
+            // https://www.infoworld.com/article/3085390/application-development/how-to-handle-concurrency-conflicts-in-entity-framework.html
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    dbContext.Attach(updateStatusContent).State = EntityState.Modified;
+                    try
+                    {
+                        dbContext.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException ex)
+                    {
+                        ex.Entries.Single().Reload();
+                        dbContext.SaveChanges();
+                    }
+                    _query.CacheUpdateItem(new List<FileIndexItem> {updateStatusContent});
+                }
             return updateStatusContent;
         }
+                
     }
 }

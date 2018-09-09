@@ -75,30 +75,30 @@ function writeFilterList (tags) {
         document.querySelector("#portfolio-filter").appendChild(ul);
 
         var filterarticle = document.querySelector("#portfolio-filter ul");
+        
+        // ALLES!! nu RESET
+        var li_alles = document.createElement("li");
+        var a_alles = document.createElement("a");
+        var currentitem_alles = filterarticle.appendChild(li_alles).appendChild(a_alles);
+        currentitem_alles.innerHTML = "Herstel selectie";
+        currentitem_alles.className = "reset";
+        currentitem_alles.addEventListener("click", function(e){
 
+            // dependency on sidebar
+            if (window.location.hash.indexOf("sidebar") >= 0) {
+                toggleSideMenu(true);
+            }
+            var those = this;
+            resetCheckBoxes();
+            selectedVar = [];
+            setVariable([]);
+            constructURL();
+            updateCollectionscount();
+
+        }, false);
+        // EINDE ALLES
+        
         if(tags.length >= 2){
-            // ALLES!! nu RESET
-            var li_alles = document.createElement("li");
-            var a_alles = document.createElement("a");
-            var currentitem_alles = filterarticle.appendChild(li_alles).appendChild(a_alles);
-            currentitem_alles.innerHTML = "Reset";
-            currentitem_alles.className = "reset";
-            currentitem_alles.addEventListener("click", function(e){
-                
-                // dependency on sidebar
-                if (window.location.hash.indexOf("sidebar") >= 0) {
-                    toggleSideMenu(true);
-                }
-                var those = this; 
-                resetCheckBoxes(); 
-                selectedVar = []; 
-                setVariable([]); 
-                constructURL();
-                updateCollectionscount();
-
-            }, false);
-            // EINDE ALLES
-
 
             window.subject = tags;
 
@@ -217,7 +217,8 @@ function updateCollectionscount() {
 
         var counter = 0;
         for (var i = 0; i < portfoliodata[0].children.length; i++) {
-            if(portfoliodata[0].children[i].className.indexOf("show") >= 0){
+            if(portfoliodata[0].children[i].className.indexOf("show") >= 0
+                && portfoliodata[0].children[i].className.indexOf("directory-false") >= 1 ){
                 counter++;
             }
         }
@@ -345,7 +346,7 @@ function buildPage() {
     }
 
     // read from url
-    console.log(window.location.hash);
+    // console.log(window.location.hash);
 
     var urlsubject = [];
 

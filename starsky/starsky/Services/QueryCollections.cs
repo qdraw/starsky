@@ -45,6 +45,7 @@ namespace starsky.Services
 
                 if (querySubFolderList.Any(p => p.FileCollectionName == duplicateItemByName.FileCollectionName))
                 {
+                    // need to add docs
                     Console.WriteLine(">> Error code 4567890-098765");
                 }
 

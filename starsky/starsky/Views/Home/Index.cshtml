@@ -23,7 +23,7 @@
             </h4>
             <div class="selections">
                 <h1>Selecties</h1>
-                <h2>Aantal: <span class="js-collectionscount">@Model.FileIndexItems.Count(p => !p.IsDirectory)</span> / @Model?.CollectionsCount files</h2>
+                <h2>Aantal: <span class="js-collectionscount">@Model.FileIndexItems.Count(p => p.IsDirectory == false)</span> / @Model?.CollectionsCount files</h2>
                 <div class="js-selectedimages"></div>
             </div>
             <div class="js-controls">

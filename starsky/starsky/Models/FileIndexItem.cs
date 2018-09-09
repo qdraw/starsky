@@ -300,6 +300,7 @@ namespace starsky.Models
         public Rotation RelativeOrientation(int relativeRotation = 0)
         {
             if (Orientation == Rotation.DoNotChange) Orientation = Rotation.Horizontal;
+            var startOrientation = Orientation;
             
             var currentOrentation = _orderRotation.FindIndex(i => i == Orientation);
             
