@@ -124,14 +124,23 @@ namespace starsky.Helpers
             return inputStringBuilder;
         }
 
-        public void CopyExif(string fullSourceImage, string thumbPath)
+        public void CopyExifPublish(string fullSourceImage, string thumbPath)
+        {
+            // add space before command
+            const string append = " -Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" " +
+                                  "-HistorySoftwareAgent=\"Qdraw 1.0\" -HistoryParameters=\"Publish to Web\" " +
+                                  "-PhotoshopQuality=\"\" -PMVersion=\"\" -Copyright=\"© Qdraw;Media www.qdraw.nl\"";
+            CopyExif(fullSourceImage, thumbPath, append);
+        }
+
+        public void CopyExif(string fullSourceImage, string thumbPath, string append = "")
         {
             // Reset Orientation on thumbpath
             
             // Do an ExifTool exif sync for the file
             if(_exiftool == null && _appSettings.Verbose) Console.WriteLine("Exiftool disabled");
             _exiftool?.BaseCommmand(" -overwrite_original -TagsFromFile \"" + fullSourceImage + "\"",
-                "\"" + thumbPath + "\"" + " -Orientation=");
+                "\"" + thumbPath + "\"" + " -Orientation=" + append);
             // Reset orentation
         }
     }

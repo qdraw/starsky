@@ -66,7 +66,8 @@ namespace starskywebhtmlcli
             // Create thumbnails from the source images 
             var thumbByDir = new ThumbnailByDirectory(appSettings,startupHelper.ExifTool());
             thumbByDir.CreateThumb(inputPath);
-            new LoopPublications(appSettings).Render(fileIndexList,thumbByDir.ToBase64DataUriList(fileIndexList));
+            new LoopPublications(appSettings,startupHelper.ExifTool())
+                .Render(fileIndexList,thumbByDir.ToBase64DataUriList(fileIndexList));
         }
         
     }

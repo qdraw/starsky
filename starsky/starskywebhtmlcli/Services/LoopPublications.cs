@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Helpers;
+using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
 using starskywebhtmlcli;
@@ -14,11 +15,14 @@ namespace starskywebhtmlcli.Services
 {
     public class LoopPublications
     {
-        private readonly AppSettings _appSettings;
 
-        public LoopPublications(AppSettings appSettings)
+        private readonly AppSettings _appSettings;
+        private readonly IExiftool _exiftool;
+
+        public LoopPublications(AppSettings appSettings, IExiftool exiftool)
         {
             _appSettings = appSettings;
+            _exiftool = exiftool;
         }
 
         public void Render(List<FileIndexItem> fileIndexItemsList, string[] base64ImageArray)
@@ -75,7 +79,7 @@ namespace starskywebhtmlcli.Services
         private void GenerateJpeg(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-            var overlayImage = new OverlayImage(_appSettings);
+            var overlayImage = new OverlayImage(_appSettings,_exiftool);
 
             foreach (var item in fileIndexItemsList)
             {
@@ -88,7 +92,7 @@ namespace starskywebhtmlcli.Services
                 if (profile.SourceMaxWidth <= 1000)
                 {
                     var inputFullFilePath = new Thumbnail(_appSettings).GetThumbnailPath(item.FileHash);
-                    new OverlayImage(_appSettings).ResizeOverlayImage(
+                    new OverlayImage(_appSettings,_exiftool).ResizeOverlayImage(
                         inputFullFilePath, outputFilePath,profile);
                 }
                             
@@ -104,7 +108,7 @@ namespace starskywebhtmlcli.Services
         private void GenerateMoveSourceFiles(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-            var overlayImage = new OverlayImage(_appSettings);
+            var overlayImage = new OverlayImage(_appSettings,_exiftool);
 
             foreach (var item in fileIndexItemsList)
             {

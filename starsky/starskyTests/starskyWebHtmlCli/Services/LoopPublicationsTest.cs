@@ -57,7 +57,7 @@ namespace starskytests.starskyWebHtmlCli.Services
                 FileHash = createAnImage.FileName.Replace(".jpg",string.Empty)
             }};
 
-            new LoopPublications(appSettings).Render(list,null);
+            new LoopPublications(appSettings,null).Render(list,null);
         }
     }
 }

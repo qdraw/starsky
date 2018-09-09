@@ -55,7 +55,8 @@ namespace starsky.Models
         public string Append { get; set; } = string.Empty; // do not add slash check, used for _kl
         public string Template { get; set; } // index.cshtml for example
         public string Prepend { get; set; } = string.Empty;
-        
+        public bool MetaData { get; set; } = true;
+
     }
 
     public enum TemplateContentType
