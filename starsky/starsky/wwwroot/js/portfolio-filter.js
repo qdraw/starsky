@@ -345,7 +345,7 @@ function buildPage() {
     }
 
     // read from url
-    console.log(window.location.hash);
+    // console.log(window.location.hash);
 
     var urlsubject = [];
 

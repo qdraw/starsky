@@ -9,7 +9,7 @@ function buildArchiveSidebar() {
         for (var i = 0; i < portfolioData[0].children.length; i++) {
             // console.log(portfolioData[0].children[i]);
             portfolioData[0].children[i].addEventListener("click", function(e){
-
+                
                 if(archive.length === 1) {
                     if(archive[0].className.indexOf("collapsed") >= 0
                         && this.className.indexOf("directory-false") >= 0) {
@@ -48,7 +48,8 @@ function buildArchiveSidebar() {
                             url = window.location.hash.replace(prevWindowHash,"");
                         }
                         if (prevWindowHash.length === 0) {
-                            url = window.location.hash = replaceSideBarString(window.location.hash);
+
+                            url = replaceSideBarString(window.location.hash);
                             // when using anchors
                             if (url === "#;") {
                                 url = url.replace("#;","");
@@ -129,7 +130,7 @@ function buildSidebarPage() {
     for (var i = 0; i < selectedFiles.length; i++) {
 
         var query1 = ".halfitem[data-filename=\""+ selectedFiles[i] +"\"]";
-        console.log(document.querySelectorAll(query1).length)
+        //console.log(document.querySelectorAll(query1).length)
 
         if (document.querySelectorAll(query1).length === 1 && 
             !document.querySelector(query1).classList.contains("on") ) {
@@ -195,8 +196,8 @@ function updateDisplayList() {
    
 }
 function updateControls() {
-    console.log(selectedFiles);
-    console.log(document.querySelectorAll(".js-controls"));
+    // console.log(selectedFiles);
+    // console.log(document.querySelectorAll(".js-controls"));
 
     if (selectedFiles.length === 0 && document.querySelectorAll(".js-controls").length === 1) {
         document.querySelector(".js-controls").classList.add("hidden");
@@ -343,8 +344,8 @@ function selectAllCurrentVisableItems() {
     }
     var toreplaceUrl = "";
     toreplaceUrl = appendArrayToString(toreplaceUrl,selectedFiles,",");
-    console.log(toreplaceUrl);
-    console.log(getSidebarWindowHashUrl);
+    // console.log(toreplaceUrl);
+    // console.log(getSidebarWindowHashUrl);
     var url =  window.location.hash.replace(getSidebarWindowHashUrl, toreplaceUrl);
 
     // overwrite when no items are selected
@@ -409,6 +410,8 @@ function loadResetButton() {
     }
 }
 function resetSelection() {
+    
+    
     buildSidebarPage();
     selectedFiles = [];
     updateControls();
@@ -422,6 +425,13 @@ function resetSelection() {
     prevURL = url;
     
     updateDisplayList();
+
+    // remove the selected items in the halfitem
+    var halfitems = document.querySelectorAll(".halfitem");
+    for (var i = 0; i < halfitems.length; i++) {
+        halfitems[i].classList.remove("on");
+    }
+
 }
 
 function addNoClickToSidebar() {
