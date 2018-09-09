@@ -75,30 +75,30 @@ function writeFilterList (tags) {
         document.querySelector("#portfolio-filter").appendChild(ul);
 
         var filterarticle = document.querySelector("#portfolio-filter ul");
+        
+        // ALLES!! nu RESET
+        var li_alles = document.createElement("li");
+        var a_alles = document.createElement("a");
+        var currentitem_alles = filterarticle.appendChild(li_alles).appendChild(a_alles);
+        currentitem_alles.innerHTML = "Herstel selectie";
+        currentitem_alles.className = "reset";
+        currentitem_alles.addEventListener("click", function(e){
 
-        if(tags.length >= 1){
-            // ALLES!! nu RESET
-            var li_alles = document.createElement("li");
-            var a_alles = document.createElement("a");
-            var currentitem_alles = filterarticle.appendChild(li_alles).appendChild(a_alles);
-            currentitem_alles.innerHTML = "Reset";
-            currentitem_alles.className = "reset";
-            currentitem_alles.addEventListener("click", function(e){
-                
-                // dependency on sidebar
-                if (window.location.hash.indexOf("sidebar") >= 0) {
-                    toggleSideMenu(true);
-                }
-                var those = this; 
-                resetCheckBoxes(); 
-                selectedVar = []; 
-                setVariable([]); 
-                constructURL();
-                updateCollectionscount();
+            // dependency on sidebar
+            if (window.location.hash.indexOf("sidebar") >= 0) {
+                toggleSideMenu(true);
+            }
+            var those = this;
+            resetCheckBoxes();
+            selectedVar = [];
+            setVariable([]);
+            constructURL();
+            updateCollectionscount();
 
-            }, false);
-            // EINDE ALLES
-
+        }, false);
+        // EINDE ALLES
+        
+        if(tags.length >= 2){
 
             window.subject = tags;
 
