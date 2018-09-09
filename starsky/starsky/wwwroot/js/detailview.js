@@ -582,9 +582,11 @@ function queryRotate(queryItem) {
     var url = updateApiBase + "&rotateClock=" + queryItem;
     loadJSON(url,
         function (data) {
-            hideUnloadWarning();
-            hidePreloader();
-            // location.reload();
+            setTimeout(function(){
+                hideUnloadWarning();
+                hidePreloader();
+                location.reload();
+            }, 1000);
         },
         function (xhr) { console.error(xhr); },
         "POST"

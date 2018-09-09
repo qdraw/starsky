@@ -185,8 +185,8 @@ namespace starsky.Controllers
                     // Do orientation / Rotate if needed (after compare)
                     if (FileIndexItem.IsRelativeOrientation(rotateClock))
                     {
-                        statusModel.SetRelativeOrientation(rotateClock);
-                        //detailView.FileIndexItem.Orientation = statusModel.Orientation;
+                        // run this on detailview => statusModel is always default
+                        detailView.FileIndexItem.SetRelativeOrientation(rotateClock);
                     }
                     
                     var comparedNamesList = FileIndexCompareHelper.Compare(detailView.FileIndexItem, statusModel, append);
