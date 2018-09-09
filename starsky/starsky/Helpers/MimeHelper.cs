@@ -26,6 +26,7 @@ namespace starsky.Helpers
         private static readonly Dictionary<string, string> MimeTypesDictionary = new Dictionary<string, string>
         {
             {"ai", "application/postscript"},
+            {"arw", "image/x-dcraw"},
             {"aif", "audio/x-aiff"},
             {"aifc", "audio/x-aiff"},
             {"aiff", "audio/x-aiff"},
@@ -43,12 +44,14 @@ namespace starsky.Helpers
             {"cpt", "application/mac-compactpro"},
             {"csh", "application/x-csh"},
             {"css", "text/css"},
+            {"cr2", "image/x-dcraw"},
             {"dcr", "application/x-director"},
             {"dif", "video/x-dv"},
             {"dir", "application/x-director"},
             {"djv", "image/vnd.djvu"},
             {"djvu", "image/vnd.djvu"},
             {"dll", "application/octet-stream"},
+            {"dng", "image/x-adobe-dng"},
             {"dmg", "application/octet-stream"},
             {"dms", "application/octet-stream"},
             {"doc", "application/msword"},
