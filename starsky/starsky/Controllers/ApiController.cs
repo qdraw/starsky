@@ -182,15 +182,17 @@ namespace starsky.Controllers
                 
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
+                    
+                    var comparedNamesList = FileIndexCompareHelper.Compare(detailView.FileIndexItem, statusModel, append);
+                    
                     // Do orientation / Rotate if needed (after compare)
                     if (FileIndexItem.IsRelativeOrientation(rotateClock))
                     {
                         // run this on detailview => statusModel is always default
                         detailView.FileIndexItem.SetRelativeOrientation(rotateClock);
+                        comparedNamesList.Add(nameof(detailView.FileIndexItem.Orientation));
                     }
                     
-                    var comparedNamesList = FileIndexCompareHelper.Compare(detailView.FileIndexItem, statusModel, append);
-
                     // this one is good :)
                     detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 
