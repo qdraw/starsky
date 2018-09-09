@@ -49,7 +49,7 @@ if (document.querySelectorAll(".sidebar").length === 1) {
                     window.location.hash = '#sidebar';
                 }
                 else if (window.location.hash.indexOf("sidebar") === -1){
-                    window.location.hash += ';sidebar';
+                    window.location.hash += ';sidebar=';
                 }
             }
             updatePrevNextHash();

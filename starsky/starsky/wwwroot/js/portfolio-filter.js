@@ -76,7 +76,7 @@ function writeFilterList (tags) {
 
         var filterarticle = document.querySelector("#portfolio-filter ul");
 
-        if(tags.length >= 2){
+        if(tags.length >= 1){
             // ALLES!! nu RESET
             var li_alles = document.createElement("li");
             var a_alles = document.createElement("a");
@@ -217,7 +217,8 @@ function updateCollectionscount() {
 
         var counter = 0;
         for (var i = 0; i < portfoliodata[0].children.length; i++) {
-            if(portfoliodata[0].children[i].className.indexOf("show") >= 0){
+            if(portfoliodata[0].children[i].className.indexOf("show") >= 0
+                && portfoliodata[0].children[i].className.indexOf("directory-false") >= 1 ){
                 counter++;
             }
         }
