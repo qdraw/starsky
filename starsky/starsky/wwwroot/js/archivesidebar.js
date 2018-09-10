@@ -1,4 +1,8 @@
 
+// use updateApiBase
+// use deleteApiBase
+// use subpath
+
 var prevURL = "";
 var selectedFiles = [];
 
@@ -192,6 +196,10 @@ function updateDisplayList() {
             document.querySelector(".js-selectallnone").classList.add("selectall");
             document.querySelector(".js-selectallnone").innerHTML = "Selecteer alles";
         }
+        // remove content is there is nothing
+        if (collectionscount === 0) {
+            document.querySelector(".js-selectallnone").innerHTML = "";
+        }
     }
    
 }
@@ -268,7 +276,8 @@ function appendOrOverwriteByToggle() {
 }
 
 function queryKeywords(queryItem) {
-
+    // keywords!!
+    
     var toupdateFiles = toSubpath();
 
     var url = updateApiBase + "?f=" + toupdateFiles + "&tags=" + queryItem + "&append=" + appendOrOverwriteByToggle();
@@ -439,13 +448,17 @@ function addNoClickToSidebar() {
         console.log("noclick")
         document.querySelector(".sidebar").classList.add("noclick");
 
-        // hide buttons
-        document.querySelector(".js-keywords").classList.add("disabled");
-        document.querySelector("#js-keywords-update a").classList.add("disabled");
-        document.querySelector('.js-keywords').contentEditable = false;
-        document.querySelector("#js-captionabstract-update a").classList.add("disabled"); //
-        document.querySelector(".js-captionabstract").classList.add("disabled");
-        document.querySelector('.js-captionabstract').contentEditable = false;
+        if (document.querySelectorAll(".js-keywords").length === 1) {
+            // hide buttons
+            document.querySelector(".js-keywords").classList.add("disabled");
+            document.querySelector("#js-keywords-update a").classList.add("disabled");
+            document.querySelector('.js-keywords').contentEditable = false;
+        }
+        if (document.querySelectorAll(".js-captionabstract").length === 1) {
+            document.querySelector("#js-captionabstract-update a").classList.add("disabled"); //
+            document.querySelector(".js-captionabstract").classList.add("disabled");
+            document.querySelector('.js-captionabstract').contentEditable = false;
+        }
         if (document.querySelectorAll(".js-objectname").length === 1){
             document.querySelector("#js-objectname-update a").classList.add("disabled");
             document.querySelector(".js-objectname").classList.add("disabled");
@@ -513,4 +526,34 @@ function toggleOverwriteText() {
         console.log(addOrReplaceObject)
 
     }
+}
+
+
+function queryDeleteApi() {
+
+    // uses data-filepath instead of data-filename
+
+    var selectedFilesFullFilePaths = [];
+    for (var i = 0; i < selectedFiles.length; i++) {
+        var query = ".halfitem[data-filename=\"" + selectedFiles[i] + "\"]";
+        var fullFileName = document.querySelector(query).getAttribute('data-filepath');
+        selectedFilesFullFilePaths.push(fullFileName);
+    }
+
+    var toupdateFiles =  appendArrayToString("", selectedFilesFullFilePaths, ";");
+    
+    var url = deleteApiBase + "?f=" + toupdateFiles + "&collections=false";
+
+    if (confirm("Weet je het zeker dat je deze bestanden wilt verwijderen?")) {
+        addNoClickToSidebar();
+
+        loadJSON(url,
+            function (data) {
+                location.reload();
+            },
+            function (xhr) { console.error(xhr); },
+            "DELETE"
+        );
+    }
+    
 }
