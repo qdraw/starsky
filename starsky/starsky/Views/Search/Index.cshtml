@@ -6,182 +6,184 @@
     ViewData["SearchQuery"] = Model.SearchQuery;
 }
 
+<div class="archive">
 
-<h4 class="nextprev">
-    &nbsp;
-    @if (Model.PageNumber >= 1)
-    {
-        var prevpage = @Model.PageNumber - 1;
-        <a class="prev" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
-    }
-
-    @if (Model.PageNumber < Model.LastPageNumber)
-    {
-        var nextpage = @Model.PageNumber + 1;
-        <a class="next" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
-    }
-</h4>
-
-<h1 class="breadcrumb">
-    @foreach (var item in Model.Breadcrumb)
-    {
-        var name = @item.Split("/")[item.Split("/").Length - 1];
-        if (name == "")
-        {
-            name = "Home";
-        }
-        if (name != "Home")
-        {
-            <a asp-controller="Search" asp-action="Index" asp-route-t="@item">@name</a>
-        }
-        else
-        {
-            <a asp-controller="Home" asp-action="Index">@name</a>
-        }
-        if (item != Model.Breadcrumb[Model.Breadcrumb.Count - 1])
-        {
-            <span> &raquo;</span>
-        }
-    }
-</h1>
-
-<div class="wrapper">
-    <form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-wrapper">
-          <input name="t" value="@Model.SearchQuery" class="form-control" autocomplete="off"/>
-        <button class="btn btn-default" type="submit">Zoek</button>
-    </form>
-</div>
-
-
-
-<div class="wrapper" style="margin-bottom: 30px;">
-
-    <p>
-    @{ 
-        var humanPageNumbering = @Model.PageNumber + 1;
-    }
-        @if (@Model.PageNumber >= 1)
-        {
-            <text>Pagina @humanPageNumbering van </text> 
-        }
-        
-        @Model.SearchCount resultaten (@Model.ElapsedSeconds seconden)
-    </p>
-</div>
-
-@if (@Model.SearchCount == 0)
-{
-    <div class="wrapper">
-        <p>
-            Zoekopties (bevat woord): <br/>
-            (default: ) Zoek term => Tags<br/>
-            -tags:"zoek term"  <br/>
-            -filepath="/path"  <br/>
-            -filename:2018  <br/>
-            -parentdirectory:2018  <br/>
-            -description:"zoek term"  <br/>
-            -title:zoekterm  <br/>
-            InUrl: Gebruik '-inurl:naam', '-inurl=naam'  of '-inurl:"naam met spatie"' zoek woorden om verder te specificeren<br/> 
-            Tags: Normale Sleutelwoorden worden gelezen als deze combinatie is aanwezig in het Tags-veld
-        </p>
-    </div>
-}
-
-<div class="wrapper">
-
-    @foreach (var item in Model.FileIndexItems)
-    {
-        <a class="halfitem" asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
-            <div class="caption">
-                <h2>@item.FileName</h2>
-                <p>@item.Tags</p>
-            </div>
-            <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash})" alt="@item.Tags" />
-        </a>
-    }
-</div>
-
-
-@*Pagination*@
-<div class="wrapper">
-
-    <div class="paginationbase">
-        @{
-            var displayPageNumber = Model.PageNumber + 1;
-        }
-    
+    <h4 class="nextprev">
+        &nbsp;
         @if (Model.PageNumber >= 1)
         {
-            var prevpage = Model.PageNumber - 1;
-            <a class="leftarrow" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">&lt;</a>
+            var prevpage = @Model.PageNumber - 1;
+            <a class="prev" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
         }
-
     
-        <span class="numberbox">
-
-            @*  Display first page  *@
-            @{ var currentmin2 = (Model.PageNumber - 2);}
-            @if (@currentmin2 >= 0 )
-            {
-                <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="0">1</a>
-                if (@currentmin2-1 >= 0 ) {
-                    <span class="box">...</span>
-                }
-            }
-        
-            @*  Display previous page (-1)  *@
-            @{ var currentmin1 = (Model.PageNumber - 1);}
-            @if (@currentmin1 >= 0 )  // && !(@currentmin2-1 >= 0) 
-            {
-                //  !(@currentmin2-1 >= 0)  => hide if .. 
-                <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@currentmin1">
-                    @{
-                        @(currentmin1 + 1);
-                    }
-                </a>
-            }
-        
-            @*    Current page number*@
-            <a class="current" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@Model.PageNumber">
-                @displayPageNumber
-            </a>
-        
-            @*  Display next page (+1)  *@
-            @{ var currentplus1 = (Model.PageNumber + 1);}
-            @if (Model.PageNumber < Model.LastPageNumber )
-            {
-                // hide if .. !((Model.PageNumber + 2)-1 <= Model.LastPageNumber )
-                <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@currentplus1">
-                    @{
-                        @(currentplus1 + 1);
-                    }
-                </a>
-            }
-        
-            @*  Display last page  *@
-            @{ var currentplus2 = (Model.PageNumber + 2);}
-            @if (@currentplus2 <= @Model.LastPageNumber )
-            {
-                // it glitch if human lenght = 3
-                if ((@currentplus2-1 <= Model.LastPageNumber && Model.LastPageNumber != 2)  ) {
-                    <span class="box">..</span>
-                }
-                <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@Model.LastPageNumber">
-                    @{
-                        @(Model.LastPageNumber + 1);
-                    }
-                </a>
-            }
-            
-        </span>
-        @*  Next arrow  *@
         @if (Model.PageNumber < Model.LastPageNumber)
         {
             var nextpage = @Model.PageNumber + 1;
-            <a class="rightarrow" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">&gt;</a>
+            <a class="next" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
         }
+    </h4>
+    
+    <h1 class="breadcrumb">
+        @foreach (var item in Model.Breadcrumb)
+        {
+            var name = @item.Split("/")[item.Split("/").Length - 1];
+            if (name == "")
+            {
+                name = "Home";
+            }
+            if (name != "Home")
+            {
+                <a asp-controller="Search" asp-action="Index" asp-route-t="@item">@name</a>
+            }
+            else
+            {
+                <a asp-controller="Home" asp-action="Index">@name</a>
+            }
+            if (item != Model.Breadcrumb[Model.Breadcrumb.Count - 1])
+            {
+                <span> &raquo;</span>
+            }
+        }
+    </h1>
+    
+    <div class="wrapper">
+        <form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-wrapper">
+              <input name="t" value="@Model.SearchQuery" class="form-control" autocomplete="off"/>
+            <button class="btn btn-default" type="submit">Zoek</button>
+        </form>
+    </div>
+    
+    
+    
+    <div class="wrapper" style="margin-bottom: 30px;">
+    
+        <p>
+        @{ 
+            var humanPageNumbering = @Model.PageNumber + 1;
+        }
+            @if (@Model.PageNumber >= 1)
+            {
+                <text>Pagina @humanPageNumbering van </text> 
+            }
+            
+            @Model.SearchCount resultaten (@Model.ElapsedSeconds seconden)
+        </p>
+    </div>
+    
+    @if (@Model.SearchCount == 0)
+    {
+        <div class="wrapper">
+            <p>
+                Zoekopties (bevat woord): <br/>
+                (default: ) Zoek term => Tags<br/>
+                -tags:"zoek term"  <br/>
+                -filepath="/path"  <br/>
+                -filename:2018  <br/>
+                -parentdirectory:2018  <br/>
+                -description:"zoek term"  <br/>
+                -title:zoekterm  <br/>
+                InUrl: Gebruik '-inurl:naam', '-inurl=naam'  of '-inurl:"naam met spatie"' zoek woorden om verder te specificeren<br/> 
+                Tags: Normale Sleutelwoorden worden gelezen als deze combinatie is aanwezig in het Tags-veld
+            </p>
+        </div>
+    }
+    
+    <div class="wrapper">
+    
+        @foreach (var item in Model.FileIndexItems)
+        {
+            <a class="halfitem" asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
+                <div class="caption">
+                    <h2>@item.FileName</h2>
+                    <p>@item.Tags</p>
+                </div>
+                <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash})" alt="@item.Tags" />
+            </a>
+        }
+    </div>
+    
+    
+    @*Pagination*@
+    <div class="wrapper">
+    
+        <div class="paginationbase">
+            @{
+                var displayPageNumber = Model.PageNumber + 1;
+            }
+        
+            @if (Model.PageNumber >= 1)
+            {
+                var prevpage = Model.PageNumber - 1;
+                <a class="leftarrow" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">&lt;</a>
+            }
+    
+        
+            <span class="numberbox">
+    
+                @*  Display first page  *@
+                @{ var currentmin2 = (Model.PageNumber - 2);}
+                @if (@currentmin2 >= 0 )
+                {
+                    <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="0">1</a>
+                    if (@currentmin2-1 >= 0 ) {
+                        <span class="box">...</span>
+                    }
+                }
+            
+                @*  Display previous page (-1)  *@
+                @{ var currentmin1 = (Model.PageNumber - 1);}
+                @if (@currentmin1 >= 0 )  // && !(@currentmin2-1 >= 0) 
+                {
+                    //  !(@currentmin2-1 >= 0)  => hide if .. 
+                    <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@currentmin1">
+                        @{
+                            @(currentmin1 + 1);
+                        }
+                    </a>
+                }
+            
+                @*    Current page number*@
+                <a class="current" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@Model.PageNumber">
+                    @displayPageNumber
+                </a>
+            
+                @*  Display next page (+1)  *@
+                @{ var currentplus1 = (Model.PageNumber + 1);}
+                @if (Model.PageNumber < Model.LastPageNumber )
+                {
+                    // hide if .. !((Model.PageNumber + 2)-1 <= Model.LastPageNumber )
+                    <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@currentplus1">
+                        @{
+                            @(currentplus1 + 1);
+                        }
+                    </a>
+                }
+            
+                @*  Display last page  *@
+                @{ var currentplus2 = (Model.PageNumber + 2);}
+                @if (@currentplus2 <= @Model.LastPageNumber )
+                {
+                    // it glitch if human lenght = 3
+                    if ((@currentplus2-1 <= Model.LastPageNumber && Model.LastPageNumber != 2)  ) {
+                        <span class="box">..</span>
+                    }
+                    <a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@Model.LastPageNumber">
+                        @{
+                            @(Model.LastPageNumber + 1);
+                        }
+                    </a>
+                }
+                
+            </span>
+            @*  Next arrow  *@
+            @if (Model.PageNumber < Model.LastPageNumber)
+            {
+                var nextpage = @Model.PageNumber + 1;
+                <a class="rightarrow" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">&gt;</a>
+            }
+        </div>
     </div>
 </div>
 
 @*For IE/IE-Edge "object-fit: cover" *@
-<script type="text/javascript" src="js/vendor/ofi.min.js" defer></script>
+<script type="text/javascript" src="~/js/vendor/ofi.min.js" defer></script>

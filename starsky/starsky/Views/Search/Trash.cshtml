@@ -6,60 +6,82 @@
     ViewData["SearchQuery"] = Model.SearchQuery;
 }
 
-<h4 class="nextprev">
-    &nbsp;
-    @if (Model.PageNumber >= 1)
-    {
-        var prevpage = @Model.PageNumber - 1;
-        <a asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
-    }
-
-    @if (Model.PageNumber < Model.LastPageNumber)
-    {
-        var nextpage = @Model.PageNumber + 1;
-        <a class="next" asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
-    }
-</h4>
-
-<h1 class="breadcrumb">
-    <a asp-controller="Home" asp-action="Index">Home</a>
-    <span> &raquo;</span>
-    <a asp-controller="Search" asp-action="Trash">Prullenmand</a>
-</h1>
-
-
-
-<div class="wrapper">
-
-    @foreach (var item in Model.FileIndexItems)
-    {
-        <div class="halfitem">
-            <div class="caption">
-                <h2><a asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">@item.FileName</a></h2>
-                <p><a onclick="Remove('@item.FilePath')"class="btn-sm btn btn-danger">Verwijder van schijf</a></p>
-            </div>
-            <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash})" alt="@item.Tags" />
+<div class="archive trash">
+    <div class="sidebar">
+            
+        <div class="close" onclick="toggleSideMenu()"></div>
+        <div class="content">
+            <h4 class="nextprev">
+                &nbsp;
+                @if (Model.PageNumber >= 1)
+                {
+                    var prevpage = @Model.PageNumber - 1;
+                    <a class="prev" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
+                }
+        
+                @if (Model.PageNumber < Model.LastPageNumber)
+                {
+                    var nextpage = @Model.PageNumber + 1;
+                    <a class="next" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
+                }
+            </h4>
         </div>
-    }
+    </div>
+    
+    <h4 class="nextprev">
+        &nbsp;
+        @if (Model.PageNumber >= 1)
+        {
+            var prevpage = @Model.PageNumber - 1;
+            <a asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
+        }
+    
+        @if (Model.PageNumber < Model.LastPageNumber)
+        {
+            var nextpage = @Model.PageNumber + 1;
+            <a class="next" asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
+        }
+    </h4>
+    
+    <h1 class="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <span> &raquo;</span>
+        <a asp-controller="Search" asp-action="Trash">Prullenmand</a>
+    </h1>
+    
+    
+    
+    <div class="wrapper">
+    
+        @foreach (var item in Model.FileIndexItems)
+        {
+            <div class="halfitem">
+                <div class="caption">
+                    <h2><a asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">@item.FileName</a></h2>
+                    <p><a onclick="Remove('@item.FilePath')"class="btn-sm btn btn-danger">Verwijder van schijf</a></p>
+                </div>
+                <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash})" alt="@item.Tags" />
+            </div>
+        }
+    </div>
+    
+    <h4 class="nextprev" style="margin-top: 30px; margin-bottom: 30px;">
+        &nbsp;
+        @if (Model.PageNumber >= 1)
+        {
+            var prevpage = @Model.PageNumber - 1;
+            <a asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
+        }
+    
+        @if (Model.PageNumber < Model.LastPageNumber)
+        {
+            var nextpage = @Model.PageNumber + 1;
+            <a class="next" asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
+        }
+    </h4>
 </div>
 
-<h4 class="nextprev" style="margin-top: 30px; margin-bottom: 30px;">
-    &nbsp;
-    @if (Model.PageNumber >= 1)
-    {
-        var prevpage = @Model.PageNumber - 1;
-        <a asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
-    }
-
-    @if (Model.PageNumber < Model.LastPageNumber)
-    {
-        var nextpage = @Model.PageNumber + 1;
-        <a class="next" asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
-    }
-</h4>
-
-
-<script type="text/javascript" src="../js/loadjson.js"></script>
+<script type="text/javascript" src="~/js/loadjson.js"></script>
 
 <script type="text/javascript">
 
@@ -83,4 +105,4 @@
 </script>
 
 @*For IE/IE-Edge "object-fit: cover" *@
-<script type="text/javascript" src="js/vendor/ofi.min.js" defer></script>
+<script type="text/javascript" src="~/js/vendor/ofi.min.js" defer></script>

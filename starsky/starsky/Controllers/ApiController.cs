@@ -156,9 +156,7 @@ namespace starsky.Controllers
         [HttpPost]
         public IActionResult Update(FileIndexItem inputModel, string f, bool append, bool collections,  int rotateClock = 0)
         {
-            // input devided by dot comma and blank values are removed
-            var inputFilePaths = f.Split(";");
-            inputFilePaths = inputFilePaths.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+            var inputFilePaths = SplitInputFilePaths(f);
             // the result list
             var fileIndexResultsList = new List<FileIndexItem>();
                 
@@ -174,10 +172,7 @@ namespace starsky.Controllers
                 // if one item fails, the status will added
                 if(ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                     
-                // Paths that are used
-                var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
-                // when not running in collections mode only update one file
-                if(!collections) collectionSubPathList = new List<string> {subPath};
+                var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
                 var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
                 
                 for (int i = 0; i < collectionSubPathList.Count; i++)
@@ -261,12 +256,28 @@ namespace starsky.Controllers
             return Json(returnNewResultList);
         }
 
-        [ResponseCache(Duration = 30, VaryByQueryKeys = new[] {"f"})]
-        public IActionResult Info(string f, bool collections = true)
+
+        private string[] SplitInputFilePaths(string f)
         {
             // input devided by dot comma and blank values are removed
             var inputFilePaths = f.Split(";");
             inputFilePaths = inputFilePaths.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+            return inputFilePaths;
+        }
+
+        private List<string> GetCollectionSubPathList(DetailView detailView, bool collections, string subPath)
+        {
+            // Paths that are used
+            var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
+            // when not running in collections mode only update one file
+            if (!collections) collectionSubPathList = new List<string> {subPath};
+            return collectionSubPathList;
+        }
+
+        [ResponseCache(Duration = 30, VaryByQueryKeys = new[] {"f"})]
+        public IActionResult Info(string f, bool collections = true)
+        {
+            var inputFilePaths = SplitInputFilePaths(f);
             // the result list
             var fileIndexResultsList = new List<FileIndexItem>();
 
@@ -281,10 +292,7 @@ namespace starsky.Controllers
 
                 if(ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                             
-                // Paths that are used
-                var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
-                // when not running in collections mode only update one file
-                if (!collections) collectionSubPathList = new List<string> {subPath};
+                var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
                 var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
 
                 var fileCompontentList = _readMeta.ReadExifAndXmpFromFileAddFilePathHash(collectionFullPaths.ToArray());
@@ -299,40 +307,87 @@ namespace starsky.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete(string f = "dbStyleFilepath")
+        public IActionResult Delete(string f, bool collections = true)
         {
-            if (_appSettings.IsReadOnly(f)) return NotFound("afbeelding is in lees-only mode en kan niet worden verwijderd");
+            var inputFilePaths = SplitInputFilePaths(f);
+            // the result list
+            var fileIndexResultsList = new List<FileIndexItem>();
 
-            var singleItem = _query.SingleItem(f,null,false,false);
-            if (singleItem == null) return NotFound("not in index");
-            if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
-                return NotFound("source image missing " +
-                                _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-            var item = _query.SingleItem(singleItem.FileIndexItem.FilePath,null,false,false).FileIndexItem;
-
-            //  Remove Files if exist xmp file
-            var fullFilePath = _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
-            var toDeletePaths =
-                new List<string>
-                {
-                    fullFilePath,
-                    fullFilePath.Replace(Path.GetExtension(fullFilePath), ".xmp"),
-                    fullFilePath.Replace(Path.GetExtension(fullFilePath), ".XMP")
-                };
-
-            foreach (var toDelPath in toDeletePaths)
+            foreach (var subPath in inputFilePaths)
             {
-                if (System.IO.File.Exists(toDelPath))
-                {
-                    System.IO.File.Delete(toDelPath);
-                }
-            }
-            // End Remove files
-            
-            _query.RemoveItem(item);
+                var detailView = _query.SingleItem(subPath, null, collections, false);
+                var statusResults = FileCollectionsCheck(detailView);
 
-            return Json(item);
+                var statusModel = new FileIndexItem();
+                statusModel.SetFilePath(subPath);
+                statusModel.IsDirectory = false;
+
+                if(ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                
+                var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
+                var collectionFullDeletePaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
+
+                // display the to delete items
+                foreach (var collectionSubPath in collectionSubPathList)
+                {
+                    var detailViewItem = _query.SingleItem(collectionSubPath, null, collections, false);
+                    // delete thumb
+                    collectionFullDeletePaths.Add(new Thumbnail(_appSettings)
+                        .GetThumbnailPath(detailViewItem.FileIndexItem.FileHash));
+                    // add to display
+                    fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
+                    // remove from db
+                    _query.RemoveItem(detailViewItem.FileIndexItem);
+                }
+                
+                // Add xmp to file to delete
+                var singleFilePath = collectionFullDeletePaths.FirstOrDefault();
+                if (singleFilePath == null) continue;
+                collectionFullDeletePaths.Add(singleFilePath.Replace(Path.GetExtension(singleFilePath), ".xmp"));
+                collectionFullDeletePaths.Add(singleFilePath.Replace(Path.GetExtension(singleFilePath), ".XMP"));
+
+                // Remove the file from disk
+                Files.DeleteFile(collectionFullDeletePaths);
+            }
+
+            return Json(fileIndexResultsList);
         }
+            
+//        [HttpDelete]
+//        public IActionResult Delete(string f = "dbStyleFilepath")
+//        {
+//            if (_appSettings.IsReadOnly(f)) return NotFound("afbeelding is in lees-only mode en kan niet worden verwijderd");
+//
+//            var singleItem = _query.SingleItem(f,null,false,false);
+//            if (singleItem == null) return NotFound("not in index");
+//            if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
+//                return NotFound("source image missing " +
+//                                _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
+//            var item = _query.SingleItem(singleItem.FileIndexItem.FilePath,null,false,false).FileIndexItem;
+//
+//            //  Remove Files if exist xmp file
+//            var fullFilePath = _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
+//            var toDeletePaths =
+//                new List<string>
+//                {
+//                    fullFilePath,
+//                    fullFilePath.Replace(Path.GetExtension(fullFilePath), ".xmp"),
+//                    fullFilePath.Replace(Path.GetExtension(fullFilePath), ".XMP")
+//                };
+//
+//            foreach (var toDelPath in toDeletePaths)
+//            {
+//                if (System.IO.File.Exists(toDelPath))
+//                {
+//                    System.IO.File.Delete(toDelPath);
+//                }
+//            }
+//            // End Remove files
+//            
+//            _query.RemoveItem(item);
+//
+//            return Json(item);
+//        }
 
         /// <summary>
         /// Http Endpoint to get fullsize image or thumbnail

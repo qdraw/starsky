@@ -255,6 +255,17 @@ namespace starsky.Helpers
             }
         }
 
+        public static void DeleteFile(IEnumerable<string> toDeletePaths)
+        {
+            foreach (var toDelPath in toDeletePaths)
+            {
+                if (File.Exists(toDelPath))
+                {
+                    File.Delete(toDelPath);
+                }
+            }
+        }
+
         public static IEnumerable<string> GetFilesRecrusive(string fullFilePath)
         {
             List<string> findlist = new List<string>();
