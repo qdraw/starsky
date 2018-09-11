@@ -985,11 +985,13 @@ footer {
 
 .sidebar.noclick .add-colorclass a,
 .sidebar.readonly-true .add-colorclass,
-.sidebar.readonly .add-colorclass a.on{
+.sidebar.readonly .add-colorclass a.on,
+.sidebar.readonly .rotation-sidebar a{
+
     display: inline-block;
     pointer-events: none;
 }
-
+.sidebar.readonly .rotation-sidebar a,
 .sidebar.readonly-true .add-colorclass a,
 .sidebar.noclick .add-colorclass a {
     opacity: 0.5;
