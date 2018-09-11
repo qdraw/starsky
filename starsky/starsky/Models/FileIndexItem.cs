@@ -117,6 +117,7 @@ namespace starsky.Models
             NotFoundIsDir,
             DirReadOnly,
             ReadOnly,
+            Unauthorized,
             Ok,
         }
 

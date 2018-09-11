@@ -94,18 +94,21 @@ namespace starskytests.Controllers
             _bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();;
         }
         
-        private FileIndexItem InsertSearchData()
+        private FileIndexItem InsertSearchData(bool delete = false)
         {
             
             var fileHashCode = FileHash.GetHashCode(_createAnImage.FullFilePath);
             if (string.IsNullOrEmpty(_query.GetItemByHash(fileHashCode)))
             {
+                var isDelete = string.Empty;
+                if (delete) isDelete = "!delete!";
                 _query.AddItem(new FileIndexItem
                 {
                     FileName = _createAnImage.FileName,
                     ParentDirectory = "/",
                     FileHash = fileHashCode,
                     ColorClass = FileIndexItem.Color.Winner, // 1
+                    Tags = isDelete
                 });
             }
             return _query.GetObjectByFilePath(_createAnImage.DbPath);
@@ -114,7 +117,7 @@ namespace starskytests.Controllers
         [TestMethod]
         public void ApiController_Delete_API_HappyFlow_Test()
         {
-            var createAnImage = InsertSearchData();
+            var createAnImage = InsertSearchData(true);
             _appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
             var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue,_readmeta,_scopeFactory);
 
@@ -126,6 +129,21 @@ namespace starskytests.Controllers
             var jsonCollection = actionResult.Value as List<FileIndexItem>;
             Assert.AreEqual(createAnImage.FilePath,jsonCollection.FirstOrDefault().FilePath);
             new CreateAnImage(); //restore afterwards
+        }
+
+        [TestMethod]
+        public void ApiController_Delete_API_RemoveNotAllowedFile_Test()
+        {
+            var createAnImage = InsertSearchData();
+            _appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
+            var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue,_readmeta,_scopeFactory);
+            var notFoundResult = controller.Delete(createAnImage.FilePath) as NotFoundObjectResult;
+            Assert.AreEqual(404,notFoundResult.StatusCode);
+            var jsonCollection = notFoundResult.Value as List<FileIndexItem>;
+
+            Assert.AreEqual(FileIndexItem.ExifStatus.Unauthorized,jsonCollection.FirstOrDefault().Status);
+
+            _query.RemoveItem(_query.SingleItem(createAnImage.FilePath).FileIndexItem);
         }
 
         [TestMethod]
@@ -209,7 +227,7 @@ namespace starskytests.Controllers
         }
 
         [TestMethod]
-        public void ApiController_NonExistingFile_API_Test()
+        public void ApiController_Thumbnail1_NonExistingFile_API_Test()
         {
             var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue,_readmeta,_scopeFactory);
             var actionResult = controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
@@ -218,7 +236,7 @@ namespace starskytests.Controllers
         }
 
         [TestMethod]
-        public void ApiController_starskyTestEnv()
+        public void ApiController_ENV_starskyTestEnv()
         {
             var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue,_readmeta,_scopeFactory);
             controller.Env();

@@ -38,7 +38,10 @@ namespace starsky.Controllers
         }
         
 
-        // Used for end2end test
+        /// <summary>
+        /// Used for end2end test, show config data
+        /// </summary>
+        /// <returns>config data, except connection strings</returns>
         [HttpGet]
         [HttpHead]
         [ResponseCache(Duration = 30 )]
@@ -105,9 +108,9 @@ namespace starsky.Controllers
         /// Does deside if the loop should be stopped, true = stop
         /// Uses FileCollectionsCheck
         /// </summary>
-        /// <param name="statusModel"></param>
-        /// <param name="statusResults"></param>
-        /// <param name="fileIndexResultsList"></param>
+        /// <param name="statusModel">the main object to return later</param>
+        /// <param name="statusResults">the status by FileCollectionsCheck</param>
+        /// <param name="fileIndexResultsList">list of object that will be returned</param>
         /// <returns>If true skip the next code</returns>
         public bool ReturnExifStatusError(FileIndexItem statusModel, FileIndexItem.ExifStatus statusResults, List<FileIndexItem> fileIndexResultsList )
         {
@@ -135,8 +138,6 @@ namespace starsky.Controllers
                     statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
                     fileIndexResultsList.Add(statusModel);
                     return true;
-
-
             }
             return false;
         }
@@ -157,6 +158,11 @@ namespace starsky.Controllers
             comparedNamesList.Add(nameof(detailView.FileIndexItem.Orientation));
         }
 
+        /// <summary>
+        /// Run the Orientation changes on the thumbnail (only relative)
+        /// </summary>
+        /// <param name="rotateClock">-1 or 1</param>
+        /// <param name="detailView">object contains filehash</param>
         private void RotationThumbnailExcute(int rotateClock, DetailView detailView)
         {
             var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(detailView.FileIndexItem.FileHash);
@@ -165,6 +171,12 @@ namespace starsky.Controllers
             if(FileIndexItem.IsRelativeOrientation(rotateClock)) new Thumbnail(null).RotateThumbnail(thumbnailFullPath,rotateClock);
         }
 
+        /// <summary>
+        /// Add a thumbnail to list to update exif with exiftool
+        /// </summary>
+        /// <param name="toUpdateFilePath">the fullpath of the source file, only the raw or jpeg</param>
+        /// <param name="detailView">main object with filehash</param>
+        /// <returns>a list with a thumb full path (if exist) and the source fullpath</returns>
         private List<string> AddThumbnailToExifChangeList(string toUpdateFilePath, DetailView detailView)
         {
             // To Add an Thumbnail to the 'to update list for exiftool'
@@ -278,7 +290,11 @@ namespace starsky.Controllers
             return Json(returnNewResultList);
         }
 
-
+        /// <summary>
+        /// Split a list with devided by dot comma and blank values are removed
+        /// </summary>
+        /// <param name="f">input filepaths</param>
+        /// <returns>string array with sperated strings</returns>
         private string[] SplitInputFilePaths(string f)
         {
             // input devided by dot comma and blank values are removed
@@ -287,6 +303,13 @@ namespace starsky.Controllers
             return inputFilePaths;
         }
 
+        /// <summary>
+        /// If conllections enalbed return list of subpaths
+        /// </summary>
+        /// <param name="detailView">the base fileIndexItem</param>
+        /// <param name="collections">bool, to enable</param>
+        /// <param name="subPath">the file orginal requested in subpath style</param>
+        /// <returns></returns>
         private List<string> GetCollectionSubPathList(DetailView detailView, bool collections, string subPath)
         {
             // Paths that are used
@@ -296,6 +319,12 @@ namespace starsky.Controllers
             return collectionSubPathList;
         }
 
+        /// <summary>
+        /// Get realtime (cached a few minutes) about the file
+        /// </summary>
+        /// <param name="f">subpaths split by dot comma</param>
+        /// <param name="collections">true is to update files with the same name before the extenstion</param>
+        /// <returns></returns>
         [ResponseCache(Duration = 30, VaryByQueryKeys = new[] {"f"})]
         public IActionResult Info(string f, bool collections = true)
         {
@@ -328,6 +357,12 @@ namespace starsky.Controllers
             return Json(fileIndexResultsList);
         }
 
+        /// <summary>
+        /// Remove files from the disk, but the file must contain the !delete! tag
+        /// </summary>
+        /// <param name="f">subpaths, seperated by dot comma</param>
+        /// <param name="collections">true is to update files with the same name before the extenstion</param>
+        /// <returns></returns>
         [HttpDelete]
         public IActionResult Delete(string f, bool collections = true)
         {
@@ -350,9 +385,20 @@ namespace starsky.Controllers
                 var collectionFullDeletePaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
 
                 // display the to delete items
-                foreach (var collectionSubPath in collectionSubPathList)
+                for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
+                    var collectionSubPath = collectionSubPathList[i];
                     var detailViewItem = _query.SingleItem(collectionSubPath, null, collections, false);
+
+                    /// Allow only files that contains the delete tag
+                    if (!detailViewItem.FileIndexItem.Tags.Contains("!delete!"))
+                    {
+                        detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Unauthorized;
+                        fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
+                        collectionFullDeletePaths[i] = null;
+                        continue;
+                    }
+                    
                     // delete thumb
                     collectionFullDeletePaths.Add(new Thumbnail(_appSettings)
                         .GetThumbnailPath(detailViewItem.FileIndexItem.FileHash));
@@ -361,6 +407,7 @@ namespace starsky.Controllers
                     // remove from db
                     _query.RemoveItem(detailViewItem.FileIndexItem);
                 }
+
                 
                 // Add xmp to file to delete
                 var singleFilePath = collectionFullDeletePaths.FirstOrDefault();
@@ -378,42 +425,7 @@ namespace starsky.Controllers
 
             return Json(fileIndexResultsList);
         }
-            
-//        [HttpDelete]
-//        public IActionResult Delete(string f = "dbStyleFilepath")
-//        {
-//            if (_appSettings.IsReadOnly(f)) return NotFound("afbeelding is in lees-only mode en kan niet worden verwijderd");
-//
-//            var singleItem = _query.SingleItem(f,null,false,false);
-//            if (singleItem == null) return NotFound("not in index");
-//            if (!System.IO.File.Exists(_appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath)))
-//                return NotFound("source image missing " +
-//                                _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath));
-//            var item = _query.SingleItem(singleItem.FileIndexItem.FilePath,null,false,false).FileIndexItem;
-//
-//            //  Remove Files if exist xmp file
-//            var fullFilePath = _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
-//            var toDeletePaths =
-//                new List<string>
-//                {
-//                    fullFilePath,
-//                    fullFilePath.Replace(Path.GetExtension(fullFilePath), ".xmp"),
-//                    fullFilePath.Replace(Path.GetExtension(fullFilePath), ".XMP")
-//                };
-//
-//            foreach (var toDelPath in toDeletePaths)
-//            {
-//                if (System.IO.File.Exists(toDelPath))
-//                {
-//                    System.IO.File.Delete(toDelPath);
-//                }
-//            }
-//            // End Remove files
-//            
-//            _query.RemoveItem(item);
-//
-//            return Json(item);
-//        }
+  
 
         /// <summary>
         /// Http Endpoint to get fullsize image or thumbnail
