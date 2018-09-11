@@ -20,7 +20,6 @@ namespace starsky
     public class Startup
     {
         private readonly IConfigurationRoot _configuration;
-        private ServiceProvider _serviceProvider;
         private AppSettings _appSettings;
 
         public Startup()
@@ -39,9 +38,9 @@ namespace starsky
         {
             // configs
             services.ConfigurePoco<AppSettings>(_configuration.GetSection("App"));
-            _serviceProvider = services.BuildServiceProvider();
+            var serviceProvider = services.BuildServiceProvider();
             
-            _appSettings = _serviceProvider.GetRequiredService<AppSettings>();
+            _appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
@@ -110,7 +109,8 @@ namespace starsky
         {
             app.UseResponseCaching();
 
-            app.UsePathBase("/" + _appSettings.Name.ToLowerInvariant() );
+            // Use the name of the application to use behind a reverse proxy
+            app.UsePathBase(ConfigRead.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
             
             if (env.IsDevelopment())
             {
@@ -123,6 +123,7 @@ namespace starsky
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
 
+            // Use in wwwroot
             app.UseStaticFiles();
 
             app.UseAuthentication();
@@ -138,7 +139,6 @@ namespace starsky
             // Run the latest migration on the database. 
             // To startover with a sqlite database please remove it and
             // it will add a new one
-
             try
             {
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()

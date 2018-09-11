@@ -635,7 +635,7 @@ function runIsSingleitem(toAdd) {
                     halfitems[i].children[j].dataset.src = halfitems[i].children[j].dataset.src.replace("?issingleitem=True",toAdd);
                     halfitems[i].children[j].src = halfitems[i].children[j].src.replace("?issingleitem=False",toAdd);
                     halfitems[i].children[j].src = halfitems[i].children[j].src.replace("?issingleitem=True",toAdd);
-                    console.log(halfitems[i].children[j].dataset.src)
+                    // console.log(halfitems[i].children[j].dataset.src)
 
                 }
             }
@@ -644,3 +644,66 @@ function runIsSingleitem(toAdd) {
     }
 }
 
+//
+// function toggleTrashForThisFolder() {
+//
+//     if (document.querySelectorAll(".js-toggle-trash").length === 1) {
+//
+//         var toAdd = "&hidedelete=true";
+//
+//         if (document.querySelector(".js-toggle-trash").className.indexOf(" on") === -1) {
+//             document.querySelector(".js-toggle-trash").classList.add("on");
+//             toAdd = "&hidedelete=false";
+//             console.log(toAdd);
+//             localStorage.setItem("hidedelete", "false");
+//         }
+//         else {
+//             document.querySelector(".js-toggle-trash").classList.remove("on");
+//             localStorage.setItem("hidedelete", "true");
+//         }
+//         runTrashForThisFolder(toAdd);
+//     }
+// }
+//
+// function runTrashForThisFolder(toAdd) {
+//
+//     if (window.location.href.indexOf("&hidedelete=") === -1 && toAdd === "&hidedelete=false") {
+//         var url = window.location.pathname + window.location.search + toAdd + window.location.hash;
+//         console.log(url);
+//         window.location.href = url;
+//
+//     }
+//    
+//    
+//     else if (window.location.href.indexOf("&hidedelete=") >= 0) {
+//
+//         if (toAdd)
+//         var url = window.location.href.replace("&hidedelete=false", toAdd);
+//         url = url.replace("&hidedelete=true", toAdd);
+//         setTimeout(function () {
+//             window.location.replace(url);
+//         }, 100)
+//     }
+//    
+// }
+//
+//
+// function startTrashForThisFolder() {
+//
+//     if (localStorage.getItem("hidedelete") === "true")
+//     {
+//         runTrashForThisFolder("&hidedelete=true");
+//         if (document.querySelectorAll(".js-toggle-trash").length === 1) {
+//             document.querySelector(".js-toggle-trash").classList.remove("on");
+//         }
+//     }
+//     else {
+//
+//         runTrashForThisFolder("&hidedelete=false");
+//         if (document.querySelectorAll(".js-toggle-trash").length === 1) {
+//             document.querySelector(".js-toggle-trash").classList.add("on");
+//         }
+//
+//     }
+// }
+// startTrashForThisFolder();
