@@ -167,17 +167,19 @@ namespace starsky.Services
                 result.Append(DIGITS[index]);
             }
 
-            if (padOutput)
-            {
-                int padding = 8 - (result.Length % 8);
-                if (padding > 0) result.Append(new string('=', padding == 8 ? 0 : padding));
-            }
+            return Base32ReturnPadOutput(padOutput, result);
+        }
 
+        private static string Base32ReturnPadOutput(bool padOutput, StringBuilder result)
+        {
+            if (!padOutput) return result.ToString();
+            var padding = 8 - (result.Length % 8);
+            if (padding > 0) result.Append(new string('=', padding == 8 ? 0 : padding));
             return result.ToString();
         }
         
-        // ReSharper disable once MemberCanBePrivate.Global
-        public class DecodingException : Exception
+        [Serializable]
+        private class DecodingException : Exception
         {
             public DecodingException(string message) : base(message)
             {

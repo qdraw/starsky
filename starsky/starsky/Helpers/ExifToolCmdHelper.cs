@@ -27,18 +27,13 @@ namespace starsky.Helpers
             return Update(updateModel, exifUpdateFilePaths, comparedNames);
         }
 
-        // Does not check in c# code if file exist
-        public string Update(FileIndexItem updateModel, List<string> inputFullFilePaths, List<string> comparedNames )
+        /// <summary>
+        /// For Raw files us an external .xmp sitecar file, and add this to the fullFilePathsList
+        /// </summary>
+        /// <param name="inputFullFilePaths">list of files to update</param>
+        /// <returns>list of files, where needed for raw-files there are .xmp used</returns>
+        private List<string> FullFilePathsListTagsFromFile(List<string> inputFullFilePaths)
         {
-            if(_exiftool == null) throw new ArgumentException("add exiftool please");
-            if(_appSettings == null) throw new ArgumentException("add _appSettings please");
-
-            var command = "-json -overwrite_original";
-            var initCommand = command; // to check if nothing
-
-            // Create an XMP File -> as those files don't support those tags
-            // Check first if it is needed
-
             var fullFilePathsList = new List<string>();
             foreach (var fullFilePath in inputFullFilePaths)
             {
@@ -56,19 +51,26 @@ namespace starsky.Helpers
                 }
                 fullFilePathsList.Add(fullFilePath);
             }
+            return fullFilePathsList;
+        }
 
-            if (comparedNames.Contains("Tags"))
-            {
-                command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags 
-                                                              + "\" -Keywords=\"" + updateModel.Tags + "\" ";
-            }
-         
-            if (comparedNames.Contains("Description"))
-            {
-                command += " -Caption-Abstract=\"" + updateModel.Description 
-                                                   + "\" -Description=\"" + updateModel.Description + "\"";
-            }
-            
+        // Does not check in c# code if file exist
+        public string Update(FileIndexItem updateModel, List<string> inputFullFilePaths, List<string> comparedNames )
+        {
+            if(_exiftool == null) throw new ArgumentException("add exiftool please");
+            if(_appSettings == null) throw new ArgumentException("add _appSettings please");
+
+            var command = "-json -overwrite_original";
+            var initCommand = command; // to check if nothing
+
+            // Create an XMP File -> as those files don't support those tags
+            // Check first if it is needed
+
+            var fullFilePathsList = FullFilePathsListTagsFromFile(inputFullFilePaths);
+
+            command = UpdateKeywordsCommand(command, comparedNames, updateModel);
+            command = UpdateDescriptionCommand(command, comparedNames, updateModel);
+
             if (comparedNames.Contains("Title"))
             {
                 command += " -ObjectName=\"" + updateModel.Title + "\"" 
@@ -109,6 +111,26 @@ namespace starsky.Helpers
                 _exiftool.BaseCommmand(command, exifBaseInputStringBuilder.ToString());
             }
 
+            return command;
+        }
+
+        private static string UpdateKeywordsCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+        {
+            if (comparedNames.Contains("Tags"))
+            {
+                command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags 
+                                                              + "\" -Keywords=\"" + updateModel.Tags + "\" ";
+            }
+            return command;
+        }
+        
+        private static string UpdateDescriptionCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+        {
+            if (comparedNames.Contains("Description"))
+            {
+                command += " -Caption-Abstract=\"" + updateModel.Description 
+                                                   + "\" -Description=\"" + updateModel.Description + "\"";
+            }
             return command;
         }
 

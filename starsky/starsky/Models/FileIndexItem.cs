@@ -154,11 +154,6 @@ namespace starsky.Models
         public double Longitude { get; set; }
         
         
-
-        
-        
-        private Color _colorClass;
-
         public Color GetColorClass(string colorclassString = "0")
         {
 
@@ -301,7 +296,6 @@ namespace starsky.Models
         public Rotation RelativeOrientation(int relativeRotation = 0)
         {
             if (Orientation == Rotation.DoNotChange) Orientation = Rotation.Horizontal;
-            var startOrientation = Orientation;
             
             var currentOrentation = _orderRotation.FindIndex(i => i == Orientation);
             

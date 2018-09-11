@@ -123,15 +123,6 @@ namespace starsky.Services
 
         }
 
-//        public void Update(FileIndexItem updateModel, string inputFullFilePath)
-//        {
-//            Update(updateModel, new List<string> {inputFullFilePath});
-//        }
-
-        
-       
-
-            
         
         // The actual query
         // will be removed very soon 
