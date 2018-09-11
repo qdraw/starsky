@@ -527,7 +527,20 @@ function toggleOverwriteText() {
 
     }
 }
+function hideDeleteDialog() {
+    if (document.querySelectorAll("#popup").length === 1) {
+        document.querySelector("#popup").classList.remove("on");
+    }
+}
 
+function showDeleteDialog() {
+    if (document.querySelectorAll("#popup").length === 1 &&
+        document.querySelectorAll(".archive").length === 1
+    ) {
+        document.querySelector("#popup").classList.add("on");
+    }
+    
+}
 
 function queryDeleteApi() {
 
@@ -544,16 +557,14 @@ function queryDeleteApi() {
     
     var url = deleteApiBase + "?f=" + toupdateFiles + "&collections=false";
 
-    if (confirm("Weet je het zeker dat je deze bestanden wilt verwijderen?")) {
-        addNoClickToSidebar();
+    addNoClickToSidebar();
 
-        loadJSON(url,
-            function (data) {
-                location.reload();
-            },
-            function (xhr) { console.error(xhr); },
-            "DELETE"
-        );
-    }
+    loadJSON(url,
+        function (data) {
+            location.reload();
+        },
+        function (xhr) { console.error(xhr); },
+        "DELETE"
+    );
     
 }

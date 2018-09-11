@@ -1067,3 +1067,38 @@ footer {
     text-decoration: underline;
     cursor: pointer;
 }
+
+/*// for warning delete*/
+div#popup .content
+{
+    position:absolute;
+    display:none;
+    top:200px;
+    top: calc(50vh - 50px);
+
+    left:50%;
+    width:300px;
+    margin-left:-150px;
+    padding:20px;
+    background-color:white;
+}
+div#popup .content p {
+    margin-bottom: 10px;
+}
+
+div#popup {
+    z-index: 501;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+div#popup.on .content,
+div#popup.on {
+    display: block;
+}
+
