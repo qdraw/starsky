@@ -254,6 +254,12 @@ function constructURL() {
             url = "#";
         }
         
+        if (document.querySelectorAll(".js-toggle-issingleitem").length === 1) {
+            if (window.location.hash.indexOf("issingleitem=true") >= 0) {
+                url += ";issingleitem=true;"
+            }
+        }
+        
         // when the sidebar has items
         if (selectedVar.length === 0 && window.location.hash.indexOf("sidebar") >= 0) {
             url += "sidebar=" + GetSidebarWindowHash("sidebar");

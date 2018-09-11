@@ -21,10 +21,14 @@
                     <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende</a>
                 }
             </h4>
+            
             <div class="selections">
                 <h1>Selecties</h1>
                 <h2>Aantal: <span class="js-collectionscount">@Model.FileIndexItems.Count(p => p.IsDirectory == false)</span> / @Model?.CollectionsCount files</h2>
                 <div class="js-selectedimages"></div>
+            </div>
+            <div class="issingleitem">
+                <a class="colorbutton small js-toggle-issingleitem" onclick="toggleIsSingleitem()"><span class="checkbox"></span> Laad langzame bestanden</a>
             </div>
             <div class="js-controls">
                 <h1>Tekst <span class="js-title-addorreplace">toevoegen</span></h1>
@@ -129,7 +133,7 @@
     
                 @if (!string.IsNullOrWhiteSpace(@item.FileHash))
                 {
-                    <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash})" alt=""/>
+                    <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash, issingleitem = false })" alt=""/>
                 }
                 else
                 {

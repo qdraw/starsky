@@ -142,6 +142,7 @@ h1 {
     cursor: pointer;
 }
 
+
 #portfolio-filter ul > li a.reset{
     height: 40px;
     padding-left: 10px;
@@ -164,6 +165,16 @@ h1 {
     margin-top: 8px;
     margin-right: 10px;
 }
+.colorbutton.small{
+    background-color: #d9d9d9;
+    line-height: 30px;
+}
+.colorbutton.small .checkbox{
+    margin-top: 5px;
+}
+
+
+
 #portfolio-data.wrapper .checkbox{
     display: none;
     float: none;
@@ -1064,8 +1075,14 @@ footer {
 }
 
 .js-selectallnone {
-    text-decoration: underline;
-    cursor: pointer;
+    margin-top: 15px;
+    padding-left: 10px;
+}
+
+
+.issingleitem div{
+    margin-top: 10px;
+    margin-bottom: 0px!important;
 }
 
 /*// for warning delete*/
