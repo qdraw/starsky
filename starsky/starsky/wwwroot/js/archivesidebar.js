@@ -580,8 +580,6 @@ function startIsSingleitem() {
 
     if (localStorage.getItem("issingleitem") === "true")
     {
-        console.log(localStorage.getItem("issingleitem"));
-
         runIsSingleitem("?issingleitem=True");
     }
     else {
@@ -620,7 +618,10 @@ function runIsSingleitem(toAdd) {
             document.querySelector(".js-toggle-issingleitem").classList.add("on");
         }
     }
-        
+
+    console.log(localStorage.getItem("issingleitem"));
+
+
     var halfitems = document.querySelectorAll(".halfitem");
 
     for (var i = 0; i < halfitems.length; i++) {

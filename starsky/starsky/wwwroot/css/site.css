@@ -168,6 +168,7 @@ h1 {
 .colorbutton.small{
     background-color: #d9d9d9;
     line-height: 30px;
+    margin-bottom: 5px
 }
 .colorbutton.small .checkbox{
     margin-top: 5px;
@@ -330,17 +331,24 @@ h2 {
     background-color: rgba(0, 0, 0, 0.3);
     display: block;
     /*z-index: 4;*/
+    transition: background-color 0.5s ease-in-out;
 }
+
+
 .wrapper .halfitem.None.directory-true .caption {
     /*// beige*/
     background-color: rgba(109, 199, 256, 0.5);
 }
+
 
 .add-colorclass .winner,
 .add-colorclass .colorclass-1,
 #portfolio-filter ul > li > a#colorclass-1,
 .wrapper .halfitem.Winner .caption {
     background-color: rgba(255, 0, 255, 0.3);
+}
+.wrapper .halfitem.Winner.on .caption {
+    background-color: rgba(255, 0, 255, 0.5);
 }
 
 .nextprev .colorclass-1.on,
@@ -356,6 +364,9 @@ h2 {
 #portfolio-filter ul > li > a#colorclass-2,
 .wrapper .halfitem.WinnerAlt .caption {
     background-color: rgba(255, 0, 2, 0.3);
+}
+.wrapper .halfitem.WinnerAlt.on .caption {
+    background-color: rgba(255, 0, 2, 0.5);
 }
 
 .nextprev .colorclass-2.on,
@@ -383,6 +394,9 @@ h2 {
 .wrapper .halfitem.Superior .caption {
     background-color: rgba(255, 127, 1, 0.3);
 }
+.wrapper .halfitem.Superior.on .caption {
+    background-color: rgba(255, 127, 1, 0.5);
+}
 
 .nextprev .colorclass-4.on,
 .add-colorclass .superioralt.on,
@@ -398,6 +412,9 @@ h2 {
 #portfolio-filter ul > li > a#colorclass-4,
 .wrapper .halfitem.SuperiorAlt .caption {
     background-color: rgba(255, 255, 83, 0.3);
+}
+.wrapper .halfitem.SuperiorAlt.on .caption {
+    background-color: rgba(255, 255, 83, 0.5);
 }
 
 .nextprev .colorclass-5.on,
@@ -415,6 +432,9 @@ h2 {
 .wrapper .halfitem.Typical .caption {
     background-color: rgba(0, 255, 0, 0.3);
 }
+.wrapper .halfitem.Typical.on .caption {
+    background-color: rgba(0, 255, 0, 0.5);
+}
 
 .nextprev .colorclass-6.on,
 .add-colorclass .colorclass-6.on,
@@ -430,6 +450,10 @@ h2 {
 .wrapper .halfitem.TypicalAlt .caption {
     background-color: rgba(0, 255, 255, 0.3);
 }
+.wrapper .halfitem.TypicalAlt.on .caption {
+    background-color: rgba(0, 255, 255, 0.6);
+}
+
 
 .nextprev .colorclass-7.on,
 .add-colorclass .colorclass-7.on,
@@ -446,6 +470,9 @@ h2 {
 .wrapper .halfitem.Extras .caption {
     background-color: rgba(0, 0, 255, 0.3);
 }
+.wrapper .halfitem.Extras.on .caption {
+    background-color: rgba(0, 0, 255, 0.6);
+}
 
 .nextprev .colorclass-8.on,
 .add-colorclass .colorclass-8.on,
@@ -461,6 +488,9 @@ h2 {
 .wrapper .halfitem.Trash .caption {
     background-color: rgba(0, 0, 0, 0.25);
 }
+.wrapper .halfitem.Trash.on .caption {
+    background-color: rgba(0, 0, 0, 0.6);
+}
 
 #portfolio-filter ul > li > a.off {
     opacity: 0.65;
@@ -472,7 +502,10 @@ h2 {
 #portfolio-filter ul > li > a#colorclass-0,
 .wrapper .halfitem.None .caption {
     background-color: rgba(150, 150, 100, 0.3);
+}
 
+.wrapper .halfitem.None.on .caption {
+    background-color: rgba(150, 150, 100, 0.5);
 }
 
 .nextprev .colorclass-0.on,

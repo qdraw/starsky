@@ -305,9 +305,6 @@ if (document.querySelectorAll(".breadcrumb").length >= 1) {
         if (breadcrumbObject.length >= 4) {
             for (var i = 0; i < breadcrumbObject.length; i++) {
 
-                console.log(breadcrumbObject)
-
-                
                 if (i === breadcrumbObject.length-3) {
                     breadcrumbObject[i].href += "#colorclass=";
                     for (var j = 0; j < addcolorclassArray.length; j++) {
