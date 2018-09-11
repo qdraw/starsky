@@ -67,7 +67,7 @@ namespace starsky.Services
 
         public string GetThumbnailPath(string fileHash)
         {
-            if (_appSettings == null) throw new NullReferenceException("add appsettings"); 
+            if (_appSettings == null) throw new FileLoadException("add appsettings first"); 
             return _appSettings.ThumbnailTempFolder + fileHash + ".jpg"; //<<full
         }
         
