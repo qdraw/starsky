@@ -101,7 +101,7 @@ namespace starsky.Services
                                                 + _appSettings.ThumbnailTempFolder);
             }
             
-            var fullFilePath = _appSettings.DatabasePathToFilePath(subpath);;
+            var fullFilePath = _appSettings.DatabasePathToFilePath(subpath);
             
             if (Files.IsFolderOrFile(fullFilePath) 
                 == FolderOrFileModel.FolderOrFileTypeList.File)
