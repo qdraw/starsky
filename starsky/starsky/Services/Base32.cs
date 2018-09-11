@@ -28,21 +28,21 @@ namespace starsky.Services
     public static class Base32
     {
 
-        private static readonly char[] DIGITS;
-        private static readonly int MASK;
-        private static readonly int SHIFT;
-        private static Dictionary<char, int> CHAR_MAP = new Dictionary<char, int>();
-        private const string SEPARATOR = "-";
+        private static readonly char[] Digits;
+        private static readonly int Mask;
+        private static readonly int Shift;
+        private static readonly Dictionary<char, int> CharMap = new Dictionary<char, int>();
+        private const string Separator = "-";
 
         static Base32()
         {
-            DIGITS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".ToCharArray();
-            MASK = DIGITS.Length - 1;
-            SHIFT = numberOfTrailingZeros(DIGITS.Length);
-            for (int i = 0; i < DIGITS.Length; i++) CHAR_MAP[DIGITS[i]] = i;
+            Digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".ToCharArray();
+            Mask = Digits.Length - 1;
+            Shift = NumberOfTrailingZeros(Digits.Length);
+            for (int i = 0; i < Digits.Length; i++) CharMap[Digits[i]] = i;
         }
 
-        private static int numberOfTrailingZeros(int i)
+        private static int NumberOfTrailingZeros(int i)
         {
             // HD, Figure 5-14
             int y;
@@ -82,7 +82,7 @@ namespace starsky.Services
         public static byte[] Decode(string encoded)
         {
             // Remove whitespace and separators
-            encoded = encoded.Trim().Replace(SEPARATOR, "");
+            encoded = encoded.Trim().Replace(Separator, "");
 
             // Remove padding. Note: the padding is used as hint to determine how many
             // bits to decode from the last incomplete chunk (which is commented out
@@ -97,21 +97,21 @@ namespace starsky.Services
             }
 
             int encodedLength = encoded.Length;
-            int outLength = encodedLength * SHIFT / 8;
+            int outLength = encodedLength * Shift / 8;
             byte[] result = new byte[outLength];
             int buffer = 0;
             int next = 0;
             int bitsLeft = 0;
             foreach (char c in encoded)
             {
-                if (!CHAR_MAP.ContainsKey(c))
+                if (!CharMap.ContainsKey(c))
                 {
                     throw new DecodingException("Illegal character: " + c);
                 }
 
-                buffer <<= SHIFT;
-                buffer |= CHAR_MAP[c] & MASK;
-                bitsLeft += SHIFT;
+                buffer <<= Shift;
+                buffer |= CharMap[c] & Mask;
+                bitsLeft += Shift;
                 if (bitsLeft >= 8)
                 {
                     result[next++] = (byte) (buffer >> (bitsLeft - 8));
@@ -138,7 +138,7 @@ namespace starsky.Services
                 throw new ArgumentOutOfRangeException("data");
             }
 
-            int outputLength = (data.Length * 8 + SHIFT - 1) / SHIFT;
+            int outputLength = (data.Length * 8 + Shift - 1) / Shift;
             StringBuilder result = new StringBuilder(outputLength);
 
             int buffer = data[0];
@@ -146,7 +146,7 @@ namespace starsky.Services
             int bitsLeft = 8;
             while (bitsLeft > 0 || next < data.Length)
             {
-                if (bitsLeft < SHIFT)
+                if (bitsLeft < Shift)
                 {
                     if (next < data.Length)
                     {
@@ -156,15 +156,15 @@ namespace starsky.Services
                     }
                     else
                     {
-                        int pad = SHIFT - bitsLeft;
+                        int pad = Shift - bitsLeft;
                         buffer <<= pad;
                         bitsLeft += pad;
                     }
                 }
 
-                int index = MASK & (buffer >> (bitsLeft - SHIFT));
-                bitsLeft -= SHIFT;
-                result.Append(DIGITS[index]);
+                int index = Mask & (buffer >> (bitsLeft - Shift));
+                bitsLeft -= Shift;
+                result.Append(Digits[index]);
             }
 
             return Base32ReturnPadOutput(padOutput, result);
@@ -179,7 +179,8 @@ namespace starsky.Services
         }
         
         [Serializable]
-        private class DecodingException : Exception
+        // ReSharper disable once MemberCanBePrivate.Global
+        public class DecodingException : Exception
         {
             public DecodingException(string message) : base(message)
             {

@@ -68,7 +68,7 @@ namespace starskywebhtmlcli.Services
                 item.FileName = _appSettings.GenerateSlug(item.FileCollectionName, true) + Path.GetExtension(item.FileName);
             }
 
-            // Files.DeleteFile(profile.Path);
+            // Files.DeleteFile(profile.Path)
                     
             var embeddedResult = new ParseRazor().EmbeddedViews(profile.Template,viewModel).Result;
             new PlainTextFileHelper().WriteFile(_appSettings.StorageFolder 

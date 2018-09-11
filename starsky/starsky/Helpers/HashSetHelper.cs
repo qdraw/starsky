@@ -5,7 +5,7 @@ using System.Text;
 
 namespace starsky.Helpers
 {
-    public class HashSetHelper
+    public static class HashSetHelper
     {
         public static HashSet<string> StringToHashSet(string inputKeywords)
         {
