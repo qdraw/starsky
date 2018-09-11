@@ -18,7 +18,7 @@ namespace starsky.Services
             
             
             // duplicateItemsByFilePath > 
-            // If you have 3 item with the same name it will include 1 name;
+            // If you have 3 item with the same name it will include 1 name
             // So we do a linq query to search simalar items
             // We keep the first item
             // And Delete duplicate items

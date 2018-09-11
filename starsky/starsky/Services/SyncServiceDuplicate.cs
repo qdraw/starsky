@@ -16,7 +16,7 @@ namespace starsky.Services
                 .SelectMany(grp => grp.Skip(1).Take(1)).ToList();
             
             // duplicateItemsByFilePath > 
-            // If you have 3 item with the same name it will include 1 name;
+            // If you have 3 item with the same name it will include 1 name
             // So we do a linq query to search simalar items
             // We keep the first item
             // And Delete duplicate items
@@ -24,7 +24,7 @@ namespace starsky.Services
             foreach (var duplicateItemByName in duplicateItemsByFilePath)
             {
                 var duplicateItems = databaseSubFolderList.Where(p => p.FilePath == duplicateItemByName.FilePath).ToList();
-                for (int i = 1; i < duplicateItems.Count(); i++)
+                for (int i = 1; i < duplicateItems.Count; i++)
                 {
                     databaseSubFolderList.Remove(duplicateItems[i]);
                     if (_appSettings.Verbose) Console.WriteLine("> RemoveDuplicate - " + duplicateItems[i].FilePath);

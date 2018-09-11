@@ -89,7 +89,7 @@ namespace starsky.Services
             List<FileIndexItem> fileIndexItemsList)
         {
             // Check if this is item is not !deleted! yet
-            if (currentFileIndexItem == null) return new RelativeObjects();;
+            if (currentFileIndexItem == null) return new RelativeObjects();
             
             var currentIndex = fileIndexItemsList.FindIndex(p => p.FilePath == currentFileIndexItem.FilePath);
             var relativeObject = new RelativeObjects();
