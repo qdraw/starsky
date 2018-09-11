@@ -35,11 +35,15 @@ namespace starsky.Services
             {
                 var subPath = _appSettings.FullPathToDatabaseStyle(fullFilePath);
                 var returnItem = ReadExifAndXmpFromFile(fullFilePath);
+                returnItem.ImageFormat = Files.GetImageFormat(fullFilePath); 
+                if (returnItem.ImageFormat == Files.ImageFormat.gpx)
+                {
+                    returnItem = ReadGpxFromFile(fullFilePath);
+                }
                 returnItem.FileName = Path.GetFileName(fullFilePath);
                 returnItem.IsDirectory = false;
                 returnItem.Id = -1;
                 returnItem.Status = FileIndexItem.ExifStatus.Ok;
-                returnItem.ImageFormat = Files.GetImageFormat(fullFilePath); 
                 returnItem.FileHash = FileHash.GetHashCode(fullFilePath);
                 returnItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault();
                 fileIndexList.Add(returnItem);

@@ -77,7 +77,10 @@ namespace starsky.Helpers
             png = 15,
 
             // Sitecar files
-            xmp = 30
+            xmp = 30,
+            
+            // documents
+            gpx = 40
         }
 
         // General list of the extensions
@@ -191,6 +194,7 @@ namespace starsky.Helpers
             var jpeg   = new byte[] { 255, 216, 255, 224 }; // jpeg
             var jpeg2  = new byte[] { 255, 216, 255, 225 }; // jpeg canon
             var xmp    = Encoding.ASCII.GetBytes("<x:xmpmeta");    // xmp
+            var gpx  = new byte[] { 60, 63, 120 };         // gpx
 
             if (bmp.SequenceEqual(bytes.Take(bmp.Length)))
                 return ImageFormat.bmp;
@@ -218,7 +222,10 @@ namespace starsky.Helpers
             
             if (xmp.SequenceEqual(bytes.Take(xmp.Length)))
                 return ImageFormat.xmp;
-
+            
+            if (gpx.SequenceEqual(bytes.Take(gpx.Length)))
+                return ImageFormat.gpx;
+            
             return ImageFormat.unknown;
         }
 
