@@ -141,6 +141,45 @@ namespace starsky.Controllers
             return false;
         }
 
+        
+        /// <summary>
+        /// Add to comparedNames list ++ add to detailview
+        /// </summary>
+        /// <param name="rotateClock">-1 or 1</param>
+        /// <param name="detailView">main db object</param>
+        /// <param name="comparedNamesList">list of types that are changes</param>
+        private void RotatonCompare(int rotateClock, DetailView detailView, ICollection<string> comparedNamesList)
+        {
+            // Do orientation / Rotate if needed (after compare)
+            if (!FileIndexItem.IsRelativeOrientation(rotateClock)) return;
+            // run this on detailview => statusModel is always default
+            detailView.FileIndexItem.SetRelativeOrientation(rotateClock);
+            comparedNamesList.Add(nameof(detailView.FileIndexItem.Orientation));
+        }
+
+        private void RotationThumbnailExcute(int rotateClock, DetailView detailView)
+        {
+            var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(detailView.FileIndexItem.FileHash);
+
+            // Do orientation
+            if(FileIndexItem.IsRelativeOrientation(rotateClock)) new Thumbnail(null).RotateThumbnail(thumbnailFullPath,rotateClock);
+        }
+
+        private List<string> AddThumbnailToExifChangeList(string toUpdateFilePath, DetailView detailView)
+        {
+            // To Add an Thumbnail to the 'to update list for exiftool'
+            var exifUpdateFilePaths = new List<string>
+            {
+                toUpdateFilePath           
+            };
+            var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(detailView.FileIndexItem.FileHash);
+            if (Files.IsFolderOrFile(thumbnailFullPath) == FolderOrFileModel.FolderOrFileTypeList.File)
+            {
+                exifUpdateFilePaths.Add(thumbnailFullPath);
+            }
+            return exifUpdateFilePaths;
+        }
+
         /// <summary>
         /// Update Exif and Rotation API
         /// </summary>
@@ -179,14 +218,8 @@ namespace starsky.Controllers
                 {
                     
                     var comparedNamesList = FileIndexCompareHelper.Compare(detailView.FileIndexItem, statusModel, append);
-                    
-                    // Do orientation / Rotate if needed (after compare)
-                    if (FileIndexItem.IsRelativeOrientation(rotateClock))
-                    {
-                        // run this on detailview => statusModel is always default
-                        detailView.FileIndexItem.SetRelativeOrientation(rotateClock);
-                        comparedNamesList.Add(nameof(detailView.FileIndexItem.Orientation));
-                    }
+
+                    RotatonCompare(rotateClock, detailView, comparedNamesList);
                     
                     // this one is good :)
                     detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
@@ -201,21 +234,10 @@ namespace starsky.Controllers
                     {
                         var exiftool = new ExifToolCmdHelper(_appSettings,_exiftool);
                         var toUpdateFilePath = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.FilePath);
-                        
-                        // To Add an Thumbnail to the 'to update list for exiftool'
-                        var exifUpdateFilePaths = new List<string>
-                        {
-                            toUpdateFilePath           
-                        };
-                        var thumbnailFullPath =
-                            new Thumbnail(_appSettings).GetThumbnailPath(detailView.FileIndexItem.FileHash);
-                        if (Files.IsFolderOrFile(thumbnailFullPath) == FolderOrFileModel.FolderOrFileTypeList.File)
-                        {
-                            exifUpdateFilePaths.Add(thumbnailFullPath);
-                        }
-                        
-                        // Do orientation
-                        if(FileIndexItem.IsRelativeOrientation(rotateClock)) new Thumbnail(null).RotateThumbnail(thumbnailFullPath,rotateClock);
+
+                        var exifUpdateFilePaths = AddThumbnailToExifChangeList(toUpdateFilePath, detailView);
+
+                        RotationThumbnailExcute(rotateClock, detailView);
                         
                         // Do an Exif Sync for all files
                         exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths , comparedNamesList);
@@ -349,6 +371,10 @@ namespace starsky.Controllers
                 // Remove the file from disk
                 Files.DeleteFile(collectionFullDeletePaths);
             }
+            
+            // When all items are not found
+            if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+                return NotFound(fileIndexResultsList);
 
             return Json(fileIndexResultsList);
         }
