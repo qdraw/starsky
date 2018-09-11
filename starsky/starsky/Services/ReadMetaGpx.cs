@@ -66,7 +66,7 @@ namespace starsky.Services
                     return new FileIndexItem
                     {
                         Title = GetTrkName(gpxDoc, namespaceManager),
-                        DateTime = dateTime.ToUniversalTime(),
+                        DateTime = dateTime, //.ToUniversalTime(),
                         Latitude = latitude,
                         Longitude = longitude
                     };
