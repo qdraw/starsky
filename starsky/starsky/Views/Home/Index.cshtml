@@ -14,11 +14,15 @@
                 &nbsp;
                 @if (@Model.RelativeObjects.PrevFilePath != null)
                 {
-                    <a class="prev" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige</a>
+                    var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.PrevFilePath});
+                    urlPath = urlPath.Replace("%2F", "/");
+                    <a class="prev" href="@urlPath">Vorige</a>
                 }
                 @if (@Model.RelativeObjects.NextFilePath != null ) 
                 {
-                    <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende</a>
+                    var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.NextFilePath});
+                    urlPath = urlPath.Replace("%2F", "/");
+                    <a class="next" href="@urlPath">Volgende</a>
                 }
             </h4>
             
@@ -76,13 +80,15 @@
     <h4 class="nextprev">
         @if (@Model.RelativeObjects.PrevFilePath != null)
         {
-            <a class="prev" asp-controller="Home" asp-action="Index" 
-               asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige (@Model.RelativeObjects.PrevFilePath.Split("/").LastOrDefault())</a>
+            var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.PrevFilePath});
+            urlPath = urlPath.Replace("%2F", "/");
+            <a class="prev" href="@urlPath">Vorige (@Model.RelativeObjects.PrevFilePath.Split("/").LastOrDefault())</a>
         }
-        @if (@Model.RelativeObjects.NextFilePath != null)
+        @if (@Model.RelativeObjects.NextFilePath != null ) 
         {
-            <a class="next" asp-controller="Home" asp-action="Index" 
-               asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende (@Model.RelativeObjects.NextFilePath.Split("/").LastOrDefault())</a>
+            var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.NextFilePath});
+            urlPath = urlPath.Replace("%2F", "/");
+            <a class="next" href="@urlPath">Volgende (@Model.RelativeObjects.NextFilePath.Split("/").LastOrDefault())</a>
         }
         &nbsp;
     </h4>
@@ -93,7 +99,10 @@
             var name = @item.Split("/")[item.Split("/").Length - 1];
             if (name == "") {name = "Home";}
     
-            <a asp-controller="Home" asp-action="Index" asp-route-f="@item">@name</a>
+            var urlPath = @Url.Action("Index", "Home", new {f = @item});
+            urlPath = urlPath.Replace("%2F", "/");
+            <a href="@urlPath">@name</a>
+
             if (item != Model.Breadcrumb[Model.Breadcrumb.Count - 1])
             {
                 <span> &raquo;</span>
@@ -103,6 +112,7 @@
         @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
         {
             <span> &raquo;</span>
+            //  this does encode %2F after redirect
             <span> <a class="removecache" asp-controller="Api" asp-action="RemoveCache" 
                       asp-route-f="@Model.SubPath">@Model.SearchQuery</a></span>
         }
@@ -124,9 +134,12 @@
         {
             var enumValue = (int) item.ColorClass;
             var directoryLabel = "directory-" + item.IsDirectory.ToString().ToLower();
+            var urlPath = @Url.Action("Index", "Home", new {f = @item.FilePath});
+            urlPath = urlPath.Replace("%2F", "/");
+            
             <a class="halfitem @item.ColorClass colorclass-@enumValue @directoryLabel" data-filename="@item.FileName" data-tag="colorclass-@enumValue"
                data-tagnl="@FileIndexItem.GetAllColorUserInterface().FirstOrDefault(p => (int) p == enumValue)"
-               asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
+               href="@urlPath">
                 <div class="caption">
                     <h2><div class="checkbox"></div> @item.FileName</h2>
                     <p>@item.Tags&nbsp;</p>

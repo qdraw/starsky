@@ -33,7 +33,9 @@
             }
             if (name != "Home")
             {
-                <a asp-controller="Search" asp-action="Index" asp-route-t="@item">@name</a>
+                var urlPath = @Url.Action("Index", "Home", new {f = @item});
+                urlPath = urlPath.Replace("%2F", "/");
+                <a href="@urlPath">@name</a>
             }
             else
             {
@@ -94,9 +96,11 @@
         {
             var enumValue = (int) item.ColorClass;
             var directoryLabel = "directory-" + item.IsDirectory.ToString().ToLower();
+            var urlPath = @Url.Action("Index", "Home", new {f = @item.FilePath});
+            urlPath = urlPath.Replace("%2F", "/");
             <a class="halfitem @item.ColorClass colorclass-@enumValue @directoryLabel" data-filename="@item.FileName" data-tag="colorclass-@enumValue"
                data-tagnl="@FileIndexItem.GetAllColorUserInterface().FirstOrDefault(p => (int) p == enumValue)"
-               asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">
+               href="@urlPath">
                 <div class="caption">
                     <h2>@item.FileName</h2>
                     <p>@item.Tags</p>

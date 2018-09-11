@@ -19,11 +19,15 @@
             &nbsp;
             @if (@Model.RelativeObjects.PrevFilePath != null)
             {
-                <a class="prev" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige</a>
+                var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.PrevFilePath});
+                urlPath = urlPath.Replace("%2F", "/");
+                <a class="prev" href="@urlPath">Vorige</a>
             }
             @if (@Model.RelativeObjects.NextFilePath != null ) 
             {
-                <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende</a>
+                var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.NextFilePath});
+                urlPath = urlPath.Replace("%2F", "/");
+                <a class="next" href="@urlPath">Volgende</a>
             }
         </h4>
 
@@ -118,7 +122,9 @@
         &nbsp;
         @if (@Model.RelativeObjects.PrevFilePath != null)
         {
-            <a class="prev" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.PrevFilePath">Vorige</a>
+            var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.PrevFilePath});
+            urlPath = urlPath.Replace("%2F", "/");
+            <a class="prev" href="@urlPath">Vorige</a>
         }
 
         <span class="js-filterinfo">
@@ -146,7 +152,10 @@
         }
         @if (@Model.RelativeObjects.NextFilePath != null)
         {
-            <a class="next" asp-controller="Home" asp-action="Index" asp-route-f="@Model.RelativeObjects.NextFilePath">Volgende</a>
+            var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.NextFilePath});
+            urlPath = urlPath.Replace("%2F", "/");
+            <a class="next" href="@urlPath">Volgende (@Model.RelativeObjects.NextFilePath.Split("/").LastOrDefault())</a>
+
         }
     </h4>
 
@@ -158,7 +167,11 @@
             {
                 name = "Home";
             }
-            <a asp-controller="Home" asp-action="Index" asp-route-f="@item">@name</a>
+            
+            var urlPath = @Url.Action("Index", "Home", new {f = @item});
+            urlPath = urlPath.Replace("%2F", "/");
+            <a href="@urlPath">@name</a>
+
             <span> &raquo;</span>
         }
         <span>
