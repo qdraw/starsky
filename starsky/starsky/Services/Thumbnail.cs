@@ -30,8 +30,13 @@ namespace starsky.Services
             _exiftool = exiftool;
         }
         
-        // Rename a thumbnail, used when you change exifdata,
-        // the hash is also changed but the images remain the same
+
+        /// <summary>
+        /// Rename a thumbnail, used when you change exifdata, the hash is also changed but the images remain the same
+        /// </summary>
+        /// <param name="oldHashCode">the old base32 hashcode</param>
+        /// <param name="newHashCode">the new base32 hashcode></param>
+        /// <exception cref="FileNotFoundException">the ThumbnailTempFolder does not exist</exception>
         public void RenameThumb(string oldHashCode, string newHashCode)
         {
             if (!Directory.Exists(_appSettings.ThumbnailTempFolder))
@@ -57,22 +62,37 @@ namespace starsky.Services
         }
         
         
-        // Create a new thumbnail
-        // used by Thumb.dir / web ui
+        /// <summary>
+        /// Create a new thumbnail, used by Thumb.dir / web ui
+        /// </summary>
+        /// <param name="item">source item with Filepath and hash to create a new thumbnail</param>
+        /// <returns>true, if succesfull</returns>
+        /// <exception cref="FileNotFoundException">Filepath and hash are missing in source item</exception>
         public bool CreateThumb(FileIndexItem item)
         {
             if(string.IsNullOrEmpty(item.FilePath) || string.IsNullOrEmpty(item.FileHash)) throw new FileNotFoundException("FilePath or FileHash == null");
             return CreateThumb(item.FilePath, item.FileHash);
         }
 
+        /// <summary>
+        /// Get the fullpath of the thumbnail
+        /// </summary>
+        /// <param name="fileHash">filehash of the file</param>
+        /// <returns>string with fullpath</returns>
+        /// <exception cref="FileLoadException">use with appsettings, to set a ThumbnailTempFolder</exception>
         public string GetThumbnailPath(string fileHash)
         {
-            if (_appSettings == null) throw new FileLoadException("add appsettings first"); 
+            if (_appSettings == null) throw new FileLoadException("use with appsettings, to set a ThumbnailTempFolder"); 
             return _appSettings.ThumbnailTempFolder + fileHash + ".jpg"; //<<full
         }
         
-        // Feature used by the cli tool
-        // Use FileIndexItem or database style path
+        /// <summary>
+        /// Create a Thumbnail file to load it faster in the UI. Use FileIndexItem or database style path, Feature used by the cli tool
+        /// </summary>
+        /// <param name="subpath">relative path to find the file in the storage folder</param>
+        /// <param name="fileHash">the base32 hash of the subpath file</param>
+        /// <returns>true, if succesfull</returns>
+        /// <exception cref="FileNotFoundException">use with appsettings, to set a ThumbnailTempFolder</exception>
         public bool CreateThumb(string subpath = "/", string fileHash = null)
         {
             if (!Directory.Exists(_appSettings.ThumbnailTempFolder))
@@ -123,15 +143,25 @@ namespace starsky.Services
 
 
 
-        // Wrapper to Make a sync task sync
+        /// <summary>
+        /// Wrapper to Make a sync task sync
+        /// </summary>
+        /// <param name="fullSourceImage">full path to source</param>
+        /// <param name="thumbPath">outputpath (full)</param>
+        /// <returns>async true, is succesfull</returns>
         private async Task<bool> ResizeThumbnailTimeoutWrap(string fullSourceImage, string thumbPath)
         {
             //adding .ConfigureAwait(false) may NOT be what you want but google it.
             return await Task.Run(() => ResizeThumbnailTimeOut(fullSourceImage, thumbPath)).ConfigureAwait(false);
         }
-        
-        // Timeout feature to check if the service is answering within 8 seconds
-        // Ignore Error CS1998
+
+
+        /// <summary>
+        /// Timeout feature to check if the service is answering within 8 seconds, Ignore Error CS1998
+        /// </summary>
+        /// <param name="fullSourceImage">full path to source</param>
+        /// <param name="thumbPath">outputpath (full)</param>
+        /// <returns>async true, is succesfull</returns>
         #pragma warning disable 1998
         private async Task<bool> ResizeThumbnailTimeOut(string fullSourceImage, string thumbPath){
         #pragma warning restore 1998
@@ -147,9 +177,13 @@ namespace starsky.Services
             return false;
         }
         
-        // Resize the thumbnail
-        // Is successfull? // private feature
-        public bool ResizeThumbnailPlain(string fullSourceImage, string thumbPath)
+        /// <summary>
+        /// Resize the thumbnail without timer, Is successfull? // private feature
+        /// </summary>
+        /// <param name="fullSourceImage">full path to source</param>
+        /// <param name="thumbPath">outputpath (full)</param>
+        /// <returns>true, is succesfull</returns>
+        private bool ResizeThumbnailPlain(string fullSourceImage, string thumbPath)
         {
             Console.WriteLine("fullSourceImage >> " + fullSourceImage + " " + thumbPath);
             try
@@ -187,8 +221,16 @@ namespace starsky.Services
         }
 
         
-        // Resize the thumbnail to object
-        // quality = value 0,100
+        /// <summary>
+        /// Resize the thumbnail to object
+        /// </summary>
+        /// <param name="fullSourceImage">full filepath</param>
+        /// <param name="width">the width of the output image</param>
+        /// <param name="height">use 0 to keep ratio</param>
+        /// <param name="quality">only for jpeg, value 0 - 100</param>
+        /// <param name="removeExif">dont store exif in output memorystream</param>
+        /// <param name="imageFormat">jpeg, or png in Enum</param>
+        /// <returns>MemoryStream with resized image</returns>
         public MemoryStream ResizeThumbnailToStream(string fullSourceImage, int width, 
             int height = 0, int quality = 75, bool removeExif = false, 
             Files.ImageFormat imageFormat = Files.ImageFormat.jpg)
@@ -259,7 +301,10 @@ namespace starsky.Services
 
         
         
-        
+        /// <summary>
+        /// Check if the image has the right first bytes, if not remove
+        /// </summary>
+        /// <param name="thumbPath">the fullfile path of the file</param>
         private void RemoveCorruptImage(string thumbPath)
         {
             if (!File.Exists(thumbPath)) return;
@@ -284,9 +329,15 @@ namespace starsky.Services
             }
         }
         
-        // Resize the thumbnail
-        // Is successfull? // private feature
-        public bool RotateThumbnail(string fullPath, int orientation)
+        /// <summary>
+        /// Rotate an image, by rotating the pixels and resize the thumbnail.Please do not apply any orientation exiftag on this file
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <param name="orientation">-1 > Rotage -90degrees, anything else 90 degrees</param>
+        /// <param name="width">to resize, default 1000</param>
+        /// <param name="height">to resize, default keep ratio (0)</param>
+        /// <returns>Is successfull? // private feature</returns>
+        public bool RotateThumbnail(string fullPath, int orientation, int width = 1000, int height = 0 )
         {
             if (!File.Exists(fullPath)) return false;
 
@@ -299,7 +350,7 @@ namespace starsky.Services
                 using (Image<Rgba32> image = Image.Load(fullPath))
                 {
                     image.Mutate(x => x
-                        .Resize(1000, 0)
+                        .Resize(width, height)
                     );
                     image.Mutate(x => x
                         .Rotate(rotateMode));
