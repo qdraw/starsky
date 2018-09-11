@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +7,7 @@ using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
 
-namespace starskytests
+namespace starskytests.Services
 {
     [TestClass]
     public class ThumbnailTest
