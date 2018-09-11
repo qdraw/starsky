@@ -216,21 +216,7 @@ namespace starsky.Services
                     image.Mutate(x => x
                         .Resize(width, height)
                     );
-                    if (imageFormat == Files.ImageFormat.png)
-                    {
-                        image.SaveAsPng(outputStream, new PngEncoder{
-                            ColorType = PngColorType.Rgb, 
-                            CompressionLevel = 9, 
-                            WriteGamma = false 
-                        });
-                    }
-                    else
-                    {
-                        image.SaveAsJpeg(outputStream, new JpegEncoder{
-                            IgnoreMetadata = removeExif,
-                            Quality = quality
-                        });
-                    }
+                    ResizeThumbnailImageFormat(image, imageFormat, outputStream, removeExif, quality);
                 }
 
             }
@@ -240,8 +226,34 @@ namespace starsky.Services
                 Console.WriteLine(ex);
                 return null;
             }
-            
             return outputStream;
+        }
+
+        /// <summary>
+        /// Used in ResizeThumbnailToStream to save based on the input settings
+        /// </summary>
+        /// <param name="image">Rgba32 image</param>
+        /// <param name="imageFormat">Files ImageFormat</param>
+        /// <param name="outputStream">input stream to save</param>
+        /// <param name="removeExif">true, remove exif, default false</param>
+        /// <param name="quality">default 75, only for jpegs</param>
+        private void ResizeThumbnailImageFormat(Image<Rgba32> image, Files.ImageFormat imageFormat, MemoryStream outputStream, bool removeExif = false, int quality = 75)
+        {
+            if (imageFormat == Files.ImageFormat.png)
+            {
+                image.SaveAsPng(outputStream, new PngEncoder{
+                    ColorType = PngColorType.Rgb, 
+                    CompressionLevel = 9, 
+                    WriteGamma = false 
+                });
+            }
+            else
+            {
+                image.SaveAsJpeg(outputStream, new JpegEncoder{
+                    IgnoreMetadata = removeExif,
+                    Quality = quality
+                });
+            }
         }
         
 

@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Helpers;
 using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
@@ -146,9 +147,26 @@ namespace starskytests.Services
 
         }
 
+        [TestMethod]
+        public void Thumbnail_ResizeThumbnailToStream_JPEG_Test()
+        {
+            var newImage = new CreateAnImage();
+
+            var thumb = new Thumbnail(_appSettings, null).ResizeThumbnailToStream(newImage.FullFilePath, 1, 1, 75, false,
+                Files.ImageFormat.jpg);
+            Assert.AreEqual(true,thumb.CanRead);
+        }
         
-        
-        
-        
+        [TestMethod]
+        public void Thumbnail_ResizeThumbnailToStream_PNG_Test()
+        {
+            var newImage = new CreateAnImage();
+
+            var thumb = new Thumbnail(_appSettings, null).ResizeThumbnailToStream(newImage.FullFilePath, 1, 1, 75, false,
+                Files.ImageFormat.png);
+            Assert.AreEqual(true,thumb.CanRead);
+        }
+
+
     }
 }
