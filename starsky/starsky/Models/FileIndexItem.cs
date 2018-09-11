@@ -125,10 +125,21 @@ namespace starsky.Models
         [NotMapped]
         public ExifStatus Status { get; set; } = ExifStatus.Default;
         
-
-        [System.ComponentModel.DefaultValue("")]
         // add default value (6#+)
-        public string Description { get; set; } = string.Empty;
+        private string _description;
+        public string Description
+        {
+            get => _description ?? string.Empty;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _description = string.Empty;
+                    return;
+                }
+                _description = value.Trim();
+            }
+        }
         
         // Do not save null in database for Title
         private string _title;
