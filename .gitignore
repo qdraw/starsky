@@ -322,3 +322,4 @@ starsky/starsky/.sonarqube*
 **/appsettings.win*
 starsky/starskyTests/coverag*.xml
 starskyapp/ios/main.jsbundle
+**/.env

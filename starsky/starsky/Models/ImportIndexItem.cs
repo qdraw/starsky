@@ -81,6 +81,11 @@ namespace starsky.Models
 
             // Parse the DateTime to a string
             var fileName = DateTime.ToString(structuredFileName, CultureInfo.InvariantCulture);
+            if (DateTime.Year < 2)
+            {
+                fileName = Base32.Encode(Services.FileHash.GenerateRandomBytes(5));
+            }
+            
             fileName += "." + fileExtension;
             
             // Escape feature to Restore (filenamebase)
@@ -163,7 +168,8 @@ namespace starsky.Models
         public List<string> SearchSubDirInDirectory(string parentItem, string parsedItem)
         {
             if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
-            var childDirectories = Directory.GetDirectories(_appSettings.DatabasePathToFilePath(parentItem), parsedItem).ToList();
+            var childDirectories = Directory.GetDirectories(
+                _appSettings.DatabasePathToFilePath(parentItem), parsedItem).ToList();
             childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
             return childDirectories;
         }
@@ -209,7 +215,8 @@ namespace starsky.Models
                     // add backslash
                     var noSlashInParsedItem = parsedItem.Replace("/", string.Empty);
                     
-                    childFullDirectory = ConfigRead.AddBackslash(SearchSubDirInDirectory(parentItem, noSlashInParsedItem).FirstOrDefault());
+                    childFullDirectory = ConfigRead.AddBackslash(
+                        SearchSubDirInDirectory(parentItem, noSlashInParsedItem).FirstOrDefault());
                     /// only first item
                     if (SubFolder == string.Empty && childFullDirectory != null)
                     {
@@ -265,7 +272,8 @@ namespace starsky.Models
             }
 
             parseListDate = PatternListInput(parseListDate, "_!x_", "*");
-            parseListDate = PatternListInput(parseListDate, "_!q_", Path.GetFileNameWithoutExtension(SourceFullFilePath));
+            parseListDate = PatternListInput(parseListDate, "_!q_", 
+                Path.GetFileNameWithoutExtension(SourceFullFilePath));
 
             return parseListDate;
         }

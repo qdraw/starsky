@@ -9,7 +9,12 @@ namespace starsky.Helpers
 {
     public static class HttpClientHelper
     {
-        static readonly List<string> AllowedDomains = new List<string> {"dl.dropboxusercontent.com", "qdraw.nl", "locker.ifttt.com"};
+        static readonly List<string> AllowedDomains = new List<string>
+        {
+            "dl.dropboxusercontent.com", 
+            "qdraw.nl", 
+            "locker.ifttt.com"
+        };
         
         private static readonly HttpClient Client = new HttpClient();
         public static async Task<bool> Download(string sourceHttpUrl, string fullLocalPath) 
