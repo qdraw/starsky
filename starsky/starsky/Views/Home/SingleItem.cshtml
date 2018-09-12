@@ -33,6 +33,7 @@
         </h4>
 
         <img src="@Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash, issingleitem = true})"/>
+        
         <div class="form-inline form-wrapper" id="js-keywords-update">
             <p>Tags: <em>(komma gescheiden)</em></p>
             <div class="form-control js-keywords contenteditable disabled" contenteditable="false" 
@@ -106,6 +107,12 @@
                download="@Model.FileIndexItem.FileName">
                 Orgineel
             </a>
+           
+            <div class="js-collectionsswitch">
+                <h4>Collecties:</h4>
+                <div><a class="btn btn-default small" href="#">jpg</a></div>
+            </div>
+
         </div>
         <div class="rotation-sidebar">
             <h4>Rotatie:</h4>

@@ -933,7 +933,7 @@ float: left;
     width: 300px;
 }
 
-.sidebar .content div:last-child {
+.sidebar .content > div:last-child {
     margin-bottom: 30px;
 }
 
@@ -1154,3 +1154,21 @@ div#popup.on {
     display: block;
 }
 
+
+.js-collectionsswitch {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+.js-collectionsswitch a{
+    padding: 4px;
+    display: inline-block;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-decoration: none;
+}
+
+.js-collectionsswitch a:first-child {
+    background-color: #5a6268;
+    color: white;
+}

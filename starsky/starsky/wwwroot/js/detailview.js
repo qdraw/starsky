@@ -1,7 +1,7 @@
 
 // Req: base url = > updateApiBase
 updateApiBase = updateApiBase.replace("&amp;", "&");
-infoApiBase = infoApiBase.replace("&amp;", "&") + "&collections=false";
+infoApiBase = infoApiBase.replace("&amp;", "&") + "&collections=true";
 thumbnailApiBase = thumbnailApiBase.replace("&amp;", "&");
     
 
@@ -103,7 +103,7 @@ if (document.querySelectorAll("#js-keywords-update").length === 1 &&
 {
    loadJSON(infoApiBase,
        function(data) {
-           
+           updateCollectionsSwitch(data);
            updateDeletedKeywordElement(data[0]);
            updateColorClassButtons(data[0].colorClass);
            updateCaptionAbstractFromInput(data[0]);
@@ -598,8 +598,17 @@ function queryRotate(queryItem) {
 }
 
 
-
-
+function updateCollectionsSwitch(data) {
+    if (data.length <= 1) return;
+    if (document.querySelectorAll(".js-collectionsswitch div").length === -1) return;
+    
+    document.querySelector(".js-collectionsswitch div").innerHTML = "";
+    
+    for (var i = 0; i < data.length; i++) {
+        document.querySelector(".js-collectionsswitch div").innerHTML += "<a class='btn btn-default small' href='/?f="+ data[i].filePath +"'>"+ data[i].imageFormat+ "</a> ";
+        console.log(data)
+    }
+}
 document.addEventListener("DOMContentLoaded", function() {
     if (document.querySelectorAll(".main-image").length === 1){
         document.querySelector(".main-image").classList.add("contentloaded");

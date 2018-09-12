@@ -30,12 +30,13 @@ imaps.connect(config).then(function (connection) {
         var yesterday = new Date();
         yesterday.setTime(Date.now() - delay);
         yesterday = yesterday.toISOString();
-        var searchCriteria = ['UNSEEN', ['SINCE', yesterday]];
+        var searchCriteria = [['SINCE', yesterday]];
         var fetchOptions = { bodies: ['HEADER.FIELDS (FROM TO SUBJECT DATE)'], struct: true };
 
         // retrieve only the headers of the messages
         return connection.search(searchCriteria, fetchOptions);
     }).then(function (messages) {
+
 
         var attachments = [];
 
@@ -51,7 +52,8 @@ imaps.connect(config).then(function (connection) {
                     .then(function (partData) {
                         return {
                             filename: part.disposition.params.filename,
-                            data: partData
+                            data: partData,
+                            label: message.attributes["x-gm-labels"]
                         };
                     });
             }));
@@ -59,7 +61,6 @@ imaps.connect(config).then(function (connection) {
 
         return Promise.all(attachments);
     }).then(function (attachments) {
-        console.log(attachments);
 
         // =>
         //    [ { filename: 'cats.jpg', data: Buffer() },
@@ -71,8 +72,11 @@ imaps.connect(config).then(function (connection) {
 
 
             // return non gpx
-            if(attachments[i].filename.indexOf(".gpx") === -1) return;
+            // Need to have a gmail filter to white list the users
+            if(attachments[i].filename.indexOf(".gpx") === -1) continue;
+            if(attachments[i].label.indexOf("gpx") === -1) continue;
 
+            console.log(attachments[i]);
 
 
 
