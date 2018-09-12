@@ -39,10 +39,12 @@ imaps.connect(config).then(function (connection) {
         var attachments = [];
 
         messages.forEach(function (message) {
+
             var parts = imaps.getParts(message.attributes.struct);
             attachments = attachments.concat(parts.filter(function (part) {
                 return part.disposition && part.disposition.type.toUpperCase() === 'ATTACHMENT';
             }).map(function (part) {
+
                 // retrieve the attachments only of the messages with attachments
                 return connection.getPartData(message, part)
                     .then(function (partData) {
@@ -63,6 +65,18 @@ imaps.connect(config).then(function (connection) {
         //      { filename: 'pay-stub.pdf', data: Buffer() } ]
 
         for (var i = 0; i < attachments.length; i++) {
+
+
+
+
+            // return non gpx
+            if(attachments[i].filename.indexOf(".gpx") === -1) return;
+
+
+
+
+
+
             var formData = {
                 image_file: {
                     value: attachments[i].data, // Upload the first file in the multi-part post
