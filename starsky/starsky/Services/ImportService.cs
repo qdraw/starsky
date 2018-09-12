@@ -119,7 +119,7 @@ namespace starsky.Services
             
             // When a file already exist, when you have multiple files with the same datetime
             if (inputFileFullPath != destinationFullPath
-                && File.Exists(destinationFullPath) )
+                && File.Exists(destinationFullPath))
             {
                
                 fileIndexItem.FileName = string.Concat(
@@ -201,7 +201,7 @@ namespace starsky.Services
             File.Copy(inputFileFullPath, destinationFullPath);
             
             // Update the contents to the file the imported item
-            if (exifToolSync)
+            if (exifToolSync && Files.IsExtensionExifToolSupported(inputFileFullPath))
             {
                 Console.WriteLine("Do a exiftoolSync");
                 var comparedNamesList = new List<string>
