@@ -34,12 +34,13 @@ namespace starsky.Services
 
                     var singleFilePath = _appSettings.DatabasePathToFilePath(singleFolderDbStyle);
 
-                    // Read data from file
-                    var databaseItem = _readMeta.ReadExifAndXmpFromFile(singleFilePath);
-
                     // Check the headers of a file to match a type
-                    databaseItem.ImageFormat = Files.GetImageFormat(singleFilePath);
+                    var imageFormat = Files.GetImageFormat(singleFilePath);
+                    
+                    // Read data from file
+                    var databaseItem = _readMeta.ReadExifAndXmpFromFile(singleFilePath,imageFormat);
 
+                    databaseItem.ImageFormat = imageFormat;
                     databaseItem.AddToDatabase = DateTime.UtcNow;
                     databaseItem.FileHash = FileHash.GetHashCode(singleFilePath);
                     databaseItem.FileName = Path.GetFileName(singleFilePath);

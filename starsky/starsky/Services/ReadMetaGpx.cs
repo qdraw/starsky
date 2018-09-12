@@ -68,7 +68,8 @@ namespace starsky.Services
                         Title = GetTrkName(gpxDoc, namespaceManager),
                         DateTime = dateTime, //.ToUniversalTime(),
                         Latitude = latitude,
-                        Longitude = longitude
+                        Longitude = longitude,
+                        Tags = string.Empty
                     };
                 }
             }

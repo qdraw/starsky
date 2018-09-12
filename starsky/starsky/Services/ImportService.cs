@@ -150,7 +150,7 @@ namespace starsky.Services
 
             // Only accept files with correct meta data
             // Check if there is a xmp file that contains data
-            var fileIndexItem = _readmeta.ReadExifAndXmpFromFile(inputFileFullPath);
+            var fileIndexItem = _readmeta.ReadExifAndXmpFromFile(inputFileFullPath,Files.GetImageFormat(inputFileFullPath));
 
             // Parse the filename and create a new importIndexItem object
             var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem, importSettings.Structure);

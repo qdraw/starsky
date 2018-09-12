@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
 using starskytests.FakeMocks;
@@ -48,13 +49,13 @@ namespace starskytests.Services
             var createAnImage = new CreateAnImage();
             var appsettings = new AppSettings {StorageFolder = createAnImage.BasePath};
             // fakely add item to cache
-            new ReadMeta(appsettings, _fakeCache).ReadExifAndXmpFromFile(createAnImage.FullFilePath);
+            new ReadMeta(appsettings, _fakeCache).ReadExifAndXmpFromFile(createAnImage.FullFilePath,Files.ImageFormat.jpg);
         }
 
         [TestMethod]
         public void ReadMeta_ReadMetaBothTest_FakeReadEntry()
         {
-            Assert.AreEqual("test",new ReadMeta(null, _fakeCache).ReadExifAndXmpFromFile("test").Tags);
+            Assert.AreEqual("test",new ReadMeta(null, _fakeCache).ReadExifAndXmpFromFile("test",Files.ImageFormat.jpg).Tags);
         }
     }
 }

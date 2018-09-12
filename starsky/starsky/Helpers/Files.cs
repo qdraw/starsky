@@ -89,6 +89,7 @@ namespace starsky.Helpers
         private static readonly List<string> Extensionbmp = new List<string> {"bmp"};
         private static readonly List<string> Extensiongif = new List<string> {"gif"};
         private static readonly List<string> Extensionpng = new List<string> {"png"};
+        private static readonly List<string> Extensiongpx = new List<string> {"gpx"};
 
         public static List<string> ExtensionSyncSupportedList
         {
@@ -100,6 +101,7 @@ namespace starsky.Helpers
                 extensionList.AddRange(Extensionbmp);
                 extensionList.AddRange(Extensiongif);
                 extensionList.AddRange(Extensionpng);
+                extensionList.AddRange(Extensiongpx);
                 return extensionList;
             }
         }
