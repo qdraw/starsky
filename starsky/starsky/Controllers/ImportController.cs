@@ -51,10 +51,11 @@ namespace starsky.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Ifttt(string fileurl, string filename)
+        public async Task<IActionResult> Ifttt(string fileurl, string filename, string structure)
         {
             var tempImportPaths = new List<string>{FileStreamingHelper.GetTempFilePath(filename,_appSettings)};
             var importSettings = new ImportSettingsModel(Request);
+            importSettings.Structure = structure;
             var isDownloaded = await HttpClientHelper.Download(fileurl, tempImportPaths.FirstOrDefault());
             if (!isDownloaded) return NotFound("fileurl not found or domain not allowed " + fileurl);
             var importedFiles = _import.Import(tempImportPaths, importSettings);

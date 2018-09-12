@@ -42,10 +42,9 @@ namespace starsky.Models
             get { return _structure; }
             set
             {
-                if (!string.IsNullOrEmpty(value))
-                {
-                    AppSettings.StructureCheck(value);
-                }
+                // Changed this => value used te be without check
+                if (string.IsNullOrEmpty(value)) return;
+                AppSettings.StructureCheck(value);
                 _structure = value;
             }
         }
