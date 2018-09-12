@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
 using starskywebhtmlcli.Services;
@@ -58,6 +60,8 @@ namespace starskytests.starskyWebHtmlCli.Services
             }};
 
             new LoopPublications(appSettings,null).Render(list,null);
+            
+            Files.DeleteFile(createAnImage.BasePath + Path.DirectorySeparatorChar + "index.html");
         }
     }
 }
