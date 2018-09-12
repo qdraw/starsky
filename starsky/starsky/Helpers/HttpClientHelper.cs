@@ -9,12 +9,14 @@ namespace starsky.Helpers
 {
     public static class HttpClientHelper
     {
-        static readonly List<string> AllowedDomains = new List<string> {"dl.dropboxusercontent.com", "qdraw.nl"};
+        static readonly List<string> AllowedDomains = new List<string> {"dl.dropboxusercontent.com", "qdraw.nl", "locker.ifttt.com"};
         
         private static readonly HttpClient Client = new HttpClient();
         public static async Task<bool> Download(string sourceHttpUrl, string fullLocalPath) 
         {
             Uri sourceUri = new Uri(sourceHttpUrl);
+
+            Console.WriteLine("HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
 
             // allow whitelist and https only
             if (!AllowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return false;
