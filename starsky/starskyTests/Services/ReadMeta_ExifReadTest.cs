@@ -9,7 +9,7 @@ using starsky.Models;
 using starsky.Services;
 using Directory = MetadataExtractor.Directory;
 
-namespace starskytests
+namespace starskytests.Services
  {
      public class MockDirectory : Directory
      {

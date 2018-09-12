@@ -75,6 +75,8 @@ namespace starskytests.Services
             var databaseItem = new FileIndexItem();
             var readXmp = new ReadMeta(appsettings).XmpGetSidecarFile(databaseItem, fakeRawPath);
             Assert.AreEqual("The object name",readXmp.Title);
+            // clean afterwards
+            Files.DeleteFile(xmpPath);
         }
 
     }

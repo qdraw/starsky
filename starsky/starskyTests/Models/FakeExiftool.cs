@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Interfaces;
 using starsky.Models;
-using starsky.Services;
-using starsky.ViewModels;
 
-namespace starskytests.Services
+namespace starskytests.Models
 {
     public class FakeExiftool : IExiftool
     {

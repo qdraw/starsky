@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Helpers;
 using starsky.Services;
 
 namespace starskytests.Services
@@ -11,11 +12,15 @@ namespace starskytests.Services
         [TestMethod]
         public void ReadGpxFromFileTest_readfile()
         {
-            var retrunItem = new ReadMeta(null, null).ReadGpxFromFile(new CreateAnGpx().FullFileGpxPath);
-            Assert.AreEqual(5.485941,retrunItem.Longitude,0.001);
-            Assert.AreEqual(51.809360,retrunItem.Latitude,0.001);
+            var gpxFullSourcePath = new CreateAnGpx().FullFileGpxPath;
+            var returnItem = new ReadMeta(null, null).ReadGpxFromFile(gpxFullSourcePath);
+            Assert.AreEqual(5.485941,returnItem.Longitude,0.001);
+            Assert.AreEqual(51.809360,returnItem.Latitude,0.001);
             DateTime.TryParse("2018-09-05T17:31:53Z", out var expectDateTime);
-            Assert.AreEqual(expectDateTime,retrunItem.DateTime);
+            Assert.AreEqual(expectDateTime,returnItem.DateTime);
+            
+            // remove afterwards
+            Files.DeleteFile(gpxFullSourcePath);
         }
 
     }

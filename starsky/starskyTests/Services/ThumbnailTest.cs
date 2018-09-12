@@ -125,21 +125,24 @@ namespace starskytests.Services
         public void ThumbnailByDirectoryTest()
         {
 
-            var newImage = new CreateAnImage();
-            _appSettings.ThumbnailTempFolder = newImage.BasePath;;
-            _appSettings.StorageFolder = newImage.BasePath;
+            var createAnImage = new CreateAnImage();
+            _appSettings.ThumbnailTempFolder = createAnImage.BasePath;;
+            _appSettings.StorageFolder = createAnImage.BasePath;
 
-            var hashString = FileHash.GetHashCode(newImage.FullFilePath);
+            var hashString = FileHash.GetHashCode(createAnImage.FullFilePath);
 
             // Delete if exist, to optimize test
-            var thumbnailPath = Path.Combine(newImage.BasePath, hashString + ".jpg");
+            var thumbnailPath = Path.Combine(createAnImage.BasePath, hashString + ".jpg");
             if (File.Exists(thumbnailPath))
             {
                 File.Delete(thumbnailPath);
             }
-        
+            
+            // this file is not needed
+            File.Delete(createAnImage.FullFilePathWithDate);
+
             // Create an thumbnail based on the image
-            new ThumbnailByDirectory(_appSettings,null).CreateThumb(newImage.BasePath);
+            new ThumbnailByDirectory(_appSettings,null).CreateThumb(createAnImage.BasePath);
             
             Assert.AreEqual(true,File.Exists(thumbnailPath));
             

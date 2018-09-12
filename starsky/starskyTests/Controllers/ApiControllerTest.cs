@@ -19,6 +19,7 @@ using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
 using starskytests.FakeMocks;
+using starskytests.Models;
 using starskytests.Services;
 
 namespace starskytests.Controllers
