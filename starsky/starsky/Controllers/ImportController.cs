@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -41,17 +43,25 @@ namespace starsky.Controllers
 
             var importedFiles = _import.Import(tempImportPaths, importSettings);
 
-            foreach (var path in tempImportPaths)
-            {
-                if (System.IO.File.Exists(path))
-                {
-                    System.IO.File.Delete(path);
-                } 
-            }
+            Files.DeleteFile(tempImportPaths);
             
             if(importedFiles.Count == 0) Response.StatusCode = 206;
             
             return Json(importedFiles);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Ifttt(string fileurl, string filename)
+        {
+            var tempImportPaths = new List<string>{FileStreamingHelper.GetTempFilePath(filename,_appSettings)};
+            var importSettings = new ImportSettingsModel(Request);
+            var isDownloaded = await HttpClientHelper.Download(fileurl, tempImportPaths.FirstOrDefault());
+            if (!isDownloaded) return NotFound("fileurl not found or domain not allowed " + fileurl);
+            var importedFiles = _import.Import(tempImportPaths, importSettings);
+            Files.DeleteFile(tempImportPaths);
+            if(importedFiles.Count == 0) Response.StatusCode = 206;
+            return Json(importedFiles);
+        }
+
     }
 }
