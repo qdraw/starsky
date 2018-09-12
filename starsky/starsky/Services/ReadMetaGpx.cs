@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -53,14 +54,17 @@ namespace starsky.Services
                 var longitudeString = node.GetAttribute("lon");
                 var latitudeString = node.GetAttribute("lat");
 
-                var longitude = double.Parse(longitudeString);
-                var latitude = double.Parse(latitudeString);
+                var longitude = double.Parse(longitudeString, 
+                    NumberStyles.Currency, CultureInfo.InvariantCulture);
+                var latitude = double.Parse(latitudeString, 
+                    NumberStyles.Currency, CultureInfo.InvariantCulture);
 
                 foreach (XmlElement childNode in node.ChildNodes)
                 {
                     // childNode.Name == "ele" > elevation
                     if (childNode.Name != "time") continue;
                     var datetimeString = childNode.InnerText;
+                    
                     DateTime.TryParse(datetimeString, out var dateTime);
                     
                     return new FileIndexItem
