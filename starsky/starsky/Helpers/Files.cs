@@ -106,9 +106,28 @@ namespace starsky.Helpers
             }
         }
         
+        private static List<string> ExtensionExifToolSupportedList
+        {
+            get
+            {
+                var extensionList = new List<string>();
+                extensionList.AddRange(Extensionjpg);
+                extensionList.AddRange(Extensiontiff);
+                extensionList.AddRange(Extensionbmp);
+                extensionList.AddRange(Extensiongif);
+                extensionList.AddRange(Extensionpng);
+                return extensionList;
+            }
+        }
+        public static bool IsExtensionExifToolSupported(string filename)
+        {
+            var ext = Path.GetExtension(filename).Remove(0,1);
+            return ExtensionExifToolSupportedList.Contains(ext); // true = if supported
+        }
+        
         // ImageSharp => The IImageFormat interface, Jpeg, Png, Bmp, and Gif formats.
         // Tiff based images are not supported by the thumbnail application 
-        public static List<string> ExtensionThumbSupportedList
+        private static List<string> ExtensionThumbSupportedList
         {
             get
             {
@@ -119,6 +138,11 @@ namespace starsky.Helpers
                 extensionList.AddRange(Extensionpng);
                 return extensionList;
             }
+        }
+        public static bool IsExtensionThumbnailSupported(string filename)
+        {
+            var ext = Path.GetExtension(filename).Remove(0,1).ToLowerInvariant();
+            return ExtensionThumbSupportedList.Contains(ext); // true = if supported
         }
         
         // List of extension that are forced to use sitecar xmp files

@@ -2,6 +2,7 @@
 @using System.Linq
 @using System.Web
 @using Microsoft.AspNetCore.Mvc
+@using starsky.Helpers
 @using starsky.Services
 @using starsky.ViewModels
 @model DetailView
@@ -91,11 +92,15 @@
         <div class="download-sidebar">
             <h4>Downloads:</h4>
 
-            <a class="btn-sm btn btn-secondary" 
-               href="@Url.Action("DownloadPhoto", "Api", new {f = @Model.FileIndexItem.FilePath, isThumbnail = true})" 
-               download="@Model.FileIndexItem.FileName.Replace(".jpg", "")-th.jpg">
-                Klein
-            </a>
+            @if (@Files.IsExtensionThumbnailSupported(@Model.FileIndexItem.FileName))
+            {
+                <a class="btn-sm btn btn-secondary" 
+                   href="@Url.Action("DownloadPhoto", "Api", new {f = @Model.FileIndexItem.FilePath, isThumbnail = true})" 
+                   download="@Model.FileIndexItem.FileName.Replace(".jpg", "")-th.jpg">
+                    Klein
+                </a>   
+            }
+
             <a class="btn-sm btn btn-secondary" 
                href="@Url.Action("DownloadPhoto", "Api", new {f = @Model.FileIndexItem.FilePath, isThumbnail = false})" 
                download="@Model.FileIndexItem.FileName">

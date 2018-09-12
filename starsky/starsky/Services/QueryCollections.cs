@@ -35,12 +35,16 @@ namespace starsky.Services
 
                 for (int i = 0; i < duplicateItems.Count; i++)
                 {
-                    var fileExtension = Path.GetExtension(duplicateItems[i].FileName).Replace(".",string.Empty);
-                    
-                    if (Files.ExtensionThumbSupportedList.Contains(fileExtension.ToLower()))
+                    if(Files.IsExtensionThumbnailSupported(duplicateItems[i].FileName))
                     {
                         querySubFolderList.Add(duplicateItems[i]);
                     }
+                    
+//                    var fileExtension = Path.GetExtension(duplicateItems[i].FileName).Replace(".",string.Empty);
+//                    
+//                    if (Files.ExtensionThumbSupportedList.Contains(fileExtension.ToLower()))
+//                    {
+//                    }
                 }
 
                 if (querySubFolderList.Any(p => p.FileCollectionName == duplicateItemByName.FileCollectionName))

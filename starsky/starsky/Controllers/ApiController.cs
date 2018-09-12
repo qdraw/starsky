@@ -228,6 +228,14 @@ namespace starsky.Controllers
                 
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
+                    // Check if extension is supported for ExtensionExifToolSupportedList
+                    // Not all files are able to write with exiftool
+                    if(!Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
+                    {
+                        detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
+                        fileIndexResultsList.Add(detailView.FileIndexItem);
+                        continue;
+                    }
                     
                     var comparedNamesList = FileIndexCompareHelper.Compare(detailView.FileIndexItem, statusModel, append);
 
@@ -335,6 +343,15 @@ namespace starsky.Controllers
             foreach (var subPath in inputFilePaths)
             {
                 var detailView = _query.SingleItem(subPath, null, collections, false);
+                
+                // Check if extension is supported for ExtensionExifToolSupportedList
+                // Not all files are able to write with exiftool
+                if(!Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
+                {
+                    detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
+                    fileIndexResultsList.Add(detailView.FileIndexItem);
+                    continue;
+                }
                 var statusResults = FileCollectionsCheck(detailView);
 
                 var statusModel = new FileIndexItem();
@@ -350,6 +367,13 @@ namespace starsky.Controllers
                 fileIndexResultsList.AddRange(fileCompontentList);
             }
 
+            // returns read only
+            if (fileIndexResultsList.All(p => p.Status == FileIndexItem.ExifStatus.ReadOnly))
+            {
+                Response.StatusCode = 203; // is readonly
+                return Json(fileIndexResultsList);
+            }
+                
             // When all items are not found
             if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
                 return NotFound(fileIndexResultsList);
@@ -497,11 +521,10 @@ namespace starsky.Controllers
                     return Json("Thumbnail is not ready yet");
                 }
                 
-                var fileExtensionWithoutDot = Path.GetExtension(sourceFullPath).Remove(0, 1).ToLower();
-                    
-                if (Files.ExtensionThumbSupportedList.Contains(fileExtensionWithoutDot.ToLower()))
+                if (Files.IsExtensionThumbnailSupported(sourceFullPath))
                 {
                     FileStream fs1 = System.IO.File.OpenRead(sourceFullPath);
+                    var fileExtensionWithoutDot = Path.GetExtension(sourceFullPath).Remove(0, 1).ToLower();
                     return File(fs1, MimeHelper.GetMimeType(fileExtensionWithoutDot));
                 }
                 Response.StatusCode = 409; // A conflict, that the thumb is not generated yet
