@@ -112,7 +112,8 @@ namespace starsky.Controllers
         /// <param name="statusResults">the status by FileCollectionsCheck</param>
         /// <param name="fileIndexResultsList">list of object that will be returned</param>
         /// <returns>If true skip the next code</returns>
-        public bool ReturnExifStatusError(FileIndexItem statusModel, FileIndexItem.ExifStatus statusResults, List<FileIndexItem> fileIndexResultsList )
+        public bool ReturnExifStatusError(FileIndexItem statusModel, 
+            FileIndexItem.ExifStatus statusResults, List<FileIndexItem> fileIndexResultsList)
         {
             switch (statusResults)
             {
@@ -532,7 +533,8 @@ namespace starsky.Controllers
             }
 
             return NotFound("There is no thumbnail image " + thumbPath + " and no source image "+ sourcePath );
-            // When you have duplicate files and one of them is removed and there is no thumbnail generated yet you might get an false error
+            // When you have duplicate files and one of them is removed and there is no thumbnail
+            // generated yet you might get an false error
         }
 
         /// <summary>
