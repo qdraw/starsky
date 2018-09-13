@@ -36,7 +36,8 @@ namespace starsky.Services
                     var newItem = new FileIndexItem
                     {
                         AddToDatabase = DateTime.UtcNow,
-                        IsDirectory = true
+                        IsDirectory = true,
+                        ColorClass = FileIndexItem.Color.None
                     };
                     if (itemSubpath != "/")
                     {

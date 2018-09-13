@@ -16,13 +16,20 @@ namespace starsky.Services
             
             if (Files.IsFolderOrFile(fullFilePath) != FolderOrFileModel.FolderOrFileTypeList.File) return new FileIndexItem();
 
-            var returnItem = ReadGpxFileReturnAfterFirstField(fullFilePath);
-
-            return returnItem;
+            try
+            {
+                return ReadGpxFileReturnAfterFirstField(fullFilePath);
+            }
+            catch (XmlException e)
+            {
+                Console.WriteLine(e);
+                return new FileIndexItem { ColorClass = FileIndexItem.Color.None};
+            }
         }
 
         private string GetTrkName(XmlDocument gpxDoc, XmlNamespaceManager namespaceManager)
         {
+            
             XmlNodeList trkNodeList = gpxDoc.SelectNodes("//x:trk",  namespaceManager);
             var trkName = new StringBuilder();
             foreach (XmlElement node in trkNodeList)
@@ -44,6 +51,7 @@ namespace starsky.Services
             
             XmlDocument gpxDoc = new XmlDocument();
             gpxDoc.Load(fullFilePath);
+            
             XmlNamespaceManager namespaceManager = new XmlNamespaceManager(gpxDoc.NameTable);
             namespaceManager.AddNamespace("x", "http://www.topografix.com/GPX/1/1");
             
@@ -73,7 +81,8 @@ namespace starsky.Services
                         DateTime = dateTime, //.ToUniversalTime(),
                         Latitude = latitude,
                         Longitude = longitude,
-                        Tags = string.Empty
+                        Tags = string.Empty,
+                        ColorClass = FileIndexItem.Color.None
                     };
                 }
             }

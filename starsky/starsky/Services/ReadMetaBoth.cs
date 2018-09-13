@@ -23,9 +23,9 @@ namespace starsky.Services
         private FileIndexItem ReadExifAndXmpFromFileDirect(string singleFilePath, 
             Files.ImageFormat imageFormat)
         {
+            if (imageFormat == Files.ImageFormat.gpx) return ReadGpxFromFile(singleFilePath);
             var databaseItem = ReadExifFromFile(singleFilePath);
             databaseItem = XmpGetSidecarFile(databaseItem, singleFilePath);
-            if (imageFormat == Files.ImageFormat.gpx) return ReadGpxFromFile(singleFilePath);
             return databaseItem;
         }
 
