@@ -15,6 +15,7 @@ namespace starsky.Models
 {
     public class FileIndexItem
     {
+        [JsonIgnore]
         public int Id { get; set; }
 
         private string _filePath { get; set; } = string.Empty;

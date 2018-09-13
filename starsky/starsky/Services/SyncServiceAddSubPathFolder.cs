@@ -30,7 +30,6 @@ namespace starsky.Services
             {
                 if(_appSettings.Verbose) Console.WriteLine("AddSubPathFolder: " + itemSubpath);
 
-//                var countFolder = _context.FileIndex.Count(p => p.FilePath == itemSubpath);
                 if (_query.GetObjectByFilePath(itemSubpath) != null) continue;
                 
                 var newItem = new FileIndexItem

@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using starsky.Helpers;
 using starsky.Services;
 
@@ -26,8 +27,8 @@ namespace starsky.Models
             Structure = _appSettings.Structure;
         }
 
-        
         public int Id { get; set; }
+        
         public string FileHash { get; set; }
 
         public DateTime AddToDatabase { get; set; }
@@ -38,11 +39,13 @@ namespace starsky.Models
         private string FileName { get; set; }
 
         [NotMapped]
+        [JsonIgnore]
         public string SourceFullFilePath { get; set; }
 
         // Defaults to _appSettings.Structure
         // Feature to overwrite system structure by request
         [NotMapped] 
+        [JsonIgnore]
         public string Structure { get; set; }
 
         
@@ -163,6 +166,7 @@ namespace starsky.Models
 
 
         [NotMapped]
+        [JsonIgnore]
         public string SubFolder  { get; set; }
 
         public List<string> SearchSubDirInDirectory(string parentItem, string parsedItem)

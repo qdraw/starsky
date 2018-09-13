@@ -45,26 +45,46 @@ namespace starsky.Controllers
         {
             var tempImportPaths = await Request.StreamFile(_appSettings);
 
-            Console.WriteLine();
-            // Update >
+            var fileIndexResultsList = new List<ImportIndexItem>();
+            var hashList = FileHash.GetHashCode(tempImportPaths.ToArray());
 
+            for (int i = 0; i < hashList.Count; i++)
+            {
+                var hash = hashList[i];
+                var item = _import.GetItemByHash(hash);
+                if (item != null)
+                {
+                    fileIndexResultsList.Add(item);
+                    continue;
+                }
+                fileIndexResultsList.Add(new ImportIndexItem
+                {
+                    FileHash = hash,
+                    SourceFullFilePath = tempImportPaths[i],
+                    AddToDatabase = DateTime.UtcNow
+                });
+            }
+
+
+            // Import files >
             _bgTaskQueue.QueueBackgroundWorkItem(async token =>
             {    
                 var importSettings = new ImportSettingsModel(Request);
-
                 var importedFiles = _import.Import(tempImportPaths, importSettings);
-
                 Files.DeleteFile(tempImportPaths);
-
+                foreach (var file in importedFiles)
+                {
+                    Console.WriteLine(file);
+                }
             });
+            
+            // When all items are allready imported
+            if (fileIndexResultsList.All(p => p.Id != 0)) Response.StatusCode = 206;
 
-            return Ok();
-
-//            if(importedFiles.Count == 0) Response.StatusCode = 206;
-//            
-//            return Json(importedFiles);
+            return Json(fileIndexResultsList);
         }
 
+        
 //        [HttpPost]
 //        public async Task<IActionResult> Ifttt(string fileurl, string filename, string structure)
 //        {

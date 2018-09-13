@@ -6,5 +6,6 @@ namespace starsky.Interfaces
     public interface IImport
     {
         List<string> Import(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings);
+        ImportIndexItem GetItemByHash(string fileHash);
     }
 }
