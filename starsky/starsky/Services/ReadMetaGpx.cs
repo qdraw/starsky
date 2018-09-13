@@ -40,7 +40,7 @@ namespace starsky.Services
                     {
                         trkName.Append(childNode.InnerText);
                         return trkName.ToString();
-                    };
+                    }
                 }
             }
             return string.Empty;

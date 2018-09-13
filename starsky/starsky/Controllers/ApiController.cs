@@ -24,7 +24,8 @@ namespace starsky.Controllers
         private readonly IReadMeta _readMeta;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public ApiController(IQuery query, IExiftool exiftool, 
+        public ApiController(
+            IQuery query, IExiftool exiftool, 
             AppSettings appSettings, IBackgroundTaskQueue queue,
             IReadMeta readMeta, IServiceScopeFactory scopeFactory
             )

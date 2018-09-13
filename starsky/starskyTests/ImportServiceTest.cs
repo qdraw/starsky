@@ -80,7 +80,7 @@ namespace starskytests
             //   _isync = isync
             //   _exiftool = exiftool
             //   _appSettings = appSettings
-            _import = new ImportService(context,_isync,_exiftool,_appSettings,_readmeta);
+            _import = new ImportService(context,_isync,_exiftool,_appSettings,_readmeta,null);
         }
         
 //        public ImportServiceTest()

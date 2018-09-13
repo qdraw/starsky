@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
 using starsky.Helpers;
 using starsky.Interfaces;
 using starsky.Models;
+using starsky.Services;
 
 namespace starsky.Controllers
 {
@@ -16,11 +19,14 @@ namespace starsky.Controllers
     {
         private readonly IImport _import;
         private readonly AppSettings _appSettings;
+        private readonly IBackgroundTaskQueue _bgTaskQueue;
 
-        public ImportController(IImport import, AppSettings appSettings)
+        public ImportController(IImport import, AppSettings appSettings, 
+            IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue)
         {
             _appSettings = appSettings;
             _import = import;
+            _bgTaskQueue = queue;
         }
 
         [HttpGet]
@@ -38,16 +44,25 @@ namespace starsky.Controllers
         public async Task<IActionResult> IndexPost()
         {
             var tempImportPaths = await Request.StreamFile(_appSettings);
-            
-            var importSettings = new ImportSettingsModel(Request);
 
-            var importedFiles = _import.Import(tempImportPaths, importSettings);
+            Console.WriteLine();
+            // Update >
 
-            Files.DeleteFile(tempImportPaths);
-            
-            if(importedFiles.Count == 0) Response.StatusCode = 206;
-            
-            return Json(importedFiles);
+            _bgTaskQueue.QueueBackgroundWorkItem(async token =>
+            {    
+                var importSettings = new ImportSettingsModel(Request);
+
+                var importedFiles = _import.Import(tempImportPaths, importSettings);
+
+                Files.DeleteFile(tempImportPaths);
+
+            });
+
+            return Ok();
+
+//            if(importedFiles.Count == 0) Response.StatusCode = 206;
+//            
+//            return Json(importedFiles);
         }
 
 //        [HttpPost]

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.Data;
 using starsky.Helpers;
 using starsky.Interfaces;
@@ -11,20 +12,26 @@ namespace starsky.Services
 {
     public class ImportService : IImport
     {
-        private readonly ApplicationDbContext _context;
+        private ApplicationDbContext _context;
         private readonly ISync _isync;
         private readonly IExiftool _exiftool;
         private readonly AppSettings _appSettings;
         private readonly IReadMeta _readmeta;
+        private readonly IServiceScopeFactory _scopeFactory;
 
         public ImportService(ApplicationDbContext context, 
-            ISync isync, IExiftool exiftool, AppSettings appSettings, IReadMeta readMeta)
+            ISync isync, 
+            IExiftool exiftool, 
+            AppSettings appSettings, 
+            IReadMeta readMeta, 
+            IServiceScopeFactory scopeFactory)
         {
             _context = context;
             _isync = isync;
             _exiftool = exiftool;
             _appSettings = appSettings;
             _readmeta = readMeta;
+            _scopeFactory = scopeFactory;
         }
 
 
@@ -252,6 +259,7 @@ namespace starsky.Services
         // New added, directory hash now also hashes
         public ImportIndexItem GetItemByHash(string fileHash)
         {
+            InjectServiceScope();
             var query = _context.ImportIndex.FirstOrDefault(
                 p => p.FileHash == fileHash 
             );
@@ -261,11 +269,22 @@ namespace starsky.Services
        
         public bool IsHashInImportDb(string fileHash)
         {
-            var query = _context.ImportIndex.Any(
+            InjectServiceScope();
+            return _context.ImportIndex.Any(
                 p => p.FileHash == fileHash 
             );
-            return query;
         }
+
+        /// <summary>
+        /// Dependency injection, used in background tasks
+        /// </summary>
+        private void InjectServiceScope()
+        {
+            if (_scopeFactory == null) return;
+            var scope = _scopeFactory.CreateScope();
+            _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        }
+        
     }
     
     

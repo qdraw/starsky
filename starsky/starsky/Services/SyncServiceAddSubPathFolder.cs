@@ -30,33 +30,22 @@ namespace starsky.Services
             {
                 if(_appSettings.Verbose) Console.WriteLine("AddSubPathFolder: " + itemSubpath);
 
-                var countFolder = _context.FileIndex.Count(p => p.FilePath == itemSubpath);
-                if (countFolder == 0)
-                {
-                    var newItem = new FileIndexItem
-                    {
-                        AddToDatabase = DateTime.UtcNow,
-                        IsDirectory = true,
-                        ColorClass = FileIndexItem.Color.None
-                    };
-                    if (itemSubpath != "/")
-                    {
-                        newItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(itemSubpath).LastOrDefault();
-                    }
-                    newItem.FileName = itemSubpath.Split("/").LastOrDefault();
-                    _query.AddItem(newItem);
-                }
-
-//                // Remove some stange items in the database
-//                // with the name slash or /2018
-//                if (countFolder < 1) continue;
-//                
-//                var fileIndexItem = _query.GetObjectByFilePath(itemSubpath);
-//                if (!string.IsNullOrWhiteSpace(fileIndexItem.FileHash) || countFolder >= 2)
-//                {
-//                    _query.RemoveItem(fileIndexItem);
-//                }
+//                var countFolder = _context.FileIndex.Count(p => p.FilePath == itemSubpath);
+                if (_query.GetObjectByFilePath(itemSubpath) != null) continue;
                 
+                var newItem = new FileIndexItem
+                {
+                    AddToDatabase = DateTime.UtcNow,
+                    IsDirectory = true,
+                    ColorClass = FileIndexItem.Color.None
+                };
+                if (itemSubpath != "/")
+                {
+                    newItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(itemSubpath).LastOrDefault();
+                }
+                newItem.FileName = itemSubpath.Split("/").LastOrDefault();
+                _query.AddItem(newItem);
+
             }
         }
     }

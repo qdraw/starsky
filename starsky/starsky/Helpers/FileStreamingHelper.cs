@@ -17,17 +17,15 @@ namespace starsky.Helpers
     public static class FileStreamingHelper
     {
         private static readonly FormOptions _defaultFormOptions = new FormOptions();
-        private static AppSettings _appSettings;
 
         public static async Task<List<string>> StreamFile(this HttpRequest request, AppSettings appSettings)
         {
-            _appSettings = appSettings;
             // The Header 'filename' is for uploading on file without a form.
-            return await StreamFile(request.ContentType, request.Body, HeaderFileName(request));            
+            return await StreamFile(request.ContentType, request.Body, appSettings, HeaderFileName(request,appSettings));            
         }
 
         // Support for plain text input and base64 strings
-        public static string HeaderFileName(HttpRequest request)
+        public static string HeaderFileName(HttpRequest request,AppSettings appSettings)
         {
             // > when you do nothing
             if (string.IsNullOrEmpty(request.Headers["filename"]))
@@ -35,18 +33,21 @@ namespace starsky.Helpers
             
             // file without base64 encoding; return slug based url
             if (Base64Helper.TryParse(request.Headers["filename"]) == null)
-                return _appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(request.Headers["filename"]))
+                return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(request.Headers["filename"]))
                        + Path.GetExtension(request.Headers["filename"]);
             
             var requestHeadersBytes = Base64Helper.TryParse(request.Headers["filename"]);
             var requestHeaders = System.Text.Encoding.ASCII.GetString(requestHeadersBytes);
-            return _appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders)) + Path.GetExtension(requestHeaders);
+            return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders)) + Path.GetExtension(requestHeaders);
         }
 
-        public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, string headerFileName = null)
+        public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, AppSettings appSettings, string headerFileName = null)
         {
             // headerFileName is for uploading on a single file without a multi part form.
 
+            // fallback
+            if (headerFileName == null) headerFileName = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
+            
             var tempPaths = new List<string>();
 
             if (!MultipartRequestHelper.IsMultipartContentType(contentType))
@@ -55,7 +56,7 @@ namespace starsky.Helpers
                     throw new FileLoadException($"Expected a multipart request, but got {contentType}");
 
        
-                var fullFilePath = Path.Combine(_appSettings.TempFolder, headerFileName);
+                var fullFilePath = Path.Combine(appSettings.TempFolder, headerFileName);
                 
                 // Write to disk
                 await Store(fullFilePath, requestBody);
@@ -85,7 +86,7 @@ namespace starsky.Helpers
                 {
                     var inputExtension = Path.GetExtension(contentDisposition.FileName.ToString().Replace("\"",string.Empty));
                     var tempHash = Base32.Encode(FileHash.GenerateRandomBytes(10));
-                    var fullFilePath = Path.Combine(_appSettings.TempFolder, tempHash + inputExtension);
+                    var fullFilePath = Path.Combine(appSettings.TempFolder, tempHash + inputExtension);
                     tempPaths.Add(fullFilePath);
 
                     await Store(fullFilePath, section.Body);
