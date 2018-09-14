@@ -847,7 +847,7 @@ float: left;
 
 .main-image {
     width: auto;
-    max-height: 80vh;
+    max-height: calc(100vh - 154px);
     max-width: calc(100vw - 30px);
 }
 .main-image.contentloaded {
@@ -856,19 +856,34 @@ float: left;
 
 /* Sorry for firefox and mobile safari only */
 /*disabled-*/
+.sidebar .content img {
+    width: 250px;
+    height: 100px;
+}
 
 .sidebar .content img.Rotate90Cw,
 .main-image.Rotate90Cw {
-    image-orientation: 90deg;
+    transform: translateY(-100%) rotate(90deg); /* W3C */
+    transform-origin: left bottom;
+}
+
+.sidebar .content img.Rotate270Cw,
+.sidebar .content img.Rotate90Cw {
+    /*flip this one*/
+    width: 100px;
+    height: 250px;
 }
 .sidebar .content img.Rotate180,
 .main-image.Rotate180 {
-    image-orientation: 180deg;
+    transform: rotate(180deg); /* W3C */
+    /*image-orientation: 180deg;*/
 }
 
 .sidebar .content img.Rotate270Cw,
 .main-image.Rotate270Cw {
-    image-orientation: 270deg;
+    transform: translateX(-100%) rotate(-90deg); /* W3C */
+    transform-origin: top right;
+    /*image-orientation: 270deg;*/
 }
 
 .sidebar .content img.Rotate90Cw,
@@ -891,14 +906,17 @@ float: left;
         max-height: unset;
     }
 }
-.sidebar .content img {
+.sidebar .content .thumbnail {
     width: 250px;
     height: 100px;
-    object-fit: contain;
-    object-position: center;
     background-color: #ddd;
-    font-family: "object-fit: cover";
 }
+.sidebar .content .thumbnail > img {
+    font-family: "object-fit: cover";
+    object-fit: contain;
+    object-position: center; 
+}
+
 .sidebar {
     width: 300px;
     height: 100vh;
