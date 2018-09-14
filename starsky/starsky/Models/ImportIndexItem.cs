@@ -84,10 +84,6 @@ namespace starsky.Models
 
             // Parse the DateTime to a string
             var fileName = DateTime.ToString(structuredFileName, CultureInfo.InvariantCulture);
-//            if (DateTime.Year < 2)
-//            {
-//                fileName = Base32.Encode(Services.FileHash.GenerateRandomBytes(5));
-//            }
             
             fileName += "." + fileExtension;
             

@@ -1154,6 +1154,10 @@ div#popup.on {
     display: block;
 }
 
+.js-toggle-issingleitem {
+    margin-top: 10px;
+    letter-spacing: -0.3px;
+}
 
 .js-collectionsswitch {
     display: block;
