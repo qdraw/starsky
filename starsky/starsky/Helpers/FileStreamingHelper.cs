@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -25,7 +26,8 @@ namespace starsky.Helpers
         }
 
         // Support for plain text input and base64 strings
-        public static string HeaderFileName(HttpRequest request,AppSettings appSettings)
+        // Use for single files only
+        public static string HeaderFileName(HttpRequest request, AppSettings appSettings)
         {
             // > when you do nothing
             if (string.IsNullOrEmpty(request.Headers["filename"]))
@@ -39,6 +41,13 @@ namespace starsky.Helpers
             var requestHeadersBytes = Base64Helper.TryParse(request.Headers["filename"]);
             var requestHeaders = System.Text.Encoding.ASCII.GetString(requestHeadersBytes);
             return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders)) + Path.GetExtension(requestHeaders);
+        }
+
+        public static string DecodeFileName(string sourceFileName, AppSettings appSettings)
+        {
+            var byteName = Encoding.ASCII.GetBytes(appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(sourceFileName)));
+            var tempHash = Base32.Encode(byteName) + "_00_" + Base32.Encode(FileHash.GenerateRandomBytes(5));
+            return tempHash;
         }
 
         public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, AppSettings appSettings, string headerFileName = null)
@@ -55,7 +64,6 @@ namespace starsky.Helpers
                 if (contentType != "image/jpeg" && contentType != "application/octet-stream") 
                     throw new FileLoadException($"Expected a multipart request, but got {contentType}");
 
-       
                 var fullFilePath = Path.Combine(appSettings.TempFolder, headerFileName);
                 
                 // Write to disk
@@ -84,8 +92,10 @@ namespace starsky.Helpers
 
                 if (hasContentDispositionHeader && MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
                 {
-                    var inputExtension = Path.GetExtension(contentDisposition.FileName.ToString().Replace("\"",string.Empty));
-                    var tempHash = Base32.Encode(FileHash.GenerateRandomBytes(10));
+                    var sourceFileName = contentDisposition.FileName.ToString().Replace("\"", string.Empty);
+                    var inputExtension = Path.GetExtension(sourceFileName);
+
+                    var tempHash = appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(sourceFileName));
                     var fullFilePath = Path.Combine(appSettings.TempFolder, tempHash + inputExtension);
                     tempPaths.Add(fullFilePath);
 

@@ -146,6 +146,16 @@ namespace starsky.Services
             return File.Exists(destinationFullPath) ? null : destinationFullPath;
         }
 
+        public FileIndexItem ReadExifAndXmpFromFile(string inputFileFullPath)
+        {
+            return _readmeta.ReadExifAndXmpFromFile(inputFileFullPath,Files.GetImageFormat(inputFileFullPath));
+        }
+
+        public bool IsAgeFileFilter(ImportSettingsModel importSettings, DateTime exifDateTime)
+        {
+            return importSettings.AgeFileFilter && exifDateTime < DateTime.UtcNow.AddYears(-2);
+        }
+
         private string ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)
         {
             var exifToolSync = false;
@@ -157,13 +167,11 @@ namespace starsky.Services
 
             // Only accept files with correct meta data
             // Check if there is a xmp file that contains data
-            var fileIndexItem = _readmeta.ReadExifAndXmpFromFile(inputFileFullPath,Files.GetImageFormat(inputFileFullPath));
+            var fileIndexItem = ReadExifAndXmpFromFile(inputFileFullPath);
 
             // Parse the filename and create a new importIndexItem object
             var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem, importSettings.Structure);
 
-
-            
             // Parse DateTime from filename
             if (fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
             {
@@ -176,7 +184,7 @@ namespace starsky.Services
             }
             
             // Feature to ignore old files
-            if (importSettings.AgeFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
+            if (IsAgeFileFilter(importSettings, fileIndexItem.DateTime))
             {
                 if (_appSettings.Verbose) 
                     Console.WriteLine("use this structure to parse: " + _appSettings.Structure + "or " + importIndexItem.Structure);

@@ -110,9 +110,6 @@ namespace starsky.Models
 
             var fileName = Path.GetFileNameWithoutExtension(SourceFullFilePath);
             
-            // Replace magic string from import
-            fileName = fileName.Replace("_import_", string.Empty);
-            
             // Replace Astriks > escape all options
             var structuredFileName = Structure.Split("/").LastOrDefault();
             structuredFileName = structuredFileName.Replace("*", "");
@@ -149,9 +146,9 @@ namespace starsky.Models
             }
 
             // when using /yyyymmhhss_{filenamebase}.jpg
-            if(fileName.Length >= structuredFileName.Length) {
+            if(structuredFileName.Length >= fileName.Length)  {
                 
-                fileName = fileName.Substring(0, structuredFileName.Length);
+                structuredFileName = structuredFileName.Substring(0, fileName.Length);
                 
                 DateTime.TryParseExact(fileName, 
                     structuredFileName, 
