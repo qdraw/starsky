@@ -430,26 +430,26 @@ checkIfContentIsNot204or202();
 
 function rotateOn202() {
 
-    var classList = document.querySelector(".main-image").classList;
+    var classList = document.querySelector(".main-image img").classList;
     if (classList.contains("disabled-Rotate90Cw")) {
-        document.querySelector(".main-image").classList.remove("disabled-Rotate90Cw");
-        document.querySelector(".main-image").classList.add("Rotate90Cw");
+        document.querySelector(".main-image img").classList.remove("disabled-Rotate90Cw");
+        document.querySelector(".main-image img").classList.add("Rotate90Cw");
         if (document.querySelectorAll(".sidebar .content img").length >= 1) {
             document.querySelector(".sidebar .content img").classList.add("Rotate90Cw");
         }
     }
 
     if (classList.contains("disabled-Rotate270Cw")) {
-        document.querySelector(".main-image").classList.remove("disabled-Rotate270Cw");
-        document.querySelector(".main-image").classList.add("Rotate270Cw");
+        document.querySelector(".main-image img").classList.remove("disabled-Rotate270Cw");
+        document.querySelector(".main-image img").classList.add("Rotate270Cw");
         if (document.querySelectorAll(".sidebar .content img").length >= 1) {
             document.querySelector(".sidebar .content img").classList.add("Rotate270Cw");
         }
     }
 
     if (classList.contains("disabled-Rotate180")) {
-        document.querySelector(".main-image").classList.remove("disabled-Rotate180");
-        document.querySelector(".main-image").classList.add("Rotate180");
+        document.querySelector(".main-image img").classList.remove("disabled-Rotate180");
+        document.querySelector(".main-image img").classList.add("Rotate180");
         if (document.querySelectorAll(".sidebar .content img").length >= 1) {
             document.querySelector(".sidebar .content img").classList.add("Rotate180");
         }
