@@ -91,7 +91,7 @@ namespace starskytests
             Console.WriteLine("count => "+ content.Count());
 
             // Gives a list of the content in the temp folder.
-            Assert.AreEqual(true, content.Count() >= 2);            
+            Assert.AreEqual(true, content.Any());            
 
         }
 

@@ -555,10 +555,13 @@ namespace starskytests
                 AgeFileFilter = true,
                 Structure = "/HHmmss_yyyyMMdd.ext"
             };
+            
+            var createAnImageNoExif = new CreateAnImageNoExif();
 
-            var result = _import.Import(createAnImage.FullFilePathWithDate,importSettings);
+            var result = _import.Import(createAnImageNoExif.FullFilePathWithDate,importSettings);
             
             Assert.AreEqual(string.Empty,result.FirstOrDefault());
+            Files.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
         }
         
 

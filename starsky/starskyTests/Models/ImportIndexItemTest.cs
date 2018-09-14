@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Helpers;
 using starsky.Middleware;
 using starsky.Models;
 
@@ -242,7 +243,9 @@ namespace starskytests.Models
         [TestMethod]
         public void ImportIndexItemParse_OverWriteStructureFeature_Test()
         {
+            var createAnImageNoExif = new CreateAnImageNoExif();
             var createAnImage = new CreateAnImage();
+
             _appSettings.Structure = null;
             // Go to the default structure setting 
             _appSettings.StorageFolder = createAnImage.BasePath;
@@ -250,7 +253,7 @@ namespace starskytests.Models
             // Use a strange structure setting to overwrite
             var input = new ImportIndexItem(_appSettings)
             {
-                SourceFullFilePath = createAnImage.FullFilePathWithDate,
+                SourceFullFilePath = createAnImageNoExif.FullFilePathWithDate,
                 Structure =  "/HHmmss_yyyyMMdd.ext"
             };
 
@@ -265,7 +268,8 @@ namespace starskytests.Models
             
             // Check if those overwite is accepted
             Assert.AreEqual(anserDateTime,input.DateTime);
-                        
+                   
+            Files.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
         }
 
         [TestMethod]

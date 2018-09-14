@@ -138,9 +138,6 @@ namespace starskytests.Services
                 File.Delete(thumbnailPath);
             }
             
-            // this file is not needed
-            File.Delete(createAnImage.FullFilePathWithDate);
-
             // Create an thumbnail based on the image
             new ThumbnailByDirectory(_appSettings,null).CreateThumb(createAnImage.BasePath);
             
