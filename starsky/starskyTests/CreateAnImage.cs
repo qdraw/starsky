@@ -18,11 +18,6 @@ namespace starskytests
         public readonly string BasePath =
             Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
 
-        public readonly string FullFilePathWithDate = 
-            Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + fileNameWithDate;
-        private static readonly string fileNameWithDate = "123300_20120101.jpg";
-                                            // HHmmss_yyyyMMdd > not very logical but used to test features
-
         public CreateAnImage()
         {
             var base64JpgString = "/9j/4AAQSkZJRgABAQABXgFeAAD/4QQgRXhpZgAATU0AKgAAAAgACwEOAAIAAAAg" +
@@ -235,17 +230,11 @@ namespace starskytests
                                    "/9oACAECAQE/AFjo8qCcW3vkV//EABkRAQACAwAAAAAAAAAAAAAAAAEAAhESIf/a" +
                                    "AAgBAwEBPwDaxwXE/9k=";
 
-             var base64JpgString1 =
-                 "/9j/4AAQSkZJRgABAQAAAQABAAD/2wDFAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQABAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB/8EAEQgAAgADAwARAAERAAIRAP/EACcAAQEAAAAAAAAAAAAAAAAAAAAKEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMAAAEAAgAAPwC/gH//2Q==";
+            if (!File.Exists(FullFilePath))
+            {
+                File.WriteAllBytes(FullFilePath, Convert.FromBase64String(base64JpgString));
+            }
 
-             if (!File.Exists(FullFilePath))
-             {
-                 File.WriteAllBytes(FullFilePath, Convert.FromBase64String(base64JpgString));
-             }
-             if (!File.Exists(FullFilePathWithDate))
-             {
-                 File.WriteAllBytes(FullFilePathWithDate, Convert.FromBase64String(base64JpgString1));
-             }
          }
     }
 }

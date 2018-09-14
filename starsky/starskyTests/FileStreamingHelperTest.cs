@@ -92,8 +92,9 @@ namespace starskytests
             var createAnImage = new CreateAnImage();
 
             FileStream requestBody = new FileStream(createAnImage.FullFilePath, FileMode.Open);
+            _appSettings.TempFolder = createAnImage.BasePath;
             
-            var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg", requestBody);
+            var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg", requestBody, _appSettings);
             Assert.AreNotEqual(null, formValueProvider.ToString());
             requestBody.Dispose();
             
@@ -102,41 +103,41 @@ namespace starskytests
             
         }
 
-        [TestMethod]
-        public void FileStreamingHelper_GetTempFilePath_NullOption()
-        {
-            _appSettings.ThumbnailTempFolder = String.Empty;
-            var tempFilePath = FileStreamingHelper.GetTempFilePath(null,_appSettings);
-            Assert.AreEqual(true,tempFilePath.Contains("_import_"));
-        }
+//        [TestMethod]
+//        public void FileStreamingHelper_GetTempFilePath_NullOption()
+//        {
+//            _appSettings.ThumbnailTempFolder = String.Empty;
+//            var tempFilePath = FileStreamingHelper.GetTempFilePath(null,_appSettings);
+//            Assert.AreEqual(true,tempFilePath.Contains("_import_"));
+//        }
         
         
-        [TestMethod]
-        public void FileStreamingHelper_GetTempFilePath_ParseStringSimple_Option()
-        {
-            _appSettings.TempFolder = String.Empty;
-            _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
-
-            var tempFilePath = FileStreamingHelper.GetTempFilePath("20180123_132404.jpg",_appSettings);
-            Assert.AreEqual("20180123_132404.jpg",tempFilePath);
-        }
+//        [TestMethod]
+//        public void FileStreamingHelper_GetTempFilePath_ParseStringSimple_Option()
+//        {
+//            _appSettings.TempFolder = String.Empty;
+//            _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
+//
+//            var tempFilePath = FileStreamingHelper.GetTempFilePath("20180123_132404.jpg",_appSettings);
+//            Assert.AreEqual("20180123_132404.jpg",tempFilePath);
+//        }
         
-        [TestMethod]
-        public void FileStreamingHelper_GetTempFilePath_ParseStringWithDots_Option()
-        {
-            _appSettings.TempFolder = string.Empty;
-            _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
-            var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04.jpg",_appSettings);
-            Assert.AreEqual("20180123_132404.jpg",tempFilePath);
-        }
+//        [TestMethod]
+//        public void FileStreamingHelper_GetTempFilePath_ParseStringWithDots_Option()
+//        {
+//            _appSettings.TempFolder = string.Empty;
+//            _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
+//            var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04.jpg",_appSettings);
+//            Assert.AreEqual("20180123_132404.jpg",tempFilePath);
+//        }
 
         [TestMethod]
         public void FileStreamingHelper_HeaderFileName_normalStringTest()
         {
             var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
             httpContext.Request.Headers["filename"] = "2018-07-20 20.14.52.jpg"; //Set header
-            var result = FileStreamingHelper.HeaderFileName(httpContext.Request);
-            Assert.AreEqual("2018-07-20 20.14.52.jpg",result);    
+            var result = FileStreamingHelper.HeaderFileName(httpContext.Request,_appSettings);
+            Assert.AreEqual("2018-07-20-201452.jpg",result);    
         }
 
         [TestMethod]
@@ -144,18 +145,18 @@ namespace starskytests
         {
             var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
             httpContext.Request.Headers["filename"] = "MjAxOC0wNy0yMCAyMC4xNC41Mi5qcGc="; //Set header
-            var result = FileStreamingHelper.HeaderFileName(httpContext.Request);
-            Assert.AreEqual("2018-07-20 20.14.52.jpg",result);    
+            var result = FileStreamingHelper.HeaderFileName(httpContext.Request,_appSettings);
+            Assert.AreEqual("2018-07-20-201452.jpg",result);    
         }
         
-        [TestMethod]
-        public void FileStreamingHelper_GetTempFilePath_ParseStringAppendix1_Option()
-        {
-            _appSettings.TempFolder = string.Empty;
-            _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
-            var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04-1.jpg",_appSettings);
-            Assert.AreEqual("20180123_132404.jpg",tempFilePath);
-        }
+//        [TestMethod]
+//        public void FileStreamingHelper_GetTempFilePath_ParseStringAppendix1_Option()
+//        {
+//            _appSettings.TempFolder = string.Empty;
+//            _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
+//            var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04-1.jpg",_appSettings);
+//            Assert.AreEqual("20180123_132404.jpg",tempFilePath);
+//        }
         
       
         

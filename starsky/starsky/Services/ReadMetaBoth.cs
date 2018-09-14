@@ -20,8 +20,10 @@ namespace starsky.Services
             _cache = memoryCache;
         }
 
-        private FileIndexItem ReadExifAndXmpFromFileDirect(string singleFilePath)
+        private FileIndexItem ReadExifAndXmpFromFileDirect(string singleFilePath, 
+            Files.ImageFormat imageFormat)
         {
+            if (imageFormat == Files.ImageFormat.gpx) return ReadGpxFromFile(singleFilePath);
             var databaseItem = ReadExifFromFile(singleFilePath);
             databaseItem = XmpGetSidecarFile(databaseItem, singleFilePath);
             return databaseItem;
@@ -34,12 +36,14 @@ namespace starsky.Services
             foreach (var fullFilePath in fullFilePathArray)
             {
                 var subPath = _appSettings.FullPathToDatabaseStyle(fullFilePath);
-                var returnItem = ReadExifAndXmpFromFile(fullFilePath);
+                var imageFormat = Files.GetImageFormat(fullFilePath); 
+                var returnItem = ReadExifAndXmpFromFile(fullFilePath,imageFormat);
+
+                returnItem.ImageFormat = imageFormat;
                 returnItem.FileName = Path.GetFileName(fullFilePath);
                 returnItem.IsDirectory = false;
                 returnItem.Id = -1;
                 returnItem.Status = FileIndexItem.ExifStatus.Ok;
-                returnItem.ImageFormat = Files.GetImageFormat(fullFilePath); 
                 returnItem.FileHash = FileHash.GetHashCode(fullFilePath);
                 returnItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault();
                 fileIndexList.Add(returnItem);
@@ -49,11 +53,11 @@ namespace starsky.Services
 
         // Cached view >> IMemoryCache
         // Short living cache Max 10. minutes
-        public FileIndexItem ReadExifAndXmpFromFile(string fullFilePath)
+        public FileIndexItem ReadExifAndXmpFromFile(string fullFilePath,Files.ImageFormat imageFormat)
         {
             // The CLI programs uses no cache
             if( _cache == null || _appSettings?.AddMemoryCache == false) 
-                return ReadExifAndXmpFromFileDirect(fullFilePath);
+                return ReadExifAndXmpFromFileDirect(fullFilePath,imageFormat);
             
             // Return values from IMemoryCache
             var queryCacheName = "info_" + fullFilePath;
@@ -63,7 +67,7 @@ namespace starsky.Services
                 return objectExifToolModel as FileIndexItem;
             
             // Try to catch a new object
-            objectExifToolModel = ReadExifAndXmpFromFileDirect(fullFilePath);
+            objectExifToolModel = ReadExifAndXmpFromFileDirect(fullFilePath,imageFormat);
             _cache.Set(queryCacheName, objectExifToolModel, new TimeSpan(0,10,0));
             return (FileIndexItem) objectExifToolModel;
         }

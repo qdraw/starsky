@@ -15,16 +15,20 @@ namespace starsky.Services
 {
     public partial class Query : IQuery
     {
-        private readonly ApplicationDbContext _context;
-
+        private ApplicationDbContext _context;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly IMemoryCache _cache;
         private readonly AppSettings _appSettings;
 
-        public Query(ApplicationDbContext context, IMemoryCache memoryCache = null, AppSettings appSettings = null )
+        public Query(ApplicationDbContext context, 
+            IMemoryCache memoryCache = null, 
+            AppSettings appSettings = null,
+            IServiceScopeFactory scopeFactory = null)
         {
             _context = context;
             _cache = memoryCache;
             _appSettings = appSettings;
+            _scopeFactory = scopeFactory;
         }
 
         // Get a list of all files inside an folder
@@ -54,6 +58,7 @@ namespace starsky.Services
         // Return database object file or folder
         public FileIndexItem GetObjectByFilePath(string filePath)
         {
+            InjectServiceScope();
             filePath = SubPathSlashRemove(filePath);
             var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
             return query;
@@ -62,7 +67,7 @@ namespace starsky.Services
         // Return a File Item By it Hash value
         // New added, directory hash now also hashes
         public string GetItemByHash(string fileHash)
-        {
+        {            
             var query = _context.FileIndex.FirstOrDefault(
                 p => p.FileHash == fileHash 
                      && !p.IsDirectory
@@ -204,7 +209,8 @@ namespace starsky.Services
 
         // Add a new item to the database
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)
-        {            
+        {        
+            InjectServiceScope();
             try
             {
                 _context.FileIndex.Add(updateStatusContent);
@@ -230,6 +236,16 @@ namespace starsky.Services
 
             RemoveCacheItem(updateStatusContent);
             return updateStatusContent;
+        }
+        
+        /// <summary>
+        /// Dependency injection, used in background tasks
+        /// </summary>
+        private void InjectServiceScope()
+        {
+            if (_scopeFactory == null) return;
+            var scope = _scopeFactory.CreateScope();
+            _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         }
 
     }

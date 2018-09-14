@@ -1,11 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
 using starsky.Helpers;
 using starsky.Interfaces;
 using starsky.Models;
+using starsky.Services;
 
 namespace starsky.Controllers
 {
@@ -14,11 +20,14 @@ namespace starsky.Controllers
     {
         private readonly IImport _import;
         private readonly AppSettings _appSettings;
+        private readonly IBackgroundTaskQueue _bgTaskQueue;
 
-        public ImportController(IImport import, AppSettings appSettings)
+        public ImportController(IImport import, AppSettings appSettings, 
+            IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue)
         {
             _appSettings = appSettings;
             _import = import;
+            _bgTaskQueue = queue;
         }
 
         [HttpGet]
@@ -36,22 +45,68 @@ namespace starsky.Controllers
         public async Task<IActionResult> IndexPost()
         {
             var tempImportPaths = await Request.StreamFile(_appSettings);
-            
             var importSettings = new ImportSettingsModel(Request);
 
-            var importedFiles = _import.Import(tempImportPaths, importSettings);
+            // Do some import checks before sending it to the background service
+            var fileIndexResultsList = new List<ImportIndexItem>();
+            var hashList = FileHash.GetHashCode(tempImportPaths.ToArray());
 
-            foreach (var path in tempImportPaths)
+            for (int i = 0; i < hashList.Count; i++)
             {
-                if (System.IO.File.Exists(path))
+                var hash = hashList[i];
+
+                var fileIndexItem = _import.ReadExifAndXmpFromFile(tempImportPaths[i]);
+                var importIndexItem = _import.ObjectCreateIndexItem(
+                    tempImportPaths[i], hash, fileIndexItem, importSettings.Structure);
+                
+                // do some filename reading to get dates, based on 'structure config' 
+                importIndexItem.ParseDateTimeFromFileName();
+
+                var item = _import.GetItemByHash(hash);
+                if (item != null)
                 {
-                    System.IO.File.Delete(path);
-                } 
+                    fileIndexResultsList.Add(item);
+                    continue;
+                }
+
+                if (!_import.IsAgeFileFilter(importSettings, importIndexItem.DateTime))
+                {
+                    fileIndexResultsList.Add(importIndexItem);
+                }
             }
+
+
+            // Import files >
+            _bgTaskQueue.QueueBackgroundWorkItem(async token =>
+            {    
+                var importedFiles = _import.Import(tempImportPaths, importSettings);
+                Files.DeleteFile(tempImportPaths);
+                foreach (var file in importedFiles)
+                {
+                    Console.WriteLine(file);
+                }
+            });
             
-            if(importedFiles.Count == 0) Response.StatusCode = 206;
-            
-            return Json(importedFiles);
+            // When all items are allready imported
+            if (fileIndexResultsList.All(p => p.Id != 0)) Response.StatusCode = 206;
+
+            return Json(fileIndexResultsList);
         }
+
+        
+//        [HttpPost]
+//        public async Task<IActionResult> Ifttt(string fileurl, string filename, string structure)
+//        {
+//            var tempImportPaths = new List<string>{FileStreamingHelper.GetTempFilePath(_appSettings,filename)};
+//            var importSettings = new ImportSettingsModel(Request);
+//            importSettings.Structure = structure;
+//            var isDownloaded = await HttpClientHelper.Download(fileurl);
+//            if (!isDownloaded) return NotFound("fileurl not found or domain not allowed " + fileurl);
+//            var importedFiles = _import.Import(tempImportPaths, importSettings);
+//            Files.DeleteFile(tempImportPaths);
+//            if(importedFiles.Count == 0) Response.StatusCode = 206;
+//            return Json(importedFiles);
+//        }
+
     }
 }

@@ -91,18 +91,17 @@ namespace starskytests
             Console.WriteLine("count => "+ content.Count());
 
             // Gives a list of the content in the temp folder.
-            Assert.AreEqual(true, content.Count() >= 2);            
+            Assert.AreEqual(true, content.Any());            
 
         }
 
         [TestMethod]
         public void Files_ExtensionThumbSupportedList_TiffMp4MovXMPCheck()
         {
-            var extensionThumbSupportedList = Files.ExtensionThumbSupportedList;
-            Assert.AreEqual(false,extensionThumbSupportedList.Contains("tiff"));
-            Assert.AreEqual(false,extensionThumbSupportedList.Contains("mp4"));
-            Assert.AreEqual(false,extensionThumbSupportedList.Contains("mov"));
-            Assert.AreEqual(false,extensionThumbSupportedList.Contains("xmp"));
+            Assert.AreEqual(false,Files.IsExtensionThumbnailSupported("file.tiff"));
+            Assert.AreEqual(false,Files.IsExtensionThumbnailSupported("file.mp4"));
+            Assert.AreEqual(false,Files.IsExtensionThumbnailSupported("file.mov"));
+            Assert.AreEqual(false,Files.IsExtensionThumbnailSupported("file.xmp"));
         }
         
         [TestMethod]

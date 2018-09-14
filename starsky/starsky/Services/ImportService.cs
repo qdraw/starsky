@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.Data;
 using starsky.Helpers;
 using starsky.Interfaces;
@@ -11,20 +12,26 @@ namespace starsky.Services
 {
     public class ImportService : IImport
     {
-        private readonly ApplicationDbContext _context;
+        private ApplicationDbContext _context;
         private readonly ISync _isync;
         private readonly IExiftool _exiftool;
         private readonly AppSettings _appSettings;
         private readonly IReadMeta _readmeta;
+        private readonly IServiceScopeFactory _scopeFactory;
 
         public ImportService(ApplicationDbContext context, 
-            ISync isync, IExiftool exiftool, AppSettings appSettings, IReadMeta readMeta)
+            ISync isync, 
+            IExiftool exiftool, 
+            AppSettings appSettings, 
+            IReadMeta readMeta, 
+            IServiceScopeFactory scopeFactory)
         {
             _context = context;
             _isync = isync;
             _exiftool = exiftool;
             _appSettings = appSettings;
             _readmeta = readMeta;
+            _scopeFactory = scopeFactory;
         }
 
 
@@ -119,7 +126,7 @@ namespace starsky.Services
             
             // When a file already exist, when you have multiple files with the same datetime
             if (inputFileFullPath != destinationFullPath
-                && File.Exists(destinationFullPath) )
+                && File.Exists(destinationFullPath))
             {
                
                 fileIndexItem.FileName = string.Concat(
@@ -139,6 +146,16 @@ namespace starsky.Services
             return File.Exists(destinationFullPath) ? null : destinationFullPath;
         }
 
+        public FileIndexItem ReadExifAndXmpFromFile(string inputFileFullPath)
+        {
+            return _readmeta.ReadExifAndXmpFromFile(inputFileFullPath,Files.GetImageFormat(inputFileFullPath));
+        }
+
+        public bool IsAgeFileFilter(ImportSettingsModel importSettings, DateTime exifDateTime)
+        {
+            return importSettings.AgeFileFilter && exifDateTime < DateTime.UtcNow.AddYears(-2);
+        }
+
         private string ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)
         {
             var exifToolSync = false;
@@ -150,13 +167,11 @@ namespace starsky.Services
 
             // Only accept files with correct meta data
             // Check if there is a xmp file that contains data
-            var fileIndexItem = _readmeta.ReadExifAndXmpFromFile(inputFileFullPath);
+            var fileIndexItem = ReadExifAndXmpFromFile(inputFileFullPath);
 
             // Parse the filename and create a new importIndexItem object
             var importIndexItem = ObjectCreateIndexItem(inputFileFullPath, fileHashCode, fileIndexItem, importSettings.Structure);
 
-
-            
             // Parse DateTime from filename
             if (fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
             {
@@ -169,7 +184,7 @@ namespace starsky.Services
             }
             
             // Feature to ignore old files
-            if (importSettings.AgeFileFilter && fileIndexItem.DateTime < DateTime.UtcNow.AddYears(-2))
+            if (IsAgeFileFilter(importSettings, fileIndexItem.DateTime))
             {
                 if (_appSettings.Verbose) 
                     Console.WriteLine("use this structure to parse: " + _appSettings.Structure + "or " + importIndexItem.Structure);
@@ -201,7 +216,7 @@ namespace starsky.Services
             File.Copy(inputFileFullPath, destinationFullPath);
             
             // Update the contents to the file the imported item
-            if (exifToolSync)
+            if (exifToolSync && Files.IsExtensionExifToolSupported(inputFileFullPath))
             {
                 Console.WriteLine("Do a exiftoolSync");
                 var comparedNamesList = new List<string>
@@ -252,6 +267,7 @@ namespace starsky.Services
         // New added, directory hash now also hashes
         public ImportIndexItem GetItemByHash(string fileHash)
         {
+            InjectServiceScope();
             var query = _context.ImportIndex.FirstOrDefault(
                 p => p.FileHash == fileHash 
             );
@@ -261,11 +277,22 @@ namespace starsky.Services
        
         public bool IsHashInImportDb(string fileHash)
         {
-            var query = _context.ImportIndex.Any(
+            InjectServiceScope();
+            return _context.ImportIndex.Any(
                 p => p.FileHash == fileHash 
             );
-            return query;
         }
+
+        /// <summary>
+        /// Dependency injection, used in background tasks
+        /// </summary>
+        private void InjectServiceScope()
+        {
+            if (_scopeFactory == null) return;
+            var scope = _scopeFactory.CreateScope();
+            _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        }
+        
     }
     
     

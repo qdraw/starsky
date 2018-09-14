@@ -71,6 +71,7 @@ namespace starsky.Helpers
             {"gram", "application/srgs"},
             {"grxml", "application/srgs+xml"},
             {"gtar", "application/x-gtar"},
+            {"gpx", "application/gpx+xml"},
             {"hdf", "application/x-hdf"},
             {"hqx", "application/mac-binhex40"},
             {"htm", "text/html"},

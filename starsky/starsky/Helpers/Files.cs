@@ -77,7 +77,10 @@ namespace starsky.Helpers
             png = 15,
 
             // Sitecar files
-            xmp = 30
+            xmp = 30,
+            
+            // documents
+            gpx = 40
         }
 
         // General list of the extensions
@@ -86,8 +89,24 @@ namespace starsky.Helpers
         private static readonly List<string> Extensionbmp = new List<string> {"bmp"};
         private static readonly List<string> Extensiongif = new List<string> {"gif"};
         private static readonly List<string> Extensionpng = new List<string> {"png"};
+        private static readonly List<string> Extensiongpx = new List<string> {"gpx"};
 
         public static List<string> ExtensionSyncSupportedList
+        {
+            get
+            {
+                var extensionList = new List<string>();
+                extensionList.AddRange(Extensionjpg);
+                extensionList.AddRange(Extensiontiff);
+                extensionList.AddRange(Extensionbmp);
+                extensionList.AddRange(Extensiongif);
+                extensionList.AddRange(Extensionpng);
+                extensionList.AddRange(Extensiongpx);
+                return extensionList;
+            }
+        }
+        
+        private static List<string> ExtensionExifToolSupportedList
         {
             get
             {
@@ -100,10 +119,15 @@ namespace starsky.Helpers
                 return extensionList;
             }
         }
+        public static bool IsExtensionExifToolSupported(string filename)
+        {
+            var ext = Path.GetExtension(filename).Remove(0,1);
+            return ExtensionExifToolSupportedList.Contains(ext); // true = if supported
+        }
         
         // ImageSharp => The IImageFormat interface, Jpeg, Png, Bmp, and Gif formats.
         // Tiff based images are not supported by the thumbnail application 
-        public static List<string> ExtensionThumbSupportedList
+        private static List<string> ExtensionThumbSupportedList
         {
             get
             {
@@ -114,6 +138,11 @@ namespace starsky.Helpers
                 extensionList.AddRange(Extensionpng);
                 return extensionList;
             }
+        }
+        public static bool IsExtensionThumbnailSupported(string filename)
+        {
+            var ext = Path.GetExtension(filename).Remove(0,1).ToLowerInvariant();
+            return ExtensionThumbSupportedList.Contains(ext); // true = if supported
         }
         
         // List of extension that are forced to use sitecar xmp files
@@ -191,6 +220,7 @@ namespace starsky.Helpers
             var jpeg   = new byte[] { 255, 216, 255, 224 }; // jpeg
             var jpeg2  = new byte[] { 255, 216, 255, 225 }; // jpeg canon
             var xmp    = Encoding.ASCII.GetBytes("<x:xmpmeta");    // xmp
+            var gpx  = new byte[] { 60, 63, 120 };         // gpx
 
             if (bmp.SequenceEqual(bytes.Take(bmp.Length)))
                 return ImageFormat.bmp;
@@ -218,7 +248,10 @@ namespace starsky.Helpers
             
             if (xmp.SequenceEqual(bytes.Take(xmp.Length)))
                 return ImageFormat.xmp;
-
+            
+            if (gpx.SequenceEqual(bytes.Take(gpx.Length)))
+                return ImageFormat.gpx;
+            
             return ImageFormat.unknown;
         }
 

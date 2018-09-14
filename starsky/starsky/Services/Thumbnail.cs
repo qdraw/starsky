@@ -108,7 +108,9 @@ namespace starsky.Services
             {
                 
                 // Add addional check for raw/tiff based files, those are not supported by this helper 
-                if(!Files.ExtensionThumbSupportedList.Contains(Path.GetExtension(fullFilePath).Replace(".",string.Empty).ToLower()))
+//                if(!Files.ExtensionThumbSupportedList.Contains(Path.GetExtension(fullFilePath).Replace(".",string.Empty).ToLower()))
+
+                if(!Files.IsExtensionThumbnailSupported(fullFilePath))
                 {
                     Console.WriteLine("File not supported (and ignored) > " + fullFilePath );
                     return false; // creating is not succesfull

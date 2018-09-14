@@ -13,6 +13,7 @@ using starsky.Interfaces;
 using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
+using starskytests.Models;
 using starskytests.Services;
 
 namespace starskytests
@@ -79,7 +80,7 @@ namespace starskytests
             //   _isync = isync
             //   _exiftool = exiftool
             //   _appSettings = appSettings
-            _import = new ImportService(context,_isync,_exiftool,_appSettings,_readmeta);
+            _import = new ImportService(context,_isync,_exiftool,_appSettings,_readmeta,null);
         }
         
 //        public ImportServiceTest()
@@ -212,7 +213,8 @@ namespace starskytests
             var createAnImage = new CreateAnImage();
             _appSettings.StorageFolder = createAnImage.BasePath;
 
-            if (!Directory.Exists(_appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist"))
+            var existDir = _appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist";
+            if (!Directory.Exists(existDir))
             {
                 Directory.CreateDirectory(_appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist");
             }
@@ -241,7 +243,7 @@ namespace starskytests
             
             Files.DeleteDirectory(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
-
+            Files.DeleteDirectory(existDir);
         }
         
         [TestMethod]
@@ -385,7 +387,8 @@ namespace starskytests
             _appSettings.Structure = "/\\e\\x\\i\\s\\t/\\a\\b\\c/yyyy/mm/HHmmss.ext";
             _appSettings.StorageFolder = createAnImage.BasePath;
 
-            Directory.CreateDirectory(_appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist");
+            var existDirectoryFullPath = _appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist";
+            Directory.CreateDirectory(existDirectoryFullPath);
 
             var fullFilePath = createAnImage.FullFilePath.Replace("00", "01");
             
@@ -417,6 +420,8 @@ namespace starskytests
             File.Delete(_appSettings.DatabasePathToFilePath(
                 importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
             ));
+            // delete exist dir
+            Files.DeleteDirectory(existDirectoryFullPath);
         }
 
         [TestMethod]
@@ -441,9 +446,10 @@ namespace starskytests
 
             Console.WriteLine(createAnImage.BasePath);
 
-            if (!Directory.Exists(_appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist"))
+            var existFolderPath = _appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist";
+            if (!Directory.Exists(existFolderPath))
             {
-                Directory.CreateDirectory(_appSettings.StorageFolder + Path.DirectorySeparatorChar + "exist");
+                Directory.CreateDirectory(existFolderPath);
             }
             
             _appSettings.Structure = "/\\e\\x\\i\\s*/\\f\\o\\l\\d\\e\\r\\i\\m\\p\\o\\r\\t_HHssmm.ext";
@@ -466,6 +472,9 @@ namespace starskytests
             File.Delete(_appSettings.DatabasePathToFilePath(
                 outputSubfolders + outputFileName
             ));
+            
+            // existFolderPath >= remove it afterwards
+            Files.DeleteDirectory(existFolderPath);
         }
 
         [TestMethod]
@@ -546,10 +555,13 @@ namespace starskytests
                 AgeFileFilter = true,
                 Structure = "/HHmmss_yyyyMMdd.ext"
             };
+            
+            var createAnImageNoExif = new CreateAnImageNoExif();
 
-            var result = _import.Import(createAnImage.FullFilePathWithDate,importSettings);
+            var result = _import.Import(createAnImageNoExif.FullFilePathWithDate,importSettings);
             
             Assert.AreEqual(string.Empty,result.FirstOrDefault());
+            Files.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
         }
         
 

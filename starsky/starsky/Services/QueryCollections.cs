@@ -13,7 +13,7 @@ namespace starsky.Services
         {
             
             // Get a list of duplicate items
-            var duplicateItemsByFileCollectionName = databaseSubFolderList.GroupBy(item => item.FileCollectionName)
+            var stackItemsByFileCollectionName = databaseSubFolderList.GroupBy(item => item.FileCollectionName)
                 .SelectMany(grp => grp.Skip(1).Take(1)).ToList();
             
             
@@ -26,24 +26,22 @@ namespace starsky.Services
             var querySubFolderList = new List<FileIndexItem>();
             // Do not remove it from: databaseSubFolderList otherwise it will be deleted from cache
 
-            foreach (var duplicateItemByName in duplicateItemsByFileCollectionName)
+            foreach (var stackItemByName in stackItemsByFileCollectionName)
             {
                 var duplicateItems = databaseSubFolderList.Where(p => 
-                    p.FileCollectionName == duplicateItemByName.FileCollectionName).ToList();
+                    p.FileCollectionName == stackItemByName.FileCollectionName).ToList();
                 // The idea to pick thumbnail based images first, followed by non-thumb supported
                 // when not pick alphabetaly > todo implement this
 
                 for (int i = 0; i < duplicateItems.Count; i++)
                 {
-                    var fileExtension = Path.GetExtension(duplicateItems[i].FileName).Replace(".",string.Empty);
-                    
-                    if (Files.ExtensionThumbSupportedList.Contains(fileExtension.ToLower()))
+                    if(Files.IsExtensionThumbnailSupported(duplicateItems[i].FileName))
                     {
                         querySubFolderList.Add(duplicateItems[i]);
                     }
                 }
 
-                if (querySubFolderList.Any(p => p.FileCollectionName == duplicateItemByName.FileCollectionName))
+                if (querySubFolderList.Any(p => p.FileCollectionName == stackItemByName.FileCollectionName))
                 {
                     // need to add docs
                     Console.WriteLine(">> Error code 4567890-098765");
@@ -55,7 +53,7 @@ namespace starsky.Services
             foreach (var dbItem in databaseSubFolderList)
             {
                 /// check if any item is duplicate
-                if (duplicateItemsByFileCollectionName.All(p => 
+                if (stackItemsByFileCollectionName.All(p => 
                     p.FileCollectionName != dbItem.FileCollectionName))
                 {
                     querySubFolderList.Add(dbItem);

@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using starsky.Helpers;
 using starsky.Services;
 
@@ -26,8 +27,8 @@ namespace starsky.Models
             Structure = _appSettings.Structure;
         }
 
-        
         public int Id { get; set; }
+        
         public string FileHash { get; set; }
 
         public DateTime AddToDatabase { get; set; }
@@ -38,11 +39,13 @@ namespace starsky.Models
         private string FileName { get; set; }
 
         [NotMapped]
+        [JsonIgnore]
         public string SourceFullFilePath { get; set; }
 
         // Defaults to _appSettings.Structure
         // Feature to overwrite system structure by request
         [NotMapped] 
+        [JsonIgnore]
         public string Structure { get; set; }
 
         
@@ -81,6 +84,7 @@ namespace starsky.Models
 
             // Parse the DateTime to a string
             var fileName = DateTime.ToString(structuredFileName, CultureInfo.InvariantCulture);
+            
             fileName += "." + fileExtension;
             
             // Escape feature to Restore (filenamebase)
@@ -101,9 +105,6 @@ namespace starsky.Models
             if(string.IsNullOrEmpty(SourceFullFilePath)) {return new DateTime();}
 
             var fileName = Path.GetFileNameWithoutExtension(SourceFullFilePath);
-            
-            // Replace magic string from import
-            fileName = fileName.Replace("_import_", string.Empty);
             
             // Replace Astriks > escape all options
             var structuredFileName = Structure.Split("/").LastOrDefault();
@@ -141,9 +142,9 @@ namespace starsky.Models
             }
 
             // when using /yyyymmhhss_{filenamebase}.jpg
-            if(fileName.Length >= structuredFileName.Length) {
+            if(structuredFileName.Length >= fileName.Length)  {
                 
-                fileName = fileName.Substring(0, structuredFileName.Length);
+                structuredFileName = structuredFileName.Substring(0, fileName.Length);
                 
                 DateTime.TryParseExact(fileName, 
                     structuredFileName, 
@@ -158,12 +159,14 @@ namespace starsky.Models
 
 
         [NotMapped]
+        [JsonIgnore]
         public string SubFolder  { get; set; }
 
         public List<string> SearchSubDirInDirectory(string parentItem, string parsedItem)
         {
             if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
-            var childDirectories = Directory.GetDirectories(_appSettings.DatabasePathToFilePath(parentItem), parsedItem).ToList();
+            var childDirectories = Directory.GetDirectories(
+                _appSettings.DatabasePathToFilePath(parentItem), parsedItem).ToList();
             childDirectories = childDirectories.Where(p => p[0].ToString() != ".").OrderBy(s => s).ToList();
             return childDirectories;
         }
@@ -209,7 +212,8 @@ namespace starsky.Models
                     // add backslash
                     var noSlashInParsedItem = parsedItem.Replace("/", string.Empty);
                     
-                    childFullDirectory = ConfigRead.AddBackslash(SearchSubDirInDirectory(parentItem, noSlashInParsedItem).FirstOrDefault());
+                    childFullDirectory = ConfigRead.AddBackslash(
+                        SearchSubDirInDirectory(parentItem, noSlashInParsedItem).FirstOrDefault());
                     /// only first item
                     if (SubFolder == string.Empty && childFullDirectory != null)
                     {
@@ -265,7 +269,8 @@ namespace starsky.Models
             }
 
             parseListDate = PatternListInput(parseListDate, "_!x_", "*");
-            parseListDate = PatternListInput(parseListDate, "_!q_", Path.GetFileNameWithoutExtension(SourceFullFilePath));
+            parseListDate = PatternListInput(parseListDate, "_!q_", 
+                Path.GetFileNameWithoutExtension(SourceFullFilePath));
 
             return parseListDate;
         }

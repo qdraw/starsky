@@ -24,7 +24,8 @@ namespace starsky.Controllers
         private readonly IReadMeta _readMeta;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public ApiController(IQuery query, IExiftool exiftool, 
+        public ApiController(
+            IQuery query, IExiftool exiftool, 
             AppSettings appSettings, IBackgroundTaskQueue queue,
             IReadMeta readMeta, IServiceScopeFactory scopeFactory
             )
@@ -104,43 +105,7 @@ namespace starsky.Controllers
             return FileIndexItem.ExifStatus.Ok;
         }
 
-        /// <summary>
-        /// Does deside if the loop should be stopped, true = stop
-        /// Uses FileCollectionsCheck
-        /// </summary>
-        /// <param name="statusModel">the main object to return later</param>
-        /// <param name="statusResults">the status by FileCollectionsCheck</param>
-        /// <param name="fileIndexResultsList">list of object that will be returned</param>
-        /// <returns>If true skip the next code</returns>
-        public bool ReturnExifStatusError(FileIndexItem statusModel, FileIndexItem.ExifStatus statusResults, List<FileIndexItem> fileIndexResultsList )
-        {
-            switch (statusResults)
-            {
-                case FileIndexItem.ExifStatus.NotFoundIsDir:
-                    statusModel.IsDirectory = true;
-                    statusModel.Status = FileIndexItem.ExifStatus.NotFoundIsDir;
-                    fileIndexResultsList.Add(statusModel);
-                    return true;
-                case FileIndexItem.ExifStatus.DirReadOnly:
-                    statusModel.IsDirectory = true;
-                    statusModel.Status = FileIndexItem.ExifStatus.DirReadOnly;
-                    fileIndexResultsList.Add(statusModel);
-                    return true;
-                case FileIndexItem.ExifStatus.NotFoundNotInIndex:
-                    statusModel.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
-                    fileIndexResultsList.Add(statusModel);
-                    return true;
-                case FileIndexItem.ExifStatus.NotFoundSourceMissing:
-                    statusModel.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
-                    fileIndexResultsList.Add(statusModel);
-                    return true;
-                case FileIndexItem.ExifStatus.ReadOnly:
-                    statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
-                    fileIndexResultsList.Add(statusModel);
-                    return true;
-            }
-            return false;
-        }
+        
 
         
         /// <summary>
@@ -221,13 +186,21 @@ namespace starsky.Controllers
                 statusModel.IsDirectory = false;
                 
                 // if one item fails, the status will added
-                if(ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                     
                 var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
                 var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
                 
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
+                    // Check if extension is supported for ExtensionExifToolSupportedList
+                    // Not all files are able to write with exiftool
+                    if(!Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
+                    {
+                        detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
+                        fileIndexResultsList.Add(detailView.FileIndexItem);
+                        continue;
+                    }
                     
                     var comparedNamesList = FileIndexCompareHelper.Compare(detailView.FileIndexItem, statusModel, append);
 
@@ -335,13 +308,22 @@ namespace starsky.Controllers
             foreach (var subPath in inputFilePaths)
             {
                 var detailView = _query.SingleItem(subPath, null, collections, false);
+                
+                // Check if extension is supported for ExtensionExifToolSupportedList
+                // Not all files are able to write with exiftool
+                if(!Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
+                {
+                    detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
+                    fileIndexResultsList.Add(detailView.FileIndexItem);
+                    continue;
+                }
                 var statusResults = FileCollectionsCheck(detailView);
 
                 var statusModel = new FileIndexItem();
                 statusModel.SetFilePath(subPath);
                 statusModel.IsDirectory = false;
 
-                if(ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                             
                 var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
                 var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
@@ -350,6 +332,13 @@ namespace starsky.Controllers
                 fileIndexResultsList.AddRange(fileCompontentList);
             }
 
+            // returns read only
+            if (fileIndexResultsList.All(p => p.Status == FileIndexItem.ExifStatus.ReadOnly))
+            {
+                Response.StatusCode = 203; // is readonly
+                return Json(fileIndexResultsList);
+            }
+                
             // When all items are not found
             if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
                 return NotFound(fileIndexResultsList);
@@ -379,7 +368,7 @@ namespace starsky.Controllers
                 statusModel.SetFilePath(subPath);
                 statusModel.IsDirectory = false;
 
-                if(ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                 
                 var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
                 var collectionFullDeletePaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
@@ -497,11 +486,10 @@ namespace starsky.Controllers
                     return Json("Thumbnail is not ready yet");
                 }
                 
-                var fileExtensionWithoutDot = Path.GetExtension(sourceFullPath).Remove(0, 1).ToLower();
-                    
-                if (Files.ExtensionThumbSupportedList.Contains(fileExtensionWithoutDot.ToLower()))
+                if (Files.IsExtensionThumbnailSupported(sourceFullPath))
                 {
                     FileStream fs1 = System.IO.File.OpenRead(sourceFullPath);
+                    var fileExtensionWithoutDot = Path.GetExtension(sourceFullPath).Remove(0, 1).ToLower();
                     return File(fs1, MimeHelper.GetMimeType(fileExtensionWithoutDot));
                 }
                 Response.StatusCode = 409; // A conflict, that the thumb is not generated yet
@@ -509,7 +497,8 @@ namespace starsky.Controllers
             }
 
             return NotFound("There is no thumbnail image " + thumbPath + " and no source image "+ sourcePath );
-            // When you have duplicate files and one of them is removed and there is no thumbnail generated yet you might get an false error
+            // When you have duplicate files and one of them is removed and there is no thumbnail
+            // generated yet you might get an false error
         }
 
         /// <summary>

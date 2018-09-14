@@ -189,11 +189,9 @@ namespace starsky.Models
                 "^(\\/.+)?\\/([\\/_ A-Z0-9*{}\\.\\\\-]+(?=\\.ext))\\.ext$", 
                 RegexOptions.IgnoreCase);
 
-            Console.WriteLine(structure);
-
             if (structureRegex.Match(structure).Success) return;
 
-            throw new ArgumentException("Structure is not confirm regex");
+            throw new ArgumentException("(StructureCheck) Structure is not confirm regex - " + structure);
         }
 
         private string _thumbnailTempFolder;

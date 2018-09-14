@@ -37,10 +37,12 @@ namespace starsky.Services
 
                         var fullFilePath = _appSettings.DatabasePathToFilePath(itemLocal);
                         
-                        // Read data from file
-                        var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(fullFilePath);
+                        var imageFormat = Files.GetImageFormat(fullFilePath);
 
-                        updatedDatabaseItem.ImageFormat = Files.GetImageFormat(fullFilePath);
+                        // Read data from file
+                        var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(fullFilePath,imageFormat);
+                        
+                        updatedDatabaseItem.ImageFormat = imageFormat;
                         updatedDatabaseItem.FileHash = localHash;
                         updatedDatabaseItem.FileName = dbItem.FileName;
                         updatedDatabaseItem.AddToDatabase = DateTime.Now;

@@ -76,11 +76,13 @@ namespace starsky.Services
                 IsDirectory = false,
                 SubPath = singleItemDbPath,
             };
-            
-            itemResult.FileIndexItem.CollectionPaths = new List<string>();
-            itemResult.FileIndexItem.CollectionPaths.AddRange(fileIndexItemsList
+
+            // First item is current item
+            var collectionPaths = new List<string> {singleItemDbPath};
+            collectionPaths.AddRange(fileIndexItemsList
                 .Where(p => p.FileCollectionName == currentFileIndexItem.FileCollectionName)
                 .Select(p => p.FilePath));
+            itemResult.FileIndexItem.CollectionPaths = collectionPaths.ToHashSet().ToList(); 
             
             return itemResult;
         }

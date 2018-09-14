@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.Helpers;
 using starsky.Middleware;
 using starsky.Models;
 
@@ -187,13 +188,13 @@ namespace starskytests.Models
             
             var input = new ImportIndexItem(_appSettings)
             {
-                SourceFullFilePath = Path.DirectorySeparatorChar + "20180101_011223_2018-07-26 19.45.23.jpg"
+                SourceFullFilePath = Path.DirectorySeparatorChar + "2018-07-26 19.45.23.jpg"
             };
             
             input.ParseDateTimeFromFileName();
             
             DateTime.TryParseExact(
-                "20180101_011223", 
+                "20180726_194523", 
                 "yyyyMMdd_HHmmss",
                 CultureInfo.InvariantCulture, 
                 DateTimeStyles.None, 
@@ -242,7 +243,9 @@ namespace starskytests.Models
         [TestMethod]
         public void ImportIndexItemParse_OverWriteStructureFeature_Test()
         {
+            var createAnImageNoExif = new CreateAnImageNoExif();
             var createAnImage = new CreateAnImage();
+
             _appSettings.Structure = null;
             // Go to the default structure setting 
             _appSettings.StorageFolder = createAnImage.BasePath;
@@ -250,7 +253,7 @@ namespace starskytests.Models
             // Use a strange structure setting to overwrite
             var input = new ImportIndexItem(_appSettings)
             {
-                SourceFullFilePath = createAnImage.FullFilePathWithDate,
+                SourceFullFilePath = createAnImageNoExif.FullFilePathWithDate,
                 Structure =  "/HHmmss_yyyyMMdd.ext"
             };
 
@@ -265,7 +268,8 @@ namespace starskytests.Models
             
             // Check if those overwite is accepted
             Assert.AreEqual(anserDateTime,input.DateTime);
-                        
+                   
+            Files.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
         }
 
         [TestMethod]
