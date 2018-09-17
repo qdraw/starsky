@@ -11,3 +11,6 @@
  - [starskyapp](../starskyapp) _React-Native app (Pre-alpha code)_
 
 ## Starsky node client docs
+
+- [mail](mail/readme.md) imap mail client to import files in Starsky
+- [sync](sync/readme.md) sync, not working
