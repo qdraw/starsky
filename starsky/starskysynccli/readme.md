@@ -1,14 +1,14 @@
 # Starsky
 ## List of [Starsky](../../readme.md) Projects
- - [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux [(files)](../../inotify-settings)_
- - [starsky (sln)](../../starsky/readme.md) _database photo index & import index project [(files)](../../starsky)_
-   - [starsky](../../starsky/starsky/readme.md)  _mvc application / web interface [(files)](../../starsky/starsky)_
-   - __[starskysynccli](../../starsky/starskysynccli/readme.md)  _database command line interface [(files)](../../starsky/starskysynccli)___
-   - [starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface [(files)](../../starsky/starskyimportercli)_
-   - [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests [(files)](../../starsky/starskyTests)_
-   - [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files [(files)](../../starsky/starskywebhtmlcli)_
- - [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks [(files)](../../starsky-node-client)_
- - [starskyapp](../../starskyapp) _React-Native app (Pre-alpha code)_
+ * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux [(files)](../../inotify-settings)_
+ * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project [(files)](../../starsky)_
+    * [starsky](../../starsky/starsky/readme.md)  _mvc application / web interface [(files)](../../starsky/starsky)_
+    * __[starskysynccli](../../starsky/starskysynccli/readme.md)  _database command line interface [(files)](../../starsky/starskysynccli)___
+    * [starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface [(files)](../../starsky/starskyimportercli)_
+    * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests [(files)](../../starsky/starskyTests)_
+    * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files [(files)](../../starsky/starskywebhtmlcli)_
+ * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks [(files)](../../starsky-node-client)_
+ * [starskyapp](../../starskyapp) _React-Native app (Pre-alpha code)_
 
 ## starskysynccli docs
 
@@ -35,11 +35,10 @@ When you start this application at first please update the `appsettings.json`
 >    When using a boolean in the json add quotes. Booleans without quotes are ignored
 
 #### Appsettings Notes
-1)   The `Structure`-setting is used by the `StarskyImporterCli` and the `/import` endpoint. 
-    This always uses slash as directory marker. 
-2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `StorageFolder` uses the system path.
+1.  The `Structure`-setting is used by the `StarskyImporterCli` and the `/import` endpoint. This always uses slash as directory marker.
+2.  The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `StorageFolder` uses the system path.
 When using Windows please escape the backslash, otherwise the application will crash.
-3)    The `AddMemoryCache` setting is ignored in the console/cli applications 
+3.  The `AddMemoryCache` setting is ignored in the console/cli applications
 
 
 ### To get help:
