@@ -40,7 +40,7 @@ The default structure in `appsettings.json` is:
 
 - `dd` 	 *   The day of the month, from 01 through 31.
 - `MM` 	 *   The month, from 01 through 12.
-- `yyyy` 	-    The year as a four-digit number.
+- `yyyy` 	*    The year as a four-digit number.
 - `HH` 	 *   The hour, using a 24-hour clock from 00 to 23.
 - `mm` 	 *   The minute, from 00 through 59.
 - `ss` 	 *   The second, from 00 through 59.
