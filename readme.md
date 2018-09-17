@@ -7,7 +7,7 @@
    - [starskyimportercli](starsky/starskyimportercli/readme.md)  _import command line interface [(files)](starsky/starskyimportercli)_
    - [starskyTests](starsky/starskyTests/readme.md)  _mstest unit tests [(files)](starsky/starskyTests)_
    - [starskyWebHtmlCli](starsky/starskywebhtmlcli/readme.md)  _publish web images to html files [(files)](starsky/starskywebhtmlcli)_
- - [starsky-node-client](starsky-node-client/readme.md) _nodejs tools to add-on tasks  [(files)](starsky-node-client)___
+ - [starsky-node-client](starsky-node-client/readme.md) _nodejs tools to add-on tasks  [(files)](starsky-node-client)_
  - [starskyapp](starskyapp) _React-Native app (Pre-alpha code)_
 
 ## Starsky   
