@@ -14,6 +14,42 @@
 
 ### starskyWebHtmlCli Help:
 
+This application is used to create thumbnail web images and prerender html files.
+In the `appsettings.json` is used to setup the publish actions.
+The application loops though `publishProfiles` in `appsettings.json`.
+ 
+#### ContentType
+There are options to do predefined tasks
+- `html`, uses razor to generate html files
+- `jpeg`, resizes images to smaller files
+- `moveSourceFiles`, move action to child folder
+
+#### SourceMaxWidth
+The width in pixels of the output image. This is used only for ContentType `jpeg`.
+
+#### OverlayMaxWidth
+The width of the overlay image (you can add a logo as overlay) over the output image.
+This is used only for ContentType `jpeg`.
+
+#### Path
+When using ContentType `html` this is the filename of the rendered html file.
+With ContentType `jpeg`, this is the full filepath of the image used in `OverlayMaxWidth` 
+
+#### Template
+Used with ContentType `html` to select the Razor template file
+
+#### Prepend
+In ContentType `html` this is used to add text before the urls used in the html output
+
+#### Append
+In ContentType `jpeg` this used to add text after the current filename
+
+#### Folder
+When using ContentType `jpeg` there are child folders created with this name. 
+In the example there are subfolders created with names 1000 and 500.
+In ContentType `moveSourceFiles` this is the folder to move the file to.
+
+
 #### Example configuration
 ```json
 {
