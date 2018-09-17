@@ -4,7 +4,7 @@
  - [starsky (sln)](../../starsky/readme.md) _database photo index & import index project [(files)](../../starsky)_
    - [starsky](../../starsky/starsky/readme.md)  _mvc application / web interface [(files)](../../starsky/starsky)_
    - [starskysynccli](../../starsky/starskysynccli/readme.md)  _database command line interface [(files)](../../starsky/starskysynccli)_
-   - __[starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface [(files)](../../starsky/starskyimportercli)___
+   - __[starskyimportercli](../../starsky/starskyimportercli/readme.md)  import command line interface [(files)](../../starsky/starskyimportercli)__
    - [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests [(files)](../../starsky/starskyTests)_
    - [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files [(files)](../../starsky/starskywebhtmlcli)_
  - [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks [(files)](../../starsky-node-client)_
@@ -34,7 +34,7 @@ The default structure in `appsettings.json` is:
 #### Appsettings Notes
 1)   Structure uses slash as directory separator for Linux and Windows
 2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `StorageFolder` uses the system path directory separators
-3)    The `AddMemoryCache` setting is ignored in the console/cli applications 
+3)    The `AddMemoryCache` setting is ignored in the console/cli applications
 
 ### Structure configuation options:
 
@@ -49,7 +49,7 @@ The default structure in `appsettings.json` is:
 - `.ext`   -       (dot ext); extension for example: .jpg
 - `{filenamebase}` - use the orginal filename without extension
 - `*`      -     (asterisk); match anything
-- `*starksy*`    -   Match the folder match that contains the word 'starksy' 
+- `*starksy*`    -   Match the folder match that contains the word 'starksy'
 
 Check for more date conversions:
 https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
@@ -66,8 +66,8 @@ starskyimportercli --help
 --help or -h == help (this window)
 --path or -p == parameter: (string) ; fullpath, can be an folder or file
 --move or -m == delete file after importing (default false / copy file)
---all or -a == import all files including files older than 2 years (default: false / ignore old files) 
---recursive or -r == Import Directory recursive (default: false / only the selected folder) 
+--all or -a == import all files including files older than 2 years (default: false / ignore old files)
+--recursive or -r == Import Directory recursive (default: false / only the selected folder)
 --verbose or -v == verbose, more detailed info, use -v -help to show settings:
 ```
 
