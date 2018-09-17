@@ -1,3 +1,3 @@
 [< starsky/starsky-node-client docs](../readme.md)
 
-## Node Mail Docs
+## Node Sync Docs
