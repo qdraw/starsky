@@ -1,14 +1,14 @@
 # Starsky
 ## List of [Starsky](../../readme.md) Projects
- - [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux [(files)](../../inotify-settings)_
- - [starsky (sln)](../../starsky/readme.md) _database photo index & import index project [(files)](../../starsky)_
-   - [starsky](../../starsky/starsky/readme.md)  _mvc application / web interface [(files)](../../starsky/starsky)_
-   - [starskysynccli](../../starsky/starskysynccli/readme.md)  _database command line interface [(files)](../../starsky/starskysynccli)_
-   - __[starskyimportercli](../../starsky/starskyimportercli/readme.md)  import command line interface [(files)](../../starsky/starskyimportercli)__
-   - [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests [(files)](../../starsky/starskyTests)_
-   - [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files [(files)](../../starsky/starskywebhtmlcli)_
- - [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks [(files)](../../starsky-node-client)_
- - [starskyapp](../../starskyapp) _React-Native app (Pre-alpha code)_
+ * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux [(files)](../../inotify-settings)_
+ * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project [(files)](../../starsky)_
+    * [starsky](../../starsky/starsky/readme.md)  _mvc application / web interface [(files)](../../starsky/starsky)_
+    * [starskysynccli](../../starsky/starskysynccli/readme.md)  _database command line interface [(files)](../../starsky/starskysynccli)_
+    * __[starskyimportercli](../../starsky/starskyimportercli/readme.md)  import command line interface [(files)](../../starsky/starskyimportercli)__
+    * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests [(files)](../../starsky/starskyTests)_
+    * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files [(files)](../../starsky/starskywebhtmlcli)_
+ * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks [(files)](../../starsky-node-client)_
+ * [starskyapp](../../starskyapp) _React-Native app (Pre-alpha code)_
 
 ## starskyimportercli docs
 
@@ -38,18 +38,18 @@ The default structure in `appsettings.json` is:
 
 ### Structure configuation options:
 
-- `dd` 	 -   The day of the month, from 01 through 31.
-- `MM` 	 -   The month, from 01 through 12.
+- `dd` 	 *   The day of the month, from 01 through 31.
+- `MM` 	 *   The month, from 01 through 12.
 - `yyyy` 	-    The year as a four-digit number.
-- `HH` 	 -   The hour, using a 24-hour clock from 00 to 23.
-- `mm` 	 -   The minute, from 00 through 59.
-- `ss` 	 -   The second, from 00 through 59.
-- `\\`     -      (double escape sign or double backslash); to escape dd use this: \\\d\\\d
-- `/`     -       (slash); is split in folder (Windows / Linux / Mac)
-- `.ext`   -       (dot ext); extension for example: .jpg
-- `{filenamebase}` - use the orginal filename without extension
-- `*`      -     (asterisk); match anything
-- `*starksy*`    -   Match the folder match that contains the word 'starksy'
+- `HH` 	 *   The hour, using a 24-hour clock from 00 to 23.
+- `mm` 	 *   The minute, from 00 through 59.
+- `ss` 	 *   The second, from 00 through 59.
+- `\\`     *      (double escape sign or double backslash); to escape dd use this: \\\d\\\d
+- `/`     *       (slash); is split in folder (Windows / Linux / Mac)
+- `.ext`   *       (dot ext); extension for example: .jpg
+- `{filenamebase}` * use the orginal filename without extension
+- `*`      *     (asterisk); match anything
+- `*starksy*`    *   Match the folder match that contains the word 'starksy'
 
 Check for more date conversions:
 https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
