@@ -168,7 +168,7 @@
         {
             var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.NextFilePath});
             urlPath = urlPath.Replace("%2F", "/");
-            <a class="next" href="@urlPath">Volgende (@Model.RelativeObjects.NextFilePath.Split("/").LastOrDefault())</a>
+            <a class="next" href="@urlPath">Volgende</a>
 
         }
     </h4>
