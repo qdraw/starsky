@@ -47,6 +47,14 @@ namespace starskygeosync.Services
             return admin2Object?.NameASCII;
         }
 
+        /// <summary>
+        /// Checks for files that already done
+        /// if latitude is not location 0,0, Thats default
+        ///  If one of the meta items are missing, keep in list
+        /// If extension in exiftool supported, so no gpx
+        /// </summary>
+        /// <param name="metaFilesInDirectory">List of files with metadata</param>
+        /// <returns>list that can be updated</returns>
         private List<FileIndexItem> RemoveNoUpdateItems(IEnumerable<FileIndexItem> metaFilesInDirectory)
         {
             return metaFilesInDirectory.Where(
