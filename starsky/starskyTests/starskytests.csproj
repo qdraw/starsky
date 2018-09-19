@@ -27,6 +27,10 @@
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\starskygeosync\starskygeosync.csproj">
+      <Project>{88910F4E-CE0F-4EF6-8E6F-AAF4CD5B7C98}</Project>
+      <Name>starskygeosync</Name>
+    </ProjectReference>
     <ProjectReference Include="..\starskysynccli\starskysynccli.csproj" />
     <ProjectReference Include="..\starskywebhtmlcli\starskywebhtmlcli.csproj" />
     <ProjectReference Include="..\starsky\starsky.csproj" />

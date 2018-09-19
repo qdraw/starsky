@@ -6,7 +6,9 @@ using System.Linq;
 using NGeoNames;
 using NGeoNames.Entities;
 using starsky.Helpers;
+using starsky.Interfaces;
 using starsky.Models;
+using starskygeosync.Services;
 
 namespace starskygeosync
 {
@@ -31,7 +33,7 @@ namespace starskygeosync
         public static void Main(string[] args)
         {
             
-             new ArgsHelper().SetEnvironmentByArgs(args);
+            new ArgsHelper().SetEnvironmentByArgs(args);
             
             var startupHelper = new ConfigCliAppsStartupHelper();
             var appSettings = startupHelper.AppSettings();
@@ -58,20 +60,11 @@ namespace starskygeosync
             
             var metaFilesInDirectory = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(filesInDirectory);
             
-            // The class for geodata
-            var downloader = GeoFileDownloader.CreateGeoFileDownloader();
-            downloader.DownloadFile("cities1000.zip", appSettings.TempFolder);    // Zipfile will be automatically extracted
-            
-            // Create our ReverseGeoCode class and supply it with data
-            var reverseGeoCode = new ReverseGeoCode<ExtendedGeoName>(
-                GeoFileReader.ReadExtendedGeoNames(Path.Combine(appSettings.TempFolder,"cities1000.txt"))
-            );
-            // end geodata
+            new GeoReverseLookup(appSettings).LoopFolderLookup(metaFilesInDirectory);
             
             
             foreach (var item in metaFilesInDirectory)
             {
-
                 if(item.DateTime.Year < 2) continue; // skip no date
                 
                 var dateTime = item.DateTime.ToLocalTime();
@@ -91,22 +84,7 @@ namespace starskygeosync
                     fileGeoData.Longitude = item.Longitude;
                 }
 
-                // Create a point from a lat/long pair from which we want to conduct our search(es) (center)
-                var place = reverseGeoCode.CreateFromLatLong(fileGeoData.Latitude, fileGeoData.Longitude);
-            
-                // Find nearest
-                var nearestPlace = reverseGeoCode.NearestNeighbourSearch(place, 1).FirstOrDefault();
-            
-                var distanceTo = GeoDistanceTo.GetDistance(
-                    nearestPlace.Latitude, 
-                    nearestPlace.Longitude, 
-                    fileGeoData.Latitude,
-                    fileGeoData.Longitude);
-
-                if (distanceTo > 50000) continue; // 50 kilometers
-
-                Console.WriteLine(distanceTo);
-                Console.WriteLine(nearestPlace.Latitude + " " + nearestPlace.Longitude + " " + nearestPlace.NameASCII + " " +  new RegionInfo(nearestPlace.CountryCode).EnglishName );
+                
             }
 
             
