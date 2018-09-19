@@ -13,14 +13,14 @@ namespace starskygeosync
     
     public static class Program
     {
-        public static CultureInfo GetCultureFromTwoLetterCountryCode(string twoLetterISOCountryCode)
+        public static CultureInfo GetCultureFromTwoLetterCountryCode(string twoLetterIsoCountryCode)
         {
             try
             {
                 return CultureInfo
                     .GetCultures(CultureTypes.AllCultures 
                                                & ~ CultureTypes.NeutralCultures)
-                    .FirstOrDefault(m => m.Name.EndsWith( "-" + twoLetterISOCountryCode) );
+                    .FirstOrDefault(m => m.Name.EndsWith( "-" + twoLetterIsoCountryCode) );
             }
             catch
             {

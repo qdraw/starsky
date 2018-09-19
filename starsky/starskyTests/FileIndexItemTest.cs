@@ -16,6 +16,13 @@ namespace starskytests
             Assert.AreEqual(item.Tags,string.Empty);
         }
         
+        [TestMethod]
+        public void FileIndexItemTest_SetDescriptionsToNull()
+        {
+            var item = new FileIndexItem{Description = null};
+            Assert.AreEqual(item.Description,string.Empty);
+        }
+        
         
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTestDefault()
