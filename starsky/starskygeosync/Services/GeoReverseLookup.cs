@@ -13,7 +13,7 @@ namespace starskygeosync.Services
     public class GeoReverseLookup
     {
         private readonly ReverseGeoCode<ExtendedGeoName> _reverseGeoCode;
-        private IEnumerable<Admin1Code> _admin1CodesAscii;
+        private readonly IEnumerable<Admin1Code> _admin1CodesAscii;
 
         private const string CountryName = "cities1000";
 
@@ -47,8 +47,38 @@ namespace starskygeosync.Services
             return admin2Object?.NameASCII;
         }
 
-        public void LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory)
+        private List<FileIndexItem> RemoveNoUpdateItems(IEnumerable<FileIndexItem> metaFilesInDirectory)
         {
+            return metaFilesInDirectory.Where(
+                metaFileItem => 
+                    ((Math.Abs(metaFileItem.Latitude) > 0.001 && Math.Abs(metaFileItem.Longitude) > 0.001) 
+                    && (string.IsNullOrEmpty(metaFileItem.LocationCity) 
+                        || string.IsNullOrEmpty(metaFileItem.LocationState) 
+                        || string.IsNullOrEmpty(metaFileItem.LocationCountry)))
+                    && Files.IsExtensionExifToolSupported(metaFileItem.FileName)
+                    ).ToList();
+        }
+        
+
+        public List<FileIndexItem> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory)
+        {
+            foreach (var metaFiles in metaFilesInDirectory)
+            {
+                Console.WriteLine("~> " + metaFiles.Latitude + " " +
+                                  metaFiles.Longitude + " " +
+                                  metaFiles.LocationCity + " " 
+                 + metaFiles.LocationCountry + " "  +metaFiles.LocationState + metaFiles.FileName);
+            }
+            metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory);
+            
+            foreach (var metaFiles in metaFilesInDirectory)
+            {
+                Console.WriteLine("~~~~ " + metaFiles.Latitude + " " +
+                                  metaFiles.Longitude + " " +
+                                  metaFiles.LocationCity + " " 
+                                  + metaFiles.LocationCountry + " "  +metaFiles.LocationState);
+            }  
+            
             foreach (var metaFileItem in metaFilesInDirectory)
             {
                 // Create a point from a lat/long pair from which we want to conduct our search(es) (center)
@@ -70,8 +100,9 @@ namespace starskygeosync.Services
                 metaFileItem.LocationCity = nearestPlace.NameASCII;
                 metaFileItem.LocationCountry = new RegionInfo(nearestPlace.CountryCode).NativeName;
                 metaFileItem.LocationState = GetAdmin2Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
-
             }
+            return metaFilesInDirectory;
         }
+        
     }
 }

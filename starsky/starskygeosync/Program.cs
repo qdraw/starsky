@@ -60,32 +60,34 @@ namespace starskygeosync
             
             var metaFilesInDirectory = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(filesInDirectory);
             
-            new GeoReverseLookup(appSettings).LoopFolderLookup(metaFilesInDirectory);
             
+            metaFilesInDirectory = new GeoReverseLookup(appSettings).LoopFolderLookup(metaFilesInDirectory);
+            new GeoReverseWrite(appSettings,startupHelper.ExifTool()).LoopFolder(metaFilesInDirectory);
+
             
-            foreach (var item in metaFilesInDirectory)
-            {
-                if(item.DateTime.Year < 2) continue; // skip no date
-                
-                var dateTime = item.DateTime.ToLocalTime();
-
-
-                var fileGeoData = new GeoListItem();
-                if (item.Latitude < 0.00001 && item.Longitude < 0.00001) // for files without GeoData
-                {
-                    if(!geoList.Any()) continue;
-                    fileGeoData = geoList.OrderBy(p => Math.Abs((p.DateTime - dateTime).Ticks)).FirstOrDefault();
-
-                    Console.WriteLine(dateTime + " " + fileGeoData.DateTime + " " + fileGeoData.Latitude + " " + fileGeoData.Longitude);
-                }
-                else
-                {
-                    fileGeoData.Latitude = item.Latitude;
-                    fileGeoData.Longitude = item.Longitude;
-                }
-
-                
-            }
+//            foreach (var item in metaFilesInDirectory)
+//            {
+//                if(item.DateTime.Year < 2) continue; // skip no date
+//                
+//                var dateTime = item.DateTime.ToLocalTime();
+//
+//
+//                var fileGeoData = new GeoListItem();
+//                if (item.Latitude < 0.00001 && item.Longitude < 0.00001) // for files without GeoData
+//                {
+//                    if(!geoList.Any()) continue;
+//                    fileGeoData = geoList.OrderBy(p => Math.Abs((p.DateTime - dateTime).Ticks)).FirstOrDefault();
+//
+//                    Console.WriteLine(dateTime + " " + fileGeoData.DateTime + " " + fileGeoData.Latitude + " " + fileGeoData.Longitude);
+//                }
+//                else
+//                {
+//                    fileGeoData.Latitude = item.Latitude;
+//                    fileGeoData.Longitude = item.Longitude;
+//                }
+//
+//                
+//            }
 
             
             

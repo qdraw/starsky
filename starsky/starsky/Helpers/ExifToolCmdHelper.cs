@@ -143,7 +143,7 @@ namespace starsky.Helpers
             if (comparedNames.Contains("LocationState"))
             {
                 command += " -State=\"" + updateModel.LocationState 
-                                       + "\" -xmp:State=\"" + updateModel.LocationState + "\"";
+                                       + "\" -Province-State=\"" + updateModel.LocationState + "\"";
             }
             return command;
         }
@@ -153,7 +153,7 @@ namespace starsky.Helpers
             if (comparedNames.Contains("LocationCountry"))
             {
                 command += " -Country=\"" + updateModel.LocationCountry 
-                                        + "\" -xmp:Country=\"" + updateModel.LocationCountry + "\"";
+                                        + "\" -Country-PrimaryLocationName=\"" + updateModel.LocationCountry + "\"";
             }
             return command;
         }
