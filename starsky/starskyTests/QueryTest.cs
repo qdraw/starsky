@@ -470,9 +470,31 @@ namespace starskytests
             
             var dp2 = _query.DisplayFileFolders("/StackCollection",null,false);
             Assert.AreEqual(2,dp2.Count());
-
-
         }
+
+        [TestMethod]
+        public void Query_updateStatusContentList()
+        {
+            // for updateing multiple items
+            var toupdate = new List<FileIndexItem>{new FileIndexItem
+            {
+                Tags = "test",
+                FileName = "3456784567890987654.jpg",
+                ParentDirectory = "/3456784567890987654",
+                FileHash = "3456784567890987654"
+            }};
+            _query.AddItem(toupdate.FirstOrDefault());
+
+            foreach (var item in toupdate)
+            {
+                item.Tags = "updated";
+            }
+            _query.UpdateItem(toupdate);
+
+            var fileObjectByFilePath = _query.GetObjectByFilePath("/3456784567890987654/3456784567890987654.jpg");
+            Assert.AreEqual("updated",fileObjectByFilePath.Tags);
+        }
+
 
     }
 }

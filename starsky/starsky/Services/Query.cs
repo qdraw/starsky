@@ -100,7 +100,12 @@ namespace starsky.Services
         }
 
 
-        // For the API/update endpoint
+        /// <summary>
+        /// Update a list of items in the index
+        /// Used for the API/update endpoint
+        /// </summary>
+        /// <param name="updateStatusContentList">list of items to be updated</param>
+        /// <returns>the same list, and updated in the database</returns>
         public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
         {
             foreach (var item in updateStatusContentList)
@@ -112,8 +117,12 @@ namespace starsky.Services
             return updateStatusContentList;
         }
 
-
-        // For the API/update endpoint
+        /// <summary>
+        /// Update one single item in the database
+        /// For the API/update endpoint
+        /// </summary>
+        /// <param name="updateStatusContent">content to updated</param>
+        /// <returns>this item</returns>
         public FileIndexItem UpdateItem( FileIndexItem updateStatusContent)
         {
 
