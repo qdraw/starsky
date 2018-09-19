@@ -10,13 +10,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup>
-    <PackageReference Include="KdTree" Version="1.4.1" />
     <PackageReference Include="NGeoNames" Version="1.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\starsky.corehelpers\starsky.corehelpers.csproj" />
-    <ProjectReference Include="..\starsky.meta\starsky.meta.csproj" />
-    <ProjectReference Include="..\starsky.models\starsky.models.csproj" />
     <ProjectReference Include="..\starsky\starsky.csproj" />
     <!-- <ProjectReference Include="..\starsky\starsky.csproj" /> -->
   </ItemGroup>

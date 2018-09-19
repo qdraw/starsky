@@ -5,11 +5,8 @@ using System.IO;
 using System.Linq;
 using NGeoNames;
 using NGeoNames.Entities;
-using starsky.corehelpers.Helpers;
-using starsky.corehelpers.Models;
 using starsky.Helpers;
-using starsky.meta.Services;
-using starsky.models.Models;
+using starsky.Models;
 
 namespace starskygeosync
 {
