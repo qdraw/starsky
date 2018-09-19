@@ -53,6 +53,8 @@
     <Compile Remove="Migrations\20180806181225_ExifOrientation.Designer.cs" />
     <Compile Remove="Migrations\20180820145632_ImageWidthImageHeight.cs" />
     <Compile Remove="Migrations\20180820145632_ImageWidthImageHeight.Designer.cs" />
+    <Compile Remove="Migrations\20180919145305_LocationCityLocationStateLocationCountry.cs" />
+    <Compile Remove="Migrations\20180919145305_LocationCityLocationStateLocationCountry.Designer.cs" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />
