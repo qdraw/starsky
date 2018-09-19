@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskytests", "starskytest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskywebhtmlcli", "starskywebhtmlcli\starskywebhtmlcli.csproj", "{AAD17FA3-3D15-442E-8FD1-17CE74A2F20C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskygeosync", "starskygeosync\starskygeosync.csproj", "{88910F4E-CE0F-4EF6-8E6F-AAF4CD5B7C98}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskygeocli", "starskygeocli\starskygeocli.csproj", "{EF96F7C8-4832-4606-8F5C-B1423FEE83B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +41,10 @@ Global
 		{AAD17FA3-3D15-442E-8FD1-17CE74A2F20C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAD17FA3-3D15-442E-8FD1-17CE74A2F20C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAD17FA3-3D15-442E-8FD1-17CE74A2F20C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{88910F4E-CE0F-4EF6-8E6F-AAF4CD5B7C98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88910F4E-CE0F-4EF6-8E6F-AAF4CD5B7C98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88910F4E-CE0F-4EF6-8E6F-AAF4CD5B7C98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88910F4E-CE0F-4EF6-8E6F-AAF4CD5B7C98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF96F7C8-4832-4606-8F5C-B1423FEE83B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF96F7C8-4832-4606-8F5C-B1423FEE83B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF96F7C8-4832-4606-8F5C-B1423FEE83B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF96F7C8-4832-4606-8F5C-B1423FEE83B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

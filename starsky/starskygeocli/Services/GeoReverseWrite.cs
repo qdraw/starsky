@@ -4,7 +4,7 @@ using starsky.Helpers;
 using starsky.Interfaces;
 using starsky.Models;
 
-namespace starskygeosync.Services
+namespace starskyGeoCli.Services
 {
     public class GeoReverseWrite
     {

@@ -8,7 +8,7 @@ using NGeoNames.Entities;
 using starsky.Helpers;
 using starsky.Models;
 
-namespace starskygeosync.Services
+namespace starskyGeoCli.Services
 {
     public class GeoReverseLookup
     {

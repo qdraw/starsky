@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using NGeoNames;
-using NGeoNames.Entities;
 using starsky.Helpers;
-using starsky.Interfaces;
 using starsky.Models;
-using starskygeosync.Services;
+using starskyGeoCli.Services;
 
-namespace starskygeosync
+namespace starskyGeoCli
 {
     
     public static class Program

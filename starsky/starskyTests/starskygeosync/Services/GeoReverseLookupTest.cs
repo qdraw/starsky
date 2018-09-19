@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
-using starskygeosync.Services;
+using starskyGeoCli.Services;
 
 namespace starskytests.starskygeosync.Services
 {
