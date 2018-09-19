@@ -127,51 +127,5 @@ namespace starsky.Services
                 ArrayPool<byte>.Shared.Return(block);
             }
         }
-
-        
-        
-//        // Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
-//        public static async Task<string> CalculateMd5AsyncWrapper(Stream stream)
-//        {
-//            //adding .ConfigureAwait(false) may NOT be what you want but google it.
-//            return await Task.Run(() => CalculateMd5Async(stream)).ConfigureAwait(false);
-//        }
-//        
-        /// <summary>
-        /// Base32 hash, based on Stream
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <returns></returns>
-//        public static async Task<string> CalculateMd5Async(Stream stream)
-//        {
-//            var block = ArrayPool<byte>.Shared.Rent(50000); // 0,05 Mb
-//            try
-//            {
-//                using (var md5 = MD5.Create())
-//                {
-//                    using (var newMemoryStream = new MemoryStream())
-//                    {
-//                        stream.CopyTo(newMemoryStream);
-//                        newMemoryStream.Position = 0;
-//
-//                        int length;
-//                        while ((length = await stream.ReadAsync(block, 0, block.Length).ConfigureAwait(false)) > 0)
-//                        {
-//                            md5.TransformBlock(block, 0, length, null, 0);
-//                        }
-//
-//                        md5.TransformFinalBlock(block, 0, 0);
-//                        var hash = md5.Hash;
-//                        return Base32.Encode(hash);
-//                    }
-//                }
-//            }
-//            finally
-//            {
-//                ArrayPool<byte>.Shared.Return(block);
-//            }
-//        }
-
-
     }
 }
