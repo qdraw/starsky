@@ -41,6 +41,12 @@ namespace starskytests.starskygeosync.Services
             
             new GeoReverseLookup(_appSettings).LoopFolderLookup(folderOfPhotos);
 
+            Assert.AreEqual("Argentina", buenosAires.LocationCountry);
+            Assert.AreEqual(string.Empty, northSea.LocationCountry);
+            Assert.AreEqual("'s-Hertogenbosch", cakeBakerPhoto.LocationCity);
+            Assert.AreEqual("North Brabant", cakeBakerPhoto.LocationState);
+
+            
         }
         
         

@@ -64,15 +64,12 @@ namespace starskygeosync.Services
                     metaFileItem.Latitude,
                     metaFileItem.Longitude);
 
-                if (distanceTo > 50) continue; // 50 kilometers
-                
-                Console.WriteLine(distanceTo);
+                if (distanceTo > 40) continue; // 40 kilometers
 
-                Console.WriteLine(nearestPlace.Latitude + " " 
-                    + nearestPlace.Longitude 
-                    + " " + nearestPlace.NameASCII + " " 
-                    +   GetAdmin2Name(nearestPlace.CountryCode,nearestPlace.Admincodes) + " "
-                    +  new RegionInfo(nearestPlace.CountryCode).EnglishName );
+                metaFileItem.LocationCity = nearestPlace.NameASCII;
+                metaFileItem.LocationCountry = new RegionInfo(nearestPlace.CountryCode).EnglishName;
+                metaFileItem.LocationState = GetAdmin2Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
+
             }
         }
     }
