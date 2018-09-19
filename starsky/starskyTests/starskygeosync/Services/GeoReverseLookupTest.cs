@@ -23,19 +23,22 @@ namespace starskytests.starskygeosync.Services
             var cakeBakerPhoto = new FileIndexItem
             {
                 Latitude = 51.6897055,
-                Longitude = 5.2974817
+                Longitude = 5.2974817,
+                FileName = "t.jpg"
             };
             
             var northSea = new FileIndexItem
             {
                 Latitude = 56.3618575,
-                Longitude = 3.1753435
+                Longitude = 3.1753435,
+                FileName = "t.jpg"
             };
             
             var buenosAires = new FileIndexItem
             {
                 Latitude = -34.6156625,
-                Longitude = -58.5033383
+                Longitude = -58.5033383,
+                FileName = "t.jpg" // checks if file type is suppored to write
             };
             var folderOfPhotos = new List<FileIndexItem> {cakeBakerPhoto, northSea, buenosAires};
             

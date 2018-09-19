@@ -138,6 +138,7 @@ namespace starsky.Helpers
         /// <returns>true, if exiftool can write to this</returns>
         public static bool IsExtensionExifToolSupported(string filename)
         {
+            if (string.IsNullOrEmpty(filename)) return false;
             var ext = Path.GetExtension(filename).Remove(0,1);
             return ExtensionExifToolSupportedList.Contains(ext); // true = if supported
         }
