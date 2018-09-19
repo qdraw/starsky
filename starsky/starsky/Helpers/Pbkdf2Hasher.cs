@@ -9,6 +9,12 @@ namespace starsky.Helpers
 {
     public static class Pbkdf2Hasher
     {
+        /// <summary>
+        /// Get secured hash passwords based on a salt
+        /// </summary>
+        /// <param name="password">password</param>
+        /// <param name="salt">to decrypt</param>
+        /// <returns>hased password</returns>
         public static string ComputeHash(string password, byte[] salt)
         {
             return Convert.ToBase64String(
@@ -22,6 +28,10 @@ namespace starsky.Helpers
             );
         }
 
+        /// <summary>
+        /// Generate a random salt
+        /// </summary>
+        /// <returns>random salt</returns>
         public static byte[] GenerateRandomSalt()
         {
             byte[] salt = new byte[128 / 8];

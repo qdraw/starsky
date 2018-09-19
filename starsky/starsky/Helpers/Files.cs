@@ -202,23 +202,30 @@ namespace starsky.Helpers
         /// <summary>
         /// Get the sitecar file of the raw image
         /// </summary>
-        /// <param name="fullFilePath"></param>
+        /// <param name="fullFilePath">the full path on the system</param>
+        /// <param name="exifToolXmpPrefix">prefix</param>
         /// <returns>full file path of sitecar file</returns>
-        public static string GetXmpSidecarFileWhenRequired(string fullFilePath)
+        public static string GetXmpSidecarFileWhenRequired(
+            string fullFilePath, 
+            string exifToolXmpPrefix = "")
         {
+            if (exifToolXmpPrefix == null) throw new ArgumentNullException(nameof(exifToolXmpPrefix));
             // Use an XMP File -> as those files don't support those tags
             if(IsXmpSidecarRequired(fullFilePath))
             {
                 // Overwrite to use xmp files
-                fullFilePath = Path.Combine(Path.GetDirectoryName(fullFilePath)
+                fullFilePath = Path.Combine(Path.GetDirectoryName(fullFilePath),
+                    exifToolXmpPrefix
                     + Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
             }
             return fullFilePath;
         }
         
-
-
-
+        /// <summary>
+        /// Get the format of the image by looking the first bytes
+        /// </summary>
+        /// <param name="filePath">the full path on the system</param>
+        /// <returns>ImageFormat enum</returns>
         public static ImageFormat GetImageFormat(string filePath)
         {
             if (!File.Exists(filePath)) return ImageFormat.notfound;
@@ -368,7 +375,8 @@ namespace starsky.Helpers
                 //I begin with the files, and store all of them in the list
                 foreach(string s in fl)
                     list.Add(s);
-                // I then add the directory and recurse that directory, the process will repeat until there are no more files and directories to recurse
+                // I then add the directory and recurse that directory,
+                // the process will repeat until there are no more files and directories to recurse
                 foreach(string s in dl)
                 {
                     list.Add(s);

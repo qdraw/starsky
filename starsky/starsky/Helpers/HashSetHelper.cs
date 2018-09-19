@@ -7,6 +7,11 @@ namespace starsky.Helpers
 {
     public static class HashSetHelper
     {
+        /// <summary>
+        /// Split dot comma space string (used for tags) to unique list
+        /// </summary>
+        /// <param name="inputKeywords">comma seperated string</param>
+        /// <returns>list/hashset with items in string</returns>
         public static HashSet<string> StringToHashSet(string inputKeywords)
         {
             
@@ -19,6 +24,11 @@ namespace starsky.Helpers
             return keywordsHashSet;
         }
 
+        /// <summary>
+        /// Get a string with comma seperated values from the hashset
+        /// </summary>
+        /// <param name="hashSetKeywords">import hashset</param>
+        /// <returns>string with comma seperated values</returns>
         public static string HashSetToString(HashSet<string> hashSetKeywords)
         {
             if (hashSetKeywords == null)
