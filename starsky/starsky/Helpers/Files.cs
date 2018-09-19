@@ -10,7 +10,11 @@ namespace starsky.Helpers
     public static class Files
     {
 
-        // is the subpath a folder or file
+        /// <summary>
+        /// is the subpath a folder or file, or deleted
+        /// </summary>
+        /// <param name="fullFilePath">path of the filesystem</param>
+        /// <returns>is file, folder or deleted</returns>
         public static FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string fullFilePath = "")
         {
 
@@ -127,6 +131,11 @@ namespace starsky.Helpers
                 return extensionList;
             }
         }
+        /// <summary>
+        /// is this filename with extension a filetype that exiftool can update
+        /// </summary>
+        /// <param name="filename">the name of the file with extenstion</param>
+        /// <returns>true, if exiftool can write to this</returns>
         public static bool IsExtensionExifToolSupported(string filename)
         {
             var ext = Path.GetExtension(filename).Remove(0,1);
@@ -147,6 +156,12 @@ namespace starsky.Helpers
                 return extensionList;
             }
         }
+        
+        /// <summary>
+        /// is this filename with extension a filetype that imagesharp can read/write 
+        /// </summary>
+        /// <param name="filename">the name of the file with extenstion</param>
+        /// <returns>true, if imagesharp can write to this</returns>
         public static bool IsExtensionThumbnailSupported(string filename)
         {
             var ext = Path.GetExtension(filename).Remove(0,1).ToLowerInvariant();
@@ -154,7 +169,7 @@ namespace starsky.Helpers
         }
         
         // List of extension that are forced to use sitecar xmp files
-        public static List<string> ExtensionForceXmpUseList
+        private static List<string> ExtensionForceXmpUseList
         {
             get
             {
@@ -169,6 +184,11 @@ namespace starsky.Helpers
             }
         }
 
+        /// <summary>
+        /// used for raw, bmp filetypes that has no support for in file exif
+        /// </summary>
+        /// <param name="filename">the name of the file with extenstion</param>
+        /// <returns>true, if Sidecar is required</returns>
         public static bool IsXmpSidecarRequired(string fullFilePath)
         {
             // Use an XMP File -> as those files don't support those tags
@@ -179,14 +199,18 @@ namespace starsky.Helpers
             return false;
         }
 
-        public static string GetXmpSidecarFileWhenRequired(string fullFilePath, string exifToolXmpPrefix)
+        /// <summary>
+        /// Get the sitecar file of the raw image
+        /// </summary>
+        /// <param name="fullFilePath"></param>
+        /// <returns>full file path of sitecar file</returns>
+        public static string GetXmpSidecarFileWhenRequired(string fullFilePath)
         {
             // Use an XMP File -> as those files don't support those tags
             if(IsXmpSidecarRequired(fullFilePath))
             {
                 // Overwrite to use xmp files
-                fullFilePath = Path.Combine(Path.GetDirectoryName(fullFilePath), 
-                    exifToolXmpPrefix
+                fullFilePath = Path.Combine(Path.GetDirectoryName(fullFilePath)
                     + Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
             }
             return fullFilePath;
