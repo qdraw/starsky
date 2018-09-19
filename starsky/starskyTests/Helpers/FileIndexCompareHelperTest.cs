@@ -52,12 +52,32 @@ namespace starskytests.Helpers
         }
 
         [TestMethod]
-        public void FileIndexCompareHelperTest_DateTime_Compare()
+        public void FileIndexCompareHelperTest_DateTimeNoOverwrite_Compare()
         {
+            // so no overwrite
             var source = new FileIndexItem {DateTime = DateTime.Now};
             var update = new FileIndexItem {DateTime = new DateTime()};
             FileIndexCompareHelper.Compare(source, update);
             Assert.AreNotEqual(update.DateTime,source.DateTime); 
+        }
+        
+        [TestMethod]
+        public void FileIndexCompareHelperTest_DateTime_Compare()
+        {
+            // source= null> update is new overwrite
+            var source = new FileIndexItem {DateTime = new DateTime()};
+            var update = new FileIndexItem {DateTime =  DateTime.Now};
+            FileIndexCompareHelper.Compare(source, update);
+            Assert.AreEqual(update.DateTime,source.DateTime); 
+        }
+        
+        [TestMethod]
+        public void FileIndexCompareHelperTest_Rotation_Compare()
+        {
+            var source = new FileIndexItem {Orientation = FileIndexItem.Rotation.Horizontal};
+            var update = new FileIndexItem {Orientation = FileIndexItem.Rotation.Rotate90Cw};
+            FileIndexCompareHelper.Compare(source, update);
+            Assert.AreEqual(source.Orientation,FileIndexItem.Rotation.Rotate90Cw); 
         }
     }
 }
