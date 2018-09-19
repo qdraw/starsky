@@ -71,6 +71,10 @@ namespace starsky.Helpers
             command = UpdateKeywordsCommand(command, comparedNames, updateModel);
             command = UpdateDescriptionCommand(command, comparedNames, updateModel);
 
+            command = UpdateLocationCountryCommand(command, comparedNames, updateModel);
+            command = UpdateLocationStateCommand(command, comparedNames, updateModel);
+            command = UpdateLocationCityCommand(command, comparedNames, updateModel);
+            
             if (comparedNames.Contains("Title"))
             {
                 command += " -ObjectName=\"" + updateModel.Title + "\"" 
@@ -120,6 +124,36 @@ namespace starsky.Helpers
             {
                 command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags 
                                                               + "\" -Keywords=\"" + updateModel.Tags + "\" ";
+            }
+            return command;
+        }
+        
+        private static string UpdateLocationCityCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+        {
+            if (comparedNames.Contains("LocationCity"))
+            {
+                command += " -City=\"" + updateModel.LocationCity 
+                                                   + "\" -xmp:City=\"" + updateModel.LocationCity + "\"";
+            }
+            return command;
+        }
+        
+        private static string UpdateLocationStateCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+        {
+            if (comparedNames.Contains("LocationState"))
+            {
+                command += " -State=\"" + updateModel.LocationState 
+                                       + "\" -xmp:State=\"" + updateModel.LocationState + "\"";
+            }
+            return command;
+        }
+        
+        private static string UpdateLocationCountryCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+        {
+            if (comparedNames.Contains("LocationCountry"))
+            {
+                command += " -Country=\"" + updateModel.LocationCountry 
+                                        + "\" -xmp:Country=\"" + updateModel.LocationCountry + "\"";
             }
             return command;
         }
