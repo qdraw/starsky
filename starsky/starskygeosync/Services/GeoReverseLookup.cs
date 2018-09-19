@@ -64,10 +64,11 @@ namespace starskygeosync.Services
                     metaFileItem.Latitude,
                     metaFileItem.Longitude);
 
-                if (distanceTo > 40) continue; // 40 kilometers
+                if (distanceTo > 40) continue; 
+                // if less than 40 kilometers from that place add it to the object
 
                 metaFileItem.LocationCity = nearestPlace.NameASCII;
-                metaFileItem.LocationCountry = new RegionInfo(nearestPlace.CountryCode).EnglishName;
+                metaFileItem.LocationCountry = new RegionInfo(nearestPlace.CountryCode).NativeName;
                 metaFileItem.LocationState = GetAdmin2Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
 
             }

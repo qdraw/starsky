@@ -10,7 +10,7 @@ namespace starskytests.Services
     [TestClass]
     public class XmpReadHelperTest
     {
-        private string _input = "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"XMP Core 5.1.2\"> <rdf:RDF xmlns:rdf=\""+
+        private const string Input = "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"XMP Core 5.1.2\"> <rdf:RDF xmlns:rdf=\""+
                         "http://www.w3.org/1999/02/22-rdf-syntax-ns#\"> <rdf:Description rdf:about=\"\" "+
                         "xmlns:aux=\"http://ns.adobe.com/exif/1.0/aux/\" xmlns:crs=\"http://ns.adobe.com/camera-raw-settings/1.0/\" "+
                         "xmlns:exif=\"http://ns.adobe.com/exif/1.0/\" xmlns:exifEX=\"http://cipa.jp/exif/1.0/\" xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\" "+
@@ -45,13 +45,18 @@ namespace starskytests.Services
         [TestMethod]
         public void XmpReadHelperTest_GetData_usingStringExample()
         {
-            var data = new ReadMeta().GetDataFromString(_input);
+            var data = new ReadMeta().GetDataFromString(Input);
             
             Assert.AreEqual(52.3451333333,data.Latitude,0.001);
             Assert.AreEqual(5.930,data.Longitude,0.001);
             Assert.AreEqual("caption",data.Description);
             Assert.AreEqual("keyword, keyword2",data.Tags);
             Assert.AreEqual("The object name",data.Title);
+            
+            Assert.AreEqual("Epe",data.LocationCity);
+            Assert.AreEqual("Gelderland",data.LocationState);
+            Assert.AreEqual("Nederland",data.LocationCountry);
+
             Assert.AreEqual(FileIndexItem.Color.Winner,data.ColorClass);
             
             DateTime.TryParseExact("2018-07-18 19:44:27", 
@@ -60,6 +65,7 @@ namespace starskytests.Services
                 DateTimeStyles.None, 
                 out var dateTime);
             Assert.AreEqual(dateTime, data.DateTime);
+            
         }
 
         [TestMethod]
@@ -68,7 +74,7 @@ namespace starskytests.Services
             var createAnImage = new CreateAnImage();
             var xmpPath = createAnImage.FullFilePath.Replace("jpg", "xmp");
             var fakeRawPath = createAnImage.FullFilePath.Replace("jpg", "dng");
-            new PlainTextFileHelper().WriteFile(xmpPath,_input);
+            new PlainTextFileHelper().WriteFile(xmpPath,Input);
             
             var appsettings = new AppSettings();
 

@@ -94,6 +94,28 @@ namespace starsky.Services
                     item.Orientation = orientation;
                 }
 
+                ///    [IPTC] City = Diepenveen
+                var locationCity = GetLocationPlaces(exifItem, "City");
+                if(locationCity != null) // null = is not the right tag or emthy tag
+                {
+                    item.LocationCity = locationCity;
+                }
+                
+                ///    [IPTC] Province/State = Overijssel
+                var locationState = GetLocationPlaces(exifItem, "Province/State");
+                if(locationState != null) // null = is not the right tag or emthy tag
+                {
+                    item.LocationState = locationState;
+                }
+                
+                ///    [IPTC] Country/Primary Location Name = Nederland
+                var locationCountry = GetLocationPlaces(exifItem, "Country/Primary Location Name");
+                if(locationCountry != null) // null = is not the right tag or emthy tag
+                {
+                    item.LocationCountry = locationCountry;
+                }
+
+
             }
             
             return item;
@@ -372,7 +394,27 @@ namespace starsky.Services
             }
             return 0;
         }
+        
 
+        /// <summary>
+        ///     For the location element
+        ///    [IPTC] City = Diepenveen
+        ///    [IPTC] Province/State = Overijssel
+        ///    [IPTC] Country/Primary Location Name = Nederland
+        /// </summary>
+        /// <param name="exifItem"></param>
+        /// <param name="name">City, State or Country</param>
+        /// <returns></returns>
+        public string GetLocationPlaces(MetadataExtractor.Directory exifItem, string name)
+        {
+            var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == name);
+            if (tCounts < 1) return null;
+            
+            var locationCity = exifItem.Tags.FirstOrDefault(
+                p => p.DirectoryName == "IPTC" 
+                     && p.Name == name)?.Description;
+            return locationCity;
+        }
 
     }
 }
