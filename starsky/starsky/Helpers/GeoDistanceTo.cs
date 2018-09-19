@@ -4,39 +4,34 @@ namespace starsky.Helpers
 {
     public static class GeoDistanceTo
     {
+        /// <summary>
+        /// Calculate straight line distance in kilometers
+        /// </summary>
+        /// <param name="latitudeFrom">latitude in decimal degrees</param>
+        /// <param name="longitudeFrom">longitude in decimal degrees</param>
+        /// <param name="latitudeTo">latitude in decimal degrees</param>
+        /// <param name="longitudeTo">longitude in decimal degrees</param>
+        /// <returns>in kilometers</returns>
+        public static double GetDistance(double latitudeFrom, double longitudeFrom, double latitudeTo, double longitudeTo)
+        {
+            double dlon = Radians(longitudeTo - longitudeFrom);
+            double dlat = Radians(latitudeTo - latitudeFrom);
+
+            double a = (Math.Sin(dlat / 2) * Math.Sin(dlat / 2)) + Math.Cos(Radians(latitudeFrom)) * Math.Cos(Radians(latitudeTo)) * (Math.Sin(dlon / 2) * Math.Sin(dlon / 2));
+            double angle = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            return angle * Radius;
+        }
+        
+        private const double Radius = 6378.16;
 
         /// <summary>
-        /// Calculate distance in meters
+        /// Convert degrees to Radians
         /// </summary>
-        /// <param name="lat1"></param>
-        /// <param name="long1"></param>
-        /// <param name="lat2"></param>
-        /// <param name="long2"></param>
-        /// <returns>int in meters</returns>
-        public static int GetDistance(double lat1, double long1, double lat2, double long2)
+        /// <param name="x">Degrees</param>
+        /// <returns>The equivalent in radians</returns>
+        private static double Radians(double x)
         {
-            double dLat = (lat2 - lat1) / 180 * Math.PI;
-            double dLong = (long2 - long1) / 180 * Math.PI;
- 
-            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2)
-                       + Math.Cos(lat2) * Math.Sin(dLong/2) * Math.Sin(dLong/2);
-            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-
-            // Calculate radius of earth
-            // For this you can assume any of the two points.
-            double radiusE = 6378135; // Equatorial radius, in metres
-            double radiusP = 6356750; // Polar Radius
-
-            // Numerator part of function
-            double nr = Math.Pow(radiusE * radiusP * Math.Cos(lat1 / 180 * Math.PI), 2);
-            // Denominator part of the function
-            double dr = Math.Pow(radiusE * Math.Cos(lat1 / 180 * Math.PI), 2)
-                        + Math.Pow(radiusP * Math.Sin(lat1 / 180 * Math.PI), 2);
-            double radius = Math.Sqrt(nr / dr);
-
-            // Calaculate distance in metres.
-            var distance = radius * c;
-            return (int) distance;
+            return x * Math.PI / 180;
         }
     }
 }
