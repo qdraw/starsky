@@ -9,7 +9,13 @@ namespace starsky.Helpers
     {
         public static HashSet<string> StringToHashSet(string inputKeywords)
         {
-            HashSet<string> keywordsHashSet = inputKeywords.Split(", ").ToHashSet();
+            
+            var dotcommaRegex = new System.Text.RegularExpressions.Regex(", ");
+            
+            var keywordList = dotcommaRegex.Split(inputKeywords);
+            
+            HashSet<string> keywordsHashSet = new HashSet<string>(from x in keywordList select x);
+            
             return keywordsHashSet;
         }
 

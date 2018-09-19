@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Xml;
 using starsky.Helpers;
@@ -11,10 +10,11 @@ namespace starsky.Services
 {
     public partial class ReadMeta
     {
-        public FileIndexItem ReadGpxFromFile(string fullFilePath)
+        public FileIndexItem ReadGpxFromFileReturnAfterFirstField(string fullFilePath)
         {
             
-            if (Files.IsFolderOrFile(fullFilePath) != FolderOrFileModel.FolderOrFileTypeList.File) return new FileIndexItem();
+            if (Files.IsFolderOrFile(fullFilePath) != FolderOrFileModel.FolderOrFileTypeList.File) 
+                return new FileIndexItem();
 
             try
             {
@@ -87,6 +87,71 @@ namespace starsky.Services
                 }
             }
             return new FileIndexItem();
+        }
+
+
+        /// <summary>
+        /// Read full gpx file
+        /// </summary>
+        /// <param name="fullFilePath"></param>
+        /// <param name="geoList">
+        /// </param>
+        /// <returns></returns>
+        public List<GeoListItem> ReadGpxFile(string fullFilePath, List<GeoListItem> geoList = null)
+        {
+            if (geoList == null) geoList = new List<GeoListItem>();
+
+            XmlDocument gpxDoc = new XmlDocument();
+            gpxDoc.Load(fullFilePath);
+            
+            XmlNamespaceManager namespaceManager = new XmlNamespaceManager(gpxDoc.NameTable);
+            namespaceManager.AddNamespace("x", "http://www.topografix.com/GPX/1/1");
+            
+            XmlNodeList nodeList = gpxDoc.SelectNodes("//x:trkpt", namespaceManager);
+
+            foreach (XmlElement node in nodeList)
+            {
+                var longitudeString = node.GetAttribute("lon");
+                var latitudeString = node.GetAttribute("lat");
+
+                var longitude = double.Parse(longitudeString, 
+                    NumberStyles.Currency, CultureInfo.InvariantCulture);
+                var latitude = double.Parse(latitudeString, 
+                    NumberStyles.Currency, CultureInfo.InvariantCulture);
+
+                DateTime dateTime = DateTime.MinValue;
+                foreach (XmlElement childNode in node.ChildNodes)
+                {
+                         
+                    if (childNode.Name == "ele")
+                    {
+                        var elevation = childNode.InnerText;
+                    }
+                    
+                    if (childNode.Name != "time") continue;
+                    var datetimeString = childNode.InnerText;
+                    
+                    // 2018-08-21T19:15:41Z
+                    DateTime.TryParseExact(datetimeString, 
+                        "yyyy-MM-ddTHH:mm:ssZ", 
+                        CultureInfo.InvariantCulture, 
+                        DateTimeStyles.None, 
+                        out dateTime);
+
+                    dateTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.Local);
+
+                }
+                
+                geoList.Add(new GeoListItem
+                {
+                    DateTime = dateTime,
+                    Latitude = latitude,
+                    Longitude = longitude,
+                });
+                
+                
+            }
+            return geoList;
         }
     }
 }

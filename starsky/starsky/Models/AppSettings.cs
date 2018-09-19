@@ -35,7 +35,8 @@ namespace starsky.Models
         public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
             .Replace("starskysynccli", "starsky")
             .Replace("starskyimportercli", "starsky")
-            .Replace("starskywebhtmlcli", "starsky");
+            .Replace("starskywebhtmlcli", "starsky")
+            .Replace("starskygeosync", "starsky");
         // When adding or updating please also update SqliteFullPath()
         
         public StarskyAppType ApplicationType { get; set; }

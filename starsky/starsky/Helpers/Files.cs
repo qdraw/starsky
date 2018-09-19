@@ -29,10 +29,13 @@ namespace starsky.Helpers
             return FolderOrFileModel.FolderOrFileTypeList.Deleted;
         }
 
-        // Returns a list of directories
+        /// <summary>
+        /// Returns a list of directories
+        /// </summary>
+        /// <param name="fullFilePath">directory</param>
+        /// <returns></returns>
         public static string[] GetAllFilesDirectory(string fullFilePath = "")
         {
-
             if (!Directory.Exists(fullFilePath)) return new List<string>().ToArray();
             string[] folders = Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);
             // Used For subfolders
@@ -40,7 +43,12 @@ namespace starsky.Helpers
             return folders;
         }
 
-        // Returns a list of Files in a directory (non-recruisive)
+        /// <summary>
+        /// Returns a list of Files in a directory (non-recruisive)
+        /// only files that are in the extenstion list ExtensionSyncSupportedList
+        /// </summary>
+        /// <param name="fullFilePath">path on the filesystem</param>
+        /// <returns></returns>
         public static string[] GetFilesInDirectory(string fullFilePath)
         {
             if (fullFilePath == null) return Enumerable.Empty<string>().ToArray();
