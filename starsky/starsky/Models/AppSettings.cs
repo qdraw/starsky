@@ -46,7 +46,8 @@ namespace starsky.Models
             WebController = 0,
             Importer = 1,
             Sync = 2,
-            WebHtml = 3
+            WebHtml = 3,
+            Geo = 4
         }
 
         private string _storageFolder; // in old versions: basePath 

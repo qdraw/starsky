@@ -36,16 +36,17 @@ namespace starskyGeoCli
             // Use args in application
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
             
-            if (new ArgsHelper().NeedHelp(args))
+            if (new ArgsHelper().NeedHelp(args) || new ArgsHelper().GetPathFormArgs(args,false).Length <= 1)
             {
-                appSettings.ApplicationType = AppSettings.StarskyAppType.Sync;
+                appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
                 new ArgsHelper(appSettings).NeedHelpShowDialog();
                 return;
             }
             
-            var pathFormArgs = new ArgsHelper(appSettings).GetPathFormArgs(args,false);
+            var inputPath = new ArgsHelper().GetPathFormArgs(args,false);
 
-            var filesInDirectory = Files.GetFilesInDirectory(pathFormArgs);
+
+            var filesInDirectory = Files.GetFilesInDirectory(inputPath);
             var geoList = new List<GeoListItem>(); 
             foreach (var fullfilepath in filesInDirectory)
             {
