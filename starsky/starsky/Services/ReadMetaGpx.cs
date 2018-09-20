@@ -18,12 +18,16 @@ namespace starsky.Services
 
             try
             {
-                return ReadGpxFileReturnAfterFirstField(fullFilePath);
+                return ReadGpxFileReturnAfterFirstFieldDirect(fullFilePath);
             }
             catch (XmlException e)
             {
                 Console.WriteLine(e);
-                return new FileIndexItem { ColorClass = FileIndexItem.Color.None};
+                return new FileIndexItem
+                {
+                    Tags = "SystemXmlXmlException",
+                    ColorClass = FileIndexItem.Color.None
+                };
             }
         }
 
@@ -46,7 +50,12 @@ namespace starsky.Services
             return string.Empty;
         }
         
-        private FileIndexItem ReadGpxFileReturnAfterFirstField(string fullFilePath)
+        /// <summary>
+        /// Direct api, please use with exeption handeling
+        /// </summary>
+        /// <param name="fullFilePath"></param>
+        /// <returns></returns>
+        private FileIndexItem ReadGpxFileReturnAfterFirstFieldDirect(string fullFilePath)
         {
             
             XmlDocument gpxDoc = new XmlDocument();
