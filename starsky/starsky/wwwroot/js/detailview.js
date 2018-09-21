@@ -153,12 +153,6 @@ function addDeleteTag() {
     }
     queryKeywords(queryItem);
     
-    // When delete add grey as colorclass
-    setTimeout(function () {
-        updateColorClass(document.querySelector(".add-colorclass a.colorclass-8"))
-    },1000)
-
-    
 }
 
 function queryKeywords(queryItem) {
