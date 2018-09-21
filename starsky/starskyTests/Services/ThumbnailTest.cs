@@ -72,6 +72,26 @@ namespace starskytests.Services
         }
 
         [TestMethod]
+        public void CreateAndRename_byobject_ThumbTest()
+        {
+            // object does not exist or return values
+
+            var newImage = new CreateAnImage();
+            _appSettings.ThumbnailTempFolder = newImage.BasePath;;
+
+            var fileIndexItemList = new List<FileIndexItem>
+            {
+                new FileIndexItem
+                {
+                    FileHash = "000",
+                    FileName = newImage.FileName,
+                    ParentDirectory = "/"
+                }
+            };
+            new Thumbnail(_appSettings,null).RenameThumb(fileIndexItemList);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(FileNotFoundException))]
         public void ThumbnailCreateThumbnailNullTest()
         {

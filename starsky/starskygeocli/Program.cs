@@ -81,11 +81,9 @@ namespace starskyGeoCli
             metaFilesInDirectory = new GeoReverseLookup(appSettings).LoopFolderLookup(metaFilesInDirectory);
             new GeoReverseWrite(appSettings,startupHelper.ExifTool()).LoopFolder(metaFilesInDirectory);
 
-            foreach (var VARIABLE in metaFilesInDirectory)
-            {
-                new Thumbnail().RenameThumb();
-                
-            }
+            // update thumbs to avoid unnesseary re-generation
+            new Thumbnail(appSettings).RenameThumb(metaFilesInDirectory);
+
             
 //            var geoList = new List<GeoListItem>(); 
 //            foreach (var fullfilepath in filesInDirectory)
