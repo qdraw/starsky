@@ -125,6 +125,14 @@ namespace starsky.Helpers
 
             switch (_appSettings.ApplicationType)
             {
+                case AppSettings.StarskyAppType.Geo:
+                    // When this change please update ./readme.md
+                    Console.WriteLine("--path or -p == parameter: (string) ; fullpath (all locations are supported) ");
+                    Console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database ");
+                    Console.WriteLine("--subpathrelative or -n == Overwrite subpath to use relative days to select a folder" +
+                                      ", use for example '1' to select yesterday. (structure is required)");
+                    break;
+                
                 case AppSettings.StarskyAppType.WebHtml:
                     // When this change please update ./readme.md
                     Console.WriteLine("--path or -p == parameter: (string) ; fullpath ");
@@ -141,7 +149,10 @@ namespace starsky.Helpers
                     break;
                 case AppSettings.StarskyAppType.Sync:
                     // When this change please update ./readme.md
-                    Console.WriteLine("--path or -p == parameter: (string) ; fullpath, search and replace first part of the filename '/' ");
+                    Console.WriteLine("--path or -p == parameter: (string) ; " +
+                                      "fullpath, only child items of the database folder are supported," +
+                                      "search and replace first part of the filename, '/' ");
+                    Console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
                     Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
                     Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
                     Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder (heavy cpu usage), default false");

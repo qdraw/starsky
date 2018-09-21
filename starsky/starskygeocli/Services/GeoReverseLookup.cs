@@ -68,6 +68,11 @@ namespace starskyGeoCli.Services
         }
         
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="metaFilesInDirectory"></param>
+        /// <returns></returns>
         public List<FileIndexItem> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory)
         {
             foreach (var metaFiles in metaFilesInDirectory)

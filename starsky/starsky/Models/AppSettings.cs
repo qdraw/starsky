@@ -36,7 +36,7 @@ namespace starsky.Models
             .Replace("starskysynccli", "starsky")
             .Replace("starskyimportercli", "starsky")
             .Replace("starskywebhtmlcli", "starsky")
-            .Replace("starskygeosync", "starsky");
+            .Replace("starskygeocli", "starsky");
         // When adding or updating please also update SqliteFullPath()
         
         public StarskyAppType ApplicationType { get; set; }
@@ -50,6 +50,7 @@ namespace starsky.Models
             Geo = 4
         }
 
+        // Can be used in the cli session to select files out of the file database system
         private string _storageFolder; // in old versions: basePath 
         public string StorageFolder
         {

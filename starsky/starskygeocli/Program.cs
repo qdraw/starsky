@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using starsky.Helpers;
 using starsky.Models;
+using starsky.Services;
 using starskyGeoCli.Services;
 
 namespace starskyGeoCli
@@ -36,30 +38,62 @@ namespace starskyGeoCli
             // Use args in application
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
             
-            if (new ArgsHelper().NeedHelp(args) || new ArgsHelper().GetPathFormArgs(args,false).Length <= 1)
+            // Using both options
+            string inputPath;
+            // -s = ifsubpath || -p is path
+            if (new ArgsHelper(appSettings).IfSubpathOrPath(args))
+            {
+                inputPath = appSettings.DatabasePathToFilePath(
+                    new ArgsHelper(appSettings).GetSubpathFormArgs(args)
+                    );
+            }
+            else
+            {
+                inputPath = new ArgsHelper(appSettings).GetPathFormArgs(args,false);
+            }
+            
+            // overwrite subpath with relative days
+            // use -g or --SubpathRelative to use it.
+            // envs are not supported
+            var getSubpathRelative = new ArgsHelper(appSettings).GetSubpathRelative(args);
+            if (getSubpathRelative != null)
+            {
+                inputPath = appSettings.DatabasePathToFilePath(getSubpathRelative);
+            }
+
+            if (new ArgsHelper().NeedHelp(args) || inputPath == null || 
+                (new ArgsHelper().GetPathFormArgs(args,false).Length <= 1 
+                && new ArgsHelper().GetSubpathFormArgs(args).Length <= 1) )
             {
                 appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
                 new ArgsHelper(appSettings).NeedHelpShowDialog();
                 return;
             }
             
-            var inputPath = new ArgsHelper().GetPathFormArgs(args,false);
-
+            // used in this session to find the files back
+            appSettings.StorageFolder = inputPath;
 
             var filesInDirectory = Files.GetFilesInDirectory(inputPath);
-            var geoList = new List<GeoListItem>(); 
-            foreach (var fullfilepath in filesInDirectory)
-            {
-                var imageFormat = Files.GetImageFormat(fullfilepath);
-                if (imageFormat == Files.ImageFormat.gpx) startupHelper.ReadMeta().ReadGpxFile(fullfilepath, geoList);
-            }
-            
-            var metaFilesInDirectory = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(filesInDirectory);
-            
+            var metaFilesInDirectory = startupHelper.ReadMeta()
+                .ReadExifAndXmpFromFileAddFilePathHash(filesInDirectory);
+            // FilePath is used as full
             
             metaFilesInDirectory = new GeoReverseLookup(appSettings).LoopFolderLookup(metaFilesInDirectory);
             new GeoReverseWrite(appSettings,startupHelper.ExifTool()).LoopFolder(metaFilesInDirectory);
 
+            foreach (var VARIABLE in metaFilesInDirectory)
+            {
+                new Thumbnail().RenameThumb();
+                
+            }
+            
+//            var geoList = new List<GeoListItem>(); 
+//            foreach (var fullfilepath in filesInDirectory)
+//            {
+//                var imageFormat = Files.GetImageFormat(fullfilepath);
+//                if (imageFormat == Files.ImageFormat.gpx)
+//                     startupHelper.ReadMeta().ReadGpxFile(fullfilepath, geoList);
+//            }
             
 //            foreach (var item in metaFilesInDirectory)
 //            {
@@ -74,7 +108,8 @@ namespace starskyGeoCli
 //                    if(!geoList.Any()) continue;
 //                    fileGeoData = geoList.OrderBy(p => Math.Abs((p.DateTime - dateTime).Ticks)).FirstOrDefault();
 //
-//                    Console.WriteLine(dateTime + " " + fileGeoData.DateTime + " " + fileGeoData.Latitude + " " + fileGeoData.Longitude);
+//                    Console.WriteLine(dateTime + " " + fileGeoData.DateTime
+//                     + " " + fileGeoData.Latitude + " " + fileGeoData.Longitude);
 //                }
 //                else
 //                {
