@@ -160,6 +160,10 @@ function queryKeywords(queryItem) {
     addUnloadWarning();
     showPreloader();
     
+    if (queryItem.indexOf("!delete!") >= 0) {
+        updateColorClass(document.querySelector(".add-colorclass a.colorclass-8"))
+    }
+    
     var url = updateApiBase + "&tags=" + queryItem;
     loadJSON(url,
         function (data) {
