@@ -263,12 +263,16 @@ h2 {
     margin-top: 15px;
     color: white;
 }
+.location-sidebar,
+.location-sidebar a,
 .rotation-sidebar a,
 .rotation-sidebar,
 .download-sidebar a,
 .download-sidebar{
+    display: inline-block;
     margin-top: 10px;
 }
+
 
 .add-colorclass button {
     opacity: 0.7;

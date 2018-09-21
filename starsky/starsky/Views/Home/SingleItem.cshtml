@@ -109,7 +109,24 @@
                download="@Model.FileIndexItem.FileName">
                 Orgineel
             </a>
-           
+        </div>
+        <div class="location-sidebar">
+            @if ( Math.Abs(@Model.FileIndexItem.Latitude) > 0.001
+                && Math.Abs(@Model.FileIndexItem.Longitude) > 0.001
+                 && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationCity)
+                 && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationState)
+                 && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationState))
+            {
+                <h4>Locatie:</h4>
+                <a target="_blank"
+                   href="https://www.openstreetmap.org/?mlat=@Model.FileIndexItem.Latitude&mlon=@Model.FileIndexItem.Longitude#map=15/@Model.FileIndexItem.Latitude/@Model.FileIndexItem.Longitude">
+                    @Model.FileIndexItem.LocationCity, @Model.FileIndexItem.LocationState (@Model.FileIndexItem.LocationCountry)
+                </a>
+                <em>Opent in nieuw tabblad</em>
+
+            }
+        </div>
+        <div>
             <div class="js-collectionsswitch">
                 <h4>Collecties:</h4>
                 <div><a class="btn btn-default small" href="#">@Model.FileIndexItem.ImageFormat</a></div>
