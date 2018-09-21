@@ -129,7 +129,7 @@ namespace starsky.Helpers
                     // When this change please update ./readme.md
                     Console.WriteLine("--path or -p == parameter: (string) ; fullpath (all locations are supported) ");
                     Console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database ");
-                    Console.WriteLine("--subpathrelative or -n == Overwrite subpath to use relative days to select a folder" +
+                    Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
                                       ", use for example '1' to select yesterday. (structure is required)");
                     break;
                 
@@ -162,7 +162,7 @@ namespace starsky.Helpers
                     Console.WriteLine("--connection or -c == Overwrite EnvironmentVariable for DatabaseConnection");
                     Console.WriteLine("--thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder");
                     Console.WriteLine("--exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath");
-                    Console.WriteLine("--subpathrelative or -n == Overwrite subpath to use relative days to select a folder" +
+                    Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
                                       ", use for example '1' to select yesterday. (structure is required)");
                     break;
             }

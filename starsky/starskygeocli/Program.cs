@@ -63,7 +63,8 @@ namespace starskyGeoCli
 
             if (new ArgsHelper().NeedHelp(args) || inputPath == null || 
                 (new ArgsHelper().GetPathFormArgs(args,false).Length <= 1 
-                && new ArgsHelper().GetSubpathFormArgs(args).Length <= 1) )
+                && new ArgsHelper().GetSubpathFormArgs(args).Length <= 1 
+                 && new ArgsHelper(appSettings).GetSubpathRelative(args).Length <= 1) )
             {
                 appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
                 new ArgsHelper(appSettings).NeedHelpShowDialog();
