@@ -219,7 +219,7 @@
         </span>
     </h1>
 
-    <div class="main-image" id="map">
+    <div class="main-image">
         <img class="disabled-@Model.FileIndexItem.Orientation" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
     </div>
 </div>
@@ -262,8 +262,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.4.0/gpx.min.js"></script>
     <script>
-        var map = L.map('map');
+        document.querySelector(".main-image").innerHTML = "<div id=\"map\"><div class=\"lock-map\"><a class=\"btn btn-info\" onclick=\"enableMap()\">Zet kaartnavigeer opties aan</a></div></div>";
+        var map = L.map('map',{ });
 
+        function disableMap() {
+            document.querySelector(".main-image #map").classList.add("disabled");
+            map._handlers.forEach(function(handler) {
+                handler.disable();
+            });
+            map.removeControl( map.zoomControl ); 
+        }
+        function enableMap() {
+            document.querySelector(".main-image #map").classList.remove("disabled");
+            map._handlers.forEach(function(handler) {
+                handler.enable();
+            });
+            map.addControl( map.zoomControl );
+        }
+        
+        disableMap();
+        
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
@@ -275,6 +293,6 @@
         new L.GPX(gpx, {async: true}).on('loaded', function(e) {
             map.fitBounds(e.target.getBounds());
         }).addTo(map);
-        
+
     </script>
 }

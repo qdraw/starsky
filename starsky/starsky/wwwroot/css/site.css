@@ -854,11 +854,8 @@ float: left;
     padding-right: 15px;
 }
 
-/*.main-image {*/
-    /*width: auto;*/
-    /*max-height: calc(100vh - 154px);*/
-    /*max-width: calc(100vw - 30px);*/
-/*}*/
+
+.main-image #map,
 .main-image {
     height: calc(100vh - 154px);
 }
@@ -912,16 +909,15 @@ float: left;
     background-color: rgba(109, 199, 256, 0.1);
 }
 
-
+.main-image.collapsed #map,
 .main-image.collapsed {
     width: calc(100vw - 340px);
 }
 
 @media screen and (max-width: 800px) {
-    .main-image.collapsed {
-        width: 100%;
-    }
-    .main-image {
+    .main-image,
+    .main-image.collapsed,
+    .main-image.collapsed #map {
         width: 100%;
         max-height: unset;
     }
@@ -1213,4 +1209,25 @@ div#popup.on {
 .js-collectionsswitch a:first-child {
     background-color: #5a6268;
     color: white;
+}
+.main-image #map.disabled .leaflet-map-pane{
+    opacity: 0.8;
+}
+.main-image #map .lock-map {
+    display: none;
+}
+.main-image #map.disabled .lock-map {
+    display: inline-block;
+    position: relative;
+    width: 100px;
+    height: 20px;
+    top: 20px;
+    left: 40px;
+    z-index: 401;
+}
+.main-image #map .leaflet-control-attribution {
+    display: none;
+}
+.lock-map a {
+    background-color: rgba(255, 255, 83, 1);
 }
