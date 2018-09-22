@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using starsky.Services;
+using TimeZoneConverter;
 
 namespace starsky.Models
 {
@@ -169,7 +170,29 @@ namespace starsky.Models
                 StructureCheck(_structure);
             }
         }
-        
+
+        // Used for syncing gpx files
+        public string CameraTimeZone
+        {
+            get
+            {
+                if (CameraTimeZoneInfo == null) return string.Empty; 
+                return CameraTimeZoneInfo.Id; 
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    CameraTimeZoneInfo = TimeZoneInfo.Local;
+                    return;
+                }
+                CameraTimeZoneInfo = TZConvert.GetTimeZoneInfo(value); 
+            }
+        }
+
+        [JsonIgnore]
+        public TimeZoneInfo CameraTimeZoneInfo { get; set; }
+
 
         public string StructureExampleNoSetting
         {

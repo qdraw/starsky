@@ -83,11 +83,12 @@ namespace starsky.Services
                     var datetimeString = childNode.InnerText;
                     
                     DateTime.TryParse(datetimeString, out var dateTime);
-                    
+                    dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+
                     return new FileIndexItem
                     {
                         Title = GetTrkName(gpxDoc, namespaceManager),
-                        DateTime = dateTime, //.ToUniversalTime(),
+                        DateTime = dateTime,
                         Latitude = latitude,
                         Longitude = longitude,
                         Tags = string.Empty,
@@ -147,10 +148,9 @@ namespace starsky.Services
                         DateTimeStyles.None, 
                         out dateTime);
 
-                    dateTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.Local);
-
+                    dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
                 }
-                
+
                 geoList.Add(new GeoListItem
                 {
                     DateTime = dateTime,

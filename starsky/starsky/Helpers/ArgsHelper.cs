@@ -133,6 +133,7 @@ namespace starsky.Helpers
                                       ", use for example '1' to select yesterday. (structure is required)");
                     Console.WriteLine("-p, -s, -g == you need to select one of those tags");
                     Console.WriteLine("--all or -a == overwrite reverse geotag location tags (default: false / ignore already taged files) ");
+                    Console.WriteLine("--index or -i == parameter: (bool) ; gpx feature to index geo location, default true");
 
                     break;
                 

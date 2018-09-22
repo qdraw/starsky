@@ -9,8 +9,12 @@ namespace starskytests
 
         public readonly string FullFileGpxPath = 
             Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + FileNameGpx;
+        public string FileName => FileNameGpx;
         private const string FileNameGpx = "zz__test.gpx";
 
+        public readonly string BasePath =
+            Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
+        
         public CreateAnGpx()
         {
             var base64gpxFile = "CjxncHggeG1sbnM9Imh0dHA6Ly93d3cudG9wb2dyYWZpeC5jb20vR1BYLzEvMSIg" +

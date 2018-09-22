@@ -81,21 +81,24 @@ namespace starskyGeoCli
             
             var overwriteLocationNames = new ArgsHelper().GetAll(args);
             
+            var gpxIndexMode = new ArgsHelper().GetIndexMode(args);
+
+            if (gpxIndexMode)
+            {
+                new GeoIndexGpx(appSettings,startupHelper.ReadMeta()).LoopFolder(metaFilesInDirectory);
+            }
+            
             metaFilesInDirectory = new GeoReverseLookup(appSettings)
                 .LoopFolderLookup(metaFilesInDirectory,overwriteLocationNames);
+            
+            
             new GeoReverseWrite(appSettings,startupHelper.ExifTool()).LoopFolder(metaFilesInDirectory);
 
             // update thumbs to avoid unnesseary re-generation
             new Thumbnail(appSettings).RenameThumb(metaFilesInDirectory);
 
             
-//            var geoList = new List<GeoListItem>(); 
-//            foreach (var fullfilepath in filesInDirectory)
-//            {
-//                var imageFormat = Files.GetImageFormat(fullfilepath);
-//                if (imageFormat == Files.ImageFormat.gpx)
-//                     startupHelper.ReadMeta().ReadGpxFile(fullfilepath, geoList);
-//            }
+
             
 //            foreach (var item in metaFilesInDirectory)
 //            {

@@ -17,8 +17,9 @@ namespace starskytests.starskygeosync.Services
                 TempFolder = new CreateAnImage().BasePath
             };
         }
+
         [TestMethod]
-        public void LoopFolderLookupTest()
+        public void GeoReverseLookup_LoopFolderLookupTest()
         {
             var cakeBakerPhoto = new FileIndexItem
             {
