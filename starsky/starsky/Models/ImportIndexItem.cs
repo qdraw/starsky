@@ -125,6 +125,7 @@ namespace starsky.Models
             }
                             
             // Now retry it and replace special charaters from string
+            // For parsing files like: '2018-08-31 18.50.35' > '20180831185035'
             Regex pattern = new Regex("-|_| |;|\\.|:");
             fileName = pattern.Replace(fileName,string.Empty);
             structuredFileName = pattern.Replace(structuredFileName,string.Empty);
@@ -142,6 +143,7 @@ namespace starsky.Models
             }
 
             // when using /yyyymmhhss_{filenamebase}.jpg
+            // For the situation that the image has no exif date and there is an appendix used
             if(structuredFileName.Length >= fileName.Length)  {
                 
                 structuredFileName = structuredFileName.Substring(0, fileName.Length);

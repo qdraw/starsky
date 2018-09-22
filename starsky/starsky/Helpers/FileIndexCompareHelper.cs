@@ -7,7 +7,14 @@ namespace starsky.Helpers
 {
     public static class FileIndexCompareHelper
     {
-        
+        /// <summary>
+        /// Compare a fileindex item and update items if there are changed in the updateObject
+        /// append => (propertyName == "Tags" add it with comma space or with single space)
+        /// </summary>
+        /// <param name="sourceIndexItem">the source object</param>
+        /// <param name="updateObject">the item with changed values</param>
+        /// <param name="append">when the type is string add it to existing values </param>
+        /// <returns>list of changed types</returns>
         public static List<string> Compare(FileIndexItem sourceIndexItem, FileIndexItem updateObject = null, bool append = false)
         {
             if(updateObject == null) updateObject = new FileIndexItem();

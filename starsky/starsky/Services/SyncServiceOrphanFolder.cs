@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using starsky.Models;
@@ -8,9 +9,17 @@ namespace starsky.Services
 {
     public partial class SyncService
     {
-        // Very memory using feature to check if folders are not deleted
+        /// <summary>
+        /// The folder is deleted, but there are fileindexitems that has no parrent
+        /// Output is to delete this child items
+        /// Very memory using feature to check if folders are not deleted
+        /// </summary>
+        /// <param name="subPath">internal/subpath</param>
+        /// <param name="maxNumberOfItems">(int) the max child items</param>
+        /// <returns>Output is to delete this child items</returns>
+        /// <exception cref="ConstraintException">more than 3000</exception>
         public IEnumerable<string>
-           OrphanFolder (string subPath) //  RemoveEmptyFolders
+           OrphanFolder (string subPath, int maxNumberOfItems = 3000) 
         {
             // You will get Out of Memory issues on large folders
             // 1. Index all folders
@@ -23,9 +32,12 @@ namespace starsky.Services
             var allItemsInDb = _query.GetAllRecursive(subPath);
 
             // Large items not recruisive
-            if (allItemsInDb.Count > 2500)
+            if (allItemsInDb.Count > maxNumberOfItems)
             {
-                throw new ArgumentOutOfRangeException("Item in subfolder is to large");
+                // item name is overwritten
+                throw new ConstraintException(
+                    "Item in subfolder is to large - now: " +
+                  allItemsInDb.Count + " vs max:" + maxNumberOfItems);
             }
 
             Console.WriteLine("> running");

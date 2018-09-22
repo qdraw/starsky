@@ -165,6 +165,15 @@ namespace starsky.Models
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         
+        [MaxLength(40)]
+        public string LocationCity { get; set; } = string.Empty;
+
+        [MaxLength(40)]
+        public string LocationState { get; set; } = string.Empty;
+
+        [MaxLength(40)] 
+        public string LocationCountry { get; set; } = string.Empty;
+        
         
         public Color GetColorClass(string colorclassString = "0")
         {
@@ -426,4 +435,5 @@ namespace starsky.Models
             return (FileIndexItem) MemberwiseClone();
         }
     }
+
 }

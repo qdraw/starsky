@@ -88,7 +88,7 @@
                     <p><a onclick="Remove('@item.FilePath')"class="btn-sm btn btn-danger">Verwijder van schijf</a></p>
                 </div>
                 <div class="filter"></div>
-                <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash})" alt=""/>
+                <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash, issingleitem = false })" alt=""/>
             </div>
         }
     </div>

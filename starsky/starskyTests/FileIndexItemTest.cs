@@ -16,6 +16,13 @@ namespace starskytests
             Assert.AreEqual(item.Tags,string.Empty);
         }
         
+        [TestMethod]
+        public void FileIndexItemTest_SetDescriptionsToNull()
+        {
+            var item = new FileIndexItem{Description = null};
+            Assert.AreEqual(item.Description,string.Empty);
+        }
+        
         
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTestDefault()
@@ -149,13 +156,22 @@ namespace starskytests
         }
         
         [TestMethod]
-        public void FileIndexItemTest_SetOrientationrelativeRotation0()
+        public void FileIndexItemTest_OrientationrelativeRotation0()
         {
             // keep the same
             var t = new FileIndexItem {Orientation = FileIndexItem.Rotation.Horizontal};
-            t.RelativeOrientation();
-            Assert.AreEqual(FileIndexItem.Rotation.Horizontal,t.Orientation);
+            Assert.AreEqual(FileIndexItem.Rotation.Horizontal,t.RelativeOrientation());
         }
+
+        [TestMethod]
+        public void FileIndexItemTest_SetOrientationrelativeRotation0()
+        {
+            var fileObject = new FileIndexItem {Orientation = FileIndexItem.Rotation.Horizontal};
+            fileObject.SetRelativeOrientation();
+            Assert.AreEqual(FileIndexItem.Rotation.Horizontal,fileObject.Orientation);
+        }
+            
+            
 
         [TestMethod]
         public void FileIndexItemTest_SetOrientationrelativeRotationMinus1()

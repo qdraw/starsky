@@ -81,6 +81,13 @@ namespace starskytests
             //   _exiftool = exiftool
             //   _appSettings = appSettings
             _import = new ImportService(context,_isync,_exiftool,_appSettings,_readmeta,null);
+            
+            // Delete gpx files before importing
+            // to avoid 1000 files in this folder
+            foreach (string f in Directory.EnumerateFiles(_appSettings.StorageFolder,"*.gpx"))
+            {
+                File.Delete(f);
+            }
         }
         
 //        public ImportServiceTest()

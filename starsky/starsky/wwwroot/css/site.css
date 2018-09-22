@@ -263,11 +263,20 @@ h2 {
     margin-top: 15px;
     color: white;
 }
-.rotation-sidebar a,
+.location-sidebar,
 .rotation-sidebar,
-.download-sidebar a,
-.download-sidebar{
+.download-sidebar,
+.location-sidebar a,
+.rotation-sidebar a,
+.download-sidebar a
+{
     margin-top: 10px;
+}
+.location-sidebar,
+.rotation-sidebar,
+.download-sidebar{
+    width: 100%;
+
 }
 
 .add-colorclass button {
@@ -845,11 +854,8 @@ float: left;
     padding-right: 15px;
 }
 
-/*.main-image {*/
-    /*width: auto;*/
-    /*max-height: calc(100vh - 154px);*/
-    /*max-width: calc(100vw - 30px);*/
-/*}*/
+
+.main-image #map,
 .main-image {
     height: calc(100vh - 154px);
 }
@@ -875,12 +881,7 @@ float: left;
     height: calc(100% - 123px);
 }
 
-.sidebar .content img.Rotate270Cw,
-.sidebar .content img.Rotate90Cw {
-    /*flip this one*/
-    width: 100px;
-    height: 250px;
-}
+
 .sidebar .content img.Rotate180,
 .main-image img.Rotate180 {
     transform: rotate(180deg); /* W3C */
@@ -888,12 +889,18 @@ float: left;
 }
 
 .sidebar .content img.Rotate270Cw,
-.main-image.Rotate270Cw {
+.main-image img.Rotate270Cw {
     transform: translateX(-100%) rotate(-90deg); /* W3C */
     transform-origin: top right;
     height: calc(100% - 123px);
-
     /*image-orientation: 270deg;*/
+}
+
+.sidebar .content img.Rotate270Cw,
+.sidebar .content img.Rotate90Cw {
+    /*flip this one*/
+    width: 100px;
+    height: 250px;
 }
 
 .sidebar .content img.Rotate90Cw,
@@ -902,16 +909,15 @@ float: left;
     background-color: rgba(109, 199, 256, 0.1);
 }
 
-
+.main-image.collapsed #map,
 .main-image.collapsed {
     width: calc(100vw - 340px);
 }
 
 @media screen and (max-width: 800px) {
-    .main-image.collapsed {
-        width: 100%;
-    }
-    .main-image {
+    .main-image,
+    .main-image.collapsed,
+    .main-image.collapsed #map {
         width: 100%;
         max-height: unset;
     }
@@ -1203,4 +1209,25 @@ div#popup.on {
 .js-collectionsswitch a:first-child {
     background-color: #5a6268;
     color: white;
+}
+.main-image #map.disabled .leaflet-map-pane{
+    opacity: 0.8;
+}
+.main-image #map .lock-map {
+    display: none;
+}
+.main-image #map.disabled .lock-map {
+    display: inline-block;
+    position: relative;
+    width: 100px;
+    height: 20px;
+    top: 20px;
+    left: 40px;
+    z-index: 401;
+}
+.main-image #map .leaflet-control-attribution {
+    display: none;
+}
+.lock-map a {
+    background-color: rgba(255, 255, 83, 1);
 }

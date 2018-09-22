@@ -10,7 +10,11 @@ namespace starsky.Helpers
     public static class Files
     {
 
-        // is the subpath a folder or file
+        /// <summary>
+        /// is the subpath a folder or file, or deleted
+        /// </summary>
+        /// <param name="fullFilePath">path of the filesystem</param>
+        /// <returns>is file, folder or deleted</returns>
         public static FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string fullFilePath = "")
         {
 
@@ -29,10 +33,13 @@ namespace starsky.Helpers
             return FolderOrFileModel.FolderOrFileTypeList.Deleted;
         }
 
-        // Returns a list of directories
+        /// <summary>
+        /// Returns a list of directories
+        /// </summary>
+        /// <param name="fullFilePath">directory</param>
+        /// <returns></returns>
         public static string[] GetAllFilesDirectory(string fullFilePath = "")
         {
-
             if (!Directory.Exists(fullFilePath)) return new List<string>().ToArray();
             string[] folders = Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);
             // Used For subfolders
@@ -40,7 +47,12 @@ namespace starsky.Helpers
             return folders;
         }
 
-        // Returns a list of Files in a directory (non-recruisive)
+        /// <summary>
+        /// Returns a list of Files in a directory (non-recruisive)
+        /// only files that are in the extenstion list ExtensionSyncSupportedList
+        /// </summary>
+        /// <param name="fullFilePath">path on the filesystem</param>
+        /// <returns></returns>
         public static string[] GetFilesInDirectory(string fullFilePath)
         {
             if (fullFilePath == null) return Enumerable.Empty<string>().ToArray();
@@ -119,8 +131,14 @@ namespace starsky.Helpers
                 return extensionList;
             }
         }
+        /// <summary>
+        /// is this filename with extension a filetype that exiftool can update
+        /// </summary>
+        /// <param name="filename">the name of the file with extenstion</param>
+        /// <returns>true, if exiftool can write to this</returns>
         public static bool IsExtensionExifToolSupported(string filename)
         {
+            if (string.IsNullOrEmpty(filename)) return false;
             var ext = Path.GetExtension(filename).Remove(0,1);
             return ExtensionExifToolSupportedList.Contains(ext); // true = if supported
         }
@@ -139,6 +157,12 @@ namespace starsky.Helpers
                 return extensionList;
             }
         }
+        
+        /// <summary>
+        /// is this filename with extension a filetype that imagesharp can read/write 
+        /// </summary>
+        /// <param name="filename">the name of the file with extenstion</param>
+        /// <returns>true, if imagesharp can write to this</returns>
         public static bool IsExtensionThumbnailSupported(string filename)
         {
             var ext = Path.GetExtension(filename).Remove(0,1).ToLowerInvariant();
@@ -146,7 +170,7 @@ namespace starsky.Helpers
         }
         
         // List of extension that are forced to use sitecar xmp files
-        public static List<string> ExtensionForceXmpUseList
+        private static List<string> ExtensionForceXmpUseList
         {
             get
             {
@@ -161,6 +185,11 @@ namespace starsky.Helpers
             }
         }
 
+        /// <summary>
+        /// used for raw, bmp filetypes that has no support for in file exif
+        /// </summary>
+        /// <param name="filename">the name of the file with extenstion</param>
+        /// <returns>true, if Sidecar is required</returns>
         public static bool IsXmpSidecarRequired(string fullFilePath)
         {
             // Use an XMP File -> as those files don't support those tags
@@ -171,22 +200,33 @@ namespace starsky.Helpers
             return false;
         }
 
-        public static string GetXmpSidecarFileWhenRequired(string fullFilePath, string exifToolXmpPrefix)
+        /// <summary>
+        /// Get the sitecar file of the raw image
+        /// </summary>
+        /// <param name="fullFilePath">the full path on the system</param>
+        /// <param name="exifToolXmpPrefix">prefix</param>
+        /// <returns>full file path of sitecar file</returns>
+        public static string GetXmpSidecarFileWhenRequired(
+            string fullFilePath, 
+            string exifToolXmpPrefix = "")
         {
+            if (exifToolXmpPrefix == null) throw new ArgumentNullException(nameof(exifToolXmpPrefix));
             // Use an XMP File -> as those files don't support those tags
             if(IsXmpSidecarRequired(fullFilePath))
             {
                 // Overwrite to use xmp files
-                fullFilePath = Path.Combine(Path.GetDirectoryName(fullFilePath), 
+                fullFilePath = Path.Combine(Path.GetDirectoryName(fullFilePath),
                     exifToolXmpPrefix
                     + Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
             }
             return fullFilePath;
         }
         
-
-
-
+        /// <summary>
+        /// Get the format of the image by looking the first bytes
+        /// </summary>
+        /// <param name="filePath">the full path on the system</param>
+        /// <returns>ImageFormat enum</returns>
         public static ImageFormat GetImageFormat(string filePath)
         {
             if (!File.Exists(filePath)) return ImageFormat.notfound;
@@ -336,7 +376,8 @@ namespace starsky.Helpers
                 //I begin with the files, and store all of them in the list
                 foreach(string s in fl)
                     list.Add(s);
-                // I then add the directory and recurse that directory, the process will repeat until there are no more files and directories to recurse
+                // I then add the directory and recurse that directory,
+                // the process will repeat until there are no more files and directories to recurse
                 foreach(string s in dl)
                 {
                     list.Add(s);

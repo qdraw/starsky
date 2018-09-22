@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -314,7 +315,6 @@ namespace starskytests
         }
 
         [TestMethod]
-        [ExcludeFromCoverage]
         public void SyncServiceOrphanFolderTest()
         {
             var newImage = new CreateAnImage();
@@ -335,6 +335,13 @@ namespace starskytests
             
             Assert.AreEqual(_query.GetItemByHash("deletedFile"),null);
    
+        }
+        
+        [TestMethod]
+        [ExpectedException(typeof(ConstraintException))]
+        public void SyncServiceOrphanFolder_ToLarge_Test()
+        {
+            _syncservice.OrphanFolder("/",-1); // always fail
         }
 
         [TestMethod]

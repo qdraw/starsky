@@ -77,6 +77,7 @@ function writeFilterList (tags) {
         var filterarticle = document.querySelector("#portfolio-filter ul");
         
         // ALLES!! nu RESET
+
         var li_alles = document.createElement("li");
         var a_alles = document.createElement("a");
         var currentitem_alles = filterarticle.appendChild(li_alles).appendChild(a_alles);
@@ -94,6 +95,7 @@ function writeFilterList (tags) {
             setVariable([]);
             constructURL();
             updateCollectionscount();
+            updatePrevNextHash();
 
         }, false);
         // EINDE ALLES

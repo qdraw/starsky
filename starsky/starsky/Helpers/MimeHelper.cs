@@ -5,6 +5,11 @@ namespace starsky.Helpers
 {
     public static class MimeHelper
     {
+        /// <summary>
+        /// Get the Mime type based on the filename
+        /// </summary>
+        /// <param name="fileName">for example image.jpg</param>
+        /// <returns>mime type, for example image/jpeg</returns>
         public static string GetMimeTypeByFileName(string fileName)
         {
             //get file extension
@@ -13,6 +18,11 @@ namespace starsky.Helpers
             return GetMimeType(fileExtWithoutDot);
         }
 
+        /// <summary>
+        /// Get the Mime type based on the extension without dot
+        /// </summary>
+        /// <param name="fileExtWithoutDot">for example jpg</param>
+        /// <returns>mime type, for example image/jpeg</returns>
         public static string GetMimeType(string fileExtWithoutDot)
         {
             if (fileExtWithoutDot.Length > 0 && 

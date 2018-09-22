@@ -16,7 +16,8 @@ namespace starsky.Services
         // AppSetting is dependency here        
         public FileIndexItem XmpGetSidecarFile(FileIndexItem databaseItem, string singleFilePath)
         {
-            if(_appSettings == null) throw new InvalidDataContractException("AppSettings in XmpSelectSidecarFile is null");
+            if(_appSettings == null) throw new 
+                InvalidDataContractException("AppSettings in XmpSelectSidecarFile is null");
             
             // Read content from sidecar xmp file
             if (Files.IsXmpSidecarRequired(singleFilePath))
@@ -125,7 +126,8 @@ namespace starsky.Services
                 var title = GetNullNameSpace(property, "dc:title[1]");
                 if (title != null) item.Title = title;
                 
-//                Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
+                Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
+
 
             }
 
@@ -191,7 +193,19 @@ namespace starsky.Services
                 {
                     item.SetImageWidth(width);
                 }
+                
+                // Path=photoshop:City Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Epe
+                var locationCity = GetContentNameSpace(property, "photoshop:City");
+                if (locationCity != null) item.LocationCity = locationCity;
 
+                // Path=photoshop:State Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Gelderland
+                var locationState = GetContentNameSpace(property, "photoshop:State");
+                if (locationState != null) item.LocationState = locationState;
+                
+                // Path=photoshop:Country Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Nederland
+                var locationCountry = GetContentNameSpace(property, "photoshop:Country");
+                if (locationCountry != null) item.LocationCountry = locationCountry;     
+                
             }
             return item;
         }

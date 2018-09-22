@@ -109,7 +109,33 @@
                download="@Model.FileIndexItem.FileName">
                 Orgineel
             </a>
-           
+        </div>
+        <div class="location-sidebar">
+            @if ( Math.Abs(@Model.FileIndexItem.Latitude) > 0.001
+                && Math.Abs(@Model.FileIndexItem.Longitude) > 0.001
+                 && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationCity)
+                 && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationState)
+                 && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationState))
+            {
+                <h4>Locatie:</h4>
+                <a target="_blank"
+                   href="https://www.openstreetmap.org/?mlat=@Model.FileIndexItem.Latitude&mlon=@Model.FileIndexItem.Longitude#map=15/@Model.FileIndexItem.Latitude/@Model.FileIndexItem.Longitude">
+                    @Model.FileIndexItem.LocationCity, @Model.FileIndexItem.LocationState (@Model.FileIndexItem.LocationCountry)
+                </a>
+                <em>Opent in nieuw tabblad</em>
+
+            }
+            else if (Math.Abs(@Model.FileIndexItem.Latitude) > 0.001
+                                     && Math.Abs(@Model.FileIndexItem.Longitude) > 0.001)
+            {
+                <h4>Locatie:</h4>
+                <a target="_blank"
+                   href="https://www.openstreetmap.org/?mlat=@Model.FileIndexItem.Latitude&mlon=@Model.FileIndexItem.Longitude#map=15/@Model.FileIndexItem.Latitude/@Model.FileIndexItem.Longitude">
+                    @Math.Round(@Model.FileIndexItem.Latitude,5),@Math.Round(@Model.FileIndexItem.Longitude,5)
+                </a>
+            }
+        </div>
+        <div>
             <div class="js-collectionsswitch">
                 <h4>Collecties:</h4>
                 <div><a class="btn btn-default small" href="#">@Model.FileIndexItem.ImageFormat</a></div>
@@ -225,3 +251,48 @@
 
 @*For IE/IE-Edge "object-fit: cover" *@
 <script type="text/javascript" src="~/js/vendor/ofi.min.js" defer></script>
+
+@if (@Model.FileIndexItem.ImageFormat == Files.ImageFormat.gpx)
+{
+     var downloadUrl = @Url.Action("DownloadPhoto", "Api", 
+         new {f = @Model.FileIndexItem.FilePath, isThumbnail = false});
+     downloadUrl = HttpUtility.UrlDecode(downloadUrl);
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.4.0/gpx.min.js"></script>
+    <script>
+        document.querySelector(".main-image").innerHTML = "<div id=\"map\"><div class=\"lock-map\"><a class=\"btn btn-info\" onclick=\"enableMap()\">Zet kaartnavigeer opties aan</a></div></div>";
+        var map = L.map('map',{ });
+
+        function disableMap() {
+            document.querySelector(".main-image #map").classList.add("disabled");
+            map._handlers.forEach(function(handler) {
+                handler.disable();
+            });
+            map.removeControl( map.zoomControl ); 
+        }
+        function enableMap() {
+            document.querySelector(".main-image #map").classList.remove("disabled");
+            map._handlers.forEach(function(handler) {
+                handler.enable();
+            });
+            map.addControl( map.zoomControl );
+        }
+        
+        disableMap();
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+
+        var gpx = '@downloadUrl'; // URL to your GPX file or the GPX itself
+
+        var gpx = gpx.replace("&amp;", "&");
+        new L.GPX(gpx, {async: true}).on('loaded', function(e) {
+            map.fitBounds(e.target.getBounds());
+        }).addTo(map);
+
+    </script>
+}

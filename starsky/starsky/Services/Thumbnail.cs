@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -60,8 +61,22 @@ namespace starsky.Services
 
             File.Move(oldThumbPath, newThumbPath);
         }
-        
-        
+
+        /// <summary>
+        /// For recalc new thumb objects
+        /// </summary>
+        /// <param name="listOfOldFileIndexItems"></param>
+        public void RenameThumb(IEnumerable<FileIndexItem> listOfOldFileIndexItems)
+        {
+            foreach (var item in listOfOldFileIndexItems)
+            {
+                var oldHashCode = item.FileHash;
+                var newHashCode = FileHash.GetHashCode(_appSettings.DatabasePathToFilePath(item.FilePath));
+                RenameThumb(oldHashCode,newHashCode);
+            }
+        }
+
+
         /// <summary>
         /// Create a new thumbnail, used by Thumb.dir / web ui
         /// </summary>
