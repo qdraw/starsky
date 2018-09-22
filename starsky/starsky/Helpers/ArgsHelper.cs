@@ -329,19 +329,19 @@ namespace starsky.Helpers
         public bool GetAll(IReadOnlyList<string> args)
         {
             // default false
-            var getAll = true;
+            var getAll = false;
         
             for (int arg = 0; arg < args.Count; arg++)
             {
+                if ((args[arg].ToLower() == "--all" || args[arg].ToLower() == "-a"))
+                {
+                    getAll = true;
+                }
                 if ((args[arg].ToLower() == "--all" 
                      || args[arg].ToLower() == "-a") 
                     && (arg + 1) != args.Count)
                 {
-                    bool.TryParse(args[arg + 1], out getAll);
-                }
-                if ((args[arg].ToLower() == "--all" || args[arg].ToLower() == "-a"))
-                {
-                    getAll = false;
+                    if (args[arg + 1].ToLower() == "false") getAll = false;
                 }
             }
             return getAll;

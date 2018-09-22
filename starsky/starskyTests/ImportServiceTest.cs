@@ -154,7 +154,7 @@ namespace starskytests
             _appSettings.StorageFolder = createAnImage.BasePath;
             var importSettings = new ImportSettingsModel();
             importSettings.DeleteAfter = false;
-            importSettings.AgeFileFilter = false;
+            importSettings.AgeFileFilterDisabled = false;
             
             _import.Import(createAnImage.FullFilePath,importSettings);
             
@@ -184,7 +184,7 @@ namespace starskytests
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = false,
-                AgeFileFilter = false
+                AgeFileFilterDisabled = false
             };
             _import.Import(createAnImage.FullFilePath,importSettings);
             
@@ -228,7 +228,7 @@ namespace starskytests
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = false,
-                AgeFileFilter = false
+                AgeFileFilterDisabled = false
             };
             
             _appSettings.Structure = "/\\e\\x\\i\\s\\t/\\a\\b\\c/HHmmss.ext";
@@ -270,7 +270,7 @@ namespace starskytests
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = false,
-                AgeFileFilter = false
+                AgeFileFilterDisabled = false
             };
             _import.Import(createAnImage.FullFilePath,importSettings);
             
@@ -303,7 +303,7 @@ namespace starskytests
 
             var importSettings = new ImportSettingsModel();
             importSettings.DeleteAfter = false;
-            importSettings.AgeFileFilter = false;
+            importSettings.AgeFileFilterDisabled = false;
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());  
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
@@ -341,7 +341,7 @@ namespace starskytests
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = false,
-                AgeFileFilter = false
+                AgeFileFilterDisabled = false
             };
             var createAnImage = new CreateAnImage();
             _appSettings.StorageFolder = createAnImage.BasePath;
@@ -412,7 +412,7 @@ namespace starskytests
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = true,
-                AgeFileFilter = false
+                AgeFileFilterDisabled = false
             };
             _import.Import(fullFilePath, importSettings);
 
@@ -463,7 +463,7 @@ namespace starskytests
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = false,
-                AgeFileFilter = false
+                AgeFileFilterDisabled = false
             };
             Assert.AreNotEqual(string.Empty,_import.Import(
                 createAnImage.BasePath,importSettings).FirstOrDefault());  // So testing the folder feature
@@ -490,7 +490,7 @@ namespace starskytests
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = true,
-                AgeFileFilter = false
+                AgeFileFilterDisabled = false
             };
             CollectionAssert.AreEqual(new List<string>(),_import.Import(string.Empty, importSettings));
         }
@@ -510,7 +510,7 @@ namespace starskytests
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = false,
-                AgeFileFilter = false
+                AgeFileFilterDisabled = false
             };
             _import.Import(storeItemInList,importSettings);
             
@@ -559,7 +559,7 @@ namespace starskytests
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = true,
-                AgeFileFilter = true,
+                AgeFileFilterDisabled = true,
                 Structure = "/HHmmss_yyyyMMdd.ext"
             };
             
