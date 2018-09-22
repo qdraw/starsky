@@ -42,7 +42,7 @@ namespace starskytests.starskygeosync.Services
             };
             var folderOfPhotos = new List<FileIndexItem> {cakeBakerPhoto, northSea, buenosAires};
             
-            new GeoReverseLookup(_appSettings).LoopFolderLookup(folderOfPhotos);
+            new GeoReverseLookup(_appSettings).LoopFolderLookup(folderOfPhotos,false);
 
             Assert.AreEqual("Argentina", buenosAires.LocationCountry);
             Assert.AreEqual(string.Empty, northSea.LocationCountry);
