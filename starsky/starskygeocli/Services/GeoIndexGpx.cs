@@ -58,7 +58,7 @@ namespace starskyGeoCli.Services
                 var fileGeoData = gpxList.OrderBy(p => Math.Abs((p.DateTime - dateTimeCameraUtc).Ticks)).FirstOrDefault();
                 if(fileGeoData == null) continue;
 
-                var minutesDifference = (dateTimeCameraUtc - metaFileItem.DateTime).TotalMinutes;
+                var minutesDifference = (dateTimeCameraUtc - fileGeoData.DateTime).TotalMinutes;
                 if(minutesDifference < -5 || minutesDifference > 5) continue;
                 
                 metaFileItem.Latitude = fileGeoData.Latitude;

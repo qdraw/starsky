@@ -145,7 +145,7 @@ namespace starsky.Services
                     DateTime.TryParseExact(datetimeString, 
                         "yyyy-MM-ddTHH:mm:ssZ", 
                         CultureInfo.InvariantCulture, 
-                        DateTimeStyles.None, 
+                        DateTimeStyles.AdjustToUniversal, 
                         out dateTime);
 
                     dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);

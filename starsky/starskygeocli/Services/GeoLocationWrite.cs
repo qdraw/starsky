@@ -6,18 +6,18 @@ using starsky.Models;
 
 namespace starskyGeoCli.Services
 {
-    public class GeoReverseWrite
+    public class GeoLocationWrite
     {
         private readonly IExiftool _exiftool;
         private readonly AppSettings _appSettings;
 
-        public GeoReverseWrite(AppSettings appSettings, IExiftool exiftool)
+        public GeoLocationWrite(AppSettings appSettings, IExiftool exiftool)
         {
             _exiftool = exiftool;
             _appSettings = appSettings;
         }
         
-        public void LoopFolder(List<FileIndexItem> metaFilesInDirectory)
+        public void LoopFolder(List<FileIndexItem> metaFilesInDirectory, bool syncLocationNames)
         {
             foreach (var metaFileItem in metaFilesInDirectory)
             {
@@ -26,10 +26,17 @@ namespace starskyGeoCli.Services
                 Console.WriteLine("Do a exiftoolSync");
                 var comparedNamesList = new List<string>
                 {
+                    nameof(FileIndexItem.Latitude),
+                    nameof(FileIndexItem.Longitude)
+                };
+                
+                if(syncLocationNames) comparedNamesList.AddRange( new List<string>
+                {
                     nameof(FileIndexItem.LocationCity),
                     nameof(FileIndexItem.LocationState),
                     nameof(FileIndexItem.LocationCountry),
-                };
+                });
+                
 
                 var destinationFullPath = _appSettings.DatabasePathToFilePath(metaFileItem.FilePath);
 

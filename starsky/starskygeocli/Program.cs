@@ -85,14 +85,15 @@ namespace starskyGeoCli
 
             if (gpxIndexMode)
             {
-                new GeoIndexGpx(appSettings,startupHelper.ReadMeta()).LoopFolder(metaFilesInDirectory);
+                var toMetaFilesUpdate = new GeoIndexGpx(appSettings,startupHelper.ReadMeta()).LoopFolder(metaFilesInDirectory);
+                new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(toMetaFilesUpdate,false);
             }
             
             metaFilesInDirectory = new GeoReverseLookup(appSettings)
                 .LoopFolderLookup(metaFilesInDirectory,overwriteLocationNames);
             
             
-            new GeoReverseWrite(appSettings,startupHelper.ExifTool()).LoopFolder(metaFilesInDirectory);
+            new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(metaFilesInDirectory,true);
 
             // update thumbs to avoid unnesseary re-generation
             new Thumbnail(appSettings).RenameThumb(metaFilesInDirectory);
