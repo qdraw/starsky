@@ -54,9 +54,18 @@ namespace starskyGeoCli.Services
         /// If extension in exiftool supported, so no gpx
         /// </summary>
         /// <param name="metaFilesInDirectory">List of files with metadata</param>
+        /// <param name="overwriteLocationNames"></param>
         /// <returns>list that can be updated</returns>
-        private List<FileIndexItem> RemoveNoUpdateItems(IEnumerable<FileIndexItem> metaFilesInDirectory)
+        private List<FileIndexItem> RemoveNoUpdateItems(IEnumerable<FileIndexItem> metaFilesInDirectory, 
+            bool overwriteLocationNames)
         {
+            // this will overwrite the location names, that have a gps location 
+            if (overwriteLocationNames) return metaFilesInDirectory.Where(
+                    metaFileItem =>
+                        Math.Abs(metaFileItem.Latitude) > 0.001 && Math.Abs(metaFileItem.Longitude) > 0.001)
+                .ToList();
+            
+            // the default situation
             return metaFilesInDirectory.Where(
                 metaFileItem => 
                     ((Math.Abs(metaFileItem.Latitude) > 0.001 && Math.Abs(metaFileItem.Longitude) > 0.001) 
@@ -73,16 +82,10 @@ namespace starskyGeoCli.Services
         /// </summary>
         /// <param name="metaFilesInDirectory"></param>
         /// <returns></returns>
-        public List<FileIndexItem> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory)
+        public List<FileIndexItem> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory,
+            bool overwriteLocationNames)
         {
-            foreach (var metaFiles in metaFilesInDirectory)
-            {
-                Console.WriteLine("~> " + metaFiles.Latitude + " " +
-                                  metaFiles.Longitude + " " +
-                                  metaFiles.LocationCity + " " 
-                 + metaFiles.LocationCountry + " "  +metaFiles.LocationState + metaFiles.FileName);
-            }
-            metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory);
+            metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory,overwriteLocationNames);
             
             foreach (var metaFiles in metaFilesInDirectory)
             {

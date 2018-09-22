@@ -79,7 +79,10 @@ namespace starskyGeoCli
                 .ReadExifAndXmpFromFileAddFilePathHash(filesInDirectory);
             // FilePath is used as full
             
-            metaFilesInDirectory = new GeoReverseLookup(appSettings).LoopFolderLookup(metaFilesInDirectory);
+            var overwriteLocationNames = new ArgsHelper().GetAll(args);
+            
+            metaFilesInDirectory = new GeoReverseLookup(appSettings)
+                .LoopFolderLookup(metaFilesInDirectory,overwriteLocationNames);
             new GeoReverseWrite(appSettings,startupHelper.ExifTool()).LoopFolder(metaFilesInDirectory);
 
             // update thumbs to avoid unnesseary re-generation

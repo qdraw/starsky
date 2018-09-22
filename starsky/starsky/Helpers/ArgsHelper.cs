@@ -131,6 +131,9 @@ namespace starsky.Helpers
                     Console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database ");
                     Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
                                       ", use for example '1' to select yesterday. (structure is required)");
+                    Console.WriteLine("-p, -s, -g == you need to select one of those tags");
+                    Console.WriteLine("--all or -a == overwrite reverse geotag location tags (default: false / ignore already taged files) ");
+
                     break;
                 
                 case AppSettings.StarskyAppType.WebHtml:
@@ -153,6 +156,9 @@ namespace starsky.Helpers
                                       "fullpath, only child items of the database folder are supported," +
                                       "search and replace first part of the filename, '/' ");
                     Console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
+                    Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
+                                      ", use for example '1' to select yesterday. (structure is required)");
+                    Console.WriteLine("-p, -s, -g == you need to select one of those tags");
                     Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
                     Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
                     Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder (heavy cpu usage), default false");
@@ -162,8 +168,7 @@ namespace starsky.Helpers
                     Console.WriteLine("--connection or -c == Overwrite EnvironmentVariable for DatabaseConnection");
                     Console.WriteLine("--thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder");
                     Console.WriteLine("--exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath");
-                    Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
-                                      ", use for example '1' to select yesterday. (structure is required)");
+
                     break;
             }
 
