@@ -559,7 +559,7 @@ namespace starskytests
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = true,
-                AgeFileFilterDisabled = true,
+                AgeFileFilterDisabled = false,
                 Structure = "/HHmmss_yyyyMMdd.ext"
             };
             
