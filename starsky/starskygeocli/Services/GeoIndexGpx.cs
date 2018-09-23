@@ -63,6 +63,7 @@ namespace starskyGeoCli.Services
                 
                 metaFileItem.Latitude = fileGeoData.Latitude;
                 metaFileItem.Longitude = fileGeoData.Longitude;
+                metaFileItem.LocationAltitude = fileGeoData.Altitude;
                 
                 toUpdateMetaFiles.Add(metaFileItem);
             }

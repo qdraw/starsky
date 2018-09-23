@@ -73,7 +73,8 @@ namespace starsky.Helpers
 
             command = UpdateGPSLatitudeCommand(command, comparedNames, updateModel);
             command = UpdateGPSLongitudeCommand(command, comparedNames, updateModel);
-            
+            command = UpdateLocationAltitudeCommand(command, comparedNames, updateModel);
+
             command = UpdateLocationCountryCommand(command, comparedNames, updateModel);
             command = UpdateLocationStateCommand(command, comparedNames, updateModel);
             command = UpdateLocationCityCommand(command, comparedNames, updateModel);
@@ -118,6 +119,25 @@ namespace starsky.Helpers
                 _exiftool.BaseCommmand(command, exifBaseInputStringBuilder.ToString());
             }
 
+            return command;
+        }
+
+        private string UpdateLocationAltitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+        {
+            // -GPSAltitude="+160" -GPSAltitudeRef=above
+            if (comparedNames.Contains("LocationAltitude"))
+            {
+                // 0 = "Above Sea Level"
+                // 1 = Below Sea Level
+                var gpsAltitudeRef = "0";
+                var gpsAltitude = "+" + updateModel.LocationAltitude;
+                if (updateModel.LocationAltitude < 0)
+                {
+                    gpsAltitudeRef = "1";
+                    gpsAltitude = "-" + updateModel.LocationAltitude * -1;
+                } 
+                command += " -GPSAltitude=\"" + gpsAltitude + "\" -gpsaltituderef#=\"" + gpsAltitudeRef + "\" ";
+            }
             return command;
         }
 
