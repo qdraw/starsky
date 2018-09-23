@@ -1,3 +1,16 @@
+# Starsky
+## List of [Starsky](../readme.md) Projects
+ * __[inotify-settings](../inotify-settings/readme.md) to setup auto indexing on linux__
+ * [starsky (sln)](../starsky/readme.md) _database photo index & import index project_
+    * [starsky](../starsky/starsky/readme.md)  _mvc application / web interface_
+    * [starskysynccli](../starsky/starskysynccli/readme.md)  _database command line interface_
+    * [starskyimportercli](../starsky/starskyimportercli/readme.md)  _import command line interface_
+    * [starskyTests](../starsky/starskyTests/readme.md)  _mstest unit tests_
+    * [starskyWebHtmlCli](../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files_
+ * _[starsky-node-client](../starsky-node-client/readme.md) nodejs tools to add-on tasks_
+ * _[starskyapp](../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
+
+
 # inotifywait
 
 ## Currently only for .jpg or .JPG files

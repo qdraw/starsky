@@ -7,10 +7,5 @@
     * [starskyimportercli](../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyTests](../starsky/starskyTests/readme.md)  _mstest unit tests_
     * [starskyWebHtmlCli](../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files_
- * __[starsky-node-client](../starsky-node-client/readme.md) nodejs tools to add-on tasks__
- * [starskyapp](../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
-
-## Starsky node client docs
-
-- [mail](mail/readme.md) imap mail client to import files in Starsky
-- [sync](sync/readme.md) sync, not working
+ * _[starsky-node-client](../starsky-node-client/readme.md) nodejs tools to add-on tasks_
+ * __[starskyapp](../starskyapp/readme.md) _React-Native app (Pre-alpha code)__
