@@ -59,68 +59,12 @@ namespace starsky.Services
             return string.Empty;
         }
         
-//        /// <summary>
-//        /// Direct api, please use with exeption handeling
-//        /// </summary>
-//        /// <param name="fullFilePath"></param>
-//        /// <returns></returns>
-//        private FileIndexItem ReadGpxFileReturnAfterFirstFieldDirect(string fullFilePath)
-//        {
-//            
-//            XmlDocument gpxDoc = new XmlDocument();
-//            gpxDoc.Load(fullFilePath);
-//            
-//            XmlNamespaceManager namespaceManager = new XmlNamespaceManager(gpxDoc.NameTable);
-//            namespaceManager.AddNamespace("x", "http://www.topografix.com/GPX/1/1");
-//            
-//            XmlNodeList nodeList = gpxDoc.SelectNodes("//x:trkpt", namespaceManager);
-//
-//            foreach (XmlElement node in nodeList)
-//            {
-//                var longitudeString = node.GetAttribute("lon");
-//                var latitudeString = node.GetAttribute("lat");
-//
-//                var longitude = double.Parse(longitudeString, 
-//                    NumberStyles.Currency, CultureInfo.InvariantCulture);
-//                var latitude = double.Parse(latitudeString, 
-//                    NumberStyles.Currency, CultureInfo.InvariantCulture);
-//
-//                foreach (XmlElement childNode in node.ChildNodes)
-//                {
-//                    // childNode.Name == "ele" > elevation
-//                    if (childNode.Name != "time")
-//                    {
-//                        var elevationString = childNode.InnerText;
-//                        var locationAlitude = int.Parse(elevationString);
-//                    }
-//                        
-//                    if (childNode.Name != "time") continue;
-//                    var datetimeString = childNode.InnerText;
-//                    
-//                    DateTime.TryParse(datetimeString, out var dateTime);
-//                    dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
-//
-//                    return new FileIndexItem
-//                    {
-//                        Title = GetTrkName(gpxDoc, namespaceManager),
-//                        DateTime = dateTime,
-//                        Latitude = latitude,
-//                        Longitude = longitude,
-//                        Tags = string.Empty,
-//                        ColorClass = FileIndexItem.Color.None
-//                    };
-//                }
-//            }
-//            return new FileIndexItem();
-//        }
-
-
         /// <summary>
-        /// Read full gpx file
+        /// Read full gpx file, or return after trackpoint
         /// </summary>
         /// <param name="fullFilePath"></param>
-        /// <param name="geoList">
-        /// </param>
+        /// <param name="geoList"></param>
+        /// <param name="returnAfter">default complete file, but can be used to read only the first point</param>
         /// <returns></returns>
         public List<GeoListItem> ReadGpxFile(string fullFilePath, List<GeoListItem> geoList = null, int returnAfter = int.MaxValue)
         {
