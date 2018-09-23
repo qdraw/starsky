@@ -49,6 +49,8 @@ namespace starskytests.Services
             
             Assert.AreEqual(52.3451333333,data.Latitude,0.001);
             Assert.AreEqual(5.930,data.Longitude,0.001);
+            Assert.AreEqual(19,data.LocationAltitude,0.001);
+
             Assert.AreEqual("caption",data.Description);
             Assert.AreEqual("keyword, keyword2",data.Tags);
             Assert.AreEqual("The object name",data.Title);

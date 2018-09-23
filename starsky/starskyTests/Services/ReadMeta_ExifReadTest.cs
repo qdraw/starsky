@@ -137,7 +137,8 @@ namespace starskytests.Services
              Assert.AreEqual(item.LocationCity, "Diepenveen");
              Assert.AreEqual(item.LocationState, "Overijssel");
              Assert.AreEqual(item.LocationCountry, "Nederland");
-             
+             Assert.AreEqual(item.LocationAltitude, 6);
+
          }
          
          

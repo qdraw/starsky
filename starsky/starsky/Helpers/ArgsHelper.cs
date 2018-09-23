@@ -131,6 +131,10 @@ namespace starsky.Helpers
                     Console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database ");
                     Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
                                       ", use for example '1' to select yesterday. (structure is required)");
+                    Console.WriteLine("-p, -s, -g == you need to select one of those tags");
+                    Console.WriteLine("--all or -a == overwrite reverse geotag location tags (default: false / ignore already taged files) ");
+                    Console.WriteLine("--index or -i == parameter: (bool) ; gpx feature to index geo location, default true");
+
                     break;
                 
                 case AppSettings.StarskyAppType.WebHtml:
@@ -153,6 +157,9 @@ namespace starsky.Helpers
                                       "fullpath, only child items of the database folder are supported," +
                                       "search and replace first part of the filename, '/' ");
                     Console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
+                    Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
+                                      ", use for example '1' to select yesterday. (structure is required)");
+                    Console.WriteLine("-p, -s, -g == you need to select one of those tags");
                     Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
                     Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
                     Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder (heavy cpu usage), default false");
@@ -162,8 +169,7 @@ namespace starsky.Helpers
                     Console.WriteLine("--connection or -c == Overwrite EnvironmentVariable for DatabaseConnection");
                     Console.WriteLine("--thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder");
                     Console.WriteLine("--exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath");
-                    Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
-                                      ", use for example '1' to select yesterday. (structure is required)");
+
                     break;
             }
 
@@ -329,19 +335,19 @@ namespace starsky.Helpers
         public bool GetAll(IReadOnlyList<string> args)
         {
             // default false
-            var getAll = true;
+            var getAll = false;
         
             for (int arg = 0; arg < args.Count; arg++)
             {
+                if ((args[arg].ToLower() == "--all" || args[arg].ToLower() == "-a"))
+                {
+                    getAll = true;
+                }
                 if ((args[arg].ToLower() == "--all" 
                      || args[arg].ToLower() == "-a") 
                     && (arg + 1) != args.Count)
                 {
-                    bool.TryParse(args[arg + 1], out getAll);
-                }
-                if ((args[arg].ToLower() == "--all" || args[arg].ToLower() == "-a"))
-                {
-                    getAll = false;
+                    if (args[arg + 1].ToLower() == "false") getAll = false;
                 }
             }
             return getAll;

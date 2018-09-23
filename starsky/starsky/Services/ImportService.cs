@@ -153,7 +153,7 @@ namespace starsky.Services
 
         public bool IsAgeFileFilter(ImportSettingsModel importSettings, DateTime exifDateTime)
         {
-            return importSettings.AgeFileFilter && exifDateTime < DateTime.UtcNow.AddYears(-2);
+            return !importSettings.AgeFileFilterDisabled && exifDateTime < DateTime.UtcNow.AddYears(-2);
         }
 
         private string ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)

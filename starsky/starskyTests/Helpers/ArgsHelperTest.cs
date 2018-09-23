@@ -157,11 +157,15 @@ namespace starskytests
         public void ArgsHelper_GetAllTest()
         {
             var args = new List<string> {"-a"}.ToArray();
-            Assert.AreEqual(false, new ArgsHelper(_appSettings).GetAll(args));
+            Assert.AreEqual(true, new ArgsHelper(_appSettings).GetAll(args));
             
             // Bool parse check
             args = new List<string> {"-a","false"}.ToArray();
             Assert.AreEqual(false, new ArgsHelper(_appSettings).GetAll(args));
+            
+            args = new List<string> {}.ToArray();
+            Assert.AreEqual(false, new ArgsHelper(_appSettings).GetAll(args));
+            
         }
         
         [TestMethod]

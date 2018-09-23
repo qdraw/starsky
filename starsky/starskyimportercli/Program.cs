@@ -41,7 +41,7 @@ namespace starskyimportercli
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = new ArgsHelper(appSettings).GetMove(args),
-                AgeFileFilter = new ArgsHelper(appSettings).GetAll(args),
+                AgeFileFilterDisabled = new ArgsHelper(appSettings).GetAll(args),
                 RecursiveDirectory = new ArgsHelper().NeedRecruisive(args)
             };
             
