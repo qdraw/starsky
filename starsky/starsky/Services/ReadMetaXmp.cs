@@ -134,9 +134,46 @@ namespace starsky.Services
             return item;
         }
 
+        private void GpsAltitudeRef(IXmpMeta xmp, FileIndexItem item)
+        {
+            string gpsAltitude = null;
+            string gpsAltitudeRef = null;
+            foreach (var property in xmp.Properties)
+            {
+                // Path=exif:GPSAltitude Namespace=http://ns.adobe.com/exif/1.0/ Value=627/10
+                // Path=exif:GPSAltitudeRef Namespace=http://ns.adobe.com/exif/1.0/ Value=0
+                var gpsAltitudeLocal = GetContentNameSpace(property, "exif:GPSAltitude");
+                if (gpsAltitudeLocal != null)
+                {
+                    gpsAltitude = gpsAltitudeLocal;
+                }
+                
+                var gpsAltitudeRefLocal = GetContentNameSpace(property, "exif:GPSAltitudeRef");
+                if (gpsAltitudeRefLocal != null)
+                {
+                    gpsAltitudeRef = gpsAltitudeRefLocal;
+                }
+            }
+            if(gpsAltitude == null || gpsAltitudeRef == null) return;
+            if(!gpsAltitude.Contains("/")) return;
+
+            var gpsAltitudeValues = gpsAltitude.Split("/");
+            if(gpsAltitudeValues.Length != 2) return;
+            var numerator = double.Parse(gpsAltitudeValues[0], CultureInfo.InvariantCulture);
+            var denominator = double.Parse(gpsAltitudeValues[1], CultureInfo.InvariantCulture);
+
+            item.LocationAltitude = numerator / denominator;
+
+            //For items under the sea level
+            if (gpsAltitudeRef == "1") item.LocationAltitude = item.LocationAltitude * -1;
+        }
+
         private FileIndexItem GetDataContentNameSpaceTypes(string xmpDataAsString, FileIndexItem item)
         {
             var xmp = XmpMetaFactory.ParseFromString(xmpDataAsString);
+
+            GpsAltitudeRef(xmp, item);
+                
             foreach (var property in xmp.Properties)
             {
 

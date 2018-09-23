@@ -279,7 +279,7 @@ namespace starsky.Services
             return 0;
         }
         
-        private int GetGeoLocationAltitude(List<MetadataExtractor.Directory> allExifItems)
+        private double GetGeoLocationAltitude(List<MetadataExtractor.Directory> allExifItems)
         {
             //    [GPS] GPS Altitude Ref = Below sea level
             //    [GPS] GPS Altitude = 2 metres
@@ -313,7 +313,8 @@ namespace starsky.Services
                 (altitudeRef != "Below sea level" && altitudeRef != "Sea level")) return 0;
             
             var altitude = int.Parse(altitudeString, CultureInfo.InvariantCulture);
-
+            // this value is always an int
+            
             if (altitudeRef == "Below sea level") altitude = altitude * -1;
                 
             return altitude;
