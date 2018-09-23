@@ -164,7 +164,10 @@ namespace starsky.Models
         
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        
+
+        [NotMapped] 
+        public int LocationAltitude { get; set; } // in meters
+
         [MaxLength(40)]
         public string LocationCity { get; set; } = string.Empty;
 

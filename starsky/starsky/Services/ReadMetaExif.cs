@@ -47,6 +47,7 @@ namespace starsky.Services
 
             item.Latitude = GetGeoLocationLatitude(allExifItems);
             item.Longitude = GetGeoLocationLongitude(allExifItems);
+            item.LocationAltitude = GetGeoLocationAltitude(allExifItems);
             item.SetImageWidth(GetImageWidthHeight(allExifItems,true));
             item.SetImageHeight(GetImageWidthHeight(allExifItems,false));
             
@@ -277,6 +278,47 @@ namespace starsky.Services
             }
             return 0;
         }
+        
+        private int GetGeoLocationAltitude(List<MetadataExtractor.Directory> allExifItems)
+        {
+            //    [GPS] GPS Altitude Ref = Below sea level
+            //    [GPS] GPS Altitude = 2 metres
+
+            var altitudeString = string.Empty;
+            var altitudeRef = string.Empty;
+            
+            foreach (var exifItem in allExifItems)
+            {
+                var longitudeRefLocal = exifItem.Tags.FirstOrDefault(
+                    p => p.DirectoryName == "GPS" 
+                         && p.Name == "GPS Altitude Ref")?.Description;
+                
+                if (longitudeRefLocal != null)
+                {
+                    altitudeRef = longitudeRefLocal;
+                }
+                
+                var altitudeLocal = exifItem.Tags.FirstOrDefault(
+                    p => p.DirectoryName == "GPS" 
+                         && p.Name == "GPS Altitude")?.Description;
+
+                if (altitudeLocal != null)
+                {
+                    altitudeString = altitudeLocal.Replace(" metres",string.Empty);
+                    // space metres
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(altitudeString) ||
+                (altitudeRef != "Below sea level" && altitudeRef != "Sea level")) return 0;
+            
+            var altitude = int.Parse(altitudeString, CultureInfo.InvariantCulture);
+
+            if (altitudeRef == "Below sea level") altitude = altitude * -1;
+                
+            return altitude;
+        }
+        
         
         private double GetGeoLocationLongitude(List<MetadataExtractor.Directory> allExifItems)
         {

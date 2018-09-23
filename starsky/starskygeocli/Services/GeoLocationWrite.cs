@@ -27,7 +27,8 @@ namespace starskyGeoCli.Services
                 var comparedNamesList = new List<string>
                 {
                     nameof(FileIndexItem.Latitude),
-                    nameof(FileIndexItem.Longitude)
+                    nameof(FileIndexItem.Longitude),
+                    nameof(FileIndexItem.LocationAltitude)
                 };
                 
                 if(syncLocationNames) comparedNamesList.AddRange( new List<string>
