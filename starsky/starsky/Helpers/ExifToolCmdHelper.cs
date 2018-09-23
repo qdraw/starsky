@@ -71,6 +71,9 @@ namespace starsky.Helpers
             command = UpdateKeywordsCommand(command, comparedNames, updateModel);
             command = UpdateDescriptionCommand(command, comparedNames, updateModel);
 
+            command = UpdateGPSLatitudeCommand(command, comparedNames, updateModel);
+            command = UpdateGPSLongitudeCommand(command, comparedNames, updateModel);
+            
             command = UpdateLocationCountryCommand(command, comparedNames, updateModel);
             command = UpdateLocationStateCommand(command, comparedNames, updateModel);
             command = UpdateLocationCityCommand(command, comparedNames, updateModel);
@@ -115,6 +118,26 @@ namespace starsky.Helpers
                 _exiftool.BaseCommmand(command, exifBaseInputStringBuilder.ToString());
             }
 
+            return command;
+        }
+
+        private string UpdateGPSLatitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+        {
+            if (comparedNames.Contains("Latitude"))
+            {
+                command += " -GPSLatitude=\"" + updateModel.Latitude 
+                                                              + "\" -GPSLatitudeRef=\"" + updateModel.Latitude + "\" ";
+            }
+            return command;
+        }
+        
+        private string UpdateGPSLongitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+        {
+            if (comparedNames.Contains("Longitude"))
+            {
+                command += " -GPSLongitude=\"" + updateModel.Longitude 
+                                              + "\" -GPSLongitudeRef=\"" + updateModel.Longitude + "\" ";
+            }
             return command;
         }
 
