@@ -20,12 +20,19 @@ namespace starsky.Controllers
         
         public IActionResult Index()
         {
-            return Json(User.Identity.IsAuthenticated.ToString());
+            if (!User.Identity.IsAuthenticated) return RedirectToLocal(null);
+            return View(_userManager.GetCurrentUser(HttpContext));
+//            return Json(User.Identity.IsAuthenticated.ToString());
         }
 
+        /// <summary>
+        /// Login GET page
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
@@ -41,11 +48,11 @@ namespace starsky.Controllers
             {
                 return RedirectToLocal(returnUrl);
             }
-
+            ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 
-        [HttpPost]
+        [HttpGet]
         public IActionResult Logout()
         {
             _userManager.SignOut(HttpContext);

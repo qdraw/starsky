@@ -8,7 +8,7 @@ namespace starsky.Models.Account
         public int Id { get; set; }
         public int UserId { get; set; }
         public int CredentialTypeId { get; set; }
-        public string Identifier { get; set; }
+        public string Identifier { get; set; } // email
         public string Secret { get; set; }
         public string Extra { get; set; }
         public User User { get; set; }

@@ -1,19 +1,23 @@
-@*@model IndexViewModel*@
-@*@{*@
-@*    ViewData["Title"] = "Profile";*@
-@*//    ViewData.AddActivePage(ManageNavPages.Index);*@
-@*}*@
-@**@
-@*<h4>@ViewData["Title"]</h4>*@
-@*@Html.Partial("_StatusMessage", Model.StatusMessage)*@
-@*<div class="row">*@
-@*    <div class="col-md-6">*@
-@*        <form method="post">*@
-@*            <div asp-validation-summary="All" class="text-danger"></div>*@
-@*            <div class="form-group">*@
-@*                <label asp-for="Username"></label>*@
-@*                <input asp-for="Username" class="form-control" disabled />*@
-@*            </div>*@
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<h4>@ViewData["Title"]</h4>
+
+@model starsky.Models.Account.User
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="@Model.Id"></label>
+                <input asp-for="@Model.Id" class="form-control" disabled />
+                <label asp-for="@Model.Created"></label>
+                <input asp-for="@Model.Created" class="form-control" disabled />                    
+                <label asp-for="@Model.Name"></label>
+                <input asp-for="@Model.Name" class="form-control" disabled/>
+            </div>
 @*            <div class="form-group">*@
 @*                <label asp-for="Email"></label>*@
 @*                @if (Model.IsEmailConfirmed)*@
@@ -35,10 +39,10 @@
 @*                <span asp-validation-for="PhoneNumber" class="text-danger"></span>*@
 @*            </div>*@
 @*            <button type="submit" class="btn btn-default">Save</button>*@
-@*        </form>*@
-@*    </div>*@
-@*</div>*@
-@**@
-@*@section Scripts {*@
-@*$1$    @await Html.PartialAsync("_ValidationScriptsPartial")#1#*@
-@*}*@
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+@*    @await Html.PartialAsync("_ValidationScriptsPartial")*@
+}

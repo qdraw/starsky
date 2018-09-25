@@ -31,7 +31,8 @@ namespace starsky.Services
                         IsDirectory = true,
                         AddToDatabase = DateTime.UtcNow,
                         FileName = singleFolderDbStyle.Split("/").LastOrDefault(),
-                        ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault()
+                        ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault(),
+                        ColorClass = FileIndexItem.Color.None
                     };
                     _query.AddItem(folderItem);
                     // We dont need this localy
