@@ -48,6 +48,7 @@ namespace starsky.Interfaces
 
         string GetItemByHash(string fileHash);
 
+        List<FileIndexItem> GetAllFolders();
 
         FileIndexItem AddItem(FileIndexItem updateStatusContent);
 

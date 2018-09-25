@@ -52,61 +52,6 @@ namespace starsky.Controllers
         {
             return Json(_appSettings);
         }
-
-        
-        
-        
-        /// <summary>
-        /// Check the status of a file based on DetailView object
-        /// </summary>
-        /// <param name="detailView">The element used on the web</param>
-        /// <returns>ExifStatus enum</returns>
-        private FileIndexItem.ExifStatus FileCollectionsCheck(DetailView detailView)
-        {
-            if (detailView == null)
-            {
-                return FileIndexItem.ExifStatus.NotFoundNotInIndex;
-            }
-
-            if (detailView.IsDirectory && _appSettings.IsReadOnly(detailView.SubPath))
-            {
-                return FileIndexItem.ExifStatus.DirReadOnly;
-            }
-
-            if (detailView.IsDirectory)
-            {
-                return FileIndexItem.ExifStatus.NotFoundIsDir;
-            }
-
-            if (_appSettings.IsReadOnly(detailView.FileIndexItem.ParentDirectory)) return  FileIndexItem.ExifStatus.ReadOnly;
-
-            foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths)
-            {
-                var fullPathCollection = _appSettings.DatabasePathToFilePath(collectionPath);
-                
-                //For the situation that the file is not on disk but the only one in the list
-                if (!System.IO.File.Exists(fullPathCollection) 
-                    && detailView.FileIndexItem.CollectionPaths.Count == 1)
-                {
-                    return FileIndexItem.ExifStatus.NotFoundSourceMissing;  //
-                }
-                // When there are more items in the list
-                if (!System.IO.File.Exists(fullPathCollection))
-                {
-                    detailView.FileIndexItem.CollectionPaths.Remove(collectionPath);
-                }
-            }
-
-            if (detailView.FileIndexItem.CollectionPaths.Count == 0)
-            {
-                return FileIndexItem.ExifStatus.NotFoundSourceMissing;
-            }
-
-            return FileIndexItem.ExifStatus.Ok;
-        }
-
-        
-
         
         /// <summary>
         /// Add to comparedNames list ++ add to detailview
@@ -172,21 +117,21 @@ namespace starsky.Controllers
         [HttpPost]
         public IActionResult Update(FileIndexItem inputModel, string f, bool append, bool collections,  int rotateClock = 0)
         {
-            var inputFilePaths = SplitInputFilePaths(f);
+            var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
             // the result list
             var fileIndexResultsList = new List<FileIndexItem>();
                 
             foreach (var subPath in inputFilePaths)
             {
                 var detailView = _query.SingleItem(subPath,null,collections,false);
-                var statusResults = FileCollectionsCheck(detailView);
+                var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
                 
                 var statusModel = inputModel.Clone();
                 statusModel.SetFilePath(subPath);
                 statusModel.IsDirectory = false;
                 
                 // if one item fails, the status will added
-                if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                     
                 var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
                 var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
@@ -263,18 +208,6 @@ namespace starsky.Controllers
             return Json(returnNewResultList);
         }
 
-        /// <summary>
-        /// Split a list with devided by dot comma and blank values are removed
-        /// </summary>
-        /// <param name="f">input filepaths</param>
-        /// <returns>string array with sperated strings</returns>
-        private string[] SplitInputFilePaths(string f)
-        {
-            // input devided by dot comma and blank values are removed
-            var inputFilePaths = f.Split(";");
-            inputFilePaths = inputFilePaths.Where(x => !string.IsNullOrEmpty(x)).ToArray();
-            return inputFilePaths;
-        }
 
         /// <summary>
         /// If conllections enalbed return list of subpaths
@@ -301,7 +234,7 @@ namespace starsky.Controllers
         [ResponseCache(Duration = 30, VaryByQueryKeys = new[] {"f"})]
         public IActionResult Info(string f, bool collections = true)
         {
-            var inputFilePaths = SplitInputFilePaths(f);
+            var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
             // the result list
             var fileIndexResultsList = new List<FileIndexItem>();
 
@@ -317,13 +250,13 @@ namespace starsky.Controllers
                     fileIndexResultsList.Add(detailView.FileIndexItem);
                     continue;
                 }
-                var statusResults = FileCollectionsCheck(detailView);
+                var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
 
                 var statusModel = new FileIndexItem();
                 statusModel.SetFilePath(subPath);
                 statusModel.IsDirectory = false;
 
-                if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                             
                 var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
                 var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
@@ -355,20 +288,20 @@ namespace starsky.Controllers
         [HttpDelete]
         public IActionResult Delete(string f, bool collections = true)
         {
-            var inputFilePaths = SplitInputFilePaths(f);
+            var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
             // the result list
             var fileIndexResultsList = new List<FileIndexItem>();
 
             foreach (var subPath in inputFilePaths)
             {
                 var detailView = _query.SingleItem(subPath, null, collections, false);
-                var statusResults = FileCollectionsCheck(detailView);
+                var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
 
                 var statusModel = new FileIndexItem();
                 statusModel.SetFilePath(subPath);
                 statusModel.IsDirectory = false;
 
-                if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                 
                 var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
                 var collectionFullDeletePaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);

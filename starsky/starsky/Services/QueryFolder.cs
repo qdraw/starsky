@@ -9,6 +9,18 @@ namespace starsky.Services
 {
     public partial class Query // For folder displays only
     {
+
+        /// <summary>
+        /// Query all FileindexItems with the type folder
+        /// </summary>
+        /// <returns>List of all folders in database, including content</returns>
+        public List<FileIndexItem> GetAllFolders()
+        {
+            InjectServiceScope();
+            return _context.FileIndex.Where(p => p.IsDirectory).ToList();
+        }
+
+            
         // Class for displaying folder content
         // This is the query part
         public IEnumerable<FileIndexItem> DisplayFileFolders(

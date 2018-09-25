@@ -58,7 +58,7 @@ namespace starsky.Services
             );
 
             // Query the database to get a list of the folder items
-            var databaseSubFolderList = _context.FileIndex.Where(p => p.IsDirectory).ToList();
+            var databaseSubFolderList = _query.GetAllFolders();
             
             // Check if the database folder list has no duplicates > delete them
             databaseSubFolderList = RemoveDuplicate(databaseSubFolderList);

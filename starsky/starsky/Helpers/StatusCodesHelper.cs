@@ -1,10 +1,70 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using starsky.Models;
+using starsky.ViewModels;
 
 namespace starsky.Helpers
 {
     public class StatusCodesHelper
     {
+        private readonly AppSettings _appSettings;
+
+        public StatusCodesHelper(AppSettings appSettings)
+        {
+            _appSettings = appSettings;
+        }
+        
+        /// <summary>
+        /// Check the status of a file based on DetailView object
+        /// </summary>
+        /// <param name="detailView">The element used on the web</param>
+        /// <returns>ExifStatus enum</returns>
+        public FileIndexItem.ExifStatus FileCollectionsCheck(DetailView detailView)
+        {
+            if(_appSettings == null) throw new DllNotFoundException("add app settings to ctor");
+            
+            if (detailView == null)
+            {
+                return FileIndexItem.ExifStatus.NotFoundNotInIndex;
+            }
+
+            if (detailView.IsDirectory && _appSettings.IsReadOnly(detailView.SubPath))
+            {
+                return FileIndexItem.ExifStatus.DirReadOnly;
+            }
+
+            if (detailView.IsDirectory)
+            {
+                return FileIndexItem.ExifStatus.NotFoundIsDir;
+            }
+
+            if (_appSettings.IsReadOnly(detailView.FileIndexItem.ParentDirectory)) return  FileIndexItem.ExifStatus.ReadOnly;
+
+            foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths)
+            {
+                var fullPathCollection = _appSettings.DatabasePathToFilePath(collectionPath);
+                
+                //For the situation that the file is not on disk but the only one in the list
+                if (!System.IO.File.Exists(fullPathCollection) 
+                    && detailView.FileIndexItem.CollectionPaths.Count == 1)
+                {
+                    return FileIndexItem.ExifStatus.NotFoundSourceMissing;  //
+                }
+                // When there are more items in the list
+                if (!System.IO.File.Exists(fullPathCollection))
+                {
+                    detailView.FileIndexItem.CollectionPaths.Remove(collectionPath);
+                }
+            }
+
+            if (detailView.FileIndexItem.CollectionPaths.Count == 0)
+            {
+                return FileIndexItem.ExifStatus.NotFoundSourceMissing;
+            }
+
+            return FileIndexItem.ExifStatus.Ok;
+        }
+        
         /// <summary>
         /// Does deside if the loop should be stopped, true = stop
         /// Uses FileCollectionsCheck

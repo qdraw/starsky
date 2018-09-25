@@ -88,6 +88,19 @@ namespace starsky.Services
             }
             return subpath;
         }
+        
+        /// <summary>
+        /// Split a list with devided by dot comma and blank values are removed
+        /// </summary>
+        /// <param name="f">input filepaths</param>
+        /// <returns>string array with sperated strings</returns>
+        public static string[] SplitInputFilePaths(string f)
+        {
+            // input devided by dot comma and blank values are removed
+            var inputFilePaths = f.Split(";");
+            inputFilePaths = inputFilePaths.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+            return inputFilePaths;
+        }
       
         
     }
