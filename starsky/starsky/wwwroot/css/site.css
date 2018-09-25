@@ -553,6 +553,8 @@ h2 {
         margin-right: 15px;
     }
 }
+
+
 /*.navbar-fixed-top {*/
     /*top: 0;*/
     /*border-width: 0 0 1px;*/
@@ -948,6 +950,9 @@ float: left;
 }
 
 @media screen and (max-width: 600px) {
+    .sidebar.enabled {
+        transition: none;
+    }
     .sidebar {
         height: initial;
         position: static;

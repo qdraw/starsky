@@ -2,7 +2,7 @@
     ViewData["Title"] = "Profile";
 }
 
-<h4>@ViewData["Title"]</h4>
+<h1>@ViewData["Title"]</h1>
 
 @model starsky.Models.Account.User
 
@@ -12,11 +12,11 @@
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="@Model.Id"></label>
-                <input asp-for="@Model.Id" class="form-control" disabled />
+                <input asp-for="@Model.Id" class="form-control disabled" disabled />
                 <label asp-for="@Model.Created"></label>
-                <input asp-for="@Model.Created" class="form-control" disabled />                    
+                <input asp-for="@Model.Created" class="form-control disabled" disabled />                    
                 <label asp-for="@Model.Name"></label>
-                <input asp-for="@Model.Name" class="form-control" disabled/>
+                <input asp-for="@Model.Name" class="form-control disabled" disabled/>
             </div>
 @*            <div class="form-group">*@
 @*                <label asp-for="Email"></label>*@
