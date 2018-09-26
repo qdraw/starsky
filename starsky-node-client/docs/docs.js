@@ -21,7 +21,10 @@ var filePathList = [
 	"starsky/starskysynccli/readme.md",
 	"starsky/starskyTests/readme.md",
 	"starsky/starskywebhtmlcli/readme.md",
-	"starskyapp/readme.md"
+	"starskyapp/readme.md",
+	"starsky-node-client/docs/readme.md",
+	"starsky-node-client/mail/readme.md",
+	"starsky-node-client/sync/readme.md"
 ];
 
 // create dirs
