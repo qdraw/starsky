@@ -7,6 +7,7 @@
     * [starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files_
+    * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse geotagging_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
@@ -48,9 +49,12 @@ When using Windows please escape the backslash, otherwise the application will c
 
 ### The StarskyCli --Help window:
 ```
+Starksy Sync Cli ~ Help:
 --help or -h == help (this window)
---subpath or -s == parameter: (string) ; path inside the index, default '/'
---path or -p == parameter: (string) ; fullpath, search and replace first part of the filename '/'
+--path or -p == parameter: (string) ; fullpath, only child items of the database folder are supported,search and replace first part of the filename, '/' 
+--subpath or -s == parameter: (string) ; relative path in the database
+--subpathrelative or -g == Overwrite subpath to use relative days to select a folder, use for example '1' to select yesterday. (structure is required)
+-p, -s, -g == you need to select one of those tags
 --index or -i == parameter: (bool) ; enable indexing, default true
 --thumbnail or -t == parameter: (bool) ; enable thumbnail, default false
 --orphanfolder or -o == To delete files without a parent folder (heavy cpu usage), default false
@@ -60,6 +64,6 @@ When using Windows please escape the backslash, otherwise the application will c
 --connection or -c == Overwrite EnvironmentVariable for DatabaseConnection
 --thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder
 --exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath
---subpathrelative or -g == Overwrite subpath to use relative days to select a folder, use for example '1' to select yesterday. (structure is required)
-  use -v -help to show settings:
+--verbose or -v == verbose, more detailed info
+  use -v -help to show settings: 
 ```

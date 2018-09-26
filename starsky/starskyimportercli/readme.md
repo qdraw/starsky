@@ -7,6 +7,7 @@
     * __[starskyimportercli](../../starsky/starskyimportercli/readme.md)  import command line interface__
     * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files_
+    * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse geotagging_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
@@ -63,12 +64,16 @@ starskyimportercli --help
 
 ### The StarskyImporterCli --Help window:
 ```
+Starksy Importer Cli ~ Help:
 --help or -h == help (this window)
---path or -p == parameter: (string) ; fullpath, can be an folder or file
+--path or -p == parameter: (string) ; fullpath
+                can be an folder or file
 --move or -m == delete file after importing (default false / copy file)
---all or -a == import all files including files older than 2 years (default: false / ignore old files)
---recursive or -r == Import Directory recursive (default: false / only the selected folder)
---verbose or -v == verbose, more detailed info, use -v -help to show settings:
+--all or -a == import all files including files older than 2 years (default: false / ignore old files) 
+--recursive or -r == Import Directory recursive (default: false / only the selected folder) 
+--structure == overwrite appsettings with filedirectory structure based on exif and filename create datetime
+--verbose or -v == verbose, more detailed info
+  use -v -help to show settings: 
 ```
 
 

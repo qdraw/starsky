@@ -7,6 +7,7 @@
     * [starskyimportercli](../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyTests](../starsky/starskyTests/readme.md)  _mstest unit tests_
     * [starskyWebHtmlCli](../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files_
+    * [starskyGeoCli](../starsky/starskygeocli/readme.md)  _gpx sync and reverse geotagging_
  * _[starsky-node-client](../starsky-node-client/readme.md) nodejs tools to add-on tasks_
  * _[starskyapp](../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 

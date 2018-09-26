@@ -7,16 +7,28 @@
     * [starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
     * __[starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  publish web images to html files__
+    * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse geotagging_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
 ## starskyWebHtmlCli docs
 
-### starskyWebHtmlCli Help:
+### Introduction:
 
 This application is used to create thumbnail web images and prerender html files.
 In the `appsettings.json` is used to setup the publish actions.
 The application loops though `publishProfiles` in `appsettings.json`.
+
+### The StarskyWebHtmlCli --Help window:
+```sh
+Starksy WebHtml Cli ~ Help:
+--help or -h == help (this window)
+--path or -p == parameter: (string) ; fullpath (select a folder)
+--name or -n == parameter: (string) ; name of blogitem 
+--verbose or -v == verbose, more detailed info
+  use -v -help to show settings: 
+```
+### Configuration
 
 #### ContentType
 There are options to do predefined tasks

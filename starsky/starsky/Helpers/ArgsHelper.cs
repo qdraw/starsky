@@ -139,8 +139,8 @@ namespace starsky.Helpers
                 
                 case AppSettings.StarskyAppType.WebHtml:
                     // When this change please update ./readme.md
-                    Console.WriteLine("--path or -p == parameter: (string) ; fullpath ");
-                    Console.WriteLine("--name or -n == parameter: (string) ; name of item ");
+                    Console.WriteLine("--path or -p == parameter: (string) ; fullpath (select a folder) ");
+                    Console.WriteLine("--name or -n == parameter: (string) ; name of blogitem ");
                     break;
 
                 case AppSettings.StarskyAppType.Importer:
@@ -150,6 +150,7 @@ namespace starsky.Helpers
                     Console.WriteLine("--move or -m == delete file after importing (default false / copy file)");
                     Console.WriteLine("--all or -a == import all files including files older than 2 years (default: false / ignore old files) ");
                     Console.WriteLine("--recursive or -r == Import Directory recursive (default: false / only the selected folder) ");
+                    Console.WriteLine("--structure == overwrite appsettings with filedirectory structure based on exif and filename create datetime");
                     break;
                 case AppSettings.StarskyAppType.Sync:
                     // When this change please update ./readme.md

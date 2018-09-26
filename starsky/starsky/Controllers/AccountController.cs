@@ -22,11 +22,10 @@ namespace starsky.Controllers
         {
             if (!User.Identity.IsAuthenticated) return RedirectToLocal(null);
             return View(_userManager.GetCurrentUser(HttpContext));
-//            return Json(User.Identity.IsAuthenticated.ToString());
         }
 
         /// <summary>
-        /// Login GET page
+        /// Login form page
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -36,6 +35,12 @@ namespace starsky.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Login the current HttpContext in
+        /// </summary>
+        /// <param name="model">Email, password and remember me bool</param>
+        /// <param name="returnUrl">null or localurl</param>
+        /// <returns></returns>
         [HttpPost]
         [ActionName("Login")]
         public async Task<IActionResult> LoginPost(LoginViewModel model, string returnUrl = null)
@@ -52,6 +57,10 @@ namespace starsky.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Logout the current HttpContext
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult Logout()
         {
@@ -59,6 +68,11 @@ namespace starsky.Controllers
             return RedirectToAction("Login");
         }
         
+        /// <summary>
+        /// View the Register form
+        /// </summary>
+        /// <param name="returnUrl">when succesfull continue</param>
+        /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register(string returnUrl = null)
@@ -67,6 +81,13 @@ namespace starsky.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Create a new user
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="json"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -86,6 +107,11 @@ namespace starsky.Controllers
             return View(model);
         }
         
+        /// <summary>
+        /// When this url is local 302 redirect,
+        /// </summary>
+        /// <param name="returnUrl">the url to redirect, when null redirect to home</param>
+        /// <returns>302 redirect</returns>
         private IActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
