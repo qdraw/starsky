@@ -26,53 +26,52 @@
 ### Install on Raspberry Pi (Raspbian/Linux ARM)
 On Linux ARM there is no SDK avaiable, but the runtime works. So you have to compile it first on your laptop and copy to your Raspberry Pi. Use the following steps to setup:
 
-1) On your laptop (x86/x64 machine). Get the `dotnet` 2.0 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
+1.  On your laptop (x86/x64 machine). Get the `dotnet` 2.0 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
 
-2) Compile the Starsky-installation on your x86/x64 machine first. I use the following wrapper to build all projects for Linux ARM [`publish-linux-arm.sh`](publish-linux-arm.sh)
-    ```
-    ./publish-linux-arm.sh
-    ```
+2.  Compile the Starsky-installation on your x86/x64 machine first. I use the following wrapper to build all projects for Linux ARM [`publish-linux-arm.sh`](publish-linux-arm.sh)
+```
+./publish-linux-arm.sh
+```
 
-3) Copy contents from the `linux-arm` folder to your Raspberry Pi
+3.  Copy contents from the `linux-arm` folder to your Raspberry Pi
 
-4) On the Raspi, install the dependency packages first. Those are required by .NET Core
-    ```
-    sudo apt-get install curl libunwind8 gettext apt-transport-https
-    ```
-5) On the Raspi, install Exiftool
-    ```
-    sudo apt-get install libimage-exiftool-perl
-    ```
-6)  Setup `appsettings.json` configuration
+4.  On the Raspi, install the dependency packages first. Those are required by .NET Core
+```
+sudo apt-get install curl libunwind8 gettext apt-transport-https
+```
+5.  On the Raspi, install Exiftool
+```
+sudo apt-get install libimage-exiftool-perl
+```
+6.  Setup `appsettings.json` configuration
     This is the most basic configuration. There are more options available
-    ```json
-    {
-        "App": {
-            "ThumbnailTempFolder": "/home/pi/starsky_thumbnails",
-            "StorageFolder": "/home/pi/starsky_base",
-            "DatabaseType": "sqlite",
-            "DatabaseConnection": "Data Source=data.db",
-            "ExifToolPath": "/usr/bin/exiftool",
-            "ReadOnlyFolders": []
-        }
-    }   
-    ```
-7) Run the Starsky web interface
-
-    ```
-    ./starsky
-    ```
-8) Create a account in the starsky application. Those credentials are only required by the web application
-    ```
-   http://localhost:5000/account/register
-    ```
+```json
+{
+    "App": {
+        "ThumbnailTempFolder": "/home/pi/starsky_thumbnails",
+        "StorageFolder": "/home/pi/starsky_base",
+        "DatabaseType": "sqlite",
+        "DatabaseConnection": "Data Source=data.db",
+        "ExifToolPath": "/usr/bin/exiftool",
+        "ReadOnlyFolders": []
+    }
+}   
+```
+7.  Run the Starsky web interface
+```
+./starsky
+```
+8.  Create a account in the starsky application. Those credentials are only required by the web application
+```
+http://localhost:5000/account/register
+```
 
 #### Optional steps  
-9)  The script [`new-pm2.sh`](new-pm2.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
-    ```sh
-        export ASPNETCORE_URLS="http://localhost:4823/"
-        export ASPNETCORE_ENVIRONMENT="Production"
-    ```
+9.  The script [`new-pm2.sh`](new-pm2.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
+```sh
+    export ASPNETCORE_URLS="http://localhost:4823/"
+    export ASPNETCORE_ENVIRONMENT="Production"
+```
 
 #### Errors
 When using SQLite as databasetype without `SQLitePCLRaw.lib.e_sqlite3.linux` the following error appears:
@@ -90,11 +89,11 @@ The script [`new-pm2.sh`](new-pm2.sh) is a script to setup Starsky using [pm2](h
 ```sh
  export ASPNETCORE_URLS="http://localhost:4823/"
  export ASPNETCORE_ENVIRONMENT="Production"
- ```
+```
 
- ### Publish for platform scripts
+### Publish for platform scripts
 
- The scripts that are used to create a full build. (Linux has `libunwind8` and `gettext` as dependency)
+The scripts that are used to create a full build. (Linux has `libunwind8` and `gettext` as dependency)
   - [`publish-linux-arm.sh`](publish-linux-arm.sh) Linux ARM (Raspberry Pi 2/3)
   - [`publish-mac.sh`](publish-mac.sh) OS X 10.12+
   - [`publish-windows.sh`](publish-windows.sh) Windows 7+

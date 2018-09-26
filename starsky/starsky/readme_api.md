@@ -6,8 +6,8 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 
 ## Rest API Table of contents
 
-- [Get PageType	"Archive" ](#get-pagetypearchive)
-- [Get PageType	"DetailView"](#get-pagetypedetailview)
+- [Get PageType	Archive](#get-pagetype-archive)
+- [Get PageType DetailView](#get-pagetype-detailview)
 - [Exif Info](#exif-info)
 - [Exif Update](#exif-update)
 - [File Delete](#file-delete)
@@ -21,11 +21,11 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 - [Remove cache](#remove-cache)
 - [Environment info](#environment-info)
 
-## Get PageType	"Archive" 
-Endpoint `/starsky/?f=/&json=true` 
-For browsing the folders. Please use  `"pageType": "Archive"` to check the page type. 
+## Get PageType Archive
+Endpoint `/starsky/?f=/&json=true`
+For browsing the folders. Please use  `"pageType": "Archive"` to check the page type.
 The querystring name `f` is used for the file path in releative/subpath style
- 
+
 ```json
 {
     "uri":"/starsky/?f=/&json=true",
@@ -75,11 +75,10 @@ The querystring name `f` is used for the file path in releative/subpath style
 ```
 
 
-
-## Get PageType	"DetailView" 
-Api to get fast meta data about the picture. 
+## Get PageType DetailView
+Api to get fast meta data about the picture.
 - The querystring name `f` is used for the file path in releative/subpath style
-Endpoint: `/starsky/?f=/image.jpg` 
+Endpoint: `/starsky/?f=/image.jpg`
 ```json
 {
     "uri":"/starsky/?f=/image.jpg&json=true",
@@ -156,7 +155,7 @@ Endpoint: `/starsky/Api/Info?f=/image.jpg` The querystring name `f` is used for 
 - The querystring name `f` is used for the file path in releative/subpath style
 - The querystring can be seperated by a `;`
 - Ignore `Prefs` those are used to set `ColorClass` with Exiftool
-- Uses  `Status` to tell if a file exist in the database 
+- Uses  `Status` to tell if a file exist in the database
     - `Ok` is file loaded
     - `NotFoundNotInIndex` File does not exist in index
     - `NotFoundSourceMissing` The source file is missing
@@ -259,7 +258,7 @@ _Defined in the class `ExifToolCmdHelper`_
 - Description
 - Title
 - ColorClass
-- `rotateClock` is using `-1` or `1` to rotate the image 
+- `rotateClock` is using `-1` or `1` to rotate the image
     -   `-1` is rotate image 270 degrees
     -   `1` is rotate image 90 degrees
 - DateTime _(use this format: &DateTime=2018-05-05T16:03:35)_
@@ -269,7 +268,7 @@ _Defined in the class `ExifToolCmdHelper`_
 - The querystring name `f` is used for the file path in releative/subpath style
 - The querystring support `;` file sepeartion for selecting multiple files
 - Empty tags are always ignored
-- Stack collections or Collections is a feature to update multiple files with the same name _(before the extension)_. 
+- Stack collections or Collections is a feature to update multiple files with the same name _(before the extension)_.
 
 ```json
 {
@@ -357,7 +356,7 @@ _Defined in the class `ExifToolCmdHelper`_
     - `NotFoundNotInIndex` File does not exist in index and the request failed
     - `NotFoundSourceMissing` The source file is missing and the request failed
     - `ReadOnly` not allowed to overwrite this file and the request failed
-    
+
 ## File Delete
 To permanent delete a file from the file system and the database.
 The tag: `!delete!` is used to mark a file that is in the Trash. This is not required by this api.
@@ -402,7 +401,7 @@ Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
 - There is a orginal fallback, when using the `?issingleitem=True` query
   The orginal image will be loaded instead of the thumbnail
 - The `retryThumbnail` is removing a thumbnail image. When this is used in combination with
- `isSingleItem` a orginal image is loaded. The query string is  `?retryThumbnail=True`. 
+ `isSingleItem` a orginal image is loaded. The query string is  `?retryThumbnail=True`.
 - Check [Thumbnail Json](#thumbnail-json) for more information
 - This endpoint supports only 1 file per request
 
@@ -465,7 +464,7 @@ Endpoint: `/starsky/Api/DownloadPhoto?f=/image.jpg`
 For importing using the structure configuration
 The filename-header can be added in `base64` or as `string`.
 `Content-type` is required, please use `image/jpeg`
-- Endpoint: `/starsky/import` 
+- Endpoint: `/starsky/import`
 - Import overwrites are disabled by default
 - [Check #import-exif-overwrites for info about overwrite (all) imported files](#import-exif-overwrites)
 
@@ -501,7 +500,7 @@ The filename-header can be added in `base64` or as `string`.
 
 ## Form import
 When using a form, the filename is extracted from the multipart. For the filename there is only string encoding support
-- Endpoint: `/starsky/import` 
+- Endpoint: `/starsky/import`
 - Import overwrites are disabled by default
 - [Check #import-exif-overwrites for info about overwrite (all) imported files](#import-exif-overwrites)
 
@@ -522,9 +521,9 @@ When using a form, the filename is extracted from the multipart. For the filenam
     }
 }
 ```
-### Expected `/starsky/import` response: 
+### Expected `/starsky/import` response:
 - Error 206 when the response array is empty. The response array is empty when there are no items added.
-- When you have try to add duplicate items, those are not included in the list 
+- When you have try to add duplicate items, those are not included in the list
 - An array with the added items:
 ```json
 [
@@ -533,7 +532,7 @@ When using a form, the filename is extracted from the multipart. For the filenam
 ```
 
 ## Import Exif Overwrites (shared feature)
-This is a feature that is used by: 
+This is a feature that is used by:
 - [Direct import](#direct-import)
 - [Form import](#form-import)
 
@@ -545,9 +544,9 @@ This is a feature that is used by:
    By default is this filter enabled
 -  `Structure` is a toggles a feature that overwrites the default Structure settings
     It only overwrites when this header has content (So not when it empty or null`)
-    > If the structure is incorrect an Application Exception occurs. 
+    > If the structure is incorrect an Application Exception occurs.
       Structure requires to start with a `/` and the filename it must end with `.ext`
-      With the [Environment info](#environment-info) `structureExampleNoSetting` value 
+      With the [Environment info](#environment-info) `structureExampleNoSetting` value
       you can check the structure right now.
 
 
@@ -562,7 +561,7 @@ This is a feature that is used by:
     }
 }
 ```
-### Expected _Import Exif Overwrites_ result: 
+### Expected _Import Exif Overwrites_ result:
 - Do overwrites using exiftool and update it in the database
 
 ## Search
@@ -571,7 +570,7 @@ To search in the database.
 - Querystring `t` is used for the search query
 - Querystring `p` is used for the pagina number. The first page is page 0.
 - Querystring `json` is to render json.
-Endpoint: `/Starky/Search?t=searchword&p=0&json=true` 
+Endpoint: `/Starky/Search?t=searchword&p=0&json=true`
 
 ### Search using POST
 The POST-request is a redirect to a get query with the same searchquery and the same pagenumber
@@ -590,7 +589,7 @@ The POST-request is a redirect to a get query with the same searchquery and the 
 }
 ```
 
-### Expected `/starsky/search` response: 
+### Expected `/starsky/search` response:
 
 ```json
 {
@@ -636,7 +635,7 @@ The POST-request is a redirect to a get query with the same searchquery and the 
 ## Remove cache
 When using cache is might sometimes useful to reset the cache.
 
-### Expected `/starsky/api/removecache?f=/folder` response: 
+### Expected `/starsky/api/removecache?f=/folder` response:
 - A 302 redirect to `?/folder` even if cache is disabled.
 - With `&json=true`
 	-	"cache succesfull cleared"
@@ -655,7 +654,7 @@ This endpoint does not require autorisation.
     "method":"GET"
 }
 ```
-### Expected `/Starky/Api/Env` response: 
+### Expected `/Starky/Api/Env` response:
 
 ```json
 {
@@ -673,10 +672,10 @@ This endpoint does not require autorisation.
 }
 ```
 - The setting `DatabaseConnection` is only visable in `-c|--configuration {Debug}`. The connection string is in production not publicly visible due security reasons.
-- Never use `-c|--configuration {Debug}` in production. [Check the Microsoft documentation for more information](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-run?tabs=netcore20) 
+- Never use `-c|--configuration {Debug}` in production. [Check the Microsoft documentation for more information](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-run?tabs=netcore20)
 
 ### StructureExampleNoSetting
 If the structure is incorrect an Application Exception occurs. Structure requires to start with a `/` and the filename it must end with `.ext`
 With the  `structureExampleNoSetting` value you can check the structure today.
 In the view `example.jpg` is used to replace `{filenamebase}`. The file `example.jpg` and would be replaced with the orginal filename.
-- [Read more about Structure configuation (starskyimportercli docs) ](../../starsky/starskyimportercli/readme.md) 
+- [Read more about Structure configuation (starskyimportercli docs) ](../../starsky/starskyimportercli/readme.md)

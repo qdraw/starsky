@@ -67,8 +67,8 @@ The commandline arguments are shortcuts to set an in-app environment variable
 Starsky has a Json and Razorview restfull API. Please read the documentation
 
 #### Rest API Table of contents
-- [Get PageType	"Archive" ](readme_api.md#get-pagetypearchive)
-- [Get PageType	"DetailView"](readme_api.md#get-pagetypedetailview)
+- [Get PageType	"Archive" ](readme_api.md#get-pagetype-archive)
+- [Get PageType	"DetailView"](readme_api.md#get-pagetype-detailview)
 - [Exif Info](readme_api.md#exif-info)
 - [Exif Update](readme_api.md#exif-update)
 - [File Delete](readme_api.md#file-delete)

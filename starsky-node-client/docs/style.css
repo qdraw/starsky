@@ -321,6 +321,7 @@ body {
   margin-top: 64px;
   font-family: "Gloriola Std", sans-serif;
   font-weight: 100;
+  font-size: 16px;
 }
 
 
@@ -330,9 +331,32 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+
+@media (max-width: 1000px) {
+	.container{
+		width: 97%;
+		margin-left: 10px;
+		margin-right: 10px;
+	}
+}
+@media (max-width: 415px) {
+	.container{
+		width: 96%;
+		margin-left: 10px;
+		margin-right: 10px;
+	}
+}
+
 .container .entry-content {
     margin-top: 80px;
     line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    margin-top: 20px;
 }
 
 h1 {
@@ -345,23 +369,64 @@ h1 {
 }
 
 h2 {
-    margin-top: 20px;
-    font-size: 34px;
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 27px;
     line-height: 1.4;
 }
 h3 {
-   font-weight: 800;
-  font-size: 24px;
-  text-transform: uppercase;
-  -webkit-hyphens: auto;
-  -ms-hyphens: auto;
-  hyphens: auto;
+    font-weight: 300;
+    font-size: 20px;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
 }
+
+h4 {
+    font-weight: 300;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+}
+
+.container .entry-content code {
+    font-family: monospace,monospace;
+	word-break: break-all;
+}
+
+pre {
+	padding: .66001rem 9.5px 9.5px;
+	line-height: 2rem;
+	margin: 0 0 10px;
+	background: linear-gradient(to bottom,#fff 0,#fff .75rem,#f5f7fa .75rem,#f5f7fa 2.75rem,#fff 2.75rem,#fff 4rem);
+	background-size: 100% 4rem;
+	border-color: #D3DAEA;
+	border: 1px solid #ccc;
+	word-break: break-all;
+	word-wrap: break-word;
+	color: #333;
+}
+pre code {
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+    white-space: pre-wrap;
+    background-color: transparent;
+    border-radius: 0;
+}
+
 .container .entry-content strong {
     font-weight: 300;
 
 }
 .container .entry-content ul > li {
     list-style: square;
-    margin-left: 20px
+    margin-left: 16px;
+    padding-left: 5px;
+}
+
+.container .entry-content ol > li {
+    list-style: decimal;
+    margin-left: 16px;
+    padding-left: 5px;
 }
