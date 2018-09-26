@@ -11,4 +11,44 @@
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
-## starskygeosync docs
+## starskyGeoSync docs
+
+### Introduction gpx tagging
+When your camera has no GPS support build in you can use your mobile phone to keep your track.
+With various sport track apps support exporting gpx files.
+
+### Important things to know
+- Your camera date and time has to be correct.
+- Only gpx track files are supported (no waypoints or routes).
+- All trackpoints should have a latitude, longitude, elevation and time in UTC.
+- You need to add your `CameraTimeZone` name to the Starsky configuation.
+- Gpx waypoints older than 5 minutes are ignored.
+- Waypoints less that 5 minutes are using the closest point
+- All gpx files in the selected folder are combined and used.
+
+### Introduction reverse geotagging
+
+### Important things to know
+- When the reverse geotagged item is less that 40 kilometers from that place add it to the file
+
+Use to
+
+metaFileItem.LocationCity = nearestPlace.NameASCII;
+                metaFileItem.LocationCountry = new RegionInfo(nearestPlace.CountryCode).NativeName;
+                metaFileItem.LocationState
+
+
+
+### Geo Cli Help window
+```sh
+Starksy Geo Cli ~ Help:
+--help or -h == help (this window)
+--path or -p == parameter: (string) ; fullpath (all locations are supported)
+--subpath or -s == parameter: (string) ; relative path in the database
+--subpathrelative or -g == Overwrite subpath to use relative days to select a folder, use for example '1' to select yesterday. (structure is required)
+-p, -s, -g == you need to select one of those tags
+--all or -a == overwrite reverse geotag location tags (default: false / ignore already taged files)
+--index or -i == parameter: (bool) ; gpx feature to index geo location, default true
+--verbose or -v == verbose, more detailed info
+  use -v -help to show settings:
+```
