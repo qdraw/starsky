@@ -17,22 +17,21 @@
 When your camera has no GPS support build in you can use your mobile phone to keep your track.
 With various sport track apps support exporting gpx files.
 
-### Important things to know
+#### Important things to know
 - Your camera date and time has to be correct.
 - Only gpx track files are supported (no waypoints or routes).
 - All trackpoints should have a latitude, longitude, elevation and time in UTC.
 - You need to add your `CameraTimeZone` name to the Starsky configuation.
-- Gpx waypoints older than 5 minutes are ignored.
-- Waypoints less that 5 minutes are using the closest point
+- Gpx waypoints more than 5 minutes difference are ignored.
+- Waypoints less that 5 minutes difference are using the closest point
 - All gpx files in the selected folder are combined and used.
 
 ### Introduction reverse geotagging
 To add the nearest city, state and country to the already geotagged file use reverse geotagging
 
-### Important things to know
+#### Important things to know
 - When the reverse geotagged item is less that 40 kilometers from that place add it to the file
-- Uses GeoNames to for all cities with a population > 1000 or seats of adm div (ca 150.000)
-
+- Uses GeoNames.org data to for all cities with a population > 1000 or seats of adm div (ca 150.000)
 
 
 ### Geo Cli Help window

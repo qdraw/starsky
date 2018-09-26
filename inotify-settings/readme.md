@@ -9,10 +9,10 @@
     * [starskyWebHtmlCli](../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files_
     * [starskyGeoCli](../starsky/starskygeocli/readme.md)  _gpx sync and reverse geotagging_
  * _[starsky-node-client](../starsky-node-client/readme.md) nodejs tools to add-on tasks_
- * _[starskyapp](../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
+ * _[starskyapp](../starskyapp/readme.md) React-Native app (Pre-alpha code)_
 
 
-# inotifywait
+## inotifywait
 
 ## Currently only for .jpg or .JPG files
 
@@ -49,16 +49,19 @@ http://wiki.lenux.org/using-csync2-with-inotifywait/
 
 
 
-#Cron Tab
+## Cron Tab's
 
-
+```sh
 sudo nano /usr/local/sbin/starskyhourly.sh
-	''''
-	copy content from => starskyhourly.sh
-	''''
+```
+copy content from => starskyhourly.sh
 
+```sh
 sudo chmod +x /usr/local/sbin/starskyhourly.sh
-
-
+```
+```sh
 crontab -e
+```
+```sh
 0       *            *       *       *       /usr/local/sbin/starskyhourly.sh > /home/pi/z-starskycli.log 2>&1
+```

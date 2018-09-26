@@ -1,5 +1,5 @@
 # Starsky
-## List of [Starsky](readme.md) Projects
+## List of __[Starsky](readme.md)__ Projects
  * [inotify-settings](inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](starsky/readme.md) _database photo index & import index project_
     * [starsky](starsky/starsky/readme.md)  _mvc application / web interface_
