@@ -4,25 +4,8 @@ var fs = require('fs');
 var showdown  = require('showdown');
 showdown.setFlavor('github');
 
-// showdown.extension('myExtension', function () {
-//   return [{
-//     type: "output",
-//     filter: function (html, converter, options) {
-//       //parse the html string
-//       var menuHtml =  '<div class="head"><div id="menu"> <ul> <li><a href="/">Home</a></li> <li><a href="/portfolio.html">Portfolio</a></li> <li><a href="/over.html">Over</a></li> <li><a href="/contact.html">Contact</a></li> <li class="active"><a href="./">Blog</a></li> </ul> </div> <a href="#hamburger" id="hamburger" class="hamburger">Menu</a> <a href="/" class="logo">Qdraw.nl</a></div>';
-// 	  var outputHtml = html.replace(/<body>/ig, "<link rel=\"stylesheet\" href=\"style.css\">\n<body>\n"+ menuHtml +"\n<div class=\"container\"><div class=\"entry-content\">")
-// 	  outputHtml = outputHtml.replace(/<\/body>\n/ig,"</div>\n</div>\n</body>\n")
-// 	  console.log(outputHtml);
-//
-//       return outputHtml;
-//     }
-//   }];
-// });
-
-// { extensions: ['myExtension'] }
 var converter = new showdown.Converter();
 converter.setOption('completeHTMLDocument', true);
-
 
 
 var prefixPath = "../../";
