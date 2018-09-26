@@ -12,20 +12,6 @@ namespace starskyGeoCli
     
     public static class Program
     {
-        public static CultureInfo GetCultureFromTwoLetterCountryCode(string twoLetterIsoCountryCode)
-        {
-            try
-            {
-                return CultureInfo
-                    .GetCultures(CultureTypes.AllCultures 
-                                               & ~ CultureTypes.NeutralCultures)
-                    .FirstOrDefault(m => m.Name.EndsWith( "-" + twoLetterIsoCountryCode) );
-            }
-            catch
-            {
-                return null;
-            }
-        }
         
         public static void Main(string[] args)
         {

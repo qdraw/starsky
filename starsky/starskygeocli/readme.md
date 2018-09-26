@@ -27,15 +27,11 @@ With various sport track apps support exporting gpx files.
 - All gpx files in the selected folder are combined and used.
 
 ### Introduction reverse geotagging
+To add the nearest city, state and country to the already geotagged file use reverse geotagging
 
 ### Important things to know
 - When the reverse geotagged item is less that 40 kilometers from that place add it to the file
-
-Use to
-
-metaFileItem.LocationCity = nearestPlace.NameASCII;
-                metaFileItem.LocationCountry = new RegionInfo(nearestPlace.CountryCode).NativeName;
-                metaFileItem.LocationState
+- Uses GeoNames to for all cities with a population > 1000 or seats of adm div (ca 150.000)
 
 
 

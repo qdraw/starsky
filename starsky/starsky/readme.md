@@ -33,6 +33,7 @@ The commandline arguments are shortcuts to set an in-app environment variable
 3.  `StorageFolder` - For the main photo directory (default: `./bin/Debug/netcoreapp2.0/storageFolder`)
 4.  `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported (default: `sqlite`)
 5.  `DatabaseConnection` - The connectionstring to the database (default: `./bin/Debug/netcoreapp2.0/data.db`)
+6.  `CameraTimeZone` - The timezone of the Camera, for example `Europe/Amsterdam` (defaults to your local timezone)
 ### Optional settings
 1.  `Structure` - The structure that will be used when you import files, has a default fallback.
 2.  `ReadOnlyFolders` - Accepts a list of folders that never may be edited, defaults a emphy list
@@ -49,7 +50,8 @@ The commandline arguments are shortcuts to set an in-app environment variable
     "ExifToolPath": "C:\\exiftool.exe",
     "Structure": "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext",
     "ReadOnlyFolders": ["/2015","/2018"],
-    "AddMemoryCache": "true"
+    "AddMemoryCache": "true",
+    "CameraTimeZone": "America/New_York"
   }
 }
 ```
