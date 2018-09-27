@@ -60,6 +60,7 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
 	 	return m.replace(/\.md/g, '\.html');
 	});
 
+	// used for relative css and js files
     var split = filePathList[i].split("/");
     var relativeCssPath = "";
     for (var j = 0; j < split.length-1; j++) {
@@ -67,7 +68,7 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
     }
 
 
-    var menuHtml =  '<div class="head"><div id="menu"> <ul> <li><a href="/">Home</a></li> <li><a href="/portfolio.html">Portfolio</a></li> <li><a href="/over.html">Over</a></li> <li><a href="/contact.html">Contact</a></li> <li class="active"><a href="./">Blog</a></li> </ul> </div> <a href="#hamburger" id="hamburger" class="hamburger">Menu</a> <a href="/" class="logo">Qdraw.nl</a></div>';
+    var menuHtml =  '<div class="head"><div id="menu"> <ul> <li><a href="https://qdraw.nl/">Home</a></li> <li><a href="https://qdraw.nl/portfolio.html">Portfolio</a></li> <li><a href="https://qdraw.nl//over.html">Over</a></li> <li><a href="https://qdraw.nl//contact.html">Contact</a></li> <li><a href="https://qdraw.nl/blog/">Blog</a></li> </ul> </div> <a href="#hamburger" id="hamburger" class="hamburger">Menu</a> <a href="https://qdraw.nl/" class="logo">Qdraw.nl</a></div>';
     var outputHtml = contentsHtml.replace(/<\/head>\n<body>/ig, "<link rel=\"stylesheet\" href=\""+ relativeCssPath +"style.css\"><\/head>\n<body>\n"+ menuHtml + "\n<div class=\"container\"><div class=\"entry-content\">");
 
 	contentsHtml = outputHtml.replace(/<\/body>\n/ig,"</div>\n</div>\n <script defer src=\""+ relativeCssPath +"menu.js\"></script></body>\n");
