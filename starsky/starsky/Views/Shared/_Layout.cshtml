@@ -25,21 +25,42 @@
             You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.
         </p>
     <![endif]-->
-    <nav class="navbar navbar-inverse">
-        <div class="container">
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Starsky</a></li>
-                    <li>
-                        <form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-nav">
-                            <input name="t" class="form-control" value="@ViewData["SearchQuery"]" autocomplete="off"/>
-                            <button class="btn btn-default" type="submit">Zoek</button>
-                        </form>
-                    </li>
+
+<div class="head">
+    <div id="menu">
+        <ul>
+            <li>
+                <form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-nav">
+                    <input name="t" class="form-control" value="@ViewData["SearchQuery"]" autocomplete="off"/>
+                    <button class="btn btn-default" type="submit">Zoek</button>
+                </form>
+            </li>
+            <li>
+                <a href="@Url.Action("Index", "Account")">Account</a>
+                <ul style="display: none">
+                    <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
                 </ul>
-            </div>
-        </div>
-    </nav>
+            </li> 
+        </ul>
+    </div> <a href="#hamburger" id="hamburger" class="hamburger">Menu</a> 
+    <a href="@Url.Action("Index", "Home")" class="logo">Qdraw.nl</a>
+</div>
+
+@*<nav class="navbar navbar-inverse">*@
+@*        <div class="container">*@
+@*            <div class="navbar-collapse collapse">*@
+@*                <ul class="nav navbar-nav">*@
+@*                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Starsky</a></li>*@
+@*                    <li>*@
+@*                        <form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-nav">*@
+@*                            <input name="t" class="form-control" value="@ViewData["SearchQuery"]" autocomplete="off"/>*@
+@*                            <button class="btn btn-default" type="submit">Zoek</button>*@
+@*                        </form>*@
+@*                    </li>*@
+@*                </ul>*@
+@*            </div>*@
+@*        </div>*@
+@*    </nav>*@
     <div class="container body-content">
         @RenderBody()
 @*        <footer>*@
@@ -49,7 +70,7 @@
 
 @*    <script src="~/lib/jquery/dist/jquery.js"></script>*@
 @*    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>*@
-    <script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
 
 <script src="~/js/lazyload.js"></script>
 <script type="text/javascript">

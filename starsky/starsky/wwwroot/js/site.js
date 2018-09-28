@@ -84,3 +84,60 @@ function handleTouchMove(evt) {
 }//e/handleTouchMove
 
 
+
+
+
+/* menu.js from qdraw */
+
+
+document.querySelector(".head #hamburger").addEventListener("click", function(e){ hamburger(e); }, false);
+
+var isHamburgerActive = true;
+
+function hamburger(e) {
+
+    if (e !== undefined) {
+        e.preventDefault();
+    }
+    document.querySelector(".head #hamburger").innerHTML = "";
+
+    if (isHamburgerActive === false) {
+        document.querySelector(".head #menu ul").className = "moveto";
+        document.querySelector(".head #hamburger").className = "close";
+    }
+
+    if (isHamburgerActive === true) {
+        document.querySelector(".head #menu ul").className = "moveaway";
+        document.querySelector(".head #hamburger").className = "hamburger";
+    }
+    if (isHamburgerActive === true && e === undefined) {
+        document.querySelector(".head #menu ul").classList.add("moveawayinitial");
+    }
+
+    isHamburgerActive = !isHamburgerActive;
+    // console.log("hamburger" + isHamburgerActive);
+
+}
+
+var widthMobile = 900; 
+if (window.innerWidth <= widthMobile) {
+    hamburger();
+}
+
+window.addEventListener('resize', function() {
+
+    // Close or open menu if change in resolution
+    if (window.innerWidth >= widthMobile) {
+        isHamburgerActive = false;
+        hamburger();
+    }
+
+    if (window.innerWidth <= widthMobile) {
+        isHamburgerActive = true;
+        hamburger();
+    }
+
+
+}, true);
+
+
