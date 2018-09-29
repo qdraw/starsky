@@ -244,7 +244,7 @@ namespace starsky.Controllers
                 
                 // Check if extension is supported for ExtensionExifToolSupportedList
                 // Not all files are able to write with exiftool
-                if(!Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
+                if(detailView != null && !Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
                 {
                     detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
                     fileIndexResultsList.Add(detailView.FileIndexItem);

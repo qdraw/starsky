@@ -72,6 +72,6 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
     var outputHtml = contentsHtml.replace(/<\/head>\n<body>/ig, "<link rel=\"stylesheet\" href=\""+ relativeCssPath +"style.css\"><\/head>\n<body>\n"+ menuHtml + "\n<div class=\"container\"><div class=\"entry-content\">");
 
 	contentsHtml = outputHtml.replace(/<\/body>\n/ig,"</div>\n</div>\n <script defer src=\""+ relativeCssPath +"menu.js\"></script></body>\n");
-
+	console.log(htmlPath);
 	fs.writeFileSync(htmlPath,contentsHtml);
 }
