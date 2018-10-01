@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 using starsky.Data;
 using starsky.Interfaces;
 using starsky.Models;
@@ -59,6 +60,7 @@ namespace starsky.Services
 
         private void WideSearch(SearchViewModel model)
         {
+            // .AsNoTracking() => never change data to update
             for (var i = 0; i < model.SearchIn.Count; i++)
             {
                 var  searchInType = (SearchViewModel.SearchInTypes) 
@@ -70,35 +72,35 @@ namespace starsky.Services
                 {
                     case SearchViewModel.SearchInTypes.description:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            _context.FileIndex.Where(
+                            _context.FileIndex.AsNoTracking().Where(
                                 p => p.FilePath.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()    
                         );
                         break;
                     case SearchViewModel.SearchInTypes.filename:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            _context.FileIndex.Where(
+                            _context.FileIndex.AsNoTracking().Where(
                                 p => p.FileName.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()    
                         );
                         break;
                     case SearchViewModel.SearchInTypes.filepath:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            _context.FileIndex.Where(
+                            _context.FileIndex.AsNoTracking().Where(
                                 p => p.FilePath.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()   
                         );
                         break;
                     case SearchViewModel.SearchInTypes.parentdirectory:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            _context.FileIndex.Where(
+                            _context.FileIndex.AsNoTracking().Where(
                                 p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()    
                         );
                         break;   
                     case SearchViewModel.SearchInTypes.title:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            _context.FileIndex.Where(
+                            _context.FileIndex.AsNoTracking().Where(
                                 p => p.Title.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()   
                         );
@@ -109,7 +111,7 @@ namespace starsky.Services
                         foreach (var itemSearchFor in splitSearchFor)
                         {
                             model.FileIndexItems = model.FileIndexItems.Concat(
-                                _context.FileIndex.Where(
+                                _context.FileIndex.AsNoTracking().Where(
                                     p => p.Tags.ToLower().Contains(itemSearchFor)
                                 ).ToHashSet()    
                             );
