@@ -70,8 +70,12 @@ namespace starsky.Services
         {
             if (geoList == null) geoList = new List<GeoListItem>();
 
+            
             XmlDocument gpxDoc = new XmlDocument();
-            gpxDoc.Load(fullFilePath);
+            
+            // Some files are having problems with gpxDoc.Load()
+            var fileString = new PlainTextFileHelper().ReadFile(fullFilePath);
+            gpxDoc.LoadXml(fileString);
             
             XmlNamespaceManager namespaceManager = new XmlNamespaceManager(gpxDoc.NameTable);
             namespaceManager.AddNamespace("x", "http://www.topografix.com/GPX/1/1");
