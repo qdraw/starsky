@@ -38,6 +38,9 @@ namespace starsky.Services
         [ExcludeFromCoverage]
         public IEnumerable<string> SyncFiles(string subPath)
         {
+            // Prefix / for database
+            subPath = ConfigRead.PrefixDbSlash(subPath);
+            
             // Handle single files
             if (Deleted(subPath)) return null;
             
