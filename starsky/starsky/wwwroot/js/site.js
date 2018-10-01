@@ -1,17 +1,23 @@
 ﻿// Write your JavaScript code.
 
+function setNext() {
+    if (document.querySelectorAll(".nextprev .next").length >= 1) next = document.querySelector(".nextprev .next").href;
+}
 
-
+function setPrev() {
+    if (document.querySelectorAll(".nextprev .prev").length >= 1) prev = document.querySelector(".nextprev .prev").href;
+}
 if (document.querySelectorAll(".nextprev").length >= 1) {
     var next = null;
     var prev = null;
-    if (document.querySelectorAll(".nextprev .next").length >= 1) next = document.querySelector(".nextprev .next").href;
-    if (document.querySelectorAll(".nextprev .prev").length >= 1) prev = document.querySelector(".nextprev .prev").href;
+    setPrev();
+    setNext();
 
     window.onkeydown = function(e) {
         switch (e.keyCode) {
             case 37:
                 // left
+                setPrev();
                 if (prev != null && document.activeElement.className.indexOf("form-control") === -1) {
                     window.location.href = prev;
                 }
@@ -21,6 +27,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 break;
             case 39:
                 // right
+                setNext();
                 if (next != null && document.activeElement.className.indexOf("form-control") === -1) {
                     window.location.href = next;
                 }
@@ -60,12 +67,14 @@ function handleTouchMove(evt) {
         if (Math.abs(xDiff) > Math.abs(yDiff)) {/*most significant*/
             if (xDiff > 0) {/* left swipe */
                 console.log('left!');
+                setNext();
                 if (next != null && document.activeElement.className.indexOf("form-control") === -1) {
                     window.location.href = next;
                 }
                 
             } else {/* right swipe */
                 console.log('right!');
+                setNext();
                 if (prev != null && document.activeElement.className.indexOf("form-control") === -1) {
                     window.location.href = prev;
                 }
