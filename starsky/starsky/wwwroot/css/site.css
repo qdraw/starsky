@@ -249,7 +249,7 @@ body {
 }
 @media screen and (min-width: 200px) and (max-width: 600px) {
     .head .form-inline .form-control {
-        width: 75vw;
+        width: calc(100vw - 100px);
     }
     .collapsed .head {
         width: 100%;
@@ -863,15 +863,13 @@ h2 {
     padding-top: 10px;
 }
 @media screen and (max-width: 390px) {
-    .form-nav {
-        width: 98%!important;
-    }
+
     .form-nav,
     .form-nav input {
-        display: inline-block!important;
+        display: inline-block !important;
     }
-}
 
+}
 .show {
     display: block !important;
 }
