@@ -497,7 +497,7 @@ h2 {
 .collapsed .wrapper .halfitem .filter {
     width: calc(47vw - 150px);
 }
-@media screen and (max-height: 550px) and (max-width: 600px) {
+@media screen and (max-width: 600px) {
     .collapsed .wrapper .halfitem .filter,
     .wrapper .halfitem .filter {
         width: 85vw;
