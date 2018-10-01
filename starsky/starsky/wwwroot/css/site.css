@@ -864,7 +864,7 @@ h2 {
 }
 @media screen and (max-width: 390px) {
     .form-nav {
-        width: 100%!important;
+        width: 99%!important;
     }
     .form-nav,
     .form-nav input {
