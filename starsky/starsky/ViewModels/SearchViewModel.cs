@@ -13,7 +13,7 @@ namespace starsky.ViewModels
             if (FileIndexItems == null) FileIndexItems = new HashSet<FileIndexItem>(); 
         }
 
-        public HashSet<FileIndexItem> FileIndexItems { get; set; }
+        public IEnumerable<FileIndexItem> FileIndexItems { get; set; }
         public List<string> Breadcrumb { get; set; }
         public string SearchQuery { get; set; }
         public int PageNumber { get; set; }
@@ -30,7 +30,8 @@ namespace starsky.ViewModels
             parentdirectory = 2,
             tags = 3,
             description = 4,
-            title = 5
+            title = 5,
+            datetime = 6
         }
 
         
@@ -63,6 +64,20 @@ namespace starsky.ViewModels
         {
             if (_searchFor == null) _searchFor = new List<string>();
             _searchFor.Add(value.Trim());
+        }
+        
+        
+        // Options
+        private List<string> _searchForOptions;
+        public List<string> SearchForOptions
+        {  
+            get { return _searchForOptions; }
+        }
+
+        public void SetAddSearchForOptions(string value)
+        {
+            if (_searchForOptions == null) _searchForOptions = new List<string>();
+            _searchForOptions.Add(value.Trim()[0].ToString());
         }
 
         private double _elapsedSeconds;

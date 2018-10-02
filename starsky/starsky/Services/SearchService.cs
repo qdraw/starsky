@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
@@ -42,9 +43,15 @@ namespace starsky.Services
             model.SearchQuery = QueryShortcuts(model.SearchQuery);
             model = MatchSearch(model);
 
-            WideSearch(model);
+            WideSearch(_context.FileIndex.AsNoTracking(),model);
             NarrowSearch(model);
 
+            // Remove duplicates from list
+            model.FileIndexItems = model.FileIndexItems.GroupBy(s => s.FilePath)
+                .Select(grp => grp.FirstOrDefault())
+                .OrderBy(s => s.FilePath)
+                .ToList();
+            
             model.SearchCount = model.FileIndexItems.Count();
 
             model.FileIndexItems = model.FileIndexItems
@@ -58,7 +65,7 @@ namespace starsky.Services
             return model;
         }
 
-        private void WideSearch(HashSet<FileIndexItem> sourceHashSet, SearchViewModel model)
+        private void WideSearch(IEnumerable<FileIndexItem> sourceList, SearchViewModel model)
         {
             // .AsNoTracking() => never change data to update
             for (var i = 0; i < model.SearchIn.Count; i++)
@@ -72,38 +79,71 @@ namespace starsky.Services
                 {
                     case SearchViewModel.SearchInTypes.description:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            sourceHashSet.Where(
-                                p => p.FilePath.ToLower().Contains(model.SearchFor[i])
+                            sourceList.Where(
+                                p => p.Description.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()
-                        ).ToHashSet();
+                        );
                         break;
                     case SearchViewModel.SearchInTypes.filename:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            sourceHashSet.Where(
+                            sourceList.Where(
                                 p => p.FileName.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()
-                        ).ToHashSet();
+                        );
                         break;
                     case SearchViewModel.SearchInTypes.filepath:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            sourceHashSet.Where(
+                            sourceList.Where(
                                 p => p.FilePath.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()
-                        ).ToHashSet();
+                        );
                         break;
                     case SearchViewModel.SearchInTypes.parentdirectory:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            sourceHashSet.Where(
+                            sourceList.Where(
                                 p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()
-                        ).ToHashSet();
+                        );
                         break;
                     case SearchViewModel.SearchInTypes.title:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            sourceHashSet.Where(
+                            sourceList.Where(
                                 p => p.Title.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()
-                        ).ToHashSet();
+                        );
+                        break;
+                    
+                    case SearchViewModel.SearchInTypes.datetime:
+
+                        DateTime.TryParse(model.SearchFor[i], out var dateTime);
+                        if(dateTime.Year < 2) dateTime = DateTime.Now;
+                        model.SearchFor[i] = dateTime.ToString(CultureInfo.InvariantCulture);
+                        
+                        switch (model.SearchForOptions[i])
+                        {
+                            case "<":
+                                model.FileIndexItems = model.FileIndexItems.Concat(
+                                    sourceList.Where(
+                                        p => p.DateTime <= dateTime
+                                    ).ToHashSet()
+                                );
+                                break;
+                            case ">":
+                                model.FileIndexItems = model.FileIndexItems.Concat(
+                                    sourceList.Where(
+                                        p => p.DateTime >= dateTime
+                                    ).ToHashSet()
+                                );
+                                break;
+                            default:
+                                model.FileIndexItems = model.FileIndexItems.Concat(
+                                    sourceList.Where(
+                                        p => p.DateTime == dateTime
+                                    ).ToHashSet()
+                                );
+                                break;
+                        }
+
                         break;
                     default:
                         var splitSearchFor = Split(model.SearchFor[i]);
@@ -111,10 +151,10 @@ namespace starsky.Services
                         foreach (var itemSearchFor in splitSearchFor)
                         {
                             model.FileIndexItems = model.FileIndexItems.Concat(
-                                sourceHashSet.Where(
+                                sourceList.Where(
                                     p => p.Tags.ToLower().Contains(itemSearchFor)
                                 ).ToHashSet()
-                            ).ToHashSet();
+                            );
                         }
                     break;
                 }
@@ -204,17 +244,28 @@ namespace starsky.Services
         private void SearchItemName(SearchViewModel model, string itemName)
         {
             // Without double escapes:
-            // (:|=|;)(([\w\!\~\-_\.\/]+)|(\"|').+(\"|'))
+            // (:|=|;|>|<)(([\w\!\~\-_\.\/:]+)|(\"|').+(\"|'))
             Regex inurlRegex = new Regex(
                 "-" + itemName +
-                "(:|=|;)(([\\w\\!\\~\\-_\\.\\/]+)|(\"|').+(\"|'))",
+                "(:|=|;|>|<)(([\\w\\!\\~\\-_\\.\\/:]+)|(\"|').+(\"|'))",
                 RegexOptions.IgnoreCase);
             _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
             if (inurlRegex.Match(model.SearchQuery).Success)
             {
                 var item = inurlRegex.Match(model.SearchQuery).Value;
-                Regex rgx = new Regex("-"+ itemName +"(:|=|;)", RegexOptions.IgnoreCase);
+                Regex rgx = new Regex("-"+ itemName +"(:|=|;|>|<)", RegexOptions.IgnoreCase);
+
+                // To Search Type
+                var itemNameSearch = rgx.Match(item).Value;
+                if (!itemNameSearch.Any()) return;
+
+                // replace
                 item = rgx.Replace(item, string.Empty);
+                
+
+                var searchForOption = itemNameSearch[itemNameSearch.Length - 1].ToString();
+                model.SetAddSearchForOptions(searchForOption);                    
+                
                 // Remove parenthesis
                 item = item.Replace("\"", string.Empty);
                 item = item.Replace("'", string.Empty);

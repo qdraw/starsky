@@ -236,7 +236,8 @@ namespace starsky.Models
 
             foreach (var propertyInfo in new FileIndexItem().GetType().GetProperties())
             {
-                if (propertyInfo.PropertyType == typeof(string) && propertyInfo.CanRead)
+                if (propertyInfo.PropertyType == typeof(string) || 
+                    propertyInfo.PropertyType == typeof(DateTime) && propertyInfo.CanRead)
                 {
                     fileIndexPropList.Add(propertyInfo.Name);
                 }
