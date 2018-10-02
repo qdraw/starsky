@@ -204,16 +204,16 @@ namespace starsky.Services
         private void SearchItemName(SearchViewModel model, string itemName)
         {
             // Without double escapes:
-            // (:|=|;|>|<|<=|>=)(([\w\!\~\-_\.\/]+)|(\"|').+(\"|'))
+            // (:|=|;)(([\w\!\~\-_\.\/]+)|(\"|').+(\"|'))
             Regex inurlRegex = new Regex(
                 "-" + itemName +
-                "(:|=|;|>|<|<=|>=)(([\\w\\!\\~\\-_\\.\\/]+)|(\"|').+(\"|'))", 
+                "(:|=|;)(([\\w\\!\\~\\-_\\.\\/]+)|(\"|').+(\"|'))", 
                 RegexOptions.IgnoreCase);
             _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
             if (inurlRegex.Match(model.SearchQuery).Success)
             {
                 var item = inurlRegex.Match(model.SearchQuery).Value;
-                Regex rgx = new Regex("-"+ itemName +"(:|=|;|>|<|<=|>=)", RegexOptions.IgnoreCase);
+                Regex rgx = new Regex("-"+ itemName +"(:|=|;)", RegexOptions.IgnoreCase);
                 item = rgx.Replace(item, string.Empty);
                 // Remove parenthesis
                 item = item.Replace("\"", string.Empty);
