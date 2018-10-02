@@ -49,7 +49,7 @@ namespace starsky.Services
             model.FileIndexItems = model.FileIndexItems
                 .OrderByDescending(p => p.DateTime)
                 .Skip( pageNumber * NumberOfResultsInView )
-                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView ).ToList(); 
+                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView ).ToHashSet(); 
 
             model.LastPageNumber = GetLastPageNumber(model.SearchCount);
             
@@ -57,7 +57,7 @@ namespace starsky.Services
             return model;
         }
 
-        private void WideSearch(SearchViewModel model)
+        private void WideSearch(HashSet<FileIndexItem> sourceHashSet, SearchViewModel model)
         {
             for (var i = 0; i < model.SearchIn.Count; i++)
             {
@@ -70,38 +70,38 @@ namespace starsky.Services
                 {
                     case SearchViewModel.SearchInTypes.description:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            _context.FileIndex.Where(
+                            sourceHashSet.Where(
                                 p => p.FilePath.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()    
-                        );
+                        ).ToHashSet();
                         break;
                     case SearchViewModel.SearchInTypes.filename:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            _context.FileIndex.Where(
+                            sourceHashSet.Where(
                                 p => p.FileName.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()    
-                        );
+                        ).ToHashSet();
                         break;
                     case SearchViewModel.SearchInTypes.filepath:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            _context.FileIndex.Where(
+                            sourceHashSet.Where(
                                 p => p.FilePath.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()   
-                        );
+                        ).ToHashSet();
                         break;
                     case SearchViewModel.SearchInTypes.parentdirectory:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            _context.FileIndex.Where(
+                            sourceHashSet.Where(
                                 p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()    
-                        );
+                        ).ToHashSet();
                         break;   
                     case SearchViewModel.SearchInTypes.title:
                         model.FileIndexItems = model.FileIndexItems.Concat(
-                            _context.FileIndex.Where(
+                            sourceHashSet.Where(
                                 p => p.Title.ToLower().Contains(model.SearchFor[i])
                             ).ToHashSet()   
-                        );
+                        ).ToHashSet();
                         break;  
                     default:
                         var splitSearchFor = Split(model.SearchFor[i]);
@@ -109,10 +109,10 @@ namespace starsky.Services
                         foreach (var itemSearchFor in splitSearchFor)
                         {
                             model.FileIndexItems = model.FileIndexItems.Concat(
-                                _context.FileIndex.Where(
+                                sourceHashSet.Where(
                                     p => p.Tags.ToLower().Contains(itemSearchFor)
                                 ).ToHashSet()    
-                            );
+                            ).ToHashSet();
                         }
                     break;   
                 }

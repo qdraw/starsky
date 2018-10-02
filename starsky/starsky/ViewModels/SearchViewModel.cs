@@ -10,10 +10,10 @@ namespace starsky.ViewModels
         public SearchViewModel()
         {
             if (_searchIn == null) _searchIn = new List<string>(); 
-            if (FileIndexItems == null) FileIndexItems = new List<FileIndexItem>(); 
+            if (FileIndexItems == null) FileIndexItems = new HashSet<FileIndexItem>(); 
         }
 
-        public IEnumerable<FileIndexItem> FileIndexItems { get; set; }
+        public HashSet<FileIndexItem> FileIndexItems { get; set; }
         public List<string> Breadcrumb { get; set; }
         public string SearchQuery { get; set; }
         public int PageNumber { get; set; }
