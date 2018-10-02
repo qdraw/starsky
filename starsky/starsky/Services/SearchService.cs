@@ -212,6 +212,39 @@ namespace starsky.Services
                             p => p.Title.ToLower().Contains(model.SearchFor[i].ToLower())
                         ).ToHashSet();
                         break;
+                    
+                    case SearchViewModel.SearchInTypes.datetime:
+
+                        DateTime.TryParse(model.SearchFor[i], out var dateTime);
+                        if(dateTime.Year < 2) dateTime = DateTime.Now;
+                        model.SearchFor[i] = dateTime.ToString(CultureInfo.InvariantCulture);
+                        
+                        switch (model.SearchForOptions[i])
+                        {
+                            case "<":
+                                model.FileIndexItems = model.FileIndexItems.Concat(
+                                    model.FileIndexItems.Where(
+                                        p => p.DateTime <= dateTime
+                                    ).ToHashSet()
+                                );
+                                break;
+                            case ">":
+                                model.FileIndexItems = model.FileIndexItems.Concat(
+                                    model.FileIndexItems.Where(
+                                        p => p.DateTime >= dateTime
+                                    ).ToHashSet()
+                                );
+                                break;
+                            default:
+                                model.FileIndexItems = model.FileIndexItems.Concat(
+                                    model.FileIndexItems.Where(
+                                        p => p.DateTime == dateTime
+                                    ).ToHashSet()
+                                );
+                                break;
+                        }
+
+                        break;
                 }
             }
         }
@@ -313,7 +346,6 @@ namespace starsky.Services
         {
             return toRound - toRound % 10;
         }
-
 
     }
 }
