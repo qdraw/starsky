@@ -29,9 +29,11 @@ namespace starsky.Services
             _appSettings = appSettings;
         }
 
-        public SearchViewModel Search(string query = "", int pageNumber = 0)
+        public SearchViewModel Search(string query = "", int pageNumber = 0, bool enableCache = true)
         {
-            if( _cache == null || _appSettings?.AddMemoryCache == false) return SkipSearchItems(SearchDirect(query),pageNumber);
+            if(enableCache == false || 
+               _cache == null || _appSettings?.AddMemoryCache == false) 
+                return SkipSearchItems(SearchDirect(query),pageNumber);
 
             // Return values from IMemoryCache
             var queryCacheName = "search-" + query;

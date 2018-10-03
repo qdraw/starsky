@@ -36,7 +36,7 @@ namespace starsky.Controllers
         [HttpGet]
         public IActionResult Trash(int p = 0, bool json = false)
         {
-            var model = _search.Search("!delete!", p);
+            var model = _search.Search("!delete!", p, false);
             if (json) return Json(model);
             return View("Trash", model);
         }
