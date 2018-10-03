@@ -157,9 +157,8 @@ namespace starsky.Services
                     
                     case SearchViewModel.SearchInTypes.addtodatabase:
 
-                        DateTime.TryParse(model.SearchFor[i], out var addtodatabase);
-                        if(addtodatabase.Year < 2) addtodatabase = DateTime.Now;
-                        model.SearchFor[i] = addtodatabase.ToString(CultureInfo.InvariantCulture);
+                        var addtodatabase = parseDateTime(model.SearchFor[i]);
+                        model.SearchFor[i] = addtodatabase.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
                         
                         switch (model.SearchForOptions[i])
                         {
@@ -184,10 +183,9 @@ namespace starsky.Services
                     
                     case SearchViewModel.SearchInTypes.datetime:
 
-                        DateTime.TryParse(model.SearchFor[i], out var dateTime);
-                        if(dateTime.Year < 2) dateTime = DateTime.Now;
-                        model.SearchFor[i] = dateTime.ToString(CultureInfo.InvariantCulture);
-                        
+                        var dateTime = parseDateTime(model.SearchFor[i]);
+                        model.SearchFor[i] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
+
                         switch (model.SearchForOptions[i])
                         {
                             case "<":
@@ -276,10 +274,9 @@ namespace starsky.Services
                     
                     case SearchViewModel.SearchInTypes.addtodatabase:
 
-                        DateTime.TryParse(model.SearchFor[i], out var addtodatabase);
-                        if(addtodatabase.Year < 2) addtodatabase = DateTime.Now;
-                        model.SearchFor[i] = addtodatabase.ToString(CultureInfo.InvariantCulture);
-                        
+                        var addtodatabase = parseDateTime(model.SearchFor[i]);
+                        model.SearchFor[i] = addtodatabase.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
+
                         switch (model.SearchForOptions[i])
                         {
                             case "<":
@@ -303,9 +300,8 @@ namespace starsky.Services
                     
                     case SearchViewModel.SearchInTypes.datetime:
 
-                        DateTime.TryParse(model.SearchFor[i], out var dateTime);
-                        if(dateTime.Year < 2) dateTime = DateTime.Now;
-                        model.SearchFor[i] = dateTime.ToString(CultureInfo.InvariantCulture);
+                        var dateTime = parseDateTime(model.SearchFor[i]);
+                        model.SearchFor[i] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
                         
                         switch (model.SearchForOptions[i])
                         {
@@ -336,6 +332,30 @@ namespace starsky.Services
             return input.ToLower().Split(" ").ToList();
         }
 
+        private DateTime parseDateTime(string input)
+        {
+            var patternLab = new List<string>
+            {
+                "yyyy-MM-dd\\THH:mm:ss",
+                "yyyy-MM-dd HH:mm:ss",
+                "yyyy-MM-dd-HH:mm:ss",
+                "yyyy-MM-dd", 
+                "dd-MM-yyyy", 
+                "dd-MM-yyyy HH:mm:ss",
+                "dd-MM-yyyy\\THH:mm:ss",
+                "MM/dd/yyyy HH:mm:ss", // < used by the next string rule 01/30/2018 00:00:00
+            };
+            DateTime dateTime = DateTime.MinValue;
+            foreach (var pattern in patternLab)
+            {
+                DateTime.TryParseExact(input, 
+                    pattern, 
+                    CultureInfo.InvariantCulture, 
+                    DateTimeStyles.None, out dateTime);
+                if(dateTime.Year > 2) return dateTime;
+            }
+            return dateTime.Year > 2 ? dateTime : DateTime.Now;
+        }
 
 
         private string _defaultQuery = string.Empty;
