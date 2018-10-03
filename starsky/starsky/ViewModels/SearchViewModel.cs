@@ -92,5 +92,11 @@ namespace starsky.ViewModels
                 _elapsedSeconds = value - value % 0.001;
             }
         }
+        
+        public SearchViewModel Clone()
+        {
+            return (SearchViewModel) MemberwiseClone();
+        }
+        
     }
 }

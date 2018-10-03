@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.Data;
 using starsky.Interfaces;
 using starsky.Models;
@@ -15,13 +16,65 @@ namespace starsky.Services
     public class SearchService : ISearch
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMemoryCache _cache;
+        private readonly AppSettings _appSettings;
 
-        public SearchService(ApplicationDbContext context)
+        public SearchService(
+            ApplicationDbContext context, 
+            IMemoryCache memoryCache = null,
+            AppSettings appSettings = null)
         {
             _context = context;
+            _cache = memoryCache;
+            _appSettings = appSettings;
         }
 
         public SearchViewModel Search(string query = "", int pageNumber = 0)
+        {
+            if( _cache == null || _appSettings?.AddMemoryCache == false) return SkipSearchItems(SearchDirect(query),pageNumber);
+
+            // Return values from IMemoryCache
+            var queryCacheName = "search-" + query;
+            
+            // Return Cached object if it exist
+            if (_cache.TryGetValue(queryCacheName, out var objectSearchModel))
+                return SkipSearchItems(objectSearchModel, pageNumber);
+            
+            // Try to catch a new object
+            objectSearchModel = SearchDirect(query);
+            _cache.Set(queryCacheName, objectSearchModel, new TimeSpan(0,10,0));
+            return SkipSearchItems(objectSearchModel, pageNumber);
+        }
+
+        /// <summary>
+        /// Skip un-needed items
+        /// </summary>
+        /// <param name="objectSearchModel"></param>
+        /// <param name="pageNumber"></param>
+        /// <returns></returns>
+        private SearchViewModel SkipSearchItems(object objectSearchModel, int pageNumber)
+        {
+            var searchModel = objectSearchModel as SearchViewModel;            
+            
+            // Clone the item to avoid removeing items from cache
+            searchModel = searchModel.Clone();
+            
+            searchModel.PageNumber = pageNumber;
+            searchModel.FileIndexItems = 
+                searchModel.FileIndexItems.Skip( pageNumber * NumberOfResultsInView )
+                .SkipLast(searchModel.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView )
+                    .ToHashSet().ToList();
+           
+            return searchModel;
+        }
+
+        /// <summary>
+        /// Return all results
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="pageNumber"></param>
+        /// <returns></returns>
+        private SearchViewModel SearchDirect(string query = "")
         {
 
             var stopWatch = Stopwatch.StartNew();
@@ -29,7 +82,6 @@ namespace starsky.Services
             // Create an view model
             var model = new SearchViewModel
             {
-                PageNumber = pageNumber,
                 SearchQuery = query ?? string.Empty,
                 Breadcrumb = new List<string> {"/", query ?? string.Empty  }
                 // Null check will safe you from error 500 with Empty request
@@ -55,9 +107,7 @@ namespace starsky.Services
             model.SearchCount = model.FileIndexItems.Count();
 
             model.FileIndexItems = model.FileIndexItems
-                .OrderByDescending(p => p.DateTime)
-                .Skip( pageNumber * NumberOfResultsInView )
-                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView ).ToHashSet().ToList();
+                .OrderByDescending(p => p.DateTime).ToList();
 
             model.LastPageNumber = GetLastPageNumber(model.SearchCount);
 
