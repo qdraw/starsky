@@ -90,6 +90,7 @@ namespace starskytests
             {
                 for (var i = 0; i < 61; i++)
                 {
+                    // 61 > used for three pages
                     _query.AddItem(new FileIndexItem
                     {
                         FileName = "cityloop" + i + ".jpg",
@@ -100,6 +101,7 @@ namespace starskytests
                         DateTime = new DateTime(2018,1,1,1,1,1)
                     });
                 }
+                
             }
 
         }
