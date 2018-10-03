@@ -280,6 +280,12 @@ _Defined in the class `ExifToolCmdHelper`_
 - Description
 - Title
 - ColorClass
+- Latitude (in decimal degrees)
+- Longitude (in decimal degrees)
+- LocationAltitude (in meters)
+- LocationCity
+- LocationState
+- LocationCountry
 - `rotateClock` is using `-1` or `1` to rotate the image
     -   `-1` is rotate image 270 degrees
     -   `1` is rotate image 90 degrees
@@ -379,9 +385,15 @@ _Defined in the class `ExifToolCmdHelper`_
     - `NotFoundSourceMissing` The source file is missing and the request failed
     - `ReadOnly` not allowed to overwrite this file and the request failed
 
+
 ## File Delete
 To permanent delete a file from the file system and the database.
-The tag: `!delete!` is used to mark a file that is in the Trash. This is not required by this api.
+The tag: `!delete!` is used to mark a file that is in the Trash. This is required by this api.
+
+### Notes
+- The querystring name `f` is used for the file path in releative/subpath style
+- The querystring support `;` file sepeartion for selecting multiple files
+- the query !delete! is required by the api
 
 ```json
 {
@@ -646,6 +658,9 @@ The POST-request is a redirect to a get query with the same searchquery and the 
   ],
   "searchFor": [
     "searchword"
+  ],
+  "searchForOptions": [
+    ":"
   ],
   "pageType": "Search",
   "elapsedSeconds": 0.003
