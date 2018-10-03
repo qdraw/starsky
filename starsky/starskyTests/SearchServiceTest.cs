@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,10 +65,11 @@ namespace starskytests
                 _query.AddItem(new FileIndexItem
                 {
                     FileName = "lelystadcentrum2.jpg",
-                    //FilePath = "/stations2/lelystadcentrum.jpg",
                     ParentDirectory = "/stations2",
                     FileHash = "lelystadcentrum2",
-                    Tags = "lelystadcentrum2"
+                    Tags = "lelystadcentrum2",
+                    DateTime = new DateTime(2016,1,1,1,1,1),
+                    AddToDatabase = new DateTime(2016,1,1,1,1,1)
                 });
             }
             
@@ -91,10 +93,11 @@ namespace starskytests
                     _query.AddItem(new FileIndexItem
                     {
                         FileName = "cityloop" + i + ".jpg",
-                        //FilePath = "/cities/cityloop" + i + ".jpg",
+                        // FilePath = "/cities/cityloop" + i + ".jpg",
                         ParentDirectory = "/cities",
                         FileHash = "cityloop" + i,
-                        Tags = "cityloop"
+                        Tags = "cityloop",
+                        DateTime = new DateTime(2018,1,1,1,1,1)
                     });
                 }
             }
@@ -221,9 +224,28 @@ namespace starskytests
             // todo: check the value of this one
             Assert.AreEqual(1, _search.Search("lelystad -ParentDirectory:/stations2").SearchCount);
         }
-
         
+        [TestMethod]
+        public void SearchService_SearchNarrow2FileNameTags()
+        {
+            InsertSearchData();
+            Assert.AreEqual(1, _search.Search("-ParentDirectory:/station -ParentDirectory:2").SearchCount);
+        }
 
+        [TestMethod]
+        public void SearchService_SearchDateTime()
+        {
+            InsertSearchData();
+            Assert.AreEqual(1, _search.Search("-DateTime>2015-01-01T01:01:01 -DateTime<2017-01-01T01:01:01").SearchCount);
+        }
+        
+        [TestMethod]
+        public void SearchService_Searchaddtodatabase()
+        {
+            InsertSearchData();
+            Assert.AreEqual(1, _search.Search("-addtodatabase>2015-01-01T01:01:01 -addtodatabase<2017-01-01T01:01:01").SearchCount);
+        }
+        
         [TestMethod]
         public void SearchService_SearchSetSearchInStringTypeTest()
         {

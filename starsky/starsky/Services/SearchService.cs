@@ -57,7 +57,7 @@ namespace starsky.Services
             model.FileIndexItems = model.FileIndexItems
                 .OrderByDescending(p => p.DateTime)
                 .Skip( pageNumber * NumberOfResultsInView )
-                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView ).ToHashSet();
+                .SkipLast( model.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView ).ToHashSet().ToList();
 
             model.LastPageNumber = GetLastPageNumber(model.SearchCount);
 
@@ -65,7 +65,7 @@ namespace starsky.Services
             return model;
         }
 
-        private void WideSearch(IEnumerable<FileIndexItem> sourceList, SearchViewModel model)
+        private void WideSearch(IQueryable<FileIndexItem> sourceList, SearchViewModel model)
         {
             // .AsNoTracking() => never change data to update
             for (var i = 0; i < model.SearchIn.Count; i++)
@@ -78,39 +78,56 @@ namespace starsky.Services
                 switch (searchInType)
                 {
                     case SearchViewModel.SearchInTypes.description:
-                        model.FileIndexItems = model.FileIndexItems.Concat(
-                            sourceList.Where(
-                                p => p.Description.ToLower().Contains(model.SearchFor[i])
-                            ).ToHashSet()
-                        );
+                        model.FileIndexItems.AddRange(sourceList.Where(
+                            p => p.Description.ToLower().Contains(model.SearchFor[i])
+                        ));
                         break;
                     case SearchViewModel.SearchInTypes.filename:
-                        model.FileIndexItems = model.FileIndexItems.Concat(
-                            sourceList.Where(
-                                p => p.FileName.ToLower().Contains(model.SearchFor[i])
-                            ).ToHashSet()
-                        );
+                        model.FileIndexItems.AddRange(sourceList.Where(
+                            p => p.FileName.ToLower().Contains(model.SearchFor[i])
+                        ));
                         break;
                     case SearchViewModel.SearchInTypes.filepath:
-                        model.FileIndexItems = model.FileIndexItems.Concat(
-                            sourceList.Where(
-                                p => p.FilePath.ToLower().Contains(model.SearchFor[i])
-                            ).ToHashSet()
-                        );
+                        model.FileIndexItems.AddRange(sourceList.Where(
+                            p => p.FilePath.ToLower().Contains(model.SearchFor[i])
+                        ));
                         break;
                     case SearchViewModel.SearchInTypes.parentdirectory:
-                        model.FileIndexItems = model.FileIndexItems.Concat(
-                            sourceList.Where(
-                                p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i])
-                            ).ToHashSet()
-                        );
+                        model.FileIndexItems.AddRange(sourceList.Where(
+                            p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i])
+                        ));
                         break;
                     case SearchViewModel.SearchInTypes.title:
-                        model.FileIndexItems = model.FileIndexItems.Concat(
-                            sourceList.Where(
-                                p => p.Title.ToLower().Contains(model.SearchFor[i])
-                            ).ToHashSet()
-                        );
+                        model.FileIndexItems.AddRange(sourceList.Where(
+                            p => p.Title.ToLower().Contains(model.SearchFor[i])
+                        ));
+                        break;
+                    
+                    case SearchViewModel.SearchInTypes.addtodatabase:
+
+                        DateTime.TryParse(model.SearchFor[i], out var addtodatabase);
+                        if(addtodatabase.Year < 2) addtodatabase = DateTime.Now;
+                        model.SearchFor[i] = addtodatabase.ToString(CultureInfo.InvariantCulture);
+                        
+                        switch (model.SearchForOptions[i])
+                        {
+                            case "<":
+                                model.FileIndexItems.AddRange(sourceList.Where(
+                                    p => p.AddToDatabase <= addtodatabase
+                                ));
+                                break;
+                            case ">":
+                                model.FileIndexItems.AddRange(sourceList.Where(
+                                    p => p.AddToDatabase >= addtodatabase
+                                ));
+                                break;
+                            default:
+                                model.FileIndexItems.AddRange(sourceList.Where(
+                                    p => p.AddToDatabase == addtodatabase
+                                ));
+                                break;
+                        }
+
                         break;
                     
                     case SearchViewModel.SearchInTypes.datetime:
@@ -122,25 +139,19 @@ namespace starsky.Services
                         switch (model.SearchForOptions[i])
                         {
                             case "<":
-                                model.FileIndexItems = model.FileIndexItems.Concat(
-                                    sourceList.Where(
-                                        p => p.DateTime <= dateTime
-                                    ).ToHashSet()
-                                );
+                                model.FileIndexItems.AddRange(sourceList.Where(
+                                    p => p.DateTime <= dateTime
+                                ));
                                 break;
                             case ">":
-                                model.FileIndexItems = model.FileIndexItems.Concat(
-                                    sourceList.Where(
-                                        p => p.DateTime >= dateTime
-                                    ).ToHashSet()
-                                );
+                                model.FileIndexItems.AddRange(sourceList.Where(
+                                    p => p.DateTime >= dateTime
+                                ));
                                 break;
                             default:
-                                model.FileIndexItems = model.FileIndexItems.Concat(
-                                    sourceList.Where(
-                                        p => p.DateTime == dateTime
-                                    ).ToHashSet()
-                                );
+                                model.FileIndexItems.AddRange(sourceList.Where(
+                                    p => p.DateTime == dateTime
+                                ));
                                 break;
                         }
 
@@ -150,11 +161,9 @@ namespace starsky.Services
 
                         foreach (var itemSearchFor in splitSearchFor)
                         {
-                            model.FileIndexItems = model.FileIndexItems.Concat(
-                                sourceList.Where(
-                                    p => p.Tags.ToLower().Contains(itemSearchFor)
-                                ).ToHashSet()
-                            );
+                            model.FileIndexItems.AddRange(sourceList.Where(
+                                p => p.Tags.ToLower().Contains(itemSearchFor)
+                            ));
                         }
                     break;
                 }
@@ -174,25 +183,25 @@ namespace starsky.Services
                     case SearchViewModel.SearchInTypes.description:
                         model.FileIndexItems = model.FileIndexItems.Where(
                             p => p.Description.ToLower().Contains(model.SearchFor[i].ToLower())
-                        ).ToHashSet();
+                        ).ToList();
                         break;
 
                     case SearchViewModel.SearchInTypes.filename:
                         model.FileIndexItems = model.FileIndexItems.Where(
                             p => p.FileName.ToLower().Contains(model.SearchFor[i].ToLower())
-                        ).ToHashSet();
+                        ).ToList();
                         break;
 
                     case SearchViewModel.SearchInTypes.filepath:
                         model.FileIndexItems = model.FileIndexItems.Where(
                             p => p.FilePath.ToLower().Contains(model.SearchFor[i].ToLower())
-                        ).ToHashSet();
+                        ).ToList();
                         break;
 
                     case SearchViewModel.SearchInTypes.parentdirectory:
                         model.FileIndexItems = model.FileIndexItems.Where(
                             p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i].ToLower())
-                        ).ToHashSet();
+                        ).ToList();
                         break;
 
                     case SearchViewModel.SearchInTypes.tags:
@@ -203,14 +212,41 @@ namespace starsky.Services
                         {
                             model.FileIndexItems = model.FileIndexItems.Where(
                                 p => p.Tags.ToLower().Contains(itemSearchFor)
-                            ).ToHashSet();
+                            ).ToList();
                         }
                         break;
 
                     case SearchViewModel.SearchInTypes.title:
                         model.FileIndexItems = model.FileIndexItems.Where(
                             p => p.Title.ToLower().Contains(model.SearchFor[i].ToLower())
-                        ).ToHashSet();
+                        ).ToList();
+                        break;
+                    
+                    case SearchViewModel.SearchInTypes.addtodatabase:
+
+                        DateTime.TryParse(model.SearchFor[i], out var addtodatabase);
+                        if(addtodatabase.Year < 2) addtodatabase = DateTime.Now;
+                        model.SearchFor[i] = addtodatabase.ToString(CultureInfo.InvariantCulture);
+                        
+                        switch (model.SearchForOptions[i])
+                        {
+                            case "<":
+                                model.FileIndexItems = model.FileIndexItems.Where(
+                                    p => p.AddToDatabase <= addtodatabase
+                                ).ToList();
+                                break;
+                            case ">":
+                                model.FileIndexItems = model.FileIndexItems.Where(
+                                    p => p.AddToDatabase >= addtodatabase
+                                ).ToList();
+                                break;
+                            default:
+                                model.FileIndexItems = model.FileIndexItems.Where(
+                                    p => p.AddToDatabase == addtodatabase
+                                ).ToList();
+                                break;
+                        }
+
                         break;
                     
                     case SearchViewModel.SearchInTypes.datetime:
@@ -222,25 +258,19 @@ namespace starsky.Services
                         switch (model.SearchForOptions[i])
                         {
                             case "<":
-                                model.FileIndexItems = model.FileIndexItems.Concat(
-                                    model.FileIndexItems.Where(
-                                        p => p.DateTime <= dateTime
-                                    ).ToHashSet()
-                                );
+                                model.FileIndexItems = model.FileIndexItems.Where(
+                                    p => p.DateTime <= dateTime
+                                ).ToList();
                                 break;
                             case ">":
-                                model.FileIndexItems = model.FileIndexItems.Concat(
-                                    model.FileIndexItems.Where(
-                                        p => p.DateTime >= dateTime
-                                    ).ToHashSet()
-                                );
+                                model.FileIndexItems = model.FileIndexItems.Where(
+                                    p => p.DateTime >= dateTime
+                                ).ToList();
                                 break;
                             default:
-                                model.FileIndexItems = model.FileIndexItems.Concat(
-                                    model.FileIndexItems.Where(
-                                        p => p.DateTime == dateTime
-                                    ).ToHashSet()
-                                );
+                                model.FileIndexItems = model.FileIndexItems.Where(
+                                    p => p.DateTime == dateTime
+                                ).ToList();
                                 break;
                         }
 
@@ -283,9 +313,13 @@ namespace starsky.Services
                 "(:|=|;|>|<)(([\\w\\!\\~\\-_\\.\\/:]+)|(\"|').+(\"|'))",
                 RegexOptions.IgnoreCase);
             _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
-            if (inurlRegex.Match(model.SearchQuery).Success)
+
+            var regexInUrlMatches = inurlRegex.Matches(model.SearchQuery);
+            if(!regexInUrlMatches.Any()) return;
+
+            foreach (Match regexInUrl in regexInUrlMatches)
             {
-                var item = inurlRegex.Match(model.SearchQuery).Value;
+                var item = regexInUrl.Value;
                 Regex rgx = new Regex("-"+ itemName +"(:|=|;|>|<)", RegexOptions.IgnoreCase);
 
                 // To Search Type
@@ -305,6 +339,7 @@ namespace starsky.Services
                 model.SetAddSearchFor(item.Trim());
                 model.SetAddSearchInStringType(itemName);
             }
+                
         }
 
         public string QuerySafe(string query)
