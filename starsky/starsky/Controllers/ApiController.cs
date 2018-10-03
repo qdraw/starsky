@@ -553,7 +553,20 @@ namespace starsky.Controllers
             if(!json) return RedirectToAction("Index", "Home", new { f = f });
             return BadRequest("ignored, please check if the 'f' path exist or use a folder string to clear the cache");
         }
-        
-        
+
+        [HttpGet]
+        [HttpPost]
+        public IActionResult Rename(string f, string to, bool json = false)
+        {
+            var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
+            var toFilePaths = ConfigRead.SplitInputFilePaths(to);
+
+            // Change this in the future
+            if (toFilePaths.Length != inputFilePaths.Length) return BadRequest("f != to");
+            
+            return Json("");
+        }
+
+
     }
 }
