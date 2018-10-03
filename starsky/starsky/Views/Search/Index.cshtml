@@ -33,13 +33,13 @@
             }
             if (name != "Home")
             {
-                var urlPath = @Url.Action("Index", "Home", new {f = @item});
+                var urlPath = @Url.Action("Index", "Search", new {f = @item});
                 urlPath = urlPath.Replace("%2F", "/");
                 <a href="@urlPath">@name</a>
             }
             else
             {
-                <a asp-controller="Search" asp-action="Index">@name</a>
+                <a asp-controller="Home" asp-action="Index">@name</a>
             }
             if (item != Model.Breadcrumb[Model.Breadcrumb.Count - 1])
             {
