@@ -556,14 +556,38 @@ namespace starsky.Controllers
 
         [HttpGet]
         [HttpPost]
-        public IActionResult Rename(string f, string to, bool json = false)
+        public IActionResult Rename(string f, string to, bool json = false, bool collections = true)
         {
             var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
             var toFilePaths = ConfigRead.SplitInputFilePaths(to);
-
+            
+            // the result list
+            var fileIndexResultsList = new List<FileIndexItem>();
+            
             // Change this in the future
             if (toFilePaths.Length != inputFilePaths.Length) return BadRequest("f != to");
             
+            foreach (var subPath in inputFilePaths)
+            {
+                var detailView = _query.SingleItem(subPath, null, collections, false);
+                var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+
+                var statusModel = new FileIndexItem();
+                statusModel.SetFilePath(subPath);
+                statusModel.IsDirectory = false;
+
+                if (new StatusCodesHelper(null)
+                    .ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+
+                var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
+                var collectionFullDeletePaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
+
+                // display the to delete items
+                for (int i = 0; i < collectionSubPathList.Count; i++)
+                {
+                }
+            }
+
             return Json("");
         }
 
