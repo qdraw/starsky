@@ -239,6 +239,8 @@ namespace starskytests
         {
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("-DateTime>2015-01-01T01:01:01 -DateTime<2017-01-01T01:01:01").SearchCount);
+            // lowercase is the same
+            Assert.AreEqual(1, _search.Search("-DateTime>2015-01-01t01:01:01 -DateTime<2017-01-01t01:01:01").SearchCount);
         }
         
         [TestMethod]

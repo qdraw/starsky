@@ -336,13 +336,13 @@ namespace starsky.Services
         {
             var patternLab = new List<string>
             {
-                "yyyy-MM-dd\\THH:mm:ss",
+                "yyyy-MM-dd\\tHH:mm:ss", // < lowercase :)
                 "yyyy-MM-dd HH:mm:ss",
                 "yyyy-MM-dd-HH:mm:ss",
                 "yyyy-MM-dd", 
                 "dd-MM-yyyy", 
                 "dd-MM-yyyy HH:mm:ss",
-                "dd-MM-yyyy\\THH:mm:ss",
+                "dd-MM-yyyy\\tHH:mm:ss",
                 "MM/dd/yyyy HH:mm:ss", // < used by the next string rule 01/30/2018 00:00:00
             };
             DateTime dateTime = DateTime.MinValue;
