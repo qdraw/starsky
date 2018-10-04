@@ -24,11 +24,12 @@ namespace starsky.Helpers
             var toFileSubPaths = ConfigRead.SplitInputFilePaths(to);
             
             // the result list
-            var fileIndexResultsList = new List<FileIndexItem>();
+            //var fileIndexResultsList = new List<FileIndexItem>();
             
             // To check if the file has a unique name (in database)
             for (var i = 0; i < toFileSubPaths.Length; i++)
             {
+                toFileSubPaths[i] = ConfigRead.RemoveLatestSlash(toFileSubPaths[i]);
                 var detailView = _query.SingleItem(toFileSubPaths[i], null, collections, false);
                 if (detailView != null) toFileSubPaths[i] = null;
             }
@@ -61,6 +62,8 @@ namespace starsky.Helpers
 
                     Directory.Move(inputFileFullPath,toFileFullPath);
                     // move also in the database
+
+                    var t = _query.GetAllRecursive(inputFileSubPath);
                 }
             }
         }

@@ -21,6 +21,7 @@
 1. Download exiftool
 2. Update the `appsettings.json` configuration before starting
 > Windows: use double escape \\\\ in config directory paths
+3. Use [DB Browser for SQLite](https://sqlitebrowser.org/) to debug a local SQLite database
 
 
 ### Install on Raspberry Pi (Raspbian/Linux ARM)
