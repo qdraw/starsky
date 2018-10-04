@@ -50,6 +50,7 @@ namespace starsky.Controllers
 
             if (!validateResult.Success)
             {
+                Response.StatusCode = 401;
                 ModelState.AddModelError("All", "Login Failed");
                 return View(model);
             } 
