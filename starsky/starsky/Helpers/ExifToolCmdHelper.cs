@@ -224,13 +224,14 @@ namespace starsky.Helpers
             return inputStringBuilder;
         }
 
-        public void CopyExifPublish(string fullSourceImage, string thumbPath)
+        public string CopyExifPublish(string fullSourceImage, string thumbPath)
         {
             // add space before command
             const string append = " -Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" " +
                                   "-HistorySoftwareAgent=\"Qdraw 1.0\" -HistoryParameters=\"Publish to Web\" " +
                                   "-PhotoshopQuality=\"\" -PMVersion=\"\" -Copyright=\"© Qdraw;Media www.qdraw.nl\"";
             CopyExif(fullSourceImage, thumbPath, append);
+            return append;
         }
 
         public void CopyExif(string fullSourceImage, string thumbPath, string append = "")

@@ -6,7 +6,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
 using starsky.Interfaces;
 using starsky.Models;
-using starskyGeoCli.Services;
 using starskytests.Models;
 
 namespace starskytests.Helpers
@@ -33,7 +32,7 @@ namespace starskytests.Helpers
         }
 
         [TestMethod]
-        public void GeoLocationWriteLoopFolderTest()
+        public void ExifToolCmdHelper_UpdateTest()
         {
             var updateModel = new FileIndexItem
             {
@@ -65,7 +64,10 @@ namespace starskytests.Helpers
                 nameof(FileIndexItem.DateTime),
             };
             
-            var inputFullFilePaths = new List<string>();
+            var inputFullFilePaths = new List<string>
+            {
+                "test.jpg"
+            };
 
             var helperResult = new ExifToolCmdHelper(_appSettings, _exiftool).Update(updateModel, inputFullFilePaths, comparedNames);
             
@@ -78,6 +80,40 @@ namespace starskytests.Helpers
             Assert.AreEqual(true,helperResult.Contains(updateModel.LocationState));
             Assert.AreEqual(true,helperResult.Contains(updateModel.LocationCountry));
             Assert.AreEqual(true,helperResult.Contains(updateModel.Title));
+        }
+
+        [TestMethod]
+        public void ExifToolCmdHelper_Update_UpdateLocationAltitudeCommandTest()
+        {
+            var updateModel = new FileIndexItem
+            {
+                LocationAltitude = -41,
+            };
+            var comparedNames = new List<string>{
+                nameof(FileIndexItem.LocationAltitude),
+            };
+            
+            var inputFullFilePaths = new List<string>();
+
+            var helperResult = new ExifToolCmdHelper(_appSettings, _exiftool).Update(updateModel, inputFullFilePaths, comparedNames);
+            
+            Assert.AreEqual(true,helperResult.Contains("-GPSAltitude=\"-41"));
+            Assert.AreEqual(true,helperResult.Contains("gpsaltituderef#=\"1"));
+
+        }
+
+        [TestMethod]
+        public void ExifToolCmdHelper_Quoted()
+        {
+            var helperResult = new ExifToolCmdHelper(_appSettings, _exiftool).Quoted(null, "test");
+            Assert.AreEqual("\"test\"",helperResult.ToString());
+        }
+
+        [TestMethod]
+        public void ExifToolCmdHelper_CopyExifPublish()
+        {
+            var helperResult = new ExifToolCmdHelper(_appSettings, _exiftool).CopyExifPublish("test", "test");
+            Assert.AreEqual(true,helperResult.Contains("HistorySoftwareAgent"));
         }
     }
 }
