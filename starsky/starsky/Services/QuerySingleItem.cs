@@ -17,7 +17,14 @@ namespace starsky.Services
         // input: Name of item by db style path
         // With Caching feature :)
 
-        // do the query for singleitem + return detailview object
+        /// <summary>
+        /// SingleItemPath do the query for singleitem + return detailview object
+        /// </summary>
+        /// <param name="singleItemDbPath"></param>
+        /// <param name="colorClassFilterList">list of colorclasses to show, default show all</param>
+        /// <param name="enableCollections">enable collections feature > default true</param>
+        /// <param name="hideDeleted">do not show deleted files > default true</param>
+        /// <returns>view object to show on the page</returns>
         public DetailView SingleItem(
             string singleItemDbPath,
             List<FileIndexItem.Color> colorClassFilterList = null,
@@ -37,7 +44,14 @@ namespace starsky.Services
                 hideDeleted);
         }
 
-        // Create an detailview object
+        /// <summary>
+        /// fileIndexItemsList, Create an detailview object
+        /// </summary>
+        /// <param name="fileIndexItemsList">list of fileindexitems</param>
+        /// <param name="colorClassFilterList">list of colorclasses to show, default show all</param>
+        /// <param name="enableCollections">enable collections feature > default true</param>
+        /// <param name="hideDeleted">do not show deleted files > default true</param>
+        /// <returns>view object to show on the page</returns>
         public DetailView SingleItem(
             List<FileIndexItem> fileIndexItemsList, 
             string singleItemDbPath,

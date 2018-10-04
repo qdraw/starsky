@@ -569,26 +569,32 @@ namespace starsky.Controllers
             
             foreach (var subPath in inputFilePaths)
             {
+                var statusModel = new FileIndexItem();
+
                 var detailView = _query.SingleItem(subPath, null, collections, false);
                 var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
 
-                var statusModel = new FileIndexItem();
+                var collectionSubPathList = new List<string> {subPath};
+                if (detailView?.IsDirectory != true)
+                {
+                    if (new StatusCodesHelper(null)
+                        .ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                    statusModel.IsDirectory = false;
+                    // for files
+                    collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
+                }
+
                 statusModel.SetFilePath(subPath);
-                statusModel.IsDirectory = false;
+                var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
 
-                if (new StatusCodesHelper(null)
-                    .ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
-
-                var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
-                var collectionFullDeletePaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
-
-                // display the to delete items
+                // display the items
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
+                    Console.WriteLine();
                 }
             }
 
-            return Json("");
+            return Json(fileIndexResultsList);
         }
 
 
