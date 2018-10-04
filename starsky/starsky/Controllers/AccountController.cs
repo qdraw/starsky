@@ -46,14 +46,19 @@ namespace starsky.Controllers
         public async Task<IActionResult> LoginPost(LoginViewModel model, string returnUrl = null)
         {
             ValidateResult validateResult = _userManager.Validate("Email", model.Email, model.Password);
+            ViewData["ReturnUrl"] = returnUrl;
 
-            if (!validateResult.Success) return View(model);
+            if (!validateResult.Success)
+            {
+                ModelState.AddModelError("All", "Login Failed");
+                return View(model);
+            } 
+            
             await _userManager.SignIn(HttpContext, validateResult.User,model.RememberMe);
             if (User.Identity.IsAuthenticated)
             {
                 return RedirectToLocal(returnUrl);
             }
-            ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 
