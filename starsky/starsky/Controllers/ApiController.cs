@@ -558,39 +558,47 @@ namespace starsky.Controllers
         [HttpPost]
         public IActionResult Rename(string f, string to, bool json = false, bool collections = true)
         {
-            var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
-            var toFilePaths = ConfigRead.SplitInputFilePaths(to);
+            var inputFileSubPaths = ConfigRead.SplitInputFilePaths(f);
+            var toFileSubPaths = ConfigRead.SplitInputFilePaths(to);
             
             // the result list
             var fileIndexResultsList = new List<FileIndexItem>();
             
-            // Change this in the future
-            if (toFilePaths.Length != inputFilePaths.Length) return BadRequest("f != to");
-            
-            foreach (var subPath in inputFilePaths)
+            // To check if the file has a unique name (in database)
+            for (var i = 0; i < toFileSubPaths.Length; i++)
             {
-                var statusModel = new FileIndexItem();
+                var detailView = _query.SingleItem(toFileSubPaths[i], null, collections, false);
+                if (detailView != null) toFileSubPaths[i] = null;
+            }
 
-                var detailView = _query.SingleItem(subPath, null, collections, false);
-                var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+            for (var i = 0; i < inputFileSubPaths.Length; i++)
+            {
+                var detailView = _query.SingleItem(inputFileSubPaths[i], null, collections, false);
+                if (detailView != null) inputFileSubPaths[i] = null;
+            }
 
-                var collectionSubPathList = new List<string> {subPath};
-                if (detailView?.IsDirectory != true)
+            // Remove null from list
+            toFileSubPaths = toFileSubPaths.Where(p => p != null).ToArray();
+            inputFileSubPaths = inputFileSubPaths.Where(p => p != null).ToArray();
+
+            // Check if two list are the same lenght - Change this in the future
+            if (toFileSubPaths.Length != inputFileSubPaths.Length) return BadRequest("f != to");
+
+            for (var i = 0; i < toFileSubPaths.Length; i++)
+            {
+                var inputFileSubPath = inputFileSubPaths[i];
+                var toFileSubPath = toFileSubPaths[i];
+
+                var detailView = _query.SingleItem(inputFileSubPath, null, collections, false);
+                // files that not exist
+                if(detailView == null) continue;
+                if (detailView.IsDirectory)
                 {
-                    if (new StatusCodesHelper(null)
-                        .ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
-                    statusModel.IsDirectory = false;
-                    // for files
-                    collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
-                }
+                    var toFileFullPath = _appSettings.DatabasePathToFilePath(toFileSubPath);
+                    var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputFileSubPath);
 
-                statusModel.SetFilePath(subPath);
-                var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
-
-                // display the items
-                for (int i = 0; i < collectionSubPathList.Count; i++)
-                {
-                    Console.WriteLine();
+                    Directory.Move(inputFileFullPath,toFileFullPath);
+                    // move also in the database
                 }
             }
 
