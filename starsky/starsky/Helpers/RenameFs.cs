@@ -20,13 +20,13 @@ namespace starsky.Helpers
             _appSettings = appSettings;
         }
 
-        public void Rename(string f, string to, bool collections = true)
+        public List<FileIndexItem> Rename(string f, string to, bool collections = true)
         {
 			var inputFileSubPaths = ConfigRead.SplitInputFilePaths(f);
 			var toFileSubPaths = ConfigRead.SplitInputFilePaths(to);
 			
 			// the result list
-			//var fileIndexResultsList = new List<FileIndexItem>();
+			var fileIndexResultsList = new List<FileIndexItem>();
 			
 			// To check if the file has a unique name (in database)
 			for (var i = 0; i < toFileSubPaths.Length; i++)
@@ -52,7 +52,7 @@ namespace starsky.Helpers
 			inputFileSubPaths = inputFileSubPaths.Where(p => p != null).ToArray();
 			
 			// Check if two list are the same lenght - Change this in the future BadRequest("f != to")
-			if (toFileSubPaths.Length != inputFileSubPaths.Length) return;
+			if (toFileSubPaths.Length != inputFileSubPaths.Length) return null;
 			
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{
@@ -61,39 +61,34 @@ namespace starsky.Helpers
 				
 				var detailView = _query.SingleItem(inputFileSubPath, null, collections, false);
 				// files that not exist
-				if(detailView == null) continue;
+				if(detailView == null) continue; // next
 				var toFileFullPath = _appSettings.DatabasePathToFilePath(toFileSubPath,false);
 				var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputFileSubPath);
 				
 				if(Files.IsFolderOrFile(toFileFullPath) 
 					!= FolderOrFileModel.FolderOrFileTypeList.Deleted 
 					|| Files.IsFolderOrFile(inputFileFullPath) 
-					!= FolderOrFileModel.FolderOrFileTypeList.Folder) continue;
+					!= FolderOrFileModel.FolderOrFileTypeList.Folder) continue; //next
 				
-				// Directory.Move(inputFileFullPath,toFileFullPath);
-
-				var sourceFileIndexItems = _query.GetAllRecursive(inputFileSubPath);
-				for ( int j = 0; j < sourceFileIndexItems.Count; j++ )
-				{
-					var fileIndexItem = sourceFileIndexItems[j];
-					var fileIndexItemParentDirectory =
-						Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
-					if ( fileIndexItem.ParentDirectory == inputFileSubPath )
-					{
-						fileIndexItem.ParentDirectory =
-							fileIndexItem.ParentDirectory.Replace(inputFileSubPath, toFileSubPath);
-					}
-					else if ( fileIndexItem.ParentDirectory == fileIndexItemParentDirectory)
-					{
-						Console.WriteLine();
-					}
-				}
-
+				Directory.Move(inputFileFullPath,toFileFullPath);
 				
-				var fileIndexItems1 = _query.GetAllRecursive(inputFileSubPath);
-
+				var fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
+				// Rename child items
+				fileIndexItems.ForEach(p => 
+					p.ParentDirectory = p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath)
+				);
 				
+				// Rename parent item >eg the folder
+				detailView.FileIndexItem.SetFilePath(toFileSubPath);
+				fileIndexItems.Add(detailView.FileIndexItem);
+
+				// To update the results
+				_query.UpdateItem(fileIndexItems);
+				
+				fileIndexResultsList.AddRange(fileIndexItems);
 			}
+
+	        return fileIndexResultsList;
         }
     }
 }

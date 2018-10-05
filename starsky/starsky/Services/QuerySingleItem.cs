@@ -73,7 +73,8 @@ namespace starsky.Services
             if(currentFileIndexItem.IsDirectory) return new DetailView
             {
                 IsDirectory = true,
-                SubPath = singleItemDbPath
+                SubPath = singleItemDbPath,
+	            FileIndexItem = currentFileIndexItem, // added
             };
 
             if (currentFileIndexItem.Tags.Contains("!delete!")) hideDeleted = false;
