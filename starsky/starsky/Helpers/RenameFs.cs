@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
@@ -29,14 +32,19 @@ namespace starsky.Helpers
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{
 				toFileSubPaths[i] = ConfigRead.RemoveLatestSlash(toFileSubPaths[i]);
+				toFileSubPaths[i] = ConfigRead.PrefixDbSlash(toFileSubPaths[i]);
+
 				var detailView = _query.SingleItem(toFileSubPaths[i], null, collections, false);
 				if (detailView != null) toFileSubPaths[i] = null;
 			}
 			
 			for (var i = 0; i < inputFileSubPaths.Length; i++)
 			{
+				inputFileSubPaths[i] = ConfigRead.RemoveLatestSlash(inputFileSubPaths[i]);
+				inputFileSubPaths[i] = ConfigRead.PrefixDbSlash(inputFileSubPaths[i]);
+
 				var detailView = _query.SingleItem(inputFileSubPaths[i], null, collections, false);
-				if (detailView != null) inputFileSubPaths[i] = null;
+				if (detailView == null) inputFileSubPaths[i] = null;
 			}
 			
 			// Remove null from list
@@ -54,16 +62,37 @@ namespace starsky.Helpers
 				var detailView = _query.SingleItem(inputFileSubPath, null, collections, false);
 				// files that not exist
 				if(detailView == null) continue;
-				if (detailView.IsDirectory)
+				var toFileFullPath = _appSettings.DatabasePathToFilePath(toFileSubPath,false);
+				var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputFileSubPath);
+				
+				if(Files.IsFolderOrFile(toFileFullPath) 
+					!= FolderOrFileModel.FolderOrFileTypeList.Deleted 
+					|| Files.IsFolderOrFile(inputFileFullPath) 
+					!= FolderOrFileModel.FolderOrFileTypeList.Folder) continue;
+				
+				// Directory.Move(inputFileFullPath,toFileFullPath);
+
+				var sourceFileIndexItems = _query.GetAllRecursive(inputFileSubPath);
+				for ( int j = 0; j < sourceFileIndexItems.Count; j++ )
 				{
-					var toFileFullPath = _appSettings.DatabasePathToFilePath(toFileSubPath);
-					var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputFileSubPath);
-					
-					Directory.Move(inputFileFullPath,toFileFullPath);
-					// move also in the database
-					
-					var t = _query.GetAllRecursive(inputFileSubPath);
+					var fileIndexItem = sourceFileIndexItems[j];
+					var fileIndexItemParentDirectory =
+						Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
+					if ( fileIndexItem.ParentDirectory == inputFileSubPath )
+					{
+						fileIndexItem.ParentDirectory =
+							fileIndexItem.ParentDirectory.Replace(inputFileSubPath, toFileSubPath);
+					}
+					else if ( fileIndexItem.ParentDirectory == fileIndexItemParentDirectory)
+					{
+						Console.WriteLine();
+					}
 				}
+
+				
+				var fileIndexItems1 = _query.GetAllRecursive(inputFileSubPath);
+
+				
 			}
         }
     }
