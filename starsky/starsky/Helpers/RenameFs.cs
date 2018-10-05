@@ -52,7 +52,15 @@ namespace starsky.Helpers
 			inputFileSubPaths = inputFileSubPaths.Where(p => p != null).ToArray();
 			
 			// Check if two list are the same lenght - Change this in the future BadRequest("f != to")
-			if (toFileSubPaths.Length != inputFileSubPaths.Length) return null;
+			if (toFileSubPaths.Length != inputFileSubPaths.Length || 
+			    toFileSubPaths.Length == 0 || inputFileSubPaths.Length == 0) { 
+				// files that not exist
+		        fileIndexResultsList.Add(new FileIndexItem
+		        {
+			        Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+		        });
+		        return fileIndexResultsList;
+	        };
 			
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{
@@ -60,32 +68,48 @@ namespace starsky.Helpers
 				var toFileSubPath = toFileSubPaths[i];
 				
 				var detailView = _query.SingleItem(inputFileSubPath, null, collections, false);
-				// files that not exist
-				if(detailView == null) continue; // next
+				
 				var toFileFullPath = _appSettings.DatabasePathToFilePath(toFileSubPath,false);
 				var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputFileSubPath);
+
+				if ( Files.IsFolderOrFile(toFileFullPath)
+				     != FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				{
+					fileIndexResultsList.Add(new FileIndexItem
+					{
+						Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+					});
+					continue; //next
+				} 
 				
-				if(Files.IsFolderOrFile(toFileFullPath) 
-					!= FolderOrFileModel.FolderOrFileTypeList.Deleted 
-					|| Files.IsFolderOrFile(inputFileFullPath) 
-					!= FolderOrFileModel.FolderOrFileTypeList.Folder) continue; //next
+				var fileIndexItems = new List<FileIndexItem>();
+				if (Files.IsFolderOrFile(inputFileFullPath) 
+					== FolderOrFileModel.FolderOrFileTypeList.Folder) {
+					//move
+					Directory.Move(inputFileFullPath,toFileFullPath);
+					
+					fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
+					// Rename child items
+					fileIndexItems.ForEach(p => 
+						p.ParentDirectory = p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath)
+					);
+
+				}
+				else // file>
+				{
+					File.Move(inputFileFullPath,toFileFullPath);
+					fileIndexItems.Add(detailView.FileIndexItem);
+				}
 				
-				Directory.Move(inputFileFullPath,toFileFullPath);
-				
-				var fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
-				// Rename child items
-				fileIndexItems.ForEach(p => 
-					p.ParentDirectory = p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath)
-				);
-				
-				// Rename parent item >eg the folder
+				// Rename parent item >eg the folder or file
 				detailView.FileIndexItem.SetFilePath(toFileSubPath);
 				fileIndexItems.Add(detailView.FileIndexItem);
-
+	
 				// To update the results
 				_query.UpdateItem(fileIndexItems);
-				
+					
 				fileIndexResultsList.AddRange(fileIndexItems);
+
 			}
 
 	        return fileIndexResultsList;

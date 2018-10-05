@@ -32,8 +32,8 @@ namespace starsky.Models
 
         public void SetFilePath(string value)
         {
-                _parentDirectory = Breadcrumbs.BreadcrumbHelper(value).LastOrDefault();
-                _fileName = value.Replace(Breadcrumbs.BreadcrumbHelper(value).LastOrDefault(),string.Empty);
+	        _parentDirectory = Breadcrumbs.BreadcrumbHelper(value).LastOrDefault();
+			_fileName = value.Replace(ConfigRead.AddSlash(_parentDirectory),string.Empty);
         }
         
         // Do not save null in database for FileName

@@ -557,9 +557,7 @@ namespace starsky.Controllers
 		[HttpPost]
 		public IActionResult Rename(string f, string to, bool collections = true)
 		{
-			new RenameFs(_appSettings,_query).Rename(f,to,collections);
-			
-			return Json("");
+			return Json(new RenameFs(_appSettings,_query).Rename(f,to,collections));
 		}
     }
 }
