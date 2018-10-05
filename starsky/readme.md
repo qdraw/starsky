@@ -59,7 +59,8 @@ http://localhost:64556/account/register
 ```
 
 ### Dev-dependencies:
-1. Use [DB Browser for SQLite](https://sqlitebrowser.org/) to view a local SQLite database
+1.  Editorconfig (http://editorconfig.org/)
+2.  Use [DB Browser for SQLite](https://sqlitebrowser.org/) to view a local SQLite database
 
 
 ### Build for Raspberry Pi (Raspbian/Linux ARM)

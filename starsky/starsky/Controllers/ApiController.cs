@@ -536,9 +536,9 @@ namespace starsky.Controllers
             //For folder paths only
             if (!_appSettings.AddMemoryCache)
             {
-                Response.StatusCode = 412;
-                if(!json) return RedirectToAction("Index", "Home", new { f = f });
-                return Json("cache disabled in config");
+				Response.StatusCode = 412;
+				if(!json) return RedirectToAction("Index", "Home", new { f = f });
+				return Json("cache disabled in config");
             }
 
             var singleItem = _query.SingleItem(f);
