@@ -96,6 +96,12 @@ namespace starskytests.Controllers
             // Test login
             Assert.AreEqual(false,httpContext.User.Identity.IsAuthenticated);
             
+            // Reset the model state, 
+            // to avoid errors on RegisterViewModel
+            // in a normal session the State is cleared after 1 request
+            controller.ModelState.Clear();
+
+            
             // Make new account; 
             var newAccount = new RegisterViewModel
             {

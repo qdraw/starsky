@@ -134,7 +134,7 @@ namespace starsky.Helpers
                 if (updateModel.LocationAltitude < 0)
                 {
                     gpsAltitudeRef = "1";
-                    gpsAltitude = "-" + updateModel.LocationAltitude * -1;
+                    gpsAltitude = "-" + (updateModel.LocationAltitude * -1).ToString(CultureInfo.InvariantCulture);
                 } 
                 command += " -GPSAltitude=\"" + gpsAltitude + "\" -gpsaltituderef#=\"" + gpsAltitudeRef + "\" ";
             }
@@ -143,10 +143,11 @@ namespace starsky.Helpers
 
         private string UpdateGPSLatitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
+            // CultureInfo.InvariantCulture is used for systems where comma is the default seperator
             if (comparedNames.Contains("Latitude"))
             {
-                command += " -GPSLatitude=\"" + updateModel.Latitude 
-                                                              + "\" -GPSLatitudeRef=\"" + updateModel.Latitude + "\" ";
+                command += " -GPSLatitude=\"" + updateModel.Latitude.ToString(CultureInfo.InvariantCulture) 
+                                                              + "\" -GPSLatitudeRef=\"" + updateModel.Latitude.ToString(CultureInfo.InvariantCulture) + "\" ";
             }
             return command;
         }
@@ -155,8 +156,8 @@ namespace starsky.Helpers
         {
             if (comparedNames.Contains("Longitude"))
             {
-                command += " -GPSLongitude=\"" + updateModel.Longitude 
-                                              + "\" -GPSLongitudeRef=\"" + updateModel.Longitude + "\" ";
+                command += " -GPSLongitude=\"" + updateModel.Longitude.ToString(CultureInfo.InvariantCulture) 
+                                              + "\" -GPSLongitudeRef=\"" + updateModel.Longitude.ToString(CultureInfo.InvariantCulture) + "\" ";
             }
             return command;
         }
@@ -223,13 +224,14 @@ namespace starsky.Helpers
             return inputStringBuilder;
         }
 
-        public void CopyExifPublish(string fullSourceImage, string thumbPath)
+        public string CopyExifPublish(string fullSourceImage, string thumbPath)
         {
             // add space before command
             const string append = " -Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" " +
                                   "-HistorySoftwareAgent=\"Qdraw 1.0\" -HistoryParameters=\"Publish to Web\" " +
                                   "-PhotoshopQuality=\"\" -PMVersion=\"\" -Copyright=\"© Qdraw;Media www.qdraw.nl\"";
             CopyExif(fullSourceImage, thumbPath, append);
+            return append;
         }
 
         public void CopyExif(string fullSourceImage, string thumbPath, string append = "")

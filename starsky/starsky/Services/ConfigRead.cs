@@ -96,6 +96,8 @@ namespace starsky.Services
         /// <returns>string array with sperated strings</returns>
         public static string[] SplitInputFilePaths(string f)
         {
+            if (string.IsNullOrEmpty(f)) return new List<string>().ToArray();
+            
             // input devided by dot comma and blank values are removed
             var inputFilePaths = f.Split(";");
             inputFilePaths = inputFilePaths.Where(x => !string.IsNullOrEmpty(x)).ToArray();

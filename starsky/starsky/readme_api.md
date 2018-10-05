@@ -25,7 +25,8 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 Endpoint `/starsky/?f=/&json=true`
 For browsing the folders. Please use  `"pageType": "Archive"` to check the page type.
 The querystring name `f` is used for the file path in releative/subpath style
-
+The status: Default, is not used in this view, the page view is a cached database view of the content
+ 
 ```json
 {
     "uri":"/starsky/?f=/&json=true",
@@ -43,23 +44,35 @@ The querystring name `f` is used for the file path in releative/subpath style
 {
   "fileIndexItems": [
     {
-      "id": 338,
-      "filePath": "/2018/01",
-      "fileName": "01",
-      "fileHash": "ZUCBXWAETG6ZO5UV5VGBZJ3E74",
-      "parentDirectory": "/2018",
-      "isDirectory": true,
-      "tags": "",
-      "description": null,
-      "title": "",
-      "dateTime": "0001-01-01T00:00:00",
-      "addToDatabase": "2018-07-13T11:52:42.942471",
-      "latitude": 0,
-      "longitude": 0,
-      "colorClass": 0,
-      "orientation": "DoNotChange",
-      "imageFormat": "jpg"
-    }
+        "filePath": "/2018/01-dif/__crashy_20180721_222159__i kopie 4.jpg",
+        "fileName": "__crashy_20180721_222159__i kopie 4.jpg",
+        "fileHash": "XSY2XKG3LYGTWCKZQZCVURQS5Y",
+        "fileCollectionName": "__crashy_20180721_222159__i kopie 4",
+        "parentDirectory": "/2018/01-dif",
+        "isDirectory": false,
+        "keywords": [
+            "test",
+            "test2"
+        ],
+        "tags": "test, test2",
+        "status": "Default",
+        "description": "the description",
+        "title": "Title",
+        "dateTime": "2018-07-21T22:21:59",
+        "addToDatabase": "2018-09-20T18:18:33.341613",
+        "latitude": 0,
+        "longitude": 0,
+        "locationAltitude": 0,
+        "locationCity": "",
+        "locationState": "",
+        "locationCountry": "",
+        "colorClass": 7,
+        "orientation": "Horizontal",
+        "imageWidth": 960,
+        "imageHeight": 596,
+        "imageFormat": "jpg",
+        "collectionPaths": []
+        }
   ],
   "breadcrumb": [
     "/"
@@ -97,26 +110,35 @@ Endpoint: `/starsky/?f=/image.jpg`
 ```json
 {
     "fileIndexItem": {
-        "id": 13611,
-        "filePath": "/2018/t/image.dng",
-        "fileName": "image.dng",
-        "fileHash": "NKY7U4WGIK6NFYNIKOW7IZ56GI",
-        "fileCollectionName": "image",
-        "parentDirectory": "/2018/t",
-        "isDirectory": false,
-        "tags": "",
-        "description": "",
-        "title": "",
-        "dateTime": "2018-08-06T21:11:10",
-        "addToDatabase": "2018-08-07T15:06:44.616725",
-        "latitude": 52.8214,
-        "longitude": 7.0474805555,
-        "colorClass": 0,
-        "orientation": "Horizontal",
-        "imageFormat": "tiff",
-        "collectionPaths": [
-            "/2018/t/image.dng"
-        ]
+            "filePath": "/2018/01-dif/20180908_110315__DSC04577.jpg",
+            "fileName": "20180908_110315__DSC04577.jpg",
+            "fileHash": "6BNBOZ4T73C523F37EK43XQLPU",
+            "fileCollectionName": "20180908_110315__DSC04577",
+            "parentDirectory": "/2018/01-dif",
+            "isDirectory": false,
+            "keywords": [
+                ""
+            ],
+            "tags": "",
+            "status": "Default",
+            "description": "",
+            "title": "Dwingeloo",
+            "dateTime": "2018-09-08T11:03:15",
+            "addToDatabase": "2018-09-21T13:33:50.28786",
+            "latitude": 52.8120277777,
+            "longitude": 6.3959916666,
+            "locationAltitude": 5,
+            "locationCity": "Dwingeloo",
+            "locationState": "Drenthe",
+            "locationCountry": "Nederland",
+            "colorClass": 0,
+            "orientation": "Rotate270Cw",
+            "imageWidth": 3872,
+            "imageHeight": 2576,
+            "imageFormat": "jpg",
+            "collectionPaths": [
+                "/2018/01-dif/20180908_110315__DSC04577.jpg"
+            ]
     },
     "relativeObjects": {
         "nextFilePath": null,
@@ -258,6 +280,12 @@ _Defined in the class `ExifToolCmdHelper`_
 - Description
 - Title
 - ColorClass
+- Latitude (in decimal degrees)
+- Longitude (in decimal degrees)
+- LocationAltitude (in meters)
+- LocationCity
+- LocationState
+- LocationCountry
 - `rotateClock` is using `-1` or `1` to rotate the image
     -   `-1` is rotate image 270 degrees
     -   `1` is rotate image 90 degrees
@@ -357,9 +385,15 @@ _Defined in the class `ExifToolCmdHelper`_
     - `NotFoundSourceMissing` The source file is missing and the request failed
     - `ReadOnly` not allowed to overwrite this file and the request failed
 
+
 ## File Delete
 To permanent delete a file from the file system and the database.
-The tag: `!delete!` is used to mark a file that is in the Trash. This is not required by this api.
+The tag: `!delete!` is used to mark a file that is in the Trash. This is required by this api.
+
+### Notes
+- The querystring name `f` is used for the file path in releative/subpath style
+- The querystring support `;` file sepeartion for selecting multiple files
+- the query !delete! is required by the api
 
 ```json
 {
@@ -624,6 +658,9 @@ The POST-request is a redirect to a get query with the same searchquery and the 
   ],
   "searchFor": [
     "searchword"
+  ],
+  "searchForOptions": [
+    ":"
   ],
   "pageType": "Search",
   "elapsedSeconds": 0.003

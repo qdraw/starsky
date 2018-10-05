@@ -1,0 +1,40 @@
+# https://editorconfig.org
+
+root = true
+[*]
+# Most of the standard properties are supported
+indent_size=4
+max_line_length=100
+
+# Most frequently used .NET-coding-convention properties are supported
+csharp_space_between_parentheses=expressions, type_casts, control_flow_statements
+csharp_style_var_for_built_in_types=true
+
+[*.{js,cs}]
+charset = utf-8
+indent_style = tab
+insert_final_newline = true
+
+# The indent size used in the `package.json` file cannot be changed
+# https://github.com/npm/npm/pull/3180#issuecomment-16336516
+[{*.yml,*.yaml,package.json}]
+indent_style = space
+indent_size = 2
+
+# C# files
+[*.cs]
+# New line preferences
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_within_query_expression_clauses = true
+
+# Indentation preferences
+csharp_indent_block_contents = true
+csharp_indent_braces = false
+csharp_indent_case_contents = true
+csharp_indent_switch_labels = true
+csharp_indent_labels = one_less_than_current

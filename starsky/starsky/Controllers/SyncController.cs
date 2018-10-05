@@ -41,6 +41,7 @@ namespace starsky.Controllers
             for (int i = 0; i < inputFilePaths.Count; i++)
             {
                 var subPath = inputFilePaths[i];
+	            subPath = ConfigRead.RemoveLatestSlash(subPath);
                 var detailView = _query.SingleItem(subPath,null,false,false);
                 var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
 

@@ -244,7 +244,7 @@ namespace starsky.Controllers
                 
                 // Check if extension is supported for ExtensionExifToolSupportedList
                 // Not all files are able to write with exiftool
-                if(!Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
+                if(detailView != null && !Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
                 {
                     detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
                     fileIndexResultsList.Add(detailView.FileIndexItem);
@@ -536,9 +536,9 @@ namespace starsky.Controllers
             //For folder paths only
             if (!_appSettings.AddMemoryCache)
             {
-                Response.StatusCode = 412;
-                if(!json) return RedirectToAction("Index", "Home", new { f = f });
-                return Json("cache disabled in config");
+				Response.StatusCode = 412;
+				if(!json) return RedirectToAction("Index", "Home", new { f = f });
+				return Json("cache disabled in config");
             }
 
             var singleItem = _query.SingleItem(f);
@@ -553,7 +553,11 @@ namespace starsky.Controllers
             if(!json) return RedirectToAction("Index", "Home", new { f = f });
             return BadRequest("ignored, please check if the 'f' path exist or use a folder string to clear the cache");
         }
-        
-        
+
+		[HttpPost]
+		public IActionResult Rename(string f, string to, bool collections = true)
+		{
+			return Json(new RenameFs(_appSettings,_query).Rename(f,to,collections));
+		}
     }
 }

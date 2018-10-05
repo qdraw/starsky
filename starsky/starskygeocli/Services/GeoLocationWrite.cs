@@ -17,6 +17,11 @@ namespace starskyGeoCli.Services
             _appSettings = appSettings;
         }
         
+        /// <summary>
+        /// Write to Exiftool by list
+        /// </summary>
+        /// <param name="metaFilesInDirectory">list of files with data</param>
+        /// <param name="syncLocationNames">Write city, state and country to exiftool (false > no)</param>
         public void LoopFolder(List<FileIndexItem> metaFilesInDirectory, bool syncLocationNames)
         {
             foreach (var metaFileItem in metaFilesInDirectory)

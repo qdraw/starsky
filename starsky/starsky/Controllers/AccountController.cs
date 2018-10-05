@@ -18,9 +18,10 @@ namespace starsky.Controllers
             _userManager = userManager;
         }
         
-        public IActionResult Index()
+        public IActionResult Index(bool json = false)
         {
             if (!User.Identity.IsAuthenticated) return RedirectToLocal(null);
+	        if ( json ) return Json(_userManager.GetCurrentUser(HttpContext));
             return View(_userManager.GetCurrentUser(HttpContext));
         }
 
@@ -46,14 +47,20 @@ namespace starsky.Controllers
         public async Task<IActionResult> LoginPost(LoginViewModel model, string returnUrl = null)
         {
             ValidateResult validateResult = _userManager.Validate("Email", model.Email, model.Password);
+            ViewData["ReturnUrl"] = returnUrl;
 
-            if (!validateResult.Success) return View(model);
+            if (!validateResult.Success)
+            {
+                Response.StatusCode = 401;
+                ModelState.AddModelError("All", "Login Failed");
+                return View(model);
+            } 
+            
             await _userManager.SignIn(HttpContext, validateResult.User,model.RememberMe);
             if (User.Identity.IsAuthenticated)
             {
                 return RedirectToLocal(returnUrl);
             }
-            ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 

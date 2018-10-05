@@ -249,7 +249,7 @@ body {
 }
 @media screen and (min-width: 200px) and (max-width: 600px) {
     .head .form-inline .form-control {
-        width: 75vw;
+        width: calc(100vw - 100px);
     }
     .collapsed .head {
         width: 100%;
@@ -497,7 +497,7 @@ h2 {
 .collapsed .wrapper .halfitem .filter {
     width: calc(47vw - 150px);
 }
-@media screen and (max-height: 550px) and (max-width: 600px) {
+@media screen and (max-width: 600px) {
     .collapsed .wrapper .halfitem .filter,
     .wrapper .halfitem .filter {
         width: 85vw;
@@ -820,6 +820,7 @@ h2 {
     background-color: #fff;
     border-color: #ccc;
 }
+
 .btn-danger {
     color: #fff;
     background-color: #dc3545;
@@ -863,15 +864,13 @@ h2 {
     padding-top: 10px;
 }
 @media screen and (max-width: 390px) {
-    .form-nav {
-        width: 100%!important;
-    }
+
     .form-nav,
     .form-nav input {
-        display: inline-block!important;
+        display: inline-block !important;
     }
-}
 
+}
 .show {
     display: block !important;
 }
@@ -1410,4 +1409,12 @@ div#popup.on {
 }
 .lock-map a {
     background-color: rgba(255, 255, 83, 1);
+}
+
+
+.validation-summary-errors{
+    padding: 10px;
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
 }

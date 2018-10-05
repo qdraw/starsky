@@ -74,7 +74,7 @@ namespace starsky
                 .AddCookie(options =>
                     {
                         options.Cookie.Name = "_id";
-                        options.Cookie.Expiration = TimeSpan.FromDays(200);
+                        options.ExpireTimeSpan = TimeSpan.FromDays(365);
                         options.SlidingExpiration = true;
                     }
                 );
