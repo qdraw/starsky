@@ -325,6 +325,8 @@ starsky/starskyTests/coverag*.xml
 starskyapp/ios/main.jsbundle
 **/.env
 
+starsky-node-client/docs/*.sh
+starsky-node-client/docs/*/*.sh
 starsky-node-client/docs/*.html
 starsky-node-client/docs/*/*.html
 starsky-node-client/docs/*/*/*.html

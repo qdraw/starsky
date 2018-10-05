@@ -80,8 +80,7 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
         relativeCssPath += "../";
     }
 
-
-    var menuHtml =  '<div class="head"><div id="menu"> <ul> <li><a href="https://qdraw.nl/">Home</a></li> <li><a href="https://qdraw.nl/portfolio.html">Portfolio</a></li> <li><a href="https://qdraw.nl//over.html">Over</a></li> <li><a href="https://qdraw.nl//contact.html">Contact</a></li> <li><a href="https://qdraw.nl/blog/">Blog</a></li> </ul> </div> <a href="#hamburger" id="hamburger" class="hamburger">Menu</a> <a href="https://qdraw.nl/" class="logo">Qdraw.nl</a></div>';
+    var menuHtml =  '<div class="head"><div id="menu"> <ul> <li><a href="'+ relativeCssPath + 'readme.html">Home</a></li> <li><a href="https://qdraw.nl//contact.html">Contact</a></li> </ul> </div> <a href="#hamburger" id="hamburger" class="hamburger">Menu</a> <a href="' + relativeCssPath+ 'readme.html" class="logo">Qdraw.nl</a></div>';
     var outputHtml = contentsHtml.replace(/<\/head>\n<body>/ig, "<link rel=\"stylesheet\" href=\""+ relativeCssPath +"style.css\"><\/head>\n<body>\n"+ menuHtml + "\n<div class=\"container\"><div class=\"entry-content\">");
 
 	contentsHtml = outputHtml.replace(/<\/body>\n/ig,"</div>\n</div>\n <script defer src=\""+ relativeCssPath +"menu.js\"></script></body>\n");
