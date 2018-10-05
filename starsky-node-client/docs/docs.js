@@ -28,6 +28,13 @@ var filePathList = [
 	"starsky-node-client/sync/readme.md"
 ];
 
+var blobPathList = [
+	"starsky/new-pm2.sh",
+	"starsky/publish-linux-arm.sh",
+	"starsky/publish-mac.sh",
+	"starsky/publish-windows.sh",
+];
+
 // create dirs
 var sourceFullPathList = [];
 var htmlFullPathList = [];
@@ -48,7 +55,13 @@ for (var i = 0; i < filePathList.length; i++) {
 
 }
 
-
+for (var i = 0; i < blobPathList.length; i++) {
+	var filePath = blobPathList[i];
+	var relativeSource = path.join(__dirname, prefixPath, filePath);
+	var outputPath = path.join(__dirname, filePath);
+	console.log(outputPath);
+	fs.copyFileSync(relativeSource,outputPath,{flag:'w'})
+}
 
 for (var i = 0; i < htmlFullPathList.length; i++) {
 	var htmlPath = htmlFullPathList[i];
