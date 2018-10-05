@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using starsky.Interfaces;
 using starsky.Models;
@@ -53,7 +52,7 @@ namespace starsky.Helpers
                 var toFileSubPath = toFileSubPaths[i];
 
                 var detailView = _query.SingleItem(inputFileSubPath, null, collections, false);
-                // files that not exist
+            	// files that not exist
                 if(detailView == null) continue;
                 if (detailView.IsDirectory)
                 {
@@ -61,7 +60,7 @@ namespace starsky.Helpers
                     var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputFileSubPath);
 
                     Directory.Move(inputFileFullPath,toFileFullPath);
-                    // move also in the database
+                	// move also in the database
 
                     var t = _query.GetAllRecursive(inputFileSubPath);
                 }
