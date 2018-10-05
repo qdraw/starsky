@@ -18,9 +18,10 @@ namespace starsky.Controllers
             _userManager = userManager;
         }
         
-        public IActionResult Index()
+        public IActionResult Index(bool json = false)
         {
             if (!User.Identity.IsAuthenticated) return RedirectToLocal(null);
+	        if ( json ) return Json(_userManager.GetCurrentUser(HttpContext));
             return View(_userManager.GetCurrentUser(HttpContext));
         }
 
