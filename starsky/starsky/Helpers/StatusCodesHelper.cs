@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using starsky.Models;
 using starsky.ViewModels;
 
@@ -40,8 +41,9 @@ namespace starsky.Helpers
 
             if (_appSettings.IsReadOnly(detailView.FileIndexItem.ParentDirectory)) return  FileIndexItem.ExifStatus.ReadOnly;
 
-            foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths)
+            foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths.ToList())
             {
+	            // toList() is add to avoid :> Collection was modified; enumeration operation
                 var fullPathCollection = _appSettings.DatabasePathToFilePath(collectionPath);
                 
                 //For the situation that the file is not on disk but the only one in the list

@@ -293,7 +293,10 @@ function queryKeywords(queryItem) {
         function (data) {
             location.reload();
         },
-        function (xhr) { console.error(xhr); },
+        function (xhr) { 
+            console.error(xhr);
+            alert(xhr);
+        },
         "POST"
     );
 }
@@ -309,7 +312,9 @@ function queryCaptionAbstract(queryItem) {
         function (data) {
             location.reload();
         },
-        function (xhr) { console.error(xhr); },
+        function (xhr) { 
+            console.error(xhr); 
+        },
         "POST"
     );
 }
