@@ -160,8 +160,9 @@ namespace starsky.Services
         public void CacheUpdateItem(IEnumerable<FileIndexItem> updateStatusContent)
         {
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
-            foreach (var item in updateStatusContent)
+			foreach (var item in updateStatusContent.ToList())
             {
+				// ToList() > Collection was modified; enumeration operation may not execute.
                 var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
                     item.ParentDirectory);
 
