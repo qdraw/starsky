@@ -111,28 +111,31 @@
             </a>
         </div>
         <div class="location-sidebar">
+            <h4>Locatie:</h4>
             @if ( Math.Abs(@Model.FileIndexItem.Latitude) > 0.001
-                && Math.Abs(@Model.FileIndexItem.Longitude) > 0.001
-                 && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationCity)
-                 && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationState)
-                 && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationState))
+                  && Math.Abs(@Model.FileIndexItem.Longitude) > 0.001
+                  && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationCity)
+                  && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationState)
+                  && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationState) )
             {
-                <h4>Locatie:</h4>
                 <a target="_blank"
                    href="https://www.openstreetmap.org/?mlat=@Model.FileIndexItem.Latitude&mlon=@Model.FileIndexItem.Longitude#map=15/@Model.FileIndexItem.Latitude/@Model.FileIndexItem.Longitude">
                     @Model.FileIndexItem.LocationCity, @Model.FileIndexItem.LocationState (@Model.FileIndexItem.LocationCountry)
-                </a>
+                </a><br />
                 <em>Opent in nieuw tabblad</em>
-
             }
-            else if (Math.Abs(@Model.FileIndexItem.Latitude) > 0.001
-                                     && Math.Abs(@Model.FileIndexItem.Longitude) > 0.001)
+            else if ( Math.Abs(@Model.FileIndexItem.Latitude) > 0.001
+                      && Math.Abs(@Model.FileIndexItem.Longitude) > 0.001 )
             {
-                <h4>Locatie:</h4>
                 <a target="_blank"
                    href="https://www.openstreetmap.org/?mlat=@Model.FileIndexItem.Latitude&mlon=@Model.FileIndexItem.Longitude#map=15/@Model.FileIndexItem.Latitude/@Model.FileIndexItem.Longitude">
-                    @Math.Round(@Model.FileIndexItem.Latitude,5),@Math.Round(@Model.FileIndexItem.Longitude,5)
-                </a>
+                    @Math.Round(@Model.FileIndexItem.Latitude, 5),@Math.Round(@Model.FileIndexItem.Longitude, 5)
+                </a><br />
+                <em>Opent in nieuw tabblad</em>
+            }
+            else
+            {
+                <text>Geen locatie bekend</text>
             }
         </div>
         <div>
@@ -151,6 +154,15 @@
                 ]
             </a>
         </div>
+        
+        <div class="form-inline form-wrapper" id="js-filename-update">
+            <p>Filename:</p>
+            <div class="form-control js-filename contenteditable disabled" contenteditable="false" 
+                 name="keywords" onfocusout="updateFilename()" data-previouscontent="@Model.FileIndexItem.FilePath">@Model.FileIndexItem.FilePath</div>
+            <a class="btn btn-default disabled" type="submit" onClick="updateFilename()">Update</a>
+        </div>
+        
+
 
 
 

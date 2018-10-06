@@ -386,6 +386,12 @@ document.addEventListener('keydown', function (event) {
             content.focus();
             var selection;
             var char = document.querySelector(".js-keywords").innerHTML.length;
+
+            // trick to fill the field before selecting
+            if (char === 0) {
+                document.querySelector(".js-keywords").innerHTML = "&nbsp;";
+            }
+            
             if (document.selection) {
                 selection = document.selection.createRange();
                 selection.moveStart('character', char);
@@ -395,6 +401,7 @@ document.addEventListener('keydown', function (event) {
                 selection = window.getSelection();
                 selection.collapse(content.firstChild, char);
             }
+            
 
         }
     }

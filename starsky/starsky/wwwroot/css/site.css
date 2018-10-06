@@ -311,7 +311,7 @@ h1 {
 #portfolio-filter ul > li > a {
     margin-right: 10px;
     border-radius: 3px;
-    margin-bottom: 13px;
+    margin-bottom: 10px;
     padding-right: 10px;
     background-color: #b0bec5;
     text-decoration: none;
@@ -1107,6 +1107,11 @@ float: left;
     font-family: "object-fit: contain";
     object-fit: contain;
     object-position: center; 
+}
+@media screen and (min-width: 600px) {
+    .sidebar .content .thumbnail {
+        display: none;
+    }
 }
 
 .sidebar {
