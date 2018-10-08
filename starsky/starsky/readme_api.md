@@ -387,7 +387,29 @@ _Defined in the class `ExifToolCmdHelper`_
     - `ReadOnly` not allowed to overwrite this file and the request failed
 
 ## Rename
->> todo: add api
+Rename files or folder on disk and in the same request update the database.
+Endpoint: `/starsky/Api/Rename?f=/image.jpg&to=/image2.jpg`
+
+```json
+{
+    "uri":"/starsky/Api/Rename?f=/current&to=/future",
+    "method":"POST",
+    "headers":
+    {
+       "Content-Type":"application/json"
+    },
+    "authentication":
+    {
+        "username":"username",
+        "password":"*sanitized*",
+        "type":"Basic"
+    }
+}
+```
+
+### Notes
+- Statuscodes not implemented yet
+
 
 
 ## File Delete
