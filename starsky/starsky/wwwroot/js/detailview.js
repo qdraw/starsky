@@ -118,8 +118,8 @@ if (document.querySelectorAll("#js-keywords-update").length === 1 &&
                     document.querySelector("#js-keywords-update .btn").classList.add("disabled");
 
                     hidePreloader();
-                    if (document.querySelectorAll(".navbar").length >= 0) {
-                        document.querySelector(".navbar").classList.add("navbar-gray");
+                    if (document.querySelectorAll(".head").length >= 0) {
+                        document.querySelector(".head").classList.add("head-gray");
                     }
                     if (document.querySelectorAll(".js-filterinfo").length >= 0) {
                         document.querySelector(".js-filterinfo").innerHTML += "<span class='red'>Alleen lezen</span>"
@@ -435,6 +435,8 @@ checkIfContentIsNot204or202();
 
 function rotateOn202() {
 
+    if (document.querySelectorAll(".main-image img").length === 0) return;
+    
     var classList = document.querySelector(".main-image img").classList;
     if (classList.contains("disabled-Rotate90Cw")) {
         document.querySelector(".main-image img").classList.remove("disabled-Rotate90Cw");

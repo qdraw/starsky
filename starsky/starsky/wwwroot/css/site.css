@@ -734,21 +734,7 @@ h2 {
 }
 
 
-/*.navbar-fixed-top {*/
-    /*top: 0;*/
-    /*border-width: 0 0 1px;*/
-    /*position: fixed;*/
-    /*right: 0;*/
-    /*left: 0;*/
-    /*z-index: 1030;*/
-/*}*/
-
-.navbar-inverse {
-    background-color: #222;
-    border-color: #080808;
-}
-
-.navbar-gray {
+.head-gray {
     background-color: #888;
     border-color: #888;
 }
