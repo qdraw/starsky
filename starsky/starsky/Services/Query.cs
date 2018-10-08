@@ -157,17 +157,20 @@ namespace starsky.Services
         }
 
         // Private api within Query to update cached items
-        public void CacheUpdateItem(IEnumerable<FileIndexItem> updateStatusContent)
+        public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
         {
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
-			foreach (var item in updateStatusContent.ToList())
-            {
-				// ToList() > Collection was modified; enumeration operation may not execute.
-                var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+
+	        for ( var i = 0; i < updateStatusContent.Count(); i++ )
+	        {
+		        var item = updateStatusContent[i];
+				// As for-loop Collection was modified; enumeration operation may not execute.
+                
+		        var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
                     item.ParentDirectory);
 
                 if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
-            
+	            
                 var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
                 
                 var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
