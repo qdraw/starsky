@@ -176,7 +176,7 @@ namespace starsky.Services
 				var obj = displayFileFolders.ToList().FirstOrDefault(p => p.FilePath == item.FilePath);
 				// toList add to avoid Collection modified error
                 if (obj == null) return;
-                displayFileFolders.Remove(obj);
+				displayFileFolders.ToList().Remove(obj);
                 // Add here item to cached index
                 displayFileFolders.Add(item);
                 // Order by filename
