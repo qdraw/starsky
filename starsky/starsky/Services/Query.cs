@@ -173,7 +173,7 @@ namespace starsky.Services
 	            
                 var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
                 
-                var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
+                var obj = displayFileFolders.ToList().FirstOrDefault(p => p.FilePath == item.FilePath);
                 if (obj == null) return;
                 displayFileFolders.Remove(obj);
                 // Add here item to cached index
