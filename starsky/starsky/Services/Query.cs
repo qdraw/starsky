@@ -176,15 +176,22 @@ namespace starsky.Services
 				var obj = displayFileFolders.ToList().FirstOrDefault(p => p.FilePath == item.FilePath);
 				// toList add to avoid Collection modified error
                 if (obj == null) return;
+		        
 				displayFileFolders.ToList().Remove(obj);
                 // Add here item to cached index
                 displayFileFolders.Add(item);
-                // Order by filename
-				displayFileFolders = displayFileFolders.ToList().OrderBy(p => p.FileName).ToList();
-				// toList add to avoid Collection modified error
 
-                _cache.Remove(queryCacheName);
-                _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
+				_cache.Remove(queryCacheName);
+				
+				// Order by filename
+				// Remove duplicates from list
+				displayFileFolders = displayFileFolders.ToList().GroupBy(s => s.FilePath)
+					.Select(grp => grp.FirstOrDefault())
+					.OrderBy(s => s.FilePath)
+					.ToList();
+				// toList add to avoid Collection modified error
+		        
+		        _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
             }
             
         }
