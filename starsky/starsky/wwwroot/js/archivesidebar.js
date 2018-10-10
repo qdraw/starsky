@@ -286,10 +286,9 @@ function queryKeywords(queryItem) {
     
     var toupdateFiles = toSubpath();
 
-    var url = updateApiBase + "?f=" + toupdateFiles + "&tags=" + queryItem + "&append=" + appendOrOverwriteByToggle();
     addNoClickToSidebar();
 
-    loadJSON(url,
+    loadJSON(updateApiBase,
         function (data) {
             location.reload();
         },
@@ -297,7 +296,8 @@ function queryKeywords(queryItem) {
             console.error(xhr);
             alert(xhr.response);
         },
-        "POST"
+        "POST",
+        "f=" + toupdateFiles + "&tags=" + queryItem + "&append=" + appendOrOverwriteByToggle()
     );
 }
 
@@ -305,10 +305,9 @@ function queryCaptionAbstract(queryItem) {
 
     var toupdateFiles = toSubpath();
 
-    var url = updateApiBase + "?f=" + toupdateFiles + "&description=" + queryItem + "&append=" + appendOrOverwriteByToggle();
     addNoClickToSidebar();
 
-    loadJSON(url,
+    loadJSON(updateApiBase,
         function (data) {
             location.reload();
         },
@@ -316,7 +315,8 @@ function queryCaptionAbstract(queryItem) {
             console.error(xhr);
             alert(xhr.response);
         },
-        "POST"
+        "POST",
+        "f=" + toupdateFiles + "&description=" + queryItem + "&append=" + appendOrOverwriteByToggle()
     );
 }
 
@@ -324,7 +324,6 @@ function queryObjectName(queryItem) {
 
     var toupdateFiles = toSubpath();
 
-    var url = updateApiBase + "?f=" + toupdateFiles + "&title=" + queryItem + "&append=" + appendOrOverwriteByToggle();
     addNoClickToSidebar();
 
     loadJSON(url,
@@ -335,7 +334,8 @@ function queryObjectName(queryItem) {
             console.error(xhr);
             alert(xhr.response);
         },
-        "POST"
+        "POST",
+        "f=" + toupdateFiles + "&title=" + queryItem + "&append=" + appendOrOverwriteByToggle()
     );
     
 }
