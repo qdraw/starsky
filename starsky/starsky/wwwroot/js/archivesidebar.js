@@ -295,7 +295,7 @@ function queryKeywords(queryItem) {
         },
         function (xhr) { 
             console.error(xhr);
-            alert(xhr);
+            alert(xhr.response);
         },
         "POST"
     );
@@ -313,7 +313,8 @@ function queryCaptionAbstract(queryItem) {
             location.reload();
         },
         function (xhr) { 
-            console.error(xhr); 
+            console.error(xhr);
+            alert(xhr.response);
         },
         "POST"
     );
@@ -330,7 +331,10 @@ function queryObjectName(queryItem) {
         function (data) {
             location.reload();
         },
-        function (xhr) { console.error(xhr); },
+        function (xhr) { 
+            console.error(xhr);
+            alert(xhr.response);
+        },
         "POST"
     );
     
