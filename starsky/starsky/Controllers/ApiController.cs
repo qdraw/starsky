@@ -114,6 +114,7 @@ namespace starsky.Controllers
         /// <param name="collections">StackCollections bool</param>
         /// <param name="append">only for stings, add update to existing items</param>
         /// <returns></returns>
+        [IgnoreAntiforgeryToken]
         [HttpPost]
         public IActionResult Update(FileIndexItem inputModel, string f, bool append, bool collections,  int rotateClock = 0)
         {
