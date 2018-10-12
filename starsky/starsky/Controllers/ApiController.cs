@@ -114,10 +114,10 @@ namespace starsky.Controllers
         /// <param name="collections">StackCollections bool</param>
         /// <param name="append">only for stings, add update to existing items</param>
         /// <returns></returns>
-        [IgnoreAntiforgeryToken]
-        [HttpPost]
-        public IActionResult Update(FileIndexItem inputModel, string f, bool append, bool collections,  int rotateClock = 0)
-        {
+		[IgnoreAntiforgeryToken]
+		[HttpPost]
+		public IActionResult Update(FileIndexItem inputModel, string f, bool append, bool collections = true,  int rotateClock = 0)
+		{
             var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
             // the result list
             var fileIndexResultsList = new List<FileIndexItem>();
