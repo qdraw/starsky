@@ -121,16 +121,18 @@ namespace starsky.Controllers
             var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
             // the result list
             var fileIndexResultsList = new List<FileIndexItem>();
-            var changedFileIndexItemName = new Dictionary<int, List<string>>();
+            var changedFileIndexItemName = new Dictionary<string, List<string>>();
+			
+
 			
             foreach (var subPath in inputFilePaths)
             {
                 var detailView = _query.SingleItem(subPath,null,collections,false);
                 var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
-                
-                var statusModel = inputModel.Clone();
-                statusModel.SetFilePath(subPath);
-                statusModel.IsDirectory = false;
+	            
+	            var statusModel = inputModel.Clone();
+	            statusModel.IsDirectory = false;
+	            statusModel.SetFilePath(subPath);
                 
                 // if one item fails, the status will added
                 if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
@@ -153,7 +155,7 @@ namespace starsky.Controllers
                     }
                     
                     var comparedNamesList = FileIndexCompareHelper.Compare(collectionsDetailView.FileIndexItem, statusModel, append);
-	                changedFileIndexItemName.Add(i,comparedNamesList);
+	                changedFileIndexItemName.Add(collectionsDetailView.FileIndexItem.FilePath,comparedNamesList);
 	                
                     RotatonCompare(rotateClock, detailView, comparedNamesList);
                     
@@ -175,10 +177,16 @@ namespace starsky.Controllers
 			{
 
 				var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList(); 
-				for ( int i = 0; i < collectionsDetailViewList.Count; i++ )
+				for ( var i = 0; i < collectionsDetailViewList.Count; i++ )
 				{
-					var detailView = _query.SingleItem(collectionsDetailViewList[i].FilePath, null, collections, false);
-					
+					var detailView = _query.SingleItem(collectionsDetailViewList[i].FilePath,null,collections,false);
+
+				
+					var comparedNamesList = changedFileIndexItemName[detailView.FileIndexItem.FilePath];
+					detailView.FileIndexItem = FileIndexCompareHelper.SetCompare(detailView.FileIndexItem, inputModel, comparedNamesList);
+					RotatonCompare(rotateClock, detailView, comparedNamesList);
+
+						
 					var exiftool = new ExifToolCmdHelper(_appSettings,_exiftool);
 					var toUpdateFilePath = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.FilePath);
 
@@ -187,7 +195,7 @@ namespace starsky.Controllers
 					RotationThumbnailExcute(rotateClock, detailView.FileIndexItem);
 					
 					// Do an Exif Sync for all files
-					exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths , changedFileIndexItemName[i]);
+					exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
                         
 					// change thumbnail names after the orginal is changed
 					var newFileHash = FileHash.GetHashCode(toUpdateFilePath);

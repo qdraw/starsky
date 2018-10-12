@@ -439,7 +439,10 @@ namespace starskytests
            if (!_memoryCache.TryGetValue("List`1_", out var objectFileFolders));
             var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
 
-            Assert.AreEqual(displayFileFolders.FirstOrDefault(p => p.FileName == "cache").Tags,"hi");
+            Assert.AreEqual("hi",displayFileFolders.FirstOrDefault(p => p.FileName == "cache").Tags);
+	        
+	        Assert.AreEqual(1,displayFileFolders.Count(p => p.FileName == "cache"));
+
         }
 
         [TestMethod]

@@ -125,12 +125,15 @@ namespace starsky.Services
         /// <returns>this item</returns>
         public FileIndexItem UpdateItem( FileIndexItem updateStatusContent)
         {
-
+			InjectServiceScope();
+	        
             _context.Attach(updateStatusContent).State = EntityState.Modified;
             _context.SaveChanges();
             
             CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
-
+			
+	        _context.Attach(updateStatusContent).State = EntityState.Detached;
+	        
             return updateStatusContent;
         }
         
@@ -161,38 +164,61 @@ namespace starsky.Services
         {
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
-	        for ( var i = 0; i < updateStatusContent.Count(); i++ )
-	        {
-		        var item = updateStatusContent[i];
-				// As for-loop Collection was modified; enumeration operation may not execute.
-                
-		        var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-                    item.ParentDirectory);
-
-                if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
-	            
-                var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
-                
-				var obj = displayFileFolders.ToList().FirstOrDefault(p => p.FilePath == item.FilePath);
-				// toList add to avoid Collection modified error
-                if (obj == null) return;
-		        
-				displayFileFolders.ToList().Remove(obj);
-                // Add here item to cached index
-                displayFileFolders.Add(item);
-
-				_cache.Remove(queryCacheName);
+			foreach (var item in updateStatusContent.ToList())
+			{
+				// ToList() > Collection was modified; enumeration operation may not execute.
+				var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+				item.ParentDirectory);
 				
+				if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
+				
+				var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
+				
+				var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
+				if (obj == null) return;
+				displayFileFolders.Remove(obj);
+				// Add here item to cached index
+				displayFileFolders.Add(item);
 				// Order by filename
-				// Remove duplicates from list
-				displayFileFolders = displayFileFolders.ToList().GroupBy(s => s.FilePath)
-					.Select(grp => grp.FirstOrDefault())
-					.OrderBy(s => s.FilePath)
-					.ToList();
-				// toList add to avoid Collection modified error
-		        
-		        _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
-            }
+				displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
+				
+				_cache.Remove(queryCacheName);
+				_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
+			}
+	        
+	        
+//	        for ( var i = 0; i < updateStatusContent.Count(); i++ )
+//	        {
+//		        var item = updateStatusContent[i];
+//				// As for-loop Collection was modified; enumeration operation may not execute.
+//                
+//		        var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+//                    item.ParentDirectory);
+//
+//                if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
+//	            
+//                var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
+//                
+//				var obj = displayFileFolders.ToList().FirstOrDefault(p => p.FilePath == item.FilePath);
+//				// toList add to avoid Collection modified error
+//                if (obj == null) return;
+//		        
+//				displayFileFolders.ToList().Remove(obj);
+//                // Add here item to cached index
+//                displayFileFolders.Add(item);
+//
+//				_cache.Remove(queryCacheName);
+//				
+//				// Order by filename
+//				// Remove duplicates from list
+////				displayFileFolders = displayFileFolders.ToList().GroupBy(s => s.FilePath)
+////					.Select(grp => grp.FirstOrDefault())
+////					.OrderBy(s => s.FilePath)
+////					.ToList();
+//				// toList add to avoid Collection modified error
+//		        
+//		        _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
+//            }
             
         }
         

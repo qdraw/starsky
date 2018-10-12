@@ -45,7 +45,7 @@ namespace starskytests.Services
         [TestMethod]
         public void XmpReadHelperTest_GetData_usingStringExample()
         {
-            var data = new ReadMeta().GetDataFromString(Input);
+            var data = new ReadMeta(new AppSettings()).GetDataFromString(Input);
             
             Assert.AreEqual(52.3451333333,data.Latitude,0.001);
             Assert.AreEqual(5.930,data.Longitude,0.001);
