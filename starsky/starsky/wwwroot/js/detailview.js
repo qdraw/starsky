@@ -612,7 +612,7 @@ function updateCollectionsSwitch(data) {
     document.querySelector(".js-collectionsswitch div").innerHTML = "";
     
     for (var i = 0; i < data.length; i++) {
-        document.querySelector(".js-collectionsswitch div").innerHTML += "<a class='btn btn-default small' href='/?f="+ data[i].filePath +"'>"+ data[i].imageFormat+ "</a> ";
+        document.querySelector(".js-collectionsswitch div").innerHTML += "<a class='btn btn-default small' href='?f="+ data[i].filePath +"'>"+ data[i].imageFormat+ "</a> ";
         console.log(data)
     }
 }
