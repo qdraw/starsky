@@ -59,6 +59,8 @@ namespace starsky.Services
             bool enableCollections = true,
             bool hideDeleted = true)
         {
+	        InjectServiceScope();
+
             // reject emphy requests
             if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
             var parentFolder = Breadcrumbs.BreadcrumbHelper(singleItemDbPath).LastOrDefault();
