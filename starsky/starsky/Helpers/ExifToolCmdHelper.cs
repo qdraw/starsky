@@ -130,7 +130,7 @@ namespace starsky.Helpers
                 // 0 = "Above Sea Level"
                 // 1 = Below Sea Level
                 var gpsAltitudeRef = "0";
-                var gpsAltitude = "+" + updateModel.LocationAltitude.ToString(CultureInfo.InvariantCulture;
+                var gpsAltitude = "+" + updateModel.LocationAltitude.ToString(CultureInfo.InvariantCulture);
                 if (updateModel.LocationAltitude < 0)
                 {
                     gpsAltitudeRef = "1";
