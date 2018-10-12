@@ -14,7 +14,6 @@ namespace starsky
 			WebHost.CreateDefaultBuilder(args)
 				.UseKestrel(options =>
 				{
-					options.Limits.MaxRequestHeaderCount = 20;
 					options.Limits.MaxRequestLineSize = 65536; //64Kb
 				})
 				.UseStartup<Startup>()
