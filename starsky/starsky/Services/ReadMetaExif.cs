@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MetadataExtractor;
-using starsky.Interfaces;
 using starsky.Models;
 
 namespace starsky.Services
@@ -184,7 +183,7 @@ namespace starsky.Services
             {
                 var tags = exifItem.Tags.FirstOrDefault(
                     p => p.DirectoryName == "IPTC" 
-                         && p.Name == "Keywords")?.Description.ToLower();
+                         && p.Name == "Keywords")?.Description;
                 if (!string.IsNullOrWhiteSpace(tags))
                 {
                     tags = tags.Replace(";", ", ");
