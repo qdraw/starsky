@@ -111,7 +111,7 @@ namespace starsky.Controllers
         /// <param name="description">string to update description/caption abstract, emthy will be ignored</param>
         /// <param name="rotateClock">relative orentation -1 or 1</param>
         /// <param name="title">edit image title</param>
-        /// <param name="collections">StackCollections bool</param>
+		/// <param name="collections">StackCollections bool, default true</param>
         /// <param name="append">only for stings, add update to existing items</param>
         /// <returns></returns>
 		[IgnoreAntiforgeryToken]
