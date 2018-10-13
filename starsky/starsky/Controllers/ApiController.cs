@@ -127,8 +127,6 @@ namespace starsky.Controllers
             var fileIndexResultsList = new List<FileIndexItem>();
             var changedFileIndexItemName = new Dictionary<string, List<string>>();
 			
-
-			
             foreach (var subPath in inputFilePaths)
             {
                 var detailView = _query.SingleItem(subPath,null,collections,false);
@@ -148,8 +146,6 @@ namespace starsky.Controllers
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
 	                var collectionsDetailView = _query.SingleItem(collectionSubPathList[i], null, collections, false);
-	                // avoid secretly writing to cache
-//	                collectionsDetailView.FileIndexItem = collectionsDetailView.FileIndexItem.Clone();
 
                     // Check if extension is supported for ExtensionExifToolSupportedList
                     // Not all files are able to write with exiftool
@@ -160,7 +156,10 @@ namespace starsky.Controllers
                         continue;
                     }
                     
+	                // compare and add changes to collectionsDetailView
                     var comparedNamesList = FileIndexCompareHelper.Compare(collectionsDetailView.FileIndexItem, statusModel, append);
+	                
+	                // if requested, add changes to rotation
 	                collectionsDetailView.FileIndexItem = RotatonCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
 	                changedFileIndexItemName.Add(collectionsDetailView.FileIndexItem.FilePath,comparedNamesList);
                     
@@ -181,16 +180,16 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-
-				var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList(); 
-				for ( var i = 0; i < collectionsDetailViewList.Count; i++ )
+				var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+				foreach ( var item in collectionsDetailViewList )
 				{
-					var detailView = _query.SingleItem(collectionsDetailViewList[i].FilePath,null,collections,false);
+					// need to recheck because this process is async, so in the mainwhile there are changes posible
+					var detailView = _query.SingleItem(item.FilePath,null,collections,false);
 				
-					// used for tracking differences
+					// used for tracking differences, in the database/exiftool compare
 					var comparedNamesList = changedFileIndexItemName[detailView.FileIndexItem.FilePath];
 
-					// the inputmodel is always DoNotChange, so updating is useless
+					// the inputmodel is always DoNotChange, so checking from the field is useless
 					inputModel.Orientation = detailView.FileIndexItem.Orientation;
 
 					if ( !_query.IsCacheEnabled() )
@@ -202,21 +201,24 @@ namespace starsky.Controllers
 						
 					var exiftool = new ExifToolCmdHelper(_appSettings,_exiftool);
 					var toUpdateFilePath = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.FilePath);
-
+					
+					// feature to exif update the thumbnails 
 					var exifUpdateFilePaths = AddThumbnailToExifChangeList(toUpdateFilePath, detailView.FileIndexItem);
 
+					// do rotation on thumbs
 					RotationThumbnailExcute(rotateClock, detailView.FileIndexItem);
 					
-					// Do an Exif Sync for all files
+					// Do an Exif Sync for all files, including thumbnails
 					exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
                         
 					// change thumbnail names after the orginal is changed
 					var newFileHash = FileHash.GetHashCode(toUpdateFilePath);
 					new Thumbnail(_appSettings).RenameThumb(detailView.FileIndexItem.FileHash,newFileHash);
-					// Update the hash
+					
+					// Update the hash in the database
 					detailView.FileIndexItem.FileHash = newFileHash;
                         
-					// Do a database sync
+					// Do a database sync + cache sync
 					_query.UpdateItem(detailView.FileIndexItem);
                         
 					// > async > force you to read the file again
@@ -224,7 +226,6 @@ namespace starsky.Controllers
 					// only the full path url of the source image
 					_readMeta.RemoveReadMetaCache(toUpdateFilePath);
 				}
-				
 			});
             
             // When all items are not found
