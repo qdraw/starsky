@@ -59,13 +59,17 @@ namespace starsky.Controllers
         /// <param name="rotateClock">-1 or 1</param>
         /// <param name="detailView">main db object</param>
         /// <param name="comparedNamesList">list of types that are changes</param>
-        private void RotatonCompare(int rotateClock, DetailView detailView, ICollection<string> comparedNamesList)
+        private FileIndexItem RotatonCompare(int rotateClock, FileIndexItem fileIndexItem, ICollection<string> comparedNamesList)
         {
             // Do orientation / Rotate if needed (after compare)
-            if (!FileIndexItem.IsRelativeOrientation(rotateClock)) return;
+            if (!FileIndexItem.IsRelativeOrientation(rotateClock)) return fileIndexItem;
             // run this on detailview => statusModel is always default
-            detailView.FileIndexItem.SetRelativeOrientation(rotateClock);
-            comparedNamesList.Add(nameof(detailView.FileIndexItem.Orientation));
+	        fileIndexItem.SetRelativeOrientation(rotateClock);
+	        if ( !comparedNamesList.Contains(nameof(fileIndexItem.Orientation)) )
+	        {
+		        comparedNamesList.Add(nameof(fileIndexItem.Orientation));
+	        }
+	        return fileIndexItem;
         }
 
         /// <summary>
@@ -144,7 +148,9 @@ namespace starsky.Controllers
                 for (int i = 0; i < collectionSubPathList.Count; i++)
                 {
 	                var collectionsDetailView = _query.SingleItem(collectionSubPathList[i], null, collections, false);
-		                
+	                // avoid secretly writing to cache
+//	                collectionsDetailView.FileIndexItem = collectionsDetailView.FileIndexItem.Clone();
+
                     // Check if extension is supported for ExtensionExifToolSupportedList
                     // Not all files are able to write with exiftool
                     if(!Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
@@ -155,9 +161,8 @@ namespace starsky.Controllers
                     }
                     
                     var comparedNamesList = FileIndexCompareHelper.Compare(collectionsDetailView.FileIndexItem, statusModel, append);
+	                collectionsDetailView.FileIndexItem = RotatonCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
 	                changedFileIndexItemName.Add(collectionsDetailView.FileIndexItem.FilePath,comparedNamesList);
-	                
-                    RotatonCompare(rotateClock, detailView, comparedNamesList);
                     
                     // this one is good :)
 	                collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
@@ -165,6 +170,7 @@ namespace starsky.Controllers
                     // When it done this will be removed,
                     // to avoid conflicts
                     _readMeta.UpdateReadMetaCache(collectionFullPaths[i],collectionsDetailView.FileIndexItem);
+	                // update database cache
                     _query.CacheUpdateItem(new List<FileIndexItem>{collectionsDetailView.FileIndexItem});
                     
                     // The hash in FileIndexItem is not correct
@@ -180,12 +186,19 @@ namespace starsky.Controllers
 				for ( var i = 0; i < collectionsDetailViewList.Count; i++ )
 				{
 					var detailView = _query.SingleItem(collectionsDetailViewList[i].FilePath,null,collections,false);
-
 				
+					// used for tracking differences
 					var comparedNamesList = changedFileIndexItemName[detailView.FileIndexItem.FilePath];
-					detailView.FileIndexItem = FileIndexCompareHelper.SetCompare(detailView.FileIndexItem, inputModel, comparedNamesList);
-					RotatonCompare(rotateClock, detailView, comparedNamesList);
 
+					// the inputmodel is always DoNotChange, so updating is useless
+					inputModel.Orientation = detailView.FileIndexItem.Orientation;
+
+					if ( !_query.IsCacheEnabled() )
+					{
+						// when you disable cache the field is not filled with the data
+						detailView.FileIndexItem = FileIndexCompareHelper.SetCompare(detailView.FileIndexItem, inputModel, comparedNamesList);
+						detailView.FileIndexItem = RotatonCompare(rotateClock, detailView.FileIndexItem, comparedNamesList);
+					}
 						
 					var exiftool = new ExifToolCmdHelper(_appSettings,_exiftool);
 					var toUpdateFilePath = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.FilePath);

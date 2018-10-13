@@ -61,5 +61,7 @@ namespace starsky.Interfaces
 
         List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList);
         void CacheUpdateItem(List<FileIndexItem> updateStatusContent);
+
+	    bool IsCacheEnabled();
     }
 }

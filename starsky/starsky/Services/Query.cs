@@ -136,9 +136,14 @@ namespace starsky.Services
 	        
             return updateStatusContent;
         }
-        
 
-        // Private api within Query to add cached items
+	    public bool IsCacheEnabled()
+	    {
+		    if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
+		    return true;
+	    }
+
+	    // Private api within Query to add cached items
         public void AddCacheItem(FileIndexItem updateStatusContent)
         {
             // Add protection for disabeling caching
