@@ -122,58 +122,58 @@ namespace starsky.Controllers
 		[HttpPost]
 		public IActionResult Update(FileIndexItem inputModel, string f, bool append, bool collections = true,  int rotateClock = 0)
 		{
-            var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
-            // the result list
-            var fileIndexResultsList = new List<FileIndexItem>();
-            var changedFileIndexItemName = new Dictionary<string, List<string>>();
+			var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
+			// the result list
+			var fileIndexResultsList = new List<FileIndexItem>();
+			var changedFileIndexItemName = new Dictionary<string, List<string>>();
 			
-            foreach (var subPath in inputFilePaths)
-            {
-                var detailView = _query.SingleItem(subPath,null,collections,false);
-                var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
-	            
-	            var statusModel = inputModel.Clone();
-	            statusModel.IsDirectory = false;
-	            statusModel.SetFilePath(subPath);
+			foreach (var subPath in inputFilePaths)
+			{
+				var detailView = _query.SingleItem(subPath,null,collections,false);
+				var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+				
+				var statusModel = inputModel.Clone();
+				statusModel.IsDirectory = false;
+				statusModel.SetFilePath(subPath);
+				
+				// if one item fails, the status will added
+				if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+				
+				var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
+				var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
                 
-                // if one item fails, the status will added
-                if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
-                    
-                var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
-                var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
-                
-	            // loop to update
-                for (int i = 0; i < collectionSubPathList.Count; i++)
-                {
-	                var collectionsDetailView = _query.SingleItem(collectionSubPathList[i], null, collections, false);
-
-                    // Check if extension is supported for ExtensionExifToolSupportedList
-                    // Not all files are able to write with exiftool
-                    if(!Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
-                    {
-	                    collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
-                        fileIndexResultsList.Add(detailView.FileIndexItem);
-                        continue;
-                    }
-                    
-	                // compare and add changes to collectionsDetailView
-                    var comparedNamesList = FileIndexCompareHelper.Compare(collectionsDetailView.FileIndexItem, statusModel, append);
-	                
-	                // if requested, add changes to rotation
-	                collectionsDetailView.FileIndexItem = RotatonCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
-	                changedFileIndexItemName.Add(collectionsDetailView.FileIndexItem.FilePath,comparedNamesList);
-                    
-                    // this one is good :)
-	                collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-
-                    // When it done this will be removed,
-                    // to avoid conflicts
-                    _readMeta.UpdateReadMetaCache(collectionFullPaths[i],collectionsDetailView.FileIndexItem);
-	                // update database cache
-                    _query.CacheUpdateItem(new List<FileIndexItem>{collectionsDetailView.FileIndexItem});
-                    
-                    // The hash in FileIndexItem is not correct
-                    fileIndexResultsList.Add(collectionsDetailView.FileIndexItem);
+				// loop to update
+				for (int i = 0; i < collectionSubPathList.Count; i++)
+				{
+					var collectionsDetailView = _query.SingleItem(collectionSubPathList[i], null, collections, false);
+					
+					// Check if extension is supported for ExtensionExifToolSupportedList
+					// Not all files are able to write with exiftool
+					if(!Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
+					{
+						collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
+						fileIndexResultsList.Add(detailView.FileIndexItem);
+						continue;
+					}
+					
+					// compare and add changes to collectionsDetailView
+					var comparedNamesList = FileIndexCompareHelper.Compare(collectionsDetailView.FileIndexItem, statusModel, append);
+					
+					// if requested, add changes to rotation
+					collectionsDetailView.FileIndexItem = RotatonCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
+					changedFileIndexItemName.Add(collectionsDetailView.FileIndexItem.FilePath,comparedNamesList);
+					
+					// this one is good :)
+					collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+					
+					// When it done this will be removed,
+					// to avoid conflicts
+					_readMeta.UpdateReadMetaCache(collectionFullPaths[i],collectionsDetailView.FileIndexItem);
+					// update database cache
+					_query.CacheUpdateItem(new List<FileIndexItem>{collectionsDetailView.FileIndexItem});
+					
+					// The hash in FileIndexItem is not correct
+					fileIndexResultsList.Add(collectionsDetailView.FileIndexItem);
                 }
             }
 			
