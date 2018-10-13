@@ -22,12 +22,11 @@ namespace starsky.Controllers
         private readonly AppSettings _appSettings;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
         private readonly IReadMeta _readMeta;
-        private readonly IServiceScopeFactory _scopeFactory;
 
         public ApiController(
             IQuery query, IExiftool exiftool, 
             AppSettings appSettings, IBackgroundTaskQueue queue,
-            IReadMeta readMeta, IServiceScopeFactory scopeFactory
+            IReadMeta readMeta
             )
         {
             _appSettings = appSettings;
@@ -35,7 +34,6 @@ namespace starsky.Controllers
             _exiftool = exiftool;
             _bgTaskQueue = queue;
             _readMeta = readMeta;
-            _scopeFactory = scopeFactory;
         }
         
 
