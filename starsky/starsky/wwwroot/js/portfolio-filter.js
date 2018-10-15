@@ -407,9 +407,11 @@ function buildPage() {
 
     if (anchorurl != null) {
         anchorurl = anchorurl.replace(/(#a|a)nchor=/ig, "");
-        if (document.querySelectorAll('a[data-filename="' + anchorurl + '"]').length >= 1) {
-            var positionx = document.querySelector('a[data-filename="' + anchorurl + '"]').offsetTop;
-            console.log(positionx)
+        var queryDataFileName = 'a[data-filename="' + decodeURIComponent(anchorurl) + '"]';
+
+        if (document.querySelectorAll(queryDataFileName).length >= 1) {
+            var positionx = document.querySelector(queryDataFileName).offsetTop;
+            console.log(positionx);
             window.scrollTo(0, positionx);
         }
 
