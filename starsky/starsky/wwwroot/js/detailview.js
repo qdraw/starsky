@@ -436,6 +436,15 @@ checkIfContentIsNot204or202();
 function rotateOn202() {
 
     if (document.querySelectorAll(".main-image img").length === 0) return;
+
+    // in safari on iOS, but not on Mac OS, images are rotating based on jpeg exif
+    var isWebkit = 'WebkitAppearance' in document.documentElement.style;
+    var isSafari = navigator.userAgent.indexOf("Safari") >= 1;
+    if (((navigator.userAgent.indexOf("iPhone") > -1) || (navigator.userAgent.indexOf("iPad") > -1) )
+        && (isWebkit && isSafari ) && 
+        (updateApiBase.indexOf(".jpg") >= 1 || updateApiBase.indexOf(".jpeg") >= 1 ) ) {
+        return;
+    }
     
     var classList = document.querySelector(".main-image img").classList;
     if (classList.contains("disabled-Rotate90Cw")) {
