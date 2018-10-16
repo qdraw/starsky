@@ -11,17 +11,17 @@ namespace starsky.Helpers
 {
     public class RenameFs
     {
-        private readonly IQuery _query;
-        private readonly AppSettings _appSettings;
+		private readonly IQuery _query;
+		private readonly AppSettings _appSettings;
+		
+		public RenameFs(AppSettings appSettings, IQuery query)
+		{
+			_query = query;
+			_appSettings = appSettings;
+		}
 
-        public RenameFs(AppSettings appSettings, IQuery query)
-        {
-            _query = query;
-            _appSettings = appSettings;
-        }
-
-        public List<FileIndexItem> Rename(string f, string to, bool collections = true)
-        {
+		public List<FileIndexItem> Rename(string f, string to, bool collections = true)
+		{
 			var inputFileSubPaths = ConfigRead.SplitInputFilePaths(f);
 			var toFileSubPaths = ConfigRead.SplitInputFilePaths(to);
 			
@@ -53,13 +53,13 @@ namespace starsky.Helpers
 			
 			// Check if two list are the same lenght - Change this in the future BadRequest("f != to")
 			if (toFileSubPaths.Length != inputFileSubPaths.Length || 
-			    toFileSubPaths.Length == 0 || inputFileSubPaths.Length == 0) { 
+				toFileSubPaths.Length == 0 || inputFileSubPaths.Length == 0) { 
 				// files that not exist
-		        fileIndexResultsList.Add(new FileIndexItem
-		        {
-			        Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
-		        });
-		        return fileIndexResultsList;
+				fileIndexResultsList.Add(new FileIndexItem
+				{
+					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+				});
+				return fileIndexResultsList;
 	        }
 			
 			for (var i = 0; i < toFileSubPaths.Length; i++)
