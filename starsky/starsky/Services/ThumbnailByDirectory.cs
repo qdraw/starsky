@@ -28,7 +28,7 @@ namespace starsky.Services
                 var item = fileIndexList[i];
                 var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
                 base64ImageArray[i] = "data:image/png;base64," + Base64Helper
-                                          .ToBase64(new Thumbnail(null,null).ResizeThumbnailToStream(fullFilePath, 4, 0, 0, true,
+                                          .ToBase64(new Thumbnail(null).ResizeThumbnailToStream(fullFilePath, 4, 0, 0, true,
                                               Files.ImageFormat.png));
             }
             return base64ImageArray;
