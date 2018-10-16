@@ -37,5 +37,11 @@ namespace starskytests
             Assert.AreEqual("/nocache/nocache.jpg", singleItem.FilePath);
         }
 
+	    [TestMethod]
+	    public void Query_IsCacheEnabled_False()
+	    {
+		    Assert.AreEqual(false, _query.IsCacheEnabled());
+	    }
+	    
     }
 }

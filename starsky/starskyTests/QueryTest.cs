@@ -498,6 +498,11 @@ namespace starskytests
             Assert.AreEqual("updated",fileObjectByFilePath.Tags);
         }
 
+	    [TestMethod]
+	    public void Query_IsCacheEnabled_True()
+	    {
+		    Assert.AreEqual(true, _query.IsCacheEnabled());
+	    }
 
     }
 }
