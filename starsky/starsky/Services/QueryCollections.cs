@@ -50,7 +50,7 @@ namespace starsky.Services
             }
 
             // Then add the items that are non duplicate back to the list
-            foreach (var dbItem in databaseSubFolderList)
+            foreach (var dbItem in databaseSubFolderList.ToList())
             {
                 /// check if any item is duplicate
                 if (stackItemsByFileCollectionName.All(p => 
