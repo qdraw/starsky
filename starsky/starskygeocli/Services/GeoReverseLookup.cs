@@ -56,7 +56,7 @@ namespace starskyGeoCli.Services
         /// <param name="metaFilesInDirectory">List of files with metadata</param>
         /// <param name="overwriteLocationNames"></param>
         /// <returns>list that can be updated</returns>
-        private List<FileIndexItem> RemoveNoUpdateItems(IEnumerable<FileIndexItem> metaFilesInDirectory, 
+        public List<FileIndexItem> RemoveNoUpdateItems(IEnumerable<FileIndexItem> metaFilesInDirectory, 
             bool overwriteLocationNames)
         {
             // this will overwrite the location names, that have a gps location 

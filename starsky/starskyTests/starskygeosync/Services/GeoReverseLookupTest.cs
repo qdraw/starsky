@@ -53,8 +53,18 @@ namespace starskytests.starskygeosync.Services
 
             
         }
-        
-        
-        
+
+	    [TestMethod]
+	    public void GeoReverseLookup_RemoveNoUpdateItemsTest()
+	    {
+		    var list = new List<FileIndexItem>
+		    {
+			    new FileIndexItem(),
+			    new FileIndexItem{ Latitude = 50, Longitude = 50}
+		    };
+		    var result = new GeoReverseLookup(_appSettings).RemoveNoUpdateItems(list,true);
+		    Assert.AreEqual(1, result.Count);
+	    }
+
     }
 }
