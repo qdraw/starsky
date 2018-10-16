@@ -13,7 +13,7 @@ namespace starsky.Helpers
         /// <returns>byte array</returns>
         public static byte[] TryParse(string inputstring)
         {
-            if (inputstring?.Length % 4 != 0 || !_rx.IsMatch(inputstring)) return null;
+			if (inputstring?.Length % 4 != 0 || !_rx.IsMatch(inputstring)) return new byte[0];
             return Convert.FromBase64String(inputstring);
             // Source: https://stackoverflow.com/questions/7686585/something-like-tryparse-from-convert-frombase64string
         }

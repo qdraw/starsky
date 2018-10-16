@@ -26,7 +26,7 @@ namespace starskytests
             builder.UseInMemoryDatabase("test");
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
-            _query = new Query(context,_memoryCache);
+            _query = new Query(context,_memoryCache, new AppSettings());
         }
 
         private readonly Query _query;

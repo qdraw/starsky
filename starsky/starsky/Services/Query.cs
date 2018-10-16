@@ -178,14 +178,20 @@ namespace starsky.Services
 				if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
 				
 				var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
+
+				// make it a list to avoid enum errors
+				displayFileFolders = displayFileFolders.ToList();
 				
-				var obj = displayFileFolders.ToList().FirstOrDefault(p => p.FilePath == item.FilePath);
+				var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
 				if (obj == null) return;
 				displayFileFolders.Remove(obj);
 				// Add here item to cached index
 				displayFileFolders.Add(item);
+				
+				// make it a list to avoid enum errors
+				displayFileFolders = displayFileFolders.ToList();
 				// Order by filename
-				displayFileFolders = displayFileFolders.ToList().OrderBy(p => p.FileName).ToList();
+				displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
 				
 				_cache.Remove(queryCacheName);
 				_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));

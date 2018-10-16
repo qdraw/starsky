@@ -60,7 +60,7 @@ namespace starsky.Helpers
 			        Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
 		        });
 		        return fileIndexResultsList;
-	        };
+	        }
 			
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{

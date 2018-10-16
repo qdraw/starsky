@@ -344,12 +344,10 @@ namespace starsky.Helpers
                 {
                     getAll = true;
                 }
-                if ((args[arg].ToLower() == "--all" 
-                     || args[arg].ToLower() == "-a") 
-                    && (arg + 1) != args.Count)
-                {
-                    if (args[arg + 1].ToLower() == "false") getAll = false;
-                }
+
+	            if ( ( args[arg].ToLower() != "--all" && args[arg].ToLower() != "-a" ) ||
+	                 ( arg + 1 ) == args.Count ) continue;
+	            if (args[arg + 1].ToLower() == "false") getAll = false;
             }
             return getAll;
         }
