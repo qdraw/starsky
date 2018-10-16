@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
@@ -53,7 +51,8 @@ namespace starsky.Helpers
 			
 			// Check if two list are the same lenght - Change this in the future BadRequest("f != to")
 			if (toFileSubPaths.Length != inputFileSubPaths.Length || 
-				toFileSubPaths.Length == 0 || inputFileSubPaths.Length == 0) { 
+				toFileSubPaths.Length == 0 || inputFileSubPaths.Length == 0) 
+			{ 
 				// files that not exist
 				fileIndexResultsList.Add(new FileIndexItem
 				{
@@ -84,7 +83,8 @@ namespace starsky.Helpers
 				
 				var fileIndexItems = new List<FileIndexItem>();
 				if (Files.IsFolderOrFile(inputFileFullPath) 
-					== FolderOrFileModel.FolderOrFileTypeList.Folder) {
+					== FolderOrFileModel.FolderOrFileTypeList.Folder)
+				{
 					//move
 					Directory.Move(inputFileFullPath,toFileFullPath);
 					
