@@ -192,6 +192,7 @@ namespace starsky.Helpers
         /// <returns>true, if Sidecar is required</returns>
         public static bool IsXmpSidecarRequired(string fullFilePath)
         {
+	        if ( string.IsNullOrEmpty(fullFilePath) ) return false;
             // Use an XMP File -> as those files don't support those tags
             if (ExtensionForceXmpUseList.Contains(Path.GetExtension(fullFilePath).Replace(".", string.Empty).ToLower()))
             {

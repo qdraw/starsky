@@ -37,6 +37,7 @@ namespace starskytests.starskygeosync.Services
 	            new FileIndexItem
 	            {
 		            FileName = "test.jpg", //<= used to check
+		            ParentDirectory = "/",
 		            Latitude = 1,
 		            Longitude = 1,
 		            LocationAltitude = 1,
