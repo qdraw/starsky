@@ -44,7 +44,7 @@ namespace starsky.Services
                 if (querySubFolderList.Any(p => p.FileCollectionName == stackItemByName.FileCollectionName))
                 {
                     // need to add docs
-                    Console.WriteLine(">> Error code 4567890-098765");
+					if(_appSettings.Verbose) Console.WriteLine(">> Error code 4567890-098765");
                 }
 
             }

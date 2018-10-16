@@ -8,12 +8,12 @@
 }
 
 <div class="archive trash">
-    <div id="popup" onclick="hideDeleteDialog()">
+    <div id="popup" onclick="hidePopupDialog()">
         <div class="content">
             <p>Weet je het zeker dat je deze bestanden wilt verwijderen?</p>
             <p>
                 <a onClick="queryDeleteApi()" class="btn-sm btn btn-danger delete">Verwijder van schijf</a>
-                <a onClick="hideDeleteDialog()" class="btn-sm btn btn-default">Nee</a>
+                <a onClick="hidePopupDialog()" class="btn-sm btn btn-default">Nee</a>
             </p>
         </div>
     </div>
@@ -44,7 +44,7 @@
             <div class="js-controls">
                 <div class="addDeleteTag">
                     <h4>Danger zone:</h4>
-                    <a onClick="showDeleteDialog()" class="btn-sm btn btn-danger delete">Verwijder van schijf</a>
+                    <a onClick="showPopupDialog()" class="btn-sm btn btn-danger delete">Verwijder van schijf</a>
                 </div>
             </div>
         </div>

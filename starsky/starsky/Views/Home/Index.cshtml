@@ -6,6 +6,14 @@
     ViewData["Title"] = Model.SearchQuery + " Index view ";
 }
 <div class="archive">
+    <div id="popup" onclick="hidePopupDialog()">
+        <div class="content">
+            <p></p>
+            <p>
+                <a onClick="hidePopupDialog()" class="btn-sm btn btn-default">Oke</a>
+            </p>
+        </div>
+    </div>
     
     <div class="sidebar readonly-@{@Model.IsReadOnly.ToString().ToLower()}">
         <div class="close" onclick="toggleSideMenu()"></div>

@@ -172,7 +172,7 @@
 <div class="detailview">
     <h4 class="nextprev">
         &nbsp;
-        @if (@Model.RelativeObjects.PrevFilePath != null)
+        @if ( @Model.RelativeObjects.PrevFilePath != null )
         {
             var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.PrevFilePath});
             urlPath = urlPath.Replace("%2F", "/");
@@ -180,29 +180,29 @@
         }
 
         <span class="js-filterinfo">
-            @if (@Model.ColorClassFilterList.Any())
+            @if ( @Model.ColorClassFilterList.Any() )
             {
                 <text>Filters:</text>
-                foreach(var item in Model.ColorClassFilterList)
+                foreach ( var item in Model.ColorClassFilterList )
                 {
-                    var enumValue = (int) item;
+                    var enumValue = ( int ) item;
                     <span class="sqbox on colorclass-@enumValue"></span>
                 }
-                
+
             }
         </span>
-        
-        @if (@Model.ColorClassFilterList.Any() && !Model.ColorClassFilterList.Contains(
-            @Model.FileIndexItem.ColorClass))
+
+        @if ( @Model.ColorClassFilterList.Any() && !Model.ColorClassFilterList.Contains(
+            @Model.FileIndexItem.ColorClass) )
         {
             <span>&nbsp;&nbsp;Deze file is buiten de ColorClass selectie</span>
         }
-        
-        @if (@Model.FileIndexItem.Tags.Contains("!delete!"))
+
+        @if ( @Model.FileIndexItem.Tags.Contains("!delete!") )
         {
             <span>Verwijderd bestand!</span>
         }
-        @if (@Model.RelativeObjects.NextFilePath != null)
+        @if ( @Model.RelativeObjects.NextFilePath != null )
         {
             var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.NextFilePath});
             urlPath = urlPath.Replace("%2F", "/");
@@ -212,14 +212,14 @@
     </h4>
 
     <h1 class="breadcrumb">
-        @foreach (var item in Model.Breadcrumb)
+        @foreach ( var item in Model.Breadcrumb )
         {
             var name = @item.Split("/")[item.Split("/").Length - 1];
-            if (name == "")
+            if ( name == "" )
             {
                 name = "Home";
             }
-            
+
             var urlPath = @Url.Action("Index", "Home", new {f = @item});
             urlPath = urlPath.Replace("%2F", "/");
             <a href="@urlPath">@name</a>
@@ -232,7 +232,7 @@
     </h1>
 
     <div class="main-image">
-        <img class="disabled-@Model.FileIndexItem.Orientation" src="@Url.Action("Thumbnail", "Api", new { f = @Model.FileIndexItem.FileHash, issingleitem = true })" />
+        <img class="disabled-@Model.FileIndexItem.Orientation" src="@Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash, issingleitem = true})"/>
     </div>
 </div>
 
