@@ -491,7 +491,10 @@ function updateColorClass(those) {
         function(data) {
             location.reload();
         },
-        function (xhr) { console.error(xhr); },
+        function (xhr) { 
+            console.error(xhr);
+            alert(xhr.response);
+        },
         "POST",
         "f=" + toupdateFiles + "&colorClass=" + those.dataset.colorclass
     );
