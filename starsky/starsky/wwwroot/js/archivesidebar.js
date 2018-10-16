@@ -486,14 +486,14 @@ function addNoClickToSidebar() {
 // Used in <div class="add-colorclass">
 function updateColorClass(those) {
     var toupdateFiles = toSubpath();
-    var url = updateApiBase + "?f=" + toupdateFiles + "&colorClass=" + those.dataset.colorclass;
     addNoClickToSidebar();
-    loadJSON(url,
+    loadJSON(updateApiBase,
         function(data) {
             location.reload();
         },
         function (xhr) { console.error(xhr); },
-        "POST"
+        "POST",
+        "f=" + toupdateFiles + "&colorClass=" + those.dataset.colorclass
     );
 }
 
