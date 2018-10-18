@@ -236,13 +236,15 @@ namespace starsky.Helpers
 
         public void CopyExif(string fullSourceImage, string thumbPath, string append = "")
         {
-            // Reset Orientation on thumbpath
-            
-            // Do an ExifTool exif sync for the file
-            if(_exiftool == null && _appSettings.Verbose) Console.WriteLine("Exiftool disabled");
-            _exiftool?.BaseCommmand(" -overwrite_original -TagsFromFile \"" + fullSourceImage + "\"",
-                "\"" + thumbPath + "\"" + " -Orientation=" + append);
-            // Reset orentation
+			// ignore files that are not exist
+			if(Files.IsFolderOrFile(fullSourceImage) != FolderOrFileModel.FolderOrFileTypeList.File) return;
+			
+			// Reset Orientation on thumbpath
+			// Do an ExifTool exif sync for the file
+			if(_exiftool == null && _appSettings.Verbose) Console.WriteLine("Exiftool disabled");
+			_exiftool?.BaseCommmand(" -overwrite_original -TagsFromFile \"" + fullSourceImage + "\"",
+				"\"" + thumbPath + "\"" + " -Orientation=" + append);
+			// Reset orentation
         }
     }
 }
