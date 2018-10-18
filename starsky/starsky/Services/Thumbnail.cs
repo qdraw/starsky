@@ -140,8 +140,13 @@ namespace starsky.Services
                     return true; // creating is succesfull; already exist
                 }
 
-                if (!_isErrorItem(GetErrorLogItemFullPath(fullFilePath))) return false;
-                // File is already tested
+	            if( new PlainTextFileHelper().ReadFile(GetErrorLogItemFullPath(fullFilePath)).Contains("Thumbnail error") )
+		            return false;
+	            // File is already tested
+
+	            
+//				if (Files.IsFolderOrFile(GetErrorLogItemFullPath(fullFilePath))
+//					== FolderOrFileModel.FolderOrFileTypeList.File) return false;
                 
 
                 // Wrapper to check if the thumbservice is not waiting forever
@@ -151,7 +156,10 @@ namespace starsky.Services
                 if(isSuccesResult) Console.WriteLine(".");
                 RemoveCorruptImage(thumbPath);
                 // Log the corrupt image
-                if(!isSuccesResult) CreateErrorLogItem(GetErrorLogItemFullPath(fullFilePath));
+				if ( !isSuccesResult )
+				{
+					new PlainTextFileHelper().WriteFile(GetErrorLogItemFullPath(fullFilePath),"Thumbnail error");
+				}
                 
                 return isSuccesResult;
             }
@@ -388,47 +396,49 @@ namespace starsky.Services
         
         
         
-        private static readonly string _thumbnailErrorMessage = "Thumbnail error";
-        private static readonly string _thumbnailPrefix = "_";
-        private static readonly string _thumbnailSuffix = "_starksy-error.log";
-
-//        // todo: replace this code with something good
-        
-        private string GetErrorLogItemFullPath(string inputFullFilePath)
-        {
-             return Path.GetDirectoryName(inputFullFilePath) 
-                  + Path.DirectorySeparatorChar 
-                  + _thumbnailPrefix
-                  + Path.GetFileNameWithoutExtension(inputFullFilePath)
-                  + ".log";
-        }
-
-        public void CreateErrorLogItem(string path)
-        {
-            if (File.Exists(path)) return;
-            
-            // Create a file to write to.
-            using (StreamWriter sw = File.CreateText(path)) 
-            {
-                sw.WriteLine(_thumbnailErrorMessage);
-            }
-        }
-        
-        // todo: Use PlainTextFileHelper
-        private bool _isErrorItem(string inputDatabaseFilePath)
-        {
-            var path = GetErrorLogItemFullPath(inputDatabaseFilePath);
-            if (!File.Exists(path)) return true;
-            
-            using (StreamReader sr = File.OpenText(path)) 
-            {
-                string s = "";
-                while ((s = sr.ReadLine()) != null)
-                {
-                    if (s.Contains(_thumbnailErrorMessage)) return false;
-                }
-            }
-            return true;
-        }
+//        private static readonly string _thumbnailErrorMessage = "Thumbnail error";
+//        private static readonly string _thumbnailSuffix = "_starksy-error.log";
+//
+////        // todo: replace this code with something good
+//        
+	    
+		private static readonly string _thumbnailPrefix = "_";
+		
+		private string GetErrorLogItemFullPath(string inputFullFilePath)
+		{
+			return Path.GetDirectoryName(inputFullFilePath) 
+				+ Path.DirectorySeparatorChar 
+				+ _thumbnailPrefix
+				+ Path.GetFileNameWithoutExtension(inputFullFilePath)
+				+ ".log";
+		}
+//
+//        public void CreateErrorLogItem(string path)
+//        {
+//            if (File.Exists(path)) return;
+//            
+//            // Create a file to write to.
+//            using (StreamWriter sw = File.CreateText(path)) 
+//            {
+//                sw.WriteLine(_thumbnailErrorMessage);
+//            }
+//        }
+//        
+//        // todo: Use PlainTextFileHelper
+//        private bool _isErrorItem(string inputDatabaseFilePath)
+//        {
+//            var path = GetErrorLogItemFullPath(inputDatabaseFilePath);
+//            if (!File.Exists(path)) return true;
+//            
+//            using (StreamReader sr = File.OpenText(path)) 
+//            {
+//                string s = "";
+//                while ((s = sr.ReadLine()) != null)
+//                {
+//                    if (s.Contains(_thumbnailErrorMessage)) return false;
+//                }
+//            }
+//            return true;
+//        }
     }
 }

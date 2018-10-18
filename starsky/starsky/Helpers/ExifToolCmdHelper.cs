@@ -238,7 +238,8 @@ namespace starsky.Helpers
         {
 			// ignore files that are not exist
 			if(Files.IsFolderOrFile(fullSourceImage) != FolderOrFileModel.FolderOrFileTypeList.File) return;
-			
+	        if(Files.IsFolderOrFile(thumbPath) != FolderOrFileModel.FolderOrFileTypeList.File) return;
+
 			// Reset Orientation on thumbpath
 			// Do an ExifTool exif sync for the file
 			if(_exiftool == null && _appSettings.Verbose) Console.WriteLine("Exiftool disabled");
