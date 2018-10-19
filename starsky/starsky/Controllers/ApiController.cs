@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.Helpers;
 using starsky.Interfaces;
 using starsky.Models;
@@ -155,10 +153,12 @@ namespace starsky.Controllers
 					}
 					
 					// compare and add changes to collectionsDetailView
-					var comparedNamesList = FileIndexCompareHelper.Compare(collectionsDetailView.FileIndexItem, statusModel, append);
+					var comparedNamesList = FileIndexCompareHelper
+						.Compare(collectionsDetailView.FileIndexItem, statusModel, append);
 					
 					// if requested, add changes to rotation
-					collectionsDetailView.FileIndexItem = RotatonCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
+					collectionsDetailView.FileIndexItem = 
+						RotatonCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
 					changedFileIndexItemName.Add(collectionsDetailView.FileIndexItem.FilePath,comparedNamesList);
 					
 					// this one is good :)
@@ -193,7 +193,8 @@ namespace starsky.Controllers
 					if ( !_query.IsCacheEnabled() )
 					{
 						// when you disable cache the field is not filled with the data
-						detailView.FileIndexItem = FileIndexCompareHelper.SetCompare(detailView.FileIndexItem, inputModel, comparedNamesList);
+						detailView.FileIndexItem = FileIndexCompareHelper
+							.SetCompare(detailView.FileIndexItem, inputModel, comparedNamesList);
 						detailView.FileIndexItem = RotatonCompare(rotateClock, detailView.FileIndexItem, comparedNamesList);
 					}
 						
@@ -571,7 +572,7 @@ namespace starsky.Controllers
             if (!_appSettings.AddMemoryCache)
             {
 				Response.StatusCode = 412;
-				if(!json) return RedirectToAction("Index", "Home", new { f = f });
+				if(!json) return RedirectToAction("Index", "Home", new { f });
 				return Json("cache disabled in config");
             }
 
@@ -580,11 +581,11 @@ namespace starsky.Controllers
             {
                 var displayFileFolders = _query.DisplayFileFolders(f);
                 _query.RemoveCacheParentItem(displayFileFolders,f);
-                if(!json) return RedirectToAction("Index", "Home", new { f = f });
+                if(!json) return RedirectToAction("Index", "Home", new { f });
                 return Json("cache succesfull cleared");
             }
 
-            if(!json) return RedirectToAction("Index", "Home", new { f = f });
+            if(!json) return RedirectToAction("Index", "Home", new { f });
             return BadRequest("ignored, please check if the 'f' path exist or use a folder string to clear the cache");
         }
 

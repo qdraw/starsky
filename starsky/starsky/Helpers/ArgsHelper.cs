@@ -132,7 +132,8 @@ namespace starsky.Helpers
                     Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
                                       ", use for example '1' to select yesterday. (structure is required)");
                     Console.WriteLine("-p, -s, -g == you need to select one of those tags");
-                    Console.WriteLine("--all or -a == overwrite reverse geotag location tags (default: false / ignore already taged files) ");
+                    Console.WriteLine("--all or -a == overwrite reverse geotag location tags " +
+                                      "(default: false / ignore already taged files) ");
                     Console.WriteLine("--index or -i == parameter: (bool) ; gpx feature to index geo location, default true");
 
                     break;
@@ -148,9 +149,12 @@ namespace starsky.Helpers
                     Console.WriteLine("--path or -p == parameter: (string) ; fullpath");
                     Console.WriteLine("                can be an folder or file");
                     Console.WriteLine("--move or -m == delete file after importing (default false / copy file)");
-                    Console.WriteLine("--all or -a == import all files including files older than 2 years (default: false / ignore old files) ");
-                    Console.WriteLine("--recursive or -r == Import Directory recursive (default: false / only the selected folder) ");
-                    Console.WriteLine("--structure == overwrite appsettings with filedirectory structure based on exif and filename create datetime");
+                    Console.WriteLine("--all or -a == import all files including files older than 2 years" +
+                                      " (default: false / ignore old files) ");
+                    Console.WriteLine("--recursive or -r == Import Directory recursive " +
+                                      "(default: false / only the selected folder) ");
+                    Console.WriteLine("--structure == overwrite appsettings with filedirectory structure "+
+                                      "based on exif and filename create datetime");
                     break;
                 case AppSettings.StarskyAppType.Sync:
                     // When this change please update ./readme.md
@@ -163,7 +167,8 @@ namespace starsky.Helpers
                     Console.WriteLine("-p, -s, -g == you need to select one of those tags");
                     Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
                     Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
-                    Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder (heavy cpu usage), default false");
+                    Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder " +
+                                      "(heavy cpu usage), default false");
                     Console.WriteLine("--verbose or -v == verbose, more detailed info");
                     Console.WriteLine("--databasetype or -d == Overwrite EnvironmentVariable for DatabaseType");
                     Console.WriteLine("--basepath or -b == Overwrite EnvironmentVariable for StorageFolder");

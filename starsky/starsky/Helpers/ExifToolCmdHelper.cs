@@ -43,7 +43,8 @@ namespace starsky.Helpers
                 
                     if (Files.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
                     {
-                        _exiftool.BaseCommmand(" -overwrite_original -TagsFromFile \""  + fullFilePath + "\"",  "\""+ xmpFullPath +  "\"");
+                        _exiftool.BaseCommmand(" -overwrite_original -TagsFromFile \""  
+                                               + fullFilePath + "\"",  "\""+ xmpFullPath +  "\"");
                     }
                     // to continue as xmp file
                     fullFilePathsList.Add(xmpFullPath);
@@ -122,7 +123,8 @@ namespace starsky.Helpers
             return command;
         }
 
-        private string UpdateLocationAltitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+        private string UpdateLocationAltitudeCommand(
+	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
             // -GPSAltitude="+160" -GPSAltitudeRef=above
             if (comparedNames.Contains("LocationAltitude"))
@@ -141,13 +143,15 @@ namespace starsky.Helpers
             return command;
         }
 
-        private string UpdateGPSLatitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+        private string UpdateGPSLatitudeCommand(
+	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
             // CultureInfo.InvariantCulture is used for systems where comma is the default seperator
             if (comparedNames.Contains("Latitude"))
             {
                 command += " -GPSLatitude=\"" + updateModel.Latitude.ToString(CultureInfo.InvariantCulture) 
-                                                              + "\" -GPSLatitudeRef=\"" + updateModel.Latitude.ToString(CultureInfo.InvariantCulture) + "\" ";
+                                                              + "\" -GPSLatitudeRef=\"" 
+                                              + updateModel.Latitude.ToString(CultureInfo.InvariantCulture) + "\" ";
             }
             return command;
         }
@@ -157,7 +161,8 @@ namespace starsky.Helpers
             if (comparedNames.Contains("Longitude"))
             {
                 command += " -GPSLongitude=\"" + updateModel.Longitude.ToString(CultureInfo.InvariantCulture) 
-                                              + "\" -GPSLongitudeRef=\"" + updateModel.Longitude.ToString(CultureInfo.InvariantCulture) + "\" ";
+                                              + "\" -GPSLongitudeRef=\"" 
+                                               + updateModel.Longitude.ToString(CultureInfo.InvariantCulture) + "\" ";
             }
             return command;
         }
@@ -192,7 +197,8 @@ namespace starsky.Helpers
             return command;
         }
         
-        private static string UpdateLocationCountryCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+        private static string UpdateLocationCountryCommand(
+	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
             if (comparedNames.Contains("LocationCountry"))
             {
