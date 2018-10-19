@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -223,21 +222,15 @@ namespace starsky.Models
         private string _thumbnailTempFolder;
         public string ThumbnailTempFolder
         {
-            get { return _thumbnailTempFolder; }
-            set
-            {
-                _thumbnailTempFolder = ConfigRead.AddBackslash(value);
-            }
+            get => _thumbnailTempFolder;
+	        set => _thumbnailTempFolder = ConfigRead.AddBackslash(value);
         }
         
         private string _tempFolder;
         public string TempFolder
         {
-            get { return _tempFolder; }
-            set
-            {
-                _tempFolder = ConfigRead.AddBackslash(value);
-            }
+            get => _tempFolder;
+	        set => _tempFolder = ConfigRead.AddBackslash(value);
         }
 
 

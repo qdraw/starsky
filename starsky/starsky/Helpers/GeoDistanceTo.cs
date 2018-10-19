@@ -17,7 +17,8 @@ namespace starsky.Helpers
             double dlon = Radians(longitudeTo - longitudeFrom);
             double dlat = Radians(latitudeTo - latitudeFrom);
 
-            double a = (Math.Sin(dlat / 2) * Math.Sin(dlat / 2)) + Math.Cos(Radians(latitudeFrom)) * Math.Cos(Radians(latitudeTo)) * (Math.Sin(dlon / 2) * Math.Sin(dlon / 2));
+            double a = (Math.Sin(dlat / 2) * Math.Sin(dlat / 2)) + 
+                       Math.Cos(Radians(latitudeFrom)) * Math.Cos(Radians(latitudeTo)) * (Math.Sin(dlon / 2) * Math.Sin(dlon / 2));
             double angle = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
             return angle * Radius;
         }

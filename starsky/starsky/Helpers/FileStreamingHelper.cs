@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Net.Http.Headers;
 using starsky.Models;
 using starsky.Services;
@@ -17,7 +13,7 @@ namespace starsky.Helpers
 {
     public static class FileStreamingHelper
     {
-        private static readonly FormOptions _defaultFormOptions = new FormOptions();
+        private static readonly FormOptions DefaultFormOptions = new FormOptions();
 
         public static async Task<List<string>> StreamFile(this HttpRequest request, AppSettings appSettings)
         {
@@ -39,7 +35,7 @@ namespace starsky.Helpers
                        + Path.GetExtension(request.Headers["filename"]);
             
             var requestHeadersBytes = Base64Helper.TryParse(request.Headers["filename"]);
-            var requestHeaders = System.Text.Encoding.ASCII.GetString(requestHeadersBytes);
+            var requestHeaders = Encoding.ASCII.GetString(requestHeadersBytes);
             return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders)) + Path.GetExtension(requestHeaders);
         }
 
@@ -81,7 +77,7 @@ namespace starsky.Helpers
 
             var boundary = MultipartRequestHelper.GetBoundary(
                 MediaTypeHeaderValue.Parse(contentType),
-                _defaultFormOptions.MultipartBoundaryLengthLimit);
+                DefaultFormOptions.MultipartBoundaryLengthLimit);
             var reader = new MultipartReader(boundary, requestBody);
 
             var section = await reader.ReadNextSectionAsync();

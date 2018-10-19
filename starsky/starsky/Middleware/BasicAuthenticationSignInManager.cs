@@ -1,7 +1,4 @@
-﻿using System;
-using System.Security.Authentication;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using starsky.Interfaces;
 
@@ -43,7 +40,7 @@ namespace starsky.Middleware
                     return;
                 }
 
-                await _userManager.SignIn(_context, validateResult.User,false);
+                await _userManager.SignIn(_context, validateResult.User);
 
 //                // Add ClaimsIdentity
 //                var claims = new[] { new Claim("name", _authenticationHeaderValue.UserPassword), new Claim(ClaimTypes.Role, "Admin") };
