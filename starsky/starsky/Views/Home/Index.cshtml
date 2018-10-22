@@ -160,7 +160,7 @@
     
                 @if (!string.IsNullOrWhiteSpace(@item.FileHash))
                 {
-                    <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash, issingleitem = false })" alt=""/>
+                    <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash + ".jpg", issingleitem = false })" alt=""/>
                 }
                 else
                 {

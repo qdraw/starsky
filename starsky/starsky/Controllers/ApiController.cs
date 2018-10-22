@@ -407,7 +407,13 @@ namespace starsky.Controllers
             // isSingleItem => detailview
             // Retry thumbnail => is when you press reset thumbnail
             // json, => to don't waste the users bandwith.
-            
+
+	        // For serving jpeg files
+	        if ( Path.HasExtension(f) && Path.GetExtension(f) == ".jpg" )
+	        {
+		        f = f.Remove(f.Length - 4);
+	        }
+	        
             var thumbPath = _appSettings.ThumbnailTempFolder + f + ".jpg";
 
             if (Files.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
