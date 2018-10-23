@@ -98,7 +98,6 @@ namespace starsky.Helpers
 				else // file>
 				{
 					File.Move(inputFileFullPath,toFileFullPath);
-					fileIndexItems.Add(detailView.FileIndexItem);
 				}
 				
 				// Rename parent item >eg the folder or file
