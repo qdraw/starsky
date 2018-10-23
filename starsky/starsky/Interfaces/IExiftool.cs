@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using starsky.Models;
+﻿using starsky.Models;
 
 namespace starsky.Interfaces
 {

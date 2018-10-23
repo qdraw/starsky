@@ -13,9 +13,9 @@ namespace starsky.Services
         {
             
             // Get a list of duplicate items
-            var stackItemsByFileCollectionName = databaseSubFolderList.GroupBy(item => item.FileCollectionName)
+            var stackItemsByFileCollectionName = databaseSubFolderList.ToList().GroupBy(item => item.FileCollectionName)
                 .SelectMany(grp => grp.Skip(1).Take(1)).ToList();
-            
+			// databaseSubFolderList.ToList() > Collection was modified; enumeration operation may not execute.
             
             // duplicateItemsByFilePath > 
             // If you have 3 item with the same name it will include 1 name
@@ -44,13 +44,13 @@ namespace starsky.Services
                 if (querySubFolderList.Any(p => p.FileCollectionName == stackItemByName.FileCollectionName))
                 {
                     // need to add docs
-                    Console.WriteLine(">> Error code 4567890-098765");
+					if(_appSettings.Verbose) Console.WriteLine(">> Error code 4567890-098765");
                 }
 
             }
 
             // Then add the items that are non duplicate back to the list
-            foreach (var dbItem in databaseSubFolderList)
+            foreach (var dbItem in databaseSubFolderList.ToList())
             {
                 /// check if any item is duplicate
                 if (stackItemsByFileCollectionName.All(p => 

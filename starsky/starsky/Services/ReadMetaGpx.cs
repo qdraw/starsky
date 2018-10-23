@@ -11,6 +11,8 @@ namespace starsky.Services
 {
     public partial class ReadMeta
     {
+	    private const string GpxXmlNameSpaceName = "http://www.topografix.com/GPX/1/1"; 
+	    
         public FileIndexItem ReadGpxFromFileReturnAfterFirstField(string fullFilePath)
         {
             if (Files.IsFolderOrFile(fullFilePath) != FolderOrFileModel.FolderOrFileTypeList.File) 
@@ -78,7 +80,7 @@ namespace starsky.Services
             gpxDoc.LoadXml(fileString);
             
             XmlNamespaceManager namespaceManager = new XmlNamespaceManager(gpxDoc.NameTable);
-            namespaceManager.AddNamespace("x", "http://www.topografix.com/GPX/1/1");
+			namespaceManager.AddNamespace("x", GpxXmlNameSpaceName);
             
             XmlNodeList nodeList = gpxDoc.SelectNodes("//x:trkpt", namespaceManager);
 

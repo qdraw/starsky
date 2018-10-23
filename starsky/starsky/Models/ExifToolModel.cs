@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using starsky.Helpers;
 
 namespace starsky.Models
@@ -59,27 +57,28 @@ namespace starsky.Models
             }
         }
 
-        private HashSet<string> keywords = new HashSet<string>();
+        private HashSet<string> _keywords = new HashSet<string>();
         
         public HashSet<string> Keywords
         {
-            get { return keywords; } // keep null? temp off
+            get => _keywords;
+			// keep null? temp off
             set {
                     if (value != null)
                     {
-                        keywords = value; 
+                        _keywords = value; 
                     }
             }
         }
 
         public string Tags
         {
-            get { return HashSetHelper.HashSetToString(keywords); }
+            get { return HashSetHelper.HashSetToString(_keywords); }
             set
             {
                 if (!string.IsNullOrWhiteSpace(value))
                 {
-                    keywords = HashSetHelper.StringToHashSet(value);
+                    _keywords = HashSetHelper.StringToHashSet(value);
                 }
             }
         }
@@ -88,9 +87,9 @@ namespace starsky.Models
         public HashSet<string> Subject
         {
             set {
-                if (keywords.Count == 0)
+                if (_keywords.Count == 0)
                 {
-                    keywords = value;
+                    _keywords = value;
                 }
             }
             get => null;

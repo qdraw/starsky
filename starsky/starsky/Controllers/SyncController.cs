@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.Helpers;
 using starsky.Interfaces;
 using starsky.Models;

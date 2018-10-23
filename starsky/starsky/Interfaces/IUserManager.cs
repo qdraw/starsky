@@ -14,15 +14,15 @@ namespace starsky.Interfaces
     
     public class SignUpResult
     {
-        public User User { get; set; }
-        public bool Success { get; set; }
-        public SignUpResultError? Error { get; set; }
+        public User User { get; }
+        public bool Success { get; private set; }
+        public SignUpResultError? Error { get; }
         
         public SignUpResult(User user = null, bool success = false, SignUpResultError? error = null)
         {
-            this.User = user;
-            this.Success = success;
-            this.Error = error;
+            User = user;
+            Success = success;
+            Error = error;
         }
     }
     

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -166,6 +167,27 @@ namespace starskytests.Services
             File.Delete(thumbnailPath);
 
         }
+	    
+	    
+	    [TestMethod]
+	    public void ThumbnailByDirectory_Check_HashTest()
+	    {
+		    var createAnImage = new CreateAnImage();
+		    _appSettings.ThumbnailTempFolder = createAnImage.BasePath;;
+		    _appSettings.StorageFolder = createAnImage.BasePath;
+
+
+		    var listOfFileIndexItems = new List<FileIndexItem> {
+			    new FileIndexItem
+				{
+					FileName = createAnImage.FileName,
+					ParentDirectory = "/",
+				}
+		    };
+		    // Create an thumbnail in base64 based on the image
+		    var base64DataUriList = new ThumbnailByDirectory(_appSettings,null).ToBase64DataUriList(listOfFileIndexItems);
+		    Assert.AreEqual(true,base64DataUriList.FirstOrDefault().Contains("data:image"));
+	    }
 
         [TestMethod]
         public void Thumbnail_ResizeThumbnailToStream_JPEG_Test()

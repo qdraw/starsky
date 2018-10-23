@@ -1,8 +1,6 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
-using starsky.Models;
 
 namespace starsky.Controllers
 {
@@ -20,7 +18,7 @@ namespace starsky.Controllers
         [ActionName("Index")]
         public IActionResult IndexPost(string t)
         {
-            return RedirectToAction("Index", new { t = t, p = 0 });
+			return RedirectToAction("Index", new {t, p = 0 });
         }
 
         [HttpGet]

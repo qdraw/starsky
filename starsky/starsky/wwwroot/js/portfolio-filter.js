@@ -191,7 +191,9 @@ function readVariable (those) {
 
         // set the selected checkboxes to active;
         for (i = 0; i < selectedVar.length; i++) {
-            document.querySelector("#portfolio-filter ul #" + selectedVar[i]).className = "active";
+            if (document.querySelectorAll("#portfolio-filter ul #" + selectedVar[i]).length >= 1) {
+                document.querySelector("#portfolio-filter ul #" + selectedVar[i]).className = "active";
+            }
         }
     }
     else {
@@ -290,6 +292,8 @@ function setVariable(hashList) {
         
         var object = document.querySelector("#portfolio-data").children;
         // console.log(object);
+
+        var visableitemsCount = 0;
         
         for (var i = 0; i < object.length; i++) {
 
@@ -336,6 +340,7 @@ function setVariable(hashList) {
                 if (hashList.indexOf(tag) >= 0) {
                     object[i].classList.remove("hide");
                     object[i].classList.add("show");
+                    visableitemsCount++;
                 }
                 if (hashList.indexOf(tag) === -1) {
                     object[i].classList.remove("show");
@@ -343,7 +348,19 @@ function setVariable(hashList) {
                 }
             }
         }
-        
+
+        // warning for selecting a wrong colorclass
+        if (document.querySelectorAll(".js-noimages").length === 1) {
+            if (visableitemsCount === 0 && hashList.length !== 0) {
+                document.querySelector(".js-noimages").classList.remove("hide");
+            }
+            else {
+                document.querySelector(".js-noimages").classList.add("hide");
+            }
+        }
+        console.log(visableitemsCount);
+        console.log(hashList);
+    
     }
 }
 
@@ -390,9 +407,11 @@ function buildPage() {
 
     if (anchorurl != null) {
         anchorurl = anchorurl.replace(/(#a|a)nchor=/ig, "");
-        if (document.querySelectorAll('a[data-filename="' + anchorurl + '"]').length >= 1) {
-            var positionx = document.querySelector('a[data-filename="' + anchorurl + '"]').offsetTop;
-            console.log(positionx)
+        var queryDataFileName = 'a[data-filename="' + decodeURIComponent(anchorurl) + '"]';
+
+        if (document.querySelectorAll(queryDataFileName).length >= 1) {
+            var positionx = document.querySelector(queryDataFileName).offsetTop;
+            console.log(positionx);
             window.scrollTo(0, positionx);
         }
 

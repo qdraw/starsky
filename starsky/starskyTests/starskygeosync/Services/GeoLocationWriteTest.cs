@@ -32,7 +32,20 @@ namespace starskytests.starskygeosync.Services
         [TestMethod]
         public void GeoLocationWriteLoopFolderTest()
         {
-            var metaFilesInDirectory = new List<FileIndexItem>();
+            var metaFilesInDirectory = new List<FileIndexItem>
+            {
+	            new FileIndexItem
+	            {
+		            FileName = "test.jpg", //<= used to check
+		            ParentDirectory = "/",
+		            Latitude = 1,
+		            Longitude = 1,
+		            LocationAltitude = 1,
+		            LocationCity = "city",
+		            LocationState = "state",
+		            LocationCountry = "country"
+	            }
+            };
             new GeoLocationWrite(_appSettings, _exiftool).LoopFolder(metaFilesInDirectory, true);
         }
     }

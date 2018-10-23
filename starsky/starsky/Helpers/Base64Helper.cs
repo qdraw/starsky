@@ -13,12 +13,12 @@ namespace starsky.Helpers
         /// <returns>byte array</returns>
         public static byte[] TryParse(string inputstring)
         {
-            if (inputstring?.Length % 4 != 0 || !_rx.IsMatch(inputstring)) return null;
+			if (inputstring?.Length % 4 != 0 || !Base64Regex.IsMatch(inputstring)) return new byte[0];
             return Convert.FromBase64String(inputstring);
             // Source: https://stackoverflow.com/questions/7686585/something-like-tryparse-from-convert-frombase64string
         }
     
-        private static readonly Regex _rx = new Regex(
+        private static readonly Regex Base64Regex = new Regex(
             @"^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}[AEIMQUYcgkosw048]=|[A-Za-z0-9+/][AQgw]==)?$",
             RegexOptions.Compiled);
 

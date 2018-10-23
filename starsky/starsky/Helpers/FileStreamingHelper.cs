@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Net.Http.Headers;
 using starsky.Models;
 using starsky.Services;
@@ -17,7 +13,7 @@ namespace starsky.Helpers
 {
     public static class FileStreamingHelper
     {
-        private static readonly FormOptions _defaultFormOptions = new FormOptions();
+        private static readonly FormOptions DefaultFormOptions = new FormOptions();
 
         public static async Task<List<string>> StreamFile(this HttpRequest request, AppSettings appSettings)
         {
@@ -34,12 +30,12 @@ namespace starsky.Helpers
                 return Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
             
             // file without base64 encoding; return slug based url
-            if (Base64Helper.TryParse(request.Headers["filename"]) == null)
+            if (Base64Helper.TryParse(request.Headers["filename"]).Length == 0)
                 return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(request.Headers["filename"]))
                        + Path.GetExtension(request.Headers["filename"]);
             
             var requestHeadersBytes = Base64Helper.TryParse(request.Headers["filename"]);
-            var requestHeaders = System.Text.Encoding.ASCII.GetString(requestHeadersBytes);
+            var requestHeaders = Encoding.ASCII.GetString(requestHeadersBytes);
             return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders)) + Path.GetExtension(requestHeaders);
         }
 
@@ -81,7 +77,7 @@ namespace starsky.Helpers
 
             var boundary = MultipartRequestHelper.GetBoundary(
                 MediaTypeHeaderValue.Parse(contentType),
-                _defaultFormOptions.MultipartBoundaryLengthLimit);
+                DefaultFormOptions.MultipartBoundaryLengthLimit);
             var reader = new MultipartReader(boundary, requestBody);
 
             var section = await reader.ReadNextSectionAsync();
@@ -116,54 +112,6 @@ namespace starsky.Helpers
             await stream.CopyToAsync(fileStream); // changed
             fileStream.Dispose();
         }
-
-//        public static string GetTempFilePath(AppSettings appSettings, Stream stream )
-//        {
-//            var filename = FileHash.CalculateMd5AsyncWrapper(stream).Result;
-//            return Path.Combine(appSettings.TempFolder, filename );
-//        }
-
-        
-//        public static string GetTempFilePath(AppSettings appSettings, string baseFileName)
-//        {
-//            _appSettings = appSettings;
-//            // Requires  AppSettingsProvider.ThumbnailTempFolder
-//            // Requires: importIndexItem()
-//            // Requires: AppSettingsProvider.Structure
-//            
-//            if (string.IsNullOrEmpty(baseFileName))
-//            {
-//                var guid = "_import_" + Guid.NewGuid().ToString().Substring(0, 5) + ".unknown";
-//                guid = guid.Replace("=", string.Empty);
-//                var path = Path.Combine(appSettings.TempFolder, guid);
-//                return path;
-//            }
-//            
-//            // // Escape a filename from nasty signs \/|:|\*|\?|\"|<|>|]
-//            Regex illegalInFileName = new Regex("[\\/|:|\\*|\\?|\"|<|>|]");
-//            baseFileName = illegalInFileName.Replace(baseFileName, string.Empty);
-//
-//            
-//            var importIndexItem = new ImportIndexItem(_appSettings) {SourceFullFilePath = baseFileName};
-//            
-//            // Replace appendix with '-1' or '-222' ; (-22 will not be replaced)
-//            // Assumes that a extension has always 3 letters. so no mp3 or html
-//            importIndexItem.SourceFullFilePath = Regex.Replace(
-//                importIndexItem.SourceFullFilePath, 
-//                "\\-(\\d{3}|\\d)\\.\\w{3}$", 
-//                importIndexItem.SourceFullFilePath.Substring(importIndexItem.SourceFullFilePath.Length - 4), 
-//                RegexOptions.CultureInvariant);
-//            
-//            importIndexItem.ParseDateTimeFromFileName();
-//            
-//            
-//            // Files that are not good parsed will be 00010101_000000.jpg
-//            // By default those files are ignored by the ageing filter
-//
-//            var filename = importIndexItem.ParseFileName(false);
-//            return Path.Combine(appSettings.TempFolder, filename );
-//        }
-
         
 //        // For reading plain text form fields
 //                    else if (MultipartRequestHelper.HasFormDataContentDisposition(contentDisposition))

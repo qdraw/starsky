@@ -1,4 +1,4 @@
-function loadJSON(path, success, error, type)
+function loadJSON(path, success, error, type, data)
 {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function()
@@ -21,5 +21,11 @@ function loadJSON(path, success, error, type)
     };
     xhr.open(type, path, true);
     xhr.setRequestHeader("Cache-Control", "max-age=0");
-    xhr.send();
+    if (data !== undefined) {
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.send(data);
+    }
+    else {
+        xhr.send();
+    }
 }

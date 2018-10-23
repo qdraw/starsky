@@ -32,6 +32,7 @@ namespace starsky.Services
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error occurred executing {nameof(workItem)}.");
+	                Console.WriteLine(ex);
                 }
             }
 

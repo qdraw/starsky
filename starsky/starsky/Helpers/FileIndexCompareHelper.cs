@@ -65,7 +65,27 @@ namespace starsky.Helpers
             return differenceList;
         }
 
-        private static void CompareRotation(string propertyName, FileIndexItem sourceIndexItem, FileIndexItem.Rotation oldRotationValue,
+	    public static FileIndexItem SetCompare(FileIndexItem sourceIndexItem, FileIndexItem updateObject, List<string> differenceList)
+	    {
+		    if(updateObject == null) updateObject = new FileIndexItem();
+		    PropertyInfo[] propertiesA = sourceIndexItem.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+		    PropertyInfo[] propertiesB = updateObject.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+		    int count = propertiesA.Length;
+		    for ( int i = 0; i < count; i++ )
+		    {
+			    if ( ( !propertiesA[i].CanRead ) || ( !propertiesB[i].CanRead ) ) continue;
+			    if(!differenceList.Contains(propertiesA[i].Name)) continue;
+			    
+			    var newRotationValue = propertiesB [i].GetValue(updateObject, null);
+			    
+			    sourceIndexItem.GetType().GetProperty(propertiesA[i].Name).SetValue(sourceIndexItem, newRotationValue, null);
+		    }
+
+		    return sourceIndexItem;
+	    }
+
+	    private static void CompareRotation(string propertyName, FileIndexItem sourceIndexItem, FileIndexItem.Rotation oldRotationValue,
             FileIndexItem.Rotation newRotationValue, List<string> differenceList)
         {
             if (oldRotationValue == newRotationValue || newRotationValue == FileIndexItem.Rotation.DoNotChange) return;

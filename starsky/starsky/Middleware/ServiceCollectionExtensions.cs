@@ -6,7 +6,8 @@ namespace starsky.Middleware
 {
     public static class ServiceCollectionExtensions
     {
-        public static TConfig ConfigurePoco<TConfig>(this IServiceCollection services, IConfiguration configuration) where TConfig : class, new()
+        public static TConfig ConfigurePoco<TConfig>(
+	        this IServiceCollection services, IConfiguration configuration) where TConfig : class, new()
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));

@@ -8,6 +8,7 @@ using starsky.Data;
 using starsky.Models;
 using starsky.Services;
 using starsky.ViewModels;
+using starskytests.FakeMocks;
 
 namespace starskytests
 {
@@ -16,8 +17,9 @@ namespace starskytests
     {
         private SearchService _search;
         private Query _query;
+	    private ApplicationDbContext _dbContext;
 
-        public SearchServiceTest()
+	    public SearchServiceTest()
         {
             var provider = new ServiceCollection()
                 .AddMemoryCache()
@@ -27,9 +29,9 @@ namespace starskytests
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             builder.UseInMemoryDatabase("search");
             var options = builder.Options;
-            var context = new ApplicationDbContext(options);
-            _search = new SearchService(context);
-            _query = new Query(context,memoryCache);
+            _dbContext = new ApplicationDbContext(options);
+            _search = new SearchService(_dbContext);
+            _query = new Query(_dbContext,memoryCache);
         }
 
         public void InsertSearchData()
@@ -359,6 +361,15 @@ namespace starskytests
         {
             Assert.AreEqual(_search.RoundUp(8),20); // NumberOfResultsInView
         }
+
+		[TestMethod]
+		public void SearchService_cacheTest()
+		{
+			var searchService = new SearchService(_dbContext,new FakeMemoryCache(),new AppSettings());
+			var result = searchService.Search("t"); // <= t is only to detect in fakeCache
+			Assert.AreEqual(1,result.FileIndexItems.Count);
+			
+		}
         
     }
 }

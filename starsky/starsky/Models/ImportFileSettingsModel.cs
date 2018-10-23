@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-using starsky.Helpers;
 
 namespace starsky.Models
 {

@@ -243,7 +243,8 @@ namespace starskytests
                 .NeedHelpShowDialog();
             new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Importer})
                 .NeedHelpShowDialog();
-            
+			new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Geo})
+				.NeedHelpShowDialog();
         }
 
 

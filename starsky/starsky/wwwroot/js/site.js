@@ -18,7 +18,9 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
             case 37:
                 // left
                 setPrev();
-                if (prev != null && document.activeElement.className.indexOf("form-control") === -1) {
+                if (prev != null 
+                    && document.activeElement.className.indexOf("form-control") === -1
+                    && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
                     window.location.href = prev;
                 }
                 break;
@@ -28,7 +30,9 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
             case 39:
                 // right
                 setNext();
-                if (next != null && document.activeElement.className.indexOf("form-control") === -1) {
+                if (next != null
+                    && document.activeElement.className.indexOf("form-control") === -1
+                    && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
                     window.location.href = next;
                 }
                 break;

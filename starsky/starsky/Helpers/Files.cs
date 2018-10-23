@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -76,6 +77,7 @@ namespace starsky.Helpers
             return imageFilesList.ToArray();
         }
 
+	    [SuppressMessage("ReSharper", "InconsistentNaming")]
         public enum ImageFormat
         {
             notfound = -1,
@@ -192,6 +194,7 @@ namespace starsky.Helpers
         /// <returns>true, if Sidecar is required</returns>
         public static bool IsXmpSidecarRequired(string fullFilePath)
         {
+	        if ( string.IsNullOrEmpty(fullFilePath) ) return false;
             // Use an XMP File -> as those files don't support those tags
             if (ExtensionForceXmpUseList.Contains(Path.GetExtension(fullFilePath).Replace(".", string.Empty).ToLower()))
             {
@@ -240,7 +243,7 @@ namespace starsky.Helpers
                     fs.Close();
                 }
             }
-            catch (System.UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException ex)
             {
                 Console.WriteLine(ex.Message);
             }

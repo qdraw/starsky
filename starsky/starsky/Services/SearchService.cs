@@ -31,7 +31,7 @@ namespace starsky.Services
 
         public SearchViewModel Search(string query = "", int pageNumber = 0, bool enableCache = true)
         {
-            if(enableCache == false || 
+            if(!enableCache || 
                _cache == null || _appSettings?.AddMemoryCache == false) 
                 return SkipSearchItems(SearchDirect(query),pageNumber);
 
@@ -106,7 +106,7 @@ namespace starsky.Services
                 .OrderBy(s => s.FilePath)
                 .ToList();
             
-            model.SearchCount = model.FileIndexItems.Count();
+            model.SearchCount = model.FileIndexItems.Count;
 
             model.FileIndexItems = model.FileIndexItems
                 .OrderByDescending(p => p.DateTime).ToList();

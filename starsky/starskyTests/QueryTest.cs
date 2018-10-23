@@ -26,7 +26,7 @@ namespace starskytests
             builder.UseInMemoryDatabase("test");
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
-            _query = new Query(context,_memoryCache);
+            _query = new Query(context,_memoryCache, new AppSettings());
         }
 
         private readonly Query _query;
@@ -439,7 +439,10 @@ namespace starskytests
            if (!_memoryCache.TryGetValue("List`1_", out var objectFileFolders));
             var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
 
-            Assert.AreEqual(displayFileFolders.FirstOrDefault(p => p.FileName == "cache").Tags,"hi");
+            Assert.AreEqual("hi",displayFileFolders.FirstOrDefault(p => p.FileName == "cache").Tags);
+	        
+	        Assert.AreEqual(1,displayFileFolders.Count(p => p.FileName == "cache"));
+
         }
 
         [TestMethod]
@@ -495,6 +498,11 @@ namespace starskytests
             Assert.AreEqual("updated",fileObjectByFilePath.Tags);
         }
 
+	    [TestMethod]
+	    public void Query_IsCacheEnabled_True()
+	    {
+		    Assert.AreEqual(true, _query.IsCacheEnabled());
+	    }
 
     }
 }

@@ -71,6 +71,7 @@ Starsky has a Json and Razorview restfull API. Please read the documentation
 - [Get PageType	"DetailView"](readme_api.md#get-pagetype-detailview)
 - [Exif Info](readme_api.md#exif-info)
 - [Exif Update](readme_api.md#exif-update)
+- [Rename](readme_api.md#rename)
 - [File Delete](readme_api.md#file-delete)
 - [Thumbnail](readme_api.md#thumbnail)
 - [Thumbnail Json](readme_api.md#thumbnail-json)

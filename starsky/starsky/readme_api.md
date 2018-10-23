@@ -10,6 +10,7 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 - [Get PageType DetailView](#get-pagetype-detailview)
 - [Exif Info](#exif-info)
 - [Exif Update](#exif-update)
+- [Rename](#rename)
 - [File Delete](#file-delete)
 - [Thumbnail](#thumbnail)
 - [Thumbnail Json](#thumbnail-json)
@@ -384,6 +385,31 @@ _Defined in the class `ExifToolCmdHelper`_
     - `NotFoundNotInIndex` File does not exist in index and the request failed
     - `NotFoundSourceMissing` The source file is missing and the request failed
     - `ReadOnly` not allowed to overwrite this file and the request failed
+
+## Rename
+Rename files or folder on disk and in the same request update the database.
+Endpoint: `/starsky/Api/Rename?f=/image.jpg&to=/image2.jpg`
+
+```json
+{
+    "uri":"/starsky/Api/Rename?f=/current&to=/future",
+    "method":"POST",
+    "headers":
+    {
+       "Content-Type":"application/json"
+    },
+    "authentication":
+    {
+        "username":"username",
+        "password":"*sanitized*",
+        "type":"Basic"
+    }
+}
+```
+
+### Notes
+- Statuscodes not implemented yet
+
 
 
 ## File Delete

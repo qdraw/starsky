@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
@@ -82,7 +78,7 @@ namespace starsky.Controllers
                         return Json(directoryModel);
                 }
 
-                if (singleItem?.FileIndexItem.FilePath == null && queryIfFolder == null)
+                if (queryIfFolder == null) // used to have: singleItem?.FileIndexItem.FilePath == null &&
                 {
                     Response.StatusCode = 404;
                     if (json) return Json("not found");

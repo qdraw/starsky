@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using starsky.Helpers;
@@ -18,7 +17,8 @@ namespace starsky.Models
         [JsonIgnore]
         public int Id { get; set; }
 
-        private string _filePath { get; set; } = string.Empty;
+        private string FilePathPrivate { get; set; } = string.Empty;
+	    
         [Column(Order = 2)]
         public string FilePath
         {
@@ -26,7 +26,7 @@ namespace starsky.Models
             set
             {
                 // For legacy reasons
-                _filePath = ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName);
+                FilePathPrivate = ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName);
             } 
         }
 

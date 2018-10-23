@@ -6,6 +6,14 @@
     ViewData["Title"] = Model.SearchQuery + " Index view ";
 }
 <div class="archive">
+    <div id="popup" onclick="hidePopupDialog()">
+        <div class="content">
+            <p></p>
+            <p>
+                <a onClick="hidePopupDialog()" class="btn-sm btn btn-default">Oke</a>
+            </p>
+        </div>
+    </div>
     
     <div class="sidebar readonly-@{@Model.IsReadOnly.ToString().ToLower()}">
         <div class="close" onclick="toggleSideMenu()"></div>
@@ -128,7 +136,11 @@
             <h2> Er zijn geen afbeeldingen in de map <em>@Model.SearchQuery</em> </h2>
         </div>
     }
-    
+                                   
+    <div class="js-noimages wrapper hide">
+       <h2> Er zijn geen afbeeldingen met de huidige colorclass. Herstel selectie om afbeeldingen in de map <em>@Model.SearchQuery</em> te zien </h2>
+    </div>
+       
     <div class="wrapper" id="portfolio-data">
         @foreach (var item in Model.FileIndexItems)
         {
@@ -148,7 +160,7 @@
     
                 @if (!string.IsNullOrWhiteSpace(@item.FileHash))
                 {
-                    <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash, issingleitem = false })" alt=""/>
+                    <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash + ".jpg", issingleitem = false })" alt=""/>
                 }
                 else
                 {

@@ -311,7 +311,7 @@ h1 {
 #portfolio-filter ul > li > a {
     margin-right: 10px;
     border-radius: 3px;
-    margin-bottom: 13px;
+    margin-bottom: 10px;
     padding-right: 10px;
     background-color: #b0bec5;
     text-decoration: none;
@@ -734,21 +734,7 @@ h2 {
 }
 
 
-/*.navbar-fixed-top {*/
-    /*top: 0;*/
-    /*border-width: 0 0 1px;*/
-    /*position: fixed;*/
-    /*right: 0;*/
-    /*left: 0;*/
-    /*z-index: 1030;*/
-/*}*/
-
-.navbar-inverse {
-    background-color: #222;
-    border-color: #080808;
-}
-
-.navbar-gray {
+.head-gray {
     background-color: #888;
     border-color: #888;
 }
@@ -1107,6 +1093,11 @@ float: left;
     font-family: "object-fit: contain";
     object-fit: contain;
     object-position: center; 
+}
+@media screen and (min-width: 600px) {
+    .sidebar .content .thumbnail {
+        display: none;
+    }
 }
 
 .sidebar {

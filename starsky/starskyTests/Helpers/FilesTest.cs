@@ -10,9 +10,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
 using starsky.Middleware;
 using starsky.Models;
-using starsky.Services;
 
-namespace starskytests
+namespace starskytests.Helpers
 {
     [TestClass]
     public class FilesTest

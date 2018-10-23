@@ -1,12 +1,14 @@
 // Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using starsky.Models;
 using starsky.Models.Account;
 
 namespace starsky.Data
 {
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 	public class ApplicationDbContext : DbContext
 	{
 		public ApplicationDbContext(DbContextOptions options) : base(options)

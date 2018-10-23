@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
 using starsky.Models;
@@ -79,5 +80,18 @@ namespace starskytests.Helpers
             FileIndexCompareHelper.Compare(source, update);
             Assert.AreEqual(source.Orientation,FileIndexItem.Rotation.Rotate90Cw); 
         }
+
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest_SetCompare()
+	    {
+		    var source = new FileIndexItem {DateTime = new DateTime()};
+		    var update = new FileIndexItem {DateTime =  DateTime.Now};
+		    var result =  FileIndexCompareHelper.SetCompare(source, update, new List<string>
+		    {
+			    "DateTime"
+		    });
+		    Assert.AreEqual(update.DateTime, result.DateTime);
+
+	    }
     }
 }

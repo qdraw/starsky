@@ -286,15 +286,21 @@ function queryKeywords(queryItem) {
     
     var toupdateFiles = toSubpath();
 
-    var url = updateApiBase + "?f=" + toupdateFiles + "&tags=" + queryItem + "&append=" + appendOrOverwriteByToggle();
     addNoClickToSidebar();
 
-    loadJSON(url,
+    loadJSON(updateApiBase,
         function (data) {
             location.reload();
         },
-        function (xhr) { console.error(xhr); },
-        "POST"
+        function (xhr) { 
+            console.error(xhr);
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
+        "POST",
+        "f=" + toupdateFiles + "&tags=" + queryItem + "&append=" + appendOrOverwriteByToggle()
     );
 }
 
@@ -302,15 +308,21 @@ function queryCaptionAbstract(queryItem) {
 
     var toupdateFiles = toSubpath();
 
-    var url = updateApiBase + "?f=" + toupdateFiles + "&description=" + queryItem + "&append=" + appendOrOverwriteByToggle();
     addNoClickToSidebar();
 
-    loadJSON(url,
+    loadJSON(updateApiBase,
         function (data) {
             location.reload();
         },
-        function (xhr) { console.error(xhr); },
-        "POST"
+        function (xhr) { 
+            console.error(xhr);
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
+        "POST",
+        "f=" + toupdateFiles + "&description=" + queryItem + "&append=" + appendOrOverwriteByToggle()
     );
 }
 
@@ -318,15 +330,21 @@ function queryObjectName(queryItem) {
 
     var toupdateFiles = toSubpath();
 
-    var url = updateApiBase + "?f=" + toupdateFiles + "&title=" + queryItem + "&append=" + appendOrOverwriteByToggle();
     addNoClickToSidebar();
 
-    loadJSON(url,
+    loadJSON(updateApiBase,
         function (data) {
             location.reload();
         },
-        function (xhr) { console.error(xhr); },
-        "POST"
+        function (xhr) { 
+            console.error(xhr);
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
+        "POST",
+        "f=" + toupdateFiles + "&title=" + queryItem + "&append=" + appendOrOverwriteByToggle()
     );
     
 }
@@ -477,14 +495,20 @@ function addNoClickToSidebar() {
 // Used in <div class="add-colorclass">
 function updateColorClass(those) {
     var toupdateFiles = toSubpath();
-    var url = updateApiBase + "?f=" + toupdateFiles + "&colorClass=" + those.dataset.colorclass;
     addNoClickToSidebar();
-    loadJSON(url,
+    loadJSON(updateApiBase,
         function(data) {
             location.reload();
         },
-        function (xhr) { console.error(xhr); },
-        "POST"
+        function (xhr) { 
+            console.error(xhr);
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
+        "POST",
+        "f=" + toupdateFiles + "&colorClass=" + those.dataset.colorclass
     );
 }
 
@@ -534,17 +558,20 @@ function toggleOverwriteText() {
 
     }
 }
-function hideDeleteDialog() {
+function hidePopupDialog() {
     if (document.querySelectorAll("#popup").length === 1) {
         document.querySelector("#popup").classList.remove("on");
     }
 }
 
-function showDeleteDialog() {
+function showPopupDialog(content) {
     if (document.querySelectorAll("#popup").length === 1 &&
         document.querySelectorAll(".archive").length === 1
     ) {
         document.querySelector("#popup").classList.add("on");
+        if (content !== undefined) {
+            document.querySelector("#popup .content").innerHTML = content;
+        }
     }
     
 }

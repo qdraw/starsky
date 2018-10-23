@@ -31,7 +31,7 @@ namespace starsky.Services
             if (_appSettings.Verbose)
             {
                 Console.Write("diff: " + differenceFileNames.Count + "  | in db folder" + databaseSubFolderList.Count);
-            };
+			}
 
             // Delete removed items
             foreach (var item in differenceFileNames)
