@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,6 +59,12 @@ namespace starskytests.Helpers
 		{
 			var renameFs = new RenameFs(_appSettings, _query).Rename(_newImage.DbPath, "/test2.jpg");
 
+			foreach ( var item in renameFs )
+			{
+				Console.WriteLine(item.FileName);
+				Console.WriteLine(item.FilePath);
+				Console.WriteLine(item);
+			}
 			Assert.AreEqual(1,renameFs.Count);
 		}
 	}
