@@ -97,6 +97,19 @@ namespace starsky.Helpers
 				}
 				else // file>
 				{
+					var parentFolder = Breadcrumbs.BreadcrumbHelper(toFileFullPath).LastOrDefault();
+					
+					if (  Files.IsFolderOrFile(parentFolder) != FolderOrFileModel.FolderOrFileTypeList.Folder &&
+						Files.IsFolderOrFile(parentFolder) != FolderOrFileModel.FolderOrFileTypeList.File )
+					{
+						
+					}
+
+					if ( Files.IsFolderOrFile(parentFolder) == FolderOrFileModel.FolderOrFileTypeList.Folder )
+					{
+						
+					}
+
 					File.Move(inputFileFullPath,toFileFullPath);
 				}
 				

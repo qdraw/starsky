@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using MetadataExtractor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,23 +57,35 @@ namespace starskytests.Helpers
 		}
 		
 		[TestMethod]
-		public void RenameFsTest_Items()
+		public void RenameFsTest_SameFolder_Items()
 		{
 			var renameFs = new RenameFs(_appSettings, _query).Rename(_newImage.DbPath, "/test2.jpg");
 
-			var t = Files.GetAllFilesDirectory(_newImage.FullFilePath);
-			foreach ( var item in t )
-			{
-				Console.WriteLine(item);
-			}
-
-			foreach ( var item in renameFs )
-			{
-				Console.WriteLine(item.FileName);
-				Console.WriteLine(item.FilePath);
-				Console.WriteLine(item);
-			}
 			Assert.AreEqual(1,renameFs.Count);
 		}
+		
+		[TestMethod]
+		public void RenameFsTest_ToExistFolder_Items()
+		{
+			
+			System.IO.Directory.CreateDirectory(Path.Combine(_newImage.BasePath, "exist"));
+			
+			var renameFs = new RenameFs(_appSettings, _query).Rename(_newImage.DbPath, "/exist/test2.jpg");
+
+			Assert.AreEqual(1,renameFs.Count);
+			
+			Files.DeleteDirectory(Path.Combine(_newImage.BasePath, "exist"));
+		}
+		
+//		[TestMethod]
+//		public void RenameFsTest_ToNonExistFolder_Items()
+//		{
+//						
+//			var renameFs = new RenameFs(_appSettings, _query).Rename(_newImage.DbPath, "/exist/test2.jpg");
+//
+//			Assert.AreEqual(1,renameFs.Count);
+//			
+//			Files.DeleteDirectory(Path.Combine(_newImage.BasePath, "exist"));
+//		}
 	}
 }
