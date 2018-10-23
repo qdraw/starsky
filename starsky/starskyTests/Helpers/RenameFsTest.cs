@@ -59,6 +59,12 @@ namespace starskytests.Helpers
 		{
 			var renameFs = new RenameFs(_appSettings, _query).Rename(_newImage.DbPath, "/test2.jpg");
 
+			var t = Files.GetAllFilesDirectory(_newImage.FullFilePath);
+			foreach ( var item in t )
+			{
+				Console.WriteLine(item);
+			}
+
 			foreach ( var item in renameFs )
 			{
 				Console.WriteLine(item.FileName);
