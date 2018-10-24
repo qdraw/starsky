@@ -275,7 +275,10 @@
     <script src="~/js/vendor/leaflet-gpx.min.js"></script>
 
     <script>
-        document.querySelector(".main-image").innerHTML = "<div id=\"map\"><div class=\"lock-map\"><a class=\"btn btn-info\" onclick=\"enableMap()\">Zet kaartnavigeer opties aan</a></div></div>";
+        document.querySelector(".main-image").innerHTML = "<div id=\"map\">" +
+            "<div class=\"lock-map\">" +
+            "<a class=\"btn btn-info\" onclick=\"enableMap()\">" +
+            "Zet kaartnavigeer opties aan</a></div><div class=\"info\"></div></div>";
         var map = L.map('map',{ });
 
         function disableMap() {
@@ -326,6 +329,15 @@
                 
             }).on('loaded', function(e) {
             map.fitBounds(e.target.getBounds());
+
+            document.querySelector(".main-image #map .info").innerHTML =
+                '<div class="get_distance"></div> <div class="get_total_speed"></div> <div class="get_moving_speed"></div>';
+
+            var distance = (e.target.get_distance() / 1000).toFixed(2);
+            document.querySelector(".main-image #map .get_distance").innerHTML = "Afstand " + distance + " km";
+            document.querySelector(".main-image #map .get_total_speed").innerHTML = "Gemiddelde snelheid " + e.target.get_total_speed().toFixed(2) + " km/h";
+
+            console.log(e.target.get_distance());
         }).addTo(map);
 
     </script>

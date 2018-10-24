@@ -1383,6 +1383,8 @@ div#popup.on {
 .main-image #map.disabled .leaflet-map-pane{
     opacity: 0.8;
 }
+
+.main-image #map .info,
 .main-image #map .lock-map {
     display: none;
 }
@@ -1393,6 +1395,17 @@ div#popup.on {
     height: 20px;
     top: 20px;
     left: 40px;
+    z-index: 401;
+}
+
+.main-image #map.disabled .info {
+    position: relative;
+    display: block;
+    top: 40px;
+    left: 40px;
+    padding: 15px;
+    width: 230px;
+    background-color: white;
     z-index: 401;
 }
 .main-image #map .leaflet-control-attribution {
