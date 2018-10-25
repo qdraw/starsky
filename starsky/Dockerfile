@@ -12,6 +12,7 @@ RUN dotnet restore
 RUN dotnet publish -c Release -o out
 
 
+
 # build runtime image
 FROM microsoft/aspnetcore:2.0
 WORKDIR /app
