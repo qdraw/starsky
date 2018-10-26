@@ -287,7 +287,8 @@ function queryKeywords(queryItem) {
     var toupdateFiles = toSubpath();
 
     addNoClickToSidebar();
-
+    showPreloader();
+    
     loadJSON(updateApiBase,
         function (data) {
             location.reload();
@@ -309,7 +310,8 @@ function queryCaptionAbstract(queryItem) {
     var toupdateFiles = toSubpath();
 
     addNoClickToSidebar();
-
+    showPreloader();
+    
     loadJSON(updateApiBase,
         function (data) {
             location.reload();
@@ -331,7 +333,8 @@ function queryObjectName(queryItem) {
     var toupdateFiles = toSubpath();
 
     addNoClickToSidebar();
-
+    showPreloader();
+    
     loadJSON(updateApiBase,
         function (data) {
             location.reload();
@@ -495,7 +498,10 @@ function addNoClickToSidebar() {
 // Used in <div class="add-colorclass">
 function updateColorClass(those) {
     var toupdateFiles = toSubpath();
+    
     addNoClickToSidebar();
+    showPreloader();
+    
     loadJSON(updateApiBase,
         function(data) {
             location.reload();
@@ -592,7 +598,8 @@ function queryDeleteApi() {
     var url = deleteApiBase + "?f=" + toupdateFiles + "&collections=false";
 
     addNoClickToSidebar();
-
+    showPreloader();
+    
     loadJSON(url,
         function (data) {
             location.reload();
@@ -669,5 +676,20 @@ function runIsSingleitem(toAdd) {
 
         }
     }
+}
+
+function showPreloader() {
+    if (document.querySelectorAll(".preloader").length === 1){
+        document.querySelector(".preloader").style.display = "block";
+    }
+}
+function hidePreloader() {
+    if (document.querySelectorAll(".preloader").length === 1) {
+        document.querySelector(".preloader").style.display = "none";
+    }
+}
+
+if (document.querySelectorAll(".trash").length === 1 ) {
+    hidePreloader();
 }
 
