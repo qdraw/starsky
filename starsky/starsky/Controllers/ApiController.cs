@@ -355,7 +355,9 @@ namespace starsky.Controllers
                         collectionFullDeletePaths[i] = null;
                         continue;
                     }
-                    
+	                // return a Ok, which means the file is deleted
+	                detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+
                     // delete thumb
                     collectionFullDeletePaths.Add(new Thumbnail(_appSettings)
                         .GetThumbnailPath(detailViewItem.FileIndexItem.FileHash));
@@ -377,6 +379,7 @@ namespace starsky.Controllers
             }
             
             // When all items are not found
+	        // ok = file is deleted
             if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
                 return NotFound(fileIndexResultsList);
 

@@ -43,8 +43,15 @@
             </div>
             <div class="js-controls">
                 <div class="addDeleteTag">
-                    <h4>Danger zone:</h4>
-                    <a onClick="showPopupDialog()" class="btn-sm btn btn-danger delete">Verwijder van schijf</a>
+	                <h4>Danger zone:</h4>
+	                <script>
+                		var beforedelete = '<p>Weet je het zeker dat je deze bestanden wilt verwijderen?</p>'+
+			                '<p>'+
+			                '<a onClick="queryDeleteApi()" class="btn-sm btn btn-danger delete">Verwijder van schijf</a>' +
+			                '<a onClick="hidePopupDialog()" class="btn-sm btn btn-default">Nee</a>'+
+		                    '</p>';
+                	</script>
+                    <a onClick="showPopupDialog(beforedelete)" class="btn-sm btn btn-danger delete">Verwijder van schijf</a>
                 </div>
             </div>
         </div>
@@ -111,12 +118,12 @@
 
 
 <script type="text/javascript">
-    @{
+	@{
         // Javascript don't accept decoded slashes
         var deleteApiBase = Url.Action("Delete", "Api");
         deleteApiBase = HttpUtility.UrlDecode(deleteApiBase);
     }
-    var deleteApiBase = "@deleteApiBase";
+	var deleteApiBase = "@deleteApiBase";
 </script>
 
 <div class="preloader">
@@ -132,22 +139,22 @@
 
 <script type="text/javascript">
 
-    function Remove(filePath) {
-        var url = "@Url.Action("Delete", "Api")" + "?f=" + filePath;
-        url = url.replace("&amp;", "&");
-        loadJSON(url,
-            function(data) {
-                location.reload(); 
-            },
-            function(xhr) {
-                if (xhr.status === 404) {
-                    alert(xhr.response);
-                }
-                console.error(xhr);
-            },
-            "DELETE"
-        );
-    }
+	function Remove(filePath) {
+		var url = "@Url.Action("Delete", "Api")" + "?f=" + filePath;
+		url = url.replace("&amp;", "&");
+		loadJSON(url,
+			function(data) {
+				location.reload(); 
+			},
+			function(xhr) {
+				if (xhr.status === 404) {
+					alert(xhr.response);
+				}
+				console.error(xhr);
+			},
+			"DELETE"
+		);
+	}
 
 </script>
 

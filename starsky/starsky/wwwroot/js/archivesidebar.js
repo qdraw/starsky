@@ -604,7 +604,13 @@ function queryDeleteApi() {
         function (data) {
             location.reload();
         },
-        function (xhr) { console.error(xhr); },
+        function (xhr) { 
+            console.error(xhr);
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
         "DELETE"
     );
     
