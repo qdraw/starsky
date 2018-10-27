@@ -157,7 +157,7 @@ Endpoint: `/starsky/?f=/image.jpg`
 ```
 
 ## Exif Info
-Api to get data about the picture that is editable. This checks the file using Exiftool
+Get the current exif status of a file, only for files that are exist and editable. 
 Endpoint: `/starsky/Api/Info?f=/image.jpg` The querystring name `f` is used for file path's
 
 ```json
@@ -174,10 +174,10 @@ Endpoint: `/starsky/Api/Info?f=/image.jpg` The querystring name `f` is used for 
 ```
 ### Expected `/starsky/Api/Info?f=/image.jpg` response:
 - Statuscode 203 with the content `read only` when readonly mode is active
-- Gives a list of names that are used by exiftool
+- Uses a different scheme that is used by exiftool 
 - The querystring name `f` is used for the file path in releative/subpath style
 - The querystring can be seperated by a `;`
-- Ignore `Prefs` those are used to set `ColorClass` with Exiftool
+- Ignore the `Prefs`-tag those are used to set `ColorClass` with Exiftool
 - Uses  `Status` to tell if a file exist in the database
     - `Ok` is file loaded
     - `NotFoundNotInIndex` File does not exist in index
@@ -280,14 +280,14 @@ _Defined in the class `ExifToolCmdHelper`_
 - Tags
 - Description
 - Title
-- ColorClass
+- ColorClass (use integer value)
 - Latitude (in decimal degrees)
 - Longitude (in decimal degrees)
 - LocationAltitude (in meters)
 - LocationCity
 - LocationState
 - LocationCountry
-- `rotateClock` is using `-1` or `1` to rotate the image
+- `rotateClock` is using `-1` or `1` to rotate the image relative to the current rotation tag
     -   `-1` is rotate image 270 degrees
     -   `1` is rotate image 90 degrees
 - DateTime _(use this format: &DateTime=2018-05-05T16:03:35)_
@@ -378,8 +378,8 @@ _Defined in the class `ExifToolCmdHelper`_
 ```
 -  Statuscode 203. When trying to update a `read only` image. With the content `read only`
 -  Error 404 When a image is `not in index`
--  Only the values that are request are return. In this example `title` has a value but it is not requested.
-> Update replied only the values that are request to update. To get all Info do a request to the Info-endpoint
+-  This request returns the complete request, this is using the cached database view to present the latest status
+-  To get all latest Info do a request to the Info-endpoint
 - This Endpoint uses  `Status` to show if a file is updated. The file is only updated when the status is `Ok`
     - `Ok` is file updated
     - `NotFoundNotInIndex` File does not exist in index and the request failed
@@ -387,6 +387,7 @@ _Defined in the class `ExifToolCmdHelper`_
     - `ReadOnly` not allowed to overwrite this file and the request failed
 
 ## Rename
+### Alpha feature > not yet implemented in the front-end
 Rename files or folder on disk and in the same request update the database.
 Endpoint: `/starsky/Api/Rename?f=/image.jpg&to=/image2.jpg`
 
@@ -419,7 +420,7 @@ The tag: `!delete!` is used to mark a file that is in the Trash. This is require
 ### Notes
 - The querystring name `f` is used for the file path in releative/subpath style
 - The querystring support `;` file sepeartion for selecting multiple files
-- the query !delete! is required by the api
+- the file must contain the keyword: !delete! (this is a requimenent)
 
 ```json
 {
@@ -439,9 +440,11 @@ The tag: `!delete!` is used to mark a file that is in the Trash. This is require
 - Statuscode 200, when the file is deleted.
 
 ## Thumbnail
-To get an thumbnail of the image, the thumbnail is 1000px width.
-- The querystring after `Thumbnail/` is used for the base32 hash of the orginal image
+To get an thumbnail of the image, the thumbnail is 1000 pixels width.
+- The querystring after `Thumbnail/` is used for the Base32 hash of the orginal image
 - This endpoint supports only 1 file per request
+- Only `.jpg` as extension is optional supported (for example: `LNPE227BMTFMQWMIN7BE4X5ZOU.jpg`)
+
 
 Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
 ```json
@@ -458,18 +461,18 @@ Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
 
 ```
 ### Thumbnail querystring options
-- There is a orginal fallback, when using the `?issingleitem=True` query
+- There is a orginal (source image) fallback, when using the `?issingleitem=True` query
   The orginal image will be loaded instead of the thumbnail
-- The `retryThumbnail` is removing a thumbnail image. When this is used in combination with
- `isSingleItem` a orginal image is loaded. The query string is  `?retryThumbnail=True`.
+- The `retryThumbnail` is removing a thumbnail image, only when this Thumbnail is 0 bytes. The query string is  `?retryThumbnail=True`.
+  When this is used in combination with  `isSingleItem` a orginal image is loaded. 
 - Check [Thumbnail Json](#thumbnail-json) for more information
 - This endpoint supports only 1 file per request
 
 ### Expected `/starsky/Api/Thumbnail` response:
 - A jpeg image
-- A 204 / `NoContent()` result when a thumbnail is corrupt
+- A 204 / `NoContent()` result when a thumbnail is corrupt (or 0 bytes)
 - A 404 Error page, when the base32 hash does not exist
-- A 202 Error when "Thumbnail is not ready yet"
+- A 202 Error when "Thumbnail is not ready yet". There is no thumbnail generated.
 
 ## Thumbnail Json
 Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU&json=true`
@@ -489,14 +492,14 @@ For checking if a thumbnail exist without loading the entire image
 }
 ```
 
-### Expected `/starsky/Api/Thumbnail` response:
-- A 200 result with no content if the request is successfull
+### Expected `/starsky/Api/Thumbnail&json=true` response:
+- A 200 result with no content if the request is successfull (with the json tag enabled)
 - A 204 / `NoContent()` result when a thumbnail is corrupt
 - A 404 Error page, when the base32 hash does not exist
 - A 202 Error when "Thumbnail is not ready yet"
 
 ## Download Photo
-To get an orginal or to regenerate a thumbnail.
+To get an orginal or to (re)generate a thumbnail.
 - The querystring  `f` is used for the filepath of the orginal image
 - When the querystring `isThumbnail` is used `true` a thumbnail we used or generated
 - This endpoint supports only 1 file per request
@@ -516,7 +519,7 @@ Endpoint: `/starsky/Api/DownloadPhoto?f=/image.jpg`
 ```
 ### Expected `/starsky/Api/DownloadPhoto` response:
 - A thumbnail image with the type `image/jpeg`
-- An orginal image
+- An orginal image or file
 
 
 
@@ -584,7 +587,7 @@ When using a form, the filename is extracted from the multipart. For the filenam
 ### Expected `/starsky/import` response:
 - Error 206 when the response array is empty. The response array is empty when there are no items added.
 - When you have try to add duplicate items, those are not included in the list
-- An array with the added items:
+- An array with the added items (the list can contain multiple items):
 ```json
 [
     "/2018/07/2018_07_22/20180722_220442.jpg"
@@ -630,6 +633,7 @@ To search in the database.
 - Querystring `t` is used for the search query
 - Querystring `p` is used for the pagina number. The first page is page 0.
 - Querystring `json` is to render json.
+- The request returns a maximum of 20 results
 Endpoint: `/Starky/Search?t=searchword&p=0&json=true`
 
 ### Search using POST
@@ -696,7 +700,7 @@ The POST-request is a redirect to a get query with the same searchquery and the 
 - When there are no search results:  `"searchCount": 1` will be `0` and the `fileIndexItems` will be a empty array
 
 ## Remove cache
-When using cache is might sometimes useful to reset the cache.
+When using cache (`IMemoryCache`) is might sometimes useful to reset the cache.
 
 ### Expected `/starsky/api/removecache?f=/folder` response:
 - A 302 redirect to `?/folder` even if cache is disabled.
