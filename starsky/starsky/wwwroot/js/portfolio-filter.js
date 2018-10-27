@@ -108,15 +108,14 @@ function writeFilterList (tags) {
                 var li = document.createElement("li");
                 var a = document.createElement("a");
 
-                var currentitem = filterarticle.appendChild(li).appendChild(a);
-                currentitem.addEventListener("click", function(e){ var those = this; readVariable(those); }, false);
-                currentitem.id = tags[i].toLowerCase().replace(/ /ig, "-");
-
+                var tagsbutton_currentitem = filterarticle.appendChild(li).appendChild(a);
+                tagsbutton_currentitem.addEventListener("click", function(e){ var those = this; readVariable(those); }, false);
+                tagsbutton_currentitem.id = tags[i].toLowerCase().replace(/ /ig, "-");
                
                 if (document.querySelectorAll("#portfolio-data ."+tags[i] ).length >= 0){
                     var tagnl = document.querySelector("#portfolio-data ."+tags[i] ).dataset.tagnl;
 
-                    currentitem.innerHTML = "<span class='checkbox'></span>" + tagnl
+                    tagsbutton_currentitem.innerHTML = "<span class='checkbox'></span>" + tagnl
                 }
                 
                 //"<span class='checkbox'></span>"
@@ -125,6 +124,10 @@ function writeFilterList (tags) {
             //updateCollectionscount();
         }
     }
+    else if (document.querySelectorAll("#portfolio-data").length === 1){
+        
+    }
+
 
 }///e/writeFilterList
 
