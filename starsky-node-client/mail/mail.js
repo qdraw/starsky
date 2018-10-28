@@ -25,8 +25,8 @@ imaps.connect(config).then(function (connection) {
 
     connection.openBox('INBOX').then(function () {
 
-        // Fetch emails from the last 24h
-        var delay = 24 * 3600 * 1000;
+        // Fetch emails from the last 48h
+        var delay = 48 * 3600 * 1000;
         var yesterday = new Date();
         yesterday.setTime(Date.now() - delay);
         yesterday = yesterday.toISOString();
