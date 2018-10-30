@@ -21,8 +21,11 @@ import {
 import { NavigationActions,HeaderBackButton } from 'react-navigation'
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
+var baseURL = "https://starsky.qdraw.eu/starsky/"; // end with slash
+var Authorization = "Basic =";
+
 function renderLeft(params,navigation) {
-if(params == undefined) return(<Text> </Text>);
+	if(params == undefined) return(<Text> </Text>);
 
   if(params.breadcrumb != undefined && (params.filePath != undefined && params.filePath != "/")) {
     return (<HeaderBackButton onPress={() => navigation.navigate('Home', {
@@ -40,13 +43,13 @@ export default class ArchiveScreen extends React.Component {
     super(props);
     const { params } = this.props.navigation.state;
 
-    this.state = { 
+    this.state = {
        isLoading: true,
        filePath: params ? params.filePath : "/",
     }
-    
+
   }
-  
+
   static navigationOptions = ({ navigation, navigationOptions }) => {
     const { params } = navigation.state;
 
@@ -73,7 +76,7 @@ export default class ArchiveScreen extends React.Component {
       );
     }
   }
- 
+
   onSwipeRight(gestureState) {
     var prev =  this.state.dataSource.relativeObjects.prevFilePath;
     if(prev != null) {
@@ -113,7 +116,7 @@ export default class ArchiveScreen extends React.Component {
 
     if (this.state.dataSource.pageType === 'Archive') {
 
-      var thumbBasePath = 'https://qdraw.eu/starsky_tmp_access_894ikrfs8m438g/thumbnail?f=';
+      var thumbBasePath = baseURL + 'api/thumbnail/';
 
       return(
         <GestureRecognizer
@@ -133,7 +136,7 @@ export default class ArchiveScreen extends React.Component {
               //    onRefresh={this._handleRefresh}
               //   />
               // }
-              renderItem={({item}) => 
+              renderItem={({item}) =>
               <TouchableHighlight
                 // onPress={() => {
                 //   /* 1. Navigate to the Details route with params */
@@ -143,7 +146,7 @@ export default class ArchiveScreen extends React.Component {
                 //   });
                 // }}
               >
-                <ImageBackground 
+                <ImageBackground
                   style={styles.flatlistItem}
                   source={{uri: thumbBasePath + item.fileHash}}
                 >
@@ -156,7 +159,7 @@ export default class ArchiveScreen extends React.Component {
                         filePath: item.filePath,
                       });
                     }}
-                  > 
+                  >
                     {item.fileName}
                   </Text>
 
@@ -173,7 +176,7 @@ export default class ArchiveScreen extends React.Component {
       );
     }
     if (this.state.dataSource.pageType === 'DetailView') {
-      var thumbPath = 'https://qdraw.eu/starsky_tmp_access_894ikrfs8m438g/thumbnail?f=' + this.state.dataSource.fileIndexItem.fileHash
+      var thumbPath = baseURL + 'api/thumbnail/' + this.state.dataSource.fileIndexItem.fileHash
       return(
         <GestureRecognizer
           onSwipeLeft={(state) => this.onSwipeLeft(state)}
@@ -200,7 +203,7 @@ export default class ArchiveScreen extends React.Component {
       )
     }
  }
-  
+
   componentDidMount(){
 
     var filePath = this.state.filePath;
@@ -213,7 +216,7 @@ export default class ArchiveScreen extends React.Component {
     //     }, function(){
     //       console.log("SDFsdfsdfsd1fdsf")
     //       console.log(filePathFromStorage)
-  
+
     //       componentDidMount();
     //     });
 
@@ -223,17 +226,22 @@ export default class ArchiveScreen extends React.Component {
     if(filePath === undefined) filePath = "/";
     var filePath = filePath.replace(/ /ig,"$20");
 
-    // http://localhost:5000/?json=true&f= 
+    // http://localhost:5000/?json=true&f=
 
-    return fetch('https://qdraw.eu/starsky_tmp_access_894ikrfs8m438g/api/f=' + filePath)
-      .then((response) => response.json())
-      .then((responseJson) => {
+    return fetch('https://starsky.qdraw.eu/starsky/?json=true&f=' + filePath, {
+		headers: {
+			"Content-Type": "application/json; charset=utf-8",
+			"Authorization": Authorization
+		},
+	})
+		.then((response) => response.json())
+		.then((responseJson) => {
 
         var breadcrumb = responseJson.breadcrumb[responseJson.breadcrumb.length-1];
         var breadcrumbName = breadcrumb.split("/")[breadcrumb.split("/").length-1];
         if(breadcrumbName === "")  breadcrumbName = "Starsky";
 
-        this.props.navigation.setParams({ 
+        this.props.navigation.setParams({
           breadcrumb: breadcrumb,
           breadcrumbName: breadcrumbName,
         });
@@ -254,7 +262,7 @@ export default class ArchiveScreen extends React.Component {
   }
 
   render(){
-    
+
      if(this.state.isLoading){
       return(
         <View style={{flex: 1, padding: 20}}>
@@ -283,7 +291,7 @@ var styles = StyleSheet.create({
   },
   flatlist: {
     flex: 100, //10
-    flexWrap: 'wrap', 
+    flexWrap: 'wrap',
     alignItems: 'flex-start',
     flexDirection: 'row',
     justifyContent: 'space-between'
@@ -306,7 +314,7 @@ var styles = StyleSheet.create({
   },
   nextprev: {
     flex: 1,
-    flexWrap: 'wrap', 
+    flexWrap: 'wrap',
     alignItems: 'flex-start',
     flexDirection: 'row',
     justifyContent: 'space-between'
@@ -329,9 +337,3 @@ var styles = StyleSheet.create({
     backgroundColor: 'red'
   }
 });
-
-
-
-
-
-
