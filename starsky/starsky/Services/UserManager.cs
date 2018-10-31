@@ -8,10 +8,13 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Rest;
 using starsky.Data;
 using starsky.Helpers;
 using starsky.Interfaces;
+using starsky.Middleware;
 using starsky.Models.Account;
 
 namespace starsky.Services
@@ -24,56 +27,141 @@ public class UserManager : IUserManager
         {
             _storage = storage;
         }
-        
+	    
+		public List<Role> AddDefaultRoles()
+		{
+			// User.HasClaim(ClaimTypes.Role, "Administrator") -- > p.Code
+
+			var existingRoleNames = new List<string>
+			{
+				"User",
+				"Administrator",
+			};
+		    var roles = new List<Role>();
+		    foreach ( var roleName in existingRoleNames )
+		    {
+			    Role role = _storage.Roles.FirstOrDefault(p =>
+				    string.Equals(p.Code, roleName, StringComparison.OrdinalIgnoreCase));
+			    
+			    if ( role == null )
+			    {
+				    role = new Role
+				    {
+					    Code = roleName,
+					    Name = roleName,
+				    };
+				    _storage.Roles.Add(role);
+			    }
+			    
+			    // Get the Int Ids from the database
+			    role = _storage.Roles.FirstOrDefault(p =>
+				    string.Equals(p.Code, roleName, StringComparison.OrdinalIgnoreCase));
+			    
+			    roles.Add(role);
+		    }
+			
+			_storage.SaveChanges();
+
+			return roles;
+	    }
+
+	    public CredentialType AddDefaultCredentialType(string credentialTypeCode)
+	    {
+		    CredentialType credentialType = _storage.CredentialTypes.FirstOrDefault(
+			    ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
+
+		    // When not exist add it
+		    if (credentialType == null && credentialTypeCode.ToLower() == "email" )
+		    {
+			    credentialType = new CredentialType
+			    {
+				    Code = "email",
+				    Name = "email",
+				    Position = 1,
+				    Id = 1
+			    };
+			    _storage.CredentialTypes.Add(credentialType);
+		    }
+
+		    return credentialType;
+	    }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">Nice Name, default string.Emthy</param>
+        /// <param name="credentialTypeCode">usaly email</param>
+        /// <param name="identifier">Email</param>
+        /// <param name="secret">Password</param>
+        /// <returns></returns>
         public SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret)
         {
-            User user = new User
-            {
-                Name = name,
-                Created = DateTime.Now
-            };
+	        var credentialType = AddDefaultCredentialType(credentialTypeCode);
+	        var roles = AddDefaultRoles();
+	        
+	        if ( string.IsNullOrEmpty(identifier) || string.IsNullOrEmpty(secret))
+	        {
+				return new SignUpResult(success: false, error: SignUpResultError.NullString);
+	        }
+	        
+	        // The email is stored in the Credentials database
+	        User user = null;
+	        var credential = _storage.Credentials.FirstOrDefault(p => p.Identifier == identifier);
+	        if ( credential != null )
+	        {
+		        user = _storage.Users.FirstOrDefault(p => p.Id == credential.UserId);		        
+	        }
+	        if ( user == null )
+	        {
+		        // Check if user not already exist
+		        user = new User
+		        {
+			        Name = name,
+			        Created = DateTime.Now
+		        };
+		        _storage.Users.Add(user);
+		        _storage.SaveChanges();
+		        
+		        // to get the Id
+		        user = _storage.Users.FirstOrDefault(p => p.Name == name);
+	        }
 
-            _storage.Users.Add(user);
-            _storage.SaveChanges();
-            
-            CredentialType credentialType = _storage.CredentialTypes.FirstOrDefault(
-                ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
-
-            // When not exist add it
-            if (credentialType == null && credentialTypeCode.ToLower() == "email" )
-            {
-                credentialType = new CredentialType
-                {
-                    Code = "email",
-                    Name = "email",
-                    Position = 1,
-                    Id = 1
-                };
-                _storage.CredentialTypes.Add(credentialType);
-            }
+	        UserRole userRole = _storage.UserRoles.FirstOrDefault(p => p.RoleId > int.MinValue);
+	        if ( userRole == null )
+	        {
+		        userRole = new UserRole
+		        {
+			        Role = roles.FirstOrDefault(),
+			        User = user
+		        };
+		        _storage.UserRoles.Add(userRole);
+		        _storage.SaveChanges();
+	        }
 
             if (credentialType == null)
             {
                 return new SignUpResult(success: false, error: SignUpResultError.CredentialTypeNotFound);
             }
-            
-            Credential credential = new Credential();
-            
-            credential.UserId = user.Id;
-            credential.CredentialTypeId = credentialType.Id;
-            credential.Identifier = identifier;
-            
-            if (!string.IsNullOrEmpty(secret))
-            {
-                byte[] salt = Pbkdf2Hasher.GenerateRandomSalt();
-                string hash = Pbkdf2Hasher.ComputeHash(secret, salt);
+
+
+	        if ( credential == null && !string.IsNullOrEmpty(secret))
+	        {
+		        // Check if credential not already exist
+		        credential = new Credential
+		        {
+			        UserId = user.Id,
+			        CredentialTypeId = credentialType.Id,
+			        Identifier = identifier
+		        };
+		        byte[] salt = Pbkdf2Hasher.GenerateRandomSalt();
+		        string hash = Pbkdf2Hasher.ComputeHash(secret, salt);
                 
-                credential.Secret = hash;
-                credential.Extra = Convert.ToBase64String(salt);
-            }
-        
-            _storage.Credentials.Add(credential);
-            _storage.SaveChanges();
+		        credential.Secret = hash;
+		        credential.Extra = Convert.ToBase64String(salt);
+		        _storage.Credentials.Add(credential);
+		        _storage.SaveChanges();
+	        }
+
             return new SignUpResult(user: user, success: true);
         }
        

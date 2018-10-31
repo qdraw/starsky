@@ -9,7 +9,8 @@ namespace starsky.Interfaces
 {
     public enum SignUpResultError
     {
-        CredentialTypeNotFound
+        CredentialTypeNotFound,
+	    NullString
     }
     
     public class SignUpResult

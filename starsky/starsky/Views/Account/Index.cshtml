@@ -1,6 +1,7 @@
 @{
     ViewData["Title"] = "Profile";
 }
+@using System.Security.Claims
 @model starsky.Models.Account.User
 
 
@@ -21,41 +22,58 @@
 <h1>@ViewData["Title"]</h1>
 
 <div class="row">
-    <div class="col-md-6">
-        <form method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="@Model.Id"></label>
-                <input asp-for="@Model.Id" class="form-control disabled" disabled />
-                <label asp-for="@Model.Created"></label>
-                <input asp-for="@Model.Created" class="form-control disabled" disabled />                    
-                <label asp-for="@Model.Name"></label>
-                <input asp-for="@Model.Name" class="form-control disabled" disabled/>
-            </div>
-@*            <div class="form-group">*@
-@*                <label asp-for="Email"></label>*@
-@*                @if (Model.IsEmailConfirmed)*@
-@*                {*@
-@*                    <div class="input-group">*@
-@*                        <input asp-for="Email" class="form-control" />*@
-@*                        <span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-ok text-success"></span></span>*@
-@*                    </div>*@
-@*                }*@
-@*                else*@
-@*                {*@
-@*                    <input asp-for="Email" class="form-control" />*@
-@*                }*@
-@*                <span asp-validation-for="Email" class="text-danger"></span>*@
-@*            </div>*@
-@*            <div class="form-group">*@
-@*                <label asp-for="PhoneNumber"></label>*@
-@*                <input asp-for="PhoneNumber" class="form-control" />*@
-@*                <span asp-validation-for="PhoneNumber" class="text-danger"></span>*@
-@*            </div>*@
-@*            <button type="submit" class="btn btn-default">Save</button>*@
-        </form>
-    </div>
+	<div class="col-md-6">
+		<form method="post">
+			<div asp-validation-summary="All" class="text-danger"></div>
+			<div class="form-group">
+				<label asp-for="@Model.Id"></label>
+				<input asp-for="@Model.Id" class="form-control disabled" disabled />
+				<label asp-for="@Model.Created"></label>
+				<input asp-for="@Model.Created" class="form-control disabled" disabled />
+				<label asp-for="@Model.Name"></label>
+				<input asp-for="@Model.Name" class="form-control disabled" disabled/>
+			</div>
+			@*            <div class="form-group">*@
+			@*                <label asp-for="Email"></label>*@
+			@*                @if (Model.IsEmailConfirmed)*@
+			@*                {*@
+			@*                    <div class="input-group">*@
+			@*                        <input asp-for="Email" class="form-control" />*@
+			@*                        <span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-ok text-success"></span></span>*@
+			@*                    </div>*@
+			@*                }*@
+			@*                else*@
+			@*                {*@
+			@*                    <input asp-for="Email" class="form-control" />*@
+			@*                }*@
+			@*                <span asp-validation-for="Email" class="text-danger"></span>*@
+			@*            </div>*@
+			@*            <div class="form-group">*@
+			@*                <label asp-for="PhoneNumber"></label>*@
+			@*                <input asp-for="PhoneNumber" class="form-control" />*@
+			@*                <span asp-validation-for="PhoneNumber" class="text-danger"></span>*@
+			@*            </div>*@
+			@*            <button type="submit" class="btn btn-default">Save</button>*@
+		</form>
+	</div>
 </div>
+
+
+<h1>Account Rechten</h1>
+
+<ul>
+	<li>Auth type: @User.Claims.FirstOrDefault().Subject.AuthenticationType - always this type</li>
+
+	@foreach ( var claim in @User.Claims )
+	{
+		<li>@claim.Type.Split("/").LastOrDefault() - @claim.Value</li>
+	}
+
+	<li>Is Admin?</li>
+	<li>@User.HasClaim(ClaimTypes.Role, "Administrator")</li>
+	<li>Is User?</li>
+	<li> @User.HasClaim(ClaimTypes.Role, "User")</li>
+</ul>
 
 <script type="text/javascript" src="js/toggleIsSingleitem.js"></script>
 

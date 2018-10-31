@@ -22,7 +22,7 @@ namespace starsky.Controllers
         {
             if (!User.Identity.IsAuthenticated) return RedirectToLocal(null);
 	        if ( json ) return Json(_userManager.GetCurrentUser(HttpContext));
-            return View(_userManager.GetCurrentUser(HttpContext));
+			return View(_userManager.GetCurrentUser(HttpContext));
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace starsky.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, bool json = false, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
