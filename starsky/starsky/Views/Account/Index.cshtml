@@ -1,10 +1,24 @@
 @{
     ViewData["Title"] = "Profile";
 }
+@model starsky.Models.Account.User
+
+
+
+<a class="btn-sm btn btn-info" asp-controller="Search" asp-action="Trash" asp-fragment="sidebar=">Bekijk prullenmand</a>
+<a class="btn-sm btn btn-default" asp-controller="Account" asp-action="Logout">Logout</a>
+
+<h1>Instellingen</h1>
+
+<div>
+	<ul>
+		<a title="Voor dit device wordt deze instelling opgeslagen" class="colorbutton small js-toggle-issingleitem on" onclick="toggleIsSingleitem()"><span class="checkbox"></span> Laad langzame bestanden</a>
+	</ul>
+	<ul>Per sessie/browser</ul>
+</div>
+
 
 <h1>@ViewData["Title"]</h1>
-
-@model starsky.Models.Account.User
 
 <div class="row">
     <div class="col-md-6">
@@ -42,6 +56,8 @@
         </form>
     </div>
 </div>
+
+<script type="text/javascript" src="js/toggleIsSingleitem.js"></script>
 
 @section Scripts {
 @*    @await Html.PartialAsync("_ValidationScriptsPartial")*@
