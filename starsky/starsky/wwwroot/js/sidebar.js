@@ -132,7 +132,7 @@ function updatePrevNextHash() {
     for (var i = 0; i < document.querySelectorAll(".nextprev").length; i++) {
         var object = document.querySelectorAll(".nextprev")[i].children;
         for (var j = 0; j < object.length; j++) {
-            if (object[j].href === undefined) return;
+            if (object[j].href === undefined) continue;
 
             // clean up the url, this method runs 5 times
             // and add everyting behind the #; 
