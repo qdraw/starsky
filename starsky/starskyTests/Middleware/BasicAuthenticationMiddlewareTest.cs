@@ -80,15 +80,6 @@ namespace starskytests.Middleware
         public async Task BasicAuthenticationMiddlewareLoginTest()
         {
 	        
-	        
-	        
-	        // This one fails
-
-	        
-	        
-	        
-	        
-	        
             // Arrange
             var userId = "TestUserA";
             var phone = "abcdefg";

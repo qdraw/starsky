@@ -40,9 +40,8 @@ public class UserManager : IUserManager
 		    var roles = new List<Role>();
 		    foreach ( var roleName in existingRoleNames )
 		    {
-			    Role role = _storage.Roles.FirstOrDefault(p =>
-				    string.Equals(p.Code, roleName, StringComparison.OrdinalIgnoreCase));
-			    
+			    Role role = _storage.Roles.FirstOrDefault(p => p.Code.ToLowerInvariant() == roleName.ToLowerInvariant());
+
 			    if ( role == null )
 			    {
 				    role = new Role
@@ -52,16 +51,14 @@ public class UserManager : IUserManager
 				    };
 				    _storage.Roles.Add(role);
 			    }
-			    
+			    _storage.SaveChanges();
+
 			    // Get the Int Ids from the database
-			    role = _storage.Roles.FirstOrDefault(p =>
-				    string.Equals(p.Code, roleName, StringComparison.OrdinalIgnoreCase));
+			    role = _storage.Roles.FirstOrDefault(p => p.Code.ToLowerInvariant() == roleName.ToLowerInvariant());
 			    
 			    roles.Add(role);
 		    }
 			
-			_storage.SaveChanges();
-
 			return roles;
 	    }
 

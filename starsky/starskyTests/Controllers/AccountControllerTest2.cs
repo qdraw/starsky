@@ -70,14 +70,6 @@ namespace starskytests.Controllers
         [TestMethod]
         public async Task AccountController_NoLogin_Login_And_newAccount_Test()
         {
-	        
-	        
-	        // This one fails
-	        
-	        
-	        
-	        
-	        
             // Arrange
             var userId = "TestUserA";
             var phone = "abcdefg";
