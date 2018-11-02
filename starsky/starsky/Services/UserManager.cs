@@ -123,17 +123,18 @@ public class UserManager : IUserManager
 		        user = _storage.Users.FirstOrDefault(p => p.Name == name);
 	        }
 
-	        UserRole userRole = _storage.UserRoles.FirstOrDefault(p => p.RoleId > int.MinValue);
-	        if ( userRole == null )
-	        {
-		        userRole = new UserRole
-		        {
-			        Role = roles.FirstOrDefault(),
-			        User = user
-		        };
-		        _storage.UserRoles.Add(userRole);
-		        _storage.SaveChanges();
-	        }
+	        // Add a user role based on a user id
+			UserRole userRole = _storage.UserRoles.FirstOrDefault(p => p.UserId == user.Id);
+			if ( userRole == null )
+			{
+				userRole = new UserRole
+				{
+					Role = roles.FirstOrDefault(),
+					User = user
+				};
+				_storage.UserRoles.Add(userRole);
+				_storage.SaveChanges();
+			}
 
             if (credentialType == null)
             {
