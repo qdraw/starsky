@@ -129,19 +129,8 @@ public class UserManager : IUserManager
 		        user = _storage.Users.FirstOrDefault(p => p.Name == name);
 	        }
 
-	        // Add a user role based on a user id
-			UserRole userRole = _storage.UserRoles.FirstOrDefault(p => p.UserId == user.Id);
-			if ( userRole == null )
-			{
-				// Add a link between the user and the role (for example Admin)
-				userRole = new UserRole
-				{
-					Role = roles.FirstOrDefault(),
-					User = user
-				};
-				_storage.UserRoles.Add(userRole);
-				_storage.SaveChanges();
-			}
+			// Add a user role based on a user id
+			AddToRole(user, roles.FirstOrDefault());
 
             if (credentialType == null)
             {
@@ -170,39 +159,45 @@ public class UserManager : IUserManager
             return new SignUpResult(user: user, success: true);
         }
        
-//  // Features are temp off // keep in code 
         
-//        public void AddToRole(User user, string roleCode)
-//        {
-//            Role role = _storage.Roles.FirstOrDefault(r => 
-//                string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
-//
-//            if (role == null)
-//            {
-//                return;                
-//            }
-//            
-//            AddToRole(user, role);
-//        }
-//        
-//        public void AddToRole(User user, Role role)
-//        {
-//            UserRole userRole = this._storage.UserRoles.Find(user.Id, role.Id);
-//
-//            if (userRole != null)
-//            {
-//                return;                
-//            }
-//
-//            userRole = new UserRole
-//            {
-//                UserId = user.Id,
-//                RoleId = role.Id
-//            };
-//            _storage.UserRoles.Add(userRole);
-//            _storage.SaveChanges();
-//        }
+        public void AddToRole(User user, string roleCode)
+        {
+            Role role = _storage.Roles.FirstOrDefault(r => 
+                string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+
+            if (role == null)
+            {
+                return;                
+            }
+            
+            AddToRole(user, role);
+        }
+   
+	    /// <summary>
+	    ///  Add a link between the user and the role (for example Admin)
+	    /// </summary>
+	    /// <param name="user">AccountUser object</param>
+	    /// <param name="role">Role object</param>
+        public void AddToRole(User user, Role role)
+        {
+			UserRole userRole = _storage.UserRoles.Find(user.Id, role.Id);
+			
+			if (userRole != null)
+			{
+				return;                
+			}
+
+	        // Add a user role based on a user id
+			userRole = new UserRole
+			{
+				UserId = user.Id,
+				RoleId = role.Id
+			};
+			_storage.UserRoles.Add(userRole);
+			_storage.SaveChanges();
+        }
         
+	    //  // Features are temp off // keep in code 
 //        public void RemoveFromRole(User user, string roleCode)
 //        {
 //            Role role = _storage.Roles.FirstOrDefault(
