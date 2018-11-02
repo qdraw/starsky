@@ -25,6 +25,10 @@ public class UserManager : IUserManager
             _storage = storage;
         }
 	    
+	    /// <summary>
+	    /// Add the roles 'User' and 'Administrator' to an empty database (and checks this list)
+	    /// </summary>
+	    /// <returns>List of roles in existingRoleNames</returns>
 		public List<Role> AddDefaultRoles()
 		{
 			// User.HasClaim(ClaimTypes.Role, "Administrator") -- > p.Code
@@ -59,6 +63,11 @@ public class UserManager : IUserManager
 			return roles;
 	    }
 
+	    /// <summary>
+	    /// The default username is an email-adres, this is added as default value to an empty database (and checks this list)
+	    /// </summary>
+	    /// <param name="credentialTypeCode">the type, for example email</param>
+	    /// <returns></returns>
 	    public CredentialType AddDefaultCredentialType(string credentialTypeCode)
 	    {
 		    CredentialType credentialType = _storage.CredentialTypes.FirstOrDefault(
@@ -81,7 +90,7 @@ public class UserManager : IUserManager
 	    }
 
         /// <summary>
-        /// 
+        /// Add a new user, including Roles and UserRoles
         /// </summary>
         /// <param name="name">Nice Name, default string.Emthy</param>
         /// <param name="credentialTypeCode">usaly email</param>
@@ -124,6 +133,7 @@ public class UserManager : IUserManager
 			UserRole userRole = _storage.UserRoles.FirstOrDefault(p => p.UserId == user.Id);
 			if ( userRole == null )
 			{
+				// Add a link between the user and the role (for example Admin)
 				userRole = new UserRole
 				{
 					Role = roles.FirstOrDefault(),
