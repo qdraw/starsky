@@ -6,12 +6,14 @@ using System.Collections.Generic;
 
 namespace starsky.Models.Account
 {
-    public class User
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public DateTime Created { get; set; }
-        
-        public virtual ICollection<Credential> Credentials { get; set; }
-    }
+	public class User
+	{
+		public int Id { get; set; }
+		public string Name { get; set; }
+		public DateTime Created { get; set; }
+		
+		// menu settings in the future
+		
+		public virtual ICollection<Credential> Credentials { get; set; }
+	}
 }

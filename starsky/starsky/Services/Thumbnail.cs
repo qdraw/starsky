@@ -391,54 +391,17 @@ namespace starsky.Services
             
             return true;
         }
-        
-        
-        
-        
-        
-//        private static readonly string _thumbnailErrorMessage = "Thumbnail error";
-//        private static readonly string _thumbnailSuffix = "_starksy-error.log";
-//
-////        // todo: replace this code with something good
-//        
-	    
-		private static readonly string _thumbnailPrefix = "_";
-		
-		private string GetErrorLogItemFullPath(string inputFullFilePath)
+
+	    private const string ThumbnailPrefix = "_";
+
+	    private string GetErrorLogItemFullPath(string inputFullFilePath)
 		{
 			return Path.GetDirectoryName(inputFullFilePath) 
 				+ Path.DirectorySeparatorChar 
-				+ _thumbnailPrefix
+				+ ThumbnailPrefix
 				+ Path.GetFileNameWithoutExtension(inputFullFilePath)
 				+ ".log";
 		}
-//
-//        public void CreateErrorLogItem(string path)
-//        {
-//            if (File.Exists(path)) return;
-//            
-//            // Create a file to write to.
-//            using (StreamWriter sw = File.CreateText(path)) 
-//            {
-//                sw.WriteLine(_thumbnailErrorMessage);
-//            }
-//        }
-//        
-//        // todo: Use PlainTextFileHelper
-//        private bool _isErrorItem(string inputDatabaseFilePath)
-//        {
-//            var path = GetErrorLogItemFullPath(inputDatabaseFilePath);
-//            if (!File.Exists(path)) return true;
-//            
-//            using (StreamReader sr = File.OpenText(path)) 
-//            {
-//                string s = "";
-//                while ((s = sr.ReadLine()) != null)
-//                {
-//                    if (s.Contains(_thumbnailErrorMessage)) return false;
-//                }
-//            }
-//            return true;
-//        }
+
     }
 }
