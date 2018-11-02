@@ -79,6 +79,7 @@ namespace starskytests.Middleware
         [TestMethod]
         public async Task BasicAuthenticationMiddlewareLoginTest()
         {
+	        
             // Arrange
             var userId = "TestUserA";
             var phone = "abcdefg";

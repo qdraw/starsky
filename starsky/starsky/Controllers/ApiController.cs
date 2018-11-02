@@ -33,9 +33,21 @@ namespace starsky.Controllers
             _bgTaskQueue = queue;
             _readMeta = readMeta;
         }
-        
 
-        /// <summary>
+		[HttpGet]
+		[HttpHead]
+		public IActionResult Index(
+			string f = "/",
+			string colorClass = null,
+			bool json = true,
+			bool collections = true,
+			bool hidedelete = true
+		)
+		{
+			return new HomeController(_query, _appSettings).Index(f, colorClass, json, collections, hidedelete);
+		}
+
+	    /// <summary>
         /// Used for end2end test, show config data
         /// </summary>
         /// <returns>config data, except connection strings</returns>

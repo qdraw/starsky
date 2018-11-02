@@ -22,7 +22,7 @@ namespace starsky.Controllers
         {
             if (!User.Identity.IsAuthenticated) return RedirectToLocal(null);
 	        if ( json ) return Json(_userManager.GetCurrentUser(HttpContext));
-            return View(_userManager.GetCurrentUser(HttpContext));
+			return View(_userManager.GetCurrentUser(HttpContext));
         }
 
         /// <summary>

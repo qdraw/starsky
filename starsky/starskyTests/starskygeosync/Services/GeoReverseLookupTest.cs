@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
 using starskyGeoCli.Services;
@@ -42,7 +43,9 @@ namespace starskytests.starskygeosync.Services
                 FileName = "t.jpg" // checks if file type is suppored to write
             };
             var folderOfPhotos = new List<FileIndexItem> {cakeBakerPhoto, northSea, buenosAires};
-            
+
+	        Console.WriteLine(NGeoNames.GeoFileDownloader.DEFAULTGEOFILEBASEURI);
+		        
             new GeoReverseLookup(_appSettings).LoopFolderLookup(folderOfPhotos,false);
 
             Assert.AreEqual("Argentina", buenosAires.LocationCountry);

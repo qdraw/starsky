@@ -26,10 +26,12 @@ namespace starsky.Data
 		public DbSet<Permission> Permissions { get; set; }
 		public DbSet<RolePermission> RolePermissions { get; set; }
 
-			protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-			{
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		{
+			#if (DEBUG) 
 				optionsBuilder.EnableSensitiveDataLogging();
-			}
+			#endif
+		}
 			
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
