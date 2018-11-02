@@ -8,13 +8,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Rest;
 using starsky.Data;
 using starsky.Helpers;
 using starsky.Interfaces;
-using starsky.Middleware;
 using starsky.Models.Account;
 
 namespace starsky.Services
