@@ -97,7 +97,7 @@ namespace starsky.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, bool json = false, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
