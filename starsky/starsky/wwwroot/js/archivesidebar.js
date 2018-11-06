@@ -227,26 +227,42 @@ function updateControls() {
 
     if (selectedFiles.length === 0 && document.querySelectorAll(".js-controls").length === 1) {
         document.querySelector(".js-controls").classList.add("disabled");
-        document.querySelector(".js-toggle-addorreplace .colorbutton").classList.add("disabled");
-        document.querySelector(".js-keywords").classList.add("disabled");
-        document.querySelector("#js-keywords-update .btn").classList.add("disabled");
-        document.querySelector(".js-captionabstract").classList.add("disabled");
-        document.querySelector("#js-captionabstract-update .btn").classList.add("disabled");
-        document.querySelector(".js-objectname").classList.add("disabled");
-        document.querySelector("#js-objectname-update .btn").classList.add("disabled");
-        document.querySelector(".add-colorclass").classList.add("disabled");
+        if (document.querySelectorAll(".js-toggle-addorreplace").length === 1) {
+            document.querySelector(".js-toggle-addorreplace .colorbutton").classList.add("disabled");
+            document.querySelector(".js-keywords").classList.add("disabled");
+        }
+        if (document.querySelectorAll("#js-keywords-update").length === 1) {
+            document.querySelector("#js-keywords-update .btn").classList.add("disabled");
+            document.querySelector(".js-captionabstract").classList.add("disabled");
+        }
+        if (document.querySelectorAll("#js-captionabstract-update").length === 1) {
+            document.querySelector("#js-captionabstract-update .btn").classList.add("disabled");
+            document.querySelector(".js-objectname").classList.add("disabled");
+        }
+        if (document.querySelectorAll("#js-objectname-update").length === 1) {
+            document.querySelector("#js-objectname-update .btn").classList.add("disabled");
+            document.querySelector(".add-colorclass").classList.add("disabled");
+        }
     }
 
     if (selectedFiles.length >= 1 && document.querySelectorAll(".js-controls").length === 1) {
         document.querySelector(".js-controls").classList.remove("disabled");
-        document.querySelector(".js-toggle-addorreplace .colorbutton").classList.remove("disabled");
-        document.querySelector(".js-keywords").classList.remove("disabled");
-        document.querySelector("#js-keywords-update .btn").classList.remove("disabled");
-        document.querySelector(".js-captionabstract").classList.remove("disabled");
-        document.querySelector("#js-captionabstract-update .btn").classList.remove("disabled");
-        document.querySelector(".js-objectname").classList.remove("disabled");
-        document.querySelector("#js-objectname-update .btn").classList.remove("disabled");
-        document.querySelector(".add-colorclass").classList.remove("disabled");
+        if (document.querySelectorAll(".js-toggle-addorreplace").length === 1) {
+            document.querySelector(".js-toggle-addorreplace .colorbutton").classList.remove("disabled");
+            document.querySelector(".js-keywords").classList.remove("disabled");
+        }
+        if (document.querySelectorAll("#js-keywords-update").length === 1) {
+            document.querySelector("#js-keywords-update .btn").classList.remove("disabled");
+            document.querySelector(".js-captionabstract").classList.remove("disabled");
+        }
+        if (document.querySelectorAll("#js-captionabstract-update").length === 1) {
+            document.querySelector("#js-captionabstract-update .btn").classList.remove("disabled");
+            document.querySelector(".js-objectname").classList.remove("disabled");
+        }
+        if (document.querySelectorAll("#js-objectname-update").length === 1) {
+            document.querySelector("#js-objectname-update .btn").classList.remove("disabled");
+            document.querySelector(".add-colorclass").classList.remove("disabled");
+        }
     }
 }
 
@@ -643,15 +659,16 @@ if (document.querySelectorAll(".trash").length === 1 ) {
 }
 
 
-
-if (window.location.search.indexOf("collections=false") >= 0) {
-    document.querySelector(".js-collections-box h2").innerHTML =  "<a href='" + window.location.search.replace("&collections=false","") + "#sidebar' class='js-collections colorbutton'><span class=\"checkbox\"></span>Collections</a>";
-}
-else if (window.location.search === "") {
-    document.querySelector(".js-collections-box h2").innerHTML = "<a href='" + window.location.search + "?f=/&collections=false#sidebar' class='js-collections colorbutton on'><span class=\"checkbox\"></span>Collections</a>";
-}
-else {
-    document.querySelector(".js-collections-box h2").innerHTML =    "<a href='" + window.location.search + "&collections=false#sidebar' class='js-collections colorbutton on'><span class=\"checkbox\"></span>Collections</a>";
+if (document.querySelectorAll(".js-collections-box h2").length >= 1) {
+    if (window.location.search.indexOf("collections=false") >= 0) {
+        document.querySelector(".js-collections-box h2").innerHTML =  "<a href='" + window.location.search.replace("&collections=false","") + "#sidebar' class='js-collections colorbutton'><span class=\"checkbox\"></span>Collections</a>";
+    }
+    else if (window.location.search === "") {
+        document.querySelector(".js-collections-box h2").innerHTML = "<a href='" + window.location.search + "?f=/&collections=false#sidebar' class='js-collections colorbutton on'><span class=\"checkbox\"></span>Collections</a>";
+    }
+    else {
+        document.querySelector(".js-collections-box h2").innerHTML =    "<a href='" + window.location.search + "&collections=false#sidebar' class='js-collections colorbutton on'><span class=\"checkbox\"></span>Collections</a>";
+    } 
 }
 // add to all items in index
 if (window.location.search.indexOf("collections=false") >= 0) {
