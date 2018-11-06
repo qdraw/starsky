@@ -127,7 +127,7 @@ function handleTouchMove(evt) {
                     document.activeElement.className.indexOf("form-control") === -1
                     && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) 
                 {
-                    showPopupDialog( "<p>Je bent al bij het eerste item, je kunt niet verder terug</p>\n" +
+                    showPopupDialog( "<p>Je bent al bij het eerste item, je kunt niet verder terug.</p>\n" +
                         "<p>\n" +
                         "<a onClick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
                         "</p>\n",3000);

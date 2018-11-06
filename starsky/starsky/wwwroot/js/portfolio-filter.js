@@ -272,7 +272,7 @@ function constructURL() {
             url += "sidebar=" + GetSidebarWindowHash("sidebar");
         }
 
-            // Check if this function isn't repeated excuded;
+        // Check if this function isn't repeated excuded;
         if (url !== prevURL) {
             var stateObj = { url: url };
             history.pushState(stateObj, "Qdraw", url);
@@ -416,6 +416,18 @@ function buildPage() {
             var positionx = document.querySelector(queryDataFileName).offsetTop;
             console.log(positionx);
             window.scrollTo(0, positionx);
+
+            var url = window.location.hash.replace(GetSidebarWindowHash("anchor"),"");
+            url = url.replace(/;$/ig,"");
+            if (window.location.hash.indexOf("anchor") >= 0 && url !== prevURL  ) {
+                var stateObj = { url: url };
+                console.log(window.location.hash)
+
+                history.pushState(stateObj, "Qdraw", url);
+            }
+            prevURL = url;
+            
+            
         }
 
     }
