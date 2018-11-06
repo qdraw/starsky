@@ -13,6 +13,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
     setPrev();
     setNext();
 
+    var previousKey = [];
     window.onkeydown = function(e) {
         console.log(e.keyCode);
         switch (e.keyCode) {
@@ -20,8 +21,9 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 // left
                 setPrev();
                 if (prev != null 
-                    && document.activeElement.className.indexOf("form-control") === -1
-                    && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
+                    && (document.activeElement.className.indexOf("form-control") === -1
+                    && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) 
+                    || previousKey.indexOf(17) >= 0 ) {
                     window.location.href = prev;
                 }
                 else if (document.activeElement.className.indexOf("form-control") === -1
@@ -39,8 +41,9 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 // right
                 setNext();
                 if (next != null
-                    && document.activeElement.className.indexOf("form-control") === -1
-                    && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
+                && (document.activeElement.className.indexOf("form-control") === -1
+                && document.activeElement.className.indexOf("leaflet-touch-drag") === -1)
+                || previousKey.indexOf(17) >= 0 ) {
                     window.location.href = next;
                 }
                 else if (document.activeElement.className.indexOf("form-control") === -1
@@ -68,8 +71,20 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                         break;
                     }
                 }
-                
                 break;
+            case 224: // apple cmd
+                previousKey.push(17);
+                break;
+            case 17: // ctrl
+                previousKey.push(17);
+                break;
+            case 18: // alt
+                previousKey.push(18);
+                break;
+            default:
+                previousKey = [];
+                break;
+
         }
     };
     
