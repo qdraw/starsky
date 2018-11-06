@@ -564,23 +564,7 @@ function toggleOverwriteText() {
 
     }
 }
-function hidePopupDialog() {
-    if (document.querySelectorAll("#popup").length === 1) {
-        document.querySelector("#popup").classList.remove("on");
-    }
-}
 
-function showPopupDialog(content) {
-    if (document.querySelectorAll("#popup").length === 1 &&
-        document.querySelectorAll(".archive").length === 1
-    ) {
-        document.querySelector("#popup").classList.add("on");
-        if (content !== undefined) {
-            document.querySelector("#popup .content").innerHTML = content;
-        }
-    }
-    
-}
 
 function queryDeleteApi() {
 

@@ -21,7 +21,13 @@ function updateColorClass(those) {
             hidePreloader();
             updateColorClassButtons(data[0].colorClass);
         },
-        function (xhr) { console.error(xhr); },
+        function (xhr) { 
+            console.error(xhr);
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
         "POST"
     );
 }
@@ -171,7 +177,13 @@ function queryKeywords(queryItem) {
             hidePreloader();
             updateDeletedKeywordElement(data[0]);
         },
-        function (xhr) { console.error(xhr); },
+        function (xhr) { 
+            console.error(xhr);
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
         "POST"
     );
 }
@@ -187,7 +199,13 @@ function queryCaptionAbstract(queryItem) {
             hideUnloadWarning();
             hidePreloader();
         },
-        function (xhr) { console.error(xhr); },
+        function (xhr) { 
+            console.error(xhr);
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
         "POST"
     );
 }
@@ -239,7 +257,13 @@ function queryObjectName(queryItem) {
             hideUnloadWarning();
             hidePreloader();
         },
-        function (xhr) { console.error(xhr); },
+        function (xhr) { 
+            console.error(xhr);
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
         "POST"
     );
 }
@@ -338,9 +362,10 @@ document.addEventListener('keydown', function (event) {
             if (breadcrumbObjectKey.length >= 4) {
                 // :not(.removecache)
                 for (var i = 0; i < breadcrumbObjectKey.length; i++) {
-                    if (i === breadcrumbObjectKey.length - 3) {
+                    if (i === breadcrumbObjectKey.length - 3 &&
+                    document.querySelector("#popup").className.indexOf("on") === -1) {
                         console.log("esc");
-                        breadcrumbObjectKey[i].click();
+                         breadcrumbObjectKey[i].click();
                     }
                 }
             }
@@ -608,7 +633,13 @@ function queryRotate(queryItem) {
                 location.reload();
             }, 1000);
         },
-        function (xhr) { console.error(xhr); },
+        function (xhr) { 
+            console.error(xhr);
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
         "POST"
     );
 }

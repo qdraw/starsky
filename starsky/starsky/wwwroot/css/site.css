@@ -1337,6 +1337,9 @@ div#popup .content
     margin-left:-150px;
     padding:20px;
     background-color:white;
+    /*z-index: 502;*/
+    cursor: default;
+
 }
 div#popup .content p {
     margin-bottom: 10px;
@@ -1351,6 +1354,8 @@ div#popup {
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.5);
+    cursor: pointer;
+
 }
 
 div#popup.on .content,

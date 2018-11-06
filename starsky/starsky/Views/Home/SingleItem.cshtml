@@ -231,9 +231,15 @@
         </span>
     </h1>
 
-    <div class="main-image">
-        <img class="disabled-@Model.FileIndexItem.Orientation" src="@Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash + ".jpg", issingleitem = true})"/>
-    </div>
+	<div class="main-image">
+		<img class="disabled-@Model.FileIndexItem.Orientation" src="@Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash + ".jpg", issingleitem = true})"/>
+	</div>
+	
+	<div id="popup">
+		<div class="content">
+		</div>
+	</div>
+	
 </div>
 
 
