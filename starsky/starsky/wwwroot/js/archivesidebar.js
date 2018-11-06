@@ -627,18 +627,6 @@ function queryDeleteApi() {
     
 }
 
-function startIsSingleitem() {
-
-    if (localStorage.getItem("issingleitem") === "true")
-    {
-        runIsSingleitem("?issingleitem=True");
-    }
-    else {
-        runIsSingleitem("?issingleitem=False");
-    }
-}
-
-
 function showPreloader() {
     if (document.querySelectorAll(".preloader").length === 1){
         document.querySelector(".preloader").style.display = "block";

@@ -18,6 +18,16 @@ function toggleIsSingleitem() {
     }
 }
 
+function startIsSingleitem() {
+
+    if (localStorage.getItem("issingleitem") === "true")
+    {
+        runIsSingleitem("?issingleitem=True");
+    }
+    else {
+        runIsSingleitem("?issingleitem=False");
+    }
+}
 
 function runIsSingleitem(toAdd) {
     if (document.querySelectorAll(".js-toggle-issingleitem").length === 1) {
@@ -53,3 +63,5 @@ function runIsSingleitem(toAdd) {
         }
     }
 }
+
+startIsSingleitem();
