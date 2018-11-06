@@ -1323,11 +1323,15 @@ footer {
     display: none;
 }
 
+.js-collections,
 .js-selectallnone {
-    margin-top: 15px;
-    padding-left: 10px;
+    margin-top: 8px;
 }
 
+.js-resetselect,
+.js-selectallnone {
+    padding-left: 10px;
+}
 
 .issingleitem div{
     margin-top: 10px;

@@ -64,17 +64,21 @@
                 </div>
                 
                 <h1>Kleur overschrijven</h1>
-                <div class="add-colorclass">
-                    @{
-                        foreach (var item in @FileIndexItem.GetAllColorUserInterface())
-                        {
-                            var enumValue = (int) item;
-                            <a class="colorclass-@enumValue" data-colorclass="@enumValue" onclick="updateColorClass(this)">
-                                <span class='checkbox'></span>@item.ToString()
-                            </a>
-                        }
-                    }
-                </div>
+	            <div class="add-colorclass">
+		            @{
+			            foreach (var item in @FileIndexItem.GetAllColorUserInterface())
+			            {
+				            var enumValue = (int) item;
+				            <a class="colorclass-@enumValue" data-colorclass="@enumValue" onclick="updateColorClass(this)">
+					            <span class='checkbox'></span>@item.ToString()
+				            </a>
+			            }
+		            }
+	            </div>
+	            <div class="js-collections-box">
+		            <h1>Weergave</h1>
+		            <h2></h2>
+	            </div>
             </div>
 
         </div>

@@ -310,6 +310,14 @@ window.onload = function() {
 
 if (document.querySelectorAll(".breadcrumb").length >= 1) {
     var breadcrumbObject = document.querySelector(".breadcrumb").children;
+
+    // add it to breadcrumb if collections is in the url
+    if (window.location.search.indexOf("collections=false") >= 0) {
+        for (var i = 0; i < breadcrumbObject.length; i++) {
+            breadcrumbObject[i].href += "&collections=false";
+        }
+    }
+    
     if(window.location.search.indexOf("colorclass") === -1) {
         if (breadcrumbObject.length >= 4) {
             for (var i = 0; i < breadcrumbObject.length; i++) {

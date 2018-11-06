@@ -140,6 +140,10 @@ function updatePrevNextHash() {
             var indexof = object[j].href.indexOf("#");
             if (indexof === -1) indexof = object[j].href.length;
             var href = object[j].href.substr(0, indexof);
+            if (window.location.search.indexOf("collections=false") >= 0 &&
+            object[j].href.indexOf("collections=false") === -1) {
+                href += "&collections=false"
+            }
             href += window.location.hash;
             object[j].href = href;
             // console.log(href)

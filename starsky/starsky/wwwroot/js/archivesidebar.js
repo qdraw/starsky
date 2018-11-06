@@ -159,7 +159,9 @@ function updateDisplayList() {
 
     if (document.querySelectorAll(".js-selectedimages").length === 1) {
         var html = "<h2><span class='js-selectedcount'>Geen bestanden geselecteerd</span></h2>";
-        html +=    "<h2><a class='colorbutton js-selectallnone selectall' onclick='toggleSelectAll()'><span class='checkbox'></span> Selecteer alles</a></h2>";
+        
+        html +=    "<h2><a class='colorbutton js-selectallnone selectall' onclick='toggleSelectAll()'><span class='checkbox'></span> Selecteer alles</a>"
+            + "<a class='colorbutton js-resetselect' onclick='resetSelection()'>Deselecteer</a></h2>";
         html +=    "<ul>";
         for (var i = 0; i < selectedFiles.length; i++) {
             html += "<li><a class='close' onclick='removeThisItem(\"" + selectedFiles[i] + "\")'></a> " + selectedFiles[i] + "</li>";
@@ -193,16 +195,26 @@ function updateDisplayList() {
             document.querySelector(".js-selectallnone").classList.add("selectnone");
             document.querySelector(".js-selectallnone").classList.add("on");
 
+            document.querySelector(".js-resetselect").classList.add("hide");
+
+            
+
             document.querySelector(".js-selectallnone").innerHTML = "Selectie ongedaan maken";
         }
         else {
             document.querySelector(".js-selectallnone").classList.remove("selectnone");
             document.querySelector(".js-selectallnone").classList.add("selectall");
             document.querySelector(".js-selectallnone").classList.remove("on");
-
             document.querySelector(".js-selectallnone").innerHTML = " Selecteer alles";
+            document.querySelector(".js-resetselect").classList.remove("hide");
+
         }
-        // remove content is there is nothing
+        // no Deselecteer options when there is nothing selected
+        if (selectedFiles.length === 0) {
+            document.querySelector(".js-resetselect").classList.add("hide");
+        }
+        
+        // remove content is there a no files
         if (collectionscount === 0) {
             document.querySelector(".js-selectallnone").innerHTML = "";
         }
@@ -642,3 +654,21 @@ if (document.querySelectorAll(".trash").length === 1 ) {
     hidePreloader();
 }
 
+
+
+if (window.location.search.indexOf("collections=false") >= 0) {
+    document.querySelector(".js-collections-box h2").innerHTML =  "<a href='" + window.location.search.replace("&collections=false","") + "#sidebar' class='js-collections colorbutton'><span class=\"checkbox\"></span>Collections</a>";
+}
+else if (window.location.search === "") {
+    document.querySelector(".js-collections-box h2").innerHTML = "<a href='" + window.location.search + "?f=/&collections=false#sidebar' class='js-collections colorbutton on'><span class=\"checkbox\"></span>Collections</a>";
+}
+else {
+    document.querySelector(".js-collections-box h2").innerHTML =    "<a href='" + window.location.search + "&collections=false#sidebar' class='js-collections colorbutton on'><span class=\"checkbox\"></span>Collections</a>";
+}
+// add to all items in index
+if (window.location.search.indexOf("collections=false") >= 0) {
+    var halfitems = document.querySelectorAll(".halfitem");
+    for (var i = 0; i < halfitems.length; i++) {
+        halfitems[i].href += "&collections=false"
+    }
+}
