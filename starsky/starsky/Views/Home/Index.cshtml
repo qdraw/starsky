@@ -39,11 +39,6 @@
                 <h2>Aantal: <span class="js-collectionscount">@Model.FileIndexItems.Count(p => p.IsDirectory == false)</span> / @Model?.CollectionsCount files</h2>
                 <div class="js-selectedimages"></div>
             </div>
-            <div class="issingleitem">
-                <p>
-                    <a title="Voor dit device wordt deze instelling opgeslagen" class="colorbutton small js-toggle-issingleitem" onclick="toggleIsSingleitem()"><span class="checkbox"></span> Laad langzame bestanden</a>
-                </p>
-            </div>
             <div class="js-controls">
                 <h1>Tekst <span class="js-title-addorreplace">toevoegen</span></h1>
                 <div class="js-toggle-addorreplace"><a class="colorbutton" onclick="toggleOverwriteText()"><span class="checkbox"></span> Overschrijf tekst</a></div>
