@@ -321,7 +321,10 @@ h1 {
     line-height: 40px;
     cursor: pointer;
 }
-
+.colorbutton.disabled {
+    pointer-events: none;
+    background-color: #cccccc;
+}
 
 #portfolio-filter ul > li a.reset{
     height: 40px;
@@ -679,6 +682,13 @@ h2 {
 .wrapper .halfitem.Trash.on .caption {
     background-color: rgba(0, 0, 0, 0.6);
 }
+
+.add-colorclass.disabled a {
+    opacity: 0.6;
+    pointer-events: none;
+
+}
+
 
 #portfolio-filter ul > li > a.off {
     opacity: 0.65;

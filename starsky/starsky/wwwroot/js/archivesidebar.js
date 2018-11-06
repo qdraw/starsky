@@ -214,12 +214,27 @@ function updateControls() {
     // console.log(document.querySelectorAll(".js-controls"));
 
     if (selectedFiles.length === 0 && document.querySelectorAll(".js-controls").length === 1) {
-        document.querySelector(".js-controls").classList.add("hidden");
+        document.querySelector(".js-controls").classList.add("disabled");
+        document.querySelector(".js-toggle-addorreplace .colorbutton").classList.add("disabled");
+        document.querySelector(".js-keywords").classList.add("disabled");
+        document.querySelector("#js-keywords-update .btn").classList.add("disabled");
+        document.querySelector(".js-captionabstract").classList.add("disabled");
+        document.querySelector("#js-captionabstract-update .btn").classList.add("disabled");
+        document.querySelector(".js-objectname").classList.add("disabled");
+        document.querySelector("#js-objectname-update .btn").classList.add("disabled");
+        document.querySelector(".add-colorclass").classList.add("disabled");
     }
 
     if (selectedFiles.length >= 1 && document.querySelectorAll(".js-controls").length === 1) {
-        document.querySelector(".js-controls").classList.remove("hidden");
-
+        document.querySelector(".js-controls").classList.remove("disabled");
+        document.querySelector(".js-toggle-addorreplace .colorbutton").classList.remove("disabled");
+        document.querySelector(".js-keywords").classList.remove("disabled");
+        document.querySelector("#js-keywords-update .btn").classList.remove("disabled");
+        document.querySelector(".js-captionabstract").classList.remove("disabled");
+        document.querySelector("#js-captionabstract-update .btn").classList.remove("disabled");
+        document.querySelector(".js-objectname").classList.remove("disabled");
+        document.querySelector("#js-objectname-update .btn").classList.remove("disabled");
+        document.querySelector(".add-colorclass").classList.remove("disabled");
     }
 }
 
