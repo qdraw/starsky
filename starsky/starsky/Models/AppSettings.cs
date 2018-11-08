@@ -238,8 +238,9 @@ namespace starsky.Models
         
         // C# 6+ required for this
         public string ExifToolXmpPrefix { get; set; } = ""; //zz__
-        
-        // fallback in contructor
+
+	    // fallback in contructor
+	    // use env variable: app__ReadOnlyFolders__0 - value
         public List<string> ReadOnlyFolders { get; set; }
 
         /// <summary>
