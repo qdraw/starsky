@@ -6,6 +6,7 @@ using starsky.Helpers;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.Services;
+using starsky.ViewModels;
 
 namespace starsky.Controllers
 {
@@ -35,44 +36,63 @@ namespace starsky.Controllers
         {
             var inputFilePaths = ConfigRead.SplitInputFilePaths(f).ToList();
             // the result list
-            var fileIndexResultsList = new List<FileIndexItem>();
+            var syncResultsList = new List<SyncViewModel>();
 
             for (int i = 0; i < inputFilePaths.Count; i++)
             {
                 var subPath = inputFilePaths[i];
 	            subPath = ConfigRead.RemoveLatestSlash(subPath);
-                var detailView = _query.SingleItem(subPath,null,false,false);
-                var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+	            if ( subPath == string.Empty ) subPath = "/";
 
-                var statusModel = new FileIndexItem();
-                statusModel.SetFilePath(subPath);
-                statusModel.IsDirectory = false;
+	            var folderStatus = Files.IsFolderOrFile(_appSettings.DatabasePathToFilePath(subPath));
+				if ( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				{
+					var syncItem = new SyncViewModel
+					{
+						FilePath = subPath,
+						Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+					};
+					syncResultsList.Add(syncItem);
+				}
+				else if( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
+				{
+					var filesInDirectoryArray = Files.GetFilesInDirectory(_appSettings.DatabasePathToFilePath(subPath));
+					foreach ( var fileInDirectory in filesInDirectoryArray )
+					{
+						var syncItem = new SyncViewModel
+						{
+							FilePath = _appSettings.FullPathToDatabaseStyle(fileInDirectory),
+							Status = FileIndexItem.ExifStatus.Ok
+						};
+						syncResultsList.Add(syncItem);
+					}
+				}
+				else // single file
+				{
+					var syncItem = new SyncViewModel
+					{
+						FilePath = subPath,
+						Status = FileIndexItem.ExifStatus.Ok
+					};
+					syncResultsList.Add(syncItem);
+				}
 
-                // if one item fails, the status will added
-                if (!new StatusCodesHelper(null).ReturnExifStatusError(
-                    statusModel, statusResults, fileIndexResultsList)) continue;
-                
-                inputFilePaths[i] = null;
-                if (statusResults == FileIndexItem.ExifStatus.NotFoundIsDir)
-                {
-                    inputFilePaths.AddRange(_query.DisplayFileFolders(subPath, null, false)
-                        .Where(p => p.IsDirectory == false).Select(p => p.FilePath));
-                }
-            }
+			}
+	        // todo: missing directories
 
-            foreach (var subPath in inputFilePaths)
-            {
-                if (subPath != null)
-                {
-                    // Update >
-                    _bgTaskQueue.QueueBackgroundWorkItem(async token =>
-                    {
-                        _sync.SyncFiles(subPath);
-                    });
-                }
-            }
-            
-            return Json(inputFilePaths);
+			foreach (var syncResult in syncResultsList)
+			{
+				if (syncResult.Status == FileIndexItem.ExifStatus.Ok)
+				{
+					// Update >
+					_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+					{
+						_sync.SyncFiles(syncResult.FilePath);
+					});
+				}
+			}
+			
+			return Json(syncResultsList);
         }
 
     }
