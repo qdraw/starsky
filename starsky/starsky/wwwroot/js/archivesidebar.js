@@ -696,9 +696,10 @@ function forceSync(subPath) {
 
     loadJSON(syncApiBase,
         function (data) {
-            setTimeout(function(){
-                location.reload();
-            }, 2000);
+            showPopupDialog("De server gaat nu op de achtergrond bekijken of de inhoud van deze pagina up-to-date is, een klein momentje geduld a.u.b" +
+                "<p>\n" +
+                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
         },
         function (xhr) {
             console.error(xhr);
