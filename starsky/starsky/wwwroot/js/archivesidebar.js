@@ -243,6 +243,9 @@ function updateControls() {
             document.querySelector("#js-objectname-update .btn").classList.add("disabled");
             document.querySelector(".add-colorclass").classList.add("disabled");
         }
+        if (document.querySelectorAll(".addDeleteTag").length === 1) {
+            document.querySelector(".addDeleteTag").classList.add("disabled");
+        }
     }
 
     if (selectedFiles.length >= 1 && document.querySelectorAll(".js-controls").length === 1) {
@@ -262,6 +265,10 @@ function updateControls() {
         if (document.querySelectorAll("#js-objectname-update").length === 1) {
             document.querySelector("#js-objectname-update .btn").classList.remove("disabled");
             document.querySelector(".add-colorclass").classList.remove("disabled");
+        }
+
+        if (document.querySelectorAll(".addDeleteTag").length === 1) {
+            document.querySelector(".addDeleteTag").classList.remove("disabled");
         }
     }
 }
