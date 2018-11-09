@@ -56,8 +56,10 @@ namespace starsky.Controllers
 				}
 				else if( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
-					var filesInDirectoryArray = Files.GetFilesInDirectory(_appSettings.DatabasePathToFilePath(subPath));
-					foreach ( var fileInDirectory in filesInDirectoryArray )
+					var filesAndFoldersInDirectoryArray = Files.GetFilesInDirectory(_appSettings.DatabasePathToFilePath(subPath)).ToList();
+					filesAndFoldersInDirectoryArray.AddRange(Files.GetAllFilesDirectory(_appSettings.DatabasePathToFilePath(subPath)));
+					
+					foreach ( var fileInDirectory in filesAndFoldersInDirectoryArray )
 					{
 						var syncItem = new SyncViewModel
 						{
@@ -76,21 +78,33 @@ namespace starsky.Controllers
 					};
 					syncResultsList.Add(syncItem);
 				}
-
+	        
+	            // Update >
+	            _bgTaskQueue.QueueBackgroundWorkItem(async token =>
+	            {
+		            _sync.SyncFiles(subPath,true);
+		            _query.RemoveCacheParentItem(subPath);
+	            });
+	            
 			}
+	        
+	        
 	        // todo: missing directories
 
-			foreach (var syncResult in syncResultsList)
-			{
-				if (syncResult.Status == FileIndexItem.ExifStatus.Ok)
-				{
-					// Update >
-					_bgTaskQueue.QueueBackgroundWorkItem(async token =>
-					{
-						_sync.SyncFiles(syncResult.FilePath);
-					});
-				}
-			}
+//			foreach (var syncResult in syncResultsList)
+//			{
+//				if (syncResult.Status == FileIndexItem.ExifStatus.Ok)
+//				{
+//					// Update >
+//					_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+//					{
+//						_sync.SyncFiles(syncResult.FilePath);
+//					});
+//				}
+//			}
+
+	        
+	        
 			
 			return Json(syncResultsList);
         }

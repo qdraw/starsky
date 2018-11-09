@@ -36,7 +36,7 @@ namespace starsky.Services
         */
         
         [ExcludeFromCoverage]
-        public IEnumerable<string> SyncFiles(string subPath)
+        public IEnumerable<string> SyncFiles(string subPath, bool recursive = true)
         {
             // Prefix / for database
             subPath = ConfigRead.PrefixDbSlash(subPath);
@@ -73,33 +73,37 @@ namespace starsky.Services
             AddFoldersToDatabase(localSubFolderDbStyle, databaseSubFolderList);
 
             Console.WriteLine(".");
-
+	        
+	        // dont crawl the content of the subfolders
+	        if ( recursive ) localSubFolderDbStyle = new List<string> ();
+	        
             // Allow sync for the path the direct subPath for example '/2018', 
             localSubFolderDbStyle.Add(subPath);
-
-            // Loop though the folders
-            foreach (var singleFolder in localSubFolderDbStyle)
-            {
-                Console.Write(singleFolder + "  ");
-
-                var databaseFileList = _query.GetAllFiles(singleFolder);
-                var singleFolderFullPath = _appSettings.DatabasePathToFilePath(singleFolder);
-                var localFarrayFilesFullFilePathStyle = Files.GetFilesInDirectory(singleFolderFullPath).ToList();
-                var localFarrayFilesDbStyle = RenameListItemsToDbStyle(localFarrayFilesFullFilePathStyle); 
-                databaseFileList = RemoveDuplicate(databaseFileList);
-                databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);
-                CheckMd5Hash(localFarrayFilesDbStyle, databaseFileList);
-                AddPhotoToDatabase(localFarrayFilesDbStyle, databaseFileList);
-                Console.WriteLine("-");
-            }
-
-            // Add the subpaths recruisivly 
-            AddSubPathFolder(subPath);
-            
-            // Gives folder an thumbnail image (only if contains direct files)
-            FirstItemDirectory(subPath);
-
-            return null;
+				        
+	        // Loop though the folders
+			foreach (var singleFolder in localSubFolderDbStyle)
+			{
+				Console.Write(singleFolder + "  ");
+				
+				var databaseFileList = _query.GetAllFiles(singleFolder);
+				var singleFolderFullPath = _appSettings.DatabasePathToFilePath(singleFolder);
+				
+				var localFarrayFilesFullFilePathStyle = Files.GetFilesInDirectory(singleFolderFullPath).ToList();
+				var localFarrayFilesDbStyle = RenameListItemsToDbStyle(localFarrayFilesFullFilePathStyle); 
+				databaseFileList = RemoveDuplicate(databaseFileList);
+				databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);
+				CheckMd5Hash(localFarrayFilesDbStyle, databaseFileList);
+				AddPhotoToDatabase(localFarrayFilesDbStyle, databaseFileList);
+				Console.WriteLine("-");
+			}
+	        
+	        // Add the subpaths recruisivly 
+	        AddSubPathFolder(subPath);
+			
+	        // Gives folder an thumbnail image (only if contains direct files)
+	        FirstItemDirectory(subPath);
+	        
+	        return null;
         }
 
         // Rename a list to database style (short style)

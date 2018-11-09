@@ -4,6 +4,6 @@ namespace starsky.Interfaces
 {
     public interface ISync
     {
-        IEnumerable<string> SyncFiles(string subPath);
+        IEnumerable<string> SyncFiles(string subPath, bool recursive = true);
     }
 }

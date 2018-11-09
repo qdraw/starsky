@@ -254,7 +254,7 @@ namespace starsky.Services
             _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
         }
 
-        public void RemoveCacheParentItem(IEnumerable<FileIndexItem> fileIndexItemList, string directoryName)
+        public void RemoveCacheParentItem(string directoryName)
         {
             // Add protection for disabeling caching
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
@@ -290,6 +290,8 @@ namespace starsky.Services
         // Remove a new item from the database
         public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
         {
+	        InjectServiceScope();
+
             _context.FileIndex.Remove(updateStatusContent);
             _context.SaveChanges();
 
