@@ -77,7 +77,8 @@
 	            </div>
 	            <div class="js-collections-box">
 		            <h1>Weergave</h1>
-		            <h2></h2>
+		            <span></span>
+		            <span><a onclick="forceSync('@Model.SubPath')" class="colorbutton on no-checkbox">ForceSync</a></span>
 	            </div>
             </div>
 
@@ -181,9 +182,12 @@
         updateApiBase = HttpUtility.UrlDecode(updateApiBase);
         var infoApiBase = @Url.Action("Info", "Api");
         infoApiBase = HttpUtility.UrlDecode(infoApiBase);
+		var syncApiBase = @Url.Action("Index", "Sync");
+        syncApiBase = HttpUtility.UrlDecode(syncApiBase);
     }
     var updateApiBase = "@updateApiBase";
     var infoApiBase = "@infoApiBase";
+    var syncApiBase = "@syncApiBase";
     var subPath = "@Model.SubPath";
 
 </script>

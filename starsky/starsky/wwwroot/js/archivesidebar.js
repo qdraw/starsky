@@ -2,6 +2,7 @@
 // use updateApiBase
 // use deleteApiBase
 // use subpath
+// use syncApiBase
 
 var prevURL = "";
 var selectedFiles = [];
@@ -666,15 +667,15 @@ if (document.querySelectorAll(".trash").length === 1 ) {
 }
 
 
-if (document.querySelectorAll(".js-collections-box h2").length >= 1) {
+if (document.querySelectorAll(".js-collections-box span").length >= 1) {
     if (window.location.search.indexOf("collections=false") >= 0) {
-        document.querySelector(".js-collections-box h2").innerHTML =  "<a href='" + window.location.search.replace("&collections=false","") + "#sidebar' class='js-collections colorbutton'><span class=\"checkbox\"></span>Collections</a>";
+        document.querySelector(".js-collections-box span").innerHTML =  "<a href='" + window.location.search.replace("&collections=false","") + "#sidebar' class='js-collections colorbutton'><span class=\"checkbox\"></span>Collections</a>";
     }
     else if (window.location.search === "") {
-        document.querySelector(".js-collections-box h2").innerHTML = "<a href='" + window.location.search + "?f=/&collections=false#sidebar' class='js-collections colorbutton on'><span class=\"checkbox\"></span>Collections</a>";
+        document.querySelector(".js-collections-box span").innerHTML = "<a href='" + window.location.search + "?f=/&collections=false#sidebar' class='js-collections colorbutton on'><span class=\"checkbox\"></span>Collections</a>";
     }
     else {
-        document.querySelector(".js-collections-box h2").innerHTML =    "<a href='" + window.location.search + "&collections=false#sidebar' class='js-collections colorbutton on'><span class=\"checkbox\"></span>Collections</a>";
+        document.querySelector(".js-collections-box span").innerHTML =    "<a href='" + window.location.search + "&collections=false#sidebar' class='js-collections colorbutton on'><span class=\"checkbox\"></span>Collections</a>";
     } 
 }
 // add to all items in index
@@ -683,4 +684,30 @@ if (window.location.search.indexOf("collections=false") >= 0) {
     for (var i = 0; i < halfitems.length; i++) {
         halfitems[i].href += "&collections=false"
     }
+}
+
+
+function forceSync(subPath) {
+    // force
+
+    console.log(subPath);
+    addNoClickToSidebar();
+    showPreloader();
+
+    loadJSON(syncApiBase,
+        function (data) {
+            setTimeout(function(){
+                location.reload();
+            }, 2000);
+        },
+        function (xhr) {
+            console.error(xhr);
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
+        "POST",
+        "f=" + subPath
+    );
 }

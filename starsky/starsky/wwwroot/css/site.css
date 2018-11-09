@@ -1328,6 +1328,7 @@ footer {
     margin-top: 8px;
 }
 
+.no-checkbox,
 .js-resetselect,
 .js-selectallnone {
     padding-left: 10px;
