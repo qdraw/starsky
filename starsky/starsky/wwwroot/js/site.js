@@ -23,8 +23,20 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 if (prev != null 
                     && (document.activeElement.className.indexOf("form-control") === -1
                     && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) 
-                    || previousKey.indexOf(17) >= 0 ) {
+                    ) {
                     window.location.href = prev;
+                }
+                else if( (prev != null && previousKey.indexOf(18) >= 0) ) {
+                    document.activeElement.blur();
+                    setInterval(function(){
+                        if (formSubmitting === undefined) {
+                            window.location.href = prev;
+                        }
+                        else if(formSubmitting) {
+                            console.log("<");
+                            window.location.href = prev;
+                        }
+                    }, 200);
                 }
                 else if (document.activeElement.className.indexOf("form-control") === -1
                 && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
@@ -42,9 +54,20 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 setNext();
                 if (next != null
                 && (document.activeElement.className.indexOf("form-control") === -1
-                && document.activeElement.className.indexOf("leaflet-touch-drag") === -1)
-                || previousKey.indexOf(17) >= 0 ) {
+                && document.activeElement.className.indexOf("leaflet-touch-drag") === -1)) {
                     window.location.href = next;
+                }
+                else if( (next != null && previousKey.indexOf(18) >= 0) ) {
+                    document.activeElement.blur();
+                    setInterval(function(){
+                        if (formSubmitting === undefined) {
+                            window.location.href = next;
+                        }
+                        else if(formSubmitting) {
+                            console.log(">");
+                            window.location.href = next;
+                        }
+                    }, 200);
                 }
                 else if (document.activeElement.className.indexOf("form-control") === -1
                 && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
@@ -73,10 +96,10 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 }
                 break;
             case 224: // apple cmd
-                previousKey.push(17);
+                // previousKey.push(17);
                 break;
             case 17: // ctrl
-                previousKey.push(17);
+                // previousKey.push(17);
                 break;
             case 18: // alt
                 previousKey.push(18);
