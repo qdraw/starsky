@@ -80,11 +80,11 @@ namespace starsky.Controllers
 				}
 	        
 	            // Update >
-	            _bgTaskQueue.QueueBackgroundWorkItem(async token =>
-	            {
-		            _sync.SyncFiles(subPath,true);
-		            _query.RemoveCacheParentItem(subPath);
-	            });
+				_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+				{
+					_sync.SyncFiles(subPath,false);
+					_query.RemoveCacheParentItem(subPath);
+				});
 	            
 			}
 	        

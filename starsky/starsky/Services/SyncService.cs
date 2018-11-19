@@ -74,8 +74,8 @@ namespace starsky.Services
 
             Console.WriteLine(".");
 	        
-	        // dont crawl the content of the subfolders
-	        if ( recursive ) localSubFolderDbStyle = new List<string> ();
+			// dont crawl the content of the subfolders
+			if (!recursive ) localSubFolderDbStyle = new List<string> ();
 	        
             // Allow sync for the path the direct subPath for example '/2018', 
             localSubFolderDbStyle.Add(subPath);
