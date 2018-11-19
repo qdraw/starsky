@@ -50,8 +50,24 @@ imaps.connect(config).then(function (connection) {
                 // retrieve the attachments only of the messages with attachments
                 return connection.getPartData(message, part)
                     .then(function (partData) {
+
+						var filename = "default";
+						if(part !== undefined) {
+							if(part.disposition !== undefined &&
+								part.disposition !== null) {
+								if(part.disposition.params !== undefined  &&
+									part.disposition.params !== null) {
+
+									console.log(part.disposition);
+									if(part.disposition.params.filename !== undefined) {
+
+										filename = part.disposition.params.filename
+									}
+								}
+							}
+						}
                         return {
-                            filename: part.disposition.params.filename,
+                            filename: filename,
                             data: partData,
                             label: message.attributes["x-gm-labels"]
                         };
@@ -61,6 +77,7 @@ imaps.connect(config).then(function (connection) {
 
         return Promise.all(attachments);
     }).then(function (attachments) {
+		console.log(attachments);
 
         // =>
         //    [ { filename: 'cats.jpg', data: Buffer() },
