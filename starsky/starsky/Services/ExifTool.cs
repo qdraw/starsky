@@ -55,9 +55,13 @@ namespace starsky.Services
             Process p = Process.Start(psi);
             string strOutput = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
-            Console.WriteLine(strOutput);
-
-            return strOutput;
+			
+			if ( !p.HasExited ) return null;
+	        
+	        p.CloseMainWindow();
+			p.Close();
+			Console.WriteLine(strOutput);
+			return strOutput;
         }
         
         public string FixingJsonKeywordString(string text, string nameInJson = "Keywords")
