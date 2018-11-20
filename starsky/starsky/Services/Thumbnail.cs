@@ -230,6 +230,7 @@ namespace starsky.Services
                     );
 
                     image.Save(outputStream,new JpegEncoder{Quality = 90, IgnoreMetadata = false});
+					image.Dispose();
                 }
 
                 new ExifToolCmdHelper(_appSettings, _exiftool).CopyExif(fullSourceImage, thumbPath);
