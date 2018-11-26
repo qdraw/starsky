@@ -247,19 +247,24 @@
     <img src="images/preloader.svg" alt="preloader">
 </div>
 
+@{
+	// Javascript don't accept decoded slashes
+	var thumbnailApiBase = Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash, json = true});
+	thumbnailApiBase = HttpUtility.UrlDecode(thumbnailApiBase);
+	var updateApiBase = Url.Action("Update", "Api", new { f = @Model.FileIndexItem.FilePath});
+	updateApiBase = HttpUtility.UrlDecode(updateApiBase);
+	var infoApiBase = @Url.Action("Info", "Api", new {f = @Model.FileIndexItem.FilePath});
+	infoApiBase = HttpUtility.UrlDecode(infoApiBase);
+}
+<div id="js-settings" data-updateApiBase="@updateApiBase" 
+     data-infoApiBase="@infoApiBase" data-thumbnailApiBase="@thumbnailApiBase"
+     data-subPath="@Model.SubPath"></div>
+
+@*   keep here for legacy reasons *@
 <script type="text/javascript">
-    @{
-        // Javascript don't accept decoded slashes
-        var thumbnailApiBase = Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash, json = true});
-        thumbnailApiBase = HttpUtility.UrlDecode(thumbnailApiBase);
-        var updateApiBase = Url.Action("Update", "Api", new { f = @Model.FileIndexItem.FilePath});
-        updateApiBase = HttpUtility.UrlDecode(updateApiBase);
-        var infoApiBase = @Url.Action("Info", "Api", new {f = @Model.FileIndexItem.FilePath});
-        infoApiBase = HttpUtility.UrlDecode(infoApiBase);
-    }
-    var thumbnailApiBase = "@thumbnailApiBase";
-    var updateApiBase = "@updateApiBase";
-    var infoApiBase = "@infoApiBase";
+	var thumbnailApiBase = "@thumbnailApiBase";
+	var updateApiBase = "@updateApiBase";
+	var infoApiBase = "@infoApiBase";
 </script>
 
 <script type="text/javascript" src="js/loadjson.js"></script>

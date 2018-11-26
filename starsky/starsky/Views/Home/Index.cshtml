@@ -174,23 +174,28 @@
 <div class="preloader">
 	<img src="images/preloader.svg" alt="preloader">
 </div>
-                                   
-<script type="text/javascript">
-    @{
-        // Javascript don't accept decoded slashes
-        var updateApiBase = Url.Action("Update", "Api");
-        updateApiBase = HttpUtility.UrlDecode(updateApiBase);
-        var infoApiBase = @Url.Action("Info", "Api");
-        infoApiBase = HttpUtility.UrlDecode(infoApiBase);
-		var syncApiBase = @Url.Action("Index", "Sync");
-        syncApiBase = HttpUtility.UrlDecode(syncApiBase);
-    }
-    var updateApiBase = "@updateApiBase";
-    var infoApiBase = "@infoApiBase";
-    var syncApiBase = "@syncApiBase";
-    var subPath = "@Model.SubPath";
+@{
+    // Javascript don't accept decoded slashes
+	var updateApiBase = Url.Action("Update", "Api");
+	updateApiBase = HttpUtility.UrlDecode(updateApiBase);
+	var infoApiBase = @Url.Action("Info", "Api");
+	infoApiBase = HttpUtility.UrlDecode(infoApiBase);
+	var syncApiBase = @Url.Action("Index", "Sync");
+	syncApiBase = HttpUtility.UrlDecode(syncApiBase);
+}      
+<div id="js-settings" data-updateApiBase="@updateApiBase"
+	data-infoApiBase="@infoApiBase" data-syncApiBase="@syncApiBase"
+	data-subPath="@Model.SubPath">
+</div>
 
+@*   keep here for legacy reasons *@
+<script type="text/javascript">
+   var updateApiBase = "@updateApiBase";
+   var infoApiBase = "@infoApiBase";
+   var syncApiBase = "@syncApiBase";
+   var subPath = "@Model.SubPath";
 </script>
+                                   
 <script type="text/javascript" src="js/loadjson.js"></script>
 <script type="text/javascript" src="js/sidebar-stringhelper.js"></script>
 <script type="text/javascript" src="js/archivesidebar.js"></script>

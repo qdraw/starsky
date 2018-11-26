@@ -100,6 +100,7 @@ namespace starsky
                     options.HeaderName = "X-XSRF-TOKEN";
                 }
             );
+	        
 
             services.AddMvc();
         }
@@ -129,6 +130,14 @@ namespace starsky
             app.UseAuthentication();
             app.UseBasicAuthentication();
 
+//	        app.Use(async (ctx, next) => 
+//	        {
+//		        ctx.Response.Headers
+//			        .Add("Content-Security-Policy", 
+//				        "default-src 'self';");
+//		        await next();
+//	        });
+	        
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

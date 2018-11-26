@@ -37,9 +37,9 @@
             </li>
             <li>
                 <a href="@Url.Action("Index", "Account")">Account</a>
-                <ul style="display: none">
-                    <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>
-                </ul>
+@*                <ul style="display: none">*@
+@*                    <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>*@
+@*                </ul>*@
             </li> 
         </ul>
     </div> <a href="#hamburger" id="hamburger" class="hamburger">Menu</a> 
@@ -68,14 +68,11 @@
 @*        </footer>*@
     </div>
 
-@*    <script src="~/lib/jquery/dist/jquery.js"></script>*@
-@*    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>*@
+
 <script src="~/js/site.js" asp-append-version="true"></script>
 
-<script src="~/js/lazyload.js"></script>
-<script type="text/javascript">
-    lazyload();
-</script>
+<script src="~/js/vendor/lazyload.js"></script>
+<script src="~/js/lazyload.activate.js"></script>
 
 
 @RenderSection("Scripts", required: false)

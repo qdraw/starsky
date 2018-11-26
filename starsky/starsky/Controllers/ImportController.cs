@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -91,7 +92,43 @@ namespace starsky.Controllers
             return Json(fileIndexResultsList);
         }
 
-        
+	    
+	    /// <summary>
+	    /// Experimental feature to add thumbnails to ThumbnailTempFolder
+	    /// </summary>
+	    /// <returns></returns>
+	    [HttpPost]
+	    [ActionName("Thumbnail")]
+	    [DisableFormValueModelBinding]
+	    [RequestSizeLimit(160000000)] // in bytes, 160mb
+	    public async Task<IActionResult> Thumbnail()
+	    {
+		    var tempImportPaths = await Request.StreamFile(_appSettings);
+
+		    var thumbnailPaths = new List<string>();
+		    for ( int i = 0; i < tempImportPaths.Count; i++ )
+		    {
+			    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(tempImportPaths[i]);
+			    var thumbToUpperCase = Path.Combine(_appSettings.ThumbnailTempFolder, fileNameWithoutExtension.ToUpperInvariant() + ".jpg");
+			    if ( fileNameWithoutExtension.Length != 26 || 
+			         Files.IsFolderOrFile(thumbToUpperCase) == FolderOrFileModel.FolderOrFileTypeList.File)
+			    {
+				    Files.DeleteFile(tempImportPaths[i]);
+				    tempImportPaths.Remove(tempImportPaths[i]);
+				    continue;
+			    }
+			    thumbnailPaths.Add(thumbToUpperCase);
+		    }
+
+		    for ( int i = 0; i < tempImportPaths.Count; i++ )
+		    {
+			    System.IO.File.Move(tempImportPaths[i],thumbnailPaths[i]);
+		    }
+
+		    return Json(thumbnailPaths);
+	    }
+
+
 //        [HttpPost]
 //        public async Task<IActionResult> Ifttt(string fileurl, string filename, string structure)
 //        {
