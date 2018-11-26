@@ -4,8 +4,12 @@ var request = require( 'request-promise-native');
 var fs = require('fs');
 var path = require('path');
 var jimp = require('jimp');
+require('dotenv').config({path:path.join(__dirname,".env")});
 
-var base_url = 'https://~.qdraw.eu/';
+var execFile = require('child_process').execFile;
+var exiftool = require('dist-exiftool');
+
+var base_url = process.env.STARKSYBASEURL;
 
 var source_temp = "source_temp";
 
@@ -17,7 +21,7 @@ var options = {
     },
     headers: {
         'User-Agent': 'Request-Promise',
-		'Authorization': 'Basic ~='
+		'Authorization': 'Basic ' + process.env.STARKSYACCESSTOKEN,
     },
 	resolveWithFullResponse: true,
     json: true // Automatically parses the JSON string in the response
@@ -50,10 +54,13 @@ function getIndexStart() {
 	    });
 }
 
-// getIndexStart();
+getIndexStart();
 
 function getSourceTempFolder() {
 	return path.join(__dirname, source_temp);
+}
+function getTempFolder() {
+	return path.join(__dirname, "temp");
 }
 
 function ensureExistsFolder(path, mask, cb) {
@@ -88,11 +95,11 @@ function checkIfThumbnailAlreadyExist(fileHashList) {
 		}).join(',');
 		var results = items.results.join(',');
 
-		console.log(`Executed all ${ps.length} Promises:`);
+		console.log(`Executed all ${ps.length} checkIfThumbnailAlreadyExist Promises:`);
 		console.log(`— ${items.results.length} Promises were successful: ${results}`);
 		console.log(`— ${items.errors.length} Promises failed: ${errors}`);
 		var createFileHashList = createFileList(items.results);
-
+		downloadSourceByThumb(createFileHashList);
 		console.log(createFileHashList);
 	});
 }
@@ -127,58 +134,116 @@ function downloadSourceByThumb(fileHashList) {
 
 	executeAllPromises(ps).then(function(items) {
 
-		console.log(`Executed all ${ps.length} Promises:`);
+		console.log(`Executed all ${ps.length} downloadSourceByThumb Promises:`);
 		console.log(`— ${items.results.length} Promises were successful:`);
 		console.log(`— ${items.errors.length} Promises failed:`);
 
 		var savedItems = saveSourceByThumb(items.results);
-
+		// add here
+		resizeImage(savedItems, 0);
 	});
 }
 
-function resizeImage(sourceFileHashesList) {
-	for (var i = 0; i < sourceFileHashesList.length; i++) {
 
-		var filePath = path.join(getSourceTempFolder(),sourceFileHashesList[i] + ".jpg");
-		console.log(filePath);
-		jimp.read(filePath).then(function (lenna) {
-			return lenna.resize(1000, jimp.AUTO)     // resize
-				.quality(80)                 // set JPEG quality
-				.write(path.join(__dirname,"temp",sourceFileHashesList[i] + "_kl.jpg")); // save
-		})
-		.catch(function (err) {
-			console.error(err);
-		});
+function uploadThumbs(fileHashList) {
+	var ps = [];
+	for (var i = 0; i < fileHashList.length; i++) { // fileHashList.length
+		var read_match_details = options;
+		read_match_details.uri = base_url + 'import/thumbnail/' + fileHashList[i];
+		read_match_details.encoding = 'binary';
+		read_match_details.method = "POST";
+
+		read_match_details.formData = {
+				file: {
+		            value: fs.createReadStream(path.join(getTempFolder(), fileHashList[i] + ".jpg")),
+		            options: {
+		                filename: fileHashList[i] + ".jpg",
+		                contentType: 'image/jpg'
+		            }
+	        	}
+			}
+		read_match_details.qs = {
+			f: fileHashList[i],
+			issingleitem: 'true'
+		}
+		ps.push(request(read_match_details));
 	}
 
+	executeAllPromises(ps).then(function(items) {
 
-
-}
-
-function checkIfNotExist(createFileHashList) {
-
-	var checkIfNotExistList = [];
-
-	// console.log(getTempFolder());
-	fs.readdir(getSourceTempFolder(), function (err, files) {
-		// "files" is an Array with files names
-		// console.log(files);
-		fileWithoutExtension = [];
-		for (var i = 0; i < files.length; i++) {
-			fileWithoutExtension.push( path.basename(files[i],".jpg"));
-		}
-
-		for (var i = 0; i < createFileHashList.length; i++) {
-			// console.log(createFileHashList[i]);
-			// console.log();
-			if(fileWithoutExtension.indexOf(createFileHashList[i]) === -1) {
-				checkIfNotExistList.push(createFileHashList[i]);
-			}
-		}
-		downloadSourceByThumb(checkIfNotExistList);
-		// console.log(checkIfNotExistList);
+		console.log(`Executed all ${ps.length} uploadThumbs Promises:`);
+		console.log(`— ${items.results.length} Promises were successful:`);
+		console.log(`— ${items.errors.length} Promises failed:`);
 	});
 }
+
+function resizeImage(sourceFileHashesList, count) {
+
+	if(count === undefined) count = 0;
+
+	var sourceFilePath = path.join(getSourceTempFolder(),sourceFileHashesList[count] + ".jpg");
+	var targetFilePath = path.join(__dirname,"temp",sourceFileHashesList[count] + ".jpg");
+	console.log(sourceFilePath);
+	jimp.read(sourceFilePath).then(function (lenna) {
+		return lenna.resize(1000, jimp.AUTO)     // resize
+			.quality(80)                 // set JPEG quality
+			.write(targetFilePath); // save
+	}).then(image => {
+		// Do stuff with the image.
+		copyExiftool(sourceFilePath, targetFilePath, sourceFileHashesList, count, function (sourceFileHashesList, count) {
+			count++;
+			if(count !== sourceFileHashesList.length) {
+				resizeImage(sourceFileHashesList, count)
+			}
+			else {
+				console.log("last");
+				uploadThumbs(sourceFileHashesList);
+			}
+		});
+
+	})
+	.catch(function (err) {
+		console.error(err);
+	});
+
+}
+
+function copyExiftool(sourceFilePath, targetFilePath,sourceFileHashesList, count, callback) {
+	execFile(exiftool, ['-overwrite_original', '-TagsFromFile', sourceFilePath, targetFilePath, '-Orientation=', ], (error, stdout, stderr) => {
+	    if (error) {
+	        console.error(`exec error: ${error}`);
+	        return;
+	    }
+	    console.log(`stdout: ${stdout}`);
+	    console.log(`stderr: ${stderr}`);
+		return callback(sourceFileHashesList, count);
+	});
+}
+
+// function checkIfNotExist(createFileHashList) {
+//
+// 	var checkIfNotExistList = [];
+//
+// 	// console.log(getTempFolder());
+// 	fs.readdir(getSourceTempFolder(), function (err, files) {
+// 		// "files" is an Array with files names
+// 		// console.log(files);
+// 		fileWithoutExtension = [];
+// 		for (var i = 0; i < files.length; i++) {
+// 			fileWithoutExtension.push( path.basename(files[i],".jpg"));
+// 		}
+//
+// 		for (var i = 0; i < createFileHashList.length; i++) {
+// 			// console.log(createFileHashList[i]);
+// 			// console.log();
+// 			if(fileWithoutExtension.indexOf(createFileHashList[i]) === -1) {
+// 				checkIfNotExistList.push(createFileHashList[i]);
+// 			}
+// 		}
+// 		downloadSourceByThumb(checkIfNotExistList);
+// 		// console.log(checkIfNotExistList);
+// 	});
+// }
 
 function saveSourceByThumb(results) {
 	// console.log(results.length);
@@ -201,7 +266,7 @@ function saveSourceByThumb(results) {
 }
 
 // "2BH2TMPJDYERIM6ZRMOASCYCWE","5OB5MWJU2GEID5MZO653AYHD7A",
-resizeImage(["H2PIVQDAKAN3PGMD3R7TOMGEKU"]);
+// uploadThumbs(["H2PIVQDAKAN3PGMD3R7TOMGEKU","H2PIVQDAKAN3PGMD3R7TOMGEK1"]);
 
 
 
