@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dist-exiftool": "^10.53.0",
     "jimp": "^0.5.6",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
