@@ -17,6 +17,7 @@ var requestOptions = {
         f: '/2018/11/2018_11_25', // -> uri + '?access_token=xxxxx%20xxxxx'
 		json: 'true'
     },
+	method: "GET",
     headers: {
         'User-Agent': 'MS FrontPage Express',
 		'Authorization': 'Basic ' + process.env.STARKSYACCESSTOKEN,
@@ -58,6 +59,8 @@ function getIndexStart() {
 function downloadSourceTempFile(sourceFileHashesList,i) {
 	var downloadrequestOptions = requestOptions;
 	downloadrequestOptions.uri = base_url + 'api/thumbnail/' + sourceFileHashesList[i];
+	downloadrequestOptions.method = "GET";
+	downloadrequestOptions.encoding = 'UTF-8';
 	downloadrequestOptions.qs = {
 		json: 'true',
 		f: sourceFileHashesList[i]
@@ -71,6 +74,7 @@ function downloadSourceTempFile(sourceFileHashesList,i) {
 				chain(sourceFileHashesList, i, downloadSourceTempFile, done)
 			}
 			else {
+				console.log(result.statusCode);
 				next(sourceFileHashesList, i, downloadSourceTempFile, done)
 			}
 		})
@@ -90,6 +94,7 @@ function chain(sourceFileHashesList, i, callback, finalCallback) {
 	var downloadFilerequestOptions = requestOptions;
 	downloadFilerequestOptions.uri = base_url + 'api/thumbnail/' + sourceFileHashesList[i];
 	downloadFilerequestOptions.encoding = 'binary';
+	downloadFilerequestOptions.method = "GET";
 	downloadFilerequestOptions.qs = {
 		f: sourceFileHashesList[i],
 		issingleitem: 'true'
@@ -99,22 +104,23 @@ function chain(sourceFileHashesList, i, callback, finalCallback) {
 		.then(function (fileResults) {
 			var filePath = path.join(getSourceTempFolder(),sourceFileHashesList[i] + ".jpg");
 
-			fs.writeFile(filePath, fileResults.body, 'binary',function (res) {
+			fs.writeFile(filePath, fileResults.body, 'binary', function (res) {
 				resizeImage(sourceFileHashesList[i],function (fileHash) {
-					uploadTempFile(sourceFileHashesList[i]);
+					uploadTempFile(sourceFileHashesList, i, callback, finalCallback);
 				})
 			});
-			next(sourceFileHashesList, i, callback, finalCallback)
+			// next(sourceFileHashesList, i, callback, finalCallback)
 
 		})
 		.catch(function (err) {
 			console.log("downloadFilerequestOptions");
 			console.log(err);
-			next(sourceFileHashesList, i+1, callback, finalCallback)
+			next(sourceFileHashesList, i, callback, finalCallback)
 		});
 }
 
 function next(sourceFileHashesList, count, callback, finalCallback) {
+	console.log(sourceFileHashesList[count]);
 	count++;
 	if(count < sourceFileHashesList.length) {
 		callback(sourceFileHashesList, count, callback, finalCallback)
@@ -125,8 +131,9 @@ function next(sourceFileHashesList, count, callback, finalCallback) {
 	}
 }
 
-function uploadTempFile(fileHash) {
+function uploadTempFile(sourceFileHashesList, i,callback, finalCallback) {
 	var uploadRequestOptions = requestOptions;
+	var fileHash = sourceFileHashesList[i];
 	uploadRequestOptions.uri = base_url + 'import/thumbnail/' + fileHash;
 	uploadRequestOptions.encoding = 'binary';
 	uploadRequestOptions.method = "POST";
@@ -148,6 +155,7 @@ function uploadTempFile(fileHash) {
 	request(uploadRequestOptions)
 		.then(function (uploadResults) {
 			console.log(uploadResults.body);
+			next(sourceFileHashesList, i, callback, finalCallback)
 		})
 		.catch(function (err) {
 			console.log("uploadRequestOptions");
@@ -172,10 +180,10 @@ function resizeImage(fileHash,callback) {
 		return lenna.resize(1000, jimp.AUTO)     // resize
 			.quality(80)                 // set JPEG quality
 			.write(targetFilePath); // save
-	}).then(image => {
-		// Do stuff with the image.
-		copyExiftool(sourceFilePath, targetFilePath, fileHash, function (fileHash) {
-			callback(fileHash)
+		}).then(image => {
+			// Do stuff with the image.
+			copyExiftool(sourceFilePath, targetFilePath, fileHash, function (fileHash) {
+				callback(fileHash)
 		});
 
 	})
