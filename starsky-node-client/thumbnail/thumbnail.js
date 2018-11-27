@@ -13,10 +13,12 @@ var base_url = process.env.STARKSYBASEURL;
 
 var source_temp = "source_temp";
 
+console.log(process.env.STARKSYBASEURL);
+
 var options = {
     uri: base_url,
     qs: {
-        f: '/2018/11/2018_11_24', // -> uri + '?access_token=xxxxx%20xxxxx'
+        f: '/2018/10/2018_10_24 Oss zonsondergang', // -> uri + '?access_token=xxxxx%20xxxxx'
 		json: 'true'
     },
     headers: {
@@ -46,10 +48,12 @@ function getIndexStart() {
 				if(item.imageFormat !== "jpg") continue;
 				fileHashList.push(item.fileHash)
 			}
+			console.log("-");
 
 			checkIfThumbnailAlreadyExist(fileHashList);
 	    })
 	    .catch(function (err) {
+			console.log("index: " + err.response.body);
 	        // API call failed...
 	    });
 }
@@ -100,6 +104,7 @@ function checkIfThumbnailAlreadyExist(fileHashList) {
 		console.log(`— ${items.errors.length} Promises failed: ${errors}`);
 		var createFileHashList = createFileList(items.results);
 		downloadSourceByThumb(createFileHashList);
+		console.log("createFileHashList");
 		console.log(createFileHashList);
 	});
 }
@@ -122,6 +127,10 @@ function createFileList(results) {
 function downloadSourceByThumb(fileHashList) {
 	var ps = [];
 	for (var i = 0; i < fileHashList.length; i++) { // fileHashList.length
+		if(fileHashList[i] === undefined || fileHashList[i] === "") {
+			console.log(fileHashList[i]);
+			continue;
+		}
 		var read_match_details = options;
 		read_match_details.uri = base_url + 'api/thumbnail/' + fileHashList[i];
 		read_match_details.encoding = 'binary';
@@ -183,7 +192,11 @@ function resizeImage(sourceFileHashesList, count) {
 
 	var sourceFilePath = path.join(getSourceTempFolder(),sourceFileHashesList[count] + ".jpg");
 	var targetFilePath = path.join(__dirname,"temp",sourceFileHashesList[count] + ".jpg");
-	console.log(sourceFilePath);
+
+	if(sourceFileHashesList[count] === undefined) {
+		console.log("sourceFileHashesList[count] === undefined");
+		return;
+	}
 	jimp.read(sourceFilePath).then(function (lenna) {
 		return lenna.resize(1000, jimp.AUTO)     // resize
 			.quality(80)                 // set JPEG quality
@@ -191,21 +204,26 @@ function resizeImage(sourceFileHashesList, count) {
 	}).then(image => {
 		// Do stuff with the image.
 		copyExiftool(sourceFilePath, targetFilePath, sourceFileHashesList, count, function (sourceFileHashesList, count) {
-			count++;
-			if(count !== sourceFileHashesList.length) {
-				resizeImage(sourceFileHashesList, count)
-			}
-			else {
-				console.log("last");
-				uploadThumbs(sourceFileHashesList);
-			}
+			countResizeImage(sourceFileHashesList, count)
 		});
 
 	})
 	.catch(function (err) {
 		console.error(err);
+		countResizeImage(sourceFileHashesList, count)
 	});
 
+}
+
+function countResizeImage(sourceFileHashesList, count) {
+	count++;
+	if(count !== sourceFileHashesList.length) {
+		resizeImage(sourceFileHashesList, count)
+	}
+	else {
+		console.log("last");
+		uploadThumbs(sourceFileHashesList);
+	}
 }
 
 function copyExiftool(sourceFilePath, targetFilePath,sourceFileHashesList, count, callback) {
@@ -254,6 +272,7 @@ function saveSourceByThumb(results) {
 		console.log(results[i].statusCode);
 		if(results[i].statusCode === 200) {
 
+			console.log(query.f);
 			var filePath = path.join(getSourceTempFolder(),query.f + ".jpg");
 			createFileHashList.push(query.f);
 
