@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.Data;
 using starsky.Helpers;
 using starsky.Interfaces;
@@ -19,11 +20,22 @@ namespace starsky.Services
 public class UserManager : IUserManager
     {
         private readonly ApplicationDbContext _storage;
-        
-        public UserManager(ApplicationDbContext storage)
+	    private readonly IMemoryCache _cache;
+
+	    public UserManager(ApplicationDbContext storage,
+	        IMemoryCache memoryCache = null )
         {
             _storage = storage;
+	        _cache = memoryCache;
         }
+	    
+	    private bool IsCacheEnabled()
+	    {
+		    // || _appSettings?.AddMemoryCache == false > disabled
+		    if( _cache == null ) return false;
+		    return true;
+	    }
+	    
 	    
 	    /// <summary>
 	    /// Add the roles 'User' and 'Administrator' to an empty database (and checks this list)
@@ -255,15 +267,28 @@ public class UserManager : IUserManager
        
         public ValidateResult Validate(string credentialTypeCode, string identifier, string secret)
         {
-            CredentialType credentialType = this._storage.CredentialTypes.FirstOrDefault(
-                ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
+	        // Add caching for credentialType
+	        CredentialType credentialType;
+	        if (IsCacheEnabled() && _cache.TryGetValue("credentialTypeCode_" + credentialTypeCode, out var objectCredentialTypeCode))
+	        {
+		        credentialType = ( CredentialType ) objectCredentialTypeCode;
+	        }
+	        else
+	        {
+		        credentialType = _storage.CredentialTypes.FirstOrDefault(
+			        ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
+		        if(IsCacheEnabled()) _cache.Set("credentialTypeCode_" + credentialTypeCode, credentialType, new TimeSpan(99,0,0));
+	        }
+
+	        
+            
             
             if (credentialType == null)
             {
                 return new ValidateResult(success: false, error: ValidateResultError.CredentialTypeNotFound);
             }
             
-            Credential credential = this._storage.Credentials.FirstOrDefault(
+            Credential credential = _storage.Credentials.FirstOrDefault(
                 c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 
             if (credential == null)
@@ -279,8 +304,19 @@ public class UserManager : IUserManager
                 if (credential.Secret != hash)
                     return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
             }
-            
-            return new ValidateResult(user: this._storage.Users.Find(credential.UserId), success: true);
+
+	        // Cache ValidateResult ++ always query on passwords and return result
+	        ValidateResult validateResult; 
+	        if (IsCacheEnabled() && _cache.TryGetValue("ValidateResult_" + credential.UserId, out var objectValidateResult))
+	        {
+		        validateResult = ( ValidateResult ) objectValidateResult;
+	        }
+	        else
+	        {
+		        validateResult = new ValidateResult(user: this._storage.Users.Find(credential.UserId), success: true);
+		        if(IsCacheEnabled()) _cache.Set("ValidateResult_" + credentialTypeCode, validateResult, new TimeSpan(99,0,0));
+	        }
+            return validateResult;
         }
         
         public async Task SignIn(HttpContext httpContext, User user, bool isPersistent = false)
