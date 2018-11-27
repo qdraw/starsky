@@ -5,6 +5,7 @@ var fs = require('fs');
 var path = require('path');
 var jimp = require('jimp');
 require('dotenv').config({path:path.join(__dirname,".env")});
+const sequential = require('promise-sequential');
 
 var execFile = require('child_process').execFile;
 var exiftool = require('dist-exiftool');
@@ -15,14 +16,29 @@ var source_temp = "source_temp";
 
 console.log(process.env.STARKSYBASEURL);
 
+Promise.series = function series(promises) {
+    const ret = Promise.resolve(null);
+    const results = [];
+
+    return promises.reduce(function(result, promise, index) {
+         return result.then(function() {
+            return promise.then(function(val) {
+               results[index] = val;
+            });
+         });
+    }, ret).then(function() {
+        return results;
+    });
+}
+
 var options = {
     uri: base_url,
     qs: {
-        f: '/2018/10/2018_10_24 Oss zonsondergang', // -> uri + '?access_token=xxxxx%20xxxxx'
+        f: '/2018/11/2018_11_25', // -> uri + '?access_token=xxxxx%20xxxxx'
 		json: 'true'
     },
     headers: {
-        'User-Agent': 'Request-Promise',
+        'User-Agent': 'MS FrontPage Express',
 		'Authorization': 'Basic ' + process.env.STARKSYACCESSTOKEN,
     },
 	resolveWithFullResponse: true,
@@ -92,6 +108,7 @@ function checkIfThumbnailAlreadyExist(fileHashList) {
 	    ps.push(request(read_match_details));
 	}
 
+	// run in parallel
 	executeAllPromises(ps).then(function(items) {
 		// Result
 		var errors = items.errors.map(function(error) {
@@ -138,19 +155,38 @@ function downloadSourceByThumb(fileHashList) {
 			f: fileHashList[i],
 			issingleitem: 'true'
 		}
+		// read_match_details.headers = {
+		// 	"connection": "keep-alive",
+		// 	"transfer-encoding": "chunked"
+		// };
 		ps.push(request(read_match_details));
 	}
 
-	executeAllPromises(ps).then(function(items) {
+	console.log("downloadSourceByThumb>");
+
+	Promise.series(ps).then(function(items) {
 
 		console.log(`Executed all ${ps.length} downloadSourceByThumb Promises:`);
-		console.log(`— ${items.results.length} Promises were successful:`);
-		console.log(`— ${items.errors.length} Promises failed:`);
+		console.log(`— ${items.length} Promises excuted:`);
 
-		var savedItems = saveSourceByThumb(items.results);
+		var savedItems = saveSourceByThumb(items);
 		// add here
 		resizeImage(savedItems, 0);
-	});
+	}).catch(function (err) {
+		console.log(err);
+	})
+
+
+	// executeAllPromises(ps).then(function(items) {
+	//
+	// 	console.log(`Executed all ${ps.length} downloadSourceByThumb Promises:`);
+	// 	console.log(`— ${items.results.length} Promises were successful:`);
+	// 	console.log(`— ${items.errors.length} Promises failed:`);
+	//
+	// 	var savedItems = saveSourceByThumb(items.results);
+	// 	// add here
+	// 	resizeImage(savedItems, 0);
+	// });
 }
 
 
@@ -161,6 +197,7 @@ function uploadThumbs(fileHashList) {
 		read_match_details.uri = base_url + 'import/thumbnail/' + fileHashList[i];
 		read_match_details.encoding = 'binary';
 		read_match_details.method = "POST";
+
 
 		read_match_details.formData = {
 				file: {
@@ -289,6 +326,29 @@ function saveSourceByThumb(results) {
 
 
 
+//
+// Promise.settle = function(promises) {
+//   var results = [];
+//   var done = promises.length;
+//
+//   function tryResolve(i, v) {
+// 	results[i] = v;
+// 	done = done - 1;
+// 	if (done == 0)
+// 	  resolve(results);
+//   }
+//
+//   return new Promise(function(resolve) {
+//     for (var i=0; i< promises.length; i++) {
+// 		promises[i].then(tryResolve.bind(null, i), tryResolve.bind(null, i));
+// 	}
+//     if (done == 0)
+//       resolve(results);
+//   });
+// };
+
+
+// all in parallel
 function executeAllPromises(promises) {
   // Wrap all Promises in a Promise that will always "resolve"
   var resolvingPromises = promises.map(function(promise) {
