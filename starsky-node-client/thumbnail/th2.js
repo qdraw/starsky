@@ -61,7 +61,8 @@ function downloadSourceTempFile(sourceFileHashesList,i) {
 	downloadrequestOptions.uri = base_url + 'api/thumbnail/' + sourceFileHashesList[i];
 	downloadrequestOptions.method = "GET";
 	downloadrequestOptions.encoding = 'UTF-8';
-	delete downloadrequestOptions.formData; // very important
+	delete downloadrequestOptions.formData;
+
 	downloadrequestOptions.qs = {
 		json: 'true',
 		f: sourceFileHashesList[i]
