@@ -15,6 +15,8 @@ namespace starsky.Controllers
 			    
 		public IActionResult SubpathRelative(int value, bool json = false)
 		{
+			if(value >= 1) value = value * -1; //always in the past
+
 			var importmodel = new ImportIndexItem(_appsettings)
 			{
 				DateTime = DateTime.Today.AddDays(value), 
