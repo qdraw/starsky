@@ -73,11 +73,11 @@ function downloadSourceTempFile(sourceFileHashesList,i) {
 	request(downloadrequestOptions)
 	    .then(function (result) {
 			if(result.statusCode === 202) {
-				console.log(result.statusCode);
+				console.log(result.statusCode, i, sourceFileHashesList.length, sourceFileHashesList[i]);
 				chain(sourceFileHashesList, i, downloadSourceTempFile, done)
 			}
 			else {
-				console.log(result.statusCode);
+				console.log(result.statusCode, i, sourceFileHashesList.length, sourceFileHashesList[i]);
 				next(sourceFileHashesList, i, downloadSourceTempFile, done)
 			}
 		})
@@ -125,7 +125,6 @@ function chain(sourceFileHashesList, i, callback, finalCallback) {
 function next(sourceFileHashesList, count, callback, finalCallback) {
 	deleteFile(sourceFileHashesList, count);
 
-	console.log(sourceFileHashesList[count]);
 	count++;
 	if(count < sourceFileHashesList.length) {
 		callback(sourceFileHashesList, count, callback, finalCallback)
@@ -174,7 +173,6 @@ function deleteFile(sourceFileHashesList, i) {
 		if(err) return;
 		fs.unlink(file1,function(err){
 			if(err) return console.log(err);
-			console.log('deleted temp/' + sourceFileHashesList[i]);
 		});
 	});
 
@@ -183,7 +181,6 @@ function deleteFile(sourceFileHashesList, i) {
 		if(err) return;
 		fs.unlink(file2,function(err){
 			if(err) return console.log(err);
-			console.log('deleted SourceTempFolder/' + sourceFileHashesList[i]);
 		});
 	});
 }
@@ -226,8 +223,8 @@ function copyExiftool(sourceFilePath, targetFilePath,fileHash, callback) {
 	        console.error(`exec error: ${error}`);
 	        return;
 	    }
-	    console.log(`stdout: ${stdout}`);
-	    console.log(`stderr: ${stderr}`);
+	    // console.log(`stdout: ${stdout}`);
+		if(stderr !== "") console.log(`stderr: ${stderr}`);
 		return callback(fileHash);
 	});
 }
