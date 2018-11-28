@@ -13,10 +13,6 @@ var base_url = process.env.STARKSYBASEURL;
 
 var requestOptions = {
     uri: base_url,
-    qs: {
-        f: '/2018/11/2018_11_25', // -> uri + '?access_token=xxxxx%20xxxxx'
-		json: 'true'
-    },
 	method: "GET",
     headers: {
         'User-Agent': 'MS FrontPage Express',
@@ -26,15 +22,45 @@ var requestOptions = {
     json: true // Automatically parses the JSON string in the response
 };
 
-getIndexStart();
+getSubPathRelative(-1);
 
-function getIndexStart() {
+
+function getSubPathRelative(subpathRelativeValue) {
+	var subPathRelativeRequestOptions = requestOptions;
+	subPathRelativeRequestOptions.uri = base_url + 'Redirect/SubpathRelative/';
+	subPathRelativeRequestOptions.qs = {
+        value: subpathRelativeValue,
+		json: 'true'
+    };
+
+	request(subPathRelativeRequestOptions)
+	    .then(function (items) {
+			console.log(items.body);
+			getIndexStart(items.body);
+		})
+	    .catch(function (err) {
+			console.log(err);
+			console.log("getSubPathRelative: " + err.response.body);
+	        // API call failed...
+	    });
+}
+
+function getIndexStart(subpath) {
 	ensureExistsFolder(getSourceTempFolder(), 0744, function(err) {
     	if (err) console.log(err);// handle folder creation error
 	});
 	ensureExistsFolder(getTempFolder(), 0744, function(err) {
     	if (err) console.log(err);// handle folder creation error
 	});
+
+
+	var indexRequestOptions = requestOptions;
+	indexRequestOptions.uri = base_url;
+	indexRequestOptions.qs = {
+		f: subpath,
+		json: 'true'
+	};
+
 	request(requestOptions)
 	    .then(function (items) {
 			if(items.body.fileIndexItems === undefined) return;
