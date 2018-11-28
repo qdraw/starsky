@@ -25,6 +25,7 @@ var requestOptions = {
 	resolveWithFullResponse: true,
     json: true // Automatically parses the JSON string in the response
 };
+
 getIndexStart();
 
 function getIndexStart() {
@@ -122,6 +123,8 @@ function chain(sourceFileHashesList, i, callback, finalCallback) {
 }
 
 function next(sourceFileHashesList, count, callback, finalCallback) {
+	deleteFile(sourceFileHashesList, count);
+
 	console.log(sourceFileHashesList[count]);
 	count++;
 	if(count < sourceFileHashesList.length) {
@@ -157,12 +160,32 @@ function uploadTempFile(sourceFileHashesList, i,callback, finalCallback) {
 	request(uploadRequestOptions)
 		.then(function (uploadResults) {
 			console.log(uploadResults.body);
-			next(sourceFileHashesList, i, callback, finalCallback)
+			next(sourceFileHashesList, i, callback, finalCallback);
 		})
 		.catch(function (err) {
 			console.log("uploadRequestOptions");
 			console.log(err);
 		});
+}
+
+function deleteFile(sourceFileHashesList, i) {
+	var file1 = path.join(getTempFolder(), sourceFileHashesList[i] + ".jpg");
+	fs.access(file1, fs.constants.F_OK, (err) => {
+		if(err) return;
+		fs.unlink(file1,function(err){
+			if(err) return console.log(err);
+			console.log('deleted temp/' + sourceFileHashesList[i]);
+		});
+	});
+
+	var file2 = path.join(getSourceTempFolder(), sourceFileHashesList[i] + ".jpg");
+	fs.access(file2, fs.constants.F_OK, (err) => {
+		if(err) return;
+		fs.unlink(file2,function(err){
+			if(err) return console.log(err);
+			console.log('deleted SourceTempFolder/' + sourceFileHashesList[i]);
+		});
+	});
 }
 
 
