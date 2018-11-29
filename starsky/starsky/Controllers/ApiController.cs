@@ -53,7 +53,6 @@ namespace starsky.Controllers
         /// <returns>config data, except connection strings</returns>
         [HttpGet]
         [HttpHead]
-        [ResponseCache(Duration = 30 )]
         [IgnoreAntiforgeryToken]
         [AllowAnonymous] /// <=================================
         public IActionResult Env()
@@ -278,7 +277,6 @@ namespace starsky.Controllers
         /// <param name="f">subpaths split by dot comma</param>
         /// <param name="collections">true is to update files with the same name before the extenstion</param>
         /// <returns></returns>
-        [ResponseCache(Duration = 30, VaryByQueryKeys = new[] {"f"})]
         public IActionResult Info(string f, bool collections = true)
         {
             var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
@@ -407,8 +405,6 @@ namespace starsky.Controllers
         /// <param name="json">text as output</param>
         /// <param name="retryThumbnail">true = remove thumbnail if corrupt</param>
         /// <returns></returns>
-        [ResponseCache(Duration = 90000, VaryByQueryKeys = new [] { "f", "json", 
-            "retryThumbnail", "isSingleitem"} )]
         [HttpGet("/api/thumbnail/{f}")]
         [HttpHead("/api/thumbnail/{f}")]
         [IgnoreAntiforgeryToken]
