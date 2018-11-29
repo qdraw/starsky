@@ -45,7 +45,7 @@ namespace starsky
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
             
-            services.AddResponseCaching();
+            // services.AddResponseCaching();
             
             switch (_appSettings.DatabaseType)
             {
