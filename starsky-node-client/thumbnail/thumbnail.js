@@ -22,7 +22,24 @@ var requestOptions = {
     json: true // Automatically parses the JSON string in the response
 };
 
-getSubPathRelative(0);
+function parseArgs() {
+	var args = process.argv.slice(2);
+	if (args.length >= 1) {
+		var parsed = parseInt(args[0])
+		if (isNaN(parsed)) {
+			return 0
+		}
+		else {
+			return parsed
+		}
+	}
+	return 1
+}
+
+subPathRelativeValue = parseArgs();
+console.log("subPathRelativeValue > " + subPathRelativeValue);
+
+getSubPathRelative(subPathRelativeValue);
 
 
 function getSubPathRelative(subpathRelativeValue) {
