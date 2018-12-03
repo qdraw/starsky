@@ -89,8 +89,13 @@ function getIndexStart(subpath) {
 				if(item.imageFormat !== "jpg") continue;
 				fileHashList.push(item.fileHash)
 			}
-			console.log("-");
-			downloadSourceTempFile(fileHashList,0);
+
+      if(fileHashList.length === 0) console.log("> 0 imageFormat:jpg items");
+
+      if(fileHashList.length >= 1) {
+        console.log("-");
+        downloadSourceTempFile(fileHashList,0);
+      }
 
 	    })
 	    .catch(function (err) {
@@ -125,8 +130,8 @@ function downloadSourceTempFile(sourceFileHashesList,i) {
 			}
 		})
 	    .catch(function (err) {
+        console.log(err.message, i, sourceFileHashesList.length, sourceFileHashesList[i]);
 			console.log("downloadrequestOptions - " + sourceFileHashesList[i]);
-			console.log(err.message);
 			next(sourceFileHashesList, i, downloadSourceTempFile, done)
 	    });
 }
