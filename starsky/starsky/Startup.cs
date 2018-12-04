@@ -133,7 +133,7 @@ namespace starsky
 			{
 				ctx.Response.Headers
 					.Add("Content-Security-Policy",
-						"default-src 'self';");
+						"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org;");
 				await next();
 			});
 

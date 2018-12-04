@@ -8,12 +8,77 @@ updateApiBase = updateApiBase.replace("&amp;", "&");
 infoApiBase = infoApiBase.replace("&amp;", "&") + "&collections=true";
 thumbnailApiBase = thumbnailApiBase.replace("&amp;", "&");
 
+if (document.querySelectorAll(".sidebar .close").length === 1) {
+    document.querySelector(".sidebar .close")
+        .addEventListener("click",
+            function () {
+                toggleSideMenu()
+            }, false);
+}
+if (document.querySelectorAll("#js-keywords-update").length === 1) {
+    document.querySelector("#js-keywords-update a")
+        .addEventListener("click",
+            function () {
+                updateKeywords()
+            }, false);
+    document.querySelector("#js-keywords-update .form-control")
+        .addEventListener("focusout", function () {
+            updateKeywords()
+        });
+}
 
-document.querySelector("#js-keywords-update a")
-	.addEventListener("click",
-		function(e) {
-		console.log(e);	
-		}, false);
+if (document.querySelectorAll("#js-captionabstract-update").length === 1) {
+    document.querySelector("#js-captionabstract-update a")
+        .addEventListener("click",
+            function () {
+                updateCaptionAbstract()
+            }, false);
+    document.querySelector("#js-captionabstract-update .form-control")
+        .addEventListener("focusout", function () {
+            updateCaptionAbstract()
+        });
+}
+
+if (document.querySelectorAll(".add-colorclass").length === 1) {
+    var colorClasses = document.querySelector(".add-colorclass").children;
+    
+    for (var i = 0; i < colorClasses.length; i++) {
+        colorClasses[i].addEventListener("click",
+            function (e) {
+                var target = e.target;
+                if (e.target.className === "checkbox") target = e.target.parentElement;
+                updateColorClass(target)
+            }, false);
+    }
+}
+
+
+if (document.querySelectorAll("#js-objectname-update").length === 1) {
+    document.querySelector("#js-objectname-update a")
+        .addEventListener("click",
+            function () {
+                updateObjectName()
+            }, false);
+    document.querySelector("#js-objectname-update .form-control")
+        .addEventListener("focusout", function () {
+            updateObjectName()
+        });
+}
+
+
+
+if (document.querySelectorAll(".rotation-sidebar").length === 1) {
+    document.querySelector(".rotation-sidebar a.js-left")
+        .addEventListener("click",
+            function () {
+                queryRotate(-1)
+            }, false);
+    document.querySelector(".rotation-sidebar a.js-right")
+        .addEventListener("click",
+            function () {
+                queryRotate(1)
+            }, false);
+}
 
 // Used in <div class="add-colorclass">
 function updateColorClass(those) {
@@ -34,7 +99,7 @@ function updateColorClass(those) {
             console.error(xhr);
             showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
                 "<p>\n" +
-                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "<a onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
                 "</p>");
         },
         "POST"
