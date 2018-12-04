@@ -1,4 +1,8 @@
 
+var updateApiBase = document.getElementById("js-settings").getAttribute("data-updateApiBase");
+var infoApiBase = document.getElementById("js-settings").getAttribute("data-infoApiBase");
+var thumbnailApiBase = document.getElementById("js-settings").getAttribute("data-thumbnailApiBase");
+
 // Req: base url = > updateApiBase
 updateApiBase = updateApiBase.replace("&amp;", "&");
 infoApiBase = infoApiBase.replace("&amp;", "&") + "&collections=true";

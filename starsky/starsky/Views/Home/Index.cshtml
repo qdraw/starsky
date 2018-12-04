@@ -1,4 +1,4 @@
-﻿@using System.Linq
+@using System.Linq
 @using System.Web
 @using Microsoft.AspNetCore.Mvc
 @model starsky.ViewModels.ArchiveViewModel
@@ -187,14 +187,6 @@
 	data-infoApiBase="@infoApiBase" data-syncApiBase="@syncApiBase"
 	data-subPath="@Model.SubPath">
 </div>
-
-@*   keep here for legacy reasons *@
-<script type="text/javascript">
-   var updateApiBase = "@updateApiBase";
-   var infoApiBase = "@infoApiBase";
-   var syncApiBase = "@syncApiBase";
-   var subPath = "@Model.SubPath";
-</script>
                                    
 <script type="text/javascript" src="js/loadjson.js"></script>
 <script type="text/javascript" src="js/sidebar-stringhelper.js"></script>
