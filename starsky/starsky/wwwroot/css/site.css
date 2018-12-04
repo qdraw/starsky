@@ -1,4 +1,4 @@
-﻿html, body, div, span, applet, object, iframe,
+html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
@@ -186,7 +186,7 @@ body {
     
     .head .close,
     .head .hamburger {
-        background-image: url("data:image/svg+xml,%3Csvg%20height%3D%2221%22%20viewBox%3D%220%200%2026%2021%22%20width%3D%2226%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22m0%200h26v3h-26z%22%2F%3E%3Cpath%20d%3D%22m0%209h26v3h-26z%22%2F%3E%3Cpath%20d%3D%22m0%2018h26v3h-26z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+        /*background-image: url("data:image/svg+xml,%3Csvg%20height%3D%2221%22%20viewBox%3D%220%200%2026%2021%22%20width%3D%2226%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22m0%200h26v3h-26z%22%2F%3E%3Cpath%20d%3D%22m0%209h26v3h-26z%22%2F%3E%3Cpath%20d%3D%22m0%2018h26v3h-26z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");*/
         background-repeat: no-repeat;
         position: absolute;
         top: 0px;
@@ -1000,7 +1000,7 @@ float: left;
 
 .breadcrumb.nothumbnail::after {
     display: inline-block;
-    background-image: url("data:image/jpg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAQEBAQFBAUGBgUHCAcIBwoKCQkKChALDAsMCxAYDxEPDxEPGBUZFRMVGRUmHhoaHiYsJSMlLDUvLzVDP0NXV3UBBAQEBAUEBQYGBQcIBwgHCgoJCQoKEAsMCwwLEBgPEQ8PEQ8YFRkVExUZFSYeGhoeJiwlIyUsNS8vNUM/Q1dXdf/CABEIABIAEAMBIgACEQEDEQH/xAAXAAEAAwAAAAAAAAAAAAAAAAAGBQcI/9oACAEBAAAAANbQ4l1QKb//xAAVAQEBAAAAAAAAAAAAAAAAAAACBf/aAAgBAhAAAABQv//EABUBAQEAAAAAAAAAAAAAAAAAAAMF/9oACAEDEAAAAJwf/8QAJRAAAgIBAwMEAwAAAAAAAAAAAQIDBAUAESIGEyEVFjJBB1Fh/9oACAEBAAE/AMDicRNiack8WPVjWj+ccZckqOTbjfSW7+Ge/aq4tjEJRNuk6RwmFY0Eg7O/y4kggb6yvVvp1arWrxq84q1yS3lVBT9D71hJm9r+sZavFyhmaOseInCqSNw/0wBO3nj5102BY6lwyTDuI9+srq/IMpcAgg6/KU8/vrKDvPtGsKJyPFTEDsP5udf/xAAdEQABBAIDAAAAAAAAAAAAAAABAgMEEQAhMnOx/9oACAECAQE/ABNgOPrjpcJcSLNJ0CNVeN8ne5Huf//EAB8RAQAABAcAAAAAAAAAAAAAAAIAAwQREiExQ1Fzsf/aAAgBAwEBPwCVWh1KlHNG+LjWBu9p9j//2Q==");
+    background-image: url("../images/brokenimage.jpg");
     width: 16px;
     height: 16px;
     background-size: cover;

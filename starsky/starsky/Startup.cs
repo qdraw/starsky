@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using starsky.Interfaces;
@@ -108,7 +108,6 @@ namespace starsky
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-//            app.UseResponseCaching();
 
             // Use the name of the application to use behind a reverse proxy
             app.UsePathBase(ConfigRead.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
@@ -130,15 +129,15 @@ namespace starsky
             app.UseAuthentication();
             app.UseBasicAuthentication();
 
-//	        app.Use(async (ctx, next) => 
-//	        {
-//		        ctx.Response.Headers
-//			        .Add("Content-Security-Policy", 
-//				        "default-src 'self';");
-//		        await next();
-//	        });
-	        
-            app.UseMvc(routes =>
+			app.Use(async (ctx, next) =>
+			{
+				ctx.Response.Headers
+					.Add("Content-Security-Policy",
+						"default-src 'self';");
+				await next();
+			});
+
+			app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",

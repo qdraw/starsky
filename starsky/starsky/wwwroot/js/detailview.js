@@ -7,8 +7,13 @@ var thumbnailApiBase = document.getElementById("js-settings").getAttribute("data
 updateApiBase = updateApiBase.replace("&amp;", "&");
 infoApiBase = infoApiBase.replace("&amp;", "&") + "&collections=true";
 thumbnailApiBase = thumbnailApiBase.replace("&amp;", "&");
-    
 
+
+document.querySelector("#js-keywords-update a")
+	.addEventListener("click",
+		function(e) {
+		console.log(e);	
+		}, false);
 
 // Used in <div class="add-colorclass">
 function updateColorClass(those) {
