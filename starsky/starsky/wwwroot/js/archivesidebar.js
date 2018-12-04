@@ -166,15 +166,37 @@ function updateDisplayList() {
 
     if (document.querySelectorAll(".js-selectedimages").length === 1) {
         var html = "<h2><span class='js-selectedcount'>Geen bestanden geselecteerd</span></h2>";
-        
-        html +=    "<h2><a class='colorbutton js-selectallnone selectall' onclick='toggleSelectAll()'><span class='checkbox'></span> Selecteer alles</a>"
-            + "<a class='colorbutton js-resetselect' onclick='resetSelection()'>Deselecteer</a></h2>";
-        html +=    "<ul>";
+
+        html += "<h2><a class='colorbutton js-selectallnone selectall' data-on-click='toggleSelectAll()'><span class='checkbox'></span> Selecteer alles</a>"
+            + "<a class='colorbutton js-resetselect' data-on-onclick='resetSelection()'>Deselecteer</a></h2>";
+        html += "<ul>";
         for (var i = 0; i < selectedFiles.length; i++) {
-            html += "<li><a class='close' onclick='removeThisItem(\"" + selectedFiles[i] + "\")'></a> " + selectedFiles[i] + "</li>";
+            html += "<li><a class='close' data-filename='" + selectedFiles[i] + "'></a> " + selectedFiles[i] + "</li>";
         }
         html += "</ul>";
         document.querySelector(".js-selectedimages").innerHTML = html;
+
+        // add onclick
+        document.querySelector(".js-selectedimages h2 a")
+            .addEventListener("click",
+                function () {
+                    toggleSelectAll()
+                }, false);
+
+        document.querySelector(".js-resetselect")
+            .addEventListener("click",
+                function () {
+                    resetSelection()
+                }, false);
+
+        for (var i = 0; i < document.querySelectorAll(".js-selectedimages ul li a").length; i++) {
+            document.querySelectorAll(".js-selectedimages ul li a")[i]
+                .addEventListener("click",
+                    function (e) {
+                        removeThisItem(e.target.getAttribute("data-filename"))
+                    }, false);
+
+        }
     }
     if (document.querySelectorAll(".js-selectedcount").length === 1) {
         var selectedcountElement = document.querySelector(".js-selectedcount");
@@ -704,17 +726,28 @@ function forceSync(subPath) {
         function (data) {
             showPopupDialog("De server gaat nu op de achtergrond bekijken of de inhoud van deze pagina up-to-date is, een klein momentje geduld a.u.b" +
                 "<p>\n" +
-                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
                 "</p>");
         },
         function (xhr) {
             console.error(xhr);
             showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
                 "<p>\n" +
-                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
                 "</p>");
         },
         "POST",
         "f=" + subPath
     );
 }
+
+
+
+if (document.querySelectorAll(".js-forcesync").length === 1) {
+    document.querySelector(".js-forcesync")
+        .addEventListener("click",
+            function () {
+                forceSync(subPath)
+            }, false);
+}
+

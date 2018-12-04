@@ -1,4 +1,15 @@
 
+if (document.querySelectorAll(".js-toggle-issingleitem").length === 1) {
+    document.querySelector(".js-toggle-issingleitem")
+        .addEventListener("click",
+            function () {
+                toggleIsSingleitem()
+            }, false);
+}
+
+
+
+
 function toggleIsSingleitem() {
 
     if (document.querySelectorAll(".js-toggle-issingleitem").length === 1) {

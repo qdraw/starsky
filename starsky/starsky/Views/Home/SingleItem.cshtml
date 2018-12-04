@@ -38,7 +38,7 @@
 
 		<div class="form-inline form-wrapper" id="js-keywords-update">
 			<p>Tags: <em>(komma gescheiden)</em></p>
-			<div class="form-control js-keywords contenteditable disabled" contenteditable="false"
+			<div class="form-control js-keywords contenteditable disabled js-focusout" contenteditable="false"
 				 name="keywords" data-previouscontent="@Model.FileIndexItem.Tags">@Model.FileIndexItem.Tags</div> @*onfocusout="updateKeywords()"*@
 				<a class="btn btn-default" type="submit">Update</a>
 			</div>
@@ -46,7 +46,7 @@
 			<div class="form-inline form-wrapper" id="js-captionabstract-update">
 				<p>Info:</p>
 				@*onfocusout="updateCaptionAbstract()"*@
-				<div class="form-control js-captionabstract contenteditable disabled" contenteditable="false"
+				<div class="form-control js-captionabstract contenteditable disabled js-focusout" contenteditable="false"
 					 name="keywords" data-previouscontent="@Model.FileIndexItem.Description">@Model.FileIndexItem.Description</div>
 					<a class="btn btn-default disabled" type="submit">Update</a> @*onClick="updateCaptionAbstract()"*@
 				</div>
@@ -82,7 +82,7 @@
 				</div>
 				<div class="form-inline form-wrapper" id="js-objectname-update">
 					<p>Titel:</p>
-					<div class="form-control js-objectname contenteditable disabled" contenteditable="false"
+					<div class="form-control js-objectname contenteditable disabled js-focusout" contenteditable="false"
 						 name="keywords" data-previouscontent="@Model.FileIndexItem.Title">@Model.FileIndexItem.Title</div>
 						@*onfocusout="updateObjectName()"*@
 						<a class="btn btn-default disabled" type="submit">Update</a>

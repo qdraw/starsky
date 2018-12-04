@@ -273,13 +273,17 @@ function showPopupDialog(content,timeout) {
             
             var links = document.querySelectorAll("#popup .content a");
             for (var i = 0; i < links.length; i++) {
-                if (links[i].getAttribute("data-onclick") === "hidePopupDialog()")
-                {
-                    document.querySelectorAll("#popup .content a")[i].addEventListener("click",
-                        function () {
+
+                document.querySelectorAll("#popup .content a")[i].addEventListener("click",
+                    function (e) {
+                        var target = e.target.getAttribute("data-onclick");
+                        if (target === "hidePopupDialog()") {
                             hidePopupDialog()
-                        }, false);
-                }
+                        }
+                        else if (target === "location.reload()") {
+                            location.reload()
+                        }
+                    }, false);
             }
         }
         if (!isNaN(timeout)) {
