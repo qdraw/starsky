@@ -376,7 +376,7 @@ function queryKeywords(queryItem) {
             console.error(xhr);
             showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
                 "<p>\n" +
-                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
                 "</p>");
         },
         "POST",
@@ -399,7 +399,7 @@ function queryCaptionAbstract(queryItem) {
             console.error(xhr);
             showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
                 "<p>\n" +
-                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
                 "</p>");
         },
         "POST",
@@ -422,7 +422,7 @@ function queryObjectName(queryItem) {
             console.error(xhr);
             showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
                 "<p>\n" +
-                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
                 "</p>");
         },
         "POST",
@@ -589,7 +589,7 @@ function updateColorClass(those) {
             console.error(xhr);
             showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
                 "<p>\n" +
-                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
                 "</p>");
         },
         "POST",
@@ -671,7 +671,7 @@ function queryDeleteApi() {
             console.error(xhr);
             showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
                 "<p>\n" +
-                "<a onClick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
                 "</p>");
         },
         "DELETE"
