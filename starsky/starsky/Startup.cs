@@ -103,6 +103,10 @@ namespace starsky
 	        
 
             services.AddMvc();
+	        
+	        // Application Insights
+	        var appInsightsKey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
+	        if(!string.IsNullOrWhiteSpace(appInsightsKey)) services.AddApplicationInsightsTelemetry();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -117,6 +121,16 @@ namespace starsky
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 app.UseStatusCodePages();
+	            
+	            // Add CSP
+	            app.Use(async (ctx, next) =>
+	            {
+		            ctx.Response.Headers
+			            .Add("Content-Security-Policy",
+				            "default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self';");
+		            await next();
+	            });
+
             }
             else
             {
@@ -129,20 +143,13 @@ namespace starsky
             app.UseAuthentication();
             app.UseBasicAuthentication();
 
-			app.Use(async (ctx, next) =>
-			{
-				ctx.Response.Headers
-					.Add("Content-Security-Policy",
-						"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org;");
-				await next();
-			});
-
 			app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+	        
 
             // Run the latest migration on the database. 
             // To startover with a sqlite database please remove it and
