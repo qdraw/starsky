@@ -1,4 +1,15 @@
 
+if (document.querySelectorAll(".js-toggle-issingleitem").length === 1) {
+    document.querySelector(".js-toggle-issingleitem")
+        .addEventListener("click",
+            function () {
+                toggleIsSingleitem()
+            }, false);
+}
+
+
+
+
 function toggleIsSingleitem() {
 
     if (document.querySelectorAll(".js-toggle-issingleitem").length === 1) {
@@ -39,7 +50,7 @@ function runIsSingleitem(toAdd) {
         }
     }
 
-    console.log(localStorage.getItem("issingleitem"));
+    // console.log(localStorage.getItem("issingleitem"));
 
 
     var halfitems = document.querySelectorAll(".halfitem");

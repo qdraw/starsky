@@ -15,7 +15,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
 
     var previousKey = [];
     window.onkeydown = function(e) {
-        console.log(e.keyCode);
+        // console.log(e.keyCode);
         switch (e.keyCode) {
             case 37:
                 // left
@@ -44,7 +44,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
                     showPopupDialog("<p>Je bent al bij het eerste item, je kunt niet verder terug</p>\n" +
                         "<p>\n" +
-                        "<a onClick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
+                        "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
                         "</p>\n", 3000);
                 }
                 break;
@@ -69,7 +69,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                         else if(formSubmitting) {
                             console.log(">");
                             window.location.href = next;
-                            formSubmitting = false;
+                            formSubmitting = true;
                         }
                     }, 200);
                 }
@@ -77,7 +77,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
                     showPopupDialog( "<p>Je bent al bij het laatste item, je kunt niet verder</p>\n" +
                         "<p>\n" +
-                        "<a onClick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
+                        "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
                         "</p>\n",3000); 
                 }
                 break;
@@ -156,7 +156,7 @@ function handleTouchMove(evt) {
                 {
                     showPopupDialog( "<p>Je bent al bij het eerste item, je kunt niet verder terug.</p>\n" +
                         "<p>\n" +
-                        "<a onClick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
+                        "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
                         "</p>\n",3000);
                 }
             } else {/* right swipe */
@@ -173,7 +173,7 @@ function handleTouchMove(evt) {
                 {
                     showPopupDialog( "<p>Je bent al bij het laatste item, je kunt niet verder</p>\n" +
                         "<p>\n" +
-                        "<a onClick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
+                        "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oké</a>\n" +
                         "</p>\n",3000);
                 }
             }
@@ -270,6 +270,24 @@ function showPopupDialog(content,timeout) {
         document.querySelector("#popup").classList.add("on");
         if (content !== undefined) {
             document.querySelector("#popup .content").innerHTML = content;
+            
+            var links = document.querySelectorAll("#popup .content a");
+            for (var i = 0; i < links.length; i++) {
+
+                document.querySelectorAll("#popup .content a")[i].addEventListener("click",
+                    function (e) {
+                        var target = e.target.getAttribute("data-onclick");
+                        if (target === "hidePopupDialog()") {
+                            hidePopupDialog()
+                        }
+                        else if (target === "location.reload()") {
+                            location.reload()
+                        }
+                        else if (target === "queryDeleteApi()") {
+                            queryDeleteApi();
+                        }
+                    }, false);
+            }
         }
         if (!isNaN(timeout)) {
             console.log(timeout);

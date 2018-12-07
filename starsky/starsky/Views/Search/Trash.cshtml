@@ -10,17 +10,12 @@
 <div class="archive trash">
     <div id="popup">
         <div class="content">
-            <p>Weet je het zeker dat je deze bestanden wilt verwijderen?</p>
-            <p>
-                <a onClick="queryDeleteApi()" class="btn-sm btn btn-danger delete">Verwijder van schijf</a>
-                <a onClick="hidePopupDialog()" class="btn-sm btn btn-default">Nee</a>
-            </p>
         </div>
     </div>
     
     <div class="sidebar">
 
-        <div class="close" onclick="toggleSideMenu()"></div>
+        <div class="close"></div>
         <div class="content">
             <h4 class="nextprev">
                 &nbsp;
@@ -42,16 +37,9 @@
                 <div class="js-selectedimages"></div>
             </div>
             <div class="js-controls">
-                <div class="addDeleteTag">
+                <div class="addDeleteTag prompt">
 	                <h4>Danger zone:</h4>
-	                <script>
-                		var beforedelete = '<p>Weet je het zeker dat je deze bestanden wilt verwijderen?</p>'+
-			                '<p>'+
-			                '<a onClick="queryDeleteApi()" class="btn-sm btn btn-danger delete">Verwijder van schijf</a>' +
-			                '<a onClick="hidePopupDialog()" class="btn-sm btn btn-default">Nee</a>'+
-		                    '</p>';
-                	</script>
-                    <a onClick="showPopupDialog(beforedelete)" class="btn-sm btn btn-danger delete">Verwijder van schijf</a>
+                    <a class="btn-sm btn btn-danger delete">Verwijder van schijf</a>
                 </div>
             </div>
         </div>
@@ -91,7 +79,7 @@
                 <div class="caption">
                     <h2>
                         <div class="checkbox"></div> <a asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">@item.FileName</a></h2>
-                    <p><a onclick="Remove('@item.FilePath')"class="btn-sm btn btn-danger">Verwijder van schijf</a></p>
+@*                    <p><a onclick="Remove('@item.FilePath')"class="btn-sm btn btn-danger">Verwijder van schijf</a></p>*@
                 </div>
                 <div class="filter"></div>
                 <img class="lazyload" src="#" data-src="@Url.Action("Thumbnail", "Api", new {f = item.FileHash, issingleitem = false })" alt=""/>
@@ -99,7 +87,8 @@
         }
     </div>
 
-    <h4 class="nextprev" style="margin-top: 30px; margin-bottom: 30px;">
+	@*    style="margin-top: 30px; margin-bottom: 30px;"*@
+	<h4 class="nextprev"> 
         &nbsp;
         @if (Model.PageNumber >= 1)
         {
@@ -117,14 +106,14 @@
 
 
 
-<script type="text/javascript">
-	@{
-        // Javascript don't accept decoded slashes
-        var deleteApiBase = Url.Action("Delete", "Api");
-        deleteApiBase = HttpUtility.UrlDecode(deleteApiBase);
-    }
-	var deleteApiBase = "@deleteApiBase";
-</script>
+
+@{
+	// Javascript don't accept decoded slashes
+	var deleteApiBase = Url.Action("Delete", "Api");
+	deleteApiBase = HttpUtility.UrlDecode(deleteApiBase);
+}
+<div id="js-settings" data-deleteApiBase="@deleteApiBase">
+</div>
 
 <div class="preloader">
 	<img src="~/images/preloader.svg" alt="preloader">
@@ -136,30 +125,29 @@
 
 
 
-
-<script type="text/javascript">
-
-	function Remove(filePath) {
-		var url = "@Url.Action("Delete", "Api")" + "?f=" + filePath;
-		url = url.replace("&amp;", "&");
-		loadJSON(url,
-			function(data) {
-				location.reload(); 
-			},
-			function(xhr) {
-				if (xhr.status === 404) {
-					alert(xhr.response);
-				}
-				console.error(xhr);
-			},
-			"DELETE"
-		);
-	}
-
-</script>
+@**@
+@*<script type="text/javascript">*@
+@**@
+@*	function Remove(filePath) {*@
+@*		var url = "@Url.Action("Delete", "Api")" + "?f=" + filePath;*@
+@*		url = url.replace("&amp;", "&");*@
+@*		loadJSON(url,*@
+@*			function(data) {*@
+@*				location.reload(); *@
+@*			},*@
+@*			function(xhr) {*@
+@*				if (xhr.status === 404) {*@
+@*					alert(xhr.response);*@
+@*				}*@
+@*				console.error(xhr);*@
+@*			},*@
+@*			"DELETE"*@
+@*		);*@
+@*	}*@
+@**@
+@*</script>*@
 
 @*For IE/IE-Edge "object-fit: cover" *@
 <script type="text/javascript" src="~/js/vendor/ofi.min.js" defer></script>
-<script type="text/javascript" src="~/js/sidebar-stringhelper.js" defer></script>
 <script type="text/javascript" src="~/js/archivesidebar.js" defer></script>
 <script type="text/javascript" src="~/js/toggleIsSingleitem.js" defer></script>

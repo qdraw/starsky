@@ -1,7 +1,7 @@
 {
   "name": "thumbnail",
   "version": "1.0.0",
-  "description": "",
+  "description": "Client side thumbnail generation interacting with a Starsky WebApi ",
   "main": "thumbnail.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

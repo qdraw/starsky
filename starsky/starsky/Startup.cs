@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using starsky.Interfaces;
@@ -103,12 +103,15 @@ namespace starsky
 	        
 
             services.AddMvc();
+	        
+	        // Application Insights
+	        var appInsightsKey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
+	        if(!string.IsNullOrWhiteSpace(appInsightsKey)) services.AddApplicationInsightsTelemetry();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-//            app.UseResponseCaching();
 
             // Use the name of the application to use behind a reverse proxy
             app.UsePathBase(ConfigRead.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
@@ -123,6 +126,15 @@ namespace starsky
             {
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
+	        
+	        // Add Content Security Policy/CSP
+	        app.Use(async (ctx, next) =>
+	        {
+		        ctx.Response.Headers
+			        .Add("Content-Security-Policy",
+				        "default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self';");
+		        await next();
+	        });
 
             // Use in wwwroot
             app.UseStaticFiles();
@@ -130,20 +142,13 @@ namespace starsky
             app.UseAuthentication();
             app.UseBasicAuthentication();
 
-//	        app.Use(async (ctx, next) => 
-//	        {
-//		        ctx.Response.Headers
-//			        .Add("Content-Security-Policy", 
-//				        "default-src 'self';");
-//		        await next();
-//	        });
-	        
-            app.UseMvc(routes =>
+			app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+	        
 
             // Run the latest migration on the database. 
             // To startover with a sqlite database please remove it and

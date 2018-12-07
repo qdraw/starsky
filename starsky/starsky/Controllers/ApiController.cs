@@ -437,7 +437,7 @@ namespace starsky.Controllers
                     {
                         Console.WriteLine("image is corrupt");
                         SetExpiresResponseHeadersToZero();
-                        return NoContent();
+                        return NoContent(); // 204
                     }
                     System.IO.File.Delete(thumbPath);
                 }

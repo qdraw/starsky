@@ -33,7 +33,7 @@
 			}
 			if (name != "Home")
 			{
-				var urlPath = @Url.Action("Index", "Search", new {f = @item});
+				var urlPath = @Url.Action("Index", "Search", new {t = @item});
 				urlPath = urlPath.Replace("%2F", "/");
 				<a href="@urlPath">@name</a>
 			}
@@ -57,7 +57,7 @@
     
     
     
-	<div class="wrapper" style="margin-bottom: 30px;">
+	<div class="wrapper searchcount">
     
 		<p>
 			@{ 
