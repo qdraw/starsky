@@ -138,6 +138,21 @@ namespace starskytests.Models
             var subfolders = importItem.ParseSubfolders(false);
             Assert.AreEqual("/" + createAnImage.DbPath.Replace("/",string.Empty).Replace(".jpg",string.Empty) + "/",subfolders);
         }
+	    
+	    [TestMethod]
+	    public void ImportIndexItemParse_xuxuxuxu_subfolder_Test()
+	    {
+		    _appSettings.Structure = "/xuxuxuxu_ssHHmm.ext";
+
+		    var createAnImage = new CreateAnImage();
+		    var importItem = new ImportIndexItem(_appSettings);
+
+		    importItem.SourceFullFilePath = createAnImage.FullFilePath;
+		    _appSettings.StorageFolder = createAnImage.BasePath;
+		    var subfolders = importItem.ParseSubfolders(false);
+		    Assert.AreNotEqual(subfolders,"/cs");
+		    Assert.AreEqual(subfolders,string.Empty);
+	    }
 
         [TestMethod]
         [ExpectedException(typeof(FileNotFoundException))]
@@ -152,6 +167,8 @@ namespace starskytests.Models
             input.ParseFileName();
             // ExpectedException
         }
+	    
+	    
 
         [TestMethod]
         public void ImportIndexItemParse_ParseDateTimeFromFileName_Test()
