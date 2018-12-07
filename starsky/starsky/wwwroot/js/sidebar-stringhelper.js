@@ -77,10 +77,12 @@ if (document.querySelectorAll("#js-objectname-update").length === 1) {
             function () {
                 updateObjectName()
             }, false);
-    document.querySelector("#js-objectname-update .form-control")
-        .addEventListener("focusout", function () {
-            updateObjectName()
-        });
+    if (document.querySelectorAll("#js-objectname-update .form-control.js-focusout").length === 1) {
+        document.querySelector("#js-objectname-update .form-control")
+            .addEventListener("focusout", function () {
+                updateObjectName()
+            });
+    }
 }
 
 
