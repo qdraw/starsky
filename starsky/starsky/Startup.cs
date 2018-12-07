@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using starsky.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
 using Microsoft.Extensions.Hosting;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 
 namespace starsky
@@ -102,7 +104,8 @@ namespace starsky
             );
 	        
 
-            services.AddMvc();
+            services.AddMvc()
+	            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 	        
 	        // Application Insights
 	        var appInsightsKey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
