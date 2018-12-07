@@ -4,11 +4,12 @@
 // use subpath
 // use syncApiBase
 
-var updateApiBase = document.getElementById("js-settings").getAttribute("data-updateApiBase");
-var deleteApiBase = document.getElementById("js-settings").getAttribute("data-deleteApiBase");
-var subPath = document.getElementById("js-settings").getAttribute("data-subPath");
-var syncApiBase = document.getElementById("js-settings").getAttribute("data-syncApiBase");
-
+if(document.querySelectorAll("#js-settings").length === 1) {
+    var updateApiBase = document.getElementById("js-settings").getAttribute("data-updateApiBase");
+    var deleteApiBase = document.getElementById("js-settings").getAttribute("data-deleteApiBase");
+    var subPath = document.getElementById("js-settings").getAttribute("data-subPath");
+    var syncApiBase = document.getElementById("js-settings").getAttribute("data-syncApiBase");
+}
 
 var prevURL = "";
 var selectedFiles = [];

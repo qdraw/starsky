@@ -759,6 +759,10 @@ h2 {
     margin-bottom: 3px;
 }
 
+.searchcount {
+    margin-bottom: 30px;
+}
+
 .form-control {
     display: block;
     width: 100%;
