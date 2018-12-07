@@ -69,7 +69,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                         else if(formSubmitting) {
                             console.log(">");
                             window.location.href = next;
-                            formSubmitting = false;
+                            formSubmitting = true;
                         }
                     }, 200);
                 }
