@@ -66,7 +66,6 @@ namespace starsky.Services
                 if (!ditem.IsDirectory) continue;
 
 	            var orphanPictures = _query.GetAllFiles(ditem.FilePath);
-//                var orphanPictures = _context.FileIndex.Where(p => !p.IsDirectory && p.ParentDirectory == ditem.FilePath).ToList();
                 foreach (var orphanItem in orphanPictures)
                 {
                     Console.Write("$");
