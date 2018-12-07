@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Laag_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 12 12" style="enable-background:new 0 0 12 12;" xml:space="preserve">
-<style type="text/css">
-	.st0{fill:#FFFFFF;}
-</style>
-<title>Group</title>
-<desc>Created with Sketch.</desc>
 <g id="Group">
-	<polyline id="Path-2" class="st0" points="1.9,2.5 1.9,4.1 7.4,4.1 5.7,2.4 1.9,2.4 	"/>
-	<path id="Path-2-Copy_2_" class="st0" d="M8.5,5.1H1.9v0.1v1.6h6.6l0.6-0.6c0.2-0.2,0.2-0.3,0-0.5C8.9,5.5,8.7,5.3,8.5,5.1"/>
-	<polyline id="Path-2_1_" class="st0" points="1.9,9.5 1.9,7.9 7.4,7.9 5.7,9.6 1.9,9.6 	"/>
+	<polyline id="Path-2" class="st0" points="1.9,2.5 1.9,4.1 7.4,4.1 5.7,2.4 1.9,2.4" fill="#FFFFFF"/>
+	<path id="Path-2-Copy_2_" class="st0" d="M8.5,5.1H1.9v0.1v1.6h6.6l0.6-0.6c0.2-0.2,0.2-0.3,0-0.5C8.9,5.5,8.7,5.3,8.5,5.1" fill="#FFFFFF"/>
+	<polyline id="Path-2_1_" class="st0" points="1.9,9.5 1.9,7.9 7.4,7.9 5.7,9.6 1.9,9.6" fill="#FFFFFF"/>
 </g>
 </svg>

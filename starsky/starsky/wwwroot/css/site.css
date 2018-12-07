@@ -1174,6 +1174,7 @@ float: left;
     top: 0px;
     position: absolute;
     background-image: url("../images/arrow-toright-white.svg");
+    fill: #fff;
     background-size: cover;
 }
 @media screen and (max-width: 600px) {
@@ -1186,6 +1187,7 @@ float: left;
 }
 .sidebar .close.collapsed{
     margin-left: -40px;
+    fill: #fff;
     background-image: url("../images/arrow-toleft-white.svg");
 }
 
