@@ -3,10 +3,10 @@
 
 #dotnet test starskyTests/starskytests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
-dotnet build-server shutdown
-dotnet sonarscanner begin /k:"starsky" /d:sonar.host.url=http://localhost:9000 /d:sonar.login="e23083ae4031b7e01c2045ea5815e1e7a8292a03" /d:sonar.cs.opencover.reportsPaths="starskyTests\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests*.cs"
-dotnet build /p:hideMigrations=\"true\"
-dotnet sonarscanner end /d:sonar.login="e23083ae4031b7e01c2045ea5815e1e7a8292a03"
+# dotnet build-server shutdown
+# dotnet sonarscanner begin /k:"starsky" /d:sonar.host.url=http://localhost:9000 /d:sonar.login="e23083ae4031b7e01c2045ea5815e1e7a8292a03" /d:sonar.cs.opencover.reportsPaths="starskyTests\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests*.cs"
+# dotnet build /p:hideMigrations=\"true\"
+# dotnet sonarscanner end /d:sonar.login="e23083ae4031b7e01c2045ea5815e1e7a8292a03"
 
 
 
@@ -17,7 +17,7 @@ dotnet sonarscanner end /d:sonar.login="e23083ae4031b7e01c2045ea5815e1e7a8292a03
 # so the passwords are useless!
 
 
-# For .net Core 2.1 DOES NOT WORK YET :(
+# For .net Core 2.1 
 
 #dotnet tool install --global dotnet-sonarscanner
 dotnet sonarscanner begin /k:"starsky" /d:sonar.host.url="http://localhost:9000" /d:sonar.login="e23083ae4031b7e01c2045ea5815e1e7a8292a03" /d:sonar.cs.opencover.reportsPaths="/data/git/starsky/starsky/starskyTests/coverage.opencover.xml"
