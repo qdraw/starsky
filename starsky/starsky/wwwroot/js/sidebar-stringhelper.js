@@ -108,3 +108,23 @@ if (document.querySelectorAll(".js-toggle-addorreplace a").length === 1) {
                 toggleOverwriteText()
             }, false);
 }
+
+
+
+if (document.querySelectorAll(".addDeleteTag .delete").length === 1) {
+    document.querySelector(".addDeleteTag .delete")
+        .addEventListener("click",
+            function () {
+                addDeleteTag()
+            }, false);
+}
+if (document.querySelectorAll(".status204button").length === 1) {
+    document.querySelector(".status204button")
+        .addEventListener("click",
+            function () {
+                retry204()
+            }, false);
+}
+
+
+
