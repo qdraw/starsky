@@ -72,6 +72,7 @@
 </ItemGroup> -->
   <ItemGroup>
     <PackageReference Include="MetadataExtractor" Version="2.0.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0005" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.11" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
@@ -82,6 +83,11 @@
      <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2" />
   </ItemGroup>-->
+  <ItemGroup>
+    <Content Include="pm2-starksy-new.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
