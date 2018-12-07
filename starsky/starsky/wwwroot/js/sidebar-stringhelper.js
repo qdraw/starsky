@@ -111,8 +111,8 @@ if (document.querySelectorAll(".js-toggle-addorreplace a").length === 1) {
 
 
 
-if (document.querySelectorAll(".addDeleteTag .delete").length === 1) {
-    document.querySelector(".addDeleteTag .delete")
+if (document.querySelectorAll(".addDeleteTag.direct .delete").length === 1) {
+    document.querySelector(".addDeleteTag.direct .delete")
         .addEventListener("click",
             function () {
                 addDeleteTag()
@@ -126,5 +126,17 @@ if (document.querySelectorAll(".status204button").length === 1) {
             }, false);
 }
 
+if (document.querySelectorAll(".addDeleteTag.prompt .delete").length === 1) {
+    document.querySelector(".addDeleteTag.prompt .delete")
+        .addEventListener("click",
+            function () {
+                var beforedelete = '<p>Weet je het zeker dat je deze bestanden wilt verwijderen?</p>'+
+                    '<p>'+
+                    '<a data-onClick="queryDeleteApi()" class="btn-sm btn btn-danger delete">Verwijder van schijf</a>' +
+                    '<a data-onClick="hidePopupDialog()" class="btn-sm btn btn-default">Nee</a>'+
+                    '</p>';
+                showPopupDialog(beforedelete);
+            }, false);
+}
 
 

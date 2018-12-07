@@ -283,6 +283,9 @@ function showPopupDialog(content,timeout) {
                         else if (target === "location.reload()") {
                             location.reload()
                         }
+                        else if (target === "queryDeleteApi()") {
+                            queryDeleteApi();
+                        }
                     }, false);
             }
         }
