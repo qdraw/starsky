@@ -50,7 +50,7 @@ function runIsSingleitem(toAdd) {
         }
     }
 
-    console.log(localStorage.getItem("issingleitem"));
+    // console.log(localStorage.getItem("issingleitem"));
 
 
     var halfitems = document.querySelectorAll(".halfitem");

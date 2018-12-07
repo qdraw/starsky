@@ -15,7 +15,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
 
     var previousKey = [];
     window.onkeydown = function(e) {
-        console.log(e.keyCode);
+        // console.log(e.keyCode);
         switch (e.keyCode) {
             case 37:
                 // left
