@@ -120,11 +120,11 @@ body {
     background-size: contain;
     transition: background .5s ease-in-out;
 }
-@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
-    .head .logo {
-        background-image: url("../images/logo.svg");
-    }
-}
+/*@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {*/
+    /*.head .logo {*/
+        /*background-image: url("../images/logo.svg");*/
+    /*}*/
+/*}*/
 
 .head .hamburger {
     display: none;

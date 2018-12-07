@@ -121,21 +121,20 @@ namespace starsky
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 app.UseStatusCodePages();
-	            
-	            // Add CSP
-	            app.Use(async (ctx, next) =>
-	            {
-		            ctx.Response.Headers
-			            .Add("Content-Security-Policy",
-				            "default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self';");
-		            await next();
-	            });
-
             }
             else
             {
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
+	        
+	        // Add Content Security Policy/CSP
+	        app.Use(async (ctx, next) =>
+	        {
+		        ctx.Response.Headers
+			        .Add("Content-Security-Policy",
+				        "default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self';");
+		        await next();
+	        });
 
             // Use in wwwroot
             app.UseStaticFiles();
