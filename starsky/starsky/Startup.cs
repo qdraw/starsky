@@ -130,15 +130,6 @@ namespace starsky
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
 	        
-	        // Add Content Security Policy/CSP
-	        app.Use(async (ctx, next) =>
-	        {
-		        ctx.Response.Headers
-			        .Add("Content-Security-Policy",
-				        "default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self';");
-		        await next();
-	        });
-
             // Use in wwwroot
             app.UseStaticFiles();
 
@@ -151,6 +142,15 @@ namespace starsky
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+	        
+	        // Add Content Security Policy/CSP
+	        app.Use(async (ctx, next) =>
+	        {
+		        ctx.Response.Headers
+			        .Add("Content-Security-Policy",
+				        "default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self';");
+		        await next();
+	        });
 	        
 
             // Run the latest migration on the database. 
