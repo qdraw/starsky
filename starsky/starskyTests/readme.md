@@ -49,3 +49,7 @@ The goal is improve test coverage
 | starskysynccli | 69,7%  | 56,2%  | 100%   |
 +----------------+--------+--------+--------+
 ```
+
+dotnet tool install -g dotnet-reportgenerator-globaltool
+
+
