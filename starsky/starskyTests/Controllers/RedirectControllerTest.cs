@@ -28,5 +28,18 @@ namespace starskytests.Controllers
 			Assert.AreEqual(today,result.Value);
 		}
 
+		[TestMethod]
+		public void RedirectControllerTest_SubpathRelativeMinusValue()
+		{
+			var appSettings = new AppSettings();
+			appSettings.Structure = "/yyyyMMdd/{filenamebase}.ext";
+			var controller = new RedirectController(appSettings);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var result = controller.SubpathRelative(1, true) as JsonResult;
+
+			var today = "/" + DateTime.Now.AddDays(-1).ToString("yyyyMMdd") + "/";
+			Assert.AreEqual(today, result.Value);
+		}
+
 	}
 }
