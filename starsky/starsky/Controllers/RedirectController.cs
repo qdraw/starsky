@@ -1,9 +1,11 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Models;
 
 namespace starsky.Controllers
 {
+	[Authorize]
 	public class RedirectController : Controller
 	{
 		private readonly AppSettings _appsettings;
@@ -14,7 +16,7 @@ namespace starsky.Controllers
 		}
 			    
 		/// <summary>
-		/// Redirect or view path to relative paths
+		/// Redirect or view path to relative paths using the structure-config (see /api/env)
 		/// </summary>
 		/// <param name="value">how many days ago</param>
 		/// <param name="json">get results</param>

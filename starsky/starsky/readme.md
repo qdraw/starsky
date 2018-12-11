@@ -66,6 +66,20 @@ The commandline arguments are shortcuts to set an in-app environment variable
 ### Rest API documentation
 Starsky has a Json and Razorview restfull API. Please read the documentation
 
+### Swagger
+There is an swagger definition. You could enable this
+```sh
+ASPNETCORE_ENVIRONMENT=Development
+```
+or
+```
+SWAGGER=true
+```
+This is the default location of the swagger documentation
+```
+http://localhost:5000/swagger
+```
+
 #### Rest API Table of contents
 - [Get PageType	"Archive" ](readme_api.md#get-pagetype-archive)
 - [Get PageType	"DetailView"](readme_api.md#get-pagetype-detailview)

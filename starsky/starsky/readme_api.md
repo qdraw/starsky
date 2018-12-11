@@ -21,13 +21,14 @@ The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 - [Search](#search)
 - [Remove cache](#remove-cache)
 - [Environment info](#environment-info)
+- [SubpathRelative Redirect](#subpathRelative-redirect)
 
 ## Get PageType Archive
 Endpoint `/starsky/?f=/&json=true`
 For browsing the folders. Please use  `"pageType": "Archive"` to check the page type.
 The querystring name `f` is used for the file path in releative/subpath style
 The status: Default, is not used in this view, the page view is a cached database view of the content
- 
+
 ```json
 {
     "uri":"/starsky/?f=/&json=true",
@@ -157,7 +158,7 @@ Endpoint: `/starsky/?f=/image.jpg`
 ```
 
 ## Exif Info
-Get the current exif status of a file, only for files that are exist and editable. 
+Get the current exif status of a file, only for files that are exist and editable.
 Endpoint: `/starsky/Api/Info?f=/image.jpg` The querystring name `f` is used for file path's
 
 ```json
@@ -174,7 +175,7 @@ Endpoint: `/starsky/Api/Info?f=/image.jpg` The querystring name `f` is used for 
 ```
 ### Expected `/starsky/Api/Info?f=/image.jpg` response:
 - Statuscode 203 with the content `read only` when readonly mode is active
-- Uses a different scheme that is used by exiftool 
+- Uses a different scheme that is used by exiftool
 - The querystring name `f` is used for the file path in releative/subpath style
 - The querystring can be seperated by a `;`
 - Ignore the `Prefs`-tag those are used to set `ColorClass` with Exiftool
@@ -464,7 +465,7 @@ Endpoint: `/starsky/Api/Thumbnail/LNPE227BMTFMQWMIN7BE4X5ZOU`
 - There is a orginal (source image) fallback, when using the `?issingleitem=True` query
   The orginal image will be loaded instead of the thumbnail
 - The `retryThumbnail` is removing a thumbnail image, only when this Thumbnail is 0 bytes. The query string is  `?retryThumbnail=True`.
-  When this is used in combination with  `isSingleItem` a orginal image is loaded. 
+  When this is used in combination with  `isSingleItem` a orginal image is loaded.
 - Check [Thumbnail Json](#thumbnail-json) for more information
 - This endpoint supports only 1 file per request
 
@@ -746,3 +747,19 @@ If the structure is incorrect an Application Exception occurs. Structure require
 With the  `structureExampleNoSetting` value you can check the structure today.
 In the view `example.jpg` is used to replace `{filenamebase}`. The file `example.jpg` and would be replaced with the orginal filename.
 - [Read more about Structure configuation (starskyimportercli docs) ](../../starsky/starskyimportercli/readme.md)
+
+
+## SubpathRelative Redirect
+Redirect or view path to relative paths using the structure-config (see /api/env)
+```json
+{
+    "uri":"/redirect/SubpathRelative?value=1&json=true",
+    "method":"GET"
+}
+```
+### Expected `/Starky/redirect/SubpathRelative?value=1&json=true` response:
+```json
+{
+    "/2018/01/2018_01_01"
+}
+```
