@@ -8,6 +8,9 @@
     <!-- used for RazorLight -->
     <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
+  <!-- <PropertyGroup>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup> -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
