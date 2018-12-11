@@ -14,10 +14,8 @@ using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
 using Microsoft.Extensions.Hosting;
-
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Swashbuckle.AspNetCore.SwaggerUI;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 
@@ -170,20 +168,6 @@ namespace starsky
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
 	        
-	        // Use swagger in development Environment or when env variable SWAGGER is enabled
-			var swaggerKey = Environment.GetEnvironmentVariable("SWAGGER")?.ToLower();
-			if ( swaggerKey == "true" || env.IsDevelopment() )
-			{
-				app.UseSwagger(); // registers the two documents in separate routes
-				
-				app.UseSwaggerUI(options =>
-				{
-					options.SwaggerEndpoint("/swagger/"+ _appSettings.Name + "/swagger.json", _appSettings.Name);
-					options.OAuthAppName(_appSettings.Name + " - Swagger");					
-//					options.InjectJavascript("/js/vendor/SwashbuckleCustomAuth.CustomContent.basic-auth.js"); 
-				}); // makes the ui visible    
-			}
-	        
             // Use in wwwroot
             app.UseStaticFiles();
 
@@ -197,7 +181,18 @@ namespace starsky
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 	        
-
+	        
+	        // Use swagger in development Environment or when env variable SWAGGER is enabled
+	        var swaggerKey = Environment.GetEnvironmentVariable("SWAGGER")?.ToLower();
+	        if ( swaggerKey == "true" || env.IsDevelopment() )
+	        {
+		        app.UseSwagger(); // registers the two documents in separate routes
+		        app.UseSwaggerUI(options =>
+		        {
+			        options.SwaggerEndpoint("/swagger/"+ _appSettings.Name + "/swagger.json", _appSettings.Name);
+			        options.OAuthAppName(_appSettings.Name + " - Swagger");					
+		        }); // makes the ui visible    
+	        }
 	        
 	        // Add Content Security Policy/CSP
 	        app.Use(async (ctx, next) =>
@@ -207,6 +202,7 @@ namespace starsky
 				        "default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self';");
 		        await next();
 	        });
+
 	        
 	        
 
