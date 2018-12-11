@@ -188,7 +188,7 @@ namespace starskytests.Models
 			var appSettings = new AppSettings();
 			var slug = appSettings.GenerateSlug("12345678901234567890123456789012345678901234567890");
 			// lenght == 45
-			Assert.AreEqual("123456789012345678901234567890123456789012345",slug);
+			Assert.AreEqual(slug.Length,45);
 		}
 	}
 }
