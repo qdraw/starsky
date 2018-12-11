@@ -37,8 +37,11 @@ namespace starsky.Controllers
         }
 
         
-        [HttpPost]
-        [ActionName("Index")]
+		/// <summary>
+		/// Import a file using the structure format
+		/// </summary>
+		/// <returns></returns>
+        [HttpPost("/import")]
         [DisableFormValueModelBinding]
         [RequestSizeLimit(160000000)] // in bytes, 160mb
         public async Task<IActionResult> IndexPost()

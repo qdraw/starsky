@@ -13,6 +13,8 @@ using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
 using Microsoft.Extensions.Hosting;
+using NJsonSchema;
+using NSwag.AspNetCore;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 
@@ -103,8 +105,9 @@ namespace starsky
                 }
             );
 	        
+	        services.AddSwaggerDocument(document => document.DocumentName = _appSettings.Name);
 
-            services.AddMvc()
+	        services.AddMvc()
 	            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 	        
 	        // Application Insights
@@ -124,6 +127,10 @@ namespace starsky
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 app.UseStatusCodePages();
+	            
+	            // Use swagger only in development Environment
+	            app.UseSwagger(); // registers the two documents in separate routes
+				app.UseSwaggerUi3();
             }
             else
             {
@@ -143,6 +150,8 @@ namespace starsky
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 	        
+
+	        
 	        // Add Content Security Policy/CSP
 	        app.Use(async (ctx, next) =>
 	        {
@@ -151,6 +160,7 @@ namespace starsky
 				        "default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self';");
 		        await next();
 	        });
+	        
 	        
 
             // Run the latest migration on the database. 

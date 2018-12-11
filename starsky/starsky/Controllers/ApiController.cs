@@ -34,8 +34,7 @@ namespace starsky.Controllers
             _readMeta = readMeta;
         }
 
-		[HttpGet]
-		[HttpHead]
+		[HttpGet("/api")]
 		public IActionResult Index(
 			string f = "/",
 			string colorClass = null,
@@ -51,8 +50,8 @@ namespace starsky.Controllers
         /// Used for end2end test, show config data
         /// </summary>
         /// <returns>config data, except connection strings</returns>
-        [HttpGet]
-        [HttpHead]
+	    [HttpHead("/api/env")]
+        [HttpGet("/api/env")]
         [IgnoreAntiforgeryToken]
         [AllowAnonymous] /// <=================================
         public IActionResult Env()
@@ -126,7 +125,7 @@ namespace starsky.Controllers
         /// <param name="append">only for stings, add update to existing items</param>
         /// <returns></returns>
 		[IgnoreAntiforgeryToken]
-		[HttpPost]
+		[HttpPost("/api/update")]
 		public IActionResult Update(FileIndexItem inputModel, string f, bool append, bool collections = true,  int rotateClock = 0)
 		{
 			var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
@@ -277,6 +276,7 @@ namespace starsky.Controllers
         /// <param name="f">subpaths split by dot comma</param>
         /// <param name="collections">true is to update files with the same name before the extenstion</param>
         /// <returns></returns>
+        [HttpGet("/api/info")]
         public IActionResult Info(string f, bool collections = true)
         {
             var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
@@ -330,7 +330,8 @@ namespace starsky.Controllers
         /// <param name="f">subpaths, seperated by dot comma</param>
         /// <param name="collections">true is to update files with the same name before the extenstion</param>
         /// <returns></returns>
-        [HttpDelete]
+        [HttpDelete("/api/delete")]
+        [Produces("application/json")]
         public IActionResult Delete(string f, bool collections = true)
         {
             var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
@@ -406,7 +407,6 @@ namespace starsky.Controllers
         /// <param name="retryThumbnail">true = remove thumbnail if corrupt</param>
         /// <returns></returns>
         [HttpGet("/api/thumbnail/{f}")]
-        [HttpHead("/api/thumbnail/{f}")]
         [IgnoreAntiforgeryToken]
         public IActionResult Thumbnail(
             string f, 
@@ -507,8 +507,7 @@ namespace starsky.Controllers
         /// <param name="f">string, subpath to find the file</param>
         /// <param name="isThumbnail">true = 1000px thumb (if supported)</param>
         /// <returns>FileStream with image</returns>
-        [HttpGet]
-        [HttpHead]
+        [HttpGet("/api/downloadPhoto")]
         public IActionResult DownloadPhoto(string f, bool isThumbnail = true)
         {
             // f = subpath/filepath
@@ -581,8 +580,8 @@ namespace starsky.Controllers
         /// <param name="f">subpath</param>
         /// <param name="json">return status</param>
         /// <returns>redirect or if json enabled a status</returns>
-        [HttpGet]
-        [HttpPost]
+        [HttpGet("/api/RemoveCache")]
+        [HttpPost("/api/RemoveCache")]
         public IActionResult RemoveCache(string f = "/", bool json = false)
         {
             //For folder paths only
@@ -606,7 +605,7 @@ namespace starsky.Controllers
             return BadRequest("ignored, please check if the 'f' path exist or use a folder string to clear the cache");
         }
 
-		[HttpPost]
+		[HttpPost("/api/Rename")]
 		public IActionResult Rename(string f, string to, bool collections = true)
 		{
 			return Json(new RenameFs(_appSettings,_query).Rename(f,to,collections));

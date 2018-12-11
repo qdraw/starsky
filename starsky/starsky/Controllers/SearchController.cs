@@ -14,16 +14,26 @@ namespace starsky.Controllers
             _search = search;
         }
         
-        [HttpPost]
-        [ActionName("Index")]
+	    /// <summary>
+	    /// Post a form to search and redirect to the first page (no json)
+	    /// </summary>
+	    /// <param name="t">search query</param>
+	    /// <returns></returns>
+        [HttpPost("/search")]
         public IActionResult IndexPost(string t)
         {
 			return RedirectToAction("Index", new {t, p = 0 });
         }
 
-        [HttpGet]
-        [ActionName("Index")]
-        public IActionResult Index(string t, int p = 0, bool json = false, bool cache = true)
+	    /// <summary>
+	    /// Gets the list of search results (cached)
+	    /// </summary>
+	    /// <param name="t">search query</param>
+	    /// <param name="p">page number</param>
+	    /// <param name="json">enable json response</param>
+	    /// <returns></returns>
+        [HttpGet("/search")]
+        public IActionResult Index(string t, int p = 0, bool json = false)
         {
             // Json api && View()            
             var model = _search.Search(t, p);
@@ -31,7 +41,14 @@ namespace starsky.Controllers
             return View("Index", model);
         }
 
-        [HttpGet]
+	    /// <summary>
+	    /// List of files with the tag: !delete!
+	    /// Caching is disabled on this api call
+	    /// </summary>
+	    /// <param name="p"></param>
+	    /// <param name="json"></param>
+	    /// <returns></returns>
+        [HttpGet("/search/trash")]
         public IActionResult Trash(int p = 0, bool json = false)
         {
             var model = _search.Search("!delete!", p, false);
