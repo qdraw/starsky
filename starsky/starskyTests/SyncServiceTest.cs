@@ -304,8 +304,8 @@ namespace starskytests
             var expectThisHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             
             _syncservice.FirstItemDirectory();
-            
 
+	        Console.WriteLine(createAnImage.BasePath);
             var queryItem = _query.GetObjectByFilePath("/exist");
             Assert.AreEqual(expectThisHashCode, queryItem.FileHash);
             

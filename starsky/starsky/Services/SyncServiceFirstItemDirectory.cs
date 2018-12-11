@@ -26,11 +26,11 @@ namespace starsky.Services
                         _appSettings.FullPathToDatabaseStyle(filesInDirectoryFullPath[0]);
                     var dbItem = _query.GetObjectByFilePath(subPathSingleItem);
                     // Check if photo item exist in database
-                    if (dbItem == null) return;
+                    if (dbItem == null) continue;
                     
                     // Check if parent folder exist in database
                     var dbParentItem = _query.GetObjectByFilePath(dbItem.ParentDirectory);
-                    if (dbParentItem == null) return;
+                    if (dbParentItem == null) continue;
                     // get hash from file
                     var singleFileHash = FileHash.GetHashCode(filesInDirectoryFullPath[0]);
                     // compare both
