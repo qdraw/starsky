@@ -1,11 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Middleware;
 using starsky.Models;
+using TimeZoneConverter;
 
 namespace starskytests.Models
 {
@@ -149,5 +151,34 @@ namespace starskytests.Models
             Assert.AreEqual("non-websafe-name/",appSettings.GetWebSafeReplacedName("{name}"));
             
         }
-    }
+
+	    [TestMethod]
+	    public void AppSettingsCameraTimeZoneStringEmpty()
+	    {
+		    var appSettings = new AppSettings();
+		    Assert.AreEqual(string.Empty,appSettings.CameraTimeZone);
+	    }
+
+	    [TestMethod]
+	    public void AppSettingsCameraTimeZoneExample()
+	    {
+		    var appSettings = new AppSettings();
+			appSettings.CameraTimeZoneInfo = TZConvert.GetTimeZoneInfo("Europe/Amsterdam");
+
+			// Linux: Europe/Amsterdam
+			// Windows: W. Europe Standard Time
+
+		    bool isWindows = System.Runtime.InteropServices.RuntimeInformation
+			    .IsOSPlatform(OSPlatform.Windows);
+		    if ( isWindows )
+		    {
+			    Assert.AreEqual(appSettings.CameraTimeZone.Contains("W. Europe Standard Time"), true);
+			}
+		    else
+		    {
+				Assert.AreEqual(appSettings.CameraTimeZone.Contains("Europe/Amsterdam"), true);
+			}
+
+		}
+	}
 }
