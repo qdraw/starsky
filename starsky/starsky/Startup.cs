@@ -127,15 +127,19 @@ namespace starsky
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 app.UseStatusCodePages();
-	            
-	            // Use swagger only in development Environment
-	            app.UseSwagger(); // registers the two documents in separate routes
-				app.UseSwaggerUi3();
             }
             else
             {
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
+	        
+	        // Use swagger in development Environment or when env variable SWAGGER is enabled
+			var swaggerKey = Environment.GetEnvironmentVariable("SWAGGER")?.ToLower();
+			if ( swaggerKey == "true" || env.IsDevelopment() )
+			{
+				app.UseSwagger(); // registers the two documents in separate routes
+				app.UseSwaggerUi3(); // makes the ui visible       
+			}
 	        
             // Use in wwwroot
             app.UseStaticFiles();
