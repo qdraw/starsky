@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using starsky.Interfaces;
@@ -13,8 +14,10 @@ using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
 using Microsoft.Extensions.Hosting;
-using NJsonSchema;
-using NSwag.AspNetCore;
+
+using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 
@@ -36,6 +39,7 @@ namespace starsky
             _configuration = builder.Build();
 
         }
+	    
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -104,8 +108,21 @@ namespace starsky
                     options.HeaderName = "X-XSRF-TOKEN";
                 }
             );
+
 	        
-	        services.AddSwaggerDocument(document => document.DocumentName = _appSettings.Name);
+
+	        
+	        services.AddSwaggerGen(c =>
+	        {
+		        c.SwaggerDoc(_appSettings.Name, new Info { Title = _appSettings.Name, Version = "v1" });
+		        
+		        c.AddSecurityDefinition("basic", new BasicAuthScheme {Type = "basic", Description = "basic authentication" }); 
+		        c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> { { "basic", new string[] { } },});
+		        
+		        c.IncludeXmlComments(GetXmlCommentsPath());
+		        c.DescribeAllEnumsAsStrings();
+		        c.DocumentFilter<BasicAuthFilter>();
+	        }); 
 
 	        services.AddMvc()
 	            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -114,6 +131,26 @@ namespace starsky
 	        var appInsightsKey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
 	        if(!string.IsNullOrWhiteSpace(appInsightsKey)) services.AddApplicationInsightsTelemetry();
         }
+	    
+	    public class BasicAuthFilter : IDocumentFilter
+	    {
+		    public void Apply(SwaggerDocument swaggerDoc, DocumentFilterContext context)
+		    {
+			    var securityRequirements = new Dictionary<string, IEnumerable<string>>()
+			    {
+				    { "basic", new string[] { } }
+			    };
+
+			    swaggerDoc.Security = new IDictionary<string, IEnumerable<string>>[] { securityRequirements };
+		    }
+	    }
+
+	    
+	    private string GetXmlCommentsPath()
+	    {
+		    var app = AppContext.BaseDirectory;
+		    return Path.Combine(app, "starsky.xml");
+	    }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -138,7 +175,13 @@ namespace starsky
 			if ( swaggerKey == "true" || env.IsDevelopment() )
 			{
 				app.UseSwagger(); // registers the two documents in separate routes
-				app.UseSwaggerUi3(); // makes the ui visible       
+				
+				app.UseSwaggerUI(options =>
+				{
+					options.SwaggerEndpoint("/swagger/"+ _appSettings.Name + "/swagger.json", _appSettings.Name);
+					options.OAuthAppName(_appSettings.Name + " - Swagger");					
+//					options.InjectJavascript("/js/vendor/SwashbuckleCustomAuth.CustomContent.basic-auth.js"); 
+				}); // makes the ui visible    
 			}
 	        
             // Use in wwwroot
