@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -40,6 +41,22 @@ namespace starskytests.Controllers
 			var today = "/" + DateTime.Now.AddDays(-1).ToString("yyyyMMdd") + "/";
 			Assert.AreEqual(today, result.Value);
 		}
+
+		[TestMethod]
+		public void RedirectControllerTest_SubpathRelativeRedirectToAction()
+		{
+			var appSettings = new AppSettings();
+			appSettings.Structure = "/yyyyMMdd/{filenamebase}.ext";
+			var controller = new RedirectController(appSettings);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var result = controller.SubpathRelative(0, false) as RedirectToActionResult;
+
+			var today = "/" + DateTime.Now.ToString("yyyyMMdd") + "/";
+
+			Assert.AreEqual(today, result.RouteValues.Values.FirstOrDefault());
+		}
+
+		
 
 	}
 }
