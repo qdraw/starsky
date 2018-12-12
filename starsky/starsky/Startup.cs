@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using starsky.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -125,12 +126,18 @@ namespace starsky
 	        services.AddMvc()
 	            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 	        
+	        // For the nginx reverse proxy
+			services.Configure<ForwardedHeadersOptions>(options =>
+			{
+				options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+			});
+	        
 	        // Application Insights
 	        var appInsightsKey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
 	        if(!string.IsNullOrWhiteSpace(appInsightsKey)) services.AddApplicationInsightsTelemetry();
         }
-	    
-	    public class BasicAuthFilter : IDocumentFilter
+
+	    private class BasicAuthFilter : IDocumentFilter
 	    {
 		    public void Apply(SwaggerDocument swaggerDoc, DocumentFilterContext context)
 		    {
@@ -153,7 +160,10 @@ namespace starsky
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-
+	        
+			// To enable the nginx reverse proxy
+	        app.UseForwardedHeaders();
+	        
             // Use the name of the application to use behind a reverse proxy
             app.UsePathBase(ConfigRead.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
             
