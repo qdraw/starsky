@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using starsky.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -126,11 +127,14 @@ namespace starsky
 	        services.AddMvc()
 	            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 	        
-	        // For the nginx reverse proxy
+	        // Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
 			services.Configure<ForwardedHeadersOptions>(options =>
 			{
 				options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 			});
+	        
+	        // Detect ip in code
+	        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 	        
 	        // Application Insights
 	        var appInsightsKey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
@@ -161,7 +165,7 @@ namespace starsky
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
 	        
-			// To enable the nginx reverse proxy
+	        // Enable X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
 	        app.UseForwardedHeaders();
 	        
             // Use the name of the application to use behind a reverse proxy
