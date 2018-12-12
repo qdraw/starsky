@@ -16,6 +16,7 @@ using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
 using Microsoft.Extensions.Hosting;
+using starsky.Helpers;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
@@ -52,9 +53,7 @@ namespace starsky
 
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
-            
-            // services.AddResponseCaching();
-            
+                        
             switch (_appSettings.DatabaseType)
             {
                 case (AppSettings.DatabaseTypeList.Mysql):
@@ -96,6 +95,7 @@ namespace starsky
             services.AddScoped<IExiftool, ExifTool>();
             services.AddScoped<IReadMeta, ReadMeta>();
 
+	        
             // AddHostedService in .NET Core 2.1 / background service
             services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
@@ -138,7 +138,9 @@ namespace starsky
 	        
 	        // Application Insights
 	        var appInsightsKey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
-	        if(!string.IsNullOrWhiteSpace(appInsightsKey)) services.AddApplicationInsightsTelemetry();
+	        if ( !string.IsNullOrWhiteSpace(appInsightsKey) ) services.AddApplicationInsightsTelemetry();
+	        services.AddScoped<ApplicationInsightsJsHelper>();
+
         }
 
 	    private class BasicAuthFilter : IDocumentFilter
@@ -187,6 +189,17 @@ namespace starsky
 
             app.UseAuthentication();
             app.UseBasicAuthentication();
+	        
+	        // Add Content Security Policy/CSP
+	        app.Use(async (ctx, next) =>
+	        {
+		        var nonce = Guid.NewGuid().ToString("N");
+		        ctx.Response.Headers
+			        .Add("Content-Security-Policy",
+				        $"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' https://az416426.vo.msecnd.net \'nonce-{nonce}\'; connect-src 'self' https://dc.services.visualstudio.com;");
+		        ctx.Items["csp-nonce"] = nonce;
+		        await next();
+	        });
 
 			app.UseMvc(routes =>
             {
@@ -208,14 +221,7 @@ namespace starsky
 		        }); // makes the ui visible    
 	        }
 	        
-	        // Add Content Security Policy/CSP
-	        app.Use(async (ctx, next) =>
-	        {
-		        ctx.Response.Headers
-			        .Add("Content-Security-Policy",
-				        "default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self';");
-		        await next();
-	        });
+
 
 	        
 	        
