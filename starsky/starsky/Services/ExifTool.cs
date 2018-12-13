@@ -111,7 +111,7 @@ namespace starsky.Services
 		/// </summary>
 		/// <param name="text">the json from exiftool.</param>
 		/// <returns>ExifToolModel object</returns>
-/		public ExifToolModel ParseJson(string text) {
+		public ExifToolModel ParseJson(string text) {
             if (string.IsNullOrEmpty(text)) return null;
             text = text.Replace("\r", string.Empty);
 
