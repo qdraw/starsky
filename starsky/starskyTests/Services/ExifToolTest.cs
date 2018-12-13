@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Configuration;
@@ -63,6 +64,18 @@ namespace starskytests.Services
             var output2 = new ExifTool(_appSettings).FixingJsonKeywordString(input2);
             Assert.AreEqual(expetectedOutput,output2);   
         }
-        
-    }
+
+	    [TestMethod]
+	    public void ExifToolParseJsonKeyword()
+	    {
+		    var input = "[{\n\"Keywords\": [\"test\"],\n}]"; // There is an comma inside "test,"
+
+			var output2 = new ExifTool(_appSettings).ParseJson(input);
+		    Assert.AreEqual("test", output2.Keywords.FirstOrDefault());
+
+	    }
+
+
+
+	}
 }
