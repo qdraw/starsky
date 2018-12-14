@@ -193,11 +193,13 @@ namespace starsky
 	        // Add Content Security Policy/CSP
 	        app.Use(async (ctx, next) =>
 	        {
+		        // CSP 2.0 nonce
 		        var nonce = Guid.NewGuid().ToString("N");
+		        ctx.Items["csp-nonce"] = nonce;
+
 		        ctx.Response.Headers
 			        .Add("Content-Security-Policy",
 				        $"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' https://az416426.vo.msecnd.net \'nonce-{nonce}\'; connect-src 'self' https://dc.services.visualstudio.com;");
-		        ctx.Items["csp-nonce"] = nonce;
 		        await next();
 	        });
 
