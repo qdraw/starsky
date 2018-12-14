@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +14,7 @@ using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
 
-namespace starskytests
+namespace starskytests.Services
 {
     [TestClass]
     public class SyncServiceTest
