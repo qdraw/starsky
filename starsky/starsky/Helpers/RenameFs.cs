@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using starsky.Interfaces;
@@ -18,6 +18,10 @@ namespace starsky.Helpers
 			_appSettings = appSettings;
 		}
 
+		/// <summary>Move or rename files and update the database</summary>
+		/// <param name="f">subpath to file or folder</param>
+		/// <param name="to">subpath location to move</param>
+		/// <param name="collections">true = copy files with the same name</param>
 		public List<FileIndexItem> Rename(string f, string to, bool collections = true)
 		{
 			var inputFileSubPaths = ConfigRead.SplitInputFilePaths(f);
@@ -97,18 +101,10 @@ namespace starsky.Helpers
 				}
 				else // file>
 				{
-					var parentFolder = Breadcrumbs.BreadcrumbHelper(toFileFullPath).LastOrDefault();
-					
-					if (  Files.IsFolderOrFile(parentFolder) != FolderOrFileModel.FolderOrFileTypeList.Folder &&
-						Files.IsFolderOrFile(parentFolder) != FolderOrFileModel.FolderOrFileTypeList.File )
-					{
-						
-					}
+					var toFiledirFullPath = Path.GetDirectoryName(toFileFullPath);
 
-					if ( Files.IsFolderOrFile(parentFolder) == FolderOrFileModel.FolderOrFileTypeList.Folder )
-					{
-						
-					}
+					if ( !Directory.Exists(toFiledirFullPath) )
+						throw new DirectoryNotFoundException($"toFiledirFullPath {toFiledirFullPath} does not exist");
 
 					File.Move(inputFileFullPath,toFileFullPath);
 				}
