@@ -168,6 +168,7 @@ namespace starsky.Helpers
                     Console.WriteLine("-p, -s, -g == you need to select one of those tags");
                     Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
                     Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
+	                Console.WriteLine("--cachecleanup or -x == parameter: (bool) ; enable checks in thumbnailtempfolder if thumbnails are needed, delete unused files");
                     Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder " +
                                       "(heavy cpu usage), default false");
                     Console.WriteLine("--verbose or -v == verbose, more detailed info");
