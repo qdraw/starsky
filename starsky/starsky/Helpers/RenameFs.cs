@@ -107,6 +107,11 @@ namespace starsky.Helpers
 					if ( !Directory.Exists(toFiledirFullPath) && !addDirectoryIfNotExist )
 						throw new DirectoryNotFoundException($"toFiledirFullPath {toFiledirFullPath} does not exist");
 
+					if ( !Directory.Exists(toFiledirFullPath) && addDirectoryIfNotExist )
+					{
+						//var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
+					}
+					
 					File.Move(inputFileFullPath,toFileFullPath);
 				}
 				
