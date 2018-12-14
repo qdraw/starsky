@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using MetadataExtractor;
@@ -60,6 +60,8 @@ namespace starskytests.Helpers
 		public void RenameFsTest_SameFolder_Items()
 		{
 			var renameFs = new RenameFs(_appSettings, _query).Rename(_newImage.DbPath, "/test2.jpg");
+			
+			File.Delete(Path.Combine(_newImage.BasePath, "test2.jpg"));
 
 			Assert.AreEqual(1,renameFs.Count);
 		}
@@ -76,16 +78,18 @@ namespace starskytests.Helpers
 			
 			Files.DeleteDirectory(Path.Combine(_newImage.BasePath, "exist"));
 		}
-		
+
+		[TestMethod]
+		[ExpectedException(typeof(DirectoryNotFoundException))]
+		public void RenameFsTest_ToNonExistFolder_Items_DirectoryNotFoundException()
+		{
+			var renameFs = new RenameFs(_appSettings, _query).Rename(_newImage.DbPath, "/nonExist/test2.jpg",true,false);
+		}
+
 //		[TestMethod]
 //		public void RenameFsTest_ToNonExistFolder_Items()
 //		{
-//						
-//			var renameFs = new RenameFs(_appSettings, _query).Rename(_newImage.DbPath, "/exist/test2.jpg");
-//
-//			Assert.AreEqual(1,renameFs.Count);
-//			
-//			Files.DeleteDirectory(Path.Combine(_newImage.BasePath, "exist"));
+//			var renameFs = new RenameFs(_appSettings, _query).Rename(_newImage.DbPath, "/nonExist/test2.jpg", true, false);
 //		}
 	}
 }

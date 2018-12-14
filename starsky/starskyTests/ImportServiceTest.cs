@@ -301,6 +301,7 @@ namespace starskytests
             
             _appSettings.Structure = "/xuxuxuxu_ssHHmm.ext";
 
+
             var importSettings = new ImportSettingsModel();
             importSettings.DeleteAfter = false;
             importSettings.AgeFileFilterDisabled = false;

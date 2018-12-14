@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -87,24 +87,6 @@ namespace starsky.Controllers
 				});
 	            
 			}
-	        
-	        
-	        // todo: missing directories
-
-//			foreach (var syncResult in syncResultsList)
-//			{
-//				if (syncResult.Status == FileIndexItem.ExifStatus.Ok)
-//				{
-//					// Update >
-//					_bgTaskQueue.QueueBackgroundWorkItem(async token =>
-//					{
-//						_sync.SyncFiles(syncResult.FilePath);
-//					});
-//				}
-//			}
-
-	        
-	        
 			
 			return Json(syncResultsList);
         }

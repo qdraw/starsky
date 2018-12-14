@@ -29,7 +29,7 @@ var filePathList = [
 ];
 
 var blobPathList = [
-	"starsky/new-pm2.sh",
+	"starsky/starsky/pm2-starksy-new.sh",
 	"starsky/publish-linux-arm.sh",
 	"starsky/publish-mac.sh",
 	"starsky/publish-windows.sh",

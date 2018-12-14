@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using starsky.Interfaces;
@@ -18,7 +18,12 @@ namespace starsky.Helpers
 			_appSettings = appSettings;
 		}
 
-		public List<FileIndexItem> Rename(string f, string to, bool collections = true)
+		/// <summary>Move or rename files and update the database</summary>
+		/// <param name="f">subpath to file or folder</param>
+		/// <param name="to">subpath location to move</param>
+		/// <param name="collections">true = copy files with the same name</param>
+		/// <param name="addDirectoryIfNotExist">true = create an directory if an parent directory is missing</param>
+		public List<FileIndexItem> Rename(string f, string to, bool collections = true, bool addDirectoryIfNotExist = true)
 		{
 			var inputFileSubPaths = ConfigRead.SplitInputFilePaths(f);
 			var toFileSubPaths = ConfigRead.SplitInputFilePaths(to);
@@ -97,19 +102,20 @@ namespace starsky.Helpers
 				}
 				else // file>
 				{
-					var parentFolder = Breadcrumbs.BreadcrumbHelper(toFileFullPath).LastOrDefault();
+					var toFiledirFullPath = Path.GetDirectoryName(toFileFullPath);
+
+					if ( !Directory.Exists(toFiledirFullPath) && !addDirectoryIfNotExist )
+						throw new DirectoryNotFoundException($"toFiledirFullPath {toFiledirFullPath} does not exist");
+
+					if ( !Directory.Exists(toFiledirFullPath) && addDirectoryIfNotExist )
+					{
+						//var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
+						
+						// todo: add folder feature in the future
+						throw new DirectoryNotFoundException($"toFiledirFullPath {toFiledirFullPath} does not exist");
+
+					}
 					
-					if (  Files.IsFolderOrFile(parentFolder) != FolderOrFileModel.FolderOrFileTypeList.Folder &&
-						Files.IsFolderOrFile(parentFolder) != FolderOrFileModel.FolderOrFileTypeList.File )
-					{
-						
-					}
-
-					if ( Files.IsFolderOrFile(parentFolder) == FolderOrFileModel.FolderOrFileTypeList.Folder )
-					{
-						
-					}
-
 					File.Move(inputFileFullPath,toFileFullPath);
 				}
 				

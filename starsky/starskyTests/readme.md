@@ -21,6 +21,8 @@ Run the tests inside the `starsky/starskyTests` folder:
 ```sh
 dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 ```
+or use the `starsky/starskyTest.sh` `starsky/starskyTest.bat` files to generate coverage documentation
+
 > The unittests are creating a few files inside the mstest build directory. Those files will be removed afterwards.
 
 >> All tests must run succesfull to build
@@ -28,12 +30,12 @@ dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 ### Location of temp files
 #### Windows
 ```
-C:\Users\VssAdministrator\.nuget\packages\microsoft.testplatform.testhost\15.7.2\lib\netstandard1.5\
+C:\Users\VssAdministrator\.nuget\packages\microsoft.testplatform.testhost\15.9.0\lib\netstandard1.5\
 ```
 
 #### OS X
 ```
-~/.nuget/packages/microsoft.testplatform.testhost/15.7.2/lib/netstandard1.5/
+~/.nuget/packages/microsoft.testplatform.testhost/15.9.0/lib/netstandard1.5/
 ```
 
 ### Coverlet.msbuild
@@ -41,11 +43,20 @@ The goal is improve test coverage
 
 ### Coverage Chart
 ```
-+----------------+--------+--------+--------+
-| Module         | Line   | Branch | Method |
-+----------------+--------+--------+--------+
-| starsky        | 80,2%  | 79,6%  | 92,4%  |
-+----------------+--------+--------+--------+
-| starskysynccli | 69,7%  | 56,2%  | 100%   |
-+----------------+--------+--------+--------+
++-------------------+--------+--------+--------+
+| Module            | Line   | Branch | Method |
++-------------------+--------+--------+--------+
+| starsky           | 82,4%  | 80%    | 91%    |
++-------------------+--------+--------+--------+
+| starsky.Views     | 0%     | 0%     | 0%     |
++-------------------+--------+--------+--------+
+| starskygeocli     | 74,1%  | 61,4%  | 90,9%  |
++-------------------+--------+--------+--------+
+| starskysynccli    | 52%    | 50%    | 100%   |
++-------------------+--------+--------+--------+
+| starskywebhtmlcli | 74%    | 74,1%  | 100%   |
++-------------------+--------+--------+--------+
+Total Line: 76,5%
+Total Branch: 57,2%
+Total Method: 86,6%
 ```

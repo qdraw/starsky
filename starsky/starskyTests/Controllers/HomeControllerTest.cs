@@ -115,9 +115,14 @@ namespace starskytests.Controllers
         [TestMethod]
         public void HomeController_AddHttp2SingleFile()
         {
-            var controller = new HomeController(_query) {ControllerContext = {HttpContext = new DefaultHttpContext()}};
+	        var appSettings = new AppSettings();
+	        appSettings.AddHttp2Optimizations = true;
+            var controller = new HomeController(_query,appSettings) {ControllerContext = {HttpContext = new DefaultHttpContext()}};
             controller.AddHttp2SingleFile("test");
-            // can realy test this :(
+	        
+	        var linkValue = controller.Response.Headers["Link"].ToString();
+	        Assert.AreEqual(linkValue.Contains("rel=preload;"),true);
+	        
         }
 
     }

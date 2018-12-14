@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starsky.Services;
 
-namespace starskytests
+namespace starskytests.Services
  {
      [TestClass]
      public class ConfigReadTest

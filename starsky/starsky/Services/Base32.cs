@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Derived from https://github.com/google/google-authenticator-android/blob/master/AuthenticatorApp/src/main/java/com/google/android/apps/authenticator/Base32String.java
  * 
  * Copyright (C) 2016 BravoTango86

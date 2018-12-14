@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -103,11 +103,15 @@ namespace starsky.Services
             }
 
             return text;
-        }
-        
-        
-    
-        private ExifToolModel parseJson(string text) {
+		}
+
+
+		/// <summary>
+		/// Parses the json to a ExifToolModel object
+		/// </summary>
+		/// <param name="text">the json from exiftool.</param>
+		/// <returns>ExifToolModel object</returns>
+		public ExifToolModel ParseJson(string text) {
             if (string.IsNullOrEmpty(text)) return null;
             text = text.Replace("\r", string.Empty);
 
@@ -149,7 +153,7 @@ namespace starsky.Services
             var fullFilePathStringBuilder = new ExifToolCmdHelper().Quoted(null,fullFilePath);
 
             // -Orientation# <= hashtag is that exiftool must output a int and not a human readable string
-            return parseJson(BaseCommmand("-Keywords \"-xmp:title\" -ObjectName \"-Orientation#\" -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
+            return ParseJson(BaseCommmand("-Keywords \"-xmp:title\" -ObjectName \"-Orientation#\" -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
                 fullFilePathStringBuilder.ToString()));
         }
 

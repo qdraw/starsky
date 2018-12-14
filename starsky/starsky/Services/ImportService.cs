@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -230,10 +230,13 @@ namespace starsky.Services
                     comparedNamesList);
             }
             
+			// The files that are imported need to be synced
             var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
-            // import has failed it has a list with one item with a emphy string
-            if(syncFiles.FirstOrDefault() == string.Empty) return string.Empty;
+
+			// import has failed it has a list with one item with a empty string
+			if ( syncFiles.FirstOrDefault() == string.Empty) return string.Empty;
             
+			// To the list of imported folders
             AddItem(importIndexItem);
 
             if (importSettings.DeleteAfter)

@@ -18,6 +18,11 @@
 	<ul>Per sessie/browser</ul>
 </div>
 
+<div>
+	<h1>Client IP</h1>
+	@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+	@HttpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString()
+</div>
 
 <h1>@ViewData["Title"]</h1>
 

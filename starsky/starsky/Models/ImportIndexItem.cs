@@ -180,7 +180,7 @@ namespace starsky.Models
 
             if (parsedList.Count == 1)
             {
-                return new List<string>{string.Empty};
+                return new List<string>(); // {string.Empty}
             }
                 
             if (parsedList.Count >= 2)

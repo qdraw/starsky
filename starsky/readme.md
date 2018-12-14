@@ -28,17 +28,17 @@ brew install exiftool
 ```
 Or using Chocolatey under Windows:
 ```cmd
-choco install exiftool 
+choco install exiftool
 ```   
 
-4. Make a build and run the tests 
+4. Make a build and run the tests
 from the root folder of the repository
 ```sh
 dotnet build starsky
 dotnet test starsky/*Tests
 ```
 
-4.  Link `starsky/starsky/appsettings.json` to the exiftool excutable 
+4.  Link `starsky/starsky/appsettings.json` to the exiftool excutable
 >>   Windows: use double escape \\\\ in config directory paths
 ```json
 {
@@ -110,7 +110,7 @@ http://localhost:5000/account/register
 ```
 
 #### Optional steps  
-10.  The script [`new-pm2.sh`](new-pm2.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
+10.  The script [`pm2-starksy-new.sh`](starsky/pm2-starksy-new.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
 ```sh
     export ASPNETCORE_URLS="http://localhost:4823/"
     export ASPNETCORE_ENVIRONMENT="Production"
@@ -127,8 +127,8 @@ To avoid the error: `System.IO.FileLoadException` `Microsoft.Extensions.Options,
 
 Those scripts are optional and used for configuation.
 
-### pm2 `new-pm2.sh`
-The script [`new-pm2.sh`](new-pm2.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
+### pm2 `pm2-starksy-new.sh`
+The script [`pm2-starksy-new.sh`](starsky/pm2-starksy-new.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
 ```sh
  export ASPNETCORE_URLS="http://localhost:4823/"
  export ASPNETCORE_ENVIRONMENT="Production"
