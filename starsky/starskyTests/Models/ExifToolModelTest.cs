@@ -108,7 +108,12 @@ namespace starskytests.Models
             Assert.AreEqual(null, exifToolModel.Description);
         }
 
+	    [TestMethod]
+	    public void ExifToolModelSourceFile()
+	    {
+		    var exifToolModel = new ExifToolModel { SourceFile = "testung" };
+		    Assert.AreEqual("testung", exifToolModel.SourceFile);
+	    }
 
-
-    }
+	}
 }
