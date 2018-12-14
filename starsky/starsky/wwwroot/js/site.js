@@ -88,14 +88,16 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 hidePopupDialog();
                 break;
             case 13: // enter
-                if (document.querySelector("#popup").className.indexOf("on") >= 0) {
-                    if (document.querySelectorAll("#popup .btn-secondary").length >= 1) {
-                        document.querySelector("#popup .btn-secondary").click();
-                        break;
-                    }
-                    if (document.querySelectorAll("#popup .btn-default").length >= 1) {
-                        document.querySelector("#popup .btn-default").click();
-                        break;
+                if (document.querySelectorAll("#popup").length === 1) {
+                    if (document.querySelector("#popup").className.indexOf("on") >= 0) {
+                        if (document.querySelectorAll("#popup .btn-secondary").length >= 1) {
+                            document.querySelector("#popup .btn-secondary").click();
+                            break;
+                        }
+                        if (document.querySelectorAll("#popup .btn-default").length >= 1) {
+                            document.querySelector("#popup .btn-default").click();
+                            break;
+                        }
                     }
                 }
                 break;
