@@ -24,8 +24,7 @@ namespace starsky.Services
 			}
 		}
 
-//		private readonly char[] _digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".ToCharArray();
-		
+	
 		public void CleanAllUnusedFiles()
 		{
 

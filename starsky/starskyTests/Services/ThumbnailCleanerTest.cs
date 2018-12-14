@@ -31,6 +31,14 @@ namespace starskytests.Services
 		}
 		
 		[TestMethod]
+		[ExpectedException(typeof(DirectoryNotFoundException))]
+		public void ThumbnailCleanerTest_Constructor_DirectoryNotFoundException()
+		{
+			var appsettings = new AppSettings {ThumbnailTempFolder = "\""};
+			new ThumbnailCleaner(_query,appsettings);
+		}
+		
+		[TestMethod]
 		public void ThumbnailCleanerTest_Cleaner()
 		{
 			var createAnImage = new CreateAnImage();
@@ -70,5 +78,8 @@ namespace starskytests.Services
 			
 			Files.DeleteDirectory(existFullDir);
 		}
+
+
+
 	}
 }
