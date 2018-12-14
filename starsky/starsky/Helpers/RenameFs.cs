@@ -22,7 +22,8 @@ namespace starsky.Helpers
 		/// <param name="f">subpath to file or folder</param>
 		/// <param name="to">subpath location to move</param>
 		/// <param name="collections">true = copy files with the same name</param>
-		public List<FileIndexItem> Rename(string f, string to, bool collections = true)
+		/// <param name="addDirectoryIfNotExist">true = create an directory if an parent directory is missing</param>
+		public List<FileIndexItem> Rename(string f, string to, bool collections = true, bool addDirectoryIfNotExist = true)
 		{
 			var inputFileSubPaths = ConfigRead.SplitInputFilePaths(f);
 			var toFileSubPaths = ConfigRead.SplitInputFilePaths(to);
@@ -103,7 +104,7 @@ namespace starsky.Helpers
 				{
 					var toFiledirFullPath = Path.GetDirectoryName(toFileFullPath);
 
-					if ( !Directory.Exists(toFiledirFullPath) )
+					if ( !Directory.Exists(toFiledirFullPath) && !addDirectoryIfNotExist )
 						throw new DirectoryNotFoundException($"toFiledirFullPath {toFiledirFullPath} does not exist");
 
 					File.Move(inputFileFullPath,toFileFullPath);
