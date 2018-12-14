@@ -287,7 +287,11 @@ namespace starsky.Services
             return updateStatusContent;
         }
         
-        // Remove a new item from the database
+	    /// <summary>
+	    /// Remove a new item from the database (NOT from the file system)
+	    /// </summary>
+	    /// <param name="updateStatusContent">the FileIndexItem with database data</param>
+	    /// <returns></returns>
         public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
         {
 	        InjectServiceScope();
