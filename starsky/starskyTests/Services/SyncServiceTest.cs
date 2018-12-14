@@ -185,6 +185,8 @@ namespace starskytests.Services
             // Test to do a sync with one single file
             // used in importer or web api.
             var newImage = new CreateAnImage();
+
+	        Console.WriteLine(_appSettings.StorageFolder);
             
             _appSettings.StorageFolder = newImage.BasePath;
 

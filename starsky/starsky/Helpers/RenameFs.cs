@@ -110,6 +110,10 @@ namespace starsky.Helpers
 					if ( !Directory.Exists(toFiledirFullPath) && addDirectoryIfNotExist )
 					{
 						//var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
+						
+						// todo: add folder feature in the future
+						throw new DirectoryNotFoundException($"toFiledirFullPath {toFiledirFullPath} does not exist");
+
 					}
 					
 					File.Move(inputFileFullPath,toFileFullPath);
