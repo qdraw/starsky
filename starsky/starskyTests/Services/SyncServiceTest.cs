@@ -198,7 +198,15 @@ namespace starskytests.Services
             // todo: Need to check if there is only one image with the same name
 
             var all = _query.GetAllRecursive("/");
-            
+
+	        Console.WriteLine(">>>>>>itemInAll");
+	        foreach ( var itemInAll in all )
+	        {
+		        Console.WriteLine(itemInAll.FilePath);
+	        }
+	        Console.WriteLine("<<<<<itemInAll");
+	        
+
             var item = _query.SingleItem(newImage.DbPath).FileIndexItem;
             
             Assert.AreEqual(item.FileHash.Length >= 5,true);
@@ -360,6 +368,13 @@ namespace starskytests.Services
         [TestMethod]
         public void SyncService_DuplicateContentInDatabase_Test()
         {
+	        // Cleanup the database
+	        var all = _query.GetAllRecursive("/");
+	        foreach ( var itemInAll in all )
+	        {
+		        _query.RemoveItem(itemInAll);
+	        }
+	        
             var createAnImage = new CreateAnImage();
             var testjpg = new FileIndexItem
             {
