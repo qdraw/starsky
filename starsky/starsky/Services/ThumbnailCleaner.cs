@@ -16,18 +16,17 @@ namespace starsky.Services
 		{
 			_appSettings = appSettings;
 			_query = iquery;
-
-			if (!Directory.Exists(_appSettings.ThumbnailTempFolder))
-			{
-				throw new DirectoryNotFoundException("ThumbnailTempFolder not found " 
-				                                + _appSettings.ThumbnailTempFolder);
-			}
 		}
 
 	
 		public void CleanAllUnusedFiles()
 		{
-
+			if (!Directory.Exists(_appSettings.ThumbnailTempFolder))
+			{
+				throw new DirectoryNotFoundException("ThumbnailTempFolder not found " 
+				                                     + _appSettings.ThumbnailTempFolder);
+			}
+			
 			var allThumbnailFiles = GetAllThumbnailFiles();
 			if(_appSettings.Verbose) Console.WriteLine(allThumbnailFiles.Length);
 			

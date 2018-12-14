@@ -32,10 +32,10 @@ namespace starskytests.Services
 		
 		[TestMethod]
 		[ExpectedException(typeof(DirectoryNotFoundException))]
-		public void ThumbnailCleanerTest_Constructor_DirectoryNotFoundException()
+		public void ThumbnailCleanerTest_DirectoryNotFoundException()
 		{
 			var appsettings = new AppSettings {ThumbnailTempFolder = "\""};
-			new ThumbnailCleaner(_query,appsettings);
+			new ThumbnailCleaner(_query,appsettings).CleanAllUnusedFiles();
 		}
 		
 		[TestMethod]
