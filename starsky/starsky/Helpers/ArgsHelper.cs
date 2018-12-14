@@ -28,6 +28,7 @@ namespace starsky.Helpers
         // -rf --readonlyfolders // no need to use in cli/importercli
         // -u --structure
         // -n --name
+	    // -x --cachecleanup
 
         public ArgsHelper()
         {
@@ -371,7 +372,23 @@ namespace starsky.Helpers
 
             return needRecruisive;
         }
-        
+	    
+	    
+	    public bool NeedCacheCleanup(IReadOnlyList<string> args)
+	    {
+		    // -x --cachecleanup
+		    bool needCacheCleanup = false;
+            
+		    for (int arg = 0; arg < args.Count; arg++)
+		    {
+			    if ((args[arg].ToLower() == "--cachecleanup" || args[arg].ToLower() == "-x"))
+			    {
+				    needCacheCleanup = true;
+			    }
+		    }
+
+		    return needCacheCleanup;
+	    }
         
     }
 }

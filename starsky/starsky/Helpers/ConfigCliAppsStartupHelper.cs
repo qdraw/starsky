@@ -19,8 +19,9 @@ namespace starsky.Helpers
         private readonly ServiceProvider _serviceProvider;
         private readonly ReadMeta _readmeta;
         private readonly IExiftool _exiftool;
+	    private readonly ThumbnailCleaner _thumbnailCleaner;
 
-        /// <summary>
+	    /// <summary>
         /// Inject all services for the CLI applications
         /// </summary>
         public ConfigCliAppsStartupHelper()
@@ -95,6 +96,8 @@ namespace starsky.Helpers
             //   _appSettings = appSettings
             //   _readmeta = readmeta
             _import = new ImportService(context, _isync, _exiftool, appSettings, _readmeta,null);
+
+	        _thumbnailCleaner = new ThumbnailCleaner(query, appSettings);
         }
         
         /// <summary>
@@ -141,5 +144,14 @@ namespace starsky.Helpers
         {
             return _exiftool;
         }
+	    
+	    /// <summary>
+	    /// Returns an filled ThumbnailCleaner Interface
+	    /// </summary>
+	    /// <returns>ReadMeta</returns>
+	    public ThumbnailCleaner ThumbnailCleaner()
+	    {
+		    return _thumbnailCleaner;
+	    }
     }
 }
