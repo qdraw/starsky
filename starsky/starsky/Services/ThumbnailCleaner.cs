@@ -35,10 +35,10 @@ namespace starsky.Services
 			{
 				var fileHash = Path.GetFileNameWithoutExtension(thumbnailFile.Name);
 				var itemByHash = _query.GetItemByHash(fileHash);
-				if ( itemByHash == null )
-				{
-					Files.DeleteFile(thumbnailFile.FullName);
-				}
+				if (itemByHash != null ) continue;
+
+				Files.DeleteFile(thumbnailFile.FullName);
+				Console.Write("$");
 			}
 		}
 
