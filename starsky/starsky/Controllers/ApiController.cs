@@ -454,14 +454,24 @@ namespace starsky.Controllers
                 }
             }
             
-            
+            // Cached view of item
             var sourcePath = _query.GetItemByHash(f);
             if (sourcePath == null) return NotFound("not in index");
-            
             var sourceFullPath = _appSettings.DatabasePathToFilePath(sourcePath);
 
-            if (!System.IO.File.Exists(thumbPath) &&
-                System.IO.File.Exists(sourceFullPath))
+	        
+	        // Need to check again for recently moved files
+	        if (!System.IO.File.Exists(sourceFullPath))
+	        {
+		        // remove from cache
+		        _query.ResetItemByHash(f);
+		        // query database agian
+		        sourcePath = _query.GetItemByHash(f);
+		        if (sourcePath == null) return NotFound("not in index");
+		        sourceFullPath = _appSettings.DatabasePathToFilePath(sourcePath);
+	        }
+
+            if (System.IO.File.Exists(sourceFullPath))
             {
                 if (!isSingleitem)
                 {

@@ -46,6 +46,7 @@ namespace starsky.Interfaces
         void RemoveCacheParentItem(string directoryName);
 
         string GetItemByHash(string fileHash);
+	    void ResetItemByHash(string fileHash);
 
         List<FileIndexItem> GetAllFolders();
 

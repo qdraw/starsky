@@ -63,20 +63,48 @@ namespace starsky.Services
             var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
             return query;
         }
+	    
+	    public string GetItemByHash(string fileHash)
+	    {
+		    // The CLI programs uses no cache
+		    if( !IsCacheEnabled() ) return QueryGetItemByHash(fileHash);
+            
+		    // Return values from IMemoryCache
+		    var queryCacheName = CachingDbName("hash", fileHash);
 
-        // Return a File Item By it Hash value
+		    if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) )
+		    {
+			    if(!string.IsNullOrEmpty((string)cachedSubpath)) return ( string ) cachedSubpath;
+		    }
+            
+		    cachedSubpath = QueryGetItemByHash(fileHash);
+		    
+		    _cache.Set(queryCacheName, cachedSubpath, new TimeSpan(1,0,0));
+		    return (string) cachedSubpath;
+	    }
+
+	    public void ResetItemByHash(string fileHash)
+	    {
+		    var queryCacheName = CachingDbName("hash", fileHash);
+
+		    if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) )
+		    {
+			    _cache.Remove(queryCacheName);
+		    }
+	    }
+
+	    // Return a File Item By it Hash value
         // New added, directory hash now also hashes
-        public string GetItemByHash(string fileHash)
+        private string QueryGetItemByHash(string fileHash)
         {            
-            var query = _context.FileIndex.FirstOrDefault(
-                p => p.FileHash == fileHash 
-                     && !p.IsDirectory
-             );
-            return query?.FilePath;
+			var query = _context.FileIndex.FirstOrDefault(
+				p => p.FileHash == fileHash 
+				&& !p.IsDirectory
+			);
+			return query?.FilePath;
         }
 
-
-        // Remove the '/' from the end of the url
+	    // Remove the '/' from the end of the url
         public string SubPathSlashRemove(string subPath = "/")
         {
             if (string.IsNullOrEmpty(subPath)) return subPath;
@@ -196,40 +224,6 @@ namespace starsky.Services
 				_cache.Remove(queryCacheName);
 				_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
 			}
-	        
-	        
-//	        for ( var i = 0; i < updateStatusContent.Count(); i++ )
-//	        {
-//		        var item = updateStatusContent[i];
-//				// As for-loop Collection was modified; enumeration operation may not execute.
-//                
-//		        var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-//                    item.ParentDirectory);
-//
-//                if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
-//	            
-//                var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
-//                
-//				var obj = displayFileFolders.ToList().FirstOrDefault(p => p.FilePath == item.FilePath);
-//				// toList add to avoid Collection modified error
-//                if (obj == null) return;
-//		        
-//				displayFileFolders.ToList().Remove(obj);
-//                // Add here item to cached index
-//                displayFileFolders.Add(item);
-//
-//				_cache.Remove(queryCacheName);
-//				
-//				// Order by filename
-//				// Remove duplicates from list
-////				displayFileFolders = displayFileFolders.ToList().GroupBy(s => s.FilePath)
-////					.Select(grp => grp.FirstOrDefault())
-////					.OrderBy(s => s.FilePath)
-////					.ToList();
-//				// toList add to avoid Collection modified error
-//		        
-//		        _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
-//            }
             
         }
         

@@ -333,15 +333,18 @@ namespace starskytests.Services
             {
                 FileName = "test.jpg",
                 ParentDirectory = "/deletedFolder",
-                FileHash = "deletedFile",
+                FileHash = "SyncServiceOrphanFolderTestDeletedFile",
                 IsDirectory = false
             });
 
-            Assert.AreNotEqual(_query.GetItemByHash("deletedFile"),null);
-       
+	        Assert.AreEqual("/deletedFolder/test.jpg", _query.GetItemByHash("SyncServiceOrphanFolderTestDeletedFile"));
+
+	        // Reset the hashed cache list 
+	        _query.ResetItemByHash("SyncServiceOrphanFolderTestDeletedFile");
+
             _syncservice.OrphanFolder("/");
             
-            Assert.AreEqual(_query.GetItemByHash("deletedFile"),null);
+            Assert.AreEqual(null, _query.GetItemByHash("SyncServiceOrphanFolderTestDeletedFile"));
    
         }
         
