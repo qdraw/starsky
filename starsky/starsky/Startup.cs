@@ -196,14 +196,14 @@ namespace starsky
 		        }); // makes the ui visible    
 	        }
 	        
-	        
+	        app.UseContentSecurityPolicy();
+
             // Use in wwwroot
             app.UseStaticFiles();
 
             app.UseAuthentication();
             app.UseBasicAuthentication();
 
-	        app.UseContentSecurityPolicy();
 
 			app.UseMvc(routes =>
             {
