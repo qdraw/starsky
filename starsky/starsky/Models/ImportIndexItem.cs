@@ -178,14 +178,19 @@ namespace starsky.Models
             return dateTime;
         }
 
-	    public string RemoveEscapedCharacters(string structuredFileName)
+	    /// <summary>
+	    /// Removes the escaped characters and the first character after the backslash
+	    /// </summary>
+	    /// <param name="inputString">to input</param>
+	    /// <returns>the input string without those characters</returns>
+	    public string RemoveEscapedCharacters(string inputString)
 	    {
 		    var newString = new StringBuilder();
-		    for ( int i = 0; i < structuredFileName.ToCharArray().Length; i++ )
+		    for ( int i = 0; i < inputString.ToCharArray().Length; i++ )
 		    {
-			    var structuredCharArray = structuredFileName.ToCharArray()[i];
+			    var structuredCharArray = inputString.ToCharArray()[i];
 			    var escapeChar = "\\".ToCharArray()[0];
-			    if ( i != 0 && structuredCharArray != escapeChar && structuredFileName.ToCharArray()[i - 1] != escapeChar )
+			    if ( i != 0 && structuredCharArray != escapeChar && inputString.ToCharArray()[i - 1] != escapeChar )
 			    {
 				    newString.Append(structuredCharArray);
 			    }
