@@ -9,9 +9,12 @@ namespace starskytests
 
         public readonly string FullFilePathWithDate = 
             Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + FileNameWithDate;
-        private const string FileNameWithDate = "123300_20120101.jpg";
+	    public const string FileNameWithDate = "123300_20120101.jpg";
         // HHmmss_yyyyMMdd > not very logical but used to test features
-
+	    
+	    public readonly string BasePath =
+		    Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
+	    
         public CreateAnImageNoExif()
         {
             

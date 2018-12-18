@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using starsky.Helpers;
@@ -143,7 +144,7 @@ namespace starsky.Models
             }
 
             // when using /yyyymmhhss_{filenamebase}.jpg
-            // For the situation that the image has no exif date and there is an appendix used
+            // For the situation that the image has no exif date and there is an appendix used (in the config)
             if(structuredFileName.Length >= fileName.Length)  {
                 
                 structuredFileName = structuredFileName.Substring(0, fileName.Length);
@@ -154,10 +155,47 @@ namespace starsky.Models
                     DateTimeStyles.None, 
                     out dateTime);
             }
+	        
+	        if (dateTime.Year >= 2)
+	        {
+		        DateTime = dateTime;
+		        return dateTime;
+	        }
+
+	        // For the situation that the image has no exif date and there is an appendix used in the source filename
+	        if ( fileName.Length >= structuredFileName.Length )
+	        {
+
+	        }
+
+
+	        var t = structuredFileName;
+	        var y = fileName;
+	        
+	        
             
             DateTime = dateTime;
             return dateTime;
         }
+
+	    public string RemoveEscapedCharacters(string structuredFileName)
+	    {
+		    var newString = new StringBuilder();
+		    for ( int i = 0; i < structuredFileName.ToCharArray().Length; i++ )
+		    {
+			    var structuredCharArray = structuredFileName.ToCharArray()[i];
+			    var escapeChar = "\\".ToCharArray()[0];
+			    if ( i != 0 && structuredCharArray != escapeChar && structuredFileName.ToCharArray()[i - 1] != escapeChar )
+			    {
+				    newString.Append(structuredCharArray);
+			    }
+
+			    // add the first one
+			    if ( i == 0 && structuredCharArray != escapeChar) newString.Append(structuredCharArray);
+			    
+		    }
+		    return newString.ToString();
+	    }
 
 
         [NotMapped]
