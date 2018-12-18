@@ -167,7 +167,7 @@ namespace starsky.Models
 	        {
 		        structuredFileName = RemoveEscapedCharacters(structuredFileName);
 		        
-		        // trim the filename with structuredFileName
+		        // short the filename with structuredFileName
 		        fileName = fileName.Substring(0, structuredFileName.Length);
 		        
 		        DateTime.TryParseExact(fileName, 
