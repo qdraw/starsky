@@ -184,33 +184,6 @@ namespace starsky
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
 	        
-            // Use in wwwroot
-            app.UseStaticFiles();
-
-            app.UseAuthentication();
-            app.UseBasicAuthentication();
-	        
-	        // Add Content Security Policy/CSP
-	        app.Use(async (ctx, next) =>
-	        {
-		        // CSP 2.0 nonce
-		        var nonce = Guid.NewGuid().ToString("N");
-		        ctx.Items["csp-nonce"] = nonce;
-
-		        ctx.Response.Headers
-			        .Add("Content-Security-Policy",
-				        $"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' https://az416426.vo.msecnd.net \'nonce-{nonce}\'; connect-src 'self' https://dc.services.visualstudio.com;");
-		        await next();
-	        });
-
-			app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
-	        
-	        
 	        // Use swagger in development Environment or when env variable SWAGGER is enabled
 	        var swaggerKey = Environment.GetEnvironmentVariable("SWAGGER")?.ToLower();
 	        if ( swaggerKey == "true" || env.IsDevelopment() )
@@ -222,6 +195,25 @@ namespace starsky
 			        options.OAuthAppName(_appSettings.Name + " - Swagger");					
 		        }); // makes the ui visible    
 	        }
+	        
+	        
+            // Use in wwwroot
+            app.UseStaticFiles();
+
+            app.UseAuthentication();
+            app.UseBasicAuthentication();
+
+	        app.UseContentSecurityPolicy();
+
+			app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
+	        
+	        
+
 	        
 
 
