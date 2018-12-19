@@ -31,8 +31,13 @@ namespace starsky.Services
             _scopeFactory = scopeFactory;
         }
 
-        // Get a list of all files inside an folder
-        // But this uses a database as source
+
+	    /// <summary>
+		/// Get a list of all files inside an folder
+		/// But this uses a database as source
+		/// </summary>
+		/// <param name="subPath">relative database path</param>
+		/// <returns>list of FileIndex-objects</returns>
         public List<FileIndexItem> GetAllFiles(string subPath = "/")
         {
             subPath = SubPathSlashRemove(subPath);
@@ -55,7 +60,11 @@ namespace starsky.Services
                 .OrderBy(r => r.FileName).ToList();
         }
 
-        // Return database object file or folder
+		/// <summary>
+		/// Returns a database object file or folder
+		/// </summary>
+		/// <param name="filePath">relative database path</param>
+		/// <returns>FileIndex-objects with database data</returns>
         public FileIndexItem GetObjectByFilePath(string filePath)
         {
             InjectServiceScope();
@@ -64,13 +73,18 @@ namespace starsky.Services
             return query;
         }
 	    
+		/// <summary>
+		/// Get subpath based on hash (cached hashlist view to clear use ResetItemByHash)
+		/// </summary>
+		/// <param name="fileHash">base32 hash</param>
+		/// <returns>subpath (relative to database)</returns>
 	    public string GetItemByHash(string fileHash)
 	    {
 		    // The CLI programs uses no cache
 		    if( !IsCacheEnabled() ) return QueryGetItemByHash(fileHash);
             
 		    // Return values from IMemoryCache
-		    var queryCacheName = CachingDbName("hash", fileHash);
+		    var queryCacheName = CachingDbName("hashList", fileHash);
 
 		    if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) )
 		    {
@@ -79,18 +93,22 @@ namespace starsky.Services
             
 		    cachedSubpath = QueryGetItemByHash(fileHash);
 		    
-		    _cache.Set(queryCacheName, cachedSubpath, new TimeSpan(1,0,0));
+		    _cache.Set(queryCacheName, cachedSubpath, new TimeSpan(48,0,0));
 		    return (string) cachedSubpath;
-	    }
+		}
 
+		/// <summary>
+		/// Remove fileHash from hashlist-cache
+		/// </summary>
+		/// <param name="fileHash">base32 filehash</param>
 	    public void ResetItemByHash(string fileHash)
 	    {
-		    var queryCacheName = CachingDbName("hash", fileHash);
-
-		    if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) )
-		    {
-			    _cache.Remove(queryCacheName);
-		    }
+			var queryCacheName = CachingDbName("hashList", fileHash);
+			
+			if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) )
+			{
+				_cache.Remove(queryCacheName);
+			}
 	    }
 
 	    // Return a File Item By it Hash value
