@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using starsky.Data;
 using starsky.Middleware;
 using starsky.Models;
@@ -32,9 +33,13 @@ namespace starsky
 
         public Startup()
         {
-            // new style config
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+	        var appSettings = new AppSettings();
+	        // add support for running from different directories
+	        // overwritten by the current directory appsettings.json
+	        var builder = new ConfigurationBuilder()
+		        .SetBasePath(appSettings.BaseDirectoryProject)
+		        .AddJsonFile("appsettings.json",true)
+		        .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json",true)
                 .AddEnvironmentVariables();
             _configuration = builder.Build();
@@ -198,8 +203,18 @@ namespace starsky
 	        
 	        app.UseContentSecurityPolicy();
 
-            // Use in wwwroot
-            app.UseStaticFiles();
+	        // the Current Directory wwwroot directory
+	        app.UseStaticFiles();
+	        
+	        // Use in wwwroot in build directory; the default option assumes Current Directory
+	        if ( Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot")) )
+	        {
+		        app.UseStaticFiles(new StaticFileOptions
+		        {
+			        FileProvider = new PhysicalFileProvider(
+				        Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot"))
+		        });
+	        }
 
             app.UseAuthentication();
             app.UseBasicAuthentication();
