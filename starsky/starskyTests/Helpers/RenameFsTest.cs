@@ -17,17 +17,17 @@ namespace starskytests.Helpers
 	[TestClass]
 	public class RenameFsTest
 	{
-		private readonly IMemoryCache _memoryCache;
-		private Query _query;
-		private AppSettings _appSettings;
-		private CreateAnImage _newImage;
+		private readonly Query _query;
+		private readonly AppSettings _appSettings;
+		private readonly CreateAnImage _newImage;
+		private readonly SyncService _sync;
 
 		public RenameFsTest()
 		{
 			var provider = new ServiceCollection()
 			.AddMemoryCache()
 			.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			var memoryCache = provider.GetService<IMemoryCache>();
 			
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseInMemoryDatabase("test");
@@ -41,25 +41,50 @@ namespace starskytests.Helpers
 				StorageFolder = _newImage.BasePath,
 				ThumbnailTempFolder = _newImage.BasePath
 			};
-			_query = new Query(context,_memoryCache, _appSettings);
+			_query = new Query(context,memoryCache, _appSettings);
 			_query.AddItem(new FileIndexItem
 			{
 				FileName = _newImage.FileName,
 				ParentDirectory = "/"
 			});
+			
+			var readMeta = new ReadMeta(_appSettings,memoryCache);
+			
+			_sync = new SyncService(context,_query,_appSettings,readMeta);
+
 		}
 
 		[TestMethod]
-		public void RenameFsTest_WithoutAnyItems()
+		public void RenameFsTest_DuplicateFile()
 		{
-			var renameFs = new RenameFs(_appSettings, _query).Rename("/non-exist.jpg", "/non-exist2.jpg");
+			Assert.AreEqual(null,1);
+		}
+
+		[TestMethod]
+		public void RenameFsTest_MoveFileWithoutAnyItems()
+		{
+			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename("/non-exist.jpg", "/non-exist2.jpg");
 			Assert.AreEqual(renameFs.FirstOrDefault().Status,FileIndexItem.ExifStatus.NotFoundNotInIndex);
 		}
 		
 		[TestMethod]
-		public void RenameFsTest_SameFolder_Items()
+		public void RenameFsTest_MoveFileToSameFolder_Items()
 		{
-			var renameFs = new RenameFs(_appSettings, _query).Rename(_newImage.DbPath, "/test2.jpg");
+			// remove file if already exist; we are not testing duplicate support here
+			if ( File.Exists(Path.Combine(_newImage.BasePath, "test2.jpg")) )
+			{
+				File.Delete(Path.Combine(_newImage.BasePath, "test2.jpg"));
+			}
+			
+			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename(_newImage.DbPath, "/test2.jpg");
+			
+			// query database
+			var all = _query.GetAllRecursive();
+			Assert.AreEqual(all.FirstOrDefault(p => p.FileName == "test2.jpg").FileName, "test2.jpg");
+
+			// use cached view
+			var singleItem = _query.SingleItem("/test2.jpg");
+			Assert.AreEqual("test2.jpg",singleItem.FileIndexItem.FileName);			
 			
 			File.Delete(Path.Combine(_newImage.BasePath, "test2.jpg"));
 
@@ -67,14 +92,34 @@ namespace starskytests.Helpers
 		}
 		
 		[TestMethod]
-		public void RenameFsTest_ToExistFolder_Items()
+		public void RenameFsTest_MoveFileToExistFolder_Items()
 		{
+			// remove file if already exist; we are not testing duplicate support here
+			var existFullPath = Path.Combine(_newImage.BasePath, "exist");
+			if ( File.Exists(Path.Combine(existFullPath, "test2.jpg")) )
+			{
+				File.Delete(Path.Combine(existFullPath, "test2.jpg"));
+			}
 			
-			System.IO.Directory.CreateDirectory(Path.Combine(_newImage.BasePath, "exist"));
+			// check if dir exist
+			if ( System.IO.Directory.Exists(existFullPath) )
+			{
+				System.IO.Directory.CreateDirectory(existFullPath);
+			}
 			
-			var renameFs = new RenameFs(_appSettings, _query).Rename(_newImage.DbPath, "/exist/test2.jpg");
+			
+			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename(_newImage.DbPath, "/exist/test2.jpg");
 
 			Assert.AreEqual(1,renameFs.Count);
+			
+			// query database
+			var all = _query.GetAllRecursive();
+			Assert.AreEqual(all.FirstOrDefault(p => p.FileName == "test2.jpg").FileName, "test2.jpg");
+			
+			
+			// use cached view
+			var singleItem = _query.SingleItem("/exist/test2.jpg");
+			Assert.AreEqual("test2.jpg",singleItem.FileIndexItem.FileName);		
 			
 			Files.DeleteDirectory(Path.Combine(_newImage.BasePath, "exist"));
 		}
@@ -83,8 +128,33 @@ namespace starskytests.Helpers
 		[ExpectedException(typeof(DirectoryNotFoundException))]
 		public void RenameFsTest_ToNonExistFolder_Items_DirectoryNotFoundException()
 		{
-			var renameFs = new RenameFs(_appSettings, _query).Rename(_newImage.DbPath, "/nonExist/test2.jpg",true,false);
+			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename(_newImage.DbPath, "/nonExist/test2.jpg",true,false);
 		}
+		
+		
+		[TestMethod]
+		public void RenameFsTest_MoveDirWithItemsTest()
+		{
+			var existFullDirPath = Path.Combine(_newImage.BasePath, "dir1");
+			System.IO.Directory.CreateDirectory(existFullDirPath);
+			// move an item to this directory			
+			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename(_newImage.DbPath, "/dir1/test2.jpg");
+			// there is one file moved
+			Assert.AreEqual(1,renameFs.Count);
+			
+
+			
+			renameFs = new RenameFs(_appSettings, _query,_sync).Rename("/dir1", "/dir2");
+			// check if files are moved in the database
+
+			var all = _query.GetAllRecursive();
+			
+			
+			Files.DeleteDirectory(existFullDirPath);
+		}
+		
+		
+		
 
 //		[TestMethod]
 //		public void RenameFsTest_ToNonExistFolder_Items()
