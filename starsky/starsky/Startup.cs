@@ -214,12 +214,6 @@ namespace starsky
 	        
 	        
 
-	        
-
-
-	        
-	        
-
             // Run the latest migration on the database. 
             // To startover with a sqlite database please remove it and
             // it will add a new one
