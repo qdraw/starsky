@@ -34,7 +34,7 @@ namespace starsky
         public Startup()
         {
 	        var appSettings = new AppSettings();
-	        // add support for running from different directories
+	        // add support for running from different directories (only the starsky binary)
 	        // overwritten by the current directory appsettings.json
 	        var builder = new ConfigurationBuilder()
 		        .SetBasePath(appSettings.BaseDirectoryProject)
