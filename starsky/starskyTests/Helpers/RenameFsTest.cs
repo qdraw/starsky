@@ -45,7 +45,8 @@ namespace starskytests.Helpers
 			_query.AddItem(new FileIndexItem
 			{
 				FileName = _newImage.FileName,
-				ParentDirectory = "/"
+				ParentDirectory = "/",
+				AddToDatabase = DateTime.UtcNow
 			});
 			
 			var readMeta = new ReadMeta(_appSettings,memoryCache);
@@ -102,7 +103,7 @@ namespace starskytests.Helpers
 			}
 			
 			// check if dir exist
-			if ( System.IO.Directory.Exists(existFullPath) )
+			if (!System.IO.Directory.Exists(existFullPath) )
 			{
 				System.IO.Directory.CreateDirectory(existFullPath);
 			}

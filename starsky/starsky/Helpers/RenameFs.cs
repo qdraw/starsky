@@ -119,8 +119,16 @@ namespace starsky.Helpers
 					}
 					
 					// Check if the parent folder exist in the database
-					var parentFolder = _appSettings.FullPathToDatabaseStyle(toFiledirFullPath);
-					_sync.SyncFiles(parentFolder, false);
+					var parentSubFolder = _appSettings.FullPathToDatabaseStyle(toFiledirFullPath);
+					_sync.SyncFiles(parentSubFolder, false);
+
+					// to avoid an old view of this folder
+					var parentObject = _query.SingleItem(parentSubFolder);
+					_query.UpdateItem(parentObject.FileIndexItem);
+					
+					_query.RemoveCacheParentItem(parentSubFolder);
+
+//					fileIndexItems.Add(parentObject.FileIndexItem);
 					
 					File.Move(inputFileFullPath,toFileFullPath);
 				}
@@ -131,7 +139,9 @@ namespace starsky.Helpers
 	
 				// To update the results
 				_query.UpdateItem(fileIndexItems);
-					
+
+				var t =_query.SingleItem("/exist/test2.jpg");
+				
 				fileIndexResultsList.AddRange(fileIndexItems);
 
 			}
