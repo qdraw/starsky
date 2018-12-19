@@ -9,13 +9,15 @@ namespace starsky.Helpers
 {
     public class RenameFs
     {
-		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
-		
-		public RenameFs(AppSettings appSettings, IQuery query)
+		private readonly IQuery _query;
+		private readonly ISync _sync;
+
+		public RenameFs(AppSettings appSettings, IQuery query, ISync isync)
 		{
 			_query = query;
 			_appSettings = appSettings;
+			_sync = isync;
 		}
 
 		/// <summary>Move or rename files and update the database</summary>
@@ -115,6 +117,10 @@ namespace starsky.Helpers
 						throw new DirectoryNotFoundException($"toFiledirFullPath {toFiledirFullPath} does not exist");
 
 					}
+					
+					// Check if the parent folder exist in the database
+					var parentFolder = _appSettings.FullPathToDatabaseStyle(toFiledirFullPath);
+					_sync.SyncFiles(parentFolder, false);
 					
 					File.Move(inputFileFullPath,toFileFullPath);
 				}

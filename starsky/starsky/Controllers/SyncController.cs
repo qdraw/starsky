@@ -90,6 +90,13 @@ namespace starsky.Controllers
 			
 			return Json(syncResultsList);
         }
+			   
+	    
+		[HttpPost("/sync/rename")]
+		public IActionResult Rename(string f, string to, bool collections = true)
+		{
+			return Json(new RenameFs(_appSettings,_query,_sync).Rename(f,to,collections));
+		}
 
     }
 }

@@ -615,10 +615,5 @@ namespace starsky.Controllers
             return BadRequest("ignored, please check if the 'f' path exist or use a folder string to clear the cache");
         }
 
-		[HttpPost("/api/Rename")]
-		public IActionResult Rename(string f, string to, bool collections = true)
-		{
-			return Json(new RenameFs(_appSettings,_query).Rename(f,to,collections));
-		}
     }
 }
