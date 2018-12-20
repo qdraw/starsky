@@ -36,16 +36,7 @@ namespace starsky.Helpers
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             //             // Start using dependency injection
 
-
-            var builder = new ConfigurationBuilder();
-            if (File.Exists(new AppSettings().BaseDirectoryProject + "appsettings.json"))
-            {
-                builder.AddJsonFile(
-                    new AppSettings().BaseDirectoryProject + "appsettings.json", optional: false);
-            }
-            
-            // overwrite envs
-            builder.AddEnvironmentVariables();
+            var builder = AppSettingsToBuilder();
                         
             // build config
             var configuration = builder.Build();
@@ -99,6 +90,22 @@ namespace starsky.Helpers
 
 	        _thumbnailCleaner = new ThumbnailCleaner(query, appSettings);
         }
+
+	    public static ConfigurationBuilder AppSettingsToBuilder()
+	    {
+		    var appSettings = new AppSettings();
+		    var builder = new ConfigurationBuilder();
+		    builder
+			    .SetBasePath(appSettings.BaseDirectoryProject)
+			    .AddJsonFile("appsettings.json",true)
+			    .AddJsonFile($"appsettings.{Environment.MachineName.ToLower()}.json",true)
+			    .SetBasePath(Directory.GetCurrentDirectory())
+			    .AddJsonFile("appsettings.json",true)
+			    .AddJsonFile($"appsettings.{Environment.MachineName.ToLower()}.json",true)
+			    // overwrite envs
+			    .AddEnvironmentVariables();
+		    return builder;
+	    }
         
         /// <summary>
         /// Returns an filled AppSettings Interface

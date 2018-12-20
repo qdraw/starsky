@@ -31,21 +31,11 @@ namespace starsky
         private readonly IConfigurationRoot _configuration;
         private AppSettings _appSettings;
 
-        public Startup()
-        {
-	        var appSettings = new AppSettings();
-	        // add support for running from different directories (only the starsky binary)
-	        // overwritten by the current directory appsettings.json
-	        var builder = new ConfigurationBuilder()
-		        .SetBasePath(appSettings.BaseDirectoryProject)
-		        .AddJsonFile("appsettings.json",true)
-		        .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json",true)
-                .AddEnvironmentVariables();
-            _configuration = builder.Build();
-
-        }
-	    
+		public Startup()
+		{
+			var builder = ConfigCliAppsStartupHelper.AppSettingsToBuilder();
+			_configuration = builder.Build();
+		}
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
