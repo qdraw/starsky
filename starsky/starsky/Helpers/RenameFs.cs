@@ -33,6 +33,15 @@ namespace starsky.Helpers
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
 			
+			for (var i = 0; i < inputFileSubPaths.Length; i++)
+			{
+				inputFileSubPaths[i] = ConfigRead.RemoveLatestSlash(inputFileSubPaths[i]);
+				inputFileSubPaths[i] = ConfigRead.PrefixDbSlash(inputFileSubPaths[i]);
+
+				var detailView = _query.SingleItem(inputFileSubPaths[i], null, collections, false);
+				if (detailView == null) inputFileSubPaths[i] = null;
+			}
+			
 			// To check if the file has a unique name (in database)
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{
@@ -41,15 +50,6 @@ namespace starsky.Helpers
 
 				var detailView = _query.SingleItem(toFileSubPaths[i], null, collections, false);
 				if (detailView != null) toFileSubPaths[i] = null;
-			}
-			
-			for (var i = 0; i < inputFileSubPaths.Length; i++)
-			{
-				inputFileSubPaths[i] = ConfigRead.RemoveLatestSlash(inputFileSubPaths[i]);
-				inputFileSubPaths[i] = ConfigRead.PrefixDbSlash(inputFileSubPaths[i]);
-
-				var detailView = _query.SingleItem(inputFileSubPaths[i], null, collections, false);
-				if (detailView == null) inputFileSubPaths[i] = null;
 			}
 			
 			// Remove null from list
@@ -107,6 +107,9 @@ namespace starsky.Helpers
 					
 					var parentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
 
+					// clear cache
+					_query.RemoveCacheParentItem(parentSubFolder);
+					
 					var parentDirFullPath = _appSettings.DatabasePathToFilePath(parentSubFolder);
 					if ( !Directory.Exists(parentDirFullPath))
 					{
@@ -127,9 +130,6 @@ namespace starsky.Helpers
 				detailView.FileIndexItem.SetFilePath(toFileSubPath);
 				fileIndexItems.Add(detailView.FileIndexItem);
 	
-				var t =_query.SingleItem("/exist/test2.jpg");
-
-				var t2 = _query.GetAllRecursive();
 
 				// To update the results
 				_query.UpdateItem(fileIndexItems);

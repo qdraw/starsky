@@ -42,13 +42,16 @@ namespace starskytests.Helpers
 				ThumbnailTempFolder = _newImage.BasePath
 			};
 			_query = new Query(context,memoryCache, _appSettings);
-			_query.AddItem(new FileIndexItem
+
+			if ( _query.GetAllFiles().All(p => p.FileName != _newImage.FileName) )
 			{
-				FileName = _newImage.FileName,
-				ParentDirectory = "/",
-				AddToDatabase = DateTime.UtcNow,
-				Id = 999
-			});
+				_query.AddItem(new FileIndexItem
+				{
+					FileName = _newImage.FileName,
+					ParentDirectory = "/",
+					AddToDatabase = DateTime.UtcNow,
+				});
+			}
 			
 			var readMeta = new ReadMeta(_appSettings,memoryCache);
 			
@@ -140,16 +143,22 @@ namespace starskytests.Helpers
 			var existFullDirPath = Path.Combine(_newImage.BasePath, "dir1");
 			System.IO.Directory.CreateDirectory(existFullDirPath);
 			// move an item to this directory			
-			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename(_newImage.DbPath, "/dir1/test2.jpg");
+			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename(_newImage.DbPath, "/dir1/test3.jpg");
 			// there is one file moved
 			Assert.AreEqual(1,renameFs.Count);
 			
+			// query database
+			var all = _query.GetAllRecursive();
+			Assert.AreEqual(all.FirstOrDefault(p => p.FileName == "test3.jpg").FileName, "test3.jpg");
+			
+			
+			var all1 = _query.GetAllRecursive();
 
 			
 			renameFs = new RenameFs(_appSettings, _query,_sync).Rename("/dir1", "/dir2");
 			// check if files are moved in the database
 
-			var all = _query.GetAllRecursive();
+			var all2 = _query.GetAllRecursive();
 			
 			
 			Files.DeleteDirectory(existFullDirPath);
