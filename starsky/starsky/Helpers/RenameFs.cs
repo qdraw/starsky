@@ -78,15 +78,15 @@ namespace starsky.Helpers
 				var toFileFullPath = _appSettings.DatabasePathToFilePath(toFileSubPath,false);
 				var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputFileSubPath);
 
-				if ( Files.IsFolderOrFile(toFileFullPath)
-				     != FolderOrFileModel.FolderOrFileTypeList.Deleted )
-				{
-					fileIndexResultsList.Add(new FileIndexItem
-					{
-						Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
-					});
-					continue; //next
-				} 
+//				if ( Files.IsFolderOrFile(toFileFullPath)
+//				     != FolderOrFileModel.FolderOrFileTypeList.Deleted )
+//				{
+//					fileIndexResultsList.Add(new FileIndexItem
+//					{
+//						Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+//					});
+//					continue; //next
+//				} 
 				
 				var fileIndexItems = new List<FileIndexItem>();
 				if (Files.IsFolderOrFile(inputFileFullPath) 

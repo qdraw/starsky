@@ -147,26 +147,31 @@ namespace starskytests.Helpers
 		{
 			var existFullDirPath = Path.Combine(_newImage.BasePath, "dir1");
 			System.IO.Directory.CreateDirectory(existFullDirPath);
-			// move an item to this directory			
-			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename(_newImage.DbPath, "/dir1/test3.jpg");
-			// there is one file moved
-			Assert.AreEqual(1,renameFs.Count);
+			// move an item to this directory	
+			
+			if (! File.Exists(_appSettings.DatabasePathToFilePath("/dir1/test3.jpg")) )
+			{
+				File.Move(_newImage.FullFilePath,_appSettings.DatabasePathToFilePath("/dir1/test3.jpg",false));
+			}
+			_sync.SingleFile("/dir1/test3.jpg");
 			
 			// query database
 			var all = _query.GetAllRecursive();
 			Assert.AreEqual(all.FirstOrDefault(p => p.FileName == "test3.jpg").FileName, "test3.jpg");
 			
 			
-			var all1 = _query.GetAllRecursive();
-
-			
-			renameFs = new RenameFs(_appSettings, _query,_sync).Rename("/dir1", "/dir2");
+			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename("/dir1", "/dir2");
 			// check if files are moved in the database
 
 			var all2 = _query.GetAllRecursive();
+
+			var selectFile3 = all2.FirstOrDefault(p => p.FileName == "test3.jpg");
+			Assert.AreEqual("test3.jpg",selectFile3.FileName);
+			Assert.AreEqual("/dir2",selectFile3.ParentDirectory);
 			
-			
-			Files.DeleteDirectory(existFullDirPath);
+			var dir2FullDirPath = Path.Combine(_newImage.BasePath, "dir2");
+
+			Files.DeleteDirectory(dir2FullDirPath);
 		}
 		
 		
