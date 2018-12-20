@@ -62,7 +62,12 @@ namespace starskytests.Helpers
 		[TestMethod]
 		public void RenameFsTest_DuplicateFile()
 		{
-			Assert.AreEqual(2,1);
+			// Default is skip 
+			var fileAlreadyExist = Path.Join(_newImage.BasePath, "already.txt");
+			new PlainTextFileHelper().WriteFile(fileAlreadyExist,"test");
+			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename(_newImage.DbPath, "/already.txt");
+			Assert.AreEqual("test\n",new PlainTextFileHelper().ReadFile(fileAlreadyExist));
+			Files.DeleteFile(fileAlreadyExist);
 		}
 
 		[TestMethod]
