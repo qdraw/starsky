@@ -38,7 +38,7 @@ namespace starskytests.Helpers
 
 			_appSettings = new AppSettings
 			{
-				StorageFolder = _newImage.BasePath,
+				StorageFolder = ConfigRead.AddBackslash(_newImage.BasePath),
 				ThumbnailTempFolder = _newImage.BasePath
 			};
 			_query = new Query(context,memoryCache, _appSettings);
@@ -46,7 +46,8 @@ namespace starskytests.Helpers
 			{
 				FileName = _newImage.FileName,
 				ParentDirectory = "/",
-				AddToDatabase = DateTime.UtcNow
+				AddToDatabase = DateTime.UtcNow,
+				Id = 999
 			});
 			
 			var readMeta = new ReadMeta(_appSettings,memoryCache);
@@ -129,7 +130,7 @@ namespace starskytests.Helpers
 		[ExpectedException(typeof(DirectoryNotFoundException))]
 		public void RenameFsTest_ToNonExistFolder_Items_DirectoryNotFoundException()
 		{
-			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename(_newImage.DbPath, "/nonExist/test2.jpg",true,false);
+			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename(_newImage.DbPath, "/nonExist/test2.jpg",true);
 		}
 		
 		

@@ -25,7 +25,7 @@ namespace starsky.Helpers
 		/// <param name="to">subpath location to move</param>
 		/// <param name="collections">true = copy files with the same name</param>
 		/// <param name="addDirectoryIfNotExist">true = create an directory if an parent directory is missing</param>
-		public List<FileIndexItem> Rename(string f, string to, bool collections = true, bool addDirectoryIfNotExist = true)
+		public List<FileIndexItem> Rename(string f, string to, bool collections = true)
 		{
 			var inputFileSubPaths = ConfigRead.SplitInputFilePaths(f);
 			var toFileSubPaths = ConfigRead.SplitInputFilePaths(to);
@@ -104,32 +104,22 @@ namespace starsky.Helpers
 				}
 				else // file>
 				{
-					var toFiledirFullPath = Path.GetDirectoryName(toFileFullPath);
+					
+					var parentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
 
-					if ( !Directory.Exists(toFiledirFullPath) && !addDirectoryIfNotExist )
-						throw new DirectoryNotFoundException($"toFiledirFullPath {toFiledirFullPath} does not exist");
-
-					if ( !Directory.Exists(toFiledirFullPath) && addDirectoryIfNotExist )
+					var parentDirFullPath = _appSettings.DatabasePathToFilePath(parentSubFolder);
+					if ( !Directory.Exists(parentDirFullPath))
 					{
 						//var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
 						
 						// todo: add folder feature in the future
-						throw new DirectoryNotFoundException($"toFiledirFullPath {toFiledirFullPath} does not exist");
+						throw new DirectoryNotFoundException($"toFiledirFullPath {parentDirFullPath} does not exist");
 
 					}
 					
 					// Check if the parent folder exist in the database
-					var parentSubFolder = _appSettings.FullPathToDatabaseStyle(toFiledirFullPath);
-					_sync.SyncFiles(parentSubFolder, false);
+					_sync.AddSubPathFolder(parentSubFolder);
 
-					// to avoid an old view of this folder
-					var parentObject = _query.SingleItem(parentSubFolder);
-					_query.UpdateItem(parentObject.FileIndexItem);
-					
-					_query.RemoveCacheParentItem(parentSubFolder);
-
-//					fileIndexItems.Add(parentObject.FileIndexItem);
-					
 					File.Move(inputFileFullPath,toFileFullPath);
 				}
 				
@@ -137,10 +127,13 @@ namespace starsky.Helpers
 				detailView.FileIndexItem.SetFilePath(toFileSubPath);
 				fileIndexItems.Add(detailView.FileIndexItem);
 	
+				var t =_query.SingleItem("/exist/test2.jpg");
+
+				var t2 = _query.GetAllRecursive();
+
 				// To update the results
 				_query.UpdateItem(fileIndexItems);
 
-				var t =_query.SingleItem("/exist/test2.jpg");
 				
 				fileIndexResultsList.AddRange(fileIndexItems);
 
