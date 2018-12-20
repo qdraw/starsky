@@ -192,9 +192,9 @@ namespace starsky.Models
 		    var newString = new StringBuilder();
 		    for ( int i = 0; i < inputString.ToCharArray().Length; i++ )
 		    {
-			    var structuredCharArray = inputString.ToCharArray()[i];
-			    var escapeChar = "\\".ToCharArray()[0];
-			    if ( i != 0 && structuredCharArray != escapeChar && inputString.ToCharArray()[i - 1] != escapeChar )
+			    var structuredCharArray = inputString[i];
+			    var escapeChar = "\\"[0];
+			    if ( i != 0 && structuredCharArray != escapeChar && inputString[i - 1] != escapeChar )
 			    {
 				    newString.Append(structuredCharArray);
 			    }
