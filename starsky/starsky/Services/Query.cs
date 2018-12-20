@@ -86,11 +86,10 @@ namespace starsky.Services
 		    // Return values from IMemoryCache
 		    var queryCacheName = CachingDbName("hashList", fileHash);
 
-		    if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) )
-		    {
-			    if(!string.IsNullOrEmpty((string)cachedSubpath)) return ( string ) cachedSubpath;
-		    }
-            
+		    // if result is not null return cached value
+		    if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) 
+		         && !string.IsNullOrEmpty((string)cachedSubpath)) return ( string ) cachedSubpath;
+
 		    cachedSubpath = QueryGetItemByHash(fileHash);
 		    
 		    _cache.Set(queryCacheName, cachedSubpath, new TimeSpan(48,0,0));

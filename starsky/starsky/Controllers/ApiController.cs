@@ -605,7 +605,6 @@ namespace starsky.Controllers
             var singleItem = _query.SingleItem(f);
             if (singleItem != null && singleItem.IsDirectory)
             {
-				//  var displayFileFolders = _query.DisplayFileFolders(f);
                 _query.RemoveCacheParentItem(f);
                 if(!json) return RedirectToAction("Index", "Home", new { f });
                 return Json("cache succesfull cleared");
