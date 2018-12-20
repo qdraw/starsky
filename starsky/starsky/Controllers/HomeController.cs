@@ -116,6 +116,9 @@ namespace starsky.Controllers
                                         ">; rel=preload; as=fetch";
         }
 
+	    // Error pages should be always visible
+	    // curl: (47) Maximum (50) redirects followed
+	    [AllowAnonymous]
         public IActionResult Error()
         {
             return View();
