@@ -11,10 +11,22 @@ namespace starskytests
         // There is an unit test for using directory thumbnails that uses the first image;
         // starskytests.SyncServiceTest.SyncServiceFirstItemDirectoryTest
 
+	    /// <summary>
+	    /// The filename *.jpg
+	    /// </summary>
         public string FileName => _fileName;
+	    /// <summary>
+	    /// Database Path/subpath of the iamge
+	    /// </summary>
         public readonly string DbPath = "/" + _fileName;
-        public readonly string FullFilePath = 
+        /// <summary>
+        /// Full path of the image
+        /// </summary>
+	    public readonly string FullFilePath = 
             Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + _fileName;
+	    /// <summary>
+	    /// The FullFile Path of the Directory of the Assemblies
+	    /// </summary>
         public readonly string BasePath =
             Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
 
