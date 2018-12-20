@@ -16,6 +16,11 @@ zip -d starsky-linux-arm.zip "linux-arm/appsettings.*.json"
 zip -d starsky-osx.10.12-x64.zip "osx.10.12-x64/appsettings.*.json"
 zip -d starsky-win7-x86.zip "win7-x86/appsettings.*.json"
 
+# remove sqlite database files
+zip -d starsky-linux-arm.zip "linux-arm/*.db"
+zip -d starsky-osx.10.12-x64.zip "osx.10.12-x64/*.db"
+zip -d starsky-win7-x86.zip "win7-x86/*.db"
+
 # remove temp folder
 zip -d starsky-linux-arm.zip "linux-arm/temp/*"
 zip -d starsky-osx.10.12-x64.zip "osx.10.12-x64/temp/*"
