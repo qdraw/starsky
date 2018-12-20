@@ -70,6 +70,13 @@ namespace starsky.Helpers
 			
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{
+				// options
+				// 1. file to direct folder file.jpg /folder/ (not covered)
+				// 2. folder to folder
+				// 3. folder to existing folder > merge (not convered)
+				// 4. file to file
+				// 5. file to existing file > skip
+				
 				var inputFileSubPath = inputFileSubPaths[i];
 				var toFileSubPath = toFileSubPaths[i];
 				
@@ -78,19 +85,25 @@ namespace starsky.Helpers
 				var toFileFullPath = _appSettings.DatabasePathToFilePath(toFileSubPath,false);
 				var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputFileSubPath);
 
-//				if ( Files.IsFolderOrFile(toFileFullPath)
-//				     != FolderOrFileModel.FolderOrFileTypeList.Deleted )
-//				{
-//					fileIndexResultsList.Add(new FileIndexItem
-//					{
-//						Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
-//					});
-//					continue; //next
-//				} 
+				// The To location must be
+
+				var toFileFullPathStatus = Files.IsFolderOrFile(toFileFullPath);
+				var inputFileFullPathStatus = Files.IsFolderOrFile(inputFileFullPath);
+
+				// we dont overwrite files
+				if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFullPathStatus != FolderOrFileModel.FolderOrFileTypeList.Deleted)
+				{
+					fileIndexResultsList.Add(new FileIndexItem
+					{
+						Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+					});
+					continue; //next
+				} 
+
 				
 				var fileIndexItems = new List<FileIndexItem>();
-				if (Files.IsFolderOrFile(inputFileFullPath) 
-					== FolderOrFileModel.FolderOrFileTypeList.Folder)
+				if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
+				     && toFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
 					//move
 					Directory.Move(inputFileFullPath,toFileFullPath);
@@ -102,7 +115,12 @@ namespace starsky.Helpers
 					);
 
 				}
-				else // file>
+				else if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
+					&& toFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
+				{
+					
+				}
+				else if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.File) 
 				{
 					
 					var parentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
