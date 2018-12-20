@@ -58,7 +58,7 @@ namespace starskytests.Helpers
 		[TestMethod]
 		public void RenameFsTest_DuplicateFile()
 		{
-			Assert.AreEqual(null,1);
+			Assert.AreEqual(2,1);
 		}
 
 		[TestMethod]
