@@ -192,6 +192,9 @@ namespace starsky.Helpers
             Console.WriteLine("ThumbnailTempFolder (-f --thumbnailtempfolder) "+ _appSettings.ThumbnailTempFolder);
             Console.WriteLine("ExifToolPath  (-e --exiftoolpath) "+ _appSettings.ExifToolPath);
             Console.WriteLine("Structure  (-u --structure) "+ _appSettings.Structure);
+	        Console.WriteLine("Name "+ _appSettings.Name);
+	        Console.WriteLine("CameraTimeZone "+ _appSettings.CameraTimeZone);
+	        Console.WriteLine("BaseDirectoryProject "+ _appSettings.BaseDirectoryProject);
         }
 
         // Default On
