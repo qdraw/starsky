@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +20,7 @@ namespace starsky.Helpers
         private readonly ReadMeta _readmeta;
         private readonly IExiftool _exiftool;
 	    private readonly ThumbnailCleaner _thumbnailCleaner;
-
+	    
 	    /// <summary>
         /// Inject all services for the CLI applications
         /// </summary>
@@ -90,23 +89,25 @@ namespace starsky.Helpers
             _import = new ImportService(context, _isync, _exiftool, appSettings, _readmeta,null);
 
 	        _thumbnailCleaner = new ThumbnailCleaner(query, appSettings);
+	        
         }
 
 	    public static ConfigurationBuilder AppSettingsToBuilder()
 	    {
-		    Console.WriteLine(Environment.MachineName.ToLower());
 		    var appSettings = new AppSettings();
 		    var builder = new ConfigurationBuilder();
 		    
 		    // to remove spaces and other signs, check help to get your name
-		    var machineName = Environment.MachineName.ToLowerInvariant();
+		    var appSettingsMachine =
+			    $"appsettings.{Environment.MachineName.ToLowerInvariant()}.json";
+
 		    builder
 			    .SetBasePath(appSettings.BaseDirectoryProject)
 			    .AddJsonFile("appsettings.json",true)
-			    .AddJsonFile($"appsettings.{machineName}.json",true)
+			    .AddJsonFile(appSettingsMachine, optional: true)
 			    .SetBasePath(Directory.GetCurrentDirectory())
 			    .AddJsonFile("appsettings.json",true)
-			    .AddJsonFile($"appsettings.{machineName}.json",true)
+			    .AddJsonFile(appSettingsMachine,optional:true)
 			    // overwrite envs
 			    .AddEnvironmentVariables();
 		    return builder;
