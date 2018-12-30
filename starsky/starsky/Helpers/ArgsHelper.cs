@@ -197,12 +197,9 @@ namespace starsky.Helpers
 	        Console.WriteLine("CameraTimeZone "+ _appSettings.CameraTimeZone);
 	        Console.WriteLine("-- Appsettings.json locations -- ");
 	        var machineName = Environment.MachineName.ToLowerInvariant();
-	        Console.WriteLine("BaseDirectoryProject - \n"+
-							  $"1. {Path.Join(_appSettings.BaseDirectoryProject,"appsettings.json")}\n" +
-	                          $"2. {Path.Join(_appSettings.BaseDirectoryProject,"appsettings." + machineName + ".json")}\n  "+ 
-	                          "CurrentDirectory - \n"+
-	                          $"3. {Path.Join(Directory.GetCurrentDirectory(),"appsettings.json")} \n"+
-	                          $"4. {Path.Join(Directory.GetCurrentDirectory(),$"appsettings.{machineName}.json")}\n ");
+	        Console.WriteLine("BaseDirectoryProject - \n" +
+	                          $"1. {Path.Join(_appSettings.BaseDirectoryProject, "appsettings.json")}\n" +
+	                          $"2. {Path.Join(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")}\n  ");
         }
 
         // Default On

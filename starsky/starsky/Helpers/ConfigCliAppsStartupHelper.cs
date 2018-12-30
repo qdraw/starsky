@@ -100,15 +100,13 @@ namespace starsky.Helpers
 		    // to remove spaces and other signs, check help to get your name
 		    var appSettingsMachine =
 			    $"appsettings.{Environment.MachineName.ToLowerInvariant()}.json";
-
+		    
 		    builder
 			    .SetBasePath(appSettings.BaseDirectoryProject)
 			    .AddJsonFile("appsettings.json",true)
 			    .AddJsonFile(appSettingsMachine, optional: true)
-			    .SetBasePath(Directory.GetCurrentDirectory())
-			    .AddJsonFile("appsettings.json",true)
-			    .AddJsonFile(appSettingsMachine,optional:true)
 			    // overwrite envs
+			    // current dir gives problems on linux arm
 			    .AddEnvironmentVariables();
 		    return builder;
 	    }
