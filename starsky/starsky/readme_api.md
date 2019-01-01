@@ -390,11 +390,11 @@ _Defined in the class `ExifToolCmdHelper`_
 ## Rename
 ### Alpha feature > not yet implemented in the front-end
 Rename files or folder on disk and in the same request update the database.
-Endpoint: `/starsky/Api/Rename?f=/image.jpg&to=/image2.jpg`
+Endpoint: `/starsky/Sync/Rename?f=/image.jpg&to=/image2.jpg`
 
 ```json
 {
-    "uri":"/starsky/Api/Rename?f=/current&to=/future",
+    "uri":"/starsky/Sync/Rename?f=/current&to=/future",
     "method":"POST",
     "headers":
     {

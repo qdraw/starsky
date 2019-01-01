@@ -78,7 +78,15 @@ namespace starskysynccli
                 Console.WriteLine(">>>>> Heavy CPU Feature => Use with care <<<<< ");
                 startupHelper.SyncService().OrphanFolder(subpath);
             }
-            Console.WriteLine("Done!");
+
+	        if ( new ArgsHelper(appSettings).NeedCacheCleanup(args) )
+	        {
+		        Console.WriteLine(">>>>> Heavy CPU Feature => NeedCacheCleanup <<<<< ");
+		        startupHelper.ThumbnailCleaner().CleanAllUnusedFiles();
+
+	        }
+
+	        Console.WriteLine("Done!");
 
         }
 

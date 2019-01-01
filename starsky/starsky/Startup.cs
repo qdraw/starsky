@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using starsky.Data;
 using starsky.Middleware;
 using starsky.Models;
@@ -30,17 +31,11 @@ namespace starsky
         private readonly IConfigurationRoot _configuration;
         private AppSettings _appSettings;
 
-        public Startup()
-        {
-            // new style config
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json",true)
-                .AddEnvironmentVariables();
-            _configuration = builder.Build();
-
-        }
-	    
+		public Startup()
+		{
+			var builder = ConfigCliAppsStartupHelper.AppSettingsToBuilder();
+			_configuration = builder.Build();
+		}
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -184,33 +179,6 @@ namespace starsky
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
 	        
-            // Use in wwwroot
-            app.UseStaticFiles();
-
-            app.UseAuthentication();
-            app.UseBasicAuthentication();
-	        
-	        // Add Content Security Policy/CSP
-	        app.Use(async (ctx, next) =>
-	        {
-		        // CSP 2.0 nonce
-		        var nonce = Guid.NewGuid().ToString("N");
-		        ctx.Items["csp-nonce"] = nonce;
-
-		        ctx.Response.Headers
-			        .Add("Content-Security-Policy",
-				        $"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' https://az416426.vo.msecnd.net \'nonce-{nonce}\'; connect-src 'self' https://dc.services.visualstudio.com;");
-		        await next();
-	        });
-
-			app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
-	        
-	        
 	        // Use swagger in development Environment or when env variable SWAGGER is enabled
 	        var swaggerKey = Environment.GetEnvironmentVariable("SWAGGER")?.ToLower();
 	        if ( swaggerKey == "true" || env.IsDevelopment() )
@@ -223,8 +191,31 @@ namespace starsky
 		        }); // makes the ui visible    
 	        }
 	        
+	        app.UseContentSecurityPolicy();
+
+	        // the Current Directory wwwroot directory
+	        app.UseStaticFiles();
+	        
+	        // Use in wwwroot in build directory; the default option assumes Current Directory
+	        if ( Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot")) )
+	        {
+		        app.UseStaticFiles(new StaticFileOptions
+		        {
+			        FileProvider = new PhysicalFileProvider(
+				        Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot"))
+		        });
+	        }
+
+            app.UseAuthentication();
+            app.UseBasicAuthentication();
 
 
+			app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
 	        
 	        
 

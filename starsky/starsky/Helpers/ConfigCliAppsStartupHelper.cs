@@ -19,8 +19,9 @@ namespace starsky.Helpers
         private readonly ServiceProvider _serviceProvider;
         private readonly ReadMeta _readmeta;
         private readonly IExiftool _exiftool;
-
-        /// <summary>
+	    private readonly ThumbnailCleaner _thumbnailCleaner;
+	    
+	    /// <summary>
         /// Inject all services for the CLI applications
         /// </summary>
         public ConfigCliAppsStartupHelper()
@@ -35,16 +36,7 @@ namespace starsky.Helpers
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             //             // Start using dependency injection
 
-
-            var builder = new ConfigurationBuilder();
-            if (File.Exists(new AppSettings().BaseDirectoryProject + "appsettings.json"))
-            {
-                builder.AddJsonFile(
-                    new AppSettings().BaseDirectoryProject + "appsettings.json", optional: false);
-            }
-            
-            // overwrite envs
-            builder.AddEnvironmentVariables();
+            var builder = AppSettingsToBuilder();
                         
             // build config
             var configuration = builder.Build();
@@ -95,7 +87,55 @@ namespace starsky.Helpers
             //   _appSettings = appSettings
             //   _readmeta = readmeta
             _import = new ImportService(context, _isync, _exiftool, appSettings, _readmeta,null);
+
+	        _thumbnailCleaner = new ThumbnailCleaner(query, appSettings);
+	        
         }
+
+	    public static ConfigurationBuilder AppSettingsToBuilder()
+	    {
+		    var appSettings = new AppSettings();
+		    var builder = new ConfigurationBuilder();
+		    
+		    // to remove spaces and other signs, check help to get your name
+		    var appSettingsMachine =
+			    $"appsettings.{Environment.MachineName.ToLowerInvariant()}.json";
+		    
+		    builder
+			    .SetBasePath(appSettings.BaseDirectoryProject)
+			    .AddJsonFile("appsettings.json",true)
+			    .AddJsonFile(appSettingsMachine, optional: true)
+			    // overwrite envs
+			    // current dir gives problems on linux arm
+			    .AddEnvironmentVariables();
+		    return builder;
+	    }
+
+//	    private ConfigurationBuilder AppSettingsToBuilder2()
+//	    {
+//		    var appSettings = new AppSettings();
+//		    var builder = new ConfigurationBuilder();
+//
+//		    var addFileOnPrio = new List<string>
+//		    {
+//			    Path.Join(appSettings.BaseDirectoryProject,$"appsettings.{Environment.MachineName.ToLower()}.json"),
+//			    Path.Join(appSettings.BaseDirectoryProject,"appsettings.json"),
+//			    Path.Join(Directory.GetCurrentDirectory(),$"appsettings.{Environment.MachineName.ToLower()}.json"),
+//			    Path.Join(Directory.GetCurrentDirectory(),"appsettings.json"),
+//		    };
+//
+//		    foreach ( var filePath in addFileOnPrio )
+//		    {
+//			    Console.WriteLine(filePath);
+//			    if ( !File.Exists(filePath) ) continue;
+//			    builder.AddJsonFile(filePath);
+//			    builder.AddEnvironmentVariables();
+//			    return  builder;
+//		    }
+//		    // overwrite envs			    
+//		    builder.AddEnvironmentVariables();
+//		    return builder;
+//	    }
         
         /// <summary>
         /// Returns an filled AppSettings Interface
@@ -141,5 +181,14 @@ namespace starsky.Helpers
         {
             return _exiftool;
         }
+	    
+	    /// <summary>
+	    /// Returns an filled ThumbnailCleaner Interface
+	    /// </summary>
+	    /// <returns>ReadMeta</returns>
+	    public ThumbnailCleaner ThumbnailCleaner()
+	    {
+		    return _thumbnailCleaner;
+	    }
     }
 }

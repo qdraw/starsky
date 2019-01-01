@@ -7,14 +7,7 @@ namespace starsky.Services
 {
     public partial class SyncService
     {
-        // Add Sub Path Folder - Parent Folders
-        //  root(/)
-        //      /2017  <= index only this folder
-        //      /2018
-        // If you use the cmd: $ starskycli -s "/2017"
-        // the folder '2017' it self is not added 
-        // and all parrent paths are not included
-        // this class does add those parent folders
+
 
         public List<string> GetListOfSubpaths(string subPath)
         {
@@ -24,6 +17,17 @@ namespace starsky.Services
             return listOfSubpaths;
         }
 
+	    /// <summary>
+	    /// Add Sub Path Folder - Parent Folders
+	    ///  root(/)
+	    ///      /2017  <= index only this folder
+	    ///      /2018
+	    /// If you use the cmd: $ starskycli -s "/2017"
+	    /// the folder '2017' it self is not added 
+	    /// and all parent paths are not included
+	    /// this class does add those parent folders
+	    /// </summary>
+	    /// <param name="subPath">the relative urls</param>
         public void AddSubPathFolder(string subPath)
         {
             foreach (var itemSubpath in GetListOfSubpaths(subPath))

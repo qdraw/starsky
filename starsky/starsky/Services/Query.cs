@@ -31,8 +31,13 @@ namespace starsky.Services
             _scopeFactory = scopeFactory;
         }
 
-        // Get a list of all files inside an folder
-        // But this uses a database as source
+
+	    /// <summary>
+		/// Get a list of all files inside an folder
+		/// But this uses a database as source
+		/// </summary>
+		/// <param name="subPath">relative database path</param>
+		/// <returns>list of FileIndex-objects</returns>
         public List<FileIndexItem> GetAllFiles(string subPath = "/")
         {
             subPath = SubPathSlashRemove(subPath);
@@ -55,7 +60,11 @@ namespace starsky.Services
                 .OrderBy(r => r.FileName).ToList();
         }
 
-        // Return database object file or folder
+		/// <summary>
+		/// Returns a database object file or folder
+		/// </summary>
+		/// <param name="filePath">relative database path</param>
+		/// <returns>FileIndex-objects with database data</returns>
         public FileIndexItem GetObjectByFilePath(string filePath)
         {
             InjectServiceScope();
@@ -63,20 +72,56 @@ namespace starsky.Services
             var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
             return query;
         }
+	    
+		/// <summary>
+		/// Get subpath based on hash (cached hashlist view to clear use ResetItemByHash)
+		/// </summary>
+		/// <param name="fileHash">base32 hash</param>
+		/// <returns>subpath (relative to database)</returns>
+	    public string GetItemByHash(string fileHash)
+	    {
+		    // The CLI programs uses no cache
+		    if( !IsCacheEnabled() ) return QueryGetItemByHash(fileHash);
+            
+		    // Return values from IMemoryCache
+		    var queryCacheName = CachingDbName("hashList", fileHash);
 
-        // Return a File Item By it Hash value
+		    // if result is not null return cached value
+		    if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) 
+		         && !string.IsNullOrEmpty((string)cachedSubpath)) return ( string ) cachedSubpath;
+
+		    cachedSubpath = QueryGetItemByHash(fileHash);
+		    
+		    _cache.Set(queryCacheName, cachedSubpath, new TimeSpan(48,0,0));
+		    return (string) cachedSubpath;
+		}
+
+		/// <summary>
+		/// Remove fileHash from hashlist-cache
+		/// </summary>
+		/// <param name="fileHash">base32 filehash</param>
+	    public void ResetItemByHash(string fileHash)
+	    {
+			var queryCacheName = CachingDbName("hashList", fileHash);
+			
+			if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) )
+			{
+				_cache.Remove(queryCacheName);
+			}
+	    }
+
+	    // Return a File Item By it Hash value
         // New added, directory hash now also hashes
-        public string GetItemByHash(string fileHash)
+        private string QueryGetItemByHash(string fileHash)
         {            
-            var query = _context.FileIndex.FirstOrDefault(
-                p => p.FileHash == fileHash 
-                     && !p.IsDirectory
-             );
-            return query?.FilePath;
+			var query = _context.FileIndex.FirstOrDefault(
+				p => p.FileHash == fileHash 
+				&& !p.IsDirectory
+			);
+			return query?.FilePath;
         }
 
-
-        // Remove the '/' from the end of the url
+	    // Remove the '/' from the end of the url
         public string SubPathSlashRemove(string subPath = "/")
         {
             if (string.IsNullOrEmpty(subPath)) return subPath;
@@ -196,40 +241,6 @@ namespace starsky.Services
 				_cache.Remove(queryCacheName);
 				_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
 			}
-	        
-	        
-//	        for ( var i = 0; i < updateStatusContent.Count(); i++ )
-//	        {
-//		        var item = updateStatusContent[i];
-//				// As for-loop Collection was modified; enumeration operation may not execute.
-//                
-//		        var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-//                    item.ParentDirectory);
-//
-//                if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
-//	            
-//                var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
-//                
-//				var obj = displayFileFolders.ToList().FirstOrDefault(p => p.FilePath == item.FilePath);
-//				// toList add to avoid Collection modified error
-//                if (obj == null) return;
-//		        
-//				displayFileFolders.ToList().Remove(obj);
-//                // Add here item to cached index
-//                displayFileFolders.Add(item);
-//
-//				_cache.Remove(queryCacheName);
-//				
-//				// Order by filename
-//				// Remove duplicates from list
-////				displayFileFolders = displayFileFolders.ToList().GroupBy(s => s.FilePath)
-////					.Select(grp => grp.FirstOrDefault())
-////					.OrderBy(s => s.FilePath)
-////					.ToList();
-//				// toList add to avoid Collection modified error
-//		        
-//		        _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
-//            }
             
         }
         

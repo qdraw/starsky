@@ -143,11 +143,7 @@ namespace starsky.Services
 	            if( new PlainTextFileHelper().ReadFile(GetErrorLogItemFullPath(fullFilePath)).Contains("Thumbnail error") )
 		            return false;
 	            // File is already tested
-
-	            
-//				if (Files.IsFolderOrFile(GetErrorLogItemFullPath(fullFilePath))
-//					== FolderOrFileModel.FolderOrFileTypeList.File) return false;
-                
+         
 
                 // Wrapper to check if the thumbservice is not waiting forever
                 // In some scenarios thumbservice is waiting for days
@@ -268,7 +264,7 @@ namespace starsky.Services
                 using (var image = Image.Load(inputStream))
                 {
                     // Add orginal rotation to the image as json
-                    if (image.MetaData.ExifProfile != null && removeExif == false)
+                    if (image.MetaData.ExifProfile != null && !removeExif)
                     {
                         image.MetaData.ExifProfile.SetValue(ExifTag.Software, "Starsky");
                     }

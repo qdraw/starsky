@@ -68,12 +68,41 @@ namespace starskytests.Models
 
             var importItem = new ImportIndexItem(_appSettings);
             importItem.SourceFullFilePath = createAnImage.FullFilePathWithDate;
-
+	        importItem.ParseDateTimeFromFileName();
+	        
             var fileName = importItem.ParseFileName(false);
             Assert.AreEqual("00010101_000000_d.jpg", fileName);
             
             Files.DeleteFile(importItem.SourceFullFilePath);
         }
+	    
+	    [TestMethod]
+	    public void ImportIndexItemParse_FileNameWithAppendixInFileName_Test()
+	    {
+		    var createAnImage = new CreateAnImageNoExif();
+
+		    var filPathWithAppendix = Path.Join(createAnImage.BasePath,"2018.01.01 02.02.02-test.jpg");
+		    if(!File.Exists(filPathWithAppendix)) File.Move(createAnImage.FullFilePathWithDate,filPathWithAppendix);
+		    
+		    _appSettings.Structure = "/yyyyMMdd_HHmmss_\\d.ext"; // <<<----
+
+		    var importItem = new ImportIndexItem(_appSettings);
+		    importItem.SourceFullFilePath = filPathWithAppendix;
+		    importItem.ParseDateTimeFromFileName();
+
+		    var fileName = importItem.ParseFileName(false);
+		    Assert.AreEqual("20180101_020202_d.jpg", fileName);
+            
+		    Files.DeleteFile(filPathWithAppendix);
+	    }
+
+	    [TestMethod]
+	    public void ImportIndexItemRemoveEscapedCharactersTest()
+	    {
+		    var structuredFileName = "yyyyMMdd_HHmmss_\\d.ext";
+		    var result = new ImportIndexItem(new AppSettings()).RemoveEscapedCharacters(structuredFileName);
+			Assert.AreEqual("yyyyMMdd_HHmmss_.ext",result);
+	    }
 
         [TestMethod]
         public void ImportIndexItemParseSubfoldersTest()

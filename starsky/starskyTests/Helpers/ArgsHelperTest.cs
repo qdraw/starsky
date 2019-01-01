@@ -66,6 +66,20 @@ namespace starskytests
             args = new List<string> {"-r","true"}.ToArray();
             Assert.AreEqual(new ArgsHelper(_appSettings).NeedRecruisive(args), true);
         }
+	    
+	    [TestMethod]
+	    [ExcludeFromCoverage]
+	    public void ArgsHelper_NeedCacheCleanupTest()
+	    {
+		    var args = new List<string> {"-x"}.ToArray();
+		    Assert.AreEqual(new ArgsHelper(_appSettings).NeedCacheCleanup(args), true);
+            
+		    // Bool parse check
+		    args = new List<string> {"-x","true"}.ToArray();
+		    Assert.AreEqual(new ArgsHelper(_appSettings).NeedCacheCleanup(args), true);
+	    }
+	    
+	    
 
         [TestMethod]
         [ExcludeFromCoverage]

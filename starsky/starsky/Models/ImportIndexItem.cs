@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using starsky.Helpers;
@@ -143,7 +144,7 @@ namespace starsky.Models
             }
 
             // when using /yyyymmhhss_{filenamebase}.jpg
-            // For the situation that the image has no exif date and there is an appendix used
+            // For the situation that the image has no exif date and there is an appendix used (in the config)
             if(structuredFileName.Length >= fileName.Length)  {
                 
                 structuredFileName = structuredFileName.Substring(0, fileName.Length);
@@ -154,10 +155,56 @@ namespace starsky.Models
                     DateTimeStyles.None, 
                     out dateTime);
             }
-            
+	        
+	        if (dateTime.Year >= 2)
+	        {
+		        DateTime = dateTime;
+		        return dateTime;
+	        }
+
+	        // For the situation that the image has no exif date and there is an appendix used in the source filename AND the config
+	        if ( fileName.Length >= structuredFileName.Length )
+	        {
+		        structuredFileName = RemoveEscapedCharacters(structuredFileName);
+		        
+		        // short the filename with structuredFileName
+		        fileName = fileName.Substring(0, structuredFileName.Length);
+		        
+		        DateTime.TryParseExact(fileName, 
+			        structuredFileName, 
+			        CultureInfo.InvariantCulture, 
+			        DateTimeStyles.None, 
+			        out dateTime);
+	        }
+        
+            // Return 0001-01-01 if everything fails
             DateTime = dateTime;
             return dateTime;
         }
+
+	    /// <summary>
+	    /// Removes the escaped characters and the first character after the backslash
+	    /// </summary>
+	    /// <param name="inputString">to input</param>
+	    /// <returns>the input string without those characters</returns>
+	    public string RemoveEscapedCharacters(string inputString)
+	    {
+		    var newString = new StringBuilder();
+		    for ( int i = 0; i < inputString.ToCharArray().Length; i++ )
+		    {
+			    var structuredCharArray = inputString[i];
+			    var escapeChar = "\\"[0];
+			    if ( i != 0 && structuredCharArray != escapeChar && inputString[i - 1] != escapeChar )
+			    {
+				    newString.Append(structuredCharArray);
+			    }
+
+			    // add the first one
+			    if ( i == 0 && structuredCharArray != escapeChar) newString.Append(structuredCharArray);
+			    
+		    }
+		    return newString.ToString();
+	    }
 
 
         [NotMapped]
@@ -180,7 +227,7 @@ namespace starsky.Models
 
             if (parsedList.Count == 1)
             {
-                return new List<string>(); // {string.Empty}
+                return new List<string>();
             }
                 
             if (parsedList.Count >= 2)

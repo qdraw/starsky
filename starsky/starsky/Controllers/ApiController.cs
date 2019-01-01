@@ -454,14 +454,24 @@ namespace starsky.Controllers
                 }
             }
             
-            
+            // Cached view of item
             var sourcePath = _query.GetItemByHash(f);
             if (sourcePath == null) return NotFound("not in index");
-            
             var sourceFullPath = _appSettings.DatabasePathToFilePath(sourcePath);
 
-            if (!System.IO.File.Exists(thumbPath) &&
-                System.IO.File.Exists(sourceFullPath))
+	        
+	        // Need to check again for recently moved files
+	        if (!System.IO.File.Exists(sourceFullPath))
+	        {
+		        // remove from cache
+		        _query.ResetItemByHash(f);
+		        // query database agian
+		        sourcePath = _query.GetItemByHash(f);
+		        if (sourcePath == null) return NotFound("not in index");
+		        sourceFullPath = _appSettings.DatabasePathToFilePath(sourcePath);
+	        }
+
+            if (System.IO.File.Exists(sourceFullPath))
             {
                 if (!isSingleitem)
                 {
@@ -595,7 +605,6 @@ namespace starsky.Controllers
             var singleItem = _query.SingleItem(f);
             if (singleItem != null && singleItem.IsDirectory)
             {
-				//  var displayFileFolders = _query.DisplayFileFolders(f);
                 _query.RemoveCacheParentItem(f);
                 if(!json) return RedirectToAction("Index", "Home", new { f });
                 return Json("cache succesfull cleared");
@@ -605,10 +614,5 @@ namespace starsky.Controllers
             return BadRequest("ignored, please check if the 'f' path exist or use a folder string to clear the cache");
         }
 
-		[HttpPost("/api/Rename")]
-		public IActionResult Rename(string f, string to, bool collections = true)
-		{
-			return Json(new RenameFs(_appSettings,_query).Rename(f,to,collections));
-		}
     }
 }

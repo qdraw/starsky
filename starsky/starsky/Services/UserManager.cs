@@ -305,7 +305,7 @@ public class UserManager : IUserManager
                     return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
             }
 
-	        // Cache ValidateResult ++ always query on passwords and return result
+	        // Cache ValidateResult always query on passwords and return result
 	        ValidateResult validateResult; 
 	        if (IsCacheEnabled() && _cache.TryGetValue("ValidateResult_" + credential.UserId, out var objectValidateResult))
 	        {

@@ -269,12 +269,13 @@ namespace starsky.Models
         // ------------------- Modifiers -------------------
         // -------------------------------------------------
 
-        public string FullPathToDatabaseStyle(string subpath)
-        {
-            var databaseFilePath = subpath.Replace(StorageFolder, "");
-            databaseFilePath = _pathToDatabaseStyle(databaseFilePath);
-            return databaseFilePath;
-        }
+		public string FullPathToDatabaseStyle(string subpath)
+		{
+			var databaseFilePath = subpath.Replace(StorageFolder, string.Empty);
+			databaseFilePath = _pathToDatabaseStyle(databaseFilePath);
+			
+			return ConfigRead.PrefixDbSlash(databaseFilePath);
+		}
         
         // Replace windows \\ > /
         private string _pathToDatabaseStyle(string subPath)

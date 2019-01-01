@@ -40,6 +40,12 @@ namespace starsky.Services
             return basePath;
         }
         
+	    /// <summary>
+	    /// Add backSlash to configuration // or \\
+	    /// Platform depended feature
+	    /// </summary>
+	    /// <param name="thumbnailTempFolder"></param>
+	    /// <returns></returns>
         public static string AddBackslash(string thumbnailTempFolder) { 
             // Add backSlash to configuration // or \\
             // Platform depended feature
@@ -53,9 +59,12 @@ namespace starsky.Services
             return thumbnailTempFolder;
         }
 
+	    /// <summary>
+	    /// Add slash / => always
+	    /// </summary>
+	    /// <param name="thumbnailTempFolder"></param>
+	    /// <returns>value +/</returns>
         public static string AddSlash(string thumbnailTempFolder) { 
-            // Add backSlash to configuration // or \\
-            // Platform depended feature
             if (string.IsNullOrWhiteSpace(thumbnailTempFolder)) return thumbnailTempFolder;
             
             if (thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1,
