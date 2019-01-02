@@ -96,21 +96,21 @@ namespace starsky.Services
 
                 ///    [IPTC] City = Diepenveen
                 var locationCity = GetLocationPlaces(exifItem, "City");
-                if(locationCity != null) // null = is not the right tag or emthy tag
+                if(locationCity != null) // null = is not the right tag or empty tag
                 {
                     item.LocationCity = locationCity;
                 }
                 
                 ///    [IPTC] Province/State = Overijssel
                 var locationState = GetLocationPlaces(exifItem, "Province/State");
-                if(locationState != null) // null = is not the right tag or emthy tag
+                if(locationState != null) // null = is not the right tag or empty tag
                 {
                     item.LocationState = locationState;
                 }
                 
                 ///    [IPTC] Country/Primary Location Name = Nederland
                 var locationCountry = GetLocationPlaces(exifItem, "Country/Primary Location Name");
-                if(locationCountry != null) // null = is not the right tag or emthy tag
+                if(locationCountry != null) // null = is not the right tag or empty tag
                 {
                     item.LocationCountry = locationCountry;
                 }
