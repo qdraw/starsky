@@ -154,7 +154,11 @@ namespace starsky.Services
                             p => p.Title.ToLower().Contains(model.SearchFor[i])
                         ));
                         break;
-                    
+					case SearchViewModel.SearchInTypes.filehash:
+						model.FileIndexItems.AddRange(sourceList.Where(
+						p => p.FileHash.ToLower().Contains(model.SearchFor[i])
+						));
+						break;             
                     case SearchViewModel.SearchInTypes.addtodatabase:
 
                         var addtodatabase = parseDateTime(model.SearchFor[i]);
@@ -247,7 +251,13 @@ namespace starsky.Services
                             p => p.FilePath.ToLower().Contains(model.SearchFor[i].ToLower())
                         ).ToList();
                         break;
-
+                    
+					case SearchViewModel.SearchInTypes.filehash:
+						model.FileIndexItems = model.FileIndexItems.Where(
+						p => p.FileHash.ToLower().Contains(model.SearchFor[i].ToLower())
+						).ToList();
+						break;
+	                
                     case SearchViewModel.SearchInTypes.parentdirectory:
                         model.FileIndexItems = model.FileIndexItems.Where(
                             p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i].ToLower())

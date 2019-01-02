@@ -151,7 +151,16 @@ namespace starskytests
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("-title:Schiphol").SearchCount);
         }
-            
+           
+	    
+	    [TestMethod]
+	    public void SearchService_SearchSchipholFileHashTest()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(1, _search.Search("-filehash:schipholairplane").SearchCount);
+	    }
+	    
+	    
         [TestMethod]
         public void SearchService_SearchCityloopTest()
         {
