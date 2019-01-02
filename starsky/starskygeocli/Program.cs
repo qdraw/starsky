@@ -23,7 +23,18 @@ namespace starskyGeoCli
             
             // Use args in application
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
-            
+
+			// When there is no input show help
+			if (new ArgsHelper().NeedHelp(args) || 
+					(new ArgsHelper().GetPathFormArgs(args,false).Length <= 1 
+					&& new ArgsHelper().GetSubpathFormArgs(args).Length <= 1 
+					&& new ArgsHelper(appSettings).GetSubpathRelative(args).Length <= 1))
+			{
+				appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
+				new ArgsHelper(appSettings).NeedHelpShowDialog();
+				return;
+			}
+	        
             // Using both options
             string inputPath;
             // -s = ifsubpath || -p is path
@@ -36,26 +47,27 @@ namespace starskyGeoCli
             else
             {
                 inputPath = new ArgsHelper(appSettings).GetPathFormArgs(args,false);
+	            // overwrite if folder not exist
+	            if ( Files.IsFolderOrFile(inputPath) !=
+	                 FolderOrFileModel.FolderOrFileTypeList.Folder ) inputPath = null;
+
             }
             
             // overwrite subpath with relative days
             // use -g or --SubpathRelative to use it.
             // envs are not supported
             var getSubpathRelative = new ArgsHelper(appSettings).GetSubpathRelative(args);
-            if (getSubpathRelative != null)
+            if (getSubpathRelative != string.Empty)
             {
                 inputPath = appSettings.DatabasePathToFilePath(getSubpathRelative);
             }
 
-            if (new ArgsHelper().NeedHelp(args) || inputPath == null || 
-                (new ArgsHelper().GetPathFormArgs(args,false).Length <= 1 
-                && new ArgsHelper().GetSubpathFormArgs(args).Length <= 1 
-                 && new ArgsHelper(appSettings).GetSubpathRelative(args).Length <= 1) )
-            {
-                appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
-                new ArgsHelper(appSettings).NeedHelpShowDialog();
-                return;
-            }
+	        if ( inputPath == null )
+	        {
+		        Console.WriteLine($"Folder location is not found \nPlease try the `-h` command to get help ");
+		        return;
+	        }
+
             
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;

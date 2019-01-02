@@ -254,7 +254,7 @@ namespace starsky.Helpers
         {
             if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
 
-            string subpathRelative = null;
+            string subpathRelative = string.Empty;
         
             for (int arg = 0; arg < args.Count; arg++)
             {

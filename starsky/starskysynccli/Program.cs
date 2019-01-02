@@ -10,7 +10,7 @@ namespace starskysynccli
         public static void Main(string[] args)
         {
             // Use args in application
-             new ArgsHelper().SetEnvironmentByArgs(args);
+			new ArgsHelper().SetEnvironmentByArgs(args);
             
             var startupHelper = new ConfigCliAppsStartupHelper();
             var appSettings = startupHelper.AppSettings();
@@ -39,14 +39,14 @@ namespace starskysynccli
             // use -g or --SubpathRelative to use it.
             // envs are not supported
             var getSubpathRelative = new ArgsHelper(appSettings).GetSubpathRelative(args);
-            if (getSubpathRelative != null)
+			if (getSubpathRelative != string.Empty)
             {
                 subpath = getSubpathRelative;
             }
 
             if (new ArgsHelper().GetIndexMode(args))
             {
-                Console.WriteLine("Start indexing");
+                Console.WriteLine($"Start indexing {subpath}");
                 startupHelper.SyncService().SyncFiles(subpath);
                 Console.WriteLine("Done SyncFiles!");
             }
