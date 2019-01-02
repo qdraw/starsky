@@ -108,6 +108,9 @@ function appendArrayToString(url,selectedFiles,splitter) {
         else {
             url += selectedFiles[i] + splitter;
         }
+
+        // for escaping the + sign
+        url = url.replace(/\+/ig, "%2B");
     }
     return url;
 }
