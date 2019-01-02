@@ -147,6 +147,7 @@
             
             <a class="halfitem @item.ColorClass colorclass-@enumValue @directoryLabel" data-filename="@item.FileName" data-tag="colorclass-@enumValue"
                data-tagnl="@FileIndexItem.GetAllColorUserInterface().FirstOrDefault(p => (int) p == enumValue)"
+               data-imageformat="@item.ImageFormat"
                href="@urlPath">
                 <div class="caption">
                     <h2><div class="checkbox"></div> @item.FileName</h2>

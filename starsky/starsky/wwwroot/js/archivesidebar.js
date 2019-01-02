@@ -170,9 +170,10 @@ function updateDisplayList() {
 
         html += "<h2><a class='colorbutton js-selectallnone selectall' data-on-click='toggleSelectAll()'><span class='checkbox'></span> Selecteer alles</a>"
             + "<a class='colorbutton js-resetselect' data-on-onclick='resetSelection()'>Deselecteer</a></h2>";
+        html += "<h2 class='selectfiletypes'></h2>";
         html += "<ul>";
         for (var i = 0; i < selectedFiles.length; i++) {
-            html += "<li><a class='close' data-filename='" + selectedFiles[i] + "'></a> " + selectedFiles[i] + "</li>";
+            html += "<li title='" + selectedFiles[i] + "'><a class='close' data-filename='" + selectedFiles[i] + "'></a> " + selectedFiles[i] + "</li>";
         }
         html += "</ul>";
         document.querySelector(".js-selectedimages").innerHTML = html;
@@ -248,6 +249,9 @@ function updateDisplayList() {
         if (collectionscount === 0) {
             document.querySelector(".js-selectallnone").innerHTML = "";
         }
+
+        addUpdateDisplayTypes();
+
     }
    
 }
@@ -518,6 +522,74 @@ function removeThisItem (fileName) {
     updateControls();
 }
 
+// feature for dropdown 
+function addUpdateDisplayTypes() {
+
+    if(document.querySelectorAll(".selectfiletypes").length !== 1) return;
+    if(document.querySelectorAll(".js-collections-box").length !== 1) return;
+    if(document.querySelectorAll(".js-collections").length !== 1) return;
+
+    // only if collections is enabled
+    if(document.querySelector(".js-collections").className.indexOf(" on") >= 0 ) return;
+
+    var portfolioData = document.querySelectorAll("#portfolio-data");
+    var archive = document.querySelectorAll(".archive");
+
+    var fileUrlsByImageFormat = {};
+    
+    if (portfolioData.length === 1 && archive.length === 1) {
+        for (var i = 0; i < portfolioData[0].children.length; i++) {
+            var item = portfolioData[0].children[i];
+            var format = item.getAttribute('data-imageformat');
+            
+            // no dirs
+            if(item.className.indexOf("directory-false") === -1) continue;
+            
+            // add when new
+            if(fileUrlsByImageFormat[format] === undefined) fileUrlsByImageFormat[format] = [];
+            
+            fileUrlsByImageFormat[format].push(item.getAttribute('data-filename'));
+        }
+    }
+  
+    // when there are no images at all
+    // or then there is only one type
+    if(Object.keys(fileUrlsByImageFormat).length <= 1) return;
+
+    // show the dropdown
+    document.querySelector(".selectfiletypes").innerHTML += "<div class=\"dropdown\">\n" +
+        "  <input type=\"checkbox\" id='selectfiletypes-dropdown' value=\"\" name=\"addUpdateDisplayTypes\">\n" +
+        "  <label for=\"selectfiletypes-dropdown\"\n" +
+        "     data-toggle=\"dropdown\">\n" +
+        "  Bestandstype naar selectie\n" +
+        "  </label>\n" +
+        "  <ul>\n" +
+        "  </ul>\n" +
+        "</div>";
+
+
+    Object.keys(fileUrlsByImageFormat).forEach(function(key) {
+        
+        var tocreateUrl = "";
+        for (var i = 0; i < fileUrlsByImageFormat[key].length; i++) {
+
+            if(i !== fileUrlsByImageFormat[key].length-1) {
+                tocreateUrl += fileUrlsByImageFormat[key][i] + ",";
+            }
+            else {
+                tocreateUrl += fileUrlsByImageFormat[key][i];
+            }
+        }
+        // console.log(tocreateUrl);
+        
+        document.querySelector(".selectfiletypes ul").innerHTML += "<li><li><a href=\"#sidebar="+ tocreateUrl +"\">"+key+"</a></li></li>";
+        // console.log(key, obj[key]);
+
+    });
+
+    
+}
+
 
 function loadResetButton() {
     if (document.querySelectorAll(".reset").length === 1) {
@@ -714,7 +786,8 @@ if (window.location.search.indexOf("collections=false") >= 0) {
         halfitems[i].href += "&collections=false"
     }
 }
-
+// temp
+addUpdateDisplayTypes();
 
 function forceSync(subPath) {
     // force
