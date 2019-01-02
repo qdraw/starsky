@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace starsky.Helpers
 {
@@ -14,17 +15,31 @@ namespace starsky.Helpers
         /// <returns>list/hashset with items in string</returns>
         public static HashSet<string> StringToHashSet(string inputKeywords)
         {
+	        var keywords = ReplaceSingleCommaWithCommaWithSpace(inputKeywords);
+
+            var dotcommaRegex = new Regex(", ");
             
-            var dotcommaRegex = new System.Text.RegularExpressions.Regex(", ");
-            
-            var keywordList = dotcommaRegex.Split(inputKeywords);
+            var keywordList = dotcommaRegex.Split(keywords);
 
 	        keywordList = TrimCommaInList(keywordList);
-	        
+
             HashSet<string> keywordsHashSet = new HashSet<string>(from x in keywordList select x);
 
             return keywordsHashSet;
         }
+
+	    /// <summary>
+	    /// To replace: test,fake with test, fake
+	    /// </summary>
+	    /// <param name="keywords">input string</param>
+	    /// <returns>comma separated string</returns>
+		private static string ReplaceSingleCommaWithCommaWithSpace(string keywords)
+		{
+			// unescaped regex: (,(?=\S)|:)
+			Regex pattern = new Regex("(,(?=\\S)|:)");
+			keywords = pattern.Replace(keywords,", ");
+			return keywords;
+		}
 
 	    /// <summary>
 	    /// removing ,,,,before keyword to avoid

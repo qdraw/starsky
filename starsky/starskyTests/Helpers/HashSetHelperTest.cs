@@ -24,6 +24,14 @@ namespace starskytests.Helpers
 		    Assert.AreEqual("test, test1",expetedresult);
 	    }
 	    
+	    [TestMethod]
+	    public void HashSetHelperTest_HashSetSingleComma()
+	    {
+		    // testing with double commas those are not supported by the c# exif read tool
+		    var result = HashSetHelper.StringToHashSet("test,test1");
+		    var expetedresult = HashSetHelper.HashSetToString(result);
+		    Assert.AreEqual("test, test1",expetedresult);
+	    }
         
         [TestMethod]
         public void HashSetHelperTest_SetToStringNull()
