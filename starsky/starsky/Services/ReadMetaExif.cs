@@ -55,34 +55,34 @@ namespace starsky.Services
             {
                 //  exifItem.Tags
                 var tags = GetExifKeywords(exifItem);
-                if(tags != null) // null = is not the right tag or emthy tag
+                if(tags != null) // null = is not the right tag or empty tag
                 {
                     item.Tags = tags;
                 }
                 // Colour Class => ratings
                 var colorClassString = GetColorClassString(exifItem);
-                if(colorClassString != null) // null = is not the right tag or emthy tag
+                if(colorClassString != null) // null = is not the right tag or empty tag
                 {
                     item.ColorClass = item.GetColorClass(colorClassString);
                 }
                 
                 // [IPTC] Caption/Abstract
                 var caption = GetCaptionAbstract(exifItem);
-                if(caption != null) // null = is not the right tag or emthy tag
+                if(caption != null) // null = is not the right tag or empty tag
                 {
                     item.Description = caption;
                 }    
                 
                 // [IPTC] Object Name = Title
                 var title = GetObjectName(exifItem);
-                if(title != null) // null = is not the right tag or emthy tag
+                if(title != null) // null = is not the right tag or empty tag
                 {
                      item.Title = title;
                 }
                 
                 // DateTime of image
                 var dateTime = GetExifDateTime(exifItem);
-                if(dateTime.Year > 2) // 0 = is not the right tag or emthy tag
+                if(dateTime.Year > 2) // 0 = is not the right tag or empty tag
                 {
                     item.DateTime = dateTime;
                 }
