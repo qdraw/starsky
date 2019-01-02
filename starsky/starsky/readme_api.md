@@ -29,6 +29,8 @@ For browsing the folders. Please use  `"pageType": "Archive"` to check the page 
 The querystring name `f` is used for the file path in releative/subpath style
 The status: Default, is not used in this view, the page view is a cached database view of the content
 
+>> Escape the `+`-sign with `%2B` to avoid 404 results
+
 ```json
 {
     "uri":"/starsky/?f=/&json=true",
@@ -184,6 +186,7 @@ Endpoint: `/starsky/Api/Info?f=/image.jpg` The querystring name `f` is used for 
     - `NotFoundNotInIndex` File does not exist in index
     - `NotFoundSourceMissing` The source file is missing
     - `ReadOnly` not allowed to overwrite this file
+- Escape the `+`-sign with `%2B` to avoid 404 results
 
 The response by the info request
 ```json
