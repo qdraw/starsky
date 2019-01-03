@@ -441,14 +441,11 @@ namespace starsky.Models
 		}
 	    
 	    
-	    [NotMapped]
 	    public double Aperture { get; set; }
 	    
-	    [NotMapped]
 	    [MaxLength(20)]
 	    public string ShutterSpeed { get; set; }
 
-	    [NotMapped]
 	    public ushort IsoSpeed { get; set; }
 	    
 	    public void SetIsoSpeed(string isoSpeed)

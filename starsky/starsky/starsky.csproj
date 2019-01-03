@@ -57,6 +57,8 @@
     <Compile Remove="Migrations\20180919145305_LocationCityLocationStateLocationCountry.Designer.cs" />
     <Compile Remove="Migrations\20180923145732_LocationAltitude.cs" />
     <Compile Remove="Migrations\20180923145732_LocationAltitude.Designer.cs" />
+    <Compile Remove="Migrations\20190103194709_AddApertureShutterSpeedIsoSpeed.cs" />
+    <Compile Remove="Migrations\20190103194709_AddApertureShutterSpeedIsoSpeed.Designer.cs" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />
