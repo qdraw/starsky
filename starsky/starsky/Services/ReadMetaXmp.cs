@@ -157,18 +157,31 @@ namespace starsky.Services
             if(gpsAltitude == null || gpsAltitudeRef == null) return;
             if(!gpsAltitude.Contains("/")) return;
 
-            var gpsAltitudeValues = gpsAltitude.Split("/");
-            if(gpsAltitudeValues.Length != 2) return;
-            var numerator = double.Parse(gpsAltitudeValues[0], CultureInfo.InvariantCulture);
-            var denominator = double.Parse(gpsAltitudeValues[1], CultureInfo.InvariantCulture);
-
-            item.LocationAltitude = numerator / denominator;
-
+			var locationAltitude = fraction(gpsAltitude);
+	        if(Math.Abs(locationAltitude) < 0) return;
+	        item.LocationAltitude = locationAltitude;
+	        
             //For items under the sea level
             if (gpsAltitudeRef == "1") item.LocationAltitude = item.LocationAltitude * -1;
         }
 
-        private FileIndexItem GetDataContentNameSpaceTypes(string xmpDataAsString, FileIndexItem item)
+	    private double fraction(string gpsAltitude)
+	    {
+		    var gpsAltitudeValues = gpsAltitude.Split("/");
+		    if(gpsAltitudeValues.Length != 2) return 0f;
+		    var numerator = double.Parse(gpsAltitudeValues[0], CultureInfo.InvariantCulture);
+		    var denominator = double.Parse(gpsAltitudeValues[1], CultureInfo.InvariantCulture);
+		    return numerator / denominator;
+	    }
+
+	    private double CalcAperture(string input)
+	    {
+		    var aperture = fraction(input);
+		    if(Math.Abs(aperture) < 0) return 0f;
+		    return aperture;
+	    }
+
+	    private FileIndexItem GetDataContentNameSpaceTypes(string xmpDataAsString, FileIndexItem item)
         {
             var xmp = XmpMetaFactory.ParseFromString(xmpDataAsString);
 
@@ -241,7 +254,16 @@ namespace starsky.Services
                 
                 // Path=photoshop:Country Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Nederland
                 var locationCountry = GetContentNameSpace(property, "photoshop:Country");
-                if (locationCountry != null) item.LocationCountry = locationCountry;     
+                if (locationCountry != null) item.LocationCountry = locationCountry;
+	            
+	            // exif:ExposureTime http://ns.adobe.com/exif/1.0/
+	            var shutterSpeed = GetContentNameSpace(property, "exif:ExposureTime");
+	            if (shutterSpeed != null) item.ShutterSpeed = shutterSpeed;
+	            
+	            
+	            // exif:FNumber http://ns.adobe.com/exif/1.0/
+	            var aperture = GetContentNameSpace(property, "exif:FNumber");
+	            if (aperture != null) item.Aperture = fraction(aperture);
                 
             }
             return item;

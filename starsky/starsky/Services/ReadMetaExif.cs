@@ -472,37 +472,52 @@ namespace starsky.Services
             return locationCity;
         }
 	    
-	    public float GetAperture(MetadataExtractor.Directory exifItem)
+	    public double GetAperture(MetadataExtractor.Directory exifItem)
 	    {
-		    
+		    var apertureString = string.Empty;
+
 		    var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value");
 		    if (dtCounts >= 1)
 		    {
-			    var apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;
-			    if(apertureString == null) return 0f; 
-			    apertureString = apertureString.Replace("f/", string.Empty);
-			    float.TryParse(apertureString, NumberStyles.Number, CultureInfo.InvariantCulture, out var aperture);
-			    return aperture;
+			    apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;
 		    }
 
-		    return 0f;
+		    dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "F-Number");
+		    if (dtCounts >= 1)
+		    {
+			    apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "F-Number")?.Description;
+		    }
+		    
+		    if(apertureString == null) return 0d; 
+		    apertureString = apertureString.Replace("f/", string.Empty);
+		    float.TryParse(apertureString, NumberStyles.Number, CultureInfo.InvariantCulture, out var aperture);
+		    return aperture;
+		    
 	    }
 	    
 	    // [Exif SubIFD] Shutter Speed Value = 1/2403 sec
 	    public string GetShutterSpeedValue(Directory exifItem)
 	    {
-		    
+		    string shutterSpeedString = string.Empty;
 		    var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value");
 		    if (dtCounts >= 1)
 		    {
-			    var shutterSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value")?.Description;
-			    if(shutterSpeedString == null) return string.Empty; 
-			    // the database has a 20 char limit
-			    if(shutterSpeedString.Length <= 20) return string.Empty; 
-			    return shutterSpeedString;
+			    shutterSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value")?.Description;
 		    }
-
-		    return string.Empty;
+		    
+		    dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Exposure Time");
+		    if (dtCounts >= 1)
+		    {
+			    shutterSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Exposure Time")?.Description;
+		    }
+		    
+		    if(shutterSpeedString == null) return string.Empty; 
+		    // the database has a 20 char limit
+		    if(shutterSpeedString.Length >= 20) return string.Empty;
+		    
+		    // in xmp there is only a field with for example: 1/33
+		    shutterSpeedString = shutterSpeedString.Replace(" sec", string.Empty);
+		    return shutterSpeedString;
 	    }
 
     }

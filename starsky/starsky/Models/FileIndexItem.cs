@@ -442,7 +442,7 @@ namespace starsky.Models
 	    
 	    
 	    [NotMapped]
-	    public float Aperture { get; set; }
+	    public double Aperture { get; set; }
 	    
 	    [NotMapped]
 	    [MaxLength(20)]
