@@ -19,6 +19,8 @@ if (document.querySelectorAll(".sidebar").length === 1) {
             updatePrevNextHash();
 
             document.querySelector(".sidebar .close").classList.add("collapsed");
+            document.querySelector(".sidebar .close").innerHTML = "Bewerken";
+
             sideBarDefaultWidth = document.querySelector(".sidebar").style.width;
             document.querySelector(".sidebar").style.width = "0px";
             sideBarDefaultPadding = document.querySelector(".sidebar").style.padding;
@@ -55,6 +57,8 @@ if (document.querySelectorAll(".sidebar").length === 1) {
             updatePrevNextHash();
 
             document.querySelector(".sidebar .close").classList.remove("collapsed");
+            document.querySelector(".sidebar .close").innerHTML = "Annuleer";
+
             document.querySelector(".sidebar").style.width = sideBarDefaultWidth;
             if (isStartup) {
                 document.querySelector(".sidebar .content").classList.remove("collapsed");

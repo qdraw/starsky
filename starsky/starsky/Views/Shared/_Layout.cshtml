@@ -32,23 +32,37 @@
     <![endif]-->
 
 <div class="head">
-    <div id="menu">
-        <ul>
-            <li>
-                <form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-nav">
-                    <input name="t" class="form-control" value="@ViewData["SearchQuery"]" autocomplete="off"/>
-                    <button class="btn btn-default" type="submit">Zoek</button>
-                </form>
-            </li>
-            <li>
-                <a href="@Url.Action("Index", "Account")">Account</a>
-@*                <ul style="display: none">*@
-@*                    <li><a href="@Url.Action("Logout", "Account")">Logout</a></li>*@
-@*                </ul>*@
-            </li> 
-        </ul>
-    </div> <a href="#hamburger" id="hamburger" class="hamburger">Menu</a> 
-    <a href="@Url.Action("Index", "Home")" class="logo">Qdraw.nl</a>
+	<div id="menu">
+		<ul class="moveaway">
+			<li class="hide900">
+				<form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-nav">
+					<input name="t" class="form-control" value="@ViewData["SearchQuery"]" autocomplete="off"/>
+					<button class="btn btn-default" type="submit">Zoek</button>
+				</form>
+			</li>
+			<li>
+				<a href="@Url.Action("Index", "Home")">Home</a>
+			</li>
+			<li>
+				<a href="@Url.Action("Index", "Account")">Account</a>
+			</li>
+			<li>
+				<a href="@Url.Action("Index", "Import")">Importeren</a>
+			</li>
+
+			@* <li><a href="@Url.Action("Logout", "Account")">Logout</a></li> *@
+
+		</ul>
+	</div>
+	<a href="#hamburger" id="hamburger" class="hamburger">Menu</a>
+	
+	<div class="form-logo show900">
+		<form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-nav">
+			<input name="t" class="form-control" value="@ViewData["SearchQuery"]" autocomplete="off"/>
+			<button class="btn btn-default" type="submit">Zoek</button>
+		</form>
+	</div>
+
 </div>
 
 @*<nav class="navbar navbar-inverse">*@

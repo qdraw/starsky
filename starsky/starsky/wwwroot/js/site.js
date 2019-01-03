@@ -196,12 +196,12 @@ function handleTouchMove(evt) {
 
 
 
-/* menu.js from qdraw */
+/* menu.js from qdraw but changed */
 
 
 document.querySelector(".head #hamburger").addEventListener("click", function(e){ hamburger(e); }, false);
 
-var isHamburgerActive = true;
+var isHamburgerActive = false;
 
 function hamburger(e) {
 
@@ -228,26 +228,27 @@ function hamburger(e) {
 
 }
 
-var widthMobile = 900; 
-if (window.innerWidth <= widthMobile) {
-    hamburger();
-}
-
-window.addEventListener('resize', function() {
-
-    // Close or open menu if change in resolution
-    if (window.innerWidth >= widthMobile) {
-        isHamburgerActive = false;
-        hamburger();
-    }
-
-    if (window.innerWidth <= widthMobile) {
-        isHamburgerActive = true;
-        hamburger();
-    }
-
-
-}, true);
+// var widthMobile = 900; 
+// if (window.innerWidth <= widthMobile) {
+// }
+// // hamburger();
+//
+//
+// window.addEventListener('resize', function() {
+//
+//     // Close or open menu if change in resolution
+//     if (window.innerWidth >= widthMobile) {
+//         isHamburgerActive = false;
+//         hamburger();
+//     }
+//
+//     if (window.innerWidth <= widthMobile) {
+//         isHamburgerActive = true;
+//         hamburger();
+//     }
+//
+//
+// }, true);
 
 if (document.querySelectorAll("#popup").length === 1) {
     document.querySelector("#popup")

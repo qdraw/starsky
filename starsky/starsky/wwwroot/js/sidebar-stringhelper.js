@@ -25,7 +25,8 @@ function replaceSideBarString(hashcontent) {
 if (document.querySelectorAll(".sidebar .close").length === 1) {
     document.querySelector(".sidebar .close")
         .addEventListener("click",
-            function () {
+            function (event) {
+                event.preventDefault();
                 toggleSideMenu()
             }, false);
 }
