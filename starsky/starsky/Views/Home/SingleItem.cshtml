@@ -53,10 +53,19 @@
 
 				<div>
 					@{
+						var cultureInfo = new CultureInfo("nl-NL");
 						if (Model.FileIndexItem.DateTime.Year >= 2)
 						{
-							var cultureInfo = new CultureInfo("nl-NL");
 							<p>Datum: <em>@Model.FileIndexItem.DateTime.ToString(cultureInfo)</em></p>
+						}
+						
+						if (Model.FileIndexItem.IsoSpeed != 0 && Model.FileIndexItem.ShutterSpeed != string.Empty && Math.Abs(Model.FileIndexItem.Aperture) > 0)
+						{
+							<p>
+								Sluitertijd: <em>@Model.FileIndexItem.ShutterSpeed.ToString(cultureInfo)</em> - <br />
+								Diafragma: <em>@Model.FileIndexItem.Aperture.ToString(cultureInfo)</em> -
+								ISO: <em>@Model.FileIndexItem.IsoSpeed.ToString(cultureInfo)</em>
+							</p>
 						}
 					}
 				</div>

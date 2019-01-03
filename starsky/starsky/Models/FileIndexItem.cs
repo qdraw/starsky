@@ -439,9 +439,13 @@ namespace starsky.Models
 		{
 			return (FileIndexItem) MemberwiseClone();
 		}
+
+	    private double _aperture;
 	    
-	    
-	    public double Aperture { get; set; }
+	    public double Aperture {
+			get => Math.Round(_aperture,5);
+		    set => _aperture = Math.Round(value, 5);
+	    }
 	    
 	    [MaxLength(20)]
 	    public string ShutterSpeed { get; set; }
