@@ -117,16 +117,16 @@ namespace starsky.Services
 	            
 	            ///    [Exif SubIFD] Aperture Value = f/2.2
 	            var aperture = GetAperture(exifItem);
-	            if(aperture != 0f) // 0f = is not the right tag or empty tag
+	            if(Math.Abs(aperture) > 0) // 0f = is not the right tag or empty tag
 	            {
 		            item.Aperture = aperture;
 	            }
 	            
 	            // [Exif SubIFD] Shutter Speed Value = 1/2403 sec
-	            var shutterspeed = GetShutterSpeedValue(exifItem);
-	            if(shutterspeed != string.Empty) // string.empthy = is not the right tag or empty tag
+	            var shutterSpeed = GetShutterSpeedValue(exifItem);
+	            if(shutterSpeed != string.Empty) // string.empthy = is not the right tag or empty tag
 	            {
-		            item.ShutterSpeed = shutterspeed;
+		            item.ShutterSpeed = shutterSpeed;
 	            }
 
 
