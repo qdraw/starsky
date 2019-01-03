@@ -114,6 +114,20 @@ namespace starsky.Services
                 {
                     item.LocationCountry = locationCountry;
                 }
+	            
+	            ///    [Exif SubIFD] Aperture Value = f/2.2
+	            var aperture = GetAperture(exifItem);
+	            if(aperture != 0f) // 0f = is not the right tag or empty tag
+	            {
+		            item.Aperture = aperture;
+	            }
+	            
+	            // [Exif SubIFD] Shutter Speed Value = 1/2403 sec
+	            var shutterspeed = GetShutterSpeedValue(exifItem);
+	            if(shutterspeed != string.Empty) // string.empthy = is not the right tag or empty tag
+	            {
+		            item.ShutterSpeed = shutterspeed;
+	            }
 
 
             }
@@ -148,9 +162,9 @@ namespace starsky.Services
 
         private static void DisplayAllExif(IEnumerable<MetadataExtractor.Directory> allExifItems)
         {
-//            foreach (var exifItem in allExifItems) {
-//                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
-//            }
+            foreach (var exifItem in allExifItems) {
+                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
+            }
         }
 
         public string GetObjectName (MetadataExtractor.Directory exifItem)
@@ -457,6 +471,39 @@ namespace starsky.Services
                      && p.Name == name)?.Description;
             return locationCity;
         }
+	    
+	    public float GetAperture(MetadataExtractor.Directory exifItem)
+	    {
+		    
+		    var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value");
+		    if (dtCounts >= 1)
+		    {
+			    var apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;
+			    if(apertureString == null) return 0f; 
+			    apertureString = apertureString.Replace("f/", string.Empty);
+			    float.TryParse(apertureString, NumberStyles.Number, CultureInfo.InvariantCulture, out var aperture);
+			    return aperture;
+		    }
+
+		    return 0f;
+	    }
+	    
+	    // [Exif SubIFD] Shutter Speed Value = 1/2403 sec
+	    public string GetShutterSpeedValue(Directory exifItem)
+	    {
+		    
+		    var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value");
+		    if (dtCounts >= 1)
+		    {
+			    var shutterSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value")?.Description;
+			    if(shutterSpeedString == null) return string.Empty; 
+			    // the database has a 20 char limit
+			    if(shutterSpeedString.Length <= 20) return string.Empty; 
+			    return shutterSpeedString;
+		    }
+
+		    return string.Empty;
+	    }
 
     }
 }

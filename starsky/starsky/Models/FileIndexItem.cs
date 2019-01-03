@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using starsky.Helpers;
@@ -433,11 +434,62 @@ namespace starsky.Models
         
         [NotMapped]
         public List<string> CollectionPaths { get; set; } = new List<string>();
+	    
+		public FileIndexItem Clone()
+		{
+			return (FileIndexItem) MemberwiseClone();
+		}
+	    
+	    
+	    [NotMapped]
+	    public float Aperture { get; set; }
+	    
+	    [NotMapped]
+	    [MaxLength(20)]
+	    public string ShutterSpeed { get; set; }
+	    
+	    
+	} // end class
+	
+	
+//	    [NotMapped]
+//	    public string CameraInfo { get; set; } = "{ \"Make\":\"disabled\", \"Aperture\":\"9\" }";
+//
+//	    private CameraData _cameraData;
+//	    
+//	    [NotMapped] 
+//	    public CameraData CameraData {
+//		    get
+//		    {
+//			    try
+//			    {
+//				    return JsonConvert.DeserializeObject<CameraData>(CameraInfo);
+//			    }
+//			    catch ( JsonSerializationException e )
+//			    {
+//				    Console.WriteLine(e);
+//				    return new CameraData();
+//			    }
+//			    
+//		    }
+//		    set
+//		    {
+//			    CameraInfo = JsonConvert.SerializeObject(value);
+//		    } 
+//	    }
+    
+	    
 
-        public FileIndexItem Clone()
-        {
-            return (FileIndexItem) MemberwiseClone();
-        }
-    }
+	
 
+	public enum CameraData
+	{
+		Make,
+		CameraModelName,
+		LensInfo,
+		LensModel,
+		Aperture,
+		ShutterSpeed,
+		ExposureMode
+	}
 }
