@@ -124,9 +124,16 @@ namespace starsky.Services
 	            
 	            // [Exif SubIFD] Shutter Speed Value = 1/2403 sec
 	            var shutterSpeed = GetShutterSpeedValue(exifItem);
-	            if(shutterSpeed != string.Empty) // string.empthy = is not the right tag or empty tag
+	            if(shutterSpeed != string.Empty) // string.Empty = is not the right tag or empty tag
 	            {
 		            item.ShutterSpeed = shutterSpeed;
+	            }
+	            
+	            // [Exif SubIFD] ISO Speed Ratings = 25
+	            var isoSpeed = GetIsoSpeedValue(exifItem);
+	            if(isoSpeed != 0) // 0 = is not the right tag or empty tag
+	            {
+		            item.SetIsoSpeed(isoSpeed);
 	            }
 
 
@@ -518,6 +525,21 @@ namespace starsky.Services
 		    // in xmp there is only a field with for example: 1/33
 		    shutterSpeedString = shutterSpeedString.Replace(" sec", string.Empty);
 		    return shutterSpeedString;
+	    }
+
+	    public int GetIsoSpeedValue(Directory exifItem)
+	    {
+		    var isoSpeedString = string.Empty;
+
+		    var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "ISO Speed Ratings");
+		    if (dtCounts >= 1)
+		    {
+			    isoSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "ISO Speed Ratings")?.Description;
+		    }
+		    
+		    if(isoSpeedString == null) return 0; 
+		    int.TryParse(isoSpeedString, NumberStyles.Number, CultureInfo.InvariantCulture, out var isoSpeed);
+		    return isoSpeed;
 	    }
 
     }
