@@ -447,9 +447,24 @@ namespace starsky.Models
 	    [NotMapped]
 	    [MaxLength(20)]
 	    public string ShutterSpeed { get; set; }
+
+	    [NotMapped]
+	    public ushort IsoSpeed { get; set; }
+	    
+	    public void SetIsoSpeed(string isoSpeed)
+	    {
+		    int.TryParse(isoSpeed, out var parsedInt);
+		    SetIsoSpeed(parsedInt);
+	    }
+	    
+	    public void SetIsoSpeed(int isoSpeed)
+	    {
+		    if(isoSpeed >= 1 && isoSpeed <= ushort.MaxValue ) 
+			    IsoSpeed = (ushort) isoSpeed;
+	    }
 	    
 	    
-	} // end class
+    } // end class
 	
 	
     

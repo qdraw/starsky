@@ -125,7 +125,13 @@ namespace starsky.Services
                 //    Path=dc:title[1]/xml:lang Namespace=http://www.w3...
                 var title = GetNullNameSpace(property, "dc:title[1]");
                 if (title != null) item.Title = title;
-                
+	            
+	            
+	            // Path=exif:ISOSpeedRatings Namespace=http://ns.adobe.com/exif/1.0/ Value=
+	            // Path=exif:ISOSpeedRatings[1] Namespace= Value=25
+	            var isoSpeed = GetNullNameSpace(property, "exif:ISOSpeedRatings[1]");
+	            if ( isoSpeed != null ) item.SetIsoSpeed(isoSpeed);
+               
 				if(_appSettings.Verbose) Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
 
 
