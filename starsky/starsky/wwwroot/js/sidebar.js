@@ -3,6 +3,7 @@
 var sideBarDefaultWidth;
 if (document.querySelectorAll(".sidebar").length === 1) {
     function toggleSideMenu(isStartup) {
+
         if (!isStartup) {
             if (document.querySelector(".sidebar").className.indexOf("enabled") === -1) {
                 document.querySelector(".sidebar").classList.add("enabled")
@@ -14,8 +15,20 @@ if (document.querySelectorAll(".sidebar").length === 1) {
                 var hash = window.location.hash.replace("#sidebar=" + GetSidebarWindowHash("sidebar"),"");
                 hash = hash.replace(";sidebar=" + GetSidebarWindowHash("sidebar"),"");
                 hash = hash.replace("#sidebar", "");
-                window.location.hash = hash.replace(";sidebar", "");
+                hash = hash.replace(";sidebar", "");
+                console.log(hash)
+                
+                var url = hash;
+                if(url === "") url = "#";
+
+                var stateObj = { url: url };
+                history.replaceState(stateObj, "Qdraw", url);
+
+                // window.location.hash = hash;
+
+
             }
+
             updatePrevNextHash();
 
             document.querySelector(".sidebar .close").classList.add("collapsed");
@@ -83,7 +96,10 @@ if (document.querySelectorAll(".sidebar").length === 1) {
             document.querySelector("body").classList.add("collapsed")
 
         }
-    }
+
+        window.onwheel = null;
+    } //end toggleSideMenu()
+    
     // in detailview mode
     if(document.querySelectorAll(".main-image").length === 1) {
         // Default on mobile disabled
