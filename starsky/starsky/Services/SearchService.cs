@@ -158,7 +158,14 @@ namespace starsky.Services
 						model.FileIndexItems.AddRange(sourceList.Where(
 						p => p.FileHash.ToLower().Contains(model.SearchFor[i])
 						));
-						break;             
+						break;
+	                case SearchViewModel.SearchInTypes.isdirectory:
+		                bool.TryParse(model.SearchFor[i].ToLowerInvariant(), out var boolIsDirectory);
+		                model.FileIndexItems.AddRange(sourceList.Where(
+			                p => p.IsDirectory == boolIsDirectory
+		                ));
+		                model.SearchFor[i] = boolIsDirectory.ToString();
+		                break; 
                     case SearchViewModel.SearchInTypes.addtodatabase:
 
                         var addtodatabase = parseDateTime(model.SearchFor[i]);
@@ -254,9 +261,16 @@ namespace starsky.Services
                     
 					case SearchViewModel.SearchInTypes.filehash:
 						model.FileIndexItems = model.FileIndexItems.Where(
-						p => p.FileHash.ToLower().Contains(model.SearchFor[i].ToLower())
+							p => p.FileHash.ToLower().Contains(model.SearchFor[i].ToLower())
 						).ToList();
 						break;
+					
+	                case SearchViewModel.SearchInTypes.isdirectory:
+		                bool.TryParse(model.SearchFor[i], out var boolIsDirectory);
+		                model.FileIndexItems = model.FileIndexItems.Where(
+			                p => p.IsDirectory == boolIsDirectory
+		                ).ToList();
+		                break; 
 	                
                     case SearchViewModel.SearchInTypes.parentdirectory:
                         model.FileIndexItems = model.FileIndexItems.Where(

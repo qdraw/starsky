@@ -33,7 +33,8 @@ namespace starsky.ViewModels
             title = 5,
             datetime = 6,
             addtodatabase = 7,
-	        filehash = 8
+	        filehash = 8,
+	        isdirectory = 9
         }
 
         

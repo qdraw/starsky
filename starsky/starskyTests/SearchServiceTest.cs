@@ -77,10 +77,18 @@ namespace starskytests
             
             if (string.IsNullOrEmpty(_query.GetItemByHash("stationdeletedfile")))
             {
+	            // add directory to search for
+	            _query.AddItem(new FileIndexItem
+	            {
+		            FileName = "stations",
+		            ParentDirectory = "/",
+		            FileHash = "",
+		            IsDirectory = true
+	            });
+        
                 _query.AddItem(new FileIndexItem
                 {
                     FileName = "deletedfile.jpg",
-                    //FilePath = "/stations/deletedfile.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "stationdeletedfile",
                     Tags = "!delete!"
@@ -218,6 +226,14 @@ namespace starskytests
             InsertSearchData();
             Assert.AreEqual(61, _search.Search("-ParentDirectory:/cities").SearchCount);
         }
+	    
+	    
+	    [TestMethod]
+	    public void SearchService_SearchForDirectories()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(1, _search.Search("-isDirectory:true -inurl:stations").SearchCount);
+	    }
         
         [TestMethod]
         public void SearchService_SearchInUrlTest()
@@ -225,8 +241,8 @@ namespace starskytests
             InsertSearchData();
             // Not 3, because one file is marked as deleted!
             // todo: check the value of this one
-            Assert.AreEqual(4, _search.Search("-inurl:/stations").SearchCount);
-            Assert.AreEqual(4, _search.Search("-inurl:\"/stations\"").SearchCount);
+            Assert.AreEqual(5, _search.Search("-inurl:/stations").SearchCount);
+            Assert.AreEqual(5, _search.Search("-inurl:\"/stations\"").SearchCount);
         }
 
         [TestMethod]
