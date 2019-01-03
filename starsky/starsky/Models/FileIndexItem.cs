@@ -452,44 +452,12 @@ namespace starsky.Models
 	} // end class
 	
 	
-//	    [NotMapped]
-//	    public string CameraInfo { get; set; } = "{ \"Make\":\"disabled\", \"Aperture\":\"9\" }";
-//
-//	    private CameraData _cameraData;
-//	    
-//	    [NotMapped] 
-//	    public CameraData CameraData {
-//		    get
-//		    {
-//			    try
-//			    {
-//				    return JsonConvert.DeserializeObject<CameraData>(CameraInfo);
-//			    }
-//			    catch ( JsonSerializationException e )
-//			    {
-//				    Console.WriteLine(e);
-//				    return new CameraData();
-//			    }
-//			    
-//		    }
-//		    set
-//		    {
-//			    CameraInfo = JsonConvert.SerializeObject(value);
-//		    } 
-//	    }
     
-	    
-
-	
-
-	public enum CameraData
-	{
-		Make,
-		CameraModelName,
-		LensInfo,
-		LensModel,
-		Aperture,
-		ShutterSpeed,
-		ExposureMode
-	}
+//	Make,
+//	CameraModelName,
+//	LensInfo,
+//	LensModel,
+//	Aperture,
+//	ShutterSpeed,
+//	ExposureMode
 }
