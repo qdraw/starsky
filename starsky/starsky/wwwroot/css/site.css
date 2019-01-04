@@ -622,8 +622,12 @@ h2 {
     transition: transform .5s ease-in-out;
     overflow: hidden;
     position: relative;
-    /*background-color: beige;*/
-    background-color: rgba(109, 199, 256, 0.6);
+    /*background-color: #B0BEC5;*/
+    /*background-color: #0D47A1;*/
+    
+    background-color: rgba(69, 90, 100, 0.6);
+
+    /*background-color: rgba(109, 199, 256, 0.6);*/
 }
 .wrapper .halfitem.directory-true img {
     opacity: 0.4;
@@ -646,7 +650,8 @@ h2 {
     }
 }
 .wrapper .halfitem.directory-true .filter {
-    background: linear-gradient(to right bottom, rgb(65,115,135) 50%, transparent 50%);
+    /*background: linear-gradient(to right bottom, rgb(65,115,135) 50%, transparent 50%);*/
+    background: linear-gradient(to right bottom, rgb(84, 110, 122) 50%, transparent 50%);
 }
 
 
@@ -667,7 +672,8 @@ h2 {
 
 .wrapper .halfitem.None.directory-true .caption {
     /*// beige*/
-    background-color: rgba(109, 199, 256, 0.5);
+    /*background-color: rgba(109, 199, 256, 0.5);*/
+    background-color: #607D8B;
 }
 
 
@@ -839,18 +845,23 @@ h2 {
 .add-colorclass .colorclass-0,
 #portfolio-filter ul > li > a#colorclass-0,
 .wrapper .halfitem.None .caption {
-    background-color: rgba(150, 150, 100, 0.3);
+    /*background-color: rgba(150, 150, 100, 0.3);*/
+    background-color: rgba(158, 157, 36, 0.3);
+
 }
 
 .wrapper .halfitem.None.on .caption {
-    background-color: rgba(150, 150, 100, 0.5);
+    /*background-color: rgba(150, 150, 100, 0.5);*/
+    background-color: rgba(158, 157, 36, 0.5);
 }
 
 .nextprev .colorclass-0.on,
 .add-colorclass .none.on,
 .add-colorclass .colorclass-0.on,
 #portfolio-filter ul > li > a#colorclass-0.active {
-    background-color: rgba(150, 150, 100, 1);
+    /*background-color: rgba(150, 150, 100, 1);*/
+    background-color: rgba(158, 157, 36, 1);
+
     color: white;
     opacity: 1;
 }
