@@ -835,34 +835,57 @@ if (document.querySelectorAll(".js-exportzip").length === 1) {
     document.querySelector(".js-exportzip")
         .addEventListener("click",
             function () {
-                exportZip(subPath)
+                exportZip()
             }, false);
 }
 
 
-function exportZip(subPath) {
+function exportZip() {
     // force
 
     console.log(subPath);
-    addNoClickToSidebar();
     showPreloader();
     console.log(exportZipApiBase)
 
+    var toupdateFiles = toSubpath();
+   
     loadJSON(exportZipApiBase,
         function (data) {
-            showPopupDialog("De server gaat nu op de achtergrond bekijken of de inhoud van deze pagina up-to-date is, een klein momentje geduld a.u.b" +
-                "<p>\n" +
-                "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
-                "</p>");
+            var exportZipUrl = "/export/zip?json=true&f=" + data;
+            var filename = data + ".zip";
+
+
+            showPopupDialog("Een moment geduld, op de achtergrond wordt een export gemaakt ");
+            
+        
+            var exportZipUrlsetInterval = setInterval(function () {
+                loadJSON(exportZipUrl,
+                    function (data) {
+                        
+                        // temp
+                        console.log(data);
+                        
+                        if(data === "OK") clearInterval(exportZipUrlsetInterval);
+                        showPopupDialog("Je kunt het bestand nu downloaden" +
+                            "<p>\n" +
+                            "<a download='"+filename+"' href='"+exportZipUrl.replace("?json=true","?")+"' class=\"btn-sm btn btn-default\">Download Export als zip</a>\n" +
+                            "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Sluit venster</a>\n" +
+                            "</p>");
+                    },
+                    function (xhr) {
+                        console.log(xhr)
+                    },
+                    "GET")
+            }, 1000);
+
         },
         function (xhr) {
-            console.error(xhr);
             showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
                 "<p>\n" +
                 "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
                 "</p>");
         },
         "POST",
-        "f=" + subPath
+        "f=" + toupdateFiles + "&json=true"
     );
 }

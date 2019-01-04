@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -40,8 +41,8 @@ namespace starsky.Controllers
 		/// <param name="f"></param>
 		/// <param name="collections"></param>
 		/// <returns></returns>
-		[HttpPost("/export/zip")]
-		public IActionResult Zip(string f, bool collections = true)
+		[HttpPost("/export/createZip")]
+		public IActionResult CreateZip(string f, bool collections = true)
 		{
 			var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
 			// the result list
@@ -69,28 +70,76 @@ namespace starsky.Controllers
 				statusModel.IsDirectory = false;
 
 				if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
-				
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
-				var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
-
-				var fileCompontentList = _readMeta.ReadExifAndXmpFromFileAddFilePathHash(collectionFullPaths.ToArray());
-				fileIndexResultsList.AddRange(fileCompontentList);
+				foreach ( var item in collectionSubPathList )
+				{
+					var itemDetailView = _query.SingleItem(item, null, false, false).FileIndexItem;
+					itemDetailView.Status = FileIndexItem.ExifStatus.Ok;
+					fileIndexResultsList.Add(itemDetailView);
+				}
 			}
-			var sourceFullPath =  CreateZip(fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList());
+
+			var zipHash = GetName(fileIndexResultsList);
 			
+			// Creating a zip is a background task
+			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			{
+				CreateZip(fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList(),zipHash);
+				
+				// Write a single file to be sure that writing is ready
+				var doneFileFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".done";
+				new PlainTextFileHelper().WriteFile(doneFileFullPath,"OK");
+			});
+
+			// When all items are not found
+			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+				return NotFound(fileIndexResultsList);
+			
+			// for the rest api
+			return Json(zipHash);
+		}
+
+		[HttpGet("/export/zip")]
+		public IActionResult Zip(string f, bool json = false)
+		{
+			var sourceFullPath = Path.Join(_appSettings.TempFolder,f) + ".zip";
+			var doneFileFullPath = Path.Join(_appSettings.TempFolder,f) + ".done";
+
+			if ( Files.IsFolderOrFile(sourceFullPath) ==
+			     FolderOrFileModel.FolderOrFileTypeList.Deleted ) NotFound("Path is not found");
+
+			// Read a single file to be sure that writing is ready
+			if ( Files.IsFolderOrFile(doneFileFullPath) ==
+			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			{
+				Response.StatusCode = 206;
+				return Json("Not Ready");
+			}
+			
+			if ( json ) return Json("OK");
 			FileStream fs = System.IO.File.OpenRead(sourceFullPath);
 			// Return the right mime type
 			return File(fs, MimeHelper.GetMimeTypeByFileName(sourceFullPath));
+
 		}
 
-		public string CreateZip(List<FileIndexItem> fileIndexResultsList)
+		private string GetName(List<FileIndexItem> fileIndexResultsList)
 		{
 			var tempFileNameStringBuilder = new StringBuilder();
 			foreach ( var item in fileIndexResultsList )
 			{
 				tempFileNameStringBuilder.Append(item.FileHash);
 			}
-			var tempFileFullPath = Path.Join(_appSettings.TempFolder,tempFileNameStringBuilder.ToString()) + ".zip";
+			// to be sure that the max string limit
+			var shortName = tempFileNameStringBuilder.ToString().GetHashCode().ToString(CultureInfo.InvariantCulture).ToLower().Replace("-","A");
+			return shortName;
+		}
+	
+
+		public string CreateZip(List<FileIndexItem> fileIndexResultsList, string zipHash)
+		{
+
+			var tempFileFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".zip";
 
 			if(System.IO.File.Exists(tempFileFullPath))
 			{
