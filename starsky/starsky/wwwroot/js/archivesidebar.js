@@ -265,6 +265,13 @@ function updateDisplayList() {
     if(selectedFiles.length >= 1 && document.querySelectorAll(".js-exportzip").length === 1){
         document.querySelector(".js-exportzip").classList.remove("disabled");
     }
+
+    if (selectedFiles.length === 0 && document.querySelectorAll(".js-exportzip-thumbnail").length === 1) {
+        document.querySelector(".js-exportzip-thumbnail").classList.add("disabled");
+    }
+    if(selectedFiles.length >= 1 && document.querySelectorAll(".js-exportzip-thumbnail").length === 1){
+        document.querySelector(".js-exportzip-thumbnail").classList.remove("disabled");
+    }
    
 }
 function updateControls() {
@@ -847,13 +854,23 @@ if (document.querySelectorAll(".js-exportzip").length === 1) {
             }, false);
 }
 
+if (document.querySelectorAll(".js-exportzip-thumbnail").length === 1) {
+    document.querySelector(".js-exportzip-thumbnail")
+        .addEventListener("click",
+            function () {
+                exportZip(true)
+            }, false);
+}
 
-function exportZip() {
+
+function exportZip(isThumbnail) {
+    if(isThumbnail === undefined) isThumbnail = false;
+    
     // force
 
     console.log(subPath);
     showPreloader();
-    console.log(exportZipApiBase)
+    console.log(exportZipApiBase);
 
     var toupdateFiles = toSubpath();
    
@@ -894,6 +911,6 @@ function exportZip() {
                 "</p>");
         },
         "POST",
-        "f=" + toupdateFiles + "&json=true"
+        "f=" + toupdateFiles + "&json=true&thumbnail="+ isThumbnail
     );
 }

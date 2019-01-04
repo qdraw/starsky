@@ -42,7 +42,7 @@ namespace starsky.Controllers
 		/// <param name="collections"></param>
 		/// <returns></returns>
 		[HttpPost("/export/createZip")]
-		public IActionResult CreateZip(string f, bool collections = true)
+		public IActionResult CreateZip(string f, bool collections = true, bool thumbnail = false)
 		{
 			var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
 			// the result list
@@ -79,12 +79,30 @@ namespace starsky.Controllers
 				}
 			}
 
-			var zipHash = GetName(fileIndexResultsList);
+			var isThumbnail = thumbnail ? "TN" : "SR"; // has:notHas
+			var zipHash = isThumbnail + GetName(fileIndexResultsList);
 			
 			// Creating a zip is a background task
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				CreateZip(fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList(),zipHash);
+
+				var filePaths = new List<string>();
+				var fileNames = new List<string>();
+
+				foreach ( var item in fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList() )
+				{
+					var sourceFile = _appSettings.DatabasePathToFilePath(item.FilePath);
+					var sourceThumb = Path.Join(_appSettings.ThumbnailTempFolder,
+						item.FileHash + ".jpg");
+					
+					if ( thumbnail )
+						new Thumbnail(_appSettings,_exiftool).CreateThumb(item);
+					
+					filePaths.Add(thumbnail ? sourceThumb : sourceFile ); // has:notHas
+					fileNames.Add(item.FileName);
+				}
+
+				CreateZip(filePaths,fileNames,zipHash);
 				
 				// Write a single file to be sure that writing is ready
 				var doneFileFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".done";
@@ -120,7 +138,6 @@ namespace starsky.Controllers
 			FileStream fs = System.IO.File.OpenRead(sourceFullPath);
 			// Return the right mime type
 			return File(fs, MimeHelper.GetMimeTypeByFileName(sourceFullPath));
-
 		}
 
 		private string GetName(List<FileIndexItem> fileIndexResultsList)
@@ -136,7 +153,7 @@ namespace starsky.Controllers
 		}
 	
 
-		public string CreateZip(List<FileIndexItem> fileIndexResultsList, string zipHash)
+		public string CreateZip(List<string> filePaths, List<string> fileNames, string zipHash)
 		{
 
 			var tempFileFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".zip";
@@ -146,9 +163,13 @@ namespace starsky.Controllers
 				return tempFileFullPath;
 			}
 			ZipArchive zip = ZipFile.Open(tempFileFullPath, ZipArchiveMode.Create);
-			foreach (var item in fileIndexResultsList)
+
+			for ( int i = 0; i < filePaths.Count; i++ )
 			{
-				zip.CreateEntryFromFile(_appSettings.DatabasePathToFilePath(item.FilePath), item.FileName);
+				if ( System.IO.File.Exists(filePaths[i]) )
+				{
+					zip.CreateEntryFromFile(filePaths[i], fileNames[i]);
+				}
 			}
 			zip.Dispose();
 			return tempFileFullPath;
