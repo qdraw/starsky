@@ -74,9 +74,10 @@
 	            <div class="js-collections-box">
 		            <h1>Weergave</h1>
 		            <span></span>
+		            <span><a class="colorbutton on no-checkbox js-forcesync">ForceSync</a></span>
+
 		            <span><a class="colorbutton on no-checkbox js-exportzip">Exporteer selectie</a></span>
 
-		            <span><a class="colorbutton on no-checkbox js-forcesync">Syncroniseer map</a></span>
 
 	            </div>
             </div>
@@ -182,10 +183,13 @@
 	infoApiBase = HttpUtility.UrlDecode(infoApiBase);
 	var syncApiBase = @Url.Action("Index", "Sync");
 	syncApiBase = HttpUtility.UrlDecode(syncApiBase);
+	var exportZipApiBase = @Url.Action("Zip", "Export");
+	exportZipApiBase = HttpUtility.UrlDecode(exportZipApiBase);
+
 }      
 <div id="js-settings" data-updateApiBase="@updateApiBase"
 	data-infoApiBase="@infoApiBase" data-syncApiBase="@syncApiBase"
-	data-subPath="@Model.SubPath">
+	data-subPath="@Model.SubPath" data-exportZipApiBase="@exportZipApiBase">
 </div>
                                    
 <script type="text/javascript" src="js/loadjson.js"></script>

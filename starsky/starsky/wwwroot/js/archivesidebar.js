@@ -9,6 +9,7 @@ if(document.querySelectorAll("#js-settings").length === 1) {
     var deleteApiBase = document.getElementById("js-settings").getAttribute("data-deleteApiBase");
     var subPath = document.getElementById("js-settings").getAttribute("data-subPath");
     var syncApiBase = document.getElementById("js-settings").getAttribute("data-syncApiBase");
+    var exportZipApiBase = document.getElementById("js-settings").getAttribute("data-exportZipApiBase");
 }
 
 var prevURL = "";
@@ -828,3 +829,40 @@ if (document.querySelectorAll(".js-forcesync").length === 1) {
             }, false);
 }
 
+
+
+if (document.querySelectorAll(".js-exportzip").length === 1) {
+    document.querySelector(".js-exportzip")
+        .addEventListener("click",
+            function () {
+                exportZip(subPath)
+            }, false);
+}
+
+
+function exportZip(subPath) {
+    // force
+
+    console.log(subPath);
+    addNoClickToSidebar();
+    showPreloader();
+    console.log(exportZipApiBase)
+
+    loadJSON(exportZipApiBase,
+        function (data) {
+            showPopupDialog("De server gaat nu op de achtergrond bekijken of de inhoud van deze pagina up-to-date is, een klein momentje geduld a.u.b" +
+                "<p>\n" +
+                "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
+        function (xhr) {
+            console.error(xhr);
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
+        "POST",
+        "f=" + subPath
+    );
+}

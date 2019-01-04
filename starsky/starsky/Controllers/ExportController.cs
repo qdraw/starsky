@@ -40,7 +40,7 @@ namespace starsky.Controllers
 		/// <param name="f"></param>
 		/// <param name="collections"></param>
 		/// <returns></returns>
-		[HttpGet("/export/zip")]
+		[HttpPost("/export/zip")]
 		public IActionResult Zip(string f, bool collections = true)
 		{
 			var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
