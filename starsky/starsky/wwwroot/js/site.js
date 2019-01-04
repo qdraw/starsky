@@ -60,6 +60,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                     window.location.href = next;
                 }
                 else if( (next != null && previousKey.indexOf(18) >= 0) ) {
+                    document.activeElement.focus();
                     document.activeElement.blur();
                     setInterval(function(){
                         if (formSubmitting === undefined) {
@@ -102,19 +103,68 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 }
                 break;
             case 224: // apple cmd
-                // previousKey.push(17);
+                previousKey.push(17);
                 break;
             case 17: // ctrl
-                // previousKey.push(17);
+                previousKey.push(17);
                 break;
             case 18: // alt
                 previousKey.push(18);
+                break;
+            case 16: // shift
+                previousKey.push(16);
+                break;
+            case 67: // C
+                previousKey.push(67);
+                break;
+            case 86: // V
+                previousKey.push(86);
                 break;
             default:
                 previousKey = [];
                 break;
 
         }
+        
+        
+        // auto copy
+        if(document.querySelectorAll(".archive").length === 1 || document.querySelectorAll(".detailview").length === 1) {
+            // copy
+            if (previousKey.indexOf(17) >= 0 && previousKey.indexOf(16) >= 0 && previousKey.indexOf(67) >= 0) {
+                console.log("copy");
+                console.log(previousKey)
+
+                var formControl = document.querySelectorAll(".form-control.js-allow-auto-copy");
+                for (var i = 0; i < formControl.length; i++) {
+
+                    var name = "copy_#" + formControl[i].parentElement.id + " - " + formControl[i].className;
+                    var contentCopy = document.querySelectorAll(".form-control.js-allow-auto-copy")[i].textContent;
+                    window.localStorage.setItem(name, contentCopy);
+                }
+                previousKey = [];
+            }
+            // paste
+            if (previousKey.indexOf(17) >= 0 && previousKey.indexOf(16) >= 0 && previousKey.indexOf(86) >= 0) {
+                console.log("paste");
+                // console.log(previousKey)
+
+                var formControlPaste = document.querySelectorAll(".form-control.js-allow-auto-copy");
+                for (var i = 0; i < formControlPaste.length; i++) {
+
+                    var nameCopy = "copy_#" + formControlPaste[i].parentElement.id + " - " + formControlPaste[i].className;
+                    var content = window.localStorage.getItem(nameCopy);
+                    if(content !== undefined && content !== null && content !== "") {
+                        formControlPaste[i].textContent = content;
+                        formControlPaste[i].focus(true);
+                        formControlPaste[i].blur();
+                    }
+                    // console.log("paste +> " + content);
+                }
+
+                previousKey = [];
+            }
+        }
+        
     };
     
     // swipes
@@ -227,28 +277,6 @@ function hamburger(e) {
     // console.log("hamburger" + isHamburgerActive);
 
 }
-
-// var widthMobile = 900; 
-// if (window.innerWidth <= widthMobile) {
-// }
-// // hamburger();
-//
-//
-// window.addEventListener('resize', function() {
-//
-//     // Close or open menu if change in resolution
-//     if (window.innerWidth >= widthMobile) {
-//         isHamburgerActive = false;
-//         hamburger();
-//     }
-//
-//     if (window.innerWidth <= widthMobile) {
-//         isHamburgerActive = true;
-//         hamburger();
-//     }
-//
-//
-// }, true);
 
 if (document.querySelectorAll("#popup").length === 1) {
     document.querySelector("#popup")
