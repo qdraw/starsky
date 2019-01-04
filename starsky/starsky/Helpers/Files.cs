@@ -67,8 +67,10 @@ namespace starsky.Helpers
                 // the same check in SingleFile
                 // Recruisive >= same check
                 // GetFilesInDirectory
-                var extension = Path.GetExtension(file).ToLower().Replace(".",string.Empty);
-                if (ExtensionSyncSupportedList.Contains(extension))
+				var extension = Path.GetExtension(file).ToLower().Replace(".",string.Empty);
+				// ignore Files with ._ names, this is Mac OS specific
+				var isAppleDouble = Path.GetFileName(file).StartsWith("._");
+				if (ExtensionSyncSupportedList.Contains(extension) && !isAppleDouble)
                 {
                     imageFilesList.Add(file);
                 }
