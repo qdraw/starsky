@@ -257,6 +257,14 @@ function updateDisplayList() {
         addUpdateDisplayTypes();
 
     }
+    // console.log(document.querySelector(".js-exportzip"))
+
+    if (selectedFiles.length === 0 && document.querySelectorAll(".js-exportzip").length === 1) {
+        document.querySelector(".js-exportzip").classList.add("disabled");
+    }
+    if(selectedFiles.length >= 1 && document.querySelectorAll(".js-exportzip").length === 1){
+        document.querySelector(".js-exportzip").classList.remove("disabled");
+    }
    
 }
 function updateControls() {
@@ -855,7 +863,7 @@ function exportZip() {
             var filename = data + ".zip";
 
 
-            showPopupDialog("Een moment geduld, op de achtergrond wordt een export gemaakt ");
+            showPopupDialog("Een moment geduld, op de achtergrond wordt een export gemaakt. De duur is afhankelijk van de selectie.");
             
         
             var exportZipUrlsetInterval = setInterval(function () {
