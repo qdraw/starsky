@@ -145,7 +145,7 @@ namespace starsky.Controllers
 				// if one item fails, the status will added
 				if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 				
-				var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
+				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
 				var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
                 
 				// loop to update
@@ -255,22 +255,6 @@ namespace starsky.Controllers
 
 
         /// <summary>
-        /// If conllections enalbed return list of subpaths
-        /// </summary>
-        /// <param name="detailView">the base fileIndexItem</param>
-        /// <param name="collections">bool, to enable</param>
-        /// <param name="subPath">the file orginal requested in subpath style</param>
-        /// <returns></returns>
-        private List<string> GetCollectionSubPathList(DetailView detailView, bool collections, string subPath)
-        {
-            // Paths that are used
-            var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
-            // when not running in collections mode only update one file
-            if (!collections) collectionSubPathList = new List<string> {subPath};
-            return collectionSubPathList;
-        }
-
-        /// <summary>
         /// Get realtime (cached a few minutes) about the file
         /// </summary>
         /// <param name="f">subpaths split by dot comma</param>
@@ -303,7 +287,7 @@ namespace starsky.Controllers
 
                 if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                             
-                var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
+                var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
                 var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
 
                 var fileCompontentList = _readMeta.ReadExifAndXmpFromFileAddFilePathHash(collectionFullPaths.ToArray());
@@ -349,7 +333,7 @@ namespace starsky.Controllers
 
                 if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                 
-                var collectionSubPathList = GetCollectionSubPathList(detailView, collections, subPath);
+                var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
                 var collectionFullDeletePaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
 
                 // display the to delete items
