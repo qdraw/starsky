@@ -269,6 +269,18 @@ namespace starskytests
             // lowercase is the same
             Assert.AreEqual(1, _search.Search("-DateTime>2015-01-01t01:01:01 -DateTime<2017-01-01t01:01:01").SearchCount);
         }
+	    
+	    [TestMethod]
+	    public void SearchService_SearchOnOnlyDay()
+	    {
+		    InsertSearchData();
+
+		    var item = _search.Search("-DateTime=2016-01-01");
+		    
+		    Assert.AreEqual(1, item.SearchCount);
+
+
+	    }
         
         [TestMethod]
         public void SearchService_Searchaddtodatabase()
@@ -386,6 +398,7 @@ namespace starskytests
         {
             Assert.AreEqual(_search.RoundUp(8),20); // NumberOfResultsInView
         }
+
 
 		[TestMethod]
 		public void SearchService_cacheTest()

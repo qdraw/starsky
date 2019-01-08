@@ -197,6 +197,40 @@ namespace starsky.Services
                         var dateTime = parseDateTime(model.SearchFor[i]);
                         model.SearchFor[i] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
 
+
+	                    // Searching for entire day
+	                    if ( model.SearchForOptions[i] == "=" && dateTime.Hour == 0 && dateTime.Minute == 0 && dateTime.Second == 0 &&
+	                         dateTime.Millisecond == 0 )
+	                    {
+
+		                    model.SearchForOptions[i] = ">";
+		                    model.SearchForOptions.Add("<");
+
+		                    var add24Hours = dateTime.AddHours(23)
+			                    .AddMinutes(59).AddSeconds(59).ToString(CultureInfo.InvariantCulture);
+		                    model.SearchFor.Add(add24Hours);		                    
+		                    model.SearchIn.Add("DateTime");
+	                    }
+
+	                    // faster search for searching within
+	                    // how ever this is still triggered multiple times
+	                    var beforeIndexSearchForOptions =
+		                    model.SearchForOptions.IndexOf(">");
+	                    var afterIndexSearchForOptions =
+		                    model.SearchForOptions.IndexOf("<");
+	                    if ( beforeIndexSearchForOptions >= 0  &&
+	                         afterIndexSearchForOptions >= 0 ) 
+						{
+		                    var beforeDateTime = parseDateTime(model.SearchFor[beforeIndexSearchForOptions]);
+		                    var afterDateTime = parseDateTime(model.SearchFor[afterIndexSearchForOptions]);
+		                    
+		                    model.FileIndexItems.AddRange(sourceList.Where(
+			                    p => p.DateTime >= beforeDateTime && p.DateTime <= afterDateTime 
+		                    ));
+							continue;
+	                    }
+	                    
+
                         switch (model.SearchForOptions[i])
                         {
                             case "<":
@@ -229,7 +263,7 @@ namespace starsky.Services
                     break;
                 }
             }
-        }
+        }	    
 
         private void NarrowSearch(SearchViewModel model)
         {
