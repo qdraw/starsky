@@ -281,7 +281,15 @@ function hamburger(e) {
 if (document.querySelectorAll("#popup").length === 1) {
     document.querySelector("#popup")
         .addEventListener("click", function(e){ 
-            hidePopupDialog(e); 
+
+            // on first button fail > reload entire page
+            var statusFirstButton =  document.querySelectorAll("#popup .content a")[0].getAttribute("data-onclick");
+            if (statusFirstButton === "location.reload()") {
+                location.reload()
+            }
+            //else hide >
+            hidePopupDialog(e);
+            hidePreloader();
         }, false);
 }
 function hidePopupDialog(those) {
@@ -309,7 +317,7 @@ function showPopupDialog(content,timeout) {
                     function (e) {
                         var target = e.target.getAttribute("data-onclick");
                         if (target === "hidePopupDialog()") {
-                            hidePopupDialog()
+                            hidePopupDialog();
                         }
                         else if (target === "location.reload()") {
                             location.reload()
@@ -317,6 +325,7 @@ function showPopupDialog(content,timeout) {
                         else if (target === "queryDeleteApi()") {
                             queryDeleteApi();
                         }
+
                     }, false);
             }
         }

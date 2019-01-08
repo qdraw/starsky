@@ -20,5 +20,22 @@ namespace starsky.ViewModels
         // Used by Razor view
         [JsonIgnore]
         public IEnumerable<FileIndexItem.ColorUserInterface> GetAllColor { get; set; }
+	    
+	    /// <summary>
+	    /// If conllections enalbed return list of subpaths
+	    /// </summary>
+	    /// <param name="detailView">the base fileIndexItem</param>
+	    /// <param name="collections">bool, to enable</param>
+	    /// <param name="subPath">the file orginal requested in subpath style</param>
+	    /// <returns></returns>
+	    public List<string> GetCollectionSubPathList(DetailView detailView, bool collections, string subPath)
+	    {
+		    // Paths that are used
+		    var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
+		    // when not running in collections mode only update one file
+		    if (!collections) collectionSubPathList = new List<string> {subPath};
+		    return collectionSubPathList;
+	    }
+	    
     }
 }
