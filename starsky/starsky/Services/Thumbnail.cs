@@ -85,7 +85,8 @@ namespace starsky.Services
         /// <exception cref="FileNotFoundException">Filepath and hash are missing in source item</exception>
         public bool CreateThumb(FileIndexItem item)
         {
-            if(string.IsNullOrEmpty(item.FilePath) || string.IsNullOrEmpty(item.FileHash)) throw new FileNotFoundException("FilePath or FileHash == null");
+            if(string.IsNullOrEmpty(item.FilePath) || string.IsNullOrEmpty(item.FileHash)) 
+	            throw new FileNotFoundException("FilePath or FileHash == null");
             return CreateThumb(item.FilePath, item.FileHash);
         }
 
@@ -300,7 +301,8 @@ namespace starsky.Services
         /// <param name="outputStream">input stream to save</param>
         /// <param name="removeExif">true, remove exif, default false</param>
         /// <param name="quality">default 75, only for jpegs</param>
-        private void ResizeThumbnailImageFormat(Image<Rgba32> image, Files.ImageFormat imageFormat, MemoryStream outputStream, bool removeExif = false, int quality = 75)
+        private void ResizeThumbnailImageFormat(Image<Rgba32> image, Files.ImageFormat imageFormat, 
+	        MemoryStream outputStream, bool removeExif = false, int quality = 75)
         {
             if (imageFormat == Files.ImageFormat.png)
             {
