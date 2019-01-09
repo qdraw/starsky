@@ -281,7 +281,7 @@ namespace starskytests
 	    }
 	    
 	    [TestMethod]
-	    public void SearchService_SearchToday()
+	    public void SearchService_SearchOnToday()
 	    {
 		    InsertSearchData();
 
