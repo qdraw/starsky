@@ -392,6 +392,15 @@ namespace starsky.Services
 
         private DateTime parseDateTime(string input)
         {
+
+	        // For relative values
+	        if ( Regex.IsMatch(input, @"^\d+$") )
+	        {
+				int.TryParse(input, out var relativeValue);
+				if(relativeValue >= 1) relativeValue = relativeValue * -1; // always in the past
+				return DateTime.Today.AddDays(relativeValue);
+	        }
+	        
             var patternLab = new List<string>
             {
                 "yyyy-MM-dd\\tHH:mm:ss", // < lowercase :)
@@ -403,8 +412,10 @@ namespace starsky.Services
                 "dd-MM-yyyy\\tHH:mm:ss",
                 "MM/dd/yyyy HH:mm:ss", // < used by the next string rule 01/30/2018 00:00:00
             };
+	        
             DateTime dateTime = DateTime.MinValue;
-            foreach (var pattern in patternLab)
+            
+	        foreach (var pattern in patternLab)
             {
                 DateTime.TryParseExact(input, 
                     pattern, 

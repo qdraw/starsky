@@ -279,6 +279,15 @@ namespace starskytests
 		    var item = _search.Search("-DateTime=2016-01-01");
 		    Assert.AreEqual(1, item.SearchCount);
 	    }
+	    
+	    [TestMethod]
+	    public void SearchService_SearchToday()
+	    {
+		    InsertSearchData();
+
+		    var item = _search.Search("-DateTime=0");
+		    Assert.AreEqual(1, item.SearchCount);
+	    }
         
         [TestMethod]
         public void SearchService_Searchaddtodatabase()
