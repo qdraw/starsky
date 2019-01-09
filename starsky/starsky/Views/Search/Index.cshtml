@@ -182,7 +182,7 @@
 				}
             
                 @*  Display previous page (-1)  *@
-	@{ var currentmin1 = (Model.PageNumber - 1);}
+				@{ var currentmin1 = (Model.PageNumber - 1);}
 				@if (@currentmin1 >= 0 )  // && !(@currentmin2-1 >= 0) 
 				{
 					//  !(@currentmin2-1 >= 0)  => hide if .. 
@@ -194,7 +194,7 @@
 				}
             
                 @*    Current page number*@
-	<a class="current" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@Model.PageNumber">
+				<a class="current" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@Model.PageNumber">
 					@displayPageNumber
 				</a>
             
@@ -211,12 +211,12 @@
 				}
             
                 @*  Display last page  *@
-	@{ var currentplus2 = (Model.PageNumber + 2);}
+				@{ var currentplus2 = (Model.PageNumber + 2);}
 				@if (@currentplus2 <= @Model.LastPageNumber )
 				{
 					// it glitch if human lenght = 3
 					if ((@currentplus2-1 <= Model.LastPageNumber && Model.LastPageNumber != 2)  ) {
-						<span class="box">..</span>
+						<span class="box">...</span>
 					}
 					<a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@Model.LastPageNumber">
 						@{

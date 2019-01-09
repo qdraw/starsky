@@ -1401,8 +1401,8 @@ footer {
 }
 .paginationbase .numberbox {
     position: absolute; 
-    left: 21px; 
-    width: 260px; 
+    left: 8px; 
+    width: 270px; 
     text-align: center;
 }
 .paginationbase .box,
@@ -1415,6 +1415,7 @@ footer {
     margin-left: -4px;
     text-decoration: none;
     color: black;
+    max-width: 40px;
 }
 .paginationbase a.current {
     background-color: black;
