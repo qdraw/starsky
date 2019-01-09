@@ -58,7 +58,8 @@ namespace starskytests
                     //FilePath = "/stations/lelystadcentrum.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "lelystadcentrum",
-                    Tags = "station, train, lelystad, de trein"
+                    Tags = "station, train, lelystad, de trein",
+	                DateTime = DateTime.Now
                 });
             }
             
@@ -276,10 +277,7 @@ namespace starskytests
 		    InsertSearchData();
 
 		    var item = _search.Search("-DateTime=2016-01-01");
-		    
 		    Assert.AreEqual(1, item.SearchCount);
-
-
 	    }
         
         [TestMethod]
