@@ -11,9 +11,17 @@ namespace starsky.ViewModels
         {
             if (_searchIn == null) _searchIn = new List<string>(); 
             if (FileIndexItems == null) FileIndexItems = new List<FileIndexItem>(); 
+	        
+	        _dateTime = DateTime.Now;
         }
 
-        public List<FileIndexItem> FileIndexItems { get; set; }
+	    /// <summary>
+	    /// Used to know how old the search query is
+	    /// </summary>
+	    private readonly DateTime _dateTime;
+	    public double Offset =>   Math.Round(Math.Abs((DateTime.Now - _dateTime).TotalSeconds),2);
+
+	    public List<FileIndexItem> FileIndexItems { get; set; }
         public List<string> Breadcrumb { get; set; }
         public string SearchQuery { get; set; }
         public int PageNumber { get; set; }
@@ -94,8 +102,8 @@ namespace starsky.ViewModels
                 _elapsedSeconds = value - value % 0.001;
             }
         }
-        
-        public SearchViewModel Clone()
+
+	    public SearchViewModel Clone()
         {
             return (SearchViewModel) MemberwiseClone();
         }
