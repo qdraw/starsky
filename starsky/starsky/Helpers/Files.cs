@@ -142,9 +142,12 @@ namespace starsky.Helpers
         /// <returns>true, if exiftool can write to this</returns>
         public static bool IsExtensionExifToolSupported(string filename)
         {
-            if (string.IsNullOrEmpty(filename)) return false;
-            var ext = Path.GetExtension(filename).Remove(0,1).ToLowerInvariant();
-            return ExtensionExifToolSupportedList.Contains(ext); // true = if supported
+			if (string.IsNullOrEmpty(filename)) return false;
+			var extension = Path.GetExtension(filename);
+			// dirs are = ""
+			if (string.IsNullOrEmpty(extension)) return false;
+			var ext = extension.Remove(0,1).ToLowerInvariant();
+			return ExtensionExifToolSupportedList.Contains(ext); // true = if supported
         }
         
         // ImageSharp => The IImageFormat interface, Jpeg, Png, Bmp, and Gif formats.

@@ -9,6 +9,7 @@ if(document.querySelectorAll("#js-settings").length === 1) {
     var deleteApiBase = document.getElementById("js-settings").getAttribute("data-deleteApiBase");
     var subPath = document.getElementById("js-settings").getAttribute("data-subPath");
     var syncApiBase = document.getElementById("js-settings").getAttribute("data-syncApiBase");
+    var exportZipApiBase = document.getElementById("js-settings").getAttribute("data-exportZipApiBase");
 }
 
 var prevURL = "";
@@ -255,6 +256,21 @@ function updateDisplayList() {
 
         addUpdateDisplayTypes();
 
+    }
+    // console.log(document.querySelector(".js-exportzip"))
+
+    if (selectedFiles.length === 0 && document.querySelectorAll(".js-exportzip").length === 1) {
+        document.querySelector(".js-exportzip").classList.add("disabled");
+    }
+    if(selectedFiles.length >= 1 && document.querySelectorAll(".js-exportzip").length === 1){
+        document.querySelector(".js-exportzip").classList.remove("disabled");
+    }
+
+    if (selectedFiles.length === 0 && document.querySelectorAll(".js-exportzip-thumbnail").length === 1) {
+        document.querySelector(".js-exportzip-thumbnail").classList.add("disabled");
+    }
+    if(selectedFiles.length >= 1 && document.querySelectorAll(".js-exportzip-thumbnail").length === 1){
+        document.querySelector(".js-exportzip-thumbnail").classList.remove("disabled");
     }
    
 }
@@ -828,3 +844,73 @@ if (document.querySelectorAll(".js-forcesync").length === 1) {
             }, false);
 }
 
+
+
+if (document.querySelectorAll(".js-exportzip").length === 1) {
+    document.querySelector(".js-exportzip")
+        .addEventListener("click",
+            function () {
+                exportZip()
+            }, false);
+}
+
+if (document.querySelectorAll(".js-exportzip-thumbnail").length === 1) {
+    document.querySelector(".js-exportzip-thumbnail")
+        .addEventListener("click",
+            function () {
+                exportZip(true)
+            }, false);
+}
+
+
+function exportZip(isThumbnail) {
+    if(isThumbnail === undefined) isThumbnail = false;
+    
+    // force
+
+    console.log(subPath);
+    showPreloader();
+    console.log(exportZipApiBase);
+
+    var toupdateFiles = toSubpath();
+   
+    loadJSON(exportZipApiBase,
+        function (data) {
+            var exportZipUrl = "/export/zip?json=true&f=" + data;
+            var filename = data + ".zip";
+
+
+            showPopupDialog("Een moment geduld, op de achtergrond wordt een export gemaakt. De duur is afhankelijk van de selectie.");
+            
+        
+            var exportZipUrlsetInterval = setInterval(function () {
+                loadJSON(exportZipUrl,
+                    function (data) {
+                        
+                        // temp
+                        console.log(data);
+                        
+                        if(data === "OK") clearInterval(exportZipUrlsetInterval);
+                        showPopupDialog("Je kunt het bestand nu downloaden" +
+                            "<p>\n" +
+                            "<a download='"+filename+"' href='"+exportZipUrl.replace("?json=true","?")+"' class=\"btn-sm btn btn-default\">Download Export als zip</a>\n" +
+                            "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Sluit venster</a>\n" +
+                            "</p>");
+                    },
+                    function (xhr) {
+                        console.log(xhr)
+                    },
+                    "GET")
+            }, 1000);
+
+        },
+        function (xhr) {
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
+        "POST",
+        "f=" + toupdateFiles + "&json=true&thumbnail="+ isThumbnail
+    );
+}

@@ -76,6 +76,14 @@
 		            <span></span>
 		            <span><a class="colorbutton on no-checkbox js-forcesync">ForceSync</a></span>
 	            </div>
+
+                <div class="js-collections-box">
+                    <h1>Export</h1>
+	                <span>
+		                <a class="colorbutton on no-checkbox js-exportzip">Orgineel</a>
+		                <a class="colorbutton on no-checkbox js-exportzip-thumbnail">Thumbnail</a>
+	                </span>
+	            </div>
             </div>
 
         </div>
@@ -179,10 +187,13 @@
 	infoApiBase = HttpUtility.UrlDecode(infoApiBase);
 	var syncApiBase = @Url.Action("Index", "Sync");
 	syncApiBase = HttpUtility.UrlDecode(syncApiBase);
+	var exportZipApiBase = @Url.Action("CreateZip", "Export");
+	exportZipApiBase = HttpUtility.UrlDecode(exportZipApiBase);
+
 }      
 <div id="js-settings" data-updateApiBase="@updateApiBase"
 	data-infoApiBase="@infoApiBase" data-syncApiBase="@syncApiBase"
-	data-subPath="@Model.SubPath">
+	data-subPath="@Model.SubPath" data-exportZipApiBase="@exportZipApiBase">
 </div>
                                    
 <script type="text/javascript" src="js/loadjson.js"></script>
