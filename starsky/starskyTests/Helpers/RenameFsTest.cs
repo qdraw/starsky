@@ -66,7 +66,7 @@ namespace starskytests.Helpers
 			var fileAlreadyExist = Path.Join(_newImage.BasePath, "already.txt");
 			if(!File.Exists(fileAlreadyExist)) new PlainTextFileHelper().WriteFile(fileAlreadyExist,"test");
 			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename(_newImage.DbPath, "/already.txt");
-			Assert.AreEqual("test\n",new PlainTextFileHelper().ReadFile(fileAlreadyExist));
+			Assert.AreEqual(new PlainTextFileHelper().ReadFile(fileAlreadyExist).Contains("test"), true);
 			Files.DeleteFile(fileAlreadyExist);
 		}
 
