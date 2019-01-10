@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Helpers;
@@ -42,7 +44,7 @@ namespace starsky.Controllers
 		/// <param name="collections"></param>
 		/// <returns></returns>
 		[HttpPost("/export/createZip")]
-		public IActionResult CreateZip(string f, bool collections = true, bool thumbnail = false)
+		public async Task<IActionResult> CreateZip(string f, bool collections = true, bool thumbnail = false)
 		{
 			var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
 			// the result list
@@ -82,10 +84,14 @@ namespace starsky.Controllers
 			var isThumbnail = thumbnail ? "TN" : "SR"; // has:notHas
 			var zipHash = isThumbnail + GetName(fileIndexResultsList);
 			
+			// When all items are not found
+			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+				return NotFound(fileIndexResultsList);
+			
 			// Creating a zip is a background task
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-
+				
 				var filePaths = new List<string>();
 				var fileNames = new List<string>();
 
@@ -107,18 +113,16 @@ namespace starsky.Controllers
 				// Write a single file to be sure that writing is ready
 				var doneFileFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".done";
 				new PlainTextFileHelper().WriteFile(doneFileFullPath,"OK");
-			});
+				Console.WriteLine("<<<<<<<");
 
-			// When all items are not found
-			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
-				return NotFound(fileIndexResultsList);
+			});
 			
 			// for the rest api
 			return Json(zipHash);
 		}
 
 		[HttpGet("/export/zip")]
-		public IActionResult Zip(string f, bool json = false)
+		public async Task<IActionResult> Zip(string f, bool json = false)
 		{
 			var sourceFullPath = Path.Join(_appSettings.TempFolder,f) + ".zip";
 			var doneFileFullPath = Path.Join(_appSettings.TempFolder,f) + ".done";

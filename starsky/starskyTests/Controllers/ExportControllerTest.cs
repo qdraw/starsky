@@ -2,17 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using starsky.Controllers;
 using starsky.Data;
 using starsky.Helpers;
 using starsky.Interfaces;
@@ -21,7 +20,7 @@ using starsky.Models;
 using starsky.Services;
 using starskytests.FakeMocks;
 using starskytests.Models;
-using starskytests.Services;
+using starsky.Controllers;
 
 namespace starskytests.Controllers
 {
@@ -91,10 +90,7 @@ namespace starskytests.Controllers
 			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-
-			// get the background helper
-			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
-			;
+	
 		}
 
 		private FileIndexItem InsertSearchData(bool delete = false)
@@ -118,51 +114,75 @@ namespace starskytests.Controllers
 		}
 
 		[TestMethod]
-		public void ExportController_CreateZipNotFound()
+		public async Task ExportController_CreateZipNotFound()
 		{
 			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue, _readmeta);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = controller.CreateZip("/fail", true, false) as NotFoundObjectResult;
+			var actionResult = await controller.CreateZip("/fail", true, false) as NotFoundObjectResult;
 			Assert.AreEqual(404,actionResult.StatusCode);
 		}
 
 		[TestMethod]
-		public void ExportController_TestZipping()
-		{
+		public async Task ExportController_TestZipping() {
+			IServiceCollection services = new ServiceCollection();
+			services.AddHostedService<BackgroundQueuedHostedService>();
+			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			var serviceProvider = services.BuildServiceProvider();
+
+			var service = serviceProvider.GetService<IHostedService>() as BackgroundQueuedHostedService;
+
+			var backgroundQueue = serviceProvider.GetService<IBackgroundTaskQueue>();
+
+			await service.StartAsync(CancellationToken.None);
+
+			// the test
 			var createAnImage = InsertSearchData(true);
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
-			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue, _readmeta);
+			var controller = new ExportController(_query, _exiftool, _appSettings, backgroundQueue, _readmeta);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			// to avoid skip of adding zip
-			var zipFileFullPath = Path.Join(_createAnImage.BasePath, zipHash + ".zip");
-			Files.DeleteFile(zipFileFullPath);
+			var zipFilesList = Directory.GetFiles(_createAnImage.BasePath, "*.*", SearchOption.AllDirectories)
+				.Where(p => ".zip" == Path.GetExtension(p) );
+			Files.DeleteFile(zipFilesList);
+			
+			
+			backgroundQueue.QueueBackgroundWorkItem(async token =>
+			{
+				Console.WriteLine("kdlsf");
+			});
 
-			var actionResult = controller.CreateZip(createAnImage.FilePath,true,false) as JsonResult;
+			var actionResult = await controller.CreateZip(createAnImage.FilePath,true,false) as JsonResult;
 			Assert.AreNotEqual(actionResult, null);
 			var zipHash = actionResult.Value as string;
 
 			Assert.AreEqual(zipHash.Contains("SR"),true);
 
+			await Task.Delay(100);
 
-			var actionResult2 = controller.Zip(zipHash) as JsonResult;
-			if ( (string) actionResult2.Value == "Not ready" || ( string ) actionResult2.Value == "OK" )
+			var actionResult2zip = await controller.Zip(zipHash,true) as JsonResult;
+			Assert.AreNotEqual(actionResult2zip, null);
+
+			var resultValue = ( string ) actionResult2zip.Value;
+			
+			if ( resultValue != "OK" && resultValue != "Not Ready" )
 			{
-				throw new Exception(actionResult2.StatusCode.ToString());
+				throw new Exception(actionResult2zip.StatusCode.ToString());
 			}
 
-			// There is no check due async background process
-
+			// Don't check if file exist due async
+			await service.StopAsync(CancellationToken.None);
 		}
+		
 
 		[TestMethod]
-		public void ExportController_ZipNotFound()
+		public async Task ExportController_ZipNotFound()
 		{
 			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue, _readmeta);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = controller.Zip("____fail", true) as NotFoundObjectResult;
+			var actionResult = await controller.Zip("____fail", true) as NotFoundObjectResult;
 			Assert.AreEqual(404, actionResult.StatusCode);
 		}
 

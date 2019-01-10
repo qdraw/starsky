@@ -12,7 +12,7 @@ namespace starsky.Helpers
     {
 
         /// <summary>
-        /// is the subpath a folder or file, or deleted
+        /// is the subpath a folder or file, or deleted (FolderOrFileModel.FolderOrFileTypeList.Deleted)
         /// </summary>
         /// <param name="fullFilePath">path of the filesystem</param>
         /// <returns>is file, folder or deleted</returns>

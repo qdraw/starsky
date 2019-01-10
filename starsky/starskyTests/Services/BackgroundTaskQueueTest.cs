@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Middleware;
 using starsky.Models;
@@ -58,5 +60,33 @@ namespace starskytests.Services
             });
 
         }
+	    
+	    // https://stackoverflow.com/a/51224556
+	    [TestMethod]
+	    public async Task BackgroundTaskQueueTest_Verify_Hosted_Service_Executes_Task() {
+		    IServiceCollection services = new ServiceCollection();
+		    services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
+		    services.AddHostedService<BackgroundQueuedHostedService>();
+		    services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+		    var serviceProvider = services.BuildServiceProvider();
+
+		    var service = serviceProvider.GetService<IHostedService>() as BackgroundQueuedHostedService;
+
+		    var backgroundQueue = serviceProvider.GetService<IBackgroundTaskQueue>();
+
+		    await service.StartAsync(CancellationToken.None);
+
+		    var isExecuted = false;
+		    backgroundQueue.QueueBackgroundWorkItem(async token => {
+			    isExecuted = true;
+		    });
+
+		    await Task.Delay(1000);
+		    Assert.IsTrue(isExecuted);
+
+		    await service.StopAsync(CancellationToken.None);
+	    }
+	    
+	    
     }
 }
