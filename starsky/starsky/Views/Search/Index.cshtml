@@ -68,7 +68,37 @@
 				<text>Pagina @humanPageNumbering van </text> 
 			}
             
-			@Model.SearchCount resultaten (@Model.ElapsedSeconds seconden)
+			@if ( @Model.SearchCount == 1 )
+			{
+				<text>1 resultaat</text> 
+			}
+			else
+			{
+				@Model.SearchCount <text> resultaten</text>
+			}
+			
+            (@Math.Round(@Model.ElapsedSeconds,2) seconden) 
+			
+			<em><text>(resultaat is  </text>   
+			@{
+				if ( @Model.Offset > 60 )
+				{
+					<text>@Math.Round(@Model.Offset /60 ) minuten oud</text>
+				}
+				else if (@Model.Offset < 3 )
+				{
+					<text>realtime</text>
+				}
+				else
+				{
+					<text>@Math.Round(@Model.Offset) seconden oud</text>
+				}
+				<text>)</text>                                          
+			}
+			</em>
+
+			
+			<br/>
 			@for (var i = 0; i < @Model.SearchIn.Count; i++)
 			{
 				<i>
@@ -93,6 +123,7 @@
 				-description:"zoek term"  <br/>
 				-title:zoekterm  <br/>
 				-datetime>2018-01-01T01:01:01  <br/>
+				-datetime=1 <em>(zoek naar foto's van gisteren)</em>  <br/>
 				-addtodatabase<2018-01-01T01:01:01  <br/>
 				-filehash:3DB75N7JJ6FDOPZY4YHGX4TLKHOQ <br/>
 				-isdirectory:true <em>or</em> -isdirectory:false<br/>
@@ -151,7 +182,7 @@
 				}
             
                 @*  Display previous page (-1)  *@
-	@{ var currentmin1 = (Model.PageNumber - 1);}
+				@{ var currentmin1 = (Model.PageNumber - 1);}
 				@if (@currentmin1 >= 0 )  // && !(@currentmin2-1 >= 0) 
 				{
 					//  !(@currentmin2-1 >= 0)  => hide if .. 
@@ -163,7 +194,7 @@
 				}
             
                 @*    Current page number*@
-	<a class="current" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@Model.PageNumber">
+				<a class="current" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@Model.PageNumber">
 					@displayPageNumber
 				</a>
             
@@ -180,12 +211,12 @@
 				}
             
                 @*  Display last page  *@
-	@{ var currentplus2 = (Model.PageNumber + 2);}
+				@{ var currentplus2 = (Model.PageNumber + 2);}
 				@if (@currentplus2 <= @Model.LastPageNumber )
 				{
 					// it glitch if human lenght = 3
 					if ((@currentplus2-1 <= Model.LastPageNumber && Model.LastPageNumber != 2)  ) {
-						<span class="box">..</span>
+						<span class="box">...</span>
 					}
 					<a asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@Model.LastPageNumber">
 						@{
