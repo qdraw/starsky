@@ -118,6 +118,16 @@ namespace starskytests.Controllers
 		}
 
 		[TestMethod]
+		public void ExportController_CreateZipNotFound()
+		{
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue, _readmeta);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			var actionResult = controller.CreateZip("/fail", true, false) as NotFoundObjectResult;
+			Assert.AreEqual(404,actionResult.StatusCode);
+		}
+
+		[TestMethod]
 		public void ExportController_TestZipping()
 		{
 			var createAnImage = InsertSearchData(true);
@@ -125,6 +135,9 @@ namespace starskytests.Controllers
 			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue, _readmeta);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
+			// to avoid skip of adding zip
+			var zipFileFullPath = Path.Join(_createAnImage.BasePath, zipHash + ".zip");
+			Files.DeleteFile(zipFileFullPath);
 
 			var actionResult = controller.CreateZip(createAnImage.FilePath,true,false) as JsonResult;
 			Assert.AreNotEqual(actionResult, null);
@@ -132,15 +145,25 @@ namespace starskytests.Controllers
 
 			Assert.AreEqual(zipHash.Contains("SR"),true);
 
+
 			var actionResult2 = controller.Zip(zipHash) as JsonResult;
 			if ( (string) actionResult2.Value == "Not ready" || ( string ) actionResult2.Value == "OK" )
 			{
 				throw new Exception(actionResult2.StatusCode.ToString());
 			}
 
-			var zipFileFullPath = Path.Join(_createAnImage.BasePath, zipHash +".zip");	
-			Files.DeleteFile(zipFileFullPath);
+			// There is no check due async background process
 
+		}
+
+		[TestMethod]
+		public void ExportController_ZipNotFound()
+		{
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue, _readmeta);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			var actionResult = controller.Zip("____fail", true) as NotFoundObjectResult;
+			Assert.AreEqual(404, actionResult.StatusCode);
 		}
 
 

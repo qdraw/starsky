@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -149,10 +149,16 @@ namespace starsky.Helpers
 			var ext = extension.Remove(0,1).ToLowerInvariant();
 			return ExtensionExifToolSupportedList.Contains(ext); // true = if supported
         }
-        
-        // ImageSharp => The IImageFormat interface, Jpeg, Png, Bmp, and Gif formats.
-        // Tiff based images are not supported by the thumbnail application 
-        private static List<string> ExtensionThumbSupportedList
+	
+		/// <summary>
+		/// Gets the extension thumb supported list.
+		/// ImageSharp => The IImageFormat interface, Jpeg, Png, Bmp, and Gif formats.
+		/// Tiff based images are not supported by the thumbnail application 	
+		/// </summary>
+		/// <value>
+		/// The extension thumb supported list.
+		/// </value>
+		private static List<string> ExtensionThumbSupportedList
         {
             get
             {
@@ -175,9 +181,14 @@ namespace starsky.Helpers
             var ext = Path.GetExtension(filename).Remove(0,1).ToLowerInvariant();
             return ExtensionThumbSupportedList.Contains(ext); // true = if supported
         }
-        
-        // List of extension that are forced to use sitecar xmp files
-        private static List<string> ExtensionForceXmpUseList
+
+		/// <summary>
+		/// List of extension that are forced to use site car xmp files	
+		/// </summary>
+		/// <value>
+		/// The extension force XMP use list.
+		/// </value>
+		private static List<string> ExtensionForceXmpUseList
         {
             get
             {
@@ -256,7 +267,12 @@ namespace starsky.Helpers
             return GetImageFormat(buffer);
         }
 
-        public static ImageFormat GetImageFormat(byte[] bytes)
+		/// <summary>
+		/// Gets the image format.
+		/// </summary>
+		/// <param name="bytes">The bytes of image</param>
+		/// <returns></returns>
+		public static ImageFormat GetImageFormat(byte[] bytes)
         {
             // see http://www.mikekunz.com/image_file_header.html  
             var bmp    = Encoding.ASCII.GetBytes("BM");     // BMP
@@ -347,7 +363,12 @@ namespace starsky.Helpers
             }
         }
 
-        public static IEnumerable<string> GetFilesRecrusive(string fullFilePath)
+		/// <summary>
+		/// Gets the files recrusive. (only ExtensionSyncSupportedList types)
+		/// </summary>
+		/// <param name="fullFilePath">The full file path.</param>
+		/// <returns></returns>
+		public static IEnumerable<string> GetFilesRecrusive(string fullFilePath)
         {
             List<string> findlist = new List<string>();
 
@@ -375,7 +396,12 @@ namespace starsky.Helpers
             return imageFilesList;
         }
 
-        private static void RecurseFind( string path, List<string> list )
+		/// <summary>
+		/// Recurses the find. (private)
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <param name="list">The list of strings.</param>
+		private static void RecurseFind( string path, List<string> list )
         {
             string[] fl = Directory.GetFiles(path);
             string[] dl = Directory.GetDirectories(path);

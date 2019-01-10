@@ -124,7 +124,7 @@ namespace starsky.Controllers
 			var doneFileFullPath = Path.Join(_appSettings.TempFolder,f) + ".done";
 
 			if ( Files.IsFolderOrFile(sourceFullPath) ==
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted ) NotFound("Path is not found");
+			     FolderOrFileModel.FolderOrFileTypeList.Deleted ) return NotFound("Path is not found");
 
 			// Read a single file to be sure that writing is ready
 			if ( Files.IsFolderOrFile(doneFileFullPath) ==
