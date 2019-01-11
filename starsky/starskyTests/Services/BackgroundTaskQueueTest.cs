@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -86,7 +86,14 @@ namespace starskytests.Services
 
 		    await service.StopAsync(CancellationToken.None);
 	    }
-	    
-	    
+
+		[ExpectedException(typeof(ArgumentNullException))]
+	    [TestMethod]
+	    public async Task BackgroundTaskQueueTest_ArgumentNullExceptionFail()
+	    {
+		    _bgTaskQueue.QueueBackgroundWorkItem(null);
+	    }
+
+
     }
 }
