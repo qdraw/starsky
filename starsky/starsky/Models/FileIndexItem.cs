@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -35,6 +35,8 @@ namespace starsky.Models
         {
 	        _parentDirectory = Breadcrumbs.BreadcrumbHelper(value).LastOrDefault();
 			_fileName = value.Replace(ConfigRead.AddSlash(_parentDirectory),string.Empty);
+			// filenames are without starting slash
+	        _fileName = ConfigRead.RemovePrefixDbSlash(_fileName);
         }
         
         // Do not save null in database for FileName
