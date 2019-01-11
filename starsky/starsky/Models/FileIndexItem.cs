@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using starsky.Helpers;
@@ -15,12 +14,24 @@ namespace starsky.Models
 {
     public class FileIndexItem
     {
-        [JsonIgnore]
+		/// <summary>
+		/// Unique database Id, not used and Json Ignored due the fact that files that are moved could have a new Id 
+		/// </summary>
+		/// <value>
+		/// The identifier.
+		/// </value>
+		[JsonIgnore]
         public int Id { get; set; }
 
         private string FilePathPrivate { get; set; } = string.Empty;
-	    
-        [Column(Order = 2)]
+
+		/// <summary>
+		/// Get a concatenated subpath style filepath to find the location
+		/// </summary>
+		/// <value>
+		/// The file path.
+		/// </value>
+		[Column(Order = 2)]
         public string FilePath
         {
             get { return ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName); }
@@ -31,17 +42,29 @@ namespace starsky.Models
             } 
         }
 
-        public void SetFilePath(string value)
+		/// <summary>
+		/// Sets the file path as Filename and ParentDirectory
+		/// </summary>
+		/// <param name="value">The value.</param>
+		public void SetFilePath(string value)
         {
 	        _parentDirectory = Breadcrumbs.BreadcrumbHelper(value).LastOrDefault();
 			_fileName = value.Replace(ConfigRead.AddSlash(_parentDirectory),string.Empty);
 			// filenames are without starting slash
 	        _fileName = ConfigRead.RemovePrefixDbSlash(_fileName);
         }
-        
+
         // Do not save null in database for FileName
         private string _fileName;
-        [Column(Order = 1)]
+
+		/// <summary>
+		/// Get or Set FileName with extension
+		/// Without first slash or path
+		/// </summary>
+		/// <value>
+		/// The name of the file with extension
+		/// </value>
+		[Column(Order = 1)]
         public string FileName
         {
             get => _fileName ?? string.Empty;
@@ -56,18 +79,38 @@ namespace starsky.Models
             }
         }
 
-        public string FileHash { get; set; }
-        
-        [NotMapped]
+		/// <summary>
+		/// Base32 hash to identify this file. Gets or sets the file hash.
+		/// </summary>
+		/// <value>
+		/// The file hash.
+		/// </value>
+		public string FileHash { get; set; }
+
+		/// <summary>
+		/// GetFileNameWithoutExtension
+		/// </summary>
+		/// <value>
+		/// The name of the file collection.
+		/// </value>
+		[NotMapped]
         public string FileCollectionName {
             get
             {
                 return Path.GetFileNameWithoutExtension(FileName);
             } 
         }
+
         // Do not save null in database for Parent Directory
         private string _parentDirectory;
-        public string ParentDirectory
+
+		/// <summary>
+		/// Get/Set Relative path of the parent Directory
+		/// </summary>
+		/// <value>
+		/// The parent directory in subpath style
+		/// </value>
+		public string ParentDirectory
         {
             get => _parentDirectory ?? string.Empty;
             set
@@ -80,10 +123,22 @@ namespace starsky.Models
                 _parentDirectory = value;
             }
         }
-        
-        public bool IsDirectory { get; set; }
 
-        [NotMapped]
+		/// <summary>
+		/// Gets or sets a value indicating whether this instance is directory.
+		/// </summary>
+		/// <value>
+		///   <c>true</c> if this instance is directory; otherwise (then is a file), <c>false</c>.
+		/// </value>
+		public bool IsDirectory { get; set; }
+
+		/// <summary>
+		/// Get/Set a HashList with Tags (stores as string under Tags)
+		/// </summary>
+		/// <value>
+		/// The keywords as List/HashList
+		/// </value>
+		[NotMapped]
         public HashSet<string> Keywords {
             get => HashSetHelper.StringToHashSet(Tags);
             set
@@ -96,7 +151,15 @@ namespace starsky.Models
         
         // Do not save null in database for tags
         private string _tags;
-        public string Tags
+
+		/// <summary>
+		/// Get/Set a comma separated string of unique tags.
+		/// Duplicate keywords are case sensitive removed
+		/// </summary>
+		/// <value>
+		/// The tags.
+		/// </value>
+		public string Tags
         {
             get => _tags ?? string.Empty;
             set
@@ -111,9 +174,11 @@ namespace starsky.Models
                 _tags = HashSetHelper.HashSetToString(Keywords);
             }
         }
-        
-        // Used to display file status
-        public enum ExifStatus
+
+		/// <summary>
+		/// Used to display file status (eg. NotFoundNotInIndex, Ok)
+		/// </summary>
+		public enum ExifStatus
         {
             Default,
             NotFoundNotInIndex,
@@ -125,13 +190,26 @@ namespace starsky.Models
             Ok,
         }
 
-        [JsonConverter(typeof(StringEnumConverter))]
+		/// <summary>
+		/// Gets or sets the display file status. (eg. NotFoundNotInIndex, Ok)
+		/// </summary>
+		/// <value>
+		/// The display file status. (eg. NotFoundNotInIndex, Ok).
+		/// </value>
+		[JsonConverter(typeof(StringEnumConverter))]
         [NotMapped]
         public ExifStatus Status { get; set; } = ExifStatus.Default;
         
         // add default value (6#+)
         private string _description;
-        public string Description
+
+		/// <summary>
+		/// Gets or sets the iptc:Caption-Abstract or xmp:description.
+		/// </summary>
+		/// <value>
+		/// The description as string
+		/// </value>
+		public string Description
         {
             get => _description ?? string.Empty;
             set
@@ -147,7 +225,14 @@ namespace starsky.Models
         
         // Do not save null in database for Title
         private string _title;
-        public string Title
+
+		/// <summary>
+		/// Gets or sets the iptc:Object Name or xmp:title.
+		/// </summary>
+		/// <value>
+		/// The title as string
+		/// </value>
+		public string Title
         {
             get => _title ?? string.Empty;
             set
