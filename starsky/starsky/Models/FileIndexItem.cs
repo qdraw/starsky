@@ -335,8 +335,13 @@ namespace starsky.Models
         {
             Orientation = RelativeOrientation(relativeRotation);
         }
-        
-        public Rotation RelativeOrientation(int relativeRotation = 0)
+
+		/// <summary>
+		/// Use a relative value to get the next orientation value
+		/// </summary>
+		/// <param name="relativeRotation">The relative rotation. +1 left, -1 right</param>
+		/// <returns>enum value of the output rotation</returns>
+		public Rotation RelativeOrientation(int relativeRotation = 0)
         {
             if (Orientation == Rotation.DoNotChange) Orientation = Rotation.Horizontal;
             
@@ -355,9 +360,13 @@ namespace starsky.Models
             
             return Rotation.DoNotChange;
         }
-        
-        // Set Rotation value
-        public Rotation SetAbsoluteOrientation(string orientationString = "0")
+
+		/// <summary>
+		/// Sets the absolute orientation value for rotation.
+		/// </summary>
+		/// <param name="orientationString">The orientation string (used by exif 1,6,8)</param>
+		/// <returns></returns>
+		public Rotation SetAbsoluteOrientation(string orientationString = "0")
         {
 
             switch (orientationString)
@@ -380,38 +389,71 @@ namespace starsky.Models
             }
         }
 
-        // Unexpeted side effect: when rotating; this may not be updated
-        // type > ushort 0-65535
-        public ushort ImageWidth { get; set; }
-        public ushort ImageHeight { get; set; }
+		/// <summary>
+		/// Gets or sets the width of the image. (ushort 0-65535)
+		/// Side effect: when rotating; this may not be updated
+		/// </summary>
+		/// <value>
+		/// The width of the image.
+		/// </value>
+		public ushort ImageWidth { get; set; }
 
-        public void SetImageWidth(string imageWidth)
+		/// <summary>
+		/// Gets or sets the height of the image. (ushort 0-65535)
+		///  Side effect: when rotating; this may not be updated
+		/// </summary>
+		/// <value>
+		/// The height of the image.
+		/// </value>
+		public ushort ImageHeight { get; set; }
+
+		/// <summary>
+		/// Sets the width of the image.
+		/// </summary>
+		/// <param name="imageWidth">Width of the image.</param>
+		public void SetImageWidth(string imageWidth)
         {
             int.TryParse(imageWidth, out var parsedInt);
             SetImageWidth(parsedInt);
         }
 
-        public void SetImageWidth(int imageWidth)
+	    /// <summary>
+	    /// Sets the width of the image.
+	    /// </summary>
+	    /// <param name="imageWidth">Width of the image.</param>
+		public void SetImageWidth(int imageWidth)
         {
             if(imageWidth >= 1 && imageWidth <= ushort.MaxValue ) 
                 ImageWidth = (ushort) imageWidth;
         }
 
-        public void SetImageHeight(string imageHeight)
+		/// <summary>
+		/// Sets the height of the image.
+		/// </summary>
+		/// <param name="imageHeight">Height of the image.</param>
+		public void SetImageHeight(string imageHeight)
         {
             int.TryParse(imageHeight, out var parsedInt);
             SetImageHeight(parsedInt);
         }
-        
-        public void SetImageHeight(int imageHeight)
+
+		/// <summary>
+		/// Sets the height of the image.
+		/// </summary>
+		/// <param name="imageHeight">Height of the image.</param>
+		public void SetImageHeight(int imageHeight)
         {
             if(imageHeight >= 1 && imageHeight <= ushort.MaxValue ) 
                 ImageHeight = (ushort) imageHeight;
         }
-        
-        
 
-        public static string GetDisplayName(Enum enumValue)
+
+		/// <summary>
+		/// Gets the display name. the value of this field [Display(Name = "Winner")]
+		/// </summary>
+		/// <param name="enumValue">The enum value.</param>
+		/// <returns>display name as string</returns>
+		public static string GetDisplayName(Enum enumValue)
         {
             var name = enumValue.GetType()?
                 .GetMember(enumValue.ToString())?
