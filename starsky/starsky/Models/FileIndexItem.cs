@@ -160,27 +160,81 @@ namespace starsky.Models
                 _title = value.Trim();
             }
         }
-        
-        public DateTime DateTime { get; set; }
 
-        public DateTime AddToDatabase { get; set; }
-        
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+		/// <summary>
+		/// Date/Time Digitized or Date/Time Original
+		/// </summary>
+		/// <value>
+		/// The DateTime object
+		/// </value>
+		public DateTime DateTime { get; set; }
 
-        public double LocationAltitude { get; set; } // in meters
+		/// <summary>
+		/// Datetime of when this item is added to the database
+		/// </summary>
+		/// <value>
+		/// The add to database DateTime value
+		/// </value>
+		public DateTime AddToDatabase { get; set; }
 
-        [MaxLength(40)]
+		/// <summary>
+		/// Latitude as decimal degrees using WGS84 (stored as double)
+		/// </summary>
+		/// <value>
+		/// The latitude value
+		/// </value>
+		public double Latitude { get; set; }
+
+		/// <summary>
+		/// Longitude  as decimal degrees using WGS84 (stored as double)
+		/// </summary>
+		/// <value>
+		/// The longitude value
+		/// </value>
+		public double Longitude { get; set; }
+
+		/// <summary>
+		/// Location altitude in meters. How how difference there is relative to WGS84 round earth.
+		/// (This might be different than meters above sea level)
+		/// </summary>
+		/// <value>
+		/// The location altitude.
+		/// </value>
+		public double LocationAltitude { get; set; } // in meters
+
+		/// <summary>
+		/// The name of the nearest city
+		/// </summary>
+		/// <value>
+		/// The location city.
+		/// </value>
+		[MaxLength(40)]
         public string LocationCity { get; set; } = string.Empty;
 
-        [MaxLength(40)]
+		/// <summary>
+		/// The name of the nearest state or province (Max length is 40 chars)
+		/// </summary>
+		/// <value>
+		/// The state of the location.
+		/// </value>
+		[MaxLength(40)]
         public string LocationState { get; set; } = string.Empty;
 
-        [MaxLength(40)] 
+		/// <summary>
+		/// The name of the nearest country (Max length is 40 chars)
+		/// </summary>
+		/// <value>
+		/// The location country.
+		/// </value>
+		[MaxLength(40)] 
         public string LocationCountry { get; set; } = string.Empty;
-        
-        
-        public Color GetColorClass(string colorclassString = "0")
+
+		/// <summary>
+		/// Use a int value to get the ColorClass enum. The number input is between 1 and 8
+		/// </summary>
+		/// <param name="colorclassString">The colorclass string.</param>
+		/// <returns></returns>
+		public Color GetColorClass(string colorclassString = "0")
         {
 
             switch (colorclassString)
@@ -208,7 +262,13 @@ namespace starsky.Models
             }
         }
 
-        public List<Color> GetColorClassList(string colorclassString = null)
+		/// <summary>
+		/// Comma separated list of color class numbers to create a list of enums
+		/// Used to create custom files to sort a combination of color classes
+		/// </summary>
+		/// <param name="colorclassString">The color class string.</param>
+		/// <returns></returns>
+		public List<Color> GetColorClassList(string colorclassString = null)
         {
             if (string.IsNullOrWhiteSpace(colorclassString)) return new List<Color>();
 
@@ -261,8 +321,10 @@ namespace starsky.Models
 		/// </value>
 		public Color ColorClass { get; set; } = Color.DoNotChange;
 
-
-        public enum Color
+		/// <summary>
+		/// ColorClass enum, used to filter images
+		/// </summary>
+		public enum Color
         {
             // Display name: used in -xmp:Label
             [Display(Name = "Winner")]
@@ -317,8 +379,10 @@ namespace starsky.Models
             Rotate270Cw = 8
         }
 
-        // More than 1 and order by logic order instead of exif order
-        private readonly List<Rotation> _orderRotation = new List<Rotation>
+		/// <summary>
+		/// The logic order of the rotation. Used when rotate relative. And after the last one it starts with the first item.
+		/// </summary>
+		private readonly List<Rotation> _orderRotation = new List<Rotation>
         {
             Rotation.Horizontal,
             Rotation.Rotate90Cw,
@@ -326,12 +390,23 @@ namespace starsky.Models
             Rotation.Rotate270Cw
         };
 
-        public static bool IsRelativeOrientation(int rotateClock)
+		/// <summary>
+		/// Determines whether [is relative orientation] [the specified rotate clock].
+		/// </summary>
+		/// <param name="rotateClock">The rotate clock.</param>
+		/// <returns>
+		///   <c>true</c> if [is relative orientation] [the specified rotate clock]; otherwise, <c>false</c>.
+		/// </returns>
+		public static bool IsRelativeOrientation(int rotateClock)
         {
             return rotateClock == -1 || rotateClock == 1; // rotateClock == -1 || rotateClock == 1 true
         }
 
-        public void SetRelativeOrientation(int relativeRotation = 0)
+		/// <summary>
+		/// Sets the relative orientation.
+		/// </summary>
+		/// <param name="relativeRotation">The relative rotation.</param>
+		public void SetRelativeOrientation(int relativeRotation = 0)
         {
             Orientation = RelativeOrientation(relativeRotation);
         }
@@ -390,7 +465,7 @@ namespace starsky.Models
         }
 
 		/// <summary>
-		/// Gets or sets the width of the image. (ushort 0-65535)
+		/// Gets or sets the width of the image. (saved as ushort 0-65535)
 		/// Side effect: when rotating; this may not be updated
 		/// </summary>
 		/// <value>
@@ -399,7 +474,7 @@ namespace starsky.Models
 		public ushort ImageWidth { get; set; }
 
 		/// <summary>
-		/// Gets or sets the height of the image. (ushort 0-65535)
+		/// Gets or sets the height of the image. (saved as ushort 0-65535)
 		///  Side effect: when rotating; this may not be updated
 		/// </summary>
 		/// <value>
@@ -408,8 +483,8 @@ namespace starsky.Models
 		public ushort ImageHeight { get; set; }
 
 		/// <summary>
-		/// Sets the width of the image.
-		/// </summary>
+		/// Sets the width of the image. (saved as ushort 0-65535)
+		/// </summary> 
 		/// <param name="imageWidth">Width of the image.</param>
 		public void SetImageWidth(string imageWidth)
         {
@@ -417,10 +492,10 @@ namespace starsky.Models
             SetImageWidth(parsedInt);
         }
 
-	    /// <summary>
-	    /// Sets the width of the image.
-	    /// </summary>
-	    /// <param name="imageWidth">Width of the image.</param>
+		/// <summary>
+		/// Sets the width of the image. (saved as ushort 0-65535)
+		/// </summary>
+		/// <param name="imageWidth">Width of the image.</param>
 		public void SetImageWidth(int imageWidth)
         {
             if(imageWidth >= 1 && imageWidth <= ushort.MaxValue ) 
@@ -428,7 +503,7 @@ namespace starsky.Models
         }
 
 		/// <summary>
-		/// Sets the height of the image.
+		/// Sets the height of the image. (saved as ushort 0-65535)
 		/// </summary>
 		/// <param name="imageHeight">Height of the image.</param>
 		public void SetImageHeight(string imageHeight)
@@ -438,7 +513,7 @@ namespace starsky.Models
         }
 
 		/// <summary>
-		/// Sets the height of the image.
+		/// Sets the height of the image. (saved as ushort 0-65535)
 		/// </summary>
 		/// <param name="imageHeight">Height of the image.</param>
 		public void SetImageHeight(int imageHeight)
@@ -462,14 +537,20 @@ namespace starsky.Models
                 .Name;
             return name;
         }
-        
-      
-        public static IEnumerable<Color> GetAllColor()
+
+		/// <summary>
+		/// Gets all items of the enum color, eg Winner, WinnerAlt.
+		/// </summary>
+		/// <returns>List with enum-item</returns>
+		public static IEnumerable<Color> GetAllColor()
         {
             return Enum.GetValues(typeof(Color)).Cast<Color>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
         }
-        
-        public enum ColorUserInterface
+
+		/// <summary>
+		/// The enum Color in Dutch
+		/// </summary>
+		public enum ColorUserInterface
         {
             Paars = 1, // Paars - purple
             Rood = 2, // rood - Red -
@@ -483,41 +564,88 @@ namespace starsky.Models
             DoNotChange = -1
         }
 
-        public static IEnumerable<ColorUserInterface> GetAllColorUserInterface()
+		/// <summary>
+		/// Gets all color user interface. In Dutch: Paars, Rood, etc.
+		/// </summary>
+		/// <returns></returns>
+		public static IEnumerable<ColorUserInterface> GetAllColorUserInterface()
         {
             return Enum.GetValues(typeof(ColorUserInterface)).Cast<ColorUserInterface>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
         }
-        
-        [JsonConverter(typeof(StringEnumConverter))]
+
+		/// <summary>
+		/// Gets or sets the image format. (eg: jpg, tiff)
+		/// There are types for: notfound = -1, and	unknown = 0,
+		/// </summary>
+		/// <value>
+		/// The image format as enum item
+		/// </value>
+		[JsonConverter(typeof(StringEnumConverter))]
         public Files.ImageFormat ImageFormat { get; set; }
-        
-        [NotMapped]
+
+		/// <summary>
+		/// To show location of files with the same Filename without extension
+		/// </summary>
+		/// <value>
+		/// The collection paths, relative to the database (subpath style)
+		/// </value>
+		[NotMapped]
         public List<string> CollectionPaths { get; set; } = new List<string>();
-	    
+
+		/// <summary>
+		/// Duplicate this item in memory.
+		/// </summary>
+		/// <returns>FileIndexItem duplicated</returns>
 		public FileIndexItem Clone()
 		{
 			return (FileIndexItem) MemberwiseClone();
 		}
 
 	    private double _aperture;
-	    
-	    public double Aperture {
+
+		/// <summary>
+		/// Gets or sets the aperture. (round to 5 decimals)
+		/// </summary>
+		/// <value>
+		/// The aperture.
+		/// </value>
+		public double Aperture {
 			get => Math.Round(_aperture,5);
 		    set => _aperture = Math.Round(value, 5);
 	    }
-	    
-	    [MaxLength(20)]
+
+		/// <summary>
+		/// Shutter speed as string so '1/2' or '1' 
+		/// </summary>
+		/// <value>
+		/// The shutter speed as string
+		/// </value>
+		[MaxLength(20)]
 	    public string ShutterSpeed { get; set; }
 
-	    public ushort IsoSpeed { get; set; }
-	    
-	    public void SetIsoSpeed(string isoSpeed)
+		/// <summary>
+		/// Gets or sets the iso speed used by cameras  (saved as ushort 0-65535)
+		/// </summary>
+		/// <value>
+		/// The iso speed.
+		/// </value>
+		public ushort IsoSpeed { get; set; }
+
+		/// <summary>
+		/// Sets the iso speed. (saved as ushort 0-65535)
+		/// </summary>
+		/// <param name="isoSpeed">The iso speed.</param>
+		public void SetIsoSpeed(string isoSpeed)
 	    {
 		    int.TryParse(isoSpeed, out var parsedInt);
 		    SetIsoSpeed(parsedInt);
 	    }
-	    
-	    public void SetIsoSpeed(int isoSpeed)
+
+		/// <summary>
+		/// Sets the iso speed. (saved as ushort 0-65535)
+		/// </summary>
+		/// <param name="isoSpeed">The iso speed.</param>
+		public void SetIsoSpeed(int isoSpeed)
 	    {
 		    if(isoSpeed >= 1 && isoSpeed <= ushort.MaxValue ) 
 			    IsoSpeed = (ushort) isoSpeed;
