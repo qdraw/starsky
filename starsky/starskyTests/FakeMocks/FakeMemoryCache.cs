@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Models;
@@ -6,7 +6,7 @@ using starsky.ViewModels;
 
 namespace starskytests.FakeMocks
 {
-    public class FakeMemoryCache :IMemoryCache
+    public class FakeMemoryCache : IMemoryCache
     {
         private readonly ICacheEntry _fakeCacheEntry;
 
