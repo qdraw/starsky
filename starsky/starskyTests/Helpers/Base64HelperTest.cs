@@ -34,7 +34,7 @@ namespace starskytests.Helpers
 		[TestMethod]
 		public void Base64HelperTest_TryParseCorruptString()
 		{
-			var currupt = Base64Helper.TryParse("fail");
+			var currupt = Base64Helper.TryParse("failing");
 			var noByte = new byte[0];
 			Assert.AreEqual(noByte.Length, currupt.Length);
 		}
