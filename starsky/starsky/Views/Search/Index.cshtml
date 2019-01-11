@@ -23,30 +23,22 @@
 		}
 	</h4>
     
-	<h1 class="breadcrumb">
-		@foreach (var item in Model.Breadcrumb)
+<h1 class="breadcrumb">
+
+	<a asp-controller="Home" asp-action="Index">Home</a>
+	<span> &raquo;</span>
+	<a asp-controller="Search" asp-action="Index">Zoeken</a>
+	
+	@{
+		var urlPath = @Url.Action("Index", "Search", new {t = @Model.Breadcrumb.LastOrDefault() });
+		urlPath = urlPath.Replace("%2F", "/");
+		if ( Model.Breadcrumb.LastOrDefault() != string.Empty )
 		{
-			var name = @item.Split("/")[item.Split("/").Length - 1];
-			if (name == "")
-			{
-				name = "Home";
-			}
-			if (name != "Home")
-			{
-				var urlPath = @Url.Action("Index", "Search", new {t = @item});
-				urlPath = urlPath.Replace("%2F", "/");
-				<a href="@urlPath">@name</a>
-			}
-			else
-			{
-				<a asp-controller="Home" asp-action="Index">@name</a>
-			}
-			if (item != Model.Breadcrumb[Model.Breadcrumb.Count - 1])
-			{
-				<span> &raquo;</span>
-			}
+			<span> &raquo;</span>
+			<a href="@urlPath">@Model.Breadcrumb.LastOrDefault()</a>
 		}
-	</h1>
+	}
+</h1>
     
 	<div class="wrapper">
 		<form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-wrapper">
@@ -81,11 +73,11 @@
 			
 			<em><text>(resultaat is  </text>   
 			@{
-				if ( @Model.Offset > 60 )
+				if ( @Model.Offset > 60)
 				{
 					<text>@Math.Round(@Model.Offset /60 ) minuten oud</text>
 				}
-				else if (@Model.Offset < 3 )
+				else if (@Model.Offset < 4 )
 				{
 					<text>realtime</text>
 				}
@@ -113,21 +105,22 @@
 	@if (@Model.SearchCount == 0)
 	{
 		<div class="wrapper">
-			<p>
+
+			<p><b>Instructies </b><br/>
 				Zoekopties (bevat woord): <br/>
 				(default: ) Zoek term => Tags<br/>
-				-tags:"zoek term"  <br/>
-				-filepath="/path"  <br/>
-				-filename:2018  <br/>
-				-parentdirectory:2018  <br/>
-				-description:"zoek term"  <br/>
-				-title:zoekterm  <br/>
-				-datetime>2018-01-01T01:01:01  <br/>
-				-datetime=1 <em>(zoek naar foto's van gisteren)</em>  <br/>
-				-addtodatabase<2018-01-01T01:01:01  <br/>
+				-tags:"zoek term" <br/>
+				-filepath="/path" <br/>
+				-filename:2018 <br/>
+				-parentdirectory:2018 <br/>
+				-description:"zoek term" <br/>
+				-title:zoekterm <br/>
+				-datetime>2018-01-01T01:01:01 <br/>
+				-datetime=1 <em>(zoek naar foto's van gisteren)</em> <br/>
+				-addtodatabase<2018-01-01T01:01:01 <br/>
 				-filehash:3DB75N7JJ6FDOPZY4YHGX4TLKHOQ <br/>
 				-isdirectory:true <em>or</em> -isdirectory:false<br/>
-				InUrl: Gebruik '-inurl:naam', '-inurl=naam'  of '-inurl:"naam met spatie"' zoek woorden om verder te specificeren<br/> 
+				InUrl: Gebruik '-inurl:naam', '-inurl=naam' of '-inurl:"naam met spatie"' zoek woorden om verder te specificeren<br/>
 				Tags: Normale Sleutelwoorden worden gelezen als deze combinatie is aanwezig in het Tags-veld
 			</p>
 		</div>
@@ -139,7 +132,7 @@
 		{
 			var enumValue = (int) item.ColorClass;
 			var directoryLabel = "directory-" + item.IsDirectory.ToString().ToLower();
-			var urlPath = @Url.Action("Index", "Home", new {f = @item.FilePath});
+			urlPath = @Url.Action("Index", "Home", new {f = @item.FilePath});
 			urlPath = urlPath.Replace("%2F", "/");
 			<a class="halfitem @item.ColorClass colorclass-@enumValue @directoryLabel" data-filename="@item.FileName" data-tag="colorclass-@enumValue"
 			   data-tagnl="@FileIndexItem.GetAllColorUserInterface().FirstOrDefault(p => (int) p == enumValue)"

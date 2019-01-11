@@ -4,7 +4,14 @@
 @using System.Security.Claims
 @model starsky.Models.Account.User
 
-
+<h4 class="nextprev">
+	&nbsp;
+</h4>
+<h1 class="breadcrumb">
+	<a asp-controller="Home" asp-action="Index">Home</a>
+	<span> &raquo;</span>
+	<a asp-controller="Account" asp-action="Index">Account</a>
+</h1>
 
 <a class="btn-sm btn btn-info" asp-controller="Search" asp-action="Trash" asp-fragment="sidebar=">Bekijk prullenmand</a>
 <a class="btn-sm btn btn-default" asp-controller="Account" asp-action="Logout">Logout</a>

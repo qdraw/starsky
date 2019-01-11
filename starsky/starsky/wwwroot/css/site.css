@@ -169,6 +169,14 @@ body {
     padding-left: 65px;
     font-size: 24px;
 }
+@media screen and (max-width: 390px) {
+
+    .head #menu li form,
+    .head #menu li a {
+        padding-left: 30px;
+    }
+}
+
 
 #menu li a {
     height: 46px;
@@ -1014,14 +1022,8 @@ h2 {
 .form-nav {
     padding-top: 10px;
 }
-@media screen and (max-width: 390px) {
 
-    .form-nav,
-    .form-nav input {
-        display: inline-block !important;
-    }
 
-}
 .show {
     display: block !important;
 }
