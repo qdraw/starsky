@@ -59,10 +59,11 @@
 							<p>Datum: <em>@Model.FileIndexItem.DateTime.ToString(cultureInfo)</em></p>
 						}
 						
-						if (Model.FileIndexItem.IsoSpeed != 0 && Model.FileIndexItem.ShutterSpeed != string.Empty && Math.Abs(Model.FileIndexItem.Aperture) > 0)
+						if (Model.FileIndexItem.MakeModel != string.Empty && Model.FileIndexItem.IsoSpeed != 0 && Model.FileIndexItem.ShutterSpeed != string.Empty && Math.Abs(Model.FileIndexItem.Aperture) > 0)
 						{
 							<p>
-								Sluitertijd: <em>@Model.FileIndexItem.ShutterSpeed.ToString(cultureInfo) sec </em>- <br />
+								Camera: <em>@Model.FileIndexItem.Make  @Model.FileIndexItem.Model</em> - <br/>
+								Sluitertijd: <em>@Model.FileIndexItem.ShutterSpeed.ToString(cultureInfo) sec </em>- <br/>
 								Diafragma: <em>@Model.FileIndexItem.Aperture.ToString(cultureInfo)</em> -
 								ISO: <em>@Model.FileIndexItem.IsoSpeed.ToString(cultureInfo)</em>
 							</p>
