@@ -135,6 +135,19 @@ namespace starsky.Services
 	            {
 		            item.SetIsoSpeed(isoSpeed);
 	            }
+	            
+	            
+	            var make = GetMakeModel(exifItem,true);
+	            if (make != string.Empty) // string.Empty = is not the right tag or empty tag
+	            {
+		            item.AddMakeModel(make);
+	            }
+	            
+	            var model = GetMakeModel(exifItem,false);
+	            if (model != string.Empty) // string.Empty = is not the right tag or empty tag
+	            {
+		            item.AddMakeModel(model);
+	            }        
 
 
             }
@@ -167,11 +180,32 @@ namespace starsky.Services
             }
         }
 
-        private static void DisplayAllExif(IEnumerable<MetadataExtractor.Directory> allExifItems)
+
+
+	    private string GetMakeModel(MetadataExtractor.Directory exifItem, bool isMake)
+	    {
+		    // [Exif IFD0] Make = SONY
+		    // [Exif IFD0] Model = SLT-A58
+
+		    var makeModel = isMake ? "Make" : "Model";
+		    
+		    var tCounts =
+			    exifItem.Tags.Count(p => p.DirectoryName == "Exif IFD0" && p.Name == makeModel);
+		    if ( tCounts < 1 ) return string.Empty;
+
+		    var caption = exifItem.Tags.FirstOrDefault(
+			    p => p.DirectoryName == "Exif IFD0"
+			         && p.Name == makeModel)?.Description;
+		    
+		    return caption;
+	    }
+
+
+	    private static void DisplayAllExif(IEnumerable<MetadataExtractor.Directory> allExifItems)
         {
-//            foreach (var exifItem in allExifItems) {
-//                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
-//            }
+            foreach (var exifItem in allExifItems) {
+                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
+            }
         }
 
         public string GetObjectName (MetadataExtractor.Directory exifItem)

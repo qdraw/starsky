@@ -180,12 +180,6 @@ namespace starsky.Services
 		    return numerator / denominator;
 	    }
 
-	    private double CalcAperture(string input)
-	    {
-		    var aperture = fraction(input);
-		    if(Math.Abs(aperture) < 0) return 0f;
-		    return aperture;
-	    }
 
 	    private FileIndexItem GetDataContentNameSpaceTypes(string xmpDataAsString, FileIndexItem item)
         {
@@ -270,10 +264,21 @@ namespace starsky.Services
 	            // exif:FNumber http://ns.adobe.com/exif/1.0/
 	            var aperture = GetContentNameSpace(property, "exif:FNumber");
 	            if (aperture != null) item.Aperture = fraction(aperture);
-                
+	            
+	            
+	            // Path=tiff:Make Namespace=http://ns.adobe.com/tiff/1.0/ Value=SONY
+	            // Path=tiff:Model Namespace=http://ns.adobe.com/tiff/1.0/ Value=SLT-A58
+	            var make = GetContentNameSpace(property, "tiff:Make");
+	            if (make != null) item.AddMakeModel(make);
+
+	            var model = GetContentNameSpace(property, "tiff:Model");
+	            if (model != null) item.AddMakeModel(model);
+	            
             }
+	        
             return item;
         }
+
         
     }
 }

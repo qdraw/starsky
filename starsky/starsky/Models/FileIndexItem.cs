@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -716,7 +717,7 @@ namespace starsky.Models
 		/// </value>
 		public ushort IsoSpeed { get; set; }
 
-		/// <summary>
+	    /// <summary>
 		/// Sets the iso speed. (saved as ushort 0-65535)
 		/// </summary>
 		/// <param name="isoSpeed">The iso speed.</param>
@@ -736,7 +737,40 @@ namespace starsky.Models
 			    IsoSpeed = (ushort) isoSpeed;
 	    }
 	    
+	    private string _makeModel;
 	    
+	    /// <summary>
+	    /// Camera make and Model (saved comma seperated String)
+	    /// </summary>
+	    /// <value>
+	    /// Camera brand and type
+	    /// </value>
+	    [NotMapped] 
+	    public string MakeModel {
+		    get { 
+			    if(string.IsNullOrWhiteSpace(_makeModel)) return string.Empty;
+			    return _makeModel.Replace(", ", " "); 
+		    }
+		    set { _makeModel = value; }
+	    }
+
+	    /// <summary>
+	    /// To add Make (without comma and TitleCase) and second follow by Model (same as input)
+	    /// </summary>
+	    /// <param name="addedValue"></param>
+	    public void AddMakeModel(string addedValue)
+	    {
+		    var titleValue = addedValue.Replace(", ",string.Empty);
+		    if ( string.IsNullOrEmpty(MakeModel) )
+		    {
+			    _makeModel = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
+		    }
+		    else
+		    {
+			    _makeModel += ", " + titleValue;
+		    }
+	    }
+
     } // end class
 	
 	
