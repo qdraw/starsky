@@ -30,5 +30,14 @@ namespace starskytests.Helpers
 			var base64String = Base64Helper.ToBase64(base64bytes);
 			Assert.AreEqual("dGVzdA==", base64String);
 		}
+
+		[TestMethod]
+		public void Base64HelperTest_TryParseCorruptString()
+		{
+			var currupt = Base64Helper.TryParse("fail");
+			var noByte = new byte[0];
+			Assert.AreEqual(noByte.Length, currupt.Length);
+		}
+
 	}
 }
