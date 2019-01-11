@@ -56,8 +56,8 @@ namespace starskytests.Middleware
 			// Act
 			await authMiddleware.Invoke(httpContext);
 			//test
-			var csp = httpContext.Response.Headers["Content-Security-Policy"];
-			Assert.AreEqual(true,csp.Contains("{default-src"));
+			var csp = httpContext.Response.Headers["Content-Security-Policy"].ToString();
+			Assert.AreEqual(true,csp.Contains("default-src"));
 		}
 
 
