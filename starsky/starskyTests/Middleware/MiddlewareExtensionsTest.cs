@@ -1,4 +1,8 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder.Internal;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -6,6 +10,7 @@ using starsky.Data;
 using starsky.Interfaces;
 using starsky.Middleware;
 using starsky.Services;
+using starskytests.FakeMocks;
 
 namespace starskytests.Middleware
 {
@@ -14,8 +19,9 @@ namespace starskytests.Middleware
     public class MiddlewareExtensionsTest
     {
         private IUserManager _userManager;
-        
-        public MiddlewareExtensionsTest()
+
+
+		public MiddlewareExtensionsTest()
         {
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             builder.UseInMemoryDatabase("test");
