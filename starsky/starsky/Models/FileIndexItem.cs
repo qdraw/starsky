@@ -737,21 +737,25 @@ namespace starsky.Models
 			    IsoSpeed = (ushort) isoSpeed;
 	    }
 	    
-	    private string _makeModel;
-	    
+    
 	    /// <summary>
 	    /// Camera make and Model (saved comma seperated String)
 	    /// </summary>
 	    /// <value>
 	    /// Camera brand and type
 	    /// </value>
-	    [NotMapped] 
-	    public string MakeModel {
-		    get { 
-			    if(string.IsNullOrWhiteSpace(_makeModel)) return string.Empty;
-			    return _makeModel.Replace(", ", " "); 
-		    }
-		    set { _makeModel = value; }
+	    public string MakeModel { get; set; }
+
+	    [NotMapped]
+	    public string Make
+	    {
+		    get { return MakeModel.Split(", ").FirstOrDefault(); }
+	    }
+	    
+	    [NotMapped]
+	    public string Model
+	    {
+		    get { return MakeModel.Split(", ").LastOrDefault(); }
 	    }
 
 	    /// <summary>
@@ -763,11 +767,11 @@ namespace starsky.Models
 		    var titleValue = addedValue.Replace(", ",string.Empty);
 		    if ( string.IsNullOrEmpty(MakeModel) )
 		    {
-			    _makeModel = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
+			    MakeModel = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
 		    }
 		    else
 		    {
-			    _makeModel += ", " + titleValue;
+			    MakeModel += ", " + titleValue;
 		    }
 	    }
 
