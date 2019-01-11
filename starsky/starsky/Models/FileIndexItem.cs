@@ -707,7 +707,7 @@ namespace starsky.Models
 		/// The shutter speed as string
 		/// </value>
 		[MaxLength(20)]
-	    public string ShutterSpeed { get; set; }
+	    public string ShutterSpeed { get; set; } = string.Empty;
 
 		/// <summary>
 		/// Gets or sets the iso speed used by cameras  (saved as ushort 0-65535)
@@ -736,26 +736,34 @@ namespace starsky.Models
 		    if(isoSpeed >= 1 && isoSpeed <= ushort.MaxValue ) 
 			    IsoSpeed = (ushort) isoSpeed;
 	    }
-	    
-    
+
+
 	    /// <summary>
 	    /// Camera make and Model (saved comma seperated String)
 	    /// </summary>
 	    /// <value>
 	    /// Camera brand and type
 	    /// </value>
-	    public string MakeModel { get; set; }
+	    public string MakeModel { get; set; } = string.Empty;
 
 	    [NotMapped]
 	    public string Make
 	    {
-		    get { return MakeModel.Split(", ").FirstOrDefault(); }
+		    get
+		    {
+			    if ( string.IsNullOrEmpty(MakeModel) ) return string.Empty;
+			    return MakeModel.Split(", ").FirstOrDefault(); 
+		    }
 	    }
 	    
 	    [NotMapped]
 	    public string Model
 	    {
-		    get { return MakeModel.Split(", ").LastOrDefault(); }
+		    get
+		    {
+			    if ( string.IsNullOrEmpty(MakeModel) ) return string.Empty;
+			    return MakeModel.Split(", ").LastOrDefault();
+		    }
 	    }
 
 	    /// <summary>
