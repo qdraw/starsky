@@ -230,9 +230,12 @@ namespace starsky.Models
             return colorclassList.ToList();
         }
 
-        
-        // Creat an List of all String based database fields
-        public List<string> FileIndexPropList()
+
+		/// <summary
+		/// Create an List of all String, bool, Datetime based database fields		
+		/// </summary>
+		/// <returns> Files the index property list.</returns>
+		public List<string> FileIndexPropList()
         {
             var fileIndexPropList = new List<string>();
             // only for types String in FileIndexItem()
@@ -249,10 +252,14 @@ namespace starsky.Models
             return fileIndexPropList;
         }
 
-      
-        // Always display int, because the Update api uses ints to parse
-        // allow all types
-        public Color ColorClass { get; set; } = Color.DoNotChange;
+		/// <summary>
+		/// Gets or sets the color class.
+		/// Always display int, because the Update api uses ints to parse
+		/// </summary>
+		/// <value>
+		/// The color class.
+		/// </value>
+		public Color ColorClass { get; set; } = Color.DoNotChange;
 
 
         public enum Color
@@ -278,11 +285,19 @@ namespace starsky.Models
             DoNotChange = -1
         }
 
-
-        [JsonConverter(typeof(StringEnumConverter))]
+		/// <summary>
+		/// Gets or sets the image orientation.
+		/// </summary>
+		/// <value>
+		/// The orientation as enum item
+		/// </value>
+		[JsonConverter(typeof(StringEnumConverter))]
         public Rotation Orientation { get; set; } = Rotation.DoNotChange;
 
-        public enum Rotation
+		/// <summary>
+		/// Exit Rotation values
+		/// </summary>
+		public enum Rotation
         {
             DoNotChange = -1,
             
