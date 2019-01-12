@@ -700,6 +700,11 @@ namespace starsky.Models
 		    set => _aperture = Math.Round(value, 5);
 	    }
 
+	    /// <summary>
+	    /// Private field to store ShutterSpeed Data
+	    /// </summary>
+	    private string _shutterSpeed = string.Empty;
+	    
 		/// <summary>
 		/// Shutter speed as string so '1/2' or '1' 
 		/// </summary>
@@ -707,8 +712,19 @@ namespace starsky.Models
 		/// The shutter speed as string
 		/// </value>
 		[MaxLength(20)]
-	    public string ShutterSpeed { get; set; } = string.Empty;
-
+	    public string ShutterSpeed {
+		    get
+		    {
+			    if ( string.IsNullOrEmpty(_shutterSpeed) ) return string.Empty;
+			    return _shutterSpeed;
+		    }
+			set
+			{
+				if ( string.IsNullOrEmpty(_shutterSpeed) ) _shutterSpeed = string.Empty;
+				if ( value.Length <= 20 ) _shutterSpeed = value;
+			}
+		}
+	    
 		/// <summary>
 		/// Gets or sets the iso speed used by cameras  (saved as ushort 0-65535)
 		/// </summary>
@@ -737,14 +753,25 @@ namespace starsky.Models
 			    IsoSpeed = (ushort) isoSpeed;
 	    }
 
-
+		/// <summary>
+		/// Private field to store MakeModel Data
+		/// </summary>
+	    private string _makeModel = string.Empty;
+	    
 	    /// <summary>
-	    /// Camera make and Model (saved comma seperated String)
+	    /// Camera make and Model (saved comma separated String)
 	    /// </summary>
 	    /// <value>
 	    /// Camera brand and type
 	    /// </value>
-	    public string MakeModel { get; set; } = string.Empty;
+	    public string MakeModel {
+		    get
+		    {
+			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
+			    return _makeModel;
+		    }
+		    set => _makeModel = string.IsNullOrEmpty(_makeModel) ? string.Empty : value;
+	    }
 
 	    [NotMapped]
 	    public string Make
