@@ -43,9 +43,10 @@ while [ $COUNTER -lt $MAXCOUNTER ]; do
 	fi
 done
 
+CURLHOMEOUTPUT=`curl -X GET --header "Authorization: Basic $BEARER" -LI "$URL"/?f=/\&json=true -o /dev/null -w '%{http_code}\n' -s`
 CURLENVOUTPUT=`curl -X GET --header "Authorization: Basic $BEARER" -LI "$URL"/api/env -o /dev/null -w '%{http_code}\n' -s`
 CURLSEARCHOUTPUT=`curl -X GET --header "Authorization: Basic $BEARER" -LI "$URL"/search?t= -o /dev/null -w '%{http_code}\n' -s`
 CURLIMPORTOUTPUT=`curl -X GET --header "Authorization: Basic $BEARER" -LI "$URL"/import -o /dev/null -w '%{http_code}\n' -s`
 
-echo "!> done ~ env:$CURLENVOUTPUT - search:$CURLSEARCHOUTPUT - import:$CURLIMPORTOUTPUT"
+echo "!> done ~ home:$CURLHOMEOUTPUT - env:$CURLENVOUTPUT - search:$CURLSEARCHOUTPUT - import:$CURLIMPORTOUTPUT"
 popd
