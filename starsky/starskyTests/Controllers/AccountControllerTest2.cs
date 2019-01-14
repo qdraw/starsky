@@ -14,6 +14,7 @@ using starsky.Controllers;
 using starsky.Data;
 using starsky.Interfaces;
 using starsky.Models;
+using starsky.Models.Account;
 using starsky.Services;
 using starsky.ViewModels.Account;
 using starskytests.FakeMocks;
@@ -149,7 +150,61 @@ namespace starskytests.Controllers
             var controller = new AccountController(_userManager);
             controller.Register();
         }
-        
+     
+	    [TestMethod]
+	    public void AccountController_IndexGetLoginSuccesfull()
+	    {
+		    var controller = new AccountController(_userManager);
+		    var user = new User() { Name = "JohnDoe", Id = 99 };
+		    
+		    
+		    var claims = new List<Claim>()
+		    {
+			    new Claim(ClaimTypes.Name, user.Name),
+			    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+		    };
+		    var identity = new ClaimsIdentity(claims, "Test");
+		    var claimsPrincipal = new ClaimsPrincipal(identity);
+		    
+		    var context = new ControllerContext
+		    {
+			    HttpContext = new DefaultHttpContext
+			    {
+				    User = claimsPrincipal
+			    }
+		    };
+
+		    controller.ControllerContext = context;
+		    
+		    controller.Index(true);
+		    Assert.AreEqual(200,controller.Response.StatusCode);
+		    
+	    }
+	    
+	    [TestMethod]
+	    public void AccountController_IndexGetLoginFail()
+	    {
+		    // Used by the warmup script
+		    var controller = new AccountController(_userManager);
+
+		    var identity = new ClaimsIdentity();
+		    var claimsPrincipal = new ClaimsPrincipal(identity);
+		    
+		    var context = new ControllerContext
+		    {
+			    HttpContext = new DefaultHttpContext
+			    {
+				    User = claimsPrincipal
+			    }
+		    };
+
+		    controller.ControllerContext = context;
+		    
+		    // keep 401, is used by the warmup script
+		    var index = controller.Index(true) as UnauthorizedResult;
+		    Assert.AreEqual(401,index.StatusCode);
+		    
+	    }
         
     }
 
