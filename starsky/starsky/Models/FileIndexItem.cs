@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -802,11 +802,11 @@ namespace starsky.Models
 		    var titleValue = addedValue.Replace(", ",string.Empty);
 		    if ( string.IsNullOrEmpty(MakeModel) )
 		    {
-			    MakeModel = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
+			    _makeModel = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
 		    }
 		    else
 		    {
-			    MakeModel += ", " + titleValue;
+			    _makeModel += ", " + titleValue;
 		    }
 	    }
 
