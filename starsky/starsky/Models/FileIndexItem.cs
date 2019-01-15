@@ -774,8 +774,7 @@ namespace starsky.Models
 		    set => _makeModel = string.IsNullOrEmpty(_makeModel) ? string.Empty : value;
 	    }
 
-	    private readonly int MakeModelFixedLength = 3;
-
+	    private const int MakeModelFixedLength = 3;
 
 
 	    [NotMapped]
@@ -784,7 +783,7 @@ namespace starsky.Models
 		    get
 		    {
 			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
-			    var makeModelList = MakeModel.Split(";");
+			    var makeModelList = MakeModel.Split("|");
 			    if ( makeModelList.Length != MakeModelFixedLength ) return string.Empty;
 			    return makeModelList[0];
 			}
@@ -796,7 +795,7 @@ namespace starsky.Models
 		    get
 		    {
 			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
-			    var makeModelList = MakeModel.Split(";");
+			    var makeModelList = MakeModel.Split("|");
 				if( makeModelList.Length != MakeModelFixedLength ) return string.Empty;
 				return makeModelList[1];
 		    }
@@ -810,9 +809,9 @@ namespace starsky.Models
 	    {
 		    if ( fieldIndex > MakeModelFixedLength ) throw new AggregateException("index is higher than MakeModelFixedLength");
 
-			var titleValue = addedValue.Replace(";", string.Empty);
+			var titleValue = addedValue.Replace("|", string.Empty);
 
-		    var makeModelList = _makeModel.Split(";").ToList();
+		    var makeModelList = _makeModel.Split("|").ToList();
 		    if ( makeModelList.Count != MakeModelFixedLength )
 		    {
 			    makeModelList = new List<string>();
@@ -846,7 +845,7 @@ namespace starsky.Models
 
 				if ( i != listKeywords.Count - 1 )
 			    {
-				    toBeAddedKeywordsStringBuilder.Append(keyword + ";");
+				    toBeAddedKeywordsStringBuilder.Append(keyword + "|");
 				}
 				else
 				{

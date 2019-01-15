@@ -244,7 +244,7 @@ namespace starskytests.Models
 		    item.SetMakeModel("iPhone", 1);
 
 			Assert.AreEqual("iPhone", item.Model);
-		    Assert.AreEqual(";iPhone;", item.MakeModel);
+		    Assert.AreEqual("|iPhone|", item.MakeModel);
 
 		}
 
@@ -255,7 +255,7 @@ namespace starskytests.Models
 		    item.SetMakeModel("APPLE", 0);
 
 		    Assert.AreEqual("Apple", item.Make);
-		    Assert.AreEqual("Apple;;", item.MakeModel);
+		    Assert.AreEqual("Apple||", item.MakeModel);
 		}
 
 		[TestMethod]
@@ -270,7 +270,7 @@ namespace starskytests.Models
 
 			item.SetMakeModel("Lens", 2);
 
-			Assert.AreEqual("Apple;iPad;Lens", item.MakeModel);
+			Assert.AreEqual("Apple|iPad|Lens", item.MakeModel);
 
 			Assert.AreEqual("Apple", item.Make);
 			Assert.AreEqual("iPad", item.Model);
@@ -284,7 +284,7 @@ namespace starskytests.Models
 		    item.SetMakeModel("Apple", 0);
 		    item.SetMakeModel("iPhone", 1);
 
-		    Assert.AreEqual("Apple;iPhone;", item.MakeModel);
+		    Assert.AreEqual("Apple|iPhone|", item.MakeModel);
 
 		    Assert.AreEqual("Apple", item.Make);
 		    Assert.AreEqual("iPhone", item.Model);
