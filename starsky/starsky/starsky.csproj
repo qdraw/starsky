@@ -21,6 +21,7 @@
     <WarningLevel>0</WarningLevel>
   </PropertyGroup>
   <ItemGroup Condition=" '$(hideMigrations)' == 'true' ">
+    <Compile Remove="Migrations\ApplicationDbContextModelSnapshot.cs" />
     <Compile Remove="Migrations\20180308104506_initDatabaseKey.cs" />
     <Compile Remove="Migrations\20180308104506_initDatabaseKey.Designer.cs" />
     <Compile Remove="Migrations\20180308104642_initDatabaseKey.cs" />
