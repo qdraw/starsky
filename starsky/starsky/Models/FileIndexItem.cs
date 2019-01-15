@@ -379,7 +379,7 @@ namespace starsky.Models
 
 
 		/// <summary
-		/// Create an List of all String, bool, Datetime based database fields		
+		/// Create an List of all String, bool, Datetime, ImageFormat based database fields		
 		/// </summary>
 		/// <returns> Files the index property list.</returns>
 		public List<string> FileIndexPropList()
@@ -389,9 +389,12 @@ namespace starsky.Models
 
             foreach (var propertyInfo in new FileIndexItem().GetType().GetProperties())
             {
-                if (propertyInfo.PropertyType == typeof(bool) 
-                    || propertyInfo.PropertyType == typeof(string) || 
-                    propertyInfo.PropertyType == typeof(DateTime) && propertyInfo.CanRead)
+                if ((
+						propertyInfo.PropertyType == typeof(bool) || 
+						propertyInfo.PropertyType == typeof(string) || 
+						propertyInfo.PropertyType == typeof(DateTime) ||
+						propertyInfo.PropertyType == typeof(Files.ImageFormat)
+                    ) && propertyInfo.CanRead)
                 {
                     fileIndexPropList.Add(propertyInfo.Name);
                 }

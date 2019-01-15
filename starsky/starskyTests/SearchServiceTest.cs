@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Data;
+using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
 using starsky.ViewModels;
@@ -41,12 +42,12 @@ namespace starskytests
                 _query.AddItem(new FileIndexItem
                 {
                     FileName = "schipholairplane.jpg",
-                    //FilePath = "/stations/schipholairplane.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "schipholairplane",
                     Tags = "schiphol, airplane, station",
                     Description = "schiphol",
-                    Title = "Schiphol"
+                    Title = "Schiphol",
+					ImageFormat = Files.ImageFormat.jpg
                 });
             }
 
@@ -295,6 +296,13 @@ namespace starskytests
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("-addtodatabase>2015-01-01T01:01:01 -addtodatabase<2017-01-01T01:01:01").SearchCount);
         }
+	    
+	    [TestMethod]
+	    public void SearchService_SearchForImageFormat()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(1, _search.Search("-ImageFormat:jpg").SearchCount);
+	    }
         
         [TestMethod]
         public void SearchService_SearchSetSearchInStringTypeTest()

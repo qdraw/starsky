@@ -42,7 +42,8 @@ namespace starsky.ViewModels
             datetime = 6,
             addtodatabase = 7,
 	        filehash = 8,
-	        isdirectory = 9
+	        isdirectory = 9,
+	        imageformat = 10
         }
 
         

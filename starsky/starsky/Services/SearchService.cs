@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.Data;
+using starsky.Helpers;
 using starsky.Interfaces;
 using starsky.Models;
 using starsky.ViewModels;
@@ -129,7 +130,18 @@ namespace starsky.Services
 
                 switch (searchInType)
                 {
-                    case SearchViewModel.SearchInTypes.description:
+	                case SearchViewModel.SearchInTypes.imageformat:
+						var  castImageFormat = (Files.ImageFormat)
+							Enum.Parse(typeof(Files.ImageFormat), model.SearchFor[i].ToLowerInvariant());
+						
+						model.FileIndexItems.AddRange(sourceList.Where(
+							p => p.ImageFormat == castImageFormat
+						));
+		                 
+		                // if you add a new type for
+		                // example an enum > please check: FileIndexItem.FileIndexPropList()
+		                break;
+	                case SearchViewModel.SearchInTypes.description:
                         model.FileIndexItems.AddRange(sourceList.Where(
                             p => p.Description.ToLower().Contains(model.SearchFor[i])
                         ));
@@ -156,7 +168,7 @@ namespace starsky.Services
                         break;
 					case SearchViewModel.SearchInTypes.filehash:
 						model.FileIndexItems.AddRange(sourceList.Where(
-						p => p.FileHash.ToLower().Contains(model.SearchFor[i])
+							p => p.FileHash.ToLower().Contains(model.SearchFor[i])
 						));
 						break;
 	                case SearchViewModel.SearchInTypes.isdirectory:
@@ -275,6 +287,14 @@ namespace starsky.Services
 
                 switch (searchInType)
                 {
+	                case SearchViewModel.SearchInTypes.imageformat:
+		                var  castImageFormat = (Files.ImageFormat)
+			                Enum.Parse(typeof(Files.ImageFormat), model.SearchFor[i].ToLowerInvariant());
+						
+		                model.FileIndexItems = model.FileIndexItems.Where(
+			                p => p.ImageFormat == castImageFormat
+		                ).ToList();
+		                break;
                     case SearchViewModel.SearchInTypes.description:
                         model.FileIndexItems = model.FileIndexItems.Where(
                             p => p.Description.ToLower().Contains(model.SearchFor[i].ToLower())
