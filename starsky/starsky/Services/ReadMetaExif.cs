@@ -140,13 +140,13 @@ namespace starsky.Services
 	            var make = GetMakeModel(exifItem,true);
 	            if (make != string.Empty) // string.Empty = is not the right tag or empty tag
 	            {
-		            item.SetMakeModel(make,false);
+		            item.SetMakeModel(make,0);
 	            }
 	            
 	            var model = GetMakeModel(exifItem,false);
 	            if (model != string.Empty) // string.Empty = is not the right tag or empty tag
 	            {
-		            item.SetMakeModel(model,true);
+		            item.SetMakeModel(model,1);
 	            }        
 
 

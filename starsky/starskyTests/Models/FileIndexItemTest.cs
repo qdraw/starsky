@@ -237,21 +237,73 @@ namespace starskytests.Models
             Assert.AreEqual("Winner Alt",colorDisplayName);
         }
 
-        
+	    [TestMethod]
+	    public void FileIndexItemTest_SetMakeModel_Model()
+	    {
+		    var item = new FileIndexItem();
+		    item.SetMakeModel("iPhone", 1);
 
-//        [TestMethod]
-//        public void FileIndexItemParseFileNameTest()
-//        {
-//            var createAnImage = new CreateAnImage();
-//
-//            var fileIndexItem = new FileIndexItem
-//            {
-//                FilePath = createAnImage.FullFilePath
-//            };
-////            var t = fileIndexItem.ParseFileName();
-//            
-//        }
-        
+			Assert.AreEqual("iPhone", item.Model);
+		    Assert.AreEqual(";iPhone;", item.MakeModel);
 
-    }
+		}
+
+		[TestMethod]
+	    public void FileIndexItemTest_SetMakeModel_Make()
+	    {
+		    var item = new FileIndexItem();
+		    item.SetMakeModel("APPLE", 0);
+
+		    Assert.AreEqual("Apple", item.Make);
+		    Assert.AreEqual("APPLE;;", item.MakeModel);
+		}
+
+		[TestMethod]
+		public void FileIndexItemTest_SetMakeModel_WrongOrder_MakeANDModel()
+		{
+			var item = new FileIndexItem();
+			// the wrong order > 1,0,2
+			item.SetMakeModel("iPhone", 1);
+			item.SetMakeModel("iPad", 1);
+
+			item.SetMakeModel("Apple", 0);
+
+			item.SetMakeModel("Lens", 2);
+
+			Assert.AreEqual("Apple;iPad;Lens", item.MakeModel);
+
+			Assert.AreEqual("Apple", item.Make);
+			Assert.AreEqual("iPad", item.Model);
+		}
+
+	    [TestMethod]
+	    public void FileIndexItemTest_SetMakeModel_RightOrder_MakeANDModel()
+	    {
+		    var item = new FileIndexItem();
+
+		    item.SetMakeModel("Apple", 0);
+		    item.SetMakeModel("iPhone", 1);
+
+		    Assert.AreEqual("Apple;iPhone;", item.MakeModel);
+
+		    Assert.AreEqual("Apple", item.Make);
+		    Assert.AreEqual("iPhone", item.Model);
+	    }
+
+
+		//        [TestMethod]
+		//        public void FileIndexItemParseFileNameTest()
+		//        {
+		//            var createAnImage = new CreateAnImage();
+		//
+		//            var fileIndexItem = new FileIndexItem
+		//            {
+		//                FilePath = createAnImage.FullFilePath
+		//            };
+		////            var t = fileIndexItem.ParseFileName();
+		//            
+		//        }
+
+
+	}
 }

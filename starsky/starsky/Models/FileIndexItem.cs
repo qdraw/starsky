@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using starsky.Helpers;
@@ -773,23 +774,36 @@ namespace starsky.Models
 		    set => _makeModel = string.IsNullOrEmpty(_makeModel) ? string.Empty : value;
 	    }
 
+	    private readonly int MakeModelFixedLength = 3;
+
+
+
 	    [NotMapped]
 	    public string Make
-	    {
+		{
 		    get
 		    {
-			    if ( string.IsNullOrEmpty(MakeModel) ) return string.Empty;
-			    return MakeModel.Split(", ").FirstOrDefault(); 
+			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
+
+			    var makeModelList = MakeModel.Split(";");
+			    if ( makeModelList.Length != MakeModelFixedLength ) return string.Empty;
+			    var model =
+				    CultureInfo.InvariantCulture.TextInfo.ToTitleCase(
+					    makeModelList[0].ToLowerInvariant());
+			    return model;
 		    }
 	    }
-	    
-	    [NotMapped]
+
+		[NotMapped]
 	    public string Model
 	    {
 		    get
 		    {
-			    if ( string.IsNullOrEmpty(MakeModel) ) return string.Empty;
-			    return MakeModel.Split(", ").LastOrDefault();
+			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
+
+			    var makeModelList = MakeModel.Split(";");
+				if( makeModelList.Length != MakeModelFixedLength ) return string.Empty;
+				return makeModelList[1];
 		    }
 	    }
 
@@ -797,21 +811,58 @@ namespace starsky.Models
 	    /// To add Make (without comma and TitleCase) and second follow by Model (same as input)
 	    /// </summary>
 	    /// <param name="addedValue"></param>
-	    public void SetMakeModel(string addedValue, bool isModel)
+	    public void SetMakeModel(string addedValue, int fieldIndex)
 	    {
+		    if ( fieldIndex > MakeModelFixedLength ) throw new AggregateException("index is higher than MakeModelFixedLength");
 
-		    var titleValue = addedValue.Replace(", ",string.Empty);
-		    if ( string.IsNullOrEmpty(MakeModel) )
+			var titleValue = addedValue.Replace(";", string.Empty);
+
+		    var makeModelList = _makeModel.Split(";").ToList();
+		    if ( makeModelList.Count != MakeModelFixedLength )
 		    {
-			    _makeModel = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
+			    makeModelList = new List<string>();
+				for ( int i = 0; i < MakeModelFixedLength; i++ )
+			    {
+					makeModelList.Add(string.Empty);
+				}
 		    }
-		    else
-		    {
-			    _makeModel += ", " + titleValue;
-		    }
+
+		    makeModelList[fieldIndex] = titleValue;
+
+		    _makeModel = FixedListToString(makeModelList);
 	    }
 
-    } // end class
+	    public static string FixedListToString(List<string> listKeywords)
+	    {
+
+		    if ( listKeywords == null )
+		    {
+			    return string.Empty;
+		    }
+
+		    var toBeAddedKeywordsStringBuilder = new StringBuilder();
+
+		    for ( int i = 0; i < listKeywords.Count; i++ )
+		    {
+			    var keyword = listKeywords[i];
+
+				if ( i != listKeywords.Count - 1 )
+			    {
+				    toBeAddedKeywordsStringBuilder.Append(keyword + ";");
+				}
+				else
+				{
+					toBeAddedKeywordsStringBuilder.Append(keyword);
+				}
+			}
+
+		    var toBeAddedKeywords = toBeAddedKeywordsStringBuilder.ToString();
+
+		    return toBeAddedKeywords;
+	    }
+
+
+	} // end class
 	
 	
     
