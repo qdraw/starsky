@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -140,13 +140,13 @@ namespace starsky.Services
 	            var make = GetMakeModel(exifItem,true);
 	            if (make != string.Empty) // string.Empty = is not the right tag or empty tag
 	            {
-		            item.AddMakeModel(make);
+		            item.SetMakeModel(make,false);
 	            }
 	            
 	            var model = GetMakeModel(exifItem,false);
 	            if (model != string.Empty) // string.Empty = is not the right tag or empty tag
 	            {
-		            item.AddMakeModel(model);
+		            item.SetMakeModel(model,true);
 	            }        
 
 

@@ -797,8 +797,9 @@ namespace starsky.Models
 	    /// To add Make (without comma and TitleCase) and second follow by Model (same as input)
 	    /// </summary>
 	    /// <param name="addedValue"></param>
-	    public void AddMakeModel(string addedValue)
+	    public void SetMakeModel(string addedValue, bool isModel)
 	    {
+
 		    var titleValue = addedValue.Replace(", ",string.Empty);
 		    if ( string.IsNullOrEmpty(MakeModel) )
 		    {

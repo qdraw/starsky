@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
@@ -269,10 +269,10 @@ namespace starsky.Services
 	            // Path=tiff:Make Namespace=http://ns.adobe.com/tiff/1.0/ Value=SONY
 	            // Path=tiff:Model Namespace=http://ns.adobe.com/tiff/1.0/ Value=SLT-A58
 	            var make = GetContentNameSpace(property, "tiff:Make");
-	            if (make != null) item.AddMakeModel(make);
+	            if (make != null) item.SetMakeModel(make,false);
 
 	            var model = GetContentNameSpace(property, "tiff:Model");
-	            if (model != null) item.AddMakeModel(model);
+	            if (model != null) item.SetMakeModel(model,true);
 	            
             }
 	        
