@@ -255,7 +255,7 @@ namespace starskytests.Models
 		    item.SetMakeModel("APPLE", 0);
 
 		    Assert.AreEqual("Apple", item.Make);
-		    Assert.AreEqual("APPLE;;", item.MakeModel);
+		    Assert.AreEqual("Apple;;", item.MakeModel);
 		}
 
 		[TestMethod]

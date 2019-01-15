@@ -784,15 +784,11 @@ namespace starsky.Models
 		    get
 		    {
 			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
-
 			    var makeModelList = MakeModel.Split(";");
 			    if ( makeModelList.Length != MakeModelFixedLength ) return string.Empty;
-			    var model =
-				    CultureInfo.InvariantCulture.TextInfo.ToTitleCase(
-					    makeModelList[0].ToLowerInvariant());
-			    return model;
-		    }
-	    }
+			    return makeModelList[0];
+			}
+		}
 
 		[NotMapped]
 	    public string Model
@@ -800,7 +796,6 @@ namespace starsky.Models
 		    get
 		    {
 			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
-
 			    var makeModelList = MakeModel.Split(";");
 				if( makeModelList.Length != MakeModelFixedLength ) return string.Empty;
 				return makeModelList[1];
@@ -827,9 +822,12 @@ namespace starsky.Models
 				}
 		    }
 
-		    makeModelList[fieldIndex] = titleValue;
+			makeModelList[fieldIndex] = titleValue;
 
-		    _makeModel = FixedListToString(makeModelList);
+			// Store Make: APPLE as Apple in the database
+			if ( fieldIndex == 0 ) makeModelList[fieldIndex] = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
+
+			_makeModel = FixedListToString(makeModelList);
 	    }
 
 	    public static string FixedListToString(List<string> listKeywords)
