@@ -59,7 +59,7 @@
 							<p>Datum: <em>@Model.FileIndexItem.DateTime.ToString(cultureInfo)</em></p>
 						}
 						
-						if (Model.FileIndexItem.MakeModel != string.Empty && Model.FileIndexItem.IsoSpeed != 0 && Model.FileIndexItem.ShutterSpeed != string.Empty && Math.Abs(Model.FileIndexItem.Aperture) > 0)
+						if (Model.FileIndexItem.Make != string.Empty && Model.FileIndexItem.Model != string.Empty && Model.FileIndexItem.IsoSpeed != 0 && Model.FileIndexItem.ShutterSpeed != string.Empty && Math.Abs(Model.FileIndexItem.Aperture) > 0)
 						{
 							<p>
 								Camera: <em>@Model.FileIndexItem.Make  @Model.FileIndexItem.Model</em> - <br/>
