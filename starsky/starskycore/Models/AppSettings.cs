@@ -37,7 +37,8 @@ namespace starsky.Models
             .Replace("starskysynccli", "starsky")
             .Replace("starskyimportercli", "starsky")
             .Replace("starskywebhtmlcli", "starsky")
-            .Replace("starskygeocli", "starsky");
+            .Replace("starskygeocli", "starsky")
+			.Replace("starskySyncFramework","starsky");
         // When adding or updating please also update SqliteFullPath()
         
         public StarskyAppType ApplicationType { get; set; }
