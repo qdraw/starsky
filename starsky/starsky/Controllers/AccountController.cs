@@ -38,7 +38,6 @@ namespace starsky.Controllers
         public IActionResult Login(string returnUrl = null)
         {
 
-	        var test = new List<FileIndexItem>().ToHashSet();
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }

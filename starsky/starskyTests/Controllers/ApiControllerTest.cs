@@ -139,8 +139,18 @@ namespace starskytests.Controllers
         [TestMethod]
         public void ApiController_Delete_API_RemoveNotAllowedFile_Test()
         {
+
+	        
+	        // re add data
             var createAnImage = InsertSearchData();
+	        
+	        // Clean existing items to avoid errors
+	        var itemByHash = _query.SingleItem(createAnImage.FilePath);
+	        itemByHash.FileIndexItem.Tags = string.Empty;
+	        _query.UpdateItem(itemByHash.FileIndexItem);
+	        
             _appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
+	        
             var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue,_readmeta);
             var notFoundResult = controller.Delete(createAnImage.FilePath) as NotFoundObjectResult;
             Assert.AreEqual(404,notFoundResult.StatusCode);

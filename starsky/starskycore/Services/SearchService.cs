@@ -65,10 +65,17 @@ namespace starskycore.Services
             
 	        
             searchModel.PageNumber = pageNumber;
+	        
+//	        //             searchModel.FileIndexItems = 
+//	        searchModel.FileIndexItems.Skip( pageNumber * NumberOfResultsInView )
+//		        .SkipLast(searchModel.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView )
+//		        .ToHashSet().ToList();
+
 
 	        var skipFirstNumber = pageNumber * NumberOfResultsInView;
 	        var skipLastNumber = searchModel.SearchCount - ( pageNumber * NumberOfResultsInView ) - NumberOfResultsInView;
 
+	        //if ( skipLastNumber <= 0 ) skipLastNumber = skipLastNumber * -1;
 	        // Remove the last items
 	        var skippedLastList = searchModel.FileIndexItems
 		        .Skip(skipFirstNumber)
@@ -108,8 +115,8 @@ namespace starskycore.Services
             model.SearchQuery = QueryShortcuts(model.SearchQuery);
             model = MatchSearch(model);
 
-            WideSearch(_context.FileIndex.AsNoTracking(),model);
-            NarrowSearch(model);
+            model = WideSearch(_context.FileIndex.AsNoTracking(),model);
+            model = NarrowSearch(model);
 
             // Remove duplicates from list
             model.FileIndexItems = model.FileIndexItems.GroupBy(s => s.FilePath)
@@ -128,7 +135,7 @@ namespace starskycore.Services
             return model;
         }
 
-        private void WideSearch(IQueryable<FileIndexItem> sourceList, SearchViewModel model)
+        private SearchViewModel WideSearch(IQueryable<FileIndexItem> sourceList, SearchViewModel model)
         {
             // .AsNoTracking() => never change data to update
             for (var i = 0; i < model.SearchIn.Count; i++)
@@ -285,9 +292,11 @@ namespace starskycore.Services
                     break;
                 }
             }
+
+	        return model;
         }	    
 
-        private void NarrowSearch(SearchViewModel model)
+        private SearchViewModel NarrowSearch(SearchViewModel model)
         {
             // Narrow Search
             for (var i = 0; i < model.SearchIn.Count; i++)
@@ -413,6 +422,8 @@ namespace starskycore.Services
                         break;
                 }
             }
+
+	        return model;
         }
 
         private List<string> Split(string input)
@@ -486,7 +497,7 @@ namespace starskycore.Services
             _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
 
             var regexInUrlMatches = inurlRegex.Matches(model.SearchQuery);
-            if(regexInUrlMatches.Count >= 1) return;
+            if(regexInUrlMatches.Count == 0) return;
 
             foreach (Match regexInUrl in regexInUrlMatches)
             {
