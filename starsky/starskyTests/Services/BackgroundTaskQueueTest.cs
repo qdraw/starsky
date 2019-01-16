@@ -94,6 +94,35 @@ namespace starskytests.Services
 		    _bgTaskQueue.QueueBackgroundWorkItem(null);
 	    }
 
+	    [TestMethod]
+		public async Task BackgroundQueuedHostedServiceTestHandleException()
+	    {
+			IServiceCollection services = new ServiceCollection();
+		    services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
+		    services.AddHostedService<BackgroundQueuedHostedService>();
+		    services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+		    var serviceProvider = services.BuildServiceProvider();
 
-    }
+		    var service = serviceProvider.GetService<IHostedService>() as BackgroundQueuedHostedService;
+
+		    var backgroundQueue = serviceProvider.GetService<IBackgroundTaskQueue>();
+
+		    await service.StartAsync(CancellationToken.None);
+
+		    var isExecuted = false;
+		    backgroundQueue.QueueBackgroundWorkItem(async token =>
+		    {
+			    isExecuted = true;
+				throw new Exception();
+				// EXCEPTION IS IGNORED
+			});
+
+		    await Task.Delay(1000);
+		    Assert.IsTrue(isExecuted);
+
+		}
+
+
+
+	}
 }
