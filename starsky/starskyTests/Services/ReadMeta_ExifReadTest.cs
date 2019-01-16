@@ -7,8 +7,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starsky.Models;
 using starsky.Services;
+using starskycore.Attributes;
+using starskycore.Models;
 using starskytests.FakeCreateAn;
 using Directory = MetadataExtractor.Directory;
+using ReadMeta = starsky.core.Services.ReadMeta;
 
 namespace starskytests.Services
  {

@@ -2,6 +2,7 @@
 using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
+using starskycore.Helpers;
 
 namespace starskysynccli
 {

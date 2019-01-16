@@ -7,7 +7,6 @@
 
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\starsky\starsky.csproj" />
-    <ProjectReference Include="..\starsky\starsky.csproj" />
+    <ProjectReference Include="..\starskycore\starskycore.csproj" />
   </ItemGroup>
 </Project>

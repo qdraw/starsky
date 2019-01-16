@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starsky.Interfaces;
+using starskycore.Interfaces;
 
 namespace starsky.Controllers
 {

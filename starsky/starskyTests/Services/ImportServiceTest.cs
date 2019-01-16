@@ -7,14 +7,19 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Data;
+using starskycore.Data;
 using starsky.Helpers;
-using starsky.Interfaces;
-using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
+using starskycore.Helpers;
+using starskycore.Interfaces;
+using starskycore.Middleware;
+using starskycore.Models;
 using starskytests.FakeCreateAn;
 using starskytests.Models;
+using Query = starsky.core.Services.Query;
+using ReadMeta = starsky.core.Services.ReadMeta;
+using SyncService = starskycore.Services.SyncService;
 
 namespace starskytests.Services
 {

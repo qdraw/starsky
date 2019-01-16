@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Data;
-using starsky.Interfaces;
-using starsky.Middleware;
+using starskycore.Data;
 using starsky.Services;
+using starskycore.Interfaces;
+using starskycore.Middleware;
+using starskycore.Services;
 
 namespace starskytests.Middleware
 {

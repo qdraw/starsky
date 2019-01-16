@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using starsky.Models;
+using starskycore.Models;
 
 namespace starskywebhtmlcli.ViewModels
 {

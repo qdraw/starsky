@@ -2,6 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starsky.Services;
+using starskycore.Attributes;
+using starskycore.Services;
 
 namespace starskytests.Services
  {

@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
 using starsky.Models;
 using starsky.ViewModels;
+using starskycore.Helpers;
+using starskycore.Models;
 
 namespace starskytests.Helpers
 {

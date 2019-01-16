@@ -5,8 +5,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
+using starskycore.Helpers;
+using starskycore.Models;
 using starskyGeoCli.Services;
 using starskytests.FakeCreateAn;
+using ReadMeta = starsky.core.Services.ReadMeta;
 
 namespace starskytests.starskygeosync.Services
 {

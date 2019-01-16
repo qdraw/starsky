@@ -4,12 +4,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Data;
+using starsky.core.Services;
+using starskycore.Data;
 using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
 using starsky.ViewModels;
+using starskycore.Helpers;
+using starskycore.Models;
+using starskycore.Services;
 using starskytests.FakeMocks;
+using Query = starsky.core.Services.Query;
 
 namespace starskytests.Services
 {
@@ -131,6 +136,9 @@ namespace starskytests.Services
             InsertSearchData();
             // With deleted files is it 3
             // todo: check the value of this one
+
+	        var t = _query.GetAllRecursive("/");
+	        
             Assert.AreEqual(2, _search.Search("station").SearchCount);
         }
 

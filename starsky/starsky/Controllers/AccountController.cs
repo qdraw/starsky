@@ -1,11 +1,14 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starsky.Interfaces;
 using starsky.ViewModels.Account;
+using starskycore.Interfaces;
+using starskycore.Models;
 
 namespace starsky.Controllers
 {
@@ -34,6 +37,8 @@ namespace starsky.Controllers
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
         {
+
+	        var test = new List<FileIndexItem>().ToHashSet();
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }

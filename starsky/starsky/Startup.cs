@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using starsky.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -12,15 +11,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using starsky.Data;
-using starsky.Middleware;
+using starskycore.Data;
 using starsky.Models;
 using starsky.Services;
 using Microsoft.Extensions.Hosting;
+using starsky.core.Services;
 using starsky.Helpers;
+using starskycore.Helpers;
+using starskycore.Interfaces;
+using starskycore.Middleware;
+using starskycore.Services;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Query = starsky.core.Services.Query;
+using ReadMeta = starsky.core.Services.ReadMeta;
+using SyncService = starskycore.Services.SyncService;
 
 
 namespace starsky

@@ -9,11 +9,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
-using starsky.Data;
-using starsky.Middleware;
+using starskycore.Data;
 using starsky.Models;
 using starsky.Services;
+using starskycore.Attributes;
+using starskycore.Middleware;
+using starskycore.Models;
 using starskytests.FakeCreateAn;
+using Query = starsky.core.Services.Query;
+using ReadMeta = starsky.core.Services.ReadMeta;
+using SyncService = starskycore.Services.SyncService;
 
 namespace starskytests.Services
 {

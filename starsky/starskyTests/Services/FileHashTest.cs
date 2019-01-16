@@ -9,7 +9,6 @@ namespace starskytests.Services
     public class FileHashTest
     {
         [TestMethod]
-        [ExcludeFromCoverage]
         public void FileHashGenerateRandomBytesTest()
         {
             var input1 = FileHash.GenerateRandomBytes(10);

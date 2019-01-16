@@ -4,9 +4,9 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Helpers;
-using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
+using starskycore.Helpers;
 using starskywebhtmlcli.Services;
 
 namespace starskywebhtmlcli

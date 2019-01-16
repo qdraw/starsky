@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using starsky.Interfaces;
+using starskycore.Interfaces;
 
 namespace starskytests.FakeMocks
 {

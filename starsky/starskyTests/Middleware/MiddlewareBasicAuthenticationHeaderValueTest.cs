@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Middleware;
+using starskycore.Middleware;
 
 namespace starskytests.Middleware
 {

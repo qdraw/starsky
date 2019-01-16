@@ -18,11 +18,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky;
 using starsky.Controllers;
-using starsky.Data;
+using starskycore.Data;
 using starsky.Helpers;
-using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
+using starskycore.Middleware;
 using starskytests.FakeMocks;
 
 namespace starskytests.Middleware

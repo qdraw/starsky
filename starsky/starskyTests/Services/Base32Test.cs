@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starsky.Services;
+using starskycore.Attributes;
+using starskycore.Services;
 
 namespace starskytests.Services
 {
@@ -8,7 +10,6 @@ namespace starskytests.Services
 	public class Base32Test
 	{
 		[TestMethod]
-		[ExcludeFromCoverage]
 		public void Base32EncodeDecodeTest()
 		{
 			var encodeBytes = Base32.Decode("VWQII6FKPI26LLWB3TRDQJU3CM");

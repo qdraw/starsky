@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using starsky.Helpers;
-using starsky.Interfaces;
 using starsky.Models;
+using starskycore.Helpers;
+using starskycore.Interfaces;
+using starskycore.Models;
 
 namespace starskyGeoCli.Services
 {

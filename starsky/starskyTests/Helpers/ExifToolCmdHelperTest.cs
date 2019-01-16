@@ -4,8 +4,10 @@ using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
-using starsky.Interfaces;
 using starsky.Models;
+using starskycore.Helpers;
+using starskycore.Interfaces;
+using starskycore.Models;
 using starskytests.Models;
 
 namespace starskytests.Helpers

@@ -6,8 +6,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
+using starskycore.Helpers;
 using starskytests.FakeCreateAn;
 using starskytests.FakeMocks;
+using ReadMeta = starsky.core.Services.ReadMeta;
 
 namespace starskytests.Services
 {
