@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,13 +37,6 @@ namespace starsky.Helpers
             var requestHeadersBytes = Base64Helper.TryParse(request.Headers["filename"]);
             var requestHeaders = Encoding.ASCII.GetString(requestHeadersBytes);
             return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders)) + Path.GetExtension(requestHeaders);
-        }
-
-        public static string DecodeFileName(string sourceFileName, AppSettings appSettings)
-        {
-            var byteName = Encoding.ASCII.GetBytes(appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(sourceFileName)));
-            var tempHash = Base32.Encode(byteName) + "_00_" + Base32.Encode(FileHash.GenerateRandomBytes(5));
-            return tempHash;
         }
 
         public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, AppSettings appSettings, string headerFileName = null)
