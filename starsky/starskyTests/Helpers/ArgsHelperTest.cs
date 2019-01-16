@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +9,7 @@ using starsky.Helpers;
 using starsky.Middleware;
 using starsky.Models;
 
-namespace starskytests
+namespace starskytests.Helpers
 {
     [TestClass]
     public class ArgsHelperTest
