@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +8,7 @@ using starsky.Helpers;
 using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
+using starskytests.FakeCreateAn;
 
 namespace starskytests.Services
 {

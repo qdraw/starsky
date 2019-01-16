@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 
-namespace starskytests
+namespace starskytests.FakeCreateAn
 {
     public class CreateAnImage
     {

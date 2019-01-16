@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,6 +18,7 @@ using starsky.Interfaces;
 using starsky.Middleware;
 using starsky.Models;
 using starsky.Services;
+using starskytests.FakeCreateAn;
 using starskytests.FakeMocks;
 using starskytests.Models;
 using starskytests.Services;

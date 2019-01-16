@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -6,6 +6,7 @@ using starsky.Helpers;
 using starsky.Models;
 using starsky.Services;
 using starskyGeoCli.Services;
+using starskytests.FakeCreateAn;
 
 namespace starskytests.starskygeosync.Services
 {
