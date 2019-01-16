@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Interfaces;
 
@@ -56,12 +56,12 @@ namespace starsky.Controllers
             return View("Trash", model);
         }
 
-        public IActionResult Error()
-        {
-            // copy to controller, this one below is only for copying
-            Response.StatusCode = 404;
-            return View();
-        }
+        //public IActionResult Error()
+        //{
+        //    // copy to controller, this one below is only for copying
+        //    Response.StatusCode = 404;
+        //    return View();
+        //}
 
     }
 }
