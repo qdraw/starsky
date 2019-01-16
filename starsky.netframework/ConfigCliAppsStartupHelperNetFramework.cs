@@ -1,22 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using starsky.Models;
 using starsky.Services;
 using starskycore.Data;
+using starskycore.Helpers;
 using starskycore.Interfaces;
-using starskycore.Middleware;
 using starskycore.Services;
 using Query = starsky.core.Services.Query;
 using ReadMeta = starsky.core.Services.ReadMeta;
 using SyncService = starskycore.Services.SyncService;
 
-namespace starskycore.Helpers
+namespace starskySyncFramework
 {
     public class ConfigCliAppsStartupHelperNetFramework
     {
@@ -92,25 +88,6 @@ namespace starskycore.Helpers
 	        _thumbnailCleaner = new ThumbnailCleaner(query, _appSettings.app);
         }
 
-	    public static ConfigurationBuilder AppSettingsToBuilder()
-	    {
-		    var appSettings = new AppSettings();
-		    var builder = new ConfigurationBuilder();
-		    
-		    // to remove spaces and other signs, check help to get your name
-		    var appSettingsMachine =
-			    $"appsettings.{Environment.MachineName.ToLowerInvariant()}.json";
-		    
-		    builder
-			    .SetBasePath(appSettings.BaseDirectoryProject)
-			    .AddJsonFile("appsettings.json",true)
-			    .AddJsonFile(appSettingsMachine, optional: true)
-			    // overwrite envs
-			    // current dir gives problems on linux arm
-			    .AddEnvironmentVariables();
-		    return builder;
-	    }
-        
         /// <summary>
         /// Returns an filled AppSettings Interface
         /// </summary>

@@ -48,7 +48,7 @@ namespace starskySyncFramework
             if (new ArgsHelper().GetIndexMode(args))
             {
                 Console.WriteLine($"Start indexing {subpath}");
-//                startupHelper.SyncService().SyncFiles(subpath);
+                startupHelper.SyncService().SyncFiles(subpath);
                 Console.WriteLine("Done SyncFiles!");
             }
 
