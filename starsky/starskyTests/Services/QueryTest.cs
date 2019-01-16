@@ -10,7 +10,7 @@ using starsky.Data;
 using starsky.Models;
 using starsky.Services;
 
-namespace starskytests
+namespace starskytests.Services
 {
     [TestClass]
     public class QueryTest
