@@ -8,7 +8,7 @@
     * [starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files_
-    * __[starskyGeoCli](../../starsky/starskygeocli/readme.md)  gpx sync and reverse geotagging__
+    * __[starskyGeoCli](../../starsky/starskygeocli/readme.md)  gpx sync and reverse 'geo tagging'__
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
