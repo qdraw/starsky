@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -22,9 +22,9 @@ namespace starskySyncFramework
         private readonly ReadMeta _readmeta;
         private readonly IExiftool _exiftool;
 	    private readonly ThumbnailCleaner _thumbnailCleaner;
-	    private AppBase _appSettings;
+	    private AppSettings _appSettings;
 
-	    public class AppBase
+	    public class AppSettingsJsonBase
 	    {
 		    public AppSettings app { get; set; }
 	    }
@@ -36,12 +36,30 @@ namespace starskySyncFramework
         {
 	        var newappSettings = new AppSettings();
 
+	        var appSettingsLocationMachine =
+		        Path.Combine(newappSettings.BaseDirectoryProject, $"appsettings.{Environment.MachineName.ToLowerInvariant()}.json");
+
 	        var appSettingsLocation =
-		        Path.Combine(newappSettings.BaseDirectoryProject, "appsettings.json"); 
-	        
-	        var appSettingsString = new PlainTextFileHelper().ReadFile(appSettingsLocation);
-	        	        
-	        _appSettings = JsonConvert.DeserializeObject<AppBase>(appSettingsString);
+		        Path.Combine(newappSettings.BaseDirectoryProject, "appsettings.json");
+
+			string appSettingsString;
+
+			if ( Files.IsFolderOrFile(appSettingsLocationMachine) ==
+	             FolderOrFileModel.FolderOrFileTypeList.File )
+	        {
+		        appSettingsString = new PlainTextFileHelper().ReadFile(appSettingsLocationMachine);
+			}
+	        else if ( Files.IsFolderOrFile(appSettingsLocation) ==
+	             FolderOrFileModel.FolderOrFileTypeList.File )
+	        {
+		        appSettingsString = new PlainTextFileHelper().ReadFile(appSettingsLocationMachine);
+	        }
+			else
+			{
+				throw new FileNotFoundException("missing appSettings");
+			}
+
+	        _appSettings = JsonConvert.DeserializeObject<AppSettingsJsonBase>(appSettingsString);
 	        
 	        _exiftool = new ExifTool(_appSettings.app);
 	        
@@ -50,22 +68,22 @@ namespace starskySyncFramework
             // Build Datbase Context
             var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
             
-            if(_appSettings.app.Verbose) Console.WriteLine(_appSettings.app.DatabaseConnection);
+            if( _appSettings.Verbose) Console.WriteLine(_appSettings.DatabaseConnection);
 
             // Select database type
-            switch (_appSettings.app.DatabaseType)
+            switch ( _appSettings.DatabaseType)
             {
                 case starsky.Models.AppSettings.DatabaseTypeList.Mysql:
-                    builderDb.UseMySql(_appSettings.app.DatabaseConnection);
+                    builderDb.UseMySql(_appSettings.DatabaseConnection);
                     break;
                 case starsky.Models.AppSettings.DatabaseTypeList.InMemoryDatabase:
                     builderDb.UseInMemoryDatabase("Starsky");
                     break;
                 case starsky.Models.AppSettings.DatabaseTypeList.Sqlite:
-                    builderDb.UseSqlite(_appSettings.app.DatabaseConnection);
+                    builderDb.UseSqlite(_appSettings.DatabaseConnection);
                     break;
                 default:
-                    builderDb.UseSqlite(_appSettings.app.DatabaseConnection);
+                    builderDb.UseSqlite(_appSettingsJsonSettings.app.DatabaseConnection);
                     break;
             }
             
@@ -73,19 +91,19 @@ namespace starskySyncFramework
             var context = new ApplicationDbContext(options);
             var query = new Query(context);
             
-            _readmeta = new ReadMeta(_appSettings.app);
+            _readmeta = new ReadMeta(_appSettingsJsonSettings.app);
             
-            _isync = new SyncService(context, query, _appSettings.app,_readmeta);
+            _isync = new SyncService(context, query, _appSettingsJsonSettings.app,_readmeta);
             
             // TOC:
             //   _context = context
             //   _isync = isync
             //   _exiftool = exiftool
-            //   _appSettings = appSettings
+            //   _appSettingsJsonSettings = appSettings
             //   _readmeta = readmeta
-            _import = new ImportService(context, _isync, _exiftool, _appSettings.app, _readmeta,null);
+            _import = new ImportService(context, _isync, _exiftool, _appSettingsJsonSettings.app, _readmeta,null);
 
-	        _thumbnailCleaner = new ThumbnailCleaner(query, _appSettings.app);
+	        _thumbnailCleaner = new ThumbnailCleaner(query, _appSettingsJsonSettings.app);
         }
 
         /// <summary>
