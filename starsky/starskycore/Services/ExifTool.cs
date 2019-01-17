@@ -54,11 +54,17 @@ namespace starskycore.Services
             Process p = Process.Start(psi);
             string strOutput = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
-			
-			if ( !p.HasExited ) return null;
+
+	        if ( !p.HasExited )
+	        {
+		        p.CloseMainWindow();
+		        p.Close();
+		        return null;
+	        }
 	        
-	        p.CloseMainWindow();
-			p.Close();
+	        // make sure that there nothing left
+	        p.Dispose();
+
 			Console.WriteLine(strOutput);
 			return strOutput;
         }
