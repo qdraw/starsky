@@ -15,6 +15,15 @@
 
 ## starskyimportercli docs
 
+To automatically copy files from for example a SD-card to the photo library. It could copy a single file, a directory with only the direct child files or a recursive directory.  It automatically sort on the photos creation date.
+The 'importer Cli' could handle local imports, and in the 'Starsky web interface' there is a web import available.
+
+To recursive _(`-r`)_ import from the sdcard
+```
+./starskyimportercli -r -p "/Volumes/sdcard/"
+```
+
+
 ## Config file (appsettings.json)
 For more information about the `appsettings.json` configuration
 
@@ -80,6 +89,8 @@ Starksy Importer Cli ~ Help:
 
 
 ## Structure Examples
+There are examples of how to manual configure the structure setting. This is all based on the creation date of the image or if the 'exif tag' _(data inside the photo)_ is missing there is a filename structure is used.
+
 ### Good examples
 #### In the main folder
 ```
