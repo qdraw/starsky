@@ -114,31 +114,6 @@ namespace starskycore.Helpers
 		    return builder;
 	    }
 
-//	    private ConfigurationBuilder AppSettingsToBuilder2()
-//	    {
-//		    var appSettings = new AppSettings();
-//		    var builder = new ConfigurationBuilder();
-//
-//		    var addFileOnPrio = new List<string>
-//		    {
-//			    Path.Join(appSettings.BaseDirectoryProject,$"appsettings.{Environment.MachineName.ToLower()}.json"),
-//			    Path.Join(appSettings.BaseDirectoryProject,"appsettings.json"),
-//			    Path.Join(Directory.GetCurrentDirectory(),$"appsettings.{Environment.MachineName.ToLower()}.json"),
-//			    Path.Join(Directory.GetCurrentDirectory(),"appsettings.json"),
-//		    };
-//
-//		    foreach ( var filePath in addFileOnPrio )
-//		    {
-//			    Console.WriteLine(filePath);
-//			    if ( !File.Exists(filePath) ) continue;
-//			    builder.AddJsonFile(filePath);
-//			    builder.AddEnvironmentVariables();
-//			    return  builder;
-//		    }
-//		    // overwrite envs			    
-//		    builder.AddEnvironmentVariables();
-//		    return builder;
-//	    }
         
         /// <summary>
         /// Returns an filled AppSettings Interface

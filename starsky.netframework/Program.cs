@@ -13,8 +13,7 @@ namespace starskySyncFramework
 			new ArgsHelper().SetEnvironmentByArgs(args);
             
             var startupHelper = new ConfigCliAppsStartupHelperNetFramework();
-//            var appSettings = startupHelper.AppSettings();
-	        var appSettings = new AppSettings();
+            var appSettings = startupHelper.AppSettings();
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
             
             if (new ArgsHelper().NeedHelp(args))

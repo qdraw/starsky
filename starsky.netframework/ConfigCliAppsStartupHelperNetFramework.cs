@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -28,40 +29,39 @@ namespace starskySyncFramework
 	    {
 		    public AppSettings app { get; set; }
 	    }
+
 	    
 	    /// <summary>
         /// Inject all services for the CLI applications
         /// </summary>
         public ConfigCliAppsStartupHelperNetFramework()
-        {
-	        var newappSettings = new AppSettings();
+	    {
 
-	        var appSettingsLocationMachine =
-		        Path.Combine(newappSettings.BaseDirectoryProject, $"appsettings.{Environment.MachineName.ToLowerInvariant()}.json");
 
-	        var appSettingsLocation =
-		        Path.Combine(newappSettings.BaseDirectoryProject, "appsettings.json");
-
-			string appSettingsString;
-
-			if ( Files.IsFolderOrFile(appSettingsLocationMachine) ==
-	             FolderOrFileModel.FolderOrFileTypeList.File )
+		    var baseDirectoryProject = new AppSettings().BaseDirectoryProject;
+	        var filePaths =  new List<string>
 	        {
-		        appSettingsString = new PlainTextFileHelper().ReadFile(appSettingsLocationMachine);
-			}
-	        else if ( Files.IsFolderOrFile(appSettingsLocation) ==
-	             FolderOrFileModel.FolderOrFileTypeList.File )
-	        {
-		        appSettingsString = new PlainTextFileHelper().ReadFile(appSettingsLocationMachine);
-	        }
-			else
-			{
-				throw new FileNotFoundException("missing appSettings");
-			}
+		        Path.Combine(baseDirectoryProject, $"appsettings.netframework.{Environment.MachineName.ToLowerInvariant()}.json"),
+		        Path.Combine(baseDirectoryProject, "appsettings.netframework.json"),
+		        Path.Combine(baseDirectoryProject, $"appsettings.{Environment.MachineName.ToLowerInvariant()}.json"),
+		        Path.Combine(baseDirectoryProject, "appsettings.json"),
+	        };
 
-	        _appSettings = JsonConvert.DeserializeObject<AppSettingsJsonBase>(appSettingsString);
 	        
-	        _exiftool = new ExifTool(_appSettings.app);
+	        var appSettingsString = new PlainTextFileHelper().ReadFirstFile(filePaths);
+
+		    if ( !string.IsNullOrEmpty(appSettingsString) )
+		    {
+			    var appSettingsJsonBase = JsonConvert.DeserializeObject<AppSettingsJsonBase>(appSettingsString);
+			    _appSettings = appSettingsJsonBase.app;    
+		    }
+		    else
+		    {
+			    _appSettings = new AppSettings();
+		    }
+
+	        
+	        _exiftool = new ExifTool(_appSettings);
 	        
 	        
 
@@ -83,7 +83,7 @@ namespace starskySyncFramework
                     builderDb.UseSqlite(_appSettings.DatabaseConnection);
                     break;
                 default:
-                    builderDb.UseSqlite(_appSettingsJsonSettings.app.DatabaseConnection);
+                    builderDb.UseSqlite(_appSettings.DatabaseConnection);
                     break;
             }
             
@@ -91,9 +91,9 @@ namespace starskySyncFramework
             var context = new ApplicationDbContext(options);
             var query = new Query(context);
             
-            _readmeta = new ReadMeta(_appSettingsJsonSettings.app);
+            _readmeta = new ReadMeta(_appSettings);
             
-            _isync = new SyncService(context, query, _appSettingsJsonSettings.app,_readmeta);
+            _isync = new SyncService(context, query, _appSettings,_readmeta);
             
             // TOC:
             //   _context = context
@@ -101,9 +101,9 @@ namespace starskySyncFramework
             //   _exiftool = exiftool
             //   _appSettingsJsonSettings = appSettings
             //   _readmeta = readmeta
-            _import = new ImportService(context, _isync, _exiftool, _appSettingsJsonSettings.app, _readmeta,null);
+            _import = new ImportService(context, _isync, _exiftool, _appSettings, _readmeta,null);
 
-	        _thumbnailCleaner = new ThumbnailCleaner(query, _appSettingsJsonSettings.app);
+	        _thumbnailCleaner = new ThumbnailCleaner(query, _appSettings);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace starskySyncFramework
         /// <returns>AppSettings</returns>
         public AppSettings AppSettings()
         {
-            return new AppSettings();
+	        return _appSettings;
         }
         
         /// <summary>

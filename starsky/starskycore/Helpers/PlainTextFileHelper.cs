@@ -1,9 +1,33 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using starsky.Models;
 
 namespace starskycore.Helpers
 {
     public class PlainTextFileHelper
     {
+	    
+	    /// <summary>
+	    /// Return the content of the first file
+	    /// </summary>
+	    /// <param name="fullFilePaths"></param>
+	    /// <returns></returns>
+	    public string ReadFirstFile(List<string> fullFilePaths)
+	    {
+
+		    foreach ( var singleFilePath in fullFilePaths )
+		    {
+
+			    if ( Files.IsFolderOrFile(singleFilePath) ==
+			         FolderOrFileModel.FolderOrFileTypeList.File )
+			    {
+				    return new PlainTextFileHelper().ReadFile(singleFilePath);
+			    }
+		    }
+
+		    return string.Empty;
+	    }
+	    
         /// <summary>
         /// Read a text based file (not binary) file
         /// </summary>
