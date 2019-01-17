@@ -1,4 +1,4 @@
-﻿
+
 using starsky.Services;
 
 namespace starsky.Models
@@ -47,7 +47,11 @@ namespace starsky.Models
             set
             {
                 // Append slash after
-                if (string.IsNullOrEmpty(value)) _folder = string.Empty;
+	            if ( string.IsNullOrEmpty(value) )
+	            {
+		            _folder = ConfigRead.AddSlash(string.Empty);
+		            return;
+	            }
                 _folder = ConfigRead.AddSlash(value);
             }
         }
