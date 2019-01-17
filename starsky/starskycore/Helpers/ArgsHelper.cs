@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Versioning;
 using starsky.Models;
 
 namespace starskycore.Helpers
@@ -197,9 +199,25 @@ namespace starskycore.Helpers
 	        Console.WriteLine("CameraTimeZone "+ _appSettings.CameraTimeZone);
 	        Console.WriteLine("-- Appsettings.json locations -- ");
 	        var machineName = Environment.MachineName.ToLowerInvariant();
+	        
+	        var framework = Assembly
+		        .GetEntryAssembly()?
+		        .GetCustomAttribute<TargetFrameworkAttribute>()?
+		        .FrameworkName;
+	        
+	        if ( framework?.Contains("NETFramework") ?? true )
+	        {
+		        Console.WriteLine("BaseDirectoryProject for .NET Framework - \n" +
+			        $"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.netframework.json")}\n" +
+			        $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.netframework." + machineName + ".json")}  ");
+	        }
+	        
 	        Console.WriteLine("BaseDirectoryProject - \n" +
 	                          $"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}\n" +
-	                          $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")}\n  ");
+	                          $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")} ");
+
+	        Console.WriteLine($".NET Version - {framework}");
+
         }
 
         // Default On
