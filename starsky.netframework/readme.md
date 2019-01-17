@@ -9,10 +9,8 @@
     * [starskyTests](../starsky/starskyTests/readme.md)  _mstest unit tests_
     * [starskyWebHtmlCli](../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files_
     * [starskyGeoCli](../starsky/starskygeocli/readme.md)  _gpx sync and reverse geotagging_
- * [starsky.netframework](../starsky.netframework/readme.md) _Client for older machines_
+ * __[starsky.netframework](../../starsky.netframework/readme.md) Client for older machines (reference starskycore)__
  * [starsky-node-client](../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
- * __[starskyapp](../starskyapp/readme.md) React-Native app (Pre-alpha code)__
+ * [starskyapp](../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
-
-# Pre alpha docs,
-please add build and install instructions
+## Starsky Client for older machines
