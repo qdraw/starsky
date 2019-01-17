@@ -1,4 +1,4 @@
-﻿
+
 using starsky.Services;
 using starskycore.Services;
 
@@ -47,11 +47,16 @@ namespace starsky.Models
             get { return _folder; }
             set
             {
-                // Append slash after
-                if (string.IsNullOrEmpty(value)) _folder = string.Empty;
-                _folder = ConfigRead.AddSlash(value);
-            }
-        }
+				// Append slash after
+				if ( string.IsNullOrEmpty(value) )
+				{
+					_folder = ConfigRead.AddSlash(string.Empty);
+					return;
+				}
+	            _folder = ConfigRead.AddSlash(value);
+
+			}
+		}
 
         public string Append { get; set; } = string.Empty; // do not add slash check, used for _kl
         public string Template { get; set; } // index.cshtml for example
