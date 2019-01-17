@@ -22,8 +22,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.1.6" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="2.1.6" />
-    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
-
 
     </ItemGroup>
     <ItemGroup>
