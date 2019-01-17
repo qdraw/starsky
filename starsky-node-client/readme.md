@@ -16,7 +16,7 @@
 ## Starsky node client docs
 
 ### Introduction
-Node Client tools are helpers to use in combination with the starsky mvc application
+Node Client are tools that you could use on the side and are helpers to use in combination with the starsky mvc application
 
 - [docs](docs/readme.md) convert markdown to html
 - [mail](mail/readme.md) imap mail client to import files in Starsky

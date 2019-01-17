@@ -14,3 +14,35 @@
  * [starskyapp](../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
 ## Starsky Client for older machines
+
+This application in only useful for older Mac OS machines. For Windows it still require 'Windows 7' or newer (_[reference](https://docs.microsoft.com/en-us/dotnet/framework/get-started/system-requirements)_)
+
+For all other Machines than Mac OS X 10.11 please continue at: 
+- [starskysynccli](../starsky/starskysynccli/readme.md)  _database command line interface_
+
+
+### Install `mono`
+When you have a Mac OS X 10.11 Machine install `mono` first.
+
+```sh
+brew install mono
+```
+
+- or go to the [install page of the Mono project](https://www.mono-project.com/docs/getting-started/install/mac/)  
+
+### Build
+
+Run the release script in the `starsky.netframework` folder to get a executable  
+```sh
+./release-msbuild.sh
+```
+
+
+### Run
+To run the application can execute the following script
+```sh
+mono bin/Release/starskySyncFramework.exe -h -v
+```
+
+### starsky.netframework is a wrapper for starskySyncCli
+For more information please check the [starskysynccli](../starsky/starskysynccli/readme.md) documentation
