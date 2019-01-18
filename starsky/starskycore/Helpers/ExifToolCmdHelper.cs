@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using starsky.Models;
-using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 
-namespace starsky.Helpers
+namespace starskycore.Helpers
 {
     public class ExifToolCmdHelper
     {
