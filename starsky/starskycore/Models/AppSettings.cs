@@ -16,7 +16,6 @@ namespace starsky.Models
         public AppSettings()
         {
             ReadOnlyFolders = new List<string>();
-            DatabaseType = DatabaseTypeList.Sqlite;
             DatabaseConnection = SqliteFullPath("Data Source=data.db",BaseDirectoryProject);
             
             // Cache for thumbs
@@ -111,8 +110,15 @@ namespace starsky.Models
         
 
         // Database
+	    private DatabaseTypeList _databaseType = DatabaseTypeList.Sqlite;
+	    
         [JsonConverter(typeof(StringEnumConverter))]
-        public DatabaseTypeList DatabaseType { get; set; }
+        public DatabaseTypeList DatabaseType {
+	        get { return _databaseType; }
+	        set { _databaseType = value; } 
+        }
+	    
+	    
         public enum DatabaseTypeList
         {
             Mysql = 1,
@@ -121,10 +127,8 @@ namespace starsky.Models
         }
         
         // DatabaseType > above this one
-        private  string _databaseConnection;
-    #if (!DEBUG) 
-        [JsonIgnore]
-    #endif
+        private string _databaseConnection;
+
         public string DatabaseConnection
         {
             get { return _databaseConnection; }
@@ -266,6 +270,23 @@ namespace starsky.Models
 
         public List<AppSettingsPublishProfiles> PublishProfiles { get; set; } = new List<AppSettingsPublishProfiles>();
 
+	    
+	    /// <summary>
+	    /// Duplicate this item in memory. AND remove _databaseConnection 
+	    /// </summary>
+	    /// <returns>AppSettings duplicated</returns>
+	    public AppSettings CloneToDisplay()
+	    {
+		    var appSettings = (AppSettings) MemberwiseClone();
+		    //         [JsonIgnore]
+		    if ( appSettings.DatabaseType != DatabaseTypeList.Sqlite )
+		    {
+			    appSettings.DatabaseConnection = "Not display due security reasons";
+		    }
+		    return appSettings;
+	    }
+	    
+	    
         
         // -------------------------------------------------
         // ------------------- Modifiers -------------------
