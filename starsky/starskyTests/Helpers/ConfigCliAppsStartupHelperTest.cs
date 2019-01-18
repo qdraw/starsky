@@ -24,7 +24,7 @@ namespace starskytests.Helpers
 			Assert.AreEqual(true,name.Contains(nameof(ReadMeta)));
 			
 			name = cliHelper.ImportService().ToString();
-			Assert.AreEqual(true,name.Contains(nameof(starsky.Services.ImportService)));		
+			Assert.AreEqual(true,name.Contains(nameof(ImportService)));		
 		}
 	}
 }

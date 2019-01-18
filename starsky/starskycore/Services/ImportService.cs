@@ -5,12 +5,14 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Helpers;
 using starsky.Models;
+using starsky.Services;
 using starskycore.Data;
+using starskycore.Extensions;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 
-namespace starsky.Services
+namespace starskycore.Services
 {
     public class ImportService : IImport
     {
@@ -20,6 +22,7 @@ namespace starsky.Services
         private readonly AppSettings _appSettings;
         private readonly IReadMeta _readmeta;
         private readonly IServiceScopeFactory _scopeFactory;
+	    private readonly bool _isConnection;
 
         public ImportService(ApplicationDbContext context, 
             ISync isync, 
@@ -29,6 +32,8 @@ namespace starsky.Services
             IServiceScopeFactory scopeFactory)
         {
             _context = context;
+	        _isConnection = _context.TestConnection();
+		        
             _isync = isync;
             _exiftool = exiftool;
             _appSettings = appSettings;
@@ -232,21 +237,28 @@ namespace starsky.Services
                     comparedNamesList);
             }
             
-			// The files that are imported need to be synced
-            var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
+	        // Ignore the sync part if the connection is missing
+	        if ( _isConnection )
+	        {
+	        
+		        // The files that are imported need to be synced
+		        var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
 
-			// import has failed it has a list with one item with a empty string
-			if ( syncFiles.FirstOrDefault() == string.Empty) return string.Empty;
+		        // import has failed it has a list with one item with a empty string
+		        if ( syncFiles.FirstOrDefault() == string.Empty) return string.Empty;
             
-			// To the list of imported folders
-            AddItem(importIndexItem);
-
+		        // To the list of imported folders
+		        AddItem(importIndexItem);
+		        
+	        }
+	        
+			// setting	        
             if (importSettings.DeleteAfter)
             {
                 File.Delete(inputFileFullPath);
             }
-            
-            return fileIndexItem.FilePath;
+
+	        return fileIndexItem.FilePath;
         }
         
         
@@ -282,10 +294,17 @@ namespace starsky.Services
        
         public bool IsHashInImportDb(string fileHash)
         {
-            InjectServiceScope();
-            return _context.ImportIndex.Any(
-                p => p.FileHash == fileHash 
-            );
+			InjectServiceScope();
+
+			if ( _isConnection )
+				return _context.ImportIndex.Any(
+					p => p.FileHash == fileHash
+				);
+	        
+			// When there is no mysql connection continue
+			Console.WriteLine($">> _isConnection == false -- fileHash:{fileHash}");
+			return false;
+
         }
 
         /// <summary>
