@@ -58,8 +58,9 @@ namespace starsky.Controllers
         [IgnoreAntiforgeryToken]
         [AllowAnonymous] /// <=================================
         public IActionResult Env()
-        {
-            return Json(_appSettings);
+	    {
+		    var appSettings = _appSettings.CloneToDisplay();
+            return Json(appSettings);
         }
         
         /// <summary>
