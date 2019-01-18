@@ -2,6 +2,7 @@
 using starsky.Models;
 using starsky.Services;
 using starskycore.Helpers;
+using starskycore.Models;
 using starskyGeoCli.Services;
 
 namespace starskyGeoCli

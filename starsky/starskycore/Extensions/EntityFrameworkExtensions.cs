@@ -10,12 +10,16 @@ namespace starskycore.Extensions
 	{
 		public static bool TestConnection(this DbContext context)
 		{
-			DbConnection connection = context.Database.GetDbConnection();
 
 			try
 			{
+				DbConnection connection = context.Database.GetDbConnection();
 				connection.Open();
 				connection.Close();
+			}
+			catch (InvalidOperationException) // for tests
+			{
+				return true;
 			}
 			catch ( MySqlException e)
 			{

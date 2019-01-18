@@ -2,6 +2,7 @@
 using starskycore.Attributes;
 using starsky.Models;
 using starskycore.Helpers;
+using starskycore.Models;
 
 namespace starskyimportercli
 {
@@ -14,8 +15,9 @@ namespace starskyimportercli
             // Use args in application
             new ArgsHelper().SetEnvironmentByArgs(args);
             
-
             var startupHelper = new ConfigCliAppsStartupHelper();
+	        
+	        // Copy for Net
             var appSettings = startupHelper.AppSettings();
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 

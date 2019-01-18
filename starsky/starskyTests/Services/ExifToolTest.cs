@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Models;
 using starskycore.Middleware;
+using starskycore.Models;
 using starskycore.Services;
 using starskytests.FakeCreateAn;
 

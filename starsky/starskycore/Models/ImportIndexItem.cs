@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using starsky.Services;
 using starskycore.Helpers;
+using starskycore.Models;
 using starskycore.Services;
 
 namespace starsky.Models

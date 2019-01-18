@@ -15,9 +15,9 @@ using starsky.Services;
 using starskycore.Attributes;
 using starskycore.Middleware;
 using starskycore.Models;
+using starskycore.Services;
 using starskytests.FakeCreateAn;
 using Query = starsky.core.Services.Query;
-using ReadMeta = starsky.core.Services.ReadMeta;
 using SyncService = starskycore.Services.SyncService;
 
 namespace starskytests.Services

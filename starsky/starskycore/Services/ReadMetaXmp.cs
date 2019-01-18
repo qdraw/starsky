@@ -7,7 +7,7 @@ using starskycore.Helpers;
 using starskycore.Models;
 using XmpCore;
 
-namespace starsky.core.Services
+namespace starskycore.Services
 {
     
     public partial class ReadMeta // IReadMeta

@@ -339,7 +339,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\starsky\starskycore\starskycore.csproj">
+    <ProjectReference Include="..\..\starsky\starskycore\starskycore.csproj">
       <Project>{c1f0af32-30af-461a-9d27-1454a7594df7}</Project>
       <Name>starskycore</Name>
     </ProjectReference>

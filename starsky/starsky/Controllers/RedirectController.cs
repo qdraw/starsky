@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Models;
+using starskycore.Models;
 
 namespace starsky.Controllers
 {

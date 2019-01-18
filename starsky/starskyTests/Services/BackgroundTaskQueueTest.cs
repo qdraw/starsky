@@ -8,9 +8,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Models;
-using starsky.Services;
 using starskycore.Middleware;
+using starskycore.Models;
 using starskycore.Services;
 
 namespace starskytests.Services

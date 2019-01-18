@@ -7,9 +7,10 @@ using starsky.Services;
 using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Middleware;
+using starskycore.Models;
 using starskycore.Services;
 using Query = starsky.core.Services.Query;
-using ReadMeta = starsky.core.Services.ReadMeta;
+using ReadMeta = starskycore.Services.ReadMeta;
 using SyncService = starskycore.Services.SyncService;
 
 namespace starskycore.Helpers
@@ -61,13 +62,13 @@ namespace starskycore.Helpers
             // Select database type
             switch (appSettings.DatabaseType)
             {
-                case starsky.Models.AppSettings.DatabaseTypeList.Mysql:
+                case Models.AppSettings.DatabaseTypeList.Mysql:
                     builderDb.UseMySql(appSettings.DatabaseConnection);
                     break;
-                case starsky.Models.AppSettings.DatabaseTypeList.InMemoryDatabase:
+                case Models.AppSettings.DatabaseTypeList.InMemoryDatabase:
                     builderDb.UseInMemoryDatabase("Starsky");
                     break;
-                case starsky.Models.AppSettings.DatabaseTypeList.Sqlite:
+                case Models.AppSettings.DatabaseTypeList.Sqlite:
                     builderDb.UseSqlite(appSettings.DatabaseConnection);
                     break;
                 default:

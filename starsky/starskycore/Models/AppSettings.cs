@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using starsky.Services;
+using starsky.Models;
 using starskycore.Services;
 using TimeZoneConverter;
 
-namespace starsky.Models
+namespace starskycore.Models
 {
     public class AppSettings
     {

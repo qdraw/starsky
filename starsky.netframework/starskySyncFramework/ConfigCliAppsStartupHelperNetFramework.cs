@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using starsky.core.Services;
 using starsky.Models;
 using starsky.Services;
 using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;
+using starskycore.Models;
 using starskycore.Services;
-using Query = starsky.core.Services.Query;
-using ReadMeta = starsky.core.Services.ReadMeta;
-using SyncService = starskycore.Services.SyncService;
+using ReadMeta = starskycore.Services.ReadMeta;
 
 namespace starskySyncFramework
 {
@@ -73,13 +73,13 @@ namespace starskySyncFramework
             // Select database type
             switch ( _appSettings.DatabaseType)
             {
-                case starsky.Models.AppSettings.DatabaseTypeList.Mysql:
+                case starskycore.Models.AppSettings.DatabaseTypeList.Mysql:
                     builderDb.UseMySql(_appSettings.DatabaseConnection);
                     break;
-                case starsky.Models.AppSettings.DatabaseTypeList.InMemoryDatabase:
+                case starskycore.Models.AppSettings.DatabaseTypeList.InMemoryDatabase:
                     builderDb.UseInMemoryDatabase("Starsky");
                     break;
-                case starsky.Models.AppSettings.DatabaseTypeList.Sqlite:
+                case starskycore.Models.AppSettings.DatabaseTypeList.Sqlite:
                     builderDb.UseSqlite(_appSettings.DatabaseConnection);
                     break;
                 default:

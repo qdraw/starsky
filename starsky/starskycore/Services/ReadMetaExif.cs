@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using MetadataExtractor;
 using starskycore.Models;
 
-namespace starsky.core.Services
+namespace starskycore.Services
 {
     // Reading Exif using MetadataExtractor
     public partial class ReadMeta // IReadMeta

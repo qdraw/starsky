@@ -5,7 +5,8 @@ using starsky.Models;
 using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;
-	
+using starskycore.Models;
+
 namespace starskycore.Services
 {
     public partial class SyncService : ISync

@@ -15,17 +15,15 @@ using starskycore.Data;
 using starsky.Models;
 using starsky.Services;
 using Microsoft.Extensions.Hosting;
-using starsky.core.Services;
-using starsky.Helpers;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Middleware;
+using starskycore.Models;
 using starskycore.Services;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Query = starsky.core.Services.Query;
-using ReadMeta = starsky.core.Services.ReadMeta;
 using SyncService = starskycore.Services.SyncService;
 
 

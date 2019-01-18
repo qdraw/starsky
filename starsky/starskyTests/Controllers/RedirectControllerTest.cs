@@ -9,6 +9,7 @@ using starsky.Controllers;
 using starsky.Models;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starskycore.Models;
 
 
 namespace starskytests.Controllers

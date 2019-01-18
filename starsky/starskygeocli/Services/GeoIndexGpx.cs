@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using starsky.Models;
-using starsky.Services;
 using starskycore.Helpers;
 using starskycore.Models;
-using ReadMeta = starsky.core.Services.ReadMeta;
+using starskycore.Services;
 
 namespace starskyGeoCli.Services
 {

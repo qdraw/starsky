@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
-using starsky.Models;
 using starsky.Services;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
-using starskycore.Services;
 
-namespace starsky.core.Services
+namespace starskycore.Services
 {
     public partial class ReadMeta : IReadMeta
     {
