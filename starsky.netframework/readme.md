@@ -30,9 +30,19 @@ brew install mono
 
 - or go to the [install page of the Mono project](https://www.mono-project.com/docs/getting-started/install/mac/)  
 
+### Install `Nuget`
+
+To get all the packages please install NuGet before running a build script
+
+```sh
+brew install nuget
+```
+
+
 ### Build
 
 Run the release script in the `starsky.netframework` folder to get a executable  
+
 ```sh
 ./release-msbuild.sh
 ```
@@ -46,3 +56,4 @@ mono bin/Release/starskySyncFramework.exe -h -v
 
 ### starsky.netframework is a wrapper for starskySyncCli
 For more information please check the [starskysynccli](../starsky/starskysynccli/readme.md) documentation
+
