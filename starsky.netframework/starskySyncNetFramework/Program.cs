@@ -3,8 +3,9 @@ using starsky.Models;
 using starsky.Services;
 using starskycore.Helpers;
 using starskycore.Models;
+using starskyNetFrameworkShared;
 
-namespace starskySyncFramework
+namespace starskySyncNetFramework
 {
     public static class Program
     {

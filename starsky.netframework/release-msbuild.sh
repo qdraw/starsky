@@ -1,8 +1,8 @@
 #!/bin/bash
 nuget restore
 
-pushd starskySyncFramework
-MSBuild "starskySyncFramework.csproj" /P:Configuration=release
+pushd starskySyncNetFramework
+MSBuild "starskySyncNetFramework.csproj" /P:Configuration=release
 popd
 
 

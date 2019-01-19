@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskySyncNetFramework", "starskySyncNetFramework\starskySyncNetFramework.csproj", "{6E4084C5-5B24-45E5-8D99-4159AF11E3AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskycore", "..\starsky\starskycore\starskycore.csproj", "{11E98077-F12D-4F4A-A6A2-29A1B72D2757}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyNetFrameworkShared", "starskyNetFrameworkShared\starskyNetFrameworkShared.csproj", "{F2F01AC7-08EF-4689-976E-17A3DE2773F4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E4084C5-5B24-45E5-8D99-4159AF11E3AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E4084C5-5B24-45E5-8D99-4159AF11E3AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E4084C5-5B24-45E5-8D99-4159AF11E3AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E4084C5-5B24-45E5-8D99-4159AF11E3AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11E98077-F12D-4F4A-A6A2-29A1B72D2757}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11E98077-F12D-4F4A-A6A2-29A1B72D2757}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11E98077-F12D-4F4A-A6A2-29A1B72D2757}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11E98077-F12D-4F4A-A6A2-29A1B72D2757}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2F01AC7-08EF-4689-976E-17A3DE2773F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2F01AC7-08EF-4689-976E-17A3DE2773F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2F01AC7-08EF-4689-976E-17A3DE2773F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2F01AC7-08EF-4689-976E-17A3DE2773F4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

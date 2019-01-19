@@ -10,6 +10,8 @@ namespace starskycore.Extensions
 		public static bool TestConnection(this DbContext context)
 		{
 
+			return true;
+
 			try
 			{
 				DbConnection connection = context.Database.GetDbConnection();

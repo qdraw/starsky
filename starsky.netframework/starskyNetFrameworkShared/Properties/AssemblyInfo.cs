@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("starskyimportercliFramework")]
+[assembly: AssemblyTitle("starskyNetFrameworkShared")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("starskyimportercliFramework")]
+[assembly: AssemblyProduct("starskyNetFrameworkShared")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("4136967E-C642-43A0-BAEB-04A718530F7D")]
+[assembly: Guid("F2F01AC7-08EF-4689-976E-17A3DE2773F4")]
 
 // Version information for an assembly consists of the following four values:
 //
