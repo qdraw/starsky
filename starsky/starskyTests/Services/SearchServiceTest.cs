@@ -5,12 +5,10 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Data;
-using starsky.Helpers;
-using starsky.Models;
-using starsky.ViewModels;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
+using starskycore.ViewModels;
 using starskytests.FakeMocks;
 using Query = starskycore.Services.Query;
 

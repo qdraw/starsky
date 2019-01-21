@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Helpers;
-using starsky.Models;
 using starskycore.Helpers;
 using starskycore.Models;
 

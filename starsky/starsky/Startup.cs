@@ -12,7 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using starskycore.Data;
-using starsky.Models;
 using Microsoft.Extensions.Hosting;
 using starskycore.Helpers;
 using starskycore.Interfaces;

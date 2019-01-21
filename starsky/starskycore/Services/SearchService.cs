@@ -6,12 +6,12 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using starsky.Models;
 using starsky.ViewModels;
 using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskycore.ViewModels;
 
 namespace starskycore.Services
 {

@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
-using starsky.Models;
+using starskycore.Models;
 
 namespace starskycore.Helpers
 {

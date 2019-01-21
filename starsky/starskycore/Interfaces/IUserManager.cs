@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using starsky.Models.Account;
+using starskycore.Models.Account;
 
 namespace starskycore.Interfaces
 {

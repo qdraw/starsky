@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
-using starskycore.Models;
 
-namespace starsky.Models
+namespace starskycore.Models
 {
     public class ImportSettingsModel
     {

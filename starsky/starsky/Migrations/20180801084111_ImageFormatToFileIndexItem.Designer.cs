@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using starskycore.Data;
 using starsky.Helpers;
-using starsky.Models;
 using System;
 
 namespace starsky.Migrations

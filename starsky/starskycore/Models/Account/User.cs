@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace starsky.Models.Account
+namespace starskycore.Models.Account
 {
 	public class User
 	{

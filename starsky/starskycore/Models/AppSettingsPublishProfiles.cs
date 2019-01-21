@@ -1,6 +1,6 @@
 using starskycore.Services;
 
-namespace starsky.Models
+namespace starskycore.Models
 {
     //"ContentType":  "html",
     //"SourceMaxWidth":  null,

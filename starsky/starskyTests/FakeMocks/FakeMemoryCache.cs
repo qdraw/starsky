@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.Models;
-using starsky.ViewModels;
 using starskycore.Models;
+using starskycore.ViewModels;
 using starskytests.FakeCreateAn;
 
 namespace starskytests.FakeMocks

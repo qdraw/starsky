@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
-using starsky.Models;
 using starskycore.Models;
 
 namespace starskycore.Helpers

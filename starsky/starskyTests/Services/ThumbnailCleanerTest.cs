@@ -4,8 +4,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Data;
-using starsky.Helpers;
-using starsky.Models;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;

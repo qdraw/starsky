@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using starsky.Models;
 using starskycore.Models;
 
-namespace starsky.ViewModels
+namespace starskycore.ViewModels
 {
     public class SearchViewModel
     {

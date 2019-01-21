@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using starsky.Models;
 using starskycore.Services;
 using TimeZoneConverter;
 

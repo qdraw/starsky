@@ -2,6 +2,7 @@
 using System.Linq;
 using starsky.ViewModels;
 using starskycore.Models;
+using starskycore.ViewModels;
 
 namespace starskycore.Services
 {

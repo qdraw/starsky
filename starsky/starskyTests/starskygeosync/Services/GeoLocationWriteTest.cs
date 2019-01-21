@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Models;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskyGeoCli.Services;

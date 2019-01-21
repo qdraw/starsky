@@ -8,8 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Data;
-using starsky.Helpers;
-using starsky.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Middleware;

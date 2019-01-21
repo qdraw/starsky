@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using starskycore.Helpers;
-using starskycore.Models;
 
-namespace starsky.Models
+namespace starskycore.Models
 {
     public class ExifToolModel
     {

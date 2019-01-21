@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace starsky.Models
+namespace starskycore.Models
 {
     public class GeoListItem
     {

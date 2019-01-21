@@ -1,11 +1,10 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starsky.Models;
-using starsky.ViewModels;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
+using starskycore.ViewModels;
 
 namespace starsky.Controllers
 {

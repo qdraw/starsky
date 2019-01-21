@@ -1,20 +1,16 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starskycore.Data;
-using starsky.Models;
 using starsky.ViewModels;
 using starskycore.Interfaces;
 using starskycore.Models;
-using starskytests.FakeMocks;
+using starskycore.ViewModels;
 using Query = starskycore.Services.Query;
 
 namespace starskytests.Controllers

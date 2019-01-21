@@ -8,10 +8,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using starskycore.Helpers;
-using starskycore.Models;
 using starskycore.Services;
 
-namespace starsky.Models
+namespace starskycore.Models
 {
     public class ImportIndexItem
     {

@@ -3,9 +3,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
-using starsky.Models;
-using starsky.Models.Account;
 using starskycore.Models;
+using starskycore.Models.Account;
 
 namespace starskycore.Data
 {

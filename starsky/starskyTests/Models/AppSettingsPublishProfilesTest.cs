@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Models;
+using starskycore.Models;
 
 namespace starskytests.Models
 {

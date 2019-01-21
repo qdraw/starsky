@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Data;
-using starsky.Models;
 using starskycore.Models;
 using Query = starskycore.Services.Query;
 

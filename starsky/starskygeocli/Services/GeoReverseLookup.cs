@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using NGeoNames;
 using NGeoNames.Entities;
-using starsky.Models;
 using starskycore.Helpers;
 using starskycore.Models;
 

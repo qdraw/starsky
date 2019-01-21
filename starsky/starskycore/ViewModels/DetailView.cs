@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using starsky.Models;
+using starsky.ViewModels;
 using starskycore.Models;
 
-namespace starsky.ViewModels
+namespace starskycore.ViewModels
 {
     public class DetailView
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Models;
+using starskycore.Models;
 
 namespace starskytests.Models
 {

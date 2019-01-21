@@ -1,7 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Models;
-using starsky.ViewModels;
 using starskycore.Models;
+using starskycore.ViewModels;
 
 namespace starskytests.ViewModels
 {

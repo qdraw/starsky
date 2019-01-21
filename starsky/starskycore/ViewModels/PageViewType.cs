@@ -1,4 +1,4 @@
-﻿namespace starsky.ViewModels
+﻿namespace starskycore.ViewModels
 {
     public class PageViewType
     {

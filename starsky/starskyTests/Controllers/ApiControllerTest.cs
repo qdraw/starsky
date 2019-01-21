@@ -5,16 +5,13 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using starsky.Controllers;
 using starskycore.Data;
-using starsky.Models;
 using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
@@ -22,7 +19,6 @@ using starskycore.Services;
 using starskytests.FakeCreateAn;
 using starskytests.FakeMocks;
 using starskytests.Models;
-using starskytests.Services;
 using Query = starskycore.Services.Query;
 
 namespace starskytests.Controllers

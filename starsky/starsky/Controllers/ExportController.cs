@@ -8,8 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starsky.Helpers;
-using starsky.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;

@@ -9,6 +9,7 @@ using starskycore.Data;
 using starsky.ViewModels;
 using starskycore.Interfaces;
 using starskycore.Services;
+using starskycore.ViewModels;
 using Query = starskycore.Services.Query;
 
 namespace starskytests.Controllers

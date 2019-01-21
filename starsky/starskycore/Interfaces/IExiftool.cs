@@ -1,4 +1,4 @@
-﻿using starsky.Models;
+﻿using starskycore.Models;
 
 namespace starskycore.Interfaces
 {

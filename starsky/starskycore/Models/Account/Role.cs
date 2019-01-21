@@ -3,7 +3,7 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace starsky.Models.Account
+namespace starskycore.Models.Account
 {
     public class Role
     {

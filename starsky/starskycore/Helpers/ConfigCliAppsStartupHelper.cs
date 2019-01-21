@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.Models;
 using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Middleware;

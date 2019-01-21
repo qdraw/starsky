@@ -1,7 +1,6 @@
-﻿using starsky.Models;
-using starskycore.Models;
+﻿using starskycore.Models;
 
-namespace starsky.ViewModels
+namespace starskycore.ViewModels
 {
 	public class SyncViewModel
 	{
