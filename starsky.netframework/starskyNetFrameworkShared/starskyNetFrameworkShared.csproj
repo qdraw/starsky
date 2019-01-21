@@ -204,6 +204,9 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="TimeZoneConverter, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TimeZoneConverter.2.4.2\lib\net45\TimeZoneConverter.dll</HintPath>
+    </Reference>
     <Reference Include="XmpCore, Version=6.1.10.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\XmpCore.6.1.10\lib\netstandard2.0\XmpCore.dll</HintPath>
     </Reference>
@@ -330,10 +333,6 @@
     </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
-    <Reference Include="TimeZoneConverter, Version=2.4.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\TimeZoneConverter.2.4.1\lib\net45\TimeZoneConverter.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\starsky\starskycore\starskycore.csproj">

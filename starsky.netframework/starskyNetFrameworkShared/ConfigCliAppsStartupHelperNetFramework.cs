@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
@@ -39,8 +39,8 @@ namespace starskyNetFrameworkShared
 		    var baseDirectoryProject = new AppSettings().BaseDirectoryProject;
 	        var filePaths =  new List<string>
 	        {
-		        Path.Combine(baseDirectoryProject, $"appsettings.netframework.{Environment.MachineName.ToLowerInvariant()}.json"),
-		        Path.Combine(baseDirectoryProject, "appsettings.netframework.json"),
+		        Path.Combine(baseDirectoryProject, $"appsettings.{Environment.MachineName.ToLowerInvariant()}.patch.json"),
+		        Path.Combine(baseDirectoryProject, "appsettings.patch.json"),
 		        Path.Combine(baseDirectoryProject, $"appsettings.{Environment.MachineName.ToLowerInvariant()}.json"),
 		        Path.Combine(baseDirectoryProject, "appsettings.json"),
 	        };

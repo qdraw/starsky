@@ -31,7 +31,7 @@ namespace starskycore.Services
             IServiceScopeFactory scopeFactory)
         {
             _context = context;
-	        _isConnection = _context.TestConnection();
+	        _isConnection = _context.TestConnection(appSettings);
 		        
             _isync = isync;
             _exiftool = exiftool;

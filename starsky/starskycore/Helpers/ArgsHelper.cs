@@ -200,22 +200,17 @@ namespace starskycore.Helpers
 	        Console.WriteLine("CameraTimeZone "+ _appSettings.CameraTimeZone);
 	        Console.WriteLine("-- Appsettings.json locations -- ");
 	        var machineName = Environment.MachineName.ToLowerInvariant();
-	        
+
+	        Console.WriteLine("Config is read in this order: \n" +
+	                          $"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch.json")}\n" +
+	                          $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch." + machineName + ".json")}  ");
+	        Console.WriteLine($"3. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}\n" +
+	                          $"4. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")} ");
+
 	        var framework = Assembly
 		        .GetEntryAssembly()?
 		        .GetCustomAttribute<TargetFrameworkAttribute>()?
 		        .FrameworkName;
-	        
-	        if ( framework?.Contains("NETFramework") ?? true )
-	        {
-		        Console.WriteLine("BaseDirectoryProject for .NET Framework - \n" +
-			        $"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.netframework.json")}\n" +
-			        $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.netframework." + machineName + ".json")}  ");
-	        }
-	        
-	        Console.WriteLine("BaseDirectoryProject - \n" +
-	                          $"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}\n" +
-	                          $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")} ");
 
 	        Console.WriteLine($".NET Version - {framework}");
 

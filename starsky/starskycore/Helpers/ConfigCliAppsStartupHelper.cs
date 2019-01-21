@@ -103,12 +103,14 @@ namespace starskycore.Helpers
 		    
 		    // to remove spaces and other signs, check help to get your name
 		    var appSettingsMachine =
-			    $"appsettings.{Environment.MachineName.ToLowerInvariant()}.json";
+			    $"appsettings.{Environment.MachineName.ToLowerInvariant()}."; // dot here
 		    
 		    builder
 			    .SetBasePath(appSettings.BaseDirectoryProject)
+			    .AddJsonFile("appsettings.patch.json",true)
+			    .AddJsonFile(appSettingsMachine + "patch.json", optional: true)
 			    .AddJsonFile("appsettings.json",true)
-			    .AddJsonFile(appSettingsMachine, optional: true)
+			    .AddJsonFile(appSettingsMachine + "json", optional: true)
 			    // overwrite envs
 			    // current dir gives problems on linux arm
 			    .AddEnvironmentVariables();
