@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using starsky.core.Services;
-using starsky.Services;
 using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;

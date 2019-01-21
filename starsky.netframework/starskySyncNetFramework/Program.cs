@@ -1,8 +1,7 @@
 ﻿using System;
-using starsky.Models;
-using starsky.Services;
 using starskycore.Helpers;
 using starskycore.Models;
+using starskycore.Services;
 using starskyNetFrameworkShared;
 
 namespace starskySyncNetFramework
