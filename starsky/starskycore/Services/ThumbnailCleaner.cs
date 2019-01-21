@@ -1,12 +1,11 @@
 using System;
 using System.IO;
 using System.Linq;
-using starsky.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 
-namespace starsky.Services
+namespace starskycore.Services
 {
 	public class ThumbnailCleaner
 	{

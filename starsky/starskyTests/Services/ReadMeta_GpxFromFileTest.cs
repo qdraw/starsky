@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
-using starsky.Services;
 using starskycore.Helpers;
 using starskycore.Services;
 using starskytests.FakeCreateAn;

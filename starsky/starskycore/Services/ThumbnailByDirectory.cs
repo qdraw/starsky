@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using starsky.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
-using starskycore.Services;
 
-namespace starsky.Services
+namespace starskycore.Services
 {
     // This feature is used to crawl over directories and add this to the thumbnail-folder
     public class ThumbnailByDirectory

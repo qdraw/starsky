@@ -7,7 +7,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Data;
 using starsky.Helpers;
 using starsky.Models;
-using starsky.Services;
 using starsky.ViewModels;
 using starskycore.Helpers;
 using starskycore.Models;

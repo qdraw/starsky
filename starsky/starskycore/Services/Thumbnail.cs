@@ -1,26 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Net.Http.Headers;
 using starsky.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
-using starskycore.Services;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Gif;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.MetaData.Profiles.Exif;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.Primitives;
 
-namespace starsky.Services
+namespace starskycore.Services
 {
     public class Thumbnail
     {

@@ -6,9 +6,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Data;
 using starsky.Helpers;
 using starsky.Models;
-using starsky.Services;
 using starskycore.Helpers;
 using starskycore.Models;
+using starskycore.Services;
 using starskytests.FakeCreateAn;
 using Query = starskycore.Services.Query;
 
