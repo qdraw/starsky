@@ -377,16 +377,30 @@ namespace starskytests.Services
                         
         }
 
-	    [TestMethod]
-	    public void ImportService_QueryDuplicate()
-	    {
-		    var item = new FileIndexItem {FileHash = _fileHashCreateAnImage, ParentDirectory = "/", FileName = "test"};
-		    _query.AddItem(item);
-
-		    var all = _query.GetAllRecursive();
-		    
-		    RemoveFromQuery();
-	    }
+//	    [TestMethod]
+//	    public void ImportService_QueryDuplicate()
+//	    {
+//		    
+//		    var importSettings = new ImportSettingsModel
+//		    {
+//			    DeleteAfter = false,
+//			    AgeFileFilterDisabled = false
+//		    };
+//		    var createAnImage = new CreateAnImage();
+//
+//		    var item = new FileIndexItem {FileHash = _fileHashCreateAnImage, ParentDirectory = "/", FileName = "test"};
+//		    _query.AddItem(item);
+//
+//		    var all = _query.GetAllRecursive();
+//		    
+//		    var items = _import.Import(createAnImage.FullFilePath, importSettings);
+//		    
+//		    Assert.AreEqual(1, items.Count);
+//		    Assert.AreEqual(string.Empty, items.FirstOrDefault());
+//
+//		    
+//		    RemoveFromQuery();
+//	    }
 
 
         [TestMethod]

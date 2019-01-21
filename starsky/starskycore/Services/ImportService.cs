@@ -166,14 +166,12 @@ namespace starskycore.Services
             
             var fileHashCode = FileHash.GetHashCode(inputFileFullPath);
             
+	        // Check controller as well for the exist check:
+	        
             // If is in the ImportIndex, ignore it and don't delete it
             if (IsHashInImportDb(fileHashCode)) return string.Empty;
 
-	        // If in FileHash Table
-	        if ( _isConnection && 
-	             _context.FileIndex.Any(p => p.FileHash == fileHashCode 
-	                                         && p.Tags.Contains("!delete!") == false 
-	                                         && p.IsDirectory == false)) return string.Empty;
+
 	        
 
             // Only accept files with correct meta data
@@ -294,19 +292,36 @@ namespace starskycore.Services
             );
             return query;
         }
-        
-       
-        public bool IsHashInImportDb(string fileHash)
+
+//	    /// <summary>
+//	    /// Check for _query and ImportIndex table
+//	    /// </summary>
+//	    /// <param name="fileHashCode"></param>
+//	    /// <returns>True = contains any value</returns>
+//	    public bool IsHashInImportAndQueryDb(string fileHashCode)
+//	    {
+//		    InjectServiceScope();
+//
+//		    // If in FileHash Table
+//		    if ( _isConnection && 
+//		         _context.FileIndex.Any(p => p.FileHash == fileHashCode 
+//		                                     && p.Tags.Contains("!delete!") == false 
+//		                                     && p.IsDirectory == false)) return true;
+//
+//		    return IsHashInImportDb(fileHashCode);
+//	    }
+
+	    public bool IsHashInImportDb(string fileHashCode)
         {
 			InjectServiceScope();
 
 			if ( _isConnection )
 				return _context.ImportIndex.Any(
-					p => p.FileHash == fileHash
+					p => p.FileHash == fileHashCode
 				);
 	        
 			// When there is no mysql connection continue
-			Console.WriteLine($">> _isConnection == false -- fileHash:{fileHash}");
+			Console.WriteLine($">> _isConnection == false -- fileHash:{fileHashCode}");
 			return false;
 
         }
