@@ -34,8 +34,8 @@ namespace starskyNetFrameworkShared
         /// </summary>
         public ConfigCliAppsStartupHelperNetFramework()
 	    {
-
-		    SQLitePCL.Batteries.Init();
+			// for running sqlite
+		    // SQLitePCL.Batteries.Init();
 
 			var baseDirectoryProject = new AppSettings().BaseDirectoryProject;
 	        var filePaths =  new List<string>
@@ -58,6 +58,9 @@ namespace starskyNetFrameworkShared
 		    {
 			    _appSettings = new AppSettings();
 		    }
+
+			// Used to import Environment variables
+			new ArgsHelper(_appSettings).SetEnvironmentToAppSettings();
 
 	        
 	        _exiftool = new ExifTool(_appSettings);
@@ -100,7 +103,7 @@ namespace starskyNetFrameworkShared
             //   _exiftool = exiftool
             //   _appSettingsJsonSettings = appSettings
             //   _readmeta = readmeta
-            _import = new ImportService(context, _isync, _exiftool, _appSettings, _readmeta,null);
+			_import = new ImportService(context, _isync, _exiftool, _appSettings, _readmeta, null);
 
 	        _thumbnailCleaner = new ThumbnailCleaner(query, _appSettings);
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,7 +43,7 @@ namespace starskycore.Helpers
             _appSettings = appSettings;
         }
 
-        private readonly AppSettings _appSettings;
+        private AppSettings _appSettings;
 
         public bool NeedVerbose(IReadOnlyList<string> args)
         {
@@ -102,7 +102,32 @@ namespace starskycore.Helpers
             }
         }
 
-       public bool NeedHelp(IReadOnlyList<string> args)
+		/// <summary>
+		/// Set Enviorment Variables to appSettings (not used in .net core)
+		/// </summary>
+	    public void SetEnvironmentToAppSettings()
+	    {
+		    if ( _appSettings == null ) throw new FieldAccessException("use with _appsettings");
+
+		    var envNameList = EnvNameList.ToArray();
+
+		    foreach ( var envUnderscoreName in envNameList )
+		    {
+			    var envValue = Environment.GetEnvironmentVariable(envUnderscoreName);
+			    var envName = envUnderscoreName.Replace("app__", string.Empty);
+
+			    PropertyInfo[] appSettingsProperties = _appSettings.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+				if ( !string.IsNullOrEmpty(envValue) )
+			    {
+				    var propertyObject = _appSettings.GetType().GetProperty(envName);
+					propertyObject.SetValue(_appSettings, envValue, null);
+				}
+			}
+
+	    }
+
+		public bool NeedHelp(IReadOnlyList<string> args)
        {
             var needHelp = false;
 
