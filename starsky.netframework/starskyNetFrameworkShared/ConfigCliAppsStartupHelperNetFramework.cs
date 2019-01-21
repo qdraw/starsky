@@ -35,8 +35,9 @@ namespace starskyNetFrameworkShared
         public ConfigCliAppsStartupHelperNetFramework()
 	    {
 
+		    SQLitePCL.Batteries.Init();
 
-		    var baseDirectoryProject = new AppSettings().BaseDirectoryProject;
+			var baseDirectoryProject = new AppSettings().BaseDirectoryProject;
 	        var filePaths =  new List<string>
 	        {
 		        Path.Combine(baseDirectoryProject, $"appsettings.{Environment.MachineName.ToLowerInvariant()}.patch.json"),
