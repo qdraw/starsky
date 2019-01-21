@@ -203,7 +203,7 @@ namespace starskycore.Helpers
 
 	        Console.WriteLine("Config is read in this order: \n" +
 	                          $"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch.json")}\n" +
-	                          $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch." + machineName + ".json")}  ");
+	                          $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".patch.json")}  ");
 	        Console.WriteLine($"3. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}\n" +
 	                          $"4. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")} ");
 
