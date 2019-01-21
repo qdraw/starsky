@@ -5,9 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using starskycore.Services;
 
-namespace starsky.Services
+namespace starskycore.Services
 {
     public static class FileHash
     {
