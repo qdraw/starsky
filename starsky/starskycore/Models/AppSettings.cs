@@ -31,13 +31,12 @@ namespace starskycore.Models
             
             // AddMemoryCache defaults in prop
         }
-        
-        public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
-            .Replace("starskysynccli", "starsky")
-            .Replace("starskyimportercli", "starsky")
-            .Replace("starskywebhtmlcli", "starsky")
-            .Replace("starskygeocli", "starsky")
-			.Replace("starskySyncFramework","starsky");
+
+	    public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
+		    .Replace("starskysynccli", "starsky")
+		    .Replace("starskyimportercli", "starsky")
+		    .Replace("starskywebhtmlcli", "starsky")
+		    .Replace("starskygeocli", "starsky");
         // When adding or updating please also update SqliteFullPath()
         
         public StarskyAppType ApplicationType { get; set; }

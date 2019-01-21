@@ -103,7 +103,7 @@ namespace starskycore.Helpers
         }
 
 		/// <summary>
-		/// Set Enviorment Variables to appSettings (not used in .net core)
+		/// Set Environment Variables to appSettings (not used in .net core)
 		/// </summary>
 	    public void SetEnvironmentToAppSettings()
 	    {
@@ -116,16 +116,37 @@ namespace starskycore.Helpers
 			    var envValue = Environment.GetEnvironmentVariable(envUnderscoreName);
 			    var envName = envUnderscoreName.Replace("app__", string.Empty);
 
-			    PropertyInfo[] appSettingsProperties = _appSettings.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
 				if ( !string.IsNullOrEmpty(envValue) )
 			    {
-				    var propertyObject = _appSettings.GetType().GetProperty(envName);
-					propertyObject.SetValue(_appSettings, envValue, null);
+				    PropertyInfo propertyObject = _appSettings.GetType().GetProperty(envName);
+
+				    if(propertyObject == null) continue;
+				    var type = propertyObject.PropertyType;
+
+				    // for enums
+				    if ( propertyObject.PropertyType.IsEnum )
+				    {
+					    var envTypedObject = Enum.Parse(type, envValue);
+					    propertyObject.SetValue(_appSettings, envTypedObject, null);
+					    continue;
+				    }
+
+				    dynamic envTypedDynamic = Convert.ChangeType(envValue, type);
+				    propertyObject.SetValue(_appSettings, envTypedDynamic, null);
+
 				}
 			}
 
 	    }
+	    
+	    public static T CastConvert<T>(string value)
+	    {
+		    if (typeof(T).GetTypeInfo().IsEnum)
+			    return (T)Enum.Parse(typeof(T), value);
+
+		    return (T)System.Convert.ChangeType(value, typeof(T));
+	    }
+	    
 
 		public bool NeedHelp(IReadOnlyList<string> args)
        {

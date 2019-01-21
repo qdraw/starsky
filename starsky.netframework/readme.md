@@ -17,8 +17,13 @@
 
 This application in only useful for older Mac OS machines. For Windows it still require 'Windows 7' or newer (_[reference](https://docs.microsoft.com/en-us/dotnet/framework/get-started/system-requirements)_)
 
+> Note: The starsky.netframework can be outdated. The focus of Starsky is on `.NET Core` and not on `.NET Framework`
+
 For all other Machines than Mac OS X 10.11 please continue at: 
 - [starskysynccli](../starsky/starskysynccli/readme.md)  _database command line interface_
+
+
+> TIP: Don't try this on Windows: You get this exception: `'System.Diagnostics.DiagnosticSource, Version=4.0.3.1` 
 
 
 ### Install `mono`
