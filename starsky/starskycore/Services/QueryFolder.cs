@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
-using starsky.Services;
 using starsky.ViewModels;
 using starskycore.Models;
-using starskycore.Services;
 
-namespace starsky.core.Services
+namespace starskycore.Services
 {
     public partial class Query // For folder displays only
     {

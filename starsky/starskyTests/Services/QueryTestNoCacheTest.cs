@@ -4,7 +4,7 @@ using starskycore.Data;
 using starsky.Models;
 using starsky.Services;
 using starskycore.Models;
-using Query = starsky.core.Services.Query;
+using Query = starskycore.Services.Query;
 
 namespace starskytests.Services
 {

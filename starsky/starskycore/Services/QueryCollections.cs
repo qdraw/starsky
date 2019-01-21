@@ -4,7 +4,7 @@ using System.Linq;
 using starskycore.Helpers;
 using starskycore.Models;
 
-namespace starsky.core.Services
+namespace starskycore.Services
 {
     public partial class Query
     {

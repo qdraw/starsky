@@ -38,6 +38,7 @@ namespace starskytests.Models
             var builder = new ConfigurationBuilder();  
             // Add random config to dependency injection
             builder.AddInMemoryCollection(dict);
+	        
             // build config
             var configuration = builder.Build();
             // inject config as object to a service
@@ -47,6 +48,7 @@ namespace starskytests.Models
             // get the service
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();
         }
+	    
         
         [TestMethod]
         public void ImportIndexItemParseFileNameTest()

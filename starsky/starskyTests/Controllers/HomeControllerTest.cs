@@ -16,7 +16,7 @@ using starsky.ViewModels;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskytests.FakeMocks;
-using Query = starsky.core.Services.Query;
+using Query = starskycore.Services.Query;
 
 namespace starskytests.Controllers
 {

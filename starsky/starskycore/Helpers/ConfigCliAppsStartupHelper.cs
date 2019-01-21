@@ -9,7 +9,7 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using Query = starsky.core.Services.Query;
+using Query = starskycore.Services.Query;
 using ReadMeta = starskycore.Services.ReadMeta;
 using SyncService = starskycore.Services.SyncService;
 

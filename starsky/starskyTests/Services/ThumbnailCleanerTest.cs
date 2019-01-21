@@ -10,7 +10,7 @@ using starsky.Services;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskytests.FakeCreateAn;
-using Query = starsky.core.Services.Query;
+using Query = starskycore.Services.Query;
 
 namespace starskytests.Services
 {
@@ -59,7 +59,8 @@ namespace starskytests.Services
 
 			_query.AddItem(new FileIndexItem
 			{
-				FileHash = "EXIST"
+				FileHash = "EXIST",
+				FileName = "exst2"
 			});
 
 			var appSettings = new AppSettings

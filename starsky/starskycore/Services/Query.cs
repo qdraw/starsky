@@ -6,12 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
-using starsky.Models;
 using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Models;
 
-namespace starsky.core.Services
+namespace starskycore.Services
 {
     public partial class Query : IQuery
     {
@@ -277,10 +276,19 @@ namespace starsky.core.Services
             _cache.Remove(queryCacheName);
         }
 
-        // Add a new item to the database
+	    /// <summary>
+	    /// Add a new item to the database
+	    /// </summary>
+	    /// <param name="updateStatusContent">the item</param>
+	    /// <returns>item with id</returns>
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)
         {        
             InjectServiceScope();
+	        
+	        if( string.IsNullOrWhiteSpace(updateStatusContent.FileName) 
+	            && !updateStatusContent.IsDirectory) 
+		        throw new MissingFieldException("use filename (exception: the root folder can have no name)");
+
             try
             {
                 _context.FileIndex.Add(updateStatusContent);
@@ -310,7 +318,11 @@ namespace starsky.core.Services
             _context.FileIndex.Remove(updateStatusContent);
             _context.SaveChanges();
 
+	        // remove parent directory cache
             RemoveCacheItem(updateStatusContent);
+
+	        // remove getFileHash Cache
+	        ResetItemByHash(updateStatusContent.FileHash);
             return updateStatusContent;
         }
         

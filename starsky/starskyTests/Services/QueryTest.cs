@@ -9,7 +9,7 @@ using starsky.Models;
 using starskycore.Attributes;
 using starskycore.Data;
 using starskycore.Models;
-using Query = starsky.core.Services.Query;
+using Query = starskycore.Services.Query;
 
 namespace starskytests.Services
 {

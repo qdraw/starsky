@@ -168,8 +168,15 @@ namespace starskycore.Services
             
             var fileHashCode = FileHash.GetHashCode(inputFileFullPath);
             
-            // If is in the database, ignore it and don't delete it
+            // If is in the ImportIndex, ignore it and don't delete it
             if (IsHashInImportDb(fileHashCode)) return string.Empty;
+
+	        // If in FileHash Table
+	        if ( _isConnection && 
+	             _context.FileIndex.Any(p => p.FileHash == fileHashCode 
+	                                         && p.Tags.Contains("!delete!") == false 
+	                                         && p.IsDirectory == false)) return string.Empty;
+	        
 
             // Only accept files with correct meta data
             // Check if there is a xmp file that contains data
@@ -305,6 +312,15 @@ namespace starskycore.Services
 			return false;
 
         }
+	    
+	    /// <summary>
+	    /// Query Database for all items
+	    /// </summary>
+	    /// <returns></returns>
+	    public List<ImportIndexItem> GetAll()
+	    {
+		    return _context.ImportIndex.Where(p => p.FileHash != null).ToList();
+	    }
 
         /// <summary>
         /// Dependency injection, used in background tasks

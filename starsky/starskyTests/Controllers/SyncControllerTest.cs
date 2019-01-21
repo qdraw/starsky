@@ -22,7 +22,7 @@ using starskycore.Services;
 using starskytests.FakeCreateAn;
 using starskytests.FakeMocks;
 using starskytests.Models;
-using Query = starsky.core.Services.Query;
+using Query = starskycore.Services.Query;
 
 namespace starskytests.Controllers
 {

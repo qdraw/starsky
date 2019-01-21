@@ -4,14 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.core.Services;
 using starsky.Controllers;
 using starskycore.Data;
 using starsky.Services;
 using starsky.ViewModels;
 using starskycore.Interfaces;
 using starskycore.Services;
-using Query = starsky.core.Services.Query;
+using Query = starskycore.Services.Query;
 
 namespace starskytests.Controllers
 {

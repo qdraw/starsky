@@ -25,7 +25,7 @@ using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
 using starskytests.FakeCreateAn;
-using Query = starsky.core.Services.Query;
+using Query = starskycore.Services.Query;
 
 namespace starskytests.Controllers
 {

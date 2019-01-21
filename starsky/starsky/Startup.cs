@@ -23,7 +23,7 @@ using starskycore.Services;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
-using Query = starsky.core.Services.Query;
+using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
 
