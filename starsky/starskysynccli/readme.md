@@ -3,22 +3,25 @@
  * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
     * [starsky](../../starsky/starsky/readme.md)  _mvc application / web interface_
+    * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard2.0)_
     * __[starskysynccli](../../starsky/starskysynccli/readme.md)  database command line interface__
     * [starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files_
-    * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse geotagging_
+    * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
+ * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
 ## starskysynccli docs
 
-### Starsky-cli Indexer Help:
-The goal of this wrapper is to get command line access to the photo index database
+### Starsky Sync Indexer:
+With this command line tool it possible to manual sync the filesystem with the database, update one file in the database, generate thumbnails, clean the thumbnail cache/ The goal of this wrapper is to get command line access to the photo index database.
 
 ### Before you start
 
 When you start this application at first please update the `appsettings.json`
+
 ```json
 {
   "App": {
@@ -33,7 +36,10 @@ When you start this application at first please update the `appsettings.json`
   }
 }
 ```
->    When using a boolean in the json add quotes. Booleans without quotes are ignored
+
+>    TIP: When using a boolean in the json add quotes. Booleans without quotes are ignored. So use `"true"` instead of `true`
+
+>   TIP: Double escape backslashes to avoid crashes 
 
 #### Appsettings Notes
 1.  The `Structure`-setting is used by the `StarskyImporterCli` and the `/import` endpoint. This always uses slash as directory marker.
@@ -42,7 +48,7 @@ When using Windows please escape the backslash, otherwise the application will c
 3.  The `AddMemoryCache` setting is ignored in the console/cli applications
 
 
-### To get help:
+### To the help dialog:
 ```sh
 ./starskysynccli --help
 ```

@@ -7,9 +7,9 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Helpers;
-using starsky.Middleware;
-using starsky.Models;
+using starskycore.Helpers;
+using starskycore.Middleware;
+using starskycore.Models;
 using starskytests.FakeCreateAn;
 
 namespace starskytests.Helpers

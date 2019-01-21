@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using starsky.Attributes;
+using starskycore.Attributes;
 
 namespace starsky.Migrations
 {

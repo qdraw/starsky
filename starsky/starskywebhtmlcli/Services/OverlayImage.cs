@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using starsky.Helpers;
-using starsky.Interfaces;
-using starsky.Models;
+using starskycore.Helpers;
+using starskycore.Interfaces;
+using starskycore.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;

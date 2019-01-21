@@ -4,10 +4,10 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Attributes;
-using starsky.Helpers;
-using starsky.Middleware;
-using starsky.Models;
+using starskycore.Attributes;
+using starskycore.Helpers;
+using starskycore.Middleware;
+using starskycore.Models;
 using starskytests.FakeCreateAn;
 
 namespace starskytests.Helpers
@@ -262,6 +262,74 @@ namespace starskytests.Helpers
 				.NeedHelpShowDialog();
         }
 
+	    [TestMethod]
+	    public void ArgsHelper_SetEnvironmentToAppSettingsTest()
+	    {
+		    var appSettings = new AppSettings();
+		    
+		    
+		    var shortNameList = new ArgsHelper(appSettings).ShortNameList.ToArray();
+		    var envNameList = new ArgsHelper(appSettings).EnvNameList.ToArray();
+
+		    var shortTestList = new List<string>();
+		    for (int i = 0; i < envNameList.Length; i++)
+		    {
+			    shortTestList.Add(shortNameList[i]);
+
+			    if ( envNameList[i] == "app__DatabaseType" )
+			    {
+				    shortTestList.Add("InMemoryDatabase"); // need to exact good
+				    continue; 
+			    }
+
+			    if ( envNameList[i] == "app__Structure" )
+			    {
+				    shortTestList.Add("/{filename}.ext");
+				    continue; 
+			    }
+			    
+			    if ( envNameList[i] == "app__DatabaseConnection" )
+			    {
+				    shortTestList.Add("test");
+				    continue; 
+			    }
+			    
+			    if ( envNameList[i] == "app__ExifToolPath" )
+			    {
+				    shortTestList.Add("app__ExifToolPath");
+				    continue; 
+			    }
+			    if ( envNameList[i] == "app__StorageFolder" )
+			    {
+				    shortTestList.Add("app__StorageFolder");
+				    continue; 
+			    }
+			    
+			    shortTestList.Add(i.ToString());
+		    }
+            
+		    // First inject values to evn
+		    new ArgsHelper(appSettings).SetEnvironmentByArgs(shortTestList);
+		    
+		    
+		    // and now read it back
+		    new ArgsHelper(appSettings).SetEnvironmentToAppSettings();
+
+
+		    Assert.AreEqual("/{filename}.ext",appSettings.Structure);
+		    Assert.AreEqual(AppSettings.DatabaseTypeList.InMemoryDatabase,appSettings.DatabaseType);
+		    Assert.AreEqual("test",appSettings.DatabaseConnection);
+		    Assert.AreEqual("app__ExifToolPath",appSettings.ExifToolPath);
+		    Assert.AreEqual(true,appSettings.StorageFolder.Contains("app__StorageFolder"));
+
+		    
+		    
+		    // Reset Environment after use
+		    foreach (var t in envNameList)
+		    {
+			    Environment.SetEnvironmentVariable(t,string.Empty);
+		    }
+	    }
 
     }
 }

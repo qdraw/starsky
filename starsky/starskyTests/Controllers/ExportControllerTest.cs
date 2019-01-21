@@ -12,16 +12,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Data;
-using starsky.Helpers;
-using starsky.Interfaces;
-using starsky.Middleware;
-using starsky.Models;
-using starsky.Services;
+using starskycore.Data;
 using starskytests.FakeMocks;
 using starskytests.Models;
 using starsky.Controllers;
+using starskycore.Helpers;
+using starskycore.Interfaces;
+using starskycore.Middleware;
+using starskycore.Models;
+using starskycore.Services;
 using starskytests.FakeCreateAn;
+using Query = starskycore.Services.Query;
 
 namespace starskytests.Controllers
 {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Models;
+using starskycore.Models;
 using starskyGeoCli.Services;
 using starskytests.FakeCreateAn;
 

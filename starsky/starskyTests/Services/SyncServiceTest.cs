@@ -8,12 +8,14 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Attributes;
-using starsky.Data;
-using starsky.Middleware;
-using starsky.Models;
-using starsky.Services;
+using starskycore.Data;
+using starskycore.Attributes;
+using starskycore.Middleware;
+using starskycore.Models;
+using starskycore.Services;
 using starskytests.FakeCreateAn;
+using Query = starskycore.Services.Query;
+using SyncService = starskycore.Services.SyncService;
 
 namespace starskytests.Services
 {

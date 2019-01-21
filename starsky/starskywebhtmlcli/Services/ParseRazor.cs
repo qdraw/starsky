@@ -2,8 +2,8 @@
 using System.IO;
 using System.Threading.Tasks;
 using RazorLight;
-using starsky.Helpers;
-using starsky.Models;
+using starskycore.Helpers;
+using starskycore.Models;
 
 namespace starskywebhtmlcli.Services
 {
@@ -18,7 +18,7 @@ namespace starskywebhtmlcli.Services
                 .UseEmbeddedResourcesProject(typeof(starskywebhtmlcli.ViewModels.WebHtmlViewModel))
                 .UseEmbeddedResourcesProject(typeof(starsky.Program))
                 .UseEmbeddedResourcesProject(typeof(System.Linq.Enumerable))
-                .UseEmbeddedResourcesProject(typeof(starsky.Models.AppSettingsPublishProfiles))
+                .UseEmbeddedResourcesProject(typeof(AppSettingsPublishProfiles))
 
                 .UseFilesystemProject(AppDomain.CurrentDomain.BaseDirectory )
                         // > starskywebhtmlcli/bin folder

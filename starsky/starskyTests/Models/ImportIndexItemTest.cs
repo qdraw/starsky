@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Helpers;
-using starsky.Middleware;
-using starsky.Models;
+using starskycore.Helpers;
+using starskycore.Middleware;
+using starskycore.Models;
 using starskytests.FakeCreateAn;
 
 namespace starskytests.Models
@@ -36,6 +36,7 @@ namespace starskytests.Models
             var builder = new ConfigurationBuilder();  
             // Add random config to dependency injection
             builder.AddInMemoryCollection(dict);
+	        
             // build config
             var configuration = builder.Build();
             // inject config as object to a service
@@ -45,6 +46,7 @@ namespace starskytests.Models
             // get the service
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();
         }
+	    
         
         [TestMethod]
         public void ImportIndexItemParseFileNameTest()

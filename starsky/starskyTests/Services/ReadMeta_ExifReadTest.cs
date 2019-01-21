@@ -4,11 +4,12 @@ using System.Linq;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Attributes;
-using starsky.Models;
-using starsky.Services;
+using starskycore.Attributes;
+using starskycore.Models;
+using starskycore.Services;
 using starskytests.FakeCreateAn;
 using Directory = MetadataExtractor.Directory;
+
 
 namespace starskytests.Services
  {

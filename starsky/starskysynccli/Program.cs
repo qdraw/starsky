@@ -1,7 +1,7 @@
 ﻿using System;
-using starsky.Helpers;
-using starsky.Models;
-using starsky.Services;
+using starskycore.Helpers;
+using starskycore.Models;
+using starskycore.Services;
 
 namespace starskysynccli
 {

@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
+using starskycore.Helpers;
+using starskycore.Services;
 
 namespace starskytests.Helpers
 {
@@ -12,16 +14,16 @@ namespace starskytests.Helpers
 			var cliHelper = new ConfigCliAppsStartupHelper();
 
 			var name = cliHelper.ExifTool().ToString();
-			Assert.AreEqual(true,name.Contains(nameof(starsky.Services.ExifTool)));
+			Assert.AreEqual(true,name.Contains(nameof(ExifTool)));
 			
 			name = cliHelper.SyncService().ToString();
-			Assert.AreEqual(true,name.Contains(nameof(starsky.Services.SyncService)));			
+			Assert.AreEqual(true,name.Contains(nameof(SyncService)));			
 			
 			name = cliHelper.ReadMeta().ToString();
-			Assert.AreEqual(true,name.Contains(nameof(starsky.Services.ReadMeta)));
+			Assert.AreEqual(true,name.Contains(nameof(ReadMeta)));
 			
 			name = cliHelper.ImportService().ToString();
-			Assert.AreEqual(true,name.Contains(nameof(starsky.Services.ImportService)));		
+			Assert.AreEqual(true,name.Contains(nameof(ImportService)));		
 		}
 	}
 }

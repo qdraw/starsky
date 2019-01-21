@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using starsky.Attributes;
-using starsky.Helpers;
-using starsky.Middleware;
-using starsky.Models;
-using starsky.Services;
+using starskycore.Attributes;
+using starskycore.Helpers;
+using starskycore.Models;
 
 namespace starskyimportercli
 {
@@ -21,8 +14,9 @@ namespace starskyimportercli
             // Use args in application
             new ArgsHelper().SetEnvironmentByArgs(args);
             
-
             var startupHelper = new ConfigCliAppsStartupHelper();
+	        
+	        // Copy for Net
             var appSettings = startupHelper.AppSettings();
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 

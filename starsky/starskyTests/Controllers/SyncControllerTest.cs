@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,15 +9,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.Data;
-using starsky.Interfaces;
-using starsky.Middleware;
-using starsky.Models;
-using starsky.Services;
-using starsky.ViewModels;
+using starskycore.Data;
+using starskycore.Interfaces;
+using starskycore.Middleware;
+using starskycore.Models;
+using starskycore.Services;
+using starskycore.ViewModels;
 using starskytests.FakeCreateAn;
 using starskytests.FakeMocks;
 using starskytests.Models;
+using Query = starskycore.Services.Query;
 
 namespace starskytests.Controllers
 {

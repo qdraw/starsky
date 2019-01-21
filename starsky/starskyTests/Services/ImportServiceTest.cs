@@ -7,14 +7,16 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Data;
-using starsky.Helpers;
-using starsky.Interfaces;
-using starsky.Middleware;
-using starsky.Models;
-using starsky.Services;
+using starskycore.Data;
+using starskycore.Helpers;
+using starskycore.Interfaces;
+using starskycore.Middleware;
+using starskycore.Models;
+using starskycore.Services;
 using starskytests.FakeCreateAn;
 using starskytests.Models;
+using Query = starskycore.Services.Query;
+using SyncService = starskycore.Services.SyncService;
 
 namespace starskytests.Services
 {
@@ -28,7 +30,8 @@ namespace starskytests.Services
         private readonly AppSettings _appSettings;
         private CreateAnImage _createAnImage;
         private readonly ReadMeta _readmeta;
-
+	    private string _fileHashCreateAnImage;
+	    
         public ImportServiceTest()
         {
             var provider = new ServiceCollection()
@@ -88,67 +91,29 @@ namespace starskytests.Services
             {
                 File.Delete(f);
             }
-        }
-        
-//        public ImportServiceTest()
-//        {
-//            var provider = new ServiceCollection()
-//                .AddMemoryCache()
-//                .BuildServiceProvider();
-//            var memoryCache = provider.GetService<IMemoryCache>();
-//            
-//            var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
-//            builderDb.UseInMemoryDatabase("importservice");
-//            var options = builderDb.Options;
-//            var context = new ApplicationDbContext(options);
-//            _query = new Query(context,memoryCache);
-//            
-//            // Inject Fake Exiftool; dependency injection
-//            // Add a dependency injection feature
-//            var services = new ServiceCollection();
-//            services.AddSingleton<IExiftool, FakeExiftool>();      
-//
-//            
-//            // Inject Config helper
-//            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-//            // random config
-//            var newImage = new CreateAnImage();
-//            var dict = new Dictionary<string, string>
-//            {
-//                { "App:StorageFolder", newImage.BasePath },
-//                { "App:Verbose", "true" }
-//            };
-//            // Start using dependency injection
-//            var builder = new ConfigurationBuilder();  
-//            // Add random config to dependency injection
-//            builder.AddInMemoryCollection(dict);
-//            // build config
-//            var configuration = builder.Build();
-//            // inject config as object to a service
-//            services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
-//            // build the service
-//            var serviceProvider = services.BuildServiceProvider();
-//            _exiftool = serviceProvider.GetRequiredService<IExiftool>();
-//            
-//            // get the service
-//            _appSettings = serviceProvider.GetRequiredService<AppSettings>();
-//            
-//            _isync = new SyncService(context, _query,_appSettings);
-//
-//            Console.WriteLine(_appSettings);
-//            //   _context = context
-//            //   _isync = isync
-//            //   _exiftool = exiftool
-//            //   _appSettings = appSettings
-//            _import = new ImportService(context,_isync,_exiftool,_appSettings);
-//        }
+	        
+	        // To Mock!!
+	        _fileHashCreateAnImage = FileHash.GetHashCode(new CreateAnImage().FullFilePath);
 
+        }
+
+	    public void RemoveFromQuery()
+	    {
+		    var t1 = _query.GetAllRecursive();  
+
+		    // remove from query database
+		    var queryPath = _query.GetItemByHash(_fileHashCreateAnImage);
+		    var queryItem = _query.GetObjectByFilePath(queryPath);
+		    if(queryItem == null) return;
+		    _query.RemoveItem(queryItem);
+	    }
         
         [TestMethod]
         public void ImportService_NoSubPath_slashyyyyMMdd_HHmmss_ImportTest()
         {
+	        RemoveFromQuery();
             var createAnImage = new CreateAnImage();
-            _appSettings.Structure = "/xxxxx__yyyyMMdd_HHmmss.ext";
+            _appSettings.Structure = "/xx1xxx__yyyyMMdd_HHmmss.ext";
             // This is not to be the first file in the test directory
             // => otherwise SyncServiceFirstItemDirectoryTest() will fail
             _appSettings.StorageFolder = createAnImage.BasePath;
@@ -176,6 +141,7 @@ namespace starskytests.Services
         [TestMethod]
         public void ImportService_AsteriskTRFolderHHmmss_ImportTest()
         {
+	        RemoveFromQuery();
             var createAnImage = new CreateAnImage();
             _appSettings.Structure = "/\\t\\r*/HHmmss_\\d.ext";
             _appSettings.StorageFolder = createAnImage.BasePath;
@@ -211,12 +177,16 @@ namespace starskytests.Services
             var itemByHash = _import.GetItemByHash(fileHashCode);
             
             _import.RemoveItem(itemByHash);
+	        RemoveFromQuery();
+
         }
         
         
         [TestMethod]
         public void ImportService_NonExistingFolder_HHmmssImportTest()
         {
+	        RemoveFromQuery();
+
             var createAnImage = new CreateAnImage();
             _appSettings.StorageFolder = createAnImage.BasePath;
 
@@ -251,6 +221,8 @@ namespace starskytests.Services
             Files.DeleteDirectory(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
             Files.DeleteDirectory(existDir);
+	        RemoveFromQuery();
+
         }
         
         [TestMethod]
@@ -288,12 +260,15 @@ namespace starskytests.Services
                 importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
             ));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
+	        // clean item
+	        RemoveFromQuery();
         }
 
         [TestMethod]
         public void ImportService_DuplicateImport_Test()
         {
-            
+	        RemoveFromQuery();
+
             var createAnImage = new CreateAnImage();
             _appSettings.StorageFolder = createAnImage.BasePath;
             
@@ -332,6 +307,7 @@ namespace starskytests.Services
             {
                 File.Delete(f);
             }
+	        RemoveFromQuery();
 
         }
 
@@ -339,12 +315,17 @@ namespace starskytests.Services
         [TestMethod]
         public void ImportService_DuplicateFileName_Test()
         {
+	        RemoveFromQuery();
+
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = false,
                 AgeFileFilterDisabled = false
             };
             var createAnImage = new CreateAnImage();
+	        var t = _query.GetAllRecursive().Where(p => p.FileHash == _fileHashCreateAnImage);
+	        
+
             _appSettings.StorageFolder = createAnImage.BasePath;
             _appSettings.Structure = "/xux99999xxxx_ssHHmm.ext";
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());  
@@ -356,8 +337,16 @@ namespace starskytests.Services
             // Remove item from import index             // Run a second time: Now it not in the database
             var importIndexItem = _import.GetItemByHash(fileHashCode);
             _import.RemoveItem(importIndexItem);
-            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());  
-            Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
+	        // also remove here
+	        RemoveFromQuery();
+
+            Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());
+
+	        var isHashInImportDb = _import.IsHashInImportDb(fileHashCode);
+	        var t22 = _import.GetAll();
+	        var t3 = _query.GetAllRecursive();
+	        // Both should be one
+            Assert.AreEqual(true, isHashInImportDb);
             
             
             // >>>> ParentDirectory ===
@@ -382,13 +371,42 @@ namespace starskytests.Services
             {
                 File.Delete(f);
             }
+	        
+	        // remove from query database
+	        RemoveFromQuery();
                         
         }
-        
+
+//	    [TestMethod]
+//	    public void ImportService_QueryDuplicate()
+//	    {
+//		    
+//		    var importSettings = new ImportSettingsModel
+//		    {
+//			    DeleteAfter = false,
+//			    AgeFileFilterDisabled = false
+//		    };
+//		    var createAnImage = new CreateAnImage();
+//
+//		    var item = new FileIndexItem {FileHash = _fileHashCreateAnImage, ParentDirectory = "/", FileName = "test"};
+//		    _query.AddItem(item);
+//
+//		    var all = _query.GetAllRecursive();
+//		    
+//		    var items = _import.Import(createAnImage.FullFilePath, importSettings);
+//		    
+//		    Assert.AreEqual(1, items.Count);
+//		    Assert.AreEqual(string.Empty, items.FirstOrDefault());
+//
+//		    
+//		    RemoveFromQuery();
+//	    }
+
 
         [TestMethod]
         public void ImportService_DeleteAfterTest_HHmmssImportTest()
         {
+	        RemoveFromQuery();
              // // Test if a source file is delete afterwards
             var createAnImage = new CreateAnImage();
             
@@ -430,6 +448,8 @@ namespace starskytests.Services
             ));
             // delete exist dir
             Files.DeleteDirectory(existDirectoryFullPath);
+	        RemoveFromQuery();
+
         }
 
         [TestMethod]
@@ -448,6 +468,8 @@ namespace starskytests.Services
         [TestMethod]
         public void ImportService_EntireBasePath_Folder_Import_ToFolderExist_Test()
         {
+	        RemoveFromQuery();
+
             // import folder
             var createAnImage = new CreateAnImage();
             _appSettings.StorageFolder = createAnImage.BasePath;
@@ -483,6 +505,8 @@ namespace starskytests.Services
             
             // existFolderPath >= remove it afterwards
             Files.DeleteDirectory(existFolderPath);
+	        RemoveFromQuery();
+
         }
 
         [TestMethod]
@@ -501,7 +525,7 @@ namespace starskytests.Services
         {
             // test for: Import(IEnumerable<string> inputFullPathList, bool deleteAfter = false, bool ageFileFilter = true)
             var createAnImage = new CreateAnImage();
-            _appSettings.Structure = "/xxxxx__yyyyMMdd_HHmmss.ext";
+            _appSettings.Structure = "/xxwxxx__yyyyMMdd_HHmmss.ext";
             // This is not to be the first file in the test directory
             // => otherwise SyncServiceFirstItemDirectoryTest() will fail
             _appSettings.StorageFolder = createAnImage.BasePath;
@@ -518,7 +542,7 @@ namespace starskytests.Services
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
-            // Clean file after succesfull run;
+            // Clean file after successful run;
             var fileIndexItem = _readmeta.ReadExifFromFile(createAnImage.FullFilePath);
             var importIndexItem = new ImportIndexItem(_appSettings)
             {
@@ -527,6 +551,10 @@ namespace starskytests.Services
             };
             File.Delete(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
+
+	        // remove from query database    
+	        RemoveFromQuery();
+
         }
 
         [TestMethod]
@@ -570,6 +598,8 @@ namespace starskytests.Services
             
             Assert.AreEqual(string.Empty,result.FirstOrDefault());
             Files.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
+	        RemoveFromQuery();
+
         }
         
 

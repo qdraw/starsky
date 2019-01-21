@@ -16,12 +16,14 @@ var filePathList = [
 	"inotify-settings/readme.md",
 	"starsky/readme.md",
 	"starsky/starsky/readme.md",
+	"starsky/starskycore/readme.md",
 	"starsky/starsky/readme_api.md",
 	"starsky/starskygeocli/readme.md",
 	"starsky/starskyimportercli/readme.md",
 	"starsky/starskysynccli/readme.md",
 	"starsky/starskyTests/readme.md",
 	"starsky/starskywebhtmlcli/readme.md",
+	"starsky.netframework/readme.md",
 	"starskyapp/readme.md",
 	"starsky-node-client/docs/readme.md",
 	"starsky-node-client/mail/readme.md",
@@ -33,6 +35,7 @@ var blobPathList = [
 	"starsky/publish-linux-arm.sh",
 	"starsky/publish-mac.sh",
 	"starsky/publish-windows.sh",
+	// "starsky/tools/starsky-warmup.sh"
 ];
 
 // create dirs

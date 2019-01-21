@@ -3,11 +3,13 @@
  * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
     * __[starsky](../../starsky/starsky/readme.md) mvc application / web interface__
+    * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard2.0)_
     * [starskysynccli](../../starsky/starskysynccli/readme.md)  _database command line interface_
     * [starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files_
-    * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse geotagging_
+    * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
+ * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
@@ -62,9 +64,12 @@ The commandline arguments are shortcuts to set an in-app environment variable
 2.  The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `StorageFolder` uses the system path directory separators
 3.  When using Windows please double escape (`\\`) system path's
 
+### Warmup script
+Please check `tools/starsky-warmup.sh`.
+
 
 ### Rest API documentation
-Starsky has a Json and Razorview restfull API. Please read the documentation
+Starsky has a Json and Razorview restful API. Please read the documentation
 
 ### Swagger
 There is an swagger definition. You could enable this

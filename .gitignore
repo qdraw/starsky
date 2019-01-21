@@ -291,10 +291,6 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 
-**/osx.10.12-x64/*
-**/linux-arm/*
-**/win7-x86/*
-
 # Xcode
 #
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
@@ -319,14 +315,17 @@ DerivedData/
 *.perspectivev3
 !default.perspectivev3
 
+
+# Project specific
+
 */.sonarqube/**
 starsky/starsky/.sonarqube*
-**/appsettings.senex*
-**/appsettings.mac*
-**/appsettings.win*
+**/appsettings.*
+!**/appsettings.json
 starsky/starskyTests/coverag*.xml
 starskyapp/ios/main.jsbundle
 **/.env
+**/.starskyenv
 
 starsky-node-client/docs/*.sh
 starsky-node-client/docs/*/*.sh
@@ -334,6 +333,12 @@ starsky-node-client/docs/*/*/*.sh
 starsky-node-client/docs/*.html
 starsky-node-client/docs/*/*.html
 starsky-node-client/docs/*/*/*.html
+
+
+**/osx.10.12-x64/*
+**/linux-arm/*
+**/win7-x86/*
+**/msbuild.netframework/*
 
 starsky-linux-arm.zip
 starsky-osx.10.12-x64.zip

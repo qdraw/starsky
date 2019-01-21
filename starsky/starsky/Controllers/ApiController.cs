@@ -4,11 +4,10 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starsky.Helpers;
-using starsky.Interfaces;
-using starsky.Models;
-using starsky.Services;
-using starsky.ViewModels;
+using starskycore.Helpers;
+using starskycore.Interfaces;
+using starskycore.Models;
+using starskycore.Services;
 
 namespace starsky.Controllers
 {
@@ -55,8 +54,9 @@ namespace starsky.Controllers
         [IgnoreAntiforgeryToken]
         [AllowAnonymous] /// <=================================
         public IActionResult Env()
-        {
-            return Json(_appSettings);
+	    {
+		    var appSettings = _appSettings.CloneToDisplay();
+            return Json(appSettings);
         }
         
         /// <summary>

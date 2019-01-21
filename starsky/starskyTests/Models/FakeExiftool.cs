@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using starsky.Interfaces;
-using starsky.Models;
+using starskycore.Interfaces;
+using starskycore.Models;
 
 namespace starskytests.Models
 {

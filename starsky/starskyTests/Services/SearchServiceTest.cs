@@ -4,12 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Data;
-using starsky.Helpers;
-using starsky.Models;
-using starsky.Services;
-using starsky.ViewModels;
+using starskycore.Data;
+using starskycore.Helpers;
+using starskycore.Models;
+using starskycore.Services;
+using starskycore.ViewModels;
 using starskytests.FakeMocks;
+using Query = starskycore.Services.Query;
 
 namespace starskytests.Services
 {
@@ -28,7 +29,7 @@ namespace starskytests.Services
             var memoryCache = provider.GetService<IMemoryCache>();
             
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            builder.UseInMemoryDatabase("search");
+            builder.UseInMemoryDatabase("searchService");
             var options = builder.Options;
             _dbContext = new ApplicationDbContext(options);
             _search = new SearchService(_dbContext);
@@ -131,6 +132,9 @@ namespace starskytests.Services
             InsertSearchData();
             // With deleted files is it 3
             // todo: check the value of this one
+
+	        var t = _query.GetAllRecursive("/");
+	        
             Assert.AreEqual(2, _search.Search("station").SearchCount);
         }
 
@@ -397,8 +401,11 @@ namespace starskytests.Services
         public void SearchService_SearchForDeletedFiles()
         {
             InsertSearchData();
+
+	        var all = _query.GetAllRecursive().Where(p => p.Tags.Contains("!delete!")).ToList();
             var del = _search.Search("!delete!");
-            Assert.AreEqual(del.FileIndexItems.Count(),1);
+	        var count = del.FileIndexItems.Count();
+            Assert.AreEqual(1,count);
             Assert.AreEqual(del.FileIndexItems.FirstOrDefault().FileHash, "stationdeletedfile");
         }
 

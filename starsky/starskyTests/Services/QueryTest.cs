@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Attributes;
-using starsky.Data;
-using starsky.Models;
-using starsky.Services;
+using starskycore.Attributes;
+using starskycore.Data;
+using starskycore.Models;
+using Query = starskycore.Services.Query;
 
 namespace starskytests.Services
 {

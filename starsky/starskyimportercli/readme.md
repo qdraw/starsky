@@ -3,15 +3,26 @@
  * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
     * [starsky](../../starsky/starsky/readme.md)  _mvc application / web interface_
+    * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard2.0)_
     * [starskysynccli](../../starsky/starskysynccli/readme.md)  _database command line interface_
     * __[starskyimportercli](../../starsky/starskyimportercli/readme.md)  import command line interface__
     * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files_
-    * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse geotagging_
+    * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
+ * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
 ## starskyimportercli docs
+
+To automatically copy files from for example a SD-card to the photo library. It could copy a single file, a directory with only the direct child files or a recursive directory.  It automatically sort on the photos creation date.
+The 'importer Cli' could handle local imports, and in the 'Starsky web interface' there is a web import available.
+
+To recursive _(`-r`)_ import from the sdcard
+```
+./starskyimportercli -r -p "/Volumes/sdcard/"
+```
+
 
 ## Config file (appsettings.json)
 For more information about the `appsettings.json` configuration
@@ -78,6 +89,8 @@ Starksy Importer Cli ~ Help:
 
 
 ## Structure Examples
+There are examples of how to manual configure the structure setting. This is all based on the creation date of the image or if the 'exif tag' _(data inside the photo)_ is missing there is a filename structure is used.
+
 ### Good examples
 #### In the main folder
 ```

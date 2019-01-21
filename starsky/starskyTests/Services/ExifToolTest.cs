@@ -1,17 +1,11 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Attributes;
-using starsky.Middleware;
-using starsky.Models;
-using starsky.Services;
+using starskycore.Middleware;
+using starskycore.Models;
+using starskycore.Services;
 using starskytests.FakeCreateAn;
 
 namespace starskytests.Services
@@ -49,7 +43,6 @@ namespace starskytests.Services
         }
         
         [TestMethod]
-        [ExcludeFromCoverage]
         public void  ExifToolFixTestIgnoreStringTest()
         {
             var input = "{\n\"Keywords\": [\"test\",\"word2\"], \n}"; // CamelCase!

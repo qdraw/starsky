@@ -10,6 +10,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup>
-    <ProjectReference Include="..\starsky\starsky.csproj" />
+    <ProjectReference Include="..\starskycore\starskycore.csproj" />
   </ItemGroup>
 </Project>

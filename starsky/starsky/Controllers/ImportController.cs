@@ -8,9 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
 using starsky.Helpers;
-using starsky.Interfaces;
-using starsky.Models;
-using starsky.Services;
+using starskycore.Helpers;
+using starskycore.Interfaces;
+using starskycore.Models;
+using starskycore.Services;
 
 namespace starsky.Controllers
 {
@@ -89,7 +90,7 @@ namespace starsky.Controllers
                 }
             });
             
-            // When all items are allready imported
+            // When all items are already imported
             if (fileIndexResultsList.All(p => p.Id != 0)) Response.StatusCode = 206;
 
             return Json(fileIndexResultsList);

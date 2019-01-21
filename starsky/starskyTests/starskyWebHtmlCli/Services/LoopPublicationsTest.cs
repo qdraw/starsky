@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Helpers;
-using starsky.Models;
-using starsky.Services;
+using starskycore.Helpers;
+using starskycore.Models;
 using starskytests.FakeCreateAn;
 using starskywebhtmlcli.Services;
 

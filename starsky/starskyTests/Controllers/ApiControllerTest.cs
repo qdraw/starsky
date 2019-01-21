@@ -5,23 +5,21 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using starsky.Controllers;
-using starsky.Data;
-using starsky.Interfaces;
-using starsky.Middleware;
-using starsky.Models;
-using starsky.Services;
+using starskycore.Data;
+using starskycore.Interfaces;
+using starskycore.Middleware;
+using starskycore.Models;
+using starskycore.Services;
 using starskytests.FakeCreateAn;
 using starskytests.FakeMocks;
 using starskytests.Models;
-using starskytests.Services;
+using Query = starskycore.Services.Query;
 
 namespace starskytests.Controllers
 {
@@ -136,8 +134,18 @@ namespace starskytests.Controllers
         [TestMethod]
         public void ApiController_Delete_API_RemoveNotAllowedFile_Test()
         {
+
+	        
+	        // re add data
             var createAnImage = InsertSearchData();
+	        
+	        // Clean existing items to avoid errors
+	        var itemByHash = _query.SingleItem(createAnImage.FilePath);
+	        itemByHash.FileIndexItem.Tags = string.Empty;
+	        _query.UpdateItem(itemByHash.FileIndexItem);
+	        
             _appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
+	        
             var controller = new ApiController(_query,_exiftool,_appSettings,_bgTaskQueue,_readmeta);
             var notFoundResult = controller.Delete(createAnImage.FilePath) as NotFoundObjectResult;
             Assert.AreEqual(404,notFoundResult.StatusCode);

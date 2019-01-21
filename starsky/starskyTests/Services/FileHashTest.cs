@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
-using starsky.Services;
+using starskycore.Services;
 using starskytests.FakeCreateAn;
 
 namespace starskytests.Services
@@ -9,7 +9,6 @@ namespace starskytests.Services
     public class FileHashTest
     {
         [TestMethod]
-        [ExcludeFromCoverage]
         public void FileHashGenerateRandomBytesTest()
         {
             var input1 = FileHash.GenerateRandomBytes(10);
