@@ -2,7 +2,9 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-    </PropertyGroup>
+		<Description>An attempt to create a database driven photo library</Description>
+		<Version>0.1.0</Version>
+	  </PropertyGroup>
     <ItemGroup>
 
     <PackageReference Include="MetadataExtractor" Version="2.0.0" />
