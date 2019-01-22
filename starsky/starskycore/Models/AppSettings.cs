@@ -34,11 +34,12 @@ namespace starskycore.Models
 	    public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
 		    .Replace("starskysynccli", "starsky")
 		    .Replace("starskyimportercli", "starsky")
+		    .Replace("starskywebftpcli", "starsky")
 		    .Replace("starskywebhtmlcli", "starsky")
 		    .Replace("starskygeocli", "starsky");
-        // When adding or updating please also update SqliteFullPath()
         
         public StarskyAppType ApplicationType { get; set; }
+	    
         [JsonConverter(typeof(StringEnumConverter))]
         public enum StarskyAppType
         {
@@ -46,7 +47,8 @@ namespace starskycore.Models
             Importer = 1,
             Sync = 2,
             WebHtml = 3,
-            Geo = 4
+            Geo = 4,
+	        WebFtp = 5
         }
 
         // Can be used in the cli session to select files out of the file database system

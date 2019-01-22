@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskygeocli", "starskygeo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskycore", "starskycore\starskycore.csproj", "{A90751E7-2F4D-44AA-8507-DDE5F980DBBB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskywebftpcli", "starskywebftpcli\starskywebftpcli.csproj", "{F8CE092D-F296-4B04-B013-EE5FCD4A8B3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{A90751E7-2F4D-44AA-8507-DDE5F980DBBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A90751E7-2F4D-44AA-8507-DDE5F980DBBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A90751E7-2F4D-44AA-8507-DDE5F980DBBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8CE092D-F296-4B04-B013-EE5FCD4A8B3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8CE092D-F296-4B04-B013-EE5FCD4A8B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8CE092D-F296-4B04-B013-EE5FCD4A8B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8CE092D-F296-4B04-B013-EE5FCD4A8B3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
