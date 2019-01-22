@@ -11,10 +11,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup>
-    <ProjectReference Include="..\starsky\starsky.csproj" />
     <None Update="EmbeddedViews\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="RazorLight" Version="2.0.0-beta1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\starskycore\starskycore.csproj" />
   </ItemGroup>
 </Project>

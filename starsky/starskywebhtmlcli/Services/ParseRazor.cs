@@ -15,11 +15,11 @@ namespace starskywebhtmlcli.Services
         {
             _engine = new RazorLightEngineBuilder()
                 .UseEmbeddedResourcesProject(typeof(Program))
-                .UseEmbeddedResourcesProject(typeof(starskywebhtmlcli.ViewModels.WebHtmlViewModel))
-                .UseEmbeddedResourcesProject(typeof(starsky.Program))
+				.UseEmbeddedResourcesProject(typeof(ViewModels.WebHtmlViewModel))
+				.UseEmbeddedResourcesProject(typeof(AppSettings))
+				.UseEmbeddedResourcesProject(typeof(FileIndexItem))
                 .UseEmbeddedResourcesProject(typeof(System.Linq.Enumerable))
                 .UseEmbeddedResourcesProject(typeof(AppSettingsPublishProfiles))
-
                 .UseFilesystemProject(AppDomain.CurrentDomain.BaseDirectory )
                         // > starskywebhtmlcli/bin folder
                 .UseMemoryCachingProvider()

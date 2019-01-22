@@ -32,9 +32,10 @@
         var longitude = Math.Round(@item.Longitude, 6);
 
         //    // Logic to setup filename
-        var filePath500 = @Model.Profile.Prepend + @fileFolder500 + @item.FileCollectionName + @append500 + @System.IO.Path.GetExtension(item.FileName);
-        var filePath1000 = @Model.Profile.Prepend + @fileFolder1000 + @item.FileCollectionName + @append1000 + @System.IO.Path.GetExtension(item.FileName);
-    
+	    var filePath500 = @Model.AppSettings.GetWebSafeReplacedName(@Model.Profile.Prepend) + @fileFolder500 + @item.FileCollectionName + @append500 + @System.IO.Path.GetExtension(item.FileName);
+	    var filePath1000 = @Model.AppSettings.GetWebSafeReplacedName(@Model.Profile.Prepend) + @fileFolder1000 + @item.FileCollectionName + @append1000 + @System.IO.Path.GetExtension(item.FileName);
+
+	    
         var displayTitleName = !string.IsNullOrEmpty(@item.Title) ? @item.Title : @Model.AppSettings.Name;
 
         <a href="@filePath1000" class="lightbox[blog]"
