@@ -64,6 +64,15 @@ namespace starskywebhtmlcli
             thumbByDir.CreateThumb(inputPath);
             new LoopPublications(appSettings,startupHelper.ExifTool())
                 .Render(fileIndexList,thumbByDir.ToBase64DataUriList(fileIndexList));
+
+        
+            // Todo: export all settings as manifest.json
+
+			dynamic manifest = new ExpandoObject();
+			manifest.Name = appSettings.Name;
+			var json = new JavaScriptSerializer().Serialize(manifest);
+
+
         }
         
     }
