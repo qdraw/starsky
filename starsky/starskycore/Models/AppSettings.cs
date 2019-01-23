@@ -285,7 +285,7 @@ namespace starskycore.Models
 			    Uri uriAddress = new Uri (value);
 			    if ( uriAddress.UserInfo.Split(":".ToCharArray()).Length == 2 
 			         && uriAddress.Scheme == "ftp" 
-			         && uriAddress.LocalPath.Length > 1 )
+			         && uriAddress.LocalPath.Length >= 1 )
 			    {
 				    _webftp = value;
 			    }

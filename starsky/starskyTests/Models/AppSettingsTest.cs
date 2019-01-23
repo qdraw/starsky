@@ -191,5 +191,30 @@ namespace starskytests.Models
 			// lenght == 45
 			Assert.AreEqual(slug.Length,45);
 		}
+
+
+		[TestMethod]
+		public void AppSettingsWebFtp_http()
+		{
+			var appSettings = new AppSettings();
+			appSettings.WebFtp = "https://google.com";
+			Assert.AreEqual(string.Empty,appSettings.WebFtp);
+		}
+		
+		[TestMethod]
+		public void AppSettingsWebFtp_FtpWithoutPassword()
+		{
+			var appSettings = new AppSettings();
+			appSettings.WebFtp = "ftp://google.com";
+			Assert.AreEqual(string.Empty,appSettings.WebFtp);
+		}
+		
+		[TestMethod]
+		public void AppSettingsWebFtp_FtpWithPassword()
+		{
+			var appSettings = new AppSettings();
+			appSettings.WebFtp = "ftp://test:test@google.com";
+			Assert.AreEqual("ftp://test:test@google.com",appSettings.WebFtp);
+		}
 	}
 }
