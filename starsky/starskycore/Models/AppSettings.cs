@@ -268,8 +268,36 @@ namespace starskycore.Models
         // For using <Link> in headers
         public bool AddHttp2Optimizations  { get; set; } = true;
 
-        public List<AppSettingsPublishProfiles> PublishProfiles { get; set; } = new List<AppSettingsPublishProfiles>();
 
+	    private string _webftp; 
+	    public string WebFtp
+	    {
+		    get
+		    {
+			    if ( string.IsNullOrEmpty(_webftp) ) return string.Empty;
+			    return _webftp;
+		    }
+		    set
+		    {
+			    // Anonymous FTP is not supported
+			    // Make sure that '@' in username is '%40'
+			    if ( string.IsNullOrEmpty(value) ) return;
+			    Uri uriAddress = new Uri (value);
+			    if ( uriAddress.UserInfo.Split(":".ToCharArray()).Length == 2 
+			         && uriAddress.Scheme == "ftp" 
+			         && uriAddress.LocalPath.Length > 1 )
+			    {
+				    _webftp = value;
+			    }
+
+		    }
+	    }
+
+	    public List<AppSettingsPublishProfiles> PublishProfiles { get; set; } = new List<AppSettingsPublishProfiles>();
+
+	    // -------------------------------------------------
+	    // ------------------- Modifiers -------------------
+	    // -------------------------------------------------
 	    
 	    /// <summary>
 	    /// Duplicate this item in memory. AND remove _databaseConnection 
@@ -285,12 +313,6 @@ namespace starskycore.Models
 		    }
 		    return appSettings;
 	    }
-	    
-	    
-        
-        // -------------------------------------------------
-        // ------------------- Modifiers -------------------
-        // -------------------------------------------------
 
 		public string FullPathToDatabaseStyle(string subpath)
 		{
