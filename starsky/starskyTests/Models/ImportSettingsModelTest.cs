@@ -25,6 +25,21 @@ namespace starskytests.Models
             context.Request.Headers["Structure"] = "wrong";
             new ImportSettingsModel(context.Request);
         }
-        
+
+	    [TestMethod]
+	    public void ImportSettingsModel_IndexMode_Test()
+	    {
+		    var context = new DefaultHttpContext();
+		    // false
+		    context.Request.Headers["IndexMode"] = "false";
+		    var model = new ImportSettingsModel(context.Request);
+			Assert.AreEqual(false, model.IndexMode);
+		    
+		    // now true
+		    context.Request.Headers["IndexMode"] = "true";
+		    model = new ImportSettingsModel(context.Request);
+		    Assert.AreEqual(true, model.IndexMode);
+	    }
+
     }
 }

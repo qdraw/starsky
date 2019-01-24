@@ -15,7 +15,10 @@ namespace starskycore.Models
 	        // Structure defaults in appsettings
         }
 
-        // Construct model using a request
+	    /// <summary>
+	    /// Construct model using a request
+	    /// </summary>
+	    /// <param name="request"></param>
         public ImportSettingsModel(HttpRequest request)
         {
 
@@ -31,6 +34,12 @@ namespace starskycore.Models
             // Always when importing using a request
             // otherwise it will stick in the temp folder
             DeleteAfter = true;
+	        
+	        // For the index Mode, false is always copy, true is check if exist in db, default true
+	        IndexMode = true;
+	        if(request.Headers["IndexMode"].ToString().ToLower() == "false")
+		        IndexMode = false;
+	        
         }
 
 

@@ -91,7 +91,7 @@ namespace starsky.Controllers
             });
             
             // When all items are already imported
-            if (fileIndexResultsList.All(p => p.Id != 0)) Response.StatusCode = 206;
+            if (importSettings.IndexMode && fileIndexResultsList.All(p => p.Id != 0)) Response.StatusCode = 206;
 
             return Json(fileIndexResultsList);
         }
