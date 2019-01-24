@@ -10,10 +10,11 @@ namespace starskycore.Models
             DeleteAfter = false;
             AgeFileFilterDisabled = true;
             RecursiveDirectory = false;
-            // ColorClass defaults in prop
-            // Structure defaults in appsettings
+	        IndexMode = true;
+	        // ColorClass defaults in prop
+	        // Structure defaults in appsettings
         }
-        
+
         // Construct model using a request
         public ImportSettingsModel(HttpRequest request)
         {
@@ -32,7 +33,7 @@ namespace starskycore.Models
             DeleteAfter = true;
         }
 
-        
+
         // This is optinal, when not in use ignore this setting
         private string _structure;
         public string Structure
@@ -51,7 +52,7 @@ namespace starskycore.Models
 
         public bool AgeFileFilterDisabled { get; set; } // default false
         // used with the getall parameter
-        
+
         public bool RecursiveDirectory { get; set; }
 
         private int _colorClass;
@@ -67,5 +68,9 @@ namespace starskycore.Models
             }
         }
 
+	    /// <summary>
+	    /// indexing, false is always copy, true is check if exist in db, default true
+	    /// </summary>
+	    public bool IndexMode { get; set; } = true;
     }
 }

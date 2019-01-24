@@ -169,9 +169,7 @@ namespace starskycore.Services
 	        // Check controller as well for the exist check:
 	        
             // If is in the ImportIndex, ignore it and don't delete it
-            if (IsHashInImportDb(fileHashCode)) return string.Empty;
-
-
+            if (importSettings.IndexMode && IsHashInImportDb(fileHashCode)) return string.Empty;
 	        
 
             // Only accept files with correct meta data
@@ -240,7 +238,8 @@ namespace starskycore.Services
             }
             
 	        // Ignore the sync part if the connection is missing
-	        if ( _isConnection )
+	        // or option enabled
+	        if ( importSettings.IndexMode && _isConnection )
 	        {
 	        
 		        // The files that are imported need to be synced

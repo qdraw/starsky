@@ -84,6 +84,7 @@ Starksy Importer Cli ~ Help:
 --recursive or -r == Import Directory recursive (default: false / only the selected folder) 
 --structure == overwrite appsettings with filedirectory structure based on exif and filename create datetime
 --verbose or -v == verbose, more detailed info
+--index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true
   use -v -help to show settings: 
 ```
 
