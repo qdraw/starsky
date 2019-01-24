@@ -292,14 +292,17 @@ namespace starskycore.Helpers
             {
                 if ((args[arg].ToLower() == "--path" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count )
                 {
-	                //if ( args[arg + 1].ToCharArray()[0] == "-".ToCharArray()[0] )
-	                //{
-
-	                //}
                     path = args[arg + 1];
                 }
             }
-            if (dbStyle)
+
+			// To use only with -p or --path > current directory
+			if ( (args.Contains("-p") || args.Contains("--path") ) && (path == string.Empty || path[0] == "-".ToCharArray()[0]))
+			{
+
+			}
+
+			if ( dbStyle)
             {
                 path = _appSettings.FullPathToDatabaseStyle(path);
             }
