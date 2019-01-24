@@ -338,7 +338,7 @@ starsky-node-client/docs/*/*/*.html
 **/osx.10.12-x64/*
 **/linux-arm/*
 **/win7-x86/*
-**/msbuild.netframework/*
+**/starsky.netframework-msbuild/*
 
 starsky-linux-arm.zip
 starsky-osx.10.12-x64.zip

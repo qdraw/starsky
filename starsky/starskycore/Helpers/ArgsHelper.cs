@@ -205,6 +205,8 @@ namespace starskycore.Helpers
                                       "(default: false / only the selected folder) ");
                     Console.WriteLine("--structure == overwrite appsettings with filedirectory structure "+
                                       "based on exif and filename create datetime");
+	                Console.WriteLine("--index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true");
+
                     break;
                 case AppSettings.StarskyAppType.Sync:
                     // When this change please update ./readme.md
