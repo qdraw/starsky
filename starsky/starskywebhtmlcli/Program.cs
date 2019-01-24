@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using starskycore.Helpers;
 using starskycore.Models;
@@ -65,15 +65,10 @@ namespace starskywebhtmlcli
             new LoopPublications(appSettings,startupHelper.ExifTool())
                 .Render(fileIndexList,thumbByDir.ToBase64DataUriList(fileIndexList));
 
-        
-            // Todo: export all settings as manifest.json
+			// Export all
+			new ExportManifest(appSettings,new PlainTextFileHelper()).Export();
 
-			dynamic manifest = new ExpandoObject();
-			manifest.Name = appSettings.Name;
-			var json = new JavaScriptSerializer().Serialize(manifest);
-
-
-        }
+		}
         
     }
 }

@@ -7,7 +7,12 @@ namespace starskycore.Services
     public static class ConfigRead
     {
 
-        public static string RemoveLatestBackslash(string basePath = "/")
+		/// <summary>
+		/// Removes the latest backslash. Path.DirectorySeparatorChar
+		/// </summary>
+		/// <param name="basePath">The base path.</param>
+		/// <returns></returns>
+		public static string RemoveLatestBackslash(string basePath = "/")
         {
             if (string.IsNullOrWhiteSpace(basePath)) return null;
 
@@ -22,8 +27,12 @@ namespace starskycore.Services
             return basePath;
         }
 
-
-        public static string RemoveLatestSlash(string basePath)
+		/// <summary>
+		/// Removes the latest slash. (/)
+		/// </summary>
+		/// <param name="basePath">The base path.</param>
+		/// <returns></returns>
+		public static string RemoveLatestSlash(string basePath)
         {
             // on all platforms the same
             if (string.IsNullOrWhiteSpace(basePath) || basePath == "/" ) return string.Empty;
