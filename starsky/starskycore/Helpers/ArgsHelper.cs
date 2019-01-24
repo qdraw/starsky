@@ -12,6 +12,13 @@ namespace starskycore.Helpers
     {
         // Table of Content
         
+		// -j > free
+		// -k > free
+		// -l > free
+		// -q > free
+		// -w > free
+		// -y > free
+		// -z > free
         // --verbose -v
         // --databasetype -d
         // --connection -c
@@ -283,8 +290,12 @@ namespace starskycore.Helpers
         
             for (int arg = 0; arg < args.Count; arg++)
             {
-                if ((args[arg].ToLower() == "--path" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count)
+                if ((args[arg].ToLower() == "--path" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count )
                 {
+	                //if ( args[arg + 1].ToCharArray()[0] == "-".ToCharArray()[0] )
+	                //{
+
+	                //}
                     path = args[arg + 1];
                 }
             }

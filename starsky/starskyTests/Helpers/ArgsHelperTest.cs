@@ -105,14 +105,22 @@ namespace starskytests.Helpers
         }
         
         [TestMethod]
-        [ExcludeFromCoverage]
         public void ArgsHelper_GetPathFormArgsTest()
         {
             var args = new List<string> {"-p", "/"}.ToArray();
             Assert.AreEqual(new ArgsHelper(_appSettings).GetPathFormArgs(args), "/");
         }
-        
-        [TestMethod]
+
+	    [TestMethod]
+	    public void ArgsHelper_GetPath_Other_Test()
+	    {
+		    var args = new List<string> { "-p", "-h" }.ToArray();
+		    var value = new ArgsHelper(_appSettings).GetPathFormArgs(args);
+
+			Assert.AreEqual(value, "/");
+	    }
+
+		[TestMethod]
         [ExcludeFromCoverage]
         public void ArgsHelper_GetSubpathFormArgsTest()
         {
