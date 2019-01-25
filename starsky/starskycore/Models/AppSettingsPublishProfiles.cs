@@ -61,6 +61,11 @@ namespace starskycore.Models
         public string Prepend { get; set; } = string.Empty;
         public bool MetaData { get; set; } = true;
 
+	    /// <summary>
+	    /// For the ftp client to ignore some directories
+	    /// </summary>
+	    public bool Copy { get; set; } = true;
+
     }
 
     public enum TemplateContentType

@@ -1,6 +1,7 @@
 ﻿using System;
 using starskycore.Helpers;
 using starskycore.Models;
+using starskywebftpcli.Services;
 
 namespace starskywebftpcli
 {
@@ -32,6 +33,24 @@ namespace starskywebftpcli
             
 			if(Files.IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
 				Console.WriteLine("Please add a valid folder: " + inputPath);
+			
+			if ( string.IsNullOrEmpty(appSettings.WebFtp) )
+			{
+				Console.WriteLine($"Please update the WebFtp settings in appsettings.json"  );
+				return;
+			}
+
+			if ( ! new ExportManifest(appSettings,new PlainTextFileHelper()).Import() )
+			{
+				// import false >
+				Console.WriteLine($"Please run starskywebhtmlcli first to generate a settings file"  );
+				return;
+			}
+
+//			var ftpService = new FtpService(appSettings).
+
+
+
 			
 			
 			Console.WriteLine("Hello World!");

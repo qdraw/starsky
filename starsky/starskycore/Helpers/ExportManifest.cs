@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
 using starskycore.Models;
@@ -16,14 +17,13 @@ namespace starskycore.Helpers
 
 		public string Slug
 		{
-			get
-			{
-				var slug = new AppSettings().GetWebSafeReplacedName(Name);
-				return ConfigRead.RemoveLatestSlash(slug);
-			}
+			get { return new AppSettings().GenerateSlug(Name, true); }
 		}
 
 		public string Export => DateTime.Now.ToString("yyyyMMddHHmmss",CultureInfo.InvariantCulture);
+		
+		public string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString(); 
+
 	}
 
 	public class ExportManifest
@@ -31,6 +31,7 @@ namespace starskycore.Helpers
 		private readonly AppSettings _appSettings;
 		private readonly PlainTextFileHelper _plainTextFileHelper;
 
+		private const string ManifestName = "_settings.json";
 
 		public ExportManifest(AppSettings appSettings, PlainTextFileHelper plainTextFileHelper)
 		{
@@ -44,25 +45,35 @@ namespace starskycore.Helpers
 		public void Export()
 		{
 			// Export settings as manifest.json to the StorageFolder
+		
 			var manifest = new ManifestModel
 			{
 				Name = _appSettings.Name,
 			};
 			var output = JsonConvert.SerializeObject(manifest);
-			var outputLocation = Path.Combine(_appSettings.StorageFolder, "manifest.json");
+			var outputLocation = Path.Combine(_appSettings.StorageFolder, ManifestName);
 			Files.DeleteFile(outputLocation);
 			_plainTextFileHelper.WriteFile(outputLocation, output);
 		}
 
 		/// <summary>
-		/// Imports name to the appsettings.
+		/// Imports name to the appsettings. 
+		/// false > file not exist
 		/// </summary>
-		public void Import()
+		/// <returns>false > file not exist</returns>
+		public bool Import()
 		{
-			var input =_plainTextFileHelper.ReadFile(Path.Combine(_appSettings.StorageFolder, "manifest.json"));
+			var fullSettingsPath = Path.Combine(_appSettings.StorageFolder, ManifestName);
+
+			if ( Files.IsFolderOrFile(fullSettingsPath) !=
+			     FolderOrFileModel.FolderOrFileTypeList.File ) return false;
+			
+			var input =_plainTextFileHelper.ReadFile(fullSettingsPath);
 
 			var manifestModel = JsonConvert.DeserializeObject<ManifestModel>(input);
 			_appSettings.Name = manifestModel.Name;
+			
+			return true;
 		}
 	}
 }
