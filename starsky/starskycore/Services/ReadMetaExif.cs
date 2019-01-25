@@ -531,7 +531,8 @@ namespace starskycore.Services
 		    
 		    if(apertureString == null) return 0d; 
 		    apertureString = apertureString.Replace("f/", string.Empty);
-		    float.TryParse(apertureString, NumberStyles.Number, CultureInfo.InvariantCulture, out var aperture);
+		    // Note: apertureString: (Dutch) 2,2 or (English) 2.2 based CultureInfo.CurrentCulture
+		    float.TryParse(apertureString, NumberStyles.Number, CultureInfo.CurrentCulture, out var aperture);
 		    return aperture;
 		    
 	    }
