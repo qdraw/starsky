@@ -31,8 +31,9 @@ namespace starskytests.Services
         private CreateAnImage _createAnImage;
         private readonly ReadMeta _readmeta;
 	    private string _fileHashCreateAnImage;
-	    
-        public ImportServiceTest()
+	    private ApplicationDbContext _context;
+
+	    public ImportServiceTest()
         {
             var provider = new ServiceCollection()
                 .AddMemoryCache()
@@ -42,8 +43,8 @@ namespace starskytests.Services
             var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
             builderDb.UseInMemoryDatabase("ImportServiceTest");
             var options = builderDb.Options;
-            var context = new ApplicationDbContext(options);
-            _query = new Query(context,memoryCache);
+            _context = new ApplicationDbContext(options);
+            _query = new Query(_context,memoryCache);
             
             // Inject Fake Exiftool; dependency injection
             var services = new ServiceCollection();
@@ -77,13 +78,13 @@ namespace starskytests.Services
             
             _readmeta = new ReadMeta(_appSettings);
 
-            _isync = new SyncService(context, _query,_appSettings,_readmeta);
+            _isync = new SyncService(_context, _query,_appSettings,_readmeta);
             
             //   _context = context
             //   _isync = isync
             //   _exiftool = exiftool
             //   _appSettings = appSettings
-            _import = new ImportService(context,_isync,_exiftool,_appSettings,_readmeta,null);
+            _import = new ImportService(_context,_isync,_exiftool,_appSettings,_readmeta,null);
             
             // Delete gpx files before importing
             // to avoid 1000 files in this folder
@@ -601,8 +602,44 @@ namespace starskytests.Services
 	        RemoveFromQuery();
 
         }
-        
 
-        
+	    [TestMethod]
+	    public void ImportService_CheckIndexerFalse()
+	    {
+		    RemoveFromQuery();
+		    
+		    var createAnImage = new CreateAnImage();
+		    var fileHash = FileHash.GetHashCode(createAnImage.FullFilePath);
+		    _appSettings.Verbose = true;
+		    _appSettings.StorageFolder = createAnImage.BasePath;
+		    
+		    var importSettings = new ImportSettingsModel
+		    {
+			    DeleteAfter = false,
+			    AgeFileFilterDisabled = false,
+			    Structure = "/HHmmss_yyyyMMdd_\\2.ext",
+			    IndexMode = false // <=================== disable check
+		    };
+
+		    // This item already exist #not
+		    _context.ImportIndex.Add(new ImportIndexItem
+		    {
+			    FileHash = fileHash
+		    });
+		    _context.SaveChanges();
+
+		    var result = _import.Import(createAnImage.FullFilePath,importSettings);
+
+		    Assert.AreEqual(1,result.Count);
+		    Assert.AreEqual(true,result.FirstOrDefault().Contains("2.jpg"));
+
+		    _import.RemoveItem(_import.GetItemByHash(fileHash));
+
+		    var subpath = ConfigRead.RemovePrefixDbSlash(result.FirstOrDefault());
+
+		    var path = Path.Combine(createAnImage.BasePath, subpath);
+		    Files.DeleteFile(path);
+	    }
+
     }
 }

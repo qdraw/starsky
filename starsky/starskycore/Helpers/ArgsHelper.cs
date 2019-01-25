@@ -212,6 +212,8 @@ namespace starskycore.Helpers
                                       "(default: false / only the selected folder) ");
                     Console.WriteLine("--structure == overwrite appsettings with filedirectory structure "+
                                       "based on exif and filename create datetime");
+	                Console.WriteLine("--index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true");
+
                     break;
                 case AppSettings.StarskyAppType.Sync:
                     // When this change please update ./readme.md
@@ -244,9 +246,12 @@ namespace starskycore.Helpers
             Console.WriteLine("AppSettings:");
             Console.WriteLine("Database Type (-d --databasetype) "+ _appSettings.DatabaseType);
             Console.WriteLine("DatabaseConnection (-c --connection) " + _appSettings.DatabaseConnection);
-            Console.WriteLine("StorageFolder (-b --basepath) " + _appSettings.StorageFolder);
-            Console.WriteLine("ThumbnailTempFolder (-f --thumbnailtempfolder) "+ _appSettings.ThumbnailTempFolder);
-            Console.WriteLine("ExifToolPath  (-e --exiftoolpath) "+ _appSettings.ExifToolPath);
+            Console.WriteLine($"StorageFolder (-b --basepath) {_appSettings.StorageFolder} " +
+                              $"- {Files.IsFolderOrFile(_appSettings.StorageFolder).ToString()}" );
+            Console.WriteLine($"ThumbnailTempFolder (-f --thumbnailtempfolder) {_appSettings.ThumbnailTempFolder} " +
+                              $"- {Files.IsFolderOrFile(_appSettings.ThumbnailTempFolder).ToString()} ");
+            Console.WriteLine($"ExifToolPath  (-e --exiftoolpath) {_appSettings.ExifToolPath} " +
+                              $"- {Files.IsFolderOrFile(_appSettings.ExifToolPath).ToString()}");
             Console.WriteLine("Structure  (-u --structure) "+ _appSettings.Structure);
 	        Console.WriteLine("Name "+ _appSettings.Name);
 	        Console.WriteLine("CameraTimeZone "+ _appSettings.CameraTimeZone);
