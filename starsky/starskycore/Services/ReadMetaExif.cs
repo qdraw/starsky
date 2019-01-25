@@ -108,14 +108,14 @@ namespace starskycore.Services
                     item.LocationState = locationState;
                 }
                 
-                ///    [IPTC] Country/Primary Location Name = Nederland
+                //    [IPTC] Country/Primary Location Name = Nederland
                 var locationCountry = GetLocationPlaces(exifItem, "Country/Primary Location Name");
                 if(locationCountry != null) // null = is not the right tag or empty tag
                 {
                     item.LocationCountry = locationCountry;
                 }
 	            
-	            ///    [Exif SubIFD] Aperture Value = f/2.2
+	            //    [Exif SubIFD] Aperture Value = f/2.2
 	            var aperture = GetAperture(exifItem);
 	            if(Math.Abs(aperture) > 0) // 0f = is not the right tag or empty tag
 	            {
