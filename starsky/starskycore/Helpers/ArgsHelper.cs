@@ -184,7 +184,7 @@ namespace starskycore.Helpers
             {
                 case AppSettings.StarskyAppType.Geo:
                     // When this change please update ./readme.md
-                    Console.WriteLine("--path or -p == parameter: (string) ; fullpath (all locations are supported) ");
+                    Console.WriteLine("--path or -p == parameter: (string) ; without addition is current directory, full path (all locations are supported) ");
                     Console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database ");
                     Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
                                       ", use for example '1' to select yesterday. (structure is required)");
@@ -203,8 +203,8 @@ namespace starskycore.Helpers
 
                 case AppSettings.StarskyAppType.Importer:
                     // When this change please update ./readme.md
-                    Console.WriteLine("--path or -p == parameter: (string) ; fullpath");
-                    Console.WriteLine("                can be an folder or file");
+                    Console.WriteLine("--path or -p == parameter: (string) ; full path");
+                    Console.WriteLine("                can be an folder or file, use '-p' for current directory");
                     Console.WriteLine("--move or -m == delete file after importing (default false / copy file)");
                     Console.WriteLine("--all or -a == import all files including files older than 2 years" +
                                       " (default: false / ignore old files) ");
@@ -218,8 +218,8 @@ namespace starskycore.Helpers
                 case AppSettings.StarskyAppType.Sync:
                     // When this change please update ./readme.md
                     Console.WriteLine("--path or -p == parameter: (string) ; " +
-                                      "fullpath, only child items of the database folder are supported," +
-                                      "search and replace first part of the filename, '/' ");
+                                      "'full path', only child items of the database folder are supported," +
+                                      "search and replace first part of the filename, '/', use '-p' for current directory ");
                     Console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
                     Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
                                       ", use for example '1' to select yesterday. (structure is required)");
@@ -304,7 +304,11 @@ namespace starskycore.Helpers
 			// To use only with -p or --path > current directory
 			if ( (args.Contains("-p") || args.Contains("--path") ) && (path == string.Empty || path[0] == "-".ToCharArray()[0]))
 			{
-
+				var currentDirectory = Directory.GetCurrentDirectory();
+				if ( currentDirectory != _appSettings.BaseDirectoryProject )
+				{
+					path = currentDirectory;
+				}
 			}
 
 			if ( dbStyle)

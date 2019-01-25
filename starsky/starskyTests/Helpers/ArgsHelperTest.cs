@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -112,14 +113,24 @@ namespace starskytests.Helpers
         }
 
 	    [TestMethod]
-	    public void ArgsHelper_GetPath_Other_Test()
+	    public void ArgsHelper_GetPath_WithHelp_CurrentDirectory_Test()
 	    {
 		    var args = new List<string> { "-p", "-h" }.ToArray();
 		    var value = new ArgsHelper(_appSettings).GetPathFormArgs(args);
 
-			Assert.AreEqual(value, "/");
+			Assert.AreEqual(Directory.GetCurrentDirectory(), value);
 	    }
 
+	    [TestMethod]
+	    public void ArgsHelper_GetPath_CurrentDirectory_Test()
+	    {
+		    var args = new List<string> { "-p" }.ToArray();
+		    var value = new ArgsHelper(_appSettings).GetPathFormArgs(args);
+
+		    Assert.AreEqual(Directory.GetCurrentDirectory(), value);
+	    }
+
+	    
 		[TestMethod]
         [ExcludeFromCoverage]
         public void ArgsHelper_GetSubpathFormArgsTest()
