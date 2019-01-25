@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Web;
@@ -29,15 +30,20 @@ namespace starskywebftpcli.Services
 		public bool Run()
 		{
 			var relativePath = new Uri (_appSettings.WebFtp).LocalPath;
+			var pushDirectory = WebFtpNoLogin + "/" + _appSettings.GenerateSlug(_appSettings.Name,true);
 
-			if ( !CreateFtpDirectory(WebFtpNoLogin) )
+			var createThisDirectories = new List<string>
 			{
+				relativePath,
+				pushDirectory
+			};
+
+			foreach ( var thisDirectory in createThisDirectories )
+			{
+				if ( CreateFtpDirectory(thisDirectory) ) continue;
 				Console.WriteLine($"Fail > create directory => {WebFtpNoLogin}");
 				return false;
 			}
-
-			var pushDirectory = WebFtpNoLogin + _appSettings.GenerateSlug(_appSettings.Name,true);
-			CreateFtpDirectory(pushDirectory);
 			
 			return true;
 		}
