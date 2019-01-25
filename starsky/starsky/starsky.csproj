@@ -20,49 +20,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningLevel>0</WarningLevel>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(hideMigrations)' == 'true' ">
-    <Compile Remove="Migrations\ApplicationDbContextModelSnapshot.cs" />
-    <Compile Remove="Migrations\20180308104506_initDatabaseKey.cs" />
-    <Compile Remove="Migrations\20180308104506_initDatabaseKey.Designer.cs" />
-    <Compile Remove="Migrations\20180308104642_initDatabaseKey.cs" />
-    <Compile Remove="Migrations\20180308104642_initDatabaseKey.Designer.cs" />
-    <Compile Remove="Migrations\20180316113937_IsDirectoryAddDescriptionParentDirectory.cs" />
-    <Compile Remove="Migrations\20180316113937_IsDirectoryAddDescriptionParentDirectory.Designer.cs" />
-    <Compile Remove="Migrations\20180407074506_Title.cs" />
-    <Compile Remove="Migrations\20180407074506_Title.Designer.cs" />
-    <Compile Remove="Migrations\20180419182654_importdatabase.cs" />
-    <Compile Remove="Migrations\20180419182654_importdatabase.Designer.cs" />
-    <Compile Remove="Migrations\20180423120037_LatitudeLongitudeGPS.cs" />
-    <Compile Remove="Migrations\20180423120037_LatitudeLongitudeGPS.Designer.cs" />
-    <Compile Remove="Migrations\20180622130045_DateTimeImportIndexItem.cs" />
-    <Compile Remove="Migrations\20180622130045_DateTimeImportIndexItem.Designer.cs" />
-    <Compile Remove="Migrations\20180712132428_IdentityProvider.cs" />
-    <Compile Remove="Migrations\20180712132428_IdentityProvider.Designer.cs" />
-    <Compile Remove="Migrations\20180308203924_FileHashTags.cs" />
-    <Compile Remove="Migrations\20180308203924_FileHashTags.Designer.cs" />
-    <Compile Remove="Migrations\20180308213306_DateTime_AddToDatabase.cs" />
-    <Compile Remove="Migrations\20180308213306_DateTime_AddToDatabase.Designer.cs" />
-    <Compile Remove="Migrations\20180322104602_ColorClassFeature.cs" />
-    <Compile Remove="Migrations\20180322104602_ColorClassFeature.Designer.cs" />
-    <Compile Remove="Migrations\20180717164601_userAccountStorage.cs" />
-    <Compile Remove="Migrations\20180717164601_userAccountStorage.Designer.cs" />
-    <Compile Remove="Migrations\20180308103923_initDatabase.cs" />
-    <Compile Remove="Migrations\20180308103923_initDatabase.Designer.cs" />
-    <Compile Remove="Migrations\20180801084111_ImageFormatToFileIndexItem.cs" />
-    <Compile Remove="Migrations\20180801084111_ImageFormatToFileIndexItem.Designer.cs" />
-    <Compile Remove="Migrations\20180806181225_ExifOrientation.cs" />
-    <Compile Remove="Migrations\20180806181225_ExifOrientation.Designer.cs" />
-    <Compile Remove="Migrations\20180820145632_ImageWidthImageHeight.cs" />
-    <Compile Remove="Migrations\20180820145632_ImageWidthImageHeight.Designer.cs" />
-    <Compile Remove="Migrations\20180919145305_LocationCityLocationStateLocationCountry.cs" />
-    <Compile Remove="Migrations\20180919145305_LocationCityLocationStateLocationCountry.Designer.cs" />
-    <Compile Remove="Migrations\20180923145732_LocationAltitude.cs" />
-    <Compile Remove="Migrations\20180923145732_LocationAltitude.Designer.cs" />
-    <Compile Remove="Migrations\20190103194709_AddApertureShutterSpeedIsoSpeed.cs" />
-    <Compile Remove="Migrations\20190103194709_AddApertureShutterSpeedIsoSpeed.Designer.cs" />
-    <Compile Remove="Migrations\20190111162308_MakeModel.cs" />
-    <Compile Remove="Migrations\20190111162308_MakeModel.Designer.cs" />
-  </ItemGroup>
+ 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.7" />
     <!-- <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.1.4" />

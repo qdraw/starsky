@@ -1,24 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
+using starskycore.Attributes;
 
 namespace starsky.Migrations
 {
-    public partial class ImageFormatToFileIndexItem : Migration
+    public partial class Title : Migration
     {
+        [ExcludeFromCoverage]
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "ImageFormat",
+            migrationBuilder.AddColumn<string>(
+                name: "Title",
                 table: "FileIndex",
-                nullable: false,
-                defaultValue: 0);
+                nullable: true);
         }
 
+        [ExcludeFromCoverage]
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ImageFormat",
+                name: "Title",
                 table: "FileIndex");
         }
     }

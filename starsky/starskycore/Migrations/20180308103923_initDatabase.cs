@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using starsky.Attributes;
 using starskycore.Attributes;
 
-namespace starsky.Migrations
+namespace starskycore.Migrations
 {
     public partial class initDatabase : Migration
     {
@@ -24,7 +23,6 @@ namespace starsky.Migrations
                 });
         }
         
-        [ExcludeFromCoverage]
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

@@ -1,34 +1,35 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using starsky.Attributes;
+using System;
 using starskycore.Attributes;
 
 namespace starsky.Migrations
 {
-    public partial class FileHashTags : Migration
+    public partial class DateTime_AddToDatabase : Migration
     {
         [ExcludeFromCoverage]
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "FileHash",
+            migrationBuilder.AddColumn<DateTime>(
+                name: "AddToDatabase",
                 table: "FileIndex",
-                nullable: true);
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
-            migrationBuilder.AddColumn<string>(
-                name: "Tags",
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DateTime",
                 table: "FileIndex",
-                nullable: true);
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
         }
 
-        [ExcludeFromCoverage]
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "FileHash",
+                name: "AddToDatabase",
                 table: "FileIndex");
 
             migrationBuilder.DropColumn(
-                name: "Tags",
+                name: "DateTime",
                 table: "FileIndex");
         }
     }

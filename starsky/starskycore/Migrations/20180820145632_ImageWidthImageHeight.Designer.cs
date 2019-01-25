@@ -6,14 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using starskycore.Data;
-using starsky.Helpers;
 using System;
 
 namespace starsky.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180806181225_ExifOrientation")]
-    partial class ExifOrientation
+    [Migration("20180820145632_ImageWidthImageHeight")]
+    partial class ImageWidthImageHeight
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -170,6 +169,10 @@ namespace starsky.Migrations
                     b.Property<string>("FilePath");
 
                     b.Property<int>("ImageFormat");
+
+                    b.Property<ushort>("ImageHeight");
+
+                    b.Property<ushort>("ImageWidth");
 
                     b.Property<bool>("IsDirectory");
 

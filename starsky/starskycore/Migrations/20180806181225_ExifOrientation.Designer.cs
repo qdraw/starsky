@@ -6,14 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using starskycore.Data;
-using starsky.Helpers;
 using System;
 
 namespace starsky.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180923145732_LocationAltitude")]
-    partial class LocationAltitude
+    [Migration("20180806181225_ExifOrientation")]
+    partial class ExifOrientation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -171,24 +170,9 @@ namespace starsky.Migrations
 
                     b.Property<int>("ImageFormat");
 
-                    b.Property<ushort>("ImageHeight");
-
-                    b.Property<ushort>("ImageWidth");
-
                     b.Property<bool>("IsDirectory");
 
                     b.Property<double>("Latitude");
-
-                    b.Property<double>("LocationAltitude");
-
-                    b.Property<string>("LocationCity")
-                        .HasMaxLength(40);
-
-                    b.Property<string>("LocationCountry")
-                        .HasMaxLength(40);
-
-                    b.Property<string>("LocationState")
-                        .HasMaxLength(40);
 
                     b.Property<double>("Longitude");
 

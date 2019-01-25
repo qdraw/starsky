@@ -6,14 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using starskycore.Data;
-using starsky.Helpers;
 using System;
 
 namespace starsky.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180919145305_LocationCityLocationStateLocationCountry")]
-    partial class LocationCityLocationStateLocationCountry
+    [Migration("20180923145732_LocationAltitude")]
+    partial class LocationAltitude
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -178,6 +177,8 @@ namespace starsky.Migrations
                     b.Property<bool>("IsDirectory");
 
                     b.Property<double>("Latitude");
+
+                    b.Property<double>("LocationAltitude");
 
                     b.Property<string>("LocationCity")
                         .HasMaxLength(40);
