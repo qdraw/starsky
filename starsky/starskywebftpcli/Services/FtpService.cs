@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Web;
 using starskycore.Models;
@@ -38,6 +39,14 @@ namespace starskywebftpcli.Services
 				pushDirectory
 			};
 
+			foreach ( var publishProfile in _appSettings.PublishProfiles )
+			{
+				if ( publishProfile.ContentType == TemplateContentType.Jpeg )
+				{
+					createThisDirectories.Add(pushDirectory + "/" + publishProfile.Folder);
+				}
+			}
+			
 			foreach ( var thisDirectory in createThisDirectories )
 			{
 				if ( CreateFtpDirectory(thisDirectory) ) continue;
