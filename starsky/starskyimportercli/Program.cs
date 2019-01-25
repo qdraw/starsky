@@ -33,7 +33,6 @@ namespace starskyimportercli
             if(appSettings.Verbose) Console.WriteLine("inputPath " + inputPath);
 	        
 	        
-
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = new ArgsHelper(appSettings).GetMove(args),
@@ -41,6 +40,14 @@ namespace starskyimportercli
                 RecursiveDirectory = new ArgsHelper().NeedRecruisive(args),
 	            IndexMode = new ArgsHelper().GetIndexMode(args)
             };
+
+	        if ( appSettings.Verbose ) 
+	        {
+		        Console.WriteLine($"Options: DeleteAfter: {importSettings.DeleteAfter}, " +
+					$"AgeFileFilterDisabled: {importSettings.AgeFileFilterDisabled},  " +
+					$"RecursiveDirectory {importSettings.RecursiveDirectory}, " +
+					$"IndexMode {importSettings.IndexMode}");
+	        }
             
             startupHelper.ImportService().Import(inputPath, importSettings);
            

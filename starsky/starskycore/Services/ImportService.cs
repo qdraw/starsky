@@ -59,8 +59,8 @@ namespace starskycore.Services
             if (!Directory.Exists(inputFullPath) && File.Exists(inputFullPath))
             {
                 // file
-                var succesfullFullPaths = ImportFile(inputFullPath, importSettings);
-                return new List<string> {succesfullFullPaths};
+                var successfulFullPaths = ImportFile(inputFullPath, importSettings);
+                return new List<string> {successfulFullPaths};
             }
 
             if (File.Exists(inputFullPath) || !Directory.Exists(inputFullPath))
@@ -75,9 +75,11 @@ namespace starskycore.Services
             // non-recursive
             if(!importSettings.RecursiveDirectory) filesFullPathList = Files.GetFilesInDirectory(inputFullPath).ToList();
 
-            var succesfullDirFullPaths = Import(filesFullPathList, importSettings);
-                
-            return succesfullDirFullPaths;
+            var successfulDirFullPaths = Import(filesFullPathList, importSettings);
+	        
+	        if ( _appSettings.Verbose ) Console.WriteLine("Number of files = " + successfulDirFullPaths.Count);
+            
+	        return successfulDirFullPaths;
         }
 
         // Create a new import object
@@ -252,6 +254,9 @@ namespace starskycore.Services
 		        AddItem(importIndexItem);
 		        
 	        }
+
+	        if ( _appSettings.Verbose ) Console.Write(".");
+	        
 	        
 			// setting	        
             if (importSettings.DeleteAfter)
