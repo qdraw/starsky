@@ -57,7 +57,7 @@ When using Windows please escape the backslash, otherwise the application will c
 ```
 Starksy Sync Cli ~ Help:
 --help or -h == help (this window)
---path or -p == parameter: (string) ; fullpath, only child items of the database folder are supported,search and replace first part of the filename, '/' 
+--path or -p == parameter: (string) ; 'full path', only child items of the database folder are supported,search and replace first part of the filename, '/', use '-p' for current directory
 --subpath or -s == parameter: (string) ; relative path in the database
 --subpathrelative or -g == Overwrite subpath to use relative days to select a folder, use for example '1' to select yesterday. (structure is required)
 -p, -s, -g == you need to select one of those tags
@@ -72,5 +72,5 @@ Starksy Sync Cli ~ Help:
 --thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder
 --exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath
 --verbose or -v == verbose, more detailed info
-  use -v -help to show settings: 
+  use -v -help to show settings:
 ```

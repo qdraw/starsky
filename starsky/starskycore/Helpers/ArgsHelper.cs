@@ -197,7 +197,7 @@ namespace starskycore.Helpers
                 
                 case AppSettings.StarskyAppType.WebHtml:
                     // When this change please update ./readme.md
-                    Console.WriteLine("--path or -p == parameter: (string) ; fullpath (select a folder) ");
+                    Console.WriteLine("--path or -p == parameter: (string) ; fullpath (select a folder), use '-p' for current directory");
                     Console.WriteLine("--name or -n == parameter: (string) ; name of blogitem ");
                     break;
 

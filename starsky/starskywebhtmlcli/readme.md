@@ -21,11 +21,18 @@ For example to generate content for a blog, the 'Web HTML Cli' can be used. This
 All actions are customizable in the `appsettings.json`. There is a section called `publishProfiles` in `appsettings.json`.
 The `publishProfiles` are executed during runtime.
 
+
+### To the help dialog:
+```sh
+./starskywebhtmlcli --help
+```
+
 ### The StarskyWebHtmlCli --Help window:
+
 ```sh
 Starksy WebHtml Cli ~ Help:
 --help or -h == help (this window)
---path or -p == parameter: (string) ; fullpath (select a folder)
+--path or -p == parameter: (string) ; fullpath (select a folder), use '-p' for current directory
 --name or -n == parameter: (string) ; name of blogitem 
 --verbose or -v == verbose, more detailed info
   use -v -help to show settings: 
