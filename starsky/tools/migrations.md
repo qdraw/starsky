@@ -6,4 +6,4 @@ dotnet ef database update
 
 
 # from starskycore folder
-dotnet ef --startup-project ../starsky/starsky.csproj --project starskycore.csproj
+dotnet ef --startup-project ../starsky/starsky.csproj --project starskycore.csproj migrations add test

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using starskycore.Attributes;
 
-namespace starsky.Migrations
+namespace starskycore.Migrations
 {
     public partial class LatitudeLongitudeGPS : Migration
     {

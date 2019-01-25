@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace starsky.Migrations
+namespace starskycore.Migrations
 {
     public partial class AddApertureShutterSpeedIsoSpeed : Migration
     {

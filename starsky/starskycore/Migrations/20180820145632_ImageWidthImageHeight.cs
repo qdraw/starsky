@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
 
-namespace starsky.Migrations
+namespace starskycore.Migrations
 {
     public partial class ImageWidthImageHeight : Migration
     {

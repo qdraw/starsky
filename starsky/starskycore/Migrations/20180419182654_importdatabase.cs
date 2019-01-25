@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using starskycore.Attributes;
 
-namespace starsky.Migrations
+namespace starskycore.Migrations
 {
     public partial class importdatabase : Migration
     {
