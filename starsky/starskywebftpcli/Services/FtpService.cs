@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Web;
 using starskycore.Models;
 
 namespace starskywebftpcli.Services
@@ -8,16 +9,39 @@ namespace starskywebftpcli.Services
 	public class FtpService
 	{
 		private readonly AppSettings _appSettings;
-		private Uri _appSettingsUri;
 		private string[] _appSettingsCredentials;
 
+		private string WebFtpNoLogin;
+		
 		public FtpService(AppSettings appSettings)
 		{
 			_appSettings = appSettings;
-			_appSettingsUri = new Uri (_appSettings.WebFtp);
-			_appSettingsCredentials = _appSettingsUri.UserInfo.Split(":".ToCharArray());
+			var uri = new Uri(_appSettings.WebFtp);
+			_appSettingsCredentials = uri.UserInfo.Split(":".ToCharArray());
 
+			// Replace WebFtpNoLogin
+			WebFtpNoLogin = $"{uri.Scheme}://{uri.Host}{uri.LocalPath}";
+			
+			_appSettingsCredentials[0] = HttpUtility.UrlDecode(_appSettingsCredentials[0]);
+			_appSettingsCredentials[1] = HttpUtility.UrlDecode(_appSettingsCredentials[1]);
 		}
+
+		public bool Run()
+		{
+			var relativePath = new Uri (_appSettings.WebFtp).LocalPath;
+
+			if ( !CreateFtpDirectory(WebFtpNoLogin) )
+			{
+				Console.WriteLine($"Fail > create directory => {WebFtpNoLogin}");
+				return false;
+			}
+
+			var pushDirectory = WebFtpNoLogin + _appSettings.GenerateSlug(_appSettings.Name,true);
+			CreateFtpDirectory(pushDirectory);
+			
+			return true;
+		}
+		
 		public void Upload()
 		{
 			
@@ -40,9 +64,9 @@ namespace starskywebftpcli.Services
 			try
 			{
 				//create the directory
-				FtpWebRequest requestDir = (FtpWebRequest)WebRequest.Create(new Uri(directory));
+				FtpWebRequest requestDir = (FtpWebRequest) FtpWebRequest.Create(directory);
 				requestDir.Method = WebRequestMethods.Ftp.MakeDirectory;
-				requestDir.Credentials = new NetworkCredential("username", "password");
+				requestDir.Credentials = new NetworkCredential(_appSettingsCredentials[0], _appSettingsCredentials[1]);
 				requestDir.UsePassive = true;
 				requestDir.UseBinary = true;
 				requestDir.KeepAlive = false;
@@ -57,12 +81,13 @@ namespace starskywebftpcli.Services
 			catch (WebException ex)
 			{
 				FtpWebResponse response = (FtpWebResponse)ex.Response;
+
+				response.Close();
+
 				if (response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
 				{
-					response.Close();
 					return true;
 				}
-				response.Close();
 				return false;
 			}
 		}

@@ -40,6 +40,8 @@ namespace starskywebftpcli
 				return;
 			}
 
+			appSettings.StorageFolder = inputPath;
+
 			if ( ! new ExportManifest(appSettings,new PlainTextFileHelper()).Import() )
 			{
 				// import false >
@@ -47,7 +49,8 @@ namespace starskywebftpcli
 				return;
 			}
 
-//			var ftpService = new FtpService(appSettings).
+			var ftpService = new FtpService(appSettings).Run();
+			
 
 
 
