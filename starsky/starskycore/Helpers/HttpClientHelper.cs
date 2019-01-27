@@ -5,11 +5,11 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace starsky.Helpers
+namespace starskycore.Helpers
 {
     public static class HttpClientHelper
     {
-        static readonly List<string> AllowedDomains = new List<string>
+        private static readonly List<string> AllowedDomains = new List<string>
         {
             "dl.dropboxusercontent.com", 
             "qdraw.nl", 
@@ -17,6 +17,7 @@ namespace starsky.Helpers
         };
         
         private static readonly HttpClient Client = new HttpClient();
+	    
         public static async Task<bool> Download(string sourceHttpUrl, string fullLocalPath) 
         {
             Uri sourceUri = new Uri(sourceHttpUrl);

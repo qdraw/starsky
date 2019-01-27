@@ -133,19 +133,21 @@ namespace starsky.Controllers
 	    }
 
 
-//        [HttpPost]
-//        public async Task<IActionResult> Ifttt(string fileurl, string filename, string structure)
-//        {
-//            var tempImportPaths = new List<string>{FileStreamingHelper.GetTempFilePath(_appSettings,filename)};
-//            var importSettings = new ImportSettingsModel(Request);
-//            importSettings.Structure = structure;
-//            var isDownloaded = await HttpClientHelper.Download(fileurl);
-//            if (!isDownloaded) return NotFound("fileurl not found or domain not allowed " + fileurl);
-//            var importedFiles = _import.Import(tempImportPaths, importSettings);
-//            Files.DeleteFile(tempImportPaths);
-//            if(importedFiles.Count == 0) Response.StatusCode = 206;
-//            return Json(importedFiles);
-//        }
+	    [HttpPost("/import/fromUrl")]
+        public async Task<IActionResult> FromUrl(string fileurl, string filename, string structure)
+        {
+	        if (filename == null) filename = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
+	        var tempImportFullPath = Path.Combine(_appSettings.TempFolder, filename);
+	        var importSettings = new ImportSettingsModel(Request);
+            importSettings.Structure = structure;
+            var isDownloaded = await HttpClientHelper.Download(fileurl,tempImportFullPath);
+            if (!isDownloaded) return NotFound("fileurl not found or domain not allowed " + fileurl);
+
+	        var importedFiles = _import.Import(new List<string>{tempImportFullPath}, importSettings);
+            Files.DeleteFile(tempImportFullPath);
+            if(importedFiles.Count == 0) Response.StatusCode = 206;
+            return Json(importedFiles);
+        }
 
     }
 }
