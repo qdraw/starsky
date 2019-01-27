@@ -876,7 +876,7 @@ function exportZip(isThumbnail) {
    
     loadJSON(exportZipApiBase,
         function (data) {
-            var exportZipUrl = "/export/zip?json=true&f=" + data;
+            var exportZipUrl = "/export/zip/" + data +".zip?json=true";
             var filename = data + ".zip";
 
 

@@ -121,7 +121,7 @@ namespace starsky.Controllers
 			return Json(zipHash);
 		}
 
-		[HttpGet("/export/zip")]
+		[HttpGet("/export/zip/{f}.zip")]
 		public async Task<IActionResult> Zip(string f, bool json = false)
 		{
 			var sourceFullPath = Path.Join(_appSettings.TempFolder,f) + ".zip";
