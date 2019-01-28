@@ -302,7 +302,7 @@ namespace starskycore.Helpers
             }
 
 			// To use only with -p or --path > current directory
-			if ( (args.Contains("-p") || args.Contains("--path") ) && (path == string.Empty || path[0] == "-".ToCharArray()[0]))
+			if ( (args.Contains("-p") || args.Contains("--path") ) && (path == string.Empty || path[0] == "-"[0]))
 			{
 				var currentDirectory = Directory.GetCurrentDirectory();
 				if ( currentDirectory != _appSettings.BaseDirectoryProject )

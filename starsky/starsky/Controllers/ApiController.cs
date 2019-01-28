@@ -144,7 +144,8 @@ namespace starsky.Controllers
 				
 				// if one item fails, the status will added
 				if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
-				
+
+				if ( detailView == null ) throw new NullReferenceException("detailView == null");
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
 				var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
                 
