@@ -69,8 +69,9 @@ namespace starsky.Controllers
 				statusModel.IsDirectory = false;
 
 				if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+				
+				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
 
-				if ( detailView == null ) throw new NullReferenceException("detailView == null");
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
 				foreach ( var item in collectionSubPathList )
 				{
