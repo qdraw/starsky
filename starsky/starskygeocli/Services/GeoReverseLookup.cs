@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -37,7 +37,7 @@ namespace starskyGeoCli.Services
             // end geodata
         }
 
-        private string GetAdmin2Name(string countryCode, string[] admincodes)
+        private string GetAdmin1Name(string countryCode, string[] admincodes)
         {
             if (admincodes.Length != 4) return null;
 
@@ -115,7 +115,7 @@ namespace starskyGeoCli.Services
 
                 metaFileItem.LocationCity = nearestPlace.NameASCII;
                 metaFileItem.LocationCountry = new RegionInfo(nearestPlace.CountryCode).NativeName;
-                metaFileItem.LocationState = GetAdmin2Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
+                metaFileItem.LocationState = GetAdmin1Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
             }
             return metaFilesInDirectory;
         }
