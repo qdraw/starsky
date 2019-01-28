@@ -10,12 +10,12 @@ namespace starskycore.Helpers
 {
     public class HttpClientHelper
     {
-	    public HttpClientHelper(HttpProvider httpProvider)
+	    public HttpClientHelper(IHttpProvider httpProvider)
 	    {
 		    _httpProvider = httpProvider;
 	    }
 
-	    private readonly HttpProvider _httpProvider;
+	    private readonly IHttpProvider _httpProvider;
 
 
 		/// <summary>
@@ -24,7 +24,7 @@ namespace starskycore.Helpers
 		private readonly List<string> AllowedDomains = new List<string>
         {
             "dl.dropboxusercontent.com", 
-            "qdraw.nl", 
+            "qdraw.nl", // < used by test
             "locker.ifttt.com",
 			"download.geonames.org"
 		};

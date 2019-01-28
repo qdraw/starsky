@@ -21,13 +21,15 @@ namespace starsky.Controllers
         private readonly IImport _import;
         private readonly AppSettings _appSettings;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
+	    private HttpClientHelper _httpClientHelper;
 
-        public ImportController(IImport import, AppSettings appSettings, 
-            IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue)
+	    public ImportController(IImport import, AppSettings appSettings, 
+            IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue, HttpClientHelper httpClientHelper)
         {
             _appSettings = appSettings;
             _import = import;
             _bgTaskQueue = queue;
+	        _httpClientHelper = httpClientHelper;
         }
 
         [HttpGet]
@@ -140,7 +142,7 @@ namespace starsky.Controllers
 	        var tempImportFullPath = Path.Combine(_appSettings.TempFolder, filename);
 	        var importSettings = new ImportSettingsModel(Request);
             importSettings.Structure = structure;
-            var isDownloaded = await HttpClientHelper.Download(fileurl,tempImportFullPath);
+            var isDownloaded = await _httpClientHelper.Download(fileurl,tempImportFullPath);
             if (!isDownloaded) return NotFound("fileurl not found or domain not allowed " + fileurl);
 
 	        var importedFiles = _import.Import(new List<string>{tempImportFullPath}, importSettings);

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using starskycore.Interfaces;
 
@@ -20,7 +17,6 @@ namespace starskycore.Helpers
 		{
 			return _httpClient.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
 		}
-
 
 	}
 }

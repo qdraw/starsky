@@ -12,6 +12,11 @@ namespace starskytests.FakeMocks
 	{
 		public virtual HttpResponseMessage Send(HttpRequestMessage request)
 		{
+			if ( request.RequestUri.Host == "download.geonames.org" )
+			{
+				return new HttpResponseMessage(HttpStatusCode.NotFound) { Content = new StringContent("404") };
+
+			}
 			return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("Your message here") };
 			// Configure this method however you wish for your testing needs.
 		}
