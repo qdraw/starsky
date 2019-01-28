@@ -24,7 +24,7 @@ namespace starskytests.Helpers
 
 			var httpClientHelper = new HttpClientHelper(httpProvider);
 
-
+			// use only whitelisted domains
 			var path = Path.Combine(new AppSettings().TempFolder, "pathToNOTdownload.txt");
 			var output = await httpClientHelper.Download("http://mybadurl.cn",path);
 			Assert.AreEqual(false,output);
