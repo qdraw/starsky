@@ -49,7 +49,7 @@ namespace starskycore.Helpers
             _appSettings = appSettings;
         }
 
-        private AppSettings _appSettings;
+        private readonly AppSettings _appSettings;
 
         public bool NeedVerbose(IReadOnlyList<string> args)
         {

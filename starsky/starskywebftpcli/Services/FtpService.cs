@@ -11,9 +11,9 @@ namespace starskywebftpcli.Services
 	public class FtpService
 	{
 		private readonly AppSettings _appSettings;
-		private string[] _appSettingsCredentials;
+		private readonly string[] _appSettingsCredentials;
 
-		private string WebFtpNoLogin;
+		private readonly string _webFtpNoLogin;
 		
 		public FtpService(AppSettings appSettings)
 		{
@@ -22,7 +22,7 @@ namespace starskywebftpcli.Services
 			_appSettingsCredentials = uri.UserInfo.Split(":".ToCharArray());
 
 			// Replace WebFtpNoLogin
-			WebFtpNoLogin = $"{uri.Scheme}://{uri.Host}{uri.LocalPath}";
+			_webFtpNoLogin = $"{uri.Scheme}://{uri.Host}{uri.LocalPath}";
 			
 			_appSettingsCredentials[0] = HttpUtility.UrlDecode(_appSettingsCredentials[0]);
 			_appSettingsCredentials[1] = HttpUtility.UrlDecode(_appSettingsCredentials[1]);
@@ -31,7 +31,7 @@ namespace starskywebftpcli.Services
 		public bool Run()
 		{
 			var relativePath = new Uri (_appSettings.WebFtp).LocalPath;
-			var pushDirectory = WebFtpNoLogin + "/" + _appSettings.GenerateSlug(_appSettings.Name,true);
+			var pushDirectory = _webFtpNoLogin + "/" + _appSettings.GenerateSlug(_appSettings.Name,true);
 
 			var createThisDirectories = new List<string>
 			{
@@ -50,7 +50,7 @@ namespace starskywebftpcli.Services
 			foreach ( var thisDirectory in createThisDirectories )
 			{
 				if ( CreateFtpDirectory(thisDirectory) ) continue;
-				Console.WriteLine($"Fail > create directory => {WebFtpNoLogin}");
+				Console.WriteLine($"Fail > create directory => {_webFtpNoLogin}");
 				return false;
 			}
 			

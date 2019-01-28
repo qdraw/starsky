@@ -22,19 +22,16 @@ namespace starsky.Controllers
 		private readonly IExiftool _exiftool;
 		private readonly AppSettings _appSettings;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
-		private readonly IReadMeta _readMeta;
 
 		public ExportController(
 			IQuery query, IExiftool exiftool, 
-			AppSettings appSettings, IBackgroundTaskQueue queue,
-			IReadMeta readMeta
+			AppSettings appSettings, IBackgroundTaskQueue queue
 		)
 		{
 			_appSettings = appSettings;
 			_query = query;
 			_exiftool = exiftool;
 			_bgTaskQueue = queue;
-			_readMeta = readMeta;
 		}
 		
 		/// <summary>

@@ -110,16 +110,12 @@ namespace starskycore.Models
         
 
         // Database
-	    private DatabaseTypeList _databaseType = DatabaseTypeList.Sqlite;
-	    
-        [JsonConverter(typeof(StringEnumConverter))]
-        public DatabaseTypeList DatabaseType {
-	        get { return _databaseType; }
-	        set { _databaseType = value; } 
-        }
-	    
-	    
-        public enum DatabaseTypeList
+
+	    [JsonConverter(typeof(StringEnumConverter))]
+        public DatabaseTypeList DatabaseType { get; set; } = DatabaseTypeList.Sqlite;
+
+
+	    public enum DatabaseTypeList
         {
             Mysql = 1,
             Sqlite = 2,
