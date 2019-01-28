@@ -99,9 +99,9 @@ namespace starskytests.Helpers
         {
             var args = new List<string> {"-h"}.ToArray();
             Assert.AreEqual(new ArgsHelper(_appSettings).NeedHelp(args), true);
-            
-            // Bool parse check
-            args = new List<string> {"-h","true"}.ToArray();
+
+			// Bool parse cheArgsHelper_GetPath_CurrentDirectory_Testck
+			args = new List<string> {"-h","true"}.ToArray();
             Assert.AreEqual(new ArgsHelper(_appSettings).NeedHelp(args), true);
         }
         
@@ -116,16 +116,17 @@ namespace starskytests.Helpers
 	    public void ArgsHelper_GetPath_WithHelp_CurrentDirectory_Test()
 	    {
 		    var args = new List<string> { "-p", "-h" }.ToArray();
-		    var value = new ArgsHelper(_appSettings).GetPathFormArgs(args);
+		    var value = new ArgsHelper(_appSettings).GetPathFormArgs(args,false);
 
-			Assert.AreEqual(Directory.GetCurrentDirectory(), value);
+		    var currentDir = Directory.GetCurrentDirectory();
+			Assert.AreEqual(currentDir, value);
 	    }
 
 	    [TestMethod]
 	    public void ArgsHelper_GetPath_CurrentDirectory_Test()
 	    {
 		    var args = new List<string> { "-p" }.ToArray();
-		    var value = new ArgsHelper(_appSettings).GetPathFormArgs(args);
+		    var value = new ArgsHelper(_appSettings).GetPathFormArgs(args,false);
 
 		    Assert.AreEqual(Directory.GetCurrentDirectory(), value);
 	    }
