@@ -54,6 +54,16 @@ namespace starskywebftpcli.Services
 				return false;
 			}
 			
+			
+			// copy content of dir
+			foreach ( var publishProfile in _appSettings.PublishProfiles )
+			{
+				if ( publishProfile.ContentType == TemplateContentType.Jpeg )
+				{
+				}
+			}
+
+			
 			return true;
 		}
 		
