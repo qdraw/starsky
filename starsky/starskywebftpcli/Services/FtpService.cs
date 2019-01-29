@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
+using starskycore.Helpers;
 using starskycore.Models;
 
 namespace starskywebftpcli.Services
@@ -60,6 +61,7 @@ namespace starskywebftpcli.Services
 			{
 				if ( publishProfile.ContentType == TemplateContentType.Jpeg )
 				{
+					Files.GetFilesInDirectory("");
 				}
 			}
 
