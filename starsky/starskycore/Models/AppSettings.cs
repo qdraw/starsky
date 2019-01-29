@@ -318,6 +318,24 @@ namespace starskycore.Models
 			
 			return PathHelper.PrefixDbSlash(databaseFilePath);
 		}
+	    
+	    
+	    /// <summary>
+	    /// Rename a list to database style (short style)
+	    /// </summary>
+	    /// <param name="localSubFolderList"></param>
+	    /// <returns></returns>
+	    public List<string> RenameListItemsToDbStyle(List<string> localSubFolderList)
+	    {
+		    var localSubFolderListDatabaseStyle = new List<string>();
+
+		    foreach (var item in localSubFolderList)
+		    {
+			    localSubFolderListDatabaseStyle.Add(FullPathToDatabaseStyle(item));
+		    }
+
+		    return localSubFolderListDatabaseStyle;
+	    }
         
         // Replace windows \\ > /
         private string _pathToDatabaseStyle(string subPath)

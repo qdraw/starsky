@@ -6,6 +6,7 @@ using System.Net;
 using System.Web;
 using starskycore.Helpers;
 using starskycore.Models;
+using starskycore.Services;
 
 namespace starskywebftpcli.Services
 {
@@ -57,13 +58,18 @@ namespace starskywebftpcli.Services
 			
 			
 			// copy content of dir
+			var copyThisFiles = new List<string>();
 			foreach ( var publishProfile in _appSettings.PublishProfiles )
 			{
-				if ( publishProfile.ContentType == TemplateContentType.Jpeg )
-				{
-					Files.GetFilesInDirectory("");
+				if ( publishProfile.ContentType == TemplateContentType.Jpeg  && publishProfile.Copy)
+				{					
+
+					var folderPath = Path.Combine(_appSettings.StorageFolder,publishProfile.Folder);
+					copyThisFiles.AddRange(Files.GetFilesInDirectory(folderPath));
 				}
 			}
+
+			var subPathCopyThisFiles = _appSettings.RenameListItemsToDbStyle(copyThisFiles);
 
 			
 			return true;

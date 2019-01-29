@@ -216,5 +216,20 @@ namespace starskytests.Models
 			appSettings.WebFtp = "ftp://test:test@google.com";
 			Assert.AreEqual("ftp://test:test@google.com",appSettings.WebFtp);
 		}
+		
+		[TestMethod]
+		public void SyncServiceRenameListItemsToDbStyleTest()
+		{
+			var appSettings = new AppSettings();
+
+			var newImage = new CreateAnImage();
+			_appSettings.StorageFolder = newImage.BasePath; // needs to have an / or \ at the end
+			var inputList = new List<string>{ Path.DirectorySeparatorChar.ToString() };
+			var expectedOutputList = new List<string>{ "/"};
+			var output = appSettings.RenameListItemsToDbStyle(inputList);
+			// list of files names that are starting with a filename (and not an / or \ )
+
+			CollectionAssert.AreEqual(expectedOutputList,output);
+		}
 	}
 }
