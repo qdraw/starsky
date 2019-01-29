@@ -30,15 +30,15 @@ namespace starskywebftpcli.Services
 
 		public bool Run()
 		{
-			var relativePath = new Uri (_appSettings.WebFtp).LocalPath;
 			var pushDirectory = _webFtpNoLogin + "/" + _appSettings.GenerateSlug(_appSettings.Name,true);
 
 			var createThisDirectories = new List<string>
 			{
-				relativePath,
-				pushDirectory
+				_webFtpNoLogin, // <= the base dir
+				pushDirectory // <= current log item
 			};
 
+			// make the 1000 and 500 dirs on ftp
 			foreach ( var publishProfile in _appSettings.PublishProfiles )
 			{
 				if ( publishProfile.ContentType == TemplateContentType.Jpeg )
