@@ -100,9 +100,10 @@ namespace starsky.Controllers
 
 	    
 	    /// <summary>
-	    /// Experimental feature to add thumbnails to ThumbnailTempFolder
+	    /// Upload thumbnail to ThumbnailTempFolder
+	    /// Make sure that the filename is correct, a base32 hash of length 26;
 	    /// </summary>
-	    /// <returns></returns>
+	    /// <returns>json of thumbnail urls</returns>
 	    [HttpPost]
 	    [ActionName("Thumbnail")]
 	    [DisableFormValueModelBinding]
@@ -135,6 +136,13 @@ namespace starsky.Controllers
 	    }
 
 
+	    /// <summary>
+	    /// Import file from weburl (only whitelisted domains) and import this file into the application
+	    /// </summary>
+	    /// <param name="fileurl">the url</param>
+	    /// <param name="filename">the filename (optional, random used if empty)</param>
+	    /// <param name="structure">use structure (optional)</param>
+	    /// <returns></returns>
 	    [HttpPost("/import/fromUrl")]
         public async Task<IActionResult> FromUrl(string fileurl, string filename, string structure)
         {

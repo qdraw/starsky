@@ -142,6 +142,12 @@ namespace starsky
 	        if ( !string.IsNullOrWhiteSpace(appInsightsKey) ) services.AddApplicationInsightsTelemetry();
 	        services.AddScoped<ApplicationInsightsJsHelper>();
 
+	        // For the import service
+	        services.AddSingleton<IHttpProvider,HttpProvider>();
+	        services.AddSingleton<HttpClientHelper>();
+	        services.AddSingleton<System.Net.Http.HttpClient>();
+
+
         }
 
 	    private class BasicAuthFilter : IDocumentFilter
