@@ -172,7 +172,7 @@ namespace starsky
 	        app.UseForwardedHeaders();
 	        
             // Use the name of the application to use behind a reverse proxy
-            app.UsePathBase(ConfigRead.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
+            app.UsePathBase(PathHelper.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
             
             if (env.IsDevelopment())
             {

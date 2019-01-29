@@ -27,16 +27,16 @@ namespace starskycore.Helpers
 		/// <param name="addDirectoryIfNotExist">true = create an directory if an parent directory is missing</param>
 		public List<FileIndexItem> Rename(string f, string to, bool collections = true)
 		{
-			var inputFileSubPaths = ConfigRead.SplitInputFilePaths(f);
-			var toFileSubPaths = ConfigRead.SplitInputFilePaths(to);
+			var inputFileSubPaths = PathHelper.SplitInputFilePaths(f);
+			var toFileSubPaths = PathHelper.SplitInputFilePaths(to);
 			
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
 			
 			for (var i = 0; i < inputFileSubPaths.Length; i++)
 			{
-				inputFileSubPaths[i] = ConfigRead.RemoveLatestSlash(inputFileSubPaths[i]);
-				inputFileSubPaths[i] = ConfigRead.PrefixDbSlash(inputFileSubPaths[i]);
+				inputFileSubPaths[i] = PathHelper.RemoveLatestSlash(inputFileSubPaths[i]);
+				inputFileSubPaths[i] = PathHelper.PrefixDbSlash(inputFileSubPaths[i]);
 
 				var detailView = _query.SingleItem(inputFileSubPaths[i], null, collections, false);
 				if (detailView == null) inputFileSubPaths[i] = null;
@@ -45,8 +45,8 @@ namespace starskycore.Helpers
 			// To check if the file has a unique name (in database)
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{
-				toFileSubPaths[i] = ConfigRead.RemoveLatestSlash(toFileSubPaths[i]);
-				toFileSubPaths[i] = ConfigRead.PrefixDbSlash(toFileSubPaths[i]);
+				toFileSubPaths[i] = PathHelper.RemoveLatestSlash(toFileSubPaths[i]);
+				toFileSubPaths[i] = PathHelper.PrefixDbSlash(toFileSubPaths[i]);
 
 				var detailView = _query.SingleItem(toFileSubPaths[i], null, collections, false);
 				if (detailView != null) toFileSubPaths[i] = null;

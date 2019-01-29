@@ -34,14 +34,14 @@ namespace starsky.Controllers
         [ActionName("Index")]
         public IActionResult SyncIndex(string f)
         {
-            var inputFilePaths = ConfigRead.SplitInputFilePaths(f).ToList();
+            var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
             // the result list
             var syncResultsList = new List<SyncViewModel>();
 
             for (int i = 0; i < inputFilePaths.Count; i++)
             {
                 var subPath = inputFilePaths[i];
-	            subPath = ConfigRead.RemoveLatestSlash(subPath);
+	            subPath = PathHelper.RemoveLatestSlash(subPath);
 	            if ( subPath == string.Empty ) subPath = "/";
 
 	            var folderStatus = Files.IsFolderOrFile(_appSettings.DatabasePathToFilePath(subPath));

@@ -1,3 +1,4 @@
+using starskycore.Helpers;
 using starskycore.Services;
 
 namespace starskycore.Models
@@ -48,10 +49,10 @@ namespace starskycore.Models
 				// Append slash after
 				if ( string.IsNullOrEmpty(value) )
 				{
-					_folder = ConfigRead.AddSlash(string.Empty);
+					_folder = PathHelper.AddSlash(string.Empty);
 					return;
 				}
-	            _folder = ConfigRead.AddSlash(value);
+	            _folder = PathHelper.AddSlash(value);
 
 			}
 		}

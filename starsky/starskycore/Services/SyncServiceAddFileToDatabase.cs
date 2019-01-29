@@ -9,17 +9,17 @@ namespace starskycore.Services
 {
     public partial class SyncService
     {
-        // Add new photo to database 
-        //  (if photo does not exist)
+        // Add new file to database 
+        //  (if file does not exist)
 
-        public void AddPhotoToDatabase(
+        public void AddFileToDatabase(
             List<string> localSubFolderDbStyle,
             List<FileIndexItem> databaseFileList
         )
         {
             foreach (var singleFolderDbStyle in localSubFolderDbStyle)
             {
-                // Check if Photo is in database
+                // Check if file is in database
                 var dbFolderMatchFirst = databaseFileList.FirstOrDefault(
                     p =>
                         !p.IsDirectory &&
@@ -30,7 +30,7 @@ namespace starskycore.Services
                 {
                     // photo
                     Console.Write(".");
-                    if(_appSettings.Verbose) Console.WriteLine("\nAddPhotoToDatabase: " + singleFolderDbStyle);
+                    if(_appSettings.Verbose) Console.WriteLine("\nAddFileToDatabase: " + singleFolderDbStyle);
 
                     var singleFilePath = _appSettings.DatabasePathToFilePath(singleFolderDbStyle);
 
@@ -51,7 +51,7 @@ namespace starskycore.Services
                     databaseFileList.Add(databaseItem);
                 }
 
-                // end photo
+                // end new file
             }
         }
         

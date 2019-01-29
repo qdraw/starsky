@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace starskycore.Services
+namespace starskycore.Helpers
 {
-    public static class ConfigRead
+    public static class PathHelper
     {
 
 		/// <summary>

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using starsky.ViewModels;
+using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.ViewModels;
 
@@ -63,7 +64,7 @@ namespace starskycore.Services
 
             // RemoveLatestSlash is for '/' folder
             var fileName = singleItemDbPath.Replace(
-                ConfigRead.RemoveLatestSlash(parentFolder) + "/", string.Empty);
+                PathHelper.RemoveLatestSlash(parentFolder) + "/", string.Empty);
 
             var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
             if (currentFileIndexItem == null) return null;

@@ -43,7 +43,7 @@ namespace starskycore.Services
         public IEnumerable<string> SyncFiles(string subPath, bool recursive = true)
         {
             // Prefix / for database
-            subPath = ConfigRead.PrefixDbSlash(subPath);
+            subPath = PathHelper.PrefixDbSlash(subPath);
             
             // Handle single files
             if (Deleted(subPath)) return null;
@@ -97,7 +97,7 @@ namespace starskycore.Services
 				databaseFileList = RemoveDuplicate(databaseFileList);
 				databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);
 				CheckMd5Hash(localFarrayFilesDbStyle, databaseFileList);
-				AddPhotoToDatabase(localFarrayFilesDbStyle, databaseFileList);
+				AddFileToDatabase(localFarrayFilesDbStyle, databaseFileList);
 				Console.WriteLine("-");
 			}
 	        

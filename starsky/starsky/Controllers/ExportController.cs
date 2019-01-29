@@ -43,7 +43,7 @@ namespace starsky.Controllers
 		[HttpPost("/export/createZip")]
 		public async Task<IActionResult> CreateZip(string f, bool collections = true, bool thumbnail = false)
 		{
-			var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
+			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
 

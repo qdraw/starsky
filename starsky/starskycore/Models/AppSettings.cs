@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using starskycore.Helpers;
 using starskycore.Services;
 using TimeZoneConverter;
 
@@ -58,7 +59,7 @@ namespace starskycore.Models
             get { return _storageFolder; }
             set
             {
-                _storageFolder = ConfigRead.AddBackslash(value);
+                _storageFolder = PathHelper.AddBackslash(value);
             }
         }
 
@@ -85,7 +86,7 @@ namespace starskycore.Models
         public string GetWebSafeReplacedName(string input)
         {
             // Included slash dd the end of this file
-            return ConfigRead.AddSlash(input.Replace("{name}", GenerateSlug(Name,true)));
+            return PathHelper.AddSlash(input.Replace("{name}", GenerateSlug(Name,true)));
         }
         
         /// <summary>
@@ -165,8 +166,8 @@ namespace starskycore.Models
             set // using Json importer
             {
                 if (string.IsNullOrEmpty(value) || value == "/") return;
-                var structure = ConfigRead.PrefixDbSlash(value);
-                _structure = ConfigRead.RemoveLatestBackslash(structure);
+                var structure = PathHelper.PrefixDbSlash(value);
+                _structure = PathHelper.RemoveLatestBackslash(structure);
                 // Struture regex check
                 StructureCheck(_structure);
             }
@@ -225,14 +226,14 @@ namespace starskycore.Models
         public string ThumbnailTempFolder
         {
             get => _thumbnailTempFolder;
-	        set => _thumbnailTempFolder = ConfigRead.AddBackslash(value);
+	        set => _thumbnailTempFolder = PathHelper.AddBackslash(value);
         }
         
         private string _tempFolder;
         public string TempFolder
         {
             get => _tempFolder;
-	        set => _tempFolder = ConfigRead.AddBackslash(value);
+	        set => _tempFolder = PathHelper.AddBackslash(value);
         }
 
 
@@ -315,7 +316,7 @@ namespace starskycore.Models
 			var databaseFilePath = subpath.Replace(StorageFolder, string.Empty);
 			databaseFilePath = _pathToDatabaseStyle(databaseFilePath);
 			
-			return ConfigRead.PrefixDbSlash(databaseFilePath);
+			return PathHelper.PrefixDbSlash(databaseFilePath);
 		}
         
         // Replace windows \\ > /
