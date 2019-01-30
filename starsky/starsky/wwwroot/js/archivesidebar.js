@@ -870,13 +870,13 @@ function exportZip(isThumbnail) {
 
     console.log(subPath);
     showPreloader();
-    console.log(exportZipApiBase);
 
     var toupdateFiles = toSubpath();
    
     loadJSON(exportZipApiBase,
         function (data) {
-            var exportZipUrl = "/export/zip/" + data +".zip?json=true";
+        
+            var exportZipUrl = exportZipApiBase.replace("createZip","zip/") + data +".zip?json=true";
             var filename = data + ".zip";
 
 
