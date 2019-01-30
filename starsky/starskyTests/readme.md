@@ -52,17 +52,20 @@ To measure how much code is tested by this automatically script we have included
 +-------------------+--------+--------+--------+
 | Module            | Line   | Branch | Method |
 +-------------------+--------+--------+--------+
-| starsky           | 82,4%  | 80%    | 91%    |
+| starsky           | 64,5%  | 61,5%  | 68,7%  |
 +-------------------+--------+--------+--------+
 | starsky.Views     | 0%     | 0%     | 0%     |
 +-------------------+--------+--------+--------+
-| starskygeocli     | 74,1%  | 61,4%  | 90,9%  |
+| starskycore       | 92,8%  | 85,6%  | 96,1%  |
 +-------------------+--------+--------+--------+
-| starskysynccli    | 52%    | 50%    | 100%   |
+| starskygeocli     | 71,6%  | 59,7%  | 90,9%  |
 +-------------------+--------+--------+--------+
-| starskywebhtmlcli | 74%    | 74,1%  | 100%   |
+| starskysynccli    | 49,1%  | 50%    | 100%   |
 +-------------------+--------+--------+--------+
-Total Line: 76,5%
-Total Branch: 57,2%
-Total Method: 86,6%
+| starskywebhtmlcli | 73,6%  | 74,1%  | 100%   |
++-------------------+--------+--------+--------+
+
+Total Line: 81,9%
+Total Branch: 60,5%
+Total Method: 89,1%
 ```
