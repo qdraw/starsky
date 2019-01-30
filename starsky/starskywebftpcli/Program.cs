@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskywebftpcli.Services;
@@ -50,13 +51,14 @@ namespace starskywebftpcli
 			}
 
 			var ftpService = new FtpService(appSettings).Run();
-			
+			if ( !ftpService ) return;
+			var prepend = appSettings.GetWebSafeReplacedName(
+				appSettings.PublishProfiles
+					.FirstOrDefault(p => !string.IsNullOrEmpty(p.Prepend))
+					?.Prepend
+			);
+			Console.WriteLine(prepend);
 
-
-
-			
-			
-			Console.WriteLine("Hello World!");
 		}
 	}
 }
