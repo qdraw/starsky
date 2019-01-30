@@ -1,22 +1,32 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Web;
 using starskycore.Helpers;
 using starskycore.Models;
-using starskycore.Services;
 
 namespace starskywebftpcli.Services
 {
 	public class FtpService
 	{
 		private readonly AppSettings _appSettings;
+		
+		/// <summary>
+		/// [0] is username, [1] password
+		/// </summary>
 		private readonly string[] _appSettingsCredentials;
 
+		/// <summary>
+		/// eg ftp://service.nl/drop/
+		/// </summary>
 		private readonly string _webFtpNoLogin;
 
+		/// <summary>
+		/// Use ftp://username:password@ftp.service.tld/pushfolder to extract credentials
+		/// Encode content using html for @ use %40 for example
+		/// </summary>
+		/// <param name="appSettings">the location of the settings</param>
 		public FtpService(AppSettings appSettings)
 		{
 			_appSettings = appSettings;
@@ -31,6 +41,10 @@ namespace starskywebftpcli.Services
 			_appSettingsCredentials[1] = HttpUtility.UrlDecode(_appSettingsCredentials[1]);
 		}
 
+		/// <summary>
+		/// Makes a list of containing: the root folder, subfolders to create on the ftp service
+		/// </summary>
+		/// <returns></returns>
 		private IEnumerable<string> CreateListOfRemoteDirectories()
 		{
 			var pushDirectory = _webFtpNoLogin + "/" + _appSettings.GenerateSlug(_appSettings.Name,true);
@@ -53,33 +67,47 @@ namespace starskywebftpcli.Services
 			return createThisDirectories;
 		}
 
+		/// <summary>
+		/// Makes a list of 'full file paths' of files on disk to copy
+		/// </summary>
+		/// <returns></returns>
 		private List<string> CreateListOfRemoteFiles()
 		{
 			// copy content of dir
 			var copyThisFiles = new List<string>();
 			foreach ( var publishProfile in _appSettings.PublishProfiles )
 			{
-				if ( publishProfile.ContentType == TemplateContentType.Jpeg  && publishProfile.Copy)
-				{					
-					var folderPath = Path.Combine(_appSettings.StorageFolder,publishProfile.Folder);
-					copyThisFiles.AddRange(Files.GetFilesInDirectory(folderPath));
-				}
-
-				if ( publishProfile.ContentType == TemplateContentType.Html  && publishProfile.Copy)
+				switch ( publishProfile.ContentType )
 				{
-					copyThisFiles.Add(Path.Combine(_appSettings.StorageFolder,publishProfile.Path));
+					case TemplateContentType.Jpeg when publishProfile.Copy:
+					{
+						var folderPath = Path.Combine(_appSettings.StorageFolder,publishProfile.Folder);
+						copyThisFiles.AddRange(Files.GetFilesInDirectory(folderPath));
+						break;
+					}
+					case TemplateContentType.Html when publishProfile.Copy:
+						copyThisFiles.Add(Path.Combine(_appSettings.StorageFolder,publishProfile.Path));
+						break;
+					case TemplateContentType.None:
+						break;
+					case TemplateContentType.MoveSourceFiles:
+						break;
 				}
 			}
 
 			return copyThisFiles;
 		}
 
+		/// <summary>
+		/// Copy all content to the ftp disk
+		/// </summary>
+		/// <returns>true == success</returns>
 		public bool Run()
 		{
 			
 			foreach ( var thisDirectory in CreateListOfRemoteDirectories() )
 			{
-				Console.Write("");
+				Console.Write(",");
 				if ( CreateFtpDirectory(thisDirectory) ) continue;
 				Console.WriteLine($"Fail > create directory => {_webFtpNoLogin}");
 				return false;
@@ -103,11 +131,15 @@ namespace starskywebftpcli.Services
 			Console.Write("\n");
 			return true;
 		}
-		
-		
-		
-		
-		public bool Upload(string fullFilePath, string toFtpPath)
+
+
+		/// <summary>
+		/// Upload a single file to the ftp service
+		/// </summary>
+		/// <param name="fullFilePath">on disk</param>
+		/// <param name="toFtpPath">ftp path eg ftp://service.nl/drop/test//index.html</param>
+		/// <returns></returns>
+		private bool Upload(string fullFilePath, string toFtpPath)
 		{
 						     
 			FtpWebRequest request =
@@ -124,7 +156,13 @@ namespace starskywebftpcli.Services
 			return true;
 		}
 		
-		private bool CreateFtpDirectory(string directory) {
+		/// <summary>
+		/// Create a directory on the ftp service
+		/// </summary>
+		/// <param name="directory">ftp path with directory name eg ftp://service.nl/drop</param>
+		/// <returns></returns>
+		private bool CreateFtpDirectory(string directory) 
+		{
 
 			try
 			{
