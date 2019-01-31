@@ -33,7 +33,7 @@ namespace starskycore.Services
             }
             catch (XmlException e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine($"XmlException\n{e}\nXmlException");
                 return new FileIndexItem
                 {
                     Tags = "SystemXmlXmlException",
@@ -72,8 +72,21 @@ namespace starskycore.Services
         {
             if (geoList == null) geoList = new List<GeoListItem>();
 
-            
-            XmlDocument gpxDoc = new XmlDocument();
+	        try
+	        {
+		        return ParseGpxFile(fullFilePath, geoList, returnAfter);
+	        }
+	        catch ( XmlException e )
+	        {
+		        Console.WriteLine($"XmlException\n{e}\nXmlException");
+		        return geoList;
+	        }
+
+        }
+
+	    private List<GeoListItem> ParseGpxFile(string fullFilePath, List<GeoListItem> geoList = null, int returnAfter = int.MaxValue)
+	    {
+		    XmlDocument gpxDoc = new XmlDocument();
             
             // Some files are having problems with gpxDoc.Load()
             var fileString = new PlainTextFileHelper().ReadFile(fullFilePath);
@@ -136,6 +149,6 @@ namespace starskycore.Services
                 
             }
             return geoList;
-        }
+	    }
     }
 }
