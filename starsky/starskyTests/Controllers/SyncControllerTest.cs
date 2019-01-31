@@ -104,7 +104,7 @@ namespace starskytests.Controllers
 		{
 
 			var fileHashCode = FileHash.GetHashCode(_createAnImage.FullFilePath);
-			if ( string.IsNullOrEmpty(_query.GetItemByHash(fileHashCode)) )
+			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)) )
 			{
 				_query.AddItem(new FileIndexItem
 				{
