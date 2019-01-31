@@ -40,7 +40,7 @@ namespace starskytests.Services
 
         private void InsertSearchData()
         {
-            if (string.IsNullOrEmpty(_query.GetItemByHash("09876543456789")))
+            if (string.IsNullOrEmpty(_query.GetSubPathByHash("09876543456789")))
             {
                 _insertSearchDatahiJpgInput = _query.AddItem(new FileIndexItem
                 {
@@ -168,9 +168,9 @@ namespace starskytests.Services
         public void QueryAddSingleItemGetItemByHashTest()
         {
             InsertSearchData();
-            // GetItemByHash
+            // GetSubPathByHash
             // See above for objects
-            Assert.AreEqual(_query.GetItemByHash("09876543456789"), "/basic/hi.jpg");
+            Assert.AreEqual(_query.GetSubPathByHash("09876543456789"), "/basic/hi.jpg");
         }
 
         [TestMethod]

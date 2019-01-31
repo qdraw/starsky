@@ -69,7 +69,7 @@ namespace starsky.Controllers
 				statusModel.IsDirectory = false;
 
 				if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
-				
+
 				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
 
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
@@ -85,34 +85,23 @@ namespace starsky.Controllers
 			var zipHash = isThumbnail + GetName(fileIndexResultsList);
 			
 			// When all items are not found
-			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+			// allow read only
+			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok) )
 				return NotFound(fileIndexResultsList);
 			
 			// Creating a zip is a background task
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				
-				var filePaths = new List<string>();
-				var fileNames = new List<string>();
 
-				foreach ( var item in fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList() )
-				{
-					var sourceFile = _appSettings.DatabasePathToFilePath(item.FilePath);
-					var sourceThumb = Path.Join(_appSettings.ThumbnailTempFolder,
-						item.FileHash + ".jpg");
-					
-					if ( thumbnail )
-						new Thumbnail(_appSettings,_exiftool).CreateThumb(item);
-					
-					filePaths.Add(thumbnail ? sourceThumb : sourceFile ); // has:notHas
-					fileNames.Add(item.FileName);
-				}
+				var filePaths = CreateListToExport(fileIndexResultsList, thumbnail);
+				var fileNames = FilePathToFileName(filePaths, thumbnail);
 
 				CreateZip(filePaths,fileNames,zipHash);
 				
 				// Write a single file to be sure that writing is ready
 				var doneFileFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".done";
 				new PlainTextFileHelper().WriteFile(doneFileFullPath,"OK");
+
 				Console.WriteLine("<<<<<<<");
 
 			});
@@ -120,6 +109,42 @@ namespace starsky.Controllers
 			// for the rest api
 			return Json(zipHash);
 		}
+
+		public List<string> CreateListToExport(List<FileIndexItem> fileIndexResultsList, bool thumbnail)
+		{
+			var filePaths = new List<string>();
+
+			foreach ( var item in fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList() )
+			{
+				var sourceFile = _appSettings.DatabasePathToFilePath(item.FilePath);
+				var sourceThumb = Path.Join(_appSettings.ThumbnailTempFolder,
+					item.FileHash + ".jpg");
+
+				if ( thumbnail )
+					new Thumbnail(_appSettings, _exiftool).CreateThumb(item);
+
+				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
+
+			}
+
+			return filePaths;
+		}
+
+		public List<string> FilePathToFileName(List<string> filePaths, bool thumbnail)
+		{
+			var fileNames = new List<string>();
+			foreach ( var filePath in filePaths )
+			{
+				if ( thumbnail )
+				{
+					var subPath = _query.GetSubPathByHash(Path.GetFileNameWithoutExtension(filePath));
+					continue;
+				}
+				fileNames.Add(Path.GetFileName(filePath));
+			}
+			return fileNames;
+		}
+
 
 		[HttpGet("/export/zip/{f}.zip")]
 		public async Task<IActionResult> Zip(string f, bool json = false)

@@ -38,7 +38,7 @@ namespace starskytests.Services
 
         public void InsertSearchData()
         {
-            if (string.IsNullOrEmpty(_query.GetItemByHash("schipholairplane")))
+            if (string.IsNullOrEmpty(_query.GetSubPathByHash("schipholairplane")))
             {
                 _query.AddItem(new FileIndexItem
                 {
@@ -52,7 +52,7 @@ namespace starskytests.Services
                 });
             }
 
-            if (string.IsNullOrEmpty(_query.GetItemByHash("lelystadcentrum")))
+            if (string.IsNullOrEmpty(_query.GetSubPathByHash("lelystadcentrum")))
             {
                 _query.AddItem(new FileIndexItem
                 {
@@ -65,7 +65,7 @@ namespace starskytests.Services
                 });
             }
             
-            if (string.IsNullOrEmpty(_query.GetItemByHash("lelystadcentrum2")))
+            if (string.IsNullOrEmpty(_query.GetSubPathByHash("lelystadcentrum2")))
             {
                 _query.AddItem(new FileIndexItem
                 {
@@ -78,7 +78,7 @@ namespace starskytests.Services
                 });
             }
             
-            if (string.IsNullOrEmpty(_query.GetItemByHash("stationdeletedfile")))
+            if (string.IsNullOrEmpty(_query.GetSubPathByHash("stationdeletedfile")))
             {
 	            // add directory to search for
 	            _query.AddItem(new FileIndexItem
@@ -99,7 +99,7 @@ namespace starskytests.Services
             }
             
 
-            if (string.IsNullOrEmpty(_query.GetItemByHash("cityloop9")))
+            if (string.IsNullOrEmpty(_query.GetSubPathByHash("cityloop9")))
             {
                 for (var i = 0; i < 61; i++)
                 {

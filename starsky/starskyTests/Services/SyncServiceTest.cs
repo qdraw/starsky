@@ -384,12 +384,12 @@ namespace starskytests.Services
             _query.AddItem(testjpg);
 
             // this query is before syncing the api
-            var inputWithoutSync = _query.GetAllFiles();
+            var inputWithoutSync = _query.GetAllFiles("/");
             Assert.AreEqual(2,inputWithoutSync.Count(p => p.FilePath == createAnImage.DbPath));
 
             // do a sync
             _syncservice.SyncFiles("/");
-            var outputWithSync = _query.GetAllFiles();
+            var outputWithSync = _query.GetAllFiles("/");
 
             // test if the sync is working
             Assert.AreEqual(1,outputWithSync.Count(p => p.FilePath == createAnImage.DbPath));

@@ -46,7 +46,7 @@ namespace starskytests.Controllers
 			var memoryCache = provider.GetService<IMemoryCache>();
 
 			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builderDb.UseInMemoryDatabase("test1234");
+			builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
 			var options = builderDb.Options;
 			_context = new ApplicationDbContext(options);
 			_query = new Query(_context, memoryCache);
@@ -99,7 +99,7 @@ namespace starskytests.Controllers
 		{
 
 			var fileHashCode = FileHash.GetHashCode(_createAnImage.FullFilePath);
-			if ( string.IsNullOrEmpty(_query.GetItemByHash(fileHashCode)) )
+			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)) )
 			{
 				var isDelete = string.Empty;
 				if ( delete ) isDelete = "!delete!";
@@ -176,7 +176,41 @@ namespace starskytests.Controllers
 			// Don't check if file exist due async
 			await service.StopAsync(CancellationToken.None);
 		}
-		
+
+
+		[TestMethod]
+		public async Task ExportController_TestExportRaws()
+		{
+
+			IServiceCollection services = new ServiceCollection();
+			services.AddHostedService<BackgroundQueuedHostedService>();
+			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			var serviceProvider = services.BuildServiceProvider();
+			var backgroundQueue = serviceProvider.GetService<IBackgroundTaskQueue>();
+
+
+			var controller = new ExportController(_query, _exiftool, _appSettings, backgroundQueue);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			var createAnImageNoExif = new CreateAnImageNoExif();
+			new PlainTextFileHelper().WriteFile(createAnImageNoExif.FullFilePathWithDate.Replace(".jpg",".xmp"),"test");
+
+			_query.AddItem(new FileIndexItem
+			{
+				FileName = createAnImageNoExif.FileName,
+				ParentDirectory = "/",
+				ImageFormat = Files.ImageFormat.tiff //<== not true but for test
+			});
+
+			var all = _query.GetAllFiles("/");
+
+			var t = await controller.CreateZip($"/{createAnImageNoExif.FileName}", true, false) as JsonResult;
+
+			// todo: cleanup files
+
+		}
+
+
 
 		[TestMethod]
 		public async Task ExportController_ZipNotFound()

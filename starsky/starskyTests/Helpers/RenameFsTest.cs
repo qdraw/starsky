@@ -44,7 +44,7 @@ namespace starskytests.Helpers
 			};
 			_query = new Query(context,memoryCache, _appSettings);
 
-			if ( _query.GetAllFiles().All(p => p.FileName != _newImage.FileName) )
+			if ( _query.GetAllFiles("/").All(p => p.FileName != _newImage.FileName) )
 			{
 				_query.AddItem(new FileIndexItem
 				{
