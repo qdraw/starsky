@@ -94,6 +94,7 @@ namespace starsky.Controllers
 			{
 
 				var filePaths = CreateListToExport(fileIndexResultsList, thumbnail);
+				//filePaths = AddXmpFilesToList(filePaths, thumbnail, collections);
 				var fileNames = FilePathToFileName(filePaths, thumbnail);
 
 				CreateZip(filePaths,fileNames,zipHash);
@@ -110,6 +111,39 @@ namespace starsky.Controllers
 			return Json(zipHash);
 		}
 
+
+//		/// <summary>
+//		/// Add xmp files to export; if collections > add to list,
+//		/// ignore if thumbnail
+//		/// There is a new list created
+//		/// </summary>
+//		/// <param name="fileIndexResultsList"></param>
+//		/// <param name="thumbnail"></param>
+//		/// <param name="collections"></param>
+//		/// <returns></returns>
+//		public List<string> AddXmpFilesToList(
+//			List<string> fileIndexList, 
+//			bool thumbnail, bool collections )
+//		{
+//			if ( thumbnail ) return fileIndexList;
+//			if ( !collections ) return fileIndexList;
+//
+//			// There is a new list created
+//			var fileIndexResultsList = new List<string>();
+//			fileIndexResultsList.AddRange(fileIndexList);
+//			
+//			foreach ( var filePath in fileIndexList )
+//			{
+//				var fullFilePath = filePath.Replace(Path.GetExtension(filePath), ".xmp");
+//				if ( Files.ExistFile(fullFilePath) )
+//				{
+//					fileIndexResultsList.Add(fullFilePath);
+//				}
+//			}
+//
+//			return fileIndexResultsList;
+//		}
+
 		public List<string> CreateListToExport(List<FileIndexItem> fileIndexResultsList, bool thumbnail)
 		{
 			var filePaths = new List<string>();
@@ -124,6 +158,17 @@ namespace starsky.Controllers
 					new Thumbnail(_appSettings, _exiftool).CreateThumb(item);
 
 				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
+
+//				if ( item.ImageFormat ==  )
+//				{
+//					
+//				}
+//				var fullFilePath = filePath.Replace(Path.GetExtension(filePath), ".xmp");
+//				if ( Files.ExistFile(fullFilePath) )
+//				{
+//					fileIndexResultsList.Add(fullFilePath);
+//				}
+				
 
 			}
 

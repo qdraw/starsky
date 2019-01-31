@@ -209,6 +209,7 @@ namespace starskytests.Controllers
 //			// todo: cleanup files
 //
 //		}
+		
 
 		[TestMethod]
 		public void ExportControllerTest__ThumbTrue_CreateListToExport()
@@ -299,6 +300,25 @@ namespace starskytests.Controllers
 			// as file.jpg or the nice orginal name
 			
 		}
+
+//		[TestMethod]
+//		public void ExportControllerTest__AddXmpFilesToList()
+//		{
+//			var createAnImage = new CreateAnImage();
+//			var xmpFilePath = createAnImage.FullFilePath.Replace(".jpg", ".xmp");
+//			new PlainTextFileHelper().WriteFile(xmpFilePath,"test");
+//			
+//			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+//
+//			var list = new List<string>{createAnImage.FullFilePath};
+//			list = controller.AddXmpFilesToList(list, false, true);
+//
+//			Assert.AreEqual(2,list.Count);
+//			Assert.AreEqual(true,list[1].Contains(".xmp"));
+//			//Files.DeleteFile(xmpFilePath);
+//
+//		}
+
 
 		[TestMethod]
 		public async Task ExportController_ZipNotFound()

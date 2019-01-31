@@ -76,6 +76,8 @@ namespace starskytests.Services
         {
             var createAnImage = new CreateAnImage();
             var xmpPath = createAnImage.FullFilePath.Replace("jpg", "xmp");
+	        Files.DeleteFile(xmpPath);
+
             var fakeRawPath = createAnImage.FullFilePath.Replace("jpg", "dng");
             new PlainTextFileHelper().WriteFile(xmpPath,Input);
             
