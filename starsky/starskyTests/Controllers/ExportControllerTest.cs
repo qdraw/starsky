@@ -210,6 +210,82 @@ namespace starskytests.Controllers
 
 		}
 
+		[TestMethod]
+		public void ExportControllerTest__ThumbTrue_CreateListToExport()
+		{
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+
+			var item = new FileIndexItem
+			{
+				FileName = "testFile.jpg",
+				ParentDirectory = "/",
+				FileHash = "FileHash",
+				Status = FileIndexItem.ExifStatus.Ok
+			};
+
+			_query.AddItem(item);
+
+			var fileIndexResultsList = new List<FileIndexItem> { item };
+
+			var filePaths = controller.CreateListToExport(fileIndexResultsList, true);
+
+			Assert.AreEqual(true,filePaths.FirstOrDefault().Contains(item.FileHash));
+
+		}
+
+		[TestMethod]
+		public void ExportControllerTest__ThumbFalse_CreateListToExport()
+		{
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+
+			var item = new FileIndexItem
+			{
+				FileName = "testFile.jpg",
+				ParentDirectory = "/",
+				FileHash = "FileHash",
+				Status = FileIndexItem.ExifStatus.Ok
+			};
+
+			_query.AddItem(item);
+
+			var fileIndexResultsList = new List<FileIndexItem> { item };
+
+			// change to false
+			var filePaths = controller.CreateListToExport(fileIndexResultsList, false);
+
+			Assert.AreEqual(true, filePaths.FirstOrDefault().Contains(item.FileName));
+
+		}
+
+		//[TestMethod]
+		//public void ExportControllerTest__ThumbFalse_CreateListToExport()
+		//{
+		//	var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+
+		//	var createAnImageNoExif = new CreateAnImageNoExif();
+
+		//	var item = new FileIndexItem
+		//	{
+		//		FileName = createAnImageNoExif.FileName,
+		//		ParentDirectory = "/",
+		//		FileHash = createAnImageNoExif.FileName.Replace(".jpg", "-test"),
+		//		Status = FileIndexItem.ExifStatus.Ok
+		//	};
+
+		//	_query.AddItem(item);
+
+		//	var fileIndexResultsList = new List<FileIndexItem> { item };
+
+		//	var filePaths = controller.CreateListToExport(fileIndexResultsList,false);
+
+		//	Assert.AreEqual(true, filePaths.FirstOrDefault().Contains(item.FileName));
+
+		//	Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,
+		//		Files.IsFolderOrFile(filePaths.FirstOrDefault()));
+
+		//	Files.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
+		//}
+
 
 
 		[TestMethod]
