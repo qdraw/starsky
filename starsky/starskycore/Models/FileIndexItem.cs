@@ -36,11 +36,11 @@ namespace starskycore.Models
 		[Column(Order = 2)]
         public string FilePath
         {
-            get { return ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName); }
+            get { return PathHelper.RemoveLatestSlash(ParentDirectory) + PathHelper.PrefixDbSlash(FileName); }
             set
             {
                 // For legacy reasons
-                FilePathPrivate = ConfigRead.RemoveLatestSlash(ParentDirectory) + ConfigRead.PrefixDbSlash(FileName);
+                FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory) + PathHelper.PrefixDbSlash(FileName);
             } 
         }
 
@@ -51,9 +51,9 @@ namespace starskycore.Models
 		public void SetFilePath(string value)
         {
 	        _parentDirectory = Breadcrumbs.BreadcrumbHelper(value).LastOrDefault();
-			_fileName = value.Replace(ConfigRead.AddSlash(_parentDirectory),string.Empty);
+			_fileName = value.Replace(PathHelper.AddSlash(_parentDirectory),string.Empty);
 			// filenames are without starting slash
-	        _fileName = ConfigRead.RemovePrefixDbSlash(_fileName);
+	        _fileName = PathHelper.RemovePrefixDbSlash(_fileName);
         }
 
         // Do not save null in database for FileName

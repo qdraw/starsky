@@ -3,12 +3,13 @@
  * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
     * [starsky](../../starsky/starsky/readme.md)  _mvc application / web interface_
-    * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard2.0)_
-    * __[starskysynccli](../../starsky/starskysynccli/readme.md)  database command line interface__
-    * [starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
-    * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
-    * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files_
+    * __[starskySyncCli](../../starsky/starskysynccli/readme.md)  database command line interface__
+    * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
+    * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
+    * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
+    * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
+    * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
@@ -57,7 +58,7 @@ When using Windows please escape the backslash, otherwise the application will c
 ```
 Starksy Sync Cli ~ Help:
 --help or -h == help (this window)
---path or -p == parameter: (string) ; fullpath, only child items of the database folder are supported,search and replace first part of the filename, '/' 
+--path or -p == parameter: (string) ; 'full path', only child items of the database folder are supported,search and replace first part of the filename, '/', use '-p' for current directory
 --subpath or -s == parameter: (string) ; relative path in the database
 --subpathrelative or -g == Overwrite subpath to use relative days to select a folder, use for example '1' to select yesterday. (structure is required)
 -p, -s, -g == you need to select one of those tags
@@ -72,5 +73,5 @@ Starksy Sync Cli ~ Help:
 --thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder
 --exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath
 --verbose or -v == verbose, more detailed info
-  use -v -help to show settings: 
+  use -v -help to show settings:
 ```

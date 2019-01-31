@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
@@ -31,7 +32,7 @@ namespace starsky.Controllers
             bool hidedelete = true
             )
         {
-            f = ConfigRead.PrefixDbSlash(f);
+            f = PathHelper.PrefixDbSlash(f);
             
             // Trick for avoiding spaces for behind proxy
             f = f.Replace("$20", " ");

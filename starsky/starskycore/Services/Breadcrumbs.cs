@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using starskycore.Helpers;
 
 namespace starskycore.Services
 {
@@ -14,7 +15,7 @@ namespace starskycore.Services
             if (filePath == null) return new List<string>(); 
 
             // remove backslash from end
-            filePath = ConfigRead.RemoveLatestBackslash(filePath);
+            filePath = PathHelper.RemoveLatestBackslash(filePath);
 
             var breadcrumb = new List<string>();
             if (filePath[0].ToString() != "/")

@@ -1,3 +1,4 @@
+using starskycore.Helpers;
 using starskycore.Services;
 
 namespace starskycore.Models
@@ -48,10 +49,10 @@ namespace starskycore.Models
 				// Append slash after
 				if ( string.IsNullOrEmpty(value) )
 				{
-					_folder = ConfigRead.AddSlash(string.Empty);
+					_folder = PathHelper.AddSlash(string.Empty);
 					return;
 				}
-	            _folder = ConfigRead.AddSlash(value);
+	            _folder = PathHelper.AddSlash(value);
 
 			}
 		}
@@ -60,6 +61,11 @@ namespace starskycore.Models
         public string Template { get; set; } // index.cshtml for example
         public string Prepend { get; set; } = string.Empty;
         public bool MetaData { get; set; } = true;
+
+	    /// <summary>
+	    /// For the ftp client to ignore some directories
+	    /// </summary>
+	    public bool Copy { get; set; } = true;
 
     }
 

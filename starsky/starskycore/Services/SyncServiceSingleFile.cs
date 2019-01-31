@@ -50,7 +50,7 @@ namespace starskycore.Services
                 var localListWithOneFileDbStyle = new List<string> {subPath};
 
                 CheckMd5Hash(localListWithOneFileDbStyle, dbListWithOneFile);
-                AddPhotoToDatabase(localListWithOneFileDbStyle, dbListWithOneFile);
+                AddFileToDatabase(localListWithOneFileDbStyle, dbListWithOneFile);
 
                 // add subpath
                 AddSubPathFolder(subPath);

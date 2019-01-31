@@ -128,7 +128,7 @@ namespace starsky.Controllers
 		[HttpPost("/api/update")]
 		public IActionResult Update(FileIndexItem inputModel, string f, bool append, bool collections = true,  int rotateClock = 0)
 		{
-			var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
+			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
@@ -144,6 +144,9 @@ namespace starsky.Controllers
 				
 				// if one item fails, the status will added
 				if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+
+				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
+				
 				
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
 				var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
@@ -263,7 +266,7 @@ namespace starsky.Controllers
         [HttpGet("/api/info")]
         public IActionResult Info(string f, bool collections = true)
         {
-            var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
+            var inputFilePaths = PathHelper.SplitInputFilePaths(f);
             // the result list
             var fileIndexResultsList = new List<FileIndexItem>();
 
@@ -286,7 +289,9 @@ namespace starsky.Controllers
                 statusModel.IsDirectory = false;
 
                 if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
-                            
+	            
+	            if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
+
                 var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
                 var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
 
@@ -318,7 +323,7 @@ namespace starsky.Controllers
         [Produces("application/json")]
         public IActionResult Delete(string f, bool collections = true)
         {
-            var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
+            var inputFilePaths = PathHelper.SplitInputFilePaths(f);
             // the result list
             var fileIndexResultsList = new List<FileIndexItem>();
 

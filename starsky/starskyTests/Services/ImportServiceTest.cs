@@ -635,7 +635,7 @@ namespace starskytests.Services
 
 		    _import.RemoveItem(_import.GetItemByHash(fileHash));
 
-		    var subpath = ConfigRead.RemovePrefixDbSlash(result.FirstOrDefault());
+		    var subpath = PathHelper.RemovePrefixDbSlash(result.FirstOrDefault());
 
 		    var path = Path.Combine(createAnImage.BasePath, subpath);
 		    Files.DeleteFile(path);

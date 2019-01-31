@@ -101,6 +101,8 @@ namespace starskycore.Services
 		/// <param name="fileHash">base32 filehash</param>
 	    public void ResetItemByHash(string fileHash)
 	    {
+		    if( _cache == null || _appSettings?.AddMemoryCache == false) return;
+		    
 			var queryCacheName = CachingDbName("hashList", fileHash);
 			
 			if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) )

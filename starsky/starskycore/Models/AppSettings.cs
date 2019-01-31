@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using starskycore.Helpers;
 using starskycore.Services;
 using TimeZoneConverter;
 
@@ -34,11 +35,12 @@ namespace starskycore.Models
 	    public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
 		    .Replace("starskysynccli", "starsky")
 		    .Replace("starskyimportercli", "starsky")
+		    .Replace("starskywebftpcli", "starsky")
 		    .Replace("starskywebhtmlcli", "starsky")
 		    .Replace("starskygeocli", "starsky");
-        // When adding or updating please also update SqliteFullPath()
         
         public StarskyAppType ApplicationType { get; set; }
+	    
         [JsonConverter(typeof(StringEnumConverter))]
         public enum StarskyAppType
         {
@@ -46,7 +48,8 @@ namespace starskycore.Models
             Importer = 1,
             Sync = 2,
             WebHtml = 3,
-            Geo = 4
+            Geo = 4,
+	        WebFtp = 5
         }
 
         // Can be used in the cli session to select files out of the file database system
@@ -56,7 +59,7 @@ namespace starskycore.Models
             get { return _storageFolder; }
             set
             {
-                _storageFolder = ConfigRead.AddBackslash(value);
+                _storageFolder = PathHelper.AddBackslash(value);
             }
         }
 
@@ -83,7 +86,7 @@ namespace starskycore.Models
         public string GetWebSafeReplacedName(string input)
         {
             // Included slash dd the end of this file
-            return ConfigRead.AddSlash(input.Replace("{name}", GenerateSlug(Name,true)));
+            return PathHelper.AddSlash(input.Replace("{name}", GenerateSlug(Name,true)));
         }
         
         /// <summary>
@@ -108,16 +111,12 @@ namespace starskycore.Models
         
 
         // Database
-	    private DatabaseTypeList _databaseType = DatabaseTypeList.Sqlite;
-	    
-        [JsonConverter(typeof(StringEnumConverter))]
-        public DatabaseTypeList DatabaseType {
-	        get { return _databaseType; }
-	        set { _databaseType = value; } 
-        }
-	    
-	    
-        public enum DatabaseTypeList
+
+	    [JsonConverter(typeof(StringEnumConverter))]
+        public DatabaseTypeList DatabaseType { get; set; } = DatabaseTypeList.Sqlite;
+
+
+	    public enum DatabaseTypeList
         {
             Mysql = 1,
             Sqlite = 2,
@@ -167,8 +166,8 @@ namespace starskycore.Models
             set // using Json importer
             {
                 if (string.IsNullOrEmpty(value) || value == "/") return;
-                var structure = ConfigRead.PrefixDbSlash(value);
-                _structure = ConfigRead.RemoveLatestBackslash(structure);
+                var structure = PathHelper.PrefixDbSlash(value);
+                _structure = PathHelper.RemoveLatestBackslash(structure);
                 // Struture regex check
                 StructureCheck(_structure);
             }
@@ -227,14 +226,14 @@ namespace starskycore.Models
         public string ThumbnailTempFolder
         {
             get => _thumbnailTempFolder;
-	        set => _thumbnailTempFolder = ConfigRead.AddBackslash(value);
+	        set => _thumbnailTempFolder = PathHelper.AddBackslash(value);
         }
         
         private string _tempFolder;
         public string TempFolder
         {
             get => _tempFolder;
-	        set => _tempFolder = ConfigRead.AddBackslash(value);
+	        set => _tempFolder = PathHelper.AddBackslash(value);
         }
 
 
@@ -266,8 +265,36 @@ namespace starskycore.Models
         // For using <Link> in headers
         public bool AddHttp2Optimizations  { get; set; } = true;
 
-        public List<AppSettingsPublishProfiles> PublishProfiles { get; set; } = new List<AppSettingsPublishProfiles>();
 
+	    private string _webftp; 
+	    public string WebFtp
+	    {
+		    get
+		    {
+			    if ( string.IsNullOrEmpty(_webftp) ) return string.Empty;
+			    return _webftp;
+		    }
+		    set
+		    {
+			    // Anonymous FTP is not supported
+			    // Make sure that '@' in username is '%40'
+			    if ( string.IsNullOrEmpty(value) ) return;
+			    Uri uriAddress = new Uri (value);
+			    if ( uriAddress.UserInfo.Split(":".ToCharArray()).Length == 2 
+			         && uriAddress.Scheme == "ftp" 
+			         && uriAddress.LocalPath.Length >= 1 )
+			    {
+				    _webftp = value;
+			    }
+
+		    }
+	    }
+
+	    public List<AppSettingsPublishProfiles> PublishProfiles { get; set; } = new List<AppSettingsPublishProfiles>();
+
+	    // -------------------------------------------------
+	    // ------------------- Modifiers -------------------
+	    // -------------------------------------------------
 	    
 	    /// <summary>
 	    /// Duplicate this item in memory. AND remove _databaseConnection 
@@ -283,20 +310,32 @@ namespace starskycore.Models
 		    }
 		    return appSettings;
 	    }
-	    
-	    
-        
-        // -------------------------------------------------
-        // ------------------- Modifiers -------------------
-        // -------------------------------------------------
 
 		public string FullPathToDatabaseStyle(string subpath)
 		{
 			var databaseFilePath = subpath.Replace(StorageFolder, string.Empty);
 			databaseFilePath = _pathToDatabaseStyle(databaseFilePath);
 			
-			return ConfigRead.PrefixDbSlash(databaseFilePath);
+			return PathHelper.PrefixDbSlash(databaseFilePath);
 		}
+	    
+	    
+	    /// <summary>
+	    /// Rename a list to database style (short style)
+	    /// </summary>
+	    /// <param name="localSubFolderList"></param>
+	    /// <returns></returns>
+	    public List<string> RenameListItemsToDbStyle(List<string> localSubFolderList)
+	    {
+		    var localSubFolderListDatabaseStyle = new List<string>();
+
+		    foreach (var item in localSubFolderList)
+		    {
+			    localSubFolderListDatabaseStyle.Add(FullPathToDatabaseStyle(item));
+		    }
+
+		    return localSubFolderListDatabaseStyle;
+	    }
         
         // Replace windows \\ > /
         private string _pathToDatabaseStyle(string subPath)

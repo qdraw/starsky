@@ -3,12 +3,13 @@
  * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
     * [starsky](../../starsky/starsky/readme.md)  _mvc application / web interface_
-    * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard2.0)_
-    * [starskysynccli](../../starsky/starskysynccli/readme.md)  _database command line interface_
-    * [starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
-    * __[starskyTests](../../starsky/starskyTests/readme.md)  mstest unit tests__
-    * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to html files_
+    * [starskySyncCli](../../starsky/starskysynccli/readme.md)  _database command line interface_
+    * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
+    * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
+    * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
+    * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
+    * __[starskyTests](../../starsky/starskyTests/readme.md)  mstest unit tests__
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
@@ -51,17 +52,20 @@ To measure how much code is tested by this automatically script we have included
 +-------------------+--------+--------+--------+
 | Module            | Line   | Branch | Method |
 +-------------------+--------+--------+--------+
-| starsky           | 82,4%  | 80%    | 91%    |
+| starsky           | 64,5%  | 61,5%  | 68,7%  |
 +-------------------+--------+--------+--------+
 | starsky.Views     | 0%     | 0%     | 0%     |
 +-------------------+--------+--------+--------+
-| starskygeocli     | 74,1%  | 61,4%  | 90,9%  |
+| starskycore       | 92,8%  | 85,6%  | 96,1%  |
 +-------------------+--------+--------+--------+
-| starskysynccli    | 52%    | 50%    | 100%   |
+| starskygeocli     | 71,6%  | 59,7%  | 90,9%  |
 +-------------------+--------+--------+--------+
-| starskywebhtmlcli | 74%    | 74,1%  | 100%   |
+| starskysynccli    | 49,1%  | 50%    | 100%   |
 +-------------------+--------+--------+--------+
-Total Line: 76,5%
-Total Branch: 57,2%
-Total Method: 86,6%
+| starskywebhtmlcli | 73,6%  | 74,1%  | 100%   |
++-------------------+--------+--------+--------+
+
+Total Line: 81,9%
+Total Branch: 60,5%
+Total Method: 89,1%
 ```

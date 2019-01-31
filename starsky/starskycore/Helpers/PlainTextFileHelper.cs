@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using starskycore.Models;
 
@@ -12,7 +12,7 @@ namespace starskycore.Helpers
 	    /// </summary>
 	    /// <param name="fullFilePaths"></param>
 	    /// <returns></returns>
-	    public string ReadFirstFile(List<string> fullFilePaths)
+	    public virtual string ReadFirstFile(List<string> fullFilePaths)
 	    {
 
 		    foreach ( var singleFilePath in fullFilePaths )
@@ -33,7 +33,7 @@ namespace starskycore.Helpers
         /// </summary>
         /// <param name="fullFilePath">path on filesystem</param>
         /// <returns>content of the file as string</returns>
-        public string ReadFile(string fullFilePath)
+        public virtual string ReadFile(string fullFilePath)
         {
             if (!File.Exists(fullFilePath)) return string.Empty;
             
@@ -45,7 +45,7 @@ namespace starskycore.Helpers
         /// </summary>
         /// <param name="fullFilePath">path on filesystem</param>
         /// <param name="writeString">content of the file</param>
-        public void WriteFile(string fullFilePath, string writeString)
+        public virtual void WriteFile(string fullFilePath, string writeString)
         {
             if (File.Exists(fullFilePath)) return;
             

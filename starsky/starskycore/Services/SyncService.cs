@@ -43,7 +43,7 @@ namespace starskycore.Services
         public IEnumerable<string> SyncFiles(string subPath, bool recursive = true)
         {
             // Prefix / for database
-            subPath = ConfigRead.PrefixDbSlash(subPath);
+            subPath = PathHelper.PrefixDbSlash(subPath);
             
             // Handle single files
             if (Deleted(subPath)) return null;
@@ -60,7 +60,7 @@ namespace starskycore.Services
 
             // Handle folder Get a list of all local folders and rename it to database style.
             // Db Style is a relative path
-            var localSubFolderDbStyle = RenameListItemsToDbStyle(
+            var localSubFolderDbStyle = _appSettings.RenameListItemsToDbStyle(
                 Files.GetAllFilesDirectory(_appSettings.DatabasePathToFilePath(subPath)).ToList()
             );
 
@@ -93,11 +93,11 @@ namespace starskycore.Services
 				var singleFolderFullPath = _appSettings.DatabasePathToFilePath(singleFolder);
 				
 				var localFarrayFilesFullFilePathStyle = Files.GetFilesInDirectory(singleFolderFullPath).ToList();
-				var localFarrayFilesDbStyle = RenameListItemsToDbStyle(localFarrayFilesFullFilePathStyle); 
+				var localFarrayFilesDbStyle = _appSettings.RenameListItemsToDbStyle(localFarrayFilesFullFilePathStyle); 
 				databaseFileList = RemoveDuplicate(databaseFileList);
 				databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);
 				CheckMd5Hash(localFarrayFilesDbStyle, databaseFileList);
-				AddPhotoToDatabase(localFarrayFilesDbStyle, databaseFileList);
+				AddFileToDatabase(localFarrayFilesDbStyle, databaseFileList);
 				Console.WriteLine("-");
 			}
 	        
@@ -110,18 +110,18 @@ namespace starskycore.Services
 	        return null;
         }
 
-        // Rename a list to database style (short style)
-        public List<string> RenameListItemsToDbStyle(List<string> localSubFolderList)
-        {
-            var localSubFolderListDatabaseStyle = new List<string>();
-
-            foreach (var item in localSubFolderList)
-            {
-                localSubFolderListDatabaseStyle.Add(_appSettings.FullPathToDatabaseStyle(item));
-            }
-
-            return localSubFolderListDatabaseStyle;
-        }
+//        // Rename a list to database style (short style)
+//        public List<string> RenameListItemsToDbStyle(List<string> localSubFolderList)
+//        {
+//            var localSubFolderListDatabaseStyle = new List<string>();
+//
+//            foreach (var item in localSubFolderList)
+//            {
+//                localSubFolderListDatabaseStyle.Add(_appSettings.FullPathToDatabaseStyle(item));
+//            }
+//
+//            return localSubFolderListDatabaseStyle;
+//        }
 
     }
 

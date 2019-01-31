@@ -314,7 +314,7 @@ public class UserManager : IUserManager
 	        else
 	        {
 		        validateResult = new ValidateResult(user: this._storage.Users.Find(credential.UserId), success: true);
-		        if(IsCacheEnabled()) _cache.Set("ValidateResult_" + credentialTypeCode, validateResult, new TimeSpan(99,0,0));
+		        if(IsCacheEnabled()) _cache.Set("ValidateResult_" + credential.UserId, validateResult, new TimeSpan(99,0,0));
 	        }
             return validateResult;
         }

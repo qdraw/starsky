@@ -118,7 +118,7 @@ namespace starskytests.Controllers
 		[TestMethod]
 		public async Task ExportController_CreateZipNotFound()
 		{
-			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue, _readmeta);
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = await controller.CreateZip("/fail", true, false) as NotFoundObjectResult;
@@ -141,7 +141,7 @@ namespace starskytests.Controllers
 			// the test
 			var createAnImage = InsertSearchData(true);
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
-			var controller = new ExportController(_query, _exiftool, _appSettings, backgroundQueue, _readmeta);
+			var controller = new ExportController(_query, _exiftool, _appSettings, backgroundQueue);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			// to avoid skip of adding zip
@@ -181,7 +181,7 @@ namespace starskytests.Controllers
 		[TestMethod]
 		public async Task ExportController_ZipNotFound()
 		{
-			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue, _readmeta);
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = await controller.Zip("____fail", true) as NotFoundObjectResult;

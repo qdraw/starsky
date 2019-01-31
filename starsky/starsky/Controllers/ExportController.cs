@@ -22,19 +22,16 @@ namespace starsky.Controllers
 		private readonly IExiftool _exiftool;
 		private readonly AppSettings _appSettings;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
-		private readonly IReadMeta _readMeta;
 
 		public ExportController(
 			IQuery query, IExiftool exiftool, 
-			AppSettings appSettings, IBackgroundTaskQueue queue,
-			IReadMeta readMeta
+			AppSettings appSettings, IBackgroundTaskQueue queue
 		)
 		{
 			_appSettings = appSettings;
 			_query = query;
 			_exiftool = exiftool;
 			_bgTaskQueue = queue;
-			_readMeta = readMeta;
 		}
 		
 		/// <summary>
@@ -46,7 +43,7 @@ namespace starsky.Controllers
 		[HttpPost("/export/createZip")]
 		public async Task<IActionResult> CreateZip(string f, bool collections = true, bool thumbnail = false)
 		{
-			var inputFilePaths = ConfigRead.SplitInputFilePaths(f);
+			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
 
@@ -72,6 +69,9 @@ namespace starsky.Controllers
 				statusModel.IsDirectory = false;
 
 				if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+				
+				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
+
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
 				foreach ( var item in collectionSubPathList )
 				{
@@ -121,7 +121,7 @@ namespace starsky.Controllers
 			return Json(zipHash);
 		}
 
-		[HttpGet("/export/zip")]
+		[HttpGet("/export/zip/{f}.zip")]
 		public async Task<IActionResult> Zip(string f, bool json = false)
 		{
 			var sourceFullPath = Path.Join(_appSettings.TempFolder,f) + ".zip";

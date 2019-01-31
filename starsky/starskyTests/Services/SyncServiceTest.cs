@@ -358,18 +358,7 @@ namespace starskytests.Services
             _syncservice.OrphanFolder("/",-1); // always fail
         }
 
-        [TestMethod]
-        public void SyncServiceRenameListItemsToDbStyleTest()
-        {
-            var newImage = new CreateAnImage();
-            _appSettings.StorageFolder = newImage.BasePath; // needs to have an / or \ at the end
-            var inputList = new List<string>{ Path.DirectorySeparatorChar.ToString() };
-            var expectedOutputList = new List<string>{ "/"};
-            var output = _syncservice.RenameListItemsToDbStyle(inputList);
-            // list of files names that are starting with a filename (and not an / or \ )
 
-            CollectionAssert.AreEqual(expectedOutputList,output);
-        }
 
         [TestMethod]
         public void SyncService_DuplicateContentInDatabase_Test()

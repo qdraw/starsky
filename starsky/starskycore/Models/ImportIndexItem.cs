@@ -261,7 +261,7 @@ namespace starskycore.Models
                     // add backslash
                     var noSlashInParsedItem = parsedItem.Replace("/", string.Empty);
                     
-                    childFullDirectory = ConfigRead.AddBackslash(
+                    childFullDirectory = PathHelper.AddBackslash(
                         SearchSubDirInDirectory(parentItem, noSlashInParsedItem).FirstOrDefault());
                     /// only first item
                     if (SubFolder == string.Empty && childFullDirectory != null)

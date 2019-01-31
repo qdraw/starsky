@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starskycore.Attributes;
+using starskycore.Helpers;
 using starskycore.Services;
 
 namespace starskytests.Services
@@ -14,7 +15,7 @@ namespace starskytests.Services
          [TestMethod]
          public void ConfigRead_RemoveLatestBackslashTest()
          {
-             var input = ConfigRead.RemoveLatestBackslash("/2018"+ Path.DirectorySeparatorChar.ToString());
+             var input = PathHelper.RemoveLatestBackslash("/2018"+ Path.DirectorySeparatorChar.ToString());
              var output = "/2018";
              Assert.AreEqual(input, output);
          }
@@ -23,7 +24,7 @@ namespace starskytests.Services
          [TestMethod]
          public void ConfigRead_PrefixDbslashTest()
          {
-             var input = ConfigRead.PrefixDbSlash("2018/");
+             var input = PathHelper.PrefixDbSlash("2018/");
              var output = "/2018/";
              Assert.AreEqual(input, output);
          }
@@ -32,11 +33,11 @@ namespace starskytests.Services
          [TestMethod]
          public void ConfigRead_AddBackslashTest()
          {
-             var input = ConfigRead.AddBackslash("2018");
+             var input = PathHelper.AddBackslash("2018");
              var output = "2018" + Path.DirectorySeparatorChar.ToString();
              Assert.AreEqual(input, output);
              
-             input = ConfigRead.AddBackslash("2018" + Path.DirectorySeparatorChar.ToString());
+             input = PathHelper.AddBackslash("2018" + Path.DirectorySeparatorChar.ToString());
              output = "2018"+ Path.DirectorySeparatorChar.ToString();
              Assert.AreEqual(input, output);
          }
@@ -45,7 +46,7 @@ namespace starskytests.Services
          [TestMethod]
          public void ConfigRead_RemovePrefixDbSlashTest()
          {
-             Assert.AreEqual("2018",ConfigRead.RemovePrefixDbSlash("/2018"));
+             Assert.AreEqual("2018",PathHelper.RemovePrefixDbSlash("/2018"));
          }
         
      }

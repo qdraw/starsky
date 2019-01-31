@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using starskycore.Data;
 using Microsoft.Extensions.Hosting;
+using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Middleware;
@@ -54,16 +54,16 @@ namespace starsky
             switch (_appSettings.DatabaseType)
             {
                 case (AppSettings.DatabaseTypeList.Mysql):
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection, b => b.MigrationsAssembly(nameof(starskycore))));
                     break;
                 case AppSettings.DatabaseTypeList.InMemoryDatabase:
                     services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
                     break;
                 case AppSettings.DatabaseTypeList.Sqlite:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, b => b.MigrationsAssembly(nameof(starskycore))));
                     break;
                 default:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, b => b.MigrationsAssembly(nameof(starskycore))));
                     break;
             }
             
@@ -142,6 +142,12 @@ namespace starsky
 	        if ( !string.IsNullOrWhiteSpace(appInsightsKey) ) services.AddApplicationInsightsTelemetry();
 	        services.AddScoped<ApplicationInsightsJsHelper>();
 
+	        // For the import service
+	        services.AddSingleton<IHttpProvider,HttpProvider>();
+	        services.AddSingleton<HttpClientHelper>();
+	        services.AddSingleton<System.Net.Http.HttpClient>();
+
+
         }
 
 	    private class BasicAuthFilter : IDocumentFilter
@@ -172,7 +178,7 @@ namespace starsky
 	        app.UseForwardedHeaders();
 	        
             // Use the name of the application to use behind a reverse proxy
-            app.UsePathBase(ConfigRead.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
+            app.UsePathBase(PathHelper.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
             
             if (env.IsDevelopment())
             {

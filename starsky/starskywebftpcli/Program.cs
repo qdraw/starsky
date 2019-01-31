@@ -1,0 +1,80 @@
+﻿using System;
+using System.Linq;
+using starskycore.Helpers;
+using starskycore.Models;
+using starskywebftpcli.Services;
+
+namespace starskywebftpcli
+{
+	static class Program
+	{
+		static void Main(string[] args)
+		{
+			// Use args in application
+			new ArgsHelper().SetEnvironmentByArgs(args);
+			
+			// inject services + appsettings
+			var startupHelper = new ConfigCliAppsStartupHelper();
+			var appSettings = startupHelper.AppSettings();
+            
+			
+			// verbose mode
+			appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
+            
+			// help window
+			if (new ArgsHelper().NeedHelp(args))
+			{
+				appSettings.ApplicationType = AppSettings.StarskyAppType.WebFtp;
+				new ArgsHelper(appSettings).NeedHelpShowDialog();
+				return;
+			}
+			
+			// inputPath
+			var inputPath = new ArgsHelper().GetPathFormArgs(args,false);
+
+			if (string.IsNullOrWhiteSpace(inputPath))
+			{
+				Console.WriteLine("Please use the -p to add a path first");
+				return;
+			}
+            
+			// check if inputPath is valid
+			if(Files.IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
+				Console.WriteLine("Please add a valid folder: " + inputPath);
+			
+			// check if settings is valid
+			if ( string.IsNullOrEmpty(appSettings.WebFtp) )
+			{
+				Console.WriteLine($"Please update the WebFtp settings in appsettings.json"  );
+				return;
+			}
+
+			// set storage folder !this is important!
+			appSettings.StorageFolder = inputPath;
+
+			
+			// inject manifest
+			if ( ! new ExportManifest(appSettings,new PlainTextFileHelper()).Import() )
+			{
+				// import false >
+				Console.WriteLine($"Please run 'starskywebhtmlcli' first to generate a settings file"  );
+				return;
+			}
+
+			//  now run the service
+			var ftpService = new FtpService(appSettings).Run();
+			if ( !ftpService ) return;
+			
+			// get prepend path to show
+			var prepend = appSettings.GetWebSafeReplacedName(
+				appSettings.PublishProfiles
+					.FirstOrDefault(p => !string.IsNullOrEmpty(p.Prepend))
+					?.Prepend
+			);
+			
+			// show prepend path!
+			Console.WriteLine(prepend);
+
+		}
+	}
+}

@@ -16,18 +16,18 @@ namespace starskycore.Services
         private IBackgroundTaskQueue TaskQueue { get; }
 
         protected override async Task ExecuteAsync(
-            CancellationToken cancellationToken)
+            CancellationToken stoppingToken)
         {
 
             Console.WriteLine("Queued Hosted Service is starting.");
             
-            while (!cancellationToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
-                var workItem = await TaskQueue.DequeueAsync(cancellationToken);
+                var workItem = await TaskQueue.DequeueAsync(stoppingToken);
 
                 try
                 {
-                    await workItem(cancellationToken);
+                    await workItem(stoppingToken);
                 }
                 catch (Exception ex)
                 {

@@ -108,14 +108,14 @@ namespace starskycore.Services
                     item.LocationState = locationState;
                 }
                 
-                ///    [IPTC] Country/Primary Location Name = Nederland
+                //    [IPTC] Country/Primary Location Name = Nederland
                 var locationCountry = GetLocationPlaces(exifItem, "Country/Primary Location Name");
                 if(locationCountry != null) // null = is not the right tag or empty tag
                 {
                     item.LocationCountry = locationCountry;
                 }
 	            
-	            ///    [Exif SubIFD] Aperture Value = f/2.2
+	            //    [Exif SubIFD] Aperture Value = f/2.2
 	            var aperture = GetAperture(exifItem);
 	            if(Math.Abs(aperture) > 0) // 0f = is not the right tag or empty tag
 	            {
@@ -531,7 +531,8 @@ namespace starskycore.Services
 		    
 		    if(apertureString == null) return 0d; 
 		    apertureString = apertureString.Replace("f/", string.Empty);
-		    float.TryParse(apertureString, NumberStyles.Number, CultureInfo.InvariantCulture, out var aperture);
+		    // Note: apertureString: (Dutch) 2,2 or (English) 2.2 based CultureInfo.CurrentCulture
+		    float.TryParse(apertureString, NumberStyles.Number, CultureInfo.CurrentCulture, out var aperture);
 		    return aperture;
 		    
 	    }

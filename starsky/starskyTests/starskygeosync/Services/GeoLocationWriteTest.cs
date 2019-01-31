@@ -12,7 +12,7 @@ namespace starskytests.starskygeosync.Services
     public class GeoLocationWriteTest
     {
         private readonly IExiftool _exiftool;
-        private AppSettings _appSettings;
+        private readonly AppSettings _appSettings;
 
         public GeoLocationWriteTest()
         {

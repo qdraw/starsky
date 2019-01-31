@@ -3,12 +3,13 @@
  * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
     * [starsky](../../starsky/starsky/readme.md)  _mvc application / web interface_
-    * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard2.0)_
-    * [starskysynccli](../../starsky/starskysynccli/readme.md)  _database command line interface_
-    * [starskyimportercli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
-    * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
-    * __[starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  publish web images to html files__
+    * [starskySyncCli](../../starsky/starskysynccli/readme.md)  _database command line interface_
+    * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
+    * __[starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  publish web images to a content package__
+    * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
+    * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
+    * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
@@ -21,11 +22,18 @@ For example to generate content for a blog, the 'Web HTML Cli' can be used. This
 All actions are customizable in the `appsettings.json`. There is a section called `publishProfiles` in `appsettings.json`.
 The `publishProfiles` are executed during runtime.
 
+
+### To the help dialog:
+```sh
+./starskywebhtmlcli --help
+```
+
 ### The StarskyWebHtmlCli --Help window:
+
 ```sh
 Starksy WebHtml Cli ~ Help:
 --help or -h == help (this window)
---path or -p == parameter: (string) ; fullpath (select a folder)
+--path or -p == parameter: (string) ; fullpath (select a folder), use '-p' for current directory
 --name or -n == parameter: (string) ; name of blogitem 
 --verbose or -v == verbose, more detailed info
   use -v -help to show settings: 
@@ -77,7 +85,8 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
                     "OverlayFullPath": "",
                     "Path": "index.html",
                     "Template": "Index.cshtml",
-                    "Prepend": ""
+                    "Prepend": "",
+                    "Copy": "true"
                 },
                 {
                     "ContentType":  "html",
@@ -86,7 +95,8 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
                     "OverlayFullPath": "",
                     "Path": "index.web.html",
                     "Template": "Index.cshtml",
-                    "Prepend": "https://media.qdraw.nl/log/{name}"
+                    "Prepend": "https://media.qdraw.nl/log/{name}",
+                    "Copy": "true"
                 },
                 {
                     "ContentType":  "html",
@@ -95,7 +105,8 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
                     "OverlayFullPath": "",
                     "Path": "autopost.txt",
                     "Template": "Autopost.cshtml",
-                    "Prepend": "https://media.qdraw.nl/log/{name}"
+                    "Prepend": "https://media.qdraw.nl/log/{name}",
+                    "Copy": "true"
                 },
                 {
                     "ContentType":  "jpeg",
@@ -103,7 +114,8 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
                     "OverlayMaxWidth":  380,
                     "Path": "/data/git/starsky/starsky/starskywebhtmlcli/EmbeddedViews/qdrawlarge.png",
                     "Folder": "1000",
-                    "Append": "_kl1k"
+                    "Append": "_kl1k",
+                    "Copy": "true"
                 },
                 {
                     "ContentType":  "jpeg",
@@ -111,11 +123,13 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
                     "OverlayMaxWidth":  200,
                     "Path": "/data/git/starsky/starsky/starskywebhtmlcli/EmbeddedViews/qdrawsmall.png",
                     "Folder": "500",
-                    "Append": "_kl"
+                    "Append": "_kl",
+                    "Copy": "true"
                 },
                 {
                     "ContentType":  "moveSourceFiles",
-                    "Folder": "orgineel"
+                    "Folder": "orgineel",
+                    "Copy": "false"
                 }
             ]
     }

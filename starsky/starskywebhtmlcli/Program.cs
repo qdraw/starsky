@@ -64,7 +64,11 @@ namespace starskywebhtmlcli
             thumbByDir.CreateThumb(inputPath);
             new LoopPublications(appSettings,startupHelper.ExifTool())
                 .Render(fileIndexList,thumbByDir.ToBase64DataUriList(fileIndexList));
-        }
+
+			// Export all
+			new ExportManifest(appSettings,new PlainTextFileHelper()).Export();
+
+		}
         
     }
 }
