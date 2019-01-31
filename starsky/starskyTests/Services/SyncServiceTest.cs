@@ -269,7 +269,7 @@ namespace starskytests.Services
             
             _syncservice.Deleted("/non-existing-folder");
 
-            var nonExisting = _query.GetItemByHash("4444");
+            var nonExisting = _query.GetSubPathByHash("4444");
             Assert.AreEqual(nonExisting,null);
             
         }
@@ -340,14 +340,14 @@ namespace starskytests.Services
                 IsDirectory = false
             });
 
-	        Assert.AreEqual("/deletedFolder/test.jpg", _query.GetItemByHash("SyncServiceOrphanFolderTestDeletedFile"));
+	        Assert.AreEqual("/deletedFolder/test.jpg", _query.GetSubPathByHash("SyncServiceOrphanFolderTestDeletedFile"));
 
 	        // Reset the hashed cache list 
 	        _query.ResetItemByHash("SyncServiceOrphanFolderTestDeletedFile");
 
             _syncservice.OrphanFolder("/");
             
-            Assert.AreEqual(null, _query.GetItemByHash("SyncServiceOrphanFolderTestDeletedFile"));
+            Assert.AreEqual(null, _query.GetSubPathByHash("SyncServiceOrphanFolderTestDeletedFile"));
    
         }
         
