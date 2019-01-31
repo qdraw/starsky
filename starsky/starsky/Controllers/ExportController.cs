@@ -137,7 +137,13 @@ namespace starsky.Controllers
 			{
 				if ( thumbnail )
 				{
-					var subPath = _query.GetSubPathByHash(Path.GetFileNameWithoutExtension(filePath));
+					// We use base32 filehashes but export 
+					// the file with the original name
+					
+					var thumbFilename = Path.GetFileNameWithoutExtension(filePath);
+					var subPath = _query.GetSubPathByHash(thumbFilename);
+					var filename = subPath.Split("/").LastOrDefault();
+					fileNames.Add(filename);
 					continue;
 				}
 				fileNames.Add(Path.GetFileName(filePath));
