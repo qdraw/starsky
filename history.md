@@ -1,3 +1,6 @@
+# version 0.1.3 - tbd
+- fix issues on exporting
+
 # version 0.1.2 - 2019-02-01
 - starskywebftpcli
 - add json export for starskyWebHtmlCli
