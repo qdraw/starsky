@@ -20,11 +20,11 @@ This application in only useful for older Mac OS machines. For Windows it still 
 
 > Note: The starsky.netframework can be outdated. The focus of Starsky is on `.NET Core` and not on `.NET Framework`
 
-For all other Machines than Mac OS X 10.11 please continue at: 
+For all other Machines than Mac OS X 10.11 please continue at:
 - [starskysynccli](../starsky/starskysynccli/readme.md)  _database command line interface_
+- [starskyImporterCli](../starsky/starskyimportercli/readme.md)  _import command line interface_
 
-
-> TIP: Don't try this on Windows: You get this exception: `'System.Diagnostics.DiagnosticSource, Version=4.0.3.1` 
+> TIP: Don't try this on Windows: You get this exception: `'System.Diagnostics.DiagnosticSource, Version=4.0.3.1`
 
 
 ### Install `mono`
@@ -54,12 +54,15 @@ Run the release script in the `starsky.netframework` folder to get a executable
 ```
 
 
-### Run
+### Run the Sync application
 To run the application can execute the following script
 ```sh
 mono bin/Release/starskySyncFramework.exe -h -v
 ```
 
-### starsky.netframework is a wrapper for starskySyncCli
-For more information please check the [starskysynccli](../starsky/starskysynccli/readme.md) documentation
+### Run the Importer application
 
+To run the application can execute the following script
+```sh
+mono bin/Release/starskyimportercliNetFramework.exe -h -v
+```
