@@ -13,5 +13,5 @@
 # version 0.1.1 - 2019-01-25
 - add ignore index feature to importer
 
-# version 0.1.0
+# version 0.1.0 - 2019-01-22
 - initial release
