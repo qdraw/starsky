@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,7 +37,7 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="subPath">relative database path</param>
 		/// <returns>list of FileIndex-objects</returns>
-        public List<FileIndexItem> GetAllFiles(string subPath = "/")
+        public List<FileIndexItem> GetAllFiles(string subPath)
         {
             subPath = SubPathSlashRemove(subPath);
 
@@ -77,7 +77,7 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="fileHash">base32 hash</param>
 		/// <returns>subpath (relative to database)</returns>
-	    public string GetItemByHash(string fileHash)
+	    public string GetSubPathByHash(string fileHash)
 	    {
 		    // The CLI programs uses no cache
 		    if( !IsCacheEnabled() ) return QueryGetItemByHash(fileHash);

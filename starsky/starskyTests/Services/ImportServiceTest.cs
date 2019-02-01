@@ -103,7 +103,7 @@ namespace starskytests.Services
 		    var t1 = _query.GetAllRecursive();  
 
 		    // remove from query database
-		    var queryPath = _query.GetItemByHash(_fileHashCreateAnImage);
+		    var queryPath = _query.GetSubPathByHash(_fileHashCreateAnImage);
 		    var queryItem = _query.GetObjectByFilePath(queryPath);
 		    if(queryItem == null) return;
 		    _query.RemoveItem(queryItem);
@@ -284,7 +284,7 @@ namespace starskytests.Services
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());  
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
-            var itemFilePath = _query.GetItemByHash(fileHashCode);
+            var itemFilePath = _query.GetSubPathByHash(fileHashCode);
             Assert.AreNotEqual(null, itemFilePath);
                         
             // Run a second time: > Must return nothing
@@ -293,7 +293,7 @@ namespace starskytests.Services
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Search on filename in database
-            Assert.AreEqual(true, _query.GetAllFiles().Any(p => p.FileName.Contains("xuxuxuxu_"))   );
+            Assert.AreEqual(true, _query.GetAllFiles("/").Any(p => p.FileName.Contains("xuxuxuxu_"))   );
             
             // Clean afterwards
             var importIndexItem = _import.GetItemByHash(fileHashCode);
@@ -332,7 +332,7 @@ namespace starskytests.Services
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());  
             var fileHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
-            var itemFilePath = _query.GetItemByHash(fileHashCode);
+            var itemFilePath = _query.GetSubPathByHash(fileHashCode);
             Assert.AreNotEqual(null, itemFilePath);
                         
             // Remove item from import index             // Run a second time: Now it not in the database

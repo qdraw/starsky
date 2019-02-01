@@ -444,7 +444,7 @@ namespace starsky.Controllers
             }
             
             // Cached view of item
-            var sourcePath = _query.GetItemByHash(f);
+            var sourcePath = _query.GetSubPathByHash(f);
             if (sourcePath == null) return NotFound("not in index");
             var sourceFullPath = _appSettings.DatabasePathToFilePath(sourcePath);
 
@@ -455,7 +455,7 @@ namespace starsky.Controllers
 		        // remove from cache
 		        _query.ResetItemByHash(f);
 		        // query database agian
-		        sourcePath = _query.GetItemByHash(f);
+		        sourcePath = _query.GetSubPathByHash(f);
 		        if (sourcePath == null) return NotFound("not in index");
 		        sourceFullPath = _appSettings.DatabasePathToFilePath(sourcePath);
 	        }

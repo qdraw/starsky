@@ -46,7 +46,7 @@ namespace starskytests.Controllers
 			var memoryCache = provider.GetService<IMemoryCache>();
 
 			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builderDb.UseInMemoryDatabase("test1234");
+			builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
 			var options = builderDb.Options;
 			_context = new ApplicationDbContext(options);
 			_query = new Query(_context, memoryCache);
@@ -99,7 +99,7 @@ namespace starskytests.Controllers
 		{
 
 			var fileHashCode = FileHash.GetHashCode(_createAnImage.FullFilePath);
-			if ( string.IsNullOrEmpty(_query.GetItemByHash(fileHashCode)) )
+			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)) )
 			{
 				var isDelete = string.Empty;
 				if ( delete ) isDelete = "!delete!";
@@ -176,7 +176,149 @@ namespace starskytests.Controllers
 			// Don't check if file exist due async
 			await service.StopAsync(CancellationToken.None);
 		}
+
+
+//		[TestMethod]
+//		public async Task ExportController_TestExportRaws()
+//		{
+//
+//			IServiceCollection services = new ServiceCollection();
+//			services.AddHostedService<BackgroundQueuedHostedService>();
+//			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+//			var serviceProvider = services.BuildServiceProvider();
+//			var backgroundQueue = serviceProvider.GetService<IBackgroundTaskQueue>();
+//
+//
+//			var controller = new ExportController(_query, _exiftool, _appSettings, backgroundQueue);
+//			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+//
+//			var createAnImageNoExif = new CreateAnImageNoExif();
+//			new PlainTextFileHelper().WriteFile(createAnImageNoExif.FullFilePathWithDate.Replace(".jpg",".xmp"),"test");
+//
+//			_query.AddItem(new FileIndexItem
+//			{
+//				FileName = createAnImageNoExif.FileName,
+//				ParentDirectory = "/",
+//				ImageFormat = Files.ImageFormat.tiff //<== not true but for test
+//			});
+//
+//			var all = _query.GetAllFiles("/");
+//
+//			var t = await controller.CreateZip($"/{createAnImageNoExif.FileName}", true, false) as JsonResult;
+//
+//			// todo: cleanup files
+//
+//		}
 		
+
+		[TestMethod]
+		public void ExportControllerTest__ThumbTrue_CreateListToExport()
+		{
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+
+			var item = new FileIndexItem
+			{
+				FileName = "testFile.jpg",
+				ParentDirectory = "/",
+				FileHash = "FileHash",
+				Status = FileIndexItem.ExifStatus.Ok
+			};
+
+			_query.AddItem(item);
+
+			var fileIndexResultsList = new List<FileIndexItem> { item };
+
+			var filePaths = controller.CreateListToExport(fileIndexResultsList, true);
+
+			Assert.AreEqual(true,filePaths.FirstOrDefault().Contains(item.FileHash));
+
+		}
+
+		
+		[TestMethod]
+		public void ExportControllerTest__ThumbFalse_CreateListToExport()
+		{
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+
+			var createAnImageNoExif = new CreateAnImageNoExif();
+
+			var item = new FileIndexItem
+			{
+				FileName = createAnImageNoExif.FileName,
+				ParentDirectory = "/",
+				FileHash = createAnImageNoExif.FileName.Replace(".jpg", "-test"),
+				Status = FileIndexItem.ExifStatus.Ok
+			};
+
+			_query.AddItem(item);
+
+			var fileIndexResultsList = new List<FileIndexItem> { item };
+
+			var filePaths = controller.CreateListToExport(fileIndexResultsList,false);
+
+			Assert.AreEqual(true, filePaths.FirstOrDefault().Contains(item.FileName));
+
+			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,
+				Files.IsFolderOrFile(filePaths.FirstOrDefault()));
+
+			Files.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
+		}
+
+		[TestMethod]
+		public void ExportControllerTest__ThumbFalse__FilePathToFileName()
+		{
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+			var filePaths = new List<string>
+			{
+				Path.Combine("test","file.jpg")
+			};
+			var fileNames = controller.FilePathToFileName(filePaths, false);
+			Assert.AreEqual("file.jpg",fileNames.FirstOrDefault());
+		}
+
+		[TestMethod]
+		public void ExportControllerTest__ThumbTrue__FilePathToFileName()
+		{
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+			var filePaths = new List<string>
+			{
+				Path.Combine("test","thumb.jpg")
+			};
+
+			_query.AddItem(new FileIndexItem
+			{
+				FileName = "file.jpg",
+				ParentDirectory = "/test",
+				FileHash = "thumb"
+			});
+			
+			var fileNames = controller.FilePathToFileName(filePaths, true);
+			Assert.AreEqual("file.jpg",fileNames.FirstOrDefault());
+			
+			// This is a strange one: 
+			// We use thumb as base32 filehashes but export 
+			// as file.jpg or the nice orginal name
+			
+		}
+
+//		[TestMethod]
+//		public void ExportControllerTest__AddXmpFilesToList()
+//		{
+//			var createAnImage = new CreateAnImage();
+//			var xmpFilePath = createAnImage.FullFilePath.Replace(".jpg", ".xmp");
+//			new PlainTextFileHelper().WriteFile(xmpFilePath,"test");
+//			
+//			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+//
+//			var list = new List<string>{createAnImage.FullFilePath};
+//			list = controller.AddXmpFilesToList(list, false, true);
+//
+//			Assert.AreEqual(2,list.Count);
+//			Assert.AreEqual(true,list[1].Contains(".xmp"));
+//			//Files.DeleteFile(xmpFilePath);
+//
+//		}
+
 
 		[TestMethod]
 		public async Task ExportController_ZipNotFound()

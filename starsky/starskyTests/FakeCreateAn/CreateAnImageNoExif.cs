@@ -10,8 +10,10 @@ namespace starskytests.FakeCreateAn
 		public readonly string FullFilePathWithDate = 
 			Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar + FileNameWithDate;
 
-		public const string FileNameWithDate = "123300_20120101.jpg";
+		private const string FileNameWithDate = "123300_20120101.jpg";
 		// HHmmss_yyyyMMdd > not very logical but used to test features
+
+		public readonly string FileName = FileNameWithDate;
 
 		public readonly string BasePath =
 		Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;

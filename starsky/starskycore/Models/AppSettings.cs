@@ -302,11 +302,19 @@ namespace starskycore.Models
 	    /// <returns>AppSettings duplicated</returns>
 	    public AppSettings CloneToDisplay()
 	    {
+		    var securityWarning = "warning: Not display due security reasons";
+
 		    var appSettings = (AppSettings) MemberwiseClone();
+		    
 		    //         [JsonIgnore]
 		    if ( appSettings.DatabaseType != DatabaseTypeList.Sqlite )
 		    {
-			    appSettings.DatabaseConnection = "Not display due security reasons";
+			    appSettings.DatabaseConnection = securityWarning;
+		    }
+
+		    if ( !string.IsNullOrEmpty(appSettings.WebFtp) )
+		    {
+			    appSettings._webftp = securityWarning;
 		    }
 		    return appSettings;
 	    }

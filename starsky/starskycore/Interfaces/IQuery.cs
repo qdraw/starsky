@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using starsky.ViewModels;
 using starskycore.Models;
 using starskycore.ViewModels;
@@ -8,7 +8,7 @@ namespace starskycore.Interfaces
     public interface IQuery
     {
 
-        List<FileIndexItem> GetAllFiles(string subPath = "");
+        List<FileIndexItem> GetAllFiles(string subPath);
         
         List<FileIndexItem> GetAllRecursive(string subPath = "");
 
@@ -46,7 +46,7 @@ namespace starskycore.Interfaces
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
         void RemoveCacheParentItem(string directoryName);
 
-        string GetItemByHash(string fileHash);
+        string GetSubPathByHash(string fileHash);
 	    void ResetItemByHash(string fileHash);
 
         List<FileIndexItem> GetAllFolders();

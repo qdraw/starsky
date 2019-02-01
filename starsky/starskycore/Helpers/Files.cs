@@ -34,7 +34,19 @@ namespace starskycore.Helpers
             return FolderOrFileModel.FolderOrFileTypeList.Deleted;
         }
 
-        /// <summary>
+	    /// <summary>
+	    /// Does file exist (true == exist)
+	    /// </summary>
+	    /// <param name="fullFilePath">full file path</param>
+	    /// <returns>bool true = exist</returns>
+	    public static bool ExistFile(string fullFilePath = "")
+	    {
+		    var isFolderOrFile = IsFolderOrFile(fullFilePath);
+		    return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File;
+	    }
+	    
+
+	    /// <summary>
         /// Returns a list of directories
         /// </summary>
         /// <param name="fullFilePath">directory</param>

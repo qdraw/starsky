@@ -269,7 +269,7 @@ namespace starskytests.Services
             
             _syncservice.Deleted("/non-existing-folder");
 
-            var nonExisting = _query.GetItemByHash("4444");
+            var nonExisting = _query.GetSubPathByHash("4444");
             Assert.AreEqual(nonExisting,null);
             
         }
@@ -340,14 +340,14 @@ namespace starskytests.Services
                 IsDirectory = false
             });
 
-	        Assert.AreEqual("/deletedFolder/test.jpg", _query.GetItemByHash("SyncServiceOrphanFolderTestDeletedFile"));
+	        Assert.AreEqual("/deletedFolder/test.jpg", _query.GetSubPathByHash("SyncServiceOrphanFolderTestDeletedFile"));
 
 	        // Reset the hashed cache list 
 	        _query.ResetItemByHash("SyncServiceOrphanFolderTestDeletedFile");
 
             _syncservice.OrphanFolder("/");
             
-            Assert.AreEqual(null, _query.GetItemByHash("SyncServiceOrphanFolderTestDeletedFile"));
+            Assert.AreEqual(null, _query.GetSubPathByHash("SyncServiceOrphanFolderTestDeletedFile"));
    
         }
         
@@ -384,12 +384,12 @@ namespace starskytests.Services
             _query.AddItem(testjpg);
 
             // this query is before syncing the api
-            var inputWithoutSync = _query.GetAllFiles();
+            var inputWithoutSync = _query.GetAllFiles("/");
             Assert.AreEqual(2,inputWithoutSync.Count(p => p.FilePath == createAnImage.DbPath));
 
             // do a sync
             _syncservice.SyncFiles("/");
-            var outputWithSync = _query.GetAllFiles();
+            var outputWithSync = _query.GetAllFiles("/");
 
             // test if the sync is working
             Assert.AreEqual(1,outputWithSync.Count(p => p.FilePath == createAnImage.DbPath));

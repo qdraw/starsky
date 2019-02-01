@@ -41,10 +41,23 @@ namespace starskycore.Services
             // Does not require appsettings
             
             if(databaseItem == null) databaseItem = new FileIndexItem();
-            // ContentNameSpace is for example : Namespace=http://...
-            databaseItem = GetDataContentNameSpaceTypes(xmpDataAsString, databaseItem);
-            // NullNameSpace is for example : string.Empty
-            databaseItem = GetDataNullNameSpaceTypes(xmpDataAsString, databaseItem);
+	        
+	        try
+	        {
+		        var xmp = XmpMetaFactory.ParseFromString(xmpDataAsString);
+		        // ContentNameSpace is for example : Namespace=http://...
+		        databaseItem = GetDataContentNameSpaceTypes(xmp, databaseItem);
+		        // NullNameSpace is for example : string.Empty
+		        databaseItem = GetDataNullNameSpaceTypes(xmp, databaseItem);
+	        }
+	        catch ( XmpException e )
+	        {
+		        Console.WriteLine($"XmpException {databaseItem.FilePath} >>\n{e}\n <<XmpException");
+		        databaseItem.Tags = "XmpException";
+		        databaseItem.ColorClass = FileIndexItem.Color.None;
+	        }
+	        
+	        
             return databaseItem;
         }
 
@@ -88,9 +101,9 @@ namespace starskycore.Services
             return ConvertDegreeMinutesToDouble(gpsLatOrLong, refGps);
         }
                 
-        private FileIndexItem GetDataNullNameSpaceTypes(string xmpDataAsString, FileIndexItem item)
+        private FileIndexItem GetDataNullNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
         {
-            var xmp = XmpMetaFactory.ParseFromString(xmpDataAsString);
+	        
             foreach (var property in xmp.Properties)
             {
                 
@@ -180,10 +193,15 @@ namespace starskycore.Services
 	    }
 
 
-	    private FileIndexItem GetDataContentNameSpaceTypes(string xmpDataAsString, FileIndexItem item)
-        {
-            var xmp = XmpMetaFactory.ParseFromString(xmpDataAsString);
-
+	    /// <summary>
+	    /// ContentNameSpace is for example : Namespace=http://...
+	    /// </summary>
+	    /// <param name="xmp"></param>
+	    /// <param name="item"></param>
+	    /// <returns></returns>
+	    private FileIndexItem GetDataContentNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
+	    {
+     
             GpsAltitudeRef(xmp, item);
                 
             foreach (var property in xmp.Properties)

@@ -33,7 +33,7 @@ namespace starskycore.Services
 			foreach ( var thumbnailFile in allThumbnailFiles )
 			{
 				var fileHash = Path.GetFileNameWithoutExtension(thumbnailFile.Name);
-				var itemByHash = _query.GetItemByHash(fileHash);
+				var itemByHash = _query.GetSubPathByHash(fileHash);
 				if (itemByHash != null ) continue;
 
 				Files.DeleteFile(thumbnailFile.FullName);

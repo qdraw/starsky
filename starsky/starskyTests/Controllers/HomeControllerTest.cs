@@ -54,7 +54,7 @@ namespace starskytests.Controllers
 
         private void InsertSearchData()
         {
-            if (string.IsNullOrEmpty(_query.GetItemByHash("home0012304590")))
+            if (string.IsNullOrEmpty(_query.GetSubPathByHash("home0012304590")))
             {
                 _query.AddItem(new FileIndexItem
                 {

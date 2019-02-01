@@ -872,16 +872,29 @@ function exportZip(isThumbnail) {
     showPreloader();
 
     var toupdateFiles = toSubpath();
-   
+
+
+    var isCollections = true;
+    if (window.location.search.indexOf("collections=false") >= 0) {
+        isCollections = false;
+    }
+    
+    
     loadJSON(exportZipApiBase,
         function (data) {
-        
+
+
             var exportZipUrl = exportZipApiBase.replace("createZip","zip/") + data +".zip?json=true";
+
+            if (isCollections) {
+                showPopupDialog("Van de Raw files en Jpegs worden op de achtergrond wordt een export gemaakt. De duur is afhankelijk van de selectie.");
+            }
+            else {
+                showPopupDialog("Een moment geduld, op de achtergrond wordt een export van de afbeeldingen gemaakt. De duur is afhankelijk van de selectie.");
+            }
+            
             var filename = data + ".zip";
 
-
-            showPopupDialog("Een moment geduld, op de achtergrond wordt een export gemaakt. De duur is afhankelijk van de selectie.");
-            
         
             var exportZipUrlsetInterval = setInterval(function () {
                 loadJSON(exportZipUrl,
@@ -891,7 +904,14 @@ function exportZip(isThumbnail) {
                         console.log(data);
                         
                         if(data === "OK") clearInterval(exportZipUrlsetInterval);
-                        showPopupDialog("Je kunt het bestand nu downloaden" +
+
+                        var text = "";
+                        if (isCollections && !isThumbnail) {
+                            text = "Raw bestanden zijn indien beschikbaar bijgevoegd";
+                        }
+
+
+                        showPopupDialog("Je kunt het bestand nu downloaden. " + text +
                             "<p>\n" +
                             "<a download='"+filename+"' href='"+exportZipUrl.replace("?json=true","?")+"' class=\"btn-sm btn btn-default\">Download Export als zip</a>\n" +
                             "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Sluit venster</a>\n" +
@@ -911,6 +931,6 @@ function exportZip(isThumbnail) {
                 "</p>");
         },
         "POST",
-        "f=" + toupdateFiles + "&json=true&thumbnail="+ isThumbnail
+        "f=" + toupdateFiles + "&json=true&thumbnail="+ isThumbnail + "&collections=" + isCollections
     );
 }
