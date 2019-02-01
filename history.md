@@ -1,5 +1,7 @@
 # version 0.1.3 - tbd
 - fix issues on exporting
+- fix issue on Sync (-p option)
+
 
 # version 0.1.2 - 2019-02-01
 - starskywebftpcli
