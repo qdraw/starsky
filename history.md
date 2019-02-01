@@ -10,7 +10,7 @@
 - Sync: Feature for selecting a folder with the sync cli does not work correctly
 - UI: zooming in on iPad triggers next/prev
 
-# version 0.1.1
+# version 0.1.1 - 2019-01-25
 - add ignore index feature to importer
 
 # version 0.1.0
