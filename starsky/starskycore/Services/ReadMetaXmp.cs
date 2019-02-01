@@ -201,18 +201,7 @@ namespace starskycore.Services
 	    /// <returns></returns>
 	    private FileIndexItem GetDataContentNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
 	    {
-//		    dynamic xmp = new I;
-//		    try
-//		    {
-//			    var xmp = XmpMetaFactory.ParseFromString(xmpDataAsString);
-//
-//		    }
-//		    catch ( XmpException e )
-//		    {
-//			    Console.WriteLine(e);
-//			    throw;
-//		    }
-//	        
+     
             GpsAltitudeRef(xmp, item);
                 
             foreach (var property in xmp.Properties)
