@@ -308,6 +308,7 @@ namespace starskycore.Helpers
 				if ( currentDirectory != _appSettings.BaseDirectoryProject )
 				{
 					path = currentDirectory;
+					if ( _appSettings.Verbose ) Console.WriteLine($">> currentDirectory: {currentDirectory}");
 				}
 			}
 
@@ -363,6 +364,12 @@ namespace starskycore.Helpers
 
         public bool IfSubpathOrPath(IReadOnlyList<string> args)
         {
+	        // To use only with -p or --path > current directory
+	        if ( args.Any(arg => (arg.ToLower() == "--path" || arg.ToLower() == "-p")) )
+	        {
+		        return false;
+	        }
+	        
             // Detect if a input is a fullpath or a subpath.
             for (int arg = 0; arg < args.Count; arg++)
             {
@@ -375,7 +382,7 @@ namespace starskycore.Helpers
                     return false;
                 }
             }
-            return true;
+	        return true;
         }
         
         public bool GetThumbnail(IReadOnlyList<string> args)
