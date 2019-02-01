@@ -50,24 +50,21 @@ namespace starsky.Controllers
 			foreach ( var subPath in inputFilePaths )
 			{
 				var detailView = _query.SingleItem(subPath, null, collections, false);
-
-				// Check if extension is supported for ExtensionExifToolSupportedList
-				// Not all files are able to write with exiftool
-				if ( detailView != null &&
-				     !Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName) )
-				{
-					detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
-					fileIndexResultsList.Add(detailView.FileIndexItem);
-					continue;
-				}
-
+				
+				// all filetypes that are exist > should be added 
+				
 				var statusResults =
 					new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+				
+				// ignore readonly status
+				if ( statusResults == FileIndexItem.ExifStatus.ReadOnly )
+					statusResults = FileIndexItem.ExifStatus.Ok;
+
 				
 				var statusModel = new FileIndexItem();
 				statusModel.SetFilePath(subPath);
 				statusModel.IsDirectory = false;
-
+				
 				if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 
 				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
@@ -89,12 +86,13 @@ namespace starsky.Controllers
 			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok) )
 				return NotFound(fileIndexResultsList);
 			
+			// NOT covered: when try to export for example image thumbnails of xml file
+				
 			// Creating a zip is a background task
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
 
 				var filePaths = CreateListToExport(fileIndexResultsList, thumbnail);
-				//filePaths = AddXmpFilesToList(filePaths, thumbnail, collections);
 				var fileNames = FilePathToFileName(filePaths, thumbnail);
 
 				CreateZip(filePaths,fileNames,zipHash);
@@ -112,37 +110,6 @@ namespace starsky.Controllers
 		}
 
 
-//		/// <summary>
-//		/// Add xmp files to export; if collections > add to list,
-//		/// ignore if thumbnail
-//		/// There is a new list created
-//		/// </summary>
-//		/// <param name="fileIndexResultsList"></param>
-//		/// <param name="thumbnail"></param>
-//		/// <param name="collections"></param>
-//		/// <returns></returns>
-//		public List<string> AddXmpFilesToList(
-//			List<string> fileIndexList, 
-//			bool thumbnail, bool collections )
-//		{
-//			if ( thumbnail ) return fileIndexList;
-//			if ( !collections ) return fileIndexList;
-//
-//			// There is a new list created
-//			var fileIndexResultsList = new List<string>();
-//			fileIndexResultsList.AddRange(fileIndexList);
-//			
-//			foreach ( var filePath in fileIndexList )
-//			{
-//				var fullFilePath = filePath.Replace(Path.GetExtension(filePath), ".xmp");
-//				if ( Files.ExistFile(fullFilePath) )
-//				{
-//					fileIndexResultsList.Add(fullFilePath);
-//				}
-//			}
-//
-//			return fileIndexResultsList;
-//		}
 
 		public List<string> CreateListToExport(List<FileIndexItem> fileIndexResultsList, bool thumbnail)
 		{
@@ -159,16 +126,11 @@ namespace starsky.Controllers
 
 				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
 
-//				if ( item.ImageFormat ==  )
-//				{
-//					
-//				}
-//				var fullFilePath = filePath.Replace(Path.GetExtension(filePath), ".xmp");
-//				if ( Files.ExistFile(fullFilePath) )
-//				{
-//					fileIndexResultsList.Add(fullFilePath);
-//				}
-				
+				// when there is .xmp sidecar file
+				if ( !thumbnail && Files.IsXmpSidecarRequired(sourceFile) && Files.ExistFile(Files.GetXmpSidecarFile(sourceFile)))
+				{
+					filePaths.Add(Files.GetXmpSidecarFile(sourceFile));
+				}
 
 			}
 

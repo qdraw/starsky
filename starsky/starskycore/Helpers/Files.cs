@@ -245,13 +245,20 @@ namespace starskycore.Helpers
             // Use an XMP File -> as those files don't support those tags
             if(IsXmpSidecarRequired(fullFilePath))
             {
-                // Overwrite to use xmp files
-                fullFilePath = Path.Combine(Path.GetDirectoryName(fullFilePath),
-                    exifToolXmpPrefix
-                    + Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
+	            return GetXmpSidecarFile(fullFilePath, exifToolXmpPrefix);
             }
             return fullFilePath;
         }
+
+	    public static string GetXmpSidecarFile(
+		    string fullFilePath,
+		    string exifToolXmpPrefix = "")
+	    {
+		    // Overwrite to use xmp files
+		    return Path.Combine(Path.GetDirectoryName(fullFilePath),
+			    exifToolXmpPrefix
+			    + Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
+	    }
         
         /// <summary>
         /// Get the format of the image by looking the first bytes
