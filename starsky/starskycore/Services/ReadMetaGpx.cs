@@ -18,28 +18,27 @@ namespace starskycore.Services
             if (Files.IsFolderOrFile(fullFilePath) != FolderOrFileModel.FolderOrFileTypeList.File) 
                 return new FileIndexItem();
 
-            try
-            {
-                var readGpxFile = ReadGpxFile(fullFilePath, null, 1);
-                return new FileIndexItem
-                {
-                    Title = readGpxFile.FirstOrDefault().Title,
-                    DateTime = readGpxFile.FirstOrDefault().DateTime,
-                    Latitude = readGpxFile.FirstOrDefault().Latitude,
-                    Longitude = readGpxFile.FirstOrDefault().Longitude,
-                    LocationAltitude = readGpxFile.FirstOrDefault().Altitude,
-                    ColorClass = FileIndexItem.Color.None
-                };
-            }
-            catch (XmlException e)
-            {
-                Console.WriteLine($"XmlException\n{e}\nXmlException");
-                return new FileIndexItem
-                {
-                    Tags = "SystemXmlXmlException",
-                    ColorClass = FileIndexItem.Color.None
-                };
-            }
+	        var readGpxFile = ReadGpxFile(fullFilePath, null, 1);
+	        
+	        if ( readGpxFile.Any() )
+	        {
+		        return new FileIndexItem
+		        {
+			        Title = readGpxFile.FirstOrDefault().Title,
+			        DateTime = readGpxFile.FirstOrDefault().DateTime,
+			        Latitude = readGpxFile.FirstOrDefault().Latitude,
+			        Longitude = readGpxFile.FirstOrDefault().Longitude,
+			        LocationAltitude = readGpxFile.FirstOrDefault().Altitude,
+			        ColorClass = FileIndexItem.Color.None
+		        }; 
+	        }
+	        
+	        return new FileIndexItem
+	        {
+		        Tags = "SystemXmlXmlException",
+		        ColorClass = FileIndexItem.Color.None
+	        };
+	        
         }
 
         private string GetTrkName(XmlDocument gpxDoc, XmlNamespaceManager namespaceManager)
@@ -72,24 +71,32 @@ namespace starskycore.Services
         {
             if (geoList == null) geoList = new List<GeoListItem>();
 
+	        // Some files are having problems with gpxDoc.Load()
+	        var fileString = new PlainTextFileHelper().ReadFile(fullFilePath);
+
 	        try
 	        {
-		        return ParseGpxFile(fullFilePath, geoList, returnAfter);
+		        return ParseGpxString(fileString, geoList, returnAfter);
 	        }
 	        catch ( XmlException e )
 	        {
-		        Console.WriteLine($"XmlException\n{e}\nXmlException");
+		        Console.WriteLine($"XmlException {fullFilePath} >>\n{e}\n <<XmlException");
 		        return geoList;
 	        }
 
         }
 
-	    private List<GeoListItem> ParseGpxFile(string fullFilePath, List<GeoListItem> geoList = null, int returnAfter = int.MaxValue)
+	    /// <summary>
+	    /// Parse the gpx string
+	    /// </summary>
+	    /// <param name="fileString">string with xml</param>
+	    /// <param name="geoList">object to add</param>
+	    /// <param name="returnAfter">return after number of values; default return all</param>
+	    /// <returns></returns>
+	    private List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem> geoList = null, int returnAfter = int.MaxValue)
 	    {
 		    XmlDocument gpxDoc = new XmlDocument();
             
-            // Some files are having problems with gpxDoc.Load()
-            var fileString = new PlainTextFileHelper().ReadFile(fullFilePath);
             gpxDoc.LoadXml(fileString);
             
             XmlNamespaceManager namespaceManager = new XmlNamespaceManager(gpxDoc.NameTable);
