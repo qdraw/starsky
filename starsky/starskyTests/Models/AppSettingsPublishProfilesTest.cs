@@ -55,7 +55,8 @@ namespace starskytests.Models
 				Path = "{AssemblyDirectory}" + Path.DirectorySeparatorChar + "test.jpg"
 			};
 
-			Assert.AreEqual(appSettings.BaseDirectoryProject + Path.DirectorySeparatorChar + "test.jpg", model.Path);
+			// in real world this is not always BaseDirectoryProject
+			Assert.AreEqual(appSettings.BaseDirectoryProject + "test.jpg", model.Path);
 			
 		}
 

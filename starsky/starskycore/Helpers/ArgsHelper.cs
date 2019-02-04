@@ -264,6 +264,28 @@ namespace starskycore.Helpers
 	        Console.WriteLine($"3. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}\n" +
 	                          $"4. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")} ");
 
+
+	        switch ( _appSettings.ApplicationType )
+	        {
+		        case AppSettings.StarskyAppType.WebHtml:
+			        Console.WriteLine($"Config for {_appSettings.ApplicationType}");
+			        foreach ( var publishProfiles in _appSettings.PublishProfiles )
+			        {
+				        Console.WriteLine("--- " +
+				                          $"Path: {publishProfiles.Path} " +
+				                          $"Append: {publishProfiles.Append} " +
+				                          $"Copy: {publishProfiles.Copy} " +
+				                          $"Folder: {publishProfiles.Folder} " +
+				                          $"Prepend: {publishProfiles.Prepend} " +
+				                          $"Template: {publishProfiles.Template} " +
+				                          $"ContentType: {publishProfiles.ContentType} " +
+				                          $"MetaData: {publishProfiles.MetaData} " +
+				                          $"OverlayMaxWidth: {publishProfiles.OverlayMaxWidth} " +
+				                          $"SourceMaxWidth: {publishProfiles.SourceMaxWidth} ");
+			        }
+			        break;
+	        }
+
 	        var framework = Assembly
 		        .GetEntryAssembly()?
 		        .GetCustomAttribute<TargetFrameworkAttribute>()?

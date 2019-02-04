@@ -1,6 +1,6 @@
 using System;
+using System.Text.RegularExpressions;
 using starskycore.Helpers;
-using starskycore.Services;
 
 namespace starskycore.Models
 {
@@ -58,12 +58,20 @@ namespace starskycore.Models
 		    set
 		    {
 			    if (string.IsNullOrEmpty(value)) return;
+
+			    if ( !value.Contains("{AssemblyDirectory}") )
+			    {
+				    _path = value;
+				    return;
+			    }
+				// get current dir
+			    var assemblyDirectory = PathHelper.RemoveLatestBackslash(AppDomain.CurrentDomain.BaseDirectory);
+			    // replace value -- ignore this case
+			    var subPath = Regex.Replace(value, "{AssemblyDirectory}", string.Empty, RegexOptions.IgnoreCase);
 			    
-			    // replace value
-			    _path = value.ToLowerInvariant()
-				    .Replace("{AssemblyDirectory}".ToLowerInvariant(),
-					    AppDomain.CurrentDomain.BaseDirectory
-						    .Replace("starskywebftpcli", "starskywebhtmlcli"));
+			    // append and replace
+			    _path = assemblyDirectory + subPath
+				    .Replace("starskywebftpcli", "starskywebhtmlcli");
 		    }
 	    }
 
