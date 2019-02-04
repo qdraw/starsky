@@ -47,12 +47,12 @@ namespace starskytests.Models
 
 
 		[TestMethod]
-		public void AppSettingsPublishProfilesTest_Path_BaseDirectoryProject()
+		public void AppSettingsPublishProfilesTest_Path_AssemblyDirectory()
 		{
 			var appSettings = new AppSettings();
 			var model = new AppSettingsPublishProfiles
 			{
-				Path = "{BaseDirectoryProject}" + Path.DirectorySeparatorChar + "test.jpg"
+				Path = "{AssemblyDirectory}" + Path.DirectorySeparatorChar + "test.jpg"
 			};
 
 			Assert.AreEqual(appSettings.BaseDirectoryProject + Path.DirectorySeparatorChar + "test.jpg", model.Path);
