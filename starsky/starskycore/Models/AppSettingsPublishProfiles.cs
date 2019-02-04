@@ -37,10 +37,33 @@ namespace starskycore.Models
             }
             set => _overlayMaxWidth = value;
         }
-        
-        public string Path { get; set; } // used for template url or overlay image
 
-        private string _folder = string.Empty;
+	    
+	    
+	    private string _path { get; set; } = string.Empty;
+
+	    /// <summary>
+	    /// used for template url or overlay image
+	    /// </summary>
+	    public string Path
+	    {
+		    get
+		    {
+			    // return: if null > string.Empty
+			    return string.IsNullOrEmpty(_path) ? string.Empty : _path;
+		    }
+		    set
+		    {
+			    if (string.IsNullOrEmpty(value)) return;
+			    
+			    // replace value
+			    _path = value.ToLowerInvariant()
+				    .Replace("{BaseDirectoryProject}".ToLowerInvariant(),
+					    new AppSettings().BaseDirectoryProject);
+		    }
+	    }
+
+	    private string _folder = string.Empty;
         public string Folder
         {
             get { return _folder; }

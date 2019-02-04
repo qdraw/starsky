@@ -57,11 +57,19 @@ This is used only for ContentType `jpeg`.
 When using ContentType `html` this is the filename of the rendered html file.
 With ContentType `jpeg`, this is the 'full file path' of the image used in `OverlayMaxWidth`
 
+__Replacer in Path__
+There is option to replace the `{BaseDirectoryProject}` value with the path of the starsky assemblies. This is using AppSettings.BaseDirectoryProject` 
+
+
 #### Template
 Used with ContentType `html` to select the Razor template file
 
 #### 'Pre pend'
-In ContentType `html` this is used to add text before the urls used in the html output
+In ContentType `html` this is used to add text before the urls used in the html output. 
+
+__Replacer in 'Pre pend'__
+There is option to replace the `{Name}` value with the slug-name of the item. A slug name is the name in lowercase and the spaces are replaced with dashes. 
+
 
 #### Append
 In ContentType `jpeg` this used to add text after the current filename
@@ -112,7 +120,7 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
                     "ContentType":  "jpeg",
                     "SourceMaxWidth":  1000,
                     "OverlayMaxWidth":  380,
-                    "Path": "/data/git/starsky/starsky/starskywebhtmlcli/EmbeddedViews/qdrawlarge.png",
+                    "Path": "{BaseDirectoryProject}/EmbeddedViews/qdrawlarge.png",
                     "Folder": "1000",
                     "Append": "_kl1k",
                     "Copy": "true"
@@ -121,7 +129,7 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
                     "ContentType":  "jpeg",
                     "SourceMaxWidth":  500,
                     "OverlayMaxWidth":  200,
-                    "Path": "/data/git/starsky/starsky/starskywebhtmlcli/EmbeddedViews/qdrawsmall.png",
+                    "Path": "{BaseDirectoryProject}/EmbeddedViews/qdrawsmall.png",
                     "Folder": "500",
                     "Append": "_kl",
                     "Copy": "true"
