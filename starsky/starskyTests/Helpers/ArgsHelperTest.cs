@@ -113,6 +113,15 @@ namespace starskytests.Helpers
         }
 
 	    [TestMethod]
+	    [ExpectedException(typeof(ArgumentNullException))]
+	    public void ArgsHelper_GetPathFormArgsTest_ArgumentNullException()
+	    {
+		    // inject appsettings!
+		    var args = new List<string> {"-p", "/"}.ToArray();
+		    new ArgsHelper().GetPathFormArgs(args);
+	    }
+
+	    [TestMethod]
 	    public void ArgsHelper_GetPath_WithHelp_CurrentDirectory_Test()
 	    {
 		    var args = new List<string> { "-p", "-h" }.ToArray();

@@ -26,7 +26,7 @@ namespace starskywebhtmlcli
                 return;
             }
             
-            var inputPath = new ArgsHelper().GetPathFormArgs(args,false);
+            var inputPath = new ArgsHelper(appSettings).GetPathFormArgs(args,false);
 
             if (string.IsNullOrWhiteSpace(inputPath))
             {

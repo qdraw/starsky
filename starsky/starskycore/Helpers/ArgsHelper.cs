@@ -313,7 +313,9 @@ namespace starskycore.Helpers
         
         public string GetPathFormArgs(IReadOnlyList<string> args, bool dbStyle = true)
         {
-            var path = string.Empty;
+	        if ( _appSettings == null ) throw new ArgumentNullException(nameof(_appSettings));
+
+	        var path = string.Empty;
         
             for (int arg = 0; arg < args.Count; arg++)
             {
