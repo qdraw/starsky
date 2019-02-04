@@ -1,7 +1,9 @@
 # version 0.1.3 - tbd
 - fix issues on exporting
 - fix issue on Sync (-p option)
+- change `ArgsHelper(appSettings).GetPathFormArgs` need to have appSettings
 - fix UI: zooming in on iPad triggers next/prev
+- fix init sqlite for legacy app
 
 # version 0.1.2 - 2019-02-01
 - starskywebftpcli
