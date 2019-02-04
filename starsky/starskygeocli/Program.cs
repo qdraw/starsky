@@ -23,7 +23,7 @@ namespace starskyGeoCli
 
 			// When there is no input show help
 			if (new ArgsHelper().NeedHelp(args) || 
-					(new ArgsHelper().GetPathFormArgs(args,false).Length <= 1 
+					(new ArgsHelper(appSettings).GetPathFormArgs(args,false).Length <= 1 
 					&& new ArgsHelper().GetSubpathFormArgs(args).Length <= 1 
 					&& new ArgsHelper(appSettings).GetSubpathRelative(args).Length <= 1))
 			{

@@ -118,7 +118,7 @@ namespace starskytests.Helpers
 	    {
 		    // inject appsettings!
 		    var args = new List<string> {"-p", "/"}.ToArray();
-		    new ArgsHelper().GetPathFormArgs(args);
+		    new ArgsHelper(null).GetPathFormArgs(args);
 	    }
 
 	    [TestMethod]

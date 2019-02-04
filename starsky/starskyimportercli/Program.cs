@@ -28,7 +28,7 @@ namespace starskyimportercli
                 return;
             }
             
-            var inputPath = new ArgsHelper().GetPathFormArgs(args,false);
+            var inputPath = new ArgsHelper(appSettings).GetPathFormArgs(args,false);
             
             if(appSettings.Verbose) Console.WriteLine("inputPath " + inputPath);
 	        
