@@ -1,3 +1,4 @@
+using System;
 using starskycore.Helpers;
 using starskycore.Services;
 
@@ -39,7 +40,9 @@ namespace starskycore.Models
         }
 
 	    
-	    
+	    /// <summary>
+	    /// private: used for template url or overlay image
+	    /// </summary>
 	    private string _path { get; set; } = string.Empty;
 
 	    /// <summary>
@@ -58,8 +61,9 @@ namespace starskycore.Models
 			    
 			    // replace value
 			    _path = value.ToLowerInvariant()
-				    .Replace("{BaseDirectoryProject}".ToLowerInvariant(),
-					    new AppSettings().BaseDirectoryProject);
+				    .Replace("{AssemblyDirectory}".ToLowerInvariant(),
+					    AppDomain.CurrentDomain.BaseDirectory
+						    .Replace("starskywebftpcli", "starskywebhtmlcli"));
 		    }
 	    }
 

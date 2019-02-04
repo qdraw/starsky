@@ -58,7 +58,8 @@ When using ContentType `html` this is the filename of the rendered html file.
 With ContentType `jpeg`, this is the 'full file path' of the image used in `OverlayMaxWidth`
 
 __Replacer in Path__
-There is option to replace the `{BaseDirectoryProject}` value with the path of the starsky assemblies. This is using AppSettings.BaseDirectoryProject` 
+There is option to replace the `{AssemblyDirectory}` value with the path of the starsky assemblies. 
+This is __not__ using `AppSettings.BaseDirectoryProject` but the assemblies inside StarskyWebHtmlCli
 
 
 #### Template
@@ -120,7 +121,7 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
                     "ContentType":  "jpeg",
                     "SourceMaxWidth":  1000,
                     "OverlayMaxWidth":  380,
-                    "Path": "{BaseDirectoryProject}/EmbeddedViews/qdrawlarge.png",
+                    "Path": "{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
                     "Folder": "1000",
                     "Append": "_kl1k",
                     "Copy": "true"
@@ -129,7 +130,7 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
                     "ContentType":  "jpeg",
                     "SourceMaxWidth":  500,
                     "OverlayMaxWidth":  200,
-                    "Path": "{BaseDirectoryProject}/EmbeddedViews/qdrawsmall.png",
+                    "Path": "{AssemblyDirectory}/EmbeddedViews/qdrawsmall.png",
                     "Folder": "500",
                     "Append": "_kl",
                     "Copy": "true"

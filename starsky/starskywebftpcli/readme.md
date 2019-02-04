@@ -63,7 +63,7 @@ Use the `publishProfiles` by the `starskyWebHtmlCli` and add the `WebFtp` field.
                     "ContentType":  "jpeg",
                     "SourceMaxWidth":  1000,
                     "OverlayMaxWidth":  380,
-                    "Path": "{BaseDirectoryProject}/EmbeddedViews/qdrawlarge.png",
+                    "Path": "{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
                     "Folder": "1000",
                     "Append": "_kl1k",
                     "Copy": "true"
@@ -72,7 +72,7 @@ Use the `publishProfiles` by the `starskyWebHtmlCli` and add the `WebFtp` field.
                     "ContentType":  "jpeg",
                     "SourceMaxWidth":  500,
                     "OverlayMaxWidth":  200,
-                    "Path": "{BaseDirectoryProject}/EmbeddedViews/qdrawsmall.png",
+                    "Path": "{AssemblyDirectory}/EmbeddedViews/qdrawsmall.png",
                     "Folder": "500",
                     "Append": "_kl",
                     "Copy": "true"
