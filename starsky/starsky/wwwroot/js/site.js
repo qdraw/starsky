@@ -200,7 +200,7 @@ function swipedetect(el, callback){
         startY,
         distX,
         distY,
-        threshold = 150, //required min distance traveled to be considered swipe
+        threshold = 170, //required min distance traveled to be considered swipe
         restraint = 100, // maximum distance allowed at the same time in perpendicular direction
         allowedTime = 300, // maximum time allowed to travel that distance
         elapsedTime,
@@ -208,24 +208,24 @@ function swipedetect(el, callback){
         handleswipe = callback || function(swipedir){}
 
     touchsurface.addEventListener('touchstart', function(e){
-        var touchobj = e.changedTouches[0]
-        swipedir = 'none'
-        dist = 0
-        startX = touchobj.pageX
-        startY = touchobj.pageY
+        var touchobj = e.changedTouches[0];
+        swipedir = 'none';
+        dist = 0;
+        startX = touchobj.pageX;
+        startY = touchobj.pageY;
         startTime = new Date().getTime() // record time when finger first makes contact with surface
         // e.preventDefault()
     }, false)
 
     touchsurface.addEventListener('touchmove', function(e){
         // e.preventDefault() // prevent scrolling when inside DIV
-    }, false)
+    }, false);
 
     touchsurface.addEventListener('touchend', function(e){
-        var touchobj = e.changedTouches[0]
-        distX = touchobj.pageX - startX // get horizontal dist traveled by finger while in contact with surface
-        distY = touchobj.pageY - startY // get vertical dist traveled by finger while in contact with surface
-        elapsedTime = new Date().getTime() - startTime // get time elapsed
+        var touchobj = e.changedTouches[0];
+        distX = touchobj.pageX - startX;// get horizontal dist traveled by finger while in contact with surface
+        distY = touchobj.pageY - startY; // get vertical dist traveled by finger while in contact with surface
+        elapsedTime = new Date().getTime() - startTime; // get time elapsed
         if (elapsedTime <= allowedTime){ // first condition for awipe met
             if (Math.abs(distX) >= threshold && Math.abs(distY) <= restraint){ // 2nd condition for horizontal swipe met
                 swipedir = (distX < 0)? 'left' : 'right' // if dist traveled is negative, it indicates left swipe
@@ -253,10 +253,11 @@ function goRight() {
         document.activeElement.className.indexOf("form-control") === -1
         && document.activeElement.className.indexOf("leaflet-touch-drag") === -1)
     {
-        showPopupDialog( "<p>Je bent al bij het laatste item, je kunt niet verder</p>\n" +
+        showPopupDialog("<p>Je bent al bij het eerste item, je kunt niet verder terug.</p>\n" +
             "<p>\n" +
-            "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oké</a>\n" +
-            "</p>\n",3000);
+            "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
+            "</p>\n", 3000);
+       
     }
 }
 
@@ -270,16 +271,17 @@ function goLeft() {
     else if (
         document.activeElement.className.indexOf("form-control") === -1
         && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
-        showPopupDialog("<p>Je bent al bij het eerste item, je kunt niet verder terug.</p>\n" +
+
+        showPopupDialog( "<p>Je bent al bij het laatste item, je kunt niet verder</p>\n" +
             "<p>\n" +
-            "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
-            "</p>\n", 3000);
+            "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oké</a>\n" +
+            "</p>\n",3000);
+
     }
 } 
 
 var el = document.querySelector("body");
 swipedetect(el, function(swipedir){
-    console.log(swipedir);
 
     if (swipedir === "left") 
     {
