@@ -92,7 +92,7 @@ namespace starsky.Controllers
         }
 			   
 	    /// <summary>
-	    /// Work in progress: 
+	    /// Work in progress: Rename file/folder and update it in the database
 	    /// </summary>
 	    /// <param name="f"></param>
 	    /// <param name="to"></param>

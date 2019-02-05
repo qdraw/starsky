@@ -34,6 +34,15 @@ namespace starsky.Controllers
             _readMeta = readMeta;
         }
 
+	    /// <summary>
+	    /// The database-view of a directory
+	    /// </summary>
+	    /// <param name="f">subpath</param>
+	    /// <param name="colorClass">filter on colorclass (use int)</param>
+	    /// <param name="json">to not show as webpage</param>
+	    /// <param name="collections">to combine files with the same name before the extension</param>
+	    /// <param name="hidedelete">ignore deleted files</param>
+	    /// <returns></returns>
 		[HttpGet("/api")]
 		[ProducesResponseType(typeof(ArchiveViewModel),200)]
 		[ProducesResponseType(404)]
