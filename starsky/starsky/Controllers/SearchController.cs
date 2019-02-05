@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starskycore.Interfaces;
+using starskycore.ViewModels;
 
 namespace starsky.Controllers
 {
@@ -20,6 +21,7 @@ namespace starsky.Controllers
 	    /// <param name="t">search query</param>
 	    /// <returns></returns>
         [HttpPost("/search")]
+	    [ProducesResponseType(301)] // redirect
         public IActionResult IndexPost(string t)
         {
 			return RedirectToAction("Index", new {t, p = 0 });
@@ -33,6 +35,7 @@ namespace starsky.Controllers
 	    /// <param name="json">enable json response</param>
 	    /// <returns></returns>
         [HttpGet("/search")]
+	    [ProducesResponseType(typeof(SearchViewModel),200)] // ok
         public IActionResult Index(string t, int p = 0, bool json = false)
         {
             // Json api && View()            
@@ -49,6 +52,7 @@ namespace starsky.Controllers
 	    /// <param name="json"></param>
 	    /// <returns></returns>
         [HttpGet("/search/trash")]
+	    [ProducesResponseType(typeof(SearchViewModel),200)] // ok
         public IActionResult Trash(int p = 0, bool json = false)
         {
             var model = _search.Search("!delete!", p, false);

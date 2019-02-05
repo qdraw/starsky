@@ -22,6 +22,8 @@ namespace starsky.Controllers
 		/// <param name="json">get results</param>
 		/// <returns></returns>
 		[HttpGet("/redirect/SubpathRelative")]
+		[ProducesResponseType(301)] // redirect
+		[ProducesResponseType(200)] // value
 		public IActionResult SubpathRelative(int value, bool json = false)
 		{
 			if(value >= 1) value = value * -1; //always in the past

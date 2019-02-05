@@ -41,6 +41,8 @@ namespace starsky.Controllers
 		/// <param name="collections"></param>
 		/// <returns></returns>
 		[HttpPost("/export/createZip")]
+		[ProducesResponseType(200)] // "zipHash"
+		[ProducesResponseType(404)] // "Not found"
 		public async Task<IActionResult> CreateZip(string f, bool collections = true, bool thumbnail = false)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
@@ -159,7 +161,15 @@ namespace starsky.Controllers
 		}
 
 
+		/// <summary>
+		/// Get the exported zip, first call 'createZip'
+		/// </summary>
+		/// <param name="f">zip hash</param>
+		/// <param name="json"></param>
+		/// <returns></returns>
 		[HttpGet("/export/zip/{f}.zip")]
+		[ProducesResponseType(200)] // "zip file"
+		[ProducesResponseType(206)] // "Not Ready"
 		public async Task<IActionResult> Zip(string f, bool json = false)
 		{
 			var sourceFullPath = Path.Join(_appSettings.TempFolder,f) + ".zip";
@@ -182,6 +192,11 @@ namespace starsky.Controllers
 			return File(fs, MimeHelper.GetMimeTypeByFileName(sourceFullPath));
 		}
 
+		/// <summary>
+		/// to create a unique name of the zip using c# get hashcode
+		/// </summary>
+		/// <param name="fileIndexResultsList">list of objects with filehashes</param>
+		/// <returns>unique 'get hashcode' string</returns>
 		private string GetName(List<FileIndexItem> fileIndexResultsList)
 		{
 			var tempFileNameStringBuilder = new StringBuilder();
@@ -194,7 +209,13 @@ namespace starsky.Controllers
 			return shortName;
 		}
 	
-
+		/// <summary>
+		/// To Create the zip file in the temp folder
+		/// </summary>
+		/// <param name="filePaths">list of full file paths</param>
+		/// <param name="fileNames">list of filenames</param>
+		/// <param name="zipHash">to name of the zip file</param>
+		/// <returns></returns>
 		public string CreateZip(List<string> filePaths, List<string> fileNames, string zipHash)
 		{
 

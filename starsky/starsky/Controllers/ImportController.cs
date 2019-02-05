@@ -47,6 +47,8 @@ namespace starsky.Controllers
         [HttpPost("/import")]
         [DisableFormValueModelBinding]
         [RequestSizeLimit(160000000)] // in bytes, 160mb
+        [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
+        [ProducesResponseType(typeof(List<ImportIndexItem>),206)]  // When all items are already imported
         public async Task<IActionResult> IndexPost()
         {
             var tempImportPaths = await Request.StreamFile(_appSettings);
@@ -139,19 +141,21 @@ namespace starsky.Controllers
 	    /// <summary>
 	    /// Import file from weburl (only whitelisted domains) and import this file into the application
 	    /// </summary>
-	    /// <param name="fileurl">the url</param>
+	    /// <param name="fileUrl">the url</param>
 	    /// <param name="filename">the filename (optional, random used if empty)</param>
 	    /// <param name="structure">use structure (optional)</param>
 	    /// <returns></returns>
 	    [HttpPost("/import/fromUrl")]
-        public async Task<IActionResult> FromUrl(string fileurl, string filename, string structure)
+	    [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
+	    [ProducesResponseType(404)] // url 404
+        public async Task<IActionResult> FromUrl(string fileUrl, string filename, string structure)
         {
 	        if (filename == null) filename = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
 	        var tempImportFullPath = Path.Combine(_appSettings.TempFolder, filename);
 	        var importSettings = new ImportSettingsModel(Request);
             importSettings.Structure = structure;
-            var isDownloaded = await _httpClientHelper.Download(fileurl,tempImportFullPath);
-            if (!isDownloaded) return NotFound("fileurl not found or domain not allowed " + fileurl);
+            var isDownloaded = await _httpClientHelper.Download(fileUrl,tempImportFullPath);
+            if (!isDownloaded) return NotFound("'file url' not found or domain not allowed " + fileUrl);
 
 	        var importedFiles = _import.Import(new List<string>{tempImportFullPath}, importSettings);
             Files.DeleteFile(tempImportFullPath);

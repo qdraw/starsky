@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.ViewModels.Account;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskycore.Models.Account;
 
 namespace starsky.Controllers
 {
@@ -21,7 +22,14 @@ namespace starsky.Controllers
             _userManager = userManager;
         }
         
+	    /// <summary>
+	    /// View Account settings
+	    /// </summary>
+	    /// <param name="json">true => 200 == success, 401 is not logged</param>
+	    /// <returns>account page or status</returns>
 	    [HttpGet("/account")]
+	    [ProducesResponseType(typeof(User), 200)]
+	    [ProducesResponseType(401)]
         public IActionResult Index(bool json = false)
 	    {
 		    if ( json && !User.Identity.IsAuthenticated ) return Unauthorized();
@@ -34,7 +42,8 @@ namespace starsky.Controllers
         /// Login form page
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("/account/login")]
+        [ProducesResponseType(200)]
         public IActionResult Login(string returnUrl = null)
         {
 
@@ -48,8 +57,8 @@ namespace starsky.Controllers
         /// <param name="model">Email, password and remember me bool</param>
         /// <param name="returnUrl">null or localurl</param>
         /// <returns></returns>
-        [HttpPost]
-        [ActionName("Login")]
+        [HttpPost("/account/login")]
+        [ProducesResponseType(200)]
         public async Task<IActionResult> LoginPost(LoginViewModel model, string returnUrl = null)
         {
             ValidateResult validateResult = _userManager.Validate("Email", model.Email, model.Password);
@@ -74,7 +83,7 @@ namespace starsky.Controllers
         /// Logout the current HttpContext
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("/account/logout")]
         public IActionResult Logout()
         {
             _userManager.SignOut(HttpContext);
@@ -86,7 +95,7 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="returnUrl">when succesfull continue</param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("/account/register")]
         [AllowAnonymous]
         public IActionResult Register(string returnUrl = null)
         {

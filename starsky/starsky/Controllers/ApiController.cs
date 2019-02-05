@@ -8,6 +8,7 @@ using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
+using starskycore.ViewModels;
 
 namespace starsky.Controllers
 {
@@ -34,6 +35,8 @@ namespace starsky.Controllers
         }
 
 		[HttpGet("/api")]
+		[ProducesResponseType(typeof(ArchiveViewModel),200)]
+		[ProducesResponseType(404)]
 		public IActionResult Index(
 			string f = "/",
 			string colorClass = null,
@@ -52,6 +55,7 @@ namespace starsky.Controllers
 	    [HttpHead("/api/env")]
         [HttpGet("/api/env")]
         [IgnoreAntiforgeryToken]
+	    [ProducesResponseType(typeof(AppSettings),200)]
         [AllowAnonymous] /// <=================================
         public IActionResult Env()
 	    {
@@ -125,6 +129,8 @@ namespace starsky.Controllers
         /// <param name="append">only for stings, add update to existing items</param>
         /// <returns></returns>
 		[IgnoreAntiforgeryToken]
+		[ProducesResponseType(typeof(List<FileIndexItem>),200)]
+		[ProducesResponseType(typeof(List<FileIndexItem>),404)]
 		[HttpPost("/api/update")]
 		public IActionResult Update(FileIndexItem inputModel, string f, bool append, bool collections = true,  int rotateClock = 0)
 		{
@@ -320,6 +326,8 @@ namespace starsky.Controllers
         /// <param name="collections">true is to update files with the same name before the extenstion</param>
         /// <returns></returns>
         [HttpDelete("/api/delete")]
+        [ProducesResponseType(typeof(List<FileIndexItem>),200)]
+        [ProducesResponseType(typeof(List<FileIndexItem>),404)]
         [Produces("application/json")]
         public IActionResult Delete(string f, bool collections = true)
         {
@@ -396,6 +404,10 @@ namespace starsky.Controllers
         /// <param name="retryThumbnail">true = remove thumbnail if corrupt</param>
         /// <returns></returns>
         [HttpGet("/api/thumbnail/{f}")]
+        [ProducesResponseType(200)] // file
+        [ProducesResponseType(404)] // not found
+        [ProducesResponseType(409)] // raw
+        [ProducesResponseType(209)] // "Thumbnail is not ready yet"
         [IgnoreAntiforgeryToken]
         public IActionResult Thumbnail(
             string f, 
@@ -507,6 +519,8 @@ namespace starsky.Controllers
         /// <param name="isThumbnail">true = 1000px thumb (if supported)</param>
         /// <returns>FileStream with image</returns>
         [HttpGet("/api/downloadPhoto")]
+        [ProducesResponseType(200)] // file
+        [ProducesResponseType(500)] // "Thumbnail generation failed"
         public IActionResult DownloadPhoto(string f, bool isThumbnail = true)
         {
             // f = subpath/filepath
@@ -581,6 +595,9 @@ namespace starsky.Controllers
         /// <returns>redirect or if json enabled a status</returns>
         [HttpGet("/api/RemoveCache")]
         [HttpPost("/api/RemoveCache")]
+        [ProducesResponseType(200)] // "cache successful cleared"
+        [ProducesResponseType(412)] // "cache disabled in config"
+        [ProducesResponseType(400)] // "path not exit"
         public IActionResult RemoveCache(string f = "/", bool json = false)
         {
             //For folder paths only
@@ -596,7 +613,7 @@ namespace starsky.Controllers
             {
                 _query.RemoveCacheParentItem(f);
                 if(!json) return RedirectToAction("Index", "Home", new { f });
-                return Json("cache succesfull cleared");
+                return Json("cache successful cleared");
             }
 
             if(!json) return RedirectToAction("Index", "Home", new { f });
