@@ -74,7 +74,7 @@ namespace starskytests.Helpers
 				})
 				.Configure(app =>
 				{
-					app.UseStaticFiles();
+//					app.UseStaticFiles(); // disabled for now
 					app.UseMvc();
 					app.UseMvc(routes =>
 					{
