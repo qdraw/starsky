@@ -7,6 +7,20 @@ showdown.setFlavor('github');
 var converter = new showdown.Converter();
 converter.setOption('completeHTMLDocument', true);
 
+// var exec = require('child_process').exec;
+// function execute(command, callback){
+//     exec(command, function(error, stdout, stderr){ callback(stdout); });
+// }
+//
+// execute("which dotnet", function(name){
+// 	if (name.indexOf("dotnet") >= 0) {
+// 		execute("dotnet test ../../starsky/starskyTests --filter ClassName=starskytests.Helpers.SwaggerHelperTest", function(name){
+// 			console.log(name);
+//
+// 		});
+// 	}
+// });
+
 
 var prefixPath = "../../";
 
