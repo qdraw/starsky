@@ -621,7 +621,7 @@ namespace starskytests.Controllers
 
             // Act, remove content from cache
             var actionResult = controller.RemoveCache("/cacheDeleteTest",true) as JsonResult;
-            Assert.AreEqual("cache succesfull cleared", actionResult.Value);
+            Assert.AreEqual("cache successful cleared", actionResult.Value);
             
             // Check if there are now two items in the cache
             var newQuery = _query.DisplayFileFolders("/cacheDeleteTest");

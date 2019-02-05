@@ -66,8 +66,8 @@ namespace starskytests.Helpers
 				.UseUrls("http://localhost:5051")
 				.ConfigureServices(services =>
 				{
-					services.AddMvc()
-						.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+					services.AddMvcCore().AddApiExplorer(); // use core and AddApiExplorer to make it faster
+					// https://offering.solutions/blog/articles/2017/02/07/difference-between-addmvc-addmvcore/
 					services.AddSwaggerGen();
 					new SwaggerHelper(_appSettings).Add01SwaggerGenHelper(services);
 
