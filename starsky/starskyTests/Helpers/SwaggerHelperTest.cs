@@ -46,7 +46,7 @@ namespace starskytests.Helpers
 			// Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
 			_appSettings = new AppSettings
 			{
-				Name = "swaggerOutput",
+				Name = "starskySwaggerOutput",
 				AddSwagger = true,
 				AddSwaggerExport = true
 			};
