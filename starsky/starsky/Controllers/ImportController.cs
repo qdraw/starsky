@@ -43,8 +43,10 @@ namespace starsky.Controllers
 		/// <summary>
 		/// Import a file using the structure format
 		/// </summary>
-		/// <returns></returns>
-        [HttpPost("/import")]
+		/// <returns>the ImportIndexItem of the imported files</returns>
+		/// <response code="200">done</response>
+		/// <response code="206">file already imported</response>
+		[HttpPost("/import")]
         [DisableFormValueModelBinding]
         [RequestSizeLimit(160000000)] // in bytes, 160mb
         [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
@@ -145,8 +147,12 @@ namespace starsky.Controllers
 	    /// <param name="filename">the filename (optional, random used if empty)</param>
 	    /// <param name="structure">use structure (optional)</param>
 	    /// <returns></returns>
+	    /// <response code="200">done</response>
+	    /// <response code="206">file already imported</response>
+	    /// <response code="404">the file url is not found or the domain is not whitelisted</response>
 	    [HttpPost("/import/fromUrl")]
 	    [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
+	    [ProducesResponseType(typeof(List<ImportIndexItem>),206)] // file already imported
 	    [ProducesResponseType(404)] // url 404
         public async Task<IActionResult> FromUrl(string fileUrl, string filename, string structure)
         {

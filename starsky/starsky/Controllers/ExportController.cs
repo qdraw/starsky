@@ -35,11 +35,13 @@ namespace starsky.Controllers
 		}
 		
 		/// <summary>
-		/// Export source files to an zip archive (alpha feature)
+		/// Export source files to an zip archive
 		/// </summary>
-		/// <param name="f"></param>
-		/// <param name="collections"></param>
-		/// <returns></returns>
+		/// <param name="f">subpath to files</param>
+		/// <param name="collections">enable files with the same name (before the extension)</param>
+		/// <returns>name of a to generate zip file</returns>
+		/// <response code="200">the name of the to generated zip file</response>
+		/// <response code="404">files not found</response>
 		[HttpPost("/export/createZip")]
 		[ProducesResponseType(200)] // "zipHash"
 		[ProducesResponseType(404)] // "Not found"
@@ -112,7 +114,12 @@ namespace starsky.Controllers
 		}
 
 
-
+		/// <summary>
+		/// This list will be included in the zip
+		/// </summary>
+		/// <param name="fileIndexResultsList">the items</param>
+		/// <param name="thumbnail">add the thumbnail or the source image</param>
+		/// <returns>list of filepaths</returns>
 		public List<string> CreateListToExport(List<FileIndexItem> fileIndexResultsList, bool thumbnail)
 		{
 			var filePaths = new List<string>();
@@ -139,6 +146,12 @@ namespace starsky.Controllers
 			return filePaths;
 		}
 
+		/// <summary>
+		/// Get the filename (in case of thumbnail the source image name)
+		/// </summary>
+		/// <param name="filePaths">the full file paths </param>
+		/// <param name="thumbnail">copy the thumbnail (true) or the source image (false)</param>
+		/// <returns></returns>
 		public List<string> FilePathToFileName(List<string> filePaths, bool thumbnail)
 		{
 			var fileNames = new List<string>();
@@ -162,11 +175,13 @@ namespace starsky.Controllers
 
 
 		/// <summary>
-		/// Get the exported zip, first call 'createZip'
+		/// Get the exported zip, but first call 'createZip'
 		/// </summary>
 		/// <param name="f">zip hash</param>
-		/// <param name="json"></param>
-		/// <returns></returns>
+		/// <param name="json">true to get OK instead of a zip file</param>
+		/// <returns>Not ready or the zipfile</returns>
+		/// <response code="200">if json is true return 'OK', else the zip file</response>
+		/// <response code="206">Not ready generating the zip, please wait</response>
 		[HttpGet("/export/zip/{f}.zip")]
 		[ProducesResponseType(200)] // "zip file"
 		[ProducesResponseType(206)] // "Not Ready"
@@ -215,7 +230,7 @@ namespace starsky.Controllers
 		/// <param name="filePaths">list of full file paths</param>
 		/// <param name="fileNames">list of filenames</param>
 		/// <param name="zipHash">to name of the zip file</param>
-		/// <returns></returns>
+		/// <returns>a zip in the temp folder</returns>
 		public string CreateZip(List<string> filePaths, List<string> fileNames, string zipHash)
 		{
 

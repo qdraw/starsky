@@ -60,9 +60,10 @@ namespace starsky.Controllers
 		}
 
 	    /// <summary>
-        /// Used for end2end test, show config data
+        /// Show the runtime settings (allow AllowAnonymous)
         /// </summary>
         /// <returns>config data, except connection strings</returns>
+	    /// <response code="200">returns the runtime settings of starsky</response>
 	    [HttpHead("/api/env")]
         [HttpGet("/api/env")]
         [IgnoreAntiforgeryToken]
@@ -139,7 +140,9 @@ namespace starsky.Controllers
 		/// <param name="collections">StackCollections bool, default true</param>
         /// <param name="append">only for stings, add update to existing items</param>
         /// <returns></returns>
-		[IgnoreAntiforgeryToken]
+        /// <response code="200">the item including the updated content</response>
+        /// <response code="404">item not found in the database or on disk</response>
+        [IgnoreAntiforgeryToken]
 		[ProducesResponseType(typeof(List<FileIndexItem>),200)]
 		[ProducesResponseType(typeof(List<FileIndexItem>),404)]
 		[HttpPost("/api/update")]
@@ -280,7 +283,13 @@ namespace starsky.Controllers
         /// <param name="f">subpaths split by dot comma</param>
         /// <param name="collections">true is to update files with the same name before the extenstion</param>
         /// <returns></returns>
+        /// <response code="200">the item on disk</response>
+        /// <response code="404">item not found on disk</response>
+        /// <response code="203">you are not allowed to edit this item</response>
         [HttpGet("/api/info")]
+        [ProducesResponseType(typeof(List<FileIndexItem>),200)]
+        [ProducesResponseType(typeof(List<FileIndexItem>),404)]
+        [ProducesResponseType(typeof(List<FileIndexItem>),203)]
         public IActionResult Info(string f, bool collections = true)
         {
             var inputFilePaths = PathHelper.SplitInputFilePaths(f);
@@ -336,6 +345,8 @@ namespace starsky.Controllers
         /// <param name="f">subpaths, seperated by dot comma</param>
         /// <param name="collections">true is to update files with the same name before the extenstion</param>
         /// <returns></returns>
+        /// <response code="200">file is gone</response>
+        /// <response code="404">item not found on disk or !delete! tag is missing</response>
         [HttpDelete("/api/delete")]
         [ProducesResponseType(typeof(List<FileIndexItem>),200)]
         [ProducesResponseType(typeof(List<FileIndexItem>),404)]
@@ -414,6 +425,10 @@ namespace starsky.Controllers
         /// <param name="json">text as output</param>
         /// <param name="retryThumbnail">true = remove thumbnail if corrupt</param>
         /// <returns></returns>
+        /// <response code="200">returns content of the file or when json is true, "OK"</response>
+        /// <response code="404">item not found on disk</response>
+        /// <response code="409">Conflict, you did try get for example a thumbnail of a raw file</response>
+        /// <response code="209">"Thumbnail is not ready yet"</response>
         [HttpGet("/api/thumbnail/{f}")]
         [ProducesResponseType(200)] // file
         [ProducesResponseType(404)] // not found
@@ -529,8 +544,12 @@ namespace starsky.Controllers
         /// <param name="f">string, subpath to find the file</param>
         /// <param name="isThumbnail">true = 1000px thumb (if supported)</param>
         /// <returns>FileStream with image</returns>
+        /// <response code="200">returns content of the file or when json is true, "OK"</response>
+        /// <response code="404">source image missing</response>
+        /// <response code="500">"Thumbnail generation failed"</response>
         [HttpGet("/api/downloadPhoto")]
         [ProducesResponseType(200)] // file
+        [ProducesResponseType(404)] // not found
         [ProducesResponseType(500)] // "Thumbnail generation failed"
         public IActionResult DownloadPhoto(string f, bool isThumbnail = true)
         {
@@ -599,16 +618,21 @@ namespace starsky.Controllers
         }
 
         /// <summary>
-        /// Delete Database Cache
+        /// Delete Database Cache (only the cache)
         /// </summary>
         /// <param name="f">subpath</param>
         /// <param name="json">return status</param>
         /// <returns>redirect or if json enabled a status</returns>
+        /// <response code="200">when json is true, "cache successful cleared"</response>
+        /// <response code="412">"cache disabled in config"</response>
+        /// <response code="400">ignored, please check if the 'f' path exist or use a folder string to clear the cache</response>
+        /// <response code="302">redirect back to the url</response>
         [HttpGet("/api/RemoveCache")]
         [HttpPost("/api/RemoveCache")]
         [ProducesResponseType(200)] // "cache successful cleared"
         [ProducesResponseType(412)] // "cache disabled in config"
-        [ProducesResponseType(400)] // "path not exit"
+        [ProducesResponseType(400)] // "ignored, please check if the 'f' path exist or use a folder string to clear the cache"
+        [ProducesResponseType(302)] // redirect back to the url
         public IActionResult RemoveCache(string f = "/", bool json = false)
         {
             //For folder paths only

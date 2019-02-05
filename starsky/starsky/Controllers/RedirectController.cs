@@ -20,10 +20,12 @@ namespace starsky.Controllers
 		/// </summary>
 		/// <param name="value">how many days ago</param>
 		/// <param name="json">get results</param>
-		/// <returns></returns>
+		/// <returns>redirect or path to relative folder</returns>
+		/// <response code="200">(if json is true) the subpath of the folder</response>
+		/// <response code="301">(if json is false) redirect to folder</response>
 		[HttpGet("/redirect/SubpathRelative")]
-		[ProducesResponseType(301)] // redirect
 		[ProducesResponseType(200)] // value
+		[ProducesResponseType(301)] // redirect
 		public IActionResult SubpathRelative(int value, bool json = false)
 		{
 			if(value >= 1) value = value * -1; //always in the past
