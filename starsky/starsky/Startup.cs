@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -12,14 +11,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using starsky.Helpers;
 using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using Swashbuckle.AspNetCore.Swagger;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
@@ -111,19 +109,8 @@ namespace starsky
             );
 
 	        
-
-	        
-	        services.AddSwaggerGen(c =>
-	        {
-		        c.SwaggerDoc(_appSettings.Name, new Info { Title = _appSettings.Name, Version = "v1" });
-		        
-		        c.AddSecurityDefinition("basic", new BasicAuthScheme {Type = "basic", Description = "basic authentication" }); 
-		        c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> { { "basic", new string[] { } },});
-		        
-		        c.IncludeXmlComments(GetXmlCommentsPath());
-		        c.DescribeAllEnumsAsStrings();
-		        c.DocumentFilter<BasicAuthFilter>();
-	        }); 
+			// to add support for swagger
+			new SwaggerHelper(_appSettings).Add01SwaggerGenHelper(services);	        
 
 	        services.AddMvc()
 	            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -147,28 +134,8 @@ namespace starsky
 	        services.AddSingleton<HttpClientHelper>();
 	        services.AddSingleton<System.Net.Http.HttpClient>();
 
-
         }
 
-	    private class BasicAuthFilter : IDocumentFilter
-	    {
-		    public void Apply(SwaggerDocument swaggerDoc, DocumentFilterContext context)
-		    {
-			    var securityRequirements = new Dictionary<string, IEnumerable<string>>()
-			    {
-				    { "basic", new string[] { } }
-			    };
-
-			    swaggerDoc.Security = new IDictionary<string, IEnumerable<string>>[] { securityRequirements };
-		    }
-	    }
-
-	    
-	    private string GetXmlCommentsPath()
-	    {
-		    var app = AppContext.BaseDirectory;
-		    return Path.Combine(app, "starsky.xml");
-	    }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -191,18 +158,10 @@ namespace starsky
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
 	        
-	        // Use swagger only when enabled, default false
-	        // recommend to disable in production
-	        if ( _appSettings.AddSwagger )
-	        {
-		        app.UseSwagger(); // registers the two documents in separate routes
-		        app.UseSwaggerUI(options =>
-		        {
-			        options.SwaggerEndpoint("/swagger/" + _appSettings.Name + "/swagger.json", _appSettings.Name);
-			        options.OAuthAppName(_appSettings.Name + " - Swagger");					
-		        }); // makes the ui visible    
-	        }
-	        
+	        new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
+
+	        new SwaggerHelper(_appSettings).Add03AppExport(app);
+
 	        app.UseContentSecurityPolicy();
 
 	        // the Current Directory wwwroot directory
@@ -250,5 +209,7 @@ namespace starsky
 
 
         }
+	    
+
     }
 }

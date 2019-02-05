@@ -66,6 +66,7 @@ namespace starskycore.Models
 		/// <value>
 		/// The name of the file with extension
 		/// </value>
+		/// <example>/folder/image.jpg</example>
 		[Column(Order = 1)]
         public string FileName
         {
@@ -87,6 +88,7 @@ namespace starskycore.Models
 		/// <value>
 		/// The file hash.
 		/// </value>
+		/// <example>OZHCK4I47QPHOT53QBRE7Z4RLI</example>
 		public string FileHash { get; set; }
 
 		/// <summary>
@@ -95,6 +97,7 @@ namespace starskycore.Models
 		/// <value>
 		/// The name of the file collection.
 		/// </value>
+		/// <example>filenameWithoutExtension</example>
 		[NotMapped]
         public string FileCollectionName {
             get
@@ -112,6 +115,7 @@ namespace starskycore.Models
 		/// <value>
 		/// The parent directory in subpath style
 		/// </value>
+		/// <example>/folder</example>
 		public string ParentDirectory
         {
             get => _parentDirectory ?? string.Empty;
@@ -132,6 +136,7 @@ namespace starskycore.Models
 		/// <value>
 		///   <c>true</c> if this instance is directory; otherwise (then is a file), <c>false</c>.
 		/// </value>
+		/// <example>true</example>
 		public bool IsDirectory { get; set; }
 
 		/// <summary>
@@ -161,6 +166,7 @@ namespace starskycore.Models
 		/// <value>
 		/// The tags.
 		/// </value>
+		/// <example>tag1, tag2</example>
 		public string Tags
         {
             get => _tags ?? string.Empty;

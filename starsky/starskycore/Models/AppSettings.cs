@@ -267,6 +267,11 @@ namespace starskycore.Models
 	    /// </summary>
 	    public bool AddSwagger { get; set; } = false;
 
+	    /// <summary>
+	    /// Export swagger pages (use AddSwagger and AddSwaggerExport to export)
+	    /// </summary>	    
+	    public bool AddSwaggerExport { get; set; } = false;
+
 	    
         // For using <Link> in headers
         public bool AddHttp2Optimizations  { get; set; } = true;
