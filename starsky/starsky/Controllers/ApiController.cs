@@ -43,6 +43,8 @@ namespace starsky.Controllers
 	    /// <param name="collections">to combine files with the same name before the extension</param>
 	    /// <param name="hidedelete">ignore deleted files</param>
 	    /// <returns></returns>
+	    /// <response code="200">returns a list of items from the database</response>
+	    /// <response code="404">subpath not found in the database</response>
 		[HttpGet("/api")]
 		[ProducesResponseType(typeof(ArchiveViewModel),200)]
 		[ProducesResponseType(404)]

@@ -27,9 +27,12 @@ namespace starsky.Controllers
 	    /// </summary>
 	    /// <param name="json">true => 200 == success, 401 is not logged</param>
 	    /// <returns>account page or status</returns>
+	    /// <response code="200">User exist</response>
+	    /// <response code="401">when using json=true, not logged in</response>
 	    [HttpGet("/account")]
 	    [ProducesResponseType(typeof(User), 200)]
 	    [ProducesResponseType(401)]
+	    
         public IActionResult Index(bool json = false)
 	    {
 		    if ( json && !User.Identity.IsAuthenticated ) return Unauthorized();
@@ -42,6 +45,7 @@ namespace starsky.Controllers
         /// Login form page
         /// </summary>
         /// <returns></returns>
+        /// <response code="200">Login form page</response>
         [HttpGet("/account/login")]
         [ProducesResponseType(200)]
         public IActionResult Login(string returnUrl = null)
@@ -57,6 +61,8 @@ namespace starsky.Controllers
         /// <param name="model">Email, password and remember me bool</param>
         /// <param name="returnUrl">null or localurl</param>
         /// <returns></returns>
+ 	    /// <response code="200">successful login</response>
+        /// <response code="401">login failed</response>
         [HttpPost("/account/login")]
         [ProducesResponseType(200)]
         public async Task<IActionResult> LoginPost(LoginViewModel model, string returnUrl = null)
@@ -83,7 +89,9 @@ namespace starsky.Controllers
         /// Logout the current HttpContext
         /// </summary>
         /// <returns></returns>
+        /// <response code="200">successful logout</response>
         [HttpGet("/account/logout")]
+        [ProducesResponseType(200)]
         public IActionResult Logout()
         {
             _userManager.SignOut(HttpContext);
@@ -93,10 +101,12 @@ namespace starsky.Controllers
         /// <summary>
         /// View the Register form
         /// </summary>
-        /// <param name="returnUrl">when succesfull continue</param>
+        /// <param name="returnUrl">when successful continue</param>
         /// <returns></returns>
+        /// <response code="200">successful Register-page</response>
         [HttpGet("/account/register")]
         [AllowAnonymous]
+        [ProducesResponseType(200)]
         public IActionResult Register(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -106,11 +116,12 @@ namespace starsky.Controllers
         /// <summary>
         /// Create a new user
         /// </summary>
-        /// <param name="model"></param>
-        /// <param name="json"></param>
-        /// <param name="returnUrl"></param>
-        /// <returns></returns>
-        [HttpPost]
+        /// <param name="model">with the userdata</param>
+        /// <param name="json">get a json response</param>
+        /// <param name="returnUrl">to redirect if json=false</param>
+        /// <returns>redirect or json</returns>
+        /// <response code="200">successful register</response>
+        [HttpPost("/account/register")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, bool json = false, string returnUrl = null)
