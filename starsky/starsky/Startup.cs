@@ -191,14 +191,14 @@ namespace starsky
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
 	        
-	        // Use swagger in development Environment or when env variable SWAGGER is enabled
-	        var swaggerKey = Environment.GetEnvironmentVariable("SWAGGER")?.ToLower();
-	        if ( swaggerKey == "true" || env.IsDevelopment() )
+	        // Use swagger only when enabled, default false
+	        // recommend to disable in production
+	        if ( _appSettings.AddSwagger )
 	        {
 		        app.UseSwagger(); // registers the two documents in separate routes
 		        app.UseSwaggerUI(options =>
 		        {
-			        options.SwaggerEndpoint("/swagger/"+ _appSettings.Name + "/swagger.json", _appSettings.Name);
+			        options.SwaggerEndpoint("/swagger/" + _appSettings.Name + "/swagger.json", _appSettings.Name);
 			        options.OAuthAppName(_appSettings.Name + " - Swagger");					
 		        }); // makes the ui visible    
 	        }

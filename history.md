@@ -5,6 +5,7 @@
 - fix UI: zooming in on iPad triggers next/prev
 - fix init sqlite for legacy app
 - add: replace `{AssemblyDirectory}` in `AppSettingsPublishProfiles.Path`
+- change settings to enable swagger: use now `app__AddSwagger` to enable
 
 # version 0.1.2 - 2019-02-01
 - starskywebftpcli

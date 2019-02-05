@@ -40,13 +40,14 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 2.  `ThumbnailTempFolder` - For storing thumbnails (default: `./bin/Debug/netcoreapp2.0/thumbnailTempFolder`)
 3.  `StorageFolder` - For the main photo directory (default: `./bin/Debug/netcoreapp2.0/storageFolder`)
 4.  `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported (default: `sqlite`)
-5.  `DatabaseConnection` - The connectionstring to the database (default: `./bin/Debug/netcoreapp2.0/data.db`)
+5.  `DatabaseConnection` - The connection-string to the database (default: `./bin/Debug/netcoreapp2.0/data.db`)
 6.  `CameraTimeZone` - The timezone of the Camera, for example `Europe/Amsterdam` (defaults to your local timezone)
 ### Optional settings
 1.  `Structure` - The structure that will be used when you import files, has a default fallback.
-2.  `ReadOnlyFolders` - Accepts a list of folders that never may be edited, defaults a emphy list
-3.  `AddMemoryCache`- Enable caching
-4.  `AddHttp2Optimizations`  - Enable HTTP2 Optimizations
+2.  `ReadOnlyFolders` - Accepts a list of folders that never may be edited, defaults a empty list
+3.  `AddMemoryCache`- Enable caching _(default true)_
+4.  `AddHttp2Optimizations`  - Enable HTTP2 Optimizations _(default true)_
+5.  `AddSwagger` - To show a user interface to show al REST-services _(default false)_
 
 
 ### Appsettings.json example
@@ -82,13 +83,11 @@ Starsky has a Json and Razorview restful API. Please read the documentation
 ### Swagger
 Swagger is an open-source software framework backed by a large ecosystem of tools that helps developers design, build, document, and consume RESTful Web services. There is an swagger definition. You could enable this by setting the following values:
 
-```sh
-ASPNETCORE_ENVIRONMENT=Development
+By default this feature is disabled, please use the `AddSwagger` definition in the AppSettings or use the following environment variable: 
 ```
-or
+app__AddSwagger=true
 ```
-SWAGGER=true
-```
+
 This is the default location of the swagger documentation
 ```
 http://localhost:5000/swagger

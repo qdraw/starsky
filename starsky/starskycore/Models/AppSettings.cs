@@ -262,6 +262,12 @@ namespace starskycore.Models
         // C# 6+ required for this
         public bool AddMemoryCache { get; set; } = true;
         
+	    /// <summary>
+	    /// Display swagger pages
+	    /// </summary>
+	    public bool AddSwagger { get; set; } = false;
+
+	    
         // For using <Link> in headers
         public bool AddHttp2Optimizations  { get; set; } = true;
 
