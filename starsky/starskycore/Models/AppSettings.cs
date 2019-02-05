@@ -37,7 +37,8 @@ namespace starskycore.Models
 		    .Replace("starskyimportercli", "starsky")
 		    .Replace("starskywebftpcli", "starsky")
 		    .Replace("starskywebhtmlcli", "starsky")
-		    .Replace("starskygeocli", "starsky");
+		    .Replace("starskygeocli", "starsky")
+		    .Replace("starskyTests", "starsky");
         
         public StarskyAppType ApplicationType { get; set; }
 	    

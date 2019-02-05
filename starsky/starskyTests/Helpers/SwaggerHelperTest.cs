@@ -43,10 +43,10 @@ namespace starskytests.Helpers
 			// inject config as object to a service
 			services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
 
+			// Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
 			_appSettings = new AppSettings
 			{
 				Name = "swaggerOutput",
-				TempFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
 				AddSwagger = true,
 				AddSwaggerExport = true
 			};
@@ -56,7 +56,7 @@ namespace starskytests.Helpers
 		
 		
 		[TestMethod]
-		public async Task SwaggerTest01()
+		public async Task SwaggerTest_Integration_01()
 		{
 			var swaggerFilePath = Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
 
@@ -97,7 +97,7 @@ namespace starskytests.Helpers
 			
 			
 		}
-		
+
 		
 	}
 }
