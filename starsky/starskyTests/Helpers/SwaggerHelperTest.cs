@@ -94,7 +94,7 @@ namespace starskytests.Helpers
 
 			var swaggerFileContent = new PlainTextFileHelper().ReadFile(swaggerFilePath);
 				
-			Assert.AreEqual(true, swaggerFileContent.Contains("\"title\": \"swaggerOutput\""));
+			Assert.AreEqual(true, swaggerFileContent.Contains($"\"title\": \"{_appSettings.Name}\""));
 			
 			
 		}
