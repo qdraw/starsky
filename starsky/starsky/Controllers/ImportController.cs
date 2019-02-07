@@ -48,7 +48,7 @@ namespace starsky.Controllers
 		/// <response code="206">file already imported</response>
 		[HttpPost("/import")]
         [DisableFormValueModelBinding]
-        [RequestSizeLimit(160000000)] // in bytes, 160mb
+		[RequestSizeLimit(100_000_000)] // 100,000,000 bytes.
         [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
         [ProducesResponseType(typeof(List<ImportIndexItem>),206)]  // When all items are already imported
         public async Task<IActionResult> IndexPost()

@@ -48,7 +48,8 @@ namespace starskytests.Helpers
 			{
 				Name = "starskySwaggerOutput",
 				AddSwagger = true,
-				AddSwaggerExport = true
+				AddSwaggerExport = true,
+				TempFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)
 			};
 			
 
@@ -56,7 +57,7 @@ namespace starskytests.Helpers
 		
 		
 		[TestMethod]
-		public async Task SwaggerTest_Integration_01()
+		public async Task SwaggerTest_Integration_Test()
 		{
 			var swaggerFilePath = Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
 

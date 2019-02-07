@@ -5,6 +5,10 @@
 		<Description>An attempt to create a database driven photo library</Description>
 		<Version>0.1.2</Version>
 	  </PropertyGroup>
+
+      <PropertyGroup>
+   <IsPackable>true</IsPackable>
+</PropertyGroup>
     <ItemGroup>
 
     <PackageReference Include="MetadataExtractor" Version="2.0.0" />
