@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Models;
@@ -56,7 +57,7 @@ namespace starskytests.Models
 			};
 
 			// in real world this is not always BaseDirectoryProject
-			Assert.AreEqual(appSettings.BaseDirectoryProject + "test.jpg", model.Path);
+			Assert.AreEqual(AppDomain.CurrentDomain.BaseDirectory + "test.jpg", model.Path);
 			
 		}
 
