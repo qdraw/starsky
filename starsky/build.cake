@@ -24,7 +24,7 @@ Task("Restore")
  Task("Build")
     .Does(() =>
     {
-        DotNetCoreBuild("**/*.csproj",
+        DotNetCoreBuild(".",
             new DotNetCoreBuildSettings()
             {
                 Configuration = configuration,
@@ -47,7 +47,10 @@ Task("Test")
                 {
                     Configuration = configuration,
                     NoBuild = true,
-                    ArgumentCustomization = args => args.Append("--no-restore"),
+                    ArgumentCustomization = args => args.Append("--no-restore")
+                                             .Append("/p:CollectCoverage=true")
+                                             .Append("/p:CoverletOutputFormat=opencover")
+                                             .Append("/p:ThresholdType=line")
                 });
         }
     });
