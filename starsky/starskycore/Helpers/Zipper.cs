@@ -13,14 +13,33 @@ namespace starskycore.Helpers
 		}
 
 		/// <summary>
-		/// 
+		/// Extract zip file to a folder
 		/// </summary>
 		/// <param name="zipInputFullPath">input e.g: /path/file.zip</param>
 		/// <param name="storeZipFolderFullPath">output e.g. /folder/</param>
 		/// <returns></returns>
-		public string ExtractZip( string zipInputFullPath, string storeZipFolderFullPath)
+		public void ExtractZip( string zipInputFullPath, string storeZipFolderFullPath)
 		{
-			throw new NotImplementedException();
+			// todo: todo: implement this comma separated list  >> string matchExtensions = "*" 
+			// Ensures that the last character on the extraction path
+			// is the directory separator char. 
+			// Without this, a malicious zip file could try to traverse outside of the expected
+			// extraction path.
+			storeZipFolderFullPath = PathHelper.AddBackslash(storeZipFolderFullPath);
+			using ( ZipArchive archive = ZipFile.OpenRead(zipInputFullPath) )
+			{
+				foreach ( ZipArchiveEntry entry in archive.Entries )
+				{
+					// Gets the full path to ensure that relative segments are removed.
+					string destinationPath = Path.GetFullPath(Path.Combine(storeZipFolderFullPath, entry.FullName));
+
+					// Ordinal match is safest, case-sensitive volumes can be mounted within volumes that
+					// are case-insensitive.
+					if (destinationPath.StartsWith(storeZipFolderFullPath, StringComparison.Ordinal))
+						entry.ExtractToFile(destinationPath);
+				}
+			}
+
 		}
 
 		/// <summary>
