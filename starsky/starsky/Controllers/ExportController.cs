@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -99,7 +98,7 @@ namespace starsky.Controllers
 				var filePaths = CreateListToExport(fileIndexResultsList, thumbnail);
 				var fileNames = FilePathToFileName(filePaths, thumbnail);
 
-				CreateZip(filePaths,fileNames,zipHash);
+				new Zipper().CreateZip(_appSettings.TempFolder,filePaths,fileNames,zipHash);
 				
 				// Write a single file to be sure that writing is ready
 				var doneFileFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".done";
@@ -224,33 +223,6 @@ namespace starsky.Controllers
 			return shortName;
 		}
 	
-		/// <summary>
-		/// To Create the zip file in the temp folder
-		/// </summary>
-		/// <param name="filePaths">list of full file paths</param>
-		/// <param name="fileNames">list of filenames</param>
-		/// <param name="zipHash">to name of the zip file</param>
-		/// <returns>a zip in the temp folder</returns>
-		public string CreateZip(List<string> filePaths, List<string> fileNames, string zipHash)
-		{
 
-			var tempFileFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".zip";
-
-			if(System.IO.File.Exists(tempFileFullPath))
-			{
-				return tempFileFullPath;
-			}
-			ZipArchive zip = ZipFile.Open(tempFileFullPath, ZipArchiveMode.Create);
-
-			for ( int i = 0; i < filePaths.Count; i++ )
-			{
-				if ( System.IO.File.Exists(filePaths[i]) )
-				{
-					zip.CreateEntryFromFile(filePaths[i], fileNames[i]);
-				}
-			}
-			zip.Dispose();
-			return tempFileFullPath;
-		}
 	}
 }
