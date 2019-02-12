@@ -1,10 +1,34 @@
+
+// powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
+// ./build.sh --runtime="osx.10.12-x64"
+
+// Windows 32 bits: 'win7-x86'
+// Mac: 'osx.10.12-x64'
+// Raspberry Pi: 'linux-arm'
+
+
 // Target - The task you want to start. Runs the Default task if not specified.
 var target = Argument("Target", "Default");
 var configuration = Argument("Configuration", "Release");
+var runtime = Argument("runtime", "generic");
+
 
 Information($"Running target {target} in configuration {configuration}");
+Information($"\n>> Try to build on {runtime}");
 
-var distDirectory = Directory("./dist");
+if(runtime == null || runtime == "" ) runtime = "generic";
+var distDirectory = Directory($"./{runtime}");
+
+var projectNames = new List<string>{
+    "starskygeocli",
+    "starskyimportercli",
+    "starskysynccli",
+    "starskywebftpcli",
+    "starskywebhtmlcli",
+    "starsky"
+};
+// ignore starskycore
+
 
 // Deletes the contents of the Artifacts folder if it contains anything from a previous build.
 Task("Clean")
@@ -17,19 +41,32 @@ Task("Clean")
 Task("Restore")
     .Does(() =>
     {
-        DotNetCoreRestore();
+        var dotnetRestoreSettings = new DotNetCoreRestoreSettings();
+
+        if(runtime != "generic") {
+            dotnetRestoreSettings.Runtime = runtime;
+        }
+
+        DotNetCoreRestore(".",dotnetRestoreSettings);
     });
 
 // Build using the build configuration specified as an argument.
  Task("Build")
     .Does(() =>
     {
+        var dotnetBuildSettings = new DotNetCoreBuildSettings()
+        {
+            Configuration = configuration,
+            ArgumentCustomization = args => args.Append("--no-restore"),
+        };
+
+        if(runtime != "generic") {
+            dotnetBuildSettings.Runtime = runtime;
+        }
+
         DotNetCoreBuild(".",
-            new DotNetCoreBuildSettings()
-            {
-                Configuration = configuration,
-                ArgumentCustomization = args => args.Append("--no-restore"),
-            });
+            dotnetBuildSettings);
+
     });
 
 // Look under a 'Tests' folder and run dotnet test against all of those projects.
@@ -49,8 +86,10 @@ Task("Test")
                     NoBuild = true,
                     ArgumentCustomization = args => args.Append("--no-restore")
                                              .Append("/p:CollectCoverage=true")
-                                             .Append("/p:CoverletOutputFormat=opencover")
+                                             .Append("/p:CoverletOutputFormat=cobertura")
                                              .Append("/p:ThresholdType=line")
+                                             .Append("/p:hideMigrations=\"true\"")
+                                             .Append($"/p:CoverletOutput='../{runtime}/coverage.cobertura.xml'")
                 });
         }
     });
@@ -59,14 +98,27 @@ Task("Test")
 Task("PublishWeb")
     .Does(() =>
     {
-        DotNetCorePublish(
-            "./starskygeocli/starskygeocli.csproj",
-            new DotNetCorePublishSettings()
+        foreach (var projectName in projectNames)
+        {
+            System.Console.WriteLine($"./{projectName}/{projectName}.csproj");
+
+            var dotnetPublishSettings = new DotNetCorePublishSettings()
             {
                 Configuration = configuration,
                 OutputDirectory = distDirectory,
                 ArgumentCustomization = args => args.Append("--no-restore"),
-            });
+            };
+
+            if(runtime != "generic") {
+                dotnetPublishSettings.Runtime = runtime;
+            }
+
+            DotNetCorePublish(
+                $"./{projectName}/{projectName}.csproj",
+                dotnetPublishSettings
+            );
+        }
+        
     });
 
 // A meta-task that runs all the steps to Build and Test the app
