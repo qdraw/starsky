@@ -92,9 +92,17 @@ Task("Restore")
 
         // rebuild for specific target
         if(runtime != "generic-netcore") {
+
+            System.Console.WriteLine("> rebuild for specific target");
             dotnetBuildSettings.Runtime = runtime;
-            DotNetCoreBuild(".",
-                dotnetBuildSettings);
+
+            foreach(var projectName in projectNames)
+            {
+                System.Console.WriteLine($"./{projectName}/{projectName}.csproj");
+                DotNetCoreBuild($"./{projectName}/{projectName}.csproj",
+                    dotnetBuildSettings);
+            }
+
         }
 
 
@@ -140,14 +148,22 @@ Task("PublishWeb")
                 ArgumentCustomization = args => args.Append("--no-restore"),
             };
 
-            if(runtime != "generic-netcore") {
-                dotnetPublishSettings.Runtime = runtime;
-            }
+            // The items are already build {generic build}
+            DotNetCorePublish(
+                $"./{projectName}/{projectName}.csproj",
+                dotnetPublishSettings
+            );
+
+            // also publish the other files for runtimes
+            if(runtime == "generic-netcore") return;
+
+            dotnetPublishSettings.Runtime = runtime;
 
             DotNetCorePublish(
                 $"./{projectName}/{projectName}.csproj",
                 dotnetPublishSettings
             );
+
         }
 
     });
