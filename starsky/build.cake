@@ -10,13 +10,13 @@
 // Target - The task you want to start. Runs the Default task if not specified.
 var target = Argument("Target", "Default");
 var configuration = Argument("Configuration", "Release");
-var runtime = Argument("runtime", "generic");
+var runtime = Argument("runtime", "generic-netcore");
 
 
 Information($"Running target {target} in configuration {configuration}");
 Information($"\n>> Try to build on {runtime}");
 
-if(runtime == null || runtime == "" ) runtime = "generic";
+if(runtime == null || runtime == "" ) runtime = "generic-netcore";
 var distDirectory = Directory($"./{runtime}");
 
 var projectNames = new List<string>{
@@ -26,8 +26,12 @@ var projectNames = new List<string>{
     "starskywebftpcli",
     "starskywebhtmlcli",
     "starsky"
+}; // ignore starskycore
+
+
+var testProjectNames = new List<string>{
+    "starskyTests"
 };
-// ignore starskycore
 
 
 // Deletes the contents of the Artifacts folder if it contains anything from a previous build.
@@ -41,13 +45,35 @@ Task("Clean")
 Task("Restore")
     .Does(() =>
     {
-        var dotnetRestoreSettings = new DotNetCoreRestoreSettings();
 
-        if(runtime != "generic") {
-            dotnetRestoreSettings.Runtime = runtime;
+        // make a new list
+        var restoreProjectNames = new List<string>(projectNames);
+        projectNames.AddRange(testProjectNames);
+
+        // now restore test with generic settings (always)
+        foreach(var projectName in restoreProjectNames)
+        {
+            System.Console.WriteLine($"./{projectName}/{projectName}.csproj");
+            DotNetCoreRestore($"./{projectName}/{projectName}.csproj",
+                new DotNetCoreRestoreSettings());
         }
 
-        DotNetCoreRestore(".",dotnetRestoreSettings);
+        if(runtime == "generic-netcore") return;
+
+        System.Console.WriteLine($"> restore for {runtime}");
+
+        var dotnetRestoreSettings = new DotNetCoreRestoreSettings{
+            Runtime = runtime
+        };
+
+        foreach(var projectName in projectNames)
+        {
+            System.Console.WriteLine($"./{projectName}/{projectName}.csproj");
+            DotNetCoreRestore($"./{projectName}/{projectName}.csproj",
+                dotnetRestoreSettings);
+        }
+
+
     });
 
 // Build using the build configuration specified as an argument.
@@ -60,12 +86,17 @@ Task("Restore")
             ArgumentCustomization = args => args.Append("--no-restore"),
         };
 
-        if(runtime != "generic") {
-            dotnetBuildSettings.Runtime = runtime;
-        }
-
+        // generic build for mstest
         DotNetCoreBuild(".",
             dotnetBuildSettings);
+
+        // rebuild for specific target
+        if(runtime != "generic-netcore") {
+            dotnetBuildSettings.Runtime = runtime;
+            DotNetCoreBuild(".",
+                dotnetBuildSettings);
+        }
+
 
     });
 
@@ -109,7 +140,7 @@ Task("PublishWeb")
                 ArgumentCustomization = args => args.Append("--no-restore"),
             };
 
-            if(runtime != "generic") {
+            if(runtime != "generic-netcore") {
                 dotnetPublishSettings.Runtime = runtime;
             }
 
@@ -118,7 +149,7 @@ Task("PublishWeb")
                 dotnetPublishSettings
             );
         }
-        
+
     });
 
 // A meta-task that runs all the steps to Build and Test the app
