@@ -48,7 +48,7 @@ Task("Restore")
 
         // make a new list
         var restoreProjectNames = new List<string>(projectNames);
-        projectNames.AddRange(testProjectNames);
+        restoreProjectNames.AddRange(testProjectNames);
 
         // now restore test with generic settings (always)
         foreach(var projectName in restoreProjectNames)
