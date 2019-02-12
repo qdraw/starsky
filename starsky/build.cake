@@ -1,6 +1,7 @@
 
 // powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
 // ./build.sh --runtime="osx.10.12-x64"
+// or: ./build.sh -Target="CI"
 
 // Windows 32 bits: 'win7-x86'
 // Mac: 'osx.10.12-x64'
@@ -10,15 +11,17 @@
 // Target - The task you want to start. Runs the Default task if not specified.
 var target = Argument("Target", "Default");
 var configuration = Argument("Configuration", "Release");
-var runtime = Argument("runtime", "generic-netcore");
+
+var genericName = "generic-netcore";
+var runtime = Argument("runtime", genericName);
 
 
 Information($"Running target {target} in configuration {configuration}");
 Information($"\n>> Try to build on {runtime}");
 
-if(runtime == null || runtime == "" ) runtime = "generic-netcore";
+if(runtime == null || runtime == "" ) runtime = genericName;
 var distDirectory = Directory($"./{runtime}");
-var genericDistDirectory = Directory($"./generic-netcore");
+var genericDistDirectory = Directory($"./{genericName}");
 
 
 var projectNames = new List<string>{
@@ -35,6 +38,12 @@ var testProjectNames = new List<string>{
     "starskyTests"
 };
 
+Task("OnlyStarskyMvc")
+    .Does(() =>
+    {
+        /* System.Console.WriteLine($"./{projectName}/{projectName}.csproj"); */
+        projectNames = new List<string>{"starsky"};
+    });
 
 // Deletes the contents of the Artifacts folder if it contains anything from a previous build.
 Task("Clean")
@@ -61,7 +70,7 @@ Task("Restore")
                 new DotNetCoreRestoreSettings());
         }
 
-        if(runtime == "generic-netcore") return;
+        if(runtime == genericName) return;
 
         System.Console.WriteLine($"> restore for {runtime}");
 
@@ -94,7 +103,7 @@ Task("Restore")
             dotnetBuildSettings);
 
         // rebuild for specific target
-        if(runtime != "generic-netcore") {
+        if(runtime != genericName) {
 
             System.Console.WriteLine($"> rebuild for specific target {runtime}");
             dotnetBuildSettings.Runtime = runtime;
@@ -158,7 +167,7 @@ Task("PublishWeb")
             );
 
             // also publish the other files for runtimes
-            if(runtime == "generic-netcore") return;
+            if(runtime == genericName) return;
 
             dotnetPublishSettings.Runtime = runtime;
             dotnetPublishSettings.OutputDirectory = distDirectory; // <= then to linux-arm
@@ -177,7 +186,7 @@ Task("Zip")
     {
         Zip($"./{genericDistDirectory}", $"{genericDistDirectory}.zip");
 
-        if(runtime == "generic-netcore") return;
+        if(runtime == genericName) return;
         Zip($"./{distDirectory}", $"{distDirectory}.zip");
 
     });
@@ -195,6 +204,16 @@ Task("Default")
     .IsDependentOn("BuildAndTest")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("Zip");
+
+
+// Run only Starsky MVC and tests
+Task("CI")
+    .IsDependentOn("OnlyStarskyMvc")
+    .IsDependentOn("BuildAndTest")
+    .IsDependentOn("PublishWeb")
+    .IsDependentOn("Zip");
+
+
 
 // Executes the task specified in the target argument.
 RunTarget(target);
