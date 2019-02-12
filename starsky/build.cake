@@ -18,6 +18,8 @@ Information($"\n>> Try to build on {runtime}");
 
 if(runtime == null || runtime == "" ) runtime = "generic-netcore";
 var distDirectory = Directory($"./{runtime}");
+var genericDistDirectory = Directory($"./generic-netcore");
+
 
 var projectNames = new List<string>{
     "starskygeocli",
@@ -39,6 +41,7 @@ Task("Clean")
     .Does(() =>
     {
         CleanDirectory(distDirectory);
+        CleanDirectory(genericDistDirectory);
     });
 
 // Run dotnet restore to restore all package references.
@@ -93,7 +96,7 @@ Task("Restore")
         // rebuild for specific target
         if(runtime != "generic-netcore") {
 
-            System.Console.WriteLine("> rebuild for specific target");
+            System.Console.WriteLine($"> rebuild for specific target {runtime}");
             dotnetBuildSettings.Runtime = runtime;
 
             foreach(var projectName in projectNames)
@@ -144,7 +147,7 @@ Task("PublishWeb")
             var dotnetPublishSettings = new DotNetCorePublishSettings()
             {
                 Configuration = configuration,
-                OutputDirectory = distDirectory,
+                OutputDirectory = genericDistDirectory, // <= first to generic
                 ArgumentCustomization = args => args.Append("--no-restore"),
             };
 
@@ -158,6 +161,7 @@ Task("PublishWeb")
             if(runtime == "generic-netcore") return;
 
             dotnetPublishSettings.Runtime = runtime;
+            dotnetPublishSettings.OutputDirectory = distDirectory; // <= then to linux-arm
 
             DotNetCorePublish(
                 $"./{projectName}/{projectName}.csproj",
@@ -165,6 +169,16 @@ Task("PublishWeb")
             );
 
         }
+
+    });
+
+Task("Zip")
+    .Does(() =>
+    {
+        Zip($"./{genericDistDirectory}", $"{genericDistDirectory}.zip");
+
+        if(runtime == "generic-netcore") return;
+        Zip($"./{distDirectory}", $"{distDirectory}.zip");
 
     });
 
@@ -179,7 +193,8 @@ Task("BuildAndTest")
 // to run everything starting from Clean, all the way up to Publish.
 Task("Default")
     .IsDependentOn("BuildAndTest")
-    .IsDependentOn("PublishWeb");
+    .IsDependentOn("PublishWeb")
+    .IsDependentOn("Zip");
 
 // Executes the task specified in the target argument.
 RunTarget(target);
