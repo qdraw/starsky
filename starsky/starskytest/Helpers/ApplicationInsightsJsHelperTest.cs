@@ -111,7 +111,7 @@ namespace starskytests.Helpers
 			var script = new ApplicationInsightsJsHelper(httpContext, fakeJs).Script;
 			
 			Assert.AreEqual(true, script.Contains(toCheckNonce));
-			Assert.AreEqual(true, "window.appInsights=appInsights,");
+			Assert.AreEqual(true, script.Contains("window.appInsights=appInsights,"));
 
 		}
 	}
