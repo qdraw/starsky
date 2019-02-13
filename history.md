@@ -1,4 +1,4 @@
-# version 0.1.3 - tbd
+# version 0.1.3 - 2019-02-13
 - fix issues on exporting
 - fix issue on Sync (-p option)
 - change `ArgsHelper(appSettings).GetPathFormArgs` need to have appSettings
@@ -6,6 +6,7 @@
 - fix init sqlite for legacy app
 - add: replace `{AssemblyDirectory}` in `AppSettingsPublishProfiles.Path`
 - change settings to enable swagger: use now `app__AddSwagger` to enable
+- Create build scripts using Cake
 
 # version 0.1.2 - 2019-02-01
 - starskywebftpcli
