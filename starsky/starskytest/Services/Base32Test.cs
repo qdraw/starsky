@@ -21,6 +21,20 @@ namespace starskytests.Services
 			
 			Base32.Encode(encodeBytes,true);
 		}
-	
+
+		[TestMethod]
+		[ExpectedException(typeof(Base32.DecodingException))]
+		public void Base32EncodeDecodeTestFail()
+		{
+			Base32.Decode("54678945346"); // will fail
+		}
+
+		[TestMethod]
+		public void Base32DecodeNull()
+		{
+			var encodeBytes = Base32.Decode(string.Empty); 
+			Assert.AreEqual(0,encodeBytes.Length);
+		}
+
 	}
 }

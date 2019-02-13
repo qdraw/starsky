@@ -165,7 +165,7 @@ Task("Test")
                                              .Append("/p:CoverletOutputFormat=cobertura")
                                              .Append("/p:ThresholdType=line")
                                              .Append("/p:hideMigrations=\"true\"")
-                                             .Append("/p:ExcludeAssemblies=\"starskycore.Migrations\"") // (, comma seperated)
+                                             .Append("/p:ExcludeByFile=\"../starskycore/Migrations/*\"") // (, comma seperated)
                                              .Append("/p:CoverletOutput=coverage.cobertura.xml")
                 });
         }

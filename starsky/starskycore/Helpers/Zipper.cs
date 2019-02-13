@@ -57,7 +57,7 @@ namespace starskycore.Helpers
 
 			var tempFileFullPath = Path.Combine(storeZipFolderFullPath,zipOutputFilename) + ".zip";
 
-			if(System.IO.File.Exists(tempFileFullPath))
+			if(File.Exists(tempFileFullPath))
 			{
 				return tempFileFullPath;
 			}
@@ -66,7 +66,7 @@ namespace starskycore.Helpers
 
 			for ( int i = 0; i < filePaths.Count; i++ )
 			{
-				if ( System.IO.File.Exists(filePaths[i]) )
+				if ( File.Exists(filePaths[i]) )
 				{
 					zip.CreateEntryFromFile(filePaths[i], fileNames[i]);
 				}
