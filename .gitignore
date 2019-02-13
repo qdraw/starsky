@@ -339,12 +339,13 @@ starsky-node-client/docs/*/*/*.html
 **/linux-arm/*
 **/win7-x86/*
 **/generic-netcore/*
+**/generic-netcore-starskyonly/*
 **/starsky.netframework-msbuild/*
 
 starsky-linux-arm.zip
 starsky-osx.10.12-x64.zip
 starsky-win7-x86.zip
-starsky-generic-netcore.zip
+starsky-generic-netcore*.zip
 
 **/Cake/*
 **/tools/nuget.exe
