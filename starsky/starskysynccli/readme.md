@@ -9,7 +9,7 @@
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
     * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
-    * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
+    * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
@@ -17,7 +17,7 @@
 ## starskysynccli docs
 
 ### Starsky Sync Indexer:
-With this command line tool it possible to manual sync the filesystem with the database, update one file in the database, generate thumbnails, clean the thumbnail cache/ The goal of this wrapper is to get command line access to the photo index database.
+With this command line tool it possible to manual sync the filesystem with the database, update one file in the database, generate thumbnails, clean the thumbnail cache. The goal of this wrapper is to get command line access to the photo index database.
 
 ### Before you start
 
@@ -40,7 +40,7 @@ When you start this application at first please update the `appsettings.json`
 
 >    TIP: When using a boolean in the json add quotes. Booleans without quotes are ignored. So use `"true"` instead of `true`
 
->   TIP: Double escape backslashes to avoid crashes 
+>   TIP: For windows use double escape backslashes to avoid crashes
 
 #### Appsettings Notes
 1.  The `Structure`-setting is used by the `StarskyImporterCli` and the `/import` endpoint. This always uses slash as directory marker.

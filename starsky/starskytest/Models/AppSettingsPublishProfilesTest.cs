@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Models;
 
@@ -41,6 +43,33 @@ namespace starskytests.Models
 			var getFolder = model.Folder;
 
 			Assert.AreEqual("/test/", getFolder);
+
+		}
+
+
+		[TestMethod]
+		public void AppSettingsPublishProfilesTest_Path_AssemblyDirectory()
+		{
+			var appSettings = new AppSettings();
+			var model = new AppSettingsPublishProfiles
+			{
+				Path = "{AssemblyDirectory}" + Path.DirectorySeparatorChar + "test.jpg"
+			};
+
+			// in real world this is not always BaseDirectoryProject
+			Assert.AreEqual(AppDomain.CurrentDomain.BaseDirectory + "test.jpg", model.Path);
+			
+		}
+
+		[TestMethod]
+		public void AppSettingsPublishProfilesTest_Path_null()
+		{
+			var model = new AppSettingsPublishProfiles
+			{
+				Path = null
+			};
+			
+			Assert.AreEqual(string.Empty, model.Path);
 
 		}
 	}

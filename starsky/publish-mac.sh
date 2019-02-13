@@ -18,6 +18,10 @@ pushd starskygeocli
 	dotnet publish -c release -r osx.10.12-x64 --output ../osx.10.12-x64
 popd
 
+pushd starskywebftpcli
+	dotnet publish --no-dependencies -c release -r osx.10.12-x64 --output ../osx.10.12-x64
+popd
+
 pushd starskysynccli
 	dotnet publish --no-dependencies -c release -r osx.10.12-x64 --output ../osx.10.12-x64
 popd

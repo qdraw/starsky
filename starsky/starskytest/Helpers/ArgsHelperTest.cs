@@ -113,6 +113,15 @@ namespace starskytests.Helpers
         }
 
 	    [TestMethod]
+	    [ExpectedException(typeof(ArgumentNullException))]
+	    public void ArgsHelper_GetPathFormArgsTest_ArgumentNullException()
+	    {
+		    // inject appsettings!
+		    var args = new List<string> {"-p", "/"}.ToArray();
+		    new ArgsHelper(null).GetPathFormArgs(args);
+	    }
+
+	    [TestMethod]
 	    public void ArgsHelper_GetPath_WithHelp_CurrentDirectory_Test()
 	    {
 		    var args = new List<string> { "-p", "-h" }.ToArray();
@@ -157,7 +166,15 @@ namespace starskytests.Helpers
             Assert.AreEqual(new ArgsHelper(_appSettings).IfSubpathOrPath(args), false);
         }
 
-        [TestMethod]
+	    [TestMethod]
+	    public void ArgsHelper_CurrentDirectory_IfSubpathTest()
+	    {
+		    // for selecting the current directory
+		    var args = new List<string> {"-p"}.ToArray();
+		    Assert.AreEqual(new ArgsHelper(_appSettings).IfSubpathOrPath(args), false);
+	    }
+
+	    [TestMethod]
         [ExcludeFromCoverage]
         public void ArgsHelper_GetThumbnailTest()
         {

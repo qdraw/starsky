@@ -32,9 +32,7 @@ namespace starskyNetFrameworkShared
         /// </summary>
         public ConfigCliAppsStartupHelperNetFramework()
 	    {
-			// for running sqlite
-		    // SQLitePCL.Batteries.Init();
-
+		    
 			var baseDirectoryProject = new AppSettings().BaseDirectoryProject;
 	        var filePaths =  new List<string>
 	        {
@@ -60,10 +58,16 @@ namespace starskyNetFrameworkShared
 			// Used to import Environment variables
 			new ArgsHelper(_appSettings).SetEnvironmentToAppSettings();
 
-	        
+		    
+		    // for running sqlite
+		    if ( _appSettings.DatabaseType == starskycore.Models.AppSettings.DatabaseTypeList.Sqlite )
+		    {
+			    SQLitePCL.Batteries.Init();
+		    }
+		    
+		    
 	        _exiftool = new ExifTool(_appSettings);
-	        
-	        
+
 
             // Build Datbase Context
             var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();

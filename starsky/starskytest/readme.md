@@ -9,24 +9,42 @@
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
     * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
-    * __[starskyTests](../../starsky/starskyTests/readme.md)  mstest unit tests__
+    * __[starskyTest](../../starsky/starskytest/readme.md)  mstest unit tests__
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
-## starsky/starskyTests docs
+## starsky/starskyTest docs
 
 To know that the application is working like expected, there are test create.  Starksy has unit tests for the C# application.
 Those unit test does not require any configuration or external dependencies like a webservice.
 The main application has Exiftool as external dependency, but you don't need this for the starskyTests.
 
+### With Cake
+
+When running the build script, inside `starskytest\coverage.report`
+
+When using powershell running only the 'Starsky Mvc application' and tests
+
+```powershell
+powershell -File build.ps1 -ScriptArgs '-Target="CI"'
+```
+
+or using bash. You need to have `mono` installed
+
+```sh
+./build.sh -Target="CI"
+```
+
+### Without Cake as build tool
 Run the tests inside the `starsky/starskyTests` folder:
 ```sh
 dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 ```
-or use the `starsky/starskyTest.sh` `starsky/starskyTest.bat` files to generate coverage documentation
+or use the `starsky/starskyTest.sh` `starsky/starskyTest.bat` files to generate coverage files
 
-> The unit tests are creating a few files inside the MSTest build directory. Those files will be removed afterwards.
+
+>  NOTE: The unit tests are creating a few files inside the MSTest build directory. Those files will be removed afterwards.
 
 >> All tests must run successful to build
 

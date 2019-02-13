@@ -264,6 +264,28 @@ namespace starskycore.Helpers
 	        Console.WriteLine($"3. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}\n" +
 	                          $"4. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")} ");
 
+
+	        switch ( _appSettings.ApplicationType )
+	        {
+		        case AppSettings.StarskyAppType.WebHtml:
+			        Console.WriteLine($"Config for {_appSettings.ApplicationType}");
+			        foreach ( var publishProfiles in _appSettings.PublishProfiles )
+			        {
+				        Console.WriteLine("--- " +
+				                          $"Path: {publishProfiles.Path} " +
+				                          $"Append: {publishProfiles.Append} " +
+				                          $"Copy: {publishProfiles.Copy} " +
+				                          $"Folder: {publishProfiles.Folder} " +
+				                          $"Prepend: {publishProfiles.Prepend} " +
+				                          $"Template: {publishProfiles.Template} " +
+				                          $"ContentType: {publishProfiles.ContentType} " +
+				                          $"MetaData: {publishProfiles.MetaData} " +
+				                          $"OverlayMaxWidth: {publishProfiles.OverlayMaxWidth} " +
+				                          $"SourceMaxWidth: {publishProfiles.SourceMaxWidth} ");
+			        }
+			        break;
+	        }
+
 	        var framework = Assembly
 		        .GetEntryAssembly()?
 		        .GetCustomAttribute<TargetFrameworkAttribute>()?
@@ -291,7 +313,9 @@ namespace starskycore.Helpers
         
         public string GetPathFormArgs(IReadOnlyList<string> args, bool dbStyle = true)
         {
-            var path = string.Empty;
+	        if ( _appSettings == null ) throw new ArgumentNullException(nameof(_appSettings));
+
+	        var path = string.Empty;
         
             for (int arg = 0; arg < args.Count; arg++)
             {
@@ -308,6 +332,7 @@ namespace starskycore.Helpers
 				if ( currentDirectory != _appSettings.BaseDirectoryProject )
 				{
 					path = currentDirectory;
+					if ( _appSettings.Verbose ) Console.WriteLine($">> currentDirectory: {currentDirectory}");
 				}
 			}
 
@@ -363,6 +388,12 @@ namespace starskycore.Helpers
 
         public bool IfSubpathOrPath(IReadOnlyList<string> args)
         {
+	        // To use only with -p or --path > current directory
+	        if ( args.Any(arg => (arg.ToLower() == "--path" || arg.ToLower() == "-p")) )
+	        {
+		        return false;
+	        }
+	        
             // Detect if a input is a fullpath or a subpath.
             for (int arg = 0; arg < args.Count; arg++)
             {
@@ -375,7 +406,7 @@ namespace starskycore.Helpers
                     return false;
                 }
             }
-            return true;
+	        return true;
         }
         
         public bool GetThumbnail(IReadOnlyList<string> args)

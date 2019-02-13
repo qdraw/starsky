@@ -169,78 +169,168 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
     
     // swipes
 
-    document.addEventListener('touchstart', handleTouchStart, false);
-    document.addEventListener('touchmove', handleTouchMove, false);
-    var xDown = null;
-    var yDown = null;
+    // document.addEventListener('touchstart', handleTouchStart, false);
+    // document.addEventListener('touchmove', handleTouchMove, false);
+    // var xDown = null;
+    // var yDown = null;
+
+    // document.addEventListener('gestureend', function(e) {
+    //     if (e.scale < 1.0) {
+    //         // User moved fingers closer together
+    //         console.log("User moved fingers closer together");
+    //     } else if (e.scale > 1.0) {
+    //         // User moved fingers further apart
+    //         console.log(" User moved fingers further apart");
+    //     }
+    // }, false);
+    
 }
 
-function handleTouchStart(evt) {
-    xDown = evt.touches[0].clientX;
-    yDown = evt.touches[0].clientY;
-}//e/handleTouchStart
+// function handleTouchStart(evt) {
+//     xDown = evt.touches[0].clientX;
+//     yDown = evt.touches[0].clientY;
+// }//e/handleTouchStart
 
+// credit: http://www.javascriptkit.com/javatutors/touchevents2.shtml
+function swipedetect(el, callback){
 
-function handleTouchMove(evt) {
-    if (!xDown || !yDown) {
-        return;
-    }
+    var touchsurface = el,
+        swipedir,
+        startX,
+        startY,
+        distX,
+        distY,
+        threshold = 170, //required min distance traveled to be considered swipe
+        restraint = 100, // maximum distance allowed at the same time in perpendicular direction
+        allowedTime = 300, // maximum time allowed to travel that distance
+        elapsedTime,
+        startTime,
+        handleswipe = callback || function(swipedir){}
 
-    var xUp = evt.touches[0].clientX;
-    var yUp = evt.touches[0].clientY;
+    touchsurface.addEventListener('touchstart', function(e){
+        var touchobj = e.changedTouches[0];
+        swipedir = 'none';
+        dist = 0;
+        startX = touchobj.pageX;
+        startY = touchobj.pageY;
+        startTime = new Date().getTime() // record time when finger first makes contact with surface
+        // e.preventDefault()
+    }, false)
 
-    var xDiff = xDown - xUp;
-    var yDiff = yDown - yUp;
-    if (Math.abs(xDiff) + Math.abs(yDiff) > 150) { //to deal with to short swipes
+    touchsurface.addEventListener('touchmove', function(e){
+        // e.preventDefault() // prevent scrolling when inside DIV
+    }, false);
 
-        if (Math.abs(xDiff) > Math.abs(yDiff)) {/*most significant*/
-            if (xDiff > 0) {/* left swipe */
-                console.log('left!');
-                setNext();
-                if (next != null && document.activeElement.className.indexOf("form-control") === -1
-                    && document.activeElement.className.indexOf("leaflet-touch-drag") === -1)
-                {
-                    window.location.href = next;
-                }
-                else if (
-                    document.activeElement.className.indexOf("form-control") === -1
-                    && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) 
-                {
-                    showPopupDialog( "<p>Je bent al bij het eerste item, je kunt niet verder terug.</p>\n" +
-                        "<p>\n" +
-                        "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
-                        "</p>\n",3000);
-                }
-            } else {/* right swipe */
-                console.log('right!');
-                setNext();
-                if (prev != null && document.activeElement.className.indexOf("form-control") === -1
-                    && document.activeElement.className.indexOf("leaflet-touch-drag") === -1)
-                {
-                    window.location.href = prev;
-                }
-                else if (
-                document.activeElement.className.indexOf("form-control") === -1
-                    && document.activeElement.className.indexOf("leaflet-touch-drag") === -1)
-                {
-                    showPopupDialog( "<p>Je bent al bij het laatste item, je kunt niet verder</p>\n" +
-                        "<p>\n" +
-                        "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oké</a>\n" +
-                        "</p>\n",3000);
-                }
+    touchsurface.addEventListener('touchend', function(e){
+        var touchobj = e.changedTouches[0];
+        distX = touchobj.pageX - startX;// get horizontal dist traveled by finger while in contact with surface
+        distY = touchobj.pageY - startY; // get vertical dist traveled by finger while in contact with surface
+        elapsedTime = new Date().getTime() - startTime; // get time elapsed
+        if (elapsedTime <= allowedTime){ // first condition for awipe met
+            if (Math.abs(distX) >= threshold && Math.abs(distY) <= restraint){ // 2nd condition for horizontal swipe met
+                swipedir = (distX < 0)? 'left' : 'right' // if dist traveled is negative, it indicates left swipe
             }
-        } else {
-            if (yDiff > 0) {/* up swipe */
-                console.log('Up!');
-            } else { /* down swipe */
-                console.log('Down!');
+            else if (Math.abs(distY) >= threshold && Math.abs(distX) <= restraint){ // 2nd condition for vertical swipe met
+                swipedir = (distY < 0)? 'up' : 'down' // if dist traveled is negative, it indicates up swipe
             }
         }
-        /* reset values */
-        xDown = null;
-        yDown = null;
+        handleswipe(swipedir)
+        // e.preventDefault()
+    }, false)
+}
+
+//USAGE:
+
+function goRight() {
+    console.log('right!');
+    setNext();
+    if (prev != null && document.activeElement.className.indexOf("form-control") === -1
+        && document.activeElement.className.indexOf("leaflet-touch-drag") === -1)
+    {
+        window.location.href = prev;
     }
-}//e/handleTouchMove
+    else if (
+        document.activeElement.className.indexOf("form-control") === -1
+        && document.activeElement.className.indexOf("leaflet-touch-drag") === -1)
+    {
+        showPopupDialog("<p>Je bent al bij het eerste item, je kunt niet verder terug.</p>\n" +
+            "<p>\n" +
+            "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
+            "</p>\n", 3000);
+       
+    }
+}
+
+function goLeft() {
+    console.log('left!');
+    setNext();
+    if (next != null && document.activeElement.className.indexOf("form-control") === -1
+        && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
+        window.location.href = next;
+    }
+    else if (
+        document.activeElement.className.indexOf("form-control") === -1
+        && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
+
+        showPopupDialog( "<p>Je bent al bij het laatste item, je kunt niet verder</p>\n" +
+            "<p>\n" +
+            "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oké</a>\n" +
+            "</p>\n",3000);
+
+    }
+} 
+
+var el = document.querySelector("body");
+swipedetect(el, function(swipedir){
+
+    if (swipedir === "left") 
+    {
+        goLeft();
+    }
+    if (swipedir === "right") {
+        goRight();
+    } 
+
+    // swipedir contains either "none", "left", "right", "top", or "down"
+});
+
+
+
+
+
+//
+// function handleTouchMove(evt) {
+//     if (!xDown || !yDown) {
+//         return;
+//     }
+//
+//     var xUp = evt.touches[0].clientX;
+//     var yUp = evt.touches[0].clientY;
+//
+//     var xDiff = xDown - xUp;
+//     var yDiff = yDown - yUp;
+//     if (Math.abs(xDiff) + Math.abs(yDiff) > 150) { //to deal with to short swipes
+//
+//         if (Math.abs(xDiff) > Math.abs(yDiff)) {/*most significant*/
+//             if (xDiff > 0) {/* left swipe */
+//                 goLeft()
+//             }
+//             } else {/* right swipe */
+//                 goRight()
+//             }
+//         } else {
+//             if (yDiff > 0) {/* up swipe */
+//                 console.log('Up!');
+//             } else { /* down swipe */
+//                 console.log('Down!');
+//             }
+//         }
+//         /* reset values */
+//         xDown = null;
+//         yDown = null;
+//     }
+// }
+// }//e/handleTouchMove
 
 
 

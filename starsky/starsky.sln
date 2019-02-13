@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskysynccli", "starskysy
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskyimportercli", "starskyimportercli\starskyimportercli.csproj", "{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskytests", "starskytests\starskytests.csproj", "{1E2346C0-67B3-4538-8F76-B152AA65BB1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskytest", "starskytest\starskytest.csproj", "{1E2346C0-67B3-4538-8F76-B152AA65BB1B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskywebhtmlcli", "starskywebhtmlcli\starskywebhtmlcli.csproj", "{AAD17FA3-3D15-442E-8FD1-17CE74A2F20C}"
 EndProject

@@ -1,5 +1,6 @@
+using System;
+using System.Text.RegularExpressions;
 using starskycore.Helpers;
-using starskycore.Services;
 
 namespace starskycore.Models
 {
@@ -37,10 +38,44 @@ namespace starskycore.Models
             }
             set => _overlayMaxWidth = value;
         }
-        
-        public string Path { get; set; } // used for template url or overlay image
 
-        private string _folder = string.Empty;
+	    
+	    /// <summary>
+	    /// private: used for template url or overlay image
+	    /// </summary>
+	    private string _path { get; set; } = string.Empty;
+
+	    /// <summary>
+	    /// used for template url or overlay image
+	    /// </summary>
+	    public string Path
+	    {
+		    get
+		    {
+			    // return: if null > string.Empty
+			    return string.IsNullOrEmpty(_path) ? string.Empty : _path;
+		    }
+		    set
+		    {
+			    if (string.IsNullOrEmpty(value)) return;
+
+			    if ( !value.Contains("{AssemblyDirectory}") )
+			    {
+				    _path = value;
+				    return;
+			    }
+				// get current dir
+			    var assemblyDirectory = PathHelper.RemoveLatestBackslash(AppDomain.CurrentDomain.BaseDirectory);
+			    // replace value -- ignore this case
+			    var subPath = Regex.Replace(value, "{AssemblyDirectory}", string.Empty, RegexOptions.IgnoreCase);
+			    
+			    // append and replace
+			    _path = assemblyDirectory + subPath
+				    .Replace("starskywebftpcli", "starskywebhtmlcli");
+		    }
+	    }
+
+	    private string _folder = string.Empty;
         public string Folder
         {
             get { return _folder; }

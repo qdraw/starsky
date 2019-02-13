@@ -322,7 +322,7 @@ DerivedData/
 starsky/starsky/.sonarqube*
 **/appsettings.*
 !**/appsettings.json
-starsky/starskyTests/coverag*.xml
+starsky/starskytest/coverag*.xml
 starskyapp/ios/main.jsbundle
 **/.env
 **/.starskyenv
@@ -338,10 +338,19 @@ starsky-node-client/docs/*/*/*.html
 **/osx.10.12-x64/*
 **/linux-arm/*
 **/win7-x86/*
+**/generic-netcore/*
+**/generic-netcore-starskyonly/*
 **/starsky.netframework-msbuild/*
 
 starsky-linux-arm.zip
 starsky-osx.10.12-x64.zip
 starsky-win7-x86.zip
+starsky-generic-netcore*.zip
 
+**/Cake/*
+**/tools/nuget.exe
+**/tools/packages.config*
+**/tools/ReportGenerator*/*
 **/coveragereport/*
+**/__coveragereport/*
+**/coverage.report/*

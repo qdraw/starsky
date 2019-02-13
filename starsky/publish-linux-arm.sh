@@ -16,6 +16,10 @@ pushd starskywebhtmlcli
 	dotnet publish -c release -r linux-arm --framework netcoreapp2.1 --output ../linux-arm
 popd
 
+pushd starskywebftpcli
+	dotnet publish --no-dependencies -c release -r linux-arm --output ../linux-arm
+popd
+
 pushd starskygeocli
 	dotnet publish -c release -r linux-arm --framework netcoreapp2.1 --output ../linux-arm
 popd

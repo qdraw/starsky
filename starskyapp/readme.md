@@ -9,7 +9,7 @@
     * [starskyWebHtmlCli](../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
     * [starskycore](../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
-    * [starskyTests](../starsky/starskyTests/readme.md)  _mstest unit tests_
+    * [starskyTest](../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * __[starskyapp](../starskyapp/readme.md) React-Native app (Pre-alpha code)__

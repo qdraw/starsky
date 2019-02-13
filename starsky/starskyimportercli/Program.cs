@@ -21,14 +21,14 @@ namespace starskyimportercli
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 
 
-            if (new ArgsHelper().NeedHelp(args) || new ArgsHelper().GetPathFormArgs(args,false).Length <= 1)
+            if (new ArgsHelper().NeedHelp(args) || new ArgsHelper(appSettings).GetPathFormArgs(args,false).Length <= 1)
             {
                 appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
                 new ArgsHelper(appSettings).NeedHelpShowDialog();
                 return;
             }
             
-            var inputPath = new ArgsHelper().GetPathFormArgs(args,false);
+            var inputPath = new ArgsHelper(appSettings).GetPathFormArgs(args,false);
             
             if(appSettings.Verbose) Console.WriteLine("inputPath " + inputPath);
 	        
