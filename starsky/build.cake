@@ -206,9 +206,12 @@ Task("PublishWeb")
 Task("Zip")
     .Does(() =>
     {
+        System.Console.WriteLine($"./{genericDistDirectory}", $"starsky-{genericDistDirectory}.zip");
         Zip($"./{genericDistDirectory}", $"starsky-{genericDistDirectory}.zip");
 
         if(runtime == genericName) return;
+
+        System.Console.WriteLine($"./{distDirectory}", $"starsky-{distDirectory}.zip");
         Zip($"./{distDirectory}", $"starsky-{distDirectory}.zip");
 
     });
