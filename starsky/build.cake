@@ -165,6 +165,7 @@ Task("Test")
                                              .Append("/p:CoverletOutputFormat=cobertura")
                                              .Append("/p:ThresholdType=line")
                                              .Append("/p:hideMigrations=\"true\"")
+                                             .Append("/p:ExcludeAssemblies=\"starskycore.Migrations\"") // (, comma seperated)
                                              .Append("/p:CoverletOutput=coverage.cobertura.xml")
                 });
         }
@@ -239,7 +240,8 @@ Task("BuildAndTest")
     .IsDependentOn("Clean")
     .IsDependentOn("Restore")
     .IsDependentOn("Build")
-    .IsDependentOn("Test");
+    .IsDependentOn("Test")
+    .IsDependentOn("CoverageReport");
 
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
