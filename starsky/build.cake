@@ -23,6 +23,10 @@ if(runtime == null || runtime == "" ) runtime = genericName;
 var distDirectory = Directory($"./{runtime}");
 var genericDistDirectory = Directory($"./{genericName}");
 
+// output for CI build -- overwrite when needed
+var distDirectoryStarskyOnly = Directory($"./{runtime}-starskyonly");
+var genericDistDirectoryStarskyOnly = Directory($"./{genericName}-starskyonly");
+
 
 var projectNames = new List<string>{
     "starskygeocli",
@@ -38,11 +42,12 @@ var testProjectNames = new List<string>{
     "starskyTests"
 };
 
-Task("OnlyStarskyMvc")
+Task("PrepStarskyOnly")
     .Does(() =>
     {
-        /* System.Console.WriteLine($"./{projectName}/{projectName}.csproj"); */
         projectNames = new List<string>{"starsky"};
+        distDirectory = distDirectoryStarskyOnly;
+        genericDistDirectory = genericDistDirectoryStarskyOnly;
     });
 
 // Deletes the contents of the Artifacts folder if it contains anything from a previous build.
@@ -151,7 +156,7 @@ Task("Test")
                                              .Append("/p:CoverletOutputFormat=cobertura")
                                              .Append("/p:ThresholdType=line")
                                              .Append("/p:hideMigrations=\"true\"")
-                                             .Append($"/p:CoverletOutput='../{runtime}/coverage.cobertura.xml'")
+                                             .Append($"/p:CoverletOutput='coverage.cobertura.xml'")
                 });
         }
     });
@@ -201,6 +206,16 @@ Task("Zip")
         Zip($"./{distDirectory}", $"starsky-{distDirectory}.zip");
 
     });
+/*
+Task("ZipStarskyOnly")
+    .Does(() =>
+    {
+        Zip($"./{genericDistDirectory}", $"starsky-{genericDistDirectory}-starskyonly.zip");
+
+        if(runtime == genericName) return;
+        Zip($"./{distDirectory}", $"starsky-{distDirectory}-starskyonly.zip");
+
+    }); */
 
 // A meta-task that runs all the steps to Build and Test the app
 Task("BuildAndTest")
@@ -219,7 +234,7 @@ Task("Default")
 
 // Run only Starsky MVC and tests
 Task("CI")
-    .IsDependentOn("OnlyStarskyMvc")
+    .IsDependentOn("PrepStarskyOnly")
     .IsDependentOn("BuildAndTest")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("Zip");
