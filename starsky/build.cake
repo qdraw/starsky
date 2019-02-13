@@ -1,3 +1,4 @@
+// CAKE FILE
 
 // powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
 // ./build.sh --runtime="osx.10.12-x64"
@@ -147,7 +148,7 @@ Task("Restore")
 Task("Test")
     .Does(() =>
     {
-        var projects = GetFiles("./*Tests/*.csproj");
+        var projects = GetFiles("./*test/*.csproj");
         foreach(var project in projects)
         {
             Information("Testing project " + project);
@@ -189,7 +190,7 @@ Task("PublishWeb")
             );
 
             // also publish the other files for runtimes
-            if(runtime == genericName) return;
+            if(runtime == genericName) continue;
 
             dotnetPublishSettings.Runtime = runtime;
             dotnetPublishSettings.OutputDirectory = distDirectory; // <= then to linux-arm
