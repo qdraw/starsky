@@ -132,10 +132,11 @@ namespace starskycore.Services
 
             // SHIFT is the number of bits per output character, so the length of the
             // output is the length of the input multiplied by 8/SHIFT, rounded up.
+	        // so: 268435456
             if (data.Length >= (1 << 28))
             {
                 // The computation below will fail, so don't do it.
-                throw new ArgumentOutOfRangeException("data");
+                throw new ArgumentOutOfRangeException(nameof(data));
             }
 
             int outputLength = (data.Length * 8 + Shift - 1) / Shift;

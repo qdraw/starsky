@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starskycore.Attributes;
 using starskycore.Services;
@@ -34,6 +35,14 @@ namespace starskytests.Services
 		{
 			var encodeBytes = Base32.Decode(string.Empty); 
 			Assert.AreEqual(0,encodeBytes.Length);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentOutOfRangeException))]
+		public void Base32Encode_OutRange()
+		{
+			var t = ( 1 << 28 ); // the lenght
+			Base32.Encode(new byte[268435456]);
 		}
 
 	}
