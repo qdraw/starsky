@@ -162,7 +162,7 @@ Task("Test")
                                              .Append("/p:CoverletOutputFormat=cobertura")
                                              .Append("/p:ThresholdType=line")
                                              .Append("/p:hideMigrations=\"true\"")
-                                             .Append($"/p:CoverletOutput='coverage.cobertura.xml'")
+                                             .Append("/p:CoverletOutput=coverage.cobertura.xml")
                 });
         }
     });
