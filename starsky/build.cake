@@ -79,12 +79,17 @@ Task("Restore")
         restoreProjectNames.AddRange(testProjectNames);
 
         // now restore test with generic settings (always)
+        // used to get all dependencies
+        DotNetCoreRestore(".",
+            new DotNetCoreRestoreSettings());
+
+        /* -- foreach project --
         foreach(var projectName in restoreProjectNames)
         {
             System.Console.WriteLine($"./{projectName}/{projectName}.csproj");
             DotNetCoreRestore($"./{projectName}/{projectName}.csproj",
                 new DotNetCoreRestoreSettings());
-        }
+        } */
 
         if(runtime == genericName) return;
 
@@ -114,6 +119,7 @@ Task("Restore")
             ArgumentCustomization = args => args.Append("--no-restore"),
         };
 
+        System.Console.WriteLine($"> build: {runtime}");
         // generic build for mstest
         DotNetCoreBuild(".",
             dotnetBuildSettings);
