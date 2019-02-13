@@ -8,6 +8,8 @@
 // Mac: 'osx.10.12-x64'
 // Raspberry Pi: 'linux-arm'
 
+// For the step CoverageReport
+#tool "nuget:?package=ReportGenerator"
 
 // Target - The task you want to start. Runs the Default task if not specified.
 var target = Argument("Target", "Default");
@@ -168,6 +170,21 @@ Task("Test")
         }
     });
 
+Task("CoverageReport")
+    .Does(() =>
+    {
+        var projects = GetFiles("./*test/coverage.cobertura.xml");
+        foreach(var project in projects)
+        {
+            var reportFolder = project.ToString().Replace("cobertura.xml","report");
+            // change to: coverage.report
+            System.Console.WriteLine(reportFolder);
+            ReportGenerator(project, reportFolder, new ReportGeneratorSettings{
+                ReportTypes = new[] { ReportGeneratorReportType.HtmlInline }
+            });
+        }
+    });
+
 // Publish the app to the /dist folder
 Task("PublishWeb")
     .Does(() =>
@@ -216,16 +233,6 @@ Task("Zip")
         Zip($"./{distDirectory}", $"starsky-{distDirectory}.zip");
 
     });
-/*
-Task("ZipStarskyOnly")
-    .Does(() =>
-    {
-        Zip($"./{genericDistDirectory}", $"starsky-{genericDistDirectory}-starskyonly.zip");
-
-        if(runtime == genericName) return;
-        Zip($"./{distDirectory}", $"starsky-{distDirectory}-starskyonly.zip");
-
-    }); */
 
 // A meta-task that runs all the steps to Build and Test the app
 Task("BuildAndTest")

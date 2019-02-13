@@ -350,6 +350,7 @@ starsky-generic-netcore*.zip
 **/Cake/*
 **/tools/nuget.exe
 **/tools/packages.config*
-
+**/tools/ReportGenerator*/*
 **/coveragereport/*
 **/__coveragereport/*
+**/coverage.report/*
