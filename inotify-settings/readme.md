@@ -9,7 +9,7 @@
     * [starskyWebHtmlCli](../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
     * [starskycore](../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
-    * [starskyTests](../starsky/starskyTests/readme.md)  _mstest unit tests_
+    * [starskyTest](../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
@@ -34,7 +34,7 @@ sudo nano /usr/local/sbin/inotify.sh
 ```
 >  copy content from `inotify.sh` to the `/usr/local/sbin` folder
 
-Make the `inotify.sh` script executable 
+Make the `inotify.sh` script executable
 ```sh
 sudo chmod ug+x /usr/local/sbin/inotify.sh
 ```
@@ -53,13 +53,13 @@ sudo nano /etc/init.d/inotifyd
 ```
 >  copy content from `inotifyd.sh` to the `/etc/init.d/` folder
 
-Make the `inotifyd.sh` script executable 
+Make the `inotifyd.sh` script executable
 ```sh
 sudo chmod +x /etc/init.d/inotifyd
 ```
 
 ### update-rc
-To init the service run the following command 
+To init the service run the following command
 ```sh
 sudo update-rc.d -f inotifyd defaults
 ```

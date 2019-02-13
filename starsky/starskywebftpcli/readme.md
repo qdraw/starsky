@@ -9,18 +9,18 @@
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * __[starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  copy a content package to a ftp service__
     * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
-    * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
+    * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
- 
- 
+
+
 ## starskyWebFtpCli docs
 
 Run the `starskyWebHtmlCli` first, to create a 'content package'
 A 'content package' is a folder with static html files and resized images.
 
-### AppSettings 
+### AppSettings
 
 Use the `publishProfiles` by the `starskyWebHtmlCli` and add the `WebFtp` field.
 ```json
@@ -86,5 +86,3 @@ Use the `publishProfiles` by the `starskyWebHtmlCli` and add the `WebFtp` field.
     }
 }
 ```
-
-

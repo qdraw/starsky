@@ -9,7 +9,7 @@
     * __[starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  publish web images to a content package__
     * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
     * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
-    * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
+    * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
@@ -18,7 +18,7 @@
 
 ### Introduction:
 
-For example to generate content for a blog, the 'Web HTML Cli' can be used. This application is used to create thumbnail web images and 'pre render' html files. 
+For example to generate content for a blog, the 'Web HTML Cli' can be used. This application is used to create thumbnail web images and 'pre render' html files.
 All actions are customizable in the `appsettings.json`. There is a section called `publishProfiles` in `appsettings.json`.
 The `publishProfiles` are executed during runtime.
 
@@ -34,9 +34,9 @@ The `publishProfiles` are executed during runtime.
 Starksy WebHtml Cli ~ Help:
 --help or -h == help (this window)
 --path or -p == parameter: (string) ; fullpath (select a folder), use '-p' for current directory
---name or -n == parameter: (string) ; name of blogitem 
+--name or -n == parameter: (string) ; name of blogitem
 --verbose or -v == verbose, more detailed info
-  use -v -help to show settings: 
+  use -v -help to show settings:
 ```
 ### Configuration
 
@@ -58,7 +58,7 @@ When using ContentType `html` this is the filename of the rendered html file.
 With ContentType `jpeg`, this is the 'full file path' of the image used in `OverlayMaxWidth`
 
 __Replacer in Path__
-There is option to replace the `{AssemblyDirectory}` value with the path of the starsky assemblies. 
+There is option to replace the `{AssemblyDirectory}` value with the path of the starsky assemblies.
 This is __not__ using `AppSettings.BaseDirectoryProject` but the assemblies inside StarskyWebHtmlCli
 
 
@@ -66,10 +66,10 @@ This is __not__ using `AppSettings.BaseDirectoryProject` but the assemblies insi
 Used with ContentType `html` to select the Razor template file
 
 #### 'Pre pend'
-In ContentType `html` this is used to add text before the urls used in the html output. 
+In ContentType `html` this is used to add text before the urls used in the html output.
 
 __Replacer in 'Pre pend'__
-There is option to replace the `{Name}` value with the slug-name of the item. A slug name is the name in lowercase and the spaces are replaced with dashes. 
+There is option to replace the `{Name}` value with the slug-name of the item. A slug name is the name in lowercase and the spaces are replaced with dashes.
 
 
 #### Append

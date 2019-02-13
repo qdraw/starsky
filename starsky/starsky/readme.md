@@ -9,7 +9,7 @@
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
     * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
-    * [starskyTests](../../starsky/starskyTests/readme.md)  _mstest unit tests_
+    * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
@@ -83,7 +83,7 @@ Starsky has a Json and Razorview restful API. Please read the documentation
 ### Swagger
 Swagger is an open-source software framework backed by a large ecosystem of tools that helps developers design, build, document, and consume RESTful Web services. There is an swagger definition. You could enable this by setting the following values:
 
-By default this feature is disabled, please use the `AddSwagger` definition in the AppSettings or use the following environment variable: 
+By default this feature is disabled, please use the `AddSwagger` definition in the AppSettings or use the following environment variable:
 ```
 app__AddSwagger=true
 ```

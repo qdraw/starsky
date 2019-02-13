@@ -39,7 +39,7 @@ var projectNames = new List<string>{
 
 
 var testProjectNames = new List<string>{
-    "starskyTests"
+    "starskytest"
 };
 
 Task("PrepStarskyOnly")

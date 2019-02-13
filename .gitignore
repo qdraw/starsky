@@ -322,7 +322,7 @@ DerivedData/
 starsky/starsky/.sonarqube*
 **/appsettings.*
 !**/appsettings.json
-starsky/starskyTests/coverag*.xml
+starsky/starskytest/coverag*.xml
 starskyapp/ios/main.jsbundle
 **/.env
 **/.starskyenv
