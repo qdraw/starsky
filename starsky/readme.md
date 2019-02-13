@@ -39,12 +39,18 @@ Or using Chocolatey under Windows:
 choco install exiftool
 ```   
 
-4. Make a build and run the tests
+4. Make a build of all the projects and run the tests
 from the root folder of the repository
+When using powershell:
+
+```powershell
+    .\build.ps1
+```
+
+or using bash. You need to have `mono` installed
 
 ```sh
-dotnet build starsky
-dotnet test starsky/*Tests
+    ./build.sh
 ```
 
 4.  Link `starsky/starsky/appsettings.json` to the exiftool excutable
