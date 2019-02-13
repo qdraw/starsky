@@ -7,7 +7,7 @@ var thumbnailApiBase = document.getElementById("js-settings").getAttribute("data
 updateApiBase = updateApiBase.replace("&amp;", "&");
 // fix for changing + in urls
 updateApiBase = updateApiBase.replace(/\+/ig, "%2B");
-infoApiBase = infoApiBase.replace("&amp;", "&") + "&collections=true";
+infoApiBase = infoApiBase.replace("&amp;", "&") + "&collections=false";
 infoApiBase = infoApiBase.replace(/\+/ig, "%2B");
 thumbnailApiBase = thumbnailApiBase.replace("&amp;", "&");
 

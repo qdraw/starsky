@@ -50,6 +50,10 @@ When using powershell:
 or using bash. You need to have `mono` installed
 
 ```sh
+brew install mono
+```
+
+```sh
     ./build.sh
 ```
 
