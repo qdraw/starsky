@@ -49,6 +49,17 @@ Task("OnlyStarskyMvc")
 Task("Clean")
     .Does(() =>
     {
+
+        if (FileExists($"starsky-{genericDistDirectory}.zip"))
+        {
+            DeleteFile($"starsky-{genericDistDirectory}.zip");
+        }
+
+        if (FileExists($"starsky-{distDirectory}.zip"))
+        {
+            DeleteFile($"starsky-{distDirectory}.zip");
+        }
+
         CleanDirectory(distDirectory);
         CleanDirectory(genericDistDirectory);
     });
@@ -184,10 +195,10 @@ Task("PublishWeb")
 Task("Zip")
     .Does(() =>
     {
-        Zip($"./{genericDistDirectory}", $"{genericDistDirectory}.zip");
+        Zip($"./{genericDistDirectory}", $"starsky-{genericDistDirectory}.zip");
 
         if(runtime == genericName) return;
-        Zip($"./{distDirectory}", $"{distDirectory}.zip");
+        Zip($"./{distDirectory}", $"starsky-{distDirectory}.zip");
 
     });
 

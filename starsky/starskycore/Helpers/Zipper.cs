@@ -39,6 +39,7 @@ namespace starskycore.Helpers
 						entry.ExtractToFile(destinationPath);
 				}
 			}
+			
 
 		}
 
