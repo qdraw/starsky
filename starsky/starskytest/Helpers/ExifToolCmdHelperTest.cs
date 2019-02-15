@@ -6,9 +6,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
-using starskytests.Models;
+using starskytest.Models;
 
-namespace starskytests.Helpers
+namespace starskytest.Helpers
 {
     [TestClass]
     public class ExifToolCmdHelperTest

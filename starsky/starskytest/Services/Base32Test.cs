@@ -1,10 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Attributes;
-using starskycore.Attributes;
 using starskycore.Services;
 
-namespace starskytests.Services
+namespace starskytest.Services
 {
 	[TestClass]
 	public class Base32Test

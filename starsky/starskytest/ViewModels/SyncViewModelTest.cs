@@ -2,7 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Models;
 using starskycore.ViewModels;
 
-namespace starskytests.ViewModels
+namespace starskytest.ViewModels
 {
 	[TestClass]
 	public class SyncViewModelTest

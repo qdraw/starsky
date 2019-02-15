@@ -12,7 +12,7 @@ using starskycore.ViewModels;
 using starskytest.FakeMocks;
 using Query = starskycore.Services.Query;
 
-namespace starskytests.Services
+namespace starskytest.Services
 {
     [TestClass]
     public class SearchServiceTest

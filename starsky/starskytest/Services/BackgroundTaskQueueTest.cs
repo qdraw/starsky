@@ -12,7 +12,7 @@ using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
 
-namespace starskytests.Services
+namespace starskytest.Services
 {
     [TestClass]
     public class BackgroundTaskQueueTest

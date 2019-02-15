@@ -12,19 +12,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Data;
-using starskytests.Models;
 using starsky.Controllers;
+using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using starskytests.FakeCreateAn;
+using starskytest.Models;
 using Query = starskycore.Services.Query;
 
-namespace starskytests.Controllers
+namespace starskytest.Controllers
 {
 	[TestClass]
 	public class ExportControllerTest

@@ -13,12 +13,12 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using starskytests.FakeCreateAn;
-using starskytests.Models;
+using starskytest.FakeCreateAn;
+using starskytest.Models;
 using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
-namespace starskytests.Services
+namespace starskytest.Services
 {
     [TestClass]
     public class ImportServiceTest

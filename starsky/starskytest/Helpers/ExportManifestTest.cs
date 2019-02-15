@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskytest.FakeMocks;
 
-namespace starskytests.Helpers
+namespace starskytest.Helpers
 {
 	[TestClass]
 	public class ExportManifestTest
@@ -21,14 +18,13 @@ namespace starskytests.Helpers
 			new ExportManifest(appSettings, plainTextFileHelper).Export();
 		}
 
+		[TestMethod]
 		public void ExportManifestTest_Import()
 		{
 			var test = "{\"Name\":\"Test\",\"Slug\":\"test\"}";
 			var plainTextFileHelper = new FakePlainTextFileHelper(test);
 			var appSettings = new AppSettings { Name = "Test" };
-
-
-
 		}
+		
 	}
 }

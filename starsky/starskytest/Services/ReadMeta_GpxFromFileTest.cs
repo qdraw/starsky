@@ -2,13 +2,11 @@ using System;
 using System.Globalization;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Helpers;
 using starskycore.Helpers;
 using starskycore.Services;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
-
-namespace starskytests.Services
+namespace starskytest.Services
 {
     [TestClass]
     public class ReadGpxFromFileTest

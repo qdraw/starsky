@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using starskytests.FakeCreateAn;
 
-namespace starskytests.Helpers
+namespace starskytest.Helpers
 {
 	[TestClass]
 	public class HttpClientHelperTest

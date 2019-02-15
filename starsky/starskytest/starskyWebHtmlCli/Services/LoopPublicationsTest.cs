@@ -3,10 +3,10 @@ using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 using starskywebhtmlcli.Services;
 
-namespace starskytests.starskyWebHtmlCli.Services
+namespace starskytest.starskyWebHtmlCli.Services
 {
     [TestClass]
     public class LoopPublicationsTest

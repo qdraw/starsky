@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Models.Account;
 
-namespace starskytests.Models.Account
+namespace starskytest.Models.Account
 {
     [TestClass]
     public class CredentialTypeTest

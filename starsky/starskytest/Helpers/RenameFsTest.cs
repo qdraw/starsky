@@ -7,14 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Data;
 using starskycore.Helpers;
-using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
-namespace starskytests.Helpers
+namespace starskytest.Helpers
 {
 	[TestClass]
 	public class RenameFsTest

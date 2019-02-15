@@ -10,9 +10,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Middleware;
 using starskycore.Models;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
-namespace starskytests.Models
+namespace starskytest.Models
 {
     [TestClass]
     public class ImportIndexItemTest

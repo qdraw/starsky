@@ -4,9 +4,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskyGeoCli.Services;
-using starskytests.Models;
+using starskytest.Models;
 
-namespace starskytests.starskygeosync.Services
+namespace starskytest.starskygeosync.Services
 {
     [TestClass]
     public class GeoLocationWriteTest

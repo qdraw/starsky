@@ -7,13 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starskycore.Data;
-using starsky.ViewModels;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.ViewModels;
 using Query = starskycore.Services.Query;
 
-namespace starskytests.Controllers
+namespace starskytest.Controllers
 {
     [TestClass]
     public class HomeControllerTest

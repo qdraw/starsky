@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
 namespace starskytest.FakeMocks
 {

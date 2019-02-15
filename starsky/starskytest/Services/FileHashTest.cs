@@ -1,9 +1,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Attributes;
 using starskycore.Services;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
-namespace starskytests.Services
+namespace starskytest.Services
 {
     [TestClass]
     public class FileHashTest

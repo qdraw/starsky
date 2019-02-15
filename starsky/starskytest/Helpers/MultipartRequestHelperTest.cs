@@ -3,7 +3,7 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
 
-namespace starskytests.Helpers
+namespace starskytest.Helpers
 {
     [TestClass]
     public class MultipartRequestHelperTest

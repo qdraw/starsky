@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace starskytests.FakeCreateAn
+namespace starskytest.FakeCreateAn
 {
     public class CreateAnGpx
     {

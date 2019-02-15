@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.ViewModels.Account;
 
-namespace starskytests.ViewModels.AccountViewModels
+namespace starskytest.ViewModels.AccountViewModels
 {
     [TestClass]
     public class RegisterViewModelTest

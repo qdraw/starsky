@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Models;
 
-namespace starskytests.Models
+namespace starskytest.Models
 {
     [TestClass]
     public class ExifToolModelTest

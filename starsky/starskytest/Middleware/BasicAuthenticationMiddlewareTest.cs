@@ -11,15 +11,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starskycore.Data;
 using starsky.ViewModels.Account;
+using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeMocks;
 
-namespace starskytests.Middleware
+namespace starskytest.Middleware
 {
     [TestClass]
     public class BasicAuthenticationMiddlewareTest

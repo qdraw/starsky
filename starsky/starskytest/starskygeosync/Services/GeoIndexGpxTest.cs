@@ -6,10 +6,9 @@ using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
 using starskyGeoCli.Services;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
-
-namespace starskytests.starskygeosync.Services
+namespace starskytest.starskygeosync.Services
 {
     [TestClass]
     public class GeoIndexGpxTest

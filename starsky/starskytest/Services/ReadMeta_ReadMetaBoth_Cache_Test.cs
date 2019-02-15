@@ -5,10 +5,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using starskytests.FakeCreateAn;
 
-namespace starskytests.Services
+namespace starskytest.Services
 {
     [TestClass]
     public class ReadMeta_ReadMetaBoth_Cache_Test

@@ -1,8 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Builder.Internal;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,7 +7,7 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Services;
 
-namespace starskytests.Middleware
+namespace starskytest.Middleware
 {
 
     [TestClass]

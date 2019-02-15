@@ -7,10 +7,10 @@ using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 using Query = starskycore.Services.Query;
 
-namespace starskytests.Services
+namespace starskytest.Services
 {
 	[TestClass]
 	public class ThumbnailCleanerTest

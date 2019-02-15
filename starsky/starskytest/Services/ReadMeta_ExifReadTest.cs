@@ -7,11 +7,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Attributes;
 using starskycore.Models;
 using starskycore.Services;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 using Directory = MetadataExtractor.Directory;
 
 
-namespace starskytests.Services
+namespace starskytest.Services
  {
      public class MockDirectory : Directory
      {
