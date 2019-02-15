@@ -9,7 +9,7 @@ namespace starskytest.FakeCreateAn
 
         private static readonly string _fileName = "0000000000aaaaa__exifreadingtest00.jpg";
         // There is an unit test for using directory thumbnails that uses the first image;
-        // starskytests.SyncServiceTest.SyncServiceFirstItemDirectoryTest
+        // starskytest.SyncServiceTest.SyncServiceFirstItemDirectoryTest
 
 	    /// <summary>
 	    /// The filename *.jpg

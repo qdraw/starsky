@@ -20,7 +20,7 @@ namespace starskytest.FakeMocks
 			throw new System.NotImplementedException();
 		}
 
-		public void DirectoryMove(string inputSubPath, string toSubPath)
+		public void FolderMove(string inputSubPath, string toSubPath)
 		{
 			throw new System.NotImplementedException();
 		}

@@ -55,7 +55,7 @@ namespace starskycore.Services
 			return FolderOrFileModel.FolderOrFileTypeList.Deleted;
 		}
 
-		public void DirectoryMove(string inputSubPath, string toSubPath)
+		public void FolderMove(string inputSubPath, string toSubPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
 			var toFileFullPath = _appSettings.DatabasePathToFilePath(toSubPath, false);

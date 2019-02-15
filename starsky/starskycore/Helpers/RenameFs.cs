@@ -109,7 +109,7 @@ namespace starskycore.Helpers
 				     && toFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
 					//move
-					_iStorage.FileMove(inputFileSubPath,inputFileSubPath);
+					_iStorage.FolderMove(inputFileSubPath,inputFileSubPath);
 					
 					fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
 					// Rename child items

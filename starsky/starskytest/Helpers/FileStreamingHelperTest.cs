@@ -11,7 +11,7 @@ using starskycore.Middleware;
 using starskycore.Models;
 using starskytest.FakeCreateAn;
 
-namespace starskytests.Helpers
+namespace starskytest.Helpers
 {
     [TestClass]
     public class FileStreamingHelperTest
