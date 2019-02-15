@@ -65,7 +65,7 @@ namespace starsky.Controllers
         /// <response code="401">login failed</response>
         [HttpPost("/account/login")]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> LoginPost(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ValidateResult validateResult = _userManager.Validate("Email", model.Email, model.Password);
             ViewData["ReturnUrl"] = returnUrl;
