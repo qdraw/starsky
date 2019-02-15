@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Data;
-using starskytests.FakeMocks;
 using starskytests.Models;
 using starsky.Controllers;
 using starskycore.Helpers;
@@ -21,6 +20,7 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
+using starskytest.FakeMocks;
 using starskytests.FakeCreateAn;
 using Query = starskycore.Services.Query;
 

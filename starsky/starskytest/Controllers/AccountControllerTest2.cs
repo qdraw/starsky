@@ -17,7 +17,7 @@ using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Models.Account;
 using starskycore.Services;
-using starskytests.FakeMocks;
+using starskytest.FakeMocks;
 
 namespace starskytests.Controllers
 {

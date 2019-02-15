@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
-using starskytests.FakeMocks;
+using starskytest.FakeMocks;
 
 namespace starskytests.Helpers
 {

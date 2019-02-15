@@ -4,7 +4,7 @@ using starskycore.Interfaces;
 using starskycore.Models;
 using starskytests.FakeCreateAn;
 
-namespace starskytests.FakeMocks
+namespace starskytest.FakeMocks
 {
     public class FakeReadMeta : IReadMeta
     {

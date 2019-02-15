@@ -16,8 +16,8 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
+using starskytest.FakeMocks;
 using starskytests.FakeCreateAn;
-using starskytests.FakeMocks;
 using starskytests.Models;
 using Query = starskycore.Services.Query;
 

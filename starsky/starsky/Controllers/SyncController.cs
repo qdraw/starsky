@@ -17,13 +17,15 @@ namespace starsky.Controllers
         private readonly IBackgroundTaskQueue _bgTaskQueue;
         private readonly IQuery _query;
         private readonly AppSettings _appSettings;
+	    private readonly IStorage _iStorage;
 
-        public SyncController(ISync sync, IBackgroundTaskQueue queue, IQuery query, AppSettings appSettings)
+        public SyncController(ISync sync, IBackgroundTaskQueue queue, IQuery query, AppSettings appSettings, IStorage iStorage)
         {
             _sync = sync;
             _bgTaskQueue = queue;
             _query = query;
             _appSettings = appSettings;
+	        _iStorage = iStorage;
         }
         
         /// <summary>
@@ -101,7 +103,7 @@ namespace starsky.Controllers
 		[HttpPost("/sync/rename")]
 		public IActionResult Rename(string f, string to, bool collections = true)
 		{
-			return Json(new RenameFs(_appSettings,_query,_sync).Rename(f,to,collections));
+			return Json(new RenameFs(_appSettings,_query,_sync,_iStorage).Rename(f,to,collections));
 		}
 
     }

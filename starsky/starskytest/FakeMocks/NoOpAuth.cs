@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
-namespace starskytests.FakeMocks
+namespace starskytest.FakeMocks
 {
     // Mock class for IAuthenticationService
     public class NoOpAuth : IAuthenticationService

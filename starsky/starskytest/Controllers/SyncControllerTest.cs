@@ -15,12 +15,12 @@ using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
 using starskycore.ViewModels;
+using starskytest.FakeMocks;
 using starskytests.FakeCreateAn;
-using starskytests.FakeMocks;
 using starskytests.Models;
 using Query = starskycore.Services.Query;
 
-namespace starskytests.Controllers
+namespace starskytest.Controllers
 {
 	[TestClass]
 	public class SyncControllerTest
@@ -97,7 +97,7 @@ namespace starskytests.Controllers
 
 			// get the background helper
 			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
-			;
+			
 		}
 
 		private FileIndexItem InsertSearchData()
@@ -134,8 +134,9 @@ namespace starskytests.Controllers
 			{
 				HttpContext = new DefaultHttpContext()
 			};
+			var iStorage = new FakeIStorage();
 
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, _appSettings);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, _appSettings,iStorage);
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex("/") as JsonResult;
@@ -153,8 +154,9 @@ namespace starskytests.Controllers
 			{
 				HttpContext = new DefaultHttpContext()
 			};
+			var iStorage = new FakeIStorage();
 
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, _appSettings);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, _appSettings, iStorage);
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex(_createAnImage.DbPath) as JsonResult;
@@ -173,8 +175,9 @@ namespace starskytests.Controllers
 			{
 				HttpContext = new DefaultHttpContext()
 			};
+			var iStorage = new FakeIStorage();
 
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, _appSettings);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, _appSettings, iStorage);
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex("/404") as JsonResult;

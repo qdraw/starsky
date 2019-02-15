@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
+using starskytest.FakeMocks;
 using starskytests.FakeCreateAn;
-using starskytests.FakeMocks;
 
 namespace starskytests.Helpers
 {

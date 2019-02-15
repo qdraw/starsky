@@ -17,7 +17,7 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using starskytests.FakeMocks;
+using starskytest.FakeMocks;
 
 namespace starskytests.Middleware
 {

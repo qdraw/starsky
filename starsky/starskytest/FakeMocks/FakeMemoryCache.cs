@@ -5,7 +5,7 @@ using starskycore.Models;
 using starskycore.ViewModels;
 using starskytests.FakeCreateAn;
 
-namespace starskytests.FakeMocks
+namespace starskytest.FakeMocks
 {
     public class FakeMemoryCache : IMemoryCache
     {

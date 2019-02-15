@@ -10,7 +10,6 @@ using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Services;
-using starskytests.FakeMocks;
 
 namespace starskytests.Middleware
 {

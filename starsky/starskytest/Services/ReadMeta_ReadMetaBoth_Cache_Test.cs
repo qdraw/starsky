@@ -5,8 +5,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
+using starskytest.FakeMocks;
 using starskytests.FakeCreateAn;
-using starskytests.FakeMocks;
 
 namespace starskytests.Services
 {
