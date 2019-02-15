@@ -44,7 +44,7 @@ namespace starsky.Controllers
 	            subPath = PathHelper.RemoveLatestSlash(subPath);
 	            if ( subPath == string.Empty ) subPath = "/";
 
-	            var folderStatus = Files.IsFolderOrFile(_appSettings.DatabasePathToFilePath(subPath));
+	            var folderStatus = FilesHelper.IsFolderOrFile(_appSettings.DatabasePathToFilePath(subPath));
 				if ( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
 					var syncItem = new SyncViewModel
@@ -56,8 +56,8 @@ namespace starsky.Controllers
 				}
 				else if( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
-					var filesAndFoldersInDirectoryArray = Files.GetFilesInDirectory(_appSettings.DatabasePathToFilePath(subPath)).ToList();
-					filesAndFoldersInDirectoryArray.AddRange(Files.GetAllFilesDirectory(_appSettings.DatabasePathToFilePath(subPath)));
+					var filesAndFoldersInDirectoryArray = FilesHelper.GetFilesInDirectory(_appSettings.DatabasePathToFilePath(subPath)).ToList();
+					filesAndFoldersInDirectoryArray.AddRange(FilesHelper.GetAllFilesDirectory(_appSettings.DatabasePathToFilePath(subPath)));
 					
 					foreach ( var fileInDirectory in filesAndFoldersInDirectoryArray )
 					{

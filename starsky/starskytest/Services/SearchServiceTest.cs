@@ -48,7 +48,7 @@ namespace starskytests.Services
                     Tags = "schiphol, airplane, station",
                     Description = "schiphol",
                     Title = "Schiphol",
-					ImageFormat = Files.ImageFormat.jpg
+					ImageFormat = FilesHelper.ImageFormat.jpg
                 });
             }
 

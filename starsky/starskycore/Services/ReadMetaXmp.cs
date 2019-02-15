@@ -19,13 +19,13 @@ namespace starskycore.Services
                 InvalidDataContractException("AppSettings in XmpSelectSidecarFile is null");
             
             // Read content from sidecar xmp file
-            if (Files.IsXmpSidecarRequired(singleFilePath))
+            if (FilesHelper.IsXmpSidecarRequired(singleFilePath))
             {
                 // Parse an xmp file for this location
-                var xmpFilePath = Files.GetXmpSidecarFileWhenRequired(
+                var xmpFilePath = FilesHelper.GetXmpSidecarFileWhenRequired(
                     singleFilePath,
                     _appSettings.ExifToolXmpPrefix);
-                if (Files.IsFolderOrFile(xmpFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
+                if (FilesHelper.IsFolderOrFile(xmpFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
                 {
                     // Read the text-content of the xmp file.
                     var xmp = new PlainTextFileHelper().ReadFile(xmpFilePath);

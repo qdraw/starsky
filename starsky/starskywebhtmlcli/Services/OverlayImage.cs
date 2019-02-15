@@ -32,15 +32,15 @@ namespace starskywebhtmlcli.Services
         
         public void ResizeOverlayImage(string sourceFilePath, string outputFilePath, AppSettingsPublishProfiles profile)
         {
-            if (Files.IsFolderOrFile(profile.Path) //< used for image overlay 
+            if (FilesHelper.IsFolderOrFile(profile.Path) //< used for image overlay 
                 != FolderOrFileModel.FolderOrFileTypeList.File) 
                 throw new FileNotFoundException("ImageOverlayFullPath " + profile.Path);
 
-            if (Files.IsFolderOrFile(sourceFilePath) 
+            if (FilesHelper.IsFolderOrFile(sourceFilePath) 
                 != FolderOrFileModel.FolderOrFileTypeList.File) 
                 throw new FileNotFoundException("sourceFilePath " + sourceFilePath);
 
-            if (Files.IsFolderOrFile(outputFilePath) 
+            if (FilesHelper.IsFolderOrFile(outputFilePath) 
                 == FolderOrFileModel.FolderOrFileTypeList.File) return;
                 
             using (var outputStream = new FileStream(outputFilePath, FileMode.CreateNew))

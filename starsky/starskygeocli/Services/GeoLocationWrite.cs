@@ -26,7 +26,7 @@ namespace starskyGeoCli.Services
         {
             foreach (var metaFileItem in metaFilesInDirectory)
             {
-                if (!Files.IsExtensionExifToolSupported(metaFileItem.FileName)) continue;
+                if (!FilesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) continue;
 
                 Console.WriteLine("Do a exiftoolSync");
                 var comparedNamesList = new List<string>

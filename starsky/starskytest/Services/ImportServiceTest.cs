@@ -219,9 +219,9 @@ namespace starskytests.Services
                 importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
             ));
             
-            Files.DeleteDirectory(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
+            FilesHelper.DeleteDirectory(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
-            Files.DeleteDirectory(existDir);
+            FilesHelper.DeleteDirectory(existDir);
 	        RemoveFromQuery();
 
         }
@@ -448,7 +448,7 @@ namespace starskytests.Services
                 importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
             ));
             // delete exist dir
-            Files.DeleteDirectory(existDirectoryFullPath);
+            FilesHelper.DeleteDirectory(existDirectoryFullPath);
 	        RemoveFromQuery();
 
         }
@@ -505,7 +505,7 @@ namespace starskytests.Services
             ));
             
             // existFolderPath >= remove it afterwards
-            Files.DeleteDirectory(existFolderPath);
+            FilesHelper.DeleteDirectory(existFolderPath);
 	        RemoveFromQuery();
 
         }
@@ -598,7 +598,7 @@ namespace starskytests.Services
             var result = _import.Import(createAnImageNoExif.FullFilePathWithDate,importSettings);
             
             Assert.AreEqual(string.Empty,result.FirstOrDefault());
-            Files.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
+            FilesHelper.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
 	        RemoveFromQuery();
 
         }
@@ -638,7 +638,7 @@ namespace starskytests.Services
 		    var subpath = PathHelper.RemovePrefixDbSlash(result.FirstOrDefault());
 
 		    var path = Path.Combine(createAnImage.BasePath, subpath);
-		    Files.DeleteFile(path);
+		    FilesHelper.DeleteFile(path);
 	    }
 
     }

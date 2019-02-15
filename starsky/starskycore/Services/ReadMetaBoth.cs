@@ -21,9 +21,9 @@ namespace starskycore.Services
         }
 
         private FileIndexItem ReadExifAndXmpFromFileDirect(string singleFilePath, 
-            Files.ImageFormat imageFormat)
+            FilesHelper.ImageFormat imageFormat)
         {
-            if (imageFormat == Files.ImageFormat.gpx) return ReadGpxFromFileReturnAfterFirstField(singleFilePath);
+            if (imageFormat == FilesHelper.ImageFormat.gpx) return ReadGpxFromFileReturnAfterFirstField(singleFilePath);
             var databaseItem = ReadExifFromFile(singleFilePath);
             databaseItem = XmpGetSidecarFile(databaseItem, singleFilePath);
             return databaseItem;
@@ -36,7 +36,7 @@ namespace starskycore.Services
             foreach (var fullFilePath in fullFilePathArray)
             {
                 var subPath = _appSettings.FullPathToDatabaseStyle(fullFilePath);
-                var imageFormat = Files.GetImageFormat(fullFilePath); 
+                var imageFormat = FilesHelper.GetImageFormat(fullFilePath); 
                 var returnItem = ReadExifAndXmpFromFile(fullFilePath,imageFormat);
 
                 returnItem.ImageFormat = imageFormat;
@@ -53,7 +53,7 @@ namespace starskycore.Services
 
         // Cached view >> IMemoryCache
         // Short living cache Max 10. minutes
-        public FileIndexItem ReadExifAndXmpFromFile(string fullFilePath,Files.ImageFormat imageFormat)
+        public FileIndexItem ReadExifAndXmpFromFile(string fullFilePath,FilesHelper.ImageFormat imageFormat)
         {
             // The CLI programs uses no cache
             if( _cache == null || _appSettings?.AddMemoryCache == false) 

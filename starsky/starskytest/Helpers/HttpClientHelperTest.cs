@@ -75,8 +75,8 @@ namespace starskytests.Helpers
 			
 			Assert.AreEqual(true,output);
 			
-			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,Files.IsFolderOrFile(path));
-			Files.DeleteFile(path);
+			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,FilesHelper.IsFolderOrFile(path));
+			FilesHelper.DeleteFile(path);
 		}
 
 

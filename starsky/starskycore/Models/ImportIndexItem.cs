@@ -57,11 +57,11 @@ namespace starskycore.Models
         public string ParseFileName(bool checkIfExist = true)
         {
             if (string.IsNullOrWhiteSpace(SourceFullFilePath)) return string.Empty;
-            var imageFormatExtenstion = Files.GetImageFormat(SourceFullFilePath);
+            var imageFormatExtenstion = FilesHelper.GetImageFormat(SourceFullFilePath);
             
             var fileExtension = Path.GetExtension(SourceFullFilePath).Replace(".",string.Empty).ToLower();
 
-            if (imageFormatExtenstion == Files.ImageFormat.notfound)
+            if (imageFormatExtenstion == FilesHelper.ImageFormat.notfound)
             {
                 // Caching feature to have te Path and url after you deleted the orginal in the ImportIndexItem context
                 if (FileName != null) return FileName;

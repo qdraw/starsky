@@ -18,7 +18,7 @@ namespace starskycore.Helpers
 		    foreach ( var singleFilePath in fullFilePaths )
 		    {
 
-			    if ( Files.IsFolderOrFile(singleFilePath) ==
+			    if ( FilesHelper.IsFolderOrFile(singleFilePath) ==
 			         FolderOrFileModel.FolderOrFileTypeList.File )
 			    {
 				    return new PlainTextFileHelper().ReadFile(singleFilePath);

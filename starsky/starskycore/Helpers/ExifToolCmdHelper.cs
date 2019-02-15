@@ -37,11 +37,11 @@ namespace starskycore.Helpers
             var fullFilePathsList = new List<string>();
             foreach (var fullFilePath in inputFullFilePaths)
             {
-                if(Files.IsXmpSidecarRequired(fullFilePath))
+                if(FilesHelper.IsXmpSidecarRequired(fullFilePath))
                 {
-                    var xmpFullPath = Files.GetXmpSidecarFileWhenRequired(fullFilePath, _appSettings.ExifToolXmpPrefix);
+                    var xmpFullPath = FilesHelper.GetXmpSidecarFileWhenRequired(fullFilePath, _appSettings.ExifToolXmpPrefix);
                 
-                    if (Files.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+                    if (FilesHelper.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
                     {
                         _exiftool.BaseCommmand(" -overwrite_original -TagsFromFile \""  
                                                + fullFilePath + "\"",  "\""+ xmpFullPath +  "\"");
@@ -243,8 +243,8 @@ namespace starskycore.Helpers
         public void CopyExif(string fullSourceImage, string thumbPath, string append = "")
         {
 			// ignore files that are not exist
-			if(Files.IsFolderOrFile(fullSourceImage) != FolderOrFileModel.FolderOrFileTypeList.File) return;
-	        if(Files.IsFolderOrFile(thumbPath) != FolderOrFileModel.FolderOrFileTypeList.File) return;
+			if(FilesHelper.IsFolderOrFile(fullSourceImage) != FolderOrFileModel.FolderOrFileTypeList.File) return;
+	        if(FilesHelper.IsFolderOrFile(thumbPath) != FolderOrFileModel.FolderOrFileTypeList.File) return;
 
 			// Reset Orientation on thumbpath
 			// Do an ExifTool exif sync for the file

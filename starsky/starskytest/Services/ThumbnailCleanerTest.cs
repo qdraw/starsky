@@ -79,7 +79,7 @@ namespace starskytests.Services
 			var allThumbnailFilesAfter = thumbnailCleaner.GetAllThumbnailFiles();
 			Assert.AreEqual(1,allThumbnailFilesAfter.Length);
 			
-			Files.DeleteDirectory(existFullDir);
+			FilesHelper.DeleteDirectory(existFullDir);
 		}
 
 

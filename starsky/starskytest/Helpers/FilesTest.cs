@@ -52,8 +52,8 @@ namespace starskytests.Helpers
             var newImage = new CreateAnImage();
             // Testing base folder of Image, and Image it self
             
-            Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, Files.IsFolderOrFile(newImage.BasePath));
-            Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,Files.IsFolderOrFile(newImage.FullFilePath));
+            Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, FilesHelper.IsFolderOrFile(newImage.BasePath));
+            Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,FilesHelper.IsFolderOrFile(newImage.FullFilePath));
         }
 
         [TestMethod]
@@ -65,7 +65,7 @@ namespace starskytests.Helpers
             
             // Used For subfolders
             var newImage = new CreateAnImage();
-            var filesInFolder = Files.GetAllFilesDirectory(newImage.BasePath);
+            var filesInFolder = FilesHelper.GetAllFilesDirectory(newImage.BasePath);
             Assert.AreEqual(true,filesInFolder.Any());
             
         }
@@ -77,7 +77,7 @@ namespace starskytests.Helpers
             var newImage = new CreateAnImage();
             _appSettings.ThumbnailTempFolder = newImage.BasePath;
             _appSettings.StorageFolder = newImage.BasePath;
-            var filesInFolder = Files.GetFilesInDirectory(newImage.BasePath);
+            var filesInFolder = FilesHelper.GetFilesInDirectory(newImage.BasePath);
             Assert.AreEqual(filesInFolder.Any(),true);
         }
 
@@ -86,7 +86,7 @@ namespace starskytests.Helpers
         {            
             var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
 
-            var content = Files.GetFilesRecrusive(path);
+            var content = FilesHelper.GetFilesRecrusive(path);
 
             Console.WriteLine("count => "+ content.Count());
 
@@ -98,16 +98,16 @@ namespace starskytests.Helpers
         [TestMethod]
         public void Files_ExtensionThumbSupportedList_TiffMp4MovXMPCheck()
         {
-            Assert.AreEqual(false,Files.IsExtensionThumbnailSupported("file.tiff"));
-            Assert.AreEqual(false,Files.IsExtensionThumbnailSupported("file.mp4"));
-            Assert.AreEqual(false,Files.IsExtensionThumbnailSupported("file.mov"));
-            Assert.AreEqual(false,Files.IsExtensionThumbnailSupported("file.xmp"));
+            Assert.AreEqual(false,FilesHelper.IsExtensionThumbnailSupported("file.tiff"));
+            Assert.AreEqual(false,FilesHelper.IsExtensionThumbnailSupported("file.mp4"));
+            Assert.AreEqual(false,FilesHelper.IsExtensionThumbnailSupported("file.mov"));
+            Assert.AreEqual(false,FilesHelper.IsExtensionThumbnailSupported("file.xmp"));
         }
         
         [TestMethod]
         public void Files_ExtensionSyncSupportedList_TiffCheck()
         {
-            var extensionSyncSupportedList = Files.ExtensionSyncSupportedList;
+            var extensionSyncSupportedList = FilesHelper.ExtensionSyncSupportedList;
             Assert.AreEqual(true,extensionSyncSupportedList.Contains("tiff"));
             Assert.AreEqual(true,extensionSyncSupportedList.Contains("jpg"));
 
@@ -116,53 +116,53 @@ namespace starskytests.Helpers
         [TestMethod]
         public void Files_GetImageFormat_png_Test()
         {
-            var fileType = Files.GetImageFormat(new byte[] {137, 80, 78, 71});
-            Assert.AreEqual(fileType,Files.ImageFormat.png);
+            var fileType = FilesHelper.GetImageFormat(new byte[] {137, 80, 78, 71});
+            Assert.AreEqual(fileType,FilesHelper.ImageFormat.png);
         }
         
         [TestMethod]
         public void Files_GetImageFormat_jpeg2_Test()
         {
-            var fileType = Files.GetImageFormat(new byte[] {255, 216, 255, 225});
-            Assert.AreEqual(fileType,Files.ImageFormat.jpg);
+            var fileType = FilesHelper.GetImageFormat(new byte[] {255, 216, 255, 225});
+            Assert.AreEqual(fileType,FilesHelper.ImageFormat.jpg);
         }
         
         [TestMethod]
         public void Files_GetImageFormat_tiff2_Test()
         {
-            var fileType = Files.GetImageFormat(new byte[] {77, 77, 42});
-            Assert.AreEqual(fileType,Files.ImageFormat.tiff);
+            var fileType = FilesHelper.GetImageFormat(new byte[] {77, 77, 42});
+            Assert.AreEqual(fileType,FilesHelper.ImageFormat.tiff);
         }
         
         [TestMethod]
         public void Files_GetImageFormat_tiff3_Test()
         {
-            var fileType = Files.GetImageFormat(new byte[] {77, 77, 0});
-            Assert.AreEqual(fileType,Files.ImageFormat.tiff);
+            var fileType = FilesHelper.GetImageFormat(new byte[] {77, 77, 0});
+            Assert.AreEqual(fileType,FilesHelper.ImageFormat.tiff);
         }
 
         [TestMethod]
         public void Files_GetImageFormat_bmp_Test()
         {
             byte[] bmBytes = Encoding.ASCII.GetBytes("BM");
-            var fileType = Files.GetImageFormat(bmBytes);
-            Assert.AreEqual(fileType,Files.ImageFormat.bmp);
+            var fileType = FilesHelper.GetImageFormat(bmBytes);
+            Assert.AreEqual(fileType,FilesHelper.ImageFormat.bmp);
         }
         
         [TestMethod]
         public void Files_GetImageFormat_gif_Test()
         {
             byte[] bmBytes = Encoding.ASCII.GetBytes("GIF");
-            var fileType = Files.GetImageFormat(bmBytes);
-            Assert.AreEqual(fileType,Files.ImageFormat.gif);
+            var fileType = FilesHelper.GetImageFormat(bmBytes);
+            Assert.AreEqual(fileType,FilesHelper.ImageFormat.gif);
         }
         
         [TestMethod]
         public void Files_GetImageFormat_xmp_Test()
         {
             byte[] bmBytes = Encoding.ASCII.GetBytes("<x:xmpmeta");
-            var fileType = Files.GetImageFormat(bmBytes);
-            Assert.AreEqual(fileType,Files.ImageFormat.xmp);
+            var fileType = FilesHelper.GetImageFormat(bmBytes);
+            Assert.AreEqual(fileType,FilesHelper.ImageFormat.xmp);
         }
         
         

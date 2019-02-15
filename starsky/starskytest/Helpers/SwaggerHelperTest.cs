@@ -61,7 +61,7 @@ namespace starskytests.Helpers
 		{
 			var swaggerFilePath = Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
 
-			Files.DeleteFile(swaggerFilePath);
+			FilesHelper.DeleteFile(swaggerFilePath);
 			
 			var host = WebHost.CreateDefaultBuilder()
 				.UseUrls("http://localhost:5051")
@@ -90,7 +90,7 @@ namespace starskytests.Helpers
 			await host.StartAsync();
 			await host.StopAsync();
 
-			Assert.AreEqual(true,Files.ExistFile(swaggerFilePath));
+			Assert.AreEqual(true,FilesHelper.ExistFile(swaggerFilePath));
 
 			var swaggerFileContent = new PlainTextFileHelper().ReadFile(swaggerFilePath);
 				

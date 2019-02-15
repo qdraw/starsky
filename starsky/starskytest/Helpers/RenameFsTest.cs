@@ -69,7 +69,7 @@ namespace starskytests.Helpers
 			var renameFs = new RenameFs(_appSettings, _query,_sync).Rename(_newImage.DbPath, "/already.txt");
 			Assert.AreEqual(new PlainTextFileHelper().ReadFile(fileAlreadyExist).Contains("test"), true);
 			// test with newline at the end
-			Files.DeleteFile(fileAlreadyExist);
+			FilesHelper.DeleteFile(fileAlreadyExist);
 		}
 
 		[TestMethod]
@@ -133,7 +133,7 @@ namespace starskytests.Helpers
 			var singleItem = _query.SingleItem("/exist/test2.jpg");
 			Assert.AreEqual("test2.jpg",singleItem.FileIndexItem.FileName);		
 			
-			Files.DeleteDirectory(Path.Combine(_newImage.BasePath, "exist"));
+			FilesHelper.DeleteDirectory(Path.Combine(_newImage.BasePath, "exist"));
 		}
 
 		[TestMethod]
@@ -173,7 +173,7 @@ namespace starskytests.Helpers
 			
 			var dir2FullDirPath = Path.Combine(_newImage.BasePath, "dir2");
 
-			Files.DeleteDirectory(dir2FullDirPath);
+			FilesHelper.DeleteDirectory(dir2FullDirPath);
 		}
 		
 		

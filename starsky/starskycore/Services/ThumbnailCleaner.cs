@@ -36,7 +36,7 @@ namespace starskycore.Services
 				var itemByHash = _query.GetSubPathByHash(fileHash);
 				if (itemByHash != null ) continue;
 
-				Files.DeleteFile(thumbnailFile.FullName);
+				FilesHelper.DeleteFile(thumbnailFile.FullName);
 				Console.Write("$");
 			}
 		}

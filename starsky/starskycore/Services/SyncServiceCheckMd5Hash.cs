@@ -36,7 +36,7 @@ namespace starskycore.Services
 
                         var fullFilePath = _appSettings.DatabasePathToFilePath(itemLocal);
                         
-                        var imageFormat = Files.GetImageFormat(fullFilePath);
+                        var imageFormat = FilesHelper.GetImageFormat(fullFilePath);
 
                         // Read data from file
                         var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(fullFilePath,imageFormat);

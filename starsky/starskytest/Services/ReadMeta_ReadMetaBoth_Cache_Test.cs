@@ -49,13 +49,13 @@ namespace starskytests.Services
             var createAnImage = new CreateAnImage();
             var appsettings = new AppSettings {StorageFolder = createAnImage.BasePath};
             // fakely add item to cache
-            new ReadMeta(appsettings, _fakeCache).ReadExifAndXmpFromFile(createAnImage.FullFilePath,Files.ImageFormat.jpg);
+            new ReadMeta(appsettings, _fakeCache).ReadExifAndXmpFromFile(createAnImage.FullFilePath,FilesHelper.ImageFormat.jpg);
         }
 
         [TestMethod]
         public void ReadMeta_ReadMetaBothTest_FakeReadEntry()
         {
-            Assert.AreEqual("test",new ReadMeta(null, _fakeCache).ReadExifAndXmpFromFile("test",Files.ImageFormat.jpg).Tags);
+            Assert.AreEqual("test",new ReadMeta(null, _fakeCache).ReadExifAndXmpFromFile("test",FilesHelper.ImageFormat.jpg).Tags);
         }
     }
 }

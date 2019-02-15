@@ -87,8 +87,8 @@ namespace starskycore.Helpers
 
 				// The To location must be
 
-				var toFileFullPathStatus = Files.IsFolderOrFile(toFileFullPath);
-				var inputFileFullPathStatus = Files.IsFolderOrFile(inputFileFullPath);
+				var toFileFullPathStatus = FilesHelper.IsFolderOrFile(toFileFullPath);
+				var inputFileFullPathStatus = FilesHelper.IsFolderOrFile(inputFileFullPath);
 
 				// we dont overwrite files
 				if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFullPathStatus != FolderOrFileModel.FolderOrFileTypeList.Deleted)

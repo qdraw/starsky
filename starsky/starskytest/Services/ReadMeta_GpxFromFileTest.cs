@@ -33,7 +33,7 @@ namespace starskytests.Services
             Assert.AreEqual(expectDateTime,returnItem.DateTime);
             
             // remove afterwards
-            Files.DeleteFile(gpxFullSourcePath);
+            FilesHelper.DeleteFile(gpxFullSourcePath);
         }
         
         [TestMethod]
@@ -54,7 +54,7 @@ namespace starskytests.Services
             Assert.AreEqual(7.263,returnItem.FirstOrDefault().Altitude,0.001);
 
             // remove afterwards
-            Files.DeleteFile(gpxFullSourcePath);
+            FilesHelper.DeleteFile(gpxFullSourcePath);
         }
 
     }

@@ -147,7 +147,7 @@ namespace starskytests.Controllers
 			// to avoid skip of adding zip
 			var zipFilesList = Directory.GetFiles(_createAnImage.BasePath, "*.*", SearchOption.AllDirectories)
 				.Where(p => ".zip" == Path.GetExtension(p) );
-			Files.DeleteFile(zipFilesList);
+			FilesHelper.DeleteFile(zipFilesList);
 			
 			
 			backgroundQueue.QueueBackgroundWorkItem(async token =>
@@ -259,9 +259,9 @@ namespace starskytests.Controllers
 			Assert.AreEqual(true, filePaths.FirstOrDefault().Contains(item.FileName));
 
 			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,
-				Files.IsFolderOrFile(filePaths.FirstOrDefault()));
+				FilesHelper.IsFolderOrFile(filePaths.FirstOrDefault()));
 
-			Files.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
+			FilesHelper.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
 		}
 
 		[TestMethod]

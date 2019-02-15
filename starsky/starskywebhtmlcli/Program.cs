@@ -34,7 +34,7 @@ namespace starskywebhtmlcli
                 return;
             }
             
-            if(Files.IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
+            if(FilesHelper.IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
                 Console.WriteLine("Please add a valid folder: " + inputPath);
 
             if (appSettings.Name == new AppSettings().Name)
@@ -56,7 +56,7 @@ namespace starskywebhtmlcli
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;
             
-            var listOfFiles = Files.GetFilesInDirectory(inputPath);
+            var listOfFiles = FilesHelper.GetFilesInDirectory(inputPath);
             var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
             
             // Create thumbnails from the source images 

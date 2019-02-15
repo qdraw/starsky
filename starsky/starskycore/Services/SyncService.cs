@@ -61,7 +61,7 @@ namespace starskycore.Services
             // Handle folder Get a list of all local folders and rename it to database style.
             // Db Style is a relative path
             var localSubFolderDbStyle = _appSettings.RenameListItemsToDbStyle(
-                Files.GetAllFilesDirectory(_appSettings.DatabasePathToFilePath(subPath)).ToList()
+                FilesHelper.GetAllFilesDirectory(_appSettings.DatabasePathToFilePath(subPath)).ToList()
             );
 
             // Query the database to get a list of the folder items
@@ -92,7 +92,7 @@ namespace starskycore.Services
 				var databaseFileList = _query.GetAllFiles(singleFolder);
 				var singleFolderFullPath = _appSettings.DatabasePathToFilePath(singleFolder);
 				
-				var localFarrayFilesFullFilePathStyle = Files.GetFilesInDirectory(singleFolderFullPath).ToList();
+				var localFarrayFilesFullFilePathStyle = FilesHelper.GetFilesInDirectory(singleFolderFullPath).ToList();
 				var localFarrayFilesDbStyle = _appSettings.RenameListItemsToDbStyle(localFarrayFilesFullFilePathStyle); 
 				databaseFileList = RemoveDuplicate(databaseFileList);
 				databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);

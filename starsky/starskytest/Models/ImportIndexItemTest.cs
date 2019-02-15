@@ -76,7 +76,7 @@ namespace starskytests.Models
             var fileName = importItem.ParseFileName(false);
             Assert.AreEqual("00010101_000000_d.jpg", fileName);
             
-            Files.DeleteFile(importItem.SourceFullFilePath);
+            FilesHelper.DeleteFile(importItem.SourceFullFilePath);
         }
 	    
 	    [TestMethod]
@@ -96,7 +96,7 @@ namespace starskytests.Models
 		    var fileName = importItem.ParseFileName(false);
 		    Assert.AreEqual("20180101_020202_d.jpg", fileName);
             
-		    Files.DeleteFile(filPathWithAppendix);
+		    FilesHelper.DeleteFile(filPathWithAppendix);
 	    }
 
 	    [TestMethod]
@@ -334,7 +334,7 @@ namespace starskytests.Models
             // Check if those overwite is accepted
             Assert.AreEqual(anserDateTime,input.DateTime);
                    
-            Files.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
+            FilesHelper.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
         }
 
         [TestMethod]

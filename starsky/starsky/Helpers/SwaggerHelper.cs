@@ -65,7 +65,7 @@ namespace starsky.Helpers
 
 				var starskyJsonPath =
 					Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
-				Files.DeleteFile(starskyJsonPath);
+				FilesHelper.DeleteFile(starskyJsonPath);
 				new PlainTextFileHelper().WriteFile(starskyJsonPath,swaggerJsonText);
 				Console.WriteLine(starskyJsonPath);
 			}

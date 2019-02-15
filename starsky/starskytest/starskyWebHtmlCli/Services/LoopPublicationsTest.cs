@@ -61,7 +61,7 @@ namespace starskytests.starskyWebHtmlCli.Services
 
             new LoopPublications(appSettings,null).Render(list,null);
             
-            Files.DeleteFile(createAnImage.BasePath + Path.DirectorySeparatorChar + "index.html");
+            FilesHelper.DeleteFile(createAnImage.BasePath + Path.DirectorySeparatorChar + "index.html");
         }
     }
 }

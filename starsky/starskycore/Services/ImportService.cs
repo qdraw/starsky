@@ -71,9 +71,9 @@ namespace starskycore.Services
 
             var filesFullPathList = new List<string>();
             // recursive
-            if(importSettings.RecursiveDirectory) filesFullPathList = Files.GetFilesRecrusive(inputFullPath).ToList();
+            if(importSettings.RecursiveDirectory) filesFullPathList = FilesHelper.GetFilesRecrusive(inputFullPath).ToList();
             // non-recursive
-            if(!importSettings.RecursiveDirectory) filesFullPathList = Files.GetFilesInDirectory(inputFullPath).ToList();
+            if(!importSettings.RecursiveDirectory) filesFullPathList = FilesHelper.GetFilesInDirectory(inputFullPath).ToList();
 
             var successfulDirFullPaths = Import(filesFullPathList, importSettings);
 	        
@@ -124,7 +124,7 @@ namespace starskycore.Services
             if (fileIndexItem.FileName.Contains(".unknown"))
             {
                 fileIndexItem.FileName = fileIndexItem.FileName.Replace(".unknown", 
-                    "." + Files.GetImageFormat(inputFileFullPath));
+                    "." + FilesHelper.GetImageFormat(inputFileFullPath));
             }
             
             var destinationFullPath = _appSettings.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
@@ -154,7 +154,7 @@ namespace starskycore.Services
 
         public FileIndexItem ReadExifAndXmpFromFile(string inputFileFullPath)
         {
-            return _readmeta.ReadExifAndXmpFromFile(inputFileFullPath,Files.GetImageFormat(inputFileFullPath));
+            return _readmeta.ReadExifAndXmpFromFile(inputFileFullPath,FilesHelper.GetImageFormat(inputFileFullPath));
         }
 
         public bool IsAgeFileFilter(ImportSettingsModel importSettings, DateTime exifDateTime)
@@ -225,7 +225,7 @@ namespace starskycore.Services
             File.Copy(inputFileFullPath, destinationFullPath);
             
             // Update the contents to the file the imported item
-            if (exifToolSync && Files.IsExtensionExifToolSupported(inputFileFullPath))
+            if (exifToolSync && FilesHelper.IsExtensionExifToolSupported(inputFileFullPath))
             {
                 Console.WriteLine("Do a exiftoolSync");
                 var comparedNamesList = new List<string>
