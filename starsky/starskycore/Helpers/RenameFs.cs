@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -109,7 +110,7 @@ namespace starskycore.Helpers
 				     && toFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
 					//move
-					_iStorage.FolderMove(inputFileSubPath,inputFileSubPath);
+					_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
 					
 					fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
 					// Rename child items
@@ -136,14 +137,13 @@ namespace starskycore.Helpers
 						//var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
 						
 						// todo: add folder feature in the future
-						// throw new Ar($"toFiledirFullPath {parentDirFullPath} does not exist");
-						throw new ArgumentException();
+						throw new DirectoryNotFoundException($"toFiledirFullPath {parentSubFolder} does not exist");
 					}
 					
 					// Check if the parent folder exist in the database
 					_sync.AddSubPathFolder(parentSubFolder);
 					
-					_iStorage.FileMove(inputFileSubPath,inputFileSubPath);
+					_iStorage.FileMove(inputFileSubPath,toFileSubPath);
 				}
 				
 				// Rename parent item >eg the folder or file
