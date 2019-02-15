@@ -8,6 +8,11 @@ using starskycore.Models;
 
 namespace starskycore.Helpers
 {
+	
+	/// <summary>
+	/// WARNING; class is obsolete
+	/// </summary>
+	[Obsolete("Will be removed in the 0.2.1 release")] 
     public static class FilesHelper
     {
 
@@ -51,7 +56,7 @@ namespace starskycore.Helpers
         /// </summary>
         /// <param name="fullFilePath">directory</param>
         /// <returns></returns>
-        public static string[] GetAllFilesDirectory(string fullFilePath = "")
+	    public static string[] GetAllFilesDirectory(string fullFilePath = "")
         {
             if (!Directory.Exists(fullFilePath)) return new List<string>().ToArray();
             string[] folders = Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);
@@ -133,7 +138,7 @@ namespace starskycore.Helpers
                 return extensionList;
             }
         }
-        
+
         private static List<string> ExtensionExifToolSupportedList
         {
             get
