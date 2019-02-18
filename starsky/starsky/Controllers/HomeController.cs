@@ -53,6 +53,7 @@ namespace starsky.Controllers
 	            var fileHashThumbnailHttpUrl = SingleItemThumbnailHttpUrl(fileHashWithExt);
 
 	            var infoHttpUrl = SingleItemInfoHttpUrl(singleItem.FileIndexItem.FilePath);
+
                 AddHttp2SingleFile(fileHashThumbnailHttpUrl,infoHttpUrl);
                 
                 if (json) return Json(singleItem);
@@ -113,7 +114,7 @@ namespace starsky.Controllers
 	    {
 		    // when using a unit test appSettings will be null
 		    if (_appsettings == null || !_appsettings.AddHttp2Optimizations) return string.Empty;
-		    return Url.Action("Info", "Api", new {f = infoSubPath});
+		    return Url.Action("Info", "Api", new {f = infoSubPath, collections = false});
 	    }
 
         // Feature to Add Http2 push to the response headers
