@@ -1,5 +1,6 @@
 # version 0.1.4 - tbd
 - fix issue where login fails results in a error 500
+[x] check http push headers
 
 # version 0.1.3 - 2019-02-13
 - fix issues on exporting

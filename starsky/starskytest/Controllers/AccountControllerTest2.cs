@@ -93,7 +93,7 @@ namespace starskytest.Controllers
             };
             
             // Try login > result login false
-            await controller.LoginPost(login);
+            await controller.Login(login);
             // Test login
             Assert.AreEqual(false,httpContext.User.Identity.IsAuthenticated);
             
@@ -114,7 +114,7 @@ namespace starskytest.Controllers
             await controller.Register(newAccount,true,string.Empty);
             
             // Try login again > now it must be succesfull
-            await controller.LoginPost(login);
+            await controller.Login(login);
             // Test login
             Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
             

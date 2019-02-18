@@ -114,7 +114,11 @@ namespace starskytest.Controllers
 	        var appSettings = new AppSettings();
 	        appSettings.AddHttp2Optimizations = true;
             var controller = new HomeController(_query,appSettings) {ControllerContext = {HttpContext = new DefaultHttpContext()}};
-            controller.AddHttp2SingleFile("test");
+
+	        var singleItem = new DetailView {FileIndexItem = new FileIndexItem()};
+	        singleItem.FileIndexItem.FileHash = "test";
+		        
+            controller.AddHttp2SingleFile("test","/api/info?test");
 	        
 	        var linkValue = controller.Response.Headers["Link"].ToString();
 	        Assert.AreEqual(linkValue.Contains("rel=preload;"),true);
