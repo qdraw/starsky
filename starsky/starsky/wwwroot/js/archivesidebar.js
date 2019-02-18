@@ -391,6 +391,12 @@ function queryKeywords(queryItem) {
 
     addNoClickToSidebar();
     showPreloader();
+
+    // know when collections are enabled
+    var isCollections = true;
+    if (window.location.search.indexOf("collections=false") >= 0) {
+        isCollections = false;
+    }
     
     loadJSON(updateApiBase,
         function (data) {
@@ -404,7 +410,7 @@ function queryKeywords(queryItem) {
                 "</p>");
         },
         "POST",
-        "f=" + toupdateFiles + "&tags=" + queryItem + "&append=" + appendOrOverwriteByToggle()
+        "f=" + toupdateFiles + "&tags=" + queryItem + "&append=" + appendOrOverwriteByToggle() + "&collections=" + isCollections
     );
 }
 
@@ -414,7 +420,14 @@ function queryCaptionAbstract(queryItem) {
 
     addNoClickToSidebar();
     showPreloader();
-    
+
+    // know when collections are enabled
+    var isCollections = true;
+    if (window.location.search.indexOf("collections=false") >= 0) {
+        isCollections = false;
+    }
+
+
     loadJSON(updateApiBase,
         function (data) {
             location.reload();
@@ -427,7 +440,7 @@ function queryCaptionAbstract(queryItem) {
                 "</p>");
         },
         "POST",
-        "f=" + toupdateFiles + "&description=" + queryItem + "&append=" + appendOrOverwriteByToggle()
+        "f=" + toupdateFiles + "&description=" + queryItem + "&append=" + appendOrOverwriteByToggle()  + "&collections=" + isCollections
     );
 }
 
@@ -437,6 +450,13 @@ function queryObjectName(queryItem) {
 
     addNoClickToSidebar();
     showPreloader();
+
+
+    // know when collections are enabled
+    var isCollections = true;
+    if (window.location.search.indexOf("collections=false") >= 0) {
+        isCollections = false;
+    }
     
     loadJSON(updateApiBase,
         function (data) {
@@ -450,7 +470,7 @@ function queryObjectName(queryItem) {
                 "</p>");
         },
         "POST",
-        "f=" + toupdateFiles + "&title=" + queryItem + "&append=" + appendOrOverwriteByToggle()
+        "f=" + toupdateFiles + "&title=" + queryItem + "&append=" + appendOrOverwriteByToggle() + "&collections=" + isCollections
     );
     
 }
@@ -673,6 +693,12 @@ function updateColorClass(those) {
     addNoClickToSidebar();
     showPreloader();
     
+    // know when collections are enabled
+    var isCollections = true;
+    if (window.location.search.indexOf("collections=false") >= 0) {
+        isCollections = false;
+    }
+    
     loadJSON(updateApiBase,
         function(data) {
             location.reload();
@@ -685,7 +711,7 @@ function updateColorClass(those) {
                 "</p>");
         },
         "POST",
-        "f=" + toupdateFiles + "&colorClass=" + those.dataset.colorclass
+        "f=" + toupdateFiles + "&colorClass=" + those.dataset.colorclass + "&collections=" + isCollections
     );
 }
 

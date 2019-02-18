@@ -7,9 +7,18 @@ var thumbnailApiBase = document.getElementById("js-settings").getAttribute("data
 updateApiBase = updateApiBase.replace("&amp;", "&");
 // fix for changing + in urls
 updateApiBase = updateApiBase.replace(/\+/ig, "%2B");
-infoApiBase = infoApiBase.replace("&amp;", "&") + "&collections=false";
+infoApiBase = infoApiBase.replace("&amp;", "&");
 infoApiBase = infoApiBase.replace(/\+/ig, "%2B");
 thumbnailApiBase = thumbnailApiBase.replace("&amp;", "&");
+
+
+// know when collections are enabled
+if (window.location.search.indexOf("collections=false") >= 0) {
+    infoApiBase += "&collections=false";
+}
+else {
+    infoApiBase += "&collections=true";
+}
 
 
 // Used in <div class="add-colorclass">
