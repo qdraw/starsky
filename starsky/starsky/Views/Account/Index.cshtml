@@ -1,6 +1,7 @@
 @{
     ViewData["Title"] = "Profile";
 }
+@using System.Diagnostics
 @using System.Security.Claims
 @model starskycore.Models.Account.User
 
@@ -29,6 +30,14 @@
 	<h1>Client IP</h1>
 	@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 	@HttpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString()
+</div>
+<div>
+	<h1>Uptime</h1>
+	@{
+		var timeSpan = (DateTime.Now - Process.GetCurrentProcess().StartTime).ToString("hh\\:mm");
+	}
+	@timeSpan - uur
+
 </div>
 
 <h1>@ViewData["Title"]</h1>

@@ -32,7 +32,6 @@ namespace starsky.Controllers
 	    [HttpGet("/account")]
 	    [ProducesResponseType(typeof(User), 200)]
 	    [ProducesResponseType(401)]
-	    
         public IActionResult Index(bool json = false)
 	    {
 		    if ( json && !User.Identity.IsAuthenticated ) return Unauthorized();
