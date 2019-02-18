@@ -587,7 +587,13 @@ function queryRotate(queryItem) {
     addUnloadWarning();
     showPreloader();
 
-    var url = updateApiBase + "&rotateClock=" + queryItem;
+    // know when collections are enabled
+    var isCollections = true;
+    if (window.location.search.indexOf("collections=false") >= 0) {
+        isCollections = false;
+    }
+
+    var url = updateApiBase + "&rotateClock=" + queryItem + "&collections=" + isCollections;
     loadJSON(url,
         function (data) {
             setTimeout(function(){
