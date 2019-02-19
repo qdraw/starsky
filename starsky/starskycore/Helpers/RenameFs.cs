@@ -15,11 +15,11 @@ namespace starskycore.Helpers
 		private readonly ISync _sync;
 	    private IStorage _iStorage;
 
-	    public RenameFs(AppSettings appSettings, IQuery query, ISync isync, IStorage iStorage)
+	    public RenameFs(AppSettings appSettings, IQuery query, ISync iSync, IStorage iStorage)
 		{
 			_query = query;
 			_appSettings = appSettings;
-			_sync = isync;
+			_sync = iSync;
 			_iStorage = iStorage;
 		}
 
@@ -86,13 +86,10 @@ namespace starskycore.Helpers
 				
 				var detailView = _query.SingleItem(inputFileSubPath, null, collections, false);
 				
-				var toFileFullPath = _appSettings.DatabasePathToFilePath(toFileSubPath,false);
-				var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputFileSubPath);
-
 				// The To location must be
 
-				var toFileFullPathStatus = _iStorage.IsFolderOrFile(toFileFullPath);
-				var inputFileFullPathStatus = _iStorage.IsFolderOrFile(inputFileFullPath);
+				var toFileFullPathStatus = _iStorage.IsFolderOrFile(toFileSubPath);
+				var inputFileFullPathStatus = _iStorage.IsFolderOrFile(inputFileSubPath);
 
 				// we dont overwrite files
 				if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFullPathStatus != FolderOrFileModel.FolderOrFileTypeList.Deleted)

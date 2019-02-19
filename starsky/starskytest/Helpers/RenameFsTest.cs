@@ -10,6 +10,7 @@ using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
@@ -182,10 +183,11 @@ namespace starskytest.Helpers
 		
 		
 
-//		[TestMethod]
-//		public void RenameFsTest_ToNonExistFolder_Items()
-//		{
-//			var renameFs = new RenameFs(_appSettings, _query).Rename(_newImage.DbPath, "/nonExist/test2.jpg", true, false);
-//		}
+		[TestMethod]
+		public void RenameFsTest_ToNonExistFolder_Items()
+		{
+			var istorage = new FakeIStorage(false,false,FolderOrFileModel.FolderOrFileTypeList.Deleted);
+			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename(_newImage.DbPath, "/nonExist/test2.jpg", true);
+		}
 	}
 }

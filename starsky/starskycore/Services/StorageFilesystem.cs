@@ -20,26 +20,25 @@ namespace starskycore.Services
 		/// <returns>bool true = exist</returns>
 		public bool ExistFile(string subPath)
 		{
-			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath, false);
-			var isFolderOrFile = IsFolderOrFile(fullFilePath);
+			var isFolderOrFile = IsFolderOrFile(subPath);
 			return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File;
 		}
 
 		public bool ExistFolder(string subPath)
 		{
-			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath, false);
-			var isFolderOrFile = IsFolderOrFile(fullFilePath);
+			var isFolderOrFile = IsFolderOrFile(subPath);
 			return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.Folder;
 		}
 
 		/// <summary>
 		/// is the subpath a folder or file, or deleted (FolderOrFileModel.FolderOrFileTypeList.Deleted)
 		/// </summary>
-		/// <param name="fullFilePath">path of the filesystem</param>
+		/// <param name="subPath">path of the database</param>
 		/// <returns>is file, folder or deleted</returns>
-		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string fullFilePath = "")
+		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath)
 		{
-			// todo: change to SUBPATH style
+			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath,false);
+			
 			if (!Directory.Exists(fullFilePath) && File.Exists(fullFilePath))
 			{
 				// file

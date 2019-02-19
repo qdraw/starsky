@@ -6,7 +6,7 @@ namespace starskycore.Interfaces
 	{
 		bool ExistFile(string subPath);
 		bool ExistFolder(string subPath);
-		FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string fullFilePath = "");
+		FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath = "");
 		void FolderMove(string inputSubPath, string toSubPath);
 		void FileMove(string inputSubPath, string toSubPath);
 
