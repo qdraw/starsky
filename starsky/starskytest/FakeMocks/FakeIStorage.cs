@@ -31,8 +31,12 @@ namespace starskytest.FakeMocks
 			return _existFolder;
 		}
 
-		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string fullFilePath = "")
+		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath = "")
 		{
+			if ( subPath == new CreateAnImage().DbPath )
+			{
+				return FolderOrFileModel.FolderOrFileTypeList.File;
+			}
 			return _isFolderOrFile;
 		}
 
@@ -43,5 +47,11 @@ namespace starskytest.FakeMocks
 		public void FileMove(string inputSubPath, string toSubPath)
 		{
 		}
+
+		public void CreateDirectory(string subPath)
+		{
+		}
+		
+		
 	}
 }

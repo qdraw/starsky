@@ -129,12 +129,11 @@ namespace starskycore.Helpers
 					// clear cache
 					_query.RemoveCacheParentItem(parentSubFolder);
 					
+					// add folder to sync and file system
 					if ( !_iStorage.ExistFolder(parentSubFolder) )
 					{
-						//var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
-						
-						// todo: add folder feature in the future
-						throw new DirectoryNotFoundException($"toFiledirFullPath {parentSubFolder} does not exist");
+						_iStorage.CreateDirectory(parentSubFolder);
+						_sync.SyncFiles(parentSubFolder);
 					}
 					
 					// Check if the parent folder exist in the database

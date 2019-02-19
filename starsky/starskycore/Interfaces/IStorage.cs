@@ -9,6 +9,6 @@ namespace starskycore.Interfaces
 		FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath = "");
 		void FolderMove(string inputSubPath, string toSubPath);
 		void FileMove(string inputSubPath, string toSubPath);
-
+		void CreateDirectory(string subPath);
 	}
 }

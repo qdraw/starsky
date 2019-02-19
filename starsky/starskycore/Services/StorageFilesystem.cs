@@ -68,7 +68,11 @@ namespace starskycore.Services
 			File.Move(inputFileFullPath,toFileFullPath);
 		}
 
-		
+		public void CreateDirectory(string subPath)
+		{
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(subPath, false);
+			Directory.CreateDirectory(inputFileFullPath);
+		}
 		
 	}
 }
