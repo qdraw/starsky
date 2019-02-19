@@ -188,5 +188,16 @@ namespace starskytest.Helpers
 			Assert.AreEqual("/nonExist",selectFile3.ParentDirectory);
 
 		}
+		
+		[TestMethod]
+		public void RenameFsTest_mergeTwoFolders()
+		{
+			var istorage = new FakeIStorage(false,false,FolderOrFileModel.FolderOrFileTypeList.Deleted);
+			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename("/folder1", "/exist", true);
+			// todo: incomplete!!!!!!
+			
+			
+		}
+
 	}
 }

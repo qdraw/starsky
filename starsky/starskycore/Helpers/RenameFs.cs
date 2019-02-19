@@ -76,11 +76,12 @@ namespace starskycore.Helpers
 			{
 				// options
 				// 1. file to direct folder file.jpg /folder/ (not covered)
-				// 2. folder to folder
-				// 3. folder to existing folder > merge (not convered)
-				// 4. file to file
-				// 5. file to existing file > skip
-				
+				// 2. folder to folder (not covered)
+				// 3. folder merge parent folder with current folder (not covered), /test/ => /test/test/
+				// 4. folder to existing folder > merge (not covered)
+				// 5. file to file
+				// 6. file to existing file > skip
+
 				var inputFileSubPath = inputFileSubPaths[i];
 				var toFileSubPath = toFileSubPaths[i];
 				
@@ -119,6 +120,7 @@ namespace starskycore.Helpers
 				else if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 					&& toFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
+					// merge two folders
 					
 				}
 				else if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.File) 
