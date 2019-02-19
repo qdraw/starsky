@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starskycore.Helpers;
@@ -114,7 +115,9 @@ namespace starsky.Controllers
 	    {
 		    // when using a unit test appSettings will be null
 		    if (_appsettings == null || !_appsettings.AddHttp2Optimizations) return string.Empty;
-		    return Url.Action("Info", "Api", new {f = infoSubPath, collections});
+		    
+		    var infoApiBase = Url.Action("Info", "Api", new {f = infoSubPath, collections});
+		    return HttpUtility.UrlDecode(infoApiBase);
 	    }
 
         // Feature to Add Http2 push to the response headers
