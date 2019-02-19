@@ -140,14 +140,7 @@ namespace starskytest.Helpers
 			FilesHelper.DeleteDirectory(Path.Combine(_newImage.BasePath, "exist"));
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(DirectoryNotFoundException))]
-		public void RenameFsTest_ToNonExistFolder_Items_DirectoryNotFoundException()
-		{
-			var renameFs = new RenameFs(_appSettings, _query,_sync,_iStorage).Rename(_newImage.DbPath, "/nonExist/test2.jpg",true);
-		}
-		
-		
+	
 		[TestMethod]
 		public void RenameFsTest_MoveDirWithItemsTest()
 		{
@@ -187,7 +180,13 @@ namespace starskytest.Helpers
 		public void RenameFsTest_ToNonExistFolder_Items()
 		{
 			var istorage = new FakeIStorage(false,false,FolderOrFileModel.FolderOrFileTypeList.Deleted);
-			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename(_newImage.DbPath, "/nonExist/test2.jpg", true);
+			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename(_newImage.DbPath, "/nonExist/test5.jpg", true);
+			
+			var all2 = _query.GetAllRecursive();
+			var selectFile3 = all2.FirstOrDefault(p => p.FileName == "test5.jpg");
+			Assert.AreEqual("test5.jpg",selectFile3.FileName);
+			Assert.AreEqual("/nonExist",selectFile3.ParentDirectory);
+
 		}
 	}
 }
