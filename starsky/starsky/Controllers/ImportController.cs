@@ -22,14 +22,16 @@ namespace starsky.Controllers
         private readonly AppSettings _appSettings;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
 	    private readonly HttpClientHelper _httpClientHelper;
+	    private readonly IStorage _iStorage; //<= not yet implemented
 
 	    public ImportController(IImport import, AppSettings appSettings, 
-            IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue, HttpClientHelper httpClientHelper)
+            IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue, HttpClientHelper httpClientHelper, IStorage iStorage)
         {
             _appSettings = appSettings;
             _import = import;
             _bgTaskQueue = queue;
 	        _httpClientHelper = httpClientHelper;
+	        _iStorage = iStorage; //<= not yet implemented
         }
 
         [HttpGet]
