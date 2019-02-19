@@ -14,10 +14,10 @@ thumbnailApiBase = thumbnailApiBase.replace("&amp;", "&");
 
 // know when collections are enabled
 if (window.location.search.indexOf("collections=false") >= 0) {
-    infoApiBase += "&collections=false";
+    infoApiBase += "&collections=False"; // start with capital for http2 push
 }
 else {
-    infoApiBase += "&collections=true";
+    infoApiBase += "&collections=True"; // start with capital for http2 push
 }
 
 
