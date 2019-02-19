@@ -148,8 +148,8 @@ namespace starskycore.Services
                 switch (searchInType)
                 {
 	                case SearchViewModel.SearchInTypes.imageformat:
-						var  castImageFormat = (FilesHelper.ImageFormat)
-							Enum.Parse(typeof(FilesHelper.ImageFormat), model.SearchFor[i].ToLowerInvariant());
+						var  castImageFormat = (ExtensionRolesHelper.ImageFormat)
+							Enum.Parse(typeof(ExtensionRolesHelper.ImageFormat), model.SearchFor[i].ToLowerInvariant());
 						
 						model.FileIndexItems.AddRange(sourceList.Where(
 							p => p.ImageFormat == castImageFormat
@@ -307,8 +307,8 @@ namespace starskycore.Services
                 switch (searchInType)
                 {
 	                case SearchViewModel.SearchInTypes.imageformat:
-		                var  castImageFormat = (FilesHelper.ImageFormat)
-			                Enum.Parse(typeof(FilesHelper.ImageFormat), model.SearchFor[i].ToLowerInvariant());
+		                var  castImageFormat = (ExtensionRolesHelper.ImageFormat)
+			                Enum.Parse(typeof(ExtensionRolesHelper.ImageFormat), model.SearchFor[i].ToLowerInvariant());
 						
 		                model.FileIndexItems = model.FileIndexItems.Where(
 			                p => p.ImageFormat == castImageFormat

@@ -32,7 +32,7 @@ namespace starskytest.starskygeosync.Services
                 new FileIndexItem
                 {
                     FileName = createAnGpx.FileName,
-                    ImageFormat = FilesHelper.ImageFormat.gpx
+                    ImageFormat = ExtensionRolesHelper.ImageFormat.gpx
                 }
             };
 

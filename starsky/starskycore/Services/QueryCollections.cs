@@ -34,7 +34,7 @@ namespace starskycore.Services
 
                 for (int i = 0; i < duplicateItems.Count; i++)
                 {
-                    if(FilesHelper.IsExtensionThumbnailSupported(duplicateItems[i].FileName))
+                    if(ExtensionRolesHelper.IsExtensionThumbnailSupported(duplicateItems[i].FileName))
                     {
                         querySubFolderList.Add(duplicateItems[i]);
                     }

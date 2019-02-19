@@ -37,9 +37,9 @@ namespace starskycore.Helpers
             var fullFilePathsList = new List<string>();
             foreach (var fullFilePath in inputFullFilePaths)
             {
-                if(FilesHelper.IsXmpSidecarRequired(fullFilePath))
+                if(ExtensionRolesHelper.IsXmpSidecarRequired(fullFilePath))
                 {
-                    var xmpFullPath = FilesHelper.GetXmpSidecarFileWhenRequired(fullFilePath, _appSettings.ExifToolXmpPrefix);
+                    var xmpFullPath = ExtensionRolesHelper.GetXmpSidecarFileWhenRequired(fullFilePath, _appSettings.ExifToolXmpPrefix);
                 
                     if (FilesHelper.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
                     {

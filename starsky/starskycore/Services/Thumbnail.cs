@@ -120,7 +120,7 @@ namespace starskycore.Services
                 // Add addional check for raw/tiff based files, those are not supported by this helper 
 //                if(!Files.ExtensionThumbSupportedList.Contains(Path.GetExtension(fullFilePath).Replace(".",string.Empty).ToLower()))
 
-                if(!FilesHelper.IsExtensionThumbnailSupported(fullFilePath))
+                if(!ExtensionRolesHelper.IsExtensionThumbnailSupported(fullFilePath))
                 {
                     Console.WriteLine("File not supported (and ignored) > " + fullFilePath );
                     return false; // creating is not succesfull
@@ -249,7 +249,7 @@ namespace starskycore.Services
         /// <returns>MemoryStream with resized image</returns>
         public MemoryStream ResizeThumbnailToStream(string fullSourceImage, int width, 
             int height = 0, int quality = 75, bool removeExif = false, 
-            FilesHelper.ImageFormat imageFormat = FilesHelper.ImageFormat.jpg)
+	        ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
         {
             var outputStream = new MemoryStream();
             try
@@ -295,10 +295,10 @@ namespace starskycore.Services
         /// <param name="outputStream">input stream to save</param>
         /// <param name="removeExif">true, remove exif, default false</param>
         /// <param name="quality">default 75, only for jpegs</param>
-        private void ResizeThumbnailImageFormat(Image<Rgba32> image, FilesHelper.ImageFormat imageFormat, 
+        private void ResizeThumbnailImageFormat(Image<Rgba32> image, ExtensionRolesHelper.ImageFormat imageFormat, 
 	        MemoryStream outputStream, bool removeExif = false, int quality = 75)
         {
-            if (imageFormat == FilesHelper.ImageFormat.png)
+            if (imageFormat == ExtensionRolesHelper.ImageFormat.png)
             {
                 image.SaveAsPng(outputStream, new PngEncoder{
                     ColorType = PngColorType.Rgb, 
@@ -326,14 +326,14 @@ namespace starskycore.Services
         {
             if (!File.Exists(thumbPath)) return;
             
-            var imageFormat = FilesHelper.GetImageFormat(thumbPath);
+            var imageFormat = ExtensionRolesHelper.GetImageFormat(thumbPath);
            
-            if(_appSettings.Verbose) Console.WriteLine(FilesHelper.GetImageFormat(thumbPath));
+            if(_appSettings.Verbose) Console.WriteLine(ExtensionRolesHelper.GetImageFormat(thumbPath));
             switch (imageFormat)
             {
-                case FilesHelper.ImageFormat.jpg:
+                case ExtensionRolesHelper.ImageFormat.jpg:
                     return;
-                case FilesHelper.ImageFormat.unknown:
+                case ExtensionRolesHelper.ImageFormat.unknown:
                     try
                     {
                         File.Delete(thumbPath);

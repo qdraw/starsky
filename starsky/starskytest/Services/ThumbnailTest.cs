@@ -196,7 +196,7 @@ namespace starskytest.Services
             var newImage = new CreateAnImage();
 
             var thumb = new Thumbnail(_appSettings, null).ResizeThumbnailToStream(newImage.FullFilePath, 1, 1, 75, true,
-                FilesHelper.ImageFormat.jpg);
+	            ExtensionRolesHelper.ImageFormat.jpg);
             Assert.AreEqual(true,thumb.CanRead);
         }
         
@@ -206,7 +206,7 @@ namespace starskytest.Services
             var newImage = new CreateAnImage();
 
             var thumb = new Thumbnail(_appSettings, null).ResizeThumbnailToStream(newImage.FullFilePath, 1, 1, 75, false,
-                FilesHelper.ImageFormat.png);
+	            ExtensionRolesHelper.ImageFormat.png);
             Assert.AreEqual(true,thumb.CanRead);
         }
 

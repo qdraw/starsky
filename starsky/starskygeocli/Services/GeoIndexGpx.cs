@@ -33,7 +33,7 @@ namespace starskyGeoCli.Services
             var geoList = new List<GeoListItem>(); 
             foreach (var metaFileItem in metaFilesInDirectory)
             {
-                if(metaFileItem.ImageFormat != FilesHelper.ImageFormat.gpx) continue;
+                if(metaFileItem.ImageFormat != ExtensionRolesHelper.ImageFormat.gpx) continue;
                 var fullfilepath = _appSettings.DatabasePathToFilePath(metaFileItem.FilePath);
                 _readMeta.ReadGpxFile(fullfilepath, geoList);
             }

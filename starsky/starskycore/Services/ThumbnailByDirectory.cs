@@ -29,7 +29,7 @@ namespace starskycore.Services
                 var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
                 base64ImageArray[i] = "data:image/png;base64," + Base64Helper
                                           .ToBase64(new Thumbnail(null).ResizeThumbnailToStream(fullFilePath, 4, 0, 0, true,
-                                              FilesHelper.ImageFormat.png));
+		                                      ExtensionRolesHelper.ImageFormat.png));
             }
             return base64ImageArray;
         }

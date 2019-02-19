@@ -178,7 +178,7 @@ namespace starsky.Controllers
 					
 					// Check if extension is supported for ExtensionExifToolSupportedList
 					// Not all files are able to write with exiftool
-					if(!FilesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
+					if(!ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
 					{
 						collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
 						fileIndexResultsList.Add(detailView.FileIndexItem);
@@ -302,7 +302,7 @@ namespace starsky.Controllers
                 
                 // Check if extension is supported for ExtensionExifToolSupportedList
                 // Not all files are able to write with exiftool
-                if(detailView != null && !FilesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
+                if(detailView != null && !ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
                 {
                     detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
                     fileIndexResultsList.Add(detailView.FileIndexItem);
@@ -457,8 +457,8 @@ namespace starsky.Controllers
             if (FilesHelper.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
             {
                 // When a file is corrupt show error + Delete
-                var imageFormat = FilesHelper.GetImageFormat(thumbPath);
-                if (imageFormat == FilesHelper.ImageFormat.unknown)
+                var imageFormat = ExtensionRolesHelper.GetImageFormat(thumbPath);
+                if (imageFormat == ExtensionRolesHelper.ImageFormat.unknown)
                 {
                     if (!retryThumbnail)
                     {
@@ -471,7 +471,7 @@ namespace starsky.Controllers
                 
                 // When using the api to check using javascript
                 // use the cached version of imageFormat, otherwise you have to check if it deleted
-                if (imageFormat != FilesHelper.ImageFormat.unknown)
+                if (imageFormat != ExtensionRolesHelper.ImageFormat.unknown)
                 {
                     if (json) return Json("OK");
 
@@ -508,7 +508,7 @@ namespace starsky.Controllers
                     return Json("Thumbnail is not ready yet");
                 }
                 
-                if (FilesHelper.IsExtensionThumbnailSupported(sourceFullPath))
+                if (ExtensionRolesHelper.IsExtensionThumbnailSupported(sourceFullPath))
                 {
                     FileStream fs1 = System.IO.File.OpenRead(sourceFullPath);
                     var fileExtensionWithoutDot = Path.GetExtension(sourceFullPath).Remove(0, 1).ToLower();
@@ -577,12 +577,12 @@ namespace starsky.Controllers
             var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
 
             // If File is corrupt delete it
-            if (FilesHelper.GetImageFormat(thumbPath) == FilesHelper.ImageFormat.unknown)
+            if (ExtensionRolesHelper.GetImageFormat(thumbPath) == ExtensionRolesHelper.ImageFormat.unknown)
             {
                 System.IO.File.Delete(thumbPath);
             }
 
-            if (FilesHelper.GetImageFormat(thumbPath) == FilesHelper.ImageFormat.notfound)
+            if (ExtensionRolesHelper.GetImageFormat(thumbPath) == ExtensionRolesHelper.ImageFormat.notfound)
             {
                 if (FilesHelper.IsFolderOrFile(_appSettings.ThumbnailTempFolder) ==
                     FolderOrFileModel.FolderOrFileTypeList.Deleted)

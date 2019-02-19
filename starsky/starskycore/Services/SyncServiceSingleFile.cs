@@ -31,12 +31,12 @@ namespace starskycore.Services
             if (FilesHelper.IsFolderOrFile(fullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File) // false == file
             {
                 // File check if jpg #not corrupt
-                var imageFormat = FilesHelper.GetImageFormat(fullFilePath);
-                if(imageFormat == FilesHelper.ImageFormat.unknown) return SingleFileSuccess.Fail;
+                var imageFormat = ExtensionRolesHelper.GetImageFormat(fullFilePath);
+                if(imageFormat == ExtensionRolesHelper.ImageFormat.unknown) return SingleFileSuccess.Fail;
                 
                 // The same check as in GetFilesInDirectory
                 var extension = Path.GetExtension(fullFilePath).ToLower().Replace(".",string.Empty);
-                if (!FilesHelper.ExtensionSyncSupportedList.Contains(extension)) return SingleFileSuccess.Fail;
+                if (!ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(extension)) return SingleFileSuccess.Fail;
                  
                 // single file -- update or adding
                 var dbListWithOneFile = new List<FileIndexItem>();

@@ -48,7 +48,7 @@ namespace starsky.Controllers
             if (singleItem?.IsDirectory == false)
             {
 	            var fileHashWithExt = singleItem.FileIndexItem.FileHash;
-	            if ( singleItem.FileIndexItem.ImageFormat == FilesHelper.ImageFormat.jpg )
+	            if ( singleItem.FileIndexItem.ImageFormat == ExtensionRolesHelper.ImageFormat.jpg )
 		            fileHashWithExt += ".jpg";
 	            var fileHashThumbnailHttpUrl = SingleItemThumbnailHttpUrl(fileHashWithExt);
 

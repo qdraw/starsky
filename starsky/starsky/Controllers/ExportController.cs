@@ -135,9 +135,9 @@ namespace starsky.Controllers
 				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
 
 				// when there is .xmp sidecar file
-				if ( !thumbnail && FilesHelper.IsXmpSidecarRequired(sourceFile) && FilesHelper.ExistFile(FilesHelper.GetXmpSidecarFile(sourceFile)))
+				if ( !thumbnail && ExtensionRolesHelper.IsXmpSidecarRequired(sourceFile) && FilesHelper.ExistFile(ExtensionRolesHelper.GetXmpSidecarFile(sourceFile)))
 				{
-					filePaths.Add(FilesHelper.GetXmpSidecarFile(sourceFile));
+					filePaths.Add(ExtensionRolesHelper.GetXmpSidecarFile(sourceFile));
 				}
 
 			}

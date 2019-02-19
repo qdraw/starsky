@@ -108,7 +108,7 @@
 					<div class="download-sidebar">
 						<h4>Downloads:</h4>
 
-						@if (FilesHelper.IsExtensionThumbnailSupported(@Model.FileIndexItem.FileName))
+						@if (ExtensionRolesHelper.IsExtensionThumbnailSupported(@Model.FileIndexItem.FileName))
 						{
 							<a class="btn-sm btn btn-secondary"
 							   href="@Url.Action("DownloadPhoto", "Api", new {f = @Model.FileIndexItem.FilePath, isThumbnail = true})"
@@ -282,7 +282,7 @@
 @*For IE/IE-Edge "object-fit: cover" *@
 <script type="text/javascript" src="~/js/vendor/ofi.min.js" defer></script>
 
-@if (@Model.FileIndexItem.ImageFormat == FilesHelper.ImageFormat.gpx)
+@if (@Model.FileIndexItem.ImageFormat == ExtensionRolesHelper.ImageFormat.gpx)
 {
     <link rel="stylesheet" href="~/css/leaflet.css" />
 	<script src="~/js/vendor/leaflet.min.js"></script>

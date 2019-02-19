@@ -124,7 +124,7 @@ namespace starskycore.Services
             if (fileIndexItem.FileName.Contains(".unknown"))
             {
                 fileIndexItem.FileName = fileIndexItem.FileName.Replace(".unknown", 
-                    "." + FilesHelper.GetImageFormat(inputFileFullPath));
+                    "." + ExtensionRolesHelper.GetImageFormat(inputFileFullPath));
             }
             
             var destinationFullPath = _appSettings.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
@@ -154,7 +154,7 @@ namespace starskycore.Services
 
         public FileIndexItem ReadExifAndXmpFromFile(string inputFileFullPath)
         {
-            return _readmeta.ReadExifAndXmpFromFile(inputFileFullPath,FilesHelper.GetImageFormat(inputFileFullPath));
+            return _readmeta.ReadExifAndXmpFromFile(inputFileFullPath,ExtensionRolesHelper.GetImageFormat(inputFileFullPath));
         }
 
         public bool IsAgeFileFilter(ImportSettingsModel importSettings, DateTime exifDateTime)
@@ -225,7 +225,7 @@ namespace starskycore.Services
             File.Copy(inputFileFullPath, destinationFullPath);
             
             // Update the contents to the file the imported item
-            if (exifToolSync && FilesHelper.IsExtensionExifToolSupported(inputFileFullPath))
+            if (exifToolSync && ExtensionRolesHelper.IsExtensionExifToolSupported(inputFileFullPath))
             {
                 Console.WriteLine("Do a exiftoolSync");
                 var comparedNamesList = new List<string>
