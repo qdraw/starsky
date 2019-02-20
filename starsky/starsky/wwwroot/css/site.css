@@ -567,8 +567,8 @@ h2 {
 
 .addDeleteTag {
     padding: 15px;
-    margin-top: 15px;
-    margin-bottom: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     background-color: #FFCCBC;
 }
 .addDeleteTag.fileIsDeleted {

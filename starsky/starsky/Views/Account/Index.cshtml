@@ -34,9 +34,10 @@
 <div>
 	<h1>Uptime</h1>
 	@{
-		var timeSpan = (DateTime.Now - Process.GetCurrentProcess().StartTime).ToString("hh\\:mm");
+		var timeSpan = (DateTime.Now - Process.GetCurrentProcess().StartTime);
+		var hours = ( int ) timeSpan.TotalHours;
 	}
-	@timeSpan - uur
+	@hours:@timeSpan.Minutes - uur
 
 </div>
 
