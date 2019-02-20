@@ -46,6 +46,7 @@ namespace starsky.Controllers
 	    /// <response code="200">returns a list of items from the database</response>
 	    /// <response code="404">subpath not found in the database</response>
 		[HttpGet("/api")]
+		[Produces("application/json")]
 		[ProducesResponseType(typeof(ArchiveViewModel),200)]
 		[ProducesResponseType(404)]
 		public IActionResult Index(
@@ -67,6 +68,7 @@ namespace starsky.Controllers
 	    [HttpHead("/api/env")]
         [HttpGet("/api/env")]
         [IgnoreAntiforgeryToken]
+	    [Produces("application/json")]
 	    [ProducesResponseType(typeof(AppSettings),200)]
         [AllowAnonymous] /// <=================================
         public IActionResult Env()
@@ -146,6 +148,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(List<FileIndexItem>),200)]
 		[ProducesResponseType(typeof(List<FileIndexItem>),404)]
 		[HttpPost("/api/update")]
+        [Produces("application/json")]
 		public IActionResult Update(FileIndexItem inputModel, string f, bool append, bool collections = true,  int rotateClock = 0)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
@@ -290,6 +293,7 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(List<FileIndexItem>),200)]
         [ProducesResponseType(typeof(List<FileIndexItem>),404)]
         [ProducesResponseType(typeof(List<FileIndexItem>),203)]
+        [Produces("application/json")]
         public IActionResult Info(string f, bool collections = true)
         {
             var inputFilePaths = PathHelper.SplitInputFilePaths(f);
