@@ -122,16 +122,12 @@ function updateDeletedKeywordElement(data) {
 if (document.querySelectorAll("#js-keywords-update").length === 1 && 
     document.querySelectorAll("#js-captionabstract-update").length === 1) 
 {
-   loadJSON(infoApiBase,
-       function(data) {
-           updateCollectionsSwitch(data);
-           updateDeletedKeywordElement(data[0]);
-           updateColorClassButtons(data[0].colorClass);
-           updateCaptionAbstractFromInput(data[0]);
-           updateObjectNameFromInput(data[0]);
-           hidePreloader();
-       },
-       function (xhr) {
+
+    fetch(infoApiBase,{
+        mode: "cors",
+        credentials: "include"
+    })
+        .then(function(xhr) {
             if (xhr.status === 404 || xhr.status === 203) {
                 if (document.querySelectorAll(".sidebar").length >= 0) {
                     // toggleSideMenu(true);
@@ -145,12 +141,49 @@ if (document.querySelectorAll("#js-keywords-update").length === 1 &&
                     if (document.querySelectorAll(".js-filterinfo").length >= 0) {
                         document.querySelector(".js-filterinfo").innerHTML += "<span class='red'>Alleen lezen</span>"
                     }
-                }                
+                }
             }
-            console.error(xhr); 
-       },
-       "GET"
-   );
+            return xhr.json();
+        })
+        .then(function(data) {
+            updateCollectionsSwitch(data);
+            updateDeletedKeywordElement(data[0]);
+            updateColorClassButtons(data[0].colorClass);
+            updateCaptionAbstractFromInput(data[0]);
+            updateObjectNameFromInput(data[0]);
+            hidePreloader();
+        });
+    
+    
+   // loadJSON(infoApiBase,
+   //     function(data) {
+   //         updateCollectionsSwitch(data);
+   //         updateDeletedKeywordElement(data[0]);
+   //         updateColorClassButtons(data[0].colorClass);
+   //         updateCaptionAbstractFromInput(data[0]);
+   //         updateObjectNameFromInput(data[0]);
+   //         hidePreloader();
+   //     },
+   //     function (xhr) {
+   //          if (xhr.status === 404 || xhr.status === 203) {
+   //              if (document.querySelectorAll(".sidebar").length >= 0) {
+   //                  // toggleSideMenu(true);
+   //                  document.querySelector(".sidebar").classList.add("readonly");
+   //                  document.querySelector("#js-keywords-update .btn").classList.add("disabled");
+   //
+   //                  hidePreloader();
+   //                  if (document.querySelectorAll(".head").length >= 0) {
+   //                      document.querySelector(".head").classList.add("head-gray");
+   //                  }
+   //                  if (document.querySelectorAll(".js-filterinfo").length >= 0) {
+   //                      document.querySelector(".js-filterinfo").innerHTML += "<span class='red'>Alleen lezen</span>"
+   //                  }
+   //              }                
+   //          }
+   //          console.error(xhr); 
+   //     },
+   //     "GET"
+   // );
 }
 
 function addDeleteTag() {

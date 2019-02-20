@@ -132,7 +132,7 @@ namespace starsky.Controllers
             Response.Headers["Link"] += ",";
             Response.Headers["Link"] += "<"
                                         + infoHttpUrl +
-                                        ">; rel=preload; as=fetch";
+                                        ">; rel=preload; crossorigin=\"use-credentials\"; as=fetch";
         }
 
 	    // Error pages should be always visible
