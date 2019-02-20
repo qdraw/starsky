@@ -58,7 +58,7 @@ namespace starsky.Controllers
                 AddHttp2SingleFile(fileHashThumbnailHttpUrl,infoHttpUrl);
                 
                 if (json) return Json(singleItem);
-                return View("SingleItem", singleItem);
+                return View("DetailView", singleItem);
             }
             
             // (singleItem.IsDirectory) or not found
