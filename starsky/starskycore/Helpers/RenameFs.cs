@@ -53,7 +53,11 @@ namespace starskycore.Helpers
 				toFileSubPaths[i] = PathHelper.PrefixDbSlash(toFileSubPaths[i]);
 
 				var detailView = _query.SingleItem(toFileSubPaths[i], null, collections, false);
-				if (detailView != null) toFileSubPaths[i] = null;
+				
+				// skip for files
+				if ( detailView == null) continue;
+				// dirs are mergable
+				if ( detailView.FileIndexItem.IsDirectory == false ) toFileSubPaths[i] = null;
 			}
 			
 			// Remove null from list
@@ -77,10 +81,11 @@ namespace starskycore.Helpers
 				// options
 				// 1. file to direct folder file.jpg /folder/ (not covered)
 				// 2. folder to folder (not covered)
-				// 3. folder merge parent folder with current folder (not covered), /test/ => /test/test/
-				// 4. folder to existing folder > merge (not covered)
-				// 5. file to file
-				// 6. file to existing file > skip
+				// 3. folder with child folders to folder (not covered)
+				// 4. folder merge parent folder with current folder (not covered), /test/ => /test/test/
+				// 5. folder to existing folder > merge (not covered)
+				// 6. file to file
+				// 7. file to existing file > skip
 
 				var inputFileSubPath = inputFileSubPaths[i];
 				var toFileSubPath = toFileSubPaths[i];
@@ -121,6 +126,7 @@ namespace starskycore.Helpers
 					&& toFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
 					// merge two folders
+					var inputFolderParentItems = _iStorage.GetAllFilesInDirectory(inputFileSubPath).Where(ExtensionRolesHelper.IsExtensionExifToolSupported);
 					
 				}
 				else if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.File) 

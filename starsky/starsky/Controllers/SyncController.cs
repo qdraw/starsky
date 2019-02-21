@@ -102,7 +102,8 @@ namespace starsky.Controllers
 	    /// <returns></returns>
 		[HttpPost("/sync/rename")]
 		public IActionResult Rename(string f, string to, bool collections = true)
-		{
+	    {
+		    return Json("Disabled");
 			return Json(new RenameFs(_appSettings,_query,_sync,_iStorage).Rename(f,to,collections));
 		}
 

@@ -1,4 +1,7 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 
@@ -74,5 +77,38 @@ namespace starskycore.Services
 			Directory.CreateDirectory(inputFileFullPath);
 		}
 		
+		/// <summary>
+		/// Returns a list of Files in a directory (non-recruisive)
+		/// </summary>
+		/// <param name="subPath">path relative to the database</param>
+		/// <returns></returns>
+		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
+		{
+			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
+			if (fullFilePath == null) return Enumerable.Empty<string>();
+
+			string[] allFiles = Directory.GetFiles(fullFilePath);
+
+			var imageFilesList = new List<string>();
+			foreach (var file in allFiles)
+			{
+				// Path.GetExtension uses (.ext)
+				// the same check in SingleFile
+				// Recruisive >= same check
+				// ignore Files with ._ names, this is Mac OS specific
+				var isAppleDouble = Path.GetFileName(file).StartsWith("._");
+				if (!isAppleDouble)
+				{
+					imageFilesList.Add(file);
+				}
+			}
+
+			// to filter use:
+			// ..etAllFilesInDirectory(subPath)
+			//	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
+			
+			return imageFilesList;
+		}
+
 	}
 }

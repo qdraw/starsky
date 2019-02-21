@@ -192,11 +192,29 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public void RenameFsTest_mergeTwoFolders()
 		{
-			var istorage = new FakeIStorage(false,false,FolderOrFileModel.FolderOrFileTypeList.Deleted);
+			var item = _query.AddItem(new FileIndexItem
+			{
+				FileName = "exist",
+				ParentDirectory = "/",
+				AddToDatabase = DateTime.UtcNow,
+				FileHash = "34567898765434567487984785487",
+				IsDirectory = true
+			});
+			
+			var itemFolder1 = _query.AddItem(new FileIndexItem
+			{
+				FileName = "folder1",
+				ParentDirectory = "/",
+				IsDirectory = true
+			});
+			
+			var istorage = new FakeIStorage(false,true,FolderOrFileModel.FolderOrFileTypeList.Folder);
 			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename("/folder1", "/exist", true);
 			// todo: incomplete!!!!!!
-			
-			
+
+			_query.RemoveItem(item);
+			_query.RemoveItem(itemFolder1);
+
 		}
 
 	}

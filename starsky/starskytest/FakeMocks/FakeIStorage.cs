@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskytest.FakeCreateAn;
@@ -9,13 +10,17 @@ namespace starskytest.FakeMocks
 		private readonly bool _existFile;
 		private readonly bool _existFolder;
 		private readonly FolderOrFileModel.FolderOrFileTypeList _isFolderOrFile;
+		private List<string> _getAllFilesInDirectory;
 
 
-		public FakeIStorage(bool existFile = false, bool existFolder = false, FolderOrFileModel.FolderOrFileTypeList isFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Deleted)
+		public FakeIStorage(bool existFile = false, bool existFolder = false, 
+			FolderOrFileModel.FolderOrFileTypeList isFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Deleted,
+			List<string> getAllFilesInDirectory = null )
 		{
 			_existFile = existFile;
 			_existFolder = existFolder;
 			_isFolderOrFile = isFolderOrFile;
+			_getAllFilesInDirectory = getAllFilesInDirectory;
 		}
 		public bool ExistFile(string subPath)
 		{
@@ -51,7 +56,17 @@ namespace starskytest.FakeMocks
 		public void CreateDirectory(string subPath)
 		{
 		}
-		
-		
+
+		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
+		{
+			
+			if(_getAllFilesInDirectory == null) return new List<string>();
+			if ( subPath == "/exist" )
+			{
+				return new List<string>{"/exist/test.jpg","/exist/test2.jpg"};
+			}
+			return _getAllFilesInDirectory;
+
+		}
 	}
 }
