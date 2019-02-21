@@ -78,7 +78,10 @@ namespace starskycore.Services
 		}
 		
 		/// <summary>
-		/// Returns a list of Files in a directory (non-recruisive)
+		/// Returns a list of Files in a directory (non-Recursive)
+		/// to filter use:
+		/// ..etAllFilesInDirectory(subPath)
+		///	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
 		/// </summary>
 		/// <param name="subPath">path relative to the database</param>
 		/// <returns></returns>
@@ -107,7 +110,8 @@ namespace starskycore.Services
 			// ..etAllFilesInDirectory(subPath)
 			//	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
 			
-			return imageFilesList;
+			// convert back to subpath style
+			return _appSettings.RenameListItemsToDbStyle(imageFilesList.ToList());
 		}
 		
 		/// <summary>
@@ -122,8 +126,8 @@ namespace starskycore.Services
 			
 			string[] folders = Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);
 			// Used For subfolders
-
-			return folders;
+			// convert back to subpath style
+			return _appSettings.RenameListItemsToDbStyle(folders.ToList());
 		}
 		
 		

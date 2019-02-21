@@ -57,20 +57,6 @@ namespace starskytest.Helpers
         }
 
         [TestMethod]
-        public void Files_GetAllFilesDirectoryTest()
-        {
-            // Assumes that
-            //     ~/.nuget/packages/microsoft.testplatform.testhost/15.6.0/lib/netstandard1.5/
-            // has subfolders
-            
-            // Used For subfolders
-            var newImage = new CreateAnImage();
-            var filesInFolder = FilesHelper.GetDirectoryRecursive(newImage.BasePath);
-            Assert.AreEqual(true,filesInFolder.Any());
-            
-        }
-
-        [TestMethod]
         public void Files_GetFilesInDirectoryTest1()
         {
             // Used for JPEG files
