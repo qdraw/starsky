@@ -52,11 +52,12 @@ namespace starskycore.Helpers
 	    
 
 	    /// <summary>
-        /// Returns a list of directories
+        /// Returns a list of directories // Get list of child folders
+        /// old name: GetFilesRecursive
         /// </summary>
         /// <param name="fullFilePath">directory</param>
         /// <returns></returns>
-	    public static string[] GetAllFilesDirectory(string fullFilePath = "")
+	    public static string[] GetDirectoryRecursive(string fullFilePath = "")
         {
             if (!Directory.Exists(fullFilePath)) return new List<string>().ToArray();
             string[] folders = Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);
@@ -146,7 +147,7 @@ namespace starskycore.Helpers
 		/// </summary>
 		/// <param name="fullFilePath">The full file path.</param>
 		/// <returns></returns>
-		public static IEnumerable<string> GetFilesRecrusive(string fullFilePath)
+		public static IEnumerable<string> GetFilesRecursive(string fullFilePath)
         {
             List<string> findlist = new List<string>();
 

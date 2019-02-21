@@ -77,8 +77,9 @@ namespace starskytest.Services
             _exiftool = serviceProvider.GetRequiredService<IExiftool>();
             
             _readmeta = new ReadMeta(_appSettings);
+	        var iStorage = new StorageFilesystem(_appSettings);
 
-            _isync = new SyncService(_context, _query,_appSettings,_readmeta);
+            _isync = new SyncService(_context, _query,_appSettings,_readmeta,iStorage);
             
             //   _context = context
             //   _isync = isync

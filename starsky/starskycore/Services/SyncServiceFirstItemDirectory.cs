@@ -13,7 +13,7 @@ namespace starskycore.Services
 
             // Loop though all folders
             var fullFilePath = _appSettings.DatabasePathToFilePath(subpath);
-            var subFoldersFullPath = FilesHelper.GetAllFilesDirectory(fullFilePath);
+            var subFoldersFullPath = FilesHelper.GetDirectoryRecursive(fullFilePath);
 
             foreach (var singleFolderFullPath in subFoldersFullPath)
             {

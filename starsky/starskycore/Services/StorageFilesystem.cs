@@ -109,6 +109,25 @@ namespace starskycore.Services
 			
 			return imageFilesList;
 		}
+		
+		/// <summary>
+		/// Returns a list of directories // Get list of child folders
+		/// </summary>
+		/// <param name="subPath">subpath in directory</param>
+		/// <returns></returns>
+		public IEnumerable<string> GetDirectoryRecursive(string subPath)
+		{
+			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
+			if (fullFilePath == null) return Enumerable.Empty<string>();
+			
+			string[] folders = Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);
+			// Used For subfolders
+
+			return folders;
+		}
+		
+		
+		
 
 	}
 }

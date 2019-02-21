@@ -12,6 +12,6 @@ namespace starskycore.Interfaces
 		void FileMove(string inputSubPath, string toSubPath);
 		void CreateDirectory(string subPath);
 		IEnumerable<string> GetAllFilesInDirectory(string subPath);
-
+		IEnumerable<string> GetDirectoryRecursive(string subPath);
 	}
 }

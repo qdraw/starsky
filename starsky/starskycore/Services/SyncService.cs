@@ -14,18 +14,21 @@ namespace starskycore.Services
         private readonly IQuery _query;
         private readonly AppSettings _appSettings;
         private readonly IReadMeta _readMeta;
+	    private readonly IStorage _iStorage;
 
-		/// <summary>Do a sync of files uning a subpath</summary>
-		/// <param name="context">Database Entity Framework context</param>
-		/// <param name="query">Starsky IQuery interface to do calls on the database</param>
-		/// <param name="appSettings">Settings of the application</param>
-		/// <param name="readMeta">To read exif and xmp</param>
-		public SyncService(ApplicationDbContext context, IQuery query, AppSettings appSettings, IReadMeta readMeta)
+	    /// <summary>Do a sync of files uning a subpath</summary>
+	    /// <param name="context">Database Entity Framework context</param>
+	    /// <param name="query">Starsky IQuery interface to do calls on the database</param>
+	    /// <param name="appSettings">Settings of the application</param>
+	    /// <param name="readMeta">To read exif and xmp</param>
+	    /// <param name="iStorage">Filesystem or other abstraction</param>
+	    public SyncService(ApplicationDbContext context, IQuery query, AppSettings appSettings, IReadMeta readMeta, IStorage iStorage)
         {
             _context = context;
             _query = query;
             _appSettings = appSettings;
             _readMeta = readMeta;
+	        _iStorage = iStorage;
         }
         
         /* Base feature to sync files and folders
@@ -61,7 +64,7 @@ namespace starskycore.Services
             // Handle folder Get a list of all local folders and rename it to database style.
             // Db Style is a relative path
             var localSubFolderDbStyle = _appSettings.RenameListItemsToDbStyle(
-                FilesHelper.GetAllFilesDirectory(_appSettings.DatabasePathToFilePath(subPath)).ToList()
+                _iStorage.GetDirectoryRecursive(subPath).ToList()
             );
 
             // Query the database to get a list of the folder items

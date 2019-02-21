@@ -38,7 +38,7 @@ namespace starskycore.Services
         {
             // Thumbnail check service
             
-            var subFoldersFullPathList =  FilesHelper.GetAllFilesDirectory(parentFolderFullPath).ToList();
+            var subFoldersFullPathList =  FilesHelper.GetDirectoryRecursive(parentFolderFullPath).ToList();
             
             // Add Subpath to scan the root folder for thumbs       
             subFoldersFullPathList.Add(parentFolderFullPath);

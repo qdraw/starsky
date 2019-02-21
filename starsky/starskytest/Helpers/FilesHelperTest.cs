@@ -65,7 +65,7 @@ namespace starskytest.Helpers
             
             // Used For subfolders
             var newImage = new CreateAnImage();
-            var filesInFolder = FilesHelper.GetAllFilesDirectory(newImage.BasePath);
+            var filesInFolder = FilesHelper.GetDirectoryRecursive(newImage.BasePath);
             Assert.AreEqual(true,filesInFolder.Any());
             
         }
@@ -86,7 +86,7 @@ namespace starskytest.Helpers
         {            
             var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
 
-            var content = FilesHelper.GetFilesRecrusive(path);
+            var content = FilesHelper.GetFilesRecursive(path);
 
             Console.WriteLine("count => "+ content.Count());
 

@@ -68,5 +68,10 @@ namespace starskytest.FakeMocks
 			return _getAllFilesInDirectory;
 
 		}
+
+		public IEnumerable<string> GetDirectoryRecursive(string subPath)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

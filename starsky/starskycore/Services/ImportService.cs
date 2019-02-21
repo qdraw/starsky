@@ -71,7 +71,7 @@ namespace starskycore.Services
 
             var filesFullPathList = new List<string>();
             // recursive
-            if(importSettings.RecursiveDirectory) filesFullPathList = FilesHelper.GetFilesRecrusive(inputFullPath).ToList();
+            if(importSettings.RecursiveDirectory) filesFullPathList = FilesHelper.GetFilesRecursive(inputFullPath).ToList();
             // non-recursive
             if(!importSettings.RecursiveDirectory) filesFullPathList = FilesHelper.GetFilesInDirectory(inputFullPath).ToList();
 

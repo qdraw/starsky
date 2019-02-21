@@ -59,7 +59,7 @@ namespace starsky.Controllers
 				else if( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
 					var filesAndFoldersInDirectoryArray = FilesHelper.GetFilesInDirectory(_appSettings.DatabasePathToFilePath(subPath)).ToList();
-					filesAndFoldersInDirectoryArray.AddRange(FilesHelper.GetAllFilesDirectory(_appSettings.DatabasePathToFilePath(subPath)));
+					filesAndFoldersInDirectoryArray.AddRange(FilesHelper.GetDirectoryRecursive(_appSettings.DatabasePathToFilePath(subPath)));
 					
 					foreach ( var fileInDirectory in filesAndFoldersInDirectoryArray )
 					{
