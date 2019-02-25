@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -173,27 +174,15 @@ namespace starskytest.Helpers
 
 			FilesHelper.DeleteDirectory(dir2FullDirPath);
 		}
-		
-		
-		
 
-		[TestMethod]
-		public void RenameFsTest_ToNonExistFolder_Items()
-		{
-			var istorage = new FakeIStorage(false,false,FolderOrFileModel.FolderOrFileTypeList.Deleted);
-			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename(_newImage.DbPath, "/nonExist/test5.jpg", true);
-			
-			var all2 = _query.GetAllRecursive();
-			var selectFile3 = all2.FirstOrDefault(p => p.FileName == "test5.jpg");
-			Assert.AreEqual("test5.jpg",selectFile3.FileName);
-			Assert.AreEqual("/nonExist",selectFile3.ParentDirectory);
+		private FileIndexItem _folderExist;
+		private FileIndexItem _folder1Exist;
+		private FileIndexItem _fileInExist;
+		private FileIndexItem _parentFolder;
 
-		}
-		
-		[TestMethod]
-		public void RenameFsTest_mergeTwoFolders()
+		private void CreateFoldersAndFilesInDatabase()
 		{
-			var item = _query.AddItem(new FileIndexItem
+			_folderExist = _query.AddItem(new FileIndexItem
 			{
 				FileName = "exist",
 				ParentDirectory = "/",
@@ -202,21 +191,87 @@ namespace starskytest.Helpers
 				IsDirectory = true
 			});
 			
-			var itemFolder1 = _query.AddItem(new FileIndexItem
+			_fileInExist = _query.AddItem(new FileIndexItem
+			{
+				FileName = "file.jpg",
+				ParentDirectory = "/exist",
+				IsDirectory = false
+			});
+
+			_folder1Exist = _query.AddItem(new FileIndexItem
 			{
 				FileName = "folder1",
 				ParentDirectory = "/",
-				IsDirectory = true
+				IsDirectory = true,
+				FileHash = "3497867df894587",
 			});
 			
-			var istorage = new FakeIStorage(false,true,FolderOrFileModel.FolderOrFileTypeList.Folder);
-			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename("/folder1", "/exist", true);
-			// todo: incomplete!!!!!!
-
-			_query.RemoveItem(item);
-			_query.RemoveItem(itemFolder1);
-
+			_parentFolder = _query.AddItem(new FileIndexItem
+			{
+				FileName = "/",
+				ParentDirectory = "/",
+				IsDirectory = true,
+			});
 		}
+
+		private void RemoveFoldersAndFilesInDatabase()
+		{
+			_query.RemoveItem(_folderExist);
+			_query.RemoveItem(_folder1Exist);
+			_query.RemoveItem(_fileInExist);
+			_query.RemoveItem(_parentFolder);
+		}
+
+		[TestMethod]
+		public void RenameFsTest_ToNonExistFolder_Items()
+		{
+			CreateFoldersAndFilesInDatabase();
+
+			var initFolderList =  new List<string> { "/" };
+			var initFileList = new List<string> { _fileInExist.FilePath };
+			var istorage = new FakeIStorage(initFolderList,initFileList);
+			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename(initFileList.FirstOrDefault(), "/nonExist/test5.jpg", true);
+			
+			var all2 = _query.GetAllRecursive();
+			var selectFile3 = all2.FirstOrDefault(p => p.FileName == "test5.jpg");
+			Assert.AreEqual("test5.jpg",selectFile3.FileName);
+			Assert.AreEqual("/nonExist",selectFile3.ParentDirectory);
+
+			// check if files are moved
+			var values = istorage.GetAllFilesInDirectory("/").ToList();
+			Assert.AreEqual("/nonExist/test5.jpg", values.FirstOrDefault(p => p == "/nonExist/test5.jpg"));
+			
+			
+			RemoveFoldersAndFilesInDatabase();
+		}
+		
+//		[TestMethod]
+//		public void RenameFsTest_mergeTwoFolders()
+//		{
+//			var item = _query.AddItem(new FileIndexItem
+//			{
+//				FileName = "exist",
+//				ParentDirectory = "/",
+//				AddToDatabase = DateTime.UtcNow,
+//				FileHash = "34567898765434567487984785487",
+//				IsDirectory = true
+//			});
+//			
+//			var itemFolder1 = _query.AddItem(new FileIndexItem
+//			{
+//				FileName = "folder1",
+//				ParentDirectory = "/",
+//				IsDirectory = true
+//			});
+//			
+//			var istorage = new FakeIStorage(false,true,FolderOrFileModel.FolderOrFileTypeList.Folder);
+//			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename("/folder1", "/exist", true);
+//			// todo: incomplete!!!!!!
+//
+//			_query.RemoveItem(item);
+//			_query.RemoveItem(itemFolder1);
+//
+//		}
 
 	}
 }

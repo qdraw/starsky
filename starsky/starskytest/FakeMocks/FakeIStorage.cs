@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskytest.FakeCreateAn;
@@ -7,65 +9,81 @@ namespace starskytest.FakeMocks
 {
 	class FakeIStorage : IStorage
 	{
-		private readonly bool _existFile;
-		private readonly bool _existFolder;
-		private readonly FolderOrFileModel.FolderOrFileTypeList _isFolderOrFile;
-		private List<string> _getAllFilesInDirectory;
+		private List<string> _outputSubPathFolders = new List<string>();
+		private List<string> _outputSubPathFiles  = new List<string>();
 
 
-		public FakeIStorage(bool existFile = false, bool existFolder = false, 
-			FolderOrFileModel.FolderOrFileTypeList isFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Deleted,
-			List<string> getAllFilesInDirectory = null )
+		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null)
 		{
-			_existFile = existFile;
-			_existFolder = existFolder;
-			_isFolderOrFile = isFolderOrFile;
-			_getAllFilesInDirectory = getAllFilesInDirectory;
+			if ( outputSubPathFolders != null )
+			{
+				_outputSubPathFolders = outputSubPathFolders;
+			}
+
+			if ( outputSubPathFiles != null )
+			{
+				_outputSubPathFiles = outputSubPathFiles;
+			}
 		}
 		public bool ExistFile(string subPath)
 		{
-			if ( subPath == new CreateAnImage().DbPath )
-			{
-				return true;
-			}
-			return _existFile;
+			return _outputSubPathFiles.Contains(subPath);
 		}
 
 		public bool ExistFolder(string subPath)
 		{
-			return _existFolder;
+			return _outputSubPathFolders.Contains(subPath);
 		}
 
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath = "")
 		{
-			if ( subPath == new CreateAnImage().DbPath )
+			if ( ExistFile(subPath) )
 			{
 				return FolderOrFileModel.FolderOrFileTypeList.File;
 			}
-			return _isFolderOrFile;
+
+			if ( ExistFolder(subPath) )
+			{
+				return FolderOrFileModel.FolderOrFileTypeList.Folder;
+			}
+
+			return FolderOrFileModel.FolderOrFileTypeList.Deleted;
 		}
 
 		public void FolderMove(string inputSubPath, string toSubPath)
 		{
+			var indexOfFolders = _outputSubPathFiles.IndexOf(inputSubPath);
+			if ( indexOfFolders == -1 )
+			{
+				throw new ArgumentException("indexOfFolders---1");
+			}
+			_outputSubPathFiles[indexOfFolders] = toSubPath;
 		}
 
 		public void FileMove(string inputSubPath, string toSubPath)
 		{
+			var indexOfFiles = _outputSubPathFiles.IndexOf(inputSubPath);
+			if ( indexOfFiles == -1 )
+			{
+				throw new ArgumentException("indexOfFiles---1");
+			}
+			_outputSubPathFiles[indexOfFiles] = toSubPath;
 		}
 
 		public void CreateDirectory(string subPath)
 		{
+			_outputSubPathFolders.Add(subPath);
 		}
 
 		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
 		{
-			
-			if(_getAllFilesInDirectory == null) return new List<string>();
-			if ( subPath == "/exist" )
+			if ( !ExistFolder(subPath) )
 			{
-				return new List<string>{"/exist/test.jpg","/exist/test2.jpg"};
+				return new List<string>();
 			}
-			return _getAllFilesInDirectory;
+
+			// now GetDirectoryRecursive
+			return _outputSubPathFiles.Where(p => p.StartsWith(subPath));
 
 		}
 

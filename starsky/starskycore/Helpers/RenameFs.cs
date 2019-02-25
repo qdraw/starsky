@@ -93,9 +93,8 @@ namespace starskycore.Helpers
 				var detailView = _query.SingleItem(inputFileSubPath, null, collections, false);
 				
 				// The To location must be
-
-				var toFileFullPathStatus = _iStorage.IsFolderOrFile(toFileSubPath);
 				var inputFileFullPathStatus = _iStorage.IsFolderOrFile(inputFileSubPath);
+				var toFileFullPathStatus = _iStorage.IsFolderOrFile(toFileSubPath);
 
 				// we dont overwrite files
 				if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFullPathStatus != FolderOrFileModel.FolderOrFileTypeList.Deleted)
