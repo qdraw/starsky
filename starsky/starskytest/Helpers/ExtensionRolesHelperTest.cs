@@ -77,6 +77,14 @@ namespace starskytest.Helpers
             var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
             Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.xmp);
         }
+		
+		
+//		[TestMethod]
+//		public void Files_GetImageFormat_h264_Test()
+//		{
+//			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 00,  00,  00,  20,  66,  74,  79,  70,  69,  7});
+//			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.h264,fileType);
+//		}
         
 	}
 }

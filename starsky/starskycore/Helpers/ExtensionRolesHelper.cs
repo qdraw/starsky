@@ -179,11 +179,11 @@ namespace starskycore.Helpers
 			gif = 14,
 			png = 15,
 
-			// Sitecar files
+			// Sidecar files
 			xmp = 30,
             
 			// documents
-			gpx = 40
+			gpx = 40,
 		}
 
 		/// <summary>
@@ -220,6 +220,7 @@ namespace starskycore.Helpers
 		public static ImageFormat GetImageFormat(byte[] bytes)
 		{
 			// see http://www.mikekunz.com/image_file_header.html  
+			// on posix: 'od -t x1 -N 10 file.mp4'  
 			var bmp = Encoding.ASCII.GetBytes("BM"); // BMP
 			var gif = Encoding.ASCII.GetBytes("GIF"); // GIF
 			var png = new byte[] {137, 80, 78, 71}; // PNG
@@ -230,6 +231,9 @@ namespace starskycore.Helpers
 			var jpeg2 = new byte[] {255, 216, 255, 225}; // jpeg canon
 			var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
 			var gpx = new byte[] {60, 63, 120}; // gpx
+			
+			var mp4H264P1 = new byte[] {00,  00,  00};
+			var mp4H264P2 = new byte[] {66, 74, 79, 70}; //  00  00  00  [skip this byte]  66  74  79  70
 
 			if ( bmp.SequenceEqual(bytes.Take(bmp.Length)) )
 				return ImageFormat.bmp;
@@ -260,6 +264,11 @@ namespace starskycore.Helpers
 
 			if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) )
 				return ImageFormat.gpx;
+
+// 			// todo: implement feature
+//			if ( mp4H264P1.SequenceEqual(bytes.Take(mp4H264P1.Length)) && 
+//			     mp4H264P2.SequenceEqual( bytes.Skip(mp4H264P1.Length+1).Take(mp4H264P2.Length))  )
+//				return ImageFormat.h264;
 
 			return ImageFormat.unknown;
 		}
