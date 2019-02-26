@@ -55,12 +55,13 @@ namespace starskytest.FakeMocks
 
 		public void FolderMove(string inputSubPath, string toSubPath)
 		{
-			var indexOfFolders = _outputSubPathFiles.IndexOf(inputSubPath);
+			var indexOfFolders = _outputSubPathFolders.IndexOf(inputSubPath);
 			if ( indexOfFolders == -1 )
 			{
-				throw new ArgumentException("indexOfFolders---1");
+				throw new ArgumentException($"inputSubPath:{inputSubPath} - toSubPath:{toSubPath} indexOfFolders---1");
 			}
-			_outputSubPathFiles[indexOfFolders] = toSubPath;
+			_outputSubPathFolders[indexOfFolders] = toSubPath;
+
 		}
 
 		public void FileMove(string inputSubPath, string toSubPath)
@@ -68,7 +69,7 @@ namespace starskytest.FakeMocks
 			var indexOfFiles = _outputSubPathFiles.IndexOf(inputSubPath);
 			if ( indexOfFiles == -1 )
 			{
-				throw new ArgumentException("indexOfFiles---1");
+				throw new ArgumentException($"inputSubPath:{inputSubPath} - toSubPath:{toSubPath} indexOfFiles---1");
 			}
 			_outputSubPathFiles[indexOfFiles] = toSubPath;
 		}
@@ -88,7 +89,7 @@ namespace starskytest.FakeMocks
 				return new List<string>();
 			}
 
-			return _outputSubPathFiles.Where(p => CheckAndFixParentFiles(subPath, p));
+			return _outputSubPathFiles.Where(p => CheckAndFixParentFiles(subPath, p)).AsEnumerable();
 		}
 
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)
@@ -100,11 +101,12 @@ namespace starskytest.FakeMocks
 
 		public IEnumerable<string> GetDirectoryRecursive(string subPath)
 		{
+			subPath = PathHelper.RemoveLatestSlash(subPath);
 			if ( !ExistFolder(subPath) )
 			{
 				return new List<string>();
 			}
-			return _outputSubPathFolders.Where(p => p.StartsWith(subPath));
+			return _outputSubPathFolders.Where(p => p.StartsWith(subPath) && p != subPath ).AsEnumerable();
 
 		}
 	}

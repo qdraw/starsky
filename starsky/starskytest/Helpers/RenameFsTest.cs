@@ -248,20 +248,32 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public void RenameFsTest_mergeTwoFolders()
 		{
-
-			
 			CreateFoldersAndFilesInDatabase();
 
 			var initFolderList =  new List<string> { "/", _folder1Exist.FilePath + "/subfolder", _folder1Exist.FilePath, _folderExist.FilePath };
 			var initFileList = new List<string> { _fileInExist.FilePath, _folder1Exist.FilePath + "/subfolder/child.jpg" };
 			var istorage = new FakeIStorage(initFolderList,initFileList);
-			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename("/folder1", "/exist", true);
-			// todo: incomplete!!!!!!
+			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename("/exist", "/folder1", true);
+			
+			// First check if fakeDisk is changed
+			var folder1Files = istorage.GetAllFilesInDirectory("/folder1").ToList();
+			var folder1Dir = istorage.GetDirectoryRecursive("/folder1").ToList();
+			
+			Assert.AreEqual("/folder1/file.jpg", folder1Files[0]);
+			Assert.AreEqual("/folder1/subfolder", folder1Dir[0]);
 
-			var t = istorage.GetDirectoryRecursive("/").ToList();
+			var existDirContent = istorage.GetDirectoryRecursive("/exist").ToList();
+			var existFolder = istorage.GetAllFilesInDirectory("/exist").ToList();
+			
+			Assert.AreEqual(0,existDirContent.Count);
+			Assert.AreEqual(0,existFolder.Count);
+			
+			// Now check if FakeDb is changed
+			var all2 = _query.GetAllRecursive();
+
+			
+
 			RemoveFoldersAndFilesInDatabase();
-
-
 		}
 
 		[TestMethod]

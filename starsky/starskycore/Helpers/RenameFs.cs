@@ -129,8 +129,38 @@ namespace starskycore.Helpers
 					// 3. move child files
 					// 4. remove old folder
 					
-					// merge two folders
-					var inputFolderParentItems = _iStorage.GetAllFilesInDirectory(inputFileSubPath).Where(ExtensionRolesHelper.IsExtensionExifToolSupported);
+					// Move Child folders
+					var directChildFolders = new List<string>();
+					directChildFolders.AddRange(_iStorage.GetDirectoryRecursive(inputFileSubPath));
+
+					foreach ( var inputChildFolder in directChildFolders )
+					{
+						// First FileSys
+						var outputChildItem = inputChildFolder.Replace(inputFileSubPath, toFileSubPath);
+						_iStorage.FolderMove(inputChildFolder,outputChildItem);
+						
+						// update db
+						_query.RemoveItem(_query.SingleItem(inputChildFolder).FileIndexItem);
+						_sync.SyncFiles(outputChildItem,false);
+					}
+
+					// Move direct files
+					var directChildItems = new List<string>();
+					directChildItems.AddRange(_iStorage.GetAllFilesInDirectory(inputFileSubPath));
+
+					foreach ( var inputChildItem in directChildItems )
+					{
+						// First FileSys
+						var outputChildItem = inputChildItem.Replace(inputFileSubPath, toFileSubPath);
+						_iStorage.FileMove(inputChildItem,outputChildItem);
+						
+						// update db
+						_query.RemoveItem(_query.SingleItem(inputChildItem).FileIndexItem);
+						_sync.SyncFiles(outputChildItem);
+					}
+					
+					// remove parent folder
+					_query.RemoveItem(_query.SingleItem(inputFileSubPath).FileIndexItem);
 					
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File) 
