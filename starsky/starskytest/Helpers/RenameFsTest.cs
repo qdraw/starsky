@@ -245,33 +245,24 @@ namespace starskytest.Helpers
 			RemoveFoldersAndFilesInDatabase();
 		}
 		
-//		[TestMethod]
-//		public void RenameFsTest_mergeTwoFolders()
-//		{
-//			var item = _query.AddItem(new FileIndexItem
-//			{
-//				FileName = "exist",
-//				ParentDirectory = "/",
-//				AddToDatabase = DateTime.UtcNow,
-//				FileHash = "34567898765434567487984785487",
-//				IsDirectory = true
-//			});
-//			
-//			var itemFolder1 = _query.AddItem(new FileIndexItem
-//			{
-//				FileName = "folder1",
-//				ParentDirectory = "/",
-//				IsDirectory = true
-//			});
-//			
-//			var istorage = new FakeIStorage(false,true,FolderOrFileModel.FolderOrFileTypeList.Folder);
-//			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename("/folder1", "/exist", true);
-//			// todo: incomplete!!!!!!
-//
-//			_query.RemoveItem(item);
-//			_query.RemoveItem(itemFolder1);
-//
-//		}
+		[TestMethod]
+		public void RenameFsTest_mergeTwoFolders()
+		{
+
+			
+			CreateFoldersAndFilesInDatabase();
+
+			var initFolderList =  new List<string> { "/", _folder1Exist.FilePath + "/subfolder", _folder1Exist.FilePath, _folderExist.FilePath };
+			var initFileList = new List<string> { _fileInExist.FilePath, _folder1Exist.FilePath + "/subfolder/child.jpg" };
+			var istorage = new FakeIStorage(initFolderList,initFileList);
+			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename("/folder1", "/exist", true);
+			// todo: incomplete!!!!!!
+
+			var t = istorage.GetDirectoryRecursive("/").ToList();
+			RemoveFoldersAndFilesInDatabase();
+
+
+		}
 
 	}
 }

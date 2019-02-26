@@ -82,14 +82,17 @@ namespace starskytest.FakeMocks
 				return new List<string>();
 			}
 
-			// now GetDirectoryRecursive
 			return _outputSubPathFiles.Where(p => p.StartsWith(subPath));
-
 		}
 
 		public IEnumerable<string> GetDirectoryRecursive(string subPath)
 		{
-			throw new System.NotImplementedException();
+			if ( !ExistFolder(subPath) )
+			{
+				return new List<string>();
+			}
+			return _outputSubPathFolders.Where(p => p.StartsWith(subPath));
+
 		}
 	}
 }

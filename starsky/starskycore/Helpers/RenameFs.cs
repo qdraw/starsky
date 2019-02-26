@@ -93,11 +93,11 @@ namespace starskycore.Helpers
 				var detailView = _query.SingleItem(inputFileSubPath, null, collections, false);
 				
 				// The To location must be
-				var inputFileFullPathStatus = _iStorage.IsFolderOrFile(inputFileSubPath);
-				var toFileFullPathStatus = _iStorage.IsFolderOrFile(toFileSubPath);
+				var inputFileFolderStatus = _iStorage.IsFolderOrFile(inputFileSubPath);
+				var toFileFolderStatus = _iStorage.IsFolderOrFile(toFileSubPath);
 
 				// we dont overwrite files
-				if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFullPathStatus != FolderOrFileModel.FolderOrFileTypeList.Deleted)
+				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFolderStatus != FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
 					fileIndexResultsList.Add(new FileIndexItem
 					{
@@ -108,10 +108,10 @@ namespace starskycore.Helpers
 
 				
 				var fileIndexItems = new List<FileIndexItem>();
-				if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
-				     && toFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
+				     && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
-					//move
+					//move entire folder
 					_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
 					
 					fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
@@ -121,14 +121,19 @@ namespace starskycore.Helpers
 					);
 
 				}
-				else if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
-					&& toFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
+				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
+					&& toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
+					// 1. Get Direct child files
+					// 2. Get Direct folder and child folders
+					// 3. move child files
+					// 4. remove old folder
+					
 					// merge two folders
 					var inputFolderParentItems = _iStorage.GetAllFilesInDirectory(inputFileSubPath).Where(ExtensionRolesHelper.IsExtensionExifToolSupported);
 					
 				}
-				else if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.File) 
+				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File) 
 				{
 					
 					var parentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
