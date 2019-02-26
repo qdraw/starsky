@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskytest.FakeCreateAn;
+using starskytest.Services;
 
 namespace starskytest.FakeMocks
 {
@@ -77,12 +80,22 @@ namespace starskytest.FakeMocks
 
 		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
 		{
+			subPath = PathHelper.RemoveLatestSlash(subPath);
+			
+			// non recruisive
 			if ( !ExistFolder(subPath) )
 			{
 				return new List<string>();
 			}
 
-			return _outputSubPathFiles.Where(p => p.StartsWith(subPath));
+			return _outputSubPathFiles.Where(p => CheckAndFixParentFiles(subPath, p));
+		}
+
+		private bool CheckAndFixParentFiles(string parentFolder, string filePath)
+		{
+			if ( !filePath.StartsWith(parentFolder) ) return false;
+			
+			return Regex.Match(filePath, $"^{parentFolder}"+ "\\/\\w+.[a-z]{3}$").Success;
 		}
 
 		public IEnumerable<string> GetDirectoryRecursive(string subPath)

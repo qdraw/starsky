@@ -238,7 +238,7 @@ namespace starskytest.Helpers
 			Assert.AreEqual("/nonExist",selectFile3.ParentDirectory);
 
 			// check if files are moved
-			var values = istorage.GetAllFilesInDirectory("/").ToList();
+			var values = istorage.GetAllFilesInDirectory("/nonExist").ToList();
 			Assert.AreEqual("/nonExist/test5.jpg", values.FirstOrDefault(p => p == "/nonExist/test5.jpg"));
 			
 			
@@ -262,6 +262,16 @@ namespace starskytest.Helpers
 			RemoveFoldersAndFilesInDatabase();
 
 
+		}
+
+		[TestMethod]
+		public void RenameFsTest_FakeIStorage_UnderstandTest()
+		{
+			// used to test the GetAllFilesInDirectory() fake class
+			var initFolderList =  new List<string> {"/", "/test/subfolder", "/test", "/otherfolder" };
+			var initFileList = new List<string> { "/test/test.jpg", "/test/subfolder/t.jpg", "/test/subfolder/child.jpg" };
+			var istorage = new FakeIStorage(initFolderList,initFileList).GetAllFilesInDirectory("/test").ToList();
+			Assert.AreEqual(1,istorage.Count);
 		}
 
 	}
