@@ -129,38 +129,38 @@ namespace starskycore.Helpers
 					// 3. move child files
 					// 4. remove old folder
 					
-					// Move Child folders
+					// Store Child folders
 					var directChildFolders = new List<string>();
 					directChildFolders.AddRange(_iStorage.GetDirectoryRecursive(inputFileSubPath));
 
+					// Store direct files
+					var directChildItems = new List<string>();
+					directChildItems.AddRange(_iStorage.GetAllFilesInDirectory(inputFileSubPath));
+					
 					foreach ( var inputChildFolder in directChildFolders )
 					{
 						// First FileSys
 						var outputChildItem = inputChildFolder.Replace(inputFileSubPath, toFileSubPath);
 						_iStorage.FolderMove(inputChildFolder,outputChildItem);
-						
-						// update db
-						_query.RemoveItem(_query.SingleItem(inputChildFolder).FileIndexItem);
-						_sync.SyncFiles(outputChildItem,false);
 					}
-
-					// Move direct files
-					var directChildItems = new List<string>();
-					directChildItems.AddRange(_iStorage.GetAllFilesInDirectory(inputFileSubPath));
 
 					foreach ( var inputChildItem in directChildItems )
 					{
 						// First FileSys
 						var outputChildItem = inputChildItem.Replace(inputFileSubPath, toFileSubPath);
 						_iStorage.FileMove(inputChildItem,outputChildItem);
-						
-						// update db
-						_query.RemoveItem(_query.SingleItem(inputChildItem).FileIndexItem);
-						_sync.SyncFiles(outputChildItem);
 					}
 					
+					// Replace all Recursive items in Query
+					// Does only replace in existing database items
+					fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
+					// Rename child items
+					fileIndexItems.ForEach(p => 
+						p.ParentDirectory = p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath)
+					);
+					
 					// remove parent folder
-					_query.RemoveItem(_query.SingleItem(inputFileSubPath).FileIndexItem);
+					//_query.RemoveItem(_query.SingleItem(inputFileSubPath).FileIndexItem);
 					
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File) 

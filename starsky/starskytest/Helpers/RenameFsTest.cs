@@ -249,9 +249,27 @@ namespace starskytest.Helpers
 		public void RenameFsTest_mergeTwoFolders()
 		{
 			CreateFoldersAndFilesInDatabase();
+			
+			var existSubFolder = _query.AddItem(new FileIndexItem
+			{
+				FileName = "subfolder",
+				ParentDirectory = _folder1Exist.FilePath,
+				IsDirectory = true,
+				FileHash = "InjectedAsExistSubFolder"
+			});
+			
+			var existSubFolderChildJpg = _query.AddItem(new FileIndexItem
+			{
+				FileName = "child.jpg",
+				ParentDirectory = _folder1Exist.FilePath + "/subfolder",
+				FileHash = "InjectedAsExistSubFolderChildJpg"
+			});
+			
 
-			var initFolderList =  new List<string> { "/", _folder1Exist.FilePath + "/subfolder", _folder1Exist.FilePath, _folderExist.FilePath };
-			var initFileList = new List<string> { _fileInExist.FilePath, _folder1Exist.FilePath + "/subfolder/child.jpg" };
+			var initFolderList =  new List<string> { "/", _folder1Exist.FilePath + "/subfolder", _folder1Exist.FilePath,
+				_folderExist.FilePath };
+			var initFileList = new List<string> { _fileInExist.FilePath, _folder1Exist.FilePath + "/subfolder/child.jpg",
+				_folder1Exist.FilePath + "/subfolder/not_synced_item.jpg" };
 			var istorage = new FakeIStorage(initFolderList,initFileList);
 			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename("/exist", "/folder1", true);
 			
@@ -271,7 +289,12 @@ namespace starskytest.Helpers
 			// Now check if FakeDb is changed
 			var all2 = _query.GetAllRecursive();
 
-			
+			Assert.AreEqual("/folder1/file.jpg",all2.FirstOrDefault(p => p.FileName == "file.jpg").FilePath);
+			Assert.AreEqual("/folder1/subfolder",all2.FirstOrDefault(p => p.FileName == "subfolder").FilePath);
+			Assert.AreEqual("/folder1/subfolder/child.jpg",all2.FirstOrDefault(p => p.FileName == "child.jpg").FilePath);
+
+			_query.RemoveItem(existSubFolder);
+			_query.RemoveItem(existSubFolderChildJpg);
 
 			RemoveFoldersAndFilesInDatabase();
 		}
