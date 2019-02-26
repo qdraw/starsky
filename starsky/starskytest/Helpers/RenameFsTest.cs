@@ -309,5 +309,11 @@ namespace starskytest.Helpers
 			Assert.AreEqual(1,istorage.Count);
 		}
 
+		[TestMethod]
+		public void RenameFsTest_MergeToLowerPath()
+		{
+			
+		}
+
 	}
 }
