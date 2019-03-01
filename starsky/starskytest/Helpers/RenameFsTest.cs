@@ -85,30 +85,7 @@ namespace starskytest.Helpers
 			Assert.AreEqual(renameFs.FirstOrDefault().Status,FileIndexItem.ExifStatus.NotFoundNotInIndex);
 		}
 		
-		[TestMethod]
-		public void RenameFsTest_MoveFileToSameFolder_Items()
-		{
-			// remove file if already exist; we are not testing duplicate support here
-			if ( File.Exists(Path.Combine(_newImage.BasePath, "test2.jpg")) )
-			{
-				File.Delete(Path.Combine(_newImage.BasePath, "test2.jpg"));
-			}
-			
-			var renameFs = new RenameFs(_appSettings, _query,_sync,_iStorage).Rename(_newImage.DbPath, "/test2.jpg");
-			
-			// query database
-			var all = _query.GetAllRecursive();
-			Assert.AreEqual(all.FirstOrDefault(p => p.FileName == "test2.jpg").FileName, "test2.jpg");
 
-			// use cached view
-			var singleItem = _query.SingleItem("/test2.jpg");
-			Assert.AreEqual("test2.jpg",singleItem.FileIndexItem.FileName);			
-			
-			File.Delete(Path.Combine(_newImage.BasePath, "test2.jpg"));
-
-			Assert.AreEqual(1,renameFs.Count);
-		}
-		
 		[TestMethod]
 		public void RenameFsTest_MoveFileToExistFolder_Items()
 		{
@@ -223,7 +200,33 @@ namespace starskytest.Helpers
 		}
 
 		[TestMethod]
-		public void RenameFsTest_ToNonExistFolder_Items()
+		public void RenameFsTest_FakeIStorage_RenameOneFile()
+		{
+			// RenameFsTest_MoveFileToSameFolder_Items
+			
+			CreateFoldersAndFilesInDatabase();
+
+			var iStorage = new FakeIStorage(new List<string>{_folderExist.FilePath},new List<string>{_fileInExist.FilePath});
+			
+			var renameFs = new RenameFs(_appSettings, _query,_sync,iStorage).Rename( _fileInExist.FilePath, _folderExist.FilePath+ "/test2.jpg");
+			
+			// query database
+			var all = _query.GetAllRecursive();
+			Assert.AreEqual("test2.jpg", all.FirstOrDefault(p => p.FileName == "test2.jpg")?.FileName );
+
+			// old item is not in db
+			Assert.AreEqual(null, all.FirstOrDefault(p => p.FileName == "test.jpg")?.FileName);
+
+			// use cached view
+			var singleItem = _query.SingleItem( _folderExist.FilePath+ "/test2.jpg");
+			Assert.AreEqual("test2.jpg",singleItem.FileIndexItem.FileName);			
+
+			Assert.AreEqual(1,renameFs.Count);
+			RemoveFoldersAndFilesInDatabase();
+		}
+
+		[TestMethod]
+		public void RenameFsTest_FakeIStorage_ToNonExistFolder_Items()
 		{
 			CreateFoldersAndFilesInDatabase();
 
@@ -246,7 +249,7 @@ namespace starskytest.Helpers
 		}
 		
 		[TestMethod]
-		public void RenameFsTest_mergeTwoFolders()
+		public void RenameFsTest_FakeIStorage_mergeTwoFolders()
 		{
 			CreateFoldersAndFilesInDatabase();
 			
