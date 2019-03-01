@@ -1,6 +1,8 @@
-# version 0.1.4 - tbd
+# version 0.1.4 - 2019-03-01
 - fix issue where login fails results in a error 500
-[x] check http push headers
+- http push headers update (add /api/info to push on detailview)
+- Initial release of the `sync/rename` api (not implemented in the front-end)
+- Mark FilesHelper as deprecated, use IStorage now
 
 # version 0.1.3 - 2019-02-13
 - fix issues on exporting
