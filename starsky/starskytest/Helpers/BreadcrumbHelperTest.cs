@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Attributes;
 using starskycore.Attributes;
 using starskycore.Services;
 
-namespace starskytests.Helpers
+namespace starskytest.Helpers
 {
 	[TestClass]
 	public class BreadcrumbHelperTest

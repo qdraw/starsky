@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskywebhtmlcli.Services;
 
-namespace starskytests.starskyWebHtmlCli.Services
+namespace starskytest.starskyWebHtmlCli.Services
 {
     [TestClass]
     public class ParseRazorTest

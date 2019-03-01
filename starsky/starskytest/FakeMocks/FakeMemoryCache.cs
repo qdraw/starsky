@@ -3,9 +3,9 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starskycore.Models;
 using starskycore.ViewModels;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
-namespace starskytests.FakeMocks
+namespace starskytest.FakeMocks
 {
     public class FakeMemoryCache : IMemoryCache
     {

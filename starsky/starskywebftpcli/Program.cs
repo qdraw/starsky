@@ -39,7 +39,7 @@ namespace starskywebftpcli
 			}
             
 			// check if inputPath is valid
-			if(Files.IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
+			if(FilesHelper.IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
 				Console.WriteLine("Please add a valid folder: " + inputPath);
 			
 			// check if settings is valid

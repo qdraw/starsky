@@ -8,9 +8,9 @@ using starskycore.Helpers;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
-namespace starskytests.Services
+namespace starskytest.Services
 {
     [TestClass]
     public class ThumbnailTest
@@ -196,7 +196,7 @@ namespace starskytests.Services
             var newImage = new CreateAnImage();
 
             var thumb = new Thumbnail(_appSettings, null).ResizeThumbnailToStream(newImage.FullFilePath, 1, 1, 75, true,
-                Files.ImageFormat.jpg);
+	            ExtensionRolesHelper.ImageFormat.jpg);
             Assert.AreEqual(true,thumb.CanRead);
         }
         
@@ -206,7 +206,7 @@ namespace starskytests.Services
             var newImage = new CreateAnImage();
 
             var thumb = new Thumbnail(_appSettings, null).ResizeThumbnailToStream(newImage.FullFilePath, 1, 1, 75, false,
-                Files.ImageFormat.png);
+	            ExtensionRolesHelper.ImageFormat.png);
             Assert.AreEqual(true,thumb.CanRead);
         }
 

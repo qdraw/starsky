@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -12,23 +11,35 @@ namespace starskycore.Helpers
 		private readonly AppSettings _appSettings;
 		private readonly IQuery _query;
 		private readonly ISync _sync;
+	    private IStorage _iStorage;
 
-		public RenameFs(AppSettings appSettings, IQuery query, ISync isync)
+	    public RenameFs(AppSettings appSettings, IQuery query, ISync iSync, IStorage iStorage)
 		{
 			_query = query;
 			_appSettings = appSettings;
-			_sync = isync;
+			_sync = iSync;
+			_iStorage = iStorage;
 		}
 
 		/// <summary>Move or rename files and update the database</summary>
 		/// <param name="f">subpath to file or folder</param>
 		/// <param name="to">subpath location to move</param>
 		/// <param name="collections">true = copy files with the same name</param>
-		/// <param name="addDirectoryIfNotExist">true = create an directory if an parent directory is missing</param>
 		public List<FileIndexItem> Rename(string f, string to, bool collections = true)
 		{
+			// -- param name="addDirectoryIfNotExist">true = create an directory if an parent directory is missing</param>
+
 			var inputFileSubPaths = PathHelper.SplitInputFilePaths(f);
 			var toFileSubPaths = PathHelper.SplitInputFilePaths(to);
+			
+			// check for the same input
+			if ( inputFileSubPaths.SequenceEqual(toFileSubPaths) )
+			{
+				return new List<FileIndexItem>{new FileIndexItem
+				{
+					Status = FileIndexItem.ExifStatus.OperationNotSupported
+				}};
+			}
 			
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
@@ -42,14 +53,18 @@ namespace starskycore.Helpers
 				if (detailView == null) inputFileSubPaths[i] = null;
 			}
 			
-			// To check if the file has a unique name (in database)
+			// To check if the file/or folder has a unique name (in database)
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{
 				toFileSubPaths[i] = PathHelper.RemoveLatestSlash(toFileSubPaths[i]);
 				toFileSubPaths[i] = PathHelper.PrefixDbSlash(toFileSubPaths[i]);
 
 				var detailView = _query.SingleItem(toFileSubPaths[i], null, collections, false);
-				if (detailView != null) toFileSubPaths[i] = null;
+				
+				// skip for files
+				if ( detailView == null) continue;
+				// dirs are mergable
+				if ( detailView.FileIndexItem.IsDirectory == false ) toFileSubPaths[i] = null;
 			}
 			
 			// Remove null from list
@@ -72,26 +87,24 @@ namespace starskycore.Helpers
 			{
 				// options
 				// 1. file to direct folder file.jpg /folder/ (not covered)
-				// 2. folder to folder
-				// 3. folder to existing folder > merge (not convered)
-				// 4. file to file
-				// 5. file to existing file > skip
-				
+				// 2. folder to folder (not covered)
+				// 3. folder with child folders to folder (not covered)
+				// 4. folder merge parent folder with current folder (not covered), /test/ => /test/test/
+				// 5. folder to existing folder > merge (not covered)
+				// 6. file to file
+				// 7. file to existing file > skip
+
 				var inputFileSubPath = inputFileSubPaths[i];
 				var toFileSubPath = toFileSubPaths[i];
 				
 				var detailView = _query.SingleItem(inputFileSubPath, null, collections, false);
 				
-				var toFileFullPath = _appSettings.DatabasePathToFilePath(toFileSubPath,false);
-				var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputFileSubPath);
-
 				// The To location must be
-
-				var toFileFullPathStatus = Files.IsFolderOrFile(toFileFullPath);
-				var inputFileFullPathStatus = Files.IsFolderOrFile(inputFileFullPath);
+				var inputFileFolderStatus = _iStorage.IsFolderOrFile(inputFileSubPath);
+				var toFileFolderStatus = _iStorage.IsFolderOrFile(toFileSubPath);
 
 				// we dont overwrite files
-				if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFullPathStatus != FolderOrFileModel.FolderOrFileTypeList.Deleted)
+				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFolderStatus != FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
 					fileIndexResultsList.Add(new FileIndexItem
 					{
@@ -102,11 +115,11 @@ namespace starskycore.Helpers
 
 				
 				var fileIndexItems = new List<FileIndexItem>();
-				if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
-				     && toFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
+				     && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
-					//move
-					Directory.Move(inputFileFullPath,toFileFullPath);
+					//move entire folder
+					_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
 					
 					fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
 					// Rename child items
@@ -115,12 +128,53 @@ namespace starskycore.Helpers
 					);
 
 				}
-				else if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
-					&& toFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
+				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
+					&& toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
+					// 1. Get Direct child files
+					// 2. Get Direct folder and child folders
+					// 3. move child files
+					// 4. remove old folder
 					
+					// Store Child folders
+					var directChildFolders = new List<string>();
+					directChildFolders.AddRange(_iStorage.GetDirectoryRecursive(inputFileSubPath));
+
+					// Store direct files
+					var directChildItems = new List<string>();
+					directChildItems.AddRange(_iStorage.GetAllFilesInDirectory(inputFileSubPath));
+					
+					// rename child folders
+					foreach ( var inputChildFolder in directChildFolders )
+					{
+						// First FileSys (with folders)
+						var outputChildItem = inputChildFolder.Replace(inputFileSubPath, toFileSubPath);
+						_iStorage.FolderMove(inputChildFolder,outputChildItem);
+					}
+
+					// rename child files
+					foreach ( var inputChildItem in directChildItems )
+					{
+						// First FileSys
+						var outputChildItem = inputChildItem.Replace(inputFileSubPath, toFileSubPath);
+						_iStorage.FileMove(inputChildItem,outputChildItem);
+					}
+					
+					// Replace all Recursive items in Query
+					// Does only replace in existing database items
+					fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
+					// Rename child items
+					fileIndexItems.ForEach(p => 
+						p.ParentDirectory = p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath)
+					);
+					
+					//todo: remove folder from disk  
+					// remove duplicate item from list
+					_query.GetObjectByFilePath(inputFileSubPath);
+					//_query.RemoveItem(_query.SingleItem(inputFileSubPath).FileIndexItem);
+
 				}
-				else if ( inputFileFullPathStatus == FolderOrFileModel.FolderOrFileTypeList.File) 
+				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File) 
 				{
 					
 					var parentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
@@ -128,20 +182,16 @@ namespace starskycore.Helpers
 					// clear cache
 					_query.RemoveCacheParentItem(parentSubFolder);
 					
-					var parentDirFullPath = _appSettings.DatabasePathToFilePath(parentSubFolder);
-					if ( !Directory.Exists(parentDirFullPath))
+					// add folder to file system
+					if ( !_iStorage.ExistFolder(parentSubFolder) )
 					{
-						//var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
-						
-						// todo: add folder feature in the future
-						throw new DirectoryNotFoundException($"toFiledirFullPath {parentDirFullPath} does not exist");
-
+						_iStorage.CreateDirectory(parentSubFolder);
 					}
 					
 					// Check if the parent folder exist in the database
 					_sync.AddSubPathFolder(parentSubFolder);
-
-					File.Move(inputFileFullPath,toFileFullPath);
+					
+					_iStorage.FileMove(inputFileSubPath,toFileSubPath);
 				}
 				
 				// Rename parent item >eg the folder or file

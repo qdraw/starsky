@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starskycore.Helpers;
@@ -47,10 +48,17 @@ namespace starsky.Controllers
             
             if (singleItem?.IsDirectory == false)
             {
-                AddHttp2SingleFile(SingleItemThumbnailHttpUrl(singleItem));
+	            var fileHashWithExt = singleItem.FileIndexItem.FileHash;
+	            if ( singleItem.FileIndexItem.ImageFormat == ExtensionRolesHelper.ImageFormat.jpg )
+		            fileHashWithExt += ".jpg";
+	            var fileHashThumbnailHttpUrl = SingleItemThumbnailHttpUrl(fileHashWithExt);
+
+	            var infoHttpUrl = SingleItemInfoHttpUrl(singleItem.FileIndexItem.FilePath,collections);
+
+                AddHttp2SingleFile(fileHashThumbnailHttpUrl,infoHttpUrl);
                 
                 if (json) return Json(singleItem);
-                return View("SingleItem", singleItem);
+                return View("DetailView", singleItem);
             }
             
             // (singleItem.IsDirectory) or not found
@@ -95,26 +103,36 @@ namespace starsky.Controllers
         }
 
         // For returning the Url of the webpage, this has a dependency
-        public string SingleItemThumbnailHttpUrl(DetailView singleItem)
+        public string SingleItemThumbnailHttpUrl(string fileHash)
         {
             // when using a unit test appSettings will be null
             if (_appsettings == null || !_appsettings.AddHttp2Optimizations) return string.Empty;
-            return Url.Action("Thumbnail", "Api", new {f = singleItem.FileIndexItem.FileHash});
+            return Url.Action("Thumbnail", "Api", new {f = fileHash});
         }
+	    
+	    // For returning the Url of the webpage, this has a dependency
+	    public string SingleItemInfoHttpUrl(string infoSubPath, bool collections)
+	    {
+		    // when using a unit test appSettings will be null
+		    if (_appsettings == null || !_appsettings.AddHttp2Optimizations) return string.Empty;
+		    
+		    var infoApiBase = Url.Action("Info", "Api", new {f = infoSubPath, collections});
+		    return HttpUtility.UrlDecode(infoApiBase);
+	    }
 
         // Feature to Add Http2 push to the response headers
-        public void AddHttp2SingleFile(string singleItemWebUrl)
+        public void AddHttp2SingleFile(string fileHashThumbnailHttpUrl, string infoHttpUrl)
         {
             if (_appsettings == null || !_appsettings.AddHttp2Optimizations) return;
-            
-            // HTTP2 push
+
+	        // HTTP2 push
             Response.Headers["Link"] =
-                "<" + singleItemWebUrl  +
+                "<" + fileHashThumbnailHttpUrl  +
                 "?issingleitem=True>; rel=preload; as=image"; 
             Response.Headers["Link"] += ",";
             Response.Headers["Link"] += "<"
-                                        + singleItemWebUrl +
-                                        ">; rel=preload; as=fetch";
+                                        + infoHttpUrl +
+                                        ">; rel=preload; crossorigin=\"use-credentials\"; as=fetch";
         }
 
 	    // Error pages should be always visible

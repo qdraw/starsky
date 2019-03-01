@@ -5,10 +5,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
-using starskytests.FakeCreateAn;
-using starskytests.FakeMocks;
+using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
-namespace starskytests.Services
+namespace starskytest.Services
 {
     [TestClass]
     public class ReadMeta_ReadMetaBoth_Cache_Test
@@ -49,13 +49,13 @@ namespace starskytests.Services
             var createAnImage = new CreateAnImage();
             var appsettings = new AppSettings {StorageFolder = createAnImage.BasePath};
             // fakely add item to cache
-            new ReadMeta(appsettings, _fakeCache).ReadExifAndXmpFromFile(createAnImage.FullFilePath,Files.ImageFormat.jpg);
+            new ReadMeta(appsettings, _fakeCache).ReadExifAndXmpFromFile(createAnImage.FullFilePath,ExtensionRolesHelper.ImageFormat.jpg);
         }
 
         [TestMethod]
         public void ReadMeta_ReadMetaBothTest_FakeReadEntry()
         {
-            Assert.AreEqual("test",new ReadMeta(null, _fakeCache).ReadExifAndXmpFromFile("test",Files.ImageFormat.jpg).Tags);
+            Assert.AreEqual("test",new ReadMeta(null, _fakeCache).ReadExifAndXmpFromFile("test",ExtensionRolesHelper.ImageFormat.jpg).Tags);
         }
     }
 }

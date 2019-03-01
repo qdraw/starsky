@@ -22,14 +22,16 @@ namespace starsky.Controllers
         private readonly AppSettings _appSettings;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
 	    private readonly HttpClientHelper _httpClientHelper;
+	    private readonly IStorage _iStorage; //<= not yet implemented
 
 	    public ImportController(IImport import, AppSettings appSettings, 
-            IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue, HttpClientHelper httpClientHelper)
+            IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue, HttpClientHelper httpClientHelper, IStorage iStorage)
         {
             _appSettings = appSettings;
             _import = import;
             _bgTaskQueue = queue;
 	        _httpClientHelper = httpClientHelper;
+	        _iStorage = iStorage; //<= not yet implemented
         }
 
         [HttpGet]
@@ -89,7 +91,7 @@ namespace starsky.Controllers
             _bgTaskQueue.QueueBackgroundWorkItem(async token =>
             {    
                 var importedFiles = _import.Import(tempImportPaths, importSettings);
-                Files.DeleteFile(tempImportPaths);
+                FilesHelper.DeleteFile(tempImportPaths);
                 foreach (var file in importedFiles)
                 {
                     Console.WriteLine(file);
@@ -122,9 +124,9 @@ namespace starsky.Controllers
 			    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(tempImportPaths[i]);
 			    var thumbToUpperCase = Path.Combine(_appSettings.ThumbnailTempFolder, fileNameWithoutExtension.ToUpperInvariant() + ".jpg");
 			    if ( fileNameWithoutExtension.Length != 26 || 
-			         Files.IsFolderOrFile(thumbToUpperCase) == FolderOrFileModel.FolderOrFileTypeList.File)
+			         FilesHelper.IsFolderOrFile(thumbToUpperCase) == FolderOrFileModel.FolderOrFileTypeList.File)
 			    {
-				    Files.DeleteFile(tempImportPaths[i]);
+				    FilesHelper.DeleteFile(tempImportPaths[i]);
 				    tempImportPaths.Remove(tempImportPaths[i]);
 				    continue;
 			    }
@@ -164,7 +166,7 @@ namespace starsky.Controllers
             if (!isDownloaded) return NotFound("'file url' not found or domain not allowed " + fileUrl);
 
 	        var importedFiles = _import.Import(new List<string>{tempImportFullPath}, importSettings);
-            Files.DeleteFile(tempImportFullPath);
+            FilesHelper.DeleteFile(tempImportFullPath);
             if(importedFiles.Count == 0) Response.StatusCode = 206;
             return Json(importedFiles);
         }

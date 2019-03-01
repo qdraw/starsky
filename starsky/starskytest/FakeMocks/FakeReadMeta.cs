@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
-namespace starskytests.FakeMocks
+namespace starskytest.FakeMocks
 {
     public class FakeReadMeta : IReadMeta
     {
-        public FileIndexItem ReadExifAndXmpFromFile(string singleFilePath, Files.ImageFormat imageFormat)
+        public FileIndexItem ReadExifAndXmpFromFile(string singleFilePath, ExtensionRolesHelper.ImageFormat imageFormat)
         {
             return new FileIndexItem{Status = FileIndexItem.ExifStatus.Ok, Tags = "test", FileHash = "test", FileName = "t", ParentDirectory = "d"};
         }

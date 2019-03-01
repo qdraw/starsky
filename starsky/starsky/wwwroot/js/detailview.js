@@ -7,9 +7,18 @@ var thumbnailApiBase = document.getElementById("js-settings").getAttribute("data
 updateApiBase = updateApiBase.replace("&amp;", "&");
 // fix for changing + in urls
 updateApiBase = updateApiBase.replace(/\+/ig, "%2B");
-infoApiBase = infoApiBase.replace("&amp;", "&") + "&collections=false";
+infoApiBase = infoApiBase.replace("&amp;", "&");
 infoApiBase = infoApiBase.replace(/\+/ig, "%2B");
 thumbnailApiBase = thumbnailApiBase.replace("&amp;", "&");
+
+
+// know when collections are enabled
+if (window.location.search.indexOf("collections=false") >= 0) {
+    infoApiBase += "&collections=False"; // start with capital for http2 push
+}
+else {
+    infoApiBase += "&collections=True"; // start with capital for http2 push
+}
 
 
 // Used in <div class="add-colorclass">
@@ -113,16 +122,12 @@ function updateDeletedKeywordElement(data) {
 if (document.querySelectorAll("#js-keywords-update").length === 1 && 
     document.querySelectorAll("#js-captionabstract-update").length === 1) 
 {
-   loadJSON(infoApiBase,
-       function(data) {
-           updateCollectionsSwitch(data);
-           updateDeletedKeywordElement(data[0]);
-           updateColorClassButtons(data[0].colorClass);
-           updateCaptionAbstractFromInput(data[0]);
-           updateObjectNameFromInput(data[0]);
-           hidePreloader();
-       },
-       function (xhr) {
+
+    fetch(infoApiBase,{
+        mode: "cors",
+        credentials: "include"
+    })
+        .then(function(xhr) {
             if (xhr.status === 404 || xhr.status === 203) {
                 if (document.querySelectorAll(".sidebar").length >= 0) {
                     // toggleSideMenu(true);
@@ -136,12 +141,49 @@ if (document.querySelectorAll("#js-keywords-update").length === 1 &&
                     if (document.querySelectorAll(".js-filterinfo").length >= 0) {
                         document.querySelector(".js-filterinfo").innerHTML += "<span class='red'>Alleen lezen</span>"
                     }
-                }                
+                }
             }
-            console.error(xhr); 
-       },
-       "GET"
-   );
+            return xhr.json();
+        })
+        .then(function(data) {
+            updateCollectionsSwitch(data);
+            updateDeletedKeywordElement(data[0]);
+            updateColorClassButtons(data[0].colorClass);
+            updateCaptionAbstractFromInput(data[0]);
+            updateObjectNameFromInput(data[0]);
+            hidePreloader();
+        });
+    
+    
+   // loadJSON(infoApiBase,
+   //     function(data) {
+   //         updateCollectionsSwitch(data);
+   //         updateDeletedKeywordElement(data[0]);
+   //         updateColorClassButtons(data[0].colorClass);
+   //         updateCaptionAbstractFromInput(data[0]);
+   //         updateObjectNameFromInput(data[0]);
+   //         hidePreloader();
+   //     },
+   //     function (xhr) {
+   //          if (xhr.status === 404 || xhr.status === 203) {
+   //              if (document.querySelectorAll(".sidebar").length >= 0) {
+   //                  // toggleSideMenu(true);
+   //                  document.querySelector(".sidebar").classList.add("readonly");
+   //                  document.querySelector("#js-keywords-update .btn").classList.add("disabled");
+   //
+   //                  hidePreloader();
+   //                  if (document.querySelectorAll(".head").length >= 0) {
+   //                      document.querySelector(".head").classList.add("head-gray");
+   //                  }
+   //                  if (document.querySelectorAll(".js-filterinfo").length >= 0) {
+   //                      document.querySelector(".js-filterinfo").innerHTML += "<span class='red'>Alleen lezen</span>"
+   //                  }
+   //              }                
+   //          }
+   //          console.error(xhr); 
+   //     },
+   //     "GET"
+   // );
 }
 
 function addDeleteTag() {
@@ -578,7 +620,13 @@ function queryRotate(queryItem) {
     addUnloadWarning();
     showPreloader();
 
-    var url = updateApiBase + "&rotateClock=" + queryItem;
+    // know when collections are enabled
+    var isCollections = true;
+    if (window.location.search.indexOf("collections=false") >= 0) {
+        isCollections = false;
+    }
+
+    var url = updateApiBase + "&rotateClock=" + queryItem + "&collections=" + isCollections;
     loadJSON(url,
         function (data) {
             setTimeout(function(){

@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
-using starskytests.FakeCreateAn;
-using starskytests.FakeMocks;
+using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
-namespace starskytests.Helpers
+namespace starskytest.Helpers
 {
 	[TestClass]
 	public class HttpClientHelperTest
@@ -75,8 +72,8 @@ namespace starskytests.Helpers
 			
 			Assert.AreEqual(true,output);
 			
-			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,Files.IsFolderOrFile(path));
-			Files.DeleteFile(path);
+			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,FilesHelper.IsFolderOrFile(path));
+			FilesHelper.DeleteFile(path);
 		}
 
 

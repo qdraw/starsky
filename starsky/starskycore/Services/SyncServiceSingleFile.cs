@@ -28,15 +28,15 @@ namespace starskycore.Services
         {
             var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
             
-            if (Files.IsFolderOrFile(fullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File) // false == file
+            if (FilesHelper.IsFolderOrFile(fullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File) // false == file
             {
                 // File check if jpg #not corrupt
-                var imageFormat = Files.GetImageFormat(fullFilePath);
-                if(imageFormat == Files.ImageFormat.unknown) return SingleFileSuccess.Fail;
+                var imageFormat = ExtensionRolesHelper.GetImageFormat(fullFilePath);
+                if(imageFormat == ExtensionRolesHelper.ImageFormat.unknown) return SingleFileSuccess.Fail;
                 
                 // The same check as in GetFilesInDirectory
                 var extension = Path.GetExtension(fullFilePath).ToLower().Replace(".",string.Empty);
-                if (!Files.ExtensionSyncSupportedList.Contains(extension)) return SingleFileSuccess.Fail;
+                if (!ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(extension)) return SingleFileSuccess.Fail;
                  
                 // single file -- update or adding
                 var dbListWithOneFile = new List<FileIndexItem>();

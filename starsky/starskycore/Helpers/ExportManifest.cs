@@ -52,7 +52,7 @@ namespace starskycore.Helpers
 			};
 			var output = JsonConvert.SerializeObject(manifest);
 			var outputLocation = Path.Combine(_appSettings.StorageFolder, ManifestName);
-			Files.DeleteFile(outputLocation);
+			FilesHelper.DeleteFile(outputLocation);
 			_plainTextFileHelper.WriteFile(outputLocation, output);
 		}
 
@@ -65,7 +65,7 @@ namespace starskycore.Helpers
 		{
 			var fullSettingsPath = Path.Combine(_appSettings.StorageFolder, ManifestName);
 
-			if ( Files.IsFolderOrFile(fullSettingsPath) !=
+			if ( FilesHelper.IsFolderOrFile(fullSettingsPath) !=
 			     FolderOrFileModel.FolderOrFileTypeList.File ) return false;
 			
 			var input =_plainTextFileHelper.ReadFile(fullSettingsPath);

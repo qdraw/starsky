@@ -82,7 +82,7 @@ namespace starskywebftpcli.Services
 					case TemplateContentType.Jpeg when publishProfile.Copy:
 					{
 						var folderPath = Path.Combine(_appSettings.StorageFolder,publishProfile.Folder);
-						copyThisFiles.AddRange(Files.GetFilesInDirectory(folderPath));
+						copyThisFiles.AddRange(FilesHelper.GetFilesInDirectory(folderPath));
 						break;
 					}
 					case TemplateContentType.Html when publishProfile.Copy:

@@ -39,4 +39,13 @@
     <ItemGroup>
         <DotNetCliToolReference Include="dotnet-reportgenerator-cli" Version="4.0.4" />
     </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="coverage.report\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Remove="coverage.report\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="coverage.report\**" />
+    </ItemGroup>
 </Project>

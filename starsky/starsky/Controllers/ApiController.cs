@@ -46,6 +46,7 @@ namespace starsky.Controllers
 	    /// <response code="200">returns a list of items from the database</response>
 	    /// <response code="404">subpath not found in the database</response>
 		[HttpGet("/api")]
+		[Produces("application/json")]
 		[ProducesResponseType(typeof(ArchiveViewModel),200)]
 		[ProducesResponseType(404)]
 		public IActionResult Index(
@@ -67,6 +68,7 @@ namespace starsky.Controllers
 	    [HttpHead("/api/env")]
         [HttpGet("/api/env")]
         [IgnoreAntiforgeryToken]
+	    [Produces("application/json")]
 	    [ProducesResponseType(typeof(AppSettings),200)]
         [AllowAnonymous] /// <=================================
         public IActionResult Env()
@@ -121,7 +123,7 @@ namespace starsky.Controllers
                 toUpdateFilePath           
             };
             var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
-            if (Files.IsFolderOrFile(thumbnailFullPath) == FolderOrFileModel.FolderOrFileTypeList.File)
+            if (FilesHelper.IsFolderOrFile(thumbnailFullPath) == FolderOrFileModel.FolderOrFileTypeList.File)
             {
                 exifUpdateFilePaths.Add(thumbnailFullPath);
             }
@@ -146,6 +148,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(List<FileIndexItem>),200)]
 		[ProducesResponseType(typeof(List<FileIndexItem>),404)]
 		[HttpPost("/api/update")]
+        [Produces("application/json")]
 		public IActionResult Update(FileIndexItem inputModel, string f, bool append, bool collections = true,  int rotateClock = 0)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
@@ -178,7 +181,7 @@ namespace starsky.Controllers
 					
 					// Check if extension is supported for ExtensionExifToolSupportedList
 					// Not all files are able to write with exiftool
-					if(!Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
+					if(!ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
 					{
 						collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
 						fileIndexResultsList.Add(detailView.FileIndexItem);
@@ -290,6 +293,7 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(List<FileIndexItem>),200)]
         [ProducesResponseType(typeof(List<FileIndexItem>),404)]
         [ProducesResponseType(typeof(List<FileIndexItem>),203)]
+        [Produces("application/json")]
         public IActionResult Info(string f, bool collections = true)
         {
             var inputFilePaths = PathHelper.SplitInputFilePaths(f);
@@ -302,7 +306,7 @@ namespace starsky.Controllers
                 
                 // Check if extension is supported for ExtensionExifToolSupportedList
                 // Not all files are able to write with exiftool
-                if(detailView != null && !Files.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
+                if(detailView != null && !ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
                 {
                     detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
                     fileIndexResultsList.Add(detailView.FileIndexItem);
@@ -405,7 +409,7 @@ namespace starsky.Controllers
                 collectionFullDeletePaths.Add(singleFilePath.Replace(Path.GetExtension(singleFilePath), ".XMP"));
 
                 // Remove the file from disk
-                Files.DeleteFile(collectionFullDeletePaths);
+                FilesHelper.DeleteFile(collectionFullDeletePaths);
             }
             
             // When all items are not found
@@ -454,11 +458,11 @@ namespace starsky.Controllers
 	        
             var thumbPath = _appSettings.ThumbnailTempFolder + f + ".jpg";
 
-            if (Files.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
+            if (FilesHelper.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
             {
                 // When a file is corrupt show error + Delete
-                var imageFormat = Files.GetImageFormat(thumbPath);
-                if (imageFormat == Files.ImageFormat.unknown)
+                var imageFormat = ExtensionRolesHelper.GetImageFormat(thumbPath);
+                if (imageFormat == ExtensionRolesHelper.ImageFormat.unknown)
                 {
                     if (!retryThumbnail)
                     {
@@ -471,7 +475,7 @@ namespace starsky.Controllers
                 
                 // When using the api to check using javascript
                 // use the cached version of imageFormat, otherwise you have to check if it deleted
-                if (imageFormat != Files.ImageFormat.unknown)
+                if (imageFormat != ExtensionRolesHelper.ImageFormat.unknown)
                 {
                     if (json) return Json("OK");
 
@@ -508,7 +512,7 @@ namespace starsky.Controllers
                     return Json("Thumbnail is not ready yet");
                 }
                 
-                if (Files.IsExtensionThumbnailSupported(sourceFullPath))
+                if (ExtensionRolesHelper.IsExtensionThumbnailSupported(sourceFullPath))
                 {
                     FileStream fs1 = System.IO.File.OpenRead(sourceFullPath);
                     var fileExtensionWithoutDot = Path.GetExtension(sourceFullPath).Remove(0, 1).ToLower();
@@ -577,14 +581,14 @@ namespace starsky.Controllers
             var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
 
             // If File is corrupt delete it
-            if (Files.GetImageFormat(thumbPath) == Files.ImageFormat.unknown)
+            if (ExtensionRolesHelper.GetImageFormat(thumbPath) == ExtensionRolesHelper.ImageFormat.unknown)
             {
                 System.IO.File.Delete(thumbPath);
             }
 
-            if (Files.GetImageFormat(thumbPath) == Files.ImageFormat.notfound)
+            if (ExtensionRolesHelper.GetImageFormat(thumbPath) == ExtensionRolesHelper.ImageFormat.notfound)
             {
-                if (Files.IsFolderOrFile(_appSettings.ThumbnailTempFolder) ==
+                if (FilesHelper.IsFolderOrFile(_appSettings.ThumbnailTempFolder) ==
                     FolderOrFileModel.FolderOrFileTypeList.Deleted)
                 {
                     return NotFound("Thumb base folder " + _appSettings.ThumbnailTempFolder + " not found");

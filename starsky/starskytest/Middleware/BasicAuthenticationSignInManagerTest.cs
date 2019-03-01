@@ -10,7 +10,7 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Services;
 
-namespace starskytests.Middleware
+namespace starskytest.Middleware
 {
 
     [TestClass]

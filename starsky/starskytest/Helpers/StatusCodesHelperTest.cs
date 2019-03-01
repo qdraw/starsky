@@ -4,7 +4,7 @@ using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.ViewModels;
 
-namespace starskytests.Helpers
+namespace starskytest.Helpers
 {
 	[TestClass]
 	public class StatusCodesHelperTest

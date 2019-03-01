@@ -18,9 +18,9 @@ namespace starskycore.Services
             subPath = _query.SubPathSlashRemove(subPath);
 
             var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
-            Console.WriteLine(Files.IsFolderOrFile(fullFilePath));
+            Console.WriteLine(FilesHelper.IsFolderOrFile(fullFilePath));
 
-            if (Files.IsFolderOrFile(fullFilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+            if (FilesHelper.IsFolderOrFile(fullFilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
             {
                 Console.WriteLine(">>deleted");
                 if(_appSettings.Verbose) Console.WriteLine(subPath);

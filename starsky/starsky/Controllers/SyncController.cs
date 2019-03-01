@@ -17,13 +17,15 @@ namespace starsky.Controllers
         private readonly IBackgroundTaskQueue _bgTaskQueue;
         private readonly IQuery _query;
         private readonly AppSettings _appSettings;
+	    private readonly IStorage _iStorage;
 
-        public SyncController(ISync sync, IBackgroundTaskQueue queue, IQuery query, AppSettings appSettings)
+        public SyncController(ISync sync, IBackgroundTaskQueue queue, IQuery query, AppSettings appSettings, IStorage iStorage)
         {
             _sync = sync;
             _bgTaskQueue = queue;
             _query = query;
             _appSettings = appSettings;
+	        _iStorage = iStorage;
         }
         
         /// <summary>
@@ -44,7 +46,7 @@ namespace starsky.Controllers
 	            subPath = PathHelper.RemoveLatestSlash(subPath);
 	            if ( subPath == string.Empty ) subPath = "/";
 
-	            var folderStatus = Files.IsFolderOrFile(_appSettings.DatabasePathToFilePath(subPath));
+	            var folderStatus = FilesHelper.IsFolderOrFile(_appSettings.DatabasePathToFilePath(subPath));
 				if ( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
 					var syncItem = new SyncViewModel
@@ -56,8 +58,8 @@ namespace starsky.Controllers
 				}
 				else if( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
-					var filesAndFoldersInDirectoryArray = Files.GetFilesInDirectory(_appSettings.DatabasePathToFilePath(subPath)).ToList();
-					filesAndFoldersInDirectoryArray.AddRange(Files.GetAllFilesDirectory(_appSettings.DatabasePathToFilePath(subPath)));
+					var filesAndFoldersInDirectoryArray = FilesHelper.GetFilesInDirectory(_appSettings.DatabasePathToFilePath(subPath)).ToList();
+					filesAndFoldersInDirectoryArray.AddRange(FilesHelper.GetDirectoryRecursive(_appSettings.DatabasePathToFilePath(subPath)));
 					
 					foreach ( var fileInDirectory in filesAndFoldersInDirectoryArray )
 					{
@@ -97,11 +99,11 @@ namespace starsky.Controllers
 	    /// <param name="f"></param>
 	    /// <param name="to"></param>
 	    /// <param name="collections"></param>
-	    /// <returns></returns>
+	    /// <returns>list of details form changed files</returns>
 		[HttpPost("/sync/rename")]
 		public IActionResult Rename(string f, string to, bool collections = true)
-		{
-			return Json(new RenameFs(_appSettings,_query,_sync).Rename(f,to,collections));
+	    {
+			return Json(new RenameFs(_appSettings,_query,_sync,_iStorage).Rename(f,to,collections));
 		}
 
     }

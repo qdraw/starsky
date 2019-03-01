@@ -1,11 +1,9 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Attributes;
 using starskycore.Attributes;
 using starskycore.Helpers;
-using starskycore.Services;
 
-namespace starskytests.Services
+namespace starskytest.Services
  {
      [TestClass]
      public class ConfigReadTest

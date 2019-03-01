@@ -131,7 +131,7 @@ namespace starskywebhtmlcli.Services
             profileFolderStringBuilder.Append(profile.Folder);
             var toCreateSubfolder = _appSettings.DatabasePathToFilePath(profileFolderStringBuilder.ToString(), false);
 
-            if (Files.IsFolderOrFile(toCreateSubfolder) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+            if (FilesHelper.IsFolderOrFile(toCreateSubfolder) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
             {
                 Directory.CreateDirectory(toCreateSubfolder);
             }

@@ -29,7 +29,7 @@ namespace starskycore.Services
                 var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
                 base64ImageArray[i] = "data:image/png;base64," + Base64Helper
                                           .ToBase64(new Thumbnail(null).ResizeThumbnailToStream(fullFilePath, 4, 0, 0, true,
-                                              Files.ImageFormat.png));
+		                                      ExtensionRolesHelper.ImageFormat.png));
             }
             return base64ImageArray;
         }
@@ -38,14 +38,14 @@ namespace starskycore.Services
         {
             // Thumbnail check service
             
-            var subFoldersFullPathList =  Files.GetAllFilesDirectory(parentFolderFullPath).ToList();
+            var subFoldersFullPathList =  FilesHelper.GetDirectoryRecursive(parentFolderFullPath).ToList();
             
             // Add Subpath to scan the root folder for thumbs       
             subFoldersFullPathList.Add(parentFolderFullPath);
             
             foreach (var singleFolderFullPath in subFoldersFullPathList)
             {
-                string[] filesInDirectoryFullPath = Files.GetFilesInDirectory(singleFolderFullPath);
+                string[] filesInDirectoryFullPath = FilesHelper.GetFilesInDirectory(singleFolderFullPath);
                 var localFileListFileHash = FileHash.GetHashCode(filesInDirectoryFullPath);
 
                 for (int i = 0; i < filesInDirectoryFullPath.Length; i++)

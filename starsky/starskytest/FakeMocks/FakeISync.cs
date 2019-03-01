@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
 using starskycore.Interfaces;
 
-namespace starskytests.FakeMocks
+namespace starskytest.FakeMocks
 {
 	class FakeISync : ISync
 	{

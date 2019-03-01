@@ -192,6 +192,7 @@ namespace starskycore.Models
             NotFoundNotInIndex,
             NotFoundSourceMissing,
             NotFoundIsDir,
+	        OperationNotSupported,
             DirReadOnly,
             ReadOnly,
             Unauthorized,
@@ -399,7 +400,7 @@ namespace starskycore.Models
 						propertyInfo.PropertyType == typeof(bool) || 
 						propertyInfo.PropertyType == typeof(string) || 
 						propertyInfo.PropertyType == typeof(DateTime) ||
-						propertyInfo.PropertyType == typeof(Files.ImageFormat)
+						propertyInfo.PropertyType == typeof(ExtensionRolesHelper.ImageFormat)
                     ) && propertyInfo.CanRead)
                 {
                     fileIndexPropList.Add(propertyInfo.Name);
@@ -677,7 +678,7 @@ namespace starskycore.Models
 		/// The image format as enum item
 		/// </value>
 		[JsonConverter(typeof(StringEnumConverter))]
-        public Files.ImageFormat ImageFormat { get; set; }
+        public ExtensionRolesHelper.ImageFormat ImageFormat { get; set; }
 
 		/// <summary>
 		/// To show location of files with the same Filename without extension

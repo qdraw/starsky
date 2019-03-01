@@ -135,9 +135,9 @@ namespace starsky.Controllers
 				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
 
 				// when there is .xmp sidecar file
-				if ( !thumbnail && Files.IsXmpSidecarRequired(sourceFile) && Files.ExistFile(Files.GetXmpSidecarFile(sourceFile)))
+				if ( !thumbnail && ExtensionRolesHelper.IsXmpSidecarRequired(sourceFile) && FilesHelper.ExistFile(ExtensionRolesHelper.GetXmpSidecarFile(sourceFile)))
 				{
-					filePaths.Add(Files.GetXmpSidecarFile(sourceFile));
+					filePaths.Add(ExtensionRolesHelper.GetXmpSidecarFile(sourceFile));
 				}
 
 			}
@@ -189,11 +189,11 @@ namespace starsky.Controllers
 			var sourceFullPath = Path.Join(_appSettings.TempFolder,f) + ".zip";
 			var doneFileFullPath = Path.Join(_appSettings.TempFolder,f) + ".done";
 
-			if ( Files.IsFolderOrFile(sourceFullPath) ==
+			if ( FilesHelper.IsFolderOrFile(sourceFullPath) ==
 			     FolderOrFileModel.FolderOrFileTypeList.Deleted ) return NotFound("Path is not found");
 
 			// Read a single file to be sure that writing is ready
-			if ( Files.IsFolderOrFile(doneFileFullPath) ==
+			if ( FilesHelper.IsFolderOrFile(doneFileFullPath) ==
 			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				Response.StatusCode = 206;

@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Attributes;
 using starskycore.Attributes;
 using starskysynccli;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
-namespace starskytests.starskySyncCli
+namespace starskytest.starskySyncCli
 {
     [TestClass]
     public class StarskyCliTest

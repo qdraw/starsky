@@ -9,10 +9,10 @@ using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
 using starskycore.ViewModels;
-using starskytests.FakeMocks;
+using starskytest.FakeMocks;
 using Query = starskycore.Services.Query;
 
-namespace starskytests.Services
+namespace starskytest.Services
 {
     [TestClass]
     public class SearchServiceTest
@@ -48,7 +48,7 @@ namespace starskytests.Services
                     Tags = "schiphol, airplane, station",
                     Description = "schiphol",
                     Title = "Schiphol",
-					ImageFormat = Files.ImageFormat.jpg
+					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
                 });
             }
 

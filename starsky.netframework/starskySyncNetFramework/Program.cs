@@ -56,7 +56,7 @@ namespace starskySyncNetFramework
             {
 
                 var fullPath = appSettings.DatabasePathToFilePath(subpath);
-                var isFolderOrFile = Files.IsFolderOrFile(fullPath);
+                var isFolderOrFile = FilesHelper.IsFolderOrFile(fullPath);
 
                 if (appSettings.Verbose) Console.WriteLine(isFolderOrFile);
                 var exiftool = startupHelper.ExifTool();

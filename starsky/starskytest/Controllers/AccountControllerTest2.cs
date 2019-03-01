@@ -11,15 +11,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starskycore.Data;
 using starsky.ViewModels.Account;
+using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Models.Account;
 using starskycore.Services;
-using starskytests.FakeMocks;
+using starskytest.FakeMocks;
 
-namespace starskytests.Controllers
+namespace starskytest.Controllers
 {
     [TestClass]
     public class AccountControllerTest2
@@ -93,7 +93,7 @@ namespace starskytests.Controllers
             };
             
             // Try login > result login false
-            await controller.LoginPost(login);
+            await controller.Login(login);
             // Test login
             Assert.AreEqual(false,httpContext.User.Identity.IsAuthenticated);
             
@@ -114,7 +114,7 @@ namespace starskytests.Controllers
             await controller.Register(newAccount,true,string.Empty);
             
             // Try login again > now it must be succesfull
-            await controller.LoginPost(login);
+            await controller.Login(login);
             // Test login
             Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
             

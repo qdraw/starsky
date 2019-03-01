@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 
-namespace starskytests.FakeMocks
+namespace starskytest.FakeMocks
 {
     // Used by FakeMemoryCache
     public class FakeICacheEntry : ICacheEntry

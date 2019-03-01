@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
 
-namespace starskytests.Helpers
+namespace starskytest.Helpers
 {
     [TestClass]
     public class FileIndexCompareHelperTest

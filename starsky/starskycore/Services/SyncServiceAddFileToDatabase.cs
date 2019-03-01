@@ -35,7 +35,7 @@ namespace starskycore.Services
                     var singleFilePath = _appSettings.DatabasePathToFilePath(singleFolderDbStyle);
 
                     // Check the headers of a file to match a type
-                    var imageFormat = Files.GetImageFormat(singleFilePath);
+                    var imageFormat = ExtensionRolesHelper.GetImageFormat(singleFilePath);
                     
                     // Read data from file
                     var databaseItem = _readMeta.ReadExifAndXmpFromFile(singleFilePath,imageFormat);

@@ -6,10 +6,9 @@ using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
 using starskyGeoCli.Services;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
-
-namespace starskytests.starskygeosync.Services
+namespace starskytest.starskygeosync.Services
 {
     [TestClass]
     public class GeoIndexGpxTest
@@ -33,7 +32,7 @@ namespace starskytests.starskygeosync.Services
                 new FileIndexItem
                 {
                     FileName = createAnGpx.FileName,
-                    ImageFormat = Files.ImageFormat.gpx
+                    ImageFormat = ExtensionRolesHelper.ImageFormat.gpx
                 }
             };
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using starskycore.Interfaces;
 using starskycore.Models;
 
-namespace starskytests.Models
+namespace starskytest.Models
 {
     public class FakeExiftool : IExiftool
     {

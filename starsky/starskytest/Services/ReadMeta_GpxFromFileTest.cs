@@ -2,13 +2,11 @@ using System;
 using System.Globalization;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Helpers;
 using starskycore.Helpers;
 using starskycore.Services;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
-
-namespace starskytests.Services
+namespace starskytest.Services
 {
     [TestClass]
     public class ReadGpxFromFileTest
@@ -33,7 +31,7 @@ namespace starskytests.Services
             Assert.AreEqual(expectDateTime,returnItem.DateTime);
             
             // remove afterwards
-            Files.DeleteFile(gpxFullSourcePath);
+            FilesHelper.DeleteFile(gpxFullSourcePath);
         }
         
         [TestMethod]
@@ -54,7 +52,7 @@ namespace starskytests.Services
             Assert.AreEqual(7.263,returnItem.FirstOrDefault().Altitude,0.001);
 
             // remove afterwards
-            Files.DeleteFile(gpxFullSourcePath);
+            FilesHelper.DeleteFile(gpxFullSourcePath);
         }
 
     }

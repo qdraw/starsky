@@ -72,7 +72,7 @@ namespace starskyGeoCli.Services
                     && (string.IsNullOrEmpty(metaFileItem.LocationCity) 
                         || string.IsNullOrEmpty(metaFileItem.LocationState) 
                         || string.IsNullOrEmpty(metaFileItem.LocationCountry)))
-                    && Files.IsExtensionExifToolSupported(metaFileItem.FileName)
+                    && ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)
                     ).ToList();
         }
         

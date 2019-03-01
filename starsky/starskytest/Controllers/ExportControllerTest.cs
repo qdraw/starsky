@@ -12,19 +12,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Data;
-using starskytests.FakeMocks;
-using starskytests.Models;
 using starsky.Controllers;
+using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
+using starskytest.Models;
 using Query = starskycore.Services.Query;
 
-namespace starskytests.Controllers
+namespace starskytest.Controllers
 {
 	[TestClass]
 	public class ExportControllerTest
@@ -147,7 +147,7 @@ namespace starskytests.Controllers
 			// to avoid skip of adding zip
 			var zipFilesList = Directory.GetFiles(_createAnImage.BasePath, "*.*", SearchOption.AllDirectories)
 				.Where(p => ".zip" == Path.GetExtension(p) );
-			Files.DeleteFile(zipFilesList);
+			FilesHelper.DeleteFile(zipFilesList);
 			
 			
 			backgroundQueue.QueueBackgroundWorkItem(async token =>
@@ -259,9 +259,9 @@ namespace starskytests.Controllers
 			Assert.AreEqual(true, filePaths.FirstOrDefault().Contains(item.FileName));
 
 			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,
-				Files.IsFolderOrFile(filePaths.FirstOrDefault()));
+				FilesHelper.IsFolderOrFile(filePaths.FirstOrDefault()));
 
-			Files.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
+			FilesHelper.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
 		}
 
 		[TestMethod]

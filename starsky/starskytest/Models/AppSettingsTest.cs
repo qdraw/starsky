@@ -7,10 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Middleware;
 using starskycore.Models;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 using TimeZoneConverter;
 
-namespace starskytests.Models
+namespace starskytest.Models
 {
 	[TestClass]
 	public class AppSettingsProviderTest

@@ -9,9 +9,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
 using starskycore.Middleware;
 using starskycore.Models;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
-namespace starskytests.Helpers
+namespace starskytest.Helpers
 {
     [TestClass]
     public class FileStreamingHelperTest

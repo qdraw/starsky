@@ -45,7 +45,7 @@ namespace starskyGeoCli
             {
                 inputPath = new ArgsHelper(appSettings).GetPathFormArgs(args,false);
 	            // overwrite if folder not exist
-	            if ( Files.IsFolderOrFile(inputPath) !=
+	            if ( FilesHelper.IsFolderOrFile(inputPath) !=
 	                 FolderOrFileModel.FolderOrFileTypeList.Folder ) inputPath = null;
 
             }
@@ -69,7 +69,7 @@ namespace starskyGeoCli
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;
 
-            var filesInDirectory = Files.GetFilesInDirectory(inputPath);
+            var filesInDirectory = FilesHelper.GetFilesInDirectory(inputPath);
             var metaFilesInDirectory = startupHelper.ReadMeta()
                 .ReadExifAndXmpFromFileAddFilePathHash(filesInDirectory);
             // FilePath is used as full

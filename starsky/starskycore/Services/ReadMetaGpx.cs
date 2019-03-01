@@ -15,7 +15,7 @@ namespace starskycore.Services
 	    
         public FileIndexItem ReadGpxFromFileReturnAfterFirstField(string fullFilePath)
         {
-            if (Files.IsFolderOrFile(fullFilePath) != FolderOrFileModel.FolderOrFileTypeList.File) 
+            if (FilesHelper.IsFolderOrFile(fullFilePath) != FolderOrFileModel.FolderOrFileTypeList.File) 
                 return new FileIndexItem();
 
 	        var readGpxFile = ReadGpxFile(fullFilePath, null, 1);

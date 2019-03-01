@@ -13,12 +13,12 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using starskytests.FakeCreateAn;
-using starskytests.Models;
+using starskytest.FakeCreateAn;
+using starskytest.Models;
 using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
-namespace starskytests.Services
+namespace starskytest.Services
 {
     [TestClass]
     public class ImportServiceTest
@@ -77,8 +77,9 @@ namespace starskytests.Services
             _exiftool = serviceProvider.GetRequiredService<IExiftool>();
             
             _readmeta = new ReadMeta(_appSettings);
+	        var iStorage = new StorageFilesystem(_appSettings);
 
-            _isync = new SyncService(_context, _query,_appSettings,_readmeta);
+            _isync = new SyncService(_context, _query,_appSettings,_readmeta,iStorage);
             
             //   _context = context
             //   _isync = isync
@@ -219,9 +220,9 @@ namespace starskytests.Services
                 importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
             ));
             
-            Files.DeleteDirectory(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
+            FilesHelper.DeleteDirectory(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
-            Files.DeleteDirectory(existDir);
+            FilesHelper.DeleteDirectory(existDir);
 	        RemoveFromQuery();
 
         }
@@ -448,7 +449,7 @@ namespace starskytests.Services
                 importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
             ));
             // delete exist dir
-            Files.DeleteDirectory(existDirectoryFullPath);
+            FilesHelper.DeleteDirectory(existDirectoryFullPath);
 	        RemoveFromQuery();
 
         }
@@ -505,7 +506,7 @@ namespace starskytests.Services
             ));
             
             // existFolderPath >= remove it afterwards
-            Files.DeleteDirectory(existFolderPath);
+            FilesHelper.DeleteDirectory(existFolderPath);
 	        RemoveFromQuery();
 
         }
@@ -598,7 +599,7 @@ namespace starskytests.Services
             var result = _import.Import(createAnImageNoExif.FullFilePathWithDate,importSettings);
             
             Assert.AreEqual(string.Empty,result.FirstOrDefault());
-            Files.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
+            FilesHelper.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
 	        RemoveFromQuery();
 
         }
@@ -638,7 +639,7 @@ namespace starskytests.Services
 		    var subpath = PathHelper.RemovePrefixDbSlash(result.FirstOrDefault());
 
 		    var path = Path.Combine(createAnImage.BasePath, subpath);
-		    Files.DeleteFile(path);
+		    FilesHelper.DeleteFile(path);
 	    }
 
     }

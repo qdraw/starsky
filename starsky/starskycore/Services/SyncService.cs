@@ -14,18 +14,21 @@ namespace starskycore.Services
         private readonly IQuery _query;
         private readonly AppSettings _appSettings;
         private readonly IReadMeta _readMeta;
+	    private readonly IStorage _iStorage;
 
-		/// <summary>Do a sync of files uning a subpath</summary>
-		/// <param name="context">Database Entity Framework context</param>
-		/// <param name="query">Starsky IQuery interface to do calls on the database</param>
-		/// <param name="appSettings">Settings of the application</param>
-		/// <param name="readMeta">To read exif and xmp</param>
-		public SyncService(ApplicationDbContext context, IQuery query, AppSettings appSettings, IReadMeta readMeta)
+	    /// <summary>Do a sync of files uning a subpath</summary>
+	    /// <param name="context">Database Entity Framework context</param>
+	    /// <param name="query">Starsky IQuery interface to do calls on the database</param>
+	    /// <param name="appSettings">Settings of the application</param>
+	    /// <param name="readMeta">To read exif and xmp</param>
+	    /// <param name="iStorage">Filesystem or other abstraction</param>
+	    public SyncService(ApplicationDbContext context, IQuery query, AppSettings appSettings, IReadMeta readMeta, IStorage iStorage)
         {
             _context = context;
             _query = query;
             _appSettings = appSettings;
             _readMeta = readMeta;
+	        _iStorage = iStorage;
         }
         
         /* Base feature to sync files and folders
@@ -39,7 +42,6 @@ namespace starskycore.Services
         And the subpath can ben 2018 to crawl only files inside this folder
         */
         
-//        [ExcludeFromCoverage]
         public IEnumerable<string> SyncFiles(string subPath, bool recursive = true)
         {
             // Prefix / for database
@@ -60,9 +62,7 @@ namespace starskycore.Services
 
             // Handle folder Get a list of all local folders and rename it to database style.
             // Db Style is a relative path
-            var localSubFolderDbStyle = _appSettings.RenameListItemsToDbStyle(
-                Files.GetAllFilesDirectory(_appSettings.DatabasePathToFilePath(subPath)).ToList()
-            );
+	        var localSubFolderDbStyle = _iStorage.GetDirectoryRecursive(subPath).ToList();
 
             // Query the database to get a list of the folder items
             var databaseSubFolderList = _query.GetAllFolders();
@@ -90,10 +90,9 @@ namespace starskycore.Services
 				Console.Write(singleFolder + "  ");
 				
 				var databaseFileList = _query.GetAllFiles(singleFolder);
-				var singleFolderFullPath = _appSettings.DatabasePathToFilePath(singleFolder);
+				var localFarrayFilesDbStyle = _iStorage.GetAllFilesInDirectory(singleFolder)
+					.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
 				
-				var localFarrayFilesFullFilePathStyle = Files.GetFilesInDirectory(singleFolderFullPath).ToList();
-				var localFarrayFilesDbStyle = _appSettings.RenameListItemsToDbStyle(localFarrayFilesFullFilePathStyle); 
 				databaseFileList = RemoveDuplicate(databaseFileList);
 				databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);
 				CheckMd5Hash(localFarrayFilesDbStyle, databaseFileList);

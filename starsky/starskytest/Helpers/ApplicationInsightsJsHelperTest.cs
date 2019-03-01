@@ -13,7 +13,7 @@ using Microsoft.Extensions.WebEncoders.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 
-namespace starskytests.Helpers
+namespace starskytest.Helpers
 {
 
 	

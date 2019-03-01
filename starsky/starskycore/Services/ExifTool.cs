@@ -143,12 +143,12 @@ namespace starskycore.Services
         {
             // Add parentes around this file
 
-            var xmpFullFilePath = Files.GetXmpSidecarFileWhenRequired(
+            var xmpFullFilePath = ExtensionRolesHelper.GetXmpSidecarFileWhenRequired(
                 fullFilePath,
                 _appSettings.ExifToolXmpPrefix);
                 
             // only overwrite when a xmp file exist
-            if (Files.IsFolderOrFile(xmpFullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
+            if (FilesHelper.IsFolderOrFile(xmpFullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
                 fullFilePath = xmpFullFilePath;
                 
             // When change also update class 'Update'

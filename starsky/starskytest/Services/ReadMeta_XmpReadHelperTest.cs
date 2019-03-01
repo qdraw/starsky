@@ -4,9 +4,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
-namespace starskytests.Services
+namespace starskytest.Services
 {
     [TestClass]
     public class XmpReadHelperTest
@@ -76,7 +76,7 @@ namespace starskytests.Services
         {
             var createAnImage = new CreateAnImage();
             var xmpPath = createAnImage.FullFilePath.Replace("jpg", "xmp");
-	        Files.DeleteFile(xmpPath);
+	        FilesHelper.DeleteFile(xmpPath);
 
             var fakeRawPath = createAnImage.FullFilePath.Replace("jpg", "dng");
             new PlainTextFileHelper().WriteFile(xmpPath,Input);
@@ -87,7 +87,7 @@ namespace starskytests.Services
             var readXmp = new ReadMeta(appsettings).XmpGetSidecarFile(databaseItem, fakeRawPath);
             Assert.AreEqual("The object name",readXmp.Title);
             // clean afterwards
-            Files.DeleteFile(xmpPath);
+            FilesHelper.DeleteFile(xmpPath);
         }
 
     }

@@ -3,7 +3,7 @@ using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskywebhtmlcli;
 
-namespace starskytests.starskyWebHtmlCli
+namespace starskytest.starskyWebHtmlCli
 {
     [TestClass]
     public class starskyWebHtmlCli_IntegrationTest

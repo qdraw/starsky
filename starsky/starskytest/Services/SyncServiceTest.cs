@@ -8,16 +8,16 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Data;
 using starskycore.Attributes;
+using starskycore.Data;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
-namespace starskytests.Services
+namespace starskytest.Services
 {
     [TestClass]
     public class SyncServiceTest
@@ -39,10 +39,11 @@ namespace starskytests.Services
             var dict = new Dictionary<string, string>
             {
                 { "App:StorageFolder", newImage.BasePath },
-                { "App:Verbose", "true" }
+                { "App:Verbose", "true" },
+	            { "App:DatabaseType", "InMemoryDatabase"}
             };
             // Build Fake database
-            var dbBuilder = new     DbContextOptionsBuilder<ApplicationDbContext>();
+            var dbBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
             dbBuilder.UseInMemoryDatabase("test");
             var options = dbBuilder.Options;
             var context = new ApplicationDbContext(options);
@@ -62,7 +63,8 @@ namespace starskytests.Services
             
             var readmeta = new ReadMeta(_appSettings);
             // Activate SyncService
-            _syncservice = new SyncService(context, _query,_appSettings,readmeta);
+	        var iStorage = new StorageFilesystem(_appSettings);
+            _syncservice = new SyncService(context, _query,_appSettings,readmeta,iStorage);
         }
 
         private readonly Query _query;
@@ -334,6 +336,7 @@ namespace starskytests.Services
             // Add Image
             _query.AddItem(new FileIndexItem
             {
+	            Id = 2023,
                 FileName = "test.jpg",
                 ParentDirectory = "/deletedFolder",
                 FileHash = "SyncServiceOrphanFolderTestDeletedFile",
@@ -349,6 +352,14 @@ namespace starskytests.Services
             
             Assert.AreEqual(null, _query.GetSubPathByHash("SyncServiceOrphanFolderTestDeletedFile"));
    
+	        //all
+	        // Cleanup the database
+	        var all = _query.GetAllRecursive("/");
+	        foreach ( var itemInAll in all )
+	        {
+		        Console.WriteLine($"...itemInAll: {itemInAll.FilePath} {itemInAll.Id}");
+		        _query.RemoveItem(itemInAll);
+	        }
         }
         
         [TestMethod]
@@ -367,13 +378,14 @@ namespace starskytests.Services
 	        var all = _query.GetAllRecursive("/");
 	        foreach ( var itemInAll in all )
 	        {
+		        Console.WriteLine($"itemInAll: {itemInAll.FilePath} {itemInAll.Id}");
 		        _query.RemoveItem(itemInAll);
 	        }
 	        
             var createAnImage = new CreateAnImage();
             var testjpg = new FileIndexItem
             {
-                Id = 300,
+                Id = 301,
                 FileName = createAnImage.DbPath.Replace("/",string.Empty),
                 ParentDirectory = "/",
                 IsDirectory = false
@@ -381,7 +393,7 @@ namespace starskytests.Services
 
             _query.AddItem(testjpg);
             testjpg.Id++;
-            _query.AddItem(testjpg);
+	        _query.AddItem(testjpg);
 
             // this query is before syncing the api
             var inputWithoutSync = _query.GetAllFiles("/");
@@ -438,10 +450,10 @@ namespace starskytests.Services
 
             var outputWithSync = _query.GetAllRecursive();
 
-            var outputWithSync1 = _query.GetAllRecursive().Where(
-                p => p.FilePath == "/exist" 
-                     && !p.FilePath.Contains("/exist/")
-            ).ToList();
+//            var outputWithSync1 = _query.GetAllRecursive().Where(
+//                p => p.FilePath == "/exist" 
+//                     && !p.FilePath.Contains("/exist/")
+//            ).ToList();
 
             // test if the sync is working
             Assert.AreEqual(1,outputWithSync.Count(

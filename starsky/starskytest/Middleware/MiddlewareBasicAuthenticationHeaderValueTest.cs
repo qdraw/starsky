@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Middleware;
 
-namespace starskytests.Middleware
+namespace starskytest.Middleware
 {
     [TestClass]
     public class MiddlewareBasicAuthenticationHeaderValueTest

@@ -6,8 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starskycore.Models;
 
-
-namespace starskytests.Controllers
+namespace starskytest.Controllers
 {
 	[TestClass]
 	public class RedirectControllerTest

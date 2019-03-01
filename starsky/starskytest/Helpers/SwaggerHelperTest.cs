@@ -4,9 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,9 +13,9 @@ using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Middleware;
 using starskycore.Models;
-using starskytests.Controllers;
+using starskytest.Controllers;
 
-namespace starskytests.Helpers
+namespace starskytest.Helpers
 {
 	[TestClass]
 	public class SwaggerHelperTest
@@ -61,7 +59,7 @@ namespace starskytests.Helpers
 		{
 			var swaggerFilePath = Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
 
-			Files.DeleteFile(swaggerFilePath);
+			FilesHelper.DeleteFile(swaggerFilePath);
 			
 			var host = WebHost.CreateDefaultBuilder()
 				.UseUrls("http://localhost:5051")
@@ -90,7 +88,7 @@ namespace starskytests.Helpers
 			await host.StartAsync();
 			await host.StopAsync();
 
-			Assert.AreEqual(true,Files.ExistFile(swaggerFilePath));
+			Assert.AreEqual(true,FilesHelper.ExistFile(swaggerFilePath));
 
 			var swaggerFileContent = new PlainTextFileHelper().ReadFile(swaggerFilePath);
 				

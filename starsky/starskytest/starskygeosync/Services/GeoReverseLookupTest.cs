@@ -5,9 +5,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskyGeoCli.Services;
-using starskytests.FakeCreateAn;
+using starskytest.FakeCreateAn;
 
-namespace starskytests.starskygeosync.Services
+namespace starskytest.starskygeosync.Services
 {
     [TestClass]
     public class GeoReverseLookupTest

@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
 using starskycore.Helpers;
 
-namespace starskytests.FakeMocks
+namespace starskytest.FakeMocks
 {
 	public class FakePlainTextFileHelper : PlainTextFileHelper
 	{

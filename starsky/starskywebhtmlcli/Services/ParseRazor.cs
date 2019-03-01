@@ -36,12 +36,12 @@ namespace starskywebhtmlcli.Services
         
         public async Task<string> EmbeddedViews(string viewName, object viewModel)
         {
-            if (Files.IsFolderOrFile(GetViewFullpath(viewName)) 
+            if (FilesHelper.IsFolderOrFile(GetViewFullpath(viewName)) 
                 == FolderOrFileModel.FolderOrFileTypeList.Deleted)
             {
                 Console.WriteLine("View Not Exist " + GetViewFullpath(viewName));
             }
-            else if (Files.IsFolderOrFile(GetViewFullpath(viewName)) 
+            else if (FilesHelper.IsFolderOrFile(GetViewFullpath(viewName)) 
                      == FolderOrFileModel.FolderOrFileTypeList.File)
             {
                 return await 
