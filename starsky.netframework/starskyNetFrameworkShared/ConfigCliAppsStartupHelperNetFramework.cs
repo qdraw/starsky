@@ -97,7 +97,7 @@ namespace starskyNetFrameworkShared
             
             _readmeta = new ReadMeta(_appSettings);
             
-            _isync = new SyncService(context, query, _appSettings,_readmeta);
+            _isync = new SyncService(context, query, _appSettings,_readmeta, new StorageFilesystem(_appSettings));
             
             // TOC:
             //   _context = context
