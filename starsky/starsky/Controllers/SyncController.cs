@@ -99,11 +99,10 @@ namespace starsky.Controllers
 	    /// <param name="f"></param>
 	    /// <param name="to"></param>
 	    /// <param name="collections"></param>
-	    /// <returns></returns>
+	    /// <returns>list of details form changed files</returns>
 		[HttpPost("/sync/rename")]
 		public IActionResult Rename(string f, string to, bool collections = true)
 	    {
-		    return Json("Disabled");
 			return Json(new RenameFs(_appSettings,_query,_sync,_iStorage).Rename(f,to,collections));
 		}
 

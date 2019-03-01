@@ -271,6 +271,8 @@ namespace starskytest.Helpers
 			var initFileList = new List<string> { _fileInExist.FilePath, _folder1Exist.FilePath + "/subfolder/child.jpg",
 				_folder1Exist.FilePath + "/subfolder/not_synced_item.jpg" };
 			var istorage = new FakeIStorage(initFolderList,initFileList);
+			
+			// the call
 			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename("/exist", "/folder1", true);
 			
 			// First check if fakeDisk is changed
@@ -297,6 +299,18 @@ namespace starskytest.Helpers
 			_query.RemoveItem(existSubFolderChildJpg);
 
 			RemoveFoldersAndFilesInDatabase();
+		}
+
+		[TestMethod]
+		public void RenameFsTest_TheSameInput()
+		{
+			var initFolderList =  new List<string> {};
+			var initFileList = new List<string> {};
+			var istorage = new FakeIStorage(initFolderList,initFileList);
+			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename("/same", "/same");
+			Assert.AreEqual(1,renameFs.Count);
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,renameFs[0].Status);
+
 		}
 
 		[TestMethod]

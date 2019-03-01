@@ -192,6 +192,7 @@ namespace starskycore.Models
             NotFoundNotInIndex,
             NotFoundSourceMissing,
             NotFoundIsDir,
+	        OperationNotSupported,
             DirReadOnly,
             ReadOnly,
             Unauthorized,

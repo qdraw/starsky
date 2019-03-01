@@ -34,6 +34,15 @@ namespace starskycore.Helpers
 			var inputFileSubPaths = PathHelper.SplitInputFilePaths(f);
 			var toFileSubPaths = PathHelper.SplitInputFilePaths(to);
 			
+			// check for the same input
+			if ( inputFileSubPaths.SequenceEqual(toFileSubPaths) )
+			{
+				return new List<FileIndexItem>{new FileIndexItem
+				{
+					Status = FileIndexItem.ExifStatus.OperationNotSupported
+				}};
+			}
+			
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
 			
