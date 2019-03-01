@@ -266,7 +266,7 @@ namespace starskytest.Helpers
 			});
 			
 
-			var initFolderList =  new List<string> { "/", _folder1Exist.FilePath + "/subfolder", _folder1Exist.FilePath,
+			var initFolderList =  new List<string> { "/", _folderExist.FilePath + "/subfolder", _folder1Exist.FilePath,
 				_folderExist.FilePath };
 			var initFileList = new List<string> { _fileInExist.FilePath, _folder1Exist.FilePath + "/subfolder/child.jpg",
 				_folder1Exist.FilePath + "/subfolder/not_synced_item.jpg" };
@@ -321,6 +321,15 @@ namespace starskytest.Helpers
 			var initFileList = new List<string> { "/test/test.jpg", "/test/subfolder/t.jpg", "/test/subfolder/child.jpg" };
 			var istorage = new FakeIStorage(initFolderList,initFileList).GetAllFilesInDirectory("/test").ToList();
 			Assert.AreEqual(1,istorage.Count);
+		}
+
+		[TestMethod]
+		public void RenameFsTest_MoveAFolderIntoAFile()
+		{
+			CreateFoldersAndFilesInDatabase();
+			var istorage = new FakeIStorage();
+			var renameFs = new RenameFs(_appSettings, _query, _sync, istorage).Rename(_folderExist.FilePath, _fileInExist.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, renameFs[0].Status);
 		}
 
 		[TestMethod]

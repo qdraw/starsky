@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -55,7 +53,7 @@ namespace starskycore.Helpers
 				if (detailView == null) inputFileSubPaths[i] = null;
 			}
 			
-			// To check if the file has a unique name (in database)
+			// To check if the file/or folder has a unique name (in database)
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{
 				toFileSubPaths[i] = PathHelper.RemoveLatestSlash(toFileSubPaths[i]);
@@ -146,13 +144,15 @@ namespace starskycore.Helpers
 					var directChildItems = new List<string>();
 					directChildItems.AddRange(_iStorage.GetAllFilesInDirectory(inputFileSubPath));
 					
+					// rename child folders
 					foreach ( var inputChildFolder in directChildFolders )
 					{
-						// First FileSys
+						// First FileSys (with folders)
 						var outputChildItem = inputChildFolder.Replace(inputFileSubPath, toFileSubPath);
 						_iStorage.FolderMove(inputChildFolder,outputChildItem);
 					}
 
+					// rename child files
 					foreach ( var inputChildItem in directChildItems )
 					{
 						// First FileSys
