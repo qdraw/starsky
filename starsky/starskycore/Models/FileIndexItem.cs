@@ -167,6 +167,7 @@ namespace starskycore.Models
 		/// The tags.
 		/// </value>
 		/// <example>tag1, tag2</example>
+		[Column(TypeName = "VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_unicode_ci")]
 		public string Tags
         {
             get => _tags ?? string.Empty;
