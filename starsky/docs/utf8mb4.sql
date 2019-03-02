@@ -1,0 +1,11 @@
+# run seperatly
+ALTER TABLE Credentials CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+ALTER TABLE CredentialTypes CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+ALTER TABLE FileIndex CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+ALTER TABLE ImportIndex CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+ALTER TABLE Permissions CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+ALTER TABLE RolePermissions CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+ALTER TABLE Roles CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+ALTER TABLE UserRoles CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+ALTER TABLE Users CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+ALTER TABLE __EFMigrationsHistory CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
