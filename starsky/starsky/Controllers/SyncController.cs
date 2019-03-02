@@ -103,7 +103,7 @@ namespace starsky.Controllers
 		[HttpPost("/sync/rename")]
 		public IActionResult Rename(string f, string to, bool collections = true)
 	    {
-			return Json(new RenameFs(_appSettings,_query,_sync,_iStorage).Rename(f,to,collections));
+			return Json(new RenameFs(_query,_sync,_iStorage).Rename(f,to,collections));
 		}
 
     }
