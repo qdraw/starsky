@@ -161,11 +161,23 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// Add to list in model (&amp;&amp;|| operators) true=&amp;&amp; false=||
 	    /// </summary>
-	    /// <param name="andOrBool"></param>
+	    /// <param name="andOrChar"></param>
 	    /// <param name="relativeLocation"></param>
-	    public void SetAndOrOperator(bool andOrBool,int relativeLocation = 0)
+	    public void SetAndOrOperator(char andOrChar, int relativeLocation = 0)
 		{
 			if ( _searchOperatorOptions == null ) _searchOperatorOptions = new List<bool>();
+
+			bool andOrBool = andOrChar == '&';
+
+			if ( _searchOperatorOptions.Count == 0 && char.IsWhiteSpace(andOrChar))
+			{
+				andOrBool = true;
+			}
+			else if (char.IsWhiteSpace(andOrChar))
+			{
+				andOrBool = false;
+			}
+			
 			if ( relativeLocation == 0 )
 			{
 				_searchOperatorOptions.Add(andOrBool);

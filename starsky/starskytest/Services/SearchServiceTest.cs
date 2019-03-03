@@ -463,9 +463,10 @@ namespace starskytest.Services
 	    public void SearchService_thisORAndCombination()
 	    {
 		    InsertSearchData();
-		    var result = _search.Search("-FileName=lelystadcentrum2.jpg || -FileHash=lelystadcentrum2 && station",0,false);
+		    var result = _search.Search("-FileName=lelystadcentrum.jpg || -FileHash=lelystadcentrum2 && lelystad",0,false);
 			//  -FileHash=lelystadcentrum2 && station >= 1 item
 		    // -DateTime=lelystadcentrum2.jpg >= 1 item
+		    // the and applies to all previous items
 		    // station = duplicate in this example but triggers other results when using || instead of &&
 		    Assert.AreEqual(2,result.FileIndexItems.Count);
 

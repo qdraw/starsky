@@ -257,7 +257,7 @@ namespace starskycore.Services
 		                    ));
 							
 							// We have now an extra query, and this is always AND  
-							model.SetAndOrOperator(true,-2);
+							model.SetAndOrOperator('&',-2);
 							
 							continue;
 	                    }
@@ -537,6 +537,12 @@ namespace starskycore.Services
                 // Remove parenthesis
                 itemQuery = itemQuery.Replace("\"", string.Empty);
                 itemQuery = itemQuery.Replace("'", string.Empty);
+
+	            // Remove || / && at the end of the string
+	            // (\|\||\&\&)$
+	            string pattern = "(\\|\\||\\&\\&)$";
+				itemQuery = Regex.Replace(itemQuery, pattern, string.Empty);
+	            
                 model.SetAddSearchFor(itemQuery.Trim());
                 model.SetAddSearchInStringType(itemName);
             }
@@ -544,11 +550,11 @@ namespace starskycore.Services
         }
 
 	    /// <summary>
-	    /// ||[OR] = false, else = true 
+	    /// ||[OR] = |, else = &amp;, default = string.Emphy 
 	    /// </summary>
 	    /// <param name="item">searchquery</param>
 	    /// <returns>bool</returns>
-	    private bool AndOrRegex(string item)
+	    private char AndOrRegex(string item)
 	    {
 		    // (\|\||\&\&)$
 		    Regex rgx = new Regex(@"(\|\||\&\&)$", RegexOptions.IgnoreCase);
@@ -557,10 +563,11 @@ namespace starskycore.Services
 		    var lastStringValue = rgx.Match(item).Value;
 		    
 		    // set default
-		    if ( string.IsNullOrEmpty(lastStringValue) ) lastStringValue = "&&";
+		    if ( string.IsNullOrEmpty(lastStringValue) ) lastStringValue = string.Empty;
 
-		    if ( lastStringValue == "||" ) return false;
-		    return true;
+
+		    if ( lastStringValue == "||" ) return '|';
+		    return '&';
 	    }
 
 	    /// <summary>
