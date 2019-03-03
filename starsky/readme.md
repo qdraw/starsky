@@ -156,6 +156,7 @@ When using SQLite as databasetype without `SQLitePCLRaw.lib.e_sqlite3.linux` the
 
 To avoid the error: `System.IO.FileLoadException` `Microsoft.Extensions.Options, Version=2.0.2.0` the package `Microsoft.EntityFrameworkCore is installed
 
+> Tip: When using MariaDB or MySQL as database, make sure you use `utf8mb4` and as collate `utf8mb4_unicode_ci` to avoid encoding errors.
 
 ### Bash build and configuation scripts
 

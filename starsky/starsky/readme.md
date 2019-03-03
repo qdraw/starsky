@@ -66,7 +66,10 @@ You could use machine specific configuration files: appsettings.{machinename}.js
   }
 }
 ```
+
 > Note: When using a boolean in the json add quotes. Booleans without quotes are ignored
+
+> Tip: When using the `mysql`-setting, make sure the database uses `utf8mb4` and as collate `utf8mb4_unicode_ci` to avoid encoding errors.
 
 #### Appsettings Notes
 1.  Structure uses slash as directory separators for Linux and Windows
@@ -84,6 +87,7 @@ Starsky has a Json and Razorview restful API. Please read the documentation
 Swagger is an open-source software framework backed by a large ecosystem of tools that helps developers design, build, document, and consume RESTful Web services. There is an swagger definition. You could enable this by setting the following values:
 
 By default this feature is disabled, please use the `AddSwagger` definition in the AppSettings or use the following environment variable:
+
 ```
 app__AddSwagger=true
 ```
