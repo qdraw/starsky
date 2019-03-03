@@ -435,7 +435,7 @@ namespace starskytest.Services
 	    public void SearchService_thisORThisFileHashes()
 	    {
 		    InsertSearchData();
-		    var result = _search.Search("-FileHash=stationdeletedfile || -FileHash=lelystadcentrum",0,false);
+		    var result = _search.Search("-FileHash=stationdeletedfile || -FileHash=lelystadcentrum2",0,false);
 		    Assert.AreEqual(2,result.FileIndexItems.Count);
 	    }
 

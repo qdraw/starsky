@@ -177,6 +177,10 @@ namespace starskycore.ViewModels
 			{
 				andOrBool = false;
 			}
+			else if (andOrChar == '|')
+			{
+				_searchOperatorOptions.Add(false);
+			}
 			
 			if ( relativeLocation == 0 )
 			{
