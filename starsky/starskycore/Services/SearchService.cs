@@ -147,153 +147,153 @@ namespace starskycore.Services
 
                 switch (searchInType)
                 {
-	                case SearchViewModel.SearchInTypes.imageformat:
+					case SearchViewModel.SearchInTypes.imageformat:
 						var  castImageFormat = (ExtensionRolesHelper.ImageFormat)
-							Enum.Parse(typeof(ExtensionRolesHelper.ImageFormat), model.SearchFor[i].ToLowerInvariant());
+						Enum.Parse(typeof(ExtensionRolesHelper.ImageFormat), model.SearchFor[i].ToLowerInvariant());
 						
 						model.FileIndexItems.AddRange(sourceList.Where(
 							p => p.ImageFormat == castImageFormat
 						));
-		                 
-		                // if you add a new type for
-		                // example an enum > please check: FileIndexItem.FileIndexPropList()
-		                break;
-	                case SearchViewModel.SearchInTypes.description:
-                        model.FileIndexItems.AddRange(sourceList.Where(
-                            p => p.Description.ToLower().Contains(model.SearchFor[i])
-                        ));
-                        break;
-                    case SearchViewModel.SearchInTypes.filename:
-                        model.FileIndexItems.AddRange(sourceList.Where(
-                            p => p.FileName.ToLower().Contains(model.SearchFor[i])
-                        ));
-                        break;
-                    case SearchViewModel.SearchInTypes.filepath:
-                        model.FileIndexItems.AddRange(sourceList.Where(
-                            p => p.FilePath.ToLower().Contains(model.SearchFor[i])
-                        ));
-                        break;
-                    case SearchViewModel.SearchInTypes.parentdirectory:
-                        model.FileIndexItems.AddRange(sourceList.Where(
-                            p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i])
-                        ));
-                        break;
-                    case SearchViewModel.SearchInTypes.title:
-                        model.FileIndexItems.AddRange(sourceList.Where(
-                            p => p.Title.ToLower().Contains(model.SearchFor[i])
-                        ));
-                        break;
+						
+						// if you add a new type for
+						// example an enum > please check: FileIndexItem.FileIndexPropList()
+					break;
+					case SearchViewModel.SearchInTypes.description:
+						model.FileIndexItems.AddRange(sourceList.Where(
+							p => p.Description.ToLower().Contains(model.SearchFor[i])
+						));
+					break;
+					case SearchViewModel.SearchInTypes.filename:
+						model.FileIndexItems.AddRange(sourceList.Where(
+							p => p.FileName.ToLower().Contains(model.SearchFor[i])
+						));
+					break;
+					case SearchViewModel.SearchInTypes.filepath:
+						model.FileIndexItems.AddRange(sourceList.Where(
+							p => p.FilePath.ToLower().Contains(model.SearchFor[i])
+						));
+					break;
+					case SearchViewModel.SearchInTypes.parentdirectory:
+						model.FileIndexItems.AddRange(sourceList.Where(
+							p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i])
+						));
+					break;
+					case SearchViewModel.SearchInTypes.title:
+						model.FileIndexItems.AddRange(sourceList.Where(
+							p => p.Title.ToLower().Contains(model.SearchFor[i])
+						));
+					break;
 					case SearchViewModel.SearchInTypes.filehash:
 						model.FileIndexItems.AddRange(sourceList.Where(
 							p => p.FileHash.ToLower().Contains(model.SearchFor[i])
 						));
-						break;
-	                case SearchViewModel.SearchInTypes.isdirectory:
-		                bool.TryParse(model.SearchFor[i].ToLowerInvariant(), out var boolIsDirectory);
-		                model.FileIndexItems.AddRange(sourceList.Where(
-			                p => p.IsDirectory == boolIsDirectory
-		                ));
-		                model.SearchFor[i] = boolIsDirectory.ToString();
-		                break; 
-                    case SearchViewModel.SearchInTypes.addtodatabase:
-
-                        var addtodatabase = parseDateTime(model.SearchFor[i]);
-                        model.SearchFor[i] = addtodatabase.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
-                        
-                        switch (model.SearchForOptions[i])
-                        {
-                            case "<":
-                                model.FileIndexItems.AddRange(sourceList.Where(
-                                    p => p.AddToDatabase <= addtodatabase
-                                ));
-                                break;
-                            case ">":
-                                model.FileIndexItems.AddRange(sourceList.Where(
-                                    p => p.AddToDatabase >= addtodatabase
-                                ));
-                                break;
-                            default:
-                                model.FileIndexItems.AddRange(sourceList.Where(
-                                    p => p.AddToDatabase == addtodatabase
-                                ));
-                                break;
-                        }
-
-                        break;
-                    
-                    case SearchViewModel.SearchInTypes.datetime:
-
-                        var dateTime = parseDateTime(model.SearchFor[i]);
-                        model.SearchFor[i] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
-
-
-	                    // Searching for entire day
-	                    if ( model.SearchForOptions[i] == "=" && dateTime.Hour == 0 && dateTime.Minute == 0 && dateTime.Second == 0 &&
-	                         dateTime.Millisecond == 0 )
-	                    {
-
-		                    model.SearchForOptions[i] = ">";
-		                    model.SearchForOptions.Add("<");
-
-		                    var add24Hours = dateTime.AddHours(23)
-			                    .AddMinutes(59).AddSeconds(59).ToString(CultureInfo.InvariantCulture);
-		                    model.SearchFor.Add(add24Hours);		                    
-		                    model.SearchIn.Add("DateTime");
-	                    }
-
-	                    // faster search for searching within
-	                    // how ever this is still triggered multiple times
-	                    var beforeIndexSearchForOptions =
-		                    model.SearchForOptions.IndexOf(">");
-	                    var afterIndexSearchForOptions =
-		                    model.SearchForOptions.IndexOf("<");
-	                    if ( beforeIndexSearchForOptions >= 0  &&
-	                         afterIndexSearchForOptions >= 0 ) 
+					break;
+					case SearchViewModel.SearchInTypes.isdirectory:
+					bool.TryParse(model.SearchFor[i].ToLowerInvariant(), out var boolIsDirectory);
+						model.FileIndexItems.AddRange(sourceList.Where(
+							p => p.IsDirectory == boolIsDirectory
+						));
+						model.SearchFor[i] = boolIsDirectory.ToString();
+					break; 
+					case SearchViewModel.SearchInTypes.addtodatabase:
+					
+						var addtodatabase = parseDateTime(model.SearchFor[i]);
+						model.SearchFor[i] = addtodatabase.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
+						
+						switch (model.SearchForOptions[i])
 						{
-		                    var beforeDateTime = parseDateTime(model.SearchFor[beforeIndexSearchForOptions]);
-		                    var afterDateTime = parseDateTime(model.SearchFor[afterIndexSearchForOptions]);
-		                    
-		                    model.FileIndexItems.AddRange(sourceList.Where(
-			                    p => p.DateTime >= beforeDateTime && p.DateTime <= afterDateTime 
-		                    ));
+							case "<":
+							model.FileIndexItems.AddRange(sourceList.Where(
+								p => p.AddToDatabase <= addtodatabase
+							));
+							break;
+							case ">":
+							model.FileIndexItems.AddRange(sourceList.Where(
+								p => p.AddToDatabase >= addtodatabase
+							));
+							break;
+							default:
+							model.FileIndexItems.AddRange(sourceList.Where(
+								p => p.AddToDatabase == addtodatabase
+							));
+						break;
+						}
+					
+					break;
+					
+					case SearchViewModel.SearchInTypes.datetime:
+					
+						var dateTime = parseDateTime(model.SearchFor[i]);
+						model.SearchFor[i] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
+						
+						
+						// Searching for entire day
+						if ( model.SearchForOptions[i] == "=" && dateTime.Hour == 0 && dateTime.Minute == 0 && dateTime.Second == 0 &&
+						dateTime.Millisecond == 0 )
+						{
+							
+							model.SearchForOptions[i] = ">";
+							model.SearchForOptions.Add("<");
+							
+							var add24Hours = dateTime.AddHours(23)
+							.AddMinutes(59).AddSeconds(59).ToString(CultureInfo.InvariantCulture);
+							model.SearchFor.Add(add24Hours);		                    
+							model.SearchIn.Add("DateTime");
+						}
+						
+						// faster search for searching within
+						// how ever this is still triggered multiple times
+						var beforeIndexSearchForOptions =
+						model.SearchForOptions.IndexOf(">");
+						var afterIndexSearchForOptions =
+						model.SearchForOptions.IndexOf("<");
+						if ( beforeIndexSearchForOptions >= 0  &&
+						afterIndexSearchForOptions >= 0 ) 
+						{
+							var beforeDateTime = parseDateTime(model.SearchFor[beforeIndexSearchForOptions]);
+							var afterDateTime = parseDateTime(model.SearchFor[afterIndexSearchForOptions]);
+							
+							model.FileIndexItems.AddRange(sourceList.Where(
+							p => p.DateTime >= beforeDateTime && p.DateTime <= afterDateTime 
+							));
 							
 							// We have now an extra query, and this is always AND  
 							model.SetAndOrOperator('&',-2);
 							
 							continue;
-	                    }
-	                    
-
-                        switch (model.SearchForOptions[i])
-                        {
-                            case "<":
-                                model.FileIndexItems.AddRange(sourceList.Where(
-                                    p => p.DateTime <= dateTime
-                                ));
-                                break;
-                            case ">":
-                                model.FileIndexItems.AddRange(sourceList.Where(
-                                    p => p.DateTime >= dateTime
-                                ));
-                                break;
-                            default:
-                                model.FileIndexItems.AddRange(sourceList.Where(
-                                    p => p.DateTime == dateTime
-                                ));
-                                break;
-                        }
-
-                        break;
-                    default:
-                        var splitSearchFor = Split(model.SearchFor[i]);
-
-                        foreach (var itemSearchFor in splitSearchFor)
-                        {
-                            model.FileIndexItems.AddRange(sourceList.Where(
-                                p => p.Tags.ToLower().Contains(itemSearchFor)
-                            ));
-                        }
-                    break;
+						}
+					
+					
+						switch (model.SearchForOptions[i])
+						{
+							case "<":
+								model.FileIndexItems.AddRange(sourceList.Where(
+									p => p.DateTime <= dateTime
+								));
+							break;
+							case ">":
+								model.FileIndexItems.AddRange(sourceList.Where(
+									p => p.DateTime >= dateTime
+								));
+							break;
+							default:
+								model.FileIndexItems.AddRange(sourceList.Where(
+									p => p.DateTime == dateTime
+								));
+							break;
+						}
+						
+						break;
+						default:
+							var splitSearchFor = Split(model.SearchFor[i]);
+							
+							foreach (var itemSearchFor in splitSearchFor)
+							{
+							model.FileIndexItems.AddRange(sourceList.Where(
+								p => p.Tags.ToLower().Contains(itemSearchFor)
+							));
+						}
+					break;
                 }
             }
 
@@ -332,6 +332,7 @@ namespace starskycore.Services
 							p => p.ImageFormat == castImageFormat
 						).ToList();
 					break;
+					
 					case SearchViewModel.SearchInTypes.description:
 						model.FileIndexItems = model.FileIndexItems.Where(
 							p => p.Description.ToLower().Contains(model.SearchFor[i].ToLower())
@@ -357,10 +358,10 @@ namespace starskycore.Services
 					break;
 					
 					case SearchViewModel.SearchInTypes.isdirectory:
-					bool.TryParse(model.SearchFor[i], out var boolIsDirectory);
-						model.FileIndexItems = model.FileIndexItems.Where(
-							p => p.IsDirectory == boolIsDirectory
-						).ToList();
+						bool.TryParse(model.SearchFor[i], out var boolIsDirectory);
+							model.FileIndexItems = model.FileIndexItems.Where(
+								p => p.IsDirectory == boolIsDirectory
+							).ToList();
 					break; 
 					
 					case SearchViewModel.SearchInTypes.parentdirectory:
@@ -370,15 +371,15 @@ namespace starskycore.Services
 					break;
 					
 					case SearchViewModel.SearchInTypes.tags:
-					// Tags are searched by multiple words
-					
-					var splitSearchFor = Split(model.SearchFor[i]);
-					foreach (var itemSearchFor in splitSearchFor)
-					{
-						model.FileIndexItems = model.FileIndexItems.Where(
-							p => p.Tags.ToLower().Contains(itemSearchFor)
-						).ToList();
-					}
+						// Tags are searched by multiple words
+						
+						var splitSearchFor = Split(model.SearchFor[i]);
+						foreach (var itemSearchFor in splitSearchFor)
+						{
+							model.FileIndexItems = model.FileIndexItems.Where(
+								p => p.Tags.ToLower().Contains(itemSearchFor)
+							).ToList();
+						}
 					break;
 					
 					case SearchViewModel.SearchInTypes.title:
@@ -389,58 +390,57 @@ namespace starskycore.Services
 					
 					case SearchViewModel.SearchInTypes.addtodatabase:
 					
-					var addtodatabase = parseDateTime(model.SearchFor[i]);
-					model.SearchFor[i] = addtodatabase.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
-					
-					switch (model.SearchForOptions[i])
-					{
-						case "<":
-							model.FileIndexItems = model.FileIndexItems.Where(
-							p => p.AddToDatabase <= addtodatabase
-							).ToList();
-						break;
-						case ">":
-							model.FileIndexItems = model.FileIndexItems.Where(
-							p => p.AddToDatabase >= addtodatabase
-							).ToList();
-						break;
-						default:
-							model.FileIndexItems = model.FileIndexItems.Where(
-							p => p.AddToDatabase == addtodatabase
-							).ToList();
-						break;
-					}
+						var addtodatabase = parseDateTime(model.SearchFor[i]);
+						model.SearchFor[i] = addtodatabase.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
+						
+						switch (model.SearchForOptions[i])
+						{
+							case "<":
+								model.FileIndexItems = model.FileIndexItems.Where(
+								p => p.AddToDatabase <= addtodatabase
+								).ToList();
+							break;
+							case ">":
+								model.FileIndexItems = model.FileIndexItems.Where(
+								p => p.AddToDatabase >= addtodatabase
+								).ToList();
+							break;
+							default:
+								model.FileIndexItems = model.FileIndexItems.Where(
+								p => p.AddToDatabase == addtodatabase
+								).ToList();
+							break;
+						}
 					
 					break;
 					
 					case SearchViewModel.SearchInTypes.datetime:
 					
-					var dateTime = parseDateTime(model.SearchFor[i]);
-					model.SearchFor[i] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
-					
-					switch (model.SearchForOptions[i])
-					{
-						case "<":
-							model.FileIndexItems = model.FileIndexItems.Where(
-							p => p.DateTime <= dateTime
-							).ToList();
-						break;
-						case ">":
-							model.FileIndexItems = model.FileIndexItems.Where(
-							p => p.DateTime >= dateTime
-							).ToList();
-						break;
-						default:
-							model.FileIndexItems = model.FileIndexItems.Where(
-							p => p.DateTime == dateTime
-							).ToList();
-						break;
-					}
+						var dateTime = parseDateTime(model.SearchFor[i]);
+						model.SearchFor[i] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
+						
+						switch (model.SearchForOptions[i])
+						{
+							case "<":
+								model.FileIndexItems = model.FileIndexItems.Where(
+								p => p.DateTime <= dateTime
+								).ToList();
+							break;
+							case ">":
+								model.FileIndexItems = model.FileIndexItems.Where(
+								p => p.DateTime >= dateTime
+								).ToList();
+							break;
+							default:
+								model.FileIndexItems = model.FileIndexItems.Where(
+								p => p.DateTime == dateTime
+								).ToList();
+							break;
+						}
 					
 					break;
 				}
 			}
-            
 
 	        return model;
         }
