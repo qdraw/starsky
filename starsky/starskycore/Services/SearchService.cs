@@ -31,6 +31,13 @@ namespace starskycore.Services
             _appSettings = appSettings;
         }
 
+	    /// <summary>
+	    /// Search in database
+	    /// </summary>
+	    /// <param name="query">where to search in</param>
+	    /// <param name="pageNumber">current page (0 = page 1)</param>
+	    /// <param name="enableCache">enable searchcache (in trash this is disabled) </param>
+	    /// <returns></returns>
         public SearchViewModel Search(string query = "", int pageNumber = 0, bool enableCache = true)
         {
             if(!enableCache || 
@@ -54,7 +61,7 @@ namespace starskycore.Services
         /// Skip un-needed items
         /// </summary>
         /// <param name="objectSearchModel"></param>
-        /// <param name="pageNumber"></param>
+        /// <param name="pageNumber">current page (0 = page 1)</param>
         /// <returns></returns>
         private SearchViewModel SkipSearchItems(object objectSearchModel, int pageNumber)
         {
@@ -63,15 +70,8 @@ namespace starskycore.Services
             // Clone the item to avoid removeing items from cache
             searchModel = searchModel.Clone();
             
-	        
             searchModel.PageNumber = pageNumber;
 	        
-//	        //             searchModel.FileIndexItems = 
-//	        searchModel.FileIndexItems.Skip( pageNumber * NumberOfResultsInView )
-//		        .SkipLast(searchModel.SearchCount - (pageNumber * NumberOfResultsInView ) - NumberOfResultsInView )
-//		        .ToHashSet().ToList();
-
-
 	        var skipFirstNumber = pageNumber * NumberOfResultsInView;
 	        var skipLastNumber = searchModel.SearchCount - ( pageNumber * NumberOfResultsInView ) - NumberOfResultsInView;
 
@@ -91,8 +91,7 @@ namespace starskycore.Services
         /// <summary>
         /// Return all results
         /// </summary>
-        /// <param name="query"></param>
-        /// <param name="pageNumber"></param>
+        /// <param name="query">where to search on</param>
         /// <returns></returns>
         private SearchViewModel SearchDirect(string query = "")
         {
