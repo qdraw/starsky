@@ -36,6 +36,19 @@ namespace starskytest.Controllers
 			var today = "/" + DateTime.Now.AddDays(-1).ToString("yyyyMMdd") + "/";
 			Assert.AreEqual(today, result.Value);
 		}
+		
+		[TestMethod]
+		public void RedirectControllerTest_LargeInt()
+		{
+			var appSettings = new AppSettings();
+			appSettings.Structure = "/yyyyMMdd/{filenamebase}.ext";
+			var controller = new RedirectController(appSettings);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var result = controller.SubpathRelative(201801020, true) as JsonResult;
+			// 201801020= not a date but a large number ==> fallback to today
+			var today = "/" + DateTime.Now.ToString("yyyyMMdd") + "/";
+			Assert.AreEqual(today, result.Value);
+		}
 
 		[TestMethod]
 		public void RedirectControllerTest_SubpathRelativeRedirectToAction()

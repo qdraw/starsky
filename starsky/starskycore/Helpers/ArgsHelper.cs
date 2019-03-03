@@ -376,8 +376,11 @@ namespace starskycore.Helpers
             
             int.TryParse(subpathRelative, out var subPathInt);
             if(subPathInt >= 1) subPathInt = subPathInt * -1; //always in the past
-                
-            var importmodel = new ImportIndexItem(_appSettings)
+
+	        // Fallback for dates older than 24-11-1854 to avoid a exception.
+	        if ( subPathInt < -60000 ) subPathInt = 0;
+
+	        var importmodel = new ImportIndexItem(_appSettings)
             {
                 DateTime = DateTime.Today.AddDays(subPathInt), 
                 SourceFullFilePath = "notimplemented.jpg"

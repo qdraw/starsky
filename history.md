@@ -1,5 +1,6 @@
 # version 0.1.5 - tbd
 - add partial support for || (or) queries using search
+- bugfix to large int relative to today
 
 # version 0.1.4 - 2019-03-01
 - fix issue where login fails results in a error 500

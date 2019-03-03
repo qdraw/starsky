@@ -28,8 +28,10 @@ namespace starsky.Controllers
 		[ProducesResponseType(301)] // redirect
 		public IActionResult SubpathRelative(int value, bool json = false)
 		{
-			if(value >= 1) value = value * -1; //always in the past
-
+			if(value >= 1) value = value * -1; // always in the past
+			// Fallback for dates older than 24-11-1854 to avoid a exception.
+			if ( value < -60000 ) value = 0;
+			
 			var importmodel = new ImportIndexItem(_appsettings)
 			{
 				DateTime = DateTime.Today.AddDays(value), 
