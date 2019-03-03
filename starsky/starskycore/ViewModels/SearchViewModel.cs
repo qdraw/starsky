@@ -157,15 +157,28 @@ namespace starskycore.ViewModels
 		/// Private field: Search Operator, and or OR
 		/// </summary>
 		private List<bool> _searchOperatorOptions;
-		
-		/// <summary>
-		/// Add to list in model (&amp;&amp;|| operators) true=&amp;&amp; false=||
-		/// </summary>
-		/// <param name="andOrBool"></param>
-		public void SetAndOrOperator(bool andOrBool)
+
+	    /// <summary>
+	    /// Add to list in model (&amp;&amp;|| operators) true=&amp;&amp; false=||
+	    /// </summary>
+	    /// <param name="andOrBool"></param>
+	    /// <param name="relativeLocation"></param>
+	    public void SetAndOrOperator(bool andOrBool,int relativeLocation = 0)
 		{
-			if (_searchForOptions == null) _searchOperatorOptions = new List<bool>();
-			_searchOperatorOptions.Add(andOrBool);
+			if ( _searchOperatorOptions == null ) _searchOperatorOptions = new List<bool>();
+			if ( relativeLocation == 0 )
+			{
+				_searchOperatorOptions.Add(andOrBool);
+			}
+			else if ( _searchOperatorOptions.Count+relativeLocation <= -1 )
+			{
+				_searchOperatorOptions.Insert(0, andOrBool);
+			}
+			else
+			{
+				_searchOperatorOptions.Insert(_searchOperatorOptions.Count+relativeLocation,andOrBool);
+			}
+			
 		}
 		
 		/// <summary>
@@ -179,12 +192,10 @@ namespace starskycore.ViewModels
 	    // false = (skip( continue to next item))
 		public bool SearchOperatorContinue(int indexer, int max)
 		{
-			if ( indexer == 0 ) return true;
-			var indMin1 = indexer - 1;
-			if (max <= indMin1) return true;
-			
-			if ( _searchOperatorOptions[indexer-1]) return true;
-			
+			if ( indexer <= -1 || indexer > max) return true;
+			// for -Datetime=1 (03-03-2019 00:00:00-03-03-2019 23:59:59), this are two queries
+			//if (indexer > _searchOperatorOptions.Count  ) return true;
+			if ( _searchOperatorOptions[indexer] ) return true;
 			return false;
 		}
 	    

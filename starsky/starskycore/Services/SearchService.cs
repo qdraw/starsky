@@ -255,6 +255,10 @@ namespace starskycore.Services
 		                    model.FileIndexItems.AddRange(sourceList.Where(
 			                    p => p.DateTime >= beforeDateTime && p.DateTime <= afterDateTime 
 		                    ));
+							
+							// We have now an extra query, and this is always AND  
+							model.SetAndOrOperator(true,-2);
+							
 							continue;
 	                    }
 	                    
@@ -483,22 +487,25 @@ namespace starskycore.Services
             {
                 SearchItemName(model, itemName);
             }
-
-            model.SearchQuery = "-Tags:" + "\"" + _defaultQuery.Trim()+ "\""; // escape values for !delete! query
-            SearchItemName(model, "Tags");
+            model.SearchQuery = "-Tags:" + $"\"{_defaultQuery.Trim()}\""; // changed: remove quotes, escape values for !delete! query
+	        
+	        SearchItemName(model, "Tags");
             model.SearchQuery = _orginalSearchQuery;
             return model;
         }
 
         private void SearchItemName(SearchViewModel model, string itemName)
         {
+	        // ignore double quotes
+	        model.SearchQuery = model.SearchQuery.Replace("\"\"", "\"");
+
             // Without double escapes:
             // (:|=|;|>|<)(([\w\!\~\-_\.\/:]+)|(\"|').+(\"|'))
-	        // With OR || && =>
-	        // (:|=|;|>|<)(([\w\!\~\-_\.\/:]+)|(\"|').+(\"|'))|( (\|\||\&\&))?
+	        // new: unescaped
+	        // (:|=|;|>|<)((["'])(\\?.)*?\3|[\w\!\~\-_\.\/:]+)( \|\|| \&\&)?
             Regex inurlRegex = new Regex(
                 "-" + itemName +
-                "(:|=|;|>|<)(([\\w\\!\\~\\-_\\.\\/:]+)|(\\\"|\').+(\\\"|\'))|( (\\|\\||\\&\\&))?",
+                "(:|=|;|>|<)(([\"\'])(\\\\?.)*?\\3|[\\w\\!\\~\\-_\\.\\/:]+)( \\|\\|| \\&\\&)?",
                 RegexOptions.IgnoreCase);
             _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
 
