@@ -169,19 +169,17 @@ namespace starskycore.ViewModels
 
 			bool andOrBool = andOrChar == '&';
 
-			if ( _searchOperatorOptions.Count == 0 && char.IsWhiteSpace(andOrChar))
-			{
-				andOrBool = true;
-			}
-			else if (char.IsWhiteSpace(andOrChar))
+			if ( char.IsWhiteSpace(andOrChar) )
 			{
 				andOrBool = false;
 			}
-			else if (andOrChar == '|')
+
+			if (_searchOperatorOptions.Count == 0 && andOrChar == '|')
 			{
 				_searchOperatorOptions.Add(false);
 			}
 			
+			// Store item on a different location in the List<T>
 			if ( relativeLocation == 0 )
 			{
 				_searchOperatorOptions.Add(andOrBool);
@@ -211,8 +209,8 @@ namespace starskycore.ViewModels
 			if ( indexer <= -1 || indexer > max) return true;
 			// for -Datetime=1 (03-03-2019 00:00:00-03-03-2019 23:59:59), this are two queries
 			//if (indexer > _searchOperatorOptions.Count  ) return true;
-			if ( _searchOperatorOptions[indexer] ) return true;
-			return false;
+			var returnResult = _searchOperatorOptions[indexer];
+			return returnResult;
 		}
 	    
     }

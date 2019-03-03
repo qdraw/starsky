@@ -463,10 +463,11 @@ namespace starskytest.Services
 	    public void SearchService_thisORAndCombination()
 	    {
 		    InsertSearchData();
-		    var result = _search.Search("-FileName=lelystadcentrum.jpg || -FileHash=lelystadcentrum2 && lelystad",0,false);
+		    var result = _search.Search("-FileName=lelystadcentrum.jpg || -FileHash=lelystadcentrum && lelystad",0,false);
 			//  -FileHash=lelystadcentrum2 && station >= 1 item
 		    // -DateTime=lelystadcentrum2.jpg >= 1 item
 		    // the and applies to all previous items
+		    // lelystadcentrum && lelystadcentrum2 are items
 		    // station = duplicate in this example but triggers other results when using || instead of &&
 		    Assert.AreEqual(2,result.FileIndexItems.Count);
 
@@ -482,7 +483,8 @@ namespace starskytest.Services
 //		    // This are actually four queries
 //		    
 //		    // todo: test FAIL
-//		    //Assert.AreEqual(2, item.SearchCount);
+//		    // Assert.AreEqual failed. Expected:<2>. Actual:<0>. 
+//		    Assert.AreEqual(2, item.SearchCount);
 //	    }
     }
 }
