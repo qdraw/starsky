@@ -373,6 +373,7 @@ namespace starskycore.Services
 					
 					case SearchViewModel.SearchInTypes.tags:
 						// Tags are searched by multiple words
+						// todo: split quoted
 						
 						var splitSearchFor = Split(model.SearchFor[i]);
 						foreach (var itemSearchFor in splitSearchFor)

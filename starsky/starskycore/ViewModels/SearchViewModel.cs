@@ -212,7 +212,7 @@ namespace starskycore.ViewModels
 			if ( _searchOperatorOptions == null ) return true;
 			if ( indexer <= -1 || indexer > max) return true;
 			// for -Datetime=1 (03-03-2019 00:00:00-03-03-2019 23:59:59), this are two queries >= fail!!
-//			if (indexer > _searchOperatorOptions.Count  ) return true;
+			if (indexer > _searchOperatorOptions.Count  ) return true; // used when general words without update 
 			var returnResult = _searchOperatorOptions[indexer];
 			return returnResult;
 		}
@@ -259,6 +259,10 @@ namespace starskycore.ViewModels
 		    {
 			    returnQuery = defaultQuery.Replace(regexInUrl.Value,"-Tags:" + $"\"{regexInUrl.Value}\"");
 			    defaultQuery = defaultQuery.Replace(regexInUrl.Value, string.Empty);
+			    
+			    SetAddSearchFor(regexInUrl.Value.Trim());
+			    SetAddSearchInStringType("tags");
+			    SetAddSearchForOptions("=");
 		    }
 		    
 			// ( )?(\|\||&&| )( )?
