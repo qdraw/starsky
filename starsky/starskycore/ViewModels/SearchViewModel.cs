@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using starskycore.Models;
 
 namespace starskycore.ViewModels
@@ -207,11 +210,87 @@ namespace starskycore.ViewModels
 		public bool SearchOperatorContinue(int indexer, int max)
 		{
 			if ( indexer <= -1 || indexer > max) return true;
-			// for -Datetime=1 (03-03-2019 00:00:00-03-03-2019 23:59:59), this are two queries
+			// for -Datetime=1 (03-03-2019 00:00:00-03-03-2019 23:59:59), this are two queries >= fail!!
 			//if (indexer > _searchOperatorOptions.Count  ) return true;
 			var returnResult = _searchOperatorOptions[indexer];
 			return returnResult;
 		}
+	    
+	    /// <summary>
+	    /// ||[OR] = |, else = &amp;, default = string.Emphy 
+	    /// </summary>
+	    /// <param name="item">searchquery</param>
+	    /// <returns>bool</returns>
+	    public char AndOrRegex(string item)
+	    {
+		    // (\|\||\&\&)$
+		    Regex rgx = new Regex(@"(\|\||\&\&)$", RegexOptions.IgnoreCase);
+
+		    // To Search Type
+		    var lastStringValue = rgx.Match(item).Value;
+		    
+		    // set default
+		    if ( string.IsNullOrEmpty(lastStringValue) ) lastStringValue = string.Empty;
+
+
+		    if ( lastStringValue == "||" ) return '|';
+		    return '&';
+	    }
+	    
+	    
+	    /// <summary>
+	    /// For reparsing keywords to -Tags:"keyword"
+	    /// </summary>
+	    /// <param name="defaultQuery"></param>
+	    /// <returns></returns>
+	    public string ParseDefaultOption(string defaultQuery)
+	    {
+		    var returnQuery = defaultQuery;
+
+		    // Get Quoted values
+		    // (["'])(\\?.)*?\1
+		    Regex inurlRegex = new Regex("([\"\'])(\\\\?.)*?\\1",
+			    RegexOptions.IgnoreCase);
+		    
+		    var regexInUrlMatches = inurlRegex.Matches(defaultQuery);
+
+		    foreach ( Match regexInUrl in regexInUrlMatches )
+		    {
+			    returnQuery = defaultQuery.Replace(regexInUrl.Value,"-Tags:" + $"\"{regexInUrl.Value}\"");
+			    defaultQuery = defaultQuery.Replace(regexInUrl.Value, string.Empty);
+		    }
+		    
+			// ( )?(\|\||&&| )( )?
+		    var andOrSpaceRegex = @"( )?(\|\||&&| )( )?";
+		    var searchValues = Regex.Split(defaultQuery, andOrSpaceRegex)
+			    .Where(p => !string.IsNullOrWhiteSpace(p)).ToList();
+		    
+		    foreach (var  itemQuery in searchValues )
+		    {
+
+			    if ( itemQuery == "||" || itemQuery == "&&" )
+			    {
+				    SetAndOrOperator(AndOrRegex(itemQuery));
+				    returnQuery = returnQuery.Replace("&&", string.Empty);
+				    returnQuery = returnQuery.Replace("||", string.Empty);
+				    continue;
+			    }
+
+			    returnQuery = returnQuery.Replace(itemQuery,"-Tags:" + $"\"{itemQuery}\"");
+			    
+			    SetAddSearchFor(itemQuery.Trim());
+			    SetAddSearchInStringType("tags");
+
+		    }
+
+		    // remove double quotes
+		    returnQuery = returnQuery.Replace("\"\"", "\"");
+		    
+	    
+		    return returnQuery;
+	    }
+	    
+	    
 	    
     }
 }

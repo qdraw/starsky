@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -303,7 +304,7 @@ namespace starskycore.Services
         private SearchViewModel NarrowSearch(SearchViewModel model)
         {
 	        
-//	        var narrowModel = new List<List<FileIndexItem>>();
+			//	        var narrowModel = new List<List<FileIndexItem>>();
 	        
 			// Narrow Search
 			for (var i = 0; i < model.SearchIn.Count; i++)
@@ -498,14 +499,17 @@ namespace starskycore.Services
             {
                 SearchItemName(model, itemName);
             }
-            model.SearchQuery = "-Tags:" + $"\"{_defaultQuery.Trim()}\""; // changed: remove quotes, escape values for !delete! query
+
+	        model.ParseDefaultOption(_defaultQuery);
 	        
-	        SearchItemName(model, "Tags");
+	        // SearchItemName(model, "Tags");
             model.SearchQuery = _orginalSearchQuery;
             return model;
         }
 
-        private void SearchItemName(SearchViewModel model, string itemName)
+
+
+	    private void SearchItemName(SearchViewModel model, string itemName)
         {
 	        // ignore double quotes
 	        model.SearchQuery = model.SearchQuery.Replace("\"\"", "\"");
@@ -519,6 +523,7 @@ namespace starskycore.Services
                 "(:|=|;|>|<)(([\"\'])(\\\\?.)*?\\3|[\\w\\!\\~\\-_\\.\\/:]+)( \\|\\|| \\&\\&)?",
                 RegexOptions.IgnoreCase);
             _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
+	        // the current query is removed from the list, so the next item will not search on it
 
             var regexInUrlMatches = inurlRegex.Matches(model.SearchQuery);
             if(regexInUrlMatches.Count == 0) return;
@@ -531,7 +536,7 @@ namespace starskycore.Services
 	            if ( string.IsNullOrEmpty(itemQuery) ) continue;
 
 	            // put ||&& in operator field => next regex > removed
-	            model.SetAndOrOperator(AndOrRegex(itemQuery));
+	            model.SetAndOrOperator(model.AndOrRegex(itemQuery));
 	            
 	            Regex rgx = new Regex("-"+ itemName +"(:|=|;|>|<)", RegexOptions.IgnoreCase);
 
@@ -560,26 +565,7 @@ namespace starskycore.Services
                 
         }
 
-	    /// <summary>
-	    /// ||[OR] = |, else = &amp;, default = string.Emphy 
-	    /// </summary>
-	    /// <param name="item">searchquery</param>
-	    /// <returns>bool</returns>
-	    private char AndOrRegex(string item)
-	    {
-		    // (\|\||\&\&)$
-		    Regex rgx = new Regex(@"(\|\||\&\&)$", RegexOptions.IgnoreCase);
 
-		    // To Search Type
-		    var lastStringValue = rgx.Match(item).Value;
-		    
-		    // set default
-		    if ( string.IsNullOrEmpty(lastStringValue) ) lastStringValue = string.Empty;
-
-
-		    if ( lastStringValue == "||" ) return '|';
-		    return '&';
-	    }
 
 	    /// <summary>
 	    /// Trim value (remove spaces)

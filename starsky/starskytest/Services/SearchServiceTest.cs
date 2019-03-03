@@ -472,7 +472,46 @@ namespace starskytest.Services
 		    Assert.AreEqual(2,result.FileIndexItems.Count);
 
 	    }
+
+	    [TestMethod]
+	    public void SearchService_thisORDefaultKeyword()
+	    {
+		    InsertSearchData();
+		    var result = _search.Search("station || lelystad",0,false);
+		    Assert.AreEqual(3,result.FileIndexItems.Count);
+	    }
+
+	    [TestMethod]
+	    public void SearchService_ParseDefaultOption()
+	    {
+
+		    var modelSearchQuery = "station || lelystad";
+
+		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
+		    Assert.AreEqual("-Tags:\"station\"  -Tags:\"lelystad\"",result);
+
+	    }
+
+	    [TestMethod]
+	    public void SearchService_Quoted_OR_ParseDefaultOption()
+	    {
+
+		    var modelSearchQuery = " \"station test\" || lelystad || key2";
+		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
+		    Assert.AreEqual(" -Tags:\"station test\"  -Tags:\"lelystad\"  -Tags:\"key2\"",result);
+
+	    }
 	    
+	    [TestMethod]
+	    public void SearchService_Quoted_DefaultSplit_ParseDefaultOption()
+	    {
+
+		    var modelSearchQuery = " \"station test\" key2";
+		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
+		    Assert.AreEqual(" -Tags:\"station test\" -Tags:\"key2\"",result);
+			
+	    }
+
 	    
 //	    [TestMethod]
 //	    public void SearchService_DoubleSearchOnOnlyDay()
