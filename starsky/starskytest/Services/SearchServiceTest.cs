@@ -57,7 +57,6 @@ namespace starskytest.Services
                 _query.AddItem(new FileIndexItem
                 {
                     FileName = "lelystadcentrum.jpg",
-                    //FilePath = "/stations/lelystadcentrum.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "lelystadcentrum",
                     Tags = "station, train, lelystad, de trein",
@@ -430,6 +429,28 @@ namespace starskytest.Services
 			Assert.AreEqual(1,result.FileIndexItems.Count);
 			
 		}
-        
+
+
+	    [TestMethod]
+	    public void SearchService_thisORThis2()
+	    {
+		    InsertSearchData();
+		    var result = _search.Search("-DateTime=2016-01-01 || -FileHash=lelystadcentrum",0,false);
+		    Assert.AreEqual(2,result.FileIndexItems.Count);
+
+	    }
+	    
+	    [TestMethod]
+	    public void SearchService_thisORAndCombination()
+	    {
+		    InsertSearchData();
+		    var result = _search.Search("-DateTime=2016-01-01 || -FileHash=lelystadcentrum2 && station",0,false);
+			//  -FileHash=lelystadcentrum2 && station >= 1 item
+		    // -DateTime=2016-01-01 >= 1 item
+		    // station = duplicate in this example but triggers other results when using || instead of &&
+		    // todo: fix this test
+		    Assert.AreEqual(2,result.FileIndexItems.Count);
+
+	    }
     }
 }

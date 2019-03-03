@@ -103,12 +103,12 @@ namespace starskycore.ViewModels
         
         
 	    /// <summary>
-	    /// Private field: Search Options eg >, <, =. to know which field use the same indexer in _searchIn or _searchFor
+	    /// Private field: Search Options &gt;, &lt;,=. (greater than sign, less than sign, equal sign) to know which field use the same indexer in _searchIn or _searchFor
 	    /// </summary>
         private List<string> _searchForOptions;
 	    
 	    /// <summary>
-	    /// Search Options eg >, <, =. to know which field use the same indexer in _searchIn or _searchFor
+	    /// Search Options eg &gt;, &lt;, =. (greater than sign, less than sign, equal sign)  to know which field use the same indexer in _searchIn or _searchFor
 	    /// </summary>
         public List<string> SearchForOptions
         {  
@@ -118,7 +118,7 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// Add first char of a string to _searchForOptions list
 	    /// </summary>
-	    /// <param name="value"></param>
+	    /// <param name="value">searchFor option (e.g. =, &gt;, &lt; </param>
         public void SetAddSearchForOptions(string value)
         {
             if (_searchForOptions == null) _searchForOptions = new List<string>();
@@ -152,6 +152,41 @@ namespace starskycore.ViewModels
         {
             return (SearchViewModel) MemberwiseClone();
         }
-        
+
+		/// <summary>
+		/// Private field: Search Operator, and or OR
+		/// </summary>
+		private List<bool> _searchOperatorOptions;
+		
+		/// <summary>
+		/// Add to list in model (&amp;&amp;|| operators) true=&amp;&amp; false=||
+		/// </summary>
+		/// <param name="andOrBool"></param>
+		public void SetAndOrOperator(bool andOrBool)
+		{
+			if (_searchForOptions == null) _searchOperatorOptions = new List<bool>();
+			_searchOperatorOptions.Add(andOrBool);
+		}
+		
+		/// <summary>
+		/// Search Operator, eg. || &amp;&amp;
+		/// </summary>
+		public List<bool> SearchOperatorOptions
+		{  
+			get { return _searchOperatorOptions; }
+		}
+
+	    // false = (skip( continue to next item))
+		public bool SearchOperatorContinue(int indexer, int max)
+		{
+			if ( indexer == 0 ) return true;
+			var indMin1 = indexer - 1;
+			if (max <= indMin1) return true;
+			
+			if ( _searchOperatorOptions[indexer-1]) return true;
+			
+			return false;
+		}
+	    
     }
 }

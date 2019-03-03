@@ -303,6 +303,11 @@ namespace starskycore.Services
                 var searchInType = (SearchViewModel.SearchInTypes)
                     Enum.Parse(typeof(SearchViewModel.SearchInTypes), model.SearchIn[i].ToLower());
 
+	            
+	            // skip OR searches
+	            if ( !model.SearchOperatorContinue(i, model.SearchIn.Count) ) continue;
+	            
+	            
                 switch (searchInType)
                 {
 	                case SearchViewModel.SearchInTypes.imageformat:
@@ -489,9 +494,11 @@ namespace starskycore.Services
         {
             // Without double escapes:
             // (:|=|;|>|<)(([\w\!\~\-_\.\/:]+)|(\"|').+(\"|'))
+	        // With OR || && =>
+	        // (:|=|;|>|<)(([\w\!\~\-_\.\/:]+)|(\"|').+(\"|'))|( (\|\||\&\&))?
             Regex inurlRegex = new Regex(
                 "-" + itemName +
-                "(:|=|;|>|<)(([\\w\\!\\~\\-_\\.\\/:]+)|(\"|').+(\"|'))",
+                "(:|=|;|>|<)(([\\w\\!\\~\\-_\\.\\/:]+)|(\\\"|\').+(\\\"|\'))|( (\\|\\||\\&\\&))?",
                 RegexOptions.IgnoreCase);
             _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
 
@@ -500,29 +507,60 @@ namespace starskycore.Services
 
             foreach (Match regexInUrl in regexInUrlMatches)
             {
-                var item = regexInUrl.Value;
-                Regex rgx = new Regex("-"+ itemName +"(:|=|;|>|<)", RegexOptions.IgnoreCase);
+                var itemQuery = regexInUrl.Value;
+	            
+	            // ignore fake results
+	            if ( string.IsNullOrEmpty(itemQuery) ) continue;
+
+	            // put ||&& in operator field => next regex > removed
+	            model.SetAndOrOperator(AndOrRegex(itemQuery));
+	            
+	            Regex rgx = new Regex("-"+ itemName +"(:|=|;|>|<)", RegexOptions.IgnoreCase);
 
                 // To Search Type
-                var itemNameSearch = rgx.Match(item).Value;
-                if (!itemNameSearch.Any()) return;
+                var itemNameSearch = rgx.Match(itemQuery).Value;
+                if (!itemNameSearch.Any()) continue;
 
                 // replace
-                item = rgx.Replace(item, string.Empty);
-                
+                itemQuery = rgx.Replace(itemQuery, string.Empty);
 
                 var searchForOption = itemNameSearch[itemNameSearch.Length - 1].ToString();
                 model.SetAddSearchForOptions(searchForOption);                    
                 
                 // Remove parenthesis
-                item = item.Replace("\"", string.Empty);
-                item = item.Replace("'", string.Empty);
-                model.SetAddSearchFor(item.Trim());
+                itemQuery = itemQuery.Replace("\"", string.Empty);
+                itemQuery = itemQuery.Replace("'", string.Empty);
+                model.SetAddSearchFor(itemQuery.Trim());
                 model.SetAddSearchInStringType(itemName);
             }
                 
         }
 
+	    /// <summary>
+	    /// ||[OR] = false, else = true 
+	    /// </summary>
+	    /// <param name="item">searchquery</param>
+	    /// <returns>bool</returns>
+	    private bool AndOrRegex(string item)
+	    {
+		    // (\|\||\&\&)$
+		    Regex rgx = new Regex(@"(\|\||\&\&)$", RegexOptions.IgnoreCase);
+
+		    // To Search Type
+		    var lastStringValue = rgx.Match(item).Value;
+		    
+		    // set default
+		    if ( string.IsNullOrEmpty(lastStringValue) ) lastStringValue = "&&";
+
+		    if ( lastStringValue == "||" ) return false;
+		    return true;
+	    }
+
+	    /// <summary>
+	    /// Trim value (remove spaces)
+	    /// </summary>
+	    /// <param name="query">searchQuery</param>
+	    /// <returns>trimmed value</returns>
         public string QuerySafe(string query)
         {
             query = query.Trim();
@@ -535,8 +573,10 @@ namespace starskycore.Services
             return query;
         }
 
-        // The amount of search results on one single page
-        // Including the trash page
+	    /// <summary>
+	    /// The amount of search results on one single page
+	    /// Including the trash page
+	    /// </summary>
         private const int NumberOfResultsInView = 20;
 
         private int GetLastPageNumber(int fileIndexQueryCount)
