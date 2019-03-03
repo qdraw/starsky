@@ -513,6 +513,34 @@ namespace starskytest.Services
 	    }
 
 	    
+	    [TestMethod]
+	    public void SearchService_ParseDateTimeLowInt()
+	    {
+		    var p = new SearchService(_dbContext).ParseDateTime("0");
+		    // today
+		    Assert.AreEqual(p.Day,DateTime.Now.Day);
+		    Assert.AreEqual(p.Month,DateTime.Now.Month);
+	    }
+	    
+	    
+	    [TestMethod]
+	    public void SearchService_ParseDateTimeLargeInt()
+	    {
+		    var p = new SearchService(_dbContext).ParseDateTime("20180911");
+		    // defaults to today
+			Assert.AreEqual(p.Day,DateTime.Now.Day);
+		    Assert.AreEqual(p.Month,DateTime.Now.Month);
+	    }
+	    
+	    [TestMethod]
+	    public void SearchService_ParseDateTimeExample()
+	    {
+		    var p = new SearchService(_dbContext).ParseDateTime("2018-09-11");
+		    // defaults to today
+		    Assert.AreEqual(DateTime.Parse("2018-09-11"),p);
+	    }
+
+	    
 //	    [TestMethod]
 //	    public void SearchService_DoubleSearchOnOnlyDay()
 //	    {

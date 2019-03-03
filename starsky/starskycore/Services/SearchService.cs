@@ -198,7 +198,7 @@ namespace starskycore.Services
 					break; 
 					case SearchViewModel.SearchInTypes.addtodatabase:
 					
-						var addtodatabase = parseDateTime(model.SearchFor[i]);
+						var addtodatabase = ParseDateTime(model.SearchFor[i]);
 						model.SearchFor[i] = addtodatabase.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
 						
 						switch (model.SearchForOptions[i])
@@ -224,7 +224,7 @@ namespace starskycore.Services
 					
 					case SearchViewModel.SearchInTypes.datetime:
 					
-						var dateTime = parseDateTime(model.SearchFor[i]);
+						var dateTime = ParseDateTime(model.SearchFor[i]);
 						model.SearchFor[i] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
 						
 						
@@ -251,8 +251,8 @@ namespace starskycore.Services
 						if ( beforeIndexSearchForOptions >= 0  &&
 						afterIndexSearchForOptions >= 0 ) 
 						{
-							var beforeDateTime = parseDateTime(model.SearchFor[beforeIndexSearchForOptions]);
-							var afterDateTime = parseDateTime(model.SearchFor[afterIndexSearchForOptions]);
+							var beforeDateTime = ParseDateTime(model.SearchFor[beforeIndexSearchForOptions]);
+							var afterDateTime = ParseDateTime(model.SearchFor[afterIndexSearchForOptions]);
 							
 							model.FileIndexItems.AddRange(sourceList.Where(
 							p => p.DateTime >= beforeDateTime && p.DateTime <= afterDateTime 
@@ -391,7 +391,7 @@ namespace starskycore.Services
 					
 					case SearchViewModel.SearchInTypes.addtodatabase:
 					
-						var addtodatabase = parseDateTime(model.SearchFor[i]);
+						var addtodatabase = ParseDateTime(model.SearchFor[i]);
 						model.SearchFor[i] = addtodatabase.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
 						
 						switch (model.SearchForOptions[i])
@@ -417,7 +417,7 @@ namespace starskycore.Services
 					
 					case SearchViewModel.SearchInTypes.datetime:
 					
-						var dateTime = parseDateTime(model.SearchFor[i]);
+						var dateTime = ParseDateTime(model.SearchFor[i]);
 						model.SearchFor[i] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
 						
 						switch (model.SearchForOptions[i])
@@ -451,7 +451,12 @@ namespace starskycore.Services
             return input.ToLower().Split(" ".ToCharArray()).ToList();
         }
 
-        private DateTime parseDateTime(string input)
+	    /// <summary>
+	    /// Internal API: to parse datetime objects
+	    /// </summary>
+	    /// <param name="input"></param>
+	    /// <returns></returns>
+        public DateTime ParseDateTime(string input)
         {
 
 	        // For relative values
@@ -459,7 +464,10 @@ namespace starskycore.Services
 	        {
 				int.TryParse(input, out var relativeValue);
 				if(relativeValue >= 1) relativeValue = relativeValue * -1; // always in the past
-				return DateTime.Today.AddDays(relativeValue);
+		        if ( relativeValue > -60000 ) // 24-11-1854
+		        {
+			        return DateTime.Today.AddDays(relativeValue);
+		        }
 	        }
 	        
             var patternLab = new List<string>
