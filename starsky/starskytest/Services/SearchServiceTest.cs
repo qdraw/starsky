@@ -187,6 +187,13 @@ namespace starskytest.Services
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("station lelystad").SearchCount);
         }
+	    
+	    [TestMethod]
+	    public void SearchService_SearchStationLelystadQuotedTest()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(1, _search.Search("\"station\" \"lelystad\"").SearchCount);
+	    }
 
         [TestMethod]
         public void SearchService_SearchParenthesisTreinTest()
@@ -482,7 +489,7 @@ namespace starskytest.Services
 	    }
 
 	    [TestMethod]
-	    public void SearchService_ParseDefaultOption()
+	    public void SearchViewModel_ParseDefaultOption()
 	    {
 
 		    var modelSearchQuery = "station || lelystad";
@@ -493,7 +500,7 @@ namespace starskytest.Services
 	    }
 
 	    [TestMethod]
-	    public void SearchService_Quoted_OR_ParseDefaultOption()
+	    public void SearchViewModel_Quoted_OR_ParseDefaultOption()
 	    {
 
 		    var modelSearchQuery = " \"station test\" || lelystad || key2";
@@ -503,7 +510,7 @@ namespace starskytest.Services
 	    }
 	    
 	    [TestMethod]
-	    public void SearchService_Quoted_DefaultSplit_ParseDefaultOption()
+	    public void SearchViewModel_Quoted_DefaultSplit_ParseDefaultOption()
 	    {
 
 		    var modelSearchQuery = " \"station test\" key2";
@@ -511,7 +518,63 @@ namespace starskytest.Services
 		    Assert.AreEqual(" -Tags:\"station test\" -Tags:\"key2\"",result);
 			
 	    }
+	    
+	    [TestMethod]
+	    public void SearchViewModel_SearchOperatorOptions_Quoted_with_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = " \"station test\" \"station test\"";
+		    var searchViewModel = new SearchViewModel();
+		    
+			searchViewModel.ParseDefaultOption(modelSearchQuery);
+		    
+		    var searchOperatorOptions = searchViewModel.SearchOperatorOptions;
+		    
+		    Assert.AreEqual(true,searchOperatorOptions[0]);
+		    Assert.AreEqual(true,searchOperatorOptions[1]);
+	    }
 
+	    [TestMethod]
+	    public void SearchViewModel_SearchOperatorOptions_NonQuoted_with_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = "station test";
+		    var searchViewModel = new SearchViewModel();
+		    
+		    searchViewModel.ParseDefaultOption(modelSearchQuery);
+		    
+		    var searchOperatorOptions = searchViewModel.SearchOperatorOptions;
+		    
+		    Assert.AreEqual(true,searchOperatorOptions[0]);
+		    Assert.AreEqual(true,searchOperatorOptions[1]);
+	    }
+
+	    [TestMethod]
+	    public void SearchViewModel_SearchOperatorOptions_NonQuoted_with_OR_Situation_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = "station || test";
+		    var searchViewModel = new SearchViewModel();
+		    
+		    searchViewModel.ParseDefaultOption(modelSearchQuery);
+		    
+		    var searchOperatorOptions = searchViewModel.SearchOperatorOptions;
+		    
+		    Assert.AreEqual(false,searchOperatorOptions[0]);
+		    Assert.AreEqual(false,searchOperatorOptions[1]);
+	    }
+	    
+	    [TestMethod]
+	    public void SearchViewModel_SearchOperatorOptions_Quoted_with_OR_Situation_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = "\"station\" || \"test\"";
+		    var searchViewModel = new SearchViewModel();
+		    
+		    searchViewModel.ParseDefaultOption(modelSearchQuery);
+		    
+		    var searchOperatorOptions = searchViewModel.SearchOperatorOptions;
+		    
+		    Assert.AreEqual(false,searchOperatorOptions[0]);
+		    Assert.AreEqual(false,searchOperatorOptions[1]);
+	    }
+	    
 	    
 	    [TestMethod]
 	    public void SearchService_ParseDateTimeLowInt()
@@ -540,7 +603,7 @@ namespace starskytest.Services
 		    Assert.AreEqual(DateTime.Parse("2018-09-11"),p);
 	    }
 
-	    
+
 //	    [TestMethod]
 //	    public void SearchService_DoubleSearchOnOnlyDay()
 //	    {

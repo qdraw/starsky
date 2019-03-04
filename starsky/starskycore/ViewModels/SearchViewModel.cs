@@ -203,7 +203,10 @@ namespace starskycore.ViewModels
 		/// </summary>
 		public List<bool> SearchOperatorOptions
 		{  
-			get { return _searchOperatorOptions; }
+			get
+			{
+				return _searchOperatorOptions ?? new List<bool>();
+			}
 		}
 
 	    // false = (skip( continue to next item))
@@ -212,7 +215,7 @@ namespace starskycore.ViewModels
 			if ( _searchOperatorOptions == null ) return true;
 			if ( indexer <= -1 || indexer > max) return true;
 			// for -Datetime=1 (03-03-2019 00:00:00-03-03-2019 23:59:59), this are two queries >= fail!!
-			if (indexer > _searchOperatorOptions.Count  ) return true; // used when general words without update 
+			if (indexer >= _searchOperatorOptions.Count  ) return true; // used when general words without update 
 			var returnResult = _searchOperatorOptions[indexer];
 			return returnResult;
 		}
@@ -259,8 +262,10 @@ namespace starskycore.ViewModels
 		    {
 			    returnQuery = defaultQuery.Replace(regexInUrl.Value,"-Tags:" + $"\"{regexInUrl.Value}\"");
 			    defaultQuery = defaultQuery.Replace(regexInUrl.Value, string.Empty);
-			    
-			    SetAddSearchFor(regexInUrl.Value.Trim());
+
+			    var searchForQuery = regexInUrl.Value.Trim();	
+			    searchForQuery = Regex.Replace(searchForQuery, "(^\")|(\"$)|", string.Empty); // begin and end of string
+			    SetAddSearchFor(searchForQuery);
 			    SetAddSearchInStringType("tags");
 			    SetAddSearchForOptions("=");
 		    }
@@ -287,6 +292,15 @@ namespace starskycore.ViewModels
 			    SetAddSearchInStringType("tags");
 			    SetAddSearchForOptions("=");
 
+		    }
+
+		    // add for default situatons
+		    if ( SearchFor.Count != SearchOperatorOptions.Count )
+		    {
+			    for ( int i = SearchOperatorOptions.Count; i < SearchFor.Count; i++ )
+			    {
+				    SetAndOrOperator(AndOrRegex("&&"));
+			    }
 		    }
 
 
