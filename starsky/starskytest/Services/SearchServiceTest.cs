@@ -349,11 +349,22 @@ namespace starskytest.Services
         }
 
         [TestMethod]
-        public void SearchService_SearchPageTypeTest()
+        public void SearchService_SearchPageTypeTest_StringEmpty()
         {
             var model = _search.Search();
             Assert.AreEqual("Search",model.PageType);
         }
+	    
+	    
+	    [TestMethod]
+	    public void SearchService_MatchSearch_StringEmpty()
+	    {
+		    var model = _search.MatchSearch(new SearchViewModel
+		    {
+			    SearchQuery = string.Empty
+		    });
+		    Assert.AreEqual(string.Empty,model.SearchQuery);
+	    }
         
 //        [TestMethod]
 //        public void SearchElapsedSecondsIsNotZeroSecondsTest()

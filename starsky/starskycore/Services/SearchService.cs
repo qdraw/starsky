@@ -502,16 +502,19 @@ namespace starskycore.Services
 
         public SearchViewModel MatchSearch(SearchViewModel model)
         {
-            _defaultQuery = model.SearchQuery;
+	        // return nulls to avoid errors
+			if ( string.IsNullOrWhiteSpace(model.SearchQuery) ) return model;
+
+	        _defaultQuery = model.SearchQuery;
 
             foreach (var itemName in new FileIndexItem().FileIndexPropList())
             {
                 SearchItemName(model, itemName);
             }
-
+	        
+			// handle keywords without for example -Tags, or -DateTime prefix
 	        model.ParseDefaultOption(_defaultQuery);
 	        
-	        // SearchItemName(model, "Tags");
             model.SearchQuery = _orginalSearchQuery;
             return model;
         }

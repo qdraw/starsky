@@ -244,6 +244,7 @@ namespace starskycore.ViewModels
 	    
 	    /// <summary>
 	    /// For reparsing keywords to -Tags:"keyword"
+	    /// handle keywords without for example -Tags, or -DateTime prefix
 	    /// </summary>
 	    /// <param name="defaultQuery"></param>
 	    /// <returns></returns>
