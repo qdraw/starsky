@@ -368,8 +368,6 @@ namespace starskycore.Services
 					
 					case SearchViewModel.SearchInTypes.tags:
 						// Tags are searched by multiple words
-
-						// todo: split quoted
 						
 						model.FileIndexItems = model.FileIndexItems.Where(
 							p => p.Tags.ToLower().Contains(model.SearchFor[i])
