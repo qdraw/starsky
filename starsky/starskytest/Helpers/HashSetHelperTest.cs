@@ -38,5 +38,13 @@ namespace starskytest.Helpers
         {
             Assert.AreEqual(string.Empty,HashSetHelper.HashSetToString(null));
         }
+
+
+	    [TestMethod]
+	    public void HashSetHelperTest_ListToStringNullTest()
+	    {
+		    var item = HashSetHelper.ListToString(null);
+		    Assert.AreEqual(0,item.Length);
+	    }
     }
 }

@@ -306,6 +306,8 @@ namespace starskytest.Helpers
                 .NeedHelpShowDialog();
 			new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Geo})
 				.NeedHelpShowDialog();
+	        new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.WebHtml})
+		        .NeedHelpShowDialog();
         }
 
 	    [TestMethod]
