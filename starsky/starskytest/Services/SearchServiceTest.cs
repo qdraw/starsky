@@ -20,20 +20,21 @@ namespace starskytest.Services
         private SearchService _search;
         private Query _query;
 	    private ApplicationDbContext _dbContext;
+	    private IMemoryCache _memoryCache;
 
 	    public SearchServiceTest()
         {
             var provider = new ServiceCollection()
                 .AddMemoryCache()
                 .BuildServiceProvider();
-            var memoryCache = provider.GetService<IMemoryCache>();
+            _memoryCache = provider.GetService<IMemoryCache>();
             
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             builder.UseInMemoryDatabase("searchService");
             var options = builder.Options;
             _dbContext = new ApplicationDbContext(options);
             _search = new SearchService(_dbContext);
-            _query = new Query(_dbContext,memoryCache);
+            _query = new Query(_dbContext,_memoryCache);
         }
 
         public void InsertSearchData()
@@ -117,6 +118,25 @@ namespace starskytest.Services
             }
 
         }
+
+	    [TestMethod]
+	    public void SearchService_CacheTest()
+	    {
+		    var search = new SearchService(_dbContext,_memoryCache);
+
+		    // fill cache with data realdata;
+		    var result = search.Search("test");
+		    Assert.AreEqual("test",result.SearchQuery);
+
+		    // now update only the name direct in the cache
+		    _memoryCache.Set("search-test", new SearchViewModel{SearchQuery = "cache"}, new TimeSpan(0,10,0));
+		    
+		    // now query again
+		    result = search.Search("test");
+		    // and get the cached value
+		    Assert.AreEqual("cache",result.SearchQuery);
+
+	    }
 
         [TestMethod]
         public void SearchService_SearchNull()
