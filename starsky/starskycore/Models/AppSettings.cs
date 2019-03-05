@@ -254,7 +254,7 @@ namespace starskycore.Models
         /// <returns>true = don't edit</returns>
         public bool IsReadOnly(string f)
         {
-            if (ReadOnlyFolders == null) return false;
+            if (!ReadOnlyFolders.Any() ) return false;
             
             var result = ReadOnlyFolders.FirstOrDefault(f.Contains);
             return result != null;

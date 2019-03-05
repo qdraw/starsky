@@ -231,5 +231,27 @@ namespace starskytest.Models
 
 			CollectionAssert.AreEqual(expectedOutputList,output);
 		}
+
+		[TestMethod]
+		public void AppSettings_CloneToDisplay_hideSecurityItems()
+		{
+			var appSettings = new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql,
+				WebFtp = "ftp://t:t@m.com"
+			};
+			var display = appSettings.CloneToDisplay();
+			Assert.AreEqual(display.DatabaseConnection,"warning: Not display due security reasons");
+			Assert.AreEqual(display.WebFtp,"warning: Not display due security reasons");
+
+		}
+
+		[TestMethod]
+		public void AppSettings_IsReadOnly_NullNoItemTest()
+		{
+			var appSettings = new AppSettings();
+			Assert.AreEqual(false, appSettings.IsReadOnly(string.Empty));
+		}
+		
 	}
 }
