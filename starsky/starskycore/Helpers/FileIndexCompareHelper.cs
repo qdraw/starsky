@@ -21,8 +21,8 @@ namespace starskycore.Helpers
             PropertyInfo[] propertiesA = sourceIndexItem.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             PropertyInfo[] propertiesB = updateObject.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-            int count = propertiesA.Length;
             var differenceList = new List<string>();
+	        int count = propertiesA.Length;
             for (int i = 0; i < count; i++)
             {
                 if ((!propertiesA[i].CanRead) || (!propertiesB[i].CanRead)) continue;
