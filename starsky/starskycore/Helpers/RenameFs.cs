@@ -8,15 +8,13 @@ namespace starskycore.Helpers
 {
     public class RenameFs
     {
-		private readonly AppSettings _appSettings;
 		private readonly IQuery _query;
 		private readonly ISync _sync;
 	    private IStorage _iStorage;
 
-	    public RenameFs(AppSettings appSettings, IQuery query, ISync iSync, IStorage iStorage)
+	    public RenameFs(IQuery query, ISync iSync, IStorage iStorage)
 		{
 			_query = query;
-			_appSettings = appSettings;
 			_sync = iSync;
 			_iStorage = iStorage;
 		}
@@ -168,7 +166,7 @@ namespace starskycore.Helpers
 						p.ParentDirectory = p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath)
 					);
 					
-					//todo: remove folder from disk  
+					// todo: remove folder from disk + remove duplicate database item 
 					// remove duplicate item from list
 					_query.GetObjectByFilePath(inputFileSubPath);
 					//_query.RemoveItem(_query.SingleItem(inputFileSubPath).FileIndexItem);

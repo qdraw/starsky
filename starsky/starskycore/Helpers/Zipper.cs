@@ -7,10 +7,6 @@ namespace starskycore.Helpers
 {
 	public class Zipper
 	{
-		public Zipper()
-		{
-			
-		}
 
 		/// <summary>
 		/// Extract zip file to a folder

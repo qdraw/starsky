@@ -60,7 +60,8 @@
 							<p>Datum: <em>@Model.FileIndexItem.DateTime.ToString(cultureInfo)</em></p>
 						}
 						
-						if (Model.FileIndexItem.Make != string.Empty && Model.FileIndexItem.Model != string.Empty && Model.FileIndexItem.IsoSpeed != 0 && Model.FileIndexItem.ShutterSpeed != string.Empty && Math.Abs(Model.FileIndexItem.Aperture) > 0)
+						if (Model.FileIndexItem.Make != string.Empty && Model.FileIndexItem.Model != string.Empty 
+						    && Model.FileIndexItem.IsoSpeed != 0 && Model.FileIndexItem.ShutterSpeed != string.Empty && Math.Abs(Model.FileIndexItem.Aperture) > 0)
 						{
 							<p>
 								Camera: <em>@Model.FileIndexItem.Make  @Model.FileIndexItem.Model</em> - <br/>
@@ -132,7 +133,8 @@
 							 && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationState))
 						{
 							<a target="_blank"
-							   href="https://www.openstreetmap.org/?mlat=@Model.FileIndexItem.Latitude&mlon=@Model.FileIndexItem.Longitude#map=15/@Model.FileIndexItem.Latitude/@Model.FileIndexItem.Longitude">
+							   href="https://www.openstreetmap.org/?mlat=@Model.FileIndexItem.Latitude&mlon=
+									@Model.FileIndexItem.Longitude#map=15/@Model.FileIndexItem.Latitude/@Model.FileIndexItem.Longitude">
 								@Model.FileIndexItem.LocationCity, @Model.FileIndexItem.LocationState (@Model.FileIndexItem.LocationCountry)
 							</a><br />
 							<em>Opent in nieuw tabblad</em>
@@ -141,7 +143,8 @@
 								  && Math.Abs(@Model.FileIndexItem.Longitude) > 0.001)
 						{
 							<a target="_blank"
-							   href="https://www.openstreetmap.org/?mlat=@Model.FileIndexItem.Latitude&mlon=@Model.FileIndexItem.Longitude#map=15/@Model.FileIndexItem.Latitude/@Model.FileIndexItem.Longitude">
+							   href="https://www.openstreetmap.org/?mlat=@Model.FileIndexItem.Latitude&mlon=
+									@Model.FileIndexItem.Longitude#map=15/@Model.FileIndexItem.Latitude/@Model.FileIndexItem.Longitude">
 								@Math.Round(@Model.FileIndexItem.Latitude, 5),@Math.Round(@Model.FileIndexItem.Longitude, 5)
 							</a><br />
 							<em>Opent in nieuw tabblad</em>

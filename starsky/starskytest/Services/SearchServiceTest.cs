@@ -57,7 +57,6 @@ namespace starskytest.Services
                 _query.AddItem(new FileIndexItem
                 {
                     FileName = "lelystadcentrum.jpg",
-                    //FilePath = "/stations/lelystadcentrum.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "lelystadcentrum",
                     Tags = "station, train, lelystad, de trein",
@@ -188,6 +187,13 @@ namespace starskytest.Services
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("station lelystad").SearchCount);
         }
+	    
+	    [TestMethod]
+	    public void SearchService_SearchStationLelystadQuotedTest()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(1, _search.Search("\"station\" \"lelystad\"").SearchCount);
+	    }
 
         [TestMethod]
         public void SearchService_SearchParenthesisTreinTest()
@@ -195,7 +201,14 @@ namespace starskytest.Services
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("\"de trein\"").SearchCount);
         }
-
+	    
+	    [TestMethod]
+	    public void SearchService_SearchNonParenthesisTreinTest()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(1, _search.Search("de trein").SearchCount);
+	    }
+	    
         [TestMethod]
         public void SearchService_SearchCityloopCaseSensitiveTest()
         {
@@ -343,11 +356,22 @@ namespace starskytest.Services
         }
 
         [TestMethod]
-        public void SearchService_SearchPageTypeTest()
+        public void SearchService_SearchPageTypeTest_StringEmpty()
         {
             var model = _search.Search();
             Assert.AreEqual("Search",model.PageType);
         }
+	    
+	    
+	    [TestMethod]
+	    public void SearchService_MatchSearch_StringEmpty()
+	    {
+		    var model = _search.MatchSearch(new SearchViewModel
+		    {
+			    SearchQuery = string.Empty
+		    });
+		    Assert.AreEqual(string.Empty,model.SearchQuery);
+	    }
         
 //        [TestMethod]
 //        public void SearchElapsedSecondsIsNotZeroSecondsTest()
@@ -430,6 +454,185 @@ namespace starskytest.Services
 			Assert.AreEqual(1,result.FileIndexItems.Count);
 			
 		}
-        
+	    
+
+	    [TestMethod]
+	    public void SearchService_thisORThisFileHashes()
+	    {
+		    InsertSearchData();
+		    var result = _search.Search("-FileHash=stationdeletedfile || -FileHash=lelystadcentrum2",0,false);
+		    Assert.AreEqual(2,result.FileIndexItems.Count);
+	    }
+
+	    
+//	    [TestMethod]
+//	    public void SearchService_thisORThis2()
+//	    {
+//		    InsertSearchData();
+//		    var result = _search.Search("-DateTime=2016-01-01 || -FileHash=lelystadcentrum",0,false);
+//		    Assert.AreEqual(2,result.FileIndexItems.Count);
+//	    }
+//
+//	    
+//	    [TestMethod]
+//	    public void SearchService_thisORThisDate()
+//	    {
+//		    InsertSearchData();
+//		    //todo": test FAILING!!
+//		    var result = _search.Search("-DateTime=2016-01-01 || -FileHash=lelystadcentrum",0,false);
+//		    Assert.AreEqual(2,result.FileIndexItems.Count);
+//
+//	    }
+	    
+	    [TestMethod]
+	    public void SearchService_thisORAndCombination()
+	    {
+		    InsertSearchData();
+		    var result = _search.Search("-FileName=lelystadcentrum.jpg || -FileHash=lelystadcentrum && lelystad",0,false);
+			//  -FileHash=lelystadcentrum2 && station >= 1 item
+		    // -DateTime=lelystadcentrum2.jpg >= 1 item
+		    // the and applies to all previous items
+		    // lelystadcentrum && lelystadcentrum2 are items
+		    // station = duplicate in this example but triggers other results when using || instead of &&
+		    Assert.AreEqual(2,result.FileIndexItems.Count);
+
+	    }
+
+	    [TestMethod]
+	    public void SearchService_thisORDefaultKeyword()
+	    {
+		    InsertSearchData();
+		    var result = _search.Search("station || lelystad",0,false);
+		    Assert.AreEqual(3,result.FileIndexItems.Count);
+	    }
+
+	    [TestMethod]
+	    public void SearchViewModel_ParseDefaultOption()
+	    {
+
+		    var modelSearchQuery = "station || lelystad";
+
+		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
+		    Assert.AreEqual("-Tags:\"station\"  -Tags:\"lelystad\"",result);
+
+	    }
+
+	    [TestMethod]
+	    public void SearchViewModel_Quoted_OR_ParseDefaultOption()
+	    {
+
+		    var modelSearchQuery = " \"station test\" || lelystad || key2";
+		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
+		    Assert.AreEqual(" -Tags:\"station test\"  -Tags:\"lelystad\"  -Tags:\"key2\"",result);
+
+	    }
+	    
+	    [TestMethod]
+	    public void SearchViewModel_Quoted_DefaultSplit_ParseDefaultOption()
+	    {
+
+		    var modelSearchQuery = " \"station test\" key2";
+		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
+		    Assert.AreEqual(" -Tags:\"station test\" -Tags:\"key2\"",result);
+			
+	    }
+	    
+	    [TestMethod]
+	    public void SearchViewModel_SearchOperatorOptions_Quoted_with_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = " \"station test\" \"station test\"";
+		    var searchViewModel = new SearchViewModel();
+		    
+			searchViewModel.ParseDefaultOption(modelSearchQuery);
+		    
+		    var searchOperatorOptions = searchViewModel.SearchOperatorOptions;
+		    
+		    Assert.AreEqual(true,searchOperatorOptions[0]);
+		    Assert.AreEqual(true,searchOperatorOptions[1]);
+	    }
+
+	    [TestMethod]
+	    public void SearchViewModel_SearchOperatorOptions_NonQuoted_with_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = "station test";
+		    var searchViewModel = new SearchViewModel();
+		    
+		    searchViewModel.ParseDefaultOption(modelSearchQuery);
+		    
+		    var searchOperatorOptions = searchViewModel.SearchOperatorOptions;
+		    
+		    Assert.AreEqual(true,searchOperatorOptions[0]);
+		    Assert.AreEqual(true,searchOperatorOptions[1]);
+	    }
+
+	    [TestMethod]
+	    public void SearchViewModel_SearchOperatorOptions_NonQuoted_with_OR_Situation_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = "station || test";
+		    var searchViewModel = new SearchViewModel();
+		    
+		    searchViewModel.ParseDefaultOption(modelSearchQuery);
+		    
+		    var searchOperatorOptions = searchViewModel.SearchOperatorOptions;
+		    
+		    Assert.AreEqual(false,searchOperatorOptions[0]);
+		    Assert.AreEqual(false,searchOperatorOptions[1]);
+	    }
+	    
+	    [TestMethod]
+	    public void SearchViewModel_SearchOperatorOptions_Quoted_with_OR_Situation_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = "\"station\" || \"test\"";
+		    var searchViewModel = new SearchViewModel();
+		    
+		    searchViewModel.ParseDefaultOption(modelSearchQuery);
+		    
+		    var searchOperatorOptions = searchViewModel.SearchOperatorOptions;
+		    
+		    Assert.AreEqual(false,searchOperatorOptions[0]);
+		    Assert.AreEqual(false,searchOperatorOptions[1]);
+	    }
+	    
+	    
+	    [TestMethod]
+	    public void SearchService_ParseDateTimeLowInt()
+	    {
+		    var p = new SearchService(_dbContext).ParseDateTime("0");
+		    // today
+		    Assert.AreEqual(p.Day,DateTime.Now.Day);
+		    Assert.AreEqual(p.Month,DateTime.Now.Month);
+	    }
+	    
+	    
+	    [TestMethod]
+	    public void SearchService_ParseDateTimeLargeInt()
+	    {
+		    var p = new SearchService(_dbContext).ParseDateTime("20180911");
+		    // defaults to today
+			Assert.AreEqual(p.Day,DateTime.Now.Day);
+		    Assert.AreEqual(p.Month,DateTime.Now.Month);
+	    }
+	    
+	    [TestMethod]
+	    public void SearchService_ParseDateTimeExample()
+	    {
+		    var p = new SearchService(_dbContext).ParseDateTime("2018-09-11");
+		    // defaults to today
+		    Assert.AreEqual(DateTime.Parse("2018-09-11"),p);
+	    }
+
+
+//	    [TestMethod]
+//	    public void SearchService_DoubleSearchOnOnlyDay()
+//	    {
+//		    InsertSearchData();
+//
+//		    var item = _search.Search("-DateTime=2016-01-01 || -DateTime=0");
+//		    // This are actually four queries
+//		    
+//		    // todo: test FAIL
+//		    // Assert.AreEqual failed. Expected:<2>. Actual:<0>. 
+//		    Assert.AreEqual(2, item.SearchCount);
+//	    }
     }
 }

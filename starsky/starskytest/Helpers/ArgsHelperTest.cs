@@ -287,7 +287,16 @@ namespace starskytest.Helpers
             Assert.AreEqual(true, relative.Contains(yesterdayString));
         }
 
-        [TestMethod]
+	    [TestMethod]
+	    public void ArgsHelper_GetSubpathRelativeTestLargeInt()
+	    {
+		    var args = new List<string> {"--subpathrelative", "201801020"}.ToArray();
+		    var relative = new ArgsHelper(_appSettings).GetSubpathRelative(args);
+		    var todayString = DateTime.Today.AddDays(0).ToString("yyyy_MM_dd");
+		    Assert.AreEqual(true, relative.Contains(todayString));
+	    }
+
+	    [TestMethod]
         public void ArgsHelper_NeedHelpShowDialog()
         {
                 // Just simple show a console dialog

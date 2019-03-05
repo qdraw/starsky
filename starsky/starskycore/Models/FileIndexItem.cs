@@ -25,6 +25,9 @@ namespace starskycore.Models
 		[JsonIgnore]
         public int Id { get; set; }
 
+	    /// <summary>
+	    /// Internal API for storing full file path's
+	    /// </summary>
         private string FilePathPrivate { get; set; } = string.Empty;
 
 		/// <summary>
@@ -56,7 +59,9 @@ namespace starskycore.Models
 	        _fileName = PathHelper.RemovePrefixDbSlash(_fileName);
         }
 
-        // Do not save null in database for FileName
+	    /// <summary>
+	    /// Internal API: Do not save null in database for FileName
+	    /// </summary>
         private string _fileName;
 
 		/// <summary>
@@ -106,8 +111,10 @@ namespace starskycore.Models
             } 
         }
 
-        // Do not save null in database for Parent Directory
-        private string _parentDirectory;
+        /// <summary>
+        /// Internal API: Do not save null in database for Parent Directory
+        /// </summary>
+	    private string _parentDirectory;
 
 		/// <summary>
 		/// Get/Set Relative path of the parent Directory
@@ -156,7 +163,9 @@ namespace starskycore.Models
         }
 
         
-        // Do not save null in database for tags
+	    /// <summary>
+	    /// Internal API: Do not save null in database for tags
+	    /// </summary>
         private string _tags;
 
 		/// <summary>
@@ -209,7 +218,9 @@ namespace starskycore.Models
         [NotMapped]
         public ExifStatus Status { get; set; } = ExifStatus.Default;
         
-        // add default value (6#+)
+        /// <summary>
+        /// Internal API: to store description
+        /// </summary>
         private string _description;
 
 		/// <summary>
@@ -232,7 +243,9 @@ namespace starskycore.Models
             }
         }
         
-        // Do not save null in database for Title
+	    /// <summary>
+	    /// Internal API: to store Title
+	    /// </summary>
         private string _title;
 
 		/// <summary>
@@ -385,7 +398,7 @@ namespace starskycore.Models
         }
 
 
-		/// <summary
+		/// <summary>
 		/// Create an List of all String, bool, Datetime, ImageFormat based database fields		
 		/// </summary>
 		/// <returns> Files the index property list.</returns>
@@ -698,6 +711,9 @@ namespace starskycore.Models
 			return (FileIndexItem) MemberwiseClone();
 		}
 
+	    /// <summary>
+	    /// Internal API: To store aperture
+	    /// </summary>
 	    private double _aperture;
 
 		/// <summary>
@@ -784,9 +800,15 @@ namespace starskycore.Models
 		    set => _makeModel = string.IsNullOrEmpty(_makeModel) ? string.Empty : value;
 	    }
 
+	    /// <summary>
+	    /// Internal API: to [0,0,0]
+	    /// </summary>
 	    private const int MakeModelFixedLength = 3;
 
 
+	    /// <summary>
+	    /// Get the Make (Camera Brand) of the _makeModel 
+	    /// </summary>
 	    [NotMapped]
 	    public string Make
 		{
@@ -799,6 +821,9 @@ namespace starskycore.Models
 			}
 		}
 
+	    /// <summary>
+	    /// Get the Model (Camera Model) of the _makeModel 
+	    /// </summary>
 		[NotMapped]
 	    public string Model
 	    {
@@ -814,7 +839,8 @@ namespace starskycore.Models
 	    /// <summary>
 	    /// To add Make (without comma and TitleCase) and second follow by Model (same as input)
 	    /// </summary>
-	    /// <param name="addedValue"></param>
+	    /// <param name="addedValue">the text to add</param>
+	    /// <param name="fieldIndex">the indexer of the array (the place in the array)</param>
 	    public void SetMakeModel(string addedValue, int fieldIndex)
 	    {
 		    if ( fieldIndex > MakeModelFixedLength ) throw new AggregateException("index is higher than MakeModelFixedLength");
@@ -839,7 +865,12 @@ namespace starskycore.Models
 			_makeModel = FixedListToString(makeModelList);
 	    }
 
-	    public static string FixedListToString(List<string> listKeywords)
+	    /// <summary>
+	    /// Convert list to fixed length string
+	    /// </summary>
+	    /// <param name="listKeywords">list</param>
+	    /// <returns>string with fixed length</returns>
+	    private static string FixedListToString(List<string> listKeywords)
 	    {
 
 		    if ( listKeywords == null )

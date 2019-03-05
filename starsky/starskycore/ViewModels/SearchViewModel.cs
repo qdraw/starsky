@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using starskycore.Models;
 
 namespace starskycore.ViewModels
@@ -103,12 +106,12 @@ namespace starskycore.ViewModels
         
         
 	    /// <summary>
-	    /// Private field: Search Options eg >, <, =. to know which field use the same indexer in _searchIn or _searchFor
+	    /// Private field: Search Options &gt;, &lt;,=. (greater than sign, less than sign, equal sign) to know which field use the same indexer in _searchIn or _searchFor
 	    /// </summary>
         private List<string> _searchForOptions;
 	    
 	    /// <summary>
-	    /// Search Options eg >, <, =. to know which field use the same indexer in _searchIn or _searchFor
+	    /// Search Options eg &gt;, &lt;, =. (greater than sign, less than sign, equal sign)  to know which field use the same indexer in _searchIn or _searchFor
 	    /// </summary>
         public List<string> SearchForOptions
         {  
@@ -118,7 +121,7 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// Add first char of a string to _searchForOptions list
 	    /// </summary>
-	    /// <param name="value"></param>
+	    /// <param name="value">searchFor option (e.g. =, &gt;, &lt; </param>
         public void SetAddSearchForOptions(string value)
         {
             if (_searchForOptions == null) _searchForOptions = new List<string>();
@@ -152,6 +155,164 @@ namespace starskycore.ViewModels
         {
             return (SearchViewModel) MemberwiseClone();
         }
-        
+
+		/// <summary>
+		/// Private field: Search Operator, and or OR
+		/// </summary>
+		private List<bool> _searchOperatorOptions;
+
+	    /// <summary>
+	    /// Add to list in model (&amp;&amp;|| operators) true=&amp;&amp; false=||
+	    /// </summary>
+	    /// <param name="andOrChar"></param>
+	    /// <param name="relativeLocation"></param>
+	    public void SetAndOrOperator(char andOrChar, int relativeLocation = 0)
+		{
+			if ( _searchOperatorOptions == null ) _searchOperatorOptions = new List<bool>();
+
+			bool andOrBool = andOrChar == '&';
+
+			if ( char.IsWhiteSpace(andOrChar) )
+			{
+				andOrBool = false;
+			}
+
+			if (_searchOperatorOptions.Count == 0 && andOrChar == '|')
+			{
+				_searchOperatorOptions.Add(false);
+			}
+			
+			// Store item on a different location in the List<T>
+			if ( relativeLocation == 0 )
+			{
+				_searchOperatorOptions.Add(andOrBool);
+			}
+			else if ( _searchOperatorOptions.Count+relativeLocation <= -1 )
+			{
+				_searchOperatorOptions.Insert(0, andOrBool);
+			}
+			else
+			{
+				_searchOperatorOptions.Insert(_searchOperatorOptions.Count+relativeLocation,andOrBool);
+			}
+			
+		}
+		
+		/// <summary>
+		/// Search Operator, eg. || &amp;&amp;
+		/// </summary>
+		public List<bool> SearchOperatorOptions
+		{  
+			get
+			{
+				return _searchOperatorOptions ?? new List<bool>();
+			}
+		}
+
+	    // false = (skip( continue to next item))
+		public bool SearchOperatorContinue(int indexer, int max)
+		{
+			if ( _searchOperatorOptions == null ) return true;
+			if ( indexer <= -1 || indexer > max) return true;
+			// for -Datetime=1 (03-03-2019 00:00:00-03-03-2019 23:59:59), this are two queries >= fail!!
+			if (indexer >= _searchOperatorOptions.Count  ) return true; // used when general words without update 
+			var returnResult = _searchOperatorOptions[indexer];
+			return returnResult;
+		}
+	    
+	    /// <summary>
+	    /// ||[OR] = |, else = &amp;, default = string.Emphy 
+	    /// </summary>
+	    /// <param name="item">searchquery</param>
+	    /// <returns>bool</returns>
+	    public char AndOrRegex(string item)
+	    {
+		    // (\|\||\&\&)$
+		    Regex rgx = new Regex(@"(\|\||\&\&)$", RegexOptions.IgnoreCase);
+
+		    // To Search Type
+		    var lastStringValue = rgx.Match(item).Value;
+		    
+		    // set default
+		    if ( string.IsNullOrEmpty(lastStringValue) ) lastStringValue = string.Empty;
+
+
+		    if ( lastStringValue == "||" ) return '|';
+		    return '&';
+	    }
+	    
+	    
+	    /// <summary>
+	    /// For reparsing keywords to -Tags:"keyword"
+	    /// handle keywords without for example -Tags, or -DateTime prefix
+	    /// </summary>
+	    /// <param name="defaultQuery"></param>
+	    /// <returns></returns>
+	    public string ParseDefaultOption(string defaultQuery)
+	    {
+		    var returnQuery = defaultQuery;
+
+		    // Get Quoted values
+		    // (["'])(\\?.)*?\1
+		    Regex inurlRegex = new Regex("([\"\'])(\\\\?.)*?\\1",
+			    RegexOptions.IgnoreCase);
+		    
+		    var regexInUrlMatches = inurlRegex.Matches(defaultQuery);
+
+		    foreach ( Match regexInUrl in regexInUrlMatches )
+		    {
+			    returnQuery = defaultQuery.Replace(regexInUrl.Value,"-Tags:" + $"\"{regexInUrl.Value}\"");
+			    defaultQuery = defaultQuery.Replace(regexInUrl.Value, string.Empty);
+
+			    var searchForQuery = regexInUrl.Value.Trim();	
+			    searchForQuery = Regex.Replace(searchForQuery, "(^\")|(\"$)|", string.Empty); // begin and end of string
+			    SetAddSearchFor(searchForQuery);
+			    SetAddSearchInStringType("tags");
+			    SetAddSearchForOptions("=");
+		    }
+		    
+			// ( )?(\|\||&&| )( )?
+		    var andOrSpaceRegex = @"( )?(\|\||&&| )( )?";
+		    var searchValues = Regex.Split(defaultQuery, andOrSpaceRegex)
+			    .Where(p => !string.IsNullOrWhiteSpace(p)).ToList();
+		    
+		    foreach (var  itemQuery in searchValues )
+		    {
+
+			    if ( itemQuery == "||" || itemQuery == "&&" )
+			    {
+				    SetAndOrOperator(AndOrRegex(itemQuery));
+				    returnQuery = returnQuery.Replace("&&", string.Empty);
+				    returnQuery = returnQuery.Replace("||", string.Empty);
+				    continue;
+			    }
+
+			    returnQuery = returnQuery.Replace(itemQuery,"-Tags:" + $"\"{itemQuery}\"");
+			    
+			    SetAddSearchFor(itemQuery.Trim());
+			    SetAddSearchInStringType("tags");
+			    SetAddSearchForOptions("=");
+
+		    }
+
+		    // add for default situatons
+		    if ( SearchFor.Count != SearchOperatorOptions.Count )
+		    {
+			    for ( int i = SearchOperatorOptions.Count; i < SearchFor.Count; i++ )
+			    {
+				    SetAndOrOperator(AndOrRegex("&&"));
+			    }
+		    }
+
+
+		    // remove double quotes
+		    returnQuery = returnQuery.Replace("\"\"", "\"");
+		    
+	    
+		    return returnQuery;
+	    }
+	    
+	    
+	    
     }
 }
