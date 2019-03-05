@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -120,7 +121,7 @@ namespace starskytest.Services
         }
 
 	    [TestMethod]
-	    public void SearchService_CacheTest()
+	    public void SearchService_CacheInjection_CacheTest()
 	    {
 		    var search = new SearchService(_dbContext,_memoryCache);
 
@@ -640,8 +641,7 @@ namespace starskytest.Services
 		    // defaults to today
 		    Assert.AreEqual(DateTime.Parse("2018-09-11"),p);
 	    }
-
-
+	    
 //	    [TestMethod]
 //	    public void SearchService_DoubleSearchOnOnlyDay()
 //	    {
@@ -654,5 +654,43 @@ namespace starskytest.Services
 //		    // Assert.AreEqual failed. Expected:<2>. Actual:<0>. 
 //		    Assert.AreEqual(2, item.SearchCount);
 //	    }
+
+	    // "lelystadcentrum -lelystadcentrum2"
+//			var result = _search.Search("lelystadcentrum -lelystadcentrum2");
+	    
+		[TestMethod]
+		public void SearchService_NotSingleKeywordsSearch()
+		{
+			var model = new SearchViewModel
+			{
+				SearchIn =
+				{
+					"tags",
+					"tags",
+					"description"
+				},
+				FileIndexItems = new List<FileIndexItem>{new FileIndexItem
+					{
+						Tags = "lelystadcentrum"
+					},
+					new FileIndexItem
+					{
+						Tags = "lelystadcentrum2"
+					},
+					new FileIndexItem
+					{
+						Tags = "else"
+					}
+				}
+			};
+			model.SetAddSearchFor("lelystadcentrum");
+			model.SetAddSearchFor("-lelystadcentrum2");
+			model.SetAddSearchFor("description search");
+
+			_search.NotSearch(model);
+		}
+
+
+
     }
 }
