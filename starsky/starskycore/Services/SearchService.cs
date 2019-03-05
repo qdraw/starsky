@@ -303,25 +303,20 @@ namespace starskycore.Services
 
         private SearchViewModel NarrowSearch(SearchViewModel model)
         {
-	        
-			//	        var narrowModel = new List<List<FileIndexItem>>();
-	        
+	        	        
 			// Narrow Search
 			for (var i = 0; i < model.SearchIn.Count; i++)
 			{
-				var searchInType = (SearchViewModel.SearchInTypes)
-				Enum.Parse(typeof(SearchViewModel.SearchInTypes), model.SearchIn[i].ToLower());
-				
-				
-				// OR searches
-				// var useOr = model.SearchOperatorContinue(i, model.SearchIn.Count);
-
 				// skip OR searches
 				if ( !model.SearchOperatorContinue(i, model.SearchIn.Count) )
 				{
 					continue;
-				};
+				}
 				
+				// AND Search ==>
+				
+				var searchInType = (SearchViewModel.SearchInTypes)
+				Enum.Parse(typeof(SearchViewModel.SearchInTypes), model.SearchIn[i].ToLower());
 				
 				switch (searchInType)
 				{
@@ -373,15 +368,13 @@ namespace starskycore.Services
 					
 					case SearchViewModel.SearchInTypes.tags:
 						// Tags are searched by multiple words
+
 						// todo: split quoted
 						
-						var splitSearchFor = Split(model.SearchFor[i]);
-						foreach (var itemSearchFor in splitSearchFor)
-						{
-							model.FileIndexItems = model.FileIndexItems.Where(
-								p => p.Tags.ToLower().Contains(itemSearchFor)
-							).ToList();
-						}
+						model.FileIndexItems = model.FileIndexItems.Where(
+							p => p.Tags.ToLower().Contains(model.SearchFor[i])
+						).ToList();
+						
 					break;
 					
 					case SearchViewModel.SearchInTypes.title:

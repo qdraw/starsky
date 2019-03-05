@@ -202,6 +202,13 @@ namespace starskytest.Services
             Assert.AreEqual(1, _search.Search("\"de trein\"").SearchCount);
         }
 	    
+	    [TestMethod]
+	    public void SearchService_SearchNonParenthesisTreinTest()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(1, _search.Search("de trein").SearchCount);
+	    }
+	    
         [TestMethod]
         public void SearchService_SearchCityloopCaseSensitiveTest()
         {
