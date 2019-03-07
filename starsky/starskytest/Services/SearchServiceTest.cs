@@ -532,10 +532,17 @@ namespace starskytest.Services
 	    {
 
 		    var modelSearchQuery = "station || lelystad";
-
 		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
-		    Assert.AreEqual("-Tags:\"station\"  -Tags:\"lelystad\"",result);
+		    Assert.AreEqual("-Tags:\"station\" -Tags:\"lelystad\" ",result);
 
+	    }
+
+	    [TestMethod]
+	    public void SearchViewModel_Duplicate_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = "station || station";
+		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
+		    Assert.AreEqual("-Tags:\"station\" -Tags:\"station\" ",result);
 	    }
 
 	    [TestMethod]
@@ -544,9 +551,31 @@ namespace starskytest.Services
 
 		    var modelSearchQuery = " \"station test\" || lelystad || key2";
 		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
-		    Assert.AreEqual(" -Tags:\"station test\"  -Tags:\"lelystad\"  -Tags:\"key2\"",result);
+		    Assert.AreEqual("-Tags:\"station test\" -Tags:\"lelystad\" -Tags:\"key2\" ",result);
 
 	    }
+
+	    [TestMethod]
+	    public void SearchViewModel_Quoted_NotSearch_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = "-\"station test\"";
+		    var model = new SearchViewModel();
+		    model.ParseDefaultOption(modelSearchQuery);
+		    Assert.AreEqual("-",model.SearchForOptions[0]);
+	    }
+
+	    
+	    [TestMethod]
+	    public void SearchViewModel_NotSearch_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = "-station";
+		    var model = new SearchViewModel();
+		    model.ParseDefaultOption(modelSearchQuery);
+		    Assert.AreEqual("-",model.SearchForOptions[0]);
+		    
+	    }
+
+	    
 	    
 	    [TestMethod]
 	    public void SearchViewModel_Quoted_DefaultSplit_ParseDefaultOption()
@@ -554,7 +583,7 @@ namespace starskytest.Services
 
 		    var modelSearchQuery = " \"station test\" key2";
 		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
-		    Assert.AreEqual(" -Tags:\"station test\" -Tags:\"key2\"",result);
+		    Assert.AreEqual("-Tags:\"station test\" -Tags:\"key2\" ",result);
 			
 	    }
 	    

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Primitives;
 using starskycore.Models;
 
 namespace starskycore.ViewModels
@@ -250,49 +251,65 @@ namespace starskycore.ViewModels
 	    /// <returns></returns>
 	    public string ParseDefaultOption(string defaultQuery)
 	    {
-		    var returnQuery = defaultQuery;
+		    var returnQueryBuilder = new StringBuilder();
 
 		    // Get Quoted values
 		    // (["'])(\\?.)*?\1
-		    Regex inurlRegex = new Regex("([\"\'])(\\\\?.)*?\\1",
+		    
+		    // Quoted or words
+		    // \w+|(["'])(\\?.)*?\1
+		    
+		    Regex inurlRegex = new Regex("\\w+|([\"\'])(\\\\?.)*?\\1",
 			    RegexOptions.IgnoreCase);
 		    
 		    var regexInUrlMatches = inurlRegex.Matches(defaultQuery);
 
 		    foreach ( Match regexInUrl in regexInUrlMatches )
 		    {
-			    returnQuery = defaultQuery.Replace(regexInUrl.Value,"-Tags:" + $"\"{regexInUrl.Value}\"");
-			    defaultQuery = defaultQuery.Replace(regexInUrl.Value, string.Empty);
+			    if ( string.IsNullOrEmpty(regexInUrl.Value) ) continue;
 
-			    var searchForQuery = regexInUrl.Value.Trim();	
-			    searchForQuery = Regex.Replace(searchForQuery, "(^\")|(\"$)|", string.Empty); // begin and end of string
+			    var startIndexer = regexInUrl.Index;
+			    var startLength = regexInUrl.Length;
+			    var lastChar = defaultQuery[startIndexer + regexInUrl.Length -1 ];
+			    
+			    if ( defaultQuery[regexInUrl.Index] == '"' &&
+			         lastChar == '"' ||
+			         defaultQuery[regexInUrl.Index] == '\'' &&
+			         lastChar == '\'' )
+			    {
+				    startIndexer = regexInUrl.Index + 1;
+				    startLength = regexInUrl.Length - 2;
+			    }
+			    
+			    // Get Value 
+			    var searchForQuery = defaultQuery.Substring(startIndexer, startLength);
+				
+			    returnQueryBuilder.Append($"-Tags:\"{searchForQuery}\" ");
+			    
 			    SetAddSearchFor(searchForQuery);
 			    SetAddSearchInStringType("tags");
-			    SetAddSearchForOptions("=");
-		    }
-		    
-			// ( )?(\|\||&&| )( )?
-		    var andOrSpaceRegex = @"( )?(\|\||&&| )( )?";
-		    var searchValues = Regex.Split(defaultQuery, andOrSpaceRegex)
-			    .Where(p => !string.IsNullOrWhiteSpace(p)).ToList();
-		    
-		    foreach (var  itemQuery in searchValues )
-		    {
-
-			    if ( itemQuery == "||" || itemQuery == "&&" )
-			    {
-				    SetAndOrOperator(AndOrRegex(itemQuery));
-				    returnQuery = returnQuery.Replace("&&", string.Empty);
-				    returnQuery = returnQuery.Replace("||", string.Empty);
-				    continue;
-			    }
-
-			    returnQuery = returnQuery.Replace(itemQuery,"-Tags:" + $"\"{itemQuery}\"");
 			    
-			    SetAddSearchFor(itemQuery.Trim());
-			    SetAddSearchInStringType("tags");
+				// Detecting Not Queries
+			    if ( ( regexInUrl.Index - 1 >= 0 && defaultQuery.ToCharArray()[regexInUrl.Index - 1] == '-' ) 
+			         || ( defaultQuery.ToCharArray()[regexInUrl.Index + 2] == '-' ) )
+				{
+					SetAddSearchForOptions("-");
+					continue;
+				}
+			    
 			    SetAddSearchForOptions("=");
+			    
+		    }
+			   
+			//			// &&|\|\|
+		    Regex andOrRegex = new Regex("&&|\\|\\|",
+			    RegexOptions.IgnoreCase);
+		    
+		    var andOrRegexMatches = andOrRegex.Matches(defaultQuery);
 
+		    foreach ( Match andOrValue in andOrRegexMatches )
+		    {
+			    SetAndOrOperator(AndOrRegex(andOrValue.Value));
 		    }
 
 		    // add for default situatons
@@ -303,13 +320,9 @@ namespace starskycore.ViewModels
 				    SetAndOrOperator(AndOrRegex("&&"));
 			    }
 		    }
-
-
-		    // remove double quotes
-		    returnQuery = returnQuery.Replace("\"\"", "\"");
 		    
 	    
-		    return returnQuery;
+		    return returnQueryBuilder.ToString();
 	    }
 	    
 	    

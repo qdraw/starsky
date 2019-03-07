@@ -319,7 +319,7 @@ namespace starskycore.Services
 		    for ( var i = 0; i < model.SearchIn.Count; i++ )
 		    {
 			    var propertyStringName = new FileIndexItem().FileIndexPropList().FirstOrDefault(p =>
-				    p.ToLowerInvariant() == model.SearchIn[i].ToLowerInvariant());
+				    String.Equals(p, model.SearchIn[i], StringComparison.InvariantCultureIgnoreCase));
 			    if ( string.IsNullOrEmpty(propertyStringName) ) continue;
 
 			    PropertyInfo property = new FileIndexItem().GetType().GetProperty(propertyStringName);
@@ -335,30 +335,19 @@ namespace starskycore.Services
 
 	    public SearchViewModel PropertySearch(SearchViewModel model, PropertyInfo property, string query)
 	    {
-//		    PropertyInfo[] propertiesA = new FileIndexItem().GetType()
-//			    .GetProperties(BindingFlags.Public | BindingFlags.Instance);
-//		    int count = propertiesA.Length;
-//
-//		    foreach ( var property in propertiesA )
-//		    {
-//			    if ( !property.CanRead ) continue;
-//
-//			    if ( property.PropertyType == typeof(string) )
-//			    {
-//				    Console.WriteLine();
-//			    }
-//		    }
-
-//		    foreach ( var p in model.FileIndexItems )
-//		    {
-//			    var t = p.GetType().GetProperty(property.Name).GetValue(p, null).ToString();
-//				var t2 = t.Contains(query);
-//		    }
 
 		    if ( property.PropertyType == typeof(string) )
 		    {
-			    var oldStringValue = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
-			                                                         && p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().Contains(query)  ).ToList();
+//			    var oldStringValue = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
+//			                                                         && p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().Contains(query)  
+//																).ToList();
+			    // Not Contains
+			    var oldStringValue = model.FileIndexItems.Where(
+				    p => p.GetType().GetProperty(property.Name).Name == property.Name 
+					&& ! // not
+					         p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().Contains(query)  
+			    ).ToList();
+			    
 			    Console.WriteLine();
 		    }
 
