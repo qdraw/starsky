@@ -561,7 +561,7 @@ namespace starskytest.Services
 		    var modelSearchQuery = "-\"station test\"";
 		    var model = new SearchViewModel();
 		    model.ParseDefaultOption(modelSearchQuery);
-		    Assert.AreEqual("-",model.SearchForOptions[0]);
+		    Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions[0]);
 	    }
 
 	    
@@ -571,7 +571,7 @@ namespace starskytest.Services
 		    var modelSearchQuery = "-station";
 		    var model = new SearchViewModel();
 		    model.ParseDefaultOption(modelSearchQuery);
-		    Assert.AreEqual("-",model.SearchForOptions[0]);
+		    Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions[0]);
 		    
 	    }
 
@@ -713,8 +713,12 @@ namespace starskytest.Services
 				}
 			};
 			model.SetAddSearchFor("lelystadcentrum");
-			model.SetAddSearchFor("-lelystadcentrum2");
+			model.SetAddSearchFor("lelystadcentrum2"); // not query
 			model.SetAddSearchFor("description search");
+			
+			model.SetAddSearchForOptions("=");
+			model.SetAddSearchForOptions("-");
+			model.SetAddSearchForOptions("=");
 
 			_search.NotSearch(model);
 		}

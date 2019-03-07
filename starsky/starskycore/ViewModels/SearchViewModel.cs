@@ -105,16 +105,33 @@ namespace starskycore.ViewModels
             _searchFor.Add(value.Trim());
         }
         
+	    
+	    public enum SearchForOptionType
+	    {
+		    /// <summary>
+		    ///  &gt;
+		    /// </summary>
+			GreaterThen,
+		    /// <summary>
+		    /// &lt;
+		    /// </summary>
+			LessThen,
+		    /// <summary>
+		    /// =
+		    /// </summary>
+		    Equal,
+			Not
+	    }
         
 	    /// <summary>
 	    /// Private field: Search Options &gt;, &lt;,=. (greater than sign, less than sign, equal sign) to know which field use the same indexer in _searchIn or _searchFor
 	    /// </summary>
-        private List<string> _searchForOptions;
+        private List<SearchForOptionType> _searchForOptions;
 	    
 	    /// <summary>
 	    /// Search Options eg &gt;, &lt;, =. (greater than sign, less than sign, equal sign)  to know which field use the same indexer in _searchIn or _searchFor
 	    /// </summary>
-        public List<string> SearchForOptions
+        public List<SearchForOptionType> SearchForOptions
         {  
             get { return _searchForOptions; }
         }
@@ -124,10 +141,25 @@ namespace starskycore.ViewModels
 	    /// </summary>
 	    /// <param name="value">searchFor option (e.g. =, &gt;, &lt; </param>
         public void SetAddSearchForOptions(string value)
-        {
-            if (_searchForOptions == null) _searchForOptions = new List<string>();
-            _searchForOptions.Add(value.Trim()[0].ToString());
-        }
+	    {
+		    if (_searchForOptions == null) _searchForOptions = new List<SearchForOptionType>();
+
+		    switch ( value.Trim()[0] )
+		    {
+			    case '>':
+				    _searchForOptions.Add(SearchForOptionType.GreaterThen);
+				    break;
+			    case '<':
+				    _searchForOptions.Add(SearchForOptionType.LessThen);
+				    break;
+			    case '-':
+				    _searchForOptions.Add(SearchForOptionType.Not);
+				    break;
+			    case '=':
+				    _searchForOptions.Add(SearchForOptionType.Equal);
+				    break;
+		    }
+	    }
 
         public string PageType { get; } = PageViewType.PageType.Search.ToString();
 
@@ -301,7 +333,7 @@ namespace starskycore.ViewModels
 			    
 		    }
 			   
-			//			// &&|\|\|
+			//	// &&|\|\|
 		    Regex andOrRegex = new Regex("&&|\\|\\|",
 			    RegexOptions.IgnoreCase);
 		    

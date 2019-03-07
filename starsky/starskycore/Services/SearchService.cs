@@ -208,12 +208,12 @@ namespace starskycore.Services
 
 					    switch ( model.SearchForOptions[i] )
 					    {
-						    case "<":
+						    case SearchViewModel.SearchForOptionType.LessThen:
 							    model.FileIndexItems.AddRange(sourceList.Where(
 								    p => p.AddToDatabase <= addtodatabase
 							    ));
 							    break;
-						    case ">":
+						    case SearchViewModel.SearchForOptionType.GreaterThen:
 							    model.FileIndexItems.AddRange(sourceList.Where(
 								    p => p.AddToDatabase >= addtodatabase
 							    ));
@@ -235,13 +235,14 @@ namespace starskycore.Services
 
 
 					    // Searching for entire day
-					    if ( model.SearchForOptions[i] == "=" && dateTime.Hour == 0 &&
+					    if ( model.SearchForOptions[i] == SearchViewModel.SearchForOptionType.Equal
+					         && dateTime.Hour == 0 &&
 					         dateTime.Minute == 0 && dateTime.Second == 0 &&
 					         dateTime.Millisecond == 0 )
 					    {
 
-						    model.SearchForOptions[i] = ">";
-						    model.SearchForOptions.Add("<");
+						    model.SearchForOptions[i] = SearchViewModel.SearchForOptionType.GreaterThen;
+						    model.SearchForOptions.Add(SearchViewModel.SearchForOptionType.LessThen);
 
 						    var add24Hours = dateTime.AddHours(23)
 							    .AddMinutes(59).AddSeconds(59)
@@ -253,9 +254,9 @@ namespace starskycore.Services
 					    // faster search for searching within
 					    // how ever this is still triggered multiple times
 					    var beforeIndexSearchForOptions =
-						    model.SearchForOptions.IndexOf(">");
+						    model.SearchForOptions.IndexOf(SearchViewModel.SearchForOptionType.GreaterThen);
 					    var afterIndexSearchForOptions =
-						    model.SearchForOptions.IndexOf("<");
+						    model.SearchForOptions.IndexOf(SearchViewModel.SearchForOptionType.LessThen);
 					    if ( beforeIndexSearchForOptions >= 0 &&
 					         afterIndexSearchForOptions >= 0 )
 					    {
@@ -277,12 +278,13 @@ namespace starskycore.Services
 
 					    switch ( model.SearchForOptions[i] )
 					    {
-						    case "<":
+						    case SearchViewModel.SearchForOptionType.LessThen:
+							    // "<":
 							    model.FileIndexItems.AddRange(sourceList.Where(
 								    p => p.DateTime <= dateTime
 							    ));
 							    break;
-						    case ">":
+						    case SearchViewModel.SearchForOptionType.GreaterThen:
 							    model.FileIndexItems.AddRange(sourceList.Where(
 								    p => p.DateTime >= dateTime
 							    ));
@@ -325,7 +327,7 @@ namespace starskycore.Services
 			    PropertyInfo property = new FileIndexItem().GetType().GetProperty(propertyStringName);
 					    
 			    
-			    PropertySearch(model, property, model.SearchFor[i]);
+			    PropertySearch(model, property, model.SearchFor[i],model.SearchForOptions[i]);
 		    }
 
 
@@ -333,20 +335,27 @@ namespace starskycore.Services
 		    return model;
 	    }
 
-	    public SearchViewModel PropertySearch(SearchViewModel model, PropertyInfo property, string query)
+	    public SearchViewModel PropertySearch(SearchViewModel model, PropertyInfo property, string query, SearchViewModel.SearchForOptionType searchType)
 	    {
 
 		    if ( property.PropertyType == typeof(string) )
 		    {
-//			    var oldStringValue = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
-//			                                                         && p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().Contains(query)  
-//																).ToList();
 			    // Not Contains
-			    var oldStringValue = model.FileIndexItems.Where(
-				    p => p.GetType().GetProperty(property.Name).Name == property.Name 
-					&& ! // not
-					         p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().Contains(query)  
-			    ).ToList();
+			    if ( searchType == SearchViewModel.SearchForOptionType.Not )
+			    {
+				    model.FileIndexItems = model.FileIndexItems.Where(
+					    p => p.GetType().GetProperty(property.Name).Name == property.Name 
+					         && ! // not
+						         p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().Contains(query)  
+				    ).ToList();
+			    }
+
+			    if ( searchType == SearchViewModel.SearchForOptionType.Equal )
+			    {
+				    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
+			                                                         && p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().Contains(query)  
+																).ToList();
+			    }
 			    
 			    Console.WriteLine();
 		    }
@@ -502,12 +511,14 @@ namespace starskycore.Services
 						
 						switch (model.SearchForOptions[i])
 						{
-							case "<":
+							case SearchViewModel.SearchForOptionType.LessThen:
+								// "<"
 								model.FileIndexItems = model.FileIndexItems.Where(
 								p => p.AddToDatabase <= addtodatabase
 								).ToList();
 							break;
-							case ">":
+							case SearchViewModel.SearchForOptionType.GreaterThen:
+								// ">"
 								model.FileIndexItems = model.FileIndexItems.Where(
 								p => p.AddToDatabase >= addtodatabase
 								).ToList();
@@ -528,12 +539,12 @@ namespace starskycore.Services
 						
 						switch (model.SearchForOptions[i])
 						{
-							case "<":
+							case SearchViewModel.SearchForOptionType.LessThen:
 								model.FileIndexItems = model.FileIndexItems.Where(
 								p => p.DateTime <= dateTime
 								).ToList();
 							break;
-							case ">":
+							case SearchViewModel.SearchForOptionType.GreaterThen:
 								model.FileIndexItems = model.FileIndexItems.Where(
 								p => p.DateTime >= dateTime
 								).ToList();
