@@ -720,7 +720,7 @@ namespace starskytest.Services
 			model.SetAddSearchForOptions("-");
 			model.SetAddSearchForOptions("=");
 
-			_search.NotSearch(model);
+			_search.NarrowSearch2(model);
 		}
 
 

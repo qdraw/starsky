@@ -118,7 +118,7 @@ namespace starskycore.Services
 
             model = WideSearch(_context.FileIndex.AsNoTracking(),model);
 	        
-            model = NarrowSearch(model);
+            model = NarrowSearch2(model);
 
             // Remove duplicates from list
             model.FileIndexItems = model.FileIndexItems.GroupBy(s => s.FilePath)
@@ -314,7 +314,7 @@ namespace starskycore.Services
 		    return model;
 	    }
 
-	    public SearchViewModel NotSearch(SearchViewModel model)
+	    public SearchViewModel NarrowSearch2(SearchViewModel model)
 	    {
 //		    if ( model.FileIndexItems == null ) model = new SearchViewModel();
 
@@ -365,61 +365,6 @@ namespace starskycore.Services
 			    Console.WriteLine();
 		    }
 
-
-		    return model;
-	    }
-
-	    public SearchViewModel NotSearch1(SearchViewModel model)
-	    {
-		    // NotSearch Search
-		    
-		    for ( var i = 0; i < model.SearchIn.Count; i++ )
-		    {
-			    var propertyStringName = new FileIndexItem().FileIndexPropList().FirstOrDefault(p =>
-				    p.ToLowerInvariant() == model.SearchIn[i].ToLowerInvariant());
-			    if ( string.IsNullOrEmpty(propertyStringName) ) continue;
-
-			    var bindingFlags = BindingFlags.Public | BindingFlags.Instance;
-			    PropertyInfo[] propertiesA = new FileIndexItem().GetType().GetProperties(bindingFlags);
-			    var item = propertiesA.FirstOrDefault(p => p.Name == propertyStringName);
-			    
-			    var type = item.PropertyType;
-			    
-			    string searchForValue = model.SearchFor[i];
-
-			    // for now string only
-
-			    if ( type != typeof(string)) continue;;
-
-			    if ( type == typeof(string))
-			    {
-				    Console.WriteLine();				    
-			    }
-			    
-			    
-			    model.FileIndexItems = model.FileIndexItems.Where(
-				    p => p.FileName.ToLowerInvariant().Contains(model.SearchFor[i].ToLowerInvariant())
-			    ).ToList();
-			    
-			    
-//			    var t = model.FileIndexItems.Where(p => p.GetType().GetProperties(bindingFlags).FirstOrDefault(k => k.Name == propertyStringName). ).ToList();
-			    
-			    Console.WriteLine();
-			    
-//			    if (  )
-//			    {
-//				    
-//				    foreach ( var propertyInfo in propertiesA )
-//				    {
-//					    propertyInfo.Name
-//				    }
-//				    propertiesA.Where(p => p.Name == )
-//
-//				    model.FileIndexItems = model.FileIndexItems.Where(
-//					    p =>p..Description.ToLowerInvariant().Contains(model.SearchFor[i].ToLowerInvariant())
-//				    ).ToList();
-//			    }
-		    }
 
 		    return model;
 	    }
