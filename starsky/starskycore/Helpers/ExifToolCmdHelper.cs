@@ -90,7 +90,7 @@ namespace starskycore.Helpers
             {
                 var intColorClass = (int) updateModel.ColorClass;
 
-                var colorDisplayName = FileIndexItem.GetDisplayName(updateModel.ColorClass);
+                var colorDisplayName = EnumHelper.GetDisplayName(updateModel.ColorClass);
                 command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\""+ intColorClass + 
                            "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
             }

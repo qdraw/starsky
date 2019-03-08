@@ -61,7 +61,7 @@ namespace starskytest.Services
                     FileName = "lelystadcentrum.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "lelystadcentrum",
-                    Tags = "station, train, lelystad, de trein",
+                    Tags = "station, train, lelystad, de trein, delete",
 	                DateTime = DateTime.Now
                 });
             }
@@ -222,6 +222,22 @@ namespace starskytest.Services
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("\"de trein\"").SearchCount);
         }
+	    
+	    
+	    [TestMethod]
+	    public void SearchService_SearchIOSDoubleParenthesisTreinTest()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(1, _search.Search("“!delete!”").SearchCount);
+	    }
+	    
+	    [TestMethod]
+	    public void SearchService_SearchIOSSingleParenthesisTreinTest()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(1, _search.Search("‘!delete!’").SearchCount);
+	    }
+	    
 	    
 	    [TestMethod]
 	    public void SearchService_SearchNonParenthesisTreinTest()

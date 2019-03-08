@@ -1,5 +1,7 @@
-﻿@using Microsoft.AspNetCore.Mvc
+﻿@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Mvc
 @using starsky.ViewModels
+@using starskycore.Helpers
 @using starskycore.Models
 @model starskycore.ViewModels.SearchViewModel
 @{
@@ -96,7 +98,7 @@
 			{
 				<i>
 					@Model.SearchIn[i]
-					@Model.SearchForOptions[i]  
+					@EnumHelper.GetDisplayName(Model.SearchForOptions[i])
 					@Model.SearchFor[i]  
 				</i>
 			}

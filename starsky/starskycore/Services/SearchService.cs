@@ -636,6 +636,9 @@ namespace starskycore.Services
         {
 	        // ignore double quotes
 	        model.SearchQuery = model.SearchQuery.Replace("\"\"", "\"");
+	        
+	        // Escape special quotes
+	        model.SearchQuery = Regex.Replace(model.SearchQuery, "[“”‘’]", "\"");
 
             // Without double escapes:
             // (:|=|;|>|<)(([\w\!\~\-_\.\/:]+)|(\"|').+(\"|'))

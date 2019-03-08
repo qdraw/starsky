@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -111,16 +112,23 @@ namespace starskycore.ViewModels
 		    /// <summary>
 		    ///  &gt;
 		    /// </summary>
+		    [Display(Name = ">")]
 			GreaterThen,
 		    /// <summary>
 		    /// &lt;
 		    /// </summary>
+		    [Display(Name = "<")]
 			LessThen,
 		    /// <summary>
 		    /// =
 		    /// </summary>
+		    [Display(Name = "=")]
 		    Equal,
-			Not
+		    /// <summary>
+		    /// -
+		    /// </summary>
+		    [Display(Name = "!-")]
+		    Not
 	    }
         
 	    /// <summary>
@@ -299,6 +307,9 @@ namespace starskycore.ViewModels
 		    
 		    Regex inurlRegex = new Regex("\\w+|([\"\'])(\\\\?.)*?\\1",
 			    RegexOptions.IgnoreCase);
+
+		    // Escape special quotes
+		    defaultQuery = Regex.Replace(defaultQuery, "[“”‘’]", "\"");
 		    
 		    var regexInUrlMatches = inurlRegex.Matches(defaultQuery);
 
