@@ -144,9 +144,9 @@ namespace starskycore.Services
 		    for ( var i = 0; i < model.SearchIn.Count; i++ )
 		    {
 			    var searchInType = ( SearchViewModel.SearchInTypes )
-				    Enum.Parse(typeof(SearchViewModel.SearchInTypes), model.SearchIn[i].ToLower());
+				    Enum.Parse(typeof(SearchViewModel.SearchInTypes), model.SearchIn[i].ToLowerInvariant());
 
-			    model.SearchFor[i] = model.SearchFor[i].ToLower();
+			    model.SearchFor[i] = model.SearchFor[i].ToLowerInvariant();
 
 			    switch ( searchInType )
 			    {
@@ -164,32 +164,32 @@ namespace starskycore.Services
 					    break;
 				    case SearchViewModel.SearchInTypes.description:
 					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.Description.ToLower().Contains(model.SearchFor[i])
+						    p => p.Description.ToLowerInvariant().Contains(model.SearchFor[i])
 					    ));
 					    break;
 				    case SearchViewModel.SearchInTypes.filename:
 					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.FileName.ToLower().Contains(model.SearchFor[i])
+						    p => p.FileName.ToLowerInvariant().Contains(model.SearchFor[i])
 					    ));
 					    break;
 				    case SearchViewModel.SearchInTypes.filepath:
 					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.FilePath.ToLower().Contains(model.SearchFor[i])
+						    p => p.FilePath.ToLowerInvariant().Contains(model.SearchFor[i])
 					    ));
 					    break;
 				    case SearchViewModel.SearchInTypes.parentdirectory:
 					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i])
+						    p => p.ParentDirectory.ToLowerInvariant().Contains(model.SearchFor[i])
 					    ));
 					    break;
 				    case SearchViewModel.SearchInTypes.title:
 					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.Title.ToLower().Contains(model.SearchFor[i])
+						    p => p.Title.ToLowerInvariant().Contains(model.SearchFor[i])
 					    ));
 					    break;
 				    case SearchViewModel.SearchInTypes.filehash:
 					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.FileHash.ToLower().Contains(model.SearchFor[i])
+						    p => p.FileHash.ToLowerInvariant().Contains(model.SearchFor[i])
 					    ));
 					    break;
 				    case SearchViewModel.SearchInTypes.isdirectory:
@@ -303,7 +303,7 @@ namespace starskycore.Services
 					    foreach ( var itemSearchFor in splitSearchFor )
 					    {
 						    model.FileIndexItems.AddRange(sourceList.Where(
-							    p => p.Tags.ToLower().Contains(itemSearchFor)
+							    p => p.Tags.ToLowerInvariant().Contains(itemSearchFor)
 						    ));
 					    }
 
@@ -316,7 +316,7 @@ namespace starskycore.Services
 
 	    public SearchViewModel NarrowSearch2(SearchViewModel model)
 	    {
-//		    if ( model.FileIndexItems == null ) model = new SearchViewModel();
+		    if ( model.FileIndexItems == null ) model = new SearchViewModel();
 
 		    for ( var i = 0; i < model.SearchIn.Count; i++ )
 		    {
@@ -326,7 +326,11 @@ namespace starskycore.Services
 
 			    PropertyInfo property = new FileIndexItem().GetType().GetProperty(propertyStringName);
 					    
-			    
+			    // skip OR searches
+			    if ( !model.SearchOperatorContinue(i, model.SearchIn.Count) )
+			    {
+				    continue;
+			    }
 			    PropertySearch(model, property, model.SearchFor[i],model.SearchForOptions[i]);
 		    }
 
@@ -335,40 +339,86 @@ namespace starskycore.Services
 		    return model;
 	    }
 
-	    public SearchViewModel PropertySearch(SearchViewModel model, PropertyInfo property, string query, SearchViewModel.SearchForOptionType searchType)
+	    public SearchViewModel PropertySearch(SearchViewModel model, PropertyInfo property, string searchForQuery, SearchViewModel.SearchForOptionType searchType)
 	    {
 
 		    if ( property.PropertyType == typeof(string) )
 		    {
-			    // Not Contains
-			    if ( searchType == SearchViewModel.SearchForOptionType.Not )
+			    switch (searchType)
 			    {
-				    model.FileIndexItems = model.FileIndexItems.Where(
-					    p => p.GetType().GetProperty(property.Name).Name == property.Name 
-					         && ! // not
-						         p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().Contains(query)  
-				    ).ToList();
+				    case SearchViewModel.SearchForOptionType.Not:
+					    model.FileIndexItems = model.FileIndexItems.Where(
+						    p => p.GetType().GetProperty(property.Name).Name == property.Name 
+						         && ! // not
+							         p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().Contains(searchForQuery)  
+					    ).ToList();
+					    break;
+				    default:
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
+					                                                           && p.GetType().GetProperty(property.Name).GetValue(p, null)
+						                                                           .ToString().ToLowerInvariant().Contains(searchForQuery)  
+					    ).ToList();
+					    break;
 			    }
-
-			    if ( searchType == SearchViewModel.SearchForOptionType.Equal )
-			    {
-				    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
-			                                                         && p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().Contains(query)  
-																).ToList();
-			    }
-			    
-			    Console.WriteLine();
+			
+			    return model;
 		    }
 
+		    if ( property.PropertyType == typeof(bool) )
+		    {
+			    bool.TryParse(searchForQuery, out var boolIsValue);
+			    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
+			                                                           && (bool) p.GetType().GetProperty(property.Name).GetValue(p, null)  == boolIsValue
+			    ).ToList();
+			    return model;
+		    }
+		    
+		    if ( property.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) )
+		    {
+			    var  castImageFormat = (ExtensionRolesHelper.ImageFormat)
+				    Enum.Parse(typeof(ExtensionRolesHelper.ImageFormat), searchForQuery.ToLowerInvariant());
+			    
+			    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
+			                                                           && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name).GetValue(p, null)  == castImageFormat
+			    ).ToList();
+			    return model;
+		    }
+		    
 		    if ( property.PropertyType == typeof(DateTime) )
 		    {
-			    Console.WriteLine();
+			    
+			    var parsedDateTime = ParseDateTime(searchForQuery);
+			    // parse it back?!
+			    searchForQuery = parsedDateTime.ToString("dd-MM-yyyy HH:mm:ss",CultureInfo.InvariantCulture);
+						
+			    switch (searchType)
+			    {
+				    case SearchViewModel.SearchForOptionType.LessThen:
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
+					                                                           && (DateTime) p.GetType().GetProperty(property.Name).GetValue(p, null)  <= parsedDateTime
+					    ).ToList();
+					    break;
+				    case SearchViewModel.SearchForOptionType.GreaterThen:
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
+					                                                           && (DateTime) p.GetType().GetProperty(property.Name).GetValue(p, null)  >= parsedDateTime
+					    ).ToList();
+					    break;
+				    default:
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
+					                                                           && (DateTime) p.GetType().GetProperty(property.Name).GetValue(p, null)  == parsedDateTime
+					    ).ToList();
+					    break;
+			    }
+			    
+			    return model;
 		    }
 
 
 		    return model;
 	    }
 
+	    
+	    [Obsolete("Will be removed in the next release")] 
 	    private SearchViewModel NarrowSearch(SearchViewModel model)
         {
 	        	        
@@ -411,13 +461,13 @@ namespace starskycore.Services
 					
 					case SearchViewModel.SearchInTypes.filepath:
 						model.FileIndexItems = model.FileIndexItems.Where(
-							p => p.FilePath.ToLower().Contains(model.SearchFor[i].ToLower())
+							p => p.FilePath.ToLowerInvariant().Contains(model.SearchFor[i].ToLowerInvariant())
 						).ToList();
 					break;
 					
 					case SearchViewModel.SearchInTypes.filehash:
 						model.FileIndexItems = model.FileIndexItems.Where(
-							p => p.FileHash.ToLower().Contains(model.SearchFor[i].ToLower())
+							p => p.FileHash.ToLowerInvariant().Contains(model.SearchFor[i].ToLowerInvariant())
 						).ToList();
 					break;
 					
@@ -430,7 +480,7 @@ namespace starskycore.Services
 					
 					case SearchViewModel.SearchInTypes.parentdirectory:
 						model.FileIndexItems = model.FileIndexItems.Where(
-							p => p.ParentDirectory.ToLower().Contains(model.SearchFor[i].ToLower())
+							p => p.ParentDirectory.ToLowerInvariant().Contains(model.SearchFor[i].ToLowerInvariant())
 						).ToList();
 					break;
 					
@@ -438,14 +488,14 @@ namespace starskycore.Services
 						// Tags are searched by multiple words
 						
 						model.FileIndexItems = model.FileIndexItems.Where(
-							p => p.Tags.ToLower().Contains(model.SearchFor[i])
+							p => p.Tags.ToLowerInvariant().Contains(model.SearchFor[i])
 						).ToList();
 						
 					break;
 					
 					case SearchViewModel.SearchInTypes.title:
 						model.FileIndexItems = model.FileIndexItems.Where(
-						p => p.Title.ToLower().Contains(model.SearchFor[i].ToLower())
+						p => p.Title.ToLowerInvariant().Contains(model.SearchFor[i].ToLowerInvariant())
 						).ToList();
 					break;
 					
@@ -510,7 +560,7 @@ namespace starskycore.Services
 
         private List<string> Split(string input)
         {
-            return input.ToLower().Split(" ".ToCharArray()).ToList();
+            return input.ToLowerInvariant().Split(" ".ToCharArray()).ToList();
         }
 
 	    /// <summary>
@@ -620,6 +670,7 @@ namespace starskycore.Services
                 // replace
                 itemQuery = rgx.Replace(itemQuery, string.Empty);
 
+	            // Option last of itemNameSearch
                 var searchForOption = itemNameSearch[itemNameSearch.Length - 1].ToString();
                 model.SetAddSearchForOptions(searchForOption);                    
                 
@@ -634,6 +685,7 @@ namespace starskycore.Services
 	            
                 model.SetAddSearchFor(itemQuery.Trim());
                 model.SetAddSearchInStringType(itemName);
+           
             }
                 
         }

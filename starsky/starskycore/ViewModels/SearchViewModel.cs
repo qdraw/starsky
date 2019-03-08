@@ -158,6 +158,12 @@ namespace starskycore.ViewModels
 			    case '=':
 				    _searchForOptions.Add(SearchForOptionType.Equal);
 				    break;
+			    case ':':
+				    _searchForOptions.Add(SearchForOptionType.Equal);
+				    break;
+			    case ';':
+				    _searchForOptions.Add(SearchForOptionType.Equal);
+				    break;
 		    }
 	    }
 

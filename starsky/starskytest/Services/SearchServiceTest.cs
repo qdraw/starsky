@@ -694,9 +694,7 @@ namespace starskytest.Services
 			{
 				SearchIn =
 				{
-					"tags",
-					"tags",
-					"description"
+					"tags"
 				},
 				FileIndexItems = new List<FileIndexItem>{new FileIndexItem
 					{
@@ -713,14 +711,22 @@ namespace starskytest.Services
 				}
 			};
 			model.SetAddSearchFor("lelystadcentrum");
-			model.SetAddSearchFor("lelystadcentrum2"); // not query
-			model.SetAddSearchFor("description search");
 			
 			model.SetAddSearchForOptions("=");
-			model.SetAddSearchForOptions("-");
-			model.SetAddSearchForOptions("=");
 
-			_search.NarrowSearch2(model);
+			var result = _search.NarrowSearch2(model);
+			Assert.AreEqual(2,result.FileIndexItems.Count);
+
+			// Add extra NOT query			
+			model.SearchIn.Add("tags");
+			model.SetAddSearchFor("lelystadcentrum2"); // not query
+			model.SetAddSearchForOptions("-");
+
+			var result2 = _search.NarrowSearch2(model);
+
+			Assert.AreEqual("lelystadcentrum",result.FileIndexItems[0].Tags);
+
+			
 		}
 
 
