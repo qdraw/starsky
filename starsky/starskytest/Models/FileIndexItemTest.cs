@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starskycore.Helpers;
 using starskycore.Models;
 
 namespace starskytest.Models
@@ -249,7 +250,7 @@ namespace starskytest.Models
         [TestMethod]
         public void FileIndexItemTest_colorDisplayName_WinnerAlt()
         {
-            var colorDisplayName = FileIndexItem.GetDisplayName(FileIndexItem.Color.WinnerAlt);
+            var colorDisplayName = EnumHelper.GetDisplayName(FileIndexItem.Color.WinnerAlt);
             Assert.AreEqual("Winner Alt",colorDisplayName);
         }
 
