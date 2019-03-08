@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starskycore.Helpers;
 using starskycore.Models;
 
 namespace starskytest.Models
@@ -14,6 +15,14 @@ namespace starskytest.Models
             var item = new FileIndexItem{Tags = null};
             Assert.AreEqual(item.Tags,string.Empty);
         }
+	    
+	    [TestMethod]
+	    public void FileIndexItemTest_KeywordsToNull()
+	    {
+		    var item = new FileIndexItem{Keywords = null};
+		    // > read tags instead of keywords
+		    Assert.AreEqual(item.Tags,string.Empty);
+	    }
         
         [TestMethod]
         public void FileIndexItemTest_SetDescriptionsToNull()
@@ -120,7 +129,15 @@ namespace starskytest.Models
             CollectionAssert.AreEqual(eightSeven,output);
         }
 
-        [TestMethod]
+	    [TestMethod]
+	    public void FileIndexItemTest_GetColorClassListString()
+	    {
+		    var input = "string";
+		    var output = new FileIndexItem().GetColorClassList(input);
+		    Assert.AreEqual(0,output.Count); // <= 0
+	    }
+
+	    [TestMethod]
         public void FileIndexItemTest_GetAllColorTest()
         {
             Assert.IsTrue(FileIndexItem.GetAllColor().Any());
@@ -233,7 +250,7 @@ namespace starskytest.Models
         [TestMethod]
         public void FileIndexItemTest_colorDisplayName_WinnerAlt()
         {
-            var colorDisplayName = FileIndexItem.GetDisplayName(FileIndexItem.Color.WinnerAlt);
+            var colorDisplayName = EnumHelper.GetDisplayName(FileIndexItem.Color.WinnerAlt);
             Assert.AreEqual("Winner Alt",colorDisplayName);
         }
 
@@ -290,8 +307,20 @@ namespace starskytest.Models
 		    Assert.AreEqual("iPhone", item.Model);
 	    }
 
+	    [TestMethod]
+	    public void FileIndexItemTest_IsRelativeOrientation()
+	    {
+			var item = FileIndexItem.IsRelativeOrientation(-1);
+		    Assert.AreEqual(true,item);
+		    
+		    var item2 = FileIndexItem.IsRelativeOrientation(1);
+		    Assert.AreEqual(true,item2);
+		    
+		    var item999 = FileIndexItem.IsRelativeOrientation(999);
+		    Assert.AreEqual(false,item999);
+	    }
 
-		//        [TestMethod]
+	    //        [TestMethod]
 		//        public void FileIndexItemParseFileNameTest()
 		//        {
 		//            var createAnImage = new CreateAnImage();

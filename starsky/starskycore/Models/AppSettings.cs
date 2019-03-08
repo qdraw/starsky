@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using starskycore.Helpers;
-using starskycore.Services;
 using TimeZoneConverter;
 
 namespace starskycore.Models
@@ -254,7 +253,7 @@ namespace starskycore.Models
         /// <returns>true = don't edit</returns>
         public bool IsReadOnly(string f)
         {
-            if (ReadOnlyFolders == null) return false;
+            if (!ReadOnlyFolders.Any() ) return false;
             
             var result = ReadOnlyFolders.FirstOrDefault(f.Contains);
             return result != null;

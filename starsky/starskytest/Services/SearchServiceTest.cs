@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -20,20 +21,21 @@ namespace starskytest.Services
         private SearchService _search;
         private Query _query;
 	    private ApplicationDbContext _dbContext;
+	    private IMemoryCache _memoryCache;
 
 	    public SearchServiceTest()
         {
             var provider = new ServiceCollection()
                 .AddMemoryCache()
                 .BuildServiceProvider();
-            var memoryCache = provider.GetService<IMemoryCache>();
+            _memoryCache = provider.GetService<IMemoryCache>();
             
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             builder.UseInMemoryDatabase("searchService");
             var options = builder.Options;
             _dbContext = new ApplicationDbContext(options);
             _search = new SearchService(_dbContext);
-            _query = new Query(_dbContext,memoryCache);
+            _query = new Query(_dbContext,_memoryCache);
         }
 
         public void InsertSearchData()
@@ -59,7 +61,7 @@ namespace starskytest.Services
                     FileName = "lelystadcentrum.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "lelystadcentrum",
-                    Tags = "station, train, lelystad, de trein",
+                    Tags = "station, train, lelystad, de trein, delete",
 	                DateTime = DateTime.Now
                 });
             }
@@ -117,6 +119,25 @@ namespace starskytest.Services
             }
 
         }
+
+	    [TestMethod]
+	    public void SearchService_CacheInjection_CacheTest()
+	    {
+		    var search = new SearchService(_dbContext,_memoryCache);
+
+		    // fill cache with data realdata;
+		    var result = search.Search("test");
+		    Assert.AreEqual("test",result.SearchQuery);
+
+		    // now update only the name direct in the cache
+		    _memoryCache.Set("search-test", new SearchViewModel{SearchQuery = "cache"}, new TimeSpan(0,10,0));
+		    
+		    // now query again
+		    result = search.Search("test");
+		    // and get the cached value
+		    Assert.AreEqual("cache",result.SearchQuery);
+
+	    }
 
         [TestMethod]
         public void SearchService_SearchNull()
@@ -201,6 +222,22 @@ namespace starskytest.Services
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("\"de trein\"").SearchCount);
         }
+	    
+	    
+	    [TestMethod]
+	    public void SearchService_SearchIOSDoubleParenthesisTreinTest()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(1, _search.Search("“!delete!”").SearchCount);
+	    }
+	    
+	    [TestMethod]
+	    public void SearchService_SearchIOSSingleParenthesisTreinTest()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(1, _search.Search("‘!delete!’").SearchCount);
+	    }
+	    
 	    
 	    [TestMethod]
 	    public void SearchService_SearchNonParenthesisTreinTest()
@@ -511,10 +548,17 @@ namespace starskytest.Services
 	    {
 
 		    var modelSearchQuery = "station || lelystad";
-
 		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
-		    Assert.AreEqual("-Tags:\"station\"  -Tags:\"lelystad\"",result);
+		    Assert.AreEqual("-Tags:\"station\" -Tags:\"lelystad\" ",result);
 
+	    }
+
+	    [TestMethod]
+	    public void SearchViewModel_Duplicate_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = "station || station";
+		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
+		    Assert.AreEqual("-Tags:\"station\" -Tags:\"station\" ",result);
 	    }
 
 	    [TestMethod]
@@ -523,9 +567,31 @@ namespace starskytest.Services
 
 		    var modelSearchQuery = " \"station test\" || lelystad || key2";
 		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
-		    Assert.AreEqual(" -Tags:\"station test\"  -Tags:\"lelystad\"  -Tags:\"key2\"",result);
+		    Assert.AreEqual("-Tags:\"station test\" -Tags:\"lelystad\" -Tags:\"key2\" ",result);
 
 	    }
+
+	    [TestMethod]
+	    public void SearchViewModel_Quoted_NotSearch_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = "-\"station test\"";
+		    var model = new SearchViewModel();
+		    model.ParseDefaultOption(modelSearchQuery);
+		    Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions[0]);
+	    }
+
+	    
+	    [TestMethod]
+	    public void SearchViewModel_NotSearch_ParseDefaultOption()
+	    {
+		    var modelSearchQuery = "-station";
+		    var model = new SearchViewModel();
+		    model.ParseDefaultOption(modelSearchQuery);
+		    Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions[0]);
+		    
+	    }
+
+	    
 	    
 	    [TestMethod]
 	    public void SearchViewModel_Quoted_DefaultSplit_ParseDefaultOption()
@@ -533,7 +599,7 @@ namespace starskytest.Services
 
 		    var modelSearchQuery = " \"station test\" key2";
 		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
-		    Assert.AreEqual(" -Tags:\"station test\" -Tags:\"key2\"",result);
+		    Assert.AreEqual("-Tags:\"station test\" -Tags:\"key2\" ",result);
 			
 	    }
 	    
@@ -620,8 +686,7 @@ namespace starskytest.Services
 		    // defaults to today
 		    Assert.AreEqual(DateTime.Parse("2018-09-11"),p);
 	    }
-
-
+	    
 //	    [TestMethod]
 //	    public void SearchService_DoubleSearchOnOnlyDay()
 //	    {
@@ -634,5 +699,53 @@ namespace starskytest.Services
 //		    // Assert.AreEqual failed. Expected:<2>. Actual:<0>. 
 //		    Assert.AreEqual(2, item.SearchCount);
 //	    }
+
+	    // "lelystadcentrum -lelystadcentrum2"
+//			var result = _search.Search("lelystadcentrum -lelystadcentrum2");
+	    
+		[TestMethod]
+		public void SearchService_NotSingleKeywordsSearch()
+		{
+			var model = new SearchViewModel
+			{
+				SearchIn =
+				{
+					"tags"
+				},
+				FileIndexItems = new List<FileIndexItem>{new FileIndexItem
+					{
+						Tags = "lelystadcentrum"
+					},
+					new FileIndexItem
+					{
+						Tags = "lelystadcentrum2"
+					},
+					new FileIndexItem
+					{
+						Tags = "else"
+					}
+				}
+			};
+			model.SetAddSearchFor("lelystadcentrum");
+			
+			model.SetAddSearchForOptions("=");
+
+			var result = _search.NarrowSearch2(model);
+			Assert.AreEqual(2,result.FileIndexItems.Count);
+
+			// Add extra NOT query			
+			model.SearchIn.Add("tags");
+			model.SetAddSearchFor("lelystadcentrum2"); // not query
+			model.SetAddSearchForOptions("-");
+
+			var result2 = _search.NarrowSearch2(model);
+
+			Assert.AreEqual("lelystadcentrum",result.FileIndexItems[0].Tags);
+
+			
+		}
+
+
+
     }
 }

@@ -295,7 +295,8 @@ namespace starskytest.Models
             Assert.AreEqual(anserDateTime,input.DateTime);
         }
 
-        [TestMethod]
+
+	    [TestMethod]
         public void ImportIndexItem_CtorRequest_ColorClass()
         {
             var context = new DefaultHttpContext();
@@ -304,8 +305,22 @@ namespace starskytest.Models
             Assert.AreEqual(1, model.ColorClass);
             
         }
-        
-        [TestMethod]
+
+	    [TestMethod]
+	    [ExpectedException(typeof(FieldAccessException))]
+	    public void ImportIndexItem_CtorRequest_ParseSubfolders()
+	    {
+		    new ImportIndexItem().ParseSubfolders(true);
+	    }
+	    
+	    [TestMethod]
+	    [ExpectedException(typeof(FieldAccessException))]
+	    public void ImportIndexItem_CtorRequest_SearchSubDirInDirectory()
+	    {
+		    new ImportIndexItem().SearchSubDirInDirectory(null, null);
+	    }
+
+	    [TestMethod]
         public void ImportIndexItemParse_OverWriteStructureFeature_Test()
         {
             var createAnImageNoExif = new CreateAnImageNoExif();

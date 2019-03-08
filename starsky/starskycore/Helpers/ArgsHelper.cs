@@ -145,13 +145,13 @@ namespace starskycore.Helpers
 
 	    }
 	    
-	    public static T CastConvert<T>(string value)
-	    {
-		    if (typeof(T).GetTypeInfo().IsEnum)
-			    return (T)Enum.Parse(typeof(T), value);
-
-		    return (T)System.Convert.ChangeType(value, typeof(T));
-	    }
+//	    public static T CastConvert<T>(string value)
+//	    {
+//		    if (typeof(T).GetTypeInfo().IsEnum)
+//			    return (T)Enum.Parse(typeof(T), value);
+//
+//		    return (T)System.Convert.ChangeType(value, typeof(T));
+//	    }
 	    
 
 		public bool NeedHelp(IReadOnlyList<string> args)
@@ -403,10 +403,6 @@ namespace starskycore.Helpers
                 if ((args[arg].ToLower() == "--subpath" || args[arg].ToLower() == "-s") && (arg + 1) != args.Count)
                 {
                     return true;
-                }
-                if ((args[arg].ToLower() == "--path" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count)
-                {
-                    return false;
                 }
             }
 	        return true;
