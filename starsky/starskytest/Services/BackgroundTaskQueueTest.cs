@@ -17,7 +17,7 @@ namespace starskytest.Services
     [TestClass]
     public class BackgroundTaskQueueTest
     {
-        private IBackgroundTaskQueue _bgTaskQueue;
+        private readonly IBackgroundTaskQueue _bgTaskQueue;
 
         public BackgroundTaskQueueTest()
         {

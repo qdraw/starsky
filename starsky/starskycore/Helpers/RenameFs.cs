@@ -10,9 +10,9 @@ namespace starskycore.Helpers
     {
 		private readonly IQuery _query;
 		private readonly ISync _sync;
-	    private IStorage _iStorage;
+		private readonly IStorage _iStorage;
 
-	    public RenameFs(IQuery query, ISync iSync, IStorage iStorage)
+		public RenameFs(IQuery query, ISync iSync, IStorage iStorage)
 		{
 			_query = query;
 			_sync = iSync;
@@ -61,8 +61,8 @@ namespace starskycore.Helpers
 				
 				// skip for files
 				if ( detailView == null) continue;
-				// dirs are mergable
-				if ( detailView.FileIndexItem.IsDirectory == false ) toFileSubPaths[i] = null;
+				// dirs are mergable (isdir=false)
+				if (!detailView.FileIndexItem.IsDirectory) toFileSubPaths[i] = null;
 			}
 			
 			// Remove null from list

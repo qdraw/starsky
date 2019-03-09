@@ -303,9 +303,9 @@ namespace starskycore.ViewModels
 		    // (["'])(\\?.)*?\1
 		    
 		    // Quoted or words
-		    // \w+|(["'])(\\?.)*?\1
+		    // [\w!]+|(["'])(\\?.)*?\1
 		    
-		    Regex inurlRegex = new Regex("\\w+|([\"\'])(\\\\?.)*?\\1",
+		    Regex inurlRegex = new Regex("[\\w!]+|([\"\'])(\\\\?.)*?\\1",
 			    RegexOptions.IgnoreCase);
 
 		    // Escape special quotes
@@ -339,8 +339,8 @@ namespace starskycore.ViewModels
 			    SetAddSearchInStringType("tags");
 			    
 				// Detecting Not Queries
-			    if ( ( regexInUrl.Index - 1 >= 0 && defaultQuery.ToCharArray()[regexInUrl.Index - 1] == '-' ) 
-			         || ( defaultQuery.ToCharArray()[regexInUrl.Index + 2] == '-' ) )
+			    if ( ( regexInUrl.Index - 1 >= 0 && defaultQuery[regexInUrl.Index - 1] == '-' ) 
+			         || ( defaultQuery[regexInUrl.Index + 2] == '-' ) )
 				{
 					SetAddSearchForOptions("-");
 					continue;

@@ -170,7 +170,7 @@ namespace starskytest.Services
             InsertSearchData();
             // GetSubPathByHash
             // See above for objects
-            Assert.AreEqual(_query.GetSubPathByHash("09876543456789"), "/basic/hi.jpg");
+            Assert.AreEqual("/basic/hi.jpg", _query.GetSubPathByHash("09876543456789"));
         }
 
         [TestMethod]
@@ -178,7 +178,7 @@ namespace starskytest.Services
         {
             InsertSearchData();
             // SubPathSlashRemove
-            Assert.AreEqual(_query.SubPathSlashRemove("/test/"), "/test");
+            Assert.AreEqual("/test", _query.SubPathSlashRemove("/test/"));
         }
 
         [TestMethod]
@@ -188,7 +188,7 @@ namespace starskytest.Services
             // Next Winner
             var colorClassFilterList = new FileIndexItem().GetColorClassList("1");
             var next = _query.SingleItem("/basic/hi.jpg", colorClassFilterList);
-            Assert.AreEqual(next.RelativeObjects.NextFilePath, "/basic/hi4.jpg");
+            Assert.AreEqual("/basic/hi4.jpg", next.RelativeObjects.NextFilePath);
         }
 
         [TestMethod]
@@ -198,7 +198,7 @@ namespace starskytest.Services
             // Prev Winner
             var colorClassFilterList = new FileIndexItem().GetColorClassList("1");
             var prev = _query.SingleItem("/basic/hi4.jpg", colorClassFilterList).RelativeObjects.PrevFilePath;
-            Assert.AreEqual(prev, "/basic/hi.jpg");
+            Assert.AreEqual("/basic/hi.jpg", prev);
         }
 
         [TestMethod]
