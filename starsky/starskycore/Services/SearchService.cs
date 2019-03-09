@@ -230,14 +230,11 @@ namespace starskycore.Services
 
 					    break;
 				    default:
-					    var splitSearchFor = Split(model.SearchFor[i]);
-
-					    foreach ( var itemSearchFor in splitSearchFor )
-					    {
-						    model.FileIndexItems.AddRange(sourceList.Where(
-							    p => p.Tags.ToLowerInvariant().Contains(itemSearchFor)
-						    ));
-					    }
+					    
+					    // in old version > loop with: input.ToLowerInvariant().Split(" ".ToCharArray()).ToList()
+					    model.FileIndexItems.AddRange(sourceList.Where(
+						    p => p.Tags.ToLowerInvariant().Contains(model.SearchFor[i])
+					    ));
 
 					    break;
 			    }
@@ -343,8 +340,6 @@ namespace starskycore.Services
 			    PropertySearch(model, property, model.SearchFor[i],model.SearchForOptions[i]);
 		    }
 
-
-
 		    return model;
 	    }
 
@@ -426,13 +421,7 @@ namespace starskycore.Services
 		    return model;
 	    }
 
-	    
-	    
 
-        private List<string> Split(string input)
-        {
-            return input.ToLowerInvariant().Split(" ".ToCharArray()).ToList();
-        }
 
 	    /// <summary>
 	    /// Internal API: to parse datetime objects
