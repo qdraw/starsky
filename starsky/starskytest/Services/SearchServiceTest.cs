@@ -463,7 +463,7 @@ namespace starskytest.Services
         {
             InsertSearchData();
 
-	        var all = _query.GetAllRecursive().Where(p => p.Tags.Contains("!delete!")).ToList();
+//	        var all = _query.GetAllRecursive().Where(p => p.Tags.Contains("!delete!")).ToList();
             var del = _search.Search("!delete!");
 	        var count = del.FileIndexItems.Count();
             Assert.AreEqual(1,count);

@@ -303,9 +303,9 @@ namespace starskycore.ViewModels
 		    // (["'])(\\?.)*?\1
 		    
 		    // Quoted or words
-		    // \w+|(["'])(\\?.)*?\1
+		    // [\w!]+|(["'])(\\?.)*?\1
 		    
-		    Regex inurlRegex = new Regex("\\w+|([\"\'])(\\\\?.)*?\\1",
+		    Regex inurlRegex = new Regex("[\\w!]+|([\"\'])(\\\\?.)*?\\1",
 			    RegexOptions.IgnoreCase);
 
 		    // Escape special quotes
