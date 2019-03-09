@@ -10,9 +10,9 @@ namespace starskycore.Helpers
     {
 		private readonly IQuery _query;
 		private readonly ISync _sync;
-	    private IStorage _iStorage;
+		private readonly IStorage _iStorage;
 
-	    public RenameFs(IQuery query, ISync iSync, IStorage iStorage)
+		public RenameFs(IQuery query, ISync iSync, IStorage iStorage)
 		{
 			_query = query;
 			_sync = iSync;
