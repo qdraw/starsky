@@ -9,7 +9,7 @@ namespace starskycore.Services
 {
 	public class StorageFilesystem : IStorage
 	{
-		private AppSettings _appSettings;
+		private readonly AppSettings _appSettings;
 
 		public StorageFilesystem(AppSettings appSettings)
 		{
