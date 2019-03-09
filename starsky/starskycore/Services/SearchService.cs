@@ -75,7 +75,6 @@ namespace starskycore.Services
 	        var skipFirstNumber = pageNumber * NumberOfResultsInView;
 	        var skipLastNumber = searchModel.SearchCount - ( pageNumber * NumberOfResultsInView ) - NumberOfResultsInView;
 
-	        //if ( skipLastNumber <= 0 ) skipLastNumber = skipLastNumber * -1;
 	        // Remove the last items
 	        var skippedLastList = searchModel.FileIndexItems
 		        .Skip(skipFirstNumber)
@@ -227,72 +226,7 @@ namespace starskycore.Services
 
 				    case SearchViewModel.SearchInTypes.datetime:
 
-					    var dateTime = ParseDateTime(model.SearchFor[i]);
-					    model.SearchFor[i] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",
-						    CultureInfo.InvariantCulture);
-
-
-					    // Searching for entire day
-					    if ( model.SearchForOptions[i] == SearchViewModel.SearchForOptionType.Equal
-					         && dateTime.Hour == 0 &&
-					         dateTime.Minute == 0 && dateTime.Second == 0 &&
-					         dateTime.Millisecond == 0 )
-					    {
-
-						    model.SearchForOptions[i] = SearchViewModel.SearchForOptionType.GreaterThen;
-						    model.SearchForOptions.Add(SearchViewModel.SearchForOptionType.LessThen);
-
-						    var add24Hours = dateTime.AddHours(23)
-							    .AddMinutes(59).AddSeconds(59)
-							    .ToString(CultureInfo.InvariantCulture);
-						    model.SearchFor.Add(add24Hours);
-						    model.SearchIn.Add("DateTime");
-					    }
-
-					    // faster search for searching within
-					    // how ever this is still triggered multiple times
-					    var beforeIndexSearchForOptions =
-						    model.SearchForOptions.IndexOf(SearchViewModel.SearchForOptionType.GreaterThen);
-					    var afterIndexSearchForOptions =
-						    model.SearchForOptions.IndexOf(SearchViewModel.SearchForOptionType.LessThen);
-					    if ( beforeIndexSearchForOptions >= 0 &&
-					         afterIndexSearchForOptions >= 0 )
-					    {
-						    var beforeDateTime =
-							    ParseDateTime(model.SearchFor[beforeIndexSearchForOptions]);
-						    var afterDateTime =
-							    ParseDateTime(model.SearchFor[afterIndexSearchForOptions]);
-
-						    model.FileIndexItems.AddRange(sourceList.Where(
-							    p => p.DateTime >= beforeDateTime && p.DateTime <= afterDateTime
-						    ));
-
-						    // We have now an extra query, and this is always AND  
-						    model.SetAndOrOperator('&', -2);
-
-						    continue;
-					    }
-
-
-					    switch ( model.SearchForOptions[i] )
-					    {
-						    case SearchViewModel.SearchForOptionType.LessThen:
-							    // "<":
-							    model.FileIndexItems.AddRange(sourceList.Where(
-								    p => p.DateTime <= dateTime
-							    ));
-							    break;
-						    case SearchViewModel.SearchForOptionType.GreaterThen:
-							    model.FileIndexItems.AddRange(sourceList.Where(
-								    p => p.DateTime >= dateTime
-							    ));
-							    break;
-						    default:
-							    model.FileIndexItems.AddRange(sourceList.Where(
-								    p => p.DateTime == dateTime
-							    ));
-							    break;
-					    }
+					    WideSearchDateTimeGet(sourceList,model,i);
 
 					    break;
 				    default:
@@ -310,6 +244,83 @@ namespace starskycore.Services
 		    }
 
 		    return model;
+	    }
+
+	    /// <summary>
+	    /// Query for DateTime: in between values, entire days, from, type of queries
+	    /// </summary>
+	    /// <param name="sourceList">Query Source</param>
+	    /// <param name="model">output</param>
+	    /// <param name="indexer">number of search query (i)</param>
+	    private void WideSearchDateTimeGet(IQueryable<FileIndexItem> sourceList,
+		    SearchViewModel model, int indexer)
+	    {
+			var dateTime = ParseDateTime(model.SearchFor[indexer]);
+			model.SearchFor[indexer] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",
+				CultureInfo.InvariantCulture);
+
+
+			// Searching for entire day
+			if ( model.SearchForOptions[indexer] == SearchViewModel.SearchForOptionType.Equal
+				 && dateTime.Hour == 0 &&
+				 dateTime.Minute == 0 && dateTime.Second == 0 &&
+				 dateTime.Millisecond == 0 )
+			{
+
+				model.SearchForOptions[indexer] = SearchViewModel.SearchForOptionType.GreaterThen;
+				model.SearchForOptions.Add(SearchViewModel.SearchForOptionType.LessThen);
+
+				var add24Hours = dateTime.AddHours(23)
+					.AddMinutes(59).AddSeconds(59)
+					.ToString(CultureInfo.InvariantCulture);
+				model.SearchFor.Add(add24Hours);
+				model.SearchIn.Add("DateTime");
+			}
+
+			// faster search for searching within
+			// how ever this is still triggered multiple times
+			var beforeIndexSearchForOptions =
+				model.SearchForOptions.IndexOf(SearchViewModel.SearchForOptionType.GreaterThen);
+			var afterIndexSearchForOptions =
+				model.SearchForOptions.IndexOf(SearchViewModel.SearchForOptionType.LessThen);
+			if ( beforeIndexSearchForOptions >= 0 &&
+				 afterIndexSearchForOptions >= 0 )
+			{
+				var beforeDateTime =
+					ParseDateTime(model.SearchFor[beforeIndexSearchForOptions]);
+				var afterDateTime =
+					ParseDateTime(model.SearchFor[afterIndexSearchForOptions]);
+
+				model.FileIndexItems.AddRange(sourceList.Where(
+					p => p.DateTime >= beforeDateTime && p.DateTime <= afterDateTime
+				));
+
+				// We have now an extra query, and this is always AND  
+				model.SetAndOrOperator('&', -2);
+
+				return;
+			}
+
+
+			switch ( model.SearchForOptions[indexer] )
+			{
+				case SearchViewModel.SearchForOptionType.LessThen:
+					// "<":
+					model.FileIndexItems.AddRange(sourceList.Where(
+						p => p.DateTime <= dateTime
+					));
+					break;
+				case SearchViewModel.SearchForOptionType.GreaterThen:
+					model.FileIndexItems.AddRange(sourceList.Where(
+						p => p.DateTime >= dateTime
+					));
+					break;
+				default:
+					model.FileIndexItems.AddRange(sourceList.Where(
+						p => p.DateTime == dateTime
+					));
+					break;
+			}
 	    }
 
 	    public SearchViewModel NarrowSearch2(SearchViewModel model)
