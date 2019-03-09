@@ -23,15 +23,15 @@ namespace starskytest.Services
     [TestClass]
     public class ImportServiceTest
     {
-        private ImportService _import;
-        private Query _query;
-        private SyncService _isync;
-        private IExiftool _exiftool;
+        private readonly ImportService _import;
+        private readonly Query _query;
+        private readonly SyncService _isync;
+        private readonly IExiftool _exiftool;
         private readonly AppSettings _appSettings;
-        private CreateAnImage _createAnImage;
+        private readonly CreateAnImage _createAnImage;
         private readonly ReadMeta _readmeta;
-	    private string _fileHashCreateAnImage;
-	    private ApplicationDbContext _context;
+	    private readonly string _fileHashCreateAnImage;
+	    private readonly ApplicationDbContext _context;
 
 	    public ImportServiceTest()
         {

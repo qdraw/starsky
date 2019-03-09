@@ -24,7 +24,7 @@ namespace starskytest.Helpers
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _newImage;
 		private readonly SyncService _sync;
-		private StorageFilesystem _iStorage;
+		private readonly StorageFilesystem _iStorage;
 
 		public RenameFsTest()
 		{

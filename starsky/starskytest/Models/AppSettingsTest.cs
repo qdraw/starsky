@@ -56,8 +56,8 @@ namespace starskytest.Models
 		public void AppSettingsProviderTest_SqliteFullPathTest()
 		{
 			var datasource = _appSettings.SqliteFullPath("Data Source=data.db", string.Empty);
-			Assert.AreEqual(datasource.Contains("data.db"), true);
-			Assert.AreEqual(datasource.Contains("Data Source="), true);
+			Assert.AreEqual(true, datasource.Contains("data.db") );
+			Assert.AreEqual(true, datasource.Contains("Data Source="));
 		}
 
 
@@ -68,8 +68,8 @@ namespace starskytest.Models
 
 			var datasource = _appSettings.SqliteFullPath(
 				"Data Source=data.db", Path.DirectorySeparatorChar + "starsky");
-			Assert.AreEqual(datasource.Contains("data.db"), true);
-			Assert.AreEqual(datasource.Contains("Data Source="), true);
+			Assert.AreEqual(true, datasource.Contains("data.db"));
+			Assert.AreEqual(true, datasource.Contains("Data Source="));
 		}
 
 		[TestMethod]
@@ -135,7 +135,7 @@ namespace starskytest.Models
 		public void AppSettingsStructureExampleNoSetting()
 		{
 			var content = _appSettings.StructureExampleNoSetting;
-			Assert.AreEqual(content.Contains(DateTime.Now.Year.ToString()), true);
+			Assert.AreEqual(true, content.Contains(DateTime.Now.Year.ToString()));
 		}
 
 		[TestMethod]
