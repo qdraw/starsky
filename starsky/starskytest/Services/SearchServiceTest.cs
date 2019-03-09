@@ -730,7 +730,7 @@ namespace starskytest.Services
 			
 			model.SetAddSearchForOptions("=");
 
-			var result = _search.NarrowSearch2(model);
+			var result = _search.NarrowSearch(model);
 			Assert.AreEqual(2,result.FileIndexItems.Count);
 
 			// Add extra NOT query			
@@ -738,7 +738,7 @@ namespace starskytest.Services
 			model.SetAddSearchFor("lelystadcentrum2"); // not query
 			model.SetAddSearchForOptions("-");
 
-			var result2 = _search.NarrowSearch2(model);
+			var result2 = _search.NarrowSearch(model);
 
 			Assert.AreEqual("lelystadcentrum",result.FileIndexItems[0].Tags);
 
