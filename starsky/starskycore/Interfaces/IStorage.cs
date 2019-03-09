@@ -13,9 +13,6 @@ namespace starskycore.Interfaces
 		void CreateDirectory(string subPath);
 		IEnumerable<string> GetAllFilesInDirectory(string subPath);
 		IEnumerable<string> GetDirectoryRecursive(string subPath);
-		
-//		bool ExistThumbnail(string subPath);
-
-		
+			
 	}
 }

@@ -90,21 +90,7 @@ namespace starskycore.Services
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
 			if (fullFilePath == null) return Enumerable.Empty<string>();
 
-			string[] allFiles = Directory.GetFiles(fullFilePath);
-
-			var imageFilesList = new List<string>();
-			foreach (var file in allFiles)
-			{
-				// Path.GetExtension uses (.ext)
-				// the same check in SingleFile
-				// Recruisive >= same check
-				// ignore Files with ._ names, this is Mac OS specific
-				var isAppleDouble = Path.GetFileName(file).StartsWith("._");
-				if (!isAppleDouble)
-				{
-					imageFilesList.Add(file);
-				}
-			}
+			var imageFilesList = new FilesystemHelper().GetAllFilesInDirectory(fullFilePath);
 
 			// to filter use:
 			// ..etAllFilesInDirectory(subPath)
@@ -124,7 +110,8 @@ namespace starskycore.Services
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
 			if (fullFilePath == null) return Enumerable.Empty<string>();
 			
-			string[] folders = Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);
+			var folders = new FilesystemHelper().GetDirectoryRecursive(fullFilePath);
+
 			// Used For subfolders
 			// convert back to subpath style
 			return _appSettings.RenameListItemsToDbStyle(folders.ToList());

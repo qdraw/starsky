@@ -11,11 +11,13 @@ namespace starskycore.Helpers
     {
         private readonly IExiftool _exiftool;
         private readonly AppSettings _appSettings;
+	    private readonly IStorage _iStorage;
 
-        public ExifToolCmdHelper(AppSettings appSettings = null, IExiftool exiftool = null)
+	    public ExifToolCmdHelper(AppSettings appSettings = null, IExiftool exiftool = null, IStorage iStorage  = null)
         {
             _exiftool = exiftool;
             _appSettings = appSettings;
+//	        _iStorage = iStorage;
         }
 
         public string Update(FileIndexItem updateModel, string inputFullFilePath, List<string> comparedNames)

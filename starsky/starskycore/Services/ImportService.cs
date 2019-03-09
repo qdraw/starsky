@@ -21,21 +21,22 @@ namespace starskycore.Services
         private readonly IServiceScopeFactory _scopeFactory;
 	    private readonly bool _isConnection;
 
-        public ImportService(ApplicationDbContext context, 
-            ISync isync, 
-            IExiftool exiftool, 
-            AppSettings appSettings, 
-            IReadMeta readMeta, 
-            IServiceScopeFactory scopeFactory)
+	    public ImportService(
+			ApplicationDbContext context, // <= for table import-index
+			ISync isync, 
+			IExiftool exiftool, 
+			AppSettings appSettings, 
+			IReadMeta readMeta, 
+			IServiceScopeFactory scopeFactory)
         {
-            _context = context;
-	        _isConnection = _context.TestConnection(appSettings);
-		        
-            _isync = isync;
-            _exiftool = exiftool;
-            _appSettings = appSettings;
-            _readmeta = readMeta;
-            _scopeFactory = scopeFactory;
+			_context = context;
+			_isConnection = _context.TestConnection(appSettings);
+				
+			_isync = isync;
+			_exiftool = exiftool;
+			_appSettings = appSettings;
+			_readmeta = readMeta;
+			_scopeFactory = scopeFactory;
         }
 
 
@@ -53,7 +54,8 @@ namespace starskycore.Services
             return output;
         }
 
-        // Imports a single path, used by the cli importer
+
+	    // Imports a single path, used by the cli importer
         public List<string> Import(string inputFullPath, ImportSettingsModel importSettings)
         {
             if (!Directory.Exists(inputFullPath) && File.Exists(inputFullPath))
@@ -152,17 +154,74 @@ namespace starskycore.Services
             return File.Exists(destinationFullPath) ? null : destinationFullPath;
         }
 
-        public FileIndexItem ReadExifAndXmpFromFile(string inputFileFullPath)
+
+        
+        
+        // Add a new item to the database
+        private void AddItem(ImportIndexItem updateStatusContent)
         {
-            return _readmeta.ReadExifAndXmpFromFile(inputFileFullPath,ExtensionRolesHelper.GetImageFormat(inputFileFullPath));
+            updateStatusContent.AddToDatabase = DateTime.UtcNow;
+            
+            _context.ImportIndex.Add(updateStatusContent);
+            _context.SaveChanges();
+            // removed MySqlException catch
+        }
+        
+        // Remove a new item from the database
+        public ImportIndexItem RemoveItem(ImportIndexItem updateStatusContent)
+        {
+            _context.ImportIndex.Remove(updateStatusContent);
+            _context.SaveChanges();
+            return updateStatusContent;
+        }
+        
+        // Return a File Item By it Hash value
+        // New added, directory hash now also hashes
+        public ImportIndexItem GetItemByHash(string fileHash)
+        {
+            InjectServiceScope();
+            var query = _context.ImportIndex.FirstOrDefault(
+                p => p.FileHash == fileHash 
+            );
+            return query;
         }
 
-        public bool IsAgeFileFilter(ImportSettingsModel importSettings, DateTime exifDateTime)
+	    public bool IsHashInImportDb(string fileHashCode)
         {
-            return !importSettings.AgeFileFilterDisabled && exifDateTime < DateTime.UtcNow.AddYears(-2);
-        }
+			InjectServiceScope();
 
-        private string ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)
+			if ( _isConnection )
+				return _context.ImportIndex.Any(
+					p => p.FileHash == fileHashCode
+				);
+	        
+			// When there is no mysql connection continue
+			Console.WriteLine($">> _isConnection == false -- fileHash:{fileHashCode}");
+			return false;
+
+        }
+	    
+	    /// <summary>
+	    /// Query Database for all items
+	    /// </summary>
+	    /// <returns></returns>
+	    public List<ImportIndexItem> GetAll()
+	    {
+		    return _context.ImportIndex.Where(p => p.FileHash != null).ToList();
+	    }
+
+        /// <summary>
+        /// Dependency injection, used in background tasks
+        /// </summary>
+        private void InjectServiceScope()
+        {
+            if (_scopeFactory == null) return;
+            var scope = _scopeFactory.CreateScope();
+            _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        }
+	    
+	    
+	    public string ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)
         {
             var exifToolSync = false;
             
@@ -235,7 +294,7 @@ namespace starskycore.Services
                     nameof(FileIndexItem.Description),
                 };
 
-                new ExifToolCmdHelper(_appSettings, _exiftool).Update(fileIndexItem, destinationFullPath,
+                new ExifToolCmdHelper(_appSettings, _exiftool, new StorageTempFolderFilesystem()).Update(fileIndexItem, destinationFullPath,
                     comparedNamesList);
             }
             
@@ -266,88 +325,50 @@ namespace starskycore.Services
 
 	        return fileIndexItem.FilePath;
         }
-        
-        
-        // Add a new item to the database
-        private void AddItem(ImportIndexItem updateStatusContent)
-        {
-            updateStatusContent.AddToDatabase = DateTime.UtcNow;
-            
-            _context.ImportIndex.Add(updateStatusContent);
-            _context.SaveChanges();
-            // removed MySqlException catch
-        }
-        
-        // Remove a new item from the database
-        public ImportIndexItem RemoveItem(ImportIndexItem updateStatusContent)
-        {
-            _context.ImportIndex.Remove(updateStatusContent);
-            _context.SaveChanges();
-            return updateStatusContent;
-        }
-        
-        // Return a File Item By it Hash value
-        // New added, directory hash now also hashes
-        public ImportIndexItem GetItemByHash(string fileHash)
-        {
-            InjectServiceScope();
-            var query = _context.ImportIndex.FirstOrDefault(
-                p => p.FileHash == fileHash 
-            );
-            return query;
-        }
 
-//	    /// <summary>
-//	    /// Check for _query and ImportIndex table
-//	    /// </summary>
-//	    /// <param name="fileHashCode"></param>
-//	    /// <returns>True = contains any value</returns>
-//	    public bool IsHashInImportAndQueryDb(string fileHashCode)
-//	    {
-//		    InjectServiceScope();
-//
-//		    // If in FileHash Table
-//		    if ( _isConnection && 
-//		         _context.FileIndex.Any(p => p.FileHash == fileHashCode 
-//		                                     && p.Tags.Contains("!delete!") == false 
-//		                                     && p.IsDirectory == false)) return true;
-//
-//		    return IsHashInImportDb(fileHashCode);
-//	    }
+		public List<ImportIndexItem> Preflight(List<string> tempImportPaths, ImportSettingsModel importSettings)
+		{
+			// Do some import checks before sending it to the background service
+			var fileIndexResultsList = new List<ImportIndexItem>();
+			var hashList = FileHash.GetHashCode(tempImportPaths.ToArray());
 
-	    public bool IsHashInImportDb(string fileHashCode)
-        {
-			InjectServiceScope();
+			for (int i = 0; i < hashList.Count; i++)
+			{
+				var hash = hashList[i];
 
-			if ( _isConnection )
-				return _context.ImportIndex.Any(
-					p => p.FileHash == fileHashCode
-				);
-	        
-			// When there is no mysql connection continue
-			Console.WriteLine($">> _isConnection == false -- fileHash:{fileHashCode}");
-			return false;
+				var fileIndexItem = ReadExifAndXmpFromFile(tempImportPaths[i]);
+				var importIndexItem = ObjectCreateIndexItem(
+					tempImportPaths[i], hash, fileIndexItem, importSettings.Structure);
+                
+				// do some filename reading to get dates, based on 'structure config' 
+				importIndexItem.ParseDateTimeFromFileName();
 
-        }
-	    
-	    /// <summary>
-	    /// Query Database for all items
-	    /// </summary>
-	    /// <returns></returns>
-	    public List<ImportIndexItem> GetAll()
-	    {
-		    return _context.ImportIndex.Where(p => p.FileHash != null).ToList();
-	    }
+				var item = GetItemByHash(hash);
+				if (item != null)
+				{
+					fileIndexResultsList.Add(item);
+					continue;
+				}
 
-        /// <summary>
-        /// Dependency injection, used in background tasks
-        /// </summary>
-        private void InjectServiceScope()
-        {
-            if (_scopeFactory == null) return;
-            var scope = _scopeFactory.CreateScope();
-            _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        }
+				if (!IsAgeFileFilter(importSettings, importIndexItem.DateTime))
+				{
+					fileIndexResultsList.Add(importIndexItem);
+				}
+			}
+
+			return fileIndexResultsList;
+		}
+		
+		
+		public FileIndexItem ReadExifAndXmpFromFile(string inputFileFullPath)
+		{
+			return _readmeta.ReadExifAndXmpFromFile(inputFileFullPath,ExtensionRolesHelper.GetImageFormat(inputFileFullPath));
+		}
+
+		public bool IsAgeFileFilter(ImportSettingsModel importSettings, DateTime exifDateTime)
+		{
+			return !importSettings.AgeFileFilterDisabled && exifDateTime < DateTime.UtcNow.AddYears(-2);
+		}
         
     }
     
