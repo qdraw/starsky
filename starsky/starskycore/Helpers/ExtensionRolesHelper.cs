@@ -89,15 +89,15 @@ namespace starskycore.Helpers
 		/// <summary>
 		/// Check if name is file.jpg or return false if not
 		/// </summary>
-		/// <param name="filename">e.g. filename.jpg</param>
+		/// <param name="filename">e.g. filename.jpg or filepath</param>
 		/// <returns></returns>
 		private static bool FilenameBaseCheck(string filename)
 		{
 			if ( string.IsNullOrEmpty(filename) || filename.Length <= 3) return false;
 			
 			// Dot two,three,four letter extenstion
-			// [a-z]\.[a-z1-9]{2,4}$
-			var regexer = new Regex("[a-z]\\.[a-z1-9]{2,4}$").Matches(filename);
+			// [\w]\.[a-z1-9]{2,4}$
+			var regexer = new Regex("[\\w]\\.[a-z1-9]{2,4}$").Matches(filename);
 			if ( regexer.Count == 0 ) return false;
 			return true;
 		}
