@@ -96,8 +96,8 @@ namespace starskycore.Helpers
 			if ( string.IsNullOrEmpty(filename) || filename.Length <= 3) return false;
 			
 			// Dot two,three,four letter extenstion
-			// [\w]\.[a-z1-9]{2,4}$
-			var regexer = new Regex("[\\w]\\.[a-z1-9]{2,4}$").Matches(filename);
+			// [\w\d]\.[a-z1-9]{2,4}$
+			var regexer = new Regex("[\\w\\d]\\.[a-z1-9]{2,4}$").Matches(filename);
 			if ( regexer.Count == 0 ) return false;
 			return true;
 		}
