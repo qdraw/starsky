@@ -16,8 +16,22 @@ namespace starskytest.Helpers
             Assert.AreEqual(false,ExtensionRolesHelper.IsExtensionThumbnailSupported("file.mov"));
             Assert.AreEqual(false,ExtensionRolesHelper.IsExtensionThumbnailSupported("file.xmp"));
         }
-        
-        [TestMethod]
+
+		[TestMethod]
+		public void Files_ExtensionThumbSupportedList_null()
+		{
+			Assert.AreEqual(false,ExtensionRolesHelper.IsExtensionThumbnailSupported(null));
+			// equal or less then three chars
+			Assert.AreEqual(false,ExtensionRolesHelper.IsExtensionThumbnailSupported("nul"));
+		}
+
+		[TestMethod]
+		public void Files_ExtensionThumbSupportedList_FolderName()
+		{
+			Assert.AreEqual(false,ExtensionRolesHelper.IsExtensionThumbnailSupported("Some Foldername"));
+		}
+
+		[TestMethod]
         public void Files_ExtensionSyncSupportedList_TiffCheck()
         {
             var extensionSyncSupportedList = ExtensionRolesHelper.ExtensionSyncSupportedList;

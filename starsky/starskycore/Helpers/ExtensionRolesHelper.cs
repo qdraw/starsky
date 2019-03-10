@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace starskycore.Helpers
 {
@@ -86,12 +87,28 @@ namespace starskycore.Helpers
 		}
 
 		/// <summary>
+		/// Check if name is file.jpg or return false if not
+		/// </summary>
+		/// <param name="filename">e.g. filename.jpg</param>
+		/// <returns></returns>
+		private static bool FilenameBaseCheck(string filename)
+		{
+			if ( string.IsNullOrEmpty(filename) || filename.Length <= 3) return false;
+			
+			// Dot two,three,four letter extenstion
+			// .[a-z1-9]{2,4}$
+			if ( new Regex(".[a-z1-9]{2,4}$").Matches(filename).Count == 0 ) return false;
+			return true;
+		}
+
+		/// <summary>
 		/// is this filename with extension a filetype that imagesharp can read/write 
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <returns>true, if imagesharp can write to this</returns>
 		public static bool IsExtensionThumbnailSupported(string filename)
 		{
+			if ( !FilenameBaseCheck(filename) ) return false;
 			var ext = Path.GetExtension(filename).Remove(0, 1).ToLowerInvariant();
 			return ExtensionThumbSupportedList.Contains(ext); // true = if supported
 		}
