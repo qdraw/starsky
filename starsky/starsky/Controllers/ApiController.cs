@@ -81,8 +81,9 @@ namespace starsky.Controllers
         /// Add to comparedNames list ++ add to detailview
         /// </summary>
         /// <param name="rotateClock">-1 or 1</param>
-        /// <param name="detailView">main db object</param>
+        /// <param name="fileIndexItem">main db object</param>
         /// <param name="comparedNamesList">list of types that are changes</param>
+        /// <returns>updated image</returns>
         private FileIndexItem RotatonCompare(int rotateClock, FileIndexItem fileIndexItem, ICollection<string> comparedNamesList)
         {
             // Do orientation / Rotate if needed (after compare)
@@ -100,7 +101,8 @@ namespace starsky.Controllers
         /// Run the Orientation changes on the thumbnail (only relative)
         /// </summary>
         /// <param name="rotateClock">-1 or 1</param>
-        /// <param name="FileIndexItem">object contains filehash</param>
+        /// <param name="fileIndexItem">object contains filehash</param>
+        /// <returns>updated image</returns>
         private void RotationThumbnailExcute(int rotateClock, FileIndexItem fileIndexItem)
         {
             var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
@@ -381,7 +383,7 @@ namespace starsky.Controllers
                     var collectionSubPath = collectionSubPathList[i];
                     var detailViewItem = _query.SingleItem(collectionSubPath, null, collections, false);
 
-                    /// Allow only files that contains the delete tag
+                    // Allow only files that contains the delete tag
                     if (!detailViewItem.FileIndexItem.Tags.Contains("!delete!"))
                     {
                         detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Unauthorized;
