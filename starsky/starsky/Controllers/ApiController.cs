@@ -70,7 +70,7 @@ namespace starsky.Controllers
         [IgnoreAntiforgeryToken]
 	    [Produces("application/json")]
 	    [ProducesResponseType(typeof(AppSettings),200)]
-        [AllowAnonymous] /// <=================================
+        [AllowAnonymous] // <----------------------------------------
         public IActionResult Env()
 	    {
 		    var appSettings = _appSettings.CloneToDisplay();
@@ -100,7 +100,7 @@ namespace starsky.Controllers
         /// Run the Orientation changes on the thumbnail (only relative)
         /// </summary>
         /// <param name="rotateClock">-1 or 1</param>
-        /// <param name="detailView">object contains filehash</param>
+        /// <param name="FileIndexItem">object contains filehash</param>
         private void RotationThumbnailExcute(int rotateClock, FileIndexItem fileIndexItem)
         {
             var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
@@ -134,14 +134,14 @@ namespace starsky.Controllers
         /// Update Exif and Rotation API
         /// </summary>
         /// <param name="f">subpath filepath to file, split by dot comma (;)</param>
-        /// <param name="tags">use for keywords</param>
-        /// <param name="colorClass">int 0-9, the colorclass to fast select images</param>
-        /// <param name="description">string to update description/caption abstract, emthy will be ignored</param>
-        /// <param name="rotateClock">relative orentation -1 or 1</param>
-        /// <param name="title">edit image title</param>
-		/// <param name="collections">StackCollections bool, default true</param>
+        /// <param name="inputModel">tags: use for keywords
+        /// colorClass: int 0-9, the colorclass to fast select images
+        /// description: string to update description/caption abstract, emthy will be ignore
+        /// title: edit image title</param>
+        /// <param name="collections">StackCollections bool, default true</param>
         /// <param name="append">only for stings, add update to existing items</param>
-        /// <returns></returns>
+        /// <param name="rotateClock">relative orentation -1 or 1</param>
+        /// <returns>update json</returns>
         /// <response code="200">the item including the updated content</response>
         /// <response code="404">item not found in the database or on disk</response>
         [IgnoreAntiforgeryToken]
