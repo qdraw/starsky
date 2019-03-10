@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using starskycore.Helpers;
 
 namespace starskycore.Models
@@ -48,6 +49,7 @@ namespace starskycore.Models
         public DateTime DateTime{ get; set; } // Time of the photo
 	    
 	    [NotMapped]
+	    [JsonConverter(typeof(StringEnumConverter))]
 	    public ImportStatus Status { get; set; }
 	    
 	    [NotMapped]
