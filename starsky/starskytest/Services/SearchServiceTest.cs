@@ -744,6 +744,47 @@ namespace starskytest.Services
 
 			
 		}
+	    
+	    [TestMethod]
+	    public void SearchService_NotImageFormatSearch()
+	    {
+		    var model = new SearchViewModel
+		    {
+			    SearchIn =
+			    {
+				    "tags"
+			    },
+			    FileIndexItems = new List<FileIndexItem>{new FileIndexItem
+				    {
+					    Tags = "lelystadcentrum",
+					    ImageFormat = ExtensionRolesHelper.ImageFormat.tiff // NOT right format
+				    },
+				    new FileIndexItem
+				    {
+					    Tags = "lelystadcentrum2", // return this one
+					    ImageFormat = ExtensionRolesHelper.ImageFormat.bmp
+				    },
+				    new FileIndexItem
+				    {
+					    Tags = "else", //<= out of query
+					    ImageFormat = ExtensionRolesHelper.ImageFormat.bmp
+				    }
+			    }
+		    };
+		    model.SetAddSearchFor("lelystadcentrum");
+		    model.SetAddSearchForOptions("=");
+
+		    // Add extra NOT query			
+		    model.SearchIn.Add("imageformat");
+		    model.SetAddSearchFor("tiff"); // not query
+		    model.SetAddSearchForOptions("-");
+
+		    var result = model.NarrowSearch(model);
+
+		    Assert.AreEqual("lelystadcentrum2",result.FileIndexItems[0].Tags);
+		    Assert.AreEqual(1,result.FileIndexItems.Count);
+	    }
+	    
 
 
 

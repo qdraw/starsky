@@ -154,10 +154,9 @@ namespace starskycore.Services
 			    switch ( searchInType )
 			    {
 				    case SearchViewModel.SearchInTypes.imageformat:
-					    var castImageFormat = ( ExtensionRolesHelper.ImageFormat )
-						    Enum.Parse(typeof(ExtensionRolesHelper.ImageFormat),
-							    model.SearchFor[i].ToLowerInvariant());
 
+					    Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
+						    model.SearchFor[i].ToLowerInvariant(), out var castImageFormat);
 					    model.FileIndexItems.AddRange(sourceList.Where(
 						    p => p.ImageFormat == castImageFormat
 					    ));
@@ -362,11 +361,12 @@ namespace starskycore.Services
             // Without double escapes:
             // (:|=|;|>|<)(([\w\!\~\-_\.\/:]+)|(\"|').+(\"|'))
 	        // new: unescaped
-	        // (:|=|;|>|<)((["'])(\\?.)*?\3|[\w\!\~\-_\.\/:]+)( \|\|| \&\&)?
+	        // (:|=|;|>|<|-)((["'])(\\?.)*?\3|[\w\!\~\-_\.\/:]+)( \|\|| \&\&)?
             Regex inurlRegex = new Regex(
                 "-" + itemName +
-                "(:|=|;|>|<)(([\"\'])(\\\\?.)*?\\3|[\\w\\!\\~\\-_\\.\\/:]+)( \\|\\|| \\&\\&)?",
+                "(:|=|;|>|<|-)(([\"\'])(\\\\?.)*?\\3|[\\w\\!\\~\\-_\\.\\/:]+)( \\|\\|| \\&\\&)?",
                 RegexOptions.IgnoreCase);
+	        
             _defaultQuery = inurlRegex.Replace(_defaultQuery,"");
 	        // the current query is removed from the list, so the next item will not search on it
 
@@ -383,7 +383,7 @@ namespace starskycore.Services
 	            // put ||&& in operator field => next regex > removed
 	            model.SetAndOrOperator(model.AndOrRegex(itemQuery));
 	            
-	            Regex rgx = new Regex("-"+ itemName +"(:|=|;|>|<)", RegexOptions.IgnoreCase);
+	            Regex rgx = new Regex("-"+ itemName +"(:|=|;|>|<|-)", RegexOptions.IgnoreCase);
 
                 // To Search Type
                 var itemNameSearch = rgx.Match(itemQuery).Value;

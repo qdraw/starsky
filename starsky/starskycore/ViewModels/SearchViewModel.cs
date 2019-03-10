@@ -413,11 +413,11 @@ namespace starskycore.ViewModels
 		    {
 			    switch (searchType)
 			    {
-				    case SearchViewModel.SearchForOptionType.Not:
+				    case SearchForOptionType.Not:
 					    model.FileIndexItems = model.FileIndexItems.Where(
 						    p => p.GetType().GetProperty(property.Name).Name == property.Name 
 						         && ! // not
-							         p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().Contains(searchForQuery)  
+							         p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().ToLowerInvariant().Contains(searchForQuery)  
 					    ).ToList();
 					    break;
 				    default:
@@ -442,12 +442,26 @@ namespace starskycore.ViewModels
 		    
 		    if ( property.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) )
 		    {
-			    var  castImageFormat = (ExtensionRolesHelper.ImageFormat)
-				    Enum.Parse(typeof(ExtensionRolesHelper.ImageFormat), searchForQuery.ToLowerInvariant());
 			    
-			    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
-			                                                           && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name).GetValue(p, null)  == castImageFormat
-			    ).ToList();
+			    Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
+				    searchForQuery.ToLowerInvariant(), out var castImageFormat);
+
+			    switch (searchType)
+			    {
+				    case SearchForOptionType.Not:
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
+					                                                           && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name).GetValue(p, null)  
+					                                                           != // not
+					                                                           castImageFormat
+					    ).ToList();
+					    break;
+				    default:
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
+					                                                           && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)
+						                                                           .GetValue(p, null)  == castImageFormat
+					    ).ToList();
+					    break;
+			    }
 			    return model;
 		    }
 		    
