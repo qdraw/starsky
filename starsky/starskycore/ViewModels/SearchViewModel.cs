@@ -417,7 +417,7 @@ namespace starskycore.ViewModels
 					    model.FileIndexItems = model.FileIndexItems.Where(
 						    p => p.GetType().GetProperty(property.Name).Name == property.Name 
 						         && ! // not
-							         p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().Contains(searchForQuery)  
+							         p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().ToLowerInvariant().Contains(searchForQuery)  
 					    ).ToList();
 					    break;
 				    default:
