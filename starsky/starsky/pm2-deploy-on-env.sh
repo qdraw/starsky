@@ -10,11 +10,17 @@ fi
 pm2 stop starsky
 
 if [ -f starsky.dll ]; then
-    echo "delete dlls so, and everything except pm2 helpers, and configs, temp, thumbnailTempFolder, deploy zip"
+    echo "delete dlls so, and everything except pm2 helpers, and"
+    echo "configs, temp, thumbnailTempFolder, deploy zip, sqlite database"
+
     LSOUTPUT=$(ls)
     for ENTRY in $LSOUTPUT
     do
-        if [[ $ENTRY != "appsettings"* && $ENTRY != "pm2-"* && $ENTRY != "thumbnailTempFolder" && $ENTRY != "temp" && $ENTRY != "starsky-linux-arm.zip" ]];
+        if [[ $ENTRY != "appsettings"* && $ENTRY != "pm2-"*
+        && $ENTRY != "thumbnailTempFolder"
+        && $ENTRY != "temp"
+        && $ENTRY != "starsky-linux-arm.zip"
+        && $ENTRY != *".db" ]];
         then
             rm -rf "$ENTRY"
         else
