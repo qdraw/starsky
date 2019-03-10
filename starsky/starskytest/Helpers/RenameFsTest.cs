@@ -24,7 +24,7 @@ namespace starskytest.Helpers
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _newImage;
 		private readonly SyncService _sync;
-		private readonly StorageFilesystem _iStorage;
+		private readonly StorageSubPathFilesystem _iStorageSubPath;
 
 		public RenameFsTest()
 		{
@@ -59,9 +59,9 @@ namespace starskytest.Helpers
 			
 			var readMeta = new ReadMeta(_appSettings,memoryCache);
 			
-			_iStorage = new StorageFilesystem(_appSettings);
+			_iStorageSubPath = new StorageSubPathFilesystem(_appSettings);
 
-			_sync = new SyncService(context,_query,_appSettings,readMeta,_iStorage);
+			_sync = new SyncService(context,_query,_appSettings,readMeta,_iStorageSubPath);
 			
 
 		}
@@ -72,7 +72,7 @@ namespace starskytest.Helpers
 			// Default is skip 
 			var fileAlreadyExist = Path.Join(_newImage.BasePath, "already.txt");
 			if(!File.Exists(fileAlreadyExist)) new PlainTextFileHelper().WriteFile(fileAlreadyExist,"test");
-			var renameFs = new RenameFs( _query,_sync,_iStorage).Rename(_newImage.DbPath, "/already.txt");
+			var renameFs = new RenameFs( _query,_sync,_iStorageSubPath).Rename(_newImage.DbPath, "/already.txt");
 			Assert.AreEqual(new PlainTextFileHelper().ReadFile(fileAlreadyExist).Contains("test"), true);
 			// test with newline at the end
 			FilesHelper.DeleteFile(fileAlreadyExist);
@@ -81,7 +81,7 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public void RenameFsTest_MoveFileWithoutAnyItems()
 		{
-			var renameFs = new RenameFs(_query,_sync,_iStorage).Rename("/non-exist.jpg", "/non-exist2.jpg");
+			var renameFs = new RenameFs(_query,_sync,_iStorageSubPath).Rename("/non-exist.jpg", "/non-exist2.jpg");
 			Assert.AreEqual(renameFs.FirstOrDefault().Status,FileIndexItem.ExifStatus.NotFoundNotInIndex);
 		}
 		
@@ -103,7 +103,7 @@ namespace starskytest.Helpers
 			}
 			
 			
-			var renameFs = new RenameFs(_query,_sync,_iStorage).Rename(_newImage.DbPath, "/exist/test2.jpg");
+			var renameFs = new RenameFs(_query,_sync,_iStorageSubPath).Rename(_newImage.DbPath, "/exist/test2.jpg");
 
 			Assert.AreEqual(1,renameFs.Count);
 			
@@ -138,7 +138,7 @@ namespace starskytest.Helpers
 			Assert.AreEqual(all.FirstOrDefault(p => p.FileName == "test3.jpg").FileName, "test3.jpg");
 			
 			
-			var renameFs = new RenameFs(_query,_sync,_iStorage).Rename("/dir1", "/dir2");
+			var renameFs = new RenameFs(_query,_sync,_iStorageSubPath).Rename("/dir1", "/dir2");
 			// check if files are moved in the database
 
 			var all2 = _query.GetAllRecursive();

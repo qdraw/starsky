@@ -8,10 +8,21 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using starskycore.Helpers;
-using starskycore.Services;
 
 namespace starskycore.Models
 {
+	/// <summary>
+	/// Used to display file status (eg. NotFoundNotInIndex, Ok)
+	/// </summary>
+	public enum ImportStatus
+	{
+		Default,
+		Ok,
+		IgnoredAlreadyImported,
+		AgeToOld,
+		FileError
+	}
+	
     public class ImportIndexItem
     {
         private readonly AppSettings _appSettings;
@@ -35,6 +46,12 @@ namespace starskycore.Models
         public DateTime AddToDatabase { get; set; }
 
         public DateTime DateTime{ get; set; } // Time of the photo
+	    
+	    [NotMapped]
+	    public ImportStatus Status { get; set; }
+	    
+	    [NotMapped]
+		public FileIndexItem FileIndexItem { get; set; }
         
         // Caching to have it after you use the afterDelete flag
         private string FileName { get; set; }

@@ -5,14 +5,18 @@ namespace starskycore.Interfaces
 {
 	public interface IStorage
 	{
-		bool ExistFile(string subPath);
-		bool ExistFolder(string subPath);
-		FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath);
-		void FolderMove(string inputSubPath, string toSubPath);
-		void FileMove(string inputSubPath, string toSubPath);
-		void CreateDirectory(string subPath);
-		IEnumerable<string> GetAllFilesInDirectory(string subPath);
-		IEnumerable<string> GetDirectoryRecursive(string subPath);
+		bool ExistFile(string path);
+		bool ExistFolder(string path);
+		FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path);
+		void FolderMove(string fromPath, string toPath);
+		void FileMove(string fromPath, string toPath);
+		void FileCopy(string fromPath, string toPath);
+		bool FileDelete(string path);
+
+		void CreateDirectory(string path);
+		IEnumerable<string> GetAllFilesInDirectory(string path);
+		IEnumerable<string> GetAllFilesInDirectoryRecursive(string path);
+		IEnumerable<string> GetDirectoryRecursive(string path);
 			
 	}
 }

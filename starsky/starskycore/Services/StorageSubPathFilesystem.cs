@@ -7,11 +7,11 @@ using starskycore.Models;
 
 namespace starskycore.Services
 {
-	public class StorageFilesystem : IStorage
+	public class StorageSubPathFilesystem : IStorage
 	{
 		private readonly AppSettings _appSettings;
 
-		public StorageFilesystem(AppSettings appSettings)
+		public StorageSubPathFilesystem(AppSettings appSettings)
 		{
 			_appSettings = appSettings;
 		}
@@ -41,36 +41,35 @@ namespace starskycore.Services
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath,false);
-			
-			if (!Directory.Exists(fullFilePath) && File.Exists(fullFilePath))
-			{
-				// file
-				return FolderOrFileModel.FolderOrFileTypeList.File;
-			}
-
-			if (!File.Exists(fullFilePath) && Directory.Exists(fullFilePath))
-			{
-				// Directory
-				return FolderOrFileModel.FolderOrFileTypeList.Folder;
-			}
-
-			return FolderOrFileModel.FolderOrFileTypeList.Deleted;
+			return new StorageFullPathFilesystem().IsFolderOrFile(fullFilePath);
 		}
 
 		public void FolderMove(string inputSubPath, string toSubPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
 			var toFileFullPath = _appSettings.DatabasePathToFilePath(toSubPath, false);
-			Directory.Move(inputFileFullPath,toFileFullPath);
+			new StorageFullPathFilesystem().FolderMove(inputFileFullPath,toFileFullPath);
 		}
 
 		public void FileMove(string inputSubPath, string toSubPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
 			var toFileFullPath = _appSettings.DatabasePathToFilePath(toSubPath, false);
-			File.Move(inputFileFullPath,toFileFullPath);
+			new StorageFullPathFilesystem().FileMove(inputFileFullPath,toFileFullPath);
 		}
-
+		
+		public void FileCopy(string inputSubPath, string toSubPath)
+		{
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
+			var toFileFullPath = _appSettings.DatabasePathToFilePath(toSubPath, false);
+			new StorageFullPathFilesystem().FileCopy(inputFileFullPath,toFileFullPath);
+		}
+		
+		public bool FileDelete(string path)
+		{
+			return new StorageFullPathFilesystem().FileDelete(path);
+		}
+		
 		public void CreateDirectory(string subPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(subPath, false);
@@ -90,13 +89,37 @@ namespace starskycore.Services
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
 			if (fullFilePath == null) return Enumerable.Empty<string>();
 
-			var imageFilesList = new FilesystemHelper().GetAllFilesInDirectory(fullFilePath);
+			var imageFilesList = new StorageFullPathFilesystem().GetAllFilesInDirectory(fullFilePath);
 
 			// to filter use:
 			// ..etAllFilesInDirectory(subPath)
 			//	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
 			
-			// convert back to subpath style
+			// convert back to subPath style
+			return _appSettings.RenameListItemsToDbStyle(imageFilesList.ToList());
+		}
+		
+		
+		/// <summary>
+		/// Returns a list of Files in a directory (Recursive)
+		/// to filter use:
+		/// ..etAllFilesInDirectory(subPath)
+		///	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
+		/// </summary>
+		/// <param name="subPath">path relative to the database</param>
+		/// <returns></returns>
+		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string subPath)
+		{
+			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
+			if (fullFilePath == null) return Enumerable.Empty<string>();
+
+			var imageFilesList = new StorageFullPathFilesystem().GetAllFilesInDirectoryRecursive(fullFilePath);
+
+			// to filter use:
+			// ..etAllFilesInDirectory(subPath)
+			//	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
+			
+			// convert back to subPath style
 			return _appSettings.RenameListItemsToDbStyle(imageFilesList.ToList());
 		}
 		
@@ -110,7 +133,7 @@ namespace starskycore.Services
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
 			if (fullFilePath == null) return Enumerable.Empty<string>();
 			
-			var folders = new FilesystemHelper().GetDirectoryRecursive(fullFilePath);
+			var folders = new StorageFullPathFilesystem().GetDirectoryRecursive(fullFilePath);
 
 			// Used For subfolders
 			// convert back to subpath style
