@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">2.0.7</RuntimeFrameworkVersion>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">2.1.7</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">2.1.8</RuntimeFrameworkVersion>
     <DebugType>Full</DebugType>
     <IsPackable>false</IsPackable>
     <!-- used for RazorLight -->
@@ -16,13 +16,12 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
       <PackageReference Include="coverlet.msbuild" Version="2.4.0" />
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.2.0" />
-      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
     <PackageReference Include="coverlet.msbuild" Version="2.3.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
     <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
   </ItemGroup>
