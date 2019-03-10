@@ -2,7 +2,9 @@
 - add partial support for || (or) queries using search
 	-	the type datetime e.g. `-datetime=1 || -datetime=2` is not supported yet
 - bugfix to large int relative to today
-- add support for not queries `-file` to ignore the word file 
+- add support for not queries `-file` to ignore the word file
+- .NET Core to 2.1.8 (update to dotnet-sdk-2.2.104)
+- performance improvements to importer
 
 # version 0.1.4 - 2019-03-01
 - fix issue where login fails results in a error 500
