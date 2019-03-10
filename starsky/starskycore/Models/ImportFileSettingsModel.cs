@@ -81,5 +81,10 @@ namespace starskycore.Models
 	    /// indexing, false is always copy, true is check if exist in db, default true
 	    /// </summary>
 	    public bool IndexMode { get; set; } = true;
+
+	    /// <summary>
+	    /// Default false, when Exiftool need to sync content
+	    /// </summary>
+	    public bool NeedExiftoolSync { get; set; } = false;
     }
 }

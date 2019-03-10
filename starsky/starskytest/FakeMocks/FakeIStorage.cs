@@ -74,6 +74,16 @@ namespace starskytest.FakeMocks
 			_outputSubPathFiles[indexOfFiles] = toSubPath;
 		}
 
+		public void FileCopy(string fromPath, string toPath)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool FileDelete(string path)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void CreateDirectory(string subPath)
 		{
 			_outputSubPathFolders.Add(subPath);
@@ -90,6 +100,11 @@ namespace starskytest.FakeMocks
 			}
 
 			return _outputSubPathFiles.Where(p => CheckAndFixParentFiles(subPath, p)).AsEnumerable();
+		}
+
+		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string fullFilePath)
+		{
+			throw new NotImplementedException();
 		}
 
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)

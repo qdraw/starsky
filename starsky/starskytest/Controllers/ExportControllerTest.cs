@@ -34,7 +34,6 @@ namespace starskytest.Controllers
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
-		private readonly ApplicationDbContext _context;
 		private readonly IReadMeta _readmeta;
 		private readonly IServiceScopeFactory _scopeFactory;
 
@@ -48,8 +47,8 @@ namespace starskytest.Controllers
 			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
 			var options = builderDb.Options;
-			_context = new ApplicationDbContext(options);
-			_query = new Query(_context, memoryCache);
+			var context = new ApplicationDbContext(options);
+			_query = new Query(context, memoryCache);
 
 			// Inject Fake Exiftool; dependency injection
 			var services = new ServiceCollection();

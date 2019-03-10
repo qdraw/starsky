@@ -661,9 +661,9 @@ namespace starskytest.Services
 	    
 	    
 	    [TestMethod]
-	    public void SearchService_ParseDateTimeLowInt()
+	    public void SearchViewModel_ParseDateTimeLowInt()
 	    {
-		    var p = new SearchService(_dbContext).ParseDateTime("0");
+		    var p = new SearchViewModel().ParseDateTime("0");
 		    // today
 		    Assert.AreEqual(p.Day,DateTime.Now.Day);
 		    Assert.AreEqual(p.Month,DateTime.Now.Month);
@@ -671,18 +671,18 @@ namespace starskytest.Services
 	    
 	    
 	    [TestMethod]
-	    public void SearchService_ParseDateTimeLargeInt()
+	    public void SearchViewModel_ParseDateTimeLargeInt()
 	    {
-		    var p = new SearchService(_dbContext).ParseDateTime("20180911");
+		    var p = new SearchViewModel().ParseDateTime("20180911");
 		    // defaults to today
 			Assert.AreEqual(p.Day,DateTime.Now.Day);
 		    Assert.AreEqual(p.Month,DateTime.Now.Month);
 	    }
 	    
 	    [TestMethod]
-	    public void SearchService_ParseDateTimeExample()
+	    public void SearchViewModel_ParseDateTimeExample()
 	    {
-		    var p = new SearchService(_dbContext).ParseDateTime("2018-09-11");
+		    var p = new SearchViewModel().ParseDateTime("2018-09-11");
 		    // defaults to today
 		    Assert.AreEqual(DateTime.Parse("2018-09-11"),p);
 	    }
@@ -730,7 +730,7 @@ namespace starskytest.Services
 			
 			model.SetAddSearchForOptions("=");
 
-			var result = _search.NarrowSearch2(model);
+			var result = model.NarrowSearch(model);
 			Assert.AreEqual(2,result.FileIndexItems.Count);
 
 			// Add extra NOT query			
@@ -738,7 +738,7 @@ namespace starskytest.Services
 			model.SetAddSearchFor("lelystadcentrum2"); // not query
 			model.SetAddSearchForOptions("-");
 
-			var result2 = _search.NarrowSearch2(model);
+			var result2 = model.NarrowSearch(model);
 
 			Assert.AreEqual("lelystadcentrum",result.FileIndexItems[0].Tags);
 

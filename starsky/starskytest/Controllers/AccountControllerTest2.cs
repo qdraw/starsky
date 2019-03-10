@@ -26,7 +26,7 @@ namespace starskytest.Controllers
     {
         private IUserManager _userManager;
         private readonly IServiceProvider _serviceProvider;
-        private DefaultHttpContext _context;
+//        private DefaultHttpContext _context;
 
         public AccountControllerTest2()
         {
@@ -73,7 +73,7 @@ namespace starskytest.Controllers
         {
             // Arrange
             var userId = "TestUserA";
-            var phone = "abcdefg";
+//            var phone = "abcdefg";
             var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
 
             _serviceProvider.GetRequiredService<IUserManager>();

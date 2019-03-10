@@ -142,62 +142,62 @@ namespace starskycore.Helpers
             }
         }
 
-		/// <summary>
-		/// Gets the files recrusive. (only ExtensionSyncSupportedList types)
-		/// </summary>
-		/// <param name="fullFilePath">The full file path.</param>
-		/// <returns></returns>
-		public static IEnumerable<string> GetFilesRecursive(string fullFilePath)
-        {
-            List<string> findlist = new List<string>();
-
-            /* I begin a recursion, following the order:
-             * - Insert all the files in the current directory with the recursion
-             * - Insert all subdirectories in the list and rebegin the recursion from there until the end
-             */
-            RecurseFind( fullFilePath, findlist );
-
-            // Add filter for file types
-            var imageFilesList = new List<string>();
-            foreach (var file in findlist)
-            {
-                // Path.GetExtension uses (.ext)
-                //  GetFilesInDirectory
-                // the same check in SingleFile
-                // Recruisive >= same check
-                var extension = Path.GetExtension(file).ToLower().Replace(".",string.Empty);
-                if (ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(extension))
-                {
-                    imageFilesList.Add(file);
-                }
-            }
-            
-            return imageFilesList;
-        }
-
-		/// <summary>
-		/// Recurses the find. (private)
-		/// </summary>
-		/// <param name="path">The path.</param>
-		/// <param name="list">The list of strings.</param>
-		private static void RecurseFind( string path, List<string> list )
-        {
-            string[] fl = Directory.GetFiles(path);
-            string[] dl = Directory.GetDirectories(path);
-            if ( fl.Length>0 || dl.Length>0 )
-            {
-                //I begin with the files, and store all of them in the list
-                foreach(string s in fl)
-                    list.Add(s);
-                // I then add the directory and recurse that directory,
-                // the process will repeat until there are no more files and directories to recurse
-                foreach(string s in dl)
-                {
-                    list.Add(s);
-                    RecurseFind(s, list);
-                }
-            }
-        }
+//		/// <summary>
+//		/// Gets the files recrusive. (only ExtensionSyncSupportedList types)
+//		/// </summary>
+//		/// <param name="fullFilePath">The full file path.</param>
+//		/// <returns></returns>
+//		public static IEnumerable<string> GetFilesRecursive(string fullFilePath)
+//        {
+//            List<string> findlist = new List<string>();
+//
+//            /* I begin a recursion, following the order:
+//             * - Insert all the files in the current directory with the recursion
+//             * - Insert all subdirectories in the list and rebegin the recursion from there until the end
+//             */
+//            RecurseFind( fullFilePath, findlist );
+//
+//            // Add filter for file types
+//            var imageFilesList = new List<string>();
+//            foreach (var file in findlist)
+//            {
+//                // Path.GetExtension uses (.ext)
+//                //  GetFilesInDirectory
+//                // the same check in SingleFile
+//                // Recruisive >= same check
+//                var extension = Path.GetExtension(file).ToLower().Replace(".",string.Empty);
+//                if (ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(extension))
+//                {
+//                    imageFilesList.Add(file);
+//                }
+//            }
+//            
+//            return imageFilesList;
+//        }
+//
+//		/// <summary>
+//		/// Recurses the find. (private)
+//		/// </summary>
+//		/// <param name="path">The path.</param>
+//		/// <param name="list">The list of strings.</param>
+//		private static void RecurseFind( string path, List<string> list )
+//        {
+//            string[] fl = Directory.GetFiles(path);
+//            string[] dl = Directory.GetDirectories(path);
+//            if ( fl.Length>0 || dl.Length>0 )
+//            {
+//                //I begin with the files, and store all of them in the list
+//                foreach(string s in fl)
+//                    list.Add(s);
+//                // I then add the directory and recurse that directory,
+//                // the process will repeat until there are no more files and directories to recurse
+//                foreach(string s in dl)
+//                {
+//                    list.Add(s);
+//                    RecurseFind(s, list);
+//                }
+//            }
+//        }
 
     }
 }

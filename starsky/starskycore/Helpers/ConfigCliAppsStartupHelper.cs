@@ -80,7 +80,7 @@ namespace starskycore.Helpers
             
             _readmeta = new ReadMeta(appSettings);
             
-            _isync = new SyncService(context, query, appSettings,_readmeta, new StorageFilesystem(appSettings));
+            _isync = new SyncService(context, query, appSettings,_readmeta, new StorageSubPathFilesystem(appSettings));
             
             // TOC:
             //   _context = context

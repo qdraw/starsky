@@ -18,7 +18,7 @@ namespace starskytest.Services
             
 			// Used For subfolders
 			var newImage = new CreateAnImage();
-			var filesInFolder = new StorageFilesystem(new AppSettings{StorageFolder = newImage.BasePath}).GetDirectoryRecursive("/");
+			var filesInFolder = new StorageSubPathFilesystem(new AppSettings{StorageFolder = newImage.BasePath}).GetDirectoryRecursive("/");
 			Assert.AreEqual(true,filesInFolder.Any());
             
 		}

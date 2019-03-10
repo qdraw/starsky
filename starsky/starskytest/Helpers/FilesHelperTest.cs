@@ -67,19 +67,7 @@ namespace starskytest.Helpers
             Assert.AreEqual(filesInFolder.Any(),true);
         }
 
-        [TestMethod]
-        public void Files_GetFilesRecrusiveTest()
-        {            
-            var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
 
-            var content = FilesHelper.GetFilesRecursive(path);
-
-            Console.WriteLine("count => "+ content.Count());
-
-            // Gives a list of the content in the temp folder.
-            Assert.AreEqual(true, content.Any());            
-
-        }
 
         
     }

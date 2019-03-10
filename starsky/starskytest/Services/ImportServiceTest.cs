@@ -77,7 +77,7 @@ namespace starskytest.Services
             _exiftool = serviceProvider.GetRequiredService<IExiftool>();
             
             _readmeta = new ReadMeta(_appSettings);
-	        var iStorage = new StorageFilesystem(_appSettings);
+	        var iStorage = new StorageSubPathFilesystem(_appSettings);
 
             _isync = new SyncService(_context, _query,_appSettings,_readmeta,iStorage);
             
@@ -345,7 +345,7 @@ namespace starskytest.Services
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());
 
 	        var isHashInImportDb = _import.IsHashInImportDb(fileHashCode);
-	        var t22 = _import.GetAll();
+//	        var t22 = _import.GetAll();
 	        var t3 = _query.GetAllRecursive();
 	        // Both should be one
             Assert.AreEqual(true, isHashInImportDb);
@@ -598,7 +598,7 @@ namespace starskytest.Services
 
             var result = _import.Import(createAnImageNoExif.FullFilePathWithDate,importSettings);
             
-            Assert.AreEqual(string.Empty,result.FirstOrDefault());
+            Assert.AreEqual(0, result.Count);
             FilesHelper.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
 	        RemoveFromQuery();
 

@@ -58,34 +58,7 @@ namespace starsky.Controllers
             var tempImportPaths = await Request.StreamFile(_appSettings);
             var importSettings = new ImportSettingsModel(Request);
 
-            // Do some import checks before sending it to the background service
-            var fileIndexResultsList = new List<ImportIndexItem>();
-            var hashList = FileHash.GetHashCode(tempImportPaths.ToArray());
-
-            for (int i = 0; i < hashList.Count; i++)
-            {
-                var hash = hashList[i];
-
-                var fileIndexItem = _import.ReadExifAndXmpFromFile(tempImportPaths[i]);
-                var importIndexItem = _import.ObjectCreateIndexItem(
-                    tempImportPaths[i], hash, fileIndexItem, importSettings.Structure);
-                
-                // do some filename reading to get dates, based on 'structure config' 
-                importIndexItem.ParseDateTimeFromFileName();
-
-                var item = _import.GetItemByHash(hash);
-                if (item != null)
-                {
-                    fileIndexResultsList.Add(item);
-                    continue;
-                }
-
-                if (!_import.IsAgeFileFilter(importSettings, importIndexItem.DateTime))
-                {
-                    fileIndexResultsList.Add(importIndexItem);
-                }
-            }
-
+	        var fileIndexResultsList = _import.Preflight(tempImportPaths, importSettings);
 
             // Import files >
             _bgTaskQueue.QueueBackgroundWorkItem(async token =>
@@ -99,7 +72,7 @@ namespace starsky.Controllers
             });
             
             // When all items are already imported
-            if (importSettings.IndexMode && fileIndexResultsList.All(p => p.Id != 0)) Response.StatusCode = 206;
+            if (importSettings.IndexMode && fileIndexResultsList.All(p => p.Status != ImportStatus.Ok)) Response.StatusCode = 206;
 
             return Json(fileIndexResultsList);
         }

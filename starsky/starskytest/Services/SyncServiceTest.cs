@@ -63,7 +63,7 @@ namespace starskytest.Services
             
             var readmeta = new ReadMeta(_appSettings);
             // Activate SyncService
-	        var iStorage = new StorageFilesystem(_appSettings);
+	        var iStorage = new StorageSubPathFilesystem(_appSettings);
             _syncservice = new SyncService(context, _query,_appSettings,readmeta,iStorage);
         }
 
