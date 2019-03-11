@@ -17,9 +17,11 @@ namespace starskycore.ViewModels
     {
         public SearchViewModel()
         {
+	        // init default values
             if (_searchIn == null) _searchIn = new List<string>(); 
             if (FileIndexItems == null) FileIndexItems = new List<FileIndexItem>(); 
 	        
+	        // to know how long a query takes
 	        _dateTime = DateTime.Now;
         }
 
@@ -30,15 +32,38 @@ namespace starskycore.ViewModels
 	    
 	    /// <summary>
 	    /// Used to know how old the search query is
+	    /// Used to know if a page is cached
 	    /// </summary>
 	    public double Offset =>   Math.Round(Math.Abs((DateTime.Now - _dateTime).TotalSeconds),2);
 
+	    /// <summary>
+	    /// Items on the page
+	    /// </summary>
 	    public List<FileIndexItem> FileIndexItems { get; set; }
-        public List<string> Breadcrumb { get; set; }
-        public string SearchQuery { get; set; }
+        
+	    /// <summary>
+	    /// Full location specification
+	    /// </summary>
+	    public List<string> Breadcrumb { get; set; }
+        
+	    /// <summary>
+	    /// Where to search for
+	    /// </summary>
+	    public string SearchQuery { get; set; }
+	    
+	    /// <summary>
+	    /// Current page number (index=0)
+	    /// </summary>
         public int PageNumber { get; set; }
+	    
+	    /// <summary>
+	    /// The last page (index=0)
+	    /// </summary>
         public int LastPageNumber { get; set; }
 
+	    /// <summary>
+	    /// Number of search results
+	    /// </summary>
         public int SearchCount { get; set; }
 
 	    /// <summary>
@@ -72,6 +97,10 @@ namespace starskycore.ViewModels
 	    /// </summary>
         public List<string> SearchIn => _searchIn;
 
+	    /// <summary>
+	    /// In which database field the search query is needed
+	    /// </summary>
+	    /// <param name="value">Search field name e.g. Tags</param>
         public void SetAddSearchInStringType(string value)
         {
             // use ctor to have an empty list
@@ -109,7 +138,9 @@ namespace starskycore.ViewModels
             _searchFor.Add(value.Trim());
         }
         
-	    
+	    /// <summary>
+	    /// The search for types
+	    /// </summary>
 	    public enum SearchForOptionType
 	    {
 		    /// <summary>
@@ -178,6 +209,9 @@ namespace starskycore.ViewModels
 		    }
 	    }
 
+	    /// <summary>
+	    /// The type of page returns, always Search
+	    /// </summary>
         public string PageType { get; } = PageViewType.PageType.Search.ToString();
 
 	    /// <summary>
@@ -259,7 +293,13 @@ namespace starskycore.ViewModels
 			}
 		}
 
-	    // false = (skip( continue to next item))
+	    /// <summary>
+	    /// When using OR || statements, skip to next item in the for loop
+	    /// false = (skip( continue to next item))
+	    /// </summary>
+	    /// <param name="indexer"></param>
+	    /// <param name="max"></param>
+	    /// <returns>false = (skip( continue to next item))</returns>
 		public bool SearchOperatorContinue(int indexer, int max)
 		{
 			if ( _searchOperatorOptions == null ) return true;
@@ -352,7 +392,8 @@ namespace starskycore.ViewModels
 			    SetAddSearchForOptions("=");
 			    
 		    }
-			   
+
+		    // Regex: for ||&& without escape chars 
 			//	// &&|\|\|
 		    Regex andOrRegex = new Regex("&&|\\|\\|",
 			    RegexOptions.IgnoreCase);
@@ -379,7 +420,8 @@ namespace starskycore.ViewModels
 	    
 	    
 		/// <summary>
-	    /// Filter WideSearch 
+	    /// Filter for WideSearch
+	    /// Always after widesearch 
 	    /// </summary>
 	    /// <param name="model"></param>
 	    /// <returns></returns>
@@ -406,6 +448,14 @@ namespace starskycore.ViewModels
 		    return model;
 	    }
 
+	    /// <summary>
+	    /// Search in properties by 
+	    /// </summary>
+	    /// <param name="model">to search in this model</param>
+	    /// <param name="property">the property name to search in</param>
+	    /// <param name="searchForQuery">the query to search for (always string) </param>
+	    /// <param name="searchType">greather then, equal</param>
+	    /// <returns>search values</returns>
 	    public SearchViewModel PropertySearch(SearchViewModel model, PropertyInfo property, string searchForQuery, SearchViewModel.SearchForOptionType searchType)
 	    {
 
@@ -543,9 +593,5 @@ namespace starskycore.ViewModels
 		    }
 		    return dateTime.Year > 2 ? dateTime : DateTime.Now;
 	    }
-
-	    
-	    
-	    
     }
 }
