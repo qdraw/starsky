@@ -300,14 +300,13 @@ namespace starskytest.Helpers
         public void ArgsHelper_NeedHelpShowDialog()
         {
                 // Just simple show a console dialog
-            new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.WebHtml})
+            new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.WebHtml, Verbose = true})
                 .NeedHelpShowDialog();
             new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Importer})
                 .NeedHelpShowDialog();
 			new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Geo})
 				.NeedHelpShowDialog();
-	        new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.WebHtml})
-		        .NeedHelpShowDialog();
+
         }
 
 	    [TestMethod]
