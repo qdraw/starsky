@@ -11,16 +11,39 @@ namespace starskycore.Helpers
 
 	public static class ExtensionRolesHelper
 	{
+		/// <summary>
+		/// List of .jpg,.jpeg extensions
+		/// </summary>
 		private static readonly List<string> Extensionjpg = new List<string> {"jpg", "jpeg"};
 
-		private static readonly List<string>
-			Extensiontiff = new List<string> {"tiff", "arw", "dng"};
+		/// <summary>
+		/// Tiff based, tiff, including raws
+		/// </summary>
+		private static readonly List<string> Extensiontiff = new List<string> {"tiff", "arw", "dng"};
 
+		/// <summary>
+		/// Bitmaps
+		/// </summary>
 		private static readonly List<string> Extensionbmp = new List<string> {"bmp"};
+		
+		/// <summary>
+		/// Gif based images
+		/// </summary>
 		private static readonly List<string> Extensiongif = new List<string> {"gif"};
+		
+		/// <summary>
+		/// PNG
+		/// </summary>
 		private static readonly List<string> Extensionpng = new List<string> {"png"};
+		
+		/// <summary>
+		/// GPX, list of geo locations
+		/// </summary>
 		private static readonly List<string> Extensiongpx = new List<string> {"gpx"};
 
+		/// <summary>
+		/// Supported by sync agent
+		/// </summary>
 		public static List<string> ExtensionSyncSupportedList
 		{
 			get
@@ -36,6 +59,9 @@ namespace starskycore.Helpers
 			}
 		}
 
+		/// <summary>
+		/// List of extensions supported by exiftool
+		/// </summary>
 		private static List<string> ExtensionExifToolSupportedList
 		{
 			get
@@ -174,6 +200,12 @@ namespace starskycore.Helpers
 			return fullFilePath;
 		}
 
+		/// <summary>
+		/// Get the fullpath of the xmp file
+		/// </summary>
+		/// <param name="fullFilePath">path of .arw/.dng image</param>
+		/// <param name="exifToolXmpPrefix">prefix used</param>
+		/// <returns></returns>
 		public static string GetXmpSidecarFile(
 			string fullFilePath,
 			string exifToolXmpPrefix = "")
@@ -184,6 +216,9 @@ namespace starskycore.Helpers
 				+ Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
 		}
 		
+		/// <summary>
+		/// Imageformat based on first bytes
+		/// </summary>
 		[SuppressMessage("ReSharper", "InconsistentNaming")]
 		public enum ImageFormat
 		{
@@ -234,7 +269,7 @@ namespace starskycore.Helpers
 		/// Gets the image format.
 		/// </summary>
 		/// <param name="bytes">The bytes of image</param>
-		/// <returns></returns>
+		/// <returns>imageFormat enum</returns>
 		public static ImageFormat GetImageFormat(byte[] bytes)
 		{
 			// see http://www.mikekunz.com/image_file_header.html  

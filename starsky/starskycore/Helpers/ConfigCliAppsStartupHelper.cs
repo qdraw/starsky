@@ -94,6 +94,10 @@ namespace starskycore.Helpers
 	        
         }
 
+	    /// <summary>
+	    /// Default appsettings.json to builder
+	    /// </summary>
+	    /// <returns>Configbuilder</returns>
 	    public static ConfigurationBuilder AppSettingsToBuilder()
 	    {
 		    var appSettings = new AppSettings();
