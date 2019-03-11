@@ -286,6 +286,14 @@ namespace starskytest.Helpers
             var yesterdayString = DateTime.Today.AddDays(-1).ToString("yyyy_MM_dd");
             Assert.AreEqual(true, relative.Contains(yesterdayString));
         }
+	    
+	    [TestMethod]
+	    [ExpectedException(typeof(FieldAccessException))]
+	    public void ArgsHelper_GetSubpathRelative_Null_Test()
+	    {
+		    new ArgsHelper(null).GetSubpathRelative(new List<string>());
+		    // FieldAccessException
+	    }
 
 	    [TestMethod]
 	    public void ArgsHelper_GetSubpathRelativeTestLargeInt()
@@ -308,6 +316,23 @@ namespace starskytest.Helpers
 				.NeedHelpShowDialog();
 
         }
+	    
+	    [TestMethod]
+	    [ExpectedException(typeof(FieldAccessException))]
+	    public void ArgsHelper_NeedHelpShowDialog_Null_Test()
+	    {
+		    new ArgsHelper(null).NeedHelpShowDialog();
+		    // FieldAccessException
+	    }
+	    
+
+	    [TestMethod]
+	    [ExpectedException(typeof(FieldAccessException))]
+	    public void ArgsHelper_SetEnvironmentToAppSettings_Null_Test()
+	    {
+		    new ArgsHelper(null).SetEnvironmentToAppSettings();
+		    // FieldAccessException
+	    }
 
 	    [TestMethod]
 	    public void ArgsHelper_SetEnvironmentToAppSettingsTest()
