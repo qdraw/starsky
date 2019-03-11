@@ -62,11 +62,11 @@ namespace starskytest.Helpers
         public void ArgsHelper_NeedRecruisiveTest()
         {
             var args = new List<string> {"-r"}.ToArray();
-            Assert.AreEqual(new ArgsHelper(_appSettings).NeedRecruisive(args), true);
+            Assert.AreEqual(new ArgsHelper(_appSettings).NeedRecursive(args), true);
             
             // Bool parse check
             args = new List<string> {"-r","true"}.ToArray();
-            Assert.AreEqual(new ArgsHelper(_appSettings).NeedRecruisive(args), true);
+            Assert.AreEqual(new ArgsHelper(_appSettings).NeedRecursive(args), true);
         }
 	    
 	    [TestMethod]

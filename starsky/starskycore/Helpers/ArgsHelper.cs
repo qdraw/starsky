@@ -39,17 +39,33 @@ namespace starskycore.Helpers
 		// -u --structure
 		// -n --name
 		// -x --cachecleanup
+		
+		/// <summary>
+		/// Simple injection
+		/// </summary>
 		public ArgsHelper()
 		{
 		}
 		
+		/// <summary>
+		/// Use with appsettings
+		/// </summary>
+		/// <param name="appSettings">appsettings</param>
 		public ArgsHelper(AppSettings appSettings)
 		{
 			_appSettings = appSettings;
 		}
 		
+		/// <summary>
+		/// Appsettings
+		/// </summary>
 		private readonly AppSettings _appSettings;
 		
+		/// <summary>
+		/// Show debug information
+		/// </summary>
+		/// <param name="args">input args</param>
+		/// <returns></returns>
 		public bool NeedVerbose(IReadOnlyList<string> args)
 		{
 			var needDebug = false;
@@ -67,11 +83,17 @@ namespace starskycore.Helpers
 			return needDebug;
 		}
 	 
+		/// <summary>
+		/// short input args, use the same order as 'LongNameList' and 'EnvNameList'
+		/// </summary>
 		public readonly IEnumerable<string> ShortNameList = new List<string>
 		{
 			"-d","-c","-b","-f","-e","-u","-g","-n"
 		}.AsReadOnly();
 		
+		/// <summary>
+		/// Long input args, use this order as 'ShortNameList' and 'EnvNameList'
+		/// </summary>
 		public readonly IEnumerable<string> LongNameList = new List<string>
 		{
 			"--databasetype","--connection","--basepath","--thumbnailtempfolder",
@@ -79,6 +101,9 @@ namespace starskycore.Helpers
 		}
 		.AsReadOnly();
 	 
+		/// <summary>
+		/// name of the env__ (__=:) use this order as 'LongNameList' and 'ShortNameList'
+		/// </summary>
 		public readonly IEnumerable<string> EnvNameList = new List<string>
 		{
 			"app__DatabaseType","app__DatabaseConnection","app__StorageFolder","app__ThumbnailTempFolder",
@@ -181,10 +206,10 @@ namespace starskycore.Helpers
 					Console.WriteLine("--path or -p == parameter: (string) ; without addition is current directory, full path (all locations are supported) ");
 					Console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database ");
 					Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
-					", use for example '1' to select yesterday. (structure is required)");
+						", use for example '1' to select yesterday. (structure is required)");
 					Console.WriteLine("-p, -s, -g == you need to select one of those tags");
 					Console.WriteLine("--all or -a == overwrite reverse geotag location tags " +
-					"(default: false / ignore already taged files) ");
+						"(default: false / ignore already taged files) ");
 					Console.WriteLine("--index or -i == parameter: (bool) ; gpx feature to index geo location, default true");
 				break;
 				
@@ -199,11 +224,11 @@ namespace starskycore.Helpers
 					Console.WriteLine("                can be an folder or file, use '-p' for current directory");
 					Console.WriteLine("--move or -m == delete file after importing (default false / copy file)");
 					Console.WriteLine("--all or -a == import all files including files older than 2 years" +
-					" (default: false / ignore old files) ");
+						" (default: false / ignore old files) ");
 					Console.WriteLine("--recursive or -r == Import Directory recursive " +
-					"(default: false / only the selected folder) ");
+						"(default: false / only the selected folder) ");
 					Console.WriteLine("--structure == overwrite appsettings with filedirectory structure "+
-					"based on exif and filename create datetime");
+						"based on exif and filename create datetime");
 					Console.WriteLine("--index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true");
 				break;
 				case AppSettings.StarskyAppType.Sync:
@@ -213,13 +238,13 @@ namespace starskycore.Helpers
 					"search and replace first part of the filename, '/', use '-p' for current directory ");
 					Console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
 					Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
-					", use for example '1' to select yesterday. (structure is required)");
+						", use for example '1' to select yesterday. (structure is required)");
 					Console.WriteLine("-p, -s, -g == you need to select one of those tags");
 					Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
 					Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
 					Console.WriteLine("--cachecleanup or -x == parameter: (bool) ; enable checks in thumbnailtempfolder if thumbnails are needed, delete unused files");
 					Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder " +
-					"(heavy cpu usage), default false");
+						"(heavy cpu usage), default false");
 					Console.WriteLine("--verbose or -v == verbose, more detailed info");
 					Console.WriteLine("--databasetype or -d == Overwrite EnvironmentVariable for DatabaseType");
 					Console.WriteLine("--basepath or -b == Overwrite EnvironmentVariable for StorageFolder");
@@ -239,21 +264,23 @@ namespace starskycore.Helpers
 			Console.WriteLine("Database Type (-d --databasetype) "+ _appSettings.DatabaseType);
 			Console.WriteLine("DatabaseConnection (-c --connection) " + _appSettings.DatabaseConnection);
 			Console.WriteLine($"StorageFolder (-b --basepath) {_appSettings.StorageFolder} " +
-			$"- {FilesHelper.IsFolderOrFile(_appSettings.StorageFolder).ToString()}" );
+				$"- {FilesHelper.IsFolderOrFile(_appSettings.StorageFolder).ToString()}" );
 			Console.WriteLine($"ThumbnailTempFolder (-f --thumbnailtempfolder) {_appSettings.ThumbnailTempFolder} " +
-			$"- {FilesHelper.IsFolderOrFile(_appSettings.ThumbnailTempFolder).ToString()} ");
+				$"- {FilesHelper.IsFolderOrFile(_appSettings.ThumbnailTempFolder).ToString()} ");
 			Console.WriteLine($"ExifToolPath  (-e --exiftoolpath) {_appSettings.ExifToolPath} " +
-			$"- {FilesHelper.IsFolderOrFile(_appSettings.ExifToolPath).ToString()}");
+				$"- {FilesHelper.IsFolderOrFile(_appSettings.ExifToolPath).ToString()}");
 			Console.WriteLine("Structure  (-u --structure) "+ _appSettings.Structure);
 			Console.WriteLine("Name "+ _appSettings.Name);
 			Console.WriteLine("CameraTimeZone "+ _appSettings.CameraTimeZone);
 			Console.WriteLine("-- Appsettings.json locations -- ");
+			
 			var machineName = Environment.MachineName.ToLowerInvariant();
+			
 			Console.WriteLine("Config is read in this order: \n" +
-			$"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch.json")}\n" +
-			$"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".patch.json")}  ");
+				$"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch.json")}\n" +
+				$"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".patch.json")}  ");
 			Console.WriteLine($"3. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}\n" +
-			$"4. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")} ");
+				$"4. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")} ");
 			
 			switch ( _appSettings.ApplicationType )
 			{
@@ -275,10 +302,11 @@ namespace starskycore.Helpers
 				}
 				break;
 			}
+			
 			var framework = Assembly
-			.GetEntryAssembly()?
-			.GetCustomAttribute<TargetFrameworkAttribute>()?
-			.FrameworkName;
+				.GetEntryAssembly()?
+				.GetCustomAttribute<TargetFrameworkAttribute>()?
+				.FrameworkName;
 			Console.WriteLine($".NET Version - {framework}");
 		}
 		
@@ -424,6 +452,11 @@ namespace starskycore.Helpers
 			return true;
 		}
 	 
+		/// <summary>
+		/// --thumbnail bool
+		/// </summary>
+		/// <param name="args">args input</param>
+		/// <returns>bool</returns>
 		public bool GetThumbnail(IReadOnlyList<string> args)
 		{
 			var isThumbnail = false;
@@ -440,6 +473,11 @@ namespace starskycore.Helpers
 			return isThumbnail;
 		}
 	 
+		/// <summary>
+		/// Check for parent/subitems feature
+		/// </summary>
+		/// <param name="args">args input</param>
+		/// <returns>bool</returns>
 		public bool GetOrphanFolderCheck(IReadOnlyList<string> args)
 		{
 			var isOrphanFolderCheck = false;
@@ -456,6 +494,11 @@ namespace starskycore.Helpers
 			return isOrphanFolderCheck;
 		}
 	 
+		/// <summary>
+		/// Move files
+		/// </summary>
+		/// <param name="args">args input</param>
+		/// <returns>bool, true=move</returns>
 		public bool GetMove(IReadOnlyList<string> args)
 		{
 			var getMove = false;
@@ -477,6 +520,11 @@ namespace starskycore.Helpers
 			return getMove;
 		}
 	 
+		/// <summary>
+		/// Get all --all true
+		/// </summary>
+		/// <param name="args">input args</param>
+		/// <returns>bool</returns>
 		public bool GetAll(IReadOnlyList<string> args)
 		{
 			// default false
@@ -497,20 +545,30 @@ namespace starskycore.Helpers
 			return getAll;
 		}
 	 
-		public bool NeedRecruisive(IReadOnlyList<string> args)
+		/// <summary>
+		/// Recursive scan for folders
+		/// </summary>
+		/// <param name="args">input args</param>
+		/// <returns>bool</returns>
+		public bool NeedRecursive(IReadOnlyList<string> args)
 		{
-			bool needRecruisive = false;
+			bool needRecursive = false;
 			
 			for (int arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--recruisive" || args[arg].ToLower() == "-r"))
+				if ((args[arg].ToLower() == "--recursive" || args[arg].ToLower() == "-r"))
 				{
-					needRecruisive = true;
+					needRecursive = true;
 				}
 			}
-			return needRecruisive;
+			return needRecursive;
 		}
 	 
+		/// <summary>
+		/// Need to remove caches
+		/// </summary>
+		/// <param name="args">input args</param>
+		/// <returns>bool</returns>
 		public bool NeedCacheCleanup(IReadOnlyList<string> args)
 		{
 			// -x --cachecleanup
