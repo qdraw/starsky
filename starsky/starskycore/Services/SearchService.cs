@@ -303,7 +303,7 @@ namespace starskycore.Services
 				return;
 			}
 
-
+			// Normal search
 			switch ( model.SearchForOptions[indexer] )
 			{
 				case SearchViewModel.SearchForOptionType.LessThen:
@@ -325,10 +325,21 @@ namespace starskycore.Services
 			}
 	    }
 
-
+		/// <summary>
+		/// Store the query during search
+		/// </summary>
         private string _defaultQuery = string.Empty;
+	    
+	    /// <summary>
+	    /// The orginal user search query
+	    /// </summary>
         private string _orginalSearchQuery = string.Empty;
 
+	    /// <summary>
+	    /// Parse search query for -Tags and default search queries e.g. "test"
+	    /// </summary>
+	    /// <param name="model">Search model</param>
+	    /// <returns>filled fields in model</returns>
         public SearchViewModel MatchSearch(SearchViewModel model)
         {
 	        // return nulls to avoid errors
@@ -350,6 +361,11 @@ namespace starskycore.Services
 
 
 
+	    /// <summary>
+	    /// Search for e.g. -Tags:"test"
+	    /// </summary>
+	    /// <param name="model">Model</param>
+	    /// <param name="itemName">e.g. Tags or Description</param>
 	    private void SearchItemName(SearchViewModel model, string itemName)
         {
 	        // ignore double quotes
@@ -425,6 +441,11 @@ namespace starskycore.Services
             return query;
         }
 
+	    /// <summary>
+	    /// Allow -inurl shortcut
+	    /// </summary>
+	    /// <param name="query"></param>
+	    /// <returns></returns>
         public string QueryShortcuts(string query)
         {
             query = query.Replace("-inurl", "-FilePath");
@@ -437,6 +458,12 @@ namespace starskycore.Services
 	    /// </summary>
         private const int NumberOfResultsInView = 20;
 
+	    /// <summary>
+	    /// Get the last page number
+	    /// Roundup by NumberOfResultsInView
+	    /// </summary>
+	    /// <param name="fileIndexQueryCount">number of search results</param>
+	    /// <returns>last page number (0=index)</returns>
         private int GetLastPageNumber(int fileIndexQueryCount)
         {
             var searchLastPageNumbers = (RoundUp(fileIndexQueryCount) / NumberOfResultsInView) - 1;
@@ -448,7 +475,11 @@ namespace starskycore.Services
             return searchLastPageNumbers;
        }
 
-        // Round features:
+	    /// <summary>
+	    /// Roundup 
+	    /// </summary>
+	    /// <param name="toRound">to round e.g. 10</param>
+	    /// <returns>roundup value</returns>
         public int RoundUp(int toRound)
         {
             // 10 => ResultsInView
@@ -456,6 +487,11 @@ namespace starskycore.Services
             return (NumberOfResultsInView - toRound % NumberOfResultsInView) + toRound;
         }
 
+	    /// <summary>
+	    /// round number down
+	    /// </summary>
+	    /// <param name="toRound">to round</param>
+	    /// <returns>round down value</returns>
         public int RoundDown(int toRound)
         {
             return toRound - toRound % 10;
