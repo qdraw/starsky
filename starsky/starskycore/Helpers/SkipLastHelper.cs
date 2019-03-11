@@ -10,6 +10,7 @@ namespace starskycore.Helpers
 	// Assembly location: /usr/local/share/dotnet/shared/Microsoft.NETCore.App/2.2.0/System.Linq.dll
 	public static class SkipLastHelper
 	{
+
 		public static IEnumerable<TSource> SkipLast<TSource>(this IEnumerable<TSource> source, int count)
 		{
 			if (source == null)

@@ -33,6 +33,9 @@ namespace starskycore.Helpers
             return "unknown/unknown";
         }
 
+	    /// <summary>
+	    /// Get mime type by extension (without dot) e.g. jpg
+	    /// </summary>
         private static readonly Dictionary<string, string> MimeTypesDictionary = new Dictionary<string, string>
         {
             {"ai", "application/postscript"},

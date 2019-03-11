@@ -23,6 +23,9 @@ namespace starskycore.Helpers
             return angle * Radius;
         }
         
+	    /// <summary>
+	    /// Radius of the earth
+	    /// </summary>
         private const double Radius = 6378.16;
 
         /// <summary>

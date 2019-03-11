@@ -81,6 +81,11 @@ namespace starskycore.Helpers
         }
         
 
+	    /// <summary>
+	    /// Add / (always) before string
+	    /// </summary>
+	    /// <param name="thumbnailTempFolder">the subpath</param>
+	    /// <returns>/subpath</returns>
         public static string PrefixDbSlash(string thumbnailTempFolder) { 
             // Add normal linux slash to beginning of the configuration
             if (string.IsNullOrWhiteSpace(thumbnailTempFolder)) return "/";
@@ -92,6 +97,11 @@ namespace starskycore.Helpers
             return thumbnailTempFolder;
         }
         
+	    /// <summary>
+	    /// Remove / (always) before string
+	    /// </summary>
+	    /// <param name="subpath">subpath</param>
+	    /// <returns>(without slash) subpath</returns>
         public static string RemovePrefixDbSlash(string subpath) { 
             // Remove linux slash to beginning of the configuration
             if (string.IsNullOrWhiteSpace(subpath)) return "/";
