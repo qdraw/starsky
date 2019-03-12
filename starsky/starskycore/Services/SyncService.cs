@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -10,21 +9,18 @@ namespace starskycore.Services
 {
     public partial class SyncService : ISync
     {
-        private readonly ApplicationDbContext _context;
         private readonly IQuery _query;
         private readonly AppSettings _appSettings;
         private readonly IReadMeta _readMeta;
 	    private readonly IStorage _iStorage;
 
 	    /// <summary>Do a sync of files uning a subpath</summary>
-	    /// <param name="context">Database Entity Framework context</param>
 	    /// <param name="query">Starsky IQuery interface to do calls on the database</param>
 	    /// <param name="appSettings">Settings of the application</param>
 	    /// <param name="readMeta">To read exif and xmp</param>
 	    /// <param name="iStorage">Filesystem or other abstraction</param>
-	    public SyncService(ApplicationDbContext context, IQuery query, AppSettings appSettings, IReadMeta readMeta, IStorage iStorage)
+	    public SyncService(IQuery query, AppSettings appSettings, IReadMeta readMeta, IStorage iStorage)
         {
-            _context = context;
             _query = query;
             _appSettings = appSettings;
             _readMeta = readMeta;

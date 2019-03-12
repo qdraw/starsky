@@ -61,7 +61,7 @@ namespace starskytest.Helpers
 			
 			_iStorageSubPath = new StorageSubPathFilesystem(_appSettings);
 
-			_sync = new SyncService(context,_query,_appSettings,readMeta,_iStorageSubPath);
+			_sync = new SyncService(_query,_appSettings,readMeta,_iStorageSubPath);
 			
 
 		}
