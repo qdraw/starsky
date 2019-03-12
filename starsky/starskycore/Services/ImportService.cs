@@ -309,7 +309,6 @@ namespace starskycore.Services
         /// </summary>
         /// <param name="inputFileFullPath">the source file</param>
         /// <param name="fileIndexItem">the object with the data</param>
-        /// <param name="tryagain">to avoid an endless loop</param>
         /// <returns>string with DestionationFullPath</returns>
         public string DestionationFullPathDuplicateTryAgain(
             string inputFileFullPath, 
@@ -325,6 +324,12 @@ namespace starskycore.Services
             return _filesystemHelper.ExistFile(destinationFullPath) ? null : destinationFullPath;
         }
 
+		/// <summary>
+		/// Checks if file exist in storagefolder - or suggest a `-102` or `-909` appendex
+		/// </summary>
+		/// <param name="inputFileFullPath">the source file</param>
+		/// <param name="fileIndexItem">the object with the data</param>
+		/// <returns>string with DestionationFullPath</returns>
 		public string DestionationFullPathDuplicate(
 			string inputFileFullPath,
 			FileIndexItem fileIndexItem)

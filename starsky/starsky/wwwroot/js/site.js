@@ -28,17 +28,6 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 }
                 else if( (prev != null && previousKey.indexOf(18) >= 0) ) {
                     document.activeElement.blur();
-                    setInterval(function(){
-                        if (formSubmitting === undefined) {
-                            window.location.href = prev;
-                            formSubmitting = false;
-                        }
-                        else if(formSubmitting) {
-                            console.log("<");
-                            window.location.href = prev;
-                            formSubmitting = false;
-                        }
-                    }, 200);
                 }
                 else if (document.activeElement.className.indexOf("form-control") === -1
                 && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
@@ -60,19 +49,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                     window.location.href = next;
                 }
                 else if( (next != null && previousKey.indexOf(18) >= 0) ) {
-                    document.activeElement.focus();
                     document.activeElement.blur();
-                    setInterval(function(){
-                        if (formSubmitting === undefined) {
-                            window.location.href = next;
-                            formSubmitting = false;
-                        }
-                        else if(formSubmitting) {
-                            console.log(">");
-                            window.location.href = next;
-                            formSubmitting = true;
-                        }
-                    }, 200);
                 }
                 else if (document.activeElement.className.indexOf("form-control") === -1
                 && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {

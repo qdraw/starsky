@@ -62,11 +62,11 @@ namespace starskytest.Helpers
         public void ArgsHelper_NeedRecruisiveTest()
         {
             var args = new List<string> {"-r"}.ToArray();
-            Assert.AreEqual(new ArgsHelper(_appSettings).NeedRecruisive(args), true);
+            Assert.AreEqual(new ArgsHelper(_appSettings).NeedRecursive(args), true);
             
             // Bool parse check
             args = new List<string> {"-r","true"}.ToArray();
-            Assert.AreEqual(new ArgsHelper(_appSettings).NeedRecruisive(args), true);
+            Assert.AreEqual(new ArgsHelper(_appSettings).NeedRecursive(args), true);
         }
 	    
 	    [TestMethod]
@@ -286,6 +286,14 @@ namespace starskytest.Helpers
             var yesterdayString = DateTime.Today.AddDays(-1).ToString("yyyy_MM_dd");
             Assert.AreEqual(true, relative.Contains(yesterdayString));
         }
+	    
+	    [TestMethod]
+	    [ExpectedException(typeof(FieldAccessException))]
+	    public void ArgsHelper_GetSubpathRelative_Null_Test()
+	    {
+		    new ArgsHelper(null).GetSubpathRelative(new List<string>());
+		    // FieldAccessException
+	    }
 
 	    [TestMethod]
 	    public void ArgsHelper_GetSubpathRelativeTestLargeInt()
@@ -300,15 +308,39 @@ namespace starskytest.Helpers
         public void ArgsHelper_NeedHelpShowDialog()
         {
                 // Just simple show a console dialog
-            new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.WebHtml})
+            new ArgsHelper(new AppSettings {
+		            ApplicationType = AppSettings.StarskyAppType.WebHtml, 
+		            Verbose = true,
+		            PublishProfiles = new List<AppSettingsPublishProfiles>{new AppSettingsPublishProfiles
+		            {
+			            Append = "t",
+		            }}
+		            
+	            })
                 .NeedHelpShowDialog();
             new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Importer})
                 .NeedHelpShowDialog();
 			new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Geo})
 				.NeedHelpShowDialog();
-	        new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.WebHtml})
-		        .NeedHelpShowDialog();
+
         }
+	    
+	    [TestMethod]
+	    [ExpectedException(typeof(FieldAccessException))]
+	    public void ArgsHelper_NeedHelpShowDialog_Null_Test()
+	    {
+		    new ArgsHelper(null).NeedHelpShowDialog();
+		    // FieldAccessException
+	    }
+	    
+
+	    [TestMethod]
+	    [ExpectedException(typeof(FieldAccessException))]
+	    public void ArgsHelper_SetEnvironmentToAppSettings_Null_Test()
+	    {
+		    new ArgsHelper(null).SetEnvironmentToAppSettings();
+		    // FieldAccessException
+	    }
 
 	    [TestMethod]
 	    public void ArgsHelper_SetEnvironmentToAppSettingsTest()

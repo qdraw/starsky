@@ -10,11 +10,18 @@ namespace starskycore.Helpers
 {
     public class HttpClientHelper
     {
+	    /// <summary>
+	    /// Set Http Provider
+	    /// </summary>
+	    /// <param name="httpProvider">IHttpProvider</param>
 	    public HttpClientHelper(IHttpProvider httpProvider)
 	    {
 		    _httpProvider = httpProvider;
 	    }
 
+	    /// <summary>
+	    /// Http Provider
+	    /// </summary>
 	    private readonly IHttpProvider _httpProvider;
 
 

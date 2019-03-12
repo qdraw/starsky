@@ -20,6 +20,13 @@ namespace starskycore.Helpers
 //	        _iStorage = iStorage;
         }
 
+	    /// <summary>
+	    /// To update Exiftool
+	    /// </summary>
+	    /// <param name="updateModel">update model</param>
+	    /// <param name="inputFullFilePath">filepath</param>
+	    /// <param name="comparedNames">list,string e.g. Tags</param>
+	    /// <returns></returns>
         public string Update(FileIndexItem updateModel, string inputFullFilePath, List<string> comparedNames)
         {
             var exifUpdateFilePaths = new List<string>

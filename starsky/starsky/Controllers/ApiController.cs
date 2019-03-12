@@ -233,6 +233,7 @@ namespace starsky.Controllers
 						// when you disable cache the field is not filled with the data
 						detailView.FileIndexItem = FileIndexCompareHelper
 							.SetCompare(detailView.FileIndexItem, inputModel, comparedNamesList);
+						
 						detailView.FileIndexItem = RotatonCompare(rotateClock, detailView.FileIndexItem, comparedNamesList);
 					}
 						

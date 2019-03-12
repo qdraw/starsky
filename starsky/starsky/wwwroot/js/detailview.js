@@ -143,7 +143,9 @@ if (document.querySelectorAll("#js-keywords-update").length === 1 &&
                     }
                 }
             }
-            return xhr.json();
+            else {
+                return xhr.json();
+            } 
         })
         .then(function(data) {
             updateCollectionsSwitch(data);
