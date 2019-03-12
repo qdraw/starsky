@@ -93,5 +93,39 @@ namespace starskytest.Helpers
 		    Assert.AreEqual(update.DateTime, result.DateTime);
 
 	    }
+	    
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest__CheckIfPropertyExist_Tags_True()
+	    {
+		    Assert.AreEqual(true,FileIndexCompareHelper.CheckIfPropertyExist(nameof(FileIndexItem.Tags)));
+	    }
+
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest__CheckIfPropertyExist_False()
+	    {
+		    Assert.AreEqual(false,FileIndexCompareHelper.CheckIfPropertyExist("45678987654"));
+	    }
+
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest__SetValue_Tags()
+	    {
+		    Assert.AreEqual("value", FileIndexCompareHelper.Set(null,nameof(FileIndexItem.Tags),"value").Tags);
+	    }
+	    
+	    
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest__SetValue_UnknownValue()
+	    {
+		    // try database type that does not exist
+		    Assert.AreEqual(string.Empty, FileIndexCompareHelper.Set(null,"ThisTagDoesNotExist","value").Tags);
+	    }
+	    
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest__SetValue_WrongTypeCast()
+	    {
+		    // wrong types are ignored by default
+		    Assert.AreEqual(string.Empty, FileIndexCompareHelper.Set(null,nameof(FileIndexItem.Tags),1).Tags);
+	    }
+	    
     }
 }

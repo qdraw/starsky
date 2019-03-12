@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using starskycore.Models;
 
@@ -64,6 +65,43 @@ namespace starskycore.Helpers
             }
             return differenceList;
         }
+
+	    /// <summary>
+	    /// Set values by string name. fieldContent must by the right type
+	    /// wrong types are ignored by default
+	    /// </summary>
+	    /// <param name="sourceIndexItem">fileIndexItem to add to</param>
+	    /// <param name="fieldName">name e.g. tags or description</param>
+	    /// <param name="fieldContent">the content, type must match exact</param>
+	    /// <returns>fileIndexItem</returns>
+	    public static FileIndexItem Set(FileIndexItem sourceIndexItem, string fieldName, object fieldContent)
+	    {
+		    if(sourceIndexItem == null) sourceIndexItem = new FileIndexItem();
+		    if ( !CheckIfPropertyExist(fieldName) ) return sourceIndexItem;
+		    
+		    // Compare input types, fieldType(object=string) fileIndexType(FileIndexItem.field=string)
+		    // wrong types are ignored by default
+		    var fieldType = fieldContent.GetType();
+		    var fileIndexType = sourceIndexItem.GetType().GetProperty(fieldName).PropertyType;
+		    if ( fileIndexType == fieldType )
+		    {
+			    sourceIndexItem.GetType().GetProperty(fieldName).SetValue(sourceIndexItem, fieldContent, null);
+		    }
+		    return sourceIndexItem;
+	    }
+	    
+	    /// <summary>
+	    /// Check if property exist in FileIndexItem
+	    /// </summary>
+	    /// <param name="fieldName">name e.g. Tags</param>
+	    /// <returns>bool, true=exist</returns>
+	    public static bool CheckIfPropertyExist(string fieldName)
+	    {
+		    PropertyInfo[] propertiesA = new FileIndexItem().GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+		    return propertiesA.Any(p => p.Name == fieldName);
+	    }
+	    
+
 
 	    /// <summary>
 	    /// Update compared values
