@@ -126,6 +126,28 @@ namespace starskytest.Helpers
 		    // wrong types are ignored by default
 		    Assert.AreEqual(string.Empty, FileIndexCompareHelper.Set(null,nameof(FileIndexItem.Tags),1).Tags);
 	    }
+
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest_GetValue()
+	    {
+		    var t = new FileIndexItem{Tags = "test"};
+		    var result = FileIndexCompareHelper.Get(t, nameof(FileIndexItem.Tags));
+		    Assert.AreEqual(t.Tags,result);
+	    }
+
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest_GetValue_NullFieldName()
+	    {
+		    var t = new FileIndexItem{Tags = "test"};
+		    var result = FileIndexCompareHelper.Get(t, "ThisTagDoesNotExist");
+		    Assert.AreEqual(null,result);
+	    }
 	    
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest_GetValue_NullFileIndexItem()
+	    {
+		    var result = FileIndexCompareHelper.Get(null, nameof(FileIndexItem.Tags));
+		    Assert.AreEqual(null,result);
+	    }
     }
 }

@@ -21,16 +21,20 @@ namespace starsky.Controllers
 		private readonly IExiftool _exiftool;
 		private readonly AppSettings _appSettings;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IStorage _iStorage;
 
 		public ExportController(
 			IQuery query, IExiftool exiftool, 
-			AppSettings appSettings, IBackgroundTaskQueue queue
+			AppSettings appSettings, IBackgroundTaskQueue queue,
+			IStorage iStorage
 		)
 		{
 			_appSettings = appSettings;
 			_query = query;
 			_exiftool = exiftool;
 			_bgTaskQueue = queue;
+			_iStorage = iStorage;
+
 		}
 		
 		/// <summary>
@@ -57,7 +61,7 @@ namespace starsky.Controllers
 				// all filetypes that are exist > should be added 
 				
 				var statusResults =
-					new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+					new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 				
 				// ignore readonly status
 				if ( statusResults == FileIndexItem.ExifStatus.ReadOnly )
@@ -68,7 +72,7 @@ namespace starsky.Controllers
 				statusModel.SetFilePath(subPath);
 				statusModel.IsDirectory = false;
 				
-				if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+				if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 
 				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
 

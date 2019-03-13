@@ -6,6 +6,7 @@ using System.Reflection;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskycore.ViewModels;
 
 namespace starskycore.Services
 {
@@ -13,20 +14,22 @@ namespace starskycore.Services
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
-		
+		private readonly IStorage _iStorage;
+
 		/// <summary>Do a sync of files uning a subpath</summary>
 		/// <param name="query">Starsky IQuery interface to do calls on the database</param>
 		/// <param name="appSettings">Settings of the application</param>
-		public ReplaceService(IQuery query, AppSettings appSettings)
+		public ReplaceService(IQuery query, AppSettings appSettings, IStorage iStorage)
 		{
 			_query = query;
 			_appSettings = appSettings;
+			_iStorage = iStorage;
 		}
 
 		/// <summary>
 		/// Search and replace in string based fields
 		/// </summary>
-		/// <param name="f">subPath</param>
+		/// <param name="f">subPath (split by dot comma ;)</param>
 		/// <param name="search"></param>
 		/// <param name="replace"></param>
 		/// <param name="fieldName"></param>
@@ -44,7 +47,7 @@ namespace starskycore.Services
 			{
 				var detailView = _query.SingleItem(subPath, null, collections, false);
 				var statusResults =
-					new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+					new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 
 				// To Inject if detailview is false
 				var statusModel = new FileIndexItem();
@@ -52,7 +55,7 @@ namespace starskycore.Services
 				statusModel.IsDirectory = false;
 
 				// if one item fails, the status will added
-				if ( new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults,
+				if ( new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
 					fileIndexResultsList) ) continue;
 				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
 				
@@ -69,20 +72,28 @@ namespace starskycore.Services
 
 			foreach ( var fileIndexItem in fileIndexResultsList.Where( p => p.Status == FileIndexItem.ExifStatus.Ok) )
 			{
-//				var statusModel = new FileIndexItem();
-//					
-//				FileIndexCompareHelper.SetCompare(null, )
-//				FileIndexCompareHelper.Compare(fileIndexItem, statusModel, append);
-//				
-//				
-//				fileIndexItem.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
-//					.Where(p => p.Name == fieldName);
-//				
-//				Compare
+				var searchInObject = FileIndexCompareHelper.Get(fileIndexItem, fieldName);
+				var replacedToObject = new object();
+				
+				PropertyInfo property = new FileIndexItem().GetType().GetProperty(fieldName);
+				if ( property.PropertyType == typeof(string) )
+				{
+					var searchIn = ( string ) searchInObject;
+					replacedToObject = searchIn.Replace(search, replace);
+				}
+
+				// only string types are added here, other types are ignored for now
+				FileIndexCompareHelper.Set(fileIndexItem, fieldName, replacedToObject);
 			}
 
 			return fileIndexResultsList;
 		}
+
+//		public List<FileIndexItem> Replace(string f, string fieldName, string search,
+//			string replace, bool collections)
+//		{
+//			
+//		}
 
 
 	}

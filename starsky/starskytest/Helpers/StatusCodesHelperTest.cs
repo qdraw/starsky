@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
+using starskycore.Services;
 using starskycore.ViewModels;
 
 namespace starskytest.Helpers
@@ -13,20 +14,21 @@ namespace starskytest.Helpers
 		public void StatusCodesHelperTest_FileCollectionsCheck_NotFoundNotInIndex()
 		{
 			var appSettings = new AppSettings();
-			var status = new StatusCodesHelper(appSettings).FileCollectionsCheck(null);
+			var status = new StatusCodesHelper(appSettings,new StorageSubPathFilesystem(appSettings)).FileCollectionsCheck(null);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,status);
 		}
 		
 		[TestMethod]
 		public void StatusCodesHelperTest_FileCollectionsCheck_DirReadOnly()
 		{
+			// this is the only diff -->>
 			var appSettings = new AppSettings{ReadOnlyFolders = new List<string>{"/"}};
 			var detailView = new DetailView
 			{
 				IsDirectory = true,
 				SubPath = "/"
 			};
-			var status = new StatusCodesHelper(appSettings).FileCollectionsCheck(detailView);
+			var status = new StatusCodesHelper(appSettings,new StorageSubPathFilesystem(appSettings)).FileCollectionsCheck(detailView);
 			Assert.AreEqual(FileIndexItem.ExifStatus.DirReadOnly,status);
 		}
 		
@@ -39,7 +41,7 @@ namespace starskytest.Helpers
 				IsDirectory = true,
 				SubPath = "/"
 			};
-			var status = new StatusCodesHelper(appSettings).FileCollectionsCheck(detailView);
+			var status = new StatusCodesHelper(appSettings,new StorageSubPathFilesystem(appSettings)).FileCollectionsCheck(detailView);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundIsDir,status);
 		}
 
@@ -50,7 +52,7 @@ namespace starskytest.Helpers
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.NotFoundIsDir;
 			var fileIndexResultsList = new List<FileIndexItem>();
-			var statusBool = new StatusCodesHelper(appSettings).ReturnExifStatusError(statusModel, statusResults,
+			var statusBool = new StatusCodesHelper(appSettings,new StorageSubPathFilesystem(appSettings)).ReturnExifStatusError(statusModel, statusResults,
 					fileIndexResultsList);
 			Assert.AreEqual(true,statusBool);
 		}
@@ -62,7 +64,7 @@ namespace starskytest.Helpers
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.DirReadOnly;
 			var fileIndexResultsList = new List<FileIndexItem>();
-			var statusBool = new StatusCodesHelper(appSettings).ReturnExifStatusError(statusModel, statusResults,
+			var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
 				fileIndexResultsList);
 			Assert.AreEqual(true,statusBool);
 		}
@@ -74,7 +76,7 @@ namespace starskytest.Helpers
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.NotFoundNotInIndex;
 			var fileIndexResultsList = new List<FileIndexItem>();
-			var statusBool = new StatusCodesHelper(appSettings).ReturnExifStatusError(statusModel, statusResults,
+			var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
 				fileIndexResultsList);
 			Assert.AreEqual(true,statusBool);
 		}
@@ -86,7 +88,7 @@ namespace starskytest.Helpers
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.NotFoundSourceMissing;
 			var fileIndexResultsList = new List<FileIndexItem>();
-			var statusBool = new StatusCodesHelper(appSettings).ReturnExifStatusError(statusModel, statusResults,
+			var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
 				fileIndexResultsList);
 			Assert.AreEqual(true,statusBool);
 		}
@@ -98,10 +100,16 @@ namespace starskytest.Helpers
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.ReadOnly;
 			var fileIndexResultsList = new List<FileIndexItem>();
-			var statusBool = new StatusCodesHelper(appSettings).ReturnExifStatusError(statusModel, statusResults,
+			var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
 				fileIndexResultsList);
 			Assert.AreEqual(true,statusBool);
 		}
-		
+
+		[TestMethod]
+		public void StatusCodesHelperTest_InjectFakeIStorage()
+		{
+			
+		}
+
 	}
 }

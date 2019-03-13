@@ -20,18 +20,21 @@ namespace starsky.Controllers
         private readonly AppSettings _appSettings;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
         private readonly IReadMeta _readMeta;
+	    private readonly IStorage _iStorage;
 
         public ApiController(
             IQuery query, IExiftool exiftool, 
             AppSettings appSettings, IBackgroundTaskQueue queue,
-            IReadMeta readMeta
-            )
+            IReadMeta readMeta,
+			IStorage iStorage)
         {
             _appSettings = appSettings;
             _query = query;
             _exiftool = exiftool;
             _bgTaskQueue = queue;
             _readMeta = readMeta;
+	        _iStorage = iStorage;
+
         }
 
 	    /// <summary>
@@ -161,14 +164,14 @@ namespace starsky.Controllers
 			foreach (var subPath in inputFilePaths)
 			{
 				var detailView = _query.SingleItem(subPath,null,collections,false);
-				var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+				var statusResults = new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 				
 				var statusModel = inputModel.Clone();
 				statusModel.IsDirectory = false;
 				statusModel.SetFilePath(subPath);
 				
 				// if one item fails, the status will added
-				if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+				if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 
 				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
 				
@@ -315,13 +318,13 @@ namespace starsky.Controllers
                     fileIndexResultsList.Add(detailView.FileIndexItem);
                     continue;
                 }
-                var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+                var statusResults = new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 
                 var statusModel = new FileIndexItem();
                 statusModel.SetFilePath(subPath);
                 statusModel.IsDirectory = false;
 
-                if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 	            
 	            if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
 
@@ -367,13 +370,13 @@ namespace starsky.Controllers
             foreach (var subPath in inputFilePaths)
             {
                 var detailView = _query.SingleItem(subPath, null, collections, false);
-                var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+                var statusResults = new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 
                 var statusModel = new FileIndexItem();
                 statusModel.SetFilePath(subPath);
                 statusModel.IsDirectory = false;
 
-                if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                 
                 var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
                 var collectionFullDeletePaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using starsky.ViewModels;
+using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.ViewModels;
 
@@ -10,13 +11,19 @@ namespace starskycore.Helpers
     public class StatusCodesHelper
     {
         private readonly AppSettings _appSettings;
+	    private readonly IStorage _iStorage;
 
-        public StatusCodesHelper(AppSettings appSettings)
+	    public StatusCodesHelper(AppSettings appSettings, IStorage iStorage)
         {
             _appSettings = appSettings;
+	        _iStorage = iStorage;
         }
-        
-        /// <summary>
+
+	    public StatusCodesHelper()
+	    {
+	    }
+
+	    /// <summary>
         /// Check the status of a file based on DetailView object
         /// </summary>
         /// <param name="detailView">The element used on the web</param>
@@ -42,21 +49,18 @@ namespace starskycore.Helpers
 
             if (_appSettings.IsReadOnly(detailView.FileIndexItem.ParentDirectory)) return  FileIndexItem.ExifStatus.ReadOnly;
 
-            foreach (var collectionPath in detailView.FileIndexItem.CollectionPaths.ToList())
+            foreach (var collectionSubPath in detailView.FileIndexItem.CollectionPaths.ToList())
             {
-	            // toList() is add to avoid :> Collection was modified; enumeration operation
-                var fullPathCollection = _appSettings.DatabasePathToFilePath(collectionPath);
-                
-                //For the situation that the file is not on disk but the only one in the list
-                if (!System.IO.File.Exists(fullPathCollection) 
+	            //For the situation that the file is not on disk but the only one in the list
+                if (! _iStorage.ExistFile(collectionSubPath)
                     && detailView.FileIndexItem.CollectionPaths.Count == 1)
                 {
                     return FileIndexItem.ExifStatus.NotFoundSourceMissing;  //
                 }
                 // When there are more items in the list
-                if (!System.IO.File.Exists(fullPathCollection))
+                if (!_iStorage.ExistFile(collectionSubPath) )
                 {
-                    detailView.FileIndexItem.CollectionPaths.Remove(collectionPath);
+                    detailView.FileIndexItem.CollectionPaths.Remove(collectionSubPath);
                 }
             }
 

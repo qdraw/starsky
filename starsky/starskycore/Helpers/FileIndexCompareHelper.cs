@@ -91,6 +91,21 @@ namespace starskycore.Helpers
 	    }
 	    
 	    /// <summary>
+	    /// Get property in FileIndexItem
+	    /// </summary>
+	    /// <param name="fieldName">name e.g. Tags</param>
+	    /// <returns>object type is defined in fileindexitem</returns>
+	    public static object Get(FileIndexItem sourceIndexItem, string fieldName)
+	    {
+		    if ( CheckIfPropertyExist(fieldName) && sourceIndexItem != null)
+		    {
+			    return sourceIndexItem.GetType().GetProperty(fieldName).GetValue(sourceIndexItem, null);
+		    }
+		    return null;
+	    }
+	    
+	    
+	    /// <summary>
 	    /// Check if property exist in FileIndexItem
 	    /// </summary>
 	    /// <param name="fieldName">name e.g. Tags</param>
