@@ -4,6 +4,7 @@ using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
 using starskycore.ViewModels;
+using starskytest.FakeMocks;
 
 namespace starskytest.Helpers
 {
@@ -30,6 +31,38 @@ namespace starskytest.Helpers
 			};
 			var status = new StatusCodesHelper(appSettings,new StorageSubPathFilesystem(appSettings)).FileCollectionsCheck(detailView);
 			Assert.AreEqual(FileIndexItem.ExifStatus.DirReadOnly,status);
+		}
+		
+		[TestMethod]
+		public void StatusCodesHelperTest_InjectFakeIStorage_GoodSituation()
+		{
+			var appSettings = new AppSettings();
+			var detailView = new DetailView
+			{
+				IsDirectory = false,
+				SubPath = "/test.jpg",
+				FileIndexItem = new FileIndexItem{ParentDirectory = "/", FileName = "test.jpg", CollectionPaths = new List<string>{"/test.jpg"}}
+			};
+			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var status = new StatusCodesHelper(appSettings,istorage).FileCollectionsCheck(detailView);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,status);
+		}
+		
+		[TestMethod]
+		public void StatusCodesHelperTest_InjectFakeIStorage_NotExitSituation()
+		{
+			var appSettings = new AppSettings();
+			var detailView = new DetailView
+			{
+				IsDirectory = false,
+				SubPath = "/404.jpg",
+				FileIndexItem = new FileIndexItem{ParentDirectory = "/", FileName = "404.jpg", CollectionPaths = new List<string>{"/404.jpg"}}
+			};
+			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var status = new StatusCodesHelper(appSettings,istorage).FileCollectionsCheck(detailView);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,status);
 		}
 		
 		[TestMethod]
@@ -103,12 +136,6 @@ namespace starskytest.Helpers
 			var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
 				fileIndexResultsList);
 			Assert.AreEqual(true,statusBool);
-		}
-
-		[TestMethod]
-		public void StatusCodesHelperTest_InjectFakeIStorage()
-		{
-			
 		}
 
 	}

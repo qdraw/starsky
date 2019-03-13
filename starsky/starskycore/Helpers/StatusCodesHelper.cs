@@ -31,7 +31,8 @@ namespace starskycore.Helpers
         public FileIndexItem.ExifStatus FileCollectionsCheck(DetailView detailView)
         {
             if(_appSettings == null) throw new DllNotFoundException("add app settings to ctor");
-            
+	        if(_iStorage == null) throw new DllNotFoundException("add _iStorage to ctor");
+
             if (detailView == null)
             {
                 return FileIndexItem.ExifStatus.NotFoundNotInIndex;
