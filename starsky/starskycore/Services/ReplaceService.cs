@@ -19,6 +19,7 @@ namespace starskycore.Services
 		/// <summary>Do a sync of files uning a subpath</summary>
 		/// <param name="query">Starsky IQuery interface to do calls on the database</param>
 		/// <param name="appSettings">Settings of the application</param>
+		/// <param name="iStorage">storage abstraction</param>
 		public ReplaceService(IQuery query, AppSettings appSettings, IStorage iStorage)
 		{
 			_query = query;
@@ -27,7 +28,7 @@ namespace starskycore.Services
 		}
 
 		/// <summary>
-		/// Search and replace in string based fields
+		/// Search and replace in string based fields (only Getting and replacing)
 		/// </summary>
 		/// <param name="f">subPath (split by dot comma ;)</param>
 		/// <param name="search"></param>

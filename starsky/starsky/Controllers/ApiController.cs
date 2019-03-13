@@ -239,33 +239,9 @@ namespace starsky.Controllers
 						
 						detailView.FileIndexItem = RotatonCompare(rotateClock, detailView.FileIndexItem, comparedNamesList);
 					}
-						
-					var exiftool = new ExifToolCmdHelper(_appSettings,_exiftool);
-					var toUpdateFilePath = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.FilePath);
-					
-					// feature to exif update the thumbnails 
-					var exifUpdateFilePaths = AddThumbnailToExifChangeList(toUpdateFilePath, detailView.FileIndexItem);
 
-					// do rotation on thumbs
-					RotationThumbnailExcute(rotateClock, detailView.FileIndexItem);
-					
-					// Do an Exif Sync for all files, including thumbnails
-					exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
-                        
-					// change thumbnail names after the orginal is changed
-					var newFileHash = FileHash.GetHashCode(toUpdateFilePath);
-					new Thumbnail(_appSettings).RenameThumb(detailView.FileIndexItem.FileHash,newFileHash);
-					
-					// Update the hash in the database
-					detailView.FileIndexItem.FileHash = newFileHash;
-                        
-					// Do a database sync + cache sync
-					_query.UpdateItem(detailView.FileIndexItem);
-                        
-					// > async > force you to read the file again
-					// do not include thumbs in MetaCache
-					// only the full path url of the source image
-					_readMeta.RemoveReadMetaCache(toUpdateFilePath);
+					// Then update it on exifTool,database and rotation
+					UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
 				}
 			});
             
@@ -284,6 +260,42 @@ namespace starsky.Controllers
                         
             return Json(returnNewResultList);
         }
+
+	    /// <summary>
+	    /// Update ExifTool, Thumbnail, Database and if needed rotateClock
+	    /// </summary>
+	    /// <param name="detailView">output database object</param>
+	    /// <param name="comparedNamesList">name of fields updated by exifTool</param>
+	    /// <param name="rotateClock">rotation value (if needed)</param>
+		public void UpdateWriteDiskDatabase(DetailView detailView, List<string> comparedNamesList, int rotateClock = 0)
+		{
+			var exiftool = new ExifToolCmdHelper(_appSettings,_exiftool);
+			var toUpdateFilePath = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.FilePath);
+					
+			// feature to exif update the thumbnails 
+			var exifUpdateFilePaths = AddThumbnailToExifChangeList(toUpdateFilePath, detailView.FileIndexItem);
+
+			// do rotation on thumbs
+			RotationThumbnailExcute(rotateClock, detailView.FileIndexItem);
+					
+			// Do an Exif Sync for all files, including thumbnails
+			exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
+                        
+			// change thumbnail names after the orginal is changed
+			var newFileHash = FileHash.GetHashCode(toUpdateFilePath);
+			new Thumbnail(_appSettings).RenameThumb(detailView.FileIndexItem.FileHash,newFileHash);
+					
+			// Update the hash in the database
+			detailView.FileIndexItem.FileHash = newFileHash;
+                        
+			// Do a database sync + cache sync
+			_query.UpdateItem(detailView.FileIndexItem);
+                        
+			// > async > force you to read the file again
+			// do not include thumbs in MetaCache
+			// only the full path url of the source image
+			_readMeta.RemoveReadMetaCache(toUpdateFilePath);		
+		}
 
 
         /// <summary>
