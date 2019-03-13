@@ -51,7 +51,7 @@ namespace starskytest.Services
 			}); 
 			
 			var output = _replace.Replace("/test2.jpg",nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
-			Assert.AreEqual("test1, , test",output[0].Tags);
+			Assert.AreEqual("test1, test",output[0].Tags);
 			_query.RemoveItem(item1);
 		}
 
