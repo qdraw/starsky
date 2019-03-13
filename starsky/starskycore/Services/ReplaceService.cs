@@ -70,6 +70,13 @@ namespace starskycore.Services
 
 			}
 
+			fileIndexResultsList = SearchAndReplace(fileIndexResultsList, fieldName, search, replace);
+
+			return fileIndexResultsList;
+		}
+
+		public List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList, string fieldName, string search, string replace)
+		{
 			foreach ( var fileIndexItem in fileIndexResultsList.Where( p => p.Status == FileIndexItem.ExifStatus.Ok) )
 			{
 				var searchInObject = FileIndexCompareHelper.Get(fileIndexItem, fieldName);
@@ -88,12 +95,6 @@ namespace starskycore.Services
 
 			return fileIndexResultsList;
 		}
-
-//		public List<FileIndexItem> Replace(string f, string fieldName, string search,
-//			string replace, bool collections)
-//		{
-//			
-//		}
 
 
 	}

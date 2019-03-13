@@ -222,13 +222,13 @@ namespace starsky.Controllers
 				var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
 				foreach ( var item in collectionsDetailViewList )
 				{
-					// need to recheck because this process is async, so in the mainwhile there are changes posible
+					// need to recheck because this process is async, so in the meanwhile there are changes possible
 					var detailView = _query.SingleItem(item.FilePath,null,collections,false);
 				
-					// used for tracking differences, in the database/exiftool compare
+					// used for tracking differences, in the database/ExifTool compare
 					var comparedNamesList = changedFileIndexItemName[detailView.FileIndexItem.FilePath];
 
-					// the inputmodel is always DoNotChange, so checking from the field is useless
+					// the inputModel is always DoNotChange, so checking from the field is useless
 					inputModel.Orientation = detailView.FileIndexItem.Orientation;
 
 					if ( !_query.IsCacheEnabled() )
@@ -320,9 +320,7 @@ namespace starsky.Controllers
                 }
                 var statusResults = new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 
-                var statusModel = new FileIndexItem();
-                statusModel.SetFilePath(subPath);
-                statusModel.IsDirectory = false;
+                var statusModel = new FileIndexItem(subPath);
 
                 if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 	            
@@ -372,9 +370,7 @@ namespace starsky.Controllers
                 var detailView = _query.SingleItem(subPath, null, collections, false);
                 var statusResults = new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 
-                var statusModel = new FileIndexItem();
-                statusModel.SetFilePath(subPath);
-                statusModel.IsDirectory = false;
+                var statusModel = new FileIndexItem(subPath);
 
                 if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                 
@@ -428,7 +424,7 @@ namespace starsky.Controllers
   
 
         /// <summary>
-        /// Http Endpoint to get fullsize image or thumbnail
+        /// Http Endpoint to get full size image or thumbnail
         /// </summary>
         /// <param name="f">one single file</param>
         /// <param name="isSingleitem">true = load orginal</param>
@@ -452,7 +448,7 @@ namespace starsky.Controllers
             bool retryThumbnail = false)
         {
             // f is Hash
-            // isSingleItem => detailview
+            // isSingleItem => detailView
             // Retry thumbnail => is when you press reset thumbnail
             // json, => to don't waste the users bandwith.
 

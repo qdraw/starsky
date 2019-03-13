@@ -36,6 +36,8 @@ namespace starskytest.Services
 			_replace = new ReplaceService(_query,new AppSettings(),_iStorage);
 
 		}
+		
+		// todo: not found
 
 		[TestMethod]
 		public void ReplaceServiceTest_replaceString()
@@ -49,7 +51,7 @@ namespace starskytest.Services
 			}); 
 			
 			var output = _replace.Replace("/test2.jpg",nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
-
+			Assert.AreEqual("test1, , test",output[0].Tags);
 			_query.RemoveItem(item1);
 		}
 
@@ -69,8 +71,10 @@ namespace starskytest.Services
 				ParentDirectory = "/",
 				Tags = "test1, !delete!, test"
 			}); 
-			var output = _replace.Replace("/test.jpg;/test2.jpg",nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+			var output = _replace.Replace("/test2.jpg;/test.jpg",nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
 			
+			Assert.AreEqual(string.Empty,output[1].Tags);
+
 			_query.RemoveItem(item0);
 			_query.RemoveItem(item1);
 		}
