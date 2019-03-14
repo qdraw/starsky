@@ -784,7 +784,14 @@ namespace starskytest.Services
 		    Assert.AreEqual("lelystadcentrum2",result.FileIndexItems[0].Tags);
 		    Assert.AreEqual(1,result.FileIndexItems.Count);
 	    }
-	    
+
+	    [TestMethod]
+	    public void SearchService_Search_Percentage()
+	    {
+		    var results = _search.Search("%", 0);
+		    Assert.AreEqual(0,results.FileIndexItems.Count);
+		    Assert.AreEqual("%",results.SearchQuery);
+	    }
 
 
 

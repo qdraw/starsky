@@ -237,16 +237,31 @@ namespace starskycore.Services
 				    default:
 					    
 					    // in old version > loop with: input.ToLowerInvariant().Split(" ".ToCharArray()).ToList()
+					    var inputSql = SafeSqlLiteral(model.SearchFor[i].ToLowerInvariant());
 					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.Tags.ToLowerInvariant().Contains(model.SearchFor[i])
+						    u => EF.Functions.Like(u.Tags, "%" + inputSql + "%")
 					    ));
-
 					    break;
 			    }
 		    }
 
 		    return model;
 	    }
+	    
+	    /// <summary>
+	    /// To Avoid SQL Injection
+	    /// No results containing _%[] 
+	    /// Source: https://docs.microsoft.com/en-us/sql/relational-databases/security/sql-injection?view=sql-server-2017
+	    /// </summary>
+	    /// <param name="inputSql">Query to SearchFor</param>
+	    /// <returns>SQL Save Query</returns>
+	    private string SafeSqlLiteral(string inputSql)  
+	    {  
+		    inputSql = inputSql.Replace("[", "[[]");  
+		    inputSql = inputSql.Replace("%", "[%]");  
+		    inputSql = inputSql.Replace("_", "[_]");  
+		    return inputSql.Replace("'", "''");  
+	    }  
 
 	    /// <summary>
 	    /// Query for DateTime: in between values, entire days, from, type of queries

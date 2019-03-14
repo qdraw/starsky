@@ -393,6 +393,16 @@ namespace starskycore.ViewModels
 			    
 		    }
 
+		    // fallback situation
+		    // search on for example: '%'
+		    if ( SearchFor == null ) 
+		    {
+			    SetAddSearchFor(defaultQuery);
+			    SetAddSearchInStringType("tags");
+			    SetAddSearchForOptions("=");
+			    return string.Empty;
+		    }
+
 		    // Regex: for ||&& without escape chars 
 			//	// &&|\|\|
 		    Regex andOrRegex = new Regex("&&|\\|\\|",
