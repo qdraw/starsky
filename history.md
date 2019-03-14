@@ -8,6 +8,7 @@
 - input args changed: --recursive (typo)
 - frontend readonly bugfix
 - frontend temp disabled alt+next loop due setinterval overflow
+- Search: performance update for searching multiple tags
 
 # version 0.1.4 - 2019-03-01
 - fix issue where login fails results in a error 500
