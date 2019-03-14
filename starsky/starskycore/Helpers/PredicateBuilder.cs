@@ -5,6 +5,9 @@ using System.Linq.Expressions;
 namespace starskytest.Helpers
 {
 
+	/// <summary>
+	/// to combine EF queries
+	/// </summary>
 	public static class PredicateBuilder
 	{
 		public static Expression<Func<T, bool>> True<T> ()  { return f => true;  }
