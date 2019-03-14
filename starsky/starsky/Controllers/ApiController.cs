@@ -80,60 +80,11 @@ namespace starsky.Controllers
             return Json(appSettings);
         }
         
-        /// <summary>
-        /// Add to comparedNames list ++ add to detailview
-        /// </summary>
-        /// <param name="rotateClock">-1 or 1</param>
-        /// <param name="fileIndexItem">main db object</param>
-        /// <param name="comparedNamesList">list of types that are changes</param>
-        /// <returns>updated image</returns>
-        private FileIndexItem RotatonCompare(int rotateClock, FileIndexItem fileIndexItem, ICollection<string> comparedNamesList)
-        {
-            // Do orientation / Rotate if needed (after compare)
-            if (!FileIndexItem.IsRelativeOrientation(rotateClock)) return fileIndexItem;
-            // run this on detailview => statusModel is always default
-	        fileIndexItem.SetRelativeOrientation(rotateClock);
-	        if ( !comparedNamesList.Contains(nameof(fileIndexItem.Orientation)) )
-	        {
-		        comparedNamesList.Add(nameof(fileIndexItem.Orientation));
-	        }
-	        return fileIndexItem;
-        }
 
-        /// <summary>
-        /// Run the Orientation changes on the thumbnail (only relative)
-        /// </summary>
-        /// <param name="rotateClock">-1 or 1</param>
-        /// <param name="fileIndexItem">object contains filehash</param>
-        /// <returns>updated image</returns>
-        private void RotationThumbnailExcute(int rotateClock, FileIndexItem fileIndexItem)
-        {
-            var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
 
-            // Do orientation
-            if(FileIndexItem.IsRelativeOrientation(rotateClock)) new Thumbnail(null).RotateThumbnail(thumbnailFullPath,rotateClock);
-        }
 
-        /// <summary>
-        /// Add a thumbnail to list to update exif with exiftool
-        /// </summary>
-        /// <param name="toUpdateFilePath">the fullpath of the source file, only the raw or jpeg</param>
-        /// <param name="detailView">main object with filehash</param>
-        /// <returns>a list with a thumb full path (if exist) and the source fullpath</returns>
-        private List<string> AddThumbnailToExifChangeList(string toUpdateFilePath, FileIndexItem fileIndexItem)
-        {
-            // To Add an Thumbnail to the 'to update list for exiftool'
-            var exifUpdateFilePaths = new List<string>
-            {
-                toUpdateFilePath           
-            };
-            var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
-            if (FilesHelper.IsFolderOrFile(thumbnailFullPath) == FolderOrFileModel.FolderOrFileTypeList.File)
-            {
-                exifUpdateFilePaths.Add(thumbnailFullPath);
-            }
-            return exifUpdateFilePaths;
-        }
+
+
 
         /// <summary>
         /// Update Exif and Rotation API
@@ -159,6 +110,8 @@ namespace starsky.Controllers
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
+			
+			// Per file stored  <string{fileHash}, List<string>{FileIndexItem.name (e.g. Tags) that are changed}
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
 			
 			foreach (var subPath in inputFilePaths)
@@ -192,15 +145,11 @@ namespace starsky.Controllers
 						fileIndexResultsList.Add(detailView.FileIndexItem);
 						continue;
 					}
-					
-					// compare and add changes to collectionsDetailView
-					var comparedNamesList = FileIndexCompareHelper
-						.Compare(collectionsDetailView.FileIndexItem, statusModel, append);
-					
-					// if requested, add changes to rotation
-					collectionsDetailView.FileIndexItem = 
-						RotatonCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
-					changedFileIndexItemName.Add(collectionsDetailView.FileIndexItem.FilePath,comparedNamesList);
+
+					// Compare Rotation and All other tags
+					new UpdateService(_query, _exiftool, _appSettings, _readMeta)
+						.CompareAllLabelsAndRotation(changedFileIndexItemName,
+							collectionsDetailView, statusModel, append, rotateClock);
 					
 					// this one is good :)
 					collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
@@ -219,30 +168,7 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
-				foreach ( var item in collectionsDetailViewList )
-				{
-					// need to recheck because this process is async, so in the meanwhile there are changes possible
-					var detailView = _query.SingleItem(item.FilePath,null,collections,false);
-				
-					// used for tracking differences, in the database/ExifTool compare
-					var comparedNamesList = changedFileIndexItemName[detailView.FileIndexItem.FilePath];
-
-					// the inputModel is always DoNotChange, so checking from the field is useless
-					inputModel.Orientation = detailView.FileIndexItem.Orientation;
-
-					if ( !_query.IsCacheEnabled() )
-					{
-						// when you disable cache the field is not filled with the data
-						detailView.FileIndexItem = FileIndexCompareHelper
-							.SetCompare(detailView.FileIndexItem, inputModel, comparedNamesList);
-						
-						detailView.FileIndexItem = RotatonCompare(rotateClock, detailView.FileIndexItem, comparedNamesList);
-					}
-
-					// Then update it on exifTool,database and rotation
-					UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
-				}
+				new UpdateService(_query,_exiftool,_appSettings, _readMeta).Update(changedFileIndexItemName,inputModel, fileIndexResultsList,collections,rotateClock);
 			});
             
             // When all items are not found
@@ -261,41 +187,37 @@ namespace starsky.Controllers
             return Json(returnNewResultList);
         }
 
-	    /// <summary>
-	    /// Update ExifTool, Thumbnail, Database and if needed rotateClock
-	    /// </summary>
-	    /// <param name="detailView">output database object</param>
-	    /// <param name="comparedNamesList">name of fields updated by exifTool</param>
-	    /// <param name="rotateClock">rotation value (if needed)</param>
-		public void UpdateWriteDiskDatabase(DetailView detailView, List<string> comparedNamesList, int rotateClock = 0)
-		{
-			var exiftool = new ExifToolCmdHelper(_appSettings,_exiftool);
-			var toUpdateFilePath = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.FilePath);
-					
-			// feature to exif update the thumbnails 
-			var exifUpdateFilePaths = AddThumbnailToExifChangeList(toUpdateFilePath, detailView.FileIndexItem);
+	    
+	    
+//	    [HttpPost("/api/replace")]
+//	    [Produces("application/json")]
+//	    public IActionResult Replace(FileIndexItem inputModel, string f, bool append, bool collections = true)
+//	    {
+//		    Replace(string f, string fieldName, string search, string replace, bool collections)
+//		    
+//			// Update >
+//			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+//			{
+//				new UpdateService(_query,_exiftool,_appSettings, _readMeta).Update(changedFileIndexItemName,inputModel, fileIndexResultsList,collections,rotateClock);
+//			});
+//					
+//				// When all items are not found
+//			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+//			return NotFound(fileIndexResultsList);
+//		
+//			// Clone an new item in the list to display
+//			var returnNewResultList = new List<FileIndexItem>();
+//			foreach (var item in fileIndexResultsList)
+//			{
+//			var citem = item.Clone();
+//			citem.FileHash = null;
+//			returnNewResultList.Add(citem);
+//			}
+//								
+//			return Json(returnNewResultList);
+//		}
 
-			// do rotation on thumbs
-			RotationThumbnailExcute(rotateClock, detailView.FileIndexItem);
-					
-			// Do an Exif Sync for all files, including thumbnails
-			exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
-                        
-			// change thumbnail names after the orginal is changed
-			var newFileHash = FileHash.GetHashCode(toUpdateFilePath);
-			new Thumbnail(_appSettings).RenameThumb(detailView.FileIndexItem.FileHash,newFileHash);
-					
-			// Update the hash in the database
-			detailView.FileIndexItem.FileHash = newFileHash;
-                        
-			// Do a database sync + cache sync
-			_query.UpdateItem(detailView.FileIndexItem);
-                        
-			// > async > force you to read the file again
-			// do not include thumbs in MetaCache
-			// only the full path url of the source image
-			_readMeta.RemoveReadMetaCache(toUpdateFilePath);		
-		}
+	   
 
 
         /// <summary>
