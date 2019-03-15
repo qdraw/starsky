@@ -1,3 +1,5 @@
+# version 0.1.6 - tbd
+
 # version 0.1.5 - tbd
 - add partial support for || (or) queries using search
 	-	the type datetime e.g. `-datetime=1 || -datetime=2` is not supported yet
@@ -9,7 +11,8 @@
 - frontend readonly bugfix
 - frontend temp disabled alt+next loop due setinterval overflow
 - Search: performance update for searching multiple tags
-- Replace API introduced, search and replace in strings 
+- Replace API introduced, search and replace in strings
+- Done some IStorage refactorings, but not complete yet
 
 # version 0.1.4 - 2019-03-01
 - fix issue where login fails results in a error 500
