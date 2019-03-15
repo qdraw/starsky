@@ -17,7 +17,7 @@ namespace starskycore.Services
         
         
         /// <summary>
-        /// Get the hashcodes of a array of files
+        /// Obsolete: Get the hashcodes of a array of files
         /// Uses the default timeout
         /// </summary>
         /// <param name="filesInDirectoryFullPath">array</param>
@@ -28,7 +28,7 @@ namespace starskycore.Services
         }
 
         /// <summary>
-        /// Returns a Base32 case insensitive filehash, used with the default timeout of 8 seconds
+        /// Obsolete: Returns a Base32 case insensitive filehash, used with the default timeout of 8 seconds
         /// </summary>
         /// <param name="filename">FullFilePath</param>
         /// <param name="timeoutSeconds">Timeout in seconds, before a random string will be returned</param>
