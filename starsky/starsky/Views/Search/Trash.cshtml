@@ -40,7 +40,8 @@
             <div class="js-controls">
                 <div class="addDeleteTag prompt">
 	                <h4>Danger zone:</h4>
-                    <a class="btn-sm btn btn-danger delete">Verwijder van schijf</a>
+	                <a class="btn-sm btn btn-danger delete">Verwijder van schijf</a>
+	                <a class="btn-sm btn btn-default undodelete">Undo uit prullenmand</a>
                 </div>
             </div>
         </div>
@@ -112,8 +113,11 @@
 	// Javascript don't accept decoded slashes
 	var deleteApiBase = Url.Action("Delete", "Api");
 	deleteApiBase = HttpUtility.UrlDecode(deleteApiBase);
+	var replaceApiBase = Url.Action("Replace", "Api");
+	replaceApiBase = HttpUtility.UrlDecode(replaceApiBase);
 }
-<div id="js-settings" data-deleteApiBase="@deleteApiBase">
+
+<div id="js-settings" data-deleteApiBase="@deleteApiBase" data-replaceApiBase="@replaceApiBase">
 </div>
 
 <div class="preloader">

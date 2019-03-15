@@ -10,6 +10,7 @@ if(document.querySelectorAll("#js-settings").length === 1) {
     var subPath = document.getElementById("js-settings").getAttribute("data-subPath");
     var syncApiBase = document.getElementById("js-settings").getAttribute("data-syncApiBase");
     var exportZipApiBase = document.getElementById("js-settings").getAttribute("data-exportZipApiBase");
+    var replaceApiBase = document.getElementById("js-settings").getAttribute("data-replaceApiBase");
 }
 
 var prevURL = "";
@@ -761,7 +762,42 @@ function toggleOverwriteText() {
 
     }
 }
+function queryUndoDeleteApi() {
 
+    // uses data-filepath instead of data-filename
+
+    var selectedFilesFullFilePaths = [];
+    for (var i = 0; i < selectedFiles.length; i++) {
+        var query = ".halfitem[data-filename=\"" + selectedFiles[i] + "\"]";
+        var fullFileName = document.querySelector(query).getAttribute('data-filepath');
+        selectedFilesFullFilePaths.push(fullFileName);
+    }
+
+    var toupdateFiles =  appendArrayToString("", selectedFilesFullFilePaths, ";");
+
+    var url = replaceApiBase + "?f=" + toupdateFiles + "&fieldName=Tags&collections=false&search=!delete!";
+
+    addNoClickToSidebar();
+    showPreloader();
+
+    loadJSON(url,
+        function (data) {
+            hidePopupDialog();
+            showPreloader();
+            setTimeout(function(){
+                location.reload();
+            }, 2000);
+        },
+        function (xhr) {
+            console.error(xhr);
+            showPopupDialog("Sorry er is iets misgegaan, probeer het aub opnieuw" +
+                "<p>\n" +
+                "<a data-onclick=\"location.reload()\" class=\"btn-sm btn btn-default\">Herlaad pagina</a>\n" +
+                "</p>");
+        },
+        "POST"
+    );
+}
 
 function queryDeleteApi() {
 
@@ -783,7 +819,11 @@ function queryDeleteApi() {
     
     loadJSON(url,
         function (data) {
-            location.reload();
+            hidePopupDialog();
+            showPreloader();
+            setTimeout(function(){
+                location.reload();
+            }, 2000);
         },
         function (xhr) { 
             console.error(xhr);
@@ -794,7 +834,6 @@ function queryDeleteApi() {
         },
         "DELETE"
     );
-    
 }
 
 function showPreloader() {

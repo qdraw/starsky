@@ -141,3 +141,15 @@ if (document.querySelectorAll(".addDeleteTag.prompt .delete").length === 1) {
 }
 
 
+if (document.querySelectorAll(".addDeleteTag.prompt .undodelete").length === 1) {
+    document.querySelector(".addDeleteTag.prompt .undodelete")
+        .addEventListener("click",
+            function () {
+                var beforedelete = '<p>Weet je het zeker dat je deze bestanden wilt herstellen?</p>'+
+                    '<p>'+
+                    '<a data-onClick="queryUndoDeleteApi()" class="btn-sm btn btn-default">Undo verwijderen</a>' +
+                    '<a data-onClick="hidePopupDialog()" class="btn-sm btn btn-default">Nee</a>'+
+                    '</p>';
+                showPopupDialog(beforedelete);
+            }, false);
+}
