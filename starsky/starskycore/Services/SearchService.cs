@@ -269,21 +269,6 @@ namespace starskycore.Services
 	    }
 	    
 	    /// <summary>
-	    /// To Avoid SQL Injection
-	    /// No results containing _%[] 
-	    /// Source: https://docs.microsoft.com/en-us/sql/relational-databases/security/sql-injection?view=sql-server-2017
-	    /// </summary>
-	    /// <param name="inputSql">Query to SearchFor</param>
-	    /// <returns>SQL Save Query</returns>
-	    private string SafeSqlLiteral(string inputSql)  
-	    {  
-		    inputSql = inputSql.Replace("[", "[[]");  
-		    inputSql = inputSql.Replace("%", "[%]");  
-		    inputSql = inputSql.Replace("_", "[_]");  
-		    return inputSql.Replace("'", "''");  
-	    }  
-
-	    /// <summary>
 	    /// Query for DateTime: in between values, entire days, from, type of queries
 	    /// </summary>
 	    /// <param name="sourceList">Query Source</param>

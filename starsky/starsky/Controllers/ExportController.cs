@@ -180,8 +180,10 @@ namespace starsky.Controllers
 
 		/// <summary>
 		/// Get the exported zip, but first call 'createZip'
+		/// use for example this url: /export/zip/TNA995920129.zip
+		/// TNA995920129 is from 'createZip'
 		/// </summary>
-		/// <param name="f">zip hash</param>
+		/// <param name="f">zip hash e.g. TNA995920129</param>
 		/// <param name="json">true to get OK instead of a zip file</param>
 		/// <returns>Not ready or the zipfile</returns>
 		/// <response code="200">if json is true return 'OK', else the zip file</response>
