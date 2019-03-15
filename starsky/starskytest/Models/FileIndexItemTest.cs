@@ -264,6 +264,13 @@ namespace starskytest.Models
 	    }
 
 	    [TestMethod]
+	    public void FileIndexItemTest_MakeModel_UsingFieldNull()
+	    {
+		    var item = new FileIndexItem{MakeModel = null};
+		    Assert.AreEqual(string.Empty, item.Make);
+	    }
+
+	    [TestMethod]
 	    public void FileIndexItemTest_SetMakeModel_Model()
 	    {
 		    var item = new FileIndexItem();
