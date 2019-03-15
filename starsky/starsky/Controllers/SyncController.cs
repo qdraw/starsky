@@ -31,8 +31,8 @@ namespace starsky.Controllers
         /// <summary>
         /// Do a file sync in a background process
         /// </summary>
-        /// <param name="f">subpaths split by dot comma</param>
-        /// <returns></returns>
+        /// <param name="f">subPaths split by dot comma</param>
+        /// <returns>list of changed files</returns>
         [ActionName("Index")]
         public IActionResult SyncIndex(string f)
         {

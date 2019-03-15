@@ -40,8 +40,8 @@ namespace starsky.Controllers
 	    /// <summary>
 	    /// The database-view of a directory
 	    /// </summary>
-	    /// <param name="f">subpath</param>
-	    /// <param name="colorClass">filter on colorclass (use int)</param>
+	    /// <param name="f">subPath</param>
+	    /// <param name="colorClass">filter on colorClass (use int)</param>
 	    /// <param name="json">to not show as webpage</param>
 	    /// <param name="collections">to combine files with the same name before the extension</param>
 	    /// <param name="hidedelete">ignore deleted files</param>
@@ -67,7 +67,7 @@ namespace starsky.Controllers
         /// Show the runtime settings (allow AllowAnonymous)
         /// </summary>
         /// <returns>config data, except connection strings</returns>
-	    /// <response code="200">returns the runtime settings of starsky</response>
+	    /// <response code="200">returns the runtime settings of Starsky</response>
 	    [HttpHead("/api/env")]
         [HttpGet("/api/env")]
         [IgnoreAntiforgeryToken]
@@ -89,14 +89,14 @@ namespace starsky.Controllers
         /// <summary>
         /// Update Exif and Rotation API
         /// </summary>
-        /// <param name="f">subpath filepath to file, split by dot comma (;)</param>
+        /// <param name="f">subPath filepath to file, split by dot comma (;)</param>
         /// <param name="inputModel">tags: use for keywords
-        /// colorClass: int 0-9, the colorclass to fast select images
-        /// description: string to update description/caption abstract, emthy will be ignore
+        /// colorClass: int 0-9, the colorClass to fast select images
+        /// description: string to update description/caption abstract, empty will be ignore
         /// title: edit image title</param>
         /// <param name="collections">StackCollections bool, default true</param>
         /// <param name="append">only for stings, add update to existing items</param>
-        /// <param name="rotateClock">relative orentation -1 or 1</param>
+        /// <param name="rotateClock">relative orientation -1 or 1</param>
         /// <returns>update json</returns>
         /// <response code="200">the item including the updated content</response>
         /// <response code="404">item not found in the database or on disk</response>
@@ -188,34 +188,47 @@ namespace starsky.Controllers
         }
 
 	    
-	    
-//	    [HttpPost("/api/replace")]
-//	    [Produces("application/json")]
-//	    public IActionResult Replace(FileIndexItem inputModel, string f, bool append, bool collections = true)
-//	    {
-//		    Replace(string f, string fieldName, string search, string replace, bool collections)
-//		    
-//			// Update >
-//			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
-//			{
-//				new UpdateService(_query,_exiftool,_appSettings, _readMeta).Update(changedFileIndexItemName,inputModel, fileIndexResultsList,collections,rotateClock);
-//			});
-//					
-//				// When all items are not found
-//			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
-//			return NotFound(fileIndexResultsList);
-//		
-//			// Clone an new item in the list to display
-//			var returnNewResultList = new List<FileIndexItem>();
-//			foreach (var item in fileIndexResultsList)
-//			{
-//			var citem = item.Clone();
-//			citem.FileHash = null;
-//			returnNewResultList.Add(citem);
-//			}
-//								
-//			return Json(returnNewResultList);
-//		}
+	    /// <summary>
+	    /// Work in progress: Search and Replace text
+	    /// </summary>
+	    /// <param name="f">subPath filepath to file, split by dot comma (;)</param>
+	    /// <param name="fieldName">name of fileIndexItem field e.g. Tags</param>
+	    /// <param name="search">text to search for</param>
+	    /// <param name="replace">replace [search] with this text</param>
+	    /// <param name="collections">enable collections</param>
+	    /// <returns>list of changed files</returns>
+	    [HttpPost("/api/replace")]
+	    [Produces("application/json")]
+	    public IActionResult Replace(string f, string fieldName, string search, string replace, bool collections = true)
+	    {
+		    var fileIndexResultsList = new ReplaceService(_query, _appSettings, _iStorage)
+			    .Replace(f, fieldName, search, replace, collections);
+		    
+			// Update >
+			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			{
+				foreach ( var inputModel in fileIndexResultsList )
+				{
+					// changedFileIndexItemName
+					new UpdateService(_query,_exiftool,_appSettings, _readMeta).Update(null,inputModel, fileIndexResultsList,collections,0);
+				}
+			});
+					
+				// When all items are not found
+			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+			return NotFound(fileIndexResultsList);
+		
+			// Clone an new item in the list to display
+			var returnNewResultList = new List<FileIndexItem>();
+			foreach (var item in fileIndexResultsList)
+			{
+			var citem = item.Clone();
+			citem.FileHash = null;
+			returnNewResultList.Add(citem);
+			}
+								
+			return Json(returnNewResultList);
+		}
 
 	   
 
@@ -223,9 +236,9 @@ namespace starsky.Controllers
         /// <summary>
         /// Get realtime (cached a few minutes) about the file
         /// </summary>
-        /// <param name="f">subpaths split by dot comma</param>
+        /// <param name="f">subPaths split by dot comma</param>
         /// <param name="collections">true is to update files with the same name before the extenstion</param>
-        /// <returns></returns>
+        /// <returns>info of object</returns>
         /// <response code="200">the item on disk</response>
         /// <response code="404">item not found on disk</response>
         /// <response code="203">you are not allowed to edit this item</response>
@@ -286,7 +299,7 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="f">subpaths, seperated by dot comma</param>
         /// <param name="collections">true is to update files with the same name before the extenstion</param>
-        /// <returns></returns>
+        /// <returns>list of deleted files</returns>
         /// <response code="200">file is gone</response>
         /// <response code="404">item not found on disk or !delete! tag is missing</response>
         [HttpDelete("/api/delete")]
@@ -364,7 +377,7 @@ namespace starsky.Controllers
         /// <param name="isSingleitem">true = load orginal</param>
         /// <param name="json">text as output</param>
         /// <param name="retryThumbnail">true = remove thumbnail if corrupt</param>
-        /// <returns></returns>
+        /// <returns>thumbnail or status</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
         /// <response code="404">item not found on disk</response>
         /// <response code="409">Conflict, you did try get for example a thumbnail of a raw file</response>
