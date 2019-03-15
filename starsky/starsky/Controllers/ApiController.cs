@@ -207,7 +207,10 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				foreach ( var inputModel in fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok) )
+				var resultsOkList =
+					fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+				
+				foreach ( var inputModel in resultsOkList )
 				{
 					// The differences are specified before update
 					var changedFileIndexItemName = new Dictionary<string, List<string>>
@@ -219,7 +222,10 @@ namespace starsky.Controllers
 							} 
 						}
 					};
-					new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage).Update(changedFileIndexItemName,inputModel, fileIndexResultsList,collections,0);
+					
+					new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage)
+						.Update(changedFileIndexItemName,inputModel, new List<FileIndexItem>{inputModel}, collections,0);
+					
 				}
 			});
 					

@@ -65,6 +65,9 @@ namespace starskycore.Services
 					fileIndexResultsList) ) continue;
 				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
 				
+				// current item is also ok
+				detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+				
 				// Now Add Collection based images
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
 				foreach ( var item in collectionSubPathList )
