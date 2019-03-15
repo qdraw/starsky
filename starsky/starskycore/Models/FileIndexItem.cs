@@ -798,7 +798,7 @@ namespace starskycore.Models
 			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
 			    return _makeModel;
 		    }
-		    set => _makeModel = string.IsNullOrEmpty(_makeModel) ? string.Empty : value;
+		    set => _makeModel = string.IsNullOrEmpty(value) ? string.Empty : value;
 	    }
 
 	    /// <summary>

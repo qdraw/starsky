@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -253,6 +254,14 @@ namespace starskytest.Models
             var colorDisplayName = EnumHelper.GetDisplayName(FileIndexItem.Color.WinnerAlt);
             Assert.AreEqual("Winner Alt",colorDisplayName);
         }
+	    
+	    [TestMethod]
+	    public void FileIndexItemTest_MakeModel_UsingField()
+	    {
+		    var item = new FileIndexItem{MakeModel = "Apple|iPad|??"};
+		    Assert.AreEqual("Apple", item.Make);
+		    Assert.AreEqual("iPad",item.Model);
+	    }
 
 	    [TestMethod]
 	    public void FileIndexItemTest_SetMakeModel_Model()
@@ -275,7 +284,15 @@ namespace starskytest.Models
 		    Assert.AreEqual("Apple||", item.MakeModel);
 		}
 
-		[TestMethod]
+	    [TestMethod]
+	    public void FileIndexItemTest_SetMakeModel_MakeWrongPipeLength()
+	    {
+		    var item = new FileIndexItem{MakeModel = "Apple|||||||"};
+		    Assert.AreEqual(string.Empty, item.Make);
+		    Assert.AreEqual(string.Empty, item.Model);
+	    }
+
+	    [TestMethod]
 		public void FileIndexItemTest_SetMakeModel_WrongOrder_MakeANDModel()
 		{
 			var item = new FileIndexItem();
@@ -292,6 +309,15 @@ namespace starskytest.Models
 			Assert.AreEqual("Apple", item.Make);
 			Assert.AreEqual("iPad", item.Model);
 		}
+
+	    [TestMethod]
+	    [ExpectedException(typeof(AggregateException))]
+	    public void FileIndexItemTest_SetMakeModel_WrongPipeLength()
+	    {
+		    var item = new FileIndexItem();
+		    item.SetMakeModel("Apple", 95);
+		    // this index (95) never exist
+	    }
 
 	    [TestMethod]
 	    public void FileIndexItemTest_SetMakeModel_RightOrder_MakeANDModel()
@@ -319,6 +345,8 @@ namespace starskytest.Models
 		    var item999 = FileIndexItem.IsRelativeOrientation(999);
 		    Assert.AreEqual(false,item999);
 	    }
+
+
 
 	    //        [TestMethod]
 		//        public void FileIndexItemParseFileNameTest()
