@@ -582,6 +582,8 @@ h2 {
 .addDeleteTag a{
     margin-top: 15px;
 }
+
+.addDeleteTag.disabled .undodelete,
 .addDeleteTag.disabled .delete {
     pointer-events: none;
     background-color: #CFD8DC;
