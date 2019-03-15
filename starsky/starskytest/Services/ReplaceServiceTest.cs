@@ -78,5 +78,22 @@ namespace starskytest.Services
 			_query.RemoveItem(item0);
 			_query.RemoveItem(item1);
 		}
+
+		[TestMethod]
+		public void ReplaceServiceTest_replaceStringWithNothingNull()
+		{
+			var item0 = _query.AddItem(new FileIndexItem
+			{
+				FileName = "test.jpg",
+				ParentDirectory = "/",
+				Tags = "!delete!"
+			});
+			
+			var output = _replace.Replace("/test2.jpg;/test.jpg",nameof(FileIndexItem.Tags),"!delete!",null,false);
+
+			
+			_query.RemoveItem(item0);
+
+		}
 	}
 }

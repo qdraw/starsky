@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -37,9 +38,13 @@ namespace starskycore.Services
 		/// <param name="collections"></param>
 		public List<FileIndexItem> Replace(string f, string fieldName, string search, string replace, bool collections)
 		{
+			// escaping null values
+			if ( string.IsNullOrEmpty(search) ) search = string.Empty;
+			if ( string.IsNullOrEmpty(replace) ) replace = string.Empty;
+
 			if ( ! FileIndexCompareHelper.CheckIfPropertyExist(fieldName) ) return new List<FileIndexItem>{new FileIndexItem{Status = FileIndexItem.ExifStatus.OperationNotSupported}};
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
-			
+
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
 
@@ -87,7 +92,14 @@ namespace starskycore.Services
 				if ( property.PropertyType == typeof(string) )
 				{
 					var searchIn = ( string ) searchInObject;
-					replacedToObject = searchIn.Replace(search, replace);
+					
+					// Replace Ignore Case
+					replacedToObject = Regex.Replace(
+						searchIn,
+						Regex.Escape(search), 
+						replace.Replace("$","$$"), 
+						RegexOptions.IgnoreCase
+					);
 				}
 
 				// only string types are added here, other types are ignored for now

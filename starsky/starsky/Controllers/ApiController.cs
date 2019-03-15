@@ -207,14 +207,23 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				foreach ( var inputModel in fileIndexResultsList )
+				foreach ( var inputModel in fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok) )
 				{
-					// changedFileIndexItemName
-					new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage).Update(null,inputModel, fileIndexResultsList,collections,0);
+					// The differences are specified before update
+					var changedFileIndexItemName = new Dictionary<string, List<string>>
+					{
+						{ 
+							inputModel.FilePath, new List<string>
+							{
+								fieldName
+							} 
+						}
+					};
+					new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage).Update(changedFileIndexItemName,inputModel, fileIndexResultsList,collections,0);
 				}
 			});
 					
-				// When all items are not found
+			// When all items are not found
 			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
 			return NotFound(fileIndexResultsList);
 		
@@ -222,9 +231,9 @@ namespace starsky.Controllers
 			var returnNewResultList = new List<FileIndexItem>();
 			foreach (var item in fileIndexResultsList)
 			{
-			var citem = item.Clone();
-			citem.FileHash = null;
-			returnNewResultList.Add(citem);
+				var citem = item.Clone();
+				citem.FileHash = null;
+				returnNewResultList.Add(citem);
 			}
 								
 			return Json(returnNewResultList);
