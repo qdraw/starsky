@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using starskycore.Helpers;
 using starskycore.Models;
 
@@ -173,7 +175,8 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// Search Options eg &gt;, &lt;, =. (greater than sign, less than sign, equal sign)  to know which field use the same indexer in _searchIn or _searchFor
 	    /// </summary>
-        public List<SearchForOptionType> SearchForOptions
+	    [JsonConverter(typeof(StringEnumConverter))]
+	    public List<SearchForOptionType> SearchForOptions
         {  
             get { return _searchForOptions; }
         }
