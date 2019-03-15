@@ -29,7 +29,7 @@ namespace starskycore.Services
 		/// <summary>
 		/// Compare Rotation and All other tags
 		/// </summary>
-		/// <param name="changedFileIndexItemName">Per file stored  string{fileHash}, List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
+		/// <param name="changedFileIndexItemName">Per file stored  string{FilePath}, List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
 		/// <param name="collectionsDetailView">DetailView input, only to display changes</param>
 		/// <param name="statusModel">object that include the changes</param>
 		/// <param name="append">true= for tags to add</param>
