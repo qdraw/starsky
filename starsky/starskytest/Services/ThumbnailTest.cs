@@ -45,28 +45,29 @@ namespace starskytest.Services
         }
         
         [TestMethod]
-        public void CreateAndRenamteThumbTest()
+        public void CreateAndRenameThumbTest()
         {
 
-            var newImage = new CreateAnImage();
-            _appSettings.ThumbnailTempFolder = newImage.BasePath;;
+            var createAnImage = new CreateAnImage();
+            _appSettings.ThumbnailTempFolder = createAnImage.BasePath;;
 
-            var hashString = FileHash.GetHashCode(newImage.FullFilePath);
+	        var iStorage = new StorageSubPathFilesystem(_appSettings);
+	        var fileHashCode = new FileHash(iStorage).GetHashCode(createAnImage.DbPath);
 
             // Delete if exist, to optimize test
-            var thumbnailPAth = Path.Combine(newImage.BasePath, hashString + ".jpg");
+            var thumbnailPAth = Path.Combine(createAnImage.BasePath, fileHashCode + ".jpg");
             if (File.Exists(thumbnailPAth))
             {
                 File.Delete(thumbnailPAth);
             }
 
             // Create an thumbnail based on the image
-            new Thumbnail(_appSettings).CreateThumb(newImage.DbPath);
+            new Thumbnail(_appSettings).CreateThumb(createAnImage.DbPath);
             Assert.AreEqual(true,File.Exists(thumbnailPAth));
 
             // Test Rename feature and delete if passed
-            new Thumbnail(_appSettings).RenameThumb(hashString, "AAAAA");
-            var thumbnailApAth = Path.Combine(newImage.BasePath, "AAAAA" + ".jpg");
+            new Thumbnail(_appSettings).RenameThumb(fileHashCode, "AAAAA");
+            var thumbnailApAth = Path.Combine(createAnImage.BasePath, "AAAAA" + ".jpg");
             if (File.Exists(thumbnailApAth))
             {
                 File.Delete(thumbnailApAth);
@@ -151,10 +152,11 @@ namespace starskytest.Services
             _appSettings.ThumbnailTempFolder = createAnImage.BasePath;;
             _appSettings.StorageFolder = createAnImage.BasePath;
 
-            var hashString = FileHash.GetHashCode(createAnImage.FullFilePath);
-
+	        var iStorage = new StorageSubPathFilesystem(_appSettings);
+	        var fileHashCode = new FileHash(iStorage).GetHashCode(createAnImage.DbPath);
+	        
             // Delete if exist, to optimize test
-            var thumbnailPath = Path.Combine(createAnImage.BasePath, hashString + ".jpg");
+            var thumbnailPath = Path.Combine(createAnImage.BasePath, fileHashCode + ".jpg");
             if (File.Exists(thumbnailPath))
             {
                 File.Delete(thumbnailPath);

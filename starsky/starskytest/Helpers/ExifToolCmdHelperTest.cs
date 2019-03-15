@@ -19,7 +19,7 @@ namespace starskytest.Helpers
         public ExifToolCmdHelperTest()
         {
             var services = new ServiceCollection();
-            services.AddSingleton<IExiftool, FakeExiftool>();    
+            services.AddSingleton<IExiftool, FakeExifTool>();    
             
             // build the service
             var serviceProvider = services.BuildServiceProvider();

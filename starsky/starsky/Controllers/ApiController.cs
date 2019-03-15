@@ -147,7 +147,7 @@ namespace starsky.Controllers
 					}
 
 					// Compare Rotation and All other tags
-					new UpdateService(_query, _exiftool, _appSettings, _readMeta)
+					new UpdateService(_query, _exiftool, _appSettings, _readMeta,_iStorage)
 						.CompareAllLabelsAndRotation(changedFileIndexItemName,
 							collectionsDetailView, statusModel, append, rotateClock);
 					
@@ -168,7 +168,7 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				new UpdateService(_query,_exiftool,_appSettings, _readMeta).Update(changedFileIndexItemName,inputModel, fileIndexResultsList,collections,rotateClock);
+				new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage).Update(changedFileIndexItemName,inputModel, fileIndexResultsList,collections,rotateClock);
 			});
             
             // When all items are not found
@@ -210,7 +210,7 @@ namespace starsky.Controllers
 				foreach ( var inputModel in fileIndexResultsList )
 				{
 					// changedFileIndexItemName
-					new UpdateService(_query,_exiftool,_appSettings, _readMeta).Update(null,inputModel, fileIndexResultsList,collections,0);
+					new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage).Update(null,inputModel, fileIndexResultsList,collections,0);
 				}
 			});
 					
@@ -549,7 +549,7 @@ namespace starsky.Controllers
                         .Split("/").LastOrDefault(),
                     ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.
                         FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
-                    FileHash = FileHash.GetHashCode(sourceFullPath)
+                    FileHash = new FileHash(_iStorage).GetHashCode(_appSettings.FullPathToDatabaseStyle(sourceFullPath))
                 };
                 
                 // When you have a different tag in the database than on disk

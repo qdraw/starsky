@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using starskycore.Helpers;
 using starskycore.Interfaces;
@@ -123,6 +125,17 @@ namespace starskytest.FakeMocks
 			}
 			return _outputSubPathFolders.Where(p => p.StartsWith(subPath) && p != subPath ).AsEnumerable();
 
+		}
+
+		public Stream Stream(string path, int maxRead = 2147483647)
+		{
+			if ( ExistFile(path) )
+			{
+				byte[] byteArray = Encoding.UTF8.GetBytes("test");
+				MemoryStream stream = new MemoryStream(byteArray);
+				return stream;
+			}
+			throw new FileNotFoundException(path);
 		}
 	}
 }

@@ -50,7 +50,7 @@ namespace starskytest.Controllers
 
 			// Inject Fake Exiftool; dependency injection
 			var services = new ServiceCollection();
-			services.AddSingleton<IExiftool, FakeExiftool>();
+			services.AddSingleton<IExiftool, FakeExifTool>();
 
 			// Fake the readmeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
@@ -103,7 +103,9 @@ namespace starskytest.Controllers
 		private FileIndexItem InsertSearchData()
 		{
 
-			var fileHashCode = FileHash.GetHashCode(_createAnImage.FullFilePath);
+			var iStorage = new StorageSubPathFilesystem(_appSettings);
+			var fileHashCode = new FileHash(iStorage).GetHashCode(_createAnImage.DbPath);
+			
 			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)) )
 			{
 				_query.AddItem(new FileIndexItem

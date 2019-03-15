@@ -5,14 +5,16 @@ using starskycore.Models;
 
 namespace starskytest.Models
 {
-    public class FakeExiftool : IExiftool
+    public class FakeExifTool : IExiftool
     {
         public void Update(ExifToolModel updateModel, List<string> inputFullFilePaths)
         {
+	        Console.WriteLine(inputFullFilePaths);
         }
 
         public void Update(ExifToolModel updateModel, string fullFilePath)
         {
+	        Console.WriteLine(fullFilePath);
         }
 
         public void Update(FileIndexItem updateModel, List<string> inputFullFilePaths)
@@ -24,6 +26,7 @@ namespace starskytest.Models
         {
             throw new System.NotImplementedException();
         }
+	    
 
         public string BaseCommmand(string options, string fullFilePathSpaceSeperated)
         {

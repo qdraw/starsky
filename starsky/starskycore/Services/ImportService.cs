@@ -28,7 +28,8 @@ namespace starskycore.Services
 			IExiftool exiftool, 
 			AppSettings appSettings, 
 			IReadMeta readMeta, 
-			IServiceScopeFactory scopeFactory)
+			IServiceScopeFactory scopeFactory,
+			IStorage iStorage)
 		{
 			_filesystemHelper = new StorageFullPathFilesystem();
 			_context = context;
@@ -151,7 +152,7 @@ namespace starskycore.Services
 		public List<ImportIndexItem> Preflight(List<string> inputFileFullPaths, ImportSettingsModel importSettings)
 	    {
 		    // Do some import checks before sending it to the background service
-		    var hashList = FileHash.GetHashCode(inputFileFullPaths.ToArray());
+		    var hashList = FileHashStatic.GetHashCode(inputFileFullPaths.ToArray());
 		    
 			var fileIndexResultsList = hashList.Select((t, i) => PreflightByItem(inputFileFullPaths[i], t, importSettings)).ToList();
 		    return fileIndexResultsList;
@@ -161,7 +162,7 @@ namespace starskycore.Services
 		public ImportIndexItem ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)
 	    {
 		    
-		    var hashCode = FileHash.GetHashCode(inputFileFullPath);
+		    var hashCode = FileHashStatic.GetHashCode(inputFileFullPath);
 			var importIndexItem = PreflightByItem(inputFileFullPath, hashCode, importSettings);
 
 		    // only used when feature is enabled

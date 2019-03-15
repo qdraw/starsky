@@ -20,8 +20,9 @@ namespace starskytest.Services
 		private readonly IMemoryCache _memoryCache;
 		private IQuery _query;
 		private AppSettings _appSettings;
-		private FakeExiftool _exifTool;
+		private FakeExifTool _exifTool;
 		private ReadMeta _readMeta;
+		private IStorage _iStorageFake;
 
 		public UpdateServiceTest()
 		{
@@ -36,14 +37,15 @@ namespace starskytest.Services
 			var dbContext = new ApplicationDbContext(options);
 			_query = new Query(dbContext,_memoryCache);
 			_appSettings = new AppSettings();
-			_exifTool = new FakeExiftool();
-			var fakeStorage = new FakeIStorage();
-			_readMeta = new ReadMeta(fakeStorage,_appSettings,_memoryCache);
+			_exifTool = new FakeExifTool();
+			_iStorageFake = new FakeIStorage(new List<string>{},new List<string>{"/test.jpg"});
+			_readMeta = new ReadMeta(_iStorageFake,_appSettings,_memoryCache);
 		}
-		[TestMethod]
-		public void Test()
-		{
-		}
+
+//		[TestMethod]
+//		public void Test()
+//		{
+//		}
 		
 		[TestMethod]
 		public void UpdateServiceTest_CompareAllLabelsAndRotation_AppendIsFalse()
@@ -71,7 +73,7 @@ namespace starskytest.Services
 			};
 			
 			// Check for compare values
-			new UpdateService(_query, _exifTool, _appSettings, _readMeta)
+			new UpdateService(_query, _exifTool, _appSettings, _readMeta,_iStorageFake)
 				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, statusModel, false, 0);
 			
 			// Check how that changedFileIndexItemName works
@@ -101,7 +103,7 @@ namespace starskytest.Services
 			};
 			
 			// Rotate right; check if values are the same
-			new UpdateService(_query, _exifTool, _appSettings, _readMeta)
+			new UpdateService(_query, _exifTool, _appSettings, _readMeta,_iStorageFake)
 				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, collectionsDetailView.FileIndexItem, false, -1);
 			
 			// Check for value
@@ -110,13 +112,14 @@ namespace starskytest.Services
 		
 		
 		[TestMethod]
-		public void Test1()
+		public void UpdateService_Update_Test1()
 		{
 			var item0 = _query.AddItem(new FileIndexItem
 			{
 				Status = FileIndexItem.ExifStatus.Ok,
-				Tags = "",
+				Tags = "thisKeywordHasChanged",
 				FileName = "test.jpg",
+				Description = "noChanges",
 				ParentDirectory = "/"
 			});
 			
@@ -135,15 +138,21 @@ namespace starskytest.Services
 				new FileIndexItem
 				{
 					Status = FileIndexItem.ExifStatus.Ok,
-					Tags = "thisValueIsUpdated",
+					Tags = "initial tags",
 					FileName = "test.jpg",
-					ParentDirectory = "/"
+					ParentDirectory = "/",
+					Description = "keep",
 				}
 			};
 
-			new UpdateService(_query,_exifTool,_appSettings, _readMeta).Update(changedFileIndexItemName,fileIndexResultsList.FirstOrDefault(), fileIndexResultsList,false,0);
+			new UpdateService(_query,_exifTool,_appSettings, _readMeta,_iStorageFake).Update(changedFileIndexItemName,fileIndexResultsList.FirstOrDefault(), fileIndexResultsList,false,0);
 
-
+			// check for item (Referenced)
+			Assert.AreEqual("thisKeywordHasChanged",item0.Tags);
+			// db
+			Assert.AreEqual("thisKeywordHasChanged",_query.SingleItem("/test.jpg").FileIndexItem.Tags);
+			
+			Assert.AreEqual("noChanges",_query.SingleItem("/test.jpg").FileIndexItem.Description);
 
 			_query.RemoveItem(item0);
 		}

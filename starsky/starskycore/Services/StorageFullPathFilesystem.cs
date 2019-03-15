@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using starskycore.Interfaces;
@@ -39,6 +40,11 @@ namespace starskycore.Services
 		public IEnumerable<string> GetDirectoryRecursive(string fullFilePath)
 		{
 			return Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);
+		}
+
+		public Stream Stream(string path, int maxRead = Int32.MaxValue)
+		{
+			throw new NotImplementedException();
 		}
 
 

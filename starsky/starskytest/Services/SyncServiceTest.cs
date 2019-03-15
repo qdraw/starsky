@@ -316,13 +316,14 @@ namespace starskytest.Services
                 ParentDirectory = "/" + "exist",
                 IsDirectory = false
             });
-            var expectThisHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
-            
+	        
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+
             _syncservice.FirstItemDirectory();
 
 	        Console.WriteLine(createAnImage.BasePath);
             var queryItem = _query.GetObjectByFilePath("/exist");
-            Assert.AreEqual(expectThisHashCode, queryItem.FileHash);
+            Assert.AreEqual(fileHashCode, queryItem.FileHash);
             
             File.Delete(testFileFullPath);
             _query.RemoveItem(queryItem);

@@ -13,17 +13,20 @@ namespace starskycore.Services
 		private readonly IExiftool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly IReadMeta _readMeta;
+		private readonly IStorage _iStorage;
 
 		public UpdateService(
 			IQuery query,
 			IExiftool exifTool, 
 			AppSettings appSettings,
-			IReadMeta readMeta)
+			IReadMeta readMeta,
+			IStorage iStorage)
 		{
 			_appSettings = appSettings;
 			_query = query;
 			_exifTool = exifTool;
 			_readMeta = readMeta;
+			_iStorage = iStorage;
 		}
 
 		/// <summary>
@@ -109,7 +112,7 @@ namespace starskycore.Services
 			exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
                         
 			// change thumbnail names after the orginal is changed
-			var newFileHash = FileHash.GetHashCode(toUpdateFilePath);
+			var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath);
 			new Thumbnail(_appSettings).RenameThumb(detailView.FileIndexItem.FileHash,newFileHash);
 					
 			// Update the hash in the database

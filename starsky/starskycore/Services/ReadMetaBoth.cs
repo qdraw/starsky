@@ -46,7 +46,7 @@ namespace starskycore.Services
                 returnItem.IsDirectory = false;
                 returnItem.Id = -1;
                 returnItem.Status = FileIndexItem.ExifStatus.Ok;
-                returnItem.FileHash = FileHash.GetHashCode(fullFilePath);
+                returnItem.FileHash = new FileHash(_iStorage).GetHashCode(subPath);
                 returnItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault();
                 fileIndexList.Add(returnItem);
             }

@@ -65,7 +65,7 @@ namespace starskycore.Services
             foreach (var item in listOfOldFileIndexItems)
             {
                 var oldHashCode = item.FileHash;
-                var newHashCode = FileHash.GetHashCode(_appSettings.DatabasePathToFilePath(item.FilePath));
+                var newHashCode = FileHashStatic.GetHashCode(_appSettings.DatabasePathToFilePath(item.FilePath));
                 RenameThumb(oldHashCode,newHashCode);
             }
         }
@@ -126,7 +126,7 @@ namespace starskycore.Services
                     return false; // creating is not succesfull
                 }
 
-                if(fileHash == null) fileHash = FileHash.GetHashCode(fullFilePath);
+                if(fileHash == null) fileHash = FileHashStatic.GetHashCode(fullFilePath);
                 var thumbPath = GetThumbnailPath(fileHash); //<<full
                 
                 if (FilesHelper.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
