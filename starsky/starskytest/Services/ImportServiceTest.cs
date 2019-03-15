@@ -76,8 +76,8 @@ namespace starskytest.Services
             // inject exiftool
             _exiftool = serviceProvider.GetRequiredService<IExiftool>();
             
-            _readmeta = new ReadMeta(_appSettings);
 	        var iStorage = new StorageSubPathFilesystem(_appSettings);
+	        _readmeta = new ReadMeta(iStorage,_appSettings);
 
             _isync = new SyncService(_query,_appSettings,_readmeta,iStorage);
             

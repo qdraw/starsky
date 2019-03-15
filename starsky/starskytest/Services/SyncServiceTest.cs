@@ -61,7 +61,8 @@ namespace starskytest.Services
             // Activate Query
             _query = new Query(context,memoryCache);
             
-            var readmeta = new ReadMeta(_appSettings);
+	        _iStorage = new StorageSubPathFilesystem(_appSettings);
+            var readmeta = new ReadMeta(_iStorage,_appSettings);
             // Activate SyncService
 	        var iStorage = new StorageSubPathFilesystem(_appSettings);
             _syncservice = new SyncService(_query,_appSettings,readmeta,iStorage);
@@ -70,8 +71,9 @@ namespace starskytest.Services
         private readonly Query _query;
         private readonly SyncService _syncservice;
         private readonly AppSettings _appSettings;
+	    private StorageSubPathFilesystem _iStorage;
 
-        [ExcludeFromCoverage]
+	    [ExcludeFromCoverage]
         [TestMethod]
         public void SyncServiceAddFoldersToDatabaseTest()
         {

@@ -13,11 +13,13 @@ namespace starskycore.Services
     {
         private readonly AppSettings _appSettings;
         private readonly IMemoryCache _cache;
+	    private readonly IStorage _iStorage;
 
-        public ReadMeta(AppSettings appSettings = null, IMemoryCache memoryCache = null)
+	    public ReadMeta(IStorage iStorage, AppSettings appSettings = null, IMemoryCache memoryCache = null)
         {
             _appSettings = appSettings;
             _cache = memoryCache;
+	        _iStorage = iStorage;
         }
 
         private FileIndexItem ReadExifAndXmpFromFileDirect(string singleFilePath, 

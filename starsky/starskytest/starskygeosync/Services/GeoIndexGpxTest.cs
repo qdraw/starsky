@@ -7,6 +7,7 @@ using starskycore.Models;
 using starskycore.Services;
 using starskyGeoCli.Services;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
 namespace starskytest.starskygeosync.Services
 {
@@ -25,7 +26,8 @@ namespace starskytest.starskygeosync.Services
                 StorageFolder = createAnGpx.BasePath,
                 CameraTimeZone = "Europe/Minsk"
             };
-            _readMeta = new ReadMeta(_appSettings);
+	        var fakeIStorage = new FakeIStorage();
+            _readMeta = new ReadMeta(fakeIStorage,_appSettings);
 
             _metaFilesDirectory = new List<FileIndexItem>
             {
