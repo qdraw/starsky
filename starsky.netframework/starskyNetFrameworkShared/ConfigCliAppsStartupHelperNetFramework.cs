@@ -94,10 +94,11 @@ namespace starskyNetFrameworkShared
             var options = builderDb.Options;
             var context = new ApplicationDbContext(options);
             var query = new Query(context);
+		    var iStorage = new StorageSubPathFilesystem(_appSettings);
             
-            _readmeta = new ReadMeta(_appSettings);
+            _readmeta = new ReadMeta(iStorage,_appSettings);
             
-            _isync = new SyncService(context, query, _appSettings,_readmeta, new StorageFilesystem(_appSettings));
+            _isync = new SyncService(query, _appSettings,_readmeta, iStorage);
             
             // TOC:
             //   _context = context
@@ -105,7 +106,7 @@ namespace starskyNetFrameworkShared
             //   _exiftool = exiftool
             //   _appSettingsJsonSettings = appSettings
             //   _readmeta = readmeta
-			_import = new ImportService(context, _isync, _exiftool, _appSettings, _readmeta, null);
+			_import = new ImportService(context, _isync, _exiftool, _appSettings, _readmeta, null, iStorage);
 
 	        _thumbnailCleaner = new ThumbnailCleaner(query, _appSettings);
         }
