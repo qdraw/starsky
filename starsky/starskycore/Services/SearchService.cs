@@ -11,7 +11,6 @@ using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.ViewModels;
-using starskytest.Helpers;
 
 namespace starskycore.Services
 {

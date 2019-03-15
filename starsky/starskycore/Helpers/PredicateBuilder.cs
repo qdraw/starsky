@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace starskytest.Helpers
+namespace starskycore.Helpers
 {
 
 	/// <summary>
