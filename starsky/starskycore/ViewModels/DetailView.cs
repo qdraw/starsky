@@ -56,8 +56,13 @@ namespace starskycore.ViewModels
 
 
         public List<string> Breadcrumb { get; set; }
-        public List<FileIndexItem.Color> ColorClassFilterList { get; set; }
-        // Used by react client
+        
+	    /// <summary>
+	    /// List of selected Color Class's
+	    /// </summary>
+	    public List<FileIndexItem.Color> ColorClassFilterList { get; set; } = new List<FileIndexItem.Color>();
+        
+	    // Used by react client
         public string PageType => PageViewType.PageType.DetailView.ToString();
         // To return error codes// in the json it is always false
         public bool IsDirectory { get; set; }
