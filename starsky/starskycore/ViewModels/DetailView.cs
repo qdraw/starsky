@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Text;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using starsky.ViewModels;
 using starskycore.Models;
@@ -8,7 +10,51 @@ namespace starskycore.ViewModels
     public class DetailView
     {
         public FileIndexItem FileIndexItem { get; set; }
-        public RelativeObjects RelativeObjects { get; set; }
+
+
+	    private RelativeObjects _relativeObjects;
+	    
+	    /// <summary>
+	    /// Get the next/prev item with Args used
+	    /// </summary>
+	    public RelativeObjects RelativeObjects
+	    {
+		    get
+		    {
+			    var urlRelative = new RelativeObjects
+			    {
+				    NextFilePath = _relativeObjects.NextFilePath,
+				    PrevFilePath = _relativeObjects.PrevFilePath
+			    };
+
+			    if ( !Collections )
+			    {
+				    urlRelative.Args.Add(nameof(Collections).ToLowerInvariant(),Collections.ToString().ToLowerInvariant());
+			    }
+			    
+				if (ColorClassFilterList.Count >= 1 )
+				{
+					var colorClassArg = new StringBuilder();
+					for ( int i = 0; i < ColorClassFilterList.Count; i++ )
+					{
+						var colorClass = ColorClassFilterList[i];
+						if (i ==  ColorClassFilterList.Count-1)
+						{
+							colorClassArg.Append(colorClass.GetHashCode());
+						}
+						else
+						{
+							colorClassArg.Append(colorClass.GetHashCode()+ ",");
+						}
+					}
+					urlRelative.Args.Add(nameof(FileIndexItem.ColorClass).ToLowerInvariant(),colorClassArg.ToString());
+				}
+			    return urlRelative;
+		    }
+		    set { _relativeObjects = value; }
+	    }
+
+
         public List<string> Breadcrumb { get; set; }
         public List<FileIndexItem.Color> ColorClassFilterList { get; set; }
         // Used by react client
@@ -21,7 +67,12 @@ namespace starskycore.ViewModels
         // Used by Razor view
         [JsonIgnore]
         public IEnumerable<FileIndexItem.ColorUserInterface> GetAllColor { get; set; }
-	    
+
+	    /// <summary>
+	    /// Is collections enabled?
+	    /// </summary>
+	    public bool Collections { get; set; }
+
 	    /// <summary>
 	    /// If conllections enalbed return list of subpaths
 	    /// </summary>

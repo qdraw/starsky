@@ -74,6 +74,7 @@ namespace starskycore.Services
                 IsDirectory = true,
                 SubPath = singleItemDbPath,
 	            FileIndexItem = currentFileIndexItem, // added
+	            Collections = enableCollections
             };
 
             if (currentFileIndexItem.Tags.Contains("!delete!")) hideDeleted = false;
@@ -90,6 +91,7 @@ namespace starskycore.Services
                 ColorClassFilterList = colorClassFilterList,
                 IsDirectory = false,
                 SubPath = singleItemDbPath,
+	            Collections = enableCollections
             };
 
             // First item is current item
