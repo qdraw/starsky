@@ -27,6 +27,7 @@
 - Search: performance update for searching multiple tags
 - Replace API introduced, search and replace in strings
 - Done some IStorage refactorings, but not complete yet
+- Next/Prev links are now served by backend code to avoid when javascript is not loaded, your selection is reset
 
 # version 0.1.4 - 2019-03-01
 - fix issue where login fails results in a error 500
