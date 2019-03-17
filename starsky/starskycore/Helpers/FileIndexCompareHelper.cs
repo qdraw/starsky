@@ -63,6 +63,13 @@ namespace starskycore.Helpers
                     CompareRotation(propertiesB[i].Name, sourceIndexItem, oldRotationValue, newRotationValue, differenceList); 
                 }
             }
+
+	        // Last Edited is not needed
+	        if ( differenceList.Any(p => p == nameof(FileIndexItem.LastEdited)) )
+	        {
+		        differenceList.Remove(nameof(FileIndexItem.LastEdited));
+	        }
+	        
             return differenceList;
         }
 
