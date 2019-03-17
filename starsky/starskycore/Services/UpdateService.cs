@@ -132,7 +132,7 @@ namespace starskycore.Services
 					
 			// Update the hash in the database
 			detailView.FileIndexItem.FileHash = newFileHash;
-                        
+			
 			// Do a database sync + cache sync
 			_query.UpdateItem(detailView.FileIndexItem);
                         

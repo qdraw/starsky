@@ -20,7 +20,7 @@ namespace starskycore.Models
 	    /// </summary>
 	    public FileIndexItem()
 	    {
-		    LastEdited = DateTime.UtcNow;
+		    SetLastEdited();
 	    }
 
 	    /// <summary>
@@ -31,7 +31,7 @@ namespace starskycore.Models
 	    {
 		    SetFilePath(subPath);
 		    IsDirectory = false;
-		    LastEdited = DateTime.UtcNow;
+		    SetLastEdited();
 	    }
 	    
 		/// <summary>
@@ -310,6 +310,14 @@ namespace starskycore.Models
 	    /// The last edited DateTime value
 	    /// </value>
 	    public DateTime LastEdited { get; set; }
+
+	    /// <summary>
+	    /// Update te last edited time manual
+	    /// </summary>
+	    public void SetLastEdited()
+	    {
+		    LastEdited = DateTime.UtcNow;
+	    }
 
 
 		/// <summary>

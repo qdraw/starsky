@@ -156,10 +156,16 @@ namespace starskycore.Services
         {
             foreach (var item in updateStatusContentList)
             {
+	            //  Update te last edited time manual
+	            item.SetLastEdited();
+	            
+	            // Set state to edit mode
                 _context.Attach(item).State = EntityState.Modified;
             }
-            _context.SaveChanges();
-            CacheUpdateItem(updateStatusContentList);
+            
+	        _context.SaveChanges();
+            
+	        CacheUpdateItem(updateStatusContentList);
             return updateStatusContentList;
         }
 
@@ -172,6 +178,9 @@ namespace starskycore.Services
         public FileIndexItem UpdateItem( FileIndexItem updateStatusContent)
         {
 			InjectServiceScope();
+
+	        //  Update te last edited time manual
+	        updateStatusContent.SetLastEdited();
 	        
             _context.Attach(updateStatusContent).State = EntityState.Modified;
             _context.SaveChanges();
