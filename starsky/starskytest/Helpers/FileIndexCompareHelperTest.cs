@@ -112,6 +112,11 @@ namespace starskytest.Helpers
 		    Assert.AreEqual("value", FileIndexCompareHelper.Set(null,nameof(FileIndexItem.Tags),"value").Tags);
 	    }
 	    
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest__SetValue_Tags_LowerCase()
+	    {
+		    Assert.AreEqual("value", FileIndexCompareHelper.Set(null,nameof(FileIndexItem.Tags).ToLowerInvariant(),"value").Tags);
+	    }
 	    
 	    [TestMethod]
 	    public void FileIndexCompareHelperTest__SetValue_UnknownValue()
@@ -132,6 +137,14 @@ namespace starskytest.Helpers
 	    {
 		    var t = new FileIndexItem{Tags = "test"};
 		    var result = FileIndexCompareHelper.Get(t, nameof(FileIndexItem.Tags));
+		    Assert.AreEqual(t.Tags,result);
+	    }
+	    
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest_GetValue_LowerCase()
+	    {
+		    var t = new FileIndexItem{Tags = "test"};
+		    var result = FileIndexCompareHelper.Get(t, nameof(FileIndexItem.Tags).ToLowerInvariant());
 		    Assert.AreEqual(t.Tags,result);
 	    }
 

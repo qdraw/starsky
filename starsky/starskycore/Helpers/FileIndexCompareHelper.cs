@@ -122,21 +122,6 @@ namespace starskycore.Helpers
 		    return propertiesA.Any(p => string.Equals(p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase));
 	    }
 	    
-//	    /// <summary>
-//	    /// Get the exact mating property name, so Tags instead of TAgs
-//	    /// </summary>
-//	    /// <param name="fieldName">name e.g. Tags</param>
-//	    /// <returns>bool, true=exist</returns>
-//	    public static string GetExactPropertyName(string fieldName)
-//	    {
-//		    if ( !CheckIfPropertyExist(fieldName) ) return string.Empty;
-//
-//	    }
-//		    
-//		    PropertyInfo[] propertiesA = new FileIndexItem().GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-//		    return propertiesA.Any(p => p.Name == fieldName);
-//	    }
-
 	    /// <summary>
 	    /// Update compared values
 	    /// </summary>
