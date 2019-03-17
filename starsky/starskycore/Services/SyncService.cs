@@ -105,18 +105,6 @@ namespace starskycore.Services
 	        return null;
         }
 
-//        // Rename a list to database style (short style)
-//        public List<string> RenameListItemsToDbStyle(List<string> localSubFolderList)
-//        {
-//            var localSubFolderListDatabaseStyle = new List<string>();
-//
-//            foreach (var item in localSubFolderList)
-//            {
-//                localSubFolderListDatabaseStyle.Add(_appSettings.FullPathToDatabaseStyle(item));
-//            }
-//
-//            return localSubFolderListDatabaseStyle;
-//        }
 
     }
 

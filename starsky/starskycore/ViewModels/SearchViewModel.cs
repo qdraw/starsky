@@ -85,7 +85,8 @@ namespace starskycore.ViewModels
             addtodatabase = 7,
 	        filehash = 8,
 	        isdirectory = 9,
-	        imageformat = 10
+	        imageformat = 10,
+	        lastedited = 11
         }
 
         

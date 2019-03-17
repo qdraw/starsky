@@ -56,26 +56,49 @@
 					<a class="btn btn-default disabled" type="submit">Update</a> @*onClick="updateCaptionAbstract()"*@
 				</div>
 
-				<div>
-					@{
-						var cultureInfo = new CultureInfo("nl-NL");
-						if (Model.FileIndexItem.DateTime.Year >= 2)
-						{
-							<p>Datum: <em>@Model.FileIndexItem.DateTime.ToString(cultureInfo)</em></p>
-						}
-						
-						if (Model.FileIndexItem.Make != string.Empty && Model.FileIndexItem.Model != string.Empty 
-						    && Model.FileIndexItem.IsoSpeed != 0 && Model.FileIndexItem.ShutterSpeed != string.Empty && Math.Abs(Model.FileIndexItem.Aperture) > 0)
-						{
-							<p>
-								Camera: <em>@Model.FileIndexItem.Make  @Model.FileIndexItem.Model</em> - <br/>
-								Sluitertijd: <em>@Model.FileIndexItem.ShutterSpeed.ToString(cultureInfo) sec </em>- <br/>
-								Diafragma: <em>@Model.FileIndexItem.Aperture.ToString(cultureInfo)</em> -
-								ISO: <em>@Model.FileIndexItem.IsoSpeed.ToString(cultureInfo)</em>
-							</p>
-						}
+		<div>
+			@{
+				var cultureInfo = new CultureInfo("nl-NL");
+				if ( Model.FileIndexItem.DateTime.Year >= 2 )
+				{
+					<p>Datum: <em>@Model.FileIndexItem.DateTime.ToString(cultureInfo)</em></p>
+				}
+				
+				if ( Model.FileIndexItem.LastEdited.Year >= 2 )
+				{
+					var timeSpan = (DateTime.Now - @Model.FileIndexItem.LastEdited);
+					var hours = ( int ) timeSpan.TotalHours;
+					var days = ( int ) timeSpan.TotalDays;
+
+					if (hours == 1 )
+					{
+						<p>Bewerkt: <em>&lt; 1 uur geleden</em></p>
 					}
-				</div>
+					else if (hours <= 100 )
+					{
+						<p>Bewerkt: <em>@hours uur geleden</em></p>
+					}
+					else
+					{
+						<p>Bewerkt: <em>@days dagen geleden</em></p>
+					}
+				}   
+				
+				if ( Model.FileIndexItem.Make != string.Empty && Model.FileIndexItem.Model != string.Empty
+				     && Model.FileIndexItem.IsoSpeed != 0 && Model.FileIndexItem.ShutterSpeed != string.Empty && Math.Abs(Model.FileIndexItem.Aperture) > 0 )
+				{
+					<p>
+						Camera: <em>@Model.FileIndexItem.Make @Model.FileIndexItem.Model</em> - <br/>
+						Sluitertijd: <em>@Model.FileIndexItem.ShutterSpeed.ToString(cultureInfo) sec </em>- <br/>
+						Diafragma: <em>@Model.FileIndexItem.Aperture.ToString(cultureInfo)</em> -
+						ISO: <em>@Model.FileIndexItem.IsoSpeed.ToString(cultureInfo)</em>
+					</p>
+				}
+			}
+
+
+			
+		</div>
 				<div class="add-colorclass">
 					@{
 						foreach (var item in @FileIndexItem.GetAllColorUserInterface())
