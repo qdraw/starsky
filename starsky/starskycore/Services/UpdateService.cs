@@ -163,21 +163,23 @@ namespace starskycore.Services
 			}
 			return fileIndexItem;
 		}
-		
+
 		/// <summary>
-		/// Add a thumbnail to list to update exif with exiftool
+		/// Add a thumbnail to list to update exif with exifTool
 		/// </summary>
-		/// <param name="toUpdateFilePath">the fullpath of the source file, only the raw or jpeg</param>
-		/// <param name="detailView">main object with filehash</param>
-		/// <returns>a list with a thumb full path (if exist) and the source fullpath</returns>
+		/// <param name="toUpdateFilePath">the fullPath of the source file, only the raw or jpeg</param>
+		/// <param name="fileIndexItem">main object with fileHash</param>
+		/// <returns>a list with a thumb full path (if exist) and the source fullPath</returns>
 		private List<string> AddThumbnailToExifChangeList(string toUpdateFilePath, FileIndexItem fileIndexItem)
 		{
-			// To Add an Thumbnail to the 'to update list for exiftool'
+			// To Add an Thumbnail to the 'to update list for exifTool'
 			var exifUpdateFilePaths = new List<string>
 			{
 				toUpdateFilePath           
 			};
 			var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
+
+			//	 todo: Change to		_iStorage.ExistFile() BUT this is thumbnail
 			if (FilesHelper.IsFolderOrFile(thumbnailFullPath) == FolderOrFileModel.FolderOrFileTypeList.File)
 			{
 				exifUpdateFilePaths.Add(thumbnailFullPath);
