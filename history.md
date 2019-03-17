@@ -15,7 +15,7 @@
 
 # version 0.1.5.1 - 2019-03-17
 - Breaking Change: added `LastEdited` field
-- Add `LastEdited` to search
+- Add `LastEdited` to search as field
 
 # version 0.1.5 - 2019-03-17
 - add partial support for || (or) queries using search
