@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using starskycore.Models;
 
 namespace starskycore.Interfaces
@@ -17,6 +18,7 @@ namespace starskycore.Interfaces
 		IEnumerable<string> GetAllFilesInDirectory(string path);
 		IEnumerable<string> GetAllFilesInDirectoryRecursive(string path);
 		IEnumerable<string> GetDirectoryRecursive(string path);
-			
+
+		Stream Stream(string path, int maxRead = int.MaxValue);
 	}
 }

@@ -392,6 +392,9 @@ function showPopupDialog(content,timeout) {
                         else if (target === "queryDeleteApi()") {
                             queryDeleteApi();
                         }
+                        else if (target === "queryUndoDeleteApi()") {
+                            queryUndoDeleteApi();
+                        }
 
                     }, false);
             }

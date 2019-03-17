@@ -31,8 +31,8 @@ namespace starsky.Controllers
         /// <summary>
         /// Do a file sync in a background process
         /// </summary>
-        /// <param name="f">subpaths split by dot comma</param>
-        /// <returns></returns>
+        /// <param name="f">subPaths split by dot comma</param>
+        /// <returns>list of changed files</returns>
         [ActionName("Index")]
         public IActionResult SyncIndex(string f)
         {
@@ -96,9 +96,9 @@ namespace starsky.Controllers
 	    /// <summary>
 	    /// Work in progress: Rename file/folder and update it in the database
 	    /// </summary>
-	    /// <param name="f"></param>
-	    /// <param name="to"></param>
-	    /// <param name="collections"></param>
+	    /// <param name="f">from subpath</param>
+	    /// <param name="to">to subpath</param>
+	    /// <param name="collections">is collections bool</param>
 	    /// <returns>list of details form changed files</returns>
 		[HttpPost("/sync/rename")]
 		public IActionResult Rename(string f, string to, bool collections = true)

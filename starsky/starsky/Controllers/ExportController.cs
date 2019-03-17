@@ -21,16 +21,20 @@ namespace starsky.Controllers
 		private readonly IExiftool _exiftool;
 		private readonly AppSettings _appSettings;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IStorage _iStorage;
 
 		public ExportController(
 			IQuery query, IExiftool exiftool, 
-			AppSettings appSettings, IBackgroundTaskQueue queue
+			AppSettings appSettings, IBackgroundTaskQueue queue,
+			IStorage iStorage
 		)
 		{
 			_appSettings = appSettings;
 			_query = query;
 			_exiftool = exiftool;
 			_bgTaskQueue = queue;
+			_iStorage = iStorage;
+
 		}
 		
 		/// <summary>
@@ -57,7 +61,7 @@ namespace starsky.Controllers
 				// all filetypes that are exist > should be added 
 				
 				var statusResults =
-					new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+					new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 				
 				// ignore readonly status
 				if ( statusResults == FileIndexItem.ExifStatus.ReadOnly )
@@ -68,10 +72,11 @@ namespace starsky.Controllers
 				statusModel.SetFilePath(subPath);
 				statusModel.IsDirectory = false;
 				
-				if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+				if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 
 				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
 
+				// Now Add Collection based images
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
 				foreach ( var item in collectionSubPathList )
 				{
@@ -175,8 +180,10 @@ namespace starsky.Controllers
 
 		/// <summary>
 		/// Get the exported zip, but first call 'createZip'
+		/// use for example this url: /export/zip/TNA995920129.zip
+		/// TNA995920129 is from 'createZip'
 		/// </summary>
-		/// <param name="f">zip hash</param>
+		/// <param name="f">zip hash e.g. TNA995920129</param>
 		/// <param name="json">true to get OK instead of a zip file</param>
 		/// <returns>Not ready or the zipfile</returns>
 		/// <response code="200">if json is true return 'OK', else the zip file</response>

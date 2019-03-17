@@ -20,25 +20,28 @@ namespace starsky.Controllers
         private readonly AppSettings _appSettings;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
         private readonly IReadMeta _readMeta;
+	    private readonly IStorage _iStorage;
 
         public ApiController(
             IQuery query, IExiftool exiftool, 
             AppSettings appSettings, IBackgroundTaskQueue queue,
-            IReadMeta readMeta
-            )
+            IReadMeta readMeta,
+			IStorage iStorage)
         {
             _appSettings = appSettings;
             _query = query;
             _exiftool = exiftool;
             _bgTaskQueue = queue;
             _readMeta = readMeta;
+	        _iStorage = iStorage;
+
         }
 
 	    /// <summary>
 	    /// The database-view of a directory
 	    /// </summary>
-	    /// <param name="f">subpath</param>
-	    /// <param name="colorClass">filter on colorclass (use int)</param>
+	    /// <param name="f">subPath</param>
+	    /// <param name="colorClass">filter on colorClass (use int)</param>
 	    /// <param name="json">to not show as webpage</param>
 	    /// <param name="collections">to combine files with the same name before the extension</param>
 	    /// <param name="hidedelete">ignore deleted files</param>
@@ -64,7 +67,7 @@ namespace starsky.Controllers
         /// Show the runtime settings (allow AllowAnonymous)
         /// </summary>
         /// <returns>config data, except connection strings</returns>
-	    /// <response code="200">returns the runtime settings of starsky</response>
+	    /// <response code="200">returns the runtime settings of Starsky</response>
 	    [HttpHead("/api/env")]
         [HttpGet("/api/env")]
         [IgnoreAntiforgeryToken]
@@ -77,72 +80,23 @@ namespace starsky.Controllers
             return Json(appSettings);
         }
         
-        /// <summary>
-        /// Add to comparedNames list ++ add to detailview
-        /// </summary>
-        /// <param name="rotateClock">-1 or 1</param>
-        /// <param name="fileIndexItem">main db object</param>
-        /// <param name="comparedNamesList">list of types that are changes</param>
-        /// <returns>updated image</returns>
-        private FileIndexItem RotatonCompare(int rotateClock, FileIndexItem fileIndexItem, ICollection<string> comparedNamesList)
-        {
-            // Do orientation / Rotate if needed (after compare)
-            if (!FileIndexItem.IsRelativeOrientation(rotateClock)) return fileIndexItem;
-            // run this on detailview => statusModel is always default
-	        fileIndexItem.SetRelativeOrientation(rotateClock);
-	        if ( !comparedNamesList.Contains(nameof(fileIndexItem.Orientation)) )
-	        {
-		        comparedNamesList.Add(nameof(fileIndexItem.Orientation));
-	        }
-	        return fileIndexItem;
-        }
 
-        /// <summary>
-        /// Run the Orientation changes on the thumbnail (only relative)
-        /// </summary>
-        /// <param name="rotateClock">-1 or 1</param>
-        /// <param name="fileIndexItem">object contains filehash</param>
-        /// <returns>updated image</returns>
-        private void RotationThumbnailExcute(int rotateClock, FileIndexItem fileIndexItem)
-        {
-            var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
 
-            // Do orientation
-            if(FileIndexItem.IsRelativeOrientation(rotateClock)) new Thumbnail(null).RotateThumbnail(thumbnailFullPath,rotateClock);
-        }
 
-        /// <summary>
-        /// Add a thumbnail to list to update exif with exiftool
-        /// </summary>
-        /// <param name="toUpdateFilePath">the fullpath of the source file, only the raw or jpeg</param>
-        /// <param name="detailView">main object with filehash</param>
-        /// <returns>a list with a thumb full path (if exist) and the source fullpath</returns>
-        private List<string> AddThumbnailToExifChangeList(string toUpdateFilePath, FileIndexItem fileIndexItem)
-        {
-            // To Add an Thumbnail to the 'to update list for exiftool'
-            var exifUpdateFilePaths = new List<string>
-            {
-                toUpdateFilePath           
-            };
-            var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
-            if (FilesHelper.IsFolderOrFile(thumbnailFullPath) == FolderOrFileModel.FolderOrFileTypeList.File)
-            {
-                exifUpdateFilePaths.Add(thumbnailFullPath);
-            }
-            return exifUpdateFilePaths;
-        }
+
+
 
         /// <summary>
         /// Update Exif and Rotation API
         /// </summary>
-        /// <param name="f">subpath filepath to file, split by dot comma (;)</param>
+        /// <param name="f">subPath filepath to file, split by dot comma (;)</param>
         /// <param name="inputModel">tags: use for keywords
-        /// colorClass: int 0-9, the colorclass to fast select images
-        /// description: string to update description/caption abstract, emthy will be ignore
+        /// colorClass: int 0-9, the colorClass to fast select images
+        /// description: string to update description/caption abstract, empty will be ignore
         /// title: edit image title</param>
         /// <param name="collections">StackCollections bool, default true</param>
         /// <param name="append">only for stings, add update to existing items</param>
-        /// <param name="rotateClock">relative orentation -1 or 1</param>
+        /// <param name="rotateClock">relative orientation -1 or 1</param>
         /// <returns>update json</returns>
         /// <response code="200">the item including the updated content</response>
         /// <response code="404">item not found in the database or on disk</response>
@@ -156,19 +110,21 @@ namespace starsky.Controllers
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
+			
+			// Per file stored  <string{fileHash}, List<string>{FileIndexItem.name (e.g. Tags) that are changed}
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
 			
 			foreach (var subPath in inputFilePaths)
 			{
 				var detailView = _query.SingleItem(subPath,null,collections,false);
-				var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+				var statusResults = new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 				
 				var statusModel = inputModel.Clone();
 				statusModel.IsDirectory = false;
 				statusModel.SetFilePath(subPath);
 				
 				// if one item fails, the status will added
-				if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+				if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 
 				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
 				
@@ -189,15 +145,11 @@ namespace starsky.Controllers
 						fileIndexResultsList.Add(detailView.FileIndexItem);
 						continue;
 					}
-					
-					// compare and add changes to collectionsDetailView
-					var comparedNamesList = FileIndexCompareHelper
-						.Compare(collectionsDetailView.FileIndexItem, statusModel, append);
-					
-					// if requested, add changes to rotation
-					collectionsDetailView.FileIndexItem = 
-						RotatonCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
-					changedFileIndexItemName.Add(collectionsDetailView.FileIndexItem.FilePath,comparedNamesList);
+
+					// Compare Rotation and All other tags
+					new UpdateService(_query, _exiftool, _appSettings, _readMeta,_iStorage)
+						.CompareAllLabelsAndRotation(changedFileIndexItemName,
+							collectionsDetailView, statusModel, append, rotateClock);
 					
 					// this one is good :)
 					collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
@@ -205,6 +157,7 @@ namespace starsky.Controllers
 					// When it done this will be removed,
 					// to avoid conflicts
 					_readMeta.UpdateReadMetaCache(collectionFullPaths[i],collectionsDetailView.FileIndexItem);
+					
 					// update database cache
 					_query.CacheUpdateItem(new List<FileIndexItem>{collectionsDetailView.FileIndexItem});
 					
@@ -216,54 +169,8 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
-				foreach ( var item in collectionsDetailViewList )
-				{
-					// need to recheck because this process is async, so in the mainwhile there are changes posible
-					var detailView = _query.SingleItem(item.FilePath,null,collections,false);
-				
-					// used for tracking differences, in the database/exiftool compare
-					var comparedNamesList = changedFileIndexItemName[detailView.FileIndexItem.FilePath];
-
-					// the inputmodel is always DoNotChange, so checking from the field is useless
-					inputModel.Orientation = detailView.FileIndexItem.Orientation;
-
-					if ( !_query.IsCacheEnabled() )
-					{
-						// when you disable cache the field is not filled with the data
-						detailView.FileIndexItem = FileIndexCompareHelper
-							.SetCompare(detailView.FileIndexItem, inputModel, comparedNamesList);
-						
-						detailView.FileIndexItem = RotatonCompare(rotateClock, detailView.FileIndexItem, comparedNamesList);
-					}
-						
-					var exiftool = new ExifToolCmdHelper(_appSettings,_exiftool);
-					var toUpdateFilePath = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.FilePath);
-					
-					// feature to exif update the thumbnails 
-					var exifUpdateFilePaths = AddThumbnailToExifChangeList(toUpdateFilePath, detailView.FileIndexItem);
-
-					// do rotation on thumbs
-					RotationThumbnailExcute(rotateClock, detailView.FileIndexItem);
-					
-					// Do an Exif Sync for all files, including thumbnails
-					exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
-                        
-					// change thumbnail names after the orginal is changed
-					var newFileHash = FileHash.GetHashCode(toUpdateFilePath);
-					new Thumbnail(_appSettings).RenameThumb(detailView.FileIndexItem.FileHash,newFileHash);
-					
-					// Update the hash in the database
-					detailView.FileIndexItem.FileHash = newFileHash;
-                        
-					// Do a database sync + cache sync
-					_query.UpdateItem(detailView.FileIndexItem);
-                        
-					// > async > force you to read the file again
-					// do not include thumbs in MetaCache
-					// only the full path url of the source image
-					_readMeta.RemoveReadMetaCache(toUpdateFilePath);
-				}
+				new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage)
+					.Update(changedFileIndexItemName,fileIndexResultsList,inputModel,collections, append, rotateClock);
 			});
             
             // When all items are not found
@@ -282,13 +189,73 @@ namespace starsky.Controllers
             return Json(returnNewResultList);
         }
 
+	    
+	    /// <summary>
+	    /// Work in progress: Search and Replace text
+	    /// </summary>
+	    /// <param name="f">subPath filepath to file, split by dot comma (;)</param>
+	    /// <param name="fieldName">name of fileIndexItem field e.g. Tags</param>
+	    /// <param name="search">text to search for</param>
+	    /// <param name="replace">replace [search] with this text</param>
+	    /// <param name="collections">enable collections</param>
+	    /// <returns>list of changed files</returns>
+	    [HttpPost("/api/replace")]
+	    [Produces("application/json")]
+	    public IActionResult Replace(string f, string fieldName, string search, string replace, bool collections = true)
+	    {
+		    var fileIndexResultsList = new ReplaceService(_query, _appSettings, _iStorage)
+			    .Replace(f, fieldName, search, replace, collections);
+		    
+			// Update >
+			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			{
+				var resultsOkList =
+					fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+				
+				foreach ( var inputModel in resultsOkList )
+				{
+					// The differences are specified before update
+					var changedFileIndexItemName = new Dictionary<string, List<string>>
+					{
+						{ 
+							inputModel.FilePath, new List<string>
+							{
+								fieldName
+							} 
+						}
+					};
+					
+					new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage)
+						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, collections, false, 0);
+					
+				}
+			});
+					
+			// When all items are not found
+			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+			return NotFound(fileIndexResultsList);
+		
+			// Clone an new item in the list to display
+			var returnNewResultList = new List<FileIndexItem>();
+			foreach (var item in fileIndexResultsList)
+			{
+				var citem = item.Clone();
+				citem.FileHash = null;
+				returnNewResultList.Add(citem);
+			}
+								
+			return Json(returnNewResultList);
+		}
+
+	   
+
 
         /// <summary>
         /// Get realtime (cached a few minutes) about the file
         /// </summary>
-        /// <param name="f">subpaths split by dot comma</param>
+        /// <param name="f">subPaths split by dot comma</param>
         /// <param name="collections">true is to update files with the same name before the extenstion</param>
-        /// <returns></returns>
+        /// <returns>info of object</returns>
         /// <response code="200">the item on disk</response>
         /// <response code="404">item not found on disk</response>
         /// <response code="203">you are not allowed to edit this item</response>
@@ -315,13 +282,11 @@ namespace starsky.Controllers
                     fileIndexResultsList.Add(detailView.FileIndexItem);
                     continue;
                 }
-                var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+                var statusResults = new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 
-                var statusModel = new FileIndexItem();
-                statusModel.SetFilePath(subPath);
-                statusModel.IsDirectory = false;
+                var statusModel = new FileIndexItem(subPath);
 
-                if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 	            
 	            if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
 
@@ -351,7 +316,7 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="f">subpaths, seperated by dot comma</param>
         /// <param name="collections">true is to update files with the same name before the extenstion</param>
-        /// <returns></returns>
+        /// <returns>list of deleted files</returns>
         /// <response code="200">file is gone</response>
         /// <response code="404">item not found on disk or !delete! tag is missing</response>
         [HttpDelete("/api/delete")]
@@ -367,13 +332,11 @@ namespace starsky.Controllers
             foreach (var subPath in inputFilePaths)
             {
                 var detailView = _query.SingleItem(subPath, null, collections, false);
-                var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+                var statusResults = new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 
-                var statusModel = new FileIndexItem();
-                statusModel.SetFilePath(subPath);
-                statusModel.IsDirectory = false;
+                var statusModel = new FileIndexItem(subPath);
 
-                if(new StatusCodesHelper(null).ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+                if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                 
                 var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
                 var collectionFullDeletePaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
@@ -425,13 +388,13 @@ namespace starsky.Controllers
   
 
         /// <summary>
-        /// Http Endpoint to get fullsize image or thumbnail
+        /// Http Endpoint to get full size image or thumbnail
         /// </summary>
         /// <param name="f">one single file</param>
         /// <param name="isSingleitem">true = load orginal</param>
         /// <param name="json">text as output</param>
         /// <param name="retryThumbnail">true = remove thumbnail if corrupt</param>
-        /// <returns></returns>
+        /// <returns>thumbnail or status</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
         /// <response code="404">item not found on disk</response>
         /// <response code="409">Conflict, you did try get for example a thumbnail of a raw file</response>
@@ -449,7 +412,7 @@ namespace starsky.Controllers
             bool retryThumbnail = false)
         {
             // f is Hash
-            // isSingleItem => detailview
+            // isSingleItem => detailView
             // Retry thumbnail => is when you press reset thumbnail
             // json, => to don't waste the users bandwith.
 
@@ -603,7 +566,7 @@ namespace starsky.Controllers
                         .Split("/").LastOrDefault(),
                     ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.
                         FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
-                    FileHash = FileHash.GetHashCode(sourceFullPath)
+                    FileHash = new FileHash(_iStorage).GetHashCode(_appSettings.FullPathToDatabaseStyle(sourceFullPath))
                 };
                 
                 // When you have a different tag in the database than on disk

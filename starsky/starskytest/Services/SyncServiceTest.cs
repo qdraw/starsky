@@ -61,17 +61,19 @@ namespace starskytest.Services
             // Activate Query
             _query = new Query(context,memoryCache);
             
-            var readmeta = new ReadMeta(_appSettings);
+	        _iStorage = new StorageSubPathFilesystem(_appSettings);
+            var readmeta = new ReadMeta(_iStorage,_appSettings);
             // Activate SyncService
 	        var iStorage = new StorageSubPathFilesystem(_appSettings);
-            _syncservice = new SyncService(context, _query,_appSettings,readmeta,iStorage);
+            _syncservice = new SyncService(_query,_appSettings,readmeta,iStorage);
         }
 
         private readonly Query _query;
         private readonly SyncService _syncservice;
         private readonly AppSettings _appSettings;
+	    private StorageSubPathFilesystem _iStorage;
 
-        [ExcludeFromCoverage]
+	    [ExcludeFromCoverage]
         [TestMethod]
         public void SyncServiceAddFoldersToDatabaseTest()
         {
@@ -314,13 +316,14 @@ namespace starskytest.Services
                 ParentDirectory = "/" + "exist",
                 IsDirectory = false
             });
-            var expectThisHashCode = FileHash.GetHashCode(createAnImage.FullFilePath);
-            
+	        
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+
             _syncservice.FirstItemDirectory();
 
 	        Console.WriteLine(createAnImage.BasePath);
             var queryItem = _query.GetObjectByFilePath("/exist");
-            Assert.AreEqual(expectThisHashCode, queryItem.FileHash);
+            Assert.AreEqual(fileHashCode, queryItem.FileHash);
             
             File.Delete(testFileFullPath);
             _query.RemoveItem(queryItem);

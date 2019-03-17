@@ -28,8 +28,10 @@ namespace starskytest.Services
         {
 
             var appsettings = new AppSettings {StorageFolder = new CreateAnImage().BasePath};
+	        var iStorage = new StorageSubPathFilesystem(appsettings);
+
             var listofFiles = new string[]{ new CreateAnImage().FullFilePath};
-            var listOfMetas = new ReadMeta(appsettings,_fakeCache)
+            var listOfMetas = new ReadMeta(iStorage,appsettings,_fakeCache)
                 .ReadExifAndXmpFromFileAddFilePathHash(listofFiles);
             Assert.AreEqual(new CreateAnImage().DbPath.Remove(0,1), 
                 listOfMetas.FirstOrDefault().FileName);
@@ -39,7 +41,9 @@ namespace starskytest.Services
         public void ReadMeta_ReadMetaBothTest_RemoveCache()
         {
             var appsettings = new AppSettings {StorageFolder = new CreateAnImage().BasePath};
-            new ReadMeta(appsettings, _fakeCache)
+	        var iStorage = new StorageSubPathFilesystem(appsettings);
+
+            new ReadMeta(iStorage,appsettings, _fakeCache)
                     .RemoveReadMetaCache("fakeString");
         }
 
@@ -48,14 +52,17 @@ namespace starskytest.Services
         {
             var createAnImage = new CreateAnImage();
             var appsettings = new AppSettings {StorageFolder = createAnImage.BasePath};
+	        var iStorage = new StorageSubPathFilesystem(appsettings);
+
             // fakely add item to cache
-            new ReadMeta(appsettings, _fakeCache).ReadExifAndXmpFromFile(createAnImage.FullFilePath,ExtensionRolesHelper.ImageFormat.jpg);
+            new ReadMeta(iStorage,appsettings, _fakeCache).ReadExifAndXmpFromFile(createAnImage.FullFilePath,ExtensionRolesHelper.ImageFormat.jpg);
         }
 
         [TestMethod]
         public void ReadMeta_ReadMetaBothTest_FakeReadEntry()
         {
-            Assert.AreEqual("test",new ReadMeta(null, _fakeCache).ReadExifAndXmpFromFile("test",ExtensionRolesHelper.ImageFormat.jpg).Tags);
+	        var iStorage = new FakeIStorage();
+            Assert.AreEqual("test",new ReadMeta(iStorage,null, _fakeCache).ReadExifAndXmpFromFile("test",ExtensionRolesHelper.ImageFormat.jpg).Tags);
         }
     }
 }

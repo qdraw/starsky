@@ -15,6 +15,23 @@ namespace starskycore.Models
 {
     public class FileIndexItem
     {
+	    /// <summary>
+	    /// Default
+	    /// </summary>
+	    public FileIndexItem()
+	    {
+	    }
+
+	    /// <summary>
+	    /// Make new FileIndexItem with set subPath
+	    /// </summary>
+	    /// <param name="subPath">the subPath</param>
+	    public FileIndexItem(string subPath)
+	    {
+		    SetFilePath(subPath);
+		    IsDirectory = false;
+	    }
+	    
 		/// <summary>
 		/// Unique database Id, not used and Json Ignored due the fact that files that are moved could have a new Id 
 		/// </summary>
@@ -781,7 +798,7 @@ namespace starskycore.Models
 			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
 			    return _makeModel;
 		    }
-		    set => _makeModel = string.IsNullOrEmpty(_makeModel) ? string.Empty : value;
+		    set => _makeModel = string.IsNullOrEmpty(value) ? string.Empty : value;
 	    }
 
 	    /// <summary>

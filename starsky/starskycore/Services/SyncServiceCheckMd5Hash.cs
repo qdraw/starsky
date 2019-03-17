@@ -27,7 +27,8 @@ namespace starskycore.Services
                 {
                     // Check if Hash is changed
                     // how should i unittest this?
-                    var localHash = FileHash.GetHashCode(_appSettings.DatabasePathToFilePath(itemLocal));
+	                var localHash = new FileHash(_iStorage).GetHashCode(itemLocal);
+
                     if(_appSettings.Verbose) Console.WriteLine("localHash: " + localHash);
 
                     if (localHash != dbItem.FileHash)

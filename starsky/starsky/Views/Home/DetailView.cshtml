@@ -21,14 +21,18 @@
 			&nbsp;
 			@if (@Model.RelativeObjects.PrevFilePath != null)
 			{
-				var urlPath = @Url.Action("Index", "Home", new { f = @Model.RelativeObjects.PrevFilePath });
-				urlPath = urlPath.Replace("%2F", "/");
+				var args = new Dictionary<string, string> {{"f", @Model.RelativeObjects.PrevFilePath}};
+				args = args.Concat(@Model.RelativeObjects.Args).ToDictionary(kv => kv.Key, kv => kv.Value);
+				var urlPath = @Url.Action("Index", "Home",args);
+				urlPath = HttpUtility.UrlDecode(urlPath);
 				<a class="prev" href="@urlPath">Vorige</a>
 			}
 			@if (@Model.RelativeObjects.NextFilePath != null)
 			{
-				var urlPath = @Url.Action("Index", "Home", new { f = @Model.RelativeObjects.NextFilePath });
-				urlPath = urlPath.Replace("%2F", "/");
+				var args = new Dictionary<string, string> {{"f", @Model.RelativeObjects.NextFilePath}};
+				args = args.Concat(@Model.RelativeObjects.Args).ToDictionary(kv => kv.Key, kv => kv.Value);
+				var urlPath = @Url.Action("Index", "Home", args);
+				urlPath = HttpUtility.UrlDecode(urlPath);
 				<a class="next" href="@urlPath">Volgende</a>
 			}
 		</h4>
@@ -178,8 +182,10 @@
         &nbsp;
         @if ( @Model.RelativeObjects.PrevFilePath != null )
         {
-            var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.PrevFilePath});
-            urlPath = urlPath.Replace("%2F", "/");
+	        var args = new Dictionary<string, string> {{"f", @Model.RelativeObjects.PrevFilePath}};
+	        args = args.Concat(@Model.RelativeObjects.Args).ToDictionary(kv => kv.Key, kv => kv.Value);
+            var urlPath = @Url.Action("Index", "Home", args);
+	        urlPath = HttpUtility.UrlDecode(urlPath);
             <a class="prev" href="@urlPath">Vorige</a>
         }
 
@@ -208,10 +214,11 @@
         }
         @if ( @Model.RelativeObjects.NextFilePath != null )
         {
-            var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.NextFilePath});
-            urlPath = urlPath.Replace("%2F", "/");
+	        var args = new Dictionary<string, string> {{"f", @Model.RelativeObjects.NextFilePath}};
+	        args = args.Concat(@Model.RelativeObjects.Args).ToDictionary(kv => kv.Key, kv => kv.Value);
+	        var urlPath = @Url.Action("Index", "Home", args);
+	        urlPath = HttpUtility.UrlDecode(urlPath);
             <a class="next" href="@urlPath">Volgende</a>
-
         }
     </h4>
 

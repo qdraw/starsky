@@ -52,7 +52,7 @@ namespace starskytest.Controllers
 
 			// Inject Fake Exiftool; dependency injection
 			var services = new ServiceCollection();
-			services.AddSingleton<IExiftool, FakeExiftool>();
+			services.AddSingleton<IExiftool, FakeExifTool>();
 
 			// Fake the readmeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
@@ -96,8 +96,8 @@ namespace starskytest.Controllers
 
 		private FileIndexItem InsertSearchData(bool delete = false)
 		{
-
-			var fileHashCode = FileHash.GetHashCode(_createAnImage.FullFilePath);
+			var iStorage = new StorageSubPathFilesystem(_appSettings);
+			var fileHashCode = new FileHash(iStorage).GetHashCode(_createAnImage.DbPath);
 			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)) )
 			{
 				var isDelete = string.Empty;
@@ -117,7 +117,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task ExportController_CreateZipNotFound()
 		{
-			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = await controller.CreateZip("/fail", true, false) as NotFoundObjectResult;
@@ -140,7 +140,7 @@ namespace starskytest.Controllers
 			// the test
 			var createAnImage = InsertSearchData(true);
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
-			var controller = new ExportController(_query, _exiftool, _appSettings, backgroundQueue);
+			var controller = new ExportController(_query, _exiftool, _appSettings, backgroundQueue,new StorageSubPathFilesystem(_appSettings));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			// to avoid skip of adding zip
@@ -213,7 +213,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportControllerTest__ThumbTrue_CreateListToExport()
 		{
-			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings));
 
 			var item = new FileIndexItem
 			{
@@ -237,7 +237,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportControllerTest__ThumbFalse_CreateListToExport()
 		{
-			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings));
 
 			var createAnImageNoExif = new CreateAnImageNoExif();
 
@@ -266,7 +266,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportControllerTest__ThumbFalse__FilePathToFileName()
 		{
-			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings));
 			var filePaths = new List<string>
 			{
 				Path.Combine("test","file.jpg")
@@ -278,7 +278,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportControllerTest__ThumbTrue__FilePathToFileName()
 		{
-			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings));
 			var filePaths = new List<string>
 			{
 				Path.Combine("test","thumb.jpg")
@@ -322,7 +322,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task ExportController_ZipNotFound()
 		{
-			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
+			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = await controller.Zip("____fail", true) as NotFoundObjectResult;

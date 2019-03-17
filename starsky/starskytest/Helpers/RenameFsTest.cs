@@ -57,11 +57,13 @@ namespace starskytest.Helpers
 				});
 			}
 			
-			var readMeta = new ReadMeta(_appSettings,memoryCache);
+			var iStorage = new StorageSubPathFilesystem(_appSettings);
+
+			var readMeta = new ReadMeta(iStorage,_appSettings,memoryCache);
 			
 			_iStorageSubPath = new StorageSubPathFilesystem(_appSettings);
 
-			_sync = new SyncService(context,_query,_appSettings,readMeta,_iStorageSubPath);
+			_sync = new SyncService(_query,_appSettings,readMeta,_iStorageSubPath);
 			
 
 		}

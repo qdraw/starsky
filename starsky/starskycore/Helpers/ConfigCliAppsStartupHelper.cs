@@ -77,10 +77,12 @@ namespace starskycore.Helpers
             var options = builderDb.Options;
             var context = new ApplicationDbContext(options);
             var query = new Query(context);
+
+	        var iStorage = new StorageSubPathFilesystem(appSettings);
             
-            _readmeta = new ReadMeta(appSettings);
+            _readmeta = new ReadMeta(iStorage,appSettings);
             
-            _isync = new SyncService(context, query, appSettings,_readmeta, new StorageSubPathFilesystem(appSettings));
+            _isync = new SyncService(query, appSettings,_readmeta, iStorage);
             
             // TOC:
             //   _context = context
@@ -88,7 +90,7 @@ namespace starskycore.Helpers
             //   _exiftool = exiftool
             //   _appSettings = appSettings
             //   _readmeta = readmeta
-            _import = new ImportService(context, _isync, _exiftool, appSettings, _readmeta,null);
+            _import = new ImportService(context, _isync, _exiftool, appSettings, _readmeta,null,iStorage);
 
 	        _thumbnailCleaner = new ThumbnailCleaner(query, appSettings);
 	        

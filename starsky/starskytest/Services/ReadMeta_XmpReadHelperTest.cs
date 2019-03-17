@@ -5,6 +5,7 @@ using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
 namespace starskytest.Services
 {
@@ -46,7 +47,8 @@ namespace starskytest.Services
         [TestMethod]
         public void XmpReadHelperTest_GetData_usingStringExample()
         {
-            var data = new ReadMeta(new AppSettings()).GetDataFromString(Input);
+	        var iStorage = new FakeIStorage();
+            var data = new ReadMeta(iStorage,new AppSettings()).GetDataFromString(Input);
             
             Assert.AreEqual(52.3451333333,data.Latitude,0.001);
             Assert.AreEqual(5.930,data.Longitude,0.001);
@@ -84,7 +86,10 @@ namespace starskytest.Services
             var appsettings = new AppSettings();
 
             var databaseItem = new FileIndexItem();
-            var readXmp = new ReadMeta(appsettings).XmpGetSidecarFile(databaseItem, fakeRawPath);
+
+	        var iStorage = new StorageSubPathFilesystem(appsettings);
+
+            var readXmp = new ReadMeta(iStorage,appsettings).XmpGetSidecarFile(databaseItem, fakeRawPath);
             Assert.AreEqual("The object name",readXmp.Title);
             // clean afterwards
             FilesHelper.DeleteFile(xmpPath);

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -135,6 +134,35 @@ namespace starskycore.Services
         }
 
 	    /// <summary>
+	    /// Do a query with multiple tags, then add it to the model
+	    /// </summary>
+	    /// <param name="sourceList">where to query in</param>
+	    /// <param name="model">where to add</param>
+	    /// <returns>model of type SearchViewModel</returns>
+	    private SearchViewModel WideSearchTagsFast(IQueryable<FileIndexItem> sourceList,
+		    SearchViewModel model)
+	    {
+		    var tagsKeywords = new List<string>();
+		    for ( int i = 0; i < model.SearchIn.Count; i++ )
+		    {
+			    if ( model.SearchIn[i].ToLowerInvariant() == nameof(SearchViewModel.SearchInTypes.tags) )
+			    {
+				    tagsKeywords.Add(model.SearchFor[i].ToLowerInvariant());
+			    }
+		    }
+		    
+		    var predicate = PredicateBuilder.False<FileIndexItem>();
+
+		    foreach (string keyword in tagsKeywords)
+		    {
+			    // Not ToLowerInvariant() due the fact that this is not supported in SQL
+			    predicate = predicate.Or (p => p.Tags.ToLower().Contains (keyword));
+		    }
+		    model.FileIndexItems.AddRange(sourceList.Where(predicate));
+		    return model;
+	    }
+
+	    /// <summary>
 	    /// Main method to query the database, in other function there is sorting needed
 	    /// </summary>
 	    /// <param name="sourceList">IQueryable database</param>
@@ -143,6 +171,10 @@ namespace starskycore.Services
 	    private SearchViewModel WideSearch(IQueryable<FileIndexItem> sourceList,
 		    SearchViewModel model)
 	    {
+
+		    // Search for tags in 1 query
+		    model = WideSearchTagsFast(sourceList, model);
+		    
 		    // .AsNoTracking() => never change data to update
 		    for ( var i = 0; i < model.SearchIn.Count; i++ )
 		    {
@@ -150,7 +182,7 @@ namespace starskycore.Services
 				    Enum.Parse(typeof(SearchViewModel.SearchInTypes), model.SearchIn[i].ToLowerInvariant());
 
 			    model.SearchFor[i] = model.SearchFor[i].ToLowerInvariant();
-
+			    
 			    switch ( searchInType )
 			    {
 				    case SearchViewModel.SearchInTypes.imageformat:
@@ -230,24 +262,17 @@ namespace starskycore.Services
 					    break;
 
 				    case SearchViewModel.SearchInTypes.datetime:
-
 					    WideSearchDateTimeGet(sourceList,model,i);
-
 					    break;
-				    default:
-					    
-					    // in old version > loop with: input.ToLowerInvariant().Split(" ".ToCharArray()).ToList()
-					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.Tags.ToLowerInvariant().Contains(model.SearchFor[i])
-					    ));
-
+				    case SearchViewModel.SearchInTypes.tags:
+						// don't do anything with tags here:  WideSearchTagsFast
 					    break;
 			    }
 		    }
 
 		    return model;
 	    }
-
+	    
 	    /// <summary>
 	    /// Query for DateTime: in between values, entire days, from, type of queries
 	    /// </summary>
@@ -290,6 +315,7 @@ namespace starskycore.Services
 			{
 				var beforeDateTime =
 					model.ParseDateTime(model.SearchFor[beforeIndexSearchForOptions]);
+				
 				var afterDateTime =
 					model.ParseDateTime(model.SearchFor[afterIndexSearchForOptions]);
 

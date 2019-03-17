@@ -13,11 +13,13 @@ namespace starskycore.Services
     {
         private readonly AppSettings _appSettings;
         private readonly IMemoryCache _cache;
+	    private readonly IStorage _iStorage;
 
-        public ReadMeta(AppSettings appSettings = null, IMemoryCache memoryCache = null)
+	    public ReadMeta(IStorage iStorage, AppSettings appSettings = null, IMemoryCache memoryCache = null)
         {
             _appSettings = appSettings;
             _cache = memoryCache;
+	        _iStorage = iStorage;
         }
 
         private FileIndexItem ReadExifAndXmpFromFileDirect(string singleFilePath, 
@@ -44,7 +46,7 @@ namespace starskycore.Services
                 returnItem.IsDirectory = false;
                 returnItem.Id = -1;
                 returnItem.Status = FileIndexItem.ExifStatus.Ok;
-                returnItem.FileHash = FileHash.GetHashCode(fullFilePath);
+                returnItem.FileHash = new FileHash(_iStorage).GetHashCode(subPath);
                 returnItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault();
                 fileIndexList.Add(returnItem);
             }

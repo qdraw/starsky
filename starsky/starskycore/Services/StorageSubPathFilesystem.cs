@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -139,9 +140,11 @@ namespace starskycore.Services
 			// convert back to subpath style
 			return _appSettings.RenameListItemsToDbStyle(folders.ToList());
 		}
-		
-		
-		
 
+		public Stream Stream(string path, int maxRead = int.MaxValue)
+		{
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+			return  new FileStream(fullFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, maxRead, true);
+		}
 	}
 }

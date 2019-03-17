@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using starskycore.Helpers;
 using starskycore.Models;
 
@@ -173,7 +175,8 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// Search Options eg &gt;, &lt;, =. (greater than sign, less than sign, equal sign)  to know which field use the same indexer in _searchIn or _searchFor
 	    /// </summary>
-        public List<SearchForOptionType> SearchForOptions
+	    [JsonConverter(typeof(StringEnumConverter))]
+	    public List<SearchForOptionType> SearchForOptions
         {  
             get { return _searchForOptions; }
         }
@@ -383,7 +386,7 @@ namespace starskycore.ViewModels
 			    
 				// Detecting Not Queries
 			    if ( ( regexInUrl.Index - 1 >= 0 && defaultQuery[regexInUrl.Index - 1] == '-' ) 
-			         || ( defaultQuery[regexInUrl.Index + 2] == '-' ) )
+			         || ( regexInUrl.Index + 2 <= regexInUrl.Length  && defaultQuery[regexInUrl.Index + 2] == '-' ) )
 				{
 					SetAddSearchForOptions("-");
 					continue;
@@ -391,6 +394,16 @@ namespace starskycore.ViewModels
 			    
 			    SetAddSearchForOptions("=");
 			    
+		    }
+
+		    // fallback situation
+		    // search on for example: '%'
+		    if ( SearchFor == null ) 
+		    {
+			    SetAddSearchFor(defaultQuery);
+			    SetAddSearchInStringType("tags");
+			    SetAddSearchForOptions("=");
+			    return string.Empty;
 		    }
 
 		    // Regex: for ||&& without escape chars 

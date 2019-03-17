@@ -46,7 +46,7 @@ namespace starskycore.Services
             foreach (var singleFolderFullPath in subFoldersFullPathList)
             {
                 string[] filesInDirectoryFullPath = FilesHelper.GetFilesInDirectory(singleFolderFullPath);
-                var localFileListFileHash = FileHash.GetHashCode(filesInDirectoryFullPath);
+                var localFileListFileHash = FileHashStatic.GetHashCode(filesInDirectoryFullPath);
 
                 for (int i = 0; i < filesInDirectoryFullPath.Length; i++)
                 {

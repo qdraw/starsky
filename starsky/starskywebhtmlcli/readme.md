@@ -41,47 +41,59 @@ Starksy WebHtml Cli ~ Help:
 ### Configuration
 
 #### ContentType
+
 There are options to do predefined tasks
 - `html`, uses razor to generate html files
 - `jpeg`, resizes images to smaller files
 - `moveSourceFiles`, move action to child folder
 
 #### SourceMaxWidth
+
 The width in pixels of the output image. This is used only for ContentType `jpeg`.
 
 #### OverlayMaxWidth
+
 The width of the overlay image (you can add a logo as overlay) over the output image.
 This is used only for ContentType `jpeg`.
 
 #### Path
+
 When using ContentType `html` this is the filename of the rendered html file.
 With ContentType `jpeg`, this is the 'full file path' of the image used in `OverlayMaxWidth`
 
+
 __Replacer in Path__
+
 There is option to replace the `{AssemblyDirectory}` value with the path of the starsky assemblies.
 This is __not__ using `AppSettings.BaseDirectoryProject` but the assemblies inside StarskyWebHtmlCli
 
-
 #### Template
+
 Used with ContentType `html` to select the Razor template file
 
 #### 'Pre pend'
+
 In ContentType `html` this is used to add text before the urls used in the html output.
 
+
 __Replacer in 'Pre pend'__
+
 There is option to replace the `{Name}` value with the slug-name of the item. A slug name is the name in lowercase and the spaces are replaced with dashes.
 
 
 #### Append
+
 In ContentType `jpeg` this used to add text after the current filename
 
 #### Folder
+
 When using ContentType `jpeg` there are child folders created with this name.
 In the example there are 'sub folders' created with names 1000 and 500.
 In ContentType `moveSourceFiles` this is the folder to move the file to.
 
 
 #### Example configuration
+
 ```json
 {
     "app" :{

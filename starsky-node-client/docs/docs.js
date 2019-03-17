@@ -26,6 +26,7 @@ var prefixPath = "../../";
 
 var filePathList = [
 	"readme.md",
+	"history.md",
 	"starsky-node-client/readme.md",
 	"inotify-settings/readme.md",
 	"starsky/readme.md",

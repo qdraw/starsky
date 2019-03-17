@@ -94,14 +94,14 @@ namespace starskycore.Services
                     item.Orientation = orientation;
                 }
 
-                ///    [IPTC] City = Diepenveen
+                //    [IPTC] City = Diepenveen
                 var locationCity = GetLocationPlaces(exifItem, "City");
                 if(locationCity != null) // null = is not the right tag or empty tag
                 {
                     item.LocationCity = locationCity;
                 }
                 
-                ///    [IPTC] Province/State = Overijssel
+                //    [IPTC] Province/State = Overijssel
                 var locationState = GetLocationPlaces(exifItem, "Province/State");
                 if(locationState != null) // null = is not the right tag or empty tag
                 {

@@ -1,3 +1,18 @@
+[< readme](readme.md)
+
+
+# Features planned (in random order)
+- []   Front-end for Replace API in folder view
+- []   Realtime Files API
+- []   Performance upgrade xmp/tiff files
+- []   Front-end copy ctrl+shift+c visual feedback
+- []   Front-end for Rename files
+- []   mp4/h.264 video support
+- []   config scheme overwrite feature for command line e.g. --scheme:/yyyy
+- []   time zone shifting
+- []   Pagination on folders - Performance update for example 800 files
+- []   Search: support for complex and/or operators `(this || or) && that`
+
 # version 0.1.5 - tbd
 - add partial support for || (or) queries using search
 	-	the type datetime e.g. `-datetime=1 || -datetime=2` is not supported yet
@@ -6,8 +21,14 @@
 - performance improvements to importer
 - .NET Core to 2.1.8 (update to dotnet-sdk-2.2.104)
 - input args changed: --recursive (typo)
-- frontend readonly bugfix
-- frontend temp disabled alt+next loop due setinterval overflow
+- frontend readonly bug fix
+- frontend temp disabled alt+next loop due set-interval overflow
+- Search: performance update for searching multiple tags
+- Replace API introduced, search and replace in strings
+- Done some IStorage refactorings, but not complete yet
+- Next/Prev links are now served by backend code to avoid when javascript is not loaded, your selection is reset
+- Add Collections to DetailView model
+- Add more Update/Replace Tests
 
 # version 0.1.4 - 2019-03-01
 - fix issue where login fails results in a error 500

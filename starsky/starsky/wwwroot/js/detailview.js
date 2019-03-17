@@ -631,11 +631,12 @@ function queryRotate(queryItem) {
     var url = updateApiBase + "&rotateClock=" + queryItem + "&collections=" + isCollections;
     loadJSON(url,
         function (data) {
+            showPreloader();
             setTimeout(function(){
                 hideUnloadWarning();
                 hidePreloader();
                 location.reload();
-            }, 1000);
+            }, 2500);
         },
         function (xhr) { 
             console.error(xhr);

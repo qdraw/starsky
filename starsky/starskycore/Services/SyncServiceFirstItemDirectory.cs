@@ -30,8 +30,10 @@ namespace starskycore.Services
                     // Check if parent folder exist in database
                     var dbParentItem = _query.GetObjectByFilePath(dbItem.ParentDirectory);
                     if (dbParentItem == null) continue;
+	                
                     // get hash from file
-                    var singleFileHash = FileHash.GetHashCode(filesInDirectoryFullPath[0]);
+	                var singleFileHash =  new FileHash(_iStorage).GetHashCode(subPathSingleItem);
+	                
                     // compare both
                     if (dbParentItem.FileHash != singleFileHash)
                     {

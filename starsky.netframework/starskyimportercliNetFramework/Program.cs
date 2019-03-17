@@ -37,7 +37,7 @@ namespace starskyimportercliNetFramework
 			{
 				DeleteAfter = new ArgsHelper(appSettings).GetMove(args),
 				AgeFileFilterDisabled = new ArgsHelper(appSettings).GetAll(args),
-				RecursiveDirectory = new ArgsHelper().NeedRecruisive(args),
+				RecursiveDirectory = new ArgsHelper().NeedRecursive(args),
 				IndexMode = new ArgsHelper().GetIndexMode(args)
 			};
 			

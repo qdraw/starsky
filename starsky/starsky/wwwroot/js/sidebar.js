@@ -124,30 +124,6 @@ if (document.querySelectorAll(".sidebar").length === 1) {
 
 
 
-
-// Add select part to next prev url
-
-if (document.querySelectorAll(".nextprev").length >= 1) {
-
-    for (var i = 0; i < document.querySelectorAll(".nextprev").length; i++) {
-
-        var object = document.querySelectorAll(".nextprev")[i].children;
-        var searchPosition = window.location.search.indexOf("colorclass") - 1;
-        addcolorclassPart = window.location.search.substr(searchPosition, window.location.search.length);
-
-        for (var j = 0; j < object.length; j++) {
-
-            // var test = object[j].href.substr(0,object[j].href.indexOf("colorclass"));
-            // console.log(test)
-
-            if (window.location.search.indexOf("colorclass") >= 0) {
-                object[j].href += addcolorclassPart;
-            }
-
-        }
-    }
-}
-
 function updatePrevNextHash() {
     for (var i = 0; i < document.querySelectorAll(".nextprev").length; i++) {
         var object = document.querySelectorAll(".nextprev")[i].children;
