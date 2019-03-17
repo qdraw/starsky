@@ -95,5 +95,14 @@ namespace starskytest.Services
 			_query.RemoveItem(item0);
 
 		}
+
+		[TestMethod]
+		public void ReplaceServiceTest_replaceSearchNull()
+		{
+			// When you search for nothing, there is nothing to replace 
+			var output = _replace.Replace("/nothing.jpg", nameof(FileIndexItem.Tags), null, "test", false);
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,output[0].Status);
+
+		}
 	}
 }

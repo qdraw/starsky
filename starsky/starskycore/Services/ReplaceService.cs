@@ -38,8 +38,10 @@ namespace starskycore.Services
 		/// <param name="collections"></param>
 		public List<FileIndexItem> Replace(string f, string fieldName, string search, string replace, bool collections)
 		{
+			// when you search for nothing, your fast done
+			if ( string.IsNullOrEmpty(search) ) return new List<FileIndexItem>{new FileIndexItem{Status = FileIndexItem.ExifStatus.OperationNotSupported}};
+
 			// escaping null values
-			if ( string.IsNullOrEmpty(search) ) search = string.Empty;
 			if ( string.IsNullOrEmpty(replace) ) replace = string.Empty;
 
 			if ( ! FileIndexCompareHelper.CheckIfPropertyExist(fieldName) ) return new List<FileIndexItem>{new FileIndexItem{Status = FileIndexItem.ExifStatus.OperationNotSupported}};
