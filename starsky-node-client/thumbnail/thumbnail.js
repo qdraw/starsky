@@ -27,19 +27,21 @@ function parseArgs() {
 	if (args.length >= 1) {
 		var parsed = parseInt(args[0])
 		if (isNaN(parsed)) {
-			return 0
+			return null;
 		}
 		else {
-			return parsed
+			return parsed;
 		}
 	}
 	return 1
 }
 
 subPathRelativeValue = parseArgs();
-console.log("subPathRelativeValue > " + subPathRelativeValue);
 
-getSubPathRelative(subPathRelativeValue);
+if (subPathRelativeValue != null) {
+	getSubPathRelative(subPathRelativeValue);
+	console.log("subPathRelativeValue > " + subPathRelativeValue);
+}
 
 
 function getSubPathRelative(subpathRelativeValue) {
