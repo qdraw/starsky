@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +50,16 @@ namespace starskytest.Services
 //		public void Test()
 //		{
 //		}
-		
+
+		[TestMethod]
+		[ExpectedException(typeof(MissingFieldException))]
+		public void UpdateServiceTest_CompareAllLabelsAndRotation_NullMissingFieldException()
+		{
+			new UpdateService(null, null, null, null, null).CompareAllLabelsAndRotation(null, null,
+				null, false, 0);
+			// ==>> MissingFieldException
+		}
+
 		[TestMethod]
 		public void UpdateServiceTest_CompareAllLabelsAndRotation_AppendIsFalse()
 		{
