@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starskycore.Data;
 using starskycore.Interfaces;
+using starskycore.Models;
 using starskycore.Services;
 using starskycore.ViewModels;
 using Query = starskycore.Services.Query;
@@ -48,10 +49,36 @@ namespace starskytest.Controllers
             var controller = new SearchController(_search);
             var jsonResult = controller.Index("98765456789987",0,true) as JsonResult;
             var searchViewResult = jsonResult.Value as SearchViewModel;
+	        
             Assert.AreEqual(0,searchViewResult.FileIndexItems.Count());
+	        Assert.AreEqual("Search",searchViewResult.PageType);
+
         }
-        
-        [TestMethod]
+
+	    [TestMethod]
+	    public void SearchControllerTest_Index_OneKeyword()
+	    {
+		    var item0 = _query.AddItem(new FileIndexItem
+		    {
+				FileName = "Test.jpg",
+			    ParentDirectory = "/",
+			    Tags = "test"
+		    });
+		    var controller = new SearchController(_search);
+		    var jsonResult = controller.Index("test",0,true) as JsonResult;
+		    var searchViewResult = jsonResult.Value as SearchViewModel;
+		    
+		    // some values
+		    Assert.AreEqual(1,searchViewResult.SearchCount);
+		    Assert.AreEqual(1,searchViewResult.FileIndexItems.Count);
+		    Assert.AreEqual(SearchViewModel.SearchForOptionType.Equal,searchViewResult.SearchForOptions[0]);
+		    Assert.AreEqual("test",searchViewResult.SearchQuery);
+		    Assert.AreEqual(nameof(FileIndexItem.Tags),searchViewResult.SearchIn[0]);
+
+		    _query.RemoveItem(item0);
+	    }
+
+	    [TestMethod]
         public void SearchControllerTest_TrashZeroItems()
         {
             var controller = new SearchController(_search);
