@@ -386,7 +386,7 @@ namespace starskycore.ViewModels
 			    
 				// Detecting Not Queries
 			    if ( ( regexInUrl.Index - 1 >= 0 && defaultQuery[regexInUrl.Index - 1] == '-' ) 
-			         || ( defaultQuery[regexInUrl.Index + 2] == '-' ) )
+			         || ( regexInUrl.Index + 2 <= regexInUrl.Length  && defaultQuery[regexInUrl.Index + 2] == '-' ) )
 				{
 					SetAddSearchForOptions("-");
 					continue;

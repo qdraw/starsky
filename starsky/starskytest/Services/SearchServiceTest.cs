@@ -658,8 +658,19 @@ namespace starskytest.Services
 		    Assert.AreEqual(false,searchOperatorOptions[0]);
 		    Assert.AreEqual(false,searchOperatorOptions[1]);
 	    }
-	    
-	    
+
+	    [TestMethod]
+	    public void
+		    SearchViewModel_SearchOperatorOptions_ShortWord()
+	    {
+		    // of -> wrong detected due searching for not queries
+		    var modelSearchQuery = "query of";
+		    var searchViewModel = new SearchViewModel();
+		    searchViewModel.ParseDefaultOption(modelSearchQuery);
+		    Assert.AreEqual("query", searchViewModel.SearchFor[0]);
+		    Assert.AreEqual("of", searchViewModel.SearchFor[1]);
+	    }
+
 	    [TestMethod]
 	    public void SearchViewModel_ParseDateTimeLowInt()
 	    {
