@@ -21,7 +21,7 @@
 - performance improvements to importer
 - .NET Core to 2.1.8 (update to dotnet-sdk-2.2.104)
 - input args changed: --recursive (typo)
-- frontend readonly bugfix
+- frontend readonly bug fix
 - frontend temp disabled alt+next loop due set-interval overflow
 - Search: performance update for searching multiple tags
 - Replace API introduced, search and replace in strings
