@@ -133,6 +133,12 @@ namespace starskycore.Services
             return model;
         }
 
+	    /// <summary>
+	    /// Do a query with multiple tags, then add it to the model
+	    /// </summary>
+	    /// <param name="sourceList">where to query in</param>
+	    /// <param name="model">where to add</param>
+	    /// <returns>model of type SearchViewModel</returns>
 	    private SearchViewModel WideSearchTagsFast(IQueryable<FileIndexItem> sourceList,
 		    SearchViewModel model)
 	    {
