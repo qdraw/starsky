@@ -66,13 +66,15 @@
 				
 				if ( Model.FileIndexItem.LastEdited.Year >= 2 )
 				{
-					var timeSpan = (DateTime.Now - @Model.FileIndexItem.LastEdited);
+					var timeSpan = (DateTime.UtcNow - @Model.FileIndexItem.LastEdited);
+					
+					var minutes = ( int ) timeSpan.TotalMinutes;
 					var hours = ( int ) timeSpan.TotalHours;
 					var days = ( int ) timeSpan.TotalDays;
 
-					if (hours == 1 )
+					if (hours <= 1 )
 					{
-						<p>Bewerkt: <em>&lt; 1 uur geleden</em></p>
+						<p>Bewerkt: <em>@minutes minuten geleden</em></p>
 					}
 					else if (hours <= 100 )
 					{
