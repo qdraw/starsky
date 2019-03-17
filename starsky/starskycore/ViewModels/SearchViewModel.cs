@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Primitives;
@@ -144,6 +145,8 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// The search for types
 	    /// </summary>
+	    [DataContract]
+	    [JsonConverter(typeof(StringEnumConverter))]
 	    public enum SearchForOptionType
 	    {
 		    /// <summary>
@@ -151,16 +154,19 @@ namespace starskycore.ViewModels
 		    /// </summary>
 		    [Display(Name = ">")]
 			GreaterThen,
+		    
 		    /// <summary>
 		    /// &lt;
 		    /// </summary>
 		    [Display(Name = "<")]
 			LessThen,
+		    
 		    /// <summary>
 		    /// =
 		    /// </summary>
 		    [Display(Name = "=")]
 		    Equal,
+		    
 		    /// <summary>
 		    /// -
 		    /// </summary>
@@ -176,7 +182,6 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// Search Options eg &gt;, &lt;, =. (greater than sign, less than sign, equal sign)  to know which field use the same indexer in _searchIn or _searchFor
 	    /// </summary>
-	    [JsonConverter(typeof(StringEnumConverter))]
 	    public List<SearchForOptionType> SearchForOptions
         {  
             get { return _searchForOptions; }
