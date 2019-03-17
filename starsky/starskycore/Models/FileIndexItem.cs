@@ -20,6 +20,7 @@ namespace starskycore.Models
 	    /// </summary>
 	    public FileIndexItem()
 	    {
+		    LastEdited = DateTime.UtcNow;
 	    }
 
 	    /// <summary>
@@ -30,6 +31,7 @@ namespace starskycore.Models
 	    {
 		    SetFilePath(subPath);
 		    IsDirectory = false;
+		    LastEdited = DateTime.UtcNow;
 	    }
 	    
 		/// <summary>
@@ -299,6 +301,16 @@ namespace starskycore.Models
 		/// The add to database DateTime value
 		/// </value>
 		public DateTime AddToDatabase { get; set; }
+	    
+	    
+	    /// <summary>
+	    /// Datetime of the last change to this object
+	    /// </summary>
+	    /// <value>
+	    /// The last edited DateTime value
+	    /// </value>
+	    public DateTime LastEdited { get; set; }
+
 
 		/// <summary>
 		/// Latitude as decimal degrees using WGS84 (stored as double)
