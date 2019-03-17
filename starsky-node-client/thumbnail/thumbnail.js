@@ -42,6 +42,19 @@ if (subPathRelativeValue != null) {
 	getSubPathRelative(subPathRelativeValue);
 	console.log("subPathRelativeValue > " + subPathRelativeValue);
 }
+else {
+	getSearchStart(process.argv.slice(2)[0])
+}
+
+function getSearchStart(searchquery) {
+	var indexRequestOptions = requestOptions;
+	indexRequestOptions.uri = base_url + "search";
+	indexRequestOptions.qs = {
+		t: searchquery,
+		json: 'true'
+	};
+	getIndex(indexRequestOptions);
+}
 
 
 function getSubPathRelative(subpathRelativeValue) {
@@ -64,28 +77,40 @@ function getSubPathRelative(subpathRelativeValue) {
 	    });
 }
 
-function getIndexStart(subpath) {
+function getRights() {
 	ensureExistsFolder(getSourceTempFolder(), 0744, function(err) {
-    	if (err) console.log(err);// handle folder creation error
+		if (err) console.log(err);// handle folder creation error
 	});
 	ensureExistsFolder(getTempFolder(), 0744, function(err) {
-    	if (err) console.log(err);// handle folder creation error
+		if (err) console.log(err);// handle folder creation error
 	});
+}
 
-
+function getIndexStart(subpath) {
 	var indexRequestOptions = requestOptions;
 	indexRequestOptions.uri = base_url;
 	indexRequestOptions.qs = {
 		f: subpath,
 		json: 'true'
 	};
+	getIndexStart(indexRequestOptions);
+}
+
+function getIndex(indexRequestOptions) {
+
+	getRights();
+
+	console.log(indexRequestOptions.uri);
+	console.log(requestOptions.qs);
 
 	request(requestOptions)
 	    .then(function (items) {
 			if(items.body.fileIndexItems === undefined) return;
+			console.log(items);
 
 			var fileHashList = [];
 			for (var i in items.body.fileIndexItems) {
+
 				var item = items.body.fileIndexItems[i];
 				if(item === undefined ||  item === null ||  item.fileHash.length !== 26) continue;
 				if(item.imageFormat !== "jpg") continue;
