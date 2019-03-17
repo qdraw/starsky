@@ -51,6 +51,8 @@ namespace starskytest.Services
 			}); 
 			
 			var output = _replace.Replace("/test2.jpg",nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 			Assert.AreEqual("test1, test",output[0].Tags);
 			_query.RemoveItem(item1);
 		}
@@ -73,6 +75,8 @@ namespace starskytest.Services
 			}); 
 			var output = _replace.Replace("/test2.jpg;/test.jpg",nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
 			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
+
 			Assert.AreEqual(string.Empty,output[1].Tags);
 
 			_query.RemoveItem(item0);
@@ -90,7 +94,6 @@ namespace starskytest.Services
 			});
 			
 			var output = _replace.Replace("/test2.jpg;/test.jpg",nameof(FileIndexItem.Tags),"!delete!",null,false);
-
 			
 			_query.RemoveItem(item0);
 
@@ -103,6 +106,25 @@ namespace starskytest.Services
 			var output = _replace.Replace("/nothing.jpg", nameof(FileIndexItem.Tags), null, "test", false);
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,output[0].Status);
 
+		}
+
+
+		[TestMethod]
+		public void ReplaceServiceTest_replace_LowerCaseTagName()
+		{
+			var item1 = _query.AddItem(new FileIndexItem
+			{
+				FileName = "test2.jpg",
+				ParentDirectory = "/",
+				Tags = "test1, !delete!, test"
+			}); 
+			
+			var output = _replace.Replace("/test2.jpg",nameof(FileIndexItem.Tags).ToLowerInvariant(),"!delete!",string.Empty,false);
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
+			Assert.AreEqual("test1, test",output[0].Tags);
+			
+			_query.RemoveItem(item1);
 		}
 	}
 }

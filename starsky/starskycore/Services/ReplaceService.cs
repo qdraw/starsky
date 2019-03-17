@@ -93,7 +93,9 @@ namespace starskycore.Services
 				var searchInObject = FileIndexCompareHelper.Get(fileIndexItem, fieldName);
 				var replacedToObject = new object();
 				
-				PropertyInfo property = new FileIndexItem().GetType().GetProperty(fieldName);
+				PropertyInfo[] propertiesA = new FileIndexItem().GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+				PropertyInfo property = propertiesA.FirstOrDefault(p => string.Equals(p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase));
+
 				if ( property.PropertyType == typeof(string) )
 				{
 					var searchIn = ( string ) searchInObject;

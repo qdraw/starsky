@@ -81,11 +81,16 @@ namespace starskycore.Helpers
 		    
 		    // Compare input types, fieldType(object=string) fileIndexType(FileIndexItem.field=string)
 		    // wrong types are ignored by default
+		    
+		    PropertyInfo[] propertiesA = new FileIndexItem().GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+		    var property = propertiesA.FirstOrDefault(p =>
+			    string.Equals(p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase));
+		    
 		    var fieldType = fieldContent.GetType();
-		    var fileIndexType = sourceIndexItem.GetType().GetProperty(fieldName).PropertyType;
+		    var fileIndexType = property.PropertyType;
 		    if ( fileIndexType == fieldType )
 		    {
-			    sourceIndexItem.GetType().GetProperty(fieldName).SetValue(sourceIndexItem, fieldContent, null);
+			    property.SetValue(sourceIndexItem, fieldContent, null);
 		    }
 		    return sourceIndexItem;
 	    }
@@ -99,7 +104,8 @@ namespace starskycore.Helpers
 	    {
 		    if ( CheckIfPropertyExist(fieldName) && sourceIndexItem != null)
 		    {
-			    return sourceIndexItem.GetType().GetProperty(fieldName).GetValue(sourceIndexItem, null);
+			    PropertyInfo[] propertiesA = new FileIndexItem().GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+			    return propertiesA.FirstOrDefault(p => string.Equals(p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase)).GetValue(sourceIndexItem, null);
 		    }
 		    return null;
 	    }
@@ -113,7 +119,7 @@ namespace starskycore.Helpers
 	    public static bool CheckIfPropertyExist(string fieldName)
 	    {
 		    PropertyInfo[] propertiesA = new FileIndexItem().GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-		    return propertiesA.Any(p => p.Name == fieldName);
+		    return propertiesA.Any(p => string.Equals(p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase));
 	    }
 	    
 //	    /// <summary>
