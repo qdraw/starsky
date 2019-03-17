@@ -234,6 +234,34 @@ namespace starskycore.Services
 					    ));
 					    model.SearchFor[i] = boolIsDirectory.ToString();
 					    break;
+				    
+				    case SearchViewModel.SearchInTypes.lastedited:
+
+					    var lastEdited = model.ParseDateTime(model.SearchFor[i]);
+					    model.SearchFor[i] = lastEdited.ToString("dd-MM-yyyy HH:mm:ss",
+						    CultureInfo.InvariantCulture);
+
+					    switch ( model.SearchForOptions[i] )
+					    {
+						    case SearchViewModel.SearchForOptionType.LessThen:
+							    model.FileIndexItems.AddRange(sourceList.Where(
+								    p => p.LastEdited <= lastEdited
+							    ));
+							    break;
+						    case SearchViewModel.SearchForOptionType.GreaterThen:
+							    model.FileIndexItems.AddRange(sourceList.Where(
+								    p => p.LastEdited >= lastEdited
+							    ));
+							    break;
+						    default:
+							    model.FileIndexItems.AddRange(sourceList.Where(
+								    p => p.LastEdited == lastEdited
+							    ));
+							    break;
+					    }
+
+					    break;
+				    
 				    case SearchViewModel.SearchInTypes.addtodatabase:
 
 					    var addtodatabase = model.ParseDateTime(model.SearchFor[i]);
