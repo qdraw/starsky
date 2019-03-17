@@ -13,7 +13,7 @@
 - []   Pagination on folders - Performance update for example 800 files
 - []   Search: support for complex and/or operators `(this || or) && that`
 
-# version 0.1.5 - tbd
+# version 0.1.5 - 2019-03-17
 - add partial support for || (or) queries using search
 	-	the type datetime e.g. `-datetime=1 || -datetime=2` is not supported yet
 - bugfix to large int relative to today
