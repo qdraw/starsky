@@ -23,6 +23,7 @@ namespace starskytest.Services
 		private FakeExifTool _exifTool;
 		private ReadMeta _readMeta;
 		private IStorage _iStorageFake;
+		private readonly Query _queryWithoutCache;
 
 		public UpdateServiceTest()
 		{
@@ -36,6 +37,8 @@ namespace starskytest.Services
 			var options = builder.Options;
 			var dbContext = new ApplicationDbContext(options);
 			_query = new Query(dbContext,_memoryCache);
+			_queryWithoutCache = new Query(dbContext,null);
+
 			_appSettings = new AppSettings();
 			_exifTool = new FakeExifTool();
 			_iStorageFake = new FakeIStorage(new List<string>{},new List<string>{"/test.jpg"});
@@ -112,7 +115,7 @@ namespace starskytest.Services
 		
 		
 		[TestMethod]
-		public void UpdateService_Update_Test1()
+		public void UpdateService_Update_defaultTest()
 		{
 			var item0 = _query.AddItem(new FileIndexItem
 			{
@@ -138,14 +141,24 @@ namespace starskytest.Services
 				new FileIndexItem
 				{
 					Status = FileIndexItem.ExifStatus.Ok,
-					Tags = "initial tags",
+					Tags = "initial tags (from database)",
 					FileName = "test.jpg",
 					ParentDirectory = "/",
 					Description = "keep",
 				}
 			};
 
-			new UpdateService(_query,_exifTool,_appSettings, _readMeta,_iStorageFake).Update(changedFileIndexItemName,fileIndexResultsList.FirstOrDefault(), fileIndexResultsList,false,0);
+			var updateItem = new FileIndexItem
+			{
+				Status = FileIndexItem.ExifStatus.Ok,
+				Tags = "only used when Caching is disabled",
+				FileName = "test.jpg",
+				Description = "noChanges",
+				ParentDirectory = "/"
+			};
+
+			new UpdateService(_query,_exifTool,_appSettings, _readMeta,_iStorageFake)
+				.Update(changedFileIndexItemName,fileIndexResultsList, updateItem, false,false,0);
 
 			// check for item (Referenced)
 			Assert.AreEqual("thisKeywordHasChanged",item0.Tags);
@@ -157,5 +170,116 @@ namespace starskytest.Services
 			_query.RemoveItem(item0);
 		}
 
+		
+		[TestMethod]
+		public void UpdateService_Update_NoChangedFileIndexItemName()
+		{
+			var item0 = _query.AddItem(new FileIndexItem
+			{
+				Status = FileIndexItem.ExifStatus.Ok,
+				Tags = "thisKeywordHasChanged",
+				FileName = "test.jpg",
+				Description = "noChanges",
+				ParentDirectory = "/"
+			});
+
+			var fileIndexResultsList = new List<FileIndexItem>
+			{
+				new FileIndexItem
+				{
+					Status = FileIndexItem.ExifStatus.Ok,
+					Tags = "initial tags (from database)",
+					FileName = "test.jpg",
+					ParentDirectory = "/",
+					Description = "keep",
+				}
+			};
+
+			var updateItem = new FileIndexItem
+			{
+				Status = FileIndexItem.ExifStatus.Ok,
+				Tags = "only used when NoChangedFileIndexItemName",
+				FileName = "test.jpg",
+				Description = "noChanges",
+				ParentDirectory = "/"
+			};
+
+			new UpdateService(_query,_exifTool,_appSettings, _readMeta,_iStorageFake)
+				.Update(null,fileIndexResultsList, updateItem, false,false,0);
+			// Second one is null
+
+			// check for item (Referenced)
+			Assert.AreEqual("only used when NoChangedFileIndexItemName",item0.Tags);
+			// db
+			Assert.AreEqual("only used when NoChangedFileIndexItemName",_query.SingleItem("/test.jpg").FileIndexItem.Tags);
+			
+			Assert.AreEqual("noChanges",_query.SingleItem("/test.jpg").FileIndexItem.Description);
+
+			_query.RemoveItem(item0);
+		}
+
+		
+		
+		
+		[TestMethod]
+		public void UpdateService_Update_DisabledCache()
+		{
+			_query.AddItem(new FileIndexItem
+			{
+				Status = FileIndexItem.ExifStatus.Ok,
+				Tags = "thisKeywordHasChanged",
+				FileName = "test.jpg",
+				Description = "noChanges",
+				ParentDirectory = "/",
+				Id = 100
+			});
+			
+			var changedFileIndexItemName = new Dictionary<string, List<string>>
+			{
+				{ 
+					"/test.jpg", new List<string>
+					{
+						nameof(FileIndexItem.Tags)
+					} 
+				},
+			};
+			
+			var fileIndexResultsList = new List<FileIndexItem>
+			{
+				new FileIndexItem
+				{
+					Status = FileIndexItem.ExifStatus.Ok,
+					Tags = "initial tags",
+					FileName = "test.jpg",
+					ParentDirectory = "/",
+					Description = "keep",
+				}
+			};
+			
+			var updateItem = new FileIndexItem
+			{
+				Status = FileIndexItem.ExifStatus.Ok,
+				Tags = "only used when Caching is disabled",
+				FileName = "test.jpg",
+				Description = "noChanges",
+				ParentDirectory = "/"
+			};
+			
+			var appSettings = new AppSettings{AddMemoryCache = false};
+			var readMetaWithNoCache = new ReadMeta(_iStorageFake,appSettings);
+			new UpdateService(_queryWithoutCache,_exifTool,appSettings, readMetaWithNoCache, _iStorageFake)
+				.Update(changedFileIndexItemName, fileIndexResultsList,updateItem,false,false,0);
+
+			// db
+			Assert.AreEqual("only used when Caching is disabled",_query.SingleItem("/test.jpg").FileIndexItem.Tags);
+			
+			Assert.AreEqual("noChanges",_query.SingleItem("/test.jpg").FileIndexItem.Description);
+
+			// need to reload again due tracking changes
+			_queryWithoutCache.RemoveItem(_queryWithoutCache.SingleItem("/test.jpg").FileIndexItem);
+
+
+		}
+		
 	}
 }

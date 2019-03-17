@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using starskycore.Helpers;
@@ -40,6 +41,9 @@ namespace starskycore.Services
 		public void CompareAllLabelsAndRotation( Dictionary<string, List<string>> changedFileIndexItemName, 
 			DetailView collectionsDetailView, FileIndexItem statusModel, bool append, int rotateClock)
 		{
+			if ( changedFileIndexItemName == null )
+				throw new MissingFieldException(nameof(changedFileIndexItemName));
+			
 			// compare and add changes to collectionsDetailView
 			var comparedNamesList = FileIndexCompareHelper
 				.Compare(collectionsDetailView.FileIndexItem, statusModel, append);
@@ -47,45 +51,56 @@ namespace starskycore.Services
 			// if requested, add changes to rotation
 			collectionsDetailView.FileIndexItem = 
 				RotatonCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
+
+			if ( ! changedFileIndexItemName.ContainsKey(collectionsDetailView.FileIndexItem.FilePath) )
+			{
+				// add to list
+				changedFileIndexItemName.Add(collectionsDetailView.FileIndexItem.FilePath,comparedNamesList);
+				return;
+			}
 			
-			// add to list
-			changedFileIndexItemName.Add(collectionsDetailView.FileIndexItem.FilePath,comparedNamesList);
+			// overwrite list if already exist
+			changedFileIndexItemName[collectionsDetailView.FileIndexItem.FilePath] = comparedNamesList;
+			
 		}
-		
+
 		/// <summary>
 		/// Run Update
 		/// </summary>
 		/// <param name="changedFileIndexItemName">Per file stored  string{fileHash}, List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
-		/// <param name="inputModel">This model is overwritten in the database and ExifTool</param>
 		/// <param name="fileIndexResultsList"></param>
+		/// <param name="inputModel">This model is overwritten in the database and ExifTool</param>
 		/// <param name="collections">enable or disable this feature</param>
+		/// <param name="append">only for disabled cache or changedFileIndexItemName=null</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
 		public void Update(Dictionary<string, List<string>> changedFileIndexItemName, 
-			FileIndexItem inputModel, 
 			List<FileIndexItem> fileIndexResultsList,
-			bool collections, int rotateClock)
+			FileIndexItem inputModel, 
+			bool collections, bool append, int rotateClock)
 		{
 			var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
 			foreach ( var item in collectionsDetailViewList )
 			{
 				// need to recheck because this process is async, so in the meanwhile there are changes possible
 				var detailView = _query.SingleItem(item.FilePath,null,collections,false);
+
+				// to get a value when null	
+				if ( changedFileIndexItemName == null ) changedFileIndexItemName = new Dictionary<string, List<string>>();
+				
+				if ( !changedFileIndexItemName.ContainsKey(detailView.FileIndexItem.FilePath) || !_query.IsCacheEnabled() )
+				{
+					// the inputModel is always DoNotChange, so checking from the field is useless
+					inputModel.Orientation = detailView.FileIndexItem.Orientation;
+					
+					// when you disable cache the field is not filled with the data
+					// Compare Rotation and All other tags
+					CompareAllLabelsAndRotation(changedFileIndexItemName, detailView, inputModel, append, rotateClock);
+				}
 				
 				// used for tracking differences, in the database/ExifTool compare
 				var comparedNamesList = changedFileIndexItemName[detailView.FileIndexItem.FilePath];
+	
 				
-				// the inputModel is always DoNotChange, so checking from the field is useless
-				inputModel.Orientation = detailView.FileIndexItem.Orientation;
-
-				if ( !_query.IsCacheEnabled() )
-				{
-					// when you disable cache the field is not filled with the data
-					detailView.FileIndexItem = FileIndexCompareHelper
-						.SetCompare(detailView.FileIndexItem, inputModel, comparedNamesList);
-						
-					detailView.FileIndexItem = RotatonCompare(rotateClock, detailView.FileIndexItem, comparedNamesList);
-				}
-
 				// Then update it on exifTool,database and rotation
 				UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
 			}

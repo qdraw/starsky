@@ -157,6 +157,7 @@ namespace starsky.Controllers
 					// When it done this will be removed,
 					// to avoid conflicts
 					_readMeta.UpdateReadMetaCache(collectionFullPaths[i],collectionsDetailView.FileIndexItem);
+					
 					// update database cache
 					_query.CacheUpdateItem(new List<FileIndexItem>{collectionsDetailView.FileIndexItem});
 					
@@ -168,7 +169,8 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage).Update(changedFileIndexItemName,inputModel, fileIndexResultsList,collections,rotateClock);
+				new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage)
+					.Update(changedFileIndexItemName,fileIndexResultsList,inputModel,collections, append, rotateClock);
 			});
             
             // When all items are not found
@@ -224,7 +226,7 @@ namespace starsky.Controllers
 					};
 					
 					new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage)
-						.Update(changedFileIndexItemName,inputModel, new List<FileIndexItem>{inputModel}, collections,0);
+						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, collections, false, 0);
 					
 				}
 			});
