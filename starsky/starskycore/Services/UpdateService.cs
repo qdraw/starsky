@@ -180,7 +180,7 @@ namespace starskycore.Services
 			var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
 
 			//	 todo: Change to		_iStorage.ExistFile() BUT this is thumbnail
-			if (FilesHelper.IsFolderOrFile(thumbnailFullPath) == FolderOrFileModel.FolderOrFileTypeList.File)
+			if (FilesHelper.ExistFile(thumbnailFullPath) && ExtensionRolesHelper.GetImageFormat(thumbnailFullPath) == ExtensionRolesHelper.ImageFormat.jpg)
 			{
 				exifUpdateFilePaths.Add(thumbnailFullPath);
 			}
