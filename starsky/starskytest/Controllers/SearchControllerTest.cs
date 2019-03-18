@@ -28,7 +28,7 @@ namespace starskytest.Controllers
             var memoryCache = provider.GetService<IMemoryCache>();
 
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            builder.UseInMemoryDatabase("test");
+            builder.UseInMemoryDatabase(nameof(SearchController));
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
             _query = new Query(context, memoryCache);
