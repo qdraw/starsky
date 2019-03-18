@@ -24,31 +24,30 @@ var requestOptions = {
 
 var currentPageNumber = 0;
 var maxPageNumber = 0;
-var searchQuery = process.argv.slice(2)[0];
+var searchQuery = parseArgs();
+
 
 function parseArgs() {
 	var args = process.argv.slice(2);
 	if (args.length >= 1) {
 		var parsed = parseInt(args[0])
 		if (isNaN(parsed)) {
-			return null;
+			return args[0];
 		}
 		else {
-			return parsed;
+			return "-Datetime>" + (parsed + 1)  + " -Datetime<"+ parsed + " -ImageFormat:jpg";
 		}
 	}
-	return 1
+
+	if (args === "nodate") {
+		return "-Datetime<59999 -ImageFormat:jpg"
+	}
+	
+	var parsedDefault = 1;
+	return "-Datetime>" + (parsedDefault)  + " -ImageFormat:jpg";
 }
 
-subPathRelativeValue = parseArgs();
-
-if (subPathRelativeValue != null) {
-	getSubPathRelative(subPathRelativeValue);
-	console.log("subPathRelativeValue > " + subPathRelativeValue);
-}
-else {
-	getSearchStart(searchQuery,0)
-}
+getSearchStart(searchQuery,0);
 
 function getSearchStart(searchquery,pageNumber) {
 	var indexRequestOptions = requestOptions;
@@ -59,27 +58,6 @@ function getSearchStart(searchquery,pageNumber) {
 		p: pageNumber
 	};
 	getIndex(indexRequestOptions);
-}
-
-
-function getSubPathRelative(subpathRelativeValue) {
-	var subPathRelativeRequestOptions = requestOptions;
-	subPathRelativeRequestOptions.uri = base_url + 'Redirect/SubpathRelative/';
-	subPathRelativeRequestOptions.qs = {
-        value: subpathRelativeValue,
-		json: 'true'
-    };
-
-	request(subPathRelativeRequestOptions)
-	    .then(function (items) {
-			console.log(items.body);
-			getIndexStart(items.body);
-		})
-	    .catch(function (err) {
-			console.log(err);
-			console.log("getSubPathRelative: " + err.response.body);
-	        // API call failed...
-	    });
 }
 
 function getRights() {
@@ -105,12 +83,11 @@ function getIndex(indexRequestOptions) {
 
 	getRights();
 
-	console.log(indexRequestOptions.uri);
-	console.log(requestOptions.qs);
-
 	request(requestOptions)
 	    .then(function (items) {
 			if(items.body.fileIndexItems === undefined) return;
+
+			console.log("searchQuery ~\n" + items.body.searchQuery);
 
 			var fileHashList = [];
 			for (var i in items.body.fileIndexItems) {
@@ -126,7 +103,6 @@ function getIndex(indexRequestOptions) {
 			maxPageNumber = items.body.lastPageNumber;
 
 			if(fileHashList.length >= 1) {
-				console.log("-");
 				downloadSourceTempFile(fileHashList,0);
 			}
 	    })
@@ -174,8 +150,10 @@ function done() {
 		currentPageNumber++;
 		getSearchStart(searchQuery,currentPageNumber);
 	}
+	else {
+		console.log("-- everything is done :)");
+	}
 
-	console.log("-- everything is done :)");
 }
 
 function chain(sourceFileHashesList, i, callback, finalCallback) {
@@ -214,7 +192,7 @@ function next(sourceFileHashesList, count, callback, finalCallback) {
 		callback(sourceFileHashesList, count, callback, finalCallback)
 	}
 	else {
-		console.log("last");
+		console.log("-- done query (" + currentPageNumber + "/" + maxPageNumber +")");
 		finalCallback(sourceFileHashesList);
 	}
 }
