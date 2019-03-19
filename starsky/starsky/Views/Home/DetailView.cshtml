@@ -25,6 +25,7 @@
 				args = args.Concat(@Model.RelativeObjects.Args).ToDictionary(kv => kv.Key, kv => kv.Value);
 				var urlPath = @Url.Action("Index", "Home",args);
 				urlPath = HttpUtility.UrlDecode(urlPath);
+				urlPath = urlPath.Replace("+", "%2B");
 				<a class="prev" href="@urlPath">Vorige</a>
 			}
 			@if (@Model.RelativeObjects.NextFilePath != null)
@@ -33,6 +34,7 @@
 				args = args.Concat(@Model.RelativeObjects.Args).ToDictionary(kv => kv.Key, kv => kv.Value);
 				var urlPath = @Url.Action("Index", "Home", args);
 				urlPath = HttpUtility.UrlDecode(urlPath);
+				urlPath = urlPath.Replace("+", "%2B");
 				<a class="next" href="@urlPath">Volgende</a>
 			}
 		</h4>
@@ -211,6 +213,7 @@
 	        args = args.Concat(@Model.RelativeObjects.Args).ToDictionary(kv => kv.Key, kv => kv.Value);
             var urlPath = @Url.Action("Index", "Home", args);
 	        urlPath = HttpUtility.UrlDecode(urlPath);
+	        urlPath = urlPath.Replace("+", "%2B");
             <a class="prev" href="@urlPath">Vorige</a>
         }
 
@@ -243,6 +246,7 @@
 	        args = args.Concat(@Model.RelativeObjects.Args).ToDictionary(kv => kv.Key, kv => kv.Value);
 	        var urlPath = @Url.Action("Index", "Home", args);
 	        urlPath = HttpUtility.UrlDecode(urlPath);
+	        urlPath = urlPath.Replace("+", "%2B");
             <a class="next" href="@urlPath">Volgende</a>
         }
     </h4>
