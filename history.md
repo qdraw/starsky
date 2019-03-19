@@ -12,7 +12,7 @@
 - []   Pagination on folders - Performance update for example 800 files
 - []   Search: support for complex and/or operators `(this || or) && that`
 
-# version 0.1.5.2 or 0.1.6 - tbd
+# version 0.1.5.2 - tbd
 - exiftool write bug
 - [x]   Performance upgrade xmp/tiff files
 - todo: refactor xmp/exif module to support iStorage
