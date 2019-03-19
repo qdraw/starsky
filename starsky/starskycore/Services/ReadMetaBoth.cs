@@ -26,9 +26,18 @@ namespace starskycore.Services
 	        ExtensionRolesHelper.ImageFormat imageFormat)
         {
             if (imageFormat == ExtensionRolesHelper.ImageFormat.gpx) return ReadGpxFromFileReturnAfterFirstField(singleFilePath);
-            var databaseItem = ReadExifFromFile(singleFilePath);
-            databaseItem = XmpGetSidecarFile(databaseItem, singleFilePath);
-            return databaseItem;
+
+	        var fileIndexItem = XmpGetSidecarFile(null, singleFilePath);
+
+	        if ( fileIndexItem.IsoSpeed == 0 
+	             || string.IsNullOrEmpty(fileIndexItem.Make) 
+	             || fileIndexItem.DateTime.Year == 0)
+	        {
+		        var databaseItemFile = ReadExifFromFile(singleFilePath);
+		        FileIndexCompareHelper.Compare(fileIndexItem, databaseItemFile);
+	        }
+	        
+            return fileIndexItem;
         }
 
         // used by the html generator
@@ -55,7 +64,7 @@ namespace starskycore.Services
 
         // Cached view >> IMemoryCache
         // Short living cache Max 10. minutes
-        public FileIndexItem ReadExifAndXmpFromFile(string fullFilePath,ExtensionRolesHelper.ImageFormat imageFormat)
+        public FileIndexItem ReadExifAndXmpFromFile(string fullFilePath, ExtensionRolesHelper.ImageFormat imageFormat)
         {
             // The CLI programs uses no cache
             if( _cache == null || _appSettings?.AddMemoryCache == false) 

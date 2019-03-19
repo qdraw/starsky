@@ -164,14 +164,14 @@ namespace starskycore.Helpers
 		/// <summary>
 		/// used for raw, bmp filetypes that has no support for in file exif
 		/// </summary>
-		/// <param name="filename">the name of the file with extenstion</param>
+		/// <param name="fullFilePath">the name of the file with extenstion</param>
 		/// <returns>true, if Sidecar is required</returns>
 		public static bool IsXmpSidecarRequired(string fullFilePath)
 		{
 			if ( string.IsNullOrEmpty(fullFilePath) ) return false;
 			// Use an XMP File -> as those files don't support those tags
 			if ( ExtensionForceXmpUseList.Contains(Path.GetExtension(fullFilePath)
-				.Replace(".", string.Empty).ToLower()) )
+				.Replace(".", string.Empty).ToLowerInvariant()) )
 			{
 				return true;
 			}
