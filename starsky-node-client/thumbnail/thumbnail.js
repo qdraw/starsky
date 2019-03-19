@@ -22,81 +22,89 @@ var requestOptions = {
     json: true // Automatically parses the JSON string in the response
 };
 
+var currentPageNumber = 0;
+var maxPageNumber = 0;
+var searchQuery = parseArgs();
+
+
 function parseArgs() {
 	var args = process.argv.slice(2);
 	if (args.length >= 1) {
 		var parsed = parseInt(args[0])
 		if (isNaN(parsed)) {
-			return 0
+			return args[0];
 		}
 		else {
-			return parsed
+			return "-Datetime>" + (parsed + 1)  + " -Datetime<"+ parsed + " -ImageFormat:jpg";
 		}
 	}
-	return 1
+
+	if (args === "nodate") {
+		return "-Datetime<59999 -ImageFormat:jpg"
+	}
+	
+	var parsedDefault = 1;
+	return "-Datetime>" + (parsedDefault)  + " -ImageFormat:jpg";
 }
 
-subPathRelativeValue = parseArgs();
-console.log("subPathRelativeValue > " + subPathRelativeValue);
+getSearchStart(searchQuery,0);
 
-getSubPathRelative(subPathRelativeValue);
+function getSearchStart(searchquery,pageNumber) {
+	var indexRequestOptions = requestOptions;
+	indexRequestOptions.uri = base_url + "search";
+	indexRequestOptions.qs = {
+		t: searchquery,
+		json: 'true',
+		p: pageNumber
+	};
+	getIndex(indexRequestOptions);
+}
 
-
-function getSubPathRelative(subpathRelativeValue) {
-	var subPathRelativeRequestOptions = requestOptions;
-	subPathRelativeRequestOptions.uri = base_url + 'Redirect/SubpathRelative/';
-	subPathRelativeRequestOptions.qs = {
-        value: subpathRelativeValue,
-		json: 'true'
-    };
-
-	request(subPathRelativeRequestOptions)
-	    .then(function (items) {
-			console.log(items.body);
-			getIndexStart(items.body);
-		})
-	    .catch(function (err) {
-			console.log(err);
-			console.log("getSubPathRelative: " + err.response.body);
-	        // API call failed...
-	    });
+function getRights() {
+	ensureExistsFolder(getSourceTempFolder(), 0744, function(err) {
+		if (err) console.log(err);// handle folder creation error
+	});
+	ensureExistsFolder(getTempFolder(), 0744, function(err) {
+		if (err) console.log(err);// handle folder creation error
+	});
 }
 
 function getIndexStart(subpath) {
-	ensureExistsFolder(getSourceTempFolder(), 0744, function(err) {
-    	if (err) console.log(err);// handle folder creation error
-	});
-	ensureExistsFolder(getTempFolder(), 0744, function(err) {
-    	if (err) console.log(err);// handle folder creation error
-	});
-
-
 	var indexRequestOptions = requestOptions;
 	indexRequestOptions.uri = base_url;
 	indexRequestOptions.qs = {
 		f: subpath,
 		json: 'true'
 	};
+	getIndex(indexRequestOptions);
+}
+
+function getIndex(indexRequestOptions) {
+
+	getRights();
 
 	request(requestOptions)
 	    .then(function (items) {
 			if(items.body.fileIndexItems === undefined) return;
 
+			console.log("searchQuery ~\n" + items.body.searchQuery);
+
 			var fileHashList = [];
 			for (var i in items.body.fileIndexItems) {
+
 				var item = items.body.fileIndexItems[i];
 				if(item === undefined ||  item === null ||  item.fileHash.length !== 26) continue;
 				if(item.imageFormat !== "jpg") continue;
 				fileHashList.push(item.fileHash)
 			}
 
-      if(fileHashList.length === 0) console.log("> 0 imageFormat:jpg items");
+			if(fileHashList.length === 0) console.log("> 0 imageFormat:jpg items");
 
-      if(fileHashList.length >= 1) {
-        console.log("-");
-        downloadSourceTempFile(fileHashList,0);
-      }
+			maxPageNumber = items.body.lastPageNumber;
 
+			if(fileHashList.length >= 1) {
+				downloadSourceTempFile(fileHashList,0);
+			}
 	    })
 	    .catch(function (err) {
 			console.log(err);
@@ -137,7 +145,15 @@ function downloadSourceTempFile(sourceFileHashesList,i) {
 }
 
 function done() {
-	console.log("DSf");
+
+	if (maxPageNumber !== undefined && currentPageNumber <= maxPageNumber-1) {
+		currentPageNumber++;
+		getSearchStart(searchQuery,currentPageNumber);
+	}
+	else {
+		console.log("-- everything is done :)");
+	}
+
 }
 
 function chain(sourceFileHashesList, i, callback, finalCallback) {
@@ -160,8 +176,6 @@ function chain(sourceFileHashesList, i, callback, finalCallback) {
 					uploadTempFile(sourceFileHashesList, i, callback, finalCallback);
 				})
 			});
-			// next(sourceFileHashesList, i, callback, finalCallback)
-
 		})
 		.catch(function (err) {
 			console.log("downloadFilerequestOptions");
@@ -178,7 +192,7 @@ function next(sourceFileHashesList, count, callback, finalCallback) {
 		callback(sourceFileHashesList, count, callback, finalCallback)
 	}
 	else {
-		console.log("last");
+		console.log("-- done query (" + currentPageNumber + "/" + maxPageNumber +")");
 		finalCallback(sourceFileHashesList);
 	}
 }

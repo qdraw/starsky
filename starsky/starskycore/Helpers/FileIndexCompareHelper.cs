@@ -62,6 +62,20 @@ namespace starskycore.Helpers
                     var newRotationValue = (FileIndexItem.Rotation)propertiesB [i].GetValue(updateObject, null);
                     CompareRotation(propertiesB[i].Name, sourceIndexItem, oldRotationValue, newRotationValue, differenceList); 
                 }
+	            
+	            if (propertiesA[i].PropertyType == typeof(double))
+	            {
+		            var oldDoubleValue = (double)propertiesA [i].GetValue(sourceIndexItem, null);
+		            var newDoubleValue = (double)propertiesB [i].GetValue(updateObject, null);
+		            CompareDouble(propertiesB[i].Name, sourceIndexItem, oldDoubleValue, newDoubleValue, differenceList); 
+	            }
+	            
+	            if (propertiesA[i].PropertyType == typeof(ushort))
+	            {
+		            var oldUshortValue = (ushort)propertiesA [i].GetValue(sourceIndexItem, null);
+		            var newUshortValue = (ushort)propertiesB [i].GetValue(updateObject, null);
+		            CompareUshort(propertiesB[i].Name, sourceIndexItem, oldUshortValue, newUshortValue, differenceList); 
+	            }
             }
 
 	        // Last Edited is not needed
@@ -171,7 +185,40 @@ namespace starskycore.Helpers
             sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newRotationValue, null);
             differenceList.Add(propertyName);
         }
+	    
+	    /// <summary>
+	    /// Compare double type 
+	    /// </summary>
+	    /// <param name="propertyName">name of property e.g. aperture</param>
+	    /// <param name="sourceIndexItem">source object</param>
+	    /// <param name="oldDoubleValue">oldDoubleValue to compare with newDoubleValue</param>
+	    /// <param name="newDoubleValue">oldDoubleValue to compare with newDoubleValue</param>
+	    /// <param name="differenceList">list of different values</param>
+	    private static void CompareDouble(string propertyName, FileIndexItem sourceIndexItem, double oldDoubleValue, double newDoubleValue, List<string> differenceList)
+	    {
+		    // Dont allow to overwrite with default 0 value
+		    if (oldDoubleValue == newDoubleValue || newDoubleValue == 0) return;
+		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newDoubleValue, null);
+		    differenceList.Add(propertyName);
+	    }
 
+	    
+	    /// <summary>
+	    /// Compare ushort type 
+	    /// </summary>
+	    /// <param name="propertyName">name of property e.g. isoSpeed</param>
+	    /// <param name="sourceIndexItem">source object</param>
+	    /// <param name="oldUshortValue">oldUshortValue to compare with newUshortValue</param>
+	    /// <param name="newUshortValue">oldUshortValue to compare with newUshortValue</param>
+	    /// <param name="differenceList">list of different values</param>
+	    private static void CompareUshort(string propertyName, FileIndexItem sourceIndexItem, ushort oldUshortValue, ushort newUshortValue, List<string> differenceList)
+	    {
+		    // Dont allow to overwrite with default 0 value
+		    if (oldUshortValue == newUshortValue || newUshortValue == 0) return;
+		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newUshortValue, null);
+		    differenceList.Add(propertyName);
+	    }
+	    
 	    /// <summary>
 	    /// Compare DateTime type 
 	    /// </summary>

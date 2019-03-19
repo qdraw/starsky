@@ -27,9 +27,9 @@ namespace starskycore.Services
         
         public string BaseCommmand(string options, string fullFilePathSpaceSeperated)
         {
-            options = " " + options + " " + fullFilePathSpaceSeperated;
+			options = " " + options + " " + fullFilePathSpaceSeperated;
 
-            Console.WriteLine(_appSettings.ExifToolPath);
+            Console.WriteLine($"{_appSettings.ExifToolPath}{options}");
 
             if (!File.Exists(_appSettings.ExifToolPath)) return null;
 
@@ -40,31 +40,31 @@ namespace starskycore.Services
                 exifToolPath = $"\"" + _appSettings.ExifToolPath + $"\"";
             }
 
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = exifToolPath,
-                UseShellExecute = false,
-                RedirectStandardOutput = true
-            };
+			ProcessStartInfo processStartInfo = new ProcessStartInfo
+			{
+				FileName = exifToolPath,
+				UseShellExecute = false,
+				RedirectStandardOutput = true,
+				Arguments = options
+			};
 
-            Console.WriteLine(options);
-            
-            psi.Arguments = options;
-            Process p = Process.Start(psi);
-            string strOutput = p.StandardOutput.ReadToEnd();
-            p.WaitForExit();
 
-	        if ( !p.HasExited )
+	        Process process = Process.Start(processStartInfo);
+
+	        string strOutput = process.StandardOutput.ReadToEnd();
+
+	        process.WaitForExit();
+
+	        if ( !process.HasExited )
 	        {
-		        p.CloseMainWindow();
-		        p.Close();
-		        return null;
+				process.CloseMainWindow();
+				process.Close();
+				return null;
 	        }
 	        
 	        // make sure that there nothing left
-	        p.Dispose();
+	        process.Dispose();
 
-			Console.WriteLine(strOutput);
 			return strOutput;
         }
         

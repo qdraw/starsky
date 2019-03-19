@@ -37,7 +37,7 @@ namespace starskycore.Helpers
         }
 
         /// <summary>
-        /// For Raw files us an external .xmp sitecar file, and add this to the fullFilePathsList
+        /// For Raw files us an external .xmp sidecar file, and add this to the fullFilePathsList
         /// </summary>
         /// <param name="inputFullFilePaths">list of files to update</param>
         /// <returns>list of files, where needed for raw-files there are .xmp used</returns>
@@ -122,8 +122,9 @@ namespace starskycore.Helpers
                 var exifBaseInputStringBuilder = new StringBuilder();
                 foreach (var fullFilePath in fullFilePathsList)
                 {
-                    exifBaseInputStringBuilder = Quoted(exifBaseInputStringBuilder,fullFilePath);
-                    exifBaseInputStringBuilder.Append($" ");
+	                if ( !FilesHelper.ExistFile(fullFilePath) ) continue;
+	                exifBaseInputStringBuilder = Quoted(exifBaseInputStringBuilder,fullFilePath);
+	                exifBaseInputStringBuilder.Append($" ");
                 }
                 
                 _exiftool.BaseCommmand(command, exifBaseInputStringBuilder.ToString());

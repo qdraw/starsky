@@ -17,7 +17,8 @@ namespace starskycore.Services
         {
             if(_appSettings == null) throw new 
                 InvalidDataContractException("AppSettings in XmpSelectSidecarFile is null");
-            
+	        if(databaseItem == null) databaseItem = new FileIndexItem();
+
             // Read content from sidecar xmp file
             if (ExtensionRolesHelper.IsXmpSidecarRequired(singleFilePath))
             {
