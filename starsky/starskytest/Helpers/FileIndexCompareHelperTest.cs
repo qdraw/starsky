@@ -71,6 +71,24 @@ namespace starskytest.Helpers
             FileIndexCompareHelper.Compare(source, update);
             Assert.AreEqual(update.DateTime,source.DateTime); 
         }
+	    
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest_ushort_Compare()
+	    {
+		    var source = new FileIndexItem {IsoSpeed = 0};
+		    var update = new FileIndexItem {IsoSpeed = 1};
+		    FileIndexCompareHelper.Compare(source, update);
+		    Assert.AreEqual(1,source.IsoSpeed);
+	    }
+	    
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest_double_Compare()
+	    {
+		    var source = new FileIndexItem {Aperture = 0};
+		    var update = new FileIndexItem {Aperture = 1};
+		    FileIndexCompareHelper.Compare(source, update);
+		    Assert.AreEqual(1,source.Aperture);
+	    }
         
         [TestMethod]
         public void FileIndexCompareHelperTest_Rotation_Compare()

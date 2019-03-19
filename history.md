@@ -4,7 +4,6 @@
 # Features planned (in random order)
 - []   Front-end for Replace API in folder view
 - []   Realtime Files API
-- []   Performance upgrade xmp/tiff files
 - []   Front-end copy ctrl+shift+c visual feedback
 - []   Front-end for Rename files
 - []   mp4/h.264 video support
@@ -15,6 +14,8 @@
 
 # version 0.1.5.2 or 0.1.6 - tbd
 - exiftool write bug
+- [x]   Performance upgrade xmp/tiff files
+- todo: refactor xmp/exif module to support iStorage
 
 # version 0.1.5.1 - 2019-03-17
 - Breaking Change: added `LastEdited` field
