@@ -169,6 +169,8 @@ namespace starskycore.Helpers
 		/// <returns>true, </returns>
 		public static bool IsExtensionForceXmp(string filename)
 		{
+			if ( string.IsNullOrEmpty(filename) ) return false;
+
 			// without escaped values:
 			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
 			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$").Matches(filename);

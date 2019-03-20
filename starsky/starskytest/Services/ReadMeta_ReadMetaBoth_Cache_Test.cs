@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,10 +53,11 @@ namespace starskytest.Services
         {
             var createAnImage = new CreateAnImage();
             var appsettings = new AppSettings {StorageFolder = createAnImage.BasePath};
-	        var iStorage = new StorageSubPathFilesystem(appsettings);
+	        var iStorage = new FakeIStorage(null,new List<string>{"/test.jpg"});
 
             // fakely add item to cache
-            new ReadMeta(iStorage,appsettings, _fakeCache).ReadExifAndXmpFromFile(createAnImage.FullFilePath,ExtensionRolesHelper.ImageFormat.jpg);
+            new ReadMeta(iStorage,appsettings, _fakeCache)
+	            .ReadExifAndXmpFromFile(createAnImage.FullFilePath,ExtensionRolesHelper.ImageFormat.jpg);
         }
 
         [TestMethod]
