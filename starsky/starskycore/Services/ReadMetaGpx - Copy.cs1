@@ -9,7 +9,7 @@ using starskycore.Models;
 
 namespace starskycore.Services
 {
-    public partial class ReadMeta
+    public class ReadMetaGpx
     {
 	    private const string GpxXmlNameSpaceName = "http://www.topografix.com/GPX/1/1"; 
 	    

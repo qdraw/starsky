@@ -14,33 +14,40 @@ namespace starskycore.Services
         private readonly AppSettings _appSettings;
         private readonly IMemoryCache _cache;
 	    private readonly IStorage _iStorage;
-	    private ReadMetaExif _readExif;
+	    private readonly ReadMetaExif _readExif;
+	    private readonly ReadMetaXmp _readXmp;
+	    private readonly ReadMetaGpx _readGpx;
 
 	    public ReadMeta(IStorage iStorage, AppSettings appSettings = null, IMemoryCache memoryCache = null)
         {
             _appSettings = appSettings;
             _cache = memoryCache;
 	        _iStorage = iStorage;
-	        _readExif = new ReadMetaExif(iStorage,memoryCache);
+	        _readExif = new ReadMetaExif();
+	        _readXmp = new ReadMetaXmp(iStorage,memoryCache);
+	        _readGpx = new ReadMetaGpx();
+
         }
 
-        private FileIndexItem ReadExifAndXmpFromFileDirect(string singleFilePath, 
-	        ExtensionRolesHelper.ImageFormat imageFormat)
+        private FileIndexItem ReadExifAndXmpFromFileDirect(
+	        string subPath, ExtensionRolesHelper.ImageFormat imageFormat)
         {
-//            if (imageFormat == ExtensionRolesHelper.ImageFormat.gpx) return ReadGpxFromFileReturnAfterFirstField(singleFilePath);
+	        if ( _iStorage.ExistFile(subPath) && imageFormat == ExtensionRolesHelper.ImageFormat.gpx )
+	        {
+				return _readGpx.ReadGpxFromFileReturnAfterFirstField(_iStorage.Stream(subPath));
+	        }
 
-//	        var fileIndexItem = XmpGetSidecarFile(null, singleFilePath);
-//
-//	        if ( fileIndexItem.IsoSpeed == 0 
-//	             || string.IsNullOrEmpty(fileIndexItem.Make) 
-//	             || fileIndexItem.DateTime.Year == 0)
-//	        {
-//		        var databaseItemFile = ReadExifFromFile(singleFilePath);
-//		        FileIndexCompareHelper.Compare(fileIndexItem, databaseItemFile);
-//	        }
+	        var fileIndexItem = _readXmp.XmpGetSidecarFile(new FileIndexItem(subPath));
+
+	        if ( fileIndexItem.IsoSpeed == 0 
+	             || string.IsNullOrEmpty(fileIndexItem.Make) 
+	             || fileIndexItem.DateTime.Year == 0)
+	        {
+		        var databaseItemFile = _readExif.ReadExifFromFile(_iStorage.Stream(subPath));
+		        FileIndexCompareHelper.Compare(fileIndexItem, databaseItemFile);
+	        }
 	        
-//            return fileIndexItem;
-	        return null;
+            return fileIndexItem;
         }
 
         // used by the html generator

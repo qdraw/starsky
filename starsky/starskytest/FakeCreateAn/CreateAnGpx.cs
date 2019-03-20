@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using starskycore.Helpers;
 
 namespace starskytest.FakeCreateAn
 {
@@ -15,9 +16,7 @@ namespace starskytest.FakeCreateAn
         public readonly string BasePath =
             Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
         
-        public CreateAnGpx()
-        {
-            var base64gpxFile = "CjxncHggeG1sbnM9Imh0dHA6Ly93d3cudG9wb2dyYWZpeC5jb20vR1BYLzEvMSIg" +
+	    private static readonly string Base64GpxString = "CjxncHggeG1sbnM9Imh0dHA6Ly93d3cudG9wb2dyYWZpeC5jb20vR1BYLzEvMSIg" +
                                 "eG1sbnM6Z3B4eD0iaHR0cDovL3d3dy5nYXJtaW4uY29tL3htbHNjaGVtYXMvR3B4" +
                                 "RXh0ZW5zaW9ucy92MyIgeG1sbnM6Z3B4dHB4PSJodHRwOi8vd3d3OC5nYXJtaW4u" +
                                 "Y29tL3htbHNjaGVtYXMvVHJhY2tQb2ludEV4dGVuc2lvbnYyLnhzZCIgeG1sbnM6" +
@@ -147,10 +146,15 @@ namespace starskytest.FakeCreateAn
                                 "RXh0ZW5zaW9uPgogICAgICAgICAgICAgICAgPC9leHRlbnNpb25zPgogICAgICAg" +
                                 "ICAgICA8L3Rya3B0PgogICAgICAgIDwvdHJrc2VnPgogICAgPC90cms+CjwvZ3B4" +
                                 "Pg==";
-            
+	    
+	    public static readonly byte[] Bytes = Base64Helper.TryParse(Base64GpxString);
+
+	    
+        public CreateAnGpx()
+        {
             if (!File.Exists(FullFileGpxPath))
             {
-                File.WriteAllBytes(FullFileGpxPath, Convert.FromBase64String(base64gpxFile));
+                File.WriteAllBytes(FullFileGpxPath, Convert.FromBase64String(Base64GpxString));
             }
          }
     }
