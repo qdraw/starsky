@@ -20,5 +20,15 @@ namespace starskycore.Interfaces
 		IEnumerable<string> GetDirectoryRecursive(string path);
 
 		Stream Stream(string path, int maxRead = int.MaxValue);
+		
+		/// <summary>
+		/// Check if thumbnail exist
+		/// </summary>
+		/// <param name="fileHash">base32 filehash</param>
+		/// <returns>if exist=true</returns>
+		bool ExistThumbnail(string fileHash);
+		Stream Thumbnail(string fileHash);
+
+		
 	}
 }

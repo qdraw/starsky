@@ -146,5 +146,15 @@ namespace starskycore.Services
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
 			return  new FileStream(fullFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, maxRead, true);
 		}
+
+		public bool ExistThumbnail(string fileHash)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Stream Thumbnail(string fileHash)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

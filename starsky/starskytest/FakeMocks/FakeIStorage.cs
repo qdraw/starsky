@@ -137,5 +137,15 @@ namespace starskytest.FakeMocks
 			}
 			throw new FileNotFoundException(path);
 		}
+
+		public bool ExistThumbnail(string fileHash)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Stream Thumbnail(string fileHash)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -47,6 +47,16 @@ namespace starskycore.Services
 			throw new NotImplementedException();
 		}
 
+		public bool ExistThumbnail(string fileHash)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Stream Thumbnail(string fileHash)
+		{
+			throw new NotImplementedException();
+		}
+
 
 		/// <summary>
 		/// Does file exist (true == exist)
