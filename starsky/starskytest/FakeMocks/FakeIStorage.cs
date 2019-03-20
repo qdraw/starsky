@@ -17,8 +17,9 @@ namespace starskytest.FakeMocks
 		private List<string> _outputSubPathFolders = new List<string>();
 		private List<string> _outputSubPathFiles  = new List<string>();
 
+		private readonly byte[] _byteArray;
 
-		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null)
+		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, byte[] byteArray = null)
 		{
 			if ( outputSubPathFolders != null )
 			{
@@ -29,7 +30,13 @@ namespace starskytest.FakeMocks
 			{
 				_outputSubPathFiles = outputSubPathFiles;
 			}
+
+			if ( byteArray != null )
+			{
+				_byteArray = byteArray;
+			}
 		}
+		
 		public bool ExistFile(string subPath)
 		{
 			return _outputSubPathFiles.Contains(subPath);
@@ -129,10 +136,15 @@ namespace starskytest.FakeMocks
 
 		public Stream Stream(string path, int maxRead = 2147483647)
 		{
-			if ( ExistFile(path) )
+			if ( ExistFile(path) && _byteArray == null)
 			{
 				byte[] byteArray = Encoding.UTF8.GetBytes("test");
 				MemoryStream stream = new MemoryStream(byteArray);
+				return stream;
+			}
+			if ( ExistFile(path) )
+			{
+				MemoryStream stream = new MemoryStream(_byteArray);
 				return stream;
 			}
 			throw new FileNotFoundException(path);

@@ -61,7 +61,7 @@ namespace starskycore.Services
 		/// <summary>
 		/// Does file exist (true == exist)
 		/// </summary>
-		/// <param name="subPath">full file path</param>
+		/// <param name="path">full file path</param>
 		/// <returns>bool true = exist</returns>
 		public bool ExistFile(string path)
 		{

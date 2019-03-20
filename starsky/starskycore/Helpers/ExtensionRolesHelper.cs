@@ -160,62 +160,130 @@ namespace starskycore.Helpers
 				return extensionList;
 			}
 		}
+		
 
 		/// <summary>
-		/// used for raw, bmp filetypes that has no support for in file exif
+		/// is this filename with extension a filetype that needs a .xmp file 
 		/// </summary>
-		/// <param name="fullFilePath">the name of the file with extenstion</param>
-		/// <returns>true, if Sidecar is required</returns>
-		public static bool IsXmpSidecarRequired(string fullFilePath)
+		/// <param name="filename">the name of the file with extenstion</param>
+		/// <returns>true, </returns>
+		public static bool IsExtensionForceXmp(string filename)
 		{
-			if ( string.IsNullOrEmpty(fullFilePath) ) return false;
-			// Use an XMP File -> as those files don't support those tags
-			if ( ExtensionForceXmpUseList.Contains(Path.GetExtension(fullFilePath)
-				.Replace(".", string.Empty).ToLowerInvariant()) )
+			// without escaped values:
+			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
+			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$").Matches(filename);
+			if ( matchCollection.Count == 0 ) return false;
+			foreach ( Match match in matchCollection )
 			{
-				return true;
+				if ( match.Value.Length < 2 ) continue;
+				var ext = match.Value.Remove(0, 1).ToLowerInvariant();
+				if ( ExtensionForceXmpUseList.Contains(ext) ) return true;
 			}
-
 			return false;
 		}
-
-		/// <summary>
-		/// Get the sitecar file of the raw image
-		/// </summary>
-		/// <param name="fullFilePath">the full path on the system</param>
-		/// <param name="exifToolXmpPrefix">prefix</param>
-		/// <returns>full file path of sitecar file</returns>
-		public static string GetXmpSidecarFileWhenRequired(
-			string fullFilePath,
-			string exifToolXmpPrefix = "")
-		{
-			if ( exifToolXmpPrefix == null )
-				throw new ArgumentNullException(nameof(exifToolXmpPrefix));
-			// Use an XMP File -> as those files don't support those tags
-			if ( IsXmpSidecarRequired(fullFilePath) )
-			{
-				return GetXmpSidecarFile(fullFilePath, exifToolXmpPrefix);
-			}
-
-			return fullFilePath;
-		}
-
-		/// <summary>
-		/// Get the fullpath of the xmp file
-		/// </summary>
-		/// <param name="fullFilePath">path of .arw/.dng image</param>
-		/// <param name="exifToolXmpPrefix">prefix used</param>
-		/// <returns></returns>
-		public static string GetXmpSidecarFile(
-			string fullFilePath,
-			string exifToolXmpPrefix = "")
-		{
-			// Overwrite to use xmp files
-			return Path.Combine(Path.GetDirectoryName(fullFilePath),
-				exifToolXmpPrefix
-				+ Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
-		}
 		
+		/// <summary>
+		/// Extension must be three letters
+		/// </summary>
+		/// <param name="filename"></param>
+		/// <returns></returns>
+		public static string ReplaceExtensionWithXmp(string filename)
+		{
+			// without escaped values:
+			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
+			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$").Matches(filename);
+			if ( matchCollection.Count == 0 ) return string.Empty;
+			foreach ( Match match in matchCollection )
+			{
+				if ( match.Value.Length < 2 ) continue;
+				var ext = match.Value.Remove(0, 1).ToLowerInvariant();
+				// Extension must be three letters
+				if ( ExtensionForceXmpUseList.Contains(ext) && filename.Length >= match.Index + 4 )
+				{
+					var matchValue = filename.Substring(0, match.Index + 4).ToCharArray();
+					
+					matchValue[match.Index+1] = 'x';
+					matchValue[match.Index+2] = 'm';
+					matchValue[match.Index+3] = 'p';
+					return new string(matchValue);
+				}
+			}
+			return string.Empty;
+		}
+
+
+//		/// <summary>
+//		/// used for raw, bmp filetypes that has no support for in file exif
+//		/// </summary>
+//		/// <param name="fullFilePath">the name of the file with extenstion</param>
+//		/// <returns>true, if Sidecar is required</returns>
+//		public static bool IsXmpSidecarRequired(string fullFilePath)
+//		{
+//			if ( string.IsNullOrEmpty(fullFilePath) ) return false;
+//			// Use an XMP File -> as those files don't support those tags
+//			if ( ExtensionForceXmpUseList.Contains(Path.GetExtension(fullFilePath)
+//				.Replace(".", string.Empty).ToLowerInvariant()) )
+//			{
+//				return true;
+//			}
+//
+//			return false;
+//		}
+
+//		/// <summary>
+//		/// Get the sitecar file of the raw image
+//		/// </summary>
+//		/// <param name="fullFilePath">the full path on the system</param>
+//		/// <param name="exifToolXmpPrefix">prefix</param>
+//		/// <returns>full file path of sitecar file</returns>
+//		public static string GetXmpSidecarFileWhenRequired(
+//			string fullFilePath,
+//			string exifToolXmpPrefix = "")
+//		{
+//			if ( exifToolXmpPrefix == null )
+//				throw new ArgumentNullException(nameof(exifToolXmpPrefix));
+//			// Use an XMP File -> as those files don't support those tags
+//			if ( IsXmpSidecarRequired(fullFilePath) )
+//			{
+//				return GetXmpSidecarFile(fullFilePath, exifToolXmpPrefix);
+//			}
+//
+//			return fullFilePath;
+//		}
+		
+//		/// <summary>
+//		/// Get the sidecar file of the raw image
+//		/// </summary>
+//		/// <param name="subPath">the full path on the system</param>
+//		/// <returns>full file path of sidecar file</returns>
+//		public static string GetXmpSidecarFileWhenRequired(
+//			string subPath)
+//		{
+//			// Use an XMP File -> as those files don't support those tags
+//			if ( IsXmpSidecarRequired(fullFilePath) )
+//			{
+//				return GetXmpSidecarFile(fullFilePath, exifToolXmpPrefix);
+//			}
+//
+//			return fullFilePath;
+//		}
+
+//		/// <summary>
+//		/// Get the fullpath of the xmp file
+//		/// </summary>
+//		/// <param name="fullFilePath">path of .arw/.dng image</param>
+//		/// <param name="exifToolXmpPrefix">prefix used</param>
+//		/// <returns></returns>
+//		public static string GetXmpSidecarFile(
+//			string fullFilePath,
+//			string exifToolXmpPrefix = "")
+//		{
+//			// Overwrite to use xmp files
+//			return Path.Combine(Path.GetDirectoryName(fullFilePath),
+//				exifToolXmpPrefix
+//				+ Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
+//		}
+//		
 		/// <summary>
 		/// Imageformat based on first bytes
 		/// </summary>

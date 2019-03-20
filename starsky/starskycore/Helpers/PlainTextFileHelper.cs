@@ -1,12 +1,25 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using starskycore.Models;
 
 namespace starskycore.Helpers
 {
     public class PlainTextFileHelper
     {
-	    
+	    /// <summary>
+	    /// Read a text based file (not binary) file
+	    /// </summary>
+	    /// <param name="stream">stream</param>
+	    /// <returns>content of the file as string</returns>
+	    public string ReadFile(Stream stream)
+	    {
+		    var reader = new StreamReader(stream, Encoding.UTF8);
+		    var result = reader.ReadToEnd();
+		    stream.Dispose();
+		    return result;
+	    }
+
 	    /// <summary>
 	    /// Return the content of the first file
 	    /// </summary>

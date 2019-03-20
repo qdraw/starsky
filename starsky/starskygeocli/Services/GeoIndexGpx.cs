@@ -35,7 +35,8 @@ namespace starskyGeoCli.Services
             {
                 if(metaFileItem.ImageFormat != ExtensionRolesHelper.ImageFormat.gpx) continue;
                 var fullfilepath = _appSettings.DatabasePathToFilePath(metaFileItem.FilePath);
-                _readMeta.ReadGpxFile(fullfilepath, geoList);
+	            throw new NotImplementedException();
+//                _readMeta.ReadGpxFile(fullfilepath, geoList);
             }
 
             return geoList;

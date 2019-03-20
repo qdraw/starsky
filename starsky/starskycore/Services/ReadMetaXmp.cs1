@@ -2,38 +2,34 @@ using System;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
-using Microsoft.Extensions.Caching.Memory;
 using starskycore.Helpers;
-using starskycore.Interfaces;
 using starskycore.Models;
 using XmpCore;
 
 namespace starskycore.Services
 {
-	public class ReadMetaXmp
-	{
-		private IStorage _iStorage;
+    
+    public partial class ReadMeta // IReadMeta
+    {
 
-		public ReadMetaXmp(IStorage iStorage, IMemoryCache memoryCache = null)
-		{
-			_iStorage = iStorage;
-		}
-		
-		
-        public FileIndexItem XmpGetSidecarFile(FileIndexItem databaseItem)
+        // AppSetting is dependency here        
+        public FileIndexItem XmpGetSidecarFile(FileIndexItem databaseItem, string singleFilePath)
         {
+            if(_appSettings == null) throw new 
+                InvalidDataContractException("AppSettings in XmpSelectSidecarFile is null");
 	        if(databaseItem == null) databaseItem = new FileIndexItem();
 
             // Read content from sidecar xmp file
-            if (ExtensionRolesHelper.IsExtensionForceXmp(databaseItem.FilePath))
+            if (ExtensionRolesHelper.IsXmpSidecarRequired(singleFilePath))
             {
                 // Parse an xmp file for this location
-	            var xmpSubPath =
-		            ExtensionRolesHelper.ReplaceExtensionWithXmp(databaseItem.FilePath);
-                if ( _iStorage.ExistFile(xmpSubPath) )
+                var xmpFilePath = ExtensionRolesHelper.GetXmpSidecarFileWhenRequired(
+                    singleFilePath,
+                    _appSettings.ExifToolXmpPrefix);
+                if (FilesHelper.IsFolderOrFile(xmpFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
                 {
                     // Read the text-content of the xmp file.
-                    var xmp = new PlainTextFileHelper().ReadFile(_iStorage.Stream(xmpSubPath));
+                    var xmp = new PlainTextFileHelper().ReadFile(xmpFilePath);
                     // Get the data from the xmp
                     databaseItem = GetDataFromString(xmp,databaseItem);
                 }
@@ -103,7 +99,7 @@ namespace starskycore.Services
         {
             // get ref North, South, East West
             string refGps = gpsLatOrLong.Substring(gpsLatOrLong.Length-1, 1);
-            return GeoDistanceTo.ConvertDegreeMinutesToDouble(gpsLatOrLong, refGps);
+            return ConvertDegreeMinutesToDouble(gpsLatOrLong, refGps);
         }
                 
         private FileIndexItem GetDataNullNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
@@ -149,7 +145,7 @@ namespace starskycore.Services
 	            var isoSpeed = GetNullNameSpace(property, "exif:ISOSpeedRatings[1]");
 	            if ( isoSpeed != null ) item.SetIsoSpeed(isoSpeed);
                
-				//if(_appSettings.Verbose) Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
+				if(_appSettings.Verbose) Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
 
 
             }
@@ -300,5 +296,7 @@ namespace starskycore.Services
 	        
             return item;
         }
-	}
+
+        
+    }
 }
