@@ -117,13 +117,10 @@ namespace starskycore.Services
                 == FolderOrFileModel.FolderOrFileTypeList.File)
             {
                 
-                // Add addional check for raw/tiff based files, those are not supported by this helper 
-//                if(!Files.ExtensionThumbSupportedList.Contains(Path.GetExtension(fullFilePath).Replace(".",string.Empty).ToLower()))
-
                 if(!ExtensionRolesHelper.IsExtensionThumbnailSupported(fullFilePath))
                 {
                     Console.WriteLine("File not supported (and ignored) > " + fullFilePath );
-                    return false; // creating is not succesfull
+                    return false; // creating is not succesful
                 }
 
                 if(fileHash == null) fileHash = FileHashStatic.GetHashCode(fullFilePath);

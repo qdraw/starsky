@@ -54,8 +54,11 @@ namespace starskytest.Services
 	        var iStorage = new StorageSubPathFilesystem(_appSettings);
 	        var fileHashCode = new FileHash(iStorage).GetHashCode(createAnImage.DbPath);
 
+	        // for some magic this is different
+	        var fileHashCode1 = FileHashStatic.GetHashCode(createAnImage.FullFilePath);
+	        
             // Delete if exist, to optimize test
-            var thumbnailPAth = Path.Combine(createAnImage.BasePath, fileHashCode + ".jpg");
+            var thumbnailPAth = Path.Combine(createAnImage.BasePath, fileHashCode1 + ".jpg");
             if (File.Exists(thumbnailPAth))
             {
                 File.Delete(thumbnailPAth);
@@ -63,6 +66,7 @@ namespace starskytest.Services
 
             // Create an thumbnail based on the image
             new Thumbnail(_appSettings).CreateThumb(createAnImage.DbPath);
+	        
             Assert.AreEqual(true,File.Exists(thumbnailPAth));
 
             // Test Rename feature and delete if passed
@@ -153,7 +157,10 @@ namespace starskytest.Services
             _appSettings.StorageFolder = createAnImage.BasePath;
 
 	        var iStorage = new StorageSubPathFilesystem(_appSettings);
-	        var fileHashCode = new FileHash(iStorage).GetHashCode(createAnImage.DbPath);
+	        
+	        // For some magic this is different
+//	        var fileHashCode = new FileHash(iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = FileHashStatic.GetHashCode(createAnImage.FullFilePath);
 	        
             // Delete if exist, to optimize test
             var thumbnailPath = Path.Combine(createAnImage.BasePath, fileHashCode + ".jpg");
