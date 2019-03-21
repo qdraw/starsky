@@ -140,15 +140,15 @@ namespace starsky.Controllers
 				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
 				
 				
-//				// when there is .xmp sidecar file
-//				if ( !thumbnail && ExtensionRolesHelper.IsExtensionForceXmp(sourceFile) 
-//				                && _iStorage.ExistFile(ExtensionRolesHelper.ReplaceExtensionWithXmp(sourceFile)))
-//				{
-//					filePaths.Add(ExtensionRolesHelper.GetXmpSidecarFile(sourceFile));
-//				}
+				// when there is .xmp sidecar file
+				if ( !thumbnail && ExtensionRolesHelper.IsExtensionForceXmp(item.FilePath) 
+				                && _iStorage.ExistFile(ExtensionRolesHelper.ReplaceExtensionWithXmp(item.FilePath)))
+				{
+					filePaths.Add(
+						_appSettings.DatabasePathToFilePath(ExtensionRolesHelper.ReplaceExtensionWithXmp(item.FilePath))
+						);
+				}
 				
-				throw new NotImplementedException();
-
 //				// when there is .xmp sidecar file
 //				if ( !thumbnail && ExtensionRolesHelper.IsExtensionForceXmp(sourceFile) 
 //				                && FilesHelper.ExistFile(ExtensionRolesHelper.GetXmpSidecarFile(sourceFile)))
