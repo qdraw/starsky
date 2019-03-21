@@ -44,7 +44,7 @@ namespace starskyGeoCli.Services
 	            
 	            using ( var stream = _iStorage.ReadStream(metaFileItem.FilePath) )
 	            {
-		            _readMetaGpx.ReadGpxFile(stream, geoList);
+		            geoList.AddRange(_readMetaGpx.ReadGpxFile(stream, geoList));
 	            }
 
             }
