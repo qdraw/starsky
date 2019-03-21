@@ -13,12 +13,13 @@ namespace starskytest.FakeMocks
             return new FileIndexItem{Status = FileIndexItem.ExifStatus.Ok, Tags = "test", FileHash = "test", FileName = "t", ParentDirectory = "d"};
         }
 
+	    public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(string[] subPathArray, string[] fileHashes = null)
+	    {
+		    var createAnImage = new CreateAnImage();
+		    return new List<FileIndexItem> {new FileIndexItem{Status = FileIndexItem.ExifStatus.Ok, FileName = createAnImage.FileName}};
+	    }
 
-        public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(string[] fullFilePathArray)
-        {
-            var createAnImage = new CreateAnImage();
-            return new List<FileIndexItem> {new FileIndexItem{Status = FileIndexItem.ExifStatus.Ok, FileName = createAnImage.FileName}};
-        }
+
 
         public void RemoveReadMetaCache(List<string> fullFilePathArray)
         {

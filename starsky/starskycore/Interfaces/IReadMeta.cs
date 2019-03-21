@@ -8,7 +8,7 @@ namespace starskycore.Interfaces
     {
         // this returns only meta data > so no filename or filehash
         FileIndexItem ReadExifAndXmpFromFile(string fullFilePath, ExtensionRolesHelper.ImageFormat imageFormat);
-        List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(string[] fullFilePathArray);
+        List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(string[] subPathArray, string[] fileHashes = null);
         void RemoveReadMetaCache(string fullFilePath);
         void UpdateReadMetaCache(string fullFilePath, FileIndexItem objectExifToolModel);
     }

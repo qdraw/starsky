@@ -118,7 +118,7 @@ namespace starskycore.Services
             {
                 using (var md5 = MD5.Create())
                 {
-                    using (var stream = _iStorage.Stream(subPath,50000))
+                    using (var stream = _iStorage.ReadStream(subPath,50000))
                     {
                         int length;
                         while ((length = await stream.ReadAsync(block, 0, block.Length).ConfigureAwait(false)) > 0)

@@ -42,7 +42,7 @@ namespace starskycore.Services
 			return Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);
 		}
 
-		public Stream Stream(string path, int maxRead = Int32.MaxValue)
+		public Stream ReadStream(string path, int maxRead = Int32.MaxValue)
 		{
 			throw new NotImplementedException();
 		}

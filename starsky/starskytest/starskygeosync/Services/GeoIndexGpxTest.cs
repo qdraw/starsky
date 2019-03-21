@@ -59,7 +59,7 @@ namespace starskytest.starskygeosync.Services
                 
             });
                
-            var returnFileIndexItems = new GeoIndexGpx(_appSettings,_readMeta).LoopFolder(exampleFiles);
+            var returnFileIndexItems = new GeoIndexGpx(_appSettings,_readMeta,new StorageSubPathFilesystem(_appSettings)).LoopFolder(exampleFiles);
             
             Assert.AreEqual(null,returnFileIndexItems.FirstOrDefault(p => p.FileName == "NotInRange.jpg"));
             Assert.AreEqual("01.jpg",returnFileIndexItems.FirstOrDefault(p => p.FileName == "01.jpg")?.FileName);

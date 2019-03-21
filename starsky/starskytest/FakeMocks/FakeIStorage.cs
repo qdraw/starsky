@@ -134,7 +134,7 @@ namespace starskytest.FakeMocks
 
 		}
 
-		public Stream Stream(string path, int maxRead = 2147483647)
+		public Stream ReadStream(string path, int maxRead = 2147483647)
 		{
 			if ( ExistFile(path) && _byteArray == null)
 			{

@@ -81,7 +81,7 @@ namespace starskyGeoCli
             if (gpxIndexMode)
             {
                 Console.WriteLine("CameraTimeZone " + appSettings.CameraTimeZone);
-                var toMetaFilesUpdate = new GeoIndexGpx(appSettings,startupHelper.ReadMeta()).LoopFolder(metaFilesInDirectory);
+                var toMetaFilesUpdate = new GeoIndexGpx(appSettings,startupHelper.ReadMeta(),startupHelper.Storage()).LoopFolder(metaFilesInDirectory);
                 new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(toMetaFilesUpdate,false);
             }
             

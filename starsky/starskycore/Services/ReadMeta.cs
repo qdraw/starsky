@@ -34,7 +34,7 @@ namespace starskycore.Services
         {
 	        if ( _iStorage.ExistFile(subPath) && imageFormat == ExtensionRolesHelper.ImageFormat.gpx )
 	        {
-				return _readGpx.ReadGpxFromFileReturnAfterFirstField(_iStorage.Stream(subPath));
+				return _readGpx.ReadGpxFromFileReturnAfterFirstField(_iStorage.ReadStream(subPath));
 	        }
 
 	        var fileIndexItem = _readXmp.XmpGetSidecarFile(new FileIndexItem(subPath));
@@ -43,7 +43,7 @@ namespace starskycore.Services
 	             || string.IsNullOrEmpty(fileIndexItem.Make) 
 	             || fileIndexItem.DateTime.Year == 0)
 	        {
-		        var databaseItemFile = _readExif.ReadExifFromFile(_iStorage.Stream(subPath));
+		        var databaseItemFile = _readExif.ReadExifFromFile(_iStorage.ReadStream(subPath));
 		        FileIndexCompareHelper.Compare(fileIndexItem, databaseItemFile);
 	        }
 	        
@@ -51,44 +51,54 @@ namespace starskycore.Services
         }
 
         // used by the html generator
-        public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(string[] fullFilePathArray)
+        public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(string[] subPathArray, string[] fileHashes = null)
         {
             var fileIndexList = new List<FileIndexItem>();
-            foreach (var fullFilePath in fullFilePathArray)
-            {
-                var subPath = _appSettings.FullPathToDatabaseStyle(fullFilePath);
-                var imageFormat = ExtensionRolesHelper.GetImageFormat(fullFilePath); 
-                var returnItem = ReadExifAndXmpFromFile(fullFilePath,imageFormat);
 
-                returnItem.ImageFormat = imageFormat;
-                returnItem.FileName = Path.GetFileName(fullFilePath);
-                returnItem.IsDirectory = false;
-                returnItem.Id = -1;
-                returnItem.Status = FileIndexItem.ExifStatus.Ok;
-                returnItem.FileHash = new FileHash(_iStorage).GetHashCode(subPath);
-                returnItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault();
-                fileIndexList.Add(returnItem);
-            }
+	        for ( int i = 0; i < subPathArray.Length; i++ )
+	        {
+		        var subPath = subPathArray[i];
+		        var imageFormat = ExtensionRolesHelper.GetImageFormat(subPath); 
+		        var returnItem = ReadExifAndXmpFromFile(subPath,imageFormat);
+
+		        returnItem.ImageFormat = imageFormat;
+		        returnItem.FileName = Path.GetFileName(subPath);
+		        returnItem.IsDirectory = false;
+		        returnItem.Id = -1;
+		        returnItem.Status = FileIndexItem.ExifStatus.Ok;
+		        returnItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault();
+
+		        if ( fileHashes == null || fileHashes.Length <= i )
+		        {
+			        returnItem.FileHash = new FileHash(_iStorage).GetHashCode(subPath);
+		        }
+		        else
+		        {
+			        returnItem.FileHash = fileHashes[i];
+		        }
+
+		        fileIndexList.Add(returnItem);
+	        }
             return fileIndexList;
         }
 
         // Cached view >> IMemoryCache
         // Short living cache Max 10. minutes
-        public FileIndexItem ReadExifAndXmpFromFile(string fullFilePath, ExtensionRolesHelper.ImageFormat imageFormat)
+        public FileIndexItem ReadExifAndXmpFromFile(string subPath, ExtensionRolesHelper.ImageFormat imageFormat)
         {
             // The CLI programs uses no cache
             if( _cache == null || _appSettings?.AddMemoryCache == false) 
-                return ReadExifAndXmpFromFileDirect(fullFilePath,imageFormat);
+                return ReadExifAndXmpFromFileDirect(subPath,imageFormat);
             
             // Return values from IMemoryCache
-            var queryCacheName = "info_" + fullFilePath;
+            var queryCacheName = "info_" + subPath;
             
             // Return Cached object if it exist
             if (_cache.TryGetValue(queryCacheName, out var objectExifToolModel))
                 return objectExifToolModel as FileIndexItem;
             
             // Try to catch a new object
-            objectExifToolModel = ReadExifAndXmpFromFileDirect(fullFilePath,imageFormat);
+            objectExifToolModel = ReadExifAndXmpFromFileDirect(subPath,imageFormat);
             _cache.Set(queryCacheName, objectExifToolModel, new TimeSpan(0,10,0));
             return (FileIndexItem) objectExifToolModel;
         }

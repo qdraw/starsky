@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using starskycore.Helpers;
+using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
 
@@ -11,11 +12,15 @@ namespace starskyGeoCli.Services
     {
         private readonly ReadMeta _readMeta;
         private readonly AppSettings _appSettings;
+	    private ReadMetaGpx _readMetaGpx;
+	    private IStorage _iStorage;
 
-        public GeoIndexGpx(AppSettings appSettings, ReadMeta readMeta)
+	    public GeoIndexGpx(AppSettings appSettings, ReadMeta readMeta, IStorage iStorage)
         {
             _readMeta = readMeta;
+	        _readMetaGpx = new ReadMetaGpx();
             _appSettings = appSettings;
+	        _iStorage = iStorage;
         }
         
         private List<FileIndexItem> GetNoLocationItems(IEnumerable<FileIndexItem> metaFilesInDirectory,
@@ -34,9 +39,14 @@ namespace starskyGeoCli.Services
             foreach (var metaFileItem in metaFilesInDirectory)
             {
                 if(metaFileItem.ImageFormat != ExtensionRolesHelper.ImageFormat.gpx) continue;
-                var fullfilepath = _appSettings.DatabasePathToFilePath(metaFileItem.FilePath);
-	            throw new NotImplementedException();
-//                _readMeta.ReadGpxFile(fullfilepath, geoList);
+	            
+	            if ( !_iStorage.ExistFile(metaFileItem.FilePath) ) continue;
+	            
+	            using ( var stream = _iStorage.ReadStream(metaFileItem.FilePath) )
+	            {
+		            _readMetaGpx.ReadGpxFile(stream, geoList);
+	            }
+
             }
 
             return geoList;
