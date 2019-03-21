@@ -58,8 +58,10 @@ namespace starskytest.starskygeosync.Services
                 }
                 
             });
+
+	        var fakeIStorage = new FakeIStorage(new List<string>{"/"},new List<string>{_metaFilesDirectory[0].FilePath},CreateAnGpx.Bytes);
                
-            var returnFileIndexItems = new GeoIndexGpx(_appSettings,_readMeta,new StorageSubPathFilesystem(_appSettings)).LoopFolder(exampleFiles);
+            var returnFileIndexItems = new GeoIndexGpx(_appSettings,_readMeta,fakeIStorage).LoopFolder(exampleFiles);
             
             Assert.AreEqual(null,returnFileIndexItems.FirstOrDefault(p => p.FileName == "NotInRange.jpg"));
             Assert.AreEqual("01.jpg",returnFileIndexItems.FirstOrDefault(p => p.FileName == "01.jpg")?.FileName);

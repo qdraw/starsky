@@ -19,6 +19,12 @@ namespace starskytest.FakeMocks
 
 		private readonly byte[] _byteArray;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="outputSubPathFolders">/</param>
+		/// <param name="outputSubPathFiles">/test.jpg</param>
+		/// <param name="byteArray"></param>
 		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, byte[] byteArray = null)
 		{
 			if ( outputSubPathFolders != null )
