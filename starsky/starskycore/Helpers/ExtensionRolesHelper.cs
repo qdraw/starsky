@@ -41,6 +41,49 @@ namespace starskycore.Helpers
 		/// </summary>
 		private static readonly List<string> Extensiongpx = new List<string> {"gpx"};
 
+
+		private static readonly Dictionary<ImageFormat, List<string>> MapFileTypesToExtensionDictionary = 
+			new Dictionary<ImageFormat, List<string>>
+			{
+				{
+					ImageFormat.jpg, Extensionjpg
+				},
+				{
+					ImageFormat.tiff, Extensiontiff
+				},
+				{
+					ImageFormat.bmp, Extensionbmp
+				},
+				{
+					ImageFormat.gif, Extensiongif
+				},
+				{
+					ImageFormat.png, Extensionpng
+				},
+				{
+					ImageFormat.gpx, Extensiongpx
+				},
+			};
+
+		
+		public static ImageFormat MapFileTypesToExtension(string filename)
+		{
+			if ( string.IsNullOrEmpty(filename) ) return ImageFormat.unknown;
+
+			// without escaped values:
+			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
+			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$").Matches(filename);
+			if ( matchCollection.Count == 0 ) return ImageFormat.unknown;
+			foreach ( Match match in matchCollection )
+			{
+				if ( match.Value.Length < 2 ) continue;
+				var ext = match.Value.Remove(0, 1).ToLowerInvariant();
+
+				return MapFileTypesToExtensionDictionary.FirstOrDefault(p => p.Value.Contains(ext)).Key;
+			}
+			return ImageFormat.unknown;
+		}
+
 		/// <summary>
 		/// Supported by sync agent
 		/// </summary>
@@ -112,21 +155,21 @@ namespace starskycore.Helpers
 			}
 		}
 
-		/// <summary>
-		/// Check if name is file.jpg or return false if not
-		/// </summary>
-		/// <param name="filename">e.g. filename.jpg or filepath</param>
-		/// <returns></returns>
-		private static bool FilenameBaseCheck(string filename)
-		{
-			if ( string.IsNullOrEmpty(filename) || filename.Length <= 3) return false;
-			
-			// Dot two,three,four letter extenstion
-			// [\w\d]\.[a-z1-9]{2,4}$
-			var regexer = new Regex("[\\w\\d]\\.[a-z1-9]{2,4}$").Matches(filename);
-			if ( regexer.Count == 0 ) return false;
-			return true;
-		}
+//		/// <summary>
+//		/// Check if name is file.jpg or return false if not
+//		/// </summary>
+//		/// <param name="filename">e.g. filename.jpg or filepath</param>
+//		/// <returns></returns>
+//		private static bool FilenameBaseCheck(string filename)
+//		{
+//			if ( string.IsNullOrEmpty(filename) || filename.Length <= 3) return false;
+//			
+//			// Dot two,three,four letter extenstion
+//			// [\w\d]\.[a-z1-9]{2,4}$
+//			var regexer = new Regex("[\\w\\d]\\.[a-z1-9]{2,4}$").Matches(filename);
+//			if ( regexer.Count == 0 ) return false;
+//			return true;
+//		}
 
 		/// <summary>
 		/// is this filename with extension a filetype that needs a .xmp file 
@@ -145,9 +188,10 @@ namespace starskycore.Helpers
 		/// <returns>true, if imagesharp can write to this</returns>
 		public static bool IsExtensionThumbnailSupported(string filename)
 		{
-			if ( !FilenameBaseCheck(filename) ) return false;
-			var ext = Path.GetExtension(filename).Remove(0, 1).ToLowerInvariant();
-			return ExtensionThumbSupportedList.Contains(ext); // true = if supported
+			return IsExtensionForce(filename, ExtensionThumbSupportedList);
+//			if ( !FilenameBaseCheck(filename) ) return false;
+//			var ext = Path.GetExtension(filename).Remove(0, 1).ToLowerInvariant();
+//			return ExtensionThumbSupportedList.Contains(ext); // true = if supported
 		}
 		
 

@@ -296,7 +296,8 @@ namespace starsky.Controllers
 		            var collectionItem = new FileIndexItem(collectionSubPath)
 		            {
 			            Status = FileIndexItem.ExifStatus.Ok,
-			            CollectionPaths = collectionSubPathList
+			            CollectionPaths = collectionSubPathList,
+			            ImageFormat = ExtensionRolesHelper.MapFileTypesToExtension(collectionSubPath)
 		            };
 		            fileIndexResultsList.Add(_readMeta.ReadExifAndXmpFromFile(collectionItem));
 	            }
