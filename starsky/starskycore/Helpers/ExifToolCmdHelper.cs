@@ -48,17 +48,16 @@ namespace starskycore.Helpers
             {
                 if(ExtensionRolesHelper.IsExtensionForceXmp(fullFilePath))
                 {
-	                throw new NotImplementedException();;
-//                    var xmpFullPath = ExtensionRolesHelper.GetXmpSidecarFileWhenRequired(fullFilePath, _appSettings.ExifToolXmpPrefix);
-//                
-//                    if (FilesHelper.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
-//                    {
-//                        _exiftool.BaseCommmand(" -overwrite_original -TagsFromFile \""  
-//                                               + fullFilePath + "\"",  "\""+ xmpFullPath +  "\"");
-//                    }
-//                    // to continue as xmp file
-//                    fullFilePathsList.Add(xmpFullPath);
-//                    continue;
+                    var xmpFullPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(fullFilePath);
+                
+                    if (FilesHelper.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+                    {
+                        _exiftool.BaseCommmand(" -overwrite_original -TagsFromFile \""  
+                                               + fullFilePath + "\"",  "\""+ xmpFullPath +  "\"");
+                    }
+                    // to continue as xmp file
+                    fullFilePathsList.Add(xmpFullPath);
+                    continue;
                 }
                 fullFilePathsList.Add(fullFilePath);
             }
