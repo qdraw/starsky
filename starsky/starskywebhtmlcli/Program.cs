@@ -57,13 +57,10 @@ namespace starskywebhtmlcli
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;
 
-	        var iStorageHost = new StorageHostFullPathFilesystem();
 
-	        var listOfFiles = iStorageHost.GetAllFilesInDirectory(inputPath)
+	        var listOfFiles = startupHelper.Storage().GetAllFilesInDirectory("/")
 		        .Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
-	        
-	        var readMeta = new ReadMeta(new StorageHostFullPathFilesystem(),appSettings);
-            var fileIndexList = readMeta.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
+            var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
             
             // Create thumbnails from the source images 
             var thumbByDir = new ThumbnailByDirectory(appSettings,startupHelper.ExifTool());
