@@ -26,7 +26,8 @@ namespace starskytest.Controllers
     {
         private IUserManager _userManager;
         private readonly IServiceProvider _serviceProvider;
-//        private DefaultHttpContext _context;
+
+	    private ApplicationDbContext _dbContext;
 
         public AccountControllerTest2()
         {
@@ -63,8 +64,8 @@ namespace starskytest.Controllers
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             builder.UseInMemoryDatabase("test123");
             var options = builder.Options;
-            var context2 = new ApplicationDbContext(options);
-            _userManager = new UserManager(context2);
+            _dbContext = new ApplicationDbContext(options);
+            _userManager = new UserManager(_dbContext);
             
         }
         
@@ -154,9 +155,13 @@ namespace starskytest.Controllers
 	    [TestMethod]
 	    public void AccountController_IndexGetLoginSuccesfull()
 	    {
-		    var controller = new AccountController(_userManager);
 		    var user = new User() { Name = "JohnDoe", Id = 99 };
 		    
+		    _dbContext.Users.Add(user);
+		    
+		    var userManager = new UserManager(_dbContext);
+		    var controller = new AccountController(userManager);
+
 		    
 		    var claims = new List<Claim>()
 		    {
