@@ -117,7 +117,9 @@ namespace starsky.Controllers
 		    if (_appsettings == null || !_appsettings.AddHttp2Optimizations) return string.Empty;
 		    
 		    var infoApiBase = Url.Action("Info", "Api", new {f = infoSubPath, collections});
-		    return HttpUtility.UrlDecode(infoApiBase);
+		    infoApiBase = infoApiBase.Replace("+", "%2B");
+		    return infoApiBase; 
+		    //HttpUtility.UrlDecode(infoApiBase)
 	    }
 
         // Feature to Add Http2 push to the response headers
