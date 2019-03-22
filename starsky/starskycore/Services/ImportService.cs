@@ -156,7 +156,8 @@ namespace starskycore.Services
 		public List<ImportIndexItem> Preflight(List<string> inputFileFullPaths, ImportSettingsModel importSettings)
 	    {
 		    // Do some import checks before sending it to the background service
-		    var hashList = FileHashStatic.GetHashCode(inputFileFullPaths.ToArray());
+		    
+		    var hashList = new FileHash(_filesystemHelper).GetHashCode(inputFileFullPaths.ToArray());
 		    
 			var fileIndexResultsList = hashList.Select((t, i) => PreflightByItem(inputFileFullPaths[i], t, importSettings)).ToList();
 		    return fileIndexResultsList;
@@ -165,8 +166,8 @@ namespace starskycore.Services
 		
 		public ImportIndexItem ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)
 	    {
-		    
-		    var hashCode = FileHashStatic.GetHashCode(inputFileFullPath);
+		    var hashCode = new FileHash(_filesystemHelper).GetHashCode(inputFileFullPath);
+
 			var importIndexItem = PreflightByItem(inputFileFullPath, hashCode, importSettings);
 
 		    // only used when feature is enabled
