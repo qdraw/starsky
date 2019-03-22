@@ -29,7 +29,7 @@ namespace starskycore.Services
 			AppSettings appSettings, 
 			IServiceScopeFactory scopeFactory,
 			IStorage iStorage,
-			bool ignoreIStorage)
+			bool ignoreIStorage = true)
 		{
 			_filesystemHelper = new StorageHostFullPathFilesystem();
 			_context = context;

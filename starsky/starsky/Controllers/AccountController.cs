@@ -36,8 +36,15 @@ namespace starsky.Controllers
 	    {
 		    if ( json && !User.Identity.IsAuthenticated ) return Unauthorized();
             if (!User.Identity.IsAuthenticated) return RedirectToLocal(null);
-	        if ( json ) return Json(_userManager.GetCurrentUser(HttpContext));
-			return View(_userManager.GetCurrentUser(HttpContext));
+		    // use model to avoid circulair references
+		    var model = new User
+		    {
+			    Name = _userManager.GetCurrentUser(HttpContext).Name,
+			    Id = _userManager.GetCurrentUser(HttpContext).Id,
+			    Created = _userManager.GetCurrentUser(HttpContext).Created,
+		    };
+	        if ( json ) return Json(model);
+			return View(model);
         }
 
         /// <summary>
