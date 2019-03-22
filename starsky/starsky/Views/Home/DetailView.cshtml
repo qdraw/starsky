@@ -74,17 +74,21 @@
 					var hours = ( int ) timeSpan.TotalHours;
 					var days = ( int ) timeSpan.TotalDays;
 
-					if (hours <= 1 )
+					if (minutes <= 5 )
 					{
-						<p>Bewerkt: <em>@minutes minuten geleden</em></p>
+						<p class="js-lastedited">Bewerkt: <em>minder dan 5 min. geleden</em></p>
+					}
+					else if (hours <= 1 )
+					{
+						<p class="js-lastedited">Bewerkt: <em>@minutes minuten geleden</em></p>
 					}
 					else if (hours <= 100 )
 					{
-						<p>Bewerkt: <em>@hours uur geleden</em></p>
+						<p class="js-lastedited">Bewerkt: <em>@hours uur geleden</em></p>
 					}
 					else
 					{
-						<p>Bewerkt: <em>@days dagen geleden</em></p>
+						<p class="js-lastedited">Bewerkt: <em>@days dagen geleden</em></p>
 					}
 				}   
 				
