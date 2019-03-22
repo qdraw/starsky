@@ -270,8 +270,12 @@ namespace starskycore.Helpers
 			Console.WriteLine($"ExifToolPath  (-e --exiftoolpath) {_appSettings.ExifToolPath} " +
 				$"- {FilesHelper.IsFolderOrFile(_appSettings.ExifToolPath).ToString()}");
 			Console.WriteLine("Structure  (-u --structure) "+ _appSettings.Structure);
-			Console.WriteLine("Name "+ _appSettings.Name);
+			Console.WriteLine("Name " + _appSettings.Name);
 			Console.WriteLine("CameraTimeZone "+ _appSettings.CameraTimeZone);
+			
+			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebFtp) 
+				Console.WriteLine("WebFtp " + _appSettings.WebFtp);
+			
 			Console.WriteLine("-- Appsettings.json locations -- ");
 			
 			var machineName = Environment.MachineName.ToLowerInvariant();
