@@ -13,7 +13,7 @@ namespace starskycore.Services
 {
 	public class ReadMetaExif
 	{
-		private IStorage _iStorage;
+		private readonly IStorage _iStorage;
 
 		public ReadMetaExif(IStorage iStorage)
 		{
@@ -27,16 +27,12 @@ namespace starskycore.Services
 	        {
 				try
 				{
-					
-//						stream.Seek(0,SeekOrigin.Begin);
-						allExifItems = ImageMetadataReader.ReadMetadata(stream).ToList();
-						stream.Dispose();
-					
-					
+					allExifItems = ImageMetadataReader.ReadMetadata(stream).ToList();
 					DisplayAllExif(allExifItems);
 				}
 				catch (ImageProcessingException)
 				{
+					stream.Dispose();
 					var item = new FileIndexItem {Tags = nameof(ImageProcessingException).ToLowerInvariant()};
 					return item;
 				}

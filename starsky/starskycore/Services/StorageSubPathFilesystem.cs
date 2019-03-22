@@ -145,13 +145,8 @@ namespace starskycore.Services
 			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
 			
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
-			
-			Console.WriteLine(fullFilePath);
-			
-			// new FileStream(fullFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, maxRead, false);
-			
-//			MemoryStream memoryStream = new MemoryStream();
-//			var bs = new BufferedStream(fileStream, 1024);
+
+			if ( _appSettings.Verbose ) Console.WriteLine(path);
 				
 			FileStream fileStream;
 			if ( maxRead <= 1 )
@@ -163,11 +158,6 @@ namespace starskycore.Services
 				fileStream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read,
 					FileShare.Read, maxRead, false);
 			}
-//			var bs = new BufferedStream(fileStream);
-			
-//			MemoryStream memoryStream = new MemoryStream();
-//			fileStream.CopyTo(memoryStream);
-//			fileStream.Dispose();
 
 			return fileStream;
 		}
