@@ -84,10 +84,10 @@ namespace starskycore.Services
 			var filesFullPathList = new List<string>();
 			// recursive
 			if(importSettings.RecursiveDirectory) filesFullPathList = new StorageHostFullPathFilesystem().GetAllFilesInDirectoryRecursive(inputFullPath)
-				.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
+				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 			// non-recursive
 			if(!importSettings.RecursiveDirectory) filesFullPathList = new StorageHostFullPathFilesystem().GetAllFilesInDirectory(inputFullPath)
-				.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
+				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
 			// go back to Import -->
 			var successfulDirFullPaths = Import(filesFullPathList, importSettings);

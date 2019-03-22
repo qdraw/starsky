@@ -118,7 +118,9 @@ namespace starskycore.Services
 			// to filter use:
 			// ..etAllFilesInDirectory(subPath)
 			//	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
-			
+			// OR:
+			//  .Where(ExtensionRolesHelper.IsExtensionSyncSupported)
+
 			// convert back to subPath style
 			return _appSettings.RenameListItemsToDbStyle(imageFilesList.ToList());
 		}
