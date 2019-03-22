@@ -235,9 +235,9 @@ namespace starskycore.Services
 
 	    private static void DisplayAllExif(IEnumerable<MetadataExtractor.Directory> allExifItems)
         {
-            foreach (var exifItem in allExifItems) {
-                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
-            }
+//            foreach (var exifItem in allExifItems) {
+//                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
+//            }
         }
 
         public string GetObjectName (MetadataExtractor.Directory exifItem)
