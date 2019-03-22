@@ -41,33 +41,33 @@ namespace starskycore.Services
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath,false);
-			return new StorageFullPathFilesystem().IsFolderOrFile(fullFilePath);
+			return new StorageHostFullPathFilesystem().IsFolderOrFile(fullFilePath);
 		}
 
 		public void FolderMove(string inputSubPath, string toSubPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
 			var toFileFullPath = _appSettings.DatabasePathToFilePath(toSubPath, false);
-			new StorageFullPathFilesystem().FolderMove(inputFileFullPath,toFileFullPath);
+			new StorageHostFullPathFilesystem().FolderMove(inputFileFullPath,toFileFullPath);
 		}
 
 		public void FileMove(string inputSubPath, string toSubPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
 			var toFileFullPath = _appSettings.DatabasePathToFilePath(toSubPath, false);
-			new StorageFullPathFilesystem().FileMove(inputFileFullPath,toFileFullPath);
+			new StorageHostFullPathFilesystem().FileMove(inputFileFullPath,toFileFullPath);
 		}
 		
 		public void FileCopy(string inputSubPath, string toSubPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
 			var toFileFullPath = _appSettings.DatabasePathToFilePath(toSubPath, false);
-			new StorageFullPathFilesystem().FileCopy(inputFileFullPath,toFileFullPath);
+			new StorageHostFullPathFilesystem().FileCopy(inputFileFullPath,toFileFullPath);
 		}
 		
 		public bool FileDelete(string path)
 		{
-			return new StorageFullPathFilesystem().FileDelete(path);
+			return new StorageHostFullPathFilesystem().FileDelete(path);
 		}
 		
 		public void CreateDirectory(string subPath)
@@ -89,7 +89,7 @@ namespace starskycore.Services
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
 			if (fullFilePath == null) return Enumerable.Empty<string>();
 
-			var imageFilesList = new StorageFullPathFilesystem().GetAllFilesInDirectory(fullFilePath);
+			var imageFilesList = new StorageHostFullPathFilesystem().GetAllFilesInDirectory(fullFilePath);
 
 			// to filter use:
 			// ..etAllFilesInDirectory(subPath)
@@ -113,7 +113,7 @@ namespace starskycore.Services
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
 			if (fullFilePath == null) return Enumerable.Empty<string>();
 
-			var imageFilesList = new StorageFullPathFilesystem().GetAllFilesInDirectoryRecursive(fullFilePath);
+			var imageFilesList = new StorageHostFullPathFilesystem().GetAllFilesInDirectoryRecursive(fullFilePath);
 
 			// to filter use:
 			// ..etAllFilesInDirectory(subPath)
@@ -133,7 +133,7 @@ namespace starskycore.Services
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
 			if (fullFilePath == null) return Enumerable.Empty<string>();
 			
-			var folders = new StorageFullPathFilesystem().GetDirectoryRecursive(fullFilePath);
+			var folders = new StorageHostFullPathFilesystem().GetDirectoryRecursive(fullFilePath);
 
 			// Used For subfolders
 			// convert back to subpath style

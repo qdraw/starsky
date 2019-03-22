@@ -6,7 +6,7 @@ using starskycore.Models;
 
 namespace starskycore.Services
 {
-	public class StorageFullPathFilesystem : IStorage
+	public class StorageHostFullPathFilesystem : IStorage
 	{
 		public void CreateDirectory(string subPath)
 		{
@@ -42,9 +42,21 @@ namespace starskycore.Services
 			return Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);
 		}
 
-		public Stream ReadStream(string path, int maxRead = Int32.MaxValue)
+		public Stream ReadStream(string path, int maxRead = -1)
 		{
-			throw new NotImplementedException();
+			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
+
+			FileStream fileStream;
+			if ( maxRead <= 1 )
+			{
+				fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+			}
+			else
+			{
+				fileStream = new FileStream(path, FileMode.Open, FileAccess.Read,
+					FileShare.Read, maxRead, false);
+			}
+			return fileStream;
 		}
 
 		public bool ExistThumbnail(string fileHash)

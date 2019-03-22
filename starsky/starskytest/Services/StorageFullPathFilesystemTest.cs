@@ -15,7 +15,7 @@ namespace starskytest.Services
 		{            
 			var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
 
-			var content = new StorageFullPathFilesystem().GetAllFilesInDirectoryRecursive(path);
+			var content = new StorageHostFullPathFilesystem().GetAllFilesInDirectoryRecursive(path);
 
 			Console.WriteLine("count => "+ content.Count());
 

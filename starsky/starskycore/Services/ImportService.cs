@@ -27,18 +27,22 @@ namespace starskycore.Services
 			ISync isync, 
 			IExiftool exiftool, 
 			AppSettings appSettings, 
-			IReadMeta readMeta, 
 			IServiceScopeFactory scopeFactory,
-			IStorage iStorage)
+			IStorage iStorage,
+			bool ignoreIStorage)
 		{
-			_filesystemHelper = new StorageFullPathFilesystem();
+			_filesystemHelper = new StorageHostFullPathFilesystem();
 			_context = context;
 			_isConnection = _context.TestConnection(appSettings);
 				
 			_isync = isync;
 			_exiftool = exiftool;
 			_appSettings = appSettings;
-			_readmeta = readMeta;
+			
+			// This is used to handle files on the host system
+			if ( !ignoreIStorage ) _readmeta = new ReadMeta(iStorage);
+			if ( ignoreIStorage ) _readmeta = new ReadMeta(_filesystemHelper);
+
 			_scopeFactory = scopeFactory;
 		}
 		
@@ -79,10 +83,10 @@ namespace starskycore.Services
 			
 			var filesFullPathList = new List<string>();
 			// recursive
-			if(importSettings.RecursiveDirectory) filesFullPathList = new StorageFullPathFilesystem().GetAllFilesInDirectoryRecursive(inputFullPath)
+			if(importSettings.RecursiveDirectory) filesFullPathList = new StorageHostFullPathFilesystem().GetAllFilesInDirectoryRecursive(inputFullPath)
 				.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
 			// non-recursive
-			if(!importSettings.RecursiveDirectory) filesFullPathList = new StorageFullPathFilesystem().GetAllFilesInDirectory(inputFullPath)
+			if(!importSettings.RecursiveDirectory) filesFullPathList = new StorageHostFullPathFilesystem().GetAllFilesInDirectory(inputFullPath)
 				.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
 
 			// go back to Import -->
