@@ -148,6 +148,7 @@ if (document.querySelectorAll("#js-keywords-update").length === 1 &&
             } 
         })
         .then(function(data) {
+            if (data === undefined) return; 
             updateCollectionsSwitch(data);
             updateDeletedKeywordElement(data[0]);
             updateColorClassButtons(data[0].colorClass);
