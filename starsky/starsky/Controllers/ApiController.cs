@@ -564,7 +564,6 @@ namespace starsky.Controllers
                     ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.
                         FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
 	                FileHash = singleItem.FileIndexItem.FileHash // not loading it from disk to make it faster
-//                    FileHash = new FileHash(_iStorage).GetHashCode(_appSettings.FullPathToDatabaseStyle(sourceFullPath))
                 };
                 
                 // When you have a different tag in the database than on disk
