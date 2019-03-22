@@ -29,7 +29,8 @@ namespace starskycore.Services
 			        Latitude = readGpxFile.FirstOrDefault().Latitude,
 			        Longitude = readGpxFile.FirstOrDefault().Longitude,
 			        LocationAltitude = readGpxFile.FirstOrDefault().Altitude,
-			        ColorClass = FileIndexItem.Color.None
+			        ColorClass = FileIndexItem.Color.None,
+			        ImageFormat = ExtensionRolesHelper.ImageFormat.gpx
 		        }; 
 	        }
 	        

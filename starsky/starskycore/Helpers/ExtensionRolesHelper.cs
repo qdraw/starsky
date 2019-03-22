@@ -129,6 +129,16 @@ namespace starskycore.Helpers
 		}
 
 		/// <summary>
+		/// is this filename with extension a filetype that needs a .xmp file 
+		/// </summary>
+		/// <param name="filename">the name of the file with extenstion</param>
+		/// <returns>true, </returns>
+		public static bool IsExtensionSyncSupported(string filename)
+		{
+			return IsExtensionForce(filename, ExtensionSyncSupportedList);
+		}
+		
+		/// <summary>
 		/// is this filename with extension a filetype that imagesharp can read/write 
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
@@ -139,6 +149,9 @@ namespace starskycore.Helpers
 			var ext = Path.GetExtension(filename).Remove(0, 1).ToLowerInvariant();
 			return ExtensionThumbSupportedList.Contains(ext); // true = if supported
 		}
+		
+
+		
 
 		/// <summary>
 		/// List of extension that are forced to use site car xmp files	
@@ -155,7 +168,7 @@ namespace starskycore.Helpers
 				extensionList.AddRange(Extensionbmp);
 				// Gif does not support internal xmp
 				extensionList.AddRange(Extensiongif);
-				// Used for raw files >
+				// Used for raw files =>
 				extensionList.AddRange(Extensiontiff);
 				return extensionList;
 			}

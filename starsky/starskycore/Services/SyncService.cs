@@ -87,7 +87,7 @@ namespace starskycore.Services
 				
 				var databaseFileList = _query.GetAllFiles(singleFolder);
 				var localFarrayFilesDbStyle = _iStorage.GetAllFilesInDirectory(singleFolder)
-					.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
+					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 				
 				databaseFileList = RemoveDuplicate(databaseFileList);
 				databaseFileList = RemoveOldFilePathItemsFromDatabase(localFarrayFilesDbStyle, databaseFileList, subPath);
