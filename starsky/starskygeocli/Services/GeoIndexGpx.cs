@@ -38,7 +38,8 @@ namespace starskyGeoCli.Services
             var geoList = new List<GeoListItem>(); 
             foreach (var metaFileItem in metaFilesInDirectory)
             {
-                if(metaFileItem.ImageFormat != ExtensionRolesHelper.ImageFormat.gpx) continue;
+	            
+                if( !ExtensionRolesHelper.IsExtensionForceGpx(metaFileItem.FileName) ) continue;
 	            
 	            if ( !_iStorage.ExistFile(metaFileItem.FilePath) ) continue;
 	            

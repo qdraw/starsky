@@ -72,7 +72,7 @@ namespace starskyGeoCli
 
 	        // use relative to StorageFolder
 	        var listOfFiles = startupHelper.Storage().GetAllFilesInDirectory("/")
-		        .Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
+		        .Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 	        var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
 	        
             var overwriteLocationNames = new ArgsHelper().GetAll(args);

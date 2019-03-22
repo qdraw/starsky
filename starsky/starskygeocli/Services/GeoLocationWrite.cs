@@ -8,27 +8,27 @@ namespace starskyGeoCli.Services
 {
     public class GeoLocationWrite
     {
-        private readonly IExiftool _exiftool;
+        private readonly IExiftool _exifTool;
         private readonly AppSettings _appSettings;
 
-        public GeoLocationWrite(AppSettings appSettings, IExiftool exiftool)
+        public GeoLocationWrite(AppSettings appSettings, IExiftool exifTool)
         {
-            _exiftool = exiftool;
+            _exifTool = exifTool;
             _appSettings = appSettings;
         }
         
         /// <summary>
-        /// Write to Exiftool by list
+        /// Write to ExifTool by list
         /// </summary>
         /// <param name="metaFilesInDirectory">list of files with data</param>
-        /// <param name="syncLocationNames">Write city, state and country to exiftool (false > no)</param>
+        /// <param name="syncLocationNames">Write city, state and country to exifTool (false > no)</param>
         public void LoopFolder(List<FileIndexItem> metaFilesInDirectory, bool syncLocationNames)
         {
             foreach (var metaFileItem in metaFilesInDirectory)
             {
                 if (!ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) continue;
 
-                Console.WriteLine("Do a exiftoolSync");
+                Console.WriteLine("Do a exifToolSync");
                 var comparedNamesList = new List<string>
                 {
                     nameof(FileIndexItem.Latitude),
@@ -46,7 +46,7 @@ namespace starskyGeoCli.Services
 
                 var destinationFullPath = _appSettings.DatabasePathToFilePath(metaFileItem.FilePath);
 
-                new ExifToolCmdHelper(_appSettings, _exiftool).Update(metaFileItem, destinationFullPath,
+                new ExifToolCmdHelper(_appSettings, _exifTool).Update(metaFileItem, destinationFullPath,
                     comparedNamesList);
                 
                 Console.WriteLine(metaFileItem.FilePath);
