@@ -149,13 +149,6 @@ namespace starsky.Controllers
 						);
 				}
 				
-//				// when there is .xmp sidecar file
-//				if ( !thumbnail && ExtensionRolesHelper.IsExtensionForceXmp(sourceFile) 
-//				                && FilesHelper.ExistFile(ExtensionRolesHelper.GetXmpSidecarFile(sourceFile)))
-//				{
-////					filePaths.Add(ExtensionRolesHelper.GetXmpSidecarFile(sourceFile));
-//				}
-
 			}
 
 			return filePaths;
