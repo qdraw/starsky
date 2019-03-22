@@ -8,7 +8,7 @@ namespace starskytest.FakeMocks
 {
     public class FakeReadMeta : IReadMeta
     {
-        public FileIndexItem ReadExifAndXmpFromFile(string singleFilePath, ExtensionRolesHelper.ImageFormat imageFormat)
+        public FileIndexItem ReadExifAndXmpFromFile(string subPath, ExtensionRolesHelper.ImageFormat imageFormat)
         {
             return new FileIndexItem{Status = FileIndexItem.ExifStatus.Ok, Tags = "test", FileHash = "test", FileName = "t", ParentDirectory = "d"};
         }

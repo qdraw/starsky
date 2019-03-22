@@ -35,14 +35,15 @@ namespace starskycore.Services
                     {
                         _query.RemoveItem(dbItem);
 
-                        var imageFormat = ExtensionRolesHelper.GetImageFormat(itemLocal);
 
                         // Read data from file
-                        var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(itemLocal,imageFormat);
-                        
-                        updatedDatabaseItem.ImageFormat = imageFormat;
+	                    var updatedDatabaseItem = new FileIndexItem(itemLocal)
+	                    {
+		                    ImageFormat = ExtensionRolesHelper.GetImageFormat(itemLocal)
+	                    };
+
+	                    updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(updatedDatabaseItem);
                         updatedDatabaseItem.FileHash = localHash;
-                        updatedDatabaseItem.FileName = dbItem.FileName;
                         updatedDatabaseItem.AddToDatabase = DateTime.Now;
                         updatedDatabaseItem.IsDirectory = false;
                         updatedDatabaseItem.ParentDirectory = dbItem.ParentDirectory;

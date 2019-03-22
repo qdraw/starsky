@@ -60,7 +60,11 @@ namespace starskycore.Services
             item.LocationAltitude = GetGeoLocationAltitude(allExifItems);
             item.SetImageWidth(GetImageWidthHeight(allExifItems,true));
             item.SetImageHeight(GetImageWidthHeight(allExifItems,false));
-            
+
+	        // Update imageFormat based on Exif data
+	        var imageFormat = GetFileSpecificTags(allExifItems);
+	        if ( imageFormat != ExtensionRolesHelper.ImageFormat.unknown )
+		        item.ImageFormat = imageFormat;
             
             foreach (var exifItem in allExifItems)
             {
@@ -166,7 +170,24 @@ namespace starskycore.Services
             return item;
         }
 
-        private FileIndexItem.Rotation GetOrientation(MetadataExtractor.Directory exifItem)
+		private ExtensionRolesHelper.ImageFormat GetFileSpecificTags(List<Directory> allExifItems)
+		{
+			if ( allExifItems.Any(p => p.Name == "JPEG") )
+				return ExtensionRolesHelper.ImageFormat.jpg;
+				
+			if ( allExifItems.Any(p => p.Name == "PNG-IHDR") )
+				return ExtensionRolesHelper.ImageFormat.png;
+			
+			if ( allExifItems.Any(p => p.Name == "BMP Header") )
+				return ExtensionRolesHelper.ImageFormat.bmp;	
+			
+			if ( allExifItems.Any(p => p.Name == "GIF Header") )
+				return ExtensionRolesHelper.ImageFormat.gif;	
+				
+			return ExtensionRolesHelper.ImageFormat.unknown;
+		}
+
+		private FileIndexItem.Rotation GetOrientation(MetadataExtractor.Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif IFD0" && p.Name == "Orientation");
             if (tCounts < 1) return FileIndexItem.Rotation.DoNotChange;
@@ -214,9 +235,9 @@ namespace starskycore.Services
 
 	    private static void DisplayAllExif(IEnumerable<MetadataExtractor.Directory> allExifItems)
         {
-//            foreach (var exifItem in allExifItems) {
-//                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
-//            }
+            foreach (var exifItem in allExifItems) {
+                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
+            }
         }
 
         public string GetObjectName (MetadataExtractor.Directory exifItem)

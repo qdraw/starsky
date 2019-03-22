@@ -301,7 +301,9 @@ namespace starskycore.Services
 		
 		public FileIndexItem ReadExifAndXmpFromFile(string inputFileFullPath)
 		{
-			return _readmeta.ReadExifAndXmpFromFile(inputFileFullPath,ExtensionRolesHelper.GetImageFormat(inputFileFullPath));
+			var fileIndexItem = new FileIndexItem(inputFileFullPath);
+			fileIndexItem.ImageFormat = ExtensionRolesHelper.GetImageFormat(inputFileFullPath);
+			return _readmeta.ReadExifAndXmpFromFile(fileIndexItem);
 		}
 
 		public bool IsAgeFileFilter(ImportSettingsModel importSettings, DateTime exifDateTime)

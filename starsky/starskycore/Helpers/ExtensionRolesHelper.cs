@@ -160,7 +160,6 @@ namespace starskycore.Helpers
 				return extensionList;
 			}
 		}
-		
 
 		/// <summary>
 		/// is this filename with extension a filetype that needs a .xmp file 
@@ -168,6 +167,27 @@ namespace starskycore.Helpers
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <returns>true, </returns>
 		public static bool IsExtensionForceXmp(string filename)
+		{
+			return IsExtensionForce(filename, ExtensionForceXmpUseList);
+		}
+
+		/// <summary>
+		/// is this filename with extension a filetype that needs a .gpx file 
+		/// </summary>
+		/// <param name="filename">the name of the file with extenstion</param>
+		/// <returns>true, </returns>
+		public static bool IsExtensionForceGpx(string filename)
+		{
+			return IsExtensionForce(filename, Extensiongpx);
+		}
+		
+		/// <summary>
+		/// is this filename with extension a filetype that needs a item that is in the list 
+		/// </summary>
+		/// <param name="filename">the name of the file with extenstion</param>
+		/// <param name="checkThisList">the list of strings to match</param>
+		/// <returns>true, </returns>
+		private static bool IsExtensionForce(string filename, List<string> checkThisList)
 		{
 			if ( string.IsNullOrEmpty(filename) ) return false;
 
@@ -179,7 +199,7 @@ namespace starskycore.Helpers
 			{
 				if ( match.Value.Length < 2 ) continue;
 				var ext = match.Value.Remove(0, 1).ToLowerInvariant();
-				if ( ExtensionForceXmpUseList.Contains(ext) ) return true;
+				if ( checkThisList.Contains(ext) ) return true;
 			}
 			return false;
 		}

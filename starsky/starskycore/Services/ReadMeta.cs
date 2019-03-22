@@ -9,7 +9,7 @@ using starskycore.Models;
 
 namespace starskycore.Services
 {
-    public partial class ReadMeta : IReadMeta
+    public class ReadMeta : IReadMeta
     {
         private readonly AppSettings _appSettings;
         private readonly IMemoryCache _cache;
@@ -29,21 +29,21 @@ namespace starskycore.Services
 
         }
 
-        private FileIndexItem ReadExifAndXmpFromFileDirect(
-	        string subPath, ExtensionRolesHelper.ImageFormat imageFormat)
+        private FileIndexItem ReadExifAndXmpFromFileDirect(FileIndexItem fileIndexItemWithPath)
         {
-	        if ( _iStorage.ExistFile(subPath) && imageFormat == ExtensionRolesHelper.ImageFormat.gpx )
+	        if ( _iStorage.ExistFile(fileIndexItemWithPath.FilePath) 
+	             && ExtensionRolesHelper.IsExtensionForceGpx(fileIndexItemWithPath.FileName) )
 	        {
-				return _readGpx.ReadGpxFromFileReturnAfterFirstField(_iStorage.ReadStream(subPath));
+				return _readGpx.ReadGpxFromFileReturnAfterFirstField(_iStorage.ReadStream(fileIndexItemWithPath.FilePath));
 	        }
 
-	        var fileIndexItem = _readXmp.XmpGetSidecarFile(new FileIndexItem(subPath));
+	        var fileIndexItem = _readXmp.XmpGetSidecarFile(fileIndexItemWithPath);
 
 	        if ( fileIndexItem.IsoSpeed == 0 
 	             || string.IsNullOrEmpty(fileIndexItem.Make) 
 	             || fileIndexItem.DateTime.Year == 0)
 	        {
-		        var databaseItemFile = _readExif.ReadExifFromFile(subPath);
+		        var databaseItemFile = _readExif.ReadExifFromFile(fileIndexItemWithPath.FilePath);
 		        FileIndexCompareHelper.Compare(fileIndexItem, databaseItemFile);
 	        }
 	        
@@ -58,13 +58,17 @@ namespace starskycore.Services
 	        for ( int i = 0; i < subPathList.Count; i++ )
 	        {
 		        var subPath = subPathList[i];
+		        
+		        // todo: fix dependency on filesystem
 		        var imageFormat = ExtensionRolesHelper.GetImageFormat(subPath); 
-		        var returnItem = ReadExifAndXmpFromFile(subPath,imageFormat);
+		        
+		        var returnItem = new FileIndexItem(subPath);
+		        
+		        returnItem = ReadExifAndXmpFromFile(returnItem);
 
 		        returnItem.ImageFormat = imageFormat;
 		        returnItem.FileName = Path.GetFileName(subPath);
 		        returnItem.IsDirectory = false;
-		        returnItem.Id = -1;
 		        returnItem.Status = FileIndexItem.ExifStatus.Ok;
 		        returnItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault();
 
@@ -83,23 +87,23 @@ namespace starskycore.Services
         }
 
         // Cached view >> IMemoryCache
-        // Short living cache Max 10. minutes
-        public FileIndexItem ReadExifAndXmpFromFile(string subPath, ExtensionRolesHelper.ImageFormat imageFormat)
+        // Short living cache Max 15. minutes
+        public FileIndexItem ReadExifAndXmpFromFile(FileIndexItem fileIndexItemWithLocation)
         {
             // The CLI programs uses no cache
             if( _cache == null || _appSettings?.AddMemoryCache == false) 
-                return ReadExifAndXmpFromFileDirect(subPath,imageFormat);
+                return ReadExifAndXmpFromFileDirect(fileIndexItemWithLocation);
             
             // Return values from IMemoryCache
-            var queryCacheName = "info_" + subPath;
+            var queryCacheName = "info_" + fileIndexItemWithLocation.FilePath;
             
             // Return Cached object if it exist
             if (_cache.TryGetValue(queryCacheName, out var objectExifToolModel))
                 return objectExifToolModel as FileIndexItem;
             
             // Try to catch a new object
-            objectExifToolModel = ReadExifAndXmpFromFileDirect(subPath,imageFormat);
-            _cache.Set(queryCacheName, objectExifToolModel, new TimeSpan(0,10,0));
+            objectExifToolModel = ReadExifAndXmpFromFileDirect(fileIndexItemWithLocation);
+            _cache.Set(queryCacheName, objectExifToolModel, new TimeSpan(0,15,0));
             return (FileIndexItem) objectExifToolModel;
         }
 
@@ -112,7 +116,7 @@ namespace starskycore.Services
             var toUpdateObject = objectExifToolModel.Clone();
             var queryCacheName = "info_" + fullFilePath;
             RemoveReadMetaCache(fullFilePath);
-            _cache.Set(queryCacheName, toUpdateObject, new TimeSpan(0,10,0));
+            _cache.Set(queryCacheName, toUpdateObject, new TimeSpan(0,15,0));
         }
         
 

@@ -35,7 +35,7 @@ namespace starskycore.ViewModels
 	    public bool Collections { get; set; }
 
 	    /// <summary>
-	    /// If conllections enalbed return list of subpaths
+	    /// If collections is enabled return list of subpaths
 	    /// </summary>
 	    /// <param name="detailView">the base fileIndexItem</param>
 	    /// <param name="collections">bool, to enable</param>

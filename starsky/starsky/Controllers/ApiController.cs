@@ -274,7 +274,7 @@ namespace starsky.Controllers
                 var detailView = _query.SingleItem(subPath, null, collections, false);
                 
                 // Check if extension is supported for ExtensionExifToolSupportedList
-                // Not all files are able to write with exiftool
+                // Not all files are able to write with exifTool
                 if(detailView != null && !ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
                 {
                     detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
@@ -290,8 +290,16 @@ namespace starsky.Controllers
 	            if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
 
                 var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
-                var fileCompontentList = _readMeta.ReadExifAndXmpFromFileAddFilePathHash(collectionSubPathList);
-                fileIndexResultsList.AddRange(fileCompontentList);
+
+	            foreach ( var collectionSubPath in collectionSubPathList )
+	            {
+		            var collectionItem = new FileIndexItem(collectionSubPath)
+		            {
+			            Status = FileIndexItem.ExifStatus.Ok,
+			            CollectionPaths = collectionSubPathList
+		            };
+		            fileIndexResultsList.Add(_readMeta.ReadExifAndXmpFromFile(collectionItem));
+	            }
             }
 
             // returns read only
