@@ -51,13 +51,13 @@ namespace starskycore.Services
         }
 
         // used by the html generator
-        public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(string[] subPathArray, string[] fileHashes = null)
+        public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(List<string> subPathList, List<string> fileHashes = null)
         {
             var fileIndexList = new List<FileIndexItem>();
 
-	        for ( int i = 0; i < subPathArray.Length; i++ )
+	        for ( int i = 0; i < subPathList.Count; i++ )
 	        {
-		        var subPath = subPathArray[i];
+		        var subPath = subPathList[i];
 		        var imageFormat = ExtensionRolesHelper.GetImageFormat(subPath); 
 		        var returnItem = ReadExifAndXmpFromFile(subPath,imageFormat);
 
@@ -68,7 +68,7 @@ namespace starskycore.Services
 		        returnItem.Status = FileIndexItem.ExifStatus.Ok;
 		        returnItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault();
 
-		        if ( fileHashes == null || fileHashes.Length <= i )
+		        if ( fileHashes == null || fileHashes.Count <= i )
 		        {
 			        returnItem.FileHash = new FileHash(_iStorage).GetHashCode(subPath);
 		        }

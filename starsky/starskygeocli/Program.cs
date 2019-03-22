@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
@@ -71,7 +72,7 @@ namespace starskyGeoCli
 
             var filesInDirectory = FilesHelper.GetFilesInDirectory(inputPath);
             var metaFilesInDirectory = startupHelper.ReadMeta()
-                .ReadExifAndXmpFromFileAddFilePathHash(filesInDirectory);
+                .ReadExifAndXmpFromFileAddFilePathHash(filesInDirectory.ToList());
             // FilePath is used as full
             
             var overwriteLocationNames = new ArgsHelper().GetAll(args);

@@ -31,7 +31,7 @@ namespace starskytest.Services
             var appsettings = new AppSettings {StorageFolder = new CreateAnImage().BasePath};
 	        var iStorage = new StorageSubPathFilesystem(appsettings);
 
-            var listofFiles = new string[]{ new CreateAnImage().DbPath};
+            var listofFiles = new List<string>{ new CreateAnImage().DbPath};
             var listOfMetas = new ReadMeta(iStorage,appsettings,_fakeCache)
                 .ReadExifAndXmpFromFileAddFilePathHash(listofFiles);
             Assert.AreEqual(new CreateAnImage().DbPath.Remove(0,1), 

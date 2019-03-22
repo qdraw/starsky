@@ -290,7 +290,7 @@ namespace starsky.Controllers
 	            if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
 
                 var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
-                var fileCompontentList = _readMeta.ReadExifAndXmpFromFileAddFilePathHash(collectionSubPathList.ToArray());
+                var fileCompontentList = _readMeta.ReadExifAndXmpFromFileAddFilePathHash(collectionSubPathList);
                 fileIndexResultsList.AddRange(fileCompontentList);
             }
 
