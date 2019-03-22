@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using MetadataExtractor;
 using starskycore.Helpers;
+using starskycore.Interfaces;
 using starskycore.Models;
 using Directory = MetadataExtractor.Directory;
 
@@ -12,24 +13,35 @@ namespace starskycore.Services
 {
 	public class ReadMetaExif
 	{
-		
-		public FileIndexItem ReadExifFromFile(Stream stream, FileIndexItem existingFileIndexItem = null) // use null to create an object
+		private IStorage _iStorage;
+
+		public ReadMetaExif(IStorage iStorage)
+		{
+			_iStorage = iStorage;
+		}
+		public FileIndexItem ReadExifFromFile(string subPath, FileIndexItem existingFileIndexItem = null) // use null to create an object
         {
             List<MetadataExtractor.Directory> allExifItems;
-            
-            try
-            {
-                allExifItems = ImageMetadataReader.ReadMetadata(stream).ToList();
-	            stream.Dispose();
-	            
-                DisplayAllExif(allExifItems);
-            }
-            catch (ImageProcessingException)
-            {
-                var item = new FileIndexItem {Tags = "ImageProcessingException".ToLower()};
-                return item;
-            }
-
+	        
+	        using ( var stream = _iStorage.ReadStream(subPath) )
+	        {
+				try
+				{
+					
+//						stream.Seek(0,SeekOrigin.Begin);
+						allExifItems = ImageMetadataReader.ReadMetadata(stream).ToList();
+						stream.Dispose();
+					
+					
+					DisplayAllExif(allExifItems);
+				}
+				catch (ImageProcessingException)
+				{
+					var item = new FileIndexItem {Tags = nameof(ImageProcessingException).ToLowerInvariant()};
+					return item;
+				}
+	        }
+	        
             return ParseExifDirectory(allExifItems, existingFileIndexItem);
         }
 

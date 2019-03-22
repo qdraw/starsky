@@ -73,7 +73,7 @@ namespace starskycore.Services
 
 	        // Some files are having problems with gpxDoc.Load()
 	        var fileString = new PlainTextFileHelper().ReadFile(stream);
-
+	        
 	        try
 	        {
 		        return ParseGpxString(fileString, geoList, returnAfter);

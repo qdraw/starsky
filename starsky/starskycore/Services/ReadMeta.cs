@@ -23,7 +23,7 @@ namespace starskycore.Services
             _appSettings = appSettings;
             _cache = memoryCache;
 	        _iStorage = iStorage;
-	        _readExif = new ReadMetaExif();
+	        _readExif = new ReadMetaExif(iStorage);
 	        _readXmp = new ReadMetaXmp(iStorage,memoryCache);
 	        _readGpx = new ReadMetaGpx();
 
@@ -43,7 +43,7 @@ namespace starskycore.Services
 	             || string.IsNullOrEmpty(fileIndexItem.Make) 
 	             || fileIndexItem.DateTime.Year == 0)
 	        {
-		        var databaseItemFile = _readExif.ReadExifFromFile(_iStorage.ReadStream(subPath));
+		        var databaseItemFile = _readExif.ReadExifFromFile(subPath);
 		        FileIndexCompareHelper.Compare(fileIndexItem, databaseItemFile);
 	        }
 	        

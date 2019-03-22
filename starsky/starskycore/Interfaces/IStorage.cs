@@ -19,7 +19,7 @@ namespace starskycore.Interfaces
 		IEnumerable<string> GetAllFilesInDirectoryRecursive(string path);
 		IEnumerable<string> GetDirectoryRecursive(string path);
 
-		Stream ReadStream(string path, int maxRead = int.MaxValue);
+		Stream ReadStream(string path, int maxRead = -1);
 		
 		/// <summary>
 		/// Check if thumbnail exist

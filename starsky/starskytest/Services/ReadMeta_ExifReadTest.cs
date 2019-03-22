@@ -35,7 +35,7 @@ namespace starskytest.Services
          [ExcludeFromCoverage]
          public void ExifRead_GetObjectNameNull()
          {
-             var t = new ReadMetaExif().GetObjectName(new MockDirectory());
+             var t = new ReadMetaExif(null).GetObjectName(new MockDirectory());
              Assert.AreEqual(t, null);
          }
 
@@ -46,7 +46,7 @@ namespace starskytest.Services
 	         var iStorage = new FakeIStorage();
              var dir = new IptcDirectory();
              dir.Set(IptcDirectory.TagObjectName, "test" );
-             var t = new ReadMetaExif().GetObjectName(dir);
+             var t = new ReadMetaExif(null).GetObjectName(dir);
              Assert.AreEqual(t, "test");
              Assert.AreNotEqual(t,null);
          }
@@ -58,7 +58,7 @@ namespace starskytest.Services
 	        var iStorage = new FakeIStorage();
             var dir = new IptcDirectory();
             dir.Set(IptcDirectory.TagCaption, "test123");
-            var t = new ReadMetaExif().GetCaptionAbstract(dir);
+            var t = new ReadMetaExif(null).GetCaptionAbstract(dir);
             Assert.AreEqual(t, "test123");
             Assert.AreNotEqual(t,string.Empty);
             Assert.AreNotEqual(t,null);
@@ -71,7 +71,7 @@ namespace starskytest.Services
 	         var iStorage = new FakeIStorage();
              var dir = new IptcDirectory();
              dir.Set(IptcDirectory.TagKeywords, "test123");
-             var t = new ReadMetaExif().GetExifKeywords(dir);
+             var t = new ReadMetaExif(null).GetExifKeywords(dir);
              Assert.AreEqual(t, "test123");
              Assert.AreNotEqual(t,null);
          }
@@ -83,7 +83,7 @@ namespace starskytest.Services
 	         var iStorage = new FakeIStorage();
              var dir = new IptcDirectory();
              dir.Set(IptcDirectory.TagKeywords, "test123;test12");
-             var t = new ReadMetaExif().GetExifKeywords(dir);
+             var t = new ReadMetaExif(null).GetExifKeywords(dir);
              Assert.AreEqual(t, "test123, test12"); //with space
              Assert.AreNotEqual(t, "test123,test12"); // without space
              Assert.AreNotEqual(t, "test123;test12");
@@ -104,7 +104,7 @@ namespace starskytest.Services
              dir2.Set(ExifDirectoryBase.TagDateTime, "2010:12:12 12:41:35");
 
 	         var iStorage = new FakeIStorage();
-             var t = new ReadMetaExif().GetExifDateTime(dir2);
+             var t = new ReadMetaExif(null).GetExifDateTime(dir2);
 
              var date2 = new DateTime(2010, 12, 12, 12, 41, 35);
              var date = new DateTime();
@@ -121,8 +121,9 @@ namespace starskytest.Services
          public void ExifRead_ReadExifFromFileTest()
          {
              var newImage = CreateAnImage.Bytes;
-	         MemoryStream stream = new MemoryStream(newImage);
-             var item = new ReadMetaExif().ReadExifFromFile(stream);
+	         var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},newImage);
+	         
+             var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.jpg");
              
              Assert.AreEqual(item.ColorClass,FileIndexItem.Color.None);
              Assert.AreEqual(item.Description, "caption");
@@ -148,10 +149,10 @@ namespace starskytest.Services
          {
 	         var iStorage = new FakeIStorage();
              var directory = new List<Directory> {BuildDirectory(new List<object>())};
-             var returnNothing = new ReadMetaExif().GetImageWidthHeight(directory,true);
+             var returnNothing = new ReadMetaExif(null).GetImageWidthHeight(directory,true);
              Assert.AreEqual(returnNothing,0);
              
-             var returnNothingFalse = new ReadMetaExif().GetImageWidthHeight(directory,false);
+             var returnNothingFalse = new ReadMetaExif(null).GetImageWidthHeight(directory,false);
              Assert.AreEqual(returnNothingFalse,0);
          }
 

@@ -140,17 +140,36 @@ namespace starskycore.Services
 			return _appSettings.RenameListItemsToDbStyle(folders.ToList());
 		}
 
-		public Stream ReadStream(string path, int maxRead = int.MaxValue)
+		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
 			
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
 			
-			MemoryStream memoryStream = new MemoryStream();
-			using (FileStream file = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read))
-				file.CopyTo(memoryStream);
+			Console.WriteLine(fullFilePath);
 			
-			return memoryStream;
+			// new FileStream(fullFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, maxRead, false);
+			
+//			MemoryStream memoryStream = new MemoryStream();
+//			var bs = new BufferedStream(fileStream, 1024);
+				
+			FileStream fileStream;
+			if ( maxRead <= 1 )
+			{
+				fileStream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read);
+			}
+			else
+			{
+				fileStream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read,
+					FileShare.Read, maxRead, false);
+			}
+//			var bs = new BufferedStream(fileStream);
+			
+//			MemoryStream memoryStream = new MemoryStream();
+//			fileStream.CopyTo(memoryStream);
+//			fileStream.Dispose();
+
+			return fileStream;
 		}
 
 		public bool ExistThumbnail(string fileHash)
