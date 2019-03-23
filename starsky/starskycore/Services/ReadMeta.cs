@@ -29,13 +29,15 @@ namespace starskycore.Services
 
         }
 
-        private FileIndexItem ReadExifAndXmpFromFileDirect(FileIndexItem fileIndexItemWithPath)
+        private FileIndexItem ReadExifAndXmpFromFileDirect(string subPath)
         {
-	        if ( _iStorage.ExistFile(fileIndexItemWithPath.FilePath) 
-	             && ExtensionRolesHelper.IsExtensionForceGpx(fileIndexItemWithPath.FileName) )
+	        if ( _iStorage.ExistFile(subPath) 
+	             && ExtensionRolesHelper.IsExtensionForceGpx(subPath) )
 	        {
-				return _readGpx.ReadGpxFromFileReturnAfterFirstField(_iStorage.ReadStream(fileIndexItemWithPath.FilePath));
+				return _readGpx.ReadGpxFromFileReturnAfterFirstField(_iStorage.ReadStream(subPath));
 	        }
+	        
+	        var fileIndexItemWithPath = new FileIndexItem(subPath);
 
 	        // Read first the sidecar file
 	        var xmpFileIndexItem = _readXmp.XmpGetSidecarFile(fileIndexItemWithPath.Clone());
@@ -45,7 +47,7 @@ namespace starskycore.Services
 	             || xmpFileIndexItem.DateTime.Year == 0)
 	        {
 		        // so the sidecar file is not used
-		        var fileExifItemFile = _readExif.ReadExifFromFile(fileIndexItemWithPath.FilePath,fileIndexItemWithPath);
+		        var fileExifItemFile = _readExif.ReadExifFromFile(subPath,fileIndexItemWithPath);
 		        
 		        // overwrite content with incomplete sidecar file (this file can contain tags)
 		        FileIndexCompareHelper.Compare(fileExifItemFile, xmpFileIndexItem);
@@ -91,28 +93,28 @@ namespace starskycore.Services
             return fileIndexList;
         }
 
-	    public FileIndexItem ReadExifAndXmpFromFile(string subPath)
+	    public FileIndexItem ReadExifAndXmpFromFile(FileIndexItem fileIndexItemWithLocation)
 	    {
-			return ReadExifAndXmpFromFile(new FileIndexItem(subPath));
+			return ReadExifAndXmpFromFile(fileIndexItemWithLocation.FilePath);
 	    }
 
 	    // Cached view >> IMemoryCache
         // Short living cache Max 15. minutes
-        public FileIndexItem ReadExifAndXmpFromFile(FileIndexItem fileIndexItemWithLocation)
+        public FileIndexItem ReadExifAndXmpFromFile(string subPath)
         {
             // The CLI programs uses no cache
             if( _cache == null || _appSettings?.AddMemoryCache == false) 
-                return ReadExifAndXmpFromFileDirect(fileIndexItemWithLocation);
+                return ReadExifAndXmpFromFileDirect(subPath);
             
             // Return values from IMemoryCache
-            var queryCacheName = "info_" + fileIndexItemWithLocation.FilePath;
+            var queryCacheName = "info_" + subPath;
             
             // Return Cached object if it exist
             if (_cache.TryGetValue(queryCacheName, out var objectExifToolModel))
                 return objectExifToolModel as FileIndexItem;
             
             // Try to catch a new object
-            objectExifToolModel = ReadExifAndXmpFromFileDirect(fileIndexItemWithLocation);
+            objectExifToolModel = ReadExifAndXmpFromFileDirect(subPath);
             _cache.Set(queryCacheName, objectExifToolModel, new TimeSpan(0,15,0));
             return (FileIndexItem) objectExifToolModel;
         }
