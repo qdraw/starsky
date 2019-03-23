@@ -241,16 +241,19 @@ namespace starskycore.Services
 
 	            // Option 2 (Datetime)
 	            // Path=xmp:CreateDate Namespace=http://ns.adobe.com/xap/1.0/ Value=2019-03-02T11:29:18+01:00
-                var dateTimeOriginal = GetContentNameSpace(property, "xmp:CreateDate");
-                if (dateTimeOriginal != null)
-                {
-                    DateTime.TryParseExact(property.Value,
-                        "yyyy-MM-dd\\THH:mm:sszzz",
-                        CultureInfo.InvariantCulture,
-                        DateTimeStyles.None,
-                        out var dateTime);
-                    item.DateTime = dateTime;
-                }
+	            if ( item.DateTime.Year == 0 )
+	            {
+		            var dateTimeOriginal = GetContentNameSpace(property, "xmp:CreateDate");
+		            if (dateTimeOriginal != null)
+		            {
+			            DateTime.TryParseExact(property.Value,
+				            "yyyy-MM-dd\\THH:mm:sszzz",
+				            CultureInfo.InvariantCulture,
+				            DateTimeStyles.None,
+				            out var dateTime);
+			            item.DateTime = dateTime;
+		            }
+	            }
                 
                 //   Path=photomechanic:ColorClass Namespace=http://ns.camerabits.com/photomechanic/1.0/ Value=1
                 var colorClass = GetContentNameSpace(property, "photomechanic:ColorClass");
