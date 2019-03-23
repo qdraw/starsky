@@ -15,7 +15,7 @@ namespace starskytest.FakeMocks
 
 	    public FileIndexItem ReadExifAndXmpFromFile(string path)
 	    {
-		    throw new System.NotImplementedException();
+		    return new FileIndexItem{Status = FileIndexItem.ExifStatus.Ok, Tags = "test", FileHash = "test", FileName = "t", ParentDirectory = "d"};
 	    }
 
 	    public FileIndexItem ReadExifAndXmpFromFile(FileIndexItem fileIndexItemWithLocation)
