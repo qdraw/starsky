@@ -293,13 +293,13 @@ namespace starsky.Controllers
 
 	            foreach ( var collectionSubPath in collectionSubPathList )
 	            {
-		            var collectionItem = new FileIndexItem(collectionSubPath)
-		            {
-			            Status = FileIndexItem.ExifStatus.Ok,
-			            CollectionPaths = collectionSubPathList,
-			            ImageFormat = ExtensionRolesHelper.MapFileTypesToExtension(collectionSubPath)
-		            };
-		            fileIndexResultsList.Add(_readMeta.ReadExifAndXmpFromFile(collectionItem));
+		            var collectionItem = _readMeta.ReadExifAndXmpFromFile(collectionSubPath);
+		            collectionItem.Status = FileIndexItem.ExifStatus.Ok;
+		            collectionItem.CollectionPaths = collectionSubPathList;
+		            collectionItem.ImageFormat =
+			            ExtensionRolesHelper.MapFileTypesToExtension(collectionSubPath);
+
+		            fileIndexResultsList.Add(collectionItem);
 	            }
             }
 

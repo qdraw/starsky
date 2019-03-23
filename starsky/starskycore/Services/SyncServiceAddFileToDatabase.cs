@@ -38,13 +38,8 @@ namespace starskycore.Services
                     var imageFormat = ExtensionRolesHelper.GetImageFormat(singleFilePath);
                     
                     // Read data from file
-	                var databaseItem = new FileIndexItem(singleFolderDbStyle)
-	                {
-		                ImageFormat = imageFormat
-	                };
-
-	                databaseItem = _readMeta.ReadExifAndXmpFromFile(databaseItem);
-
+	                var databaseItem = _readMeta.ReadExifAndXmpFromFile(singleFolderDbStyle);
+	                databaseItem.ImageFormat = imageFormat;
                     databaseItem.AddToDatabase = DateTime.UtcNow;
                     databaseItem.FileHash = new FileHash(_iStorage).GetHashCode(singleFolderDbStyle);
                     databaseItem.FileName = Path.GetFileName(singleFilePath);

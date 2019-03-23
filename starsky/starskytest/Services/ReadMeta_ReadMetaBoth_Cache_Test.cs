@@ -62,8 +62,7 @@ namespace starskytest.Services
         public void ReadMeta_ReadMetaBothTest_FakeReadEntry()
         {
 	        var iStorage = new FakeIStorage();
-	        var fileIndexItem = new FileIndexItem("test");
-            Assert.AreEqual("test",new ReadMeta(iStorage,null, _fakeCache).ReadExifAndXmpFromFile(fileIndexItem).Tags);
+            Assert.AreEqual("test",new ReadMeta(iStorage,null, _fakeCache).ReadExifAndXmpFromFile("test").Tags);
         }
     }
 }

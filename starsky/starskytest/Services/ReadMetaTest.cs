@@ -37,8 +37,7 @@ namespace starskytest.Services
 		    
 		    var fakeIStorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{CreateAnImage.Bytes,xmpByteArray}  );
 		    
-		    var exampleItem = new FileIndexItem("/test.arw");
-		    var data = new ReadMeta(fakeIStorage).ReadExifAndXmpFromFile(exampleItem);
+		    var data = new ReadMeta(fakeIStorage).ReadExifAndXmpFromFile("/test.arw");
 		    
 		    // Is in source file
 		    Assert.AreEqual(200,data.IsoSpeed);

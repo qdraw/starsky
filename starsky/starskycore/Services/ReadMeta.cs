@@ -67,11 +67,8 @@ namespace starskycore.Services
 		        var subPath = subPathList[i];
 		        
 		        // todo: fix dependency on filesystem
+		        var returnItem = ReadExifAndXmpFromFile(subPath);
 		        var imageFormat = ExtensionRolesHelper.GetImageFormat(subPath); 
-		        
-		        var returnItem = new FileIndexItem(subPath);
-		        
-		        returnItem = ReadExifAndXmpFromFile(returnItem);
 
 		        returnItem.ImageFormat = imageFormat;
 		        returnItem.FileName = Path.GetFileName(subPath);
@@ -93,10 +90,10 @@ namespace starskycore.Services
             return fileIndexList;
         }
 
-	    public FileIndexItem ReadExifAndXmpFromFile(FileIndexItem fileIndexItemWithLocation)
-	    {
-			return ReadExifAndXmpFromFile(fileIndexItemWithLocation.FilePath);
-	    }
+//	    public FileIndexItem ReadExifAndXmpFromFile(FileIndexItem fileIndexItemWithLocation)
+//	    {
+//			return ReadExifAndXmpFromFile(fileIndexItemWithLocation.FilePath);
+//	    }
 
 	    // Cached view >> IMemoryCache
         // Short living cache Max 15. minutes
