@@ -22,6 +22,12 @@ namespace starskycore.Services
 		public FileIndexItem ReadExifFromFile(string subPath, FileIndexItem existingFileIndexItem = null) // use null to create an object
         {
             List<MetadataExtractor.Directory> allExifItems;
+
+	        // Used to overwrite feature
+	        if (existingFileIndexItem == null)
+	        {
+		        existingFileIndexItem = new FileIndexItem(subPath);
+	        }
 	        
 	        using ( var stream = _iStorage.ReadStream(subPath) )
 	        {
@@ -46,7 +52,7 @@ namespace starskycore.Services
             // Used to overwrite feature
             if (item == null)
             {
-                item = new FileIndexItem();
+                throw new ArgumentException("need to fill item with filepath");
             }
             
             // Set the default value

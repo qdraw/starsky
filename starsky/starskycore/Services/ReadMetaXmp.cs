@@ -149,7 +149,7 @@ namespace starskycore.Services
 	            var isoSpeed = GetNullNameSpace(property, "exif:ISOSpeedRatings[1]");
 	            if ( isoSpeed != null ) item.SetIsoSpeed(isoSpeed);
                
-				//if(_appSettings.Verbose) Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
+				//Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
 
 
             }
