@@ -46,8 +46,9 @@ namespace starskycore.Services
 	        {
 		        // so the sidecar file is not used
 		        var fileExifItemFile = _readExif.ReadExifFromFile(fileIndexItemWithPath.FilePath,fileIndexItemWithPath);
+		        
 		        // overwrite content with incomplete sidecar file (this file can contain tags)
-		        fileIndexItem = _readXmp.XmpGetSidecarFile(fileExifItemFile);
+		        FileIndexCompareHelper.Compare(fileIndexItem, fileExifItemFile);
 	        }
 	        
             return fileIndexItem;
