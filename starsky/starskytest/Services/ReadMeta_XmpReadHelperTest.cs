@@ -80,14 +80,63 @@ namespace starskytest.Services
 	    public void XmpReadHelperTest_XmpGetSidecarFile_WithFakeStorage()
 	    {
 		    // convert string to stream
-		    byte[] byteArray = Encoding.UTF8.GetBytes(Input);
+		    byte[] xmpByteArray = Encoding.UTF8.GetBytes(Input);
 		    
 		    
-		    var fakeIStorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.arw", "/test.xmp"}, byteArray);
+		    var fakeIStorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{null,xmpByteArray}  );
 		    var fileIndexItem = new FileIndexItem
 		    {
 			    ParentDirectory = "/",
 			    FileName = "test.arw"
+		    };
+		    
+		    var data = new ReadMetaXmp(fakeIStorage).XmpGetSidecarFile(fileIndexItem);
+
+		    
+		    Assert.AreEqual(52.3451333333,data.Latitude,0.001);
+		    Assert.AreEqual(5.930,data.Longitude,0.001);
+		    Assert.AreEqual(19,data.LocationAltitude,0.001);
+
+		    Assert.AreEqual("caption",data.Description);
+		    Assert.AreEqual("keyword, keyword2",data.Tags);
+		    Assert.AreEqual("The object name",data.Title);
+            
+		    Assert.AreEqual("Epe",data.LocationCity);
+		    Assert.AreEqual("Gelderland",data.LocationState);
+		    Assert.AreEqual("Nederland",data.LocationCountry);
+
+		    Assert.AreEqual(FileIndexItem.Color.Winner,data.ColorClass);
+            
+		    DateTime.TryParseExact("2018-07-18 19:44:27", 
+			    "yyyy-MM-dd HH:mm:ss",
+			    CultureInfo.InvariantCulture, 
+			    DateTimeStyles.None, 
+			    out var dateTime);
+		    Assert.AreEqual(dateTime, data.DateTime);
+		    
+	    }
+	    
+	    
+	    [TestMethod]
+	    public void XmpReadHelperTest_XmpGetSidecarFile_TestIfOverwrite()
+	    {
+		    // convert string to stream
+		    byte[] xmpByteArray = Encoding.UTF8.GetBytes(Input);
+		    
+		    
+		    var fakeIStorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{null,xmpByteArray}  );
+		    var fileIndexItem = new FileIndexItem
+		    {
+			    ParentDirectory = "/",
+			    FileName = "test.arw",
+			    Description = "something different",
+			    LocationAltitude = 3000,
+			    Latitude = 3000,
+			    Longitude = 3000,
+			    LocationCity = "Essen",
+			    LocationState = "Flevoland",
+			    LocationCountry = "Germany",
+			    DateTime = new DateTime(1990,01,01,01,00,00)
 		    };
 		    
 		    var data = new ReadMetaXmp(fakeIStorage).XmpGetSidecarFile(fileIndexItem);

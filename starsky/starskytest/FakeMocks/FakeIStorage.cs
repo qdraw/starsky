@@ -17,16 +17,18 @@ namespace starskytest.FakeMocks
 		private List<string> _outputSubPathFolders = new List<string>();
 		private List<string> _outputSubPathFiles  = new List<string>();
 
-		private readonly byte[] _byteArray;
+		private readonly  Dictionary<string, byte[]> _byteList = new Dictionary<string, byte[]>();
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="outputSubPathFolders">/</param>
 		/// <param name="outputSubPathFiles">/test.jpg</param>
-		/// <param name="byteArray"></param>
-		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, byte[] byteArray = null)
+		/// <param name="byteList"></param>
+		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, 
+			IReadOnlyList<byte[]> byteList = null)
 		{
+	
 			if ( outputSubPathFolders != null )
 			{
 				_outputSubPathFolders = outputSubPathFolders;
@@ -37,9 +39,12 @@ namespace starskytest.FakeMocks
 				_outputSubPathFiles = outputSubPathFiles;
 			}
 
-			if ( byteArray != null )
+			if ( byteList != null && byteList.Count == _outputSubPathFiles.Count)
 			{
-				_byteArray = byteArray;
+				for ( int i = 0; i < _outputSubPathFiles.Count; i++ )
+				{
+					_byteList.Add(_outputSubPathFiles[i],byteList[i]);
+				}
 			}
 		}
 		
@@ -142,18 +147,18 @@ namespace starskytest.FakeMocks
 
 		public Stream ReadStream(string path, int maxRead = 2147483647)
 		{
-			if ( ExistFile(path) && _byteArray == null)
+			if ( ExistFile(path) && _byteList.All(p => p.Key != path) )
 			{
 				byte[] byteArray = Encoding.UTF8.GetBytes("test");
 				MemoryStream stream = new MemoryStream(byteArray);
 				return stream;
 			}
-			if ( ExistFile(path) )
-			{
-				MemoryStream stream = new MemoryStream(_byteArray);
-				return stream;
-			}
-			throw new FileNotFoundException(path);
+			if ( !ExistFile(path) ) throw new FileNotFoundException(path);
+
+			var result = _byteList.FirstOrDefault(p => p.Key == path).Value;
+			MemoryStream stream1 = new MemoryStream(result);
+			return stream1;
+
 		}
 
 		public bool ExistThumbnail(string fileHash)

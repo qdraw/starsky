@@ -277,7 +277,8 @@ namespace starskycore.Helpers
 	    /// <param name="oldColorValue">oldColorValue to compare with newColorValue</param>
 	    /// <param name="newColorValue">oldColorValue to compare with newColorValue</param>
 	    /// <param name="differenceList">list of different values</param>
-        private static void CompareColor(string propertyName, FileIndexItem sourceIndexItem, FileIndexItem.Color oldColorValue, FileIndexItem.Color newColorValue, List<string> differenceList)
+        private static void CompareColor(string propertyName, FileIndexItem sourceIndexItem, FileIndexItem.Color oldColorValue, 
+		    FileIndexItem.Color newColorValue, List<string> differenceList)
         {
             if (oldColorValue == newColorValue || newColorValue == FileIndexItem.Color.DoNotChange) return;
             sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newColorValue, null);
@@ -325,7 +326,8 @@ namespace starskycore.Helpers
 	    /// <param name="newStringValue">oldStringValue to compare with newStringValue</param>
 	    /// <param name="differenceList">list of different values</param>
 	    /// <param name="append">to add after list (if tags)</param>
-        private static void CompareString(string propertyName, FileIndexItem sourceIndexItem, string oldStringValue, string newStringValue, List<string> differenceList, bool append)
+        private static void CompareString(string propertyName, FileIndexItem sourceIndexItem, string oldStringValue, string newStringValue, 
+		    List<string> differenceList, bool append)
         {
             if (oldStringValue == newStringValue ||
                 (string.IsNullOrEmpty(newStringValue) && newStringValue != "/")) return;

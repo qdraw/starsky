@@ -121,7 +121,7 @@ namespace starskytest.Services
          public void ExifRead_ReadExifFromFileTest()
          {
              var newImage = CreateAnImage.Bytes;
-	         var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},newImage);
+	         var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 	         
              var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.jpg");
              

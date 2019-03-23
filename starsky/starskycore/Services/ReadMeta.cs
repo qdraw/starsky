@@ -38,20 +38,21 @@ namespace starskycore.Services
 	        }
 
 	        // Read first the sidecar file
-	        var fileIndexItem = _readXmp.XmpGetSidecarFile(fileIndexItemWithPath);
+	        var xmpFileIndexItem = _readXmp.XmpGetSidecarFile(fileIndexItemWithPath.Clone());
 
-	        if ( fileIndexItem.IsoSpeed == 0 
-	             || string.IsNullOrEmpty(fileIndexItem.Make) 
-	             || fileIndexItem.DateTime.Year == 0)
+	        if ( xmpFileIndexItem.IsoSpeed == 0 
+	             || string.IsNullOrEmpty(xmpFileIndexItem.Make) 
+	             || xmpFileIndexItem.DateTime.Year == 0)
 	        {
 		        // so the sidecar file is not used
 		        var fileExifItemFile = _readExif.ReadExifFromFile(fileIndexItemWithPath.FilePath,fileIndexItemWithPath);
 		        
 		        // overwrite content with incomplete sidecar file (this file can contain tags)
-		        FileIndexCompareHelper.Compare(fileIndexItem, fileExifItemFile);
+		        FileIndexCompareHelper.Compare(fileExifItemFile, xmpFileIndexItem);
+		        return fileExifItemFile;
 	        }
 	        
-            return fileIndexItem;
+            return xmpFileIndexItem;
         }
 
         // used by the html generator

@@ -226,12 +226,26 @@ namespace starskycore.Services
                     item.Longitude = GpsPreParseAndConvertDegreeAngleToDouble(gpsLongitude);
                 }
 
-                // Path=exif:DateTimeOriginal Namespace=http://ns.adobe.com/exif/1.0/ Value=2018-07-18T19:44:27
-                var dateTimeOriginal = GetContentNameSpace(property, "exif:DateTimeOriginal");
+	            // Option 1 (Datetime)
+	            // Path=exif:DateTimeOriginal Namespace=http://ns.adobe.com/exif/1.0/ Value=2018-07-18T19:44:27
+	            var createDateTime = GetContentNameSpace(property, "exif:DateTimeOriginal");
+	            if ( createDateTime != null )
+	            {
+		            DateTime.TryParseExact(property.Value,
+			            "yyyy-MM-dd\\THH:mm:ss",
+			            CultureInfo.InvariantCulture,
+			            DateTimeStyles.None,
+			            out var dateTime);
+		            item.DateTime = dateTime;
+	            }
+
+	            // Option 2 (Datetime)
+	            // Path=xmp:CreateDate Namespace=http://ns.adobe.com/xap/1.0/ Value=2019-03-02T11:29:18+01:00
+                var dateTimeOriginal = GetContentNameSpace(property, "xmp:CreateDate");
                 if (dateTimeOriginal != null)
                 {
                     DateTime.TryParseExact(property.Value,
-                        "yyyy-MM-dd\\THH:mm:ss",
+                        "yyyy-MM-dd\\THH:mm:sszzz",
                         CultureInfo.InvariantCulture,
                         DateTimeStyles.None,
                         out var dateTime);

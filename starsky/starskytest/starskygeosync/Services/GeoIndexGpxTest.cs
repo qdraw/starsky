@@ -59,7 +59,7 @@ namespace starskytest.starskygeosync.Services
                 
             });
 
-	        var fakeIStorage = new FakeIStorage(new List<string>{"/"},new List<string>{_metaFilesDirectory[0].FilePath},CreateAnGpx.Bytes);
+	        var fakeIStorage = new FakeIStorage(new List<string>{"/"},new List<string>{_metaFilesDirectory[0].FilePath}, new List<byte[]>{CreateAnGpx.Bytes} );
                
             var returnFileIndexItems = new GeoIndexGpx(_appSettings,_readMeta,fakeIStorage).LoopFolder(exampleFiles);
             
