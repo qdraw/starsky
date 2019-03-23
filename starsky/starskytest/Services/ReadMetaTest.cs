@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Models;
@@ -46,7 +47,14 @@ namespace starskytest.Services
 
 		    // Words overwritten in xmp file
 		    Assert.AreEqual("example, keyword, test",data.Tags);
-		    Assert.AreEqual(new DateTime(2019,03,02,11,29,18),data.DateTime);
+		    
+		    DateTime.TryParseExact("2019-03-02T11:29:18+01:00",
+			    "yyyy-MM-dd\\THH:mm:sszzz",
+			    CultureInfo.InvariantCulture,
+			    DateTimeStyles.None,
+			    out var expectDateTime);
+		    
+		    Assert.AreEqual(expectDateTime,data.DateTime);
 		    Assert.AreEqual(FileIndexItem.Color.Trash,data.ColorClass);
 
 	    }

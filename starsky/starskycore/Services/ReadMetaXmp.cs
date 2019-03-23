@@ -308,7 +308,6 @@ namespace starskycore.Services
 	            var shutterSpeed = GetContentNameSpace(property, "exif:ExposureTime");
 	            if (shutterSpeed != null) item.ShutterSpeed = shutterSpeed;
 	            
-	            
 	            // exif:FNumber http://ns.adobe.com/exif/1.0/
 	            var aperture = GetContentNameSpace(property, "exif:FNumber");
 	            if (aperture != null) item.Aperture = fraction(aperture);
