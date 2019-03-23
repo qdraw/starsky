@@ -289,7 +289,7 @@ namespace starskycore.Helpers
 	    /// <summary>
 	    /// Compare List String
 	    /// </summary>
-	    /// <param name="propertyName">name of property e.g. ColorClass</param>
+	    /// <param name="propertyName">name of property e.g. CollectionPaths</param>
 	    /// <param name="sourceIndexItem">source object</param>
 	    /// <param name="oldListStringValue">oldListStringValue to compare with newListStringValue</param>
 	    /// <param name="newListStringValue">newListStringValue to compare with oldListStringValue</param>
@@ -297,7 +297,9 @@ namespace starskycore.Helpers
 	    private static void CompareListstring(string propertyName, FileIndexItem sourceIndexItem, 
 		    List<string> oldListStringValue, List<string> newListStringValue, List<string> differenceList)
 	    {
-		    if (oldListStringValue.Count == newListStringValue.Count || newListStringValue.Count == 0 ) return;
+		    if ( oldListStringValue == null || newListStringValue.Count == 0 ) return;
+		    if ( oldListStringValue.Equals(newListStringValue) ) return;
+		    
 		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newListStringValue, null);
 		    differenceList.Add(propertyName);
 	    }
@@ -332,7 +334,7 @@ namespace starskycore.Helpers
             if (oldStringValue == newStringValue ||
                 (string.IsNullOrEmpty(newStringValue) && newStringValue != "/")) return;
             
-            if (propertyName == "FileName") return;
+            if (propertyName == nameof(FileIndexItem.FileName)) return;
          
             var propertyObject = sourceIndexItem.GetType().GetProperty(propertyName);
                         
@@ -340,7 +342,7 @@ namespace starskycore.Helpers
             {
                 propertyObject.SetValue(sourceIndexItem, newStringValue, null);
             }
-            else if (propertyName == "Tags")
+            else if (propertyName == nameof(FileIndexItem.Tags))
             {
                 propertyObject.SetValue(sourceIndexItem, oldStringValue + ", " + newStringValue,null);
             }
