@@ -412,12 +412,12 @@ namespace starskytest.Services
             _syncservice.SyncFiles("/");
             var outputWithSync = _query.GetAllFiles("/");
 	        
+            // test if the sync is working
+            Assert.AreEqual(1,outputWithSync.Count(p => p.FilePath == createAnImage.DbPath));
+	        
 	        // test basic objects
 	        Assert.AreEqual(testjpg.FilePath,outputWithSync.FirstOrDefault().FilePath);
 	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,outputWithSync.FirstOrDefault().ImageFormat);
-	        
-            // test if the sync is working
-            Assert.AreEqual(1,outputWithSync.Count(p => p.FilePath == createAnImage.DbPath));
         }
         
         [TestMethod]
