@@ -129,7 +129,7 @@ namespace starskytest.FakeMocks
 
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)
 		{
-			if ( parentFolder != string.Empty || !filePath.StartsWith(parentFolder) ) return false;
+			if ( parentFolder != string.Empty && !filePath.StartsWith(parentFolder) ) return false;
 
 			var value = $"^{Regex.Escape(parentFolder)}" + "\\/\\w+.[a-z]{3}$";
 			
