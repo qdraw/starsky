@@ -19,6 +19,7 @@
 - bugfix to searching filehashes with null content
 - include test with incomplete xmp file
 - ExifToolImportXmpCreate in appsettings
+- Bugfix / bug fix for: issue where import with spaces creates multiple items in the database 
 
 # version 0.1.5.1 - 2019-03-17
 - Breaking Change: added `LastEdited` field
