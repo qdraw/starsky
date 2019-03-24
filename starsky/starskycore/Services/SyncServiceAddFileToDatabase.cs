@@ -39,10 +39,10 @@ namespace starskycore.Services
                     // Read data from file
 	                var databaseItem = _readMeta.ReadExifAndXmpFromFile(singleFolderDbStyle);
 	                databaseItem.ImageFormat = imageFormat;
-                    databaseItem.AddToDatabase = DateTime.UtcNow;
+	                databaseItem.SetAddToDatabase();
+	                databaseItem.SetLastEdited();
                     databaseItem.FileHash = new FileHash(_iStorage).GetHashCode(singleFolderDbStyle);
-	                var singleFilePath = _appSettings.DatabasePathToFilePath(singleFolderDbStyle);
-                    databaseItem.FileName = Path.GetFileName(singleFilePath);
+                    databaseItem.FileName = PathHelper.GetFileName(singleFolderDbStyle);
                     databaseItem.IsDirectory = false;
                     databaseItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault();
                         

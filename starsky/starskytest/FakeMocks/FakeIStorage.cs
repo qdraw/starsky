@@ -112,9 +112,9 @@ namespace starskytest.FakeMocks
 		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
 		{
 			subPath = PathHelper.RemoveLatestSlash(subPath);
-			
+
 			// non recruisive
-			if ( !ExistFolder(subPath) )
+			if ( subPath != string.Empty && !ExistFolder(subPath) )
 			{
 				return new List<string>();
 			}
@@ -129,9 +129,11 @@ namespace starskytest.FakeMocks
 
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)
 		{
-			if ( !filePath.StartsWith(parentFolder) ) return false;
+			if ( parentFolder != string.Empty || !filePath.StartsWith(parentFolder) ) return false;
+
+			var value = $"^{Regex.Escape(parentFolder)}" + "\\/\\w+.[a-z]{3}$";
 			
-			return Regex.Match(filePath, $"^{parentFolder}"+ "\\/\\w+.[a-z]{3}$").Success;
+			return Regex.Match(filePath, $"^{Regex.Escape(parentFolder)}"+ "\\/\\w+.[a-z]{3}$").Success;
 		}
 
 		public IEnumerable<string> GetDirectoryRecursive(string subPath)
