@@ -185,9 +185,17 @@ namespace starskycore.Services
             if (destinationFullPath == null) return new ImportIndexItem{Status = ImportStatus.FileError};
             
 		    _filesystemHelper.FileCopy(inputFileFullPath, destinationFullPath);
+		    // From here on the item is exit in the storage folder
+
+		    // Creation of a sidecar xmp file
+		    if ( _appSettings.ExifToolImportXmpCreate )
+		    {
+			    new ExifToolCmdHelper().XmpSync(destinationFullPath);
+		    }
+		    
             
             // Update the contents to the file the imported item
-            if (importSettings.NeedExiftoolSync && ExtensionRolesHelper.IsExtensionExifToolSupported(inputFileFullPath))
+            if (importSettings.NeedExiftoolSync && ExtensionRolesHelper.IsExtensionExifToolSupported(destinationFullPath))
             {
                 Console.WriteLine("Do a exiftoolSync");
                 var comparedNamesList = new List<string>

@@ -36,6 +36,25 @@ namespace starskycore.Helpers
             return Update(updateModel, exifUpdateFilePaths, comparedNames);
         }
 
+	    /// <summary>
+	    /// Add a .xmp sidecar file
+	    /// </summary>
+	    /// <param name="fullFilePath"></param>
+	    /// <returns></returns>
+	    public string XmpSync(string fullFilePath)
+	    {
+		    var xmpFullPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(fullFilePath);
+                
+		    if (FilesHelper.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+		    {
+			    _exiftool.BaseCommmand(" -overwrite_original -TagsFromFile \""  
+			                           + fullFilePath + "\"",  "\""+ xmpFullPath +  "\"");
+		    }
+		    return xmpFullPath;
+	    }
+	    
+	    
+
         /// <summary>
         /// For Raw files us an external .xmp sidecar file, and add this to the fullFilePathsList
         /// </summary>
@@ -48,13 +67,7 @@ namespace starskycore.Helpers
             {
                 if(ExtensionRolesHelper.IsExtensionForceXmp(fullFilePath))
                 {
-                    var xmpFullPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(fullFilePath);
-                
-                    if (FilesHelper.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
-                    {
-                        _exiftool.BaseCommmand(" -overwrite_original -TagsFromFile \""  
-                                               + fullFilePath + "\"",  "\""+ xmpFullPath +  "\"");
-                    }
+	                var xmpFullPath = XmpSync(fullFilePath);
                     // to continue as xmp file
                     fullFilePathsList.Add(xmpFullPath);
                     continue;
