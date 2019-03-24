@@ -175,8 +175,25 @@ namespace starskytest.Services
 		    
 	    }
 
+	    [TestMethod]
+	    public void SyncServiceSingleFileTest_FakeStorage_AddItem()
+	    {
+		    var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},
+			    new List<byte[]>{CreateAnImageNoExif.Bytes});
+		    var readmeta = new ReadMeta(fakeStorage);
+		    
+		    new SyncService(_query,_appSettings,readmeta,fakeStorage).SyncFiles("/test.jpg",false);
 
-        [TestMethod]
+		    var updatedItem = _query.GetObjectByFilePath("/test.jpg");
+		    
+		    Assert.AreEqual("/test.jpg",updatedItem.FilePath);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,updatedItem.ImageFormat);
+		    Assert.AreEqual(false,updatedItem.IsDirectory);
+		    Assert.AreEqual(updatedItem.FileHash.Length >= 5,true);
+
+	    }
+
+	    [TestMethod]
         public void SyncServiceSingleFileTest()
         {
             // Test to do a sync with one single file
