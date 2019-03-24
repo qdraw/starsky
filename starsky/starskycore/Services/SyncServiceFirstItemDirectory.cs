@@ -24,8 +24,8 @@ namespace starskycore.Services
 				
 				var firstFileSubPath = _iStorage.GetAllFilesInDirectory(singleFolderSubPath)
 					.FirstOrDefault(ExtensionRolesHelper.IsExtensionThumbnailSupported);
-				
-				if ( ! _iStorage.ExistFile(firstFileSubPath) ) continue;
+
+				if ( string.IsNullOrEmpty(firstFileSubPath) || ! _iStorage.ExistFile(firstFileSubPath) ) continue;
 				
 				// get hash from file
 				var singleFileHash =  new FileHash(_iStorage).GetHashCode(firstFileSubPath);
