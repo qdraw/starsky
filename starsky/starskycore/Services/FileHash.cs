@@ -107,18 +107,18 @@ namespace starskycore.Services
         }
 
         /// <summary>
-        ///  Calculate the hash based on the first 0.01 Mb of the file
+        ///  Calculate the hash based on the first 8 Kilobytes of the file
         /// </summary>
         /// <param name="subPath"></param>
         /// <returns></returns>
         private async Task<string> CalculateMd5Async(string subPath)
         {
-            var block = ArrayPool<byte>.Shared.Rent(8192); // 0,01 Mb
+            var block = ArrayPool<byte>.Shared.Rent(8192); // 8 Kilobytes
             try
             {
                 using (var md5 = MD5.Create())
                 {
-                    using (var stream = _iStorage.ReadStream(subPath,8192))
+                    using (var stream = _iStorage.ReadStream(subPath,8192)) // reading 8 Kilobytes
                     {
                         int length;
                         while ((length = await stream.ReadAsync(block, 0, block.Length).ConfigureAwait(false)) > 0)
