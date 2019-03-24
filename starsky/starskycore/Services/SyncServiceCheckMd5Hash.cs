@@ -8,14 +8,14 @@ namespace starskycore.Services
 {
     public partial class SyncService
     {
-        // Loop thoug a local file list and 
-        // checks if the filehash in the database is up to date
+        // Loop though a local file list and 
+        // checks if the fileHash in the database is up to date
         // if the hash is not up to date =
         //      => remove item => add new item
 
-        public void CheckMd5Hash(
-            List<string> localSubFolderDbStyle,
-            List<FileIndexItem> databaseFileList
+        private void CheckMd5Hash(
+            IEnumerable<string> localSubFolderDbStyle,
+            IReadOnlyCollection<FileIndexItem> databaseFileList
         )
         {
             foreach (var itemLocal in localSubFolderDbStyle)
@@ -26,7 +26,6 @@ namespace starskycore.Services
                 if (dbItem != null)
                 {
                     // Check if Hash is changed
-                    // how should i unittest this?
 	                var localHash = new FileHash(_iStorage).GetHashCode(itemLocal);
 
                     if(_appSettings.Verbose) Console.WriteLine("localHash: " + localHash);
