@@ -48,6 +48,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 3.  `AddMemoryCache`- Enable caching _(default true)_
 4.  `AddHttp2Optimizations`  - Enable HTTP2 Optimizations _(default true)_
 5.  `AddSwagger` - To show a user interface to show al REST-services _(default false)_
+6.  `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(default false)_
 
 
 ### Appsettings.json example

@@ -46,10 +46,10 @@ The default structure in `appsettings.json` is:
 
 ```
 #### Appsettings Notes
-1)   Structure uses slash as directory separator for Linux and Windows
-2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `StorageFolder` uses the system path directory separators
-3)    The `AddMemoryCache` setting is ignored in the console/cli applications
-4)  `ExifToolImportXmpCreate`
+1)  Structure uses slash as directory separator for Linux and Windows
+2)  The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `StorageFolder` uses the system path directory separators
+3)  The `AddMemoryCache` setting is ignored in the console/cli applications
+4)  The setting: `ExifToolImportXmpCreate` is used to create at import time a xmp file based on the raw image (default: false)
 
 ### Structure configuation options:
 
