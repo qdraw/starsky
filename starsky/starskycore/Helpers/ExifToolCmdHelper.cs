@@ -43,6 +43,8 @@ namespace starskycore.Helpers
 	    /// <returns></returns>
 	    public string XmpSync(string fullFilePath)
 	    {
+		    if ( _exiftool == null ) throw new ArgumentException("exifTool missing");
+		    
 		    var xmpFullPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(fullFilePath);
                 
 		    if (FilesHelper.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)

@@ -184,20 +184,25 @@ namespace starskycore.Services
                                                                    +  " Please try again > to many failures;");
             if (destinationFullPath == null) return new ImportIndexItem{Status = ImportStatus.FileError};
             
+		    // Do the copy to the storage folder
 		    _filesystemHelper.FileCopy(inputFileFullPath, destinationFullPath);
+		    
+		    
 		    // From here on the item is exit in the storage folder
 
+		    
 		    // Creation of a sidecar xmp file
 		    if ( _appSettings.ExifToolImportXmpCreate )
 		    {
-			    new ExifToolCmdHelper().XmpSync(destinationFullPath);
+			    new ExifToolCmdHelper(_appSettings,_exiftool).XmpSync(destinationFullPath);
 		    }
 		    
             
             // Update the contents to the file the imported item
             if (importSettings.NeedExiftoolSync && ExtensionRolesHelper.IsExtensionExifToolSupported(destinationFullPath))
             {
-                Console.WriteLine("Do a exiftoolSync");
+	            if ( _appSettings.Verbose ) Console.WriteLine("Do a exifToolSync");
+               
                 var comparedNamesList = new List<string>
                 {
                     nameof(FileIndexItem.DateTime),
@@ -309,8 +314,6 @@ namespace starskycore.Services
 		
 		public FileIndexItem ReadExifAndXmpFromFile(string inputFileFullPath)
 		{
-//			var fileIndexItem = new FileIndexItem(inputFileFullPath);
-//			fileIndexItem.ImageFormat = ExtensionRolesHelper.GetImageFormat(inputFileFullPath);
 			return _readmeta.ReadExifAndXmpFromFile(inputFileFullPath);
 		}
 
