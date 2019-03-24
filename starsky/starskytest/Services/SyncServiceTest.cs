@@ -15,6 +15,7 @@ using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
@@ -141,6 +142,29 @@ namespace starskytest.Services
             CollectionAssert.AreEqual(input,output);
 
         }
+
+	    [TestMethod]
+	    public void SyncServiceCheckMd5Hash_change()
+	    {
+		    
+		    var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg","/toChange.jpg"},
+			    new List<byte[]>{CreateAnImage.Bytes,CreateAnImage.Bytes});
+		    
+		    var readmeta = new ReadMeta(fakeStorage);
+		    // Set Initial database for this folder
+		    var files = new SyncService(_query,_appSettings,readmeta,fakeStorage).SyncFiles("/",false);
+
+		    var initalItem = _query.GetObjectByFilePath("/toChange.jpg");
+
+			// update item with different bytes		  (CreateAnImageNoExif)  
+		    fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg","/toChange.jpg"},
+			    new List<byte[]>{CreateAnImage.Bytes,CreateAnImageNoExif.Bytes});
+
+		    new SyncService(_query,_appSettings,readmeta,fakeStorage).SyncFiles("/",false);
+
+		    var updatedItem = _query.GetObjectByFilePath("/toChange.jpg");
+
+	    }
         
 //        [TestMethod]
 //        [ExcludeFromCoverage]

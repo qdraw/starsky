@@ -17,10 +17,7 @@ namespace starskycore.Services
         {
             subPath = _query.SubPathSlashRemove(subPath);
 
-            var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
-            Console.WriteLine(FilesHelper.IsFolderOrFile(fullFilePath));
-
-            if (FilesHelper.IsFolderOrFile(fullFilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+            if (_iStorage.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
             {
                 Console.WriteLine(">>deleted");
                 if(_appSettings.Verbose) Console.WriteLine(subPath);
@@ -31,15 +28,15 @@ namespace starskycore.Services
                 {
                     
                     _query.RemoveItem(dbItem);
-                    Console.WriteLine("File " + subPath +" not found and removed");
+                    Console.WriteLine($"File {subPath} not found and removed");
 
                     if (!dbItem.IsDirectory) return true;
-                    // Remove subitems in directory
+                    // Remove subItems in directory
                     var toBeDeleted = _query.GetAllFiles(dbItem.FilePath);
 
                     foreach (var item in toBeDeleted)
                     {
-                        Console.WriteLine("|");
+                        Console.Write("|");
                         _query.RemoveItem(item);
                     }
                 }
