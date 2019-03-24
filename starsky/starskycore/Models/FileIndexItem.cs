@@ -73,7 +73,8 @@ namespace starskycore.Models
 		public void SetFilePath(string value)
         {
 	        _parentDirectory = Breadcrumbs.BreadcrumbHelper(value).LastOrDefault();
-			_fileName = value.Replace(PathHelper.AddSlash(_parentDirectory),string.Empty);
+	        
+			_fileName = PathHelper.GetFileName(value);
 			// filenames are without starting slash
 	        _fileName = PathHelper.RemovePrefixDbSlash(_fileName);
         }

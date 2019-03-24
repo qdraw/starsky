@@ -354,6 +354,16 @@ namespace starskytest.Models
 	    }
 
 
+	    [TestMethod]
+	    public void FileIndexItemTest_Ctor_SpaceName()
+	    {
+		    var item = new FileIndexItem("/test/image with space.jpg");
+			Assert.AreEqual("image with space.jpg",item.FileName);
+		    Assert.AreEqual("image with space",item.FileCollectionName);
+		    Assert.AreEqual("/test",item.ParentDirectory);
+	    }
+
+
 
 	    //        [TestMethod]
 		//        public void FileIndexItemParseFileNameTest()

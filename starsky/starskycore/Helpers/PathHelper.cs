@@ -16,8 +16,8 @@ namespace starskycore.Helpers
 	    public static string GetFileName(string filePath)
 	    {
 			// unescaped:
-			// \w+(?:\.\w+)*$
-			return Regex.Match(filePath, "\\w+(?:\\.\\w+)*$").Value;
+			// [^/]+(?=(?:\.[^.]+)?$)
+			return Regex.Match(filePath, "[^/]+(?=(?:\\.[^.]+)?$)").Value;
 	    }
 
 		/// <summary>
