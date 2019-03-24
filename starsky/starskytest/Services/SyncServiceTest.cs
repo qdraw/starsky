@@ -107,7 +107,6 @@ namespace starskytest.Services
             var folder1 =  _query.AddItem(new FileIndexItem
             {
                 FileName = "folder1",
-                //FilePath = "/test/folder1",
                 ParentDirectory = "/test/",
                 IsDirectory = true
             });
