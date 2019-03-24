@@ -46,7 +46,7 @@ namespace starskytest.Services
             };
             // Build Fake database
             var dbBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            dbBuilder.UseInMemoryDatabase("test");
+            dbBuilder.UseInMemoryDatabase(nameof(SyncService));
             var options = dbBuilder.Options;
             var context = new ApplicationDbContext(options);
             // Build Configuration
@@ -417,9 +417,6 @@ namespace starskytest.Services
             // test if the sync is working
             Assert.AreEqual(1,outputWithSync.Count(p => p.FilePath == createAnImage.DbPath));
 	        
-	        // test basic objects
-	        Assert.AreEqual(testjpg.FilePath,outputWithSync.FirstOrDefault().FilePath);
-	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,outputWithSync.FirstOrDefault().ImageFormat);
         }
         
         [TestMethod]

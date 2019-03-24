@@ -1,48 +1,41 @@
-﻿using starskycore.Helpers;
+﻿using System.Linq;
+using starskycore.Helpers;
 
 namespace starskycore.Services
 {
-    // Gives folder an thumbnail image (only if contains direct files)
-    // SyncServiceFirstItemDirectory
-    public partial class SyncService
-    {
-        // Subpath is the base folder, it scans subfolders
-        public void FirstItemDirectory(string subpath = "/")
-        {
-            subpath = _query.SubPathSlashRemove(subpath);
-
-            // Loop though all folders
-            var fullFilePath = _appSettings.DatabasePathToFilePath(subpath);
-            var subFoldersFullPath = FilesHelper.GetDirectoryRecursive(fullFilePath);
-
-            foreach (var singleFolderFullPath in subFoldersFullPath)
-            {
-                string[] filesInDirectoryFullPath = FilesHelper.GetFilesInDirectory(singleFolderFullPath);
-
-                if (filesInDirectoryFullPath.Length >= 1)
-                {
-                    var subPathSingleItem = 
-                        _appSettings.FullPathToDatabaseStyle(filesInDirectoryFullPath[0]);
-                    var dbItem = _query.GetObjectByFilePath(subPathSingleItem);
-                    // Check if photo item exist in database
-                    if (dbItem == null) continue;
-                    
-                    // Check if parent folder exist in database
-                    var dbParentItem = _query.GetObjectByFilePath(dbItem.ParentDirectory);
-                    if (dbParentItem == null) continue;
-	                
-                    // get hash from file
-	                var singleFileHash =  new FileHash(_iStorage).GetHashCode(subPathSingleItem);
-	                
-                    // compare both
-                    if (dbParentItem.FileHash != singleFileHash)
-                    {
-                        dbParentItem.FileHash = singleFileHash;
-                        _query.UpdateItem(dbParentItem);
-                    }
-                    
-                }
-            }
+	// Gives folder an thumbnail image (only if contains direct files)
+	// SyncServiceFirstItemDirectory
+	public partial class SyncService
+	{
+		// SubPath is the base folder, it scans subfolders
+		public void FirstItemDirectory(string subPath = "/")
+		{
+			subPath = _query.SubPathSlashRemove(subPath);
+			
+			// Loop though all folders
+			var subFoldersSubPath = _iStorage.GetDirectoryRecursive(subPath);
+	        
+			foreach (var singleFolderSubPath in subFoldersSubPath)
+			{
+				var dbItem = _query.GetObjectByFilePath(singleFolderSubPath);
+				
+				// Check if folder item exist in database
+				if (dbItem == null) continue;
+				
+				var firstFileSubPath = _iStorage.GetAllFilesInDirectory(singleFolderSubPath)
+					.FirstOrDefault(ExtensionRolesHelper.IsExtensionThumbnailSupported);
+				
+				if ( ! _iStorage.ExistFile(firstFileSubPath) ) continue;
+				
+				// get hash from file
+				var singleFileHash =  new FileHash(_iStorage).GetHashCode(firstFileSubPath);
+				
+				// compare both
+				if ( dbItem.FileHash == singleFileHash ) continue;
+				
+				dbItem.FileHash = singleFileHash;
+				_query.UpdateItem(dbItem);
+			}
         }
     }
 }

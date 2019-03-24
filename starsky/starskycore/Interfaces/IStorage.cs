@@ -15,8 +15,24 @@ namespace starskycore.Interfaces
 		bool FileDelete(string path);
 
 		void CreateDirectory(string path);
+		
+		/// <summary>
+		/// Returns a list of Files in a directory (non-Recursive)
+		/// to filter use:
+		/// ..etAllFilesInDirectory(subPath)
+		///	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
+		/// </summary>
+		/// <param name="path">path relative to the database</param>
+		/// <returns></returns>
 		IEnumerable<string> GetAllFilesInDirectory(string path);
 		IEnumerable<string> GetAllFilesInDirectoryRecursive(string path);
+		
+		/// <summary>
+		/// Returns a list of directories // Get list of child folders
+		/// old name: GetFilesRecursive
+		/// </summary>
+		/// <param name="path">directory</param>
+		/// <returns>list</returns>
 		IEnumerable<string> GetDirectoryRecursive(string path);
 
 		Stream ReadStream(string path, int maxRead = -1);
