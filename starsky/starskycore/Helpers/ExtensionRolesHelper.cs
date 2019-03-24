@@ -155,22 +155,6 @@ namespace starskycore.Helpers
 			}
 		}
 
-//		/// <summary>
-//		/// Check if name is file.jpg or return false if not
-//		/// </summary>
-//		/// <param name="filename">e.g. filename.jpg or filepath</param>
-//		/// <returns></returns>
-//		private static bool FilenameBaseCheck(string filename)
-//		{
-//			if ( string.IsNullOrEmpty(filename) || filename.Length <= 3) return false;
-//			
-//			// Dot two,three,four letter extenstion
-//			// [\w\d]\.[a-z1-9]{2,4}$
-//			var regexer = new Regex("[\\w\\d]\\.[a-z1-9]{2,4}$").Matches(filename);
-//			if ( regexer.Count == 0 ) return false;
-//			return true;
-//		}
-
 		/// <summary>
 		/// is this filename with extension a filetype that needs a .xmp file 
 		/// </summary>
@@ -189,9 +173,6 @@ namespace starskycore.Helpers
 		public static bool IsExtensionThumbnailSupported(string filename)
 		{
 			return IsExtensionForce(filename, ExtensionThumbSupportedList);
-//			if ( !FilenameBaseCheck(filename) ) return false;
-//			var ext = Path.GetExtension(filename).Remove(0, 1).ToLowerInvariant();
-//			return ExtensionThumbSupportedList.Contains(ext); // true = if supported
 		}
 		
 
@@ -290,79 +271,6 @@ namespace starskycore.Helpers
 			return string.Empty;
 		}
 
-
-//		/// <summary>
-//		/// used for raw, bmp filetypes that has no support for in file exif
-//		/// </summary>
-//		/// <param name="fullFilePath">the name of the file with extenstion</param>
-//		/// <returns>true, if Sidecar is required</returns>
-//		public static bool IsXmpSidecarRequired(string fullFilePath)
-//		{
-//			if ( string.IsNullOrEmpty(fullFilePath) ) return false;
-//			// Use an XMP File -> as those files don't support those tags
-//			if ( ExtensionForceXmpUseList.Contains(Path.GetExtension(fullFilePath)
-//				.Replace(".", string.Empty).ToLowerInvariant()) )
-//			{
-//				return true;
-//			}
-//
-//			return false;
-//		}
-
-//		/// <summary>
-//		/// Get the sitecar file of the raw image
-//		/// </summary>
-//		/// <param name="fullFilePath">the full path on the system</param>
-//		/// <param name="exifToolXmpPrefix">prefix</param>
-//		/// <returns>full file path of sitecar file</returns>
-//		public static string GetXmpSidecarFileWhenRequired(
-//			string fullFilePath,
-//			string exifToolXmpPrefix = "")
-//		{
-//			if ( exifToolXmpPrefix == null )
-//				throw new ArgumentNullException(nameof(exifToolXmpPrefix));
-//			// Use an XMP File -> as those files don't support those tags
-//			if ( IsXmpSidecarRequired(fullFilePath) )
-//			{
-//				return GetXmpSidecarFile(fullFilePath, exifToolXmpPrefix);
-//			}
-//
-//			return fullFilePath;
-//		}
-		
-//		/// <summary>
-//		/// Get the sidecar file of the raw image
-//		/// </summary>
-//		/// <param name="subPath">the full path on the system</param>
-//		/// <returns>full file path of sidecar file</returns>
-//		public static string GetXmpSidecarFileWhenRequired(
-//			string subPath)
-//		{
-//			// Use an XMP File -> as those files don't support those tags
-//			if ( IsXmpSidecarRequired(fullFilePath) )
-//			{
-//				return GetXmpSidecarFile(fullFilePath, exifToolXmpPrefix);
-//			}
-//
-//			return fullFilePath;
-//		}
-
-//		/// <summary>
-//		/// Get the fullpath of the xmp file
-//		/// </summary>
-//		/// <param name="fullFilePath">path of .arw/.dng image</param>
-//		/// <param name="exifToolXmpPrefix">prefix used</param>
-//		/// <returns></returns>
-//		public static string GetXmpSidecarFile(
-//			string fullFilePath,
-//			string exifToolXmpPrefix = "")
-//		{
-//			// Overwrite to use xmp files
-//			return Path.Combine(Path.GetDirectoryName(fullFilePath),
-//				exifToolXmpPrefix
-//				+ Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
-//		}
-//		
 		/// <summary>
 		/// Imageformat based on first bytes
 		/// </summary>
