@@ -36,6 +36,30 @@ namespace starskycore.Helpers
             return Update(updateModel, exifUpdateFilePaths, comparedNames);
         }
 
+	    /// <summary>
+	    /// Add a .xmp sidecar file
+	    /// </summary>
+	    /// <param name="fullFilePath"></param>
+	    /// <returns></returns>
+	    public string XmpSync(string fullFilePath)
+	    {
+		    if ( _exiftool == null ) throw new ArgumentException("exifTool missing");
+
+		    // only for raw files
+		    if ( !ExtensionRolesHelper.IsExtensionForceXmp(fullFilePath) ) return fullFilePath;
+
+		    var xmpFullPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(fullFilePath);
+                
+		    if (FilesHelper.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+		    {
+			    _exiftool.BaseCommmand(" -overwrite_original -TagsFromFile \""  
+			                           + fullFilePath + "\"",  "\""+ xmpFullPath +  "\"");
+		    }
+		    return xmpFullPath;
+	    }
+	    
+	    
+
         /// <summary>
         /// For Raw files us an external .xmp sidecar file, and add this to the fullFilePathsList
         /// </summary>
@@ -46,15 +70,9 @@ namespace starskycore.Helpers
             var fullFilePathsList = new List<string>();
             foreach (var fullFilePath in inputFullFilePaths)
             {
-                if(ExtensionRolesHelper.IsXmpSidecarRequired(fullFilePath))
+                if(ExtensionRolesHelper.IsExtensionForceXmp(fullFilePath))
                 {
-                    var xmpFullPath = ExtensionRolesHelper.GetXmpSidecarFileWhenRequired(fullFilePath, _appSettings.ExifToolXmpPrefix);
-                
-                    if (FilesHelper.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
-                    {
-                        _exiftool.BaseCommmand(" -overwrite_original -TagsFromFile \""  
-                                               + fullFilePath + "\"",  "\""+ xmpFullPath +  "\"");
-                    }
+	                var xmpFullPath = XmpSync(fullFilePath);
                     // to continue as xmp file
                     fullFilePathsList.Add(xmpFullPath);
                     continue;

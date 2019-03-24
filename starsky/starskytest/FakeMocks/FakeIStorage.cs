@@ -17,9 +17,18 @@ namespace starskytest.FakeMocks
 		private List<string> _outputSubPathFolders = new List<string>();
 		private List<string> _outputSubPathFiles  = new List<string>();
 
+		private readonly  Dictionary<string, byte[]> _byteList = new Dictionary<string, byte[]>();
 
-		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="outputSubPathFolders">/</param>
+		/// <param name="outputSubPathFiles">/test.jpg</param>
+		/// <param name="byteList"></param>
+		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, 
+			IReadOnlyList<byte[]> byteList = null)
 		{
+	
 			if ( outputSubPathFolders != null )
 			{
 				_outputSubPathFolders = outputSubPathFolders;
@@ -29,7 +38,16 @@ namespace starskytest.FakeMocks
 			{
 				_outputSubPathFiles = outputSubPathFiles;
 			}
+
+			if ( byteList != null && byteList.Count == _outputSubPathFiles.Count)
+			{
+				for ( int i = 0; i < _outputSubPathFiles.Count; i++ )
+				{
+					_byteList.Add(_outputSubPathFiles[i],byteList[i]);
+				}
+			}
 		}
+		
 		public bool ExistFile(string subPath)
 		{
 			return _outputSubPathFiles.Contains(subPath);
@@ -94,9 +112,9 @@ namespace starskytest.FakeMocks
 		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
 		{
 			subPath = PathHelper.RemoveLatestSlash(subPath);
-			
+
 			// non recruisive
-			if ( !ExistFolder(subPath) )
+			if ( subPath != string.Empty && !ExistFolder(subPath) )
 			{
 				return new List<string>();
 			}
@@ -111,9 +129,11 @@ namespace starskytest.FakeMocks
 
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)
 		{
-			if ( !filePath.StartsWith(parentFolder) ) return false;
+			if ( parentFolder != string.Empty && !filePath.StartsWith(parentFolder) ) return false;
+
+			var value = $"^{Regex.Escape(parentFolder)}" + "\\/\\w+.[a-z]{3}$";
 			
-			return Regex.Match(filePath, $"^{parentFolder}"+ "\\/\\w+.[a-z]{3}$").Success;
+			return Regex.Match(filePath, $"^{Regex.Escape(parentFolder)}"+ "\\/\\w+.[a-z]{3}$").Success;
 		}
 
 		public IEnumerable<string> GetDirectoryRecursive(string subPath)
@@ -127,15 +147,30 @@ namespace starskytest.FakeMocks
 
 		}
 
-		public Stream Stream(string path, int maxRead = 2147483647)
+		public Stream ReadStream(string path, int maxRead = 2147483647)
 		{
-			if ( ExistFile(path) )
+			if ( ExistFile(path) && _byteList.All(p => p.Key != path) )
 			{
 				byte[] byteArray = Encoding.UTF8.GetBytes("test");
 				MemoryStream stream = new MemoryStream(byteArray);
 				return stream;
 			}
-			throw new FileNotFoundException(path);
+			if ( !ExistFile(path) ) throw new FileNotFoundException(path);
+
+			var result = _byteList.FirstOrDefault(p => p.Key == path).Value;
+			MemoryStream stream1 = new MemoryStream(result);
+			return stream1;
+
+		}
+
+		public bool ExistThumbnail(string fileHash)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Stream Thumbnail(string fileHash)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

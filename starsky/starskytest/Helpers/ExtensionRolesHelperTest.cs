@@ -98,7 +98,41 @@ namespace starskytest.Helpers
             var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
             Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.xmp);
         }
+
+		[TestMethod]
+		public void ExtensionRolesHelperTest_IsExtensionForceXmp_Positive()
+		{
+			var result = ExtensionRolesHelper.IsExtensionForceXmp("/test.arw");
+			Assert.AreEqual(true,result);
+		}
 		
+		[TestMethod]
+		public void ExtensionRolesHelperTest_IsExtensionForceXmp_Negative()
+		{
+			var result = ExtensionRolesHelper.IsExtensionForceXmp("/test.jpg");
+			Assert.AreEqual(false,result);
+		}
+
+		[TestMethod]
+		public void ExtensionRolesHelperTest_ReplaceExtensionWithXmp_arw()
+		{
+			var result = ExtensionRolesHelper.ReplaceExtensionWithXmp("/test.arw");
+			Assert.AreEqual("/test.xmp",result);
+		}
+		
+		[TestMethod]
+		public void ExtensionRolesHelperTest_ReplaceExtensionWithXmp_tiff()
+		{
+			var result = ExtensionRolesHelper.ReplaceExtensionWithXmp("/test.tiff");
+			Assert.AreEqual("/test.xmp",result);
+		}
+
+		[TestMethod]
+		public void ExtensionRolesHelperTest_ReplaceExtensionWithXmp_fail()
+		{
+			var result = ExtensionRolesHelper.ReplaceExtensionWithXmp("/test.so");
+			Assert.AreEqual(string.Empty,result);
+		}
 		
 //		[TestMethod]
 //		public void Files_GetImageFormat_h264_Test()

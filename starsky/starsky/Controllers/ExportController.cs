@@ -138,13 +138,17 @@ namespace starsky.Controllers
 					new Thumbnail(_appSettings, _exiftool).CreateThumb(item);
 
 				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
-
+				
+				
 				// when there is .xmp sidecar file
-				if ( !thumbnail && ExtensionRolesHelper.IsXmpSidecarRequired(sourceFile) && FilesHelper.ExistFile(ExtensionRolesHelper.GetXmpSidecarFile(sourceFile)))
+				if ( !thumbnail && ExtensionRolesHelper.IsExtensionForceXmp(item.FilePath) 
+				                && _iStorage.ExistFile(ExtensionRolesHelper.ReplaceExtensionWithXmp(item.FilePath)))
 				{
-					filePaths.Add(ExtensionRolesHelper.GetXmpSidecarFile(sourceFile));
+					filePaths.Add(
+						_appSettings.DatabasePathToFilePath(ExtensionRolesHelper.ReplaceExtensionWithXmp(item.FilePath))
+						);
 				}
-
+				
 			}
 
 			return filePaths;

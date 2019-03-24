@@ -1,32 +1,49 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using MetadataExtractor;
+using starskycore.Helpers;
+using starskycore.Interfaces;
 using starskycore.Models;
+using Directory = MetadataExtractor.Directory;
 
 namespace starskycore.Services
 {
-    // Reading Exif using MetadataExtractor
-    public partial class ReadMeta // IReadMeta
-    {
-        
-        public FileIndexItem ReadExifFromFile(string fileFullPath, FileIndexItem existingFileIndexItem = null) // use null to create an object
+	public class ReadMetaExif
+	{
+		private readonly IStorage _iStorage;
+
+		public ReadMetaExif(IStorage iStorage)
+		{
+			_iStorage = iStorage;
+		}
+		public FileIndexItem ReadExifFromFile(string subPath, FileIndexItem existingFileIndexItem = null) // use null to create an object
         {
             List<MetadataExtractor.Directory> allExifItems;
-            
-            try
-            {
-                allExifItems = ImageMetadataReader.ReadMetadata(fileFullPath).ToList();
-                DisplayAllExif(allExifItems);
-            }
-            catch (ImageProcessingException)
-            {
-                var item = new FileIndexItem {Tags = "ImageProcessingException".ToLower()};
-                return item;
-            }
 
+	        // Used to overwrite feature
+	        if (existingFileIndexItem == null)
+	        {
+		        existingFileIndexItem = new FileIndexItem(subPath);
+	        }
+	        
+	        using ( var stream = _iStorage.ReadStream(subPath) )
+	        {
+				try
+				{
+					allExifItems = ImageMetadataReader.ReadMetadata(stream).ToList();
+					DisplayAllExif(allExifItems);
+				}
+				catch (ImageProcessingException)
+				{
+					stream.Dispose();
+					var item = new FileIndexItem {Tags = nameof(ImageProcessingException).ToLowerInvariant()};
+					return item;
+				}
+	        }
+	        
             return ParseExifDirectory(allExifItems, existingFileIndexItem);
         }
 
@@ -35,7 +52,7 @@ namespace starskycore.Services
             // Used to overwrite feature
             if (item == null)
             {
-                item = new FileIndexItem();
+                throw new ArgumentException("need to fill item with filepath");
             }
             
             // Set the default value
@@ -49,7 +66,11 @@ namespace starskycore.Services
             item.LocationAltitude = GetGeoLocationAltitude(allExifItems);
             item.SetImageWidth(GetImageWidthHeight(allExifItems,true));
             item.SetImageHeight(GetImageWidthHeight(allExifItems,false));
-            
+
+	        // Update imageFormat based on Exif data
+	        var imageFormat = GetFileSpecificTags(allExifItems);
+	        if ( imageFormat != ExtensionRolesHelper.ImageFormat.unknown )
+		        item.ImageFormat = imageFormat;
             
             foreach (var exifItem in allExifItems)
             {
@@ -155,7 +176,24 @@ namespace starskycore.Services
             return item;
         }
 
-        private FileIndexItem.Rotation GetOrientation(MetadataExtractor.Directory exifItem)
+		private ExtensionRolesHelper.ImageFormat GetFileSpecificTags(List<Directory> allExifItems)
+		{
+			if ( allExifItems.Any(p => p.Name == "JPEG") )
+				return ExtensionRolesHelper.ImageFormat.jpg;
+				
+			if ( allExifItems.Any(p => p.Name == "PNG-IHDR") )
+				return ExtensionRolesHelper.ImageFormat.png;
+			
+			if ( allExifItems.Any(p => p.Name == "BMP Header") )
+				return ExtensionRolesHelper.ImageFormat.bmp;	
+			
+			if ( allExifItems.Any(p => p.Name == "GIF Header") )
+				return ExtensionRolesHelper.ImageFormat.gif;	
+				
+			return ExtensionRolesHelper.ImageFormat.unknown;
+		}
+
+		private FileIndexItem.Rotation GetOrientation(MetadataExtractor.Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif IFD0" && p.Name == "Orientation");
             if (tCounts < 1) return FileIndexItem.Rotation.DoNotChange;
@@ -326,7 +364,7 @@ namespace starskycore.Services
 
             if (!string.IsNullOrWhiteSpace(latitudeString))
             {
-                var latitude = ConvertDegreeMinutesSecondsToDouble(latitudeString, latitudeRef);
+                var latitude = GeoDistanceTo.ConvertDegreeMinutesSecondsToDouble(latitudeString, latitudeRef);
                 latitude = Math.Floor(latitude * 10000000000) / 10000000000; 
                 return latitude;
             }
@@ -403,53 +441,14 @@ namespace starskycore.Services
 
             if (!string.IsNullOrWhiteSpace(longitudeString))
             {
-                var longitude = ConvertDegreeMinutesSecondsToDouble(longitudeString, longitudeRef);
+                var longitude = GeoDistanceTo.ConvertDegreeMinutesSecondsToDouble(longitudeString, longitudeRef);
                 longitude = Math.Floor(longitude * 10000000000) / 10000000000; 
                 return longitude;
             }
             return 0;
         }
 
-        public double ConvertDegreeMinutesSecondsToDouble(string point, string refGps)
-        {
-            //Example: 17.21.18S
-            // DD°MM’SS.s” usage
-            
-            var multiplier = (refGps.Contains("S") || refGps.Contains("W")) ? -1 : 1; //handle south and west
-
-            point = Regex.Replace(point, "[^0-9\\., ]", "", RegexOptions.CultureInvariant); //remove the characters
-
-            // When you use an localisation where commas are used instead of a dot
-            point = point.Replace(",", ".");
-
-            var pointArray = point.Split(' '); //split the string.
-
-            //Decimal degrees = 
-            //   whole number of degrees, 
-            //   plus minutes divided by 60, 
-            //   plus seconds divided by 3600
-
-            var degrees = double.Parse(pointArray[0], CultureInfo.InvariantCulture);
-            var minutes = double.Parse(pointArray[1], CultureInfo.InvariantCulture) / 60;
-            var seconds = double.Parse(pointArray[2],CultureInfo.InvariantCulture) / 3600;
-
-            return (degrees + minutes + seconds) * multiplier;
-        }
-
-        public double ConvertDegreeMinutesToDouble(string point, string refGps)
-        {
-            // "5,55.840E"
-            var multiplier = (refGps.Contains("S") || refGps.Contains("W")) ? -1 : 1; //handle south and west
-
-            point = point.Replace(",", " ");
-            point = Regex.Replace(point, "[^0-9\\., ]", "", RegexOptions.CultureInvariant); //remove the characters
-
-            var pointArray = point.Split(' '); //split the string.
-            var degrees = double.Parse(pointArray[0], CultureInfo.InvariantCulture);
-            var minutes = double.Parse(pointArray[1], CultureInfo.InvariantCulture) / 60;
-            
-            return (degrees + minutes) * multiplier;
-        }
+        
 
         private int GetImageWidthHeightMaxCount(string dirName, List<MetadataExtractor.Directory> allExifItems)
         {
@@ -576,6 +575,6 @@ namespace starskycore.Services
 		    int.TryParse(isoSpeedString, NumberStyles.Number, CultureInfo.InvariantCulture, out var isoSpeed);
 		    return isoSpeed;
 	    }
-
-    }
+		
+	}
 }

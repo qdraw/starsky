@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
@@ -55,8 +56,10 @@ namespace starskywebhtmlcli
 
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;
-            
-            var listOfFiles = FilesHelper.GetFilesInDirectory(inputPath);
+
+			// use relative to StorageFolder
+	        var listOfFiles = startupHelper.Storage().GetAllFilesInDirectory("/")
+		        .Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
             var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
             
             // Create thumbnails from the source images 

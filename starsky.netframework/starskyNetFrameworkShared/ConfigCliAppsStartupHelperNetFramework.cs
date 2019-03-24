@@ -106,7 +106,7 @@ namespace starskyNetFrameworkShared
             //   _exiftool = exiftool
             //   _appSettingsJsonSettings = appSettings
             //   _readmeta = readmeta
-			_import = new ImportService(context, _isync, _exiftool, _appSettings, _readmeta, null, iStorage);
+			_import = new ImportService(context, _isync, _exiftool, _appSettings, null, iStorage);
 
 	        _thumbnailCleaner = new ThumbnailCleaner(query, _appSettings);
         }

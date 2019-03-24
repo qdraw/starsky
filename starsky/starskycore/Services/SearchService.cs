@@ -223,7 +223,7 @@ namespace starskycore.Services
 					    break;
 				    case SearchViewModel.SearchInTypes.filehash:
 					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.FileHash.ToLowerInvariant().Contains(model.SearchFor[i])
+						    p =>  p.FileHash != null && p.FileHash.ToLowerInvariant() == model.SearchFor[i]
 					    ));
 					    break;
 				    case SearchViewModel.SearchInTypes.isdirectory:

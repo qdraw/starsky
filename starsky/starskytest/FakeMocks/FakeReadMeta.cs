@@ -8,17 +8,28 @@ namespace starskytest.FakeMocks
 {
     public class FakeReadMeta : IReadMeta
     {
-        public FileIndexItem ReadExifAndXmpFromFile(string singleFilePath, ExtensionRolesHelper.ImageFormat imageFormat)
+        public FileIndexItem ReadExifAndXmpFromFile(string subPath, ExtensionRolesHelper.ImageFormat imageFormat)
         {
             return new FileIndexItem{Status = FileIndexItem.ExifStatus.Ok, Tags = "test", FileHash = "test", FileName = "t", ParentDirectory = "d"};
         }
 
+	    public FileIndexItem ReadExifAndXmpFromFile(string path)
+	    {
+		    return new FileIndexItem{Status = FileIndexItem.ExifStatus.Ok};
+	    }
 
-        public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(string[] fullFilePathArray)
-        {
-            var createAnImage = new CreateAnImage();
-            return new List<FileIndexItem> {new FileIndexItem{Status = FileIndexItem.ExifStatus.Ok, FileName = createAnImage.FileName}};
-        }
+	    public FileIndexItem ReadExifAndXmpFromFile(FileIndexItem fileIndexItemWithLocation)
+	    {
+		    return fileIndexItemWithLocation;
+	    }
+
+	    public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(List<string> subPathArray, List<string> fileHashes = null)
+	    {
+		    var createAnImage = new CreateAnImage();
+		    return new List<FileIndexItem> {new FileIndexItem{Status = FileIndexItem.ExifStatus.Ok, FileName = createAnImage.FileName}};
+	    }
+
+
 
         public void RemoveReadMetaCache(List<string> fullFilePathArray)
         {

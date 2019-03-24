@@ -26,38 +26,33 @@ namespace starskycore.Services
         
         public SingleFileSuccess SingleFile(string subPath = "")
         {
-            var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
-            
-            if (FilesHelper.IsFolderOrFile(fullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File) // false == file
-            {
-                // File check if jpg #not corrupt
-                var imageFormat = ExtensionRolesHelper.GetImageFormat(fullFilePath);
-                if(imageFormat == ExtensionRolesHelper.ImageFormat.unknown) return SingleFileSuccess.Fail;
+	        if ( !_iStorage.ExistFile(subPath) ) return SingleFileSuccess.Ignore;
+	        
+	        // File check if jpg #not corrupt
+	        var imageFormat = ExtensionRolesHelper.GetImageFormat(_iStorage.ReadStream(subPath,160));
+	        if(imageFormat == ExtensionRolesHelper.ImageFormat.unknown) return SingleFileSuccess.Fail;
                 
-                // The same check as in GetFilesInDirectory
-                var extension = Path.GetExtension(fullFilePath).ToLower().Replace(".",string.Empty);
-                if (!ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(extension)) return SingleFileSuccess.Fail;
+	        // The same check as in GetFilesInDirectory
+	        if (!ExtensionRolesHelper.IsExtensionSyncSupported(subPath)) return SingleFileSuccess.Fail;
                  
-                // single file -- update or adding
-                var dbListWithOneFile = new List<FileIndexItem>();
-                var dbItem = _query.GetObjectByFilePath(subPath);
-                if (dbItem != null)
-                {
-                    // If file already exist in database
-                    dbListWithOneFile.Add(dbItem);
-                }
+	        // single file -- update or adding
+	        var dbListWithOneFile = new List<FileIndexItem>();
+	        var dbItem = _query.GetObjectByFilePath(subPath);
+	        if (dbItem != null)
+	        {
+		        // If file already exist in database
+		        dbListWithOneFile.Add(dbItem);
+	        }
 
-                var localListWithOneFileDbStyle = new List<string> {subPath};
+	        var localListWithOneFileDbStyle = new List<string> {subPath};
 
-                CheckMd5Hash(localListWithOneFileDbStyle, dbListWithOneFile);
-                AddFileToDatabase(localListWithOneFileDbStyle, dbListWithOneFile);
+	        CheckMd5Hash(localListWithOneFileDbStyle, dbListWithOneFile);
+	        AddFileToDatabase(localListWithOneFileDbStyle, dbListWithOneFile);
 
-                // add subpath
-                AddSubPathFolder(subPath);
+	        // add subpath
+	        AddSubPathFolder(subPath);
                 
-                return SingleFileSuccess.Success;
-            }
-            return SingleFileSuccess.Ignore;
+	        return SingleFileSuccess.Success;
         }
     }
 }

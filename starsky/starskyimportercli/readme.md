@@ -40,6 +40,7 @@ The default structure in `appsettings.json` is:
     "ExifToolPath": "/usr/local/bin/exiftool",
     "Structure": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext",
     "ReadOnlyFolders": ["/2015","/2018"],
+    "ExifToolImportXmpCreate": "true"
   }
 }
 
@@ -48,6 +49,7 @@ The default structure in `appsettings.json` is:
 1)   Structure uses slash as directory separator for Linux and Windows
 2)   The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `StorageFolder` uses the system path directory separators
 3)    The `AddMemoryCache` setting is ignored in the console/cli applications
+4)  `ExifToolImportXmpCreate`
 
 ### Structure configuation options:
 

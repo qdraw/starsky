@@ -1,11 +1,24 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace starskycore.Helpers
 {
     public static class PathHelper
     {
+
+	    /// <summary>
+	    /// Return value (works for POSIX/Windows paths)
+	    /// </summary>
+	    /// <param name="filePath"></param>
+	    /// <returns></returns>
+	    public static string GetFileName(string filePath)
+	    {
+			// unescaped:
+			// \w+(?:\.\w+)*$
+			return Regex.Match(filePath, "\\w+(?:\\.\\w+)*$").Value;
+	    }
 
 		/// <summary>
 		/// Removes the latest backslash. Path.DirectorySeparatorChar
@@ -33,8 +46,10 @@ namespace starskycore.Helpers
 		/// <param name="basePath">The base path.</param>
 		/// <returns></returns>
 		public static string RemoveLatestSlash(string basePath)
-        {
-            // on all platforms the same
+		{
+			// don't know why it returns / > string.empty
+
+			// on all platforms the same
             if (string.IsNullOrWhiteSpace(basePath) || basePath == "/" ) return string.Empty;
 
             // remove latest slash

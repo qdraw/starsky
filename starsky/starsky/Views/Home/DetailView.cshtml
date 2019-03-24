@@ -74,17 +74,21 @@
 					var hours = ( int ) timeSpan.TotalHours;
 					var days = ( int ) timeSpan.TotalDays;
 
-					if (hours <= 1 )
+					if (minutes <= 5 )
 					{
-						<p>Bewerkt: <em>@minutes minuten geleden</em></p>
+						<p class="js-lastedited">Bewerkt: <em>minder dan 5 min. geleden</em></p>
+					}
+					else if (hours <= 1 )
+					{
+						<p class="js-lastedited">Bewerkt: <em>@minutes minuten geleden</em></p>
 					}
 					else if (hours <= 100 )
 					{
-						<p>Bewerkt: <em>@hours uur geleden</em></p>
+						<p class="js-lastedited">Bewerkt: <em>@hours uur geleden</em></p>
 					}
 					else
 					{
-						<p>Bewerkt: <em>@days dagen geleden</em></p>
+						<p class="js-lastedited">Bewerkt: <em>@days dagen geleden</em></p>
 					}
 				}   
 				
@@ -290,14 +294,21 @@
 @{
 	// Javascript don't accept decoded slashes
 	var thumbnailApiBase = Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash, json = true});
-	thumbnailApiBase = HttpUtility.UrlDecode(thumbnailApiBase);
+	thumbnailApiBase = HttpUtility.HtmlDecode(thumbnailApiBase);
+
 	var updateApiBase = Url.Action("Update", "Api", new { f = @Model.FileIndexItem.FilePath});
-	updateApiBase = HttpUtility.UrlDecode(updateApiBase);
+	updateApiBase = HttpUtility.HtmlDecode(updateApiBase);
+	updateApiBase = updateApiBase.Replace("+", "%2B");
+
 	var infoApiBase = @Url.Action("Info", "Api", new {f = @Model.FileIndexItem.FilePath});
-	infoApiBase = HttpUtility.UrlDecode(infoApiBase);
+	infoApiBase = HttpUtility.HtmlDecode(infoApiBase);
+	infoApiBase = infoApiBase.Replace("+", "%2B");
+
 	var downloadUrl = @Url.Action("DownloadPhoto", "Api", 
 		new {f = @Model.FileIndexItem.FilePath, isThumbnail = false});
-	downloadUrl = HttpUtility.UrlDecode(downloadUrl);
+	downloadUrl = HttpUtility.HtmlDecode(downloadUrl);
+	downloadUrl = downloadUrl.Replace("+", "%2B");
+
 }
 
 <div id="js-settings" data-updateApiBase="@updateApiBase" 

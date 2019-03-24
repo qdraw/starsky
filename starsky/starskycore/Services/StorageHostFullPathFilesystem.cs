@@ -6,7 +6,7 @@ using starskycore.Models;
 
 namespace starskycore.Services
 {
-	public class StorageFullPathFilesystem : IStorage
+	public class StorageHostFullPathFilesystem : IStorage
 	{
 		public void CreateDirectory(string subPath)
 		{
@@ -32,6 +32,8 @@ namespace starskycore.Services
 				// to filter use:
 				// ..etAllFilesInDirectory(subPath)
 				//	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
+				// OR:
+				//  .Where(ExtensionRolesHelper.IsExtensionSyncSupported
 			}
 
 			return imageFilesList;
@@ -42,7 +44,29 @@ namespace starskycore.Services
 			return Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);
 		}
 
-		public Stream Stream(string path, int maxRead = Int32.MaxValue)
+		public Stream ReadStream(string path, int maxRead = -1)
+		{
+			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
+
+			FileStream fileStream;
+			if ( maxRead <= 1 )
+			{
+				fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+			}
+			else
+			{
+				fileStream = new FileStream(path, FileMode.Open, FileAccess.Read,
+					FileShare.Read, maxRead, false);
+			}
+			return fileStream;
+		}
+
+		public bool ExistThumbnail(string fileHash)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Stream Thumbnail(string fileHash)
 		{
 			throw new NotImplementedException();
 		}
@@ -51,7 +75,7 @@ namespace starskycore.Services
 		/// <summary>
 		/// Does file exist (true == exist)
 		/// </summary>
-		/// <param name="subPath">full file path</param>
+		/// <param name="path">full file path</param>
 		/// <returns>bool true = exist</returns>
 		public bool ExistFile(string path)
 		{

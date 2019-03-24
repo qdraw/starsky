@@ -21,12 +21,12 @@ namespace starskycore.Services
 	    
 	    
         // Two public interfaces
-        // Returns list of hashcodes
+        // Returns list of hashCodes
         // or one hashcode (base32)
         
         
         /// <summary>
-        /// Get the hashcodes of a array of files
+        /// Get the hashCodes of a array of files
         /// Uses the default timeout
         /// </summary>
         /// <param name="filesInDirectorySubPath">array</param>
@@ -37,7 +37,7 @@ namespace starskycore.Services
         }
 
         /// <summary>
-        /// Returns a Base32 case insensitive filehash, used with the default timeout of 8 seconds
+        /// Returns a Base32 case insensitive fileHash, used with the default timeout of 8 seconds
         /// </summary>
         /// <param name="subPath">subPath</param>
         /// <param name="timeoutSeconds">Timeout in seconds, before a random string will be returned</param>
@@ -107,18 +107,18 @@ namespace starskycore.Services
         }
 
         /// <summary>
-        ///  Calculate the hash based on the first 0.05 Mb of the file
+        ///  Calculate the hash based on the first 8 Kilobytes of the file
         /// </summary>
         /// <param name="subPath"></param>
         /// <returns></returns>
         private async Task<string> CalculateMd5Async(string subPath)
         {
-            var block = ArrayPool<byte>.Shared.Rent(50000); // 0,05 Mb
+            var block = ArrayPool<byte>.Shared.Rent(8192); // 8 Kilobytes
             try
             {
                 using (var md5 = MD5.Create())
                 {
-                    using (var stream = _iStorage.Stream(subPath,50000))
+                    using (var stream = _iStorage.ReadStream(subPath,8192)) // reading 8 Kilobytes
                     {
                         int length;
                         while ((length = await stream.ReadAsync(block, 0, block.Length).ConfigureAwait(false)) > 0)
@@ -127,7 +127,7 @@ namespace starskycore.Services
                         }
                         md5.TransformFinalBlock(block, 0, 0);
                     }
-                    var hash = md5.Hash;       
+                    var hash = md5.Hash;
                     return Base32.Encode(hash);
                 }
             }
@@ -135,6 +135,7 @@ namespace starskycore.Services
             {
                 ArrayPool<byte>.Shared.Return(block);
             }
+	        // Source: https://stackoverflow.com/a/45573180
         }
     }
 }

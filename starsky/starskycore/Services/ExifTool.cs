@@ -135,30 +135,29 @@ namespace starskycore.Services
 
         }
 
-        
+
         // The actual query
         // will be removed very soon 
         // Only used by DownloadPhoto
         public ExifToolModel Info(string fullFilePath)
         {
-            // Add parentes around this file
-
-            var xmpFullFilePath = ExtensionRolesHelper.GetXmpSidecarFileWhenRequired(
-                fullFilePath,
-                _appSettings.ExifToolXmpPrefix);
-                
-            // only overwrite when a xmp file exist
-            if (FilesHelper.IsFolderOrFile(xmpFullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
-                fullFilePath = xmpFullFilePath;
-                
-            // When change also update class 'Update'
-            // xmp:Subject == Keywords
-            // Caption-Abstract == Description
-            var fullFilePathStringBuilder = new ExifToolCmdHelper().Quoted(null,fullFilePath);
-
-            // -Orientation# <= hashtag is that exiftool must output a int and not a human readable string
-            return ParseJson(BaseCommmand("-Keywords \"-xmp:title\" -ObjectName \"-Orientation#\" -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
-                fullFilePathStringBuilder.ToString()));
+			// Add parentes around this file
+			
+			var xmpFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(
+			fullFilePath);
+			
+			// only overwrite when a xmp file exist
+			if (FilesHelper.IsFolderOrFile(xmpFullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
+				fullFilePath = xmpFullFilePath;
+			
+			// When change also update class 'Update'
+			// xmp:Subject == Keywords
+			// Caption-Abstract == Description
+			var fullFilePathStringBuilder = new ExifToolCmdHelper().Quoted(null,fullFilePath);
+			
+			// -Orientation# <= hashtag is that exiftool must output a int and not a human readable string
+			return ParseJson(BaseCommmand("-Keywords \"-xmp:title\" -ObjectName \"-Orientation#\" -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
+				fullFilePathStringBuilder.ToString()));
         }
 
     }

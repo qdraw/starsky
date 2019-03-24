@@ -76,6 +76,21 @@ namespace starskycore.Helpers
 		            var newUshortValue = (ushort)propertiesB [i].GetValue(updateObject, null);
 		            CompareUshort(propertiesB[i].Name, sourceIndexItem, oldUshortValue, newUshortValue, differenceList); 
 	            }
+
+	            if ( propertiesA[i].PropertyType == typeof(List<string>) )
+	            {
+		            var oldListStringValue = ( List<string> ) propertiesA[i].GetValue(sourceIndexItem, null);
+		            var newListStringValue = ( List<string> ) propertiesB[i].GetValue(updateObject, null);
+		            CompareListstring(propertiesB[i].Name, sourceIndexItem, oldListStringValue,
+			            newListStringValue, differenceList);
+	            }
+	            
+	            if (propertiesA[i].PropertyType == typeof(ExtensionRolesHelper.ImageFormat))
+	            {
+		            var oldImageFormatValue = (ExtensionRolesHelper.ImageFormat)propertiesA [i].GetValue(sourceIndexItem, null);
+		            var newImageFormatValue = (ExtensionRolesHelper.ImageFormat)propertiesB [i].GetValue(updateObject, null);
+		            CompareImageFormat(propertiesB[i].Name, sourceIndexItem, oldImageFormatValue, newImageFormatValue, differenceList); 
+	            }
             }
 
 	        // Last Edited is not needed
@@ -86,6 +101,7 @@ namespace starskycore.Helpers
 	        
             return differenceList;
         }
+
 
 	    /// <summary>
 	    /// Set values by string name. fieldContent must by the right type
@@ -219,6 +235,24 @@ namespace starskycore.Helpers
 		    differenceList.Add(propertyName);
 	    }
 	    
+	    
+	    /// <summary>
+	    /// Compare imageFormat type
+	    /// </summary>
+	    /// <param name="propertyName">name of property e.g. ImageFormat</param>
+	    /// <param name="sourceIndexItem">source object</param>
+	    /// <param name="oldImageFormatValue">two values to compare with</param>
+	    /// <param name="newImageFormatValue">two values to compare with</param>
+	    /// <param name="differenceList">lisf of dif</param>
+	    private static void CompareImageFormat(string propertyName, FileIndexItem sourceIndexItem, ExtensionRolesHelper.ImageFormat oldImageFormatValue, 
+		    ExtensionRolesHelper.ImageFormat newImageFormatValue, List<string> differenceList)
+	    {
+		    if (oldImageFormatValue == newImageFormatValue || newImageFormatValue == ExtensionRolesHelper.ImageFormat.unknown) return;
+		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newImageFormatValue, null);
+		    differenceList.Add(propertyName);
+	    }
+	    
+	    
 	    /// <summary>
 	    /// Compare DateTime type 
 	    /// </summary>
@@ -243,13 +277,32 @@ namespace starskycore.Helpers
 	    /// <param name="oldColorValue">oldColorValue to compare with newColorValue</param>
 	    /// <param name="newColorValue">oldColorValue to compare with newColorValue</param>
 	    /// <param name="differenceList">list of different values</param>
-        private static void CompareColor(string propertyName, FileIndexItem sourceIndexItem, FileIndexItem.Color oldColorValue, FileIndexItem.Color newColorValue, List<string> differenceList)
+        private static void CompareColor(string propertyName, FileIndexItem sourceIndexItem, FileIndexItem.Color oldColorValue, 
+		    FileIndexItem.Color newColorValue, List<string> differenceList)
         {
             if (oldColorValue == newColorValue || newColorValue == FileIndexItem.Color.DoNotChange) return;
             sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newColorValue, null);
             differenceList.Add(propertyName);
         }
         
+	    
+	    /// <summary>
+	    /// Compare List String
+	    /// </summary>
+	    /// <param name="propertyName">name of property e.g. CollectionPaths</param>
+	    /// <param name="sourceIndexItem">source object</param>
+	    /// <param name="oldListStringValue">oldListStringValue to compare with newListStringValue</param>
+	    /// <param name="newListStringValue">newListStringValue to compare with oldListStringValue</param>
+	    /// <param name="differenceList">list of different values</param>
+	    private static void CompareListstring(string propertyName, FileIndexItem sourceIndexItem, 
+		    List<string> oldListStringValue, List<string> newListStringValue, List<string> differenceList)
+	    {
+		    if ( oldListStringValue == null || newListStringValue.Count == 0 ) return;
+		    if ( oldListStringValue.Equals(newListStringValue) ) return;
+		    
+		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newListStringValue, null);
+		    differenceList.Add(propertyName);
+	    }
 	    
 	    /// <summary>
 	    /// Compare bool type 
@@ -275,12 +328,13 @@ namespace starskycore.Helpers
 	    /// <param name="newStringValue">oldStringValue to compare with newStringValue</param>
 	    /// <param name="differenceList">list of different values</param>
 	    /// <param name="append">to add after list (if tags)</param>
-        private static void CompareString(string propertyName, FileIndexItem sourceIndexItem, string oldStringValue, string newStringValue, List<string> differenceList, bool append)
+        private static void CompareString(string propertyName, FileIndexItem sourceIndexItem, string oldStringValue, string newStringValue, 
+		    List<string> differenceList, bool append)
         {
             if (oldStringValue == newStringValue ||
                 (string.IsNullOrEmpty(newStringValue) && newStringValue != "/")) return;
             
-            if (propertyName == "FileName") return;
+            if (propertyName == nameof(FileIndexItem.FileName)) return;
          
             var propertyObject = sourceIndexItem.GetType().GetProperty(propertyName);
                         
@@ -288,7 +342,7 @@ namespace starskycore.Helpers
             {
                 propertyObject.SetValue(sourceIndexItem, newStringValue, null);
             }
-            else if (propertyName == "Tags")
+            else if (propertyName == nameof(FileIndexItem.Tags))
             {
                 propertyObject.SetValue(sourceIndexItem, oldStringValue + ", " + newStringValue,null);
             }

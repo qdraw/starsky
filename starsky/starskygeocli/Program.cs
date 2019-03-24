@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
@@ -69,11 +70,11 @@ namespace starskyGeoCli
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;
 
-            var filesInDirectory = FilesHelper.GetFilesInDirectory(inputPath);
-            var metaFilesInDirectory = startupHelper.ReadMeta()
-                .ReadExifAndXmpFromFileAddFilePathHash(filesInDirectory);
-            // FilePath is used as full
-            
+	        // use relative to StorageFolder
+	        var listOfFiles = startupHelper.Storage().GetAllFilesInDirectory("/")
+		        .Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
+	        var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
+	        
             var overwriteLocationNames = new ArgsHelper().GetAll(args);
             
             var gpxIndexMode = new ArgsHelper().GetIndexMode(args);
@@ -81,15 +82,15 @@ namespace starskyGeoCli
             if (gpxIndexMode)
             {
                 Console.WriteLine("CameraTimeZone " + appSettings.CameraTimeZone);
-                var toMetaFilesUpdate = new GeoIndexGpx(appSettings,startupHelper.ReadMeta()).LoopFolder(metaFilesInDirectory);
+                var toMetaFilesUpdate = new GeoIndexGpx(appSettings,startupHelper.ReadMeta(),startupHelper.Storage()).LoopFolder(fileIndexList);
                 new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(toMetaFilesUpdate,false);
             }
             
-            metaFilesInDirectory = new GeoReverseLookup(appSettings)
-                .LoopFolderLookup(metaFilesInDirectory,overwriteLocationNames);
-            new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(metaFilesInDirectory,true);
+	        fileIndexList = new GeoReverseLookup(appSettings)
+                .LoopFolderLookup(fileIndexList,overwriteLocationNames);
+            new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(fileIndexList,true);
             // update thumbs to avoid unnesseary re-generation
-            new Thumbnail(appSettings).RenameThumb(metaFilesInDirectory);
+            new Thumbnail(appSettings).RenameThumb(fileIndexList);
 
 
         }

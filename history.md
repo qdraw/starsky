@@ -12,10 +12,13 @@
 - []   Pagination on folders - Performance update for example 800 files
 - []   Search: support for complex and/or operators `(this || or) && that`
 
-# version 0.1.5.2 - tbd
-- exiftool write bug
-- [x]   Performance upgrade xmp/tiff files
-- todo: refactor xmp/exif module to support iStorage
+# version 0.1.5.2 - 2019-03-22
+- exifTool implementation write bug fixed
+- [x]   Performance upgrade xmp/tiff files (does not check filehash again)
+- refactor xmp/exif module to support iStorage
+- bugfix to searching filehashes with null content
+- include test with incomplete xmp file
+- ExifToolImportXmpCreate in appsettings
 
 # version 0.1.5.1 - 2019-03-17
 - Breaking Change: added `LastEdited` field

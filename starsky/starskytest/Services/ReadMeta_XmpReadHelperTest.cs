@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
@@ -48,7 +51,7 @@ namespace starskytest.Services
         public void XmpReadHelperTest_GetData_usingStringExample()
         {
 	        var iStorage = new FakeIStorage();
-            var data = new ReadMeta(iStorage,new AppSettings()).GetDataFromString(Input);
+            var data = new ReadMetaXmp(iStorage).GetDataFromString(Input);
             
             Assert.AreEqual(52.3451333333,data.Latitude,0.001);
             Assert.AreEqual(5.930,data.Longitude,0.001);
@@ -73,27 +76,95 @@ namespace starskytest.Services
             
         }
 
-        [TestMethod]
-        public void XmpReadHelperTest_XmpGetSidecarFile()
-        {
-            var createAnImage = new CreateAnImage();
-            var xmpPath = createAnImage.FullFilePath.Replace("jpg", "xmp");
-	        FilesHelper.DeleteFile(xmpPath);
+	    [TestMethod]
+	    public void XmpReadHelperTest_XmpGetSidecarFile_WithFakeStorage()
+	    {
+		    // convert string to stream
+		    byte[] xmpByteArray = Encoding.UTF8.GetBytes(Input);
+		    
+		    
+		    var fakeIStorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{null,xmpByteArray}  );
+		    var fileIndexItem = new FileIndexItem
+		    {
+			    ParentDirectory = "/",
+			    FileName = "test.arw"
+		    };
+		    
+		    var data = new ReadMetaXmp(fakeIStorage).XmpGetSidecarFile(fileIndexItem);
 
-            var fakeRawPath = createAnImage.FullFilePath.Replace("jpg", "dng");
-            new PlainTextFileHelper().WriteFile(xmpPath,Input);
+		    
+		    Assert.AreEqual(52.3451333333,data.Latitude,0.001);
+		    Assert.AreEqual(5.930,data.Longitude,0.001);
+		    Assert.AreEqual(19,data.LocationAltitude,0.001);
+
+		    Assert.AreEqual("caption",data.Description);
+		    Assert.AreEqual("keyword, keyword2",data.Tags);
+		    Assert.AreEqual("The object name",data.Title);
             
-            var appsettings = new AppSettings();
+		    Assert.AreEqual("Epe",data.LocationCity);
+		    Assert.AreEqual("Gelderland",data.LocationState);
+		    Assert.AreEqual("Nederland",data.LocationCountry);
 
-            var databaseItem = new FileIndexItem();
+		    Assert.AreEqual(FileIndexItem.Color.Winner,data.ColorClass);
+            
+		    DateTime.TryParseExact("2018-07-18 19:44:27", 
+			    "yyyy-MM-dd HH:mm:ss",
+			    CultureInfo.InvariantCulture, 
+			    DateTimeStyles.None, 
+			    out var dateTime);
+		    Assert.AreEqual(dateTime, data.DateTime);
+		    
+	    }
+	    
+	    
+	    [TestMethod]
+	    public void XmpReadHelperTest_XmpGetSidecarFile_TestIfOverwrite()
+	    {
+		    // convert string to stream
+		    byte[] xmpByteArray = Encoding.UTF8.GetBytes(Input);
+		    
+		    
+		    var fakeIStorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{null,xmpByteArray}  );
+		    var fileIndexItem = new FileIndexItem
+		    {
+			    ParentDirectory = "/",
+			    FileName = "test.arw",
+			    Description = "something different",
+			    LocationAltitude = 3000,
+			    Latitude = 3000,
+			    Longitude = 3000,
+			    LocationCity = "Essen",
+			    LocationState = "Flevoland",
+			    LocationCountry = "Germany",
+			    DateTime = new DateTime(1990,01,01,01,00,00)
+		    };
+		    
+		    var data = new ReadMetaXmp(fakeIStorage).XmpGetSidecarFile(fileIndexItem);
 
-	        var iStorage = new StorageSubPathFilesystem(appsettings);
+		    
+		    Assert.AreEqual(52.3451333333,data.Latitude,0.001);
+		    Assert.AreEqual(5.930,data.Longitude,0.001);
+		    Assert.AreEqual(19,data.LocationAltitude,0.001);
 
-            var readXmp = new ReadMeta(iStorage,appsettings).XmpGetSidecarFile(databaseItem, fakeRawPath);
-            Assert.AreEqual("The object name",readXmp.Title);
-            // clean afterwards
-            FilesHelper.DeleteFile(xmpPath);
-        }
+		    Assert.AreEqual("caption",data.Description);
+		    Assert.AreEqual("keyword, keyword2",data.Tags);
+		    Assert.AreEqual("The object name",data.Title);
+            
+		    Assert.AreEqual("Epe",data.LocationCity);
+		    Assert.AreEqual("Gelderland",data.LocationState);
+		    Assert.AreEqual("Nederland",data.LocationCountry);
+
+		    Assert.AreEqual(FileIndexItem.Color.Winner,data.ColorClass);
+            
+		    DateTime.TryParseExact("2018-07-18 19:44:27", 
+			    "yyyy-MM-dd HH:mm:ss",
+			    CultureInfo.InvariantCulture, 
+			    DateTimeStyles.None, 
+			    out var dateTime);
+		    Assert.AreEqual(dateTime, data.DateTime);
+		    
+	    }
+
 
     }
 }

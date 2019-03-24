@@ -10,10 +10,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Attributes;
 using starskycore.Data;
+using starskycore.Helpers;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
@@ -44,7 +46,7 @@ namespace starskytest.Services
             };
             // Build Fake database
             var dbBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            dbBuilder.UseInMemoryDatabase("test");
+            dbBuilder.UseInMemoryDatabase(nameof(SyncService));
             var options = dbBuilder.Options;
             var context = new ApplicationDbContext(options);
             // Build Configuration
@@ -80,7 +82,6 @@ namespace starskytest.Services
             var folder1 = new FileIndexItem
             {
                 FileName = "test",
-                //FilePath = "/folder99/test",
                 ParentDirectory = "/folder99",
                 IsDirectory = true
             };
@@ -90,9 +91,14 @@ namespace starskytest.Services
             //  Run twice to check if there are no duplicates
              _syncservice.AddFoldersToDatabase(folder1List,new List<FileIndexItem> {folder1});
             
-            var allItems = _query.GetAllRecursive("/folder99").Select(p => p.FilePath).ToList();
+            var allItems = _query.GetAllRecursive("/folder99");
+			var allItemsString = allItems.Select(p => p.FilePath).ToList();
+	        
+	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, allItems.FirstOrDefault().ImageFormat );
+	        Assert.AreEqual("test", allItems.FirstOrDefault().FileName);
 
-            CollectionAssert.AreEqual(allItems, folder1List);
+
+            CollectionAssert.AreEqual(allItemsString, folder1List);
         }
 
         [TestMethod]
@@ -102,7 +108,6 @@ namespace starskytest.Services
             var folder1 =  _query.AddItem(new FileIndexItem
             {
                 FileName = "folder1",
-                //FilePath = "/test/folder1",
                 ParentDirectory = "/test/",
                 IsDirectory = true
             });
@@ -137,56 +142,58 @@ namespace starskytest.Services
             CollectionAssert.AreEqual(input,output);
 
         }
-        
-//        [TestMethod]
-//        [ExcludeFromCoverage]
-//        public void SyncServiceCheckMd5HashTest()
-//        {
-//            string path = "hashing-file-test.tmp";
-//
-//            var basePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
-//
-//            AppSettingsProvider.BasePath = basePath;
-//            
-//            Thumbnail.CreateErrorLogItem(path);
-//            
-//            var input = new List<string> {"/_hashing-file-test.tmp"};
-//            
-//            var folder2 = _query.AddItem(new FileIndexItem
-//            {
-//                FileName = "_hashing-file-test.tmp",
-//                //FilePath = "/_hashing-file-test.tmp",
-//                ParentDirectory = "/",
-//                Tags = "!delete!",
-//                IsDirectory = false
-//            });
-//
-//            FileIndexItem.DatabasePathToFilePath("_hashing-file-test.tmp");
-//            
-//            var localHash = FileHash.GetHashCode(FileIndexItem.DatabasePathToFilePath("_hashing-file-test.tmp"));
-//            var localHashInList = new List<string> {FileHash.GetHashCode(FileIndexItem.DatabasePathToFilePath("_hashing-file-test.tmp"))}.FirstOrDefault();
-//            
-//            Assert.AreEqual(localHash,localHashInList);
-//
-//            
-//            var databaseList = new List<FileIndexItem> {folder2};
-//            _syncservice.CheckMd5Hash(input,databaseList);
-//
-//            var outputFileIndex = _query.SingleItem("/_hashing-file-test.tmp").FileIndexItem;
-//            var output = new List<FileIndexItem> {outputFileIndex}.Select(p => p.FilePath).ToList();
-//           
-//            CollectionAssert.AreEqual(output,input);
-//
-//            // Clean // add underscore
-//            var fullPath = basePath + "_" + path;
-//            if (File.Exists(fullPath))
-//            {
-//                File.Delete(fullPath);
-//            }  
-//            
-//        }
 
-        [TestMethod]
+	    [TestMethod]
+	    public void SyncServiceCheckMd5Hash_change()
+	    {
+		    
+		    var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg","/toChange.jpg"},
+			    new List<byte[]>{CreateAnImage.Bytes,CreateAnImage.Bytes});
+		    
+		    var readmeta = new ReadMeta(fakeStorage);
+		    // Set Initial database for this folder
+		    new SyncService(_query,_appSettings,readmeta,fakeStorage).SyncFiles("/",false);
+
+		    var initalItem = _query.GetObjectByFilePath("/toChange.jpg");
+
+			// update item with different bytes	 (CreateAnImageNoExif)  
+		    fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg","/toChange.jpg"},
+			    new List<byte[]>{CreateAnImage.Bytes,CreateAnImageNoExif.Bytes});
+
+		    // Run sync again
+		    new SyncService(_query,_appSettings,readmeta,fakeStorage).SyncFiles("/",false);
+
+		    var updatedItem = _query.GetObjectByFilePath("/toChange.jpg");
+		    
+		    // Are not the same due change in file
+		    Assert.AreNotEqual(initalItem.FileHash,updatedItem.FileHash);
+
+		    var updatedTestItem = _query.GetObjectByFilePath("/test.jpg");
+
+		    // are the same:
+		    Assert.AreEqual(initalItem.FileHash,updatedTestItem.FileHash);
+		    
+	    }
+
+	    [TestMethod]
+	    public void SyncServiceSingleFileTest_FakeStorage_AddItem()
+	    {
+		    var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},
+			    new List<byte[]>{CreateAnImageNoExif.Bytes});
+		    var readmeta = new ReadMeta(fakeStorage);
+		    
+		    new SyncService(_query,_appSettings,readmeta,fakeStorage).SyncFiles("/test.jpg",false);
+
+		    var updatedItem = _query.GetObjectByFilePath("/test.jpg");
+		    
+		    Assert.AreEqual("/test.jpg",updatedItem.FilePath);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,updatedItem.ImageFormat);
+		    Assert.AreEqual(false,updatedItem.IsDirectory);
+		    Assert.AreEqual(updatedItem.FileHash.Length >= 5,true);
+
+	    }
+
+	    [TestMethod]
         public void SyncServiceSingleFileTest()
         {
             // Test to do a sync with one single file
@@ -216,6 +223,7 @@ namespace starskytest.Services
 
             var item = _query.SingleItem(newImage.DbPath).FileIndexItem;
             
+	        Assert.AreEqual(item.ImageFormat,ExtensionRolesHelper.ImageFormat.jpg);
             Assert.AreEqual(item.FileHash.Length >= 5,true);
             _query.RemoveItem(item);
             
@@ -405,9 +413,10 @@ namespace starskytest.Services
             // do a sync
             _syncservice.SyncFiles("/");
             var outputWithSync = _query.GetAllFiles("/");
-
+	        
             // test if the sync is working
             Assert.AreEqual(1,outputWithSync.Count(p => p.FilePath == createAnImage.DbPath));
+	        
         }
         
         [TestMethod]

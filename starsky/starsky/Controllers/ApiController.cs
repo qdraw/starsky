@@ -130,12 +130,11 @@ namespace starsky.Controllers
 				
 				
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
-				var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
                 
 				// loop to update
-				for (int i = 0; i < collectionSubPathList.Count; i++)
+				foreach ( var collectionSubPath in collectionSubPathList )
 				{
-					var collectionsDetailView = _query.SingleItem(collectionSubPathList[i], null, collections, false);
+					var collectionsDetailView = _query.SingleItem(collectionSubPath, null, collections, false);
 					
 					// Check if extension is supported for ExtensionExifToolSupportedList
 					// Not all files are able to write with exiftool
@@ -156,14 +155,14 @@ namespace starsky.Controllers
 					
 					// When it done this will be removed,
 					// to avoid conflicts
-					_readMeta.UpdateReadMetaCache(collectionFullPaths[i],collectionsDetailView.FileIndexItem);
+					_readMeta.UpdateReadMetaCache(collectionSubPath,collectionsDetailView.FileIndexItem);
 					
 					// update database cache
 					_query.CacheUpdateItem(new List<FileIndexItem>{collectionsDetailView.FileIndexItem});
 					
 					// The hash in FileIndexItem is not correct
 					fileIndexResultsList.Add(collectionsDetailView.FileIndexItem);
-                }
+				}
             }
 			
 			// Update >
@@ -275,7 +274,7 @@ namespace starsky.Controllers
                 var detailView = _query.SingleItem(subPath, null, collections, false);
                 
                 // Check if extension is supported for ExtensionExifToolSupportedList
-                // Not all files are able to write with exiftool
+                // Not all files are able to write with exifTool
                 if(detailView != null && !ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
                 {
                     detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
@@ -291,10 +290,17 @@ namespace starsky.Controllers
 	            if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
 
                 var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
-                var collectionFullPaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
 
-                var fileCompontentList = _readMeta.ReadExifAndXmpFromFileAddFilePathHash(collectionFullPaths.ToArray());
-                fileIndexResultsList.AddRange(fileCompontentList);
+	            foreach ( var collectionSubPath in collectionSubPathList )
+	            {
+		            var collectionItem = _readMeta.ReadExifAndXmpFromFile(collectionSubPath);
+		            collectionItem.Status = FileIndexItem.ExifStatus.Ok;
+		            collectionItem.CollectionPaths = collectionSubPathList;
+		            collectionItem.ImageFormat =
+			            ExtensionRolesHelper.MapFileTypesToExtension(collectionSubPath);
+
+		            fileIndexResultsList.Add(collectionItem);
+	            }
             }
 
             // returns read only
@@ -566,7 +572,7 @@ namespace starsky.Controllers
                         .Split("/").LastOrDefault(),
                     ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.
                         FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
-                    FileHash = new FileHash(_iStorage).GetHashCode(_appSettings.FullPathToDatabaseStyle(sourceFullPath))
+	                FileHash = singleItem.FileIndexItem.FileHash // not loading it from disk to make it faster
                 };
                 
                 // When you have a different tag in the database than on disk

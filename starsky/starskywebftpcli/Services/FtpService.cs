@@ -5,6 +5,7 @@ using System.Net;
 using System.Web;
 using starskycore.Helpers;
 using starskycore.Models;
+using starskycore.Services;
 
 namespace starskywebftpcli.Services
 {
@@ -118,8 +119,8 @@ namespace starskywebftpcli.Services
 
 			for ( int i = 0; i < copyThisFilesFullPaths.Count; i++ )
 			{
-				var toFtpPath = _webFtpNoLogin + "/" +
-				                _appSettings.GenerateSlug(_appSettings.Name,true) + "/" + 
+				var toFtpPath =  PathHelper.RemoveLatestSlash(_webFtpNoLogin) + "/" +
+				                _appSettings.GenerateSlug(_appSettings.Name,true) + "/" +
 				                subPathCopyThisFiles[i];
 
 				Console.Write(".");
@@ -141,7 +142,8 @@ namespace starskywebftpcli.Services
 		/// <returns></returns>
 		private bool Upload(string fullFilePath, string toFtpPath)
 		{
-						     
+			if ( !new StorageHostFullPathFilesystem().ExistFile(fullFilePath) ) return false;
+			
 			FtpWebRequest request =
 				(FtpWebRequest)WebRequest.Create(toFtpPath);
 			request.Credentials = new NetworkCredential(_appSettingsCredentials[0], _appSettingsCredentials[1]);
@@ -152,8 +154,8 @@ namespace starskywebftpcli.Services
 			{
 				fileStream.CopyTo(ftpStream);
 			}
-
 			return true;
+
 		}
 		
 		/// <summary>

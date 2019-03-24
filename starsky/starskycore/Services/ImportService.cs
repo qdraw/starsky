@@ -27,18 +27,22 @@ namespace starskycore.Services
 			ISync isync, 
 			IExiftool exiftool, 
 			AppSettings appSettings, 
-			IReadMeta readMeta, 
 			IServiceScopeFactory scopeFactory,
-			IStorage iStorage)
+			IStorage iStorage,
+			bool ignoreIStorage = true)
 		{
-			_filesystemHelper = new StorageFullPathFilesystem();
+			_filesystemHelper = new StorageHostFullPathFilesystem();
 			_context = context;
 			_isConnection = _context.TestConnection(appSettings);
 				
 			_isync = isync;
 			_exiftool = exiftool;
 			_appSettings = appSettings;
-			_readmeta = readMeta;
+			
+			// This is used to handle files on the host system
+			if ( !ignoreIStorage ) _readmeta = new ReadMeta(iStorage);
+			if ( ignoreIStorage ) _readmeta = new ReadMeta(_filesystemHelper);
+
 			_scopeFactory = scopeFactory;
 		}
 		
@@ -79,11 +83,11 @@ namespace starskycore.Services
 			
 			var filesFullPathList = new List<string>();
 			// recursive
-			if(importSettings.RecursiveDirectory) filesFullPathList = new StorageFullPathFilesystem().GetAllFilesInDirectoryRecursive(inputFullPath)
-				.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
+			if(importSettings.RecursiveDirectory) filesFullPathList = new StorageHostFullPathFilesystem().GetAllFilesInDirectoryRecursive(inputFullPath)
+				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 			// non-recursive
-			if(!importSettings.RecursiveDirectory) filesFullPathList = new StorageFullPathFilesystem().GetAllFilesInDirectory(inputFullPath)
-				.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
+			if(!importSettings.RecursiveDirectory) filesFullPathList = new StorageHostFullPathFilesystem().GetAllFilesInDirectory(inputFullPath)
+				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
 			// go back to Import -->
 			var successfulDirFullPaths = Import(filesFullPathList, importSettings);
@@ -152,7 +156,8 @@ namespace starskycore.Services
 		public List<ImportIndexItem> Preflight(List<string> inputFileFullPaths, ImportSettingsModel importSettings)
 	    {
 		    // Do some import checks before sending it to the background service
-		    var hashList = FileHashStatic.GetHashCode(inputFileFullPaths.ToArray());
+		    
+		    var hashList = new FileHash(_filesystemHelper).GetHashCode(inputFileFullPaths.ToArray());
 		    
 			var fileIndexResultsList = hashList.Select((t, i) => PreflightByItem(inputFileFullPaths[i], t, importSettings)).ToList();
 		    return fileIndexResultsList;
@@ -161,8 +166,8 @@ namespace starskycore.Services
 		
 		public ImportIndexItem ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)
 	    {
-		    
-		    var hashCode = FileHashStatic.GetHashCode(inputFileFullPath);
+		    var hashCode = new FileHash(_filesystemHelper).GetHashCode(inputFileFullPath);
+
 			var importIndexItem = PreflightByItem(inputFileFullPath, hashCode, importSettings);
 
 		    // only used when feature is enabled
@@ -179,12 +184,25 @@ namespace starskycore.Services
                                                                    +  " Please try again > to many failures;");
             if (destinationFullPath == null) return new ImportIndexItem{Status = ImportStatus.FileError};
             
+		    // Do the copy to the storage folder
 		    _filesystemHelper.FileCopy(inputFileFullPath, destinationFullPath);
+		    
+		    
+		    // From here on the item is exit in the storage folder
+
+		    
+		    // Creation of a sidecar xmp file
+		    if ( _appSettings.ExifToolImportXmpCreate )
+		    {
+			    new ExifToolCmdHelper(_appSettings,_exiftool).XmpSync(destinationFullPath);
+		    }
+		    
             
             // Update the contents to the file the imported item
-            if (importSettings.NeedExiftoolSync && ExtensionRolesHelper.IsExtensionExifToolSupported(inputFileFullPath))
+            if (importSettings.NeedExiftoolSync && ExtensionRolesHelper.IsExtensionExifToolSupported(destinationFullPath))
             {
-                Console.WriteLine("Do a exiftoolSync");
+	            if ( _appSettings.Verbose ) Console.WriteLine("Do a exifToolSync");
+               
                 var comparedNamesList = new List<string>
                 {
                     nameof(FileIndexItem.DateTime),
@@ -296,7 +314,7 @@ namespace starskycore.Services
 		
 		public FileIndexItem ReadExifAndXmpFromFile(string inputFileFullPath)
 		{
-			return _readmeta.ReadExifAndXmpFromFile(inputFileFullPath,ExtensionRolesHelper.GetImageFormat(inputFileFullPath));
+			return _readmeta.ReadExifAndXmpFromFile(inputFileFullPath);
 		}
 
 		public bool IsAgeFileFilter(ImportSettingsModel importSettings, DateTime exifDateTime)

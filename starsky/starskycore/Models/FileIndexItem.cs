@@ -21,6 +21,7 @@ namespace starskycore.Models
 	    public FileIndexItem()
 	    {
 		    SetLastEdited();
+		    if ( AddToDatabase.Year == 0 ) SetAddToDatabase();
 	    }
 
 	    /// <summary>
@@ -318,7 +319,15 @@ namespace starskycore.Models
 	    {
 		    LastEdited = DateTime.UtcNow;
 	    }
-
+	    
+	    /// <summary>
+	    /// Update the add to Database Date
+	    /// </summary>
+	    public void SetAddToDatabase()
+	    {
+		    AddToDatabase = DateTime.UtcNow;
+	    }
+	    
 
 		/// <summary>
 		/// Latitude as decimal degrees using WGS84 (stored as double)

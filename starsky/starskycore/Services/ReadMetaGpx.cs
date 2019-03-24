@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -9,16 +10,15 @@ using starskycore.Models;
 
 namespace starskycore.Services
 {
-    public partial class ReadMeta
+    public class ReadMetaGpx
     {
 	    private const string GpxXmlNameSpaceName = "http://www.topografix.com/GPX/1/1"; 
 	    
-        public FileIndexItem ReadGpxFromFileReturnAfterFirstField(string fullFilePath)
+        public FileIndexItem ReadGpxFromFileReturnAfterFirstField(Stream stream)
         {
-            if (FilesHelper.IsFolderOrFile(fullFilePath) != FolderOrFileModel.FolderOrFileTypeList.File) 
-                return new FileIndexItem();
+            if (stream == null) return new FileIndexItem();
 
-	        var readGpxFile = ReadGpxFile(fullFilePath, null, 1);
+	        var readGpxFile = ReadGpxFile(stream, null, 1);
 	        
 	        if ( readGpxFile.Any() )
 	        {
@@ -29,7 +29,8 @@ namespace starskycore.Services
 			        Latitude = readGpxFile.FirstOrDefault().Latitude,
 			        Longitude = readGpxFile.FirstOrDefault().Longitude,
 			        LocationAltitude = readGpxFile.FirstOrDefault().Altitude,
-			        ColorClass = FileIndexItem.Color.None
+			        ColorClass = FileIndexItem.Color.None,
+			        ImageFormat = ExtensionRolesHelper.ImageFormat.gpx
 		        }; 
 	        }
 	        
@@ -59,28 +60,28 @@ namespace starskycore.Services
             }
             return string.Empty;
         }
-        
-        /// <summary>
-        /// Read full gpx file, or return after trackpoint
-        /// </summary>
-        /// <param name="fullFilePath"></param>
-        /// <param name="geoList"></param>
-        /// <param name="returnAfter">default complete file, but can be used to read only the first point</param>
-        /// <returns></returns>
-        public List<GeoListItem> ReadGpxFile(string fullFilePath, List<GeoListItem> geoList = null, int returnAfter = int.MaxValue)
+
+	    /// <summary>
+	    /// Read full gpx file, or return after trackpoint
+	    /// </summary>
+	    /// <param name="stream"></param>
+	    /// <param name="geoList"></param>
+	    /// <param name="returnAfter">default complete file, but can be used to read only the first point</param>
+	    /// <returns></returns>
+	    public List<GeoListItem> ReadGpxFile(Stream stream, List<GeoListItem> geoList = null, int returnAfter = int.MaxValue)
         {
             if (geoList == null) geoList = new List<GeoListItem>();
 
 	        // Some files are having problems with gpxDoc.Load()
-	        var fileString = new PlainTextFileHelper().ReadFile(fullFilePath);
-
+	        var fileString = new PlainTextFileHelper().ReadFile(stream);
+	        
 	        try
 	        {
 		        return ParseGpxString(fileString, geoList, returnAfter);
 	        }
 	        catch ( XmlException e )
 	        {
-		        Console.WriteLine($"XmlException {fullFilePath} >>\n{e}\n <<XmlException");
+		        Console.WriteLine($"XmlException>>\n{e}\n <<XmlException");
 		        return geoList;
 	        }
 
@@ -93,7 +94,8 @@ namespace starskycore.Services
 	    /// <param name="geoList">object to add</param>
 	    /// <param name="returnAfter">return after number of values; default return all</param>
 	    /// <returns></returns>
-	    private List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem> geoList = null, int returnAfter = int.MaxValue)
+	    private List<GeoListItem> ParseGpxString(string fileString, List<GeoListItem> geoList = null, 
+		    int returnAfter = int.MaxValue)
 	    {
 		    XmlDocument gpxDoc = new XmlDocument();
             

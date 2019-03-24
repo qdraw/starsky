@@ -17,6 +17,16 @@ namespace starskytest.Helpers
             FileIndexCompareHelper.Compare(source, update);
             Assert.AreEqual("update",source.Tags);
         }
+	    
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest_StringList_Compare()
+	    {
+		    var source = new FileIndexItem {CollectionPaths = new List<string>{"source"}};
+		    var update = new FileIndexItem {CollectionPaths = new List<string>{"update"}};
+		    FileIndexCompareHelper.Compare(source, update);
+		    Assert.AreEqual("update",source.CollectionPaths[0]);
+	    }
+	    
         [TestMethod]
         public void FileIndexCompareHelperTest_String_Tags_AppendCompare()
         {
@@ -111,6 +121,17 @@ namespace starskytest.Helpers
 		    Assert.AreEqual(update.DateTime, result.DateTime);
 
 	    }
+	
+	    [TestMethod]
+	    public void FileIndexCompareHelperTest_FilePath_Compare()
+	    {
+		    // this one is ignored
+		    var source = new FileIndexItem {FilePath = "/test"};
+		    var update = new FileIndexItem {FilePath = "/ignore"};
+		    FileIndexCompareHelper.Compare(source, update);
+		    Assert.AreEqual("/",source.FilePath);
+	    }
+	    
 	    
 	    [TestMethod]
 	    public void FileIndexCompareHelperTest__CheckIfPropertyExist_Tags_True()
@@ -180,5 +201,6 @@ namespace starskytest.Helpers
 		    var result = FileIndexCompareHelper.Get(null, nameof(FileIndexItem.Tags));
 		    Assert.AreEqual(null,result);
 	    }
+
     }
 }

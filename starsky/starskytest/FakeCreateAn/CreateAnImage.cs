@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using starskycore.Helpers;
 
 namespace starskytest.FakeCreateAn
 {
@@ -30,9 +31,8 @@ namespace starskytest.FakeCreateAn
         public readonly string BasePath =
             Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
 
-        public CreateAnImage()
-        {
-            var base64JpgString = "/9j/4AAQSkZJRgABAQABXgFeAAD/4QQgRXhpZgAATU0AKgAAAAgACwEOAAIAAAAg" +
+	    
+	    private static readonly string Base64JpgString = "/9j/4AAQSkZJRgABAQABXgFeAAD/4QQgRXhpZgAATU0AKgAAAAgACwEOAAIAAAAg" +
                                    "AAAAkgEPAAIAAAAFAAAAsgEQAAIAAAAIAAAAuAESAAMAAAABAAEAAAEaAAUAAAAB" +
                                    "AAAAwAEbAAUAAAABAAAAyAEoAAMAAAABAAIAAAExAAIAAAAOAAAA0AEyAAIAAAAU" +
                                    "AAAA3odpAAQAAAABAAAA8oglAAQAAAABAAADNgAAAAAgICAgICAgICAgICAgICAg" +
@@ -242,11 +242,15 @@ namespace starskytest.FakeCreateAn
                                    "/9oACAECAQE/AFjo8qCcW3vkV//EABkRAQACAwAAAAAAAAAAAAAAAAEAAhESIf/a" +
                                    "AAgBAwEBPwDaxwXE/9k=";
 
+	    public static readonly byte[] Bytes = Base64Helper.TryParse(Base64JpgString);
+	    
+        public CreateAnImage()
+        {
             if (!File.Exists(FullFilePath))
             {
-                File.WriteAllBytes(FullFilePath, Convert.FromBase64String(base64JpgString));
+                File.WriteAllBytes(FullFilePath, Convert.FromBase64String(Base64JpgString));
             }
 
-         }
+		}
     }
 }

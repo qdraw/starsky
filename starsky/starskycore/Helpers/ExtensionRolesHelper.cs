@@ -41,6 +41,49 @@ namespace starskycore.Helpers
 		/// </summary>
 		private static readonly List<string> Extensiongpx = new List<string> {"gpx"};
 
+
+		private static readonly Dictionary<ImageFormat, List<string>> MapFileTypesToExtensionDictionary = 
+			new Dictionary<ImageFormat, List<string>>
+			{
+				{
+					ImageFormat.jpg, Extensionjpg
+				},
+				{
+					ImageFormat.tiff, Extensiontiff
+				},
+				{
+					ImageFormat.bmp, Extensionbmp
+				},
+				{
+					ImageFormat.gif, Extensiongif
+				},
+				{
+					ImageFormat.png, Extensionpng
+				},
+				{
+					ImageFormat.gpx, Extensiongpx
+				},
+			};
+
+		
+		public static ImageFormat MapFileTypesToExtension(string filename)
+		{
+			if ( string.IsNullOrEmpty(filename) ) return ImageFormat.unknown;
+
+			// without escaped values:
+			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
+			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$").Matches(filename);
+			if ( matchCollection.Count == 0 ) return ImageFormat.unknown;
+			foreach ( Match match in matchCollection )
+			{
+				if ( match.Value.Length < 2 ) continue;
+				var ext = match.Value.Remove(0, 1).ToLowerInvariant();
+
+				return MapFileTypesToExtensionDictionary.FirstOrDefault(p => p.Value.Contains(ext)).Key;
+			}
+			return ImageFormat.unknown;
+		}
+
 		/// <summary>
 		/// Supported by sync agent
 		/// </summary>
@@ -112,22 +155,32 @@ namespace starskycore.Helpers
 			}
 		}
 
-		/// <summary>
-		/// Check if name is file.jpg or return false if not
-		/// </summary>
-		/// <param name="filename">e.g. filename.jpg or filepath</param>
-		/// <returns></returns>
-		private static bool FilenameBaseCheck(string filename)
-		{
-			if ( string.IsNullOrEmpty(filename) || filename.Length <= 3) return false;
-			
-			// Dot two,three,four letter extenstion
-			// [\w\d]\.[a-z1-9]{2,4}$
-			var regexer = new Regex("[\\w\\d]\\.[a-z1-9]{2,4}$").Matches(filename);
-			if ( regexer.Count == 0 ) return false;
-			return true;
-		}
+//		/// <summary>
+//		/// Check if name is file.jpg or return false if not
+//		/// </summary>
+//		/// <param name="filename">e.g. filename.jpg or filepath</param>
+//		/// <returns></returns>
+//		private static bool FilenameBaseCheck(string filename)
+//		{
+//			if ( string.IsNullOrEmpty(filename) || filename.Length <= 3) return false;
+//			
+//			// Dot two,three,four letter extenstion
+//			// [\w\d]\.[a-z1-9]{2,4}$
+//			var regexer = new Regex("[\\w\\d]\\.[a-z1-9]{2,4}$").Matches(filename);
+//			if ( regexer.Count == 0 ) return false;
+//			return true;
+//		}
 
+		/// <summary>
+		/// is this filename with extension a filetype that needs a .xmp file 
+		/// </summary>
+		/// <param name="filename">the name of the file with extenstion</param>
+		/// <returns>true, </returns>
+		public static bool IsExtensionSyncSupported(string filename)
+		{
+			return IsExtensionForce(filename, ExtensionSyncSupportedList);
+		}
+		
 		/// <summary>
 		/// is this filename with extension a filetype that imagesharp can read/write 
 		/// </summary>
@@ -135,10 +188,14 @@ namespace starskycore.Helpers
 		/// <returns>true, if imagesharp can write to this</returns>
 		public static bool IsExtensionThumbnailSupported(string filename)
 		{
-			if ( !FilenameBaseCheck(filename) ) return false;
-			var ext = Path.GetExtension(filename).Remove(0, 1).ToLowerInvariant();
-			return ExtensionThumbSupportedList.Contains(ext); // true = if supported
+			return IsExtensionForce(filename, ExtensionThumbSupportedList);
+//			if ( !FilenameBaseCheck(filename) ) return false;
+//			var ext = Path.GetExtension(filename).Remove(0, 1).ToLowerInvariant();
+//			return ExtensionThumbSupportedList.Contains(ext); // true = if supported
 		}
+		
+
+		
 
 		/// <summary>
 		/// List of extension that are forced to use site car xmp files	
@@ -155,67 +212,157 @@ namespace starskycore.Helpers
 				extensionList.AddRange(Extensionbmp);
 				// Gif does not support internal xmp
 				extensionList.AddRange(Extensiongif);
-				// Used for raw files >
+				// Used for raw files =>
 				extensionList.AddRange(Extensiontiff);
 				return extensionList;
 			}
 		}
 
 		/// <summary>
-		/// used for raw, bmp filetypes that has no support for in file exif
+		/// is this filename with extension a filetype that needs a .xmp file 
 		/// </summary>
-		/// <param name="fullFilePath">the name of the file with extenstion</param>
-		/// <returns>true, if Sidecar is required</returns>
-		public static bool IsXmpSidecarRequired(string fullFilePath)
+		/// <param name="filename">the name of the file with extenstion</param>
+		/// <returns>true, </returns>
+		public static bool IsExtensionForceXmp(string filename)
 		{
-			if ( string.IsNullOrEmpty(fullFilePath) ) return false;
-			// Use an XMP File -> as those files don't support those tags
-			if ( ExtensionForceXmpUseList.Contains(Path.GetExtension(fullFilePath)
-				.Replace(".", string.Empty).ToLowerInvariant()) )
-			{
-				return true;
-			}
-
-			return false;
+			return IsExtensionForce(filename, ExtensionForceXmpUseList);
 		}
 
 		/// <summary>
-		/// Get the sitecar file of the raw image
+		/// is this filename with extension a filetype that needs a .gpx file 
 		/// </summary>
-		/// <param name="fullFilePath">the full path on the system</param>
-		/// <param name="exifToolXmpPrefix">prefix</param>
-		/// <returns>full file path of sitecar file</returns>
-		public static string GetXmpSidecarFileWhenRequired(
-			string fullFilePath,
-			string exifToolXmpPrefix = "")
+		/// <param name="filename">the name of the file with extenstion</param>
+		/// <returns>true, </returns>
+		public static bool IsExtensionForceGpx(string filename)
 		{
-			if ( exifToolXmpPrefix == null )
-				throw new ArgumentNullException(nameof(exifToolXmpPrefix));
-			// Use an XMP File -> as those files don't support those tags
-			if ( IsXmpSidecarRequired(fullFilePath) )
-			{
-				return GetXmpSidecarFile(fullFilePath, exifToolXmpPrefix);
-			}
-
-			return fullFilePath;
-		}
-
-		/// <summary>
-		/// Get the fullpath of the xmp file
-		/// </summary>
-		/// <param name="fullFilePath">path of .arw/.dng image</param>
-		/// <param name="exifToolXmpPrefix">prefix used</param>
-		/// <returns></returns>
-		public static string GetXmpSidecarFile(
-			string fullFilePath,
-			string exifToolXmpPrefix = "")
-		{
-			// Overwrite to use xmp files
-			return Path.Combine(Path.GetDirectoryName(fullFilePath),
-				exifToolXmpPrefix
-				+ Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
+			return IsExtensionForce(filename, Extensiongpx);
 		}
 		
+		/// <summary>
+		/// is this filename with extension a filetype that needs a item that is in the list 
+		/// </summary>
+		/// <param name="filename">the name of the file with extenstion</param>
+		/// <param name="checkThisList">the list of strings to match</param>
+		/// <returns>true, </returns>
+		private static bool IsExtensionForce(string filename, List<string> checkThisList)
+		{
+			if ( string.IsNullOrEmpty(filename) ) return false;
+
+			// without escaped values:
+			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
+			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$").Matches(filename);
+			if ( matchCollection.Count == 0 ) return false;
+			foreach ( Match match in matchCollection )
+			{
+				if ( match.Value.Length < 2 ) continue;
+				var ext = match.Value.Remove(0, 1).ToLowerInvariant();
+				if ( checkThisList.Contains(ext) ) return true;
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// Extension must be three letters
+		/// </summary>
+		/// <param name="filename"></param>
+		/// <returns></returns>
+		public static string ReplaceExtensionWithXmp(string filename)
+		{
+			// without escaped values:
+			//		\.([0-9a-z]+)(?=[?#])|(\.)(?:[\w]+)$
+			var matchCollection = new Regex("\\.([0-9a-z]+)(?=[?#])|(\\.)(?:[\\w]+)$").Matches(filename);
+			if ( matchCollection.Count == 0 ) return string.Empty;
+			foreach ( Match match in matchCollection )
+			{
+				if ( match.Value.Length < 2 ) continue;
+				var ext = match.Value.Remove(0, 1).ToLowerInvariant();
+				// Extension must be three letters
+				if ( ExtensionForceXmpUseList.Contains(ext) && filename.Length >= match.Index + 4 )
+				{
+					var matchValue = filename.Substring(0, match.Index + 4).ToCharArray();
+					
+					matchValue[match.Index+1] = 'x';
+					matchValue[match.Index+2] = 'm';
+					matchValue[match.Index+3] = 'p';
+					return new string(matchValue);
+				}
+			}
+			return string.Empty;
+		}
+
+
+//		/// <summary>
+//		/// used for raw, bmp filetypes that has no support for in file exif
+//		/// </summary>
+//		/// <param name="fullFilePath">the name of the file with extenstion</param>
+//		/// <returns>true, if Sidecar is required</returns>
+//		public static bool IsXmpSidecarRequired(string fullFilePath)
+//		{
+//			if ( string.IsNullOrEmpty(fullFilePath) ) return false;
+//			// Use an XMP File -> as those files don't support those tags
+//			if ( ExtensionForceXmpUseList.Contains(Path.GetExtension(fullFilePath)
+//				.Replace(".", string.Empty).ToLowerInvariant()) )
+//			{
+//				return true;
+//			}
+//
+//			return false;
+//		}
+
+//		/// <summary>
+//		/// Get the sitecar file of the raw image
+//		/// </summary>
+//		/// <param name="fullFilePath">the full path on the system</param>
+//		/// <param name="exifToolXmpPrefix">prefix</param>
+//		/// <returns>full file path of sitecar file</returns>
+//		public static string GetXmpSidecarFileWhenRequired(
+//			string fullFilePath,
+//			string exifToolXmpPrefix = "")
+//		{
+//			if ( exifToolXmpPrefix == null )
+//				throw new ArgumentNullException(nameof(exifToolXmpPrefix));
+//			// Use an XMP File -> as those files don't support those tags
+//			if ( IsXmpSidecarRequired(fullFilePath) )
+//			{
+//				return GetXmpSidecarFile(fullFilePath, exifToolXmpPrefix);
+//			}
+//
+//			return fullFilePath;
+//		}
+		
+//		/// <summary>
+//		/// Get the sidecar file of the raw image
+//		/// </summary>
+//		/// <param name="subPath">the full path on the system</param>
+//		/// <returns>full file path of sidecar file</returns>
+//		public static string GetXmpSidecarFileWhenRequired(
+//			string subPath)
+//		{
+//			// Use an XMP File -> as those files don't support those tags
+//			if ( IsXmpSidecarRequired(fullFilePath) )
+//			{
+//				return GetXmpSidecarFile(fullFilePath, exifToolXmpPrefix);
+//			}
+//
+//			return fullFilePath;
+//		}
+
+//		/// <summary>
+//		/// Get the fullpath of the xmp file
+//		/// </summary>
+//		/// <param name="fullFilePath">path of .arw/.dng image</param>
+//		/// <param name="exifToolXmpPrefix">prefix used</param>
+//		/// <returns></returns>
+//		public static string GetXmpSidecarFile(
+//			string fullFilePath,
+//			string exifToolXmpPrefix = "")
+//		{
+//			// Overwrite to use xmp files
+//			return Path.Combine(Path.GetDirectoryName(fullFilePath),
+//				exifToolXmpPrefix
+//				+ Path.GetFileNameWithoutExtension(fullFilePath) + ".xmp");
+//		}
+//		
 		/// <summary>
 		/// Imageformat based on first bytes
 		/// </summary>
@@ -244,6 +391,7 @@ namespace starskycore.Helpers
 		/// </summary>
 		/// <param name="filePath">the full path on the system</param>
 		/// <returns>ImageFormat enum</returns>
+		[Obsolete]
 		public static ImageFormat GetImageFormat(string filePath)
 		{
 			if ( !File.Exists(filePath) ) return ImageFormat.notfound;
@@ -256,6 +404,28 @@ namespace starskycore.Helpers
 					fs.Read(buffer, 0, buffer.Length);
 					fs.Close();
 				}
+			}
+			catch ( UnauthorizedAccessException ex )
+			{
+				Console.WriteLine(ex.Message);
+			}
+
+			return GetImageFormat(buffer);
+		}
+
+		
+		/// <summary>
+		/// Get the format of the image by looking the first bytes
+		/// </summary>
+		/// <param name="stream">stream</param>
+		/// <returns>ImageFormat enum</returns>
+		public static ImageFormat GetImageFormat(Stream stream)
+		{
+			byte[] buffer = new byte[512];
+			try
+			{
+				stream.Read(buffer, 0, buffer.Length);
+				stream.Close();
 			}
 			catch ( UnauthorizedAccessException ex )
 			{

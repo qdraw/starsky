@@ -2,34 +2,38 @@ using System;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
+using Microsoft.Extensions.Caching.Memory;
 using starskycore.Helpers;
+using starskycore.Interfaces;
 using starskycore.Models;
 using XmpCore;
 
 namespace starskycore.Services
 {
-    
-    public partial class ReadMeta // IReadMeta
-    {
+	public class ReadMetaXmp
+	{
+		private IStorage _iStorage;
 
-        // AppSetting is dependency here        
-        public FileIndexItem XmpGetSidecarFile(FileIndexItem databaseItem, string singleFilePath)
+		public ReadMetaXmp(IStorage iStorage, IMemoryCache memoryCache = null)
+		{
+			_iStorage = iStorage;
+		}
+		
+		
+        public FileIndexItem XmpGetSidecarFile(FileIndexItem databaseItem)
         {
-            if(_appSettings == null) throw new 
-                InvalidDataContractException("AppSettings in XmpSelectSidecarFile is null");
 	        if(databaseItem == null) databaseItem = new FileIndexItem();
 
             // Read content from sidecar xmp file
-            if (ExtensionRolesHelper.IsXmpSidecarRequired(singleFilePath))
+            if (ExtensionRolesHelper.IsExtensionForceXmp(databaseItem.FilePath))
             {
                 // Parse an xmp file for this location
-                var xmpFilePath = ExtensionRolesHelper.GetXmpSidecarFileWhenRequired(
-                    singleFilePath,
-                    _appSettings.ExifToolXmpPrefix);
-                if (FilesHelper.IsFolderOrFile(xmpFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
+	            var xmpSubPath =
+		            ExtensionRolesHelper.ReplaceExtensionWithXmp(databaseItem.FilePath);
+                if ( _iStorage.ExistFile(xmpSubPath) )
                 {
                     // Read the text-content of the xmp file.
-                    var xmp = new PlainTextFileHelper().ReadFile(xmpFilePath);
+                    var xmp = new PlainTextFileHelper().ReadFile(_iStorage.ReadStream(xmpSubPath));
                     // Get the data from the xmp
                     databaseItem = GetDataFromString(xmp,databaseItem);
                 }
@@ -99,7 +103,7 @@ namespace starskycore.Services
         {
             // get ref North, South, East West
             string refGps = gpsLatOrLong.Substring(gpsLatOrLong.Length-1, 1);
-            return ConvertDegreeMinutesToDouble(gpsLatOrLong, refGps);
+            return GeoDistanceTo.ConvertDegreeMinutesToDouble(gpsLatOrLong, refGps);
         }
                 
         private FileIndexItem GetDataNullNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
@@ -145,7 +149,7 @@ namespace starskycore.Services
 	            var isoSpeed = GetNullNameSpace(property, "exif:ISOSpeedRatings[1]");
 	            if ( isoSpeed != null ) item.SetIsoSpeed(isoSpeed);
                
-				if(_appSettings.Verbose) Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
+				//Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
 
 
             }
@@ -222,17 +226,43 @@ namespace starskycore.Services
                     item.Longitude = GpsPreParseAndConvertDegreeAngleToDouble(gpsLongitude);
                 }
 
-                // Path=exif:DateTimeOriginal Namespace=http://ns.adobe.com/exif/1.0/ Value=2018-07-18T19:44:27
-                var dateTimeOriginal = GetContentNameSpace(property, "exif:DateTimeOriginal");
-                if (dateTimeOriginal != null)
-                {
-                    DateTime.TryParseExact(property.Value,
-                        "yyyy-MM-dd\\THH:mm:ss",
-                        CultureInfo.InvariantCulture,
-                        DateTimeStyles.None,
-                        out var dateTime);
-                    item.DateTime = dateTime;
-                }
+	            // Option 1 (Datetime)
+	            // Path=exif:DateTimeOriginal Namespace=http://ns.adobe.com/exif/1.0/ Value=2018-07-18T19:44:27
+	            var dateTimeOriginal = GetContentNameSpace(property, "exif:DateTimeOriginal");
+	            if ( dateTimeOriginal != null )
+	            {
+		            DateTime.TryParseExact(dateTimeOriginal,
+			            "yyyy-MM-dd\\THH:mm:ss",
+			            CultureInfo.InvariantCulture,
+			            DateTimeStyles.None,
+			            out var dateTime);
+		            if ( dateTime.Year >= 3 ) item.DateTime = dateTime;
+	            }
+
+	            // Option 2 (Datetime)
+	            // Path=xmp:CreateDate Namespace=http://ns.adobe.com/xap/1.0/ Value=2019-03-02T11:29:18+01:00
+	            // Path=xmp:CreateDate Namespace=http://ns.adobe.com/xap/1.0/ Value=2019-03-02T11:29:18
+	            var createDate = GetContentNameSpace(property, "xmp:CreateDate");
+	            if (createDate != null)
+	            {
+		            DateTime.TryParseExact(createDate,
+			            "yyyy-MM-dd\\THH:mm:sszzz",
+			            CultureInfo.InvariantCulture,
+			            DateTimeStyles.None,
+			            out var dateTime);
+		            
+		            // The other option
+		            if ( dateTime.Year <= 3 )
+		            {
+			            DateTime.TryParseExact(createDate,
+				            "yyyy-MM-dd\\THH:mm:ss",
+				            CultureInfo.InvariantCulture,
+				            DateTimeStyles.None,
+				            out dateTime);
+		            }
+		            // write it back
+		            item.DateTime = dateTime;
+	            }
                 
                 //   Path=photomechanic:ColorClass Namespace=http://ns.camerabits.com/photomechanic/1.0/ Value=1
                 var colorClass = GetContentNameSpace(property, "photomechanic:ColorClass");
@@ -278,7 +308,6 @@ namespace starskycore.Services
 	            var shutterSpeed = GetContentNameSpace(property, "exif:ExposureTime");
 	            if (shutterSpeed != null) item.ShutterSpeed = shutterSpeed;
 	            
-	            
 	            // exif:FNumber http://ns.adobe.com/exif/1.0/
 	            var aperture = GetContentNameSpace(property, "exif:FNumber");
 	            if (aperture != null) item.Aperture = fraction(aperture);
@@ -296,7 +325,5 @@ namespace starskycore.Services
 	        
             return item;
         }
-
-        
-    }
+	}
 }

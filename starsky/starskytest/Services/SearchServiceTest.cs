@@ -50,7 +50,8 @@ namespace starskytest.Services
                     Tags = "schiphol, airplane, station",
                     Description = "schiphol",
                     Title = "Schiphol",
-					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg
+					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
+	                DateTime = new DateTime(2014,1,1,1,1,1),
                 });
             }
 
@@ -87,7 +88,8 @@ namespace starskytest.Services
 		            FileName = "stations",
 		            ParentDirectory = "/",
 		            FileHash = "",
-		            IsDirectory = true
+		            IsDirectory = true,
+		            DateTime = new DateTime(2013,1,1,1,1,1),
 	            });
         
                 _query.AddItem(new FileIndexItem
@@ -95,7 +97,8 @@ namespace starskytest.Services
                     FileName = "deletedfile.jpg",
                     ParentDirectory = "/stations",
                     FileHash = "stationdeletedfile",
-                    Tags = "!delete!"
+                    Tags = "!delete!",
+	                DateTime = new DateTime(2013,1,1,1,1,1),
                 });
             }
             
@@ -164,6 +167,28 @@ namespace starskytest.Services
             InsertSearchData();
             Assert.AreEqual(3, _search.Search("cityloop").LastPageNumber);
         }
+	    
+	    
+	    [TestMethod]
+	    public void SearchService_SearchForDatetime()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(1, _search.Search("-Datetime=\"2016-01-01 01:01:01\"").SearchCount);
+	    }
+	    
+	    [TestMethod]
+	    public void SearchService_SearchForDatetimeSmallerThen()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(2, _search.Search("-Datetime<\"2013-01-01 02:01:01\"").SearchCount);
+	    }
+	    
+	    [TestMethod]
+	    public void SearchService_SearchForDatetimeGreaterThen()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(62, _search.Search("-Datetime>\"2018-01-01 01:01:01\"").SearchCount);
+	    }
 
         [TestMethod]
         public void SearchSchipholDescriptionTest()

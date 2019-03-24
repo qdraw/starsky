@@ -1,14 +1,11 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.ViewModels.Account;
 using starskycore.Interfaces;
-using starskycore.Models;
 using starskycore.Models.Account;
 
 namespace starsky.Controllers
@@ -36,8 +33,31 @@ namespace starsky.Controllers
 	    {
 		    if ( json && !User.Identity.IsAuthenticated ) return Unauthorized();
             if (!User.Identity.IsAuthenticated) return RedirectToLocal(null);
-	        if ( json ) return Json(_userManager.GetCurrentUser(HttpContext));
-			return View(_userManager.GetCurrentUser(HttpContext));
+
+// 			// Keep here: only using claims data
+//		    var claimsIdentity = (ClaimsIdentity)HttpContext.User.Identity;
+//		    var model = new User();
+//		    var userIdClaim = claimsIdentity.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+//		    if (userIdClaim != null)
+//		    {
+//			    model.Id = !string.IsNullOrEmpty(userIdClaim.Value) ? int.Parse(userIdClaim.Value) : -1;
+//		    }
+//		    
+//		    var nameClaim = claimsIdentity.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name);
+//		    if (nameClaim != null)
+//		    {
+//			    model.Name = nameClaim.Value;
+//		    }
+ 
+		    // use model to avoid circulair references
+		    var model = new User
+		    {
+			    Name = _userManager.GetCurrentUser(HttpContext)?.Name,
+			    Id = _userManager.GetCurrentUser(HttpContext).Id,
+			    Created = _userManager.GetCurrentUser(HttpContext).Created,
+		    };
+	        if ( json ) return Json(model);
+			return View(model);
         }
 
         /// <summary>
