@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Attributes;
 using starskycore.Data;
+using starskycore.Helpers;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
@@ -80,7 +81,6 @@ namespace starskytest.Services
             var folder1 = new FileIndexItem
             {
                 FileName = "test",
-                //FilePath = "/folder99/test",
                 ParentDirectory = "/folder99",
                 IsDirectory = true
             };
@@ -90,9 +90,14 @@ namespace starskytest.Services
             //  Run twice to check if there are no duplicates
              _syncservice.AddFoldersToDatabase(folder1List,new List<FileIndexItem> {folder1});
             
-            var allItems = _query.GetAllRecursive("/folder99").Select(p => p.FilePath).ToList();
+            var allItems = _query.GetAllRecursive("/folder99");
+			var allItemsString = allItems.Select(p => p.FilePath).ToList();
+	        
+	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, allItems.FirstOrDefault().ImageFormat );
+	        Assert.AreEqual("test", allItems.FirstOrDefault().FileName);
 
-            CollectionAssert.AreEqual(allItems, folder1List);
+
+            CollectionAssert.AreEqual(allItemsString, folder1List);
         }
 
         [TestMethod]
@@ -216,6 +221,7 @@ namespace starskytest.Services
 
             var item = _query.SingleItem(newImage.DbPath).FileIndexItem;
             
+	        Assert.AreEqual(item.ImageFormat,ExtensionRolesHelper.ImageFormat.jpg);
             Assert.AreEqual(item.FileHash.Length >= 5,true);
             _query.RemoveItem(item);
             
@@ -405,7 +411,11 @@ namespace starskytest.Services
             // do a sync
             _syncservice.SyncFiles("/");
             var outputWithSync = _query.GetAllFiles("/");
-
+	        
+	        // test basic objects
+	        Assert.AreEqual(testjpg.FilePath,outputWithSync.FirstOrDefault().FilePath);
+	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,outputWithSync.FirstOrDefault().ImageFormat);
+	        
             // test if the sync is working
             Assert.AreEqual(1,outputWithSync.Count(p => p.FilePath == createAnImage.DbPath));
         }

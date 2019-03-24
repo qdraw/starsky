@@ -32,16 +32,16 @@ namespace starskycore.Services
                     Console.Write(".");
                     if(_appSettings.Verbose) Console.WriteLine("\nAddFileToDatabase: " + singleFolderDbStyle);
 
-                    var singleFilePath = _appSettings.DatabasePathToFilePath(singleFolderDbStyle);
 
                     // Check the headers of a file to match a type
-                    var imageFormat = ExtensionRolesHelper.GetImageFormat(singleFilePath);
+                    var imageFormat = ExtensionRolesHelper.GetImageFormat(_iStorage.ReadStream(singleFolderDbStyle,160));
                     
                     // Read data from file
 	                var databaseItem = _readMeta.ReadExifAndXmpFromFile(singleFolderDbStyle);
 	                databaseItem.ImageFormat = imageFormat;
                     databaseItem.AddToDatabase = DateTime.UtcNow;
                     databaseItem.FileHash = new FileHash(_iStorage).GetHashCode(singleFolderDbStyle);
+	                var singleFilePath = _appSettings.DatabasePathToFilePath(singleFolderDbStyle);
                     databaseItem.FileName = Path.GetFileName(singleFilePath);
                     databaseItem.IsDirectory = false;
                     databaseItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault();

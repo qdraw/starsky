@@ -17,7 +17,8 @@
 - [x]   Performance upgrade xmp/tiff files (does not check filehash again)
 - refactor xmp/exif module to support iStorage
 - bugfix to searching filehashes with null content
-- todo: write test with incomplete xmp file
+- include test with incomplete xmp file
+- ExifToolImportXmpCreate in appsettings
 
 # version 0.1.5.1 - 2019-03-17
 - Breaking Change: added `LastEdited` field

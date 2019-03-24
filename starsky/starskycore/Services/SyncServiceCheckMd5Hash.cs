@@ -37,7 +37,7 @@ namespace starskycore.Services
 
                         // Read data from file
 	                    var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(itemLocal);
-	                    updatedDatabaseItem.ImageFormat = ExtensionRolesHelper.GetImageFormat(itemLocal);
+	                    updatedDatabaseItem.ImageFormat = ExtensionRolesHelper.GetImageFormat(_iStorage.ReadStream(itemLocal,300));
 	                    updatedDatabaseItem.FileHash = localHash;
                         updatedDatabaseItem.AddToDatabase = DateTime.Now;
                         updatedDatabaseItem.IsDirectory = false;

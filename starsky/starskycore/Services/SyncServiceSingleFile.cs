@@ -28,6 +28,7 @@ namespace starskycore.Services
         {
             var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
             
+	        // todo: refactor
             if (FilesHelper.IsFolderOrFile(fullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File) // false == file
             {
                 // File check if jpg #not corrupt

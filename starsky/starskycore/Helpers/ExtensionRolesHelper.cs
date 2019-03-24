@@ -391,6 +391,7 @@ namespace starskycore.Helpers
 		/// </summary>
 		/// <param name="filePath">the full path on the system</param>
 		/// <returns>ImageFormat enum</returns>
+		[Obsolete]
 		public static ImageFormat GetImageFormat(string filePath)
 		{
 			if ( !File.Exists(filePath) ) return ImageFormat.notfound;
@@ -403,6 +404,28 @@ namespace starskycore.Helpers
 					fs.Read(buffer, 0, buffer.Length);
 					fs.Close();
 				}
+			}
+			catch ( UnauthorizedAccessException ex )
+			{
+				Console.WriteLine(ex.Message);
+			}
+
+			return GetImageFormat(buffer);
+		}
+
+		
+		/// <summary>
+		/// Get the format of the image by looking the first bytes
+		/// </summary>
+		/// <param name="stream">stream</param>
+		/// <returns>ImageFormat enum</returns>
+		public static ImageFormat GetImageFormat(Stream stream)
+		{
+			byte[] buffer = new byte[512];
+			try
+			{
+				stream.Read(buffer, 0, buffer.Length);
+				stream.Close();
 			}
 			catch ( UnauthorizedAccessException ex )
 			{
