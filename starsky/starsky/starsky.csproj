@@ -3,7 +3,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">2.1.8</RuntimeFrameworkVersion>
     <Description>An attempt to create a database driven photo library</Description>
-	<Version>0.1.5.2</Version>
+	<Version>0.1.5.3</Version>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mac|AnyCPU' ">
     <IntermediateOutputPath>obj\Mac</IntermediateOutputPath>
