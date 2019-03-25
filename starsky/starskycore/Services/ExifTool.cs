@@ -1,165 +1,78 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using starskycore.Helpers;
+using System.Threading.Tasks;
 using starskycore.Interfaces;
 using starskycore.Models;
+using static Medallion.Shell.Shell;
 
 namespace starskycore.Services
 {
-    public class ExifTool : IExiftool
-    {
-        // Write To Meta data using Exiftool.
-        // This is a exiftool wrapper
+	public class ExifTool : IExifTool
+	{
+		private static AppSettings _appSettings;
+		private readonly IStorage _iStorage;
 
-        private readonly AppSettings _appSettings;
-
-        public ExifTool(AppSettings appSettings)
-        {
-            _appSettings = appSettings;
-        }
-        
-        public string BaseCommmand(string options, string fullFilePathSpaceSeperated)
-        {
-			options = " " + options + " " + fullFilePathSpaceSeperated;
-
-            Console.WriteLine($"{_appSettings.ExifToolPath}{options}");
-
-            if (!File.Exists(_appSettings.ExifToolPath)) return null;
-
-            var exifToolPath = _appSettings.ExifToolPath;
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                exifToolPath = $"\"" + _appSettings.ExifToolPath + $"\"";
-            }
-
-			ProcessStartInfo processStartInfo = new ProcessStartInfo
-			{
-				FileName = exifToolPath,
-				UseShellExecute = false,
-				RedirectStandardOutput = true,
-				Arguments = options
-			};
-
-
-	        Process process = Process.Start(processStartInfo);
-
-	        string strOutput = process.StandardOutput.ReadToEnd();
-
-	        process.WaitForExit();
-
-	        if ( !process.HasExited )
-	        {
-				process.CloseMainWindow();
-				process.Close();
-				return null;
-	        }
-	        
-	        // make sure that there nothing left
-	        process.Dispose();
-
-			return strOutput;
-        }
-        
-        public string FixingJsonKeywordString(string text, string nameInJson = "Keywords")
-        {
-
-            // Not Single Keyword
-            // > need to be an array [""]
-            // Without gives nice shiny 500 runtime errors :) :)
-
-            var splitArray = text.Split("\n".ToCharArray());
-
-            var keywordsIndex = text.IndexOf(nameInJson, StringComparison.InvariantCulture);
-            if (keywordsIndex >= 0)
-            {
-                var updatedTextStringBuilder = new StringBuilder();
-                foreach (var item in splitArray)
-                {
-                    if (item.Contains(nameInJson) && !item.Contains("["))
-                    {
-                        var key = item.Replace("\"" + nameInJson + "\":", "");
-                        key = key.Replace("\"", "");
-                        
-                        // Remove commas at end
-                        Regex commaEndRegex = new Regex(",+$");
-                        key = commaEndRegex.Replace(key, "");
-                        
-                        key = key.Trim();
-                        var newItem = "\""+ nameInJson +"\": [\"" + key + "\"],"; 
-                        // bug potential: Could give a bug if the next line does not contain any values
-                        updatedTextStringBuilder.Append(newItem + "\n");
-                    }
-                    else
-                    {
-                        updatedTextStringBuilder.Append(item + "\n");
-                    }
-                }
-                return updatedTextStringBuilder.ToString();
-
-            }
-
-            return text;
+		public ExifTool(IStorage iStorage, AppSettings appSettings)
+		{
+			_appSettings = appSettings;
+			_iStorage = iStorage;
+		}
+		
+		public async Task<bool> WriteTagsAsync(string subPath, string command)
+		{
+			var runner = new StreamToStreamRunner(_appSettings, _iStorage.ReadStream(subPath));
+			var stream = await runner.RunProcessAsync(command);
+			return _iStorage.WriteStream(stream, subPath);
 		}
 
+		public async Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
+		{
+			var runner = new StreamToStreamRunner(_appSettings, _iStorage.ReadThumbnail(fileHash));
+			var stream = await runner.RunProcessAsync(command);
+			return _iStorage.WriteThumbnailStream(stream, fileHash);
+		}
 
-		/// <summary>
-		/// Parses the json to a ExifToolModel object
-		/// </summary>
-		/// <param name="text">the json from exiftool.</param>
-		/// <returns>ExifToolModel object</returns>
-		public ExifToolModel ParseJson(string text) {
-            if (string.IsNullOrEmpty(text)) return null;
-            text = text.Replace("\r", string.Empty);
-
-            Console.WriteLine("apply fix");
-            text = FixingJsonKeywordString(text); // "Keywords"
-            text = FixingJsonKeywordString(text,"Subject");
-
-            Console.WriteLine("read from exiftool with fix applied");
-
-            Console.WriteLine(text);
-            Console.WriteLine("-----");
-
-            var exifData = JsonConvert.DeserializeObject<IEnumerable<ExifToolModel>>(text).FirstOrDefault();
-
-            if (exifData == null) return null;
-            return exifData;
-
-        }
+		private class StreamToStreamRunner
+		{
+			private readonly Stream _src;
 
 
-        // The actual query
-        // will be removed very soon 
-        // Only used by DownloadPhoto
-        public ExifToolModel Info(string fullFilePath)
-        {
-			// Add parentes around this file
+			public StreamToStreamRunner(AppSettings appSettings, Stream src)
+			{
+				_src = src ?? throw new ArgumentNullException(nameof(src));
+				_appSettings = appSettings;
+			}
+
+
+			public async Task<Stream> RunProcessAsync(string optionsArgs)
+			{
+				var args = $"{optionsArgs} -o - -";
+
+				var ms = new MemoryStream();
+
+				try
+				{
+					var cmd =  Default.Run(_appSettings.ExifToolPath, options: opts => {
+						opts.StartInfo(si => si.Arguments = args);
+					}) < _src > ms;
+
+					var result = await cmd.Task.ConfigureAwait(false);
+
+					Console.WriteLine(result.Success);
+
+					ms.Seek(0, SeekOrigin.Begin);
+
+					return ms;
+				}
+				catch (Win32Exception ex)
+				{
+					throw new Exception("Error when trying to start the exiftool process.  " +
+					                    "Please make sure exiftool is installed, and its path is properly specified in the options.", ex);
+				}
+			}
 			
-			var xmpFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(
-			fullFilePath);
-			
-			// only overwrite when a xmp file exist
-			if (FilesHelper.IsFolderOrFile(xmpFullFilePath) == FolderOrFileModel.FolderOrFileTypeList.File)
-				fullFilePath = xmpFullFilePath;
-			
-			// When change also update class 'Update'
-			// xmp:Subject == Keywords
-			// Caption-Abstract == Description
-			var fullFilePathStringBuilder = new ExifToolCmdHelper().Quoted(null,fullFilePath);
-			
-			// -Orientation# <= hashtag is that exiftool must output a int and not a human readable string
-			return ParseJson(BaseCommmand("-Keywords \"-xmp:title\" -ObjectName \"-Orientation#\" -Description \"-xmp:subject\" -Caption-Abstract -Prefs -json", 
-				fullFilePathStringBuilder.ToString()));
-        }
-
-    }
-
+		}
+		
+	}
 }

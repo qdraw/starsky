@@ -163,8 +163,34 @@ namespace starskycore.Services
 
 			return fileStream;
 		}
+		
+		
+
+		public bool WriteStream(Stream stream, string path)
+		{
+			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
+			
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+
+			return new StorageHostFullPathFilesystem().WriteStream(stream, fullFilePath);
+		}
+
+
 
 		public bool ExistThumbnail(string fileHash)
+		{
+			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash);
+			return ExistFile(filePath);
+		}
+
+		public Stream ReadThumbnail(string fileHash)
+		{
+			if ( !ExistThumbnail(fileHash) ) throw new FileNotFoundException(fileHash); 
+			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash);
+			return new StorageHostFullPathFilesystem().ReadStream(filePath);
+		}
+
+		public bool WriteThumbnailStream(Stream stream, string fileHash)
 		{
 			throw new NotImplementedException();
 		}

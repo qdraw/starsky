@@ -16,21 +16,21 @@ namespace starsky.Controllers
     public class ApiController : Controller
     {
         private readonly IQuery _query;
-        private readonly IExiftool _exiftool;
+        private readonly IExifTool _exifTool;
         private readonly AppSettings _appSettings;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
         private readonly IReadMeta _readMeta;
 	    private readonly IStorage _iStorage;
 
         public ApiController(
-            IQuery query, IExiftool exiftool, 
+            IQuery query, IExifTool exifTool, 
             AppSettings appSettings, IBackgroundTaskQueue queue,
             IReadMeta readMeta,
 			IStorage iStorage)
         {
             _appSettings = appSettings;
             _query = query;
-            _exiftool = exiftool;
+            _exifTool = exifTool;
             _bgTaskQueue = queue;
             _readMeta = readMeta;
 	        _iStorage = iStorage;
@@ -146,7 +146,7 @@ namespace starsky.Controllers
 					}
 
 					// Compare Rotation and All other tags
-					new UpdateService(_query, _exiftool, _appSettings, _readMeta,_iStorage)
+					new UpdateService(_query, _exifTool, _appSettings, _readMeta,_iStorage)
 						.CompareAllLabelsAndRotation(changedFileIndexItemName,
 							collectionsDetailView, statusModel, append, rotateClock);
 					
@@ -168,7 +168,7 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage)
+				new UpdateService(_query,_exifTool,_appSettings, _readMeta,_iStorage)
 					.Update(changedFileIndexItemName,fileIndexResultsList,inputModel,collections, append, rotateClock);
 			});
             
@@ -224,7 +224,7 @@ namespace starsky.Controllers
 						}
 					};
 					
-					new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage)
+					new UpdateService(_query,_exifTool,_appSettings, _readMeta,_iStorage)
 						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, collections, false, 0);
 					
 				}
@@ -578,7 +578,7 @@ namespace starsky.Controllers
                 // When you have a different tag in the database than on disk
                 thumbPath = _appSettings.ThumbnailTempFolder + searchItem.FileHash + ".jpg";
                     
-                var isSuccesCreateAThumb = new Thumbnail(_appSettings,_exiftool).CreateThumb(searchItem);
+                var isSuccesCreateAThumb = new Thumbnail(_appSettings,_exifTool).CreateThumb(searchItem);
                 if (!isSuccesCreateAThumb)
                 {
                     Response.StatusCode = 500;

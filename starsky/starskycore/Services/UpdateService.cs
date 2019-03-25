@@ -11,14 +11,14 @@ namespace starskycore.Services
 	public class UpdateService
 	{ 
 		private readonly IQuery _query;
-		private readonly IExiftool _exifTool;
+		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly IReadMeta _readMeta;
 		private readonly IStorage _iStorage;
 
 		public UpdateService(
 			IQuery query,
-			IExiftool exifTool, 
+			IExifTool exifTool, 
 			AppSettings appSettings,
 			IReadMeta readMeta,
 			IStorage iStorage)
@@ -114,17 +114,18 @@ namespace starskycore.Services
 		/// <param name="rotateClock">rotation value (if needed)</param>
 		public void UpdateWriteDiskDatabase(DetailView detailView, List<string> comparedNamesList, int rotateClock = 0)
 		{
-			var exiftool = new ExifToolCmdHelper(_appSettings,_exifTool);
-			var toUpdateFilePath = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.FilePath);
+			var exiftool = new ExifToolCmdHelper(_exifTool,_iStorage);
 					
 			// feature to exif update the thumbnails 
-			var exifUpdateFilePaths = AddThumbnailToExifChangeList(toUpdateFilePath, detailView.FileIndexItem);
+			var exifUpdateFilePaths = AddThumbnailToExifChangeList(detailView.FileIndexItem);
 
 			// do rotation on thumbs
 			RotationThumbnailExcute(rotateClock, detailView.FileIndexItem);
-					
+
 			// Do an Exif Sync for all files, including thumbnails
-			exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
+			var exifResult = exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
+			
+			Console.WriteLine($"exifResult: {exifResult}");
                         
 			// change thumbnail names after the orginal is changed
 			var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath);
@@ -139,7 +140,7 @@ namespace starskycore.Services
 			// > async > force you to read the file again
 			// do not include thumbs in MetaCache
 			// only the full path url of the source image
-			_readMeta.RemoveReadMetaCache(toUpdateFilePath);		
+			_readMeta.RemoveReadMetaCache(detailView.FileIndexItem.FilePath);		
 		}
 		
 		/// <summary>
@@ -170,20 +171,23 @@ namespace starskycore.Services
 		/// <param name="toUpdateFilePath">the fullPath of the source file, only the raw or jpeg</param>
 		/// <param name="fileIndexItem">main object with fileHash</param>
 		/// <returns>a list with a thumb full path (if exist) and the source fullPath</returns>
-		private List<string> AddThumbnailToExifChangeList(string toUpdateFilePath, FileIndexItem fileIndexItem)
+		private List<string> AddThumbnailToExifChangeList(FileIndexItem fileIndexItem)
 		{
 			// To Add an Thumbnail to the 'to update list for exifTool'
 			var exifUpdateFilePaths = new List<string>
 			{
-				toUpdateFilePath           
+				fileIndexItem.FilePath           
 			};
-			var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
-
-			//	 todo: Change to		_iStorage.ExistFile() BUT this is thumbnail
-			if (FilesHelper.ExistFile(thumbnailFullPath) && ExtensionRolesHelper.GetImageFormat(thumbnailFullPath) == ExtensionRolesHelper.ImageFormat.jpg)
-			{
-				exifUpdateFilePaths.Add(thumbnailFullPath);
-			}
+			
+// todo: add thumbnail
+//			var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
+//
+//			//	 todo: Change to		_iStorage.ExistFile() BUT this is thumbnail
+//			if (FilesHelper.ExistFile(thumbnailFullPath) && ExtensionRolesHelper.GetImageFormat(thumbnailFullPath) == ExtensionRolesHelper.ImageFormat.jpg)
+//			{
+//				exifUpdateFilePaths.Add(thumbnailFullPath);
+//			}
+			
 			return exifUpdateFilePaths;
 		}
 		

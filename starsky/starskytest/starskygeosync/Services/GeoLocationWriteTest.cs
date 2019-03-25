@@ -11,18 +11,18 @@ namespace starskytest.starskygeosync.Services
     [TestClass]
     public class GeoLocationWriteTest
     {
-        private readonly IExiftool _exiftool;
+        private readonly IExifTool _exifTool;
         private readonly AppSettings _appSettings;
 
         public GeoLocationWriteTest()
         {
             var services = new ServiceCollection();
-            services.AddSingleton<IExiftool, FakeExifTool>();    
+            services.AddSingleton<IExifTool, FakeExifTool>();    
             
             // build the service
             var serviceProvider = services.BuildServiceProvider();
             
-            _exiftool = serviceProvider.GetRequiredService<IExiftool>();
+            _exifTool = serviceProvider.GetRequiredService<IExifTool>();
             
             // get the service
             _appSettings = new AppSettings();
@@ -46,7 +46,7 @@ namespace starskytest.starskygeosync.Services
 		            LocationCountry = "country"
 	            }
             };
-            new GeoLocationWrite(_appSettings, _exiftool).LoopFolder(metaFilesInDirectory, true);
+            new GeoLocationWrite(_appSettings, _exifTool).LoopFolder(metaFilesInDirectory, true);
         }
     }
 }

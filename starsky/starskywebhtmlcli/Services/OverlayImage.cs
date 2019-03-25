@@ -2,6 +2,7 @@
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskycore.Services;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -12,12 +13,12 @@ namespace starskywebhtmlcli.Services
     public class OverlayImage
     {
         private readonly AppSettings _appSettings;
-        private readonly IExiftool _exiftool;
+        private readonly IExifTool _exifTool;
 
-        public OverlayImage(AppSettings appSettings, IExiftool exiftool)
+        public OverlayImage(AppSettings appSettings, IExifTool exifTool)
         {
             _appSettings = appSettings;
-            _exiftool = exiftool;
+            _exifTool = exifTool;
         }
 
         public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
@@ -66,7 +67,8 @@ namespace starskywebhtmlcli.Services
 
             if (profile.MetaData)
             {
-                new ExifToolCmdHelper(_appSettings,_exiftool).CopyExifPublish(sourceFilePath,outputFilePath);
+	            // todo: check if works
+                new ExifToolCmdHelper(_exifTool,new StorageHostFullPathFilesystem()).CopyExifPublish(sourceFilePath,outputFilePath);
             }
 
          }

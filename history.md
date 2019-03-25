@@ -14,6 +14,10 @@
 # version 0.1.5.3 - tbd
 # (not yet implemented) refactoring connection to ExifTool to use iStorage
 # (not yet implemented) refactoring thumbnail service
+# if (profile.MetaData) // todo: check if works
+# check UpdateWriteDiskDatabase
+# check GeoLocationWrite
+# check: AddThumbnailToExifChangeList
 
 # version 0.1.5.2 - 2019-03-22
 - exifTool implementation write bug fixed

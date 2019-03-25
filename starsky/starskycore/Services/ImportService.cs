@@ -16,7 +16,7 @@ namespace starskycore.Services
 		private readonly IStorage _filesystemHelper;
 
 		private ApplicationDbContext _context;
-		private readonly IExiftool _exiftool;
+		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly IReadMeta _readmeta;
 		private readonly IServiceScopeFactory _scopeFactory;
@@ -25,7 +25,7 @@ namespace starskycore.Services
 
 		public ImportService(ApplicationDbContext context, // <= for table import-index
 			ISync isync, 
-			IExiftool exiftool, 
+			IExifTool exifTool, 
 			AppSettings appSettings, 
 			IServiceScopeFactory scopeFactory,
 			IStorage iStorage,
@@ -36,7 +36,7 @@ namespace starskycore.Services
 			_isConnection = _context.TestConnection(appSettings);
 				
 			_isync = isync;
-			_exiftool = exiftool;
+			_exifTool = exifTool;
 			_appSettings = appSettings;
 			
 			// This is used to handle files on the host system
@@ -194,7 +194,7 @@ namespace starskycore.Services
 		    // Creation of a sidecar xmp file
 		    if ( _appSettings.ExifToolImportXmpCreate )
 		    {
-			    new ExifToolCmdHelper(_appSettings,_exiftool).XmpSync(destinationFullPath);
+			    new ExifToolCmdHelper(_exifTool,_filesystemHelper).XmpSync(destinationFullPath);
 		    }
 		    
             
@@ -210,8 +210,7 @@ namespace starskycore.Services
                     nameof(FileIndexItem.Description),
                 };
 
-                new ExifToolCmdHelper(_appSettings, _exiftool).Update(fileIndexItem, destinationFullPath,
-                    comparedNamesList);
+                new ExifToolCmdHelper(_exifTool,_filesystemHelper).Update(fileIndexItem, comparedNamesList);
             }
             
 	        // Ignore the sync part if the connection is missing

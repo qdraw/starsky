@@ -17,12 +17,12 @@ namespace starskycore.Services
     public class Thumbnail
     {
         private readonly AppSettings _appSettings;
-        private readonly IExiftool _exiftool;
+        private readonly IExifTool _exifTool;
 
-        public Thumbnail(AppSettings appSettings, IExiftool exiftool = null)
+        public Thumbnail(AppSettings appSettings, IExifTool exifTool = null)
         {
             _appSettings = appSettings;
-            _exiftool = exiftool;
+            _exifTool = exifTool;
         }
         
 
@@ -220,7 +220,7 @@ namespace starskycore.Services
                     image.Save(outputStream,new JpegEncoder{Quality = 90, IgnoreMetadata = false});
                 }
 
-                new ExifToolCmdHelper(_appSettings, _exiftool).CopyExif(fullSourceImage, thumbPath);
+                new ExifToolCmdHelper(_exifTool,new StorageHostFullPathFilesystem()).CopyExif(fullSourceImage, thumbPath);
 
             }
             catch (Exception ex)            

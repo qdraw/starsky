@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskycore.Services;
 
 namespace starskyGeoCli.Services
 {
     public class GeoLocationWrite
     {
-        private readonly IExiftool _exifTool;
+        private readonly IExifTool _exifTool;
         private readonly AppSettings _appSettings;
 
-        public GeoLocationWrite(AppSettings appSettings, IExiftool exifTool)
+        public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool)
         {
             _exifTool = exifTool;
             _appSettings = appSettings;
@@ -46,7 +47,7 @@ namespace starskyGeoCli.Services
 
                 var destinationFullPath = _appSettings.DatabasePathToFilePath(metaFileItem.FilePath);
 
-                new ExifToolCmdHelper(_appSettings, _exifTool).Update(metaFileItem, destinationFullPath,
+                new ExifToolCmdHelper(_exifTool, new StorageHostFullPathFilesystem()).Update(metaFileItem, destinationFullPath,
                     comparedNamesList);
                 
                 Console.WriteLine(metaFileItem.FilePath);

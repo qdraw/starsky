@@ -12,12 +12,12 @@ namespace starskycore.Services
     public class ThumbnailByDirectory
     {
         private readonly AppSettings _appSettings;
-        private readonly IExiftool _exiftool;
+        private readonly IExifTool _exifTool;
 
-        public ThumbnailByDirectory(AppSettings appSettings, IExiftool exiftool)
+        public ThumbnailByDirectory(AppSettings appSettings, IExifTool exifTool)
         {
             _appSettings = appSettings;
-            _exiftool = exiftool;
+            _exifTool = exifTool;
         }
         
         public string[] ToBase64DataUriList(List<FileIndexItem> fileIndexList)
@@ -59,7 +59,7 @@ namespace starskycore.Services
 
                     if (_appSettings.Verbose) Console.WriteLine("localFileListFileHash[i] " + localFileListFileHash[i]); 
                     
-                    new Thumbnail(_appSettings, _exiftool).CreateThumb(value);
+                    new Thumbnail(_appSettings, _exifTool).CreateThumb(value);
                 }
 
                 if (filesInDirectoryFullPath.Length >= 1)

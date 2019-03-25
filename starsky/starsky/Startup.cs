@@ -91,7 +91,7 @@ namespace starsky
             services.AddScoped<ISearch, SearchService>();
             services.AddScoped<IImport, ImportService>();
             services.AddScoped<IUserManager, UserManager>();
-            services.AddScoped<IExiftool, ExifTool>();
+            services.AddScoped<IExifTool, ExifTool>();
             services.AddScoped<IReadMeta, ReadMeta>();
 	        services.AddScoped<IStorage, StorageSubPathFilesystem>();
 

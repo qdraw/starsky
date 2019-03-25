@@ -15,12 +15,12 @@ namespace starskywebhtmlcli.Services
     {
 
         private readonly AppSettings _appSettings;
-        private readonly IExiftool _exiftool;
+        private readonly IExifTool _exifTool;
 
-        public LoopPublications(AppSettings appSettings, IExiftool exiftool)
+        public LoopPublications(AppSettings appSettings, IExifTool exifTool)
         {
             _appSettings = appSettings;
-            _exiftool = exiftool;
+            _exifTool = exifTool;
         }
 
         public void Render(List<FileIndexItem> fileIndexItemsList, string[] base64ImageArray)
@@ -77,7 +77,7 @@ namespace starskywebhtmlcli.Services
         private void GenerateJpeg(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-            var overlayImage = new OverlayImage(_appSettings,_exiftool);
+            var overlayImage = new OverlayImage(_appSettings,_exifTool);
 
             foreach (var item in fileIndexItemsList)
             {
@@ -90,7 +90,7 @@ namespace starskywebhtmlcli.Services
                 if (profile.SourceMaxWidth <= 1000)
                 {
                     var inputFullFilePath = new Thumbnail(_appSettings).GetThumbnailPath(item.FileHash);
-                    new OverlayImage(_appSettings,_exiftool).ResizeOverlayImage(
+                    new OverlayImage(_appSettings,_exifTool).ResizeOverlayImage(
                         inputFullFilePath, outputFilePath,profile);
                 }
                             
@@ -106,7 +106,7 @@ namespace starskywebhtmlcli.Services
         private void GenerateMoveSourceFiles(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-            var overlayImage = new OverlayImage(_appSettings,_exiftool);
+            var overlayImage = new OverlayImage(_appSettings,_exifTool);
 
             foreach (var item in fileIndexItemsList)
             {

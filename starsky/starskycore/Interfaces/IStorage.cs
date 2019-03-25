@@ -37,14 +37,16 @@ namespace starskycore.Interfaces
 
 		Stream ReadStream(string path, int maxRead = -1);
 		
+		bool WriteStream(Stream stream, string path);
+		
 		/// <summary>
 		/// Check if thumbnail exist
 		/// </summary>
 		/// <param name="fileHash">base32 filehash</param>
 		/// <returns>if exist=true</returns>
 		bool ExistThumbnail(string fileHash);
-		Stream Thumbnail(string fileHash);
-
+		Stream ReadThumbnail(string fileHash);
+		bool WriteThumbnailStream(Stream stream, string fileHash);
 		
 	}
 }
