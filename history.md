@@ -11,6 +11,10 @@
 - []   Pagination on folders - Performance update for example 800 files
 - []   Search: support for complex and/or operators `(this || or) && that`
 
+# version 0.1.5.3 - tbd
+# (not yet implemented) refactoring connection to ExifTool to use iStorage
+# (not yet implemented) refactoring thumbnail service
+
 # version 0.1.5.2 - 2019-03-22
 - exifTool implementation write bug fixed
 - [x]   Performance upgrade xmp/tiff files (does not check filehash again)
