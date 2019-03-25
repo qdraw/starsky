@@ -7,7 +7,6 @@
 - []   Front-end copy ctrl+shift+c visual feedback
 - []   Front-end for Rename files
 - []   mp4/h.264 video support
-- []   config scheme overwrite feature for command line e.g. --scheme:/yyyy
 - []   time zone shifting
 - []   Pagination on folders - Performance update for example 800 files
 - []   Search: support for complex and/or operators `(this || or) && that`
@@ -20,6 +19,7 @@
 - include test with incomplete xmp file
 - ExifToolImportXmpCreate in appsettings
 - Bugfix / bug fix for: issue where import with spaces creates multiple items in the database 
+- Already exist: config scheme overwrite feature for command line e.g. --scheme:/yyyy
 
 # version 0.1.5.1 - 2019-03-17
 - Breaking Change: added `LastEdited` field
