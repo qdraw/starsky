@@ -65,11 +65,20 @@ namespace starskycore.Services
 			new StorageHostFullPathFilesystem().FileCopy(inputFileFullPath,toFileFullPath);
 		}
 		
+		/// <summary>
+		/// Check if file exist
+		/// </summary>
+		/// <param name="path">subPath</param>
+		/// <returns>bool</returns>
 		public bool FileDelete(string path)
 		{
 			return new StorageHostFullPathFilesystem().FileDelete(path);
 		}
 		
+		/// <summary>
+		/// Create an Directory 
+		/// </summary>
+		/// <param name="subPath">location</param>
 		public void CreateDirectory(string subPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(subPath, false);
@@ -165,7 +174,13 @@ namespace starskycore.Services
 		}
 		
 		
-
+		/// <summary>
+		/// Write fileStream to disk
+		/// </summary>
+		/// <param name="stream">some stream</param>
+		/// <param name="path">location</param>
+		/// <returns></returns>
+		/// <exception cref="FileNotFoundException"></exception>
 		public bool WriteStream(Stream stream, string path)
 		{
 			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
@@ -176,7 +191,11 @@ namespace starskycore.Services
 		}
 
 
-
+		/// <summary>
+		/// Check if thumbnail exist
+		/// </summary>
+		/// <param name="fileHash">bash32 filehash</param>
+		/// <returns></returns>
 		public bool ExistThumbnail(string fileHash)
 		{
 			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash);
