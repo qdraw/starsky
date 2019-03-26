@@ -44,11 +44,9 @@ namespace starskyGeoCli.Services
                     nameof(FileIndexItem.LocationCountry),
                 });
                 
-
-                var destinationFullPath = _appSettings.DatabasePathToFilePath(metaFileItem.FilePath);
-
-                new ExifToolCmdHelper(_exifTool, new StorageHostFullPathFilesystem()).Update(metaFileItem, destinationFullPath,
-                    comparedNamesList);
+				// todo: check if works
+                new ExifToolCmdHelper(_exifTool, new StorageHostFullPathFilesystem())
+	                .Update(metaFileItem, comparedNamesList);
                 
                 Console.WriteLine(metaFileItem.FilePath);
             }

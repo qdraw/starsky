@@ -13,5 +13,9 @@ namespace starskytest.Models
 		    throw new NotImplementedException();
 	    }
 
+	    public Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
+	    {
+		    throw new NotImplementedException();
+	    }
     }
 }

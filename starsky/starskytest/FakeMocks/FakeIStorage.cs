@@ -173,6 +173,16 @@ namespace starskytest.FakeMocks
 			throw new NotImplementedException();
 		}
 
+		public Stream ReadThumbnail(string fileHash)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool WriteThumbnailStream(Stream stream, string fileHash)
+		{
+			throw new NotImplementedException();
+		}
+
 		public Stream Thumbnail(string fileHash)
 		{
 			throw new NotImplementedException();
