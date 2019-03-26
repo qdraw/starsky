@@ -61,27 +61,6 @@ namespace starskycore.Services
 			return fileStream;
 		}
 
-		public bool ExistThumbnail(string fileHash)
-		{
-			var isFolderOrFile = IsFolderOrFile(fileHash);
-			return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File;
-		}
-
-		public Stream ReadThumbnail(string fileHash)
-		{
-			throw new NotImplementedException();
-		}
-
-		public bool WriteThumbnailStream(Stream stream, string fileHash)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Stream Thumbnail(string fileHash)
-		{
-			throw new NotImplementedException();
-		}
-
 
 		/// <summary>
 		/// Does file exist (true == exist)
@@ -155,6 +134,26 @@ namespace starskycore.Services
 			}
 			stream.Dispose();
 			return true;
+		}
+
+		public bool ThumbnailExist(string fileHash)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Stream ThumbnailRead(string fileHash)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool ThumbnailWriteStream(Stream stream, string fileHash)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void ThumbnailMove(string fromFileHash, string toFileHash)
+		{
+			throw new NotImplementedException();
 		}
 
 

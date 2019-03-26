@@ -181,7 +181,8 @@ namespace starskytest.Controllers
             var createAnImage = InsertSearchData();
             var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,_readmeta,new StorageSubPathFilesystem(_appSettings));
             
-            new Thumbnail(_appSettings).CreateThumb(createAnImage);
+            new Thumbnail(new StorageSubPathFilesystem(_appSettings), new FakeExifTool() )
+	            .CreateThumb(createAnImage.FilePath,createAnImage.FileHash);
 
             var actionResult = controller.Thumbnail(createAnImage.FileHash, true) as FileStreamResult;
             var thumbnailAnswer = actionResult.ContentType;

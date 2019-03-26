@@ -120,7 +120,7 @@ namespace starskycore.Services
 			var exifUpdateFilePaths = AddThumbnailToExifChangeList(detailView.FileIndexItem);
 
 			// do rotation on thumbs
-			RotationThumbnailExcute(rotateClock, detailView.FileIndexItem);
+			RotationThumbnailExecute(rotateClock, detailView.FileIndexItem);
 
 			// Do an Exif Sync for all files, including thumbnails
 			var exifResult = exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
@@ -129,7 +129,7 @@ namespace starskycore.Services
                         
 			// change thumbnail names after the orginal is changed
 			var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath);
-			new Thumbnail(_appSettings).RenameThumb(detailView.FileIndexItem.FileHash,newFileHash);
+			_iStorage.ThumbnailMove(detailView.FileIndexItem.FileHash, newFileHash);
 					
 			// Update the hash in the database
 			detailView.FileIndexItem.FileHash = newFileHash;
@@ -198,12 +198,10 @@ namespace starskycore.Services
 		/// <param name="rotateClock">-1 or 1</param>
 		/// <param name="fileIndexItem">object contains filehash</param>
 		/// <returns>updated image</returns>
-		private void RotationThumbnailExcute(int rotateClock, FileIndexItem fileIndexItem)
+		private void RotationThumbnailExecute(int rotateClock, FileIndexItem fileIndexItem)
 		{
-			var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
-
 			// Do orientation
-			if(FileIndexItem.IsRelativeOrientation(rotateClock)) new Thumbnail(null).RotateThumbnail(thumbnailFullPath,rotateClock);
+			if(FileIndexItem.IsRelativeOrientation(rotateClock)) new Thumbnail(_iStorage,_exifTool).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
 		}
 		
 		

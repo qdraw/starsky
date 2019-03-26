@@ -28,9 +28,9 @@ namespace starskycore.Services
 
 		public async Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
 		{
-			var runner = new StreamToStreamRunner(_appSettings, _iStorage.ReadThumbnail(fileHash));
+			var runner = new StreamToStreamRunner(_appSettings, _iStorage.ThumbnailRead(fileHash));
 			var stream = await runner.RunProcessAsync(command);
-			return _iStorage.WriteThumbnailStream(stream, fileHash);
+			return _iStorage.ThumbnailWriteStream(stream, fileHash);
 		}
 
 		private class StreamToStreamRunner

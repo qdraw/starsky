@@ -90,7 +90,9 @@ namespace starskyGeoCli
                 .LoopFolderLookup(fileIndexList,overwriteLocationNames);
             new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(fileIndexList,true);
             // update thumbs to avoid unnesseary re-generation
-            new Thumbnail(appSettings).RenameThumb(fileIndexList);
+	        
+//	        startupHelper.Storage().ThumbnailMove();
+//            new Thumbnail(appSettings).RenameThumb(fileIndexList);
 
 
         }

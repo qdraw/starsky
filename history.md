@@ -18,6 +18,11 @@
 # check UpdateWriteDiskDatabase
 # check GeoLocationWrite
 # check: AddThumbnailToExifChangeList
+# check: rename thumb in starskyGeoCli
+# check: starskysynccli -t
+# check: /api/delete
+# check: /api/download photo
+# check starskyWebHtmlCli
 
 # version 0.1.5.2 - 2019-03-22
 - exifTool implementation write bug fixed

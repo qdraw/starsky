@@ -153,7 +153,7 @@ namespace starskycore.Helpers
 		        await _exifTool.WriteTagsAsync(path, command);
 	        }
 
-	        if (  _iStorage.ExistThumbnail(updateModel.FileHash) )
+	        if (  _iStorage.ThumbnailExist(updateModel.FileHash) )
 	        {
 		        await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash, command);
 	        }

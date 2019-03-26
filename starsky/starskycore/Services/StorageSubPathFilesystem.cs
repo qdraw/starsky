@@ -196,27 +196,44 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="fileHash">bash32 filehash</param>
 		/// <returns></returns>
-		public bool ExistThumbnail(string fileHash)
+		public bool ThumbnailExist(string fileHash)
 		{
 			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash);
 			return ExistFile(filePath);
 		}
 
-		public Stream ReadThumbnail(string fileHash)
+		public Stream ThumbnailRead(string fileHash)
 		{
-			if ( !ExistThumbnail(fileHash) ) throw new FileNotFoundException(fileHash); 
+			if ( !ThumbnailExist(fileHash) ) throw new FileNotFoundException(fileHash); 
 			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash);
 			return new StorageHostFullPathFilesystem().ReadStream(filePath);
 		}
 
-		public bool WriteThumbnailStream(Stream stream, string fileHash)
+		/// <summary>
+		/// To Write the thumbnail stream
+		/// </summary>
+		/// <param name="stream">the output to write</param>
+		/// <param name="fileHash">the filehash</param>
+		/// <returns></returns>
+		public bool ThumbnailWriteStream(Stream stream, string fileHash)
 		{
-			throw new NotImplementedException();
+			return new StorageHostFullPathFilesystem()
+				.WriteStream(stream, Path.Combine(_appSettings.ThumbnailTempFolder, fileHash));
+		}
+		
+		public void ThumbnailMove(string oldHashCode, string newHashCode)
+		{
+			var oldThumbPath = _appSettings.ThumbnailTempFolder + oldHashCode + ".jpg";
+			var newThumbPath = _appSettings.ThumbnailTempFolder + newHashCode + ".jpg";
+
+			var hostFilesystem = new StorageHostFullPathFilesystem();
+			
+			if (!hostFilesystem.ExistFile(oldThumbPath) || !hostFilesystem.ExistFile(newThumbPath))
+			{
+				return;
+			}
+			hostFilesystem.FileMove(oldThumbPath,newThumbPath);
 		}
 
-		public Stream Thumbnail(string fileHash)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

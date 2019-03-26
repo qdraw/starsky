@@ -89,9 +89,10 @@ namespace starskywebhtmlcli.Services
                 // for less than 1000px
                 if (profile.SourceMaxWidth <= 1000)
                 {
-                    var inputFullFilePath = new Thumbnail(_appSettings).GetThumbnailPath(item.FileHash);
-                    new OverlayImage(_appSettings,_exifTool).ResizeOverlayImage(
-                        inputFullFilePath, outputFilePath,profile);
+	                throw new NotImplementedException();
+//                    var inputFullFilePath = new Thumbnail(_appSettings).GetThumbnailPath(item.FileHash);
+//                    new OverlayImage(_appSettings,_exifTool).ResizeOverlayImage(
+//                        inputFullFilePath, outputFilePath,profile);
                 }
                             
                 // Thumbs are 1000 px

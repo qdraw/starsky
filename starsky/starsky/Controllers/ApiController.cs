@@ -364,9 +364,10 @@ namespace starsky.Controllers
 	                // return a Ok, which means the file is deleted
 	                detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 
+	                throw new NotImplementedException();
                     // delete thumb
-                    collectionFullDeletePaths.Add(new Thumbnail(_appSettings)
-                        .GetThumbnailPath(detailViewItem.FileIndexItem.FileHash));
+//                    collectionFullDeletePaths.Add(new Thumbnail(_appSettings)
+//                        .GetThumbnailPath(detailViewItem.FileIndexItem.FileHash));
                     // add to display
                     fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
                     // remove from db
@@ -578,8 +579,8 @@ namespace starsky.Controllers
                 // When you have a different tag in the database than on disk
                 thumbPath = _appSettings.ThumbnailTempFolder + searchItem.FileHash + ".jpg";
                     
-                var isSuccesCreateAThumb = new Thumbnail(_appSettings,_exifTool).CreateThumb(searchItem);
-                if (!isSuccesCreateAThumb)
+                var isCreateAThumb = new Thumbnail(_iStorage,_exifTool).CreateThumb(searchItem.FilePath, searchItem.FileHash);
+                if (!isCreateAThumb)
                 {
                     Response.StatusCode = 500;
                     return Json("Thumbnail generation failed");

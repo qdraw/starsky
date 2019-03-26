@@ -62,14 +62,15 @@ namespace starskywebhtmlcli
 		        .Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
             var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
             
-            // Create thumbnails from the source images 
-            var thumbByDir = new ThumbnailByDirectory(appSettings,startupHelper.ExifTool());
-            thumbByDir.CreateThumb(inputPath);
-            new LoopPublications(appSettings,startupHelper.ExifTool())
-                .Render(fileIndexList,thumbByDir.ToBase64DataUriList(fileIndexList));
-
-			// Export all
-			new ExportManifest(appSettings,new PlainTextFileHelper()).Export();
+	        throw new NotImplementedException();
+//            // Create thumbnails from the source images 
+//            var thumbByDir = new ThumbnailByDirectory(appSettings,startupHelper.ExifTool());
+//            thumbByDir.CreateThumb(inputPath);
+//            new LoopPublications(appSettings,startupHelper.ExifTool())
+//                .Render(fileIndexList,thumbByDir.ToBase64DataUriList(fileIndexList));
+//
+//			// Export all
+//			new ExportManifest(appSettings,new PlainTextFileHelper()).Export();
 
 		}
         

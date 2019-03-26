@@ -168,22 +168,22 @@ namespace starskytest.FakeMocks
 			throw new NotImplementedException();
 		}
 
-		public bool ExistThumbnail(string fileHash)
+		public bool ThumbnailExist(string fileHash)
 		{
 			throw new NotImplementedException();
 		}
 
-		public Stream ReadThumbnail(string fileHash)
+		public Stream ThumbnailRead(string fileHash)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool WriteThumbnailStream(Stream stream, string fileHash)
+		public bool ThumbnailWriteStream(Stream stream, string fileHash)
 		{
 			throw new NotImplementedException();
 		}
 
-		public Stream Thumbnail(string fileHash)
+		public void ThumbnailMove(string fromFileHash, string toFileHash)
 		{
 			throw new NotImplementedException();
 		}
