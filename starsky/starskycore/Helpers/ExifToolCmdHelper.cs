@@ -110,8 +110,8 @@ namespace starskycore.Helpers
             command = UpdateKeywordsCommand(command, comparedNames, updateModel);
             command = UpdateDescriptionCommand(command, comparedNames, updateModel);
 
-            command = UpdateGPSLatitudeCommand(command, comparedNames, updateModel);
-            command = UpdateGPSLongitudeCommand(command, comparedNames, updateModel);
+            command = UpdateGpsLatitudeCommand(command, comparedNames, updateModel);
+            command = UpdateGpsLongitudeCommand(command, comparedNames, updateModel);
             command = UpdateLocationAltitudeCommand(command, comparedNames, updateModel);
 
             command = UpdateLocationCountryCommand(command, comparedNames, updateModel);
@@ -184,7 +184,7 @@ namespace starskycore.Helpers
             return command;
         }
 
-        private string UpdateGPSLatitudeCommand(
+        private string UpdateGpsLatitudeCommand(
 	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
             // CultureInfo.InvariantCulture is used for systems where comma is the default seperator
@@ -197,7 +197,7 @@ namespace starskycore.Helpers
             return command;
         }
         
-        private string UpdateGPSLongitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+        private string UpdateGpsLongitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
             if (comparedNames.Contains( nameof(FileIndexItem.Longitude)))
             {

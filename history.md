@@ -14,15 +14,15 @@
 # version 0.1.5.3 - tbd
 # (not yet implemented) refactoring connection to ExifTool to use iStorage
 # (not yet implemented) refactoring thumbnail service
-# if (profile.MetaData) // todo: check if works
-# check UpdateWriteDiskDatabase / check update service
-# check GeoLocationWrite
-# check: AddThumbnailToExifChangeList
-# check: rename thumb in starskyGeoCli
-# check: starskysynccli -t
-# check: /api/delete
-# check: /api/download photo
-# check starskyWebHtmlCli
+- []   check UpdateWriteDiskDatabase / check update service
+- []   check GeoLocationWrite
+- []   check: AddThumbnailToExifChangeList
+- []   check: rename thumb in starskyGeoCli
+- []   check: starskysynccli -t
+- []   check: /api/delete
+- []   check: /api/download photo
+- []   check starskyWebHtmlCli
+- []   check: if (profile.MetaData) // todo: check if works
 # changed Basic Auth middleware
 
 # version 0.1.5.2 - 2019-03-22
