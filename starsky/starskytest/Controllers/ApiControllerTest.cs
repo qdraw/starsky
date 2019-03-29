@@ -166,8 +166,7 @@ namespace starskytest.Controllers
             var createAnImage = InsertSearchData();
             var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,_readmeta,new StorageSubPathFilesystem(_appSettings));
             
-	        // todo: fix this test
-//            new Thumbnail(_iStorage,_exifTool).CreateThumb(createAnImage);
+            new Thumbnail(_iStorage,_exifTool).CreateThumb(createAnImage.FilePath, createAnImage.FileHash);
             
             var actionResult = controller.Thumbnail(createAnImage.FileHash,true,true) as JsonResult;
             Assert.AreNotEqual(actionResult,null);
