@@ -206,13 +206,13 @@ namespace starskycore.Services
 		public bool ThumbnailExist(string fileHash)
 		{
 			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg");
-			return ExistFile(filePath);
+			return new StorageHostFullPathFilesystem().ExistFile(filePath);
 		}
 
 		public Stream ThumbnailRead(string fileHash)
 		{
 			if ( !ThumbnailExist(fileHash) ) throw new FileNotFoundException(fileHash); 
-			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash);
+			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg");
 			return new StorageHostFullPathFilesystem().ReadStream(filePath);
 		}
 
@@ -234,8 +234,11 @@ namespace starskycore.Services
 			var newThumbPath = _appSettings.ThumbnailTempFolder + newHashCode + ".jpg";
 
 			var hostFilesystem = new StorageHostFullPathFilesystem();
-			
-			if (!hostFilesystem.ExistFile(oldThumbPath) || !hostFilesystem.ExistFile(newThumbPath))
+
+			var existOldFile = hostFilesystem.ExistFile(oldThumbPath);
+			var existNewFile = hostFilesystem.ExistFile(newThumbPath);
+
+			if (!existOldFile || existNewFile)
 			{
 				return;
 			}
