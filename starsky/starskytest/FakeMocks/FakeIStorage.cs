@@ -208,5 +208,10 @@ namespace starskytest.FakeMocks
 		{
 			throw new NotImplementedException();
 		}
+
+		public bool ThumbnailDelete(string fileHash)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

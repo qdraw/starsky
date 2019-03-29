@@ -158,6 +158,11 @@ namespace starskycore.Services
 			throw new NotImplementedException();
 		}
 
+		public bool ThumbnailDelete(string fileHash)
+		{
+			throw new NotImplementedException();
+		}
+
 
 		/// <summary>
 		/// Gets the files recrusive. (only ExtensionSyncSupportedList types)

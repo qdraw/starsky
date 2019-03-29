@@ -42,12 +42,38 @@ namespace starskycore.Interfaces
 		/// <summary>
 		/// Check if thumbnail exist
 		/// </summary>
-		/// <param name="fileHash">base32 filehash</param>
+		/// <param name="fileHash">base32 fileHash</param>
 		/// <returns>if exist=true</returns>
 		bool ThumbnailExist(string fileHash);
+		
+		/// <summary>
+		/// read stream base on thumbnail base32 hash
+		/// </summary>
+		/// <param name="fileHash">base32 fileHash</param>
+		/// <returns>fileStream</returns>
 		Stream ThumbnailRead(string fileHash);
+		
+		/// <summary>
+		/// write stream base on thumbnail base32 hash
+		/// </summary>
+		/// <param name="stream">write stream</param>
+		/// <param name="fileHash">base32 fileHash</param>
+		/// <returns></returns>
 		bool ThumbnailWriteStream(Stream stream, string fileHash);
+		
+		/// <summary>
+		/// Move from fileHash
+		/// </summary>
+		/// <param name="fromFileHash">from location (only fileHash)</param>
+		/// <param name="toFileHash">to location (only fileHash)</param>
 		void ThumbnailMove(string fromFileHash, string toFileHash);
+		
+		/// <summary>
+		/// Delete thumbnail
+		/// </summary>
+		/// <param name="fileHash">base32 fileHash</param>
+		/// <returns></returns>
+		bool ThumbnailDelete(string fileHash);
 
 	}
 }

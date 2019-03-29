@@ -345,7 +345,6 @@ namespace starsky.Controllers
                 if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                 
                 var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
-                var collectionFullDeletePaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
 
                 // display the to delete items
                 for (int i = 0; i < collectionSubPathList.Count; i++)
@@ -358,31 +357,33 @@ namespace starsky.Controllers
                     {
                         detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Unauthorized;
                         fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
-                        collectionFullDeletePaths[i] = null;
                         continue;
                     }
 	                // return a Ok, which means the file is deleted
 	                detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 
-	                throw new NotImplementedException();
-                    // delete thumb
-//                    collectionFullDeletePaths.Add(new Thumbnail(_appSettings)
-//                        .GetThumbnailPath(detailViewItem.FileIndexItem.FileHash));
-                    // add to display
+					// remove thumbnail from disk
+	                _iStorage.ThumbnailDelete(detailViewItem.FileIndexItem.FileHash);
+
                     fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
-                    // remove from db
+	                
+                    // remove item from db
                     _query.RemoveItem(detailViewItem.FileIndexItem);
+
+	                // remove the sidecar file (if exist)
+	                if ( ExtensionRolesHelper.IsExtensionForceXmp(detailViewItem.FileIndexItem
+		                .FileName) )
+	                {
+		                _iStorage.FileDelete(
+			                ExtensionRolesHelper.ReplaceExtensionWithXmp(detailViewItem
+				                .FileIndexItem.FilePath));
+	                }
+	                
+	                // and remove the actual file
+	                _iStorage.FileDelete(
+		                ExtensionRolesHelper.ReplaceExtensionWithXmp(detailViewItem
+			                .FileIndexItem.FilePath));
                 }
-
-                
-                // Add xmp to file to delete
-                var singleFilePath = collectionFullDeletePaths.FirstOrDefault();
-                if (singleFilePath == null) continue;
-                collectionFullDeletePaths.Add(singleFilePath.Replace(Path.GetExtension(singleFilePath), ".xmp"));
-                collectionFullDeletePaths.Add(singleFilePath.Replace(Path.GetExtension(singleFilePath), ".XMP"));
-
-                // Remove the file from disk
-                FilesHelper.DeleteFile(collectionFullDeletePaths);
             }
             
             // When all items are not found

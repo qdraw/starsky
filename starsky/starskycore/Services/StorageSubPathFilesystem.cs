@@ -242,5 +242,13 @@ namespace starskycore.Services
 			hostFilesystem.FileMove(oldThumbPath,newThumbPath);
 		}
 
+		public bool ThumbnailDelete(string fileHash)
+		{
+			if ( !ThumbnailExist(fileHash) ) return false;
+
+			var thumbPath = _appSettings.ThumbnailTempFolder + fileHash + ".jpg";
+			var hostFilesystem = new StorageHostFullPathFilesystem();
+			return hostFilesystem.FileDelete(thumbPath);
+		}
 	}
 }

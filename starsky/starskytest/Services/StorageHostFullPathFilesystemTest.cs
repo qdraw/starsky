@@ -8,7 +8,7 @@ using starskycore.Services;
 namespace starskytest.Services
 {
 	[TestClass]
-	public class StorageFullPathFilesystemTest
+	public class StorageHostFullPathFilesystemTest
 	{
 		[TestMethod]
 		public void Files_GetFilesRecrusiveTest()
