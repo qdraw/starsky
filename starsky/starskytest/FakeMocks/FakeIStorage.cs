@@ -205,7 +205,12 @@ namespace starskytest.FakeMocks
 
 		public void ThumbnailMove(string fromFileHash, string toFileHash)
 		{
-			throw new NotImplementedException();
+			var indexOfFolders = _fileHashPerThumbnail.IndexOf(fromFileHash);
+			if ( indexOfFolders == -1 )
+			{
+				throw new ArgumentException($"inputSubPath:{fromFileHash} - toSubPath:{toFileHash} indexOfFolders---1");
+			}
+			_fileHashPerThumbnail[indexOfFolders] = toFileHash;
 		}
 
 		public bool ThumbnailDelete(string fileHash)
