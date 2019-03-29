@@ -201,7 +201,8 @@ namespace starskycore.Services
 		private void RotationThumbnailExecute(int rotateClock, FileIndexItem fileIndexItem)
 		{
 			// Do orientation
-			if(FileIndexItem.IsRelativeOrientation(rotateClock)) new Thumbnail(_iStorage,_exifTool).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
+			if(FileIndexItem.IsRelativeOrientation(rotateClock)) 
+				new Thumbnail(_iStorage,_exifTool).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
 		}
 		
 		

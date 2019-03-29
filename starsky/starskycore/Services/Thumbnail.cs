@@ -210,7 +210,8 @@ namespace starskycore.Services
 
 			try
 			{
-				using (Image<Rgba32> image = Image.Load(fileHash))
+				using (var inputStream = _iStorage.ThumbnailRead(fileHash))
+				using (var image = Image.Load(inputStream))
 				using ( var stream = new MemoryStream() )
 				{
 					image.Mutate(x => x

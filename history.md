@@ -15,6 +15,7 @@
 # (not yet implemented) refactoring connection to ExifTool to use iStorage
 # (not yet implemented) refactoring thumbnail service
 - []   check UpdateWriteDiskDatabase / check update service
+- []   check rotation
 - []   check GeoLocationWrite
 - []   check: AddThumbnailToExifChangeList
 - []   check: rename thumb in starskyGeoCli
