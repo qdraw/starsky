@@ -126,7 +126,9 @@ namespace starskycore.Services
 		
 		public bool WriteStream(Stream stream, string path)
 		{
-			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
+//			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
+
+			stream.Seek(0, SeekOrigin.Begin);
 			
 			using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
 			{

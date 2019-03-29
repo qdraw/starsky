@@ -198,7 +198,7 @@ namespace starskycore.Services
 		/// <returns></returns>
 		public bool ThumbnailExist(string fileHash)
 		{
-			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash);
+			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg");
 			return ExistFile(filePath);
 		}
 
@@ -218,7 +218,7 @@ namespace starskycore.Services
 		public bool ThumbnailWriteStream(Stream stream, string fileHash)
 		{
 			return new StorageHostFullPathFilesystem()
-				.WriteStream(stream, Path.Combine(_appSettings.ThumbnailTempFolder, fileHash));
+				.WriteStream(stream, Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg"));
 		}
 		
 		public void ThumbnailMove(string oldHashCode, string newHashCode)

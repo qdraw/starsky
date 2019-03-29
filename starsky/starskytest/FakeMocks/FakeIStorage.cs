@@ -16,6 +16,7 @@ namespace starskytest.FakeMocks
 	{
 		private List<string> _outputSubPathFolders = new List<string>();
 		private List<string> _outputSubPathFiles  = new List<string>();
+		private List<bool> _existPerThumbnail  = new List<bool>();
 
 		private readonly  Dictionary<string, byte[]> _byteList = new Dictionary<string, byte[]>();
 
@@ -24,9 +25,10 @@ namespace starskytest.FakeMocks
 		/// </summary>
 		/// <param name="outputSubPathFolders">/</param>
 		/// <param name="outputSubPathFiles">/test.jpg</param>
-		/// <param name="byteList"></param>
+		/// <param name="byteListSource"></param>
+		/// <param name="existPerThumbnail">for mock fileHash=subPath</param>
 		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, 
-			IReadOnlyList<byte[]> byteList = null)
+			IReadOnlyList<byte[]> byteListSource = null, List<bool> existPerThumbnail = null)
 		{
 	
 			if ( outputSubPathFolders != null )
@@ -39,13 +41,19 @@ namespace starskytest.FakeMocks
 				_outputSubPathFiles = outputSubPathFiles;
 			}
 
-			if ( byteList != null && byteList.Count == _outputSubPathFiles.Count)
+			if ( existPerThumbnail != null &&  existPerThumbnail.Count == _outputSubPathFiles.Count)
+			{
+				_existPerThumbnail = existPerThumbnail;
+			}
+
+			if ( byteListSource != null && byteListSource.Count == _outputSubPathFiles.Count)
 			{
 				for ( int i = 0; i < _outputSubPathFiles.Count; i++ )
 				{
-					_byteList.Add(_outputSubPathFiles[i],byteList[i]);
+					_byteList.Add(_outputSubPathFiles[i],byteListSource[i]);
 				}
 			}
+
 		}
 		
 		public bool ExistFile(string subPath)
@@ -168,9 +176,17 @@ namespace starskytest.FakeMocks
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// Check if exist
+		/// </summary>
+		/// <param name="fileHash">for mock fileHash=subPath</param>
+		/// <returns></returns>
 		public bool ThumbnailExist(string fileHash)
 		{
-			throw new NotImplementedException();
+			var index = _outputSubPathFiles.IndexOf(fileHash);
+			if ( _existPerThumbnail.Count == 0 )
+				throw new ArgumentException("fill the thumbnail bool field first");
+			return _existPerThumbnail[index];
 		}
 
 		public Stream ThumbnailRead(string fileHash)
@@ -180,7 +196,12 @@ namespace starskytest.FakeMocks
 
 		public bool ThumbnailWriteStream(Stream stream, string fileHash)
 		{
-			throw new NotImplementedException();
+			stream.Dispose();
+			if ( _existPerThumbnail.Count == 0 )
+				throw new ArgumentException("fill the thumbnail bool field first");
+			var index = _outputSubPathFiles.IndexOf(fileHash);
+			_existPerThumbnail[index] = true;
+			return true;
 		}
 
 		public void ThumbnailMove(string fromFileHash, string toFileHash)

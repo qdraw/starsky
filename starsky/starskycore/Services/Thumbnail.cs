@@ -31,9 +31,15 @@ namespace starskycore.Services
 		/// <returns>true, if succesfull</returns>
 		public bool CreateThumb(string subPath, string fileHash)
 		{
-			if ( !ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath) &&
-			     !_iStorage.ExistFile(subPath) ) return false;
-			return true;
+			// FileType=supported + subPath=exit + fileHash=NOT exist
+			if ( !ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath) ||
+			     !_iStorage.ExistFile(subPath) || _iStorage.ThumbnailExist(fileHash) ) return false;
+
+			var resizeResult = ResizeThumbnailTimeoutWrap(subPath, fileHash, 1000).Result;
+			// todo: RemoveCorruptImage(thumbPath);
+			if ( resizeResult ) Console.Write(".");
+			
+			return resizeResult;
 		}
 
 		/// <summary>
@@ -44,7 +50,7 @@ namespace starskycore.Services
 		/// <param name="width">width in pixels</param>
 		/// <param name="height">0 is keep aspect ratio</param>
 		/// <param name="quality">range 0-100</param>
-		/// <returns>async true, is succesfull</returns>
+		/// <returns>async true, is good</returns>
 		private async Task<bool> ResizeThumbnailTimeoutWrap(string subPath, string thumbHash, int width, int height = 0,  int quality = 75)
 		{
 			//adding .ConfigureAwait(false) may NOT be what you want but google it.
@@ -59,7 +65,7 @@ namespace starskycore.Services
 		/// <param name="width">width in pixels</param>
 		/// <param name="height">0 is keep aspect ratio</param>
 		/// <param name="quality">range 0-100</param>
-		/// <returns>async true, is succesfull</returns>
+		/// <returns>async true, is good</returns>
 		#pragma warning disable 1998
 		private async Task<bool> ResizeThumbnailTimeOut(string subPath, string thumbHash, int width, int height = 0,  int quality = 75){
 		#pragma warning restore 1998
@@ -77,7 +83,7 @@ namespace starskycore.Services
 
 		private bool ResizeThumbnailPlain(string subPath, string thumbHash, int width, int height = 0,  int quality = 75 )
 		{
-			return _iStorage.WriteStream(ResizeThumbnail(subPath, width, height, quality), thumbHash);
+			return _iStorage.ThumbnailWriteStream(ResizeThumbnail(subPath, width, height, quality), thumbHash);
 		} 
 		
 		
