@@ -57,20 +57,24 @@ namespace starskywebhtmlcli
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;
 
+	        var iStorage = startupHelper.Storage();
 			// use relative to StorageFolder
-	        var listOfFiles = startupHelper.Storage().GetAllFilesInDirectory("/")
+	        var listOfFiles = iStorage.GetAllFilesInDirectory("/")
 		        .Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
             var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
             
-	        throw new NotImplementedException();
-//            // Create thumbnails from the source images 
-//            var thumbByDir = new ThumbnailByDirectory(appSettings,startupHelper.ExifTool());
-//            thumbByDir.CreateThumb(inputPath);
-//            new LoopPublications(appSettings,startupHelper.ExifTool())
-//                .Render(fileIndexList,thumbByDir.ToBase64DataUriList(fileIndexList));
-//
-//			// Export all
-//			new ExportManifest(appSettings,new PlainTextFileHelper()).Export();
+            // Create thumbnails from the source images 
+       
+	        var thumbByDir = new Thumbnail(iStorage,startupHelper.ExifTool());
+            thumbByDir.CreateThumb(inputPath);
+
+	        var base64DataUri = new ToBase64DataUriList(iStorage).Create(fileIndexList);
+	        
+            new LoopPublications(appSettings,startupHelper.ExifTool())
+                .Render(fileIndexList,base64DataUri );
+
+			// Export all
+			new ExportManifest(appSettings,new PlainTextFileHelper()).Export();
 
 		}
         

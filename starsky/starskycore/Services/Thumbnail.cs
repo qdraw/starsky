@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using starskycore.Helpers;
 using starskycore.Interfaces;
@@ -21,6 +22,26 @@ namespace starskycore.Services
 		{
 			_iStorage = iStorage;
 			_exifTool = exifTool;
+		}
+
+		/// <summary>
+		///  This feature is used to crawl over directories and add this to the thumbnail-folder
+		/// </summary>
+		/// <param name="subPath">folder subPath style</param>
+		/// <returns>fail/pass</returns>
+		/// <exception cref="FileNotFoundException">if folder not exist</exception>
+		public bool CreateThumb(string subPath)
+		{
+			if ( !_iStorage.ExistFolder(subPath) ) throw new DirectoryNotFoundException("should enter some valid dir");
+
+			var contentOfDir = _iStorage.GetAllFilesInDirectory(subPath)
+				.Where(ExtensionRolesHelper.IsExtensionExifToolSupported);
+			foreach ( var singleSubPath in contentOfDir )
+			{
+				var fileHash = new FileHash(_iStorage).GetHashCode(singleSubPath);
+				CreateThumb(singleSubPath, fileHash);
+			}
+			return true;
 		}
 
 		/// <summary>
@@ -97,7 +118,7 @@ namespace starskycore.Services
 		/// <param name="removeExif">dont store exif in output memorystream</param>
 		/// <param name="imageFormat">jpeg, or png in Enum</param>
 		/// <returns>MemoryStream with resized image</returns>
-		public Stream ResizeThumbnail(string subPath, int width, int height = 0, int quality = 75, 
+		public MemoryStream ResizeThumbnail(string subPath, int width, int height = 0, int quality = 75, 
 			bool removeExif = false, ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
         {
             var outputStream = new MemoryStream();

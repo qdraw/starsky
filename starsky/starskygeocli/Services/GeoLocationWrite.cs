@@ -45,7 +45,7 @@ namespace starskyGeoCli.Services
                 });
                 
 				// todo: check if works
-	            var iStorage = new StorageHostFullPathFilesystem();
+	            var iStorage = new StorageSubPathFilesystem(_appSettings);
                 new ExifToolCmdHelper(_exifTool, iStorage,new ReadMeta(iStorage))
 	                .Update(metaFileItem, comparedNamesList);
                 
