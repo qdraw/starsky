@@ -14,6 +14,7 @@ namespace starskycore.Services
 	public class ImportService : IImport
 	{
 		private readonly IStorage _filesystemHelper;
+		private readonly IStorage _inDbStorage;
 
 		private ApplicationDbContext _context;
 		private readonly IExifTool _exifTool;
@@ -43,6 +44,7 @@ namespace starskycore.Services
 			if ( !ignoreIStorage ) _readmeta = new ReadMeta(iStorage);
 			if ( ignoreIStorage ) _readmeta = new ReadMeta(_filesystemHelper);
 
+			_inDbStorage = iStorage;
 			_scopeFactory = scopeFactory;
 		}
 		
@@ -210,7 +212,7 @@ namespace starskycore.Services
                     nameof(FileIndexItem.Description),
                 };
 
-                new ExifToolCmdHelper(_exifTool,_filesystemHelper,_readmeta).Update(fileIndexItem, comparedNamesList);
+                new ExifToolCmdHelper(_exifTool,_inDbStorage,_readmeta).Update(fileIndexItem, comparedNamesList);
             }
             
 	        // Ignore the sync part if the connection is missing
