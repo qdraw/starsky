@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskycore.Services;
 using starskytest.FakeMocks;
 using starskytest.Models;
 
@@ -114,11 +115,18 @@ namespace starskytest.Helpers
 //            Assert.AreEqual("\"test\"",helperResult.ToString());
 //        }
 
+	    
         [TestMethod]
         public void ExifToolCmdHelper_CopyExifPublish()
         {
-	        var fakeReadMeta = new FakeReadMeta();
-            var helperResult = new ExifToolCmdHelper(_exifTool, new FakeIStorage(),fakeReadMeta).CopyExifPublish("test", "test");
+	        var folderPaths = new List<string>{"/"};
+	        var inputSubPaths = new List<string>{"/test.jpg"};
+
+	        var storage =
+		        new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, new List<string> {"?"});
+	        
+	        var fakeReadMeta = new ReadMeta(storage);
+            var helperResult = new ExifToolCmdHelper(_exifTool, storage, fakeReadMeta).CopyExifPublish("/test.jpg", "/test2");
             Assert.AreEqual(true,helperResult.Contains("HistorySoftwareAgent"));
         }
     }

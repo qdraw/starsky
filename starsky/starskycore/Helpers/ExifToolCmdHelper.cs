@@ -220,7 +220,7 @@ namespace starskycore.Helpers
         
         private static string UpdateLocationCityCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains( nameof(FileIndexItem.LocationCity)  )
+            if (comparedNames.Contains( nameof(FileIndexItem.LocationCity) ) )
             {
                 command += " -City=\"" + updateModel.LocationCity 
                                                    + "\" -xmp:City=\"" + updateModel.LocationCity + "\"";
@@ -269,35 +269,30 @@ namespace starskycore.Helpers
 		    return command;
 	    }
 
+	    
+	    
+	    
 	    public string CopyExifPublish(string fromSubPath, string toSubPath)
 	    {
-		    return null;
+		    var updateModel = _readMeta.ReadExifAndXmpFromFile(fromSubPath);
+		    var comparedNames = CompareAll(updateModel);
+		    comparedNames.Add(nameof(FileIndexItem.Software));
+		    updateModel.SetFilePath(toSubPath);
+		    return Update(updateModel, comparedNames);
 	    }
-	    
-//            // add space before command
-//            const string append = " -Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" " +
-//                                  "-HistorySoftwareAgent=\"Qdraw 1.0\" -HistoryParameters=\"Publish to Web\" " +
-//                                  "-PhotoshopQuality=\"\" -PMVersion=\"\" -Copyright=\"© Qdraw;Media www.qdraw.nl\"";
-//            CopyExifToThumbnail(fullSourceImage, thumbPath, append);
-//            return append;
-//        }
 
+
+	    private List<string> CompareAll(FileIndexItem fileIndexItem)
+	    {
+		    return FileIndexCompareHelper.Compare(new FileIndexItem(), fileIndexItem);
+	    } 
+	    
         public void CopyExifToThumbnail(string subPath, string thumbPath)
         {
-	        var fileIndexItem = _readMeta.ReadExifAndXmpFromFile(subPath);
-	        
-	        throw new NotImplementedException();
-	        
-//			// ignore files that are not exist
-//			if(FilesHelper.IsFolderOrFile(fullSourceImage) != FolderOrFileModel.FolderOrFileTypeList.File) return;
-//	        if(FilesHelper.IsFolderOrFile(thumbPath) != FolderOrFileModel.FolderOrFileTypeList.File) return;
-//
-//			// Reset Orientation on thumbpath
-//			// Do an ExifTool exif sync for the file
-//			if(_exifTool == null && _appSettings.Verbose) Console.WriteLine("Exiftool disabled");
-//			_exifTool?.BaseCommmand(" -overwrite_original -TagsFromFile \"" + fullSourceImage + "\"",
-//				"\"" + thumbPath + "\"" + " -Orientation=" + append);
-//			// Reset orentation
+	        var updateModel = _readMeta.ReadExifAndXmpFromFile(subPath);
+	        var comparedNames = CompareAll(updateModel);
+
+	        Update(updateModel, comparedNames);
         }
     }
 }
