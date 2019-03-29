@@ -100,7 +100,7 @@ namespace starskytest.starskygeosync.Services
 	    }
 
 	    [TestMethod]
-	    public void GeoReverseLookup_RemoveNoUpdateItemsTest2()
+	    public void GeoReverseLookup_RemoveNoUpdateItemsTest_IgnoreCity()
 	    {
 		    var list = new List<FileIndexItem>
 		    {
