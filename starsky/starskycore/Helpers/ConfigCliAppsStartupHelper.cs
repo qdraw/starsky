@@ -48,7 +48,7 @@ namespace starskycore.Helpers
 	        // Inject Filesystem backend
 	        services.AddSingleton<IStorage, StorageSubPathFilesystem>();
 
-	        // Inject Exiftool
+	        // Inject ExifTool
 	        services.AddSingleton<IExifTool, ExifTool>();
 	        
 	        
@@ -57,10 +57,10 @@ namespace starskycore.Helpers
             // get the service
             var appSettings = _serviceProvider.GetRequiredService<AppSettings>();
 
-            // inject exiftool
+            // inject exifTool
             _exifTool = _serviceProvider.GetRequiredService<IExifTool>();
 
-            // Build Datbase Context
+            // Build Database Context
             var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
             
             if(appSettings.Verbose) Console.WriteLine(appSettings.DatabaseConnection);
