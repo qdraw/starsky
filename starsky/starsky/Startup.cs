@@ -81,11 +81,7 @@ namespace starsky
                     }
                 );
 
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-				options.ForwardedHeaders =  ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
-           
+        
             services.AddScoped<IQuery, Query>();
             services.AddScoped<ISync, SyncService>();
             services.AddScoped<ISearch, SearchService>();
