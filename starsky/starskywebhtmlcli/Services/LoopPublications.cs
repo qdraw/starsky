@@ -16,8 +16,9 @@ namespace starskywebhtmlcli.Services
 
         private readonly AppSettings _appSettings;
         private readonly IExifTool _exifTool;
+	    private readonly IStorage _iStorage;
 
-        public LoopPublications(AppSettings appSettings, IExifTool exifTool)
+	    public LoopPublications( AppSettings appSettings, IExifTool exifTool)
         {
             _appSettings = appSettings;
             _exifTool = exifTool;
@@ -89,10 +90,11 @@ namespace starskywebhtmlcli.Services
                 // for less than 1000px
                 if (profile.SourceMaxWidth <= 1000)
                 {
-	                throw new NotImplementedException();
-//                    var inputFullFilePath = new Thumbnail(_appSettings).GetThumbnailPath(item.FileHash);
-//                    new OverlayImage(_appSettings,_exifTool).ResizeOverlayImage(
-//                        inputFullFilePath, outputFilePath,profile);
+	                // todo: NO direct file/system requests
+                    var inputFullFilePath = Path.Combine(_appSettings.ThumbnailTempFolder, item.FileHash + ".jpg");
+	                
+                    new OverlayImage(_appSettings,_exifTool).ResizeOverlayImage(
+                        inputFullFilePath, outputFilePath,profile);
                 }
                             
                 // Thumbs are 1000 px

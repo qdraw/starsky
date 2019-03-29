@@ -15,7 +15,7 @@
 # (not yet implemented) refactoring connection to ExifTool to use iStorage
 # (not yet implemented) refactoring thumbnail service
 # if (profile.MetaData) // todo: check if works
-# check UpdateWriteDiskDatabase
+# check UpdateWriteDiskDatabase / check update service
 # check GeoLocationWrite
 # check: AddThumbnailToExifChangeList
 # check: rename thumb in starskyGeoCli
