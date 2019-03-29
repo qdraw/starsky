@@ -194,7 +194,7 @@ namespace starskycore.Services
 		    // Creation of a sidecar xmp file
 		    if ( _appSettings.ExifToolImportXmpCreate )
 		    {
-			    new ExifToolCmdHelper(_exifTool,_filesystemHelper).XmpSync(destinationFullPath);
+			    new ExifToolCmdHelper(_exifTool,_filesystemHelper,_readmeta).XmpSync(destinationFullPath);
 		    }
 		    
             
@@ -210,7 +210,7 @@ namespace starskycore.Services
                     nameof(FileIndexItem.Description),
                 };
 
-                new ExifToolCmdHelper(_exifTool,_filesystemHelper).Update(fileIndexItem, comparedNamesList);
+                new ExifToolCmdHelper(_exifTool,_filesystemHelper,_readmeta).Update(fileIndexItem, comparedNamesList);
             }
             
 	        // Ignore the sync part if the connection is missing

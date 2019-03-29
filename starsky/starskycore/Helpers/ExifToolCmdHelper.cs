@@ -12,11 +12,13 @@ namespace starskycore.Helpers
     {
         private readonly IExifTool _exifTool;
 	    private readonly IStorage _iStorage;
+	    private readonly IReadMeta _readMeta;
 
-	    public ExifToolCmdHelper(IExifTool exifTool, IStorage iStorage)
+	    public ExifToolCmdHelper(IExifTool exifTool, IStorage iStorage, IReadMeta readMeta)
         {
             _exifTool = exifTool;
 	        _iStorage = iStorage;
+	        _readMeta = readMeta;
         }
 
 	    /// <summary>
@@ -95,9 +97,8 @@ namespace starskycore.Helpers
 	    }
 
         // Does not check in c# code if file exist
-        public async Task<string> UpdateASync(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames )
+        private async Task<string> UpdateASync(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames )
         {
-	        Console.WriteLine("sdfsdf");
             var command = "-json -overwrite_original";
             var initCommand = command; // to check if nothing
 
@@ -116,7 +117,9 @@ namespace starskycore.Helpers
             command = UpdateLocationCountryCommand(command, comparedNames, updateModel);
             command = UpdateLocationStateCommand(command, comparedNames, updateModel);
             command = UpdateLocationCityCommand(command, comparedNames, updateModel);
-            
+	        command = UpdateSoftwareCommand(command, comparedNames, updateModel);
+
+		        
             if (comparedNames.Contains("Title"))
             {
                 command += " -ObjectName=\"" + updateModel.Title + "\"" 
@@ -165,7 +168,7 @@ namespace starskycore.Helpers
 	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
             // -GPSAltitude="+160" -GPSAltitudeRef=above
-            if (comparedNames.Contains("LocationAltitude"))
+            if (comparedNames.Contains(nameof(FileIndexItem.LocationAltitude)))
             {
                 // 0 = "Above Sea Level"
                 // 1 = Below Sea Level
@@ -185,7 +188,7 @@ namespace starskycore.Helpers
 	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
             // CultureInfo.InvariantCulture is used for systems where comma is the default seperator
-            if (comparedNames.Contains("Latitude"))
+            if (comparedNames.Contains( nameof(FileIndexItem.Latitude) ))
             {
                 command += " -GPSLatitude=\"" + updateModel.Latitude.ToString(CultureInfo.InvariantCulture) 
                                                               + "\" -GPSLatitudeRef=\"" 
@@ -196,7 +199,7 @@ namespace starskycore.Helpers
         
         private string UpdateGPSLongitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains("Longitude"))
+            if (comparedNames.Contains( nameof(FileIndexItem.Longitude)))
             {
                 command += " -GPSLongitude=\"" + updateModel.Longitude.ToString(CultureInfo.InvariantCulture) 
                                               + "\" -GPSLongitudeRef=\"" 
@@ -207,7 +210,7 @@ namespace starskycore.Helpers
 
         private static string UpdateKeywordsCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains("Tags"))
+            if (comparedNames.Contains( nameof(FileIndexItem.Tags) ))
             {
                 command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags 
                                                               + "\" -Keywords=\"" + updateModel.Tags + "\" ";
@@ -217,7 +220,7 @@ namespace starskycore.Helpers
         
         private static string UpdateLocationCityCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains("LocationCity"))
+            if (comparedNames.Contains( nameof(FileIndexItem.LocationCity)  )
             {
                 command += " -City=\"" + updateModel.LocationCity 
                                                    + "\" -xmp:City=\"" + updateModel.LocationCity + "\"";
@@ -227,7 +230,7 @@ namespace starskycore.Helpers
         
         private static string UpdateLocationStateCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains("LocationState"))
+            if (comparedNames.Contains( nameof(FileIndexItem.LocationState) ))
             {
                 command += " -State=\"" + updateModel.LocationState 
                                        + "\" -Province-State=\"" + updateModel.LocationState + "\"";
@@ -238,7 +241,7 @@ namespace starskycore.Helpers
         private static string UpdateLocationCountryCommand(
 	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains("LocationCountry"))
+            if (comparedNames.Contains( nameof(FileIndexItem.LocationCountry) ))
             {
                 command += " -Country=\"" + updateModel.LocationCountry 
                                         + "\" -Country-PrimaryLocationName=\"" + updateModel.LocationCountry + "\"";
@@ -248,38 +251,41 @@ namespace starskycore.Helpers
         
         private static string UpdateDescriptionCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains("Description"))
+            if (comparedNames.Contains( nameof(FileIndexItem.Description)    ))
             {
                 command += " -Caption-Abstract=\"" + updateModel.Description 
                                                    + "\" -Description=\"" + updateModel.Description + "\"";
             }
             return command;
         }
+	    
+	    private static string UpdateSoftwareCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+	    {
+		    if (comparedNames.Contains( nameof(FileIndexItem.Software) ))
+		    {
+			    command +=
+				    "-Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" -HistorySoftwareAgent=\"Qdraw 1.0\" -HistoryParameters=\"\" -PMVersion=\"\" ";
+		    }
+		    return command;
+	    }
 
-//        public StringBuilder Quoted(StringBuilder inputStringBuilder, string fullFilePath)
-//        {
-//            if (inputStringBuilder == null)
-//            {
-//                inputStringBuilder = new StringBuilder();
-//            }
-//            inputStringBuilder.Append($"\"");
-//            inputStringBuilder.Append(fullFilePath);
-//            inputStringBuilder.Append($"\"");
-//            return inputStringBuilder;
+	    public string CopyExifPublish(string fromSubPath, string toSubPath)
+	    {
+		    return null;
+	    }
+	    
+//            // add space before command
+//            const string append = " -Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" " +
+//                                  "-HistorySoftwareAgent=\"Qdraw 1.0\" -HistoryParameters=\"Publish to Web\" " +
+//                                  "-PhotoshopQuality=\"\" -PMVersion=\"\" -Copyright=\"© Qdraw;Media www.qdraw.nl\"";
+//            CopyExifToThumbnail(fullSourceImage, thumbPath, append);
+//            return append;
 //        }
 
-        public string CopyExifPublish(string fullSourceImage, string thumbPath)
+        public void CopyExifToThumbnail(string subPath, string thumbPath)
         {
-            // add space before command
-            const string append = " -Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" " +
-                                  "-HistorySoftwareAgent=\"Qdraw 1.0\" -HistoryParameters=\"Publish to Web\" " +
-                                  "-PhotoshopQuality=\"\" -PMVersion=\"\" -Copyright=\"© Qdraw;Media www.qdraw.nl\"";
-            CopyExif(fullSourceImage, thumbPath, append);
-            return append;
-        }
-
-        public void CopyExif(string fullSourceImage, string thumbPath, string append = "")
-        {
+	        var fileIndexItem = _readMeta.ReadExifAndXmpFromFile(subPath);
+	        
 	        throw new NotImplementedException();
 	        
 //			// ignore files that are not exist

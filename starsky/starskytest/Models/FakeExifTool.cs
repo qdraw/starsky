@@ -9,13 +9,13 @@ namespace starskytest.Models
     public class FakeExifTool : IExifTool
     {
 		public Task<bool> WriteTagsAsync(string subPath, string command)
-	    {
-		    throw new NotImplementedException();
+		{
+			return Task.FromResult(true);
 	    }
 
 	    public Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
 	    {
-		    throw new NotImplementedException();
+		    return Task.FromResult(true);
 	    }
     }
 }

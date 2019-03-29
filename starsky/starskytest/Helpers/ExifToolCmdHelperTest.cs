@@ -66,12 +66,13 @@ namespace starskytest.Helpers
                 nameof(FileIndexItem.DateTime),
             };
             
-            var inputFullFilePaths = new List<string>
+            var inputSubPaths = new List<string>
             {
-                "test.jpg"
+                "/test.jpg"
             };
+	        var storage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>(),new List<string>{null});
 
-            var helperResult = new ExifToolCmdHelper(_exifTool, new FakeIStorage()).Update(updateModel, inputFullFilePaths, comparedNames);
+            var helperResult = new ExifToolCmdHelper(_exifTool, storage ,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
             
             Assert.AreEqual(true,helperResult.Contains(updateModel.Tags));
             Assert.AreEqual(true,helperResult.Contains(updateModel.Description));
@@ -95,9 +96,11 @@ namespace starskytest.Helpers
                 nameof(FileIndexItem.LocationAltitude),
             };
             
-            var inputFullFilePaths = new List<string>();
+	        var folderPaths = new List<string>{"/"};
 
-            var helperResult = new ExifToolCmdHelper(_exifTool, new FakeIStorage()).Update(updateModel, inputFullFilePaths, comparedNames);
+            var inputSubPaths = new List<string>{"/test.jpg"};
+
+            var helperResult = new ExifToolCmdHelper(_exifTool, new FakeIStorage(folderPaths,inputSubPaths,null,new List<string>{"?"}),new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
             
             Assert.AreEqual(true,helperResult.Contains("-GPSAltitude=\"-41"));
             Assert.AreEqual(true,helperResult.Contains("gpsaltituderef#=\"1"));
@@ -114,7 +117,8 @@ namespace starskytest.Helpers
         [TestMethod]
         public void ExifToolCmdHelper_CopyExifPublish()
         {
-            var helperResult = new ExifToolCmdHelper(_exifTool, new FakeIStorage()).CopyExifPublish("test", "test");
+	        var fakeReadMeta = new FakeReadMeta();
+            var helperResult = new ExifToolCmdHelper(_exifTool, new FakeIStorage(),fakeReadMeta).CopyExifPublish("test", "test");
             Assert.AreEqual(true,helperResult.Contains("HistorySoftwareAgent"));
         }
     }

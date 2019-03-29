@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.Services;
 
@@ -16,7 +17,7 @@ namespace starskytest.FakeMocks
 	{
 		private List<string> _outputSubPathFolders = new List<string>();
 		private List<string> _outputSubPathFiles  = new List<string>();
-		private List<bool> _existPerThumbnail  = new List<bool>();
+		private List<string> _fileHashPerThumbnail  = new List<string>();
 
 		private readonly  Dictionary<string, byte[]> _byteList = new Dictionary<string, byte[]>();
 
@@ -26,9 +27,9 @@ namespace starskytest.FakeMocks
 		/// <param name="outputSubPathFolders">/</param>
 		/// <param name="outputSubPathFiles">/test.jpg</param>
 		/// <param name="byteListSource"></param>
-		/// <param name="existPerThumbnail">for mock fileHash=subPath</param>
+		/// <param name="fileHashPerThumbnail">for mock fileHash=subPath</param>
 		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, 
-			IReadOnlyList<byte[]> byteListSource = null, List<bool> existPerThumbnail = null)
+			IReadOnlyList<byte[]> byteListSource = null, List<string> fileHashPerThumbnail = null)
 		{
 	
 			if ( outputSubPathFolders != null )
@@ -41,9 +42,9 @@ namespace starskytest.FakeMocks
 				_outputSubPathFiles = outputSubPathFiles;
 			}
 
-			if ( existPerThumbnail != null &&  existPerThumbnail.Count == _outputSubPathFiles.Count)
+			if ( fileHashPerThumbnail != null &&  fileHashPerThumbnail.Count == _outputSubPathFiles.Count)
 			{
-				_existPerThumbnail = existPerThumbnail;
+				_fileHashPerThumbnail = fileHashPerThumbnail;
 			}
 
 			if ( byteListSource != null && byteListSource.Count == _outputSubPathFiles.Count)
@@ -179,14 +180,13 @@ namespace starskytest.FakeMocks
 		/// <summary>
 		/// Check if exist
 		/// </summary>
-		/// <param name="fileHash">for mock fileHash=subPath</param>
+		/// <param name="fileHash">for mock fileHash</param>
 		/// <returns></returns>
 		public bool ThumbnailExist(string fileHash)
 		{
-			var index = _outputSubPathFiles.IndexOf(fileHash);
-			if ( _existPerThumbnail.Count == 0 )
-				throw new ArgumentException("fill the thumbnail bool field first");
-			return _existPerThumbnail[index];
+			if ( _fileHashPerThumbnail.Count == 0 )
+				throw new ArgumentException("fill the thumbnail field first");
+			return _fileHashPerThumbnail.Any(p => p == fileHash);
 		}
 
 		public Stream ThumbnailRead(string fileHash)
@@ -197,10 +197,9 @@ namespace starskytest.FakeMocks
 		public bool ThumbnailWriteStream(Stream stream, string fileHash)
 		{
 			stream.Dispose();
-			if ( _existPerThumbnail.Count == 0 )
+			if ( _fileHashPerThumbnail.Count == 0 )
 				throw new ArgumentException("fill the thumbnail bool field first");
 			var index = _outputSubPathFiles.IndexOf(fileHash);
-			_existPerThumbnail[index] = true;
 			return true;
 		}
 

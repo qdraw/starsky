@@ -21,7 +21,7 @@ namespace starskytest.Services
 			_iStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, 
-				new List<bool>{false});
+				new List<string>{null});
 		}
 
 		[TestMethod]
@@ -44,7 +44,7 @@ namespace starskytest.Services
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, 
-				new List<bool>{true});
+				new List<string>{"/test.jpg"});
 
 			var isCreated = new Thumbnail(storage, _exifTool).CreateThumb(_fakeIStorageImageSubPath, _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);

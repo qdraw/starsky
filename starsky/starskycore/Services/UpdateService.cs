@@ -114,7 +114,7 @@ namespace starskycore.Services
 		/// <param name="rotateClock">rotation value (if needed)</param>
 		public void UpdateWriteDiskDatabase(DetailView detailView, List<string> comparedNamesList, int rotateClock = 0)
 		{
-			var exiftool = new ExifToolCmdHelper(_exifTool,_iStorage);
+			var exiftool = new ExifToolCmdHelper(_exifTool,_iStorage,_readMeta);
 					
 			// feature to exif update the thumbnails 
 			var exifUpdateFilePaths = AddThumbnailToExifChangeList(detailView.FileIndexItem);

@@ -68,7 +68,7 @@ namespace starskywebhtmlcli.Services
             if (profile.MetaData)
             {
 	            // todo: check if works
-                new ExifToolCmdHelper(_exifTool,new StorageHostFullPathFilesystem()).CopyExifPublish(sourceFilePath,outputFilePath);
+                new ExifToolCmdHelper(_exifTool,new StorageHostFullPathFilesystem(),new ReadMeta(new StorageHostFullPathFilesystem())).CopyExifPublish(sourceFilePath,outputFilePath);
             }
 
          }
