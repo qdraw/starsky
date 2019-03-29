@@ -17,8 +17,8 @@
 - [x]   check UpdateWriteDiskDatabase / check update service
 - [x]   check rotation
 - [x]   check GeoLocationWrite
-- []   check: AddThumbnailToExifChangeList
-- []   check: rename thumb in starskyGeoCli
+- [x]   check: AddThumbnailToExifChangeList
+- [x]   check: rename thumb in starskyGeoCli
 - []   check: starskysynccli -t
 - []   check: /api/delete
 - []   check: /api/download photo
