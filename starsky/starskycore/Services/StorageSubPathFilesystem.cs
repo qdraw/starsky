@@ -151,6 +151,13 @@ namespace starskycore.Services
 			return _appSettings.RenameListItemsToDbStyle(folders.ToList());
 		}
 
+		/// <summary>
+		/// Get the file using a stream (don't forget to dispose this)
+		/// </summary>
+		/// <param name="path">subPath</param>
+		/// <param name="maxRead">number of bytes to read (default -1 = all)</param>
+		/// <returns>FileStream</returns>
+		/// <exception cref="FileNotFoundException">is file not exist, please check that first</exception>
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
