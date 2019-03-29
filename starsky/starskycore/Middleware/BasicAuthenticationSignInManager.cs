@@ -41,6 +41,7 @@ namespace starskycore.Middleware
                 }
 
                 await _userManager.SignIn(_context, validateResult.User);
+	            
 
 //                // Add ClaimsIdentity
 //                var claims = new[] { new Claim("name", _authenticationHeaderValue.UserPassword), new Claim(ClaimTypes.Role, "Admin") };

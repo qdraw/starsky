@@ -85,7 +85,7 @@ namespace starskytest.Middleware
             var phone = "abcdefg";
             var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
 
-            _serviceProvider.GetRequiredService<IUserManager>();
+            var iUserManager = _serviceProvider.GetRequiredService<IUserManager>();
             var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
             httpContext.RequestServices = _serviceProvider;
@@ -103,14 +103,15 @@ namespace starskytest.Middleware
                 Email = "test"
             };
             // Arange > new account
-            await controller.Register(newAccount,true,string.Empty);
+
+	        iUserManager.SignUp("test", "email", "test", "test");
 
             // base64 dGVzdDp0ZXN0 > test:test
             httpContext.Request.Headers["Authorization"] = "Basic dGVzdDp0ZXN0";
                 
             // Call the middleware app
             var basicAuthMiddleware = new BasicAuthenticationMiddleware(_onNext);
-            await basicAuthMiddleware.Invoke(httpContext, _userManager);
+            await basicAuthMiddleware.Invoke(httpContext);
             
             Assert.AreEqual(true, httpContext.User.Identity.IsAuthenticated);
 

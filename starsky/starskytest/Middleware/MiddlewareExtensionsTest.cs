@@ -35,7 +35,7 @@ namespace starskytest.Middleware
             var authMiddleware = new BasicAuthenticationMiddleware(next: (innerHttpContext) => Task.FromResult(0));
 
             // Act
-            await authMiddleware.Invoke(httpContext,_userManager);
+            await authMiddleware.Invoke(httpContext);
         }
         
         

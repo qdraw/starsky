@@ -19,13 +19,16 @@ namespace starskycore.Middleware
 
         private readonly RequestDelegate _next;
 
-        public async Task Invoke(HttpContext context, IUserManager userManager)
+        public async Task Invoke(HttpContext context)
         {
             if (!context.User.Identity.IsAuthenticated)
             {
                 var basicAuthenticationHeader = GetBasicAuthenticationHeaderValue(context);
                 if (basicAuthenticationHeader.IsValidBasicAuthenticationHeaderValue)
                 {
+	                
+	                var userManager = (IUserManager) context.RequestServices.GetService(typeof(IUserManager));
+		                
                     var authenticationManager = new BasicAuthenticationSignInManager(
                         context, basicAuthenticationHeader, userManager);
                     await authenticationManager.TrySignInUser();
