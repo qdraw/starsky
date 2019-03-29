@@ -108,8 +108,10 @@ namespace starskytest.starskygeosync.Services
 			    new FileIndexItem(),
 		    };
 		    
-		    var result = new GeoReverseLookup(_appSettings).RemoveNoUpdateItems(list,true);
-		    
+		    // ignore city
+		    var result = new GeoReverseLookup(_appSettings).RemoveNoUpdateItems(list,false);
+		    Assert.AreEqual(0, result.Count);
+
 	    }
 	    
     }
