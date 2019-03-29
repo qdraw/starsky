@@ -14,9 +14,9 @@
 # version 0.1.5.3 - tbd
 # (not yet implemented) refactoring connection to ExifTool to use iStorage
 # (not yet implemented) refactoring thumbnail service
-- []   check UpdateWriteDiskDatabase / check update service
-- []   check rotation
-- []   check GeoLocationWrite
+- [x]   check UpdateWriteDiskDatabase / check update service
+- [x]   check rotation
+- [x]   check GeoLocationWrite
 - []   check: AddThumbnailToExifChangeList
 - []   check: rename thumb in starskyGeoCli
 - []   check: starskysynccli -t
@@ -25,6 +25,7 @@
 - []   check starskyWebHtmlCli
 - []   check: if (profile.MetaData) // todo: check if works
 # changed Basic Auth middleware
+- []   check: sync from webUI with + in name
 
 # version 0.1.5.2 - 2019-03-22
 - exifTool implementation write bug fixed

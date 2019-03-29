@@ -49,9 +49,9 @@ namespace starskyGeoCli.Services
 
         /// <summary>
         /// Checks for files that already done
-        /// if latitude is not location 0,0, Thats default
-        ///  If one of the meta items are missing, keep in list
-        /// If extension in exiftool supported, so no gpx
+        /// if latitude is not location 0,0, That's default
+        /// If one of the meta items are missing, keep in list
+        /// If extension in exifTool supported, so no gpx
         /// </summary>
         /// <param name="metaFilesInDirectory">List of files with metadata</param>
         /// <param name="overwriteLocationNames"></param>
@@ -60,7 +60,8 @@ namespace starskyGeoCli.Services
             bool overwriteLocationNames)
         {
             // this will overwrite the location names, that have a gps location 
-            if (overwriteLocationNames) return metaFilesInDirectory.Where(
+            if (overwriteLocationNames) 
+	            return metaFilesInDirectory.Where(
                     metaFileItem =>
                         Math.Abs(metaFileItem.Latitude) > 0.001 && Math.Abs(metaFileItem.Longitude) > 0.001)
                 .ToList();
@@ -75,14 +76,15 @@ namespace starskyGeoCli.Services
                     && ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)
                     ).ToList();
         }
-        
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="metaFilesInDirectory"></param>
-        /// <returns></returns>
-        public List<FileIndexItem> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory,
+
+	    /// <summary>
+	    /// 
+	    /// </summary>
+	    /// <param name="metaFilesInDirectory"></param>
+	    /// <param name="overwriteLocationNames"></param>
+	    /// <returns></returns>
+	    public List<FileIndexItem> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory,
             bool overwriteLocationNames)
         {
             metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory,overwriteLocationNames);
