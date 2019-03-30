@@ -16,6 +16,8 @@ namespace starskywebhtmlcli
             // Use args in application
             new ArgsHelper().SetEnvironmentByArgs(args);
             var startupHelper = new ConfigCliAppsStartupHelper();
+	        
+	        // Run feature:
             var appSettings = startupHelper.AppSettings();
             
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
@@ -65,7 +67,8 @@ namespace starskywebhtmlcli
             
             // Create thumbnails from the source images 
        
-	        var thumbByDir = new Thumbnail(iStorage,startupHelper.ExifTool(),startupHelper.ReadMeta());
+	        // ,startupHelper.ExifTool(),startupHelper.ReadMeta()
+	        var thumbByDir = new Thumbnail(iStorage);
             thumbByDir.CreateThumb(inputPath);
 
 	        var base64DataUri = new ToBase64DataUriList(iStorage).Create(fileIndexList);

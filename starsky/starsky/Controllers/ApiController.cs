@@ -578,7 +578,7 @@ namespace starsky.Controllers
                 // When you have a different tag in the database than on disk
                 thumbPath = _appSettings.ThumbnailTempFolder + searchItem.FileHash + ".jpg";
                     
-                var isCreateAThumb = new Thumbnail(_iStorage,_exifTool,_readMeta).CreateThumb(searchItem.FilePath, searchItem.FileHash);
+                var isCreateAThumb = new Thumbnail(_iStorage).CreateThumb(searchItem.FilePath, searchItem.FileHash);
                 if (!isCreateAThumb)
                 {
                     Response.StatusCode = 500;

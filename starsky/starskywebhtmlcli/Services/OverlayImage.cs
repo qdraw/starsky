@@ -62,7 +62,7 @@ namespace starskywebhtmlcli.Services
                 int xPoint = image.Width - overlayLogo.Width;
                 int yPoint = image.Height - overlayLogo.Height;
 
-	            throw new NotImplementedException();
+//	            throw new NotImplementedException();
 	            // image.Mutate(x => x.DrawImage(overlayLogo, PixelBlenderMode.Normal, 1F, new Point(xPoint, yPoint)));
 
                 image.SaveAsJpeg(outputStream);
@@ -71,7 +71,9 @@ namespace starskywebhtmlcli.Services
             if (profile.MetaData)
             {
 	            // todo: check if works
-                new ExifToolCmdHelper(_exifTool,new StorageHostFullPathFilesystem(),new ReadMeta(new StorageHostFullPathFilesystem())).CopyExifPublish(sourceFilePath,outputFilePath);
+	            var storage = new StorageHostFullPathFilesystem();
+	            new ExifCopy(storage, new ExifTool(storage, new AppSettings()),
+		            new ReadMeta(storage)).CopyExifPublish(sourceFilePath, outputFilePath);
             }
 
          }

@@ -65,11 +65,11 @@ namespace starskysynccli
                 {
                     // If single file => create thumbnail
 	                var fileHash = new FileHash(storage).GetHashCode(subpath);
-                    new Thumbnail(storage,exifTool,readMeta).CreateThumb(subpath,fileHash); // <= this uses subpath
+                    new Thumbnail(storage).CreateThumb(subpath,fileHash); // <= this uses subpath
                 }
                 else
                 {
-	                new Thumbnail(storage,exifTool,readMeta).CreateThumb(subpath);
+	                new Thumbnail(storage).CreateThumb(subpath);
                 }
                 
                 Console.WriteLine("Thumbnail Done!");

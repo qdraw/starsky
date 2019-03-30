@@ -16,14 +16,10 @@ namespace starskycore.Services
 	public class Thumbnail
 	{
 		private readonly IStorage _iStorage;
-		private readonly IExifTool _exifTool;
-		private readonly IReadMeta _readMeta;
 
-		public Thumbnail(IStorage iStorage, IExifTool exifTool, IReadMeta readMeta)
+		public Thumbnail(IStorage iStorage)
 		{
 			_iStorage = iStorage;
-			_exifTool = exifTool;
-			_readMeta = readMeta;
 		}
 
 		/// <summary>
@@ -74,7 +70,7 @@ namespace starskycore.Services
 				_iStorage.WriteStream(stream, GetErrorLogItemFullPath(subPath));
 				return false;
 			}
-
+			
 			Console.Write(".");
 			return true;
 		}
@@ -198,11 +194,6 @@ namespace starskycore.Services
                 Console.WriteLine(ex);
                 return null;
             }
-
-	        new ExifToolCmdHelper(_exifTool, _iStorage, _readMeta);
-	        
-	        // todo: add exif tool copy
-	        
             return outputStream;
         }
 		

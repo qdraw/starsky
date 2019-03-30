@@ -136,7 +136,7 @@ namespace starsky.Controllers
 					item.FileHash + ".jpg");
 
 				if ( thumbnail )
-					new Thumbnail(_iStorage, _exifTool,_readMeta).CreateThumb(item.FilePath, item.FileHash);
+					new Thumbnail(_iStorage).CreateThumb(item.FilePath, item.FileHash);
 
 				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
 				

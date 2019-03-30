@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskycore.Services;
 
 namespace starskycore.Helpers
 {
@@ -43,26 +44,7 @@ namespace starskycore.Helpers
 		    return UpdateAsyncWrapper(updateModel, inputSubPaths, comparedNames).Result;
 	    }
 
-	    /// <summary>
-	    /// Add a .xmp sidecar file
-	    /// </summary>
-	    /// <param name="subPath"></param>
-	    /// <returns></returns>
-	    public string XmpSync(string subPath)
-	    {
-		    // only for raw files
-		    if ( !ExtensionRolesHelper.IsExtensionForceXmp(subPath) ) return subPath;
 
-		    var withXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
-                
-		    
-		    if (_iStorage.IsFolderOrFile(withXmp) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
-		    {
-			    throw new NotImplementedException();
-//			    _exifTool.WriteTagsAsync(withXmp, "-TagsFromFile \""  + fullFilePath + "\"",  "\""+ xmpFullPath +  "\"");
-		    }
-		    return withXmp;
-	    }
 	    
 	    
 
@@ -78,7 +60,7 @@ namespace starskycore.Helpers
             {
                 if(ExtensionRolesHelper.IsExtensionForceXmp(subPath))
                 {
-	                var xmpPath = XmpSync(subPath);
+	                var xmpPath = new ExifCopy(_iStorage,_exifTool,_readMeta).XmpSync(subPath);
                     // to continue as xmp file
                     pathsList.Add(xmpPath);
                     continue;
@@ -271,31 +253,7 @@ namespace starskycore.Helpers
 		    }
 		    return command;
 	    }
+   
 
-	    
-	    
-	    
-	    public string CopyExifPublish(string fromSubPath, string toSubPath)
-	    {
-		    var updateModel = _readMeta.ReadExifAndXmpFromFile(fromSubPath);
-		    var comparedNames = CompareAll(updateModel);
-		    comparedNames.Add(nameof(FileIndexItem.Software));
-		    updateModel.SetFilePath(toSubPath);
-		    return Update(updateModel, comparedNames);
-	    }
-
-
-	    private List<string> CompareAll(FileIndexItem fileIndexItem)
-	    {
-		    return FileIndexCompareHelper.Compare(new FileIndexItem(), fileIndexItem);
-	    } 
-	    
-        public void CopyExifToThumbnail(string subPath, string thumbPath)
-        {
-	        var updateModel = _readMeta.ReadExifAndXmpFromFile(subPath);
-	        var comparedNames = CompareAll(updateModel);
-
-	        Update(updateModel, comparedNames);
-        }
     }
 }

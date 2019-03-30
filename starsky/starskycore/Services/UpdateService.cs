@@ -180,7 +180,7 @@ namespace starskycore.Services
 		{
 			// Do orientation
 			if(FileIndexItem.IsRelativeOrientation(rotateClock)) 
-				new Thumbnail(_iStorage,_exifTool,_readMeta).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
+				new Thumbnail(_iStorage).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
 		}
 		
 		
