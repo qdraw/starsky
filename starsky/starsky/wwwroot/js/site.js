@@ -348,7 +348,6 @@ function hamburger(e) {
 if (document.querySelectorAll("#popup").length === 1) {
     document.querySelector("#popup")
         .addEventListener("click", function(e){ 
-
             // on first button fail > reload entire page
             var statusFirstButton =  document.querySelectorAll("#popup .content a")[0].getAttribute("data-onclick");
             if (statusFirstButton === "location.reload()") {
@@ -359,6 +358,8 @@ if (document.querySelectorAll("#popup").length === 1) {
             hidePreloader();
         }, false);
 }
+
+
 function hidePopupDialog(those) {
     
     // use also direct  
