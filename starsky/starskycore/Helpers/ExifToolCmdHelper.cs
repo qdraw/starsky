@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using starskycore.Interfaces;
@@ -23,7 +24,7 @@ namespace starskycore.Helpers
         }
 
 	    /// <summary>
-	    /// To update Exiftool
+	    /// To update Exiftool (both Thumbnail as Storage item)
 	    /// </summary>
 	    /// <param name="updateModel">update model</param>
 	    /// <param name="comparedNames">list,string e.g. Tags</param>
@@ -34,17 +35,43 @@ namespace starskycore.Helpers
             {
                 updateModel.FilePath           
             };
-	        return UpdateAsyncWrapper(updateModel, exifUpdateFilePaths, comparedNames).Result;
+	        return UpdateAsyncWrapperBoth(updateModel, exifUpdateFilePaths, comparedNames).Result;
         }
 
-	    
+	    /// <summary>
+	    /// To update Exiftool (both Thumbnail as Storage item)
+	    /// </summary>
+	    /// <param name="updateModel"></param>
+	    /// <param name="inputSubPaths"></param>
+	    /// <param name="comparedNames"></param>
+	    /// <returns></returns>
 	    public string Update(FileIndexItem updateModel, List<string> inputSubPaths,
 		    List<string> comparedNames)
 	    {
-		    return UpdateAsyncWrapper(updateModel, inputSubPaths, comparedNames).Result;
+		    return UpdateAsyncWrapperBoth(updateModel, inputSubPaths, comparedNames).Result;
 	    }
 
 
+//	    public string Update(Stream stream, FileIndexItem updateModel, List<string> comparedNames)
+//	    {
+//		    var command = ExifToolCommandLineArgs(updateModel, comparedNames);
+//		    
+////		    var task = Task.Run(() => _exifTool.WriteTagsStream());
+////		    var result = task.Wait(TimeSpan.FromSeconds(20)) ? task.Result : string.Empty;
+//	    }
+
+	    /// <summary>
+	    /// To update only the thumbnail hash
+	    /// </summary>
+	    /// <param name="updateModel"></param>
+	    /// <param name="comparedNames"></param>
+	    /// <returns></returns>
+	    public string UpdateThumbnail(FileIndexItem updateModel, List<string> comparedNames)
+	    {
+		    return UpdateAsyncWrapperThumbnail(updateModel, comparedNames).Result;
+		}
+
+	    
 	    
 	    
 
@@ -72,22 +99,25 @@ namespace starskycore.Helpers
 	    
 	    
 	    // Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
-	    private async Task<string> UpdateAsyncWrapper(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames)
+	    private async Task<string> UpdateAsyncWrapperBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames)
 	    {
-		    var task = Task.Run(() => UpdateASync(updateModel,inputSubPaths,comparedNames));
-		    return task.Wait(TimeSpan.FromSeconds(8)) ? task.Result : string.Empty;
+		    var task = Task.Run(() => UpdateASyncBoth(updateModel,inputSubPaths,comparedNames));
+		    return task.Wait(TimeSpan.FromSeconds(20)) ? task.Result : string.Empty;
 	    }
 
-        // Does not check in c# code if file exist
-        private async Task<string> UpdateASync(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames )
-        {
-            var command = "-json -overwrite_original";
+	    private async Task<string> UpdateAsyncWrapperThumbnail(FileIndexItem updateModel, List<string> comparedNames)
+	    {
+		    var task = Task.Run(() => UpdateASyncThumbnail(updateModel,comparedNames));
+		    return task.Wait(TimeSpan.FromSeconds(20)) ? task.Result : string.Empty;
+	    }
+	    
+	    public string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames )
+	    {
+		    var command = "-json -overwrite_original";
             var initCommand = command; // to check if nothing
 
             // Create an XMP File -> as those files don't support those tags
             // Check first if it is needed
-
-            var subPathsList = PathsListTagsFromFile(inputSubPaths);
 
             command = UpdateKeywordsCommand(command, comparedNames, updateModel);
             command = UpdateDescriptionCommand(command, comparedNames, updateModel);
@@ -130,8 +160,17 @@ namespace starskycore.Helpers
                 command += " -AllDates=\""+ exifToolString + "\" ";
             }
 
-	        if ( command == initCommand ) return command;
-	        
+		    if ( command == initCommand ) return string.Empty;
+		    
+		    return command;
+	    }
+
+        private async Task<string> UpdateASyncBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames )
+        {
+	        var command = ExifToolCommandLineArgs(updateModel, comparedNames);
+
+	        var subPathsList = PathsListTagsFromFile(inputSubPaths);
+
 	        foreach (var path in subPathsList)
 	        {
 		        if ( ! _iStorage.ExistFile(path) ) continue;
@@ -146,7 +185,15 @@ namespace starskycore.Helpers
 	        return command;
         }
 
-        private string UpdateLocationAltitudeCommand(
+	    
+	    private async Task<string> UpdateASyncThumbnail(FileIndexItem updateModel, List<string> comparedNames)
+	    {
+		    var command = ExifToolCommandLineArgs(updateModel, comparedNames);
+		    await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash, command);
+		    return command;
+	    }
+
+	    private string UpdateLocationAltitudeCommand(
 	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
             // -GPSAltitude="+160" -GPSAltitudeRef=above

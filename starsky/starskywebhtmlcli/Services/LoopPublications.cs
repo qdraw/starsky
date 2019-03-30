@@ -17,13 +17,15 @@ namespace starskywebhtmlcli.Services
         private readonly AppSettings _appSettings;
         private readonly IExifTool _exifTool;
 	    private readonly IStorage _iStorage;
+	    private readonly IReadMeta _readMeta;
 
-	    public LoopPublications(IStorage iStorage, AppSettings appSettings, IExifTool exifTool)
+	    public LoopPublications(IStorage iStorage, AppSettings appSettings, IExifTool exifTool, IReadMeta readMeta)
 	    {
 		    _iStorage = iStorage;
             _appSettings = appSettings;
             _exifTool = exifTool;
-        }
+		    _readMeta = readMeta;
+	    }
 
         public void Render(List<FileIndexItem> fileIndexItemsList, string[] base64ImageArray)
         {
@@ -91,11 +93,18 @@ namespace starskywebhtmlcli.Services
                 if (profile.SourceMaxWidth <= 1000)
                 {
 	                overlayImage.ResizeOverlayImageThumbnails(item.FileHash, outputPath, profile);
-	                continue;
+                }
+                else
+                {
+	                // Thumbs are 1000 px (and larger)
+	                overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
                 }
                             
-                // Thumbs are 1000 px (and larger)
-				overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
+	            if ( profile.MetaData )
+	            {
+		            new ExifCopy(_iStorage, _exifTool, _readMeta).CopyExifPublish(item.FilePath,
+			            outputPath);
+	            }
 
             }
         }

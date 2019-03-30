@@ -16,12 +16,14 @@ namespace starskywebhtmlcli.Services
         private readonly AppSettings _appSettings;
         private readonly IExifTool _exifTool;
 	    private IStorage _iStorage;
+//	    private IReadMeta _readMeta;
 
 	    public OverlayImage(IStorage iStorage, AppSettings appSettings, IExifTool exifTool)
         {
 	        _iStorage = iStorage;
             _appSettings = appSettings;
             _exifTool = exifTool;
+//	        _readMeta = readMeta;
         }
 
         public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
@@ -75,21 +77,23 @@ namespace starskywebhtmlcli.Services
 
 	    }
 
-	    private void ResizeOverlayImageShared(Image<Rgba32> sourceImage, Image<Rgba32> overlayImage, Stream outputStream, AppSettingsPublishProfiles profile, string outputSubPath )
+	    private void ResizeOverlayImageShared(Image<Rgba32> sourceImage, Image<Rgba32> overlayImage,
+		    Stream outputStream, AppSettingsPublishProfiles profile, string outputSubPath)
 	    {
 		    sourceImage.Mutate(x => x
 			    .Resize(profile.SourceMaxWidth, 0)
 		    );
-		        
+
 		    overlayImage.Mutate(x => x
 			    .Resize(profile.OverlayMaxWidth, 0)
 		    );
-		        
+
 		    int xPoint = sourceImage.Width - overlayImage.Width;
 		    int yPoint = sourceImage.Height - overlayImage.Height;
-		    sourceImage.Mutate(x => x.DrawImage(overlayImage, new Point(xPoint, yPoint),1F));
+		    sourceImage.Mutate(x => x.DrawImage(overlayImage, new Point(xPoint, yPoint), 1F));
 
 		    sourceImage.SaveAsJpeg(outputStream);
+
 		    _iStorage.WriteStream(outputStream, outputSubPath);
 	    }
 	    
