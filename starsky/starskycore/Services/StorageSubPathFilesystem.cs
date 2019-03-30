@@ -190,9 +190,8 @@ namespace starskycore.Services
 		/// <exception cref="FileNotFoundException"></exception>
 		public bool WriteStream(Stream stream, string path)
 		{
-			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
-			
-			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+			// should be able to write files that are not exist yet			
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
 
 			return new StorageHostFullPathFilesystem().WriteStream(stream, fullFilePath);
 		}

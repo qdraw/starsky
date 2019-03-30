@@ -334,6 +334,7 @@ namespace starskycore.Helpers
 			{
 				stream.Read(buffer, 0, buffer.Length);
 				stream.Close();
+				stream.Dispose();
 			}
 			catch ( UnauthorizedAccessException ex )
 			{

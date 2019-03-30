@@ -56,11 +56,48 @@ namespace starskycore.Services
 			if ( !ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath) ||
 			     !_iStorage.ExistFile(subPath) || _iStorage.ThumbnailExist(fileHash) ) return false;
 
-			var resizeResult = ResizeThumbnailTimeoutWrap(subPath, fileHash, 1000).Result;
-			// todo: RemoveCorruptImage(thumbPath);
-			if ( resizeResult ) Console.Write(".");
+			// File is already tested
+			if( _iStorage.ExistFile( GetErrorLogItemFullPath(subPath)) )
+				return false;
 			
-			return resizeResult;
+			// run resize sync
+			var resizeResult = ResizeThumbnailTimeoutWrap(subPath, fileHash, 1000).Result;
+			
+			// check if output any good
+			RemoveCorruptImage(fileHash);
+			
+			if ( !resizeResult )
+			{
+				var stream = new PlainTextFileHelper().StringToStream("Thumbnail error");
+				_iStorage.WriteStream(stream, GetErrorLogItemFullPath(subPath));
+				return false;
+			}
+
+			Console.Write(".");
+			return true;
+		}
+		
+		private string GetErrorLogItemFullPath(string subPath)
+		{
+			return Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault()
+				   + "_"
+			       + Path.GetFileNameWithoutExtension(PathHelper.GetFileName(subPath)) 
+			       + ".log";
+		}
+		
+		/// <summary>
+		/// Check if the image has the right first bytes, if not remove
+		/// </summary>
+		/// <param name="fileHash">the fileHash file</param>
+		private void RemoveCorruptImage(string fileHash)
+		{
+			if (!_iStorage.ThumbnailExist(fileHash)) return;
+            
+			var imageFormat = ExtensionRolesHelper.GetImageFormat(_iStorage.ThumbnailRead(fileHash));
+			if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
+			{
+				_iStorage.ThumbnailDelete(fileHash);
+			}
 		}
 
 		/// <summary>
