@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starskycore.Helpers;
 using starskycore.Services;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
 
@@ -32,14 +34,14 @@ namespace starskytest.Services
 		[TestMethod]
 		public void CreateThumbTest_ImageSubPathNotFound()
 		{
-			var isCreated = new Thumbnail(_iStorage, _exifTool, _readMeta).CreateThumb("/notfound.jpg", _fakeIStorageImageSubPath);
+			var isCreated = new Thumbnail(_iStorage).CreateThumb("/notfound.jpg", _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
 		
 		[TestMethod]
 		public void CreateThumbTest_WrongImageType()
 		{
-			var isCreated = new Thumbnail(_iStorage, _exifTool,_readMeta).CreateThumb("/notfound.dng", _fakeIStorageImageSubPath);
+			var isCreated = new Thumbnail(_iStorage).CreateThumb("/notfound.dng", _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
 		
@@ -51,15 +53,38 @@ namespace starskytest.Services
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, 
 				new List<string>{"/test.jpg"});
 
-			var isCreated = new Thumbnail(storage, _exifTool,_readMeta).CreateThumb(_fakeIStorageImageSubPath, _fakeIStorageImageSubPath);
+			var isCreated = new Thumbnail(storage).CreateThumb(_fakeIStorageImageSubPath, _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
 		
 		[TestMethod]
 		public void CreateThumbTest_WriteToMemory()
 		{
-			var isCreated = new Thumbnail(_iStorage, _exifTool,_readMeta).CreateThumb(_fakeIStorageImageSubPath, _fakeIStorageImageSubPath);
+			var isCreated = new Thumbnail(_iStorage).CreateThumb(_fakeIStorageImageSubPath, _fakeIStorageImageSubPath);
 			Assert.AreEqual(true,isCreated);
 		}
+		
+		
+		[TestMethod]
+        public void Thumbnail_ResizeThumbnailToStream__HostDependecy__JPEG_Test()
+        {
+
+            var newImage = new CreateAnImage();
+	        var iStorage = new StorageHostFullPathFilesystem();
+
+            var thumb = new Thumbnail(iStorage).ResizeThumbnail(newImage.FullFilePath, 1, 1, 75, true,
+	            ExtensionRolesHelper.ImageFormat.jpg);
+            Assert.AreEqual(true,thumb.CanRead);
+        }
+        
+        [TestMethod]
+        public void Thumbnail_ResizeThumbnailToStream__PNG_Test()
+        {
+	        var thumb = new Thumbnail(_iStorage).ResizeThumbnail(_fakeIStorageImageSubPath, 1, 1, 75, true,
+		        ExtensionRolesHelper.ImageFormat.png);
+            Assert.AreEqual(true,thumb.CanRead);
+        }
+		
+		
 	}
 }
