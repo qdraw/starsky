@@ -49,7 +49,7 @@ namespace starskytest.Services
             
             // Inject Fake Exiftool; dependency injection
             var services = new ServiceCollection();
-            services.AddSingleton<IExifTool, FakeExifTool>();    
+//            services.AddSingleton<IExifTool, FakeExifTool>();    
             
             // Inject Config helper
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
@@ -75,7 +75,7 @@ namespace starskytest.Services
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();
            
             // inject exiftool
-            _exifTool = serviceProvider.GetRequiredService<IExifTool>();
+            _exifTool = new FakeExifTool(_iStorage,_appSettings);
             
 	        _iStorage = new StorageSubPathFilesystem(_appSettings);
 	        _readmeta = new ReadMeta(_iStorage,_appSettings);

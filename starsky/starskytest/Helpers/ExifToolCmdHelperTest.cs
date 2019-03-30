@@ -16,19 +16,11 @@ namespace starskytest.Helpers
     [TestClass]
     public class ExifToolCmdHelperTest
     {
-        private readonly IExifTool _exifTool;
         private AppSettings _appSettings;
 
         public ExifToolCmdHelperTest()
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IExifTool, FakeExifTool>();    
-            
-            // build the service
-            var serviceProvider = services.BuildServiceProvider();
-            
-            _exifTool = serviceProvider.GetRequiredService<IExifTool>();
-            
+       
             // get the service
             _appSettings = new AppSettings();
             
@@ -73,7 +65,8 @@ namespace starskytest.Helpers
             };
 	        var storage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>(),new List<string>{null});
 
-            var helperResult = new ExifToolCmdHelper(_exifTool, storage ,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
+	        var fakeExifTool = new FakeExifTool(storage,_appSettings);
+            var helperResult = new ExifToolCmdHelper(fakeExifTool, storage ,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
             
             Assert.AreEqual(true,helperResult.Contains(updateModel.Tags));
             Assert.AreEqual(true,helperResult.Contains(updateModel.Description));
@@ -101,7 +94,11 @@ namespace starskytest.Helpers
 
             var inputSubPaths = new List<string>{"/test.jpg"};
 
-            var helperResult = new ExifToolCmdHelper(_exifTool, new FakeIStorage(folderPaths,inputSubPaths,null,new List<string>{"?"}),new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
+	        var storage =
+		        new FakeIStorage(folderPaths, inputSubPaths, null, new List<string> {"?"});
+	        var fakeExifTool = new FakeExifTool(storage,_appSettings);
+
+            var helperResult = new ExifToolCmdHelper(fakeExifTool, storage,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
             
             Assert.AreEqual(true,helperResult.Contains("-GPSAltitude=\"-41"));
             Assert.AreEqual(true,helperResult.Contains("gpsaltituderef#=\"1"));

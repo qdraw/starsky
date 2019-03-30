@@ -51,7 +51,6 @@ namespace starskytest.Controllers
             
             // Inject Fake Exiftool; dependency injection
             var services = new ServiceCollection();
-            services.AddSingleton<IExifTool, FakeExifTool>();    
 
             // Fake the readmeta output
             services.AddSingleton<IReadMeta, FakeReadMeta>();    
@@ -85,7 +84,7 @@ namespace starskytest.Controllers
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();
            
             // inject fake exiftool
-            _exifTool = serviceProvider.GetRequiredService<IExifTool>();
+            _exifTool = new FakeExifTool(_iStorage,_appSettings);
             
             _readmeta = serviceProvider.GetRequiredService<IReadMeta>();
             _scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();

@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskyGeoCli.Services;
+using starskytest.FakeMocks;
 using starskytest.Models;
 
 namespace starskytest.starskygeosync.Services
@@ -16,17 +17,11 @@ namespace starskytest.starskygeosync.Services
 
         public GeoLocationWriteTest()
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IExifTool, FakeExifTool>();    
-            
-            // build the service
-            var serviceProvider = services.BuildServiceProvider();
-            
-            _exifTool = serviceProvider.GetRequiredService<IExifTool>();
-            
-            // get the service
+			// get the service
             _appSettings = new AppSettings();
-            
+	        
+	        _exifTool = new FakeExifTool(new FakeIStorage(),_appSettings );
+
         }
 
         [TestMethod]

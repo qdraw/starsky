@@ -42,11 +42,12 @@ namespace starskytest.Services
 			_queryWithoutCache = new Query(dbContext,null);
 
 			_appSettings = new AppSettings();
-			_exifTool = new FakeExifTool();
 
 			_iStorageFake = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},
 				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes}, new List<string>{_exampleHash});
 			
+			_exifTool = new FakeExifTool(_iStorageFake,_appSettings);
+
 			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg");
 			_readMeta = new ReadMeta(_iStorageFake,_appSettings,_memoryCache);
 			

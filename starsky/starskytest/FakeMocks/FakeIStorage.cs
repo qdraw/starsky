@@ -180,6 +180,13 @@ namespace starskytest.FakeMocks
 			{
 				stream.CopyTo(ms);
 				var byteArray =  ms.ToArray();
+
+				if ( _byteList.Any(p => p.Key == path) )
+				{
+					_byteList[path] = byteArray;
+					return true;
+				}
+				
 				_byteList.Add(path, byteArray);
 			}
 

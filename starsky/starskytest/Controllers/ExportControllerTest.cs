@@ -86,7 +86,7 @@ namespace starskytest.Controllers
 			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
 			// inject fake exiftool
-			_exifTool = serviceProvider.GetRequiredService<IExifTool>();
+			_exifTool = new FakeExifTool(new FakeIStorage(),_appSettings );
 
 			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();

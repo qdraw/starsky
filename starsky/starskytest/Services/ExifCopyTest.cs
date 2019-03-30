@@ -13,22 +13,12 @@ namespace starskytest.Services
 	[TestClass]
 	public class ExifCopyTest
 	{
-		private readonly IExifTool _exifTool;
 		private AppSettings _appSettings;
 
 		public ExifCopyTest()
 		{
-			var services = new ServiceCollection();
-			services.AddSingleton<IExifTool, FakeExifTool>();    
-            
-			// build the service
-			var serviceProvider = services.BuildServiceProvider();
-            
-			_exifTool = serviceProvider.GetRequiredService<IExifTool>();
-            
 			// get the service
 			_appSettings = new AppSettings();
-            
 		}
 		
 		[TestMethod]
@@ -41,8 +31,32 @@ namespace starskytest.Services
 				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, new List<string> {"?"});
 	        
 			var fakeReadMeta = new ReadMeta(storage);
-			var helperResult = new ExifCopy(storage, _exifTool, fakeReadMeta).CopyExifPublish("/test.jpg", "/test2");
+			var fakeExifTool = new FakeExifTool(storage,_appSettings);
+			var helperResult = new ExifCopy(storage, fakeExifTool, fakeReadMeta).CopyExifPublish("/test.jpg", "/test2");
 			Assert.AreEqual(true,helperResult.Contains("HistorySoftwareAgent"));
 		}
+
+//		[TestMethod]
+//		public void ExifToolCmdHelper_TestForFakeExifToolInjection()
+//		{
+//			var folderPaths = new List<string>{"/"};
+//			var inputSubPaths = new List<string>{"/test.dng"};
+//			
+//			var storage = new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, new List<string> {"?"});
+//			
+//			var readMeta =  new ReadMeta(storage);
+//
+//			new ExifCopy(storage, new FakeExifTool(storage,_appSettings), readMeta).XmpSync("/test.dng");
+//			
+//			Assert.AreEqual(true,storage.ExistFile("/test.xmp"));
+//			var xmpContentReadStream = storage.ReadStream("/test.xmp");
+//			var xmpContent = new PlainTextFileHelper().StreamToString(xmpContentReadStream);
+//			
+//			// Those values are injected by fakeExifTool
+//			Assert.AreEqual(true,xmpContent.Contains("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 11.30'>"));
+//			Assert.AreEqual(true,xmpContent.Contains("<rdf:li>test</rdf:li>"));
+//
+//		}
+
 	}
 }

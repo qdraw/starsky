@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
+using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -18,7 +19,7 @@ namespace starskytest.Services
 
 		public ThumbnailTest()
 		{
-			_exifTool = new FakeExifTool();
+			_exifTool = new FakeExifTool(_iStorage,new AppSettings());
 			_fakeIStorageImageSubPath = "/test.jpg";
 			
 

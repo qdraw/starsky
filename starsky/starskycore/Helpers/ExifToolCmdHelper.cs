@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using starskycore.Interfaces;
@@ -10,7 +11,7 @@ using starskycore.Services;
 
 namespace starskycore.Helpers
 {
-    public class ExifToolCmdHelper
+    public partial class ExifToolCmdHelper
     {
         private readonly IExifTool _exifTool;
 	    private readonly IStorage _iStorage;
@@ -52,28 +53,6 @@ namespace starskycore.Helpers
 	    }
 
 
-//	    public string Update(Stream stream, FileIndexItem updateModel, List<string> comparedNames)
-//	    {
-//		    var command = ExifToolCommandLineArgs(updateModel, comparedNames);
-//		    
-////		    var task = Task.Run(() => _exifTool.WriteTagsStream());
-////		    var result = task.Wait(TimeSpan.FromSeconds(20)) ? task.Result : string.Empty;
-//	    }
-
-	    /// <summary>
-	    /// To update only the thumbnail hash
-	    /// </summary>
-	    /// <param name="updateModel"></param>
-	    /// <param name="comparedNames"></param>
-	    /// <returns></returns>
-	    public string UpdateThumbnail(FileIndexItem updateModel, List<string> comparedNames)
-	    {
-		    return UpdateAsyncWrapperThumbnail(updateModel, comparedNames).Result;
-		}
-
-	    
-	    
-	    
 
         /// <summary>
         /// For Raw files us an external .xmp sidecar file, and add this to the PathsList
@@ -87,8 +66,7 @@ namespace starskycore.Helpers
             {
                 if(ExtensionRolesHelper.IsExtensionForceXmp(subPath))
                 {
-	                var xmpPath = new ExifCopy(_iStorage,_exifTool,_readMeta).XmpSync(subPath);
-                    // to continue as xmp file
+	                var xmpPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
                     pathsList.Add(xmpPath);
                     continue;
                 }
@@ -96,8 +74,44 @@ namespace starskycore.Helpers
             }
             return pathsList;
         }
+
 	    
+
 	    
+//	    private List<bool> CreateXmpIfNotExist(List<string> inputSubPaths)
+//	    {
+//		    var existList = new List<bool>();
+//		    foreach ( var subPath in inputSubPaths )
+//		    {
+//				if (subPath.EndsWith(".xmp") &&  !_iStorage.ExistFile(subPath) )
+//				{
+//					new ExifCopy(_iStorage, _exifTool, _readMeta).XmpCreate(subPath);
+//					existList.Add(true);
+//					continue;
+//				}
+//			    
+//			    existList.Add(false);
+//		    }
+//		    return existList;
+//	    }
+	    
+//	    private void DoXmpSync(List<string> inputSubPaths)
+//	    {
+//		    foreach ( var subPath in inputSubPaths )
+//		    {
+//			    if (subPath.EndsWith(".xmp") &&  !_iStorage.ExistFile(subPath) )
+//			    {
+//				    new ExifCopy(_iStorage, _exifTool, _readMeta).XmpCreate(subPath);
+//				    existList.Add(true);
+//				    continue;
+//			    }
+//			    
+//			    existList.Add(false);
+//		    }
+//
+//	    }
+
+
 	    // Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
 	    private async Task<string> UpdateAsyncWrapperBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames)
 	    {
@@ -105,11 +119,7 @@ namespace starskycore.Helpers
 		    return task.Wait(TimeSpan.FromSeconds(20)) ? task.Result : string.Empty;
 	    }
 
-	    private async Task<string> UpdateAsyncWrapperThumbnail(FileIndexItem updateModel, List<string> comparedNames)
-	    {
-		    var task = Task.Run(() => UpdateASyncThumbnail(updateModel,comparedNames));
-		    return task.Wait(TimeSpan.FromSeconds(20)) ? task.Result : string.Empty;
-	    }
+
 	    
 	    public string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames )
 	    {
@@ -165,12 +175,37 @@ namespace starskycore.Helpers
 		    return command;
 	    }
 
+	    private async Task CreateXmpFileIsNotExist(FileIndexItem updateModel, List<string> inputSubPaths)
+	    {
+		    foreach ( var subPath in inputSubPaths )
+		    {
+			    // only for raw files
+			    if ( !ExtensionRolesHelper.IsExtensionForceXmp(subPath) ) return;
+
+			    var withXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
+
+			    if ( _iStorage.IsFolderOrFile(withXmp) !=
+			         FolderOrFileModel.FolderOrFileTypeList.Deleted ) continue;
+			    
+			    new ExifCopy(_iStorage,_exifTool,_readMeta).XmpCreate(withXmp);
+				    
+			    var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
+			    var command = ExifToolCommandLineArgs(updateModel, comparedNames);
+				    
+			    await _exifTool.WriteTagsAsync(withXmp, command);
+		    }
+	    }
+
         private async Task<string> UpdateASyncBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames )
         {
-	        var command = ExifToolCommandLineArgs(updateModel, comparedNames);
+	        // Creation and update .xmp file with all availeble content
+	        await CreateXmpFileIsNotExist(updateModel, inputSubPaths);
 
+	        // Rename .dng files .xmp to update in exifTool
 	        var subPathsList = PathsListTagsFromFile(inputSubPaths);
 
+	        var command = ExifToolCommandLineArgs(updateModel, comparedNames);
+        
 	        foreach (var path in subPathsList)
 	        {
 		        if ( ! _iStorage.ExistFile(path) ) continue;
@@ -185,13 +220,7 @@ namespace starskycore.Helpers
 	        return command;
         }
 
-	    
-	    private async Task<string> UpdateASyncThumbnail(FileIndexItem updateModel, List<string> comparedNames)
-	    {
-		    var command = ExifToolCommandLineArgs(updateModel, comparedNames);
-		    await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash, command);
-		    return command;
-	    }
+
 
 	    private string UpdateLocationAltitudeCommand(
 	        string command, List<string> comparedNames, FileIndexItem updateModel)

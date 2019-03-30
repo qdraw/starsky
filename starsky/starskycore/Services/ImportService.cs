@@ -196,12 +196,13 @@ namespace starskycore.Services
 		    // Creation of a sidecar xmp file
 		    if ( _appSettings.ExifToolImportXmpCreate )
 		    {
-			    new ExifCopy(_inDbStorage, _exifTool,_readmeta).XmpSync(destinationFullPath);
+			    var exifCopy = new ExifCopy(_inDbStorage, new ExifTool(_inDbStorage,_appSettings), new ReadMeta(_inDbStorage));
+//			    exifCopy.XmpSync(fileIndexItem.FilePath);
 		    }
 		    
             
             // Update the contents to the file the imported item
-            if (importSettings.NeedExiftoolSync && ExtensionRolesHelper.IsExtensionExifToolSupported(destinationFullPath))
+            if (importSettings.NeedExiftoolSync && ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName))
             {
 	            if ( _appSettings.Verbose ) Console.WriteLine("Do a exifToolSync");
                

@@ -165,6 +165,25 @@ namespace starskytest.Services
 		    
 	    }
 
+	    [TestMethod]
+	    public void XmpBasicRead_xPacket()
+	    {
+		    var xmpStart = "<?xpacket begin=\'﻿\' id=\'W5M0MpCehiHzreSzNTczkc9d\'?>\n<x:xmpmeta xmlns:x=\'adobe:ns:meta/\' x:xmptk=\'Image::ExifTool 10.40\'>\n<rdf:RDF xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#\'>\n</rdf:RDF>\n</x:xmpmeta>\n<?xpacket end=\'w\'?>";
+		    
+		    var data = new ReadMetaXmp(null).GetDataFromString(xmpStart);
+		    
+		    Assert.AreEqual(string.Empty,data.Tags);
 
+	    }
+
+	    [TestMethod]
+	    public void XmpBasicRead()
+	    {
+		    var xmpStart =
+			    "<x:xmpmeta xmlns:x=\'adobe:ns:meta/\' x:xmptk=\'Qdraw\'>\n<rdf:RDF xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#\'>\n</rdf:RDF>\n</x:xmpmeta>";
+		    var data = new ReadMetaXmp(null).GetDataFromString(xmpStart);
+		    Assert.AreEqual(string.Empty,data.Tags);
+
+	    }
     }
 }
