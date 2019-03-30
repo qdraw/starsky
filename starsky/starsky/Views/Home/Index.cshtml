@@ -190,11 +190,13 @@
 	syncApiBase = HttpUtility.UrlDecode(syncApiBase);
 	var exportZipApiBase = @Url.Action("CreateZip", "Export");
 	exportZipApiBase = HttpUtility.UrlDecode(exportZipApiBase);
+	var subPath = HttpUtility.HtmlDecode(@Model.SubPath);
+	subPath = HttpUtility.UrlEncode(subPath);
 }      
                      
  <div id="js-settings" data-updateApiBase="@updateApiBase"
 	data-infoApiBase="@infoApiBase" data-syncApiBase="@syncApiBase"
-	data-subPath="@Model.SubPath" data-exportZipApiBase="@exportZipApiBase">
+	data-subPath="@subPath" data-exportZipApiBase="@exportZipApiBase">
 </div>
                                    
 <script type="text/javascript" src="js/loadjson.js"></script>
