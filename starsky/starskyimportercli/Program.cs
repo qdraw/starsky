@@ -16,6 +16,7 @@ namespace starskyimportercli
             
             var startupHelper = new ConfigCliAppsStartupHelper();
 	        
+	        // todo: make feature of this -->
 	        // Copy for Net
             var appSettings = startupHelper.AppSettings();
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);

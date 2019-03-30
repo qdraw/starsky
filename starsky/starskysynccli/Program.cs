@@ -13,6 +13,8 @@ namespace starskysynccli
 			new ArgsHelper().SetEnvironmentByArgs(args);
             
             var startupHelper = new ConfigCliAppsStartupHelper();
+	        
+	        // Todo: make feature of this -->
             var appSettings = startupHelper.AppSettings();
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
             
@@ -54,8 +56,6 @@ namespace starskysynccli
             if (new ArgsHelper(appSettings).GetThumbnail(args))
             {
 	            var storage = startupHelper.Storage();
-	            var exifTool = startupHelper.ExifTool();
-	            var readMeta = startupHelper.ReadMeta();
 
 				var isFolderOrFile = storage.IsFolderOrFile(subpath);
 

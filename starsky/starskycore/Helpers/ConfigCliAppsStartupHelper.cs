@@ -184,6 +184,10 @@ namespace starskycore.Helpers
 		    return _thumbnailCleaner;
 	    }
 	    
+	    /// <summary>
+	    /// Storage Container
+	    /// </summary>
+	    /// <returns>IStorage</returns>
 	    public IStorage Storage()
 	    {
 		    return _iStorage;
