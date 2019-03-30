@@ -139,37 +139,19 @@ namespace starskycore.Helpers
             command = UpdateLocationCountryCommand(command, comparedNames, updateModel);
             command = UpdateLocationStateCommand(command, comparedNames, updateModel);
             command = UpdateLocationCityCommand(command, comparedNames, updateModel);
+		    
 	        command = UpdateSoftwareCommand(command, comparedNames, updateModel);
 
-		        
-            if (comparedNames.Contains("Title"))
-            {
-                command += " -ObjectName=\"" + updateModel.Title + "\"" 
-                           + " \"-title\"=" + "\"" + updateModel.Title  + "\"" ;
-            }
-           
-            if (comparedNames.Contains(nameof(FileIndexItem.ColorClass)) && updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
-            {
-                var intColorClass = (int) updateModel.ColorClass;
+			command = UpdateTitleCommand(command, comparedNames, updateModel);
+		    command = UpdateColorClassCommand(command, comparedNames, updateModel);
+		    command = UpdateOrientationCommand(command, comparedNames, updateModel);
+		    command = UpdateDateTimeCommand(command, comparedNames, updateModel);
 
-                var colorDisplayName = EnumHelper.GetDisplayName(updateModel.ColorClass);
-                command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\""+ intColorClass + 
-                           "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
-            }
-            
-            // // exiftool -Orientation#=5
-            if (comparedNames.Contains( nameof(FileIndexItem.Orientation) ) && updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
-            {
-                var intOrientation = (int) updateModel.Orientation;
-                command += " \"-Orientation#="+ intOrientation +"\" ";
-            }
-
-            if (comparedNames.Contains( nameof(FileIndexItem.DateTime) ) && updateModel.DateTime.Year > 2)
-            {
-                var exifToolString = updateModel.DateTime.ToString("yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
-                command += " -AllDates=\""+ exifToolString + "\" ";
-            }
-
+		    command = UpdateIsoSpeedCommand(command, comparedNames, updateModel);
+		    command = UpdateApertureCommand(command, comparedNames, updateModel);
+		    command = UpdateShutterSpeedCommand(command, comparedNames, updateModel);
+			command = UpdateMakeModelCommand(command, comparedNames, updateModel);
+		    
 		    if ( command == initCommand ) return string.Empty;
 		    
 		    return command;
@@ -329,7 +311,111 @@ namespace starskycore.Helpers
 		    }
 		    return command;
 	    }
-   
+	    
+	    private static string UpdateTitleCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+	    {
+		    if (comparedNames.Contains(nameof(FileIndexItem.Title)))
+		    {
+			    command += " -ObjectName=\"" + updateModel.Title + "\"" 
+			               + " \"-title\"=" + "\"" + updateModel.Title  + "\"" ;
+		    }
+		    return command;
+	    }
+
+	    private static string UpdateColorClassCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+	    {
+			if (comparedNames.Contains(nameof(FileIndexItem.ColorClass)) && updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
+			{
+				var intColorClass = (int) updateModel.ColorClass;
+	
+				var colorDisplayName = EnumHelper.GetDisplayName(updateModel.ColorClass);
+				command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\""+ intColorClass + 
+						   "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
+			}
+		    return command;
+
+	    }
+
+	    private static string UpdateOrientationCommand(string command, List<string> comparedNames,
+		    FileIndexItem updateModel)
+	    {
+		    // // exiftool -Orientation#=5
+		    if (comparedNames.Contains( nameof(FileIndexItem.Orientation) ) && updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
+		    {
+			    var intOrientation = (int) updateModel.Orientation;
+			    command += " \"-Orientation#="+ intOrientation +"\" ";
+		    }
+		    return command;
+	    }
+
+
+	    private static string UpdateDateTimeCommand(string command, List<string> comparedNames,
+		    FileIndexItem updateModel)
+	    {
+
+		    if ( comparedNames.Contains(nameof(FileIndexItem.DateTime)) &&
+		         updateModel.DateTime.Year > 2 )
+		    {
+			    var exifToolString = updateModel.DateTime.ToString("yyyy:MM:dd HH:mm:ss",
+				    CultureInfo.InvariantCulture);
+			    command += " -AllDates=\"" + exifToolString + "\" ";
+		    }
+		    
+		    return command;
+	    }
+
+	    private static string UpdateIsoSpeedCommand(string command, List<string> comparedNames,
+		    FileIndexItem updateModel)
+	    {
+		    if ( comparedNames.Contains(nameof(FileIndexItem.IsoSpeed)) )
+		    {
+			    command += " -ISO=\"" + updateModel.IsoSpeed + "\"";
+		    }
+
+		    return command;
+	    }
+
+	    private static string UpdateApertureCommand(string command, List<string> comparedNames,
+		    FileIndexItem updateModel)
+	    {
+		    // Warning: Sorry, Aperture is not writable => FNumber is writable
+		    if ( comparedNames.Contains(nameof(FileIndexItem.Aperture)) )
+		    {
+			    command += " -FNumber=\"" + updateModel.Aperture.ToString(CultureInfo.InvariantCulture) + "\"";
+		    }
+		    return command;
+	    }
+
+	    
+	    private static string UpdateShutterSpeedCommand(string command, List<string> comparedNames,
+		    FileIndexItem updateModel)
+	    {
+		    // // -ExposureTime=1/31
+		    // Warning: Sorry, ShutterSpeed is not writable => ExposureTime is writable
+		    if ( comparedNames.Contains(nameof(FileIndexItem.ShutterSpeed)) )
+		    {
+			    command += " -ExposureTime=\"" + updateModel.ShutterSpeed + "\"";
+		    }
+
+		    return command;
+	    }
+
+
+	    private static string UpdateMakeModelCommand(string command, List<string> comparedNames,
+		    FileIndexItem updateModel)
+	    {
+		    // Make and Model are not writable so those never exist in this list
+		    if ( comparedNames.Contains(nameof(FileIndexItem.MakeModel)) )
+		    {
+			    var make = updateModel.Make;
+			    var model = updateModel.Model;
+			    command += " -make=\"" + make + "\"" + " -model=\"" + model + "\"";
+		    }
+
+		    return command;
+	    }
+
+
 
     }
 }
