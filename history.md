@@ -25,7 +25,7 @@
 - []   check starskyWebHtmlCli
 - []   check: ResizeOverlayImage in webHtmlCli
 - []   check: if (profile.MetaData) // todo: check if works
-# changed Basic Auth middleware
+# changed Basic Auth middleware to use scoped
 - []   check: sync from webUI with '+' in name
 
 # version 0.1.5.2 - 2019-03-22

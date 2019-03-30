@@ -380,9 +380,7 @@ namespace starsky.Controllers
 	                }
 	                
 	                // and remove the actual file
-	                _iStorage.FileDelete(
-		                ExtensionRolesHelper.ReplaceExtensionWithXmp(detailViewItem
-			                .FileIndexItem.FilePath));
+	                _iStorage.FileDelete(detailViewItem.FileIndexItem.FilePath);
                 }
             }
             

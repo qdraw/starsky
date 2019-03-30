@@ -72,7 +72,8 @@ namespace starskycore.Services
 		/// <returns>bool</returns>
 		public bool FileDelete(string path)
 		{
-			return new StorageHostFullPathFilesystem().FileDelete(path);
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(path, false);
+			return new StorageHostFullPathFilesystem().FileDelete(inputFileFullPath);
 		}
 		
 		/// <summary>
