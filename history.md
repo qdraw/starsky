@@ -10,6 +10,7 @@
 - []   time zone shifting
 - []   Pagination on folders - Performance update for example 800 files
 - []   Search: support for complex and/or operators `(this || or) && that`
+- []   Add unit tests for importing raw's with .xmp files
 
 # version 0.1.5.3 - tbd
 # refactoring connection to ExifTool to use iStorage
@@ -24,10 +25,10 @@
 - [x]   check: StarskySyncCli -t (thumbnail service)
 - [x]   check: /api/delete
 - [x]   check: /api/download photo
-- []    check: xmpSync for exiftool
+- [x]    check: xmpSync for exiftool
 - [x]   check: starskyWebHtmlCli
 - [x]   check: ResizeOverlayImage in webHtmlCli
-- []   check: if (profile.MetaData) // todo: check if works
+- [x]   check: if (profile.MetaData) // todo: check if works
 - []   check: sync from webUI with '+' in name
 
 # version 0.1.5.2 - 2019-03-22

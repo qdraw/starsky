@@ -188,6 +188,16 @@ namespace starskycore.Services
             
 		    // Do the copy to the storage folder
 		    _filesystemHelper.FileCopy(inputFileFullPath, destinationFullPath);
+
+
+		    // Support for include sidecar files
+		    var xmpFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(inputFileFullPath);
+		    if ( ExtensionRolesHelper.IsExtensionForceXmp(inputFileFullPath)  && 
+		         _filesystemHelper.ExistFile(xmpFullFilePath))
+		    {
+			    var destinationXmpFullPath =  ExtensionRolesHelper.ReplaceExtensionWithXmp(destinationFullPath);
+			    _filesystemHelper.FileCopy(xmpFullFilePath, destinationXmpFullPath);
+		    }
 		    
 		    
 		    // From here on the item is exit in the storage folder
@@ -197,7 +207,7 @@ namespace starskycore.Services
 		    if ( _appSettings.ExifToolImportXmpCreate )
 		    {
 			    var exifCopy = new ExifCopy(_inDbStorage, new ExifTool(_inDbStorage,_appSettings), new ReadMeta(_inDbStorage));
-//			    exifCopy.XmpSync(fileIndexItem.FilePath);
+			    exifCopy.XmpSync(fileIndexItem.FilePath);
 		    }
 		    
             

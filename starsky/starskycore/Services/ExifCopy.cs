@@ -35,37 +35,30 @@ namespace starskycore.Services
 		}
 
 		
-		
-//		public void XmpSync(List<string> inputSubPaths)
-//		{
-//			foreach ( var subPath in inputSubPaths )
-//			{
-//				XmpSync(subPath);
-//			}
-//		}
-//
-//		/// <summary>
-//		/// Add a .xmp sidecar file
-//		/// </summary>
-//		/// <param name="subPath"></param>
-//		/// <returns></returns>
-//		public string XmpSync(string subPath)
-//		{
-//			// only for raw files
-//			if ( !ExtensionRolesHelper.IsExtensionForceXmp(subPath) ) return subPath;
-//
-//			var withXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
-//               
-//			if (_iStorage.IsFolderOrFile(withXmp) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
-//			{
-//				XmpCreate(withXmp);
-//			}
-//
-//			// Now copy content using exifTool
-//			CopyExifPublish(subPath, withXmp);
-//
-//			return withXmp;
-//		}
+		/// <summary>
+		/// Add a .xmp sidecar file
+		/// </summary>
+		/// <param name="subPath"></param>
+		/// <returns></returns>
+		public string XmpSync(string subPath)
+		{
+			// only for raw files
+			if ( !ExtensionRolesHelper.IsExtensionForceXmp(subPath) ) return subPath;
+
+			var withXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
+
+			// only for files that not exist yet
+			if ( _iStorage.IsFolderOrFile(withXmp) != 
+			     FolderOrFileModel.FolderOrFileTypeList.Deleted) return withXmp;
+			
+			XmpCreate(withXmp);
+				
+			// Now copy content using exifTool
+			CopyExifPublish(subPath, withXmp);
+
+
+			return withXmp;
+		}
 	    
 		
 		
