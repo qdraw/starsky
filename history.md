@@ -19,7 +19,7 @@
 - [x]   check GeoLocationWrite
 - [x]   check: AddThumbnailToExifChangeList
 - [x]   check: rename thumb in starskyGeoCli
-- []   check: starskysynccli -t (thumbnail service)
+- [x]   check: starskysynccli -t (thumbnail service)
 - []   check: /api/delete
 - []   check: /api/download photo
 - []   check starskyWebHtmlCli
