@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
+using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskywebhtmlcli.Services;
@@ -61,7 +62,7 @@ namespace starskytest.starskyWebHtmlCli.Services
 
 	        var fakeStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg"},new List<byte[]>{CreateAnImage.Bytes},new List<string>{"FILEHASH"});
 	        
-            new LoopPublications(fakeStorage, appSettings,null).Render(list,null);
+            new LoopPublications(fakeStorage, appSettings,null,new ReadMeta(fakeStorage)).Render(list,null);
 
 	        var dir = fakeStorage.GetAllFilesInDirectory("/").ToList();
 
