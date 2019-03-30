@@ -23,9 +23,10 @@
 - []   check: /api/delete
 - []   check: /api/download photo
 - []   check starskyWebHtmlCli
+- []   check: ResizeOverlayImage in webHtmlCli
 - []   check: if (profile.MetaData) // todo: check if works
 # changed Basic Auth middleware
-- []   check: sync from webUI with + in name
+- []   check: sync from webUI with '+' in name
 
 # version 0.1.5.2 - 2019-03-22
 - exifTool implementation write bug fixed

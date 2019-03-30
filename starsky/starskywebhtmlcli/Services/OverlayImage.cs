@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -60,7 +61,9 @@ namespace starskywebhtmlcli.Services
 
                 int xPoint = image.Width - overlayLogo.Width;
                 int yPoint = image.Height - overlayLogo.Height;
-                image.Mutate(x => x.DrawImage(overlayLogo, PixelBlenderMode.Normal, 1F, new Point(xPoint, yPoint)));
+
+	            throw new NotImplementedException();
+	            // image.Mutate(x => x.DrawImage(overlayLogo, PixelBlenderMode.Normal, 1F, new Point(xPoint, yPoint)));
 
                 image.SaveAsJpeg(outputStream);
             }

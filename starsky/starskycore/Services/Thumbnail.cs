@@ -70,12 +70,13 @@ namespace starskycore.Services
 		/// <param name="thumbHash">file hash</param>
 		/// <param name="width">width in pixels</param>
 		/// <param name="height">0 is keep aspect ratio</param>
+		/// <param name="timeout">wait in seconds (def: 140) before cancel</param>
 		/// <param name="quality">range 0-100</param>
 		/// <returns>async true, is good</returns>
-		private async Task<bool> ResizeThumbnailTimeoutWrap(string subPath, string thumbHash, int width, int height = 0,  int quality = 75)
+		private async Task<bool> ResizeThumbnailTimeoutWrap(string subPath, string thumbHash, int width, int height = 0,  int quality = 75, int timeout = 140)
 		{
 			//adding .ConfigureAwait(false) may NOT be what you want but google it.
-			return await Task.Run(() => ResizeThumbnailTimeOut(subPath, thumbHash, width, height, quality)).ConfigureAwait(false);
+			return await Task.Run(() => ResizeThumbnailTimeOut(subPath, thumbHash, width, height, quality, timeout)).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -86,13 +87,14 @@ namespace starskycore.Services
 		/// <param name="width">width in pixels</param>
 		/// <param name="height">0 is keep aspect ratio</param>
 		/// <param name="quality">range 0-100</param>
+		/// <param name="timeout">wait in seconds (def: 140) before cancel</param>
 		/// <returns>async true, is good</returns>
-		#pragma warning disable 1998
-		private async Task<bool> ResizeThumbnailTimeOut(string subPath, string thumbHash, int width, int height = 0,  int quality = 75){
+#pragma warning disable 1998
+		private async Task<bool> ResizeThumbnailTimeOut(string subPath, string thumbHash, int width, int height = 0,  int quality = 75, int timeout = 140){
 		#pragma warning restore 1998
             
 			var task = Task.Run(() => ResizeThumbnailPlain(subPath, thumbHash, width, height, quality));
-			if (task.Wait(TimeSpan.FromSeconds(120))) 
+			if (task.Wait(TimeSpan.FromSeconds(timeout))) 
 				return task.Result;
 
 			Console.WriteLine(">>>>>>>>>>>            Timeout ThumbService "
@@ -104,7 +106,8 @@ namespace starskycore.Services
 
 		private bool ResizeThumbnailPlain(string subPath, string thumbHash, int width, int height = 0,  int quality = 75 )
 		{
-			return _iStorage.ThumbnailWriteStream(ResizeThumbnail(subPath, width, height, quality), thumbHash);
+			var stream = ResizeThumbnail(subPath, width, height, quality);
+			return stream != null && _iStorage.ThumbnailWriteStream(stream, thumbHash);
 		} 
 		
 		
@@ -135,11 +138,11 @@ namespace starskycore.Services
                         image.MetaData.ExifProfile.SetValue(ExifTag.Software, "Starsky");
                     }
 
-                    if (image.MetaData.ExifProfile != null && removeExif)
-                    {
-                        image.MetaData.ExifProfile = null;
-                        image.MetaData.IccProfile?.Entries.Clear();
-                    }
+//                    if (image.MetaData.ExifProfile != null && removeExif)
+//                    {
+//                        image.MetaData.ExifProfile = null;
+//                        image.MetaData.IccProfile?.Entries..Clear();
+//                    }
                     image.Mutate(x => x.AutoOrient());
                     image.Mutate(x => x
                         .Resize(width, height)
@@ -151,7 +154,7 @@ namespace starskycore.Services
             }
             catch (Exception ex)            
             {
-                if (!(ex is ImageFormatException) && !(ex is ArgumentException)) throw;
+                if (!(ex is ImageFormatException) && !(ex is System.ArgumentException)) throw;
                 Console.WriteLine(ex);
                 return null;
             }
@@ -179,13 +182,11 @@ namespace starskycore.Services
 				image.SaveAsPng(outputStream, new PngEncoder{
 					ColorType = PngColorType.Rgb, 
 					CompressionLevel = 9, 
-					WriteGamma = false 
 				});
 			}
 			else
 			{
 				image.SaveAsJpeg(outputStream, new JpegEncoder{
-					IgnoreMetadata = removeExif,
 					Quality = quality
 				});
 			}

@@ -170,7 +170,6 @@ namespace starskycore.Services
 			if ( maxRead <= 1 )
 			{
 				fileStream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read);
-				var l = fileStream.Length;
 			}
 			else
 			{
