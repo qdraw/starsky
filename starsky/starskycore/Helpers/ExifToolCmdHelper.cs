@@ -187,7 +187,10 @@ namespace starskycore.Helpers
         private string UpdateGpsLatitudeCommand(
 	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            // CultureInfo.InvariantCulture is used for systems where comma is the default seperator
+	        // To Reset Image:
+	        // exiftool reset.jpg -gps:all= -xmp:geotag= -City= -xmp:City= -State= -xmp:State=
+
+	        // CultureInfo.InvariantCulture is used for systems where comma is the default seperator
             if (comparedNames.Contains( nameof(FileIndexItem.Latitude) ))
             {
                 command += " -GPSLatitude=\"" + updateModel.Latitude.ToString(CultureInfo.InvariantCulture) 
