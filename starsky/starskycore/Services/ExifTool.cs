@@ -8,6 +8,10 @@ using static Medallion.Shell.Shell;
 
 namespace starskycore.Services
 {
+	/// <summary>
+	/// Only for writing commands 
+	/// Check for mapping objects to exifTool commandline args -> 'ExifToolCmdHelper'
+	/// </summary>
 	public class ExifTool : IExifTool
 	{
 		private static AppSettings _appSettings;
@@ -19,6 +23,12 @@ namespace starskycore.Services
 			_iStorage = iStorage;
 		}
 		
+		/// <summary>
+		/// Write commands to ExifTool for ReadStream
+		/// </summary>
+		/// <param name="subPath">the location</param>
+		/// <param name="command">exifTool command line args</param>
+		/// <returns>true=success</returns>
 		public async Task<bool> WriteTagsAsync(string subPath, string command)
 		{
 			var runner = new StreamToStreamRunner(_appSettings, _iStorage.ReadStream(subPath));
@@ -26,6 +36,12 @@ namespace starskycore.Services
 			return _iStorage.WriteStream(stream, subPath);
 		}
 
+		/// <summary>
+		/// Write commands to ExifTool for ThumbnailWriteStream
+		/// </summary>
+		/// <param name="fileHash">the location</param>
+		/// <param name="command">exifTool command line args</param>
+		/// <returns>true=success</returns>
 		public async Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
 		{
 			var runner = new StreamToStreamRunner(_appSettings, _iStorage.ThumbnailRead(fileHash));
@@ -33,6 +49,9 @@ namespace starskycore.Services
 			return _iStorage.ThumbnailWriteStream(stream, fileHash);
 		}
 
+		/// <summary>
+		/// Handle ExifTool Streaming
+		/// </summary>
 		private class StreamToStreamRunner
 		{
 			private readonly Stream _src;
