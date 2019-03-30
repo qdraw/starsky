@@ -78,6 +78,7 @@ namespace starskycore.Services
 		private string GetErrorLogItemFullPath(string subPath)
 		{
 			return Breadcrumbs.BreadcrumbHelper(subPath).LastOrDefault()
+			       + "/"
 				   + "_"
 			       + Path.GetFileNameWithoutExtension(PathHelper.GetFileName(subPath)) 
 			       + ".log";
