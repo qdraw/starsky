@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 using starskywebhtmlcli.Services;
 
 namespace starskytest.starskyWebHtmlCli.Services
@@ -59,7 +60,7 @@ namespace starskytest.starskyWebHtmlCli.Services
                 FileHash = createAnImage.FileName.Replace(".jpg",string.Empty)
             }};
 
-            new LoopPublications(appSettings,null).Render(list,null);
+            new LoopPublications(new FakeIStorage(), appSettings,null).Render(list,null);
             
             FilesHelper.DeleteFile(createAnImage.BasePath + Path.DirectorySeparatorChar + "index.html");
         }

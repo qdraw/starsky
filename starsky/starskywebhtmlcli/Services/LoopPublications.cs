@@ -18,8 +18,9 @@ namespace starskywebhtmlcli.Services
         private readonly IExifTool _exifTool;
 	    private readonly IStorage _iStorage;
 
-	    public LoopPublications( AppSettings appSettings, IExifTool exifTool)
-        {
+	    public LoopPublications(IStorage iStorage, AppSettings appSettings, IExifTool exifTool)
+	    {
+		    _iStorage = iStorage;
             _appSettings = appSettings;
             _exifTool = exifTool;
         }
@@ -67,41 +68,36 @@ namespace starskywebhtmlcli.Services
                 item.FileName = _appSettings.GenerateSlug(item.FileCollectionName, true) + Path.GetExtension(item.FileName);
             }
 
-            // Files.DeleteFile(profile.Path)
-                    
+                  
             var embeddedResult = new ParseRazor().EmbeddedViews(profile.Template,viewModel).Result;
-            new PlainTextFileHelper().WriteFile(_appSettings.StorageFolder 
-                                                + profile.Path, embeddedResult);
+
+	        var stream = new PlainTextFileHelper().StringToStream(embeddedResult);
+	        _iStorage.WriteStream(stream, profile.Path);
+
             Console.WriteLine(embeddedResult);
         }
 
         private void GenerateJpeg(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-            var overlayImage = new OverlayImage(_appSettings,_exifTool);
+            var overlayImage = new OverlayImage(_iStorage, _appSettings,_exifTool);
 
             foreach (var item in fileIndexItemsList)
             {
 
                 var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
 
-                var outputFilePath = overlayImage.FilePathOverlayImage(fullFilePath, profile);
+                var outputPath = overlayImage.FilePathOverlayImage(fullFilePath, profile);
                         
                 // for less than 1000px
                 if (profile.SourceMaxWidth <= 1000)
                 {
-	                // todo: NO direct file/system requests
-                    var inputFullFilePath = Path.Combine(_appSettings.ThumbnailTempFolder, item.FileHash + ".jpg");
-	                
-                    new OverlayImage(_appSettings,_exifTool).ResizeOverlayImage(
-                        inputFullFilePath, outputFilePath,profile);
+	                overlayImage.ResizeOverlayImageThumbnails(item.FileHash, outputPath, profile);
+	                continue;
                 }
                             
-                // Thumbs are 1000 px
-                if (profile.SourceMaxWidth > 1000)
-                {
-                    overlayImage.ResizeOverlayImage(fullFilePath, outputFilePath, profile);
-                }
+                // Thumbs are 1000 px (and larger)
+				overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
 
             }
         }
@@ -109,15 +105,13 @@ namespace starskywebhtmlcli.Services
         private void GenerateMoveSourceFiles(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-            var overlayImage = new OverlayImage(_appSettings,_exifTool);
+            var overlayImage = new OverlayImage(_iStorage, _appSettings,_exifTool);
 
             foreach (var item in fileIndexItemsList)
             {
-                var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
-                var outputFilePath = overlayImage.FilePathOverlayImage(fullFilePath, profile);
-
-                File.Move(fullFilePath, outputFilePath);
-                item.ParentDirectory = profile.Folder;
+	            // input: item.FilePath
+                var outputPath = overlayImage.FilePathOverlayImage(item.FilePath, profile);
+	            _iStorage.FileMove(item.FilePath,outputPath);
             }
         }
 
@@ -131,13 +125,14 @@ namespace starskywebhtmlcli.Services
                 profileFolderStringBuilder.Append(parentFolder);
                 profileFolderStringBuilder.Append("/");
             }
+	        
             profileFolderStringBuilder.Append(profile.Folder);
-            var toCreateSubfolder = _appSettings.DatabasePathToFilePath(profileFolderStringBuilder.ToString(), false);
 
-            if (FilesHelper.IsFolderOrFile(toCreateSubfolder) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
-            {
-                Directory.CreateDirectory(toCreateSubfolder);
-            }
+	        if ( _iStorage.IsFolderOrFile(profileFolderStringBuilder.ToString()) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+	        {
+		        _iStorage.CreateDirectory(profileFolderStringBuilder.ToString());
+	        }
+	        
         }
 
         

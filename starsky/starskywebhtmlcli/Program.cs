@@ -66,14 +66,11 @@ namespace starskywebhtmlcli
             var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
             
             // Create thumbnails from the source images 
-       
-	        // ,startupHelper.ExifTool(),startupHelper.ReadMeta()
-	        var thumbByDir = new Thumbnail(iStorage);
-            thumbByDir.CreateThumb(inputPath);
+			new Thumbnail(iStorage).CreateThumb("/"); //<= subPath style
 
 	        var base64DataUri = new ToBase64DataUriList(iStorage).Create(fileIndexList);
 	        
-            new LoopPublications(appSettings,startupHelper.ExifTool())
+            new LoopPublications(iStorage, appSettings,startupHelper.ExifTool())
                 .Render(fileIndexList,base64DataUri );
 
 			// Export all

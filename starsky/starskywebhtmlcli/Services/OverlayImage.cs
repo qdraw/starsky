@@ -15,67 +15,114 @@ namespace starskywebhtmlcli.Services
     {
         private readonly AppSettings _appSettings;
         private readonly IExifTool _exifTool;
+	    private IStorage _iStorage;
 
-        public OverlayImage(AppSettings appSettings, IExifTool exifTool)
+	    public OverlayImage(IStorage iStorage, AppSettings appSettings, IExifTool exifTool)
         {
+	        _iStorage = iStorage;
             _appSettings = appSettings;
             _exifTool = exifTool;
         }
 
         public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
         {
-            var outputFilePath = Path.Combine(Path.GetDirectoryName(sourceFilePath),
-                profile.Folder,
-                _appSettings.GenerateSlug( Path.GetFileNameWithoutExtension(sourceFilePath),true ) +
-                profile.Append + Path.GetExtension(sourceFilePath));
+            var outputFilePath = 
+	            profile.Folder + _appSettings.GenerateSlug( Path.GetFileNameWithoutExtension(sourceFilePath),true ) + profile.Append + Path.GetExtension(sourceFilePath);
+	        
             return outputFilePath;
         }
 
         
-        public void ResizeOverlayImage(string sourceFilePath, string outputFilePath, AppSettingsPublishProfiles profile)
+        public void ResizeOverlayImageThumbnails(string fileHash, string outputSubPath, AppSettingsPublishProfiles profile)
         {
-            if (FilesHelper.IsFolderOrFile(profile.Path) //< used for image overlay 
-                != FolderOrFileModel.FolderOrFileTypeList.File) 
-                throw new FileNotFoundException("ImageOverlayFullPath " + profile.Path);
+	        if ( !_iStorage.ThumbnailExist(fileHash) ) throw new FileNotFoundException("fileHash " + fileHash);
 
-            if (FilesHelper.IsFolderOrFile(sourceFilePath) 
-                != FolderOrFileModel.FolderOrFileTypeList.File) 
-                throw new FileNotFoundException("sourceFilePath " + sourceFilePath);
+	        if ( _iStorage.ExistFile(outputSubPath)  ) return;
+	        
+	        // only for overlay image
+	        var hostFileSystem = new StorageHostFullPathFilesystem();
 
-            if (FilesHelper.IsFolderOrFile(outputFilePath) 
-                == FolderOrFileModel.FolderOrFileTypeList.File) return;
-                
-            using (var outputStream = new FileStream(outputFilePath, FileMode.CreateNew))
-            using (var inputStream = File.OpenRead(sourceFilePath))
-            using (var overlayLogoStream = File.OpenRead(profile.Path))
-            using (var image = Image.Load(inputStream))
-            using (var overlayLogo = Image.Load(overlayLogoStream))
-            {
-                image.Mutate(x => x
-                    .Resize(profile.SourceMaxWidth, 0)
-                );
-                
-                overlayLogo.Mutate(x => x
-                    .Resize(profile.OverlayMaxWidth, 0)
-                );
+	        using ( var sourceImageStream = _iStorage.ThumbnailRead(fileHash))
+	        using ( var sourceImage = Image.Load(sourceImageStream) )
+	        using ( var overlayImageStream = hostFileSystem.ReadStream(profile.Path))
+	        using ( var overlayImage = Image.Load(overlayImageStream) )
+	        using ( var outputStream  = new MemoryStream() )
+	        {
+		        ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
+			        outputSubPath);
+	        }
 
-                int xPoint = image.Width - overlayLogo.Width;
-                int yPoint = image.Height - overlayLogo.Height;
+        }
+	    
+	    public void ResizeOverlayImageLarge(string subPath, string outputSubPath, AppSettingsPublishProfiles profile)
+	    {
+		    if ( !_iStorage.ExistFile(subPath) ) throw new FileNotFoundException("subPath " + subPath);
 
-//	            throw new NotImplementedException();
-	            // image.Mutate(x => x.DrawImage(overlayLogo, PixelBlenderMode.Normal, 1F, new Point(xPoint, yPoint)));
+		    if ( _iStorage.ExistFile(outputSubPath)  ) return;
+	        
+		    // only for overlay image
+		    var hostFileSystem = new StorageHostFullPathFilesystem();
 
-                image.SaveAsJpeg(outputStream);
-            }
+		    using ( var sourceImageStream = _iStorage.ReadStream(subPath))
+		    using ( var sourceImage = Image.Load(sourceImageStream) )
+		    using ( var overlayImageStream = hostFileSystem.ReadStream(profile.Path))
+		    using ( var overlayImage = Image.Load(overlayImageStream) )
+		    using ( var outputStream  = new MemoryStream() )
+		    {
+			    ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
+				    outputSubPath);
+		    }
 
-            if (profile.MetaData)
-            {
-	            // todo: check if works
-	            var storage = new StorageHostFullPathFilesystem();
-	            new ExifCopy(storage, new ExifTool(storage, new AppSettings()),
-		            new ReadMeta(storage)).CopyExifPublish(sourceFilePath, outputFilePath);
-            }
+	    }
 
-         }
+	    private void ResizeOverlayImageShared(Image<Rgba32> sourceImage, Image<Rgba32> overlayImage, Stream outputStream, AppSettingsPublishProfiles profile, string outputSubPath )
+	    {
+		    sourceImage.Mutate(x => x
+			    .Resize(profile.SourceMaxWidth, 0)
+		    );
+		        
+		    overlayImage.Mutate(x => x
+			    .Resize(profile.OverlayMaxWidth, 0)
+		    );
+		        
+		    int xPoint = sourceImage.Width - overlayImage.Width;
+		    int yPoint = sourceImage.Height - overlayImage.Height;
+		    sourceImage.Mutate(x => x.DrawImage(overlayImage, new Point(xPoint, yPoint),1F));
+
+		    sourceImage.SaveAsJpeg(outputStream);
+		    _iStorage.WriteStream(outputStream, outputSubPath);
+	    }
+	    
+	    
+
+	    //            using (var outputStream = new FileStream(outputSubPath, FileMode.CreateNew))
+//            using (var inputStream = File.OpenRead(sourceLocation))
+//            using (var overlayLogoStream = File.OpenRead(profile.Path))
+//            using (var image = Image.Load(inputStream))
+//            using (var overlayLogo = Image.Load(overlayLogoStream))
+//            {
+//                image.Mutate(x => x
+//                    .Resize(profile.SourceMaxWidth, 0)
+//                );
+//                
+//                overlayLogo.Mutate(x => x
+//                    .Resize(profile.OverlayMaxWidth, 0)
+//                );
+//
+//                int xPoint = image.Width - overlayLogo.Width;
+//                int yPoint = image.Height - overlayLogo.Height;
+//
+//	            image.Mutate(x => x.DrawImage(overlayLogo, new Point(xPoint, yPoint),1F));
+//
+//                image.SaveAsJpeg(outputStream);
+//            }
+//
+//            if (profile.MetaData)
+//            {
+//	            // todo: check if works
+//	            var storage = new StorageHostFullPathFilesystem();
+//	            new ExifCopy(storage, new ExifTool(storage, _appSettings),
+//		            new ReadMeta(storage)).CopyExifPublish(sourceLocation, outputSubPath);
+//            }
     }
 }

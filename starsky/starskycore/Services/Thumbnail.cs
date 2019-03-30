@@ -184,7 +184,7 @@ namespace starskycore.Services
                         .Resize(width, height)
                     );
 	                
-                    ResizeThumbnailImageFormat(image, imageFormat, outputStream, removeExif, quality);
+                    ResizeThumbnailImageFormat(image, imageFormat, outputStream, quality);
                 }
 
             }
@@ -203,10 +203,9 @@ namespace starskycore.Services
 		/// <param name="image">Rgba32 image</param>
 		/// <param name="imageFormat">Files ImageFormat</param>
 		/// <param name="outputStream">input stream to save</param>
-		/// <param name="removeExif">true, remove exif, default false</param>
 		/// <param name="quality">default 75, only for jpegs</param>
 		private void ResizeThumbnailImageFormat(Image<Rgba32> image, ExtensionRolesHelper.ImageFormat imageFormat, 
-			MemoryStream outputStream, bool removeExif = false, int quality = 75)
+			MemoryStream outputStream, int quality = 75)
 		{
 			if ( outputStream == null ) throw new ArgumentNullException(nameof(outputStream));
 			
@@ -253,7 +252,7 @@ namespace starskycore.Services
 					image.Mutate(x => x
 						.Rotate(rotateMode));
 					
-					ResizeThumbnailImageFormat(image, ExtensionRolesHelper.ImageFormat.jpg, stream, false, 90);
+					ResizeThumbnailImageFormat(image, ExtensionRolesHelper.ImageFormat.jpg, stream, 90);
 					_iStorage.ThumbnailWriteStream(stream, fileHash);
 				}
 			}
