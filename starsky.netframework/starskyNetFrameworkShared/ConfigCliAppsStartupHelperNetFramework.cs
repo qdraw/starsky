@@ -8,6 +8,7 @@ using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
+using SQLitePCL;
 
 namespace starskyNetFrameworkShared
 {
@@ -75,13 +76,14 @@ namespace starskyNetFrameworkShared
 			// Used to import Environment variables
 			new ArgsHelper(_appSettings).SetEnvironmentToAppSettings();
 
+		    //todo: change back
+		    //SQLitePCL.raw.SetProvider(new SQLite3Provider_e_sqlite3());
 		    
 		    // for running sqlite
 		    if ( _appSettings.DatabaseType == starskycore.Models.AppSettings.DatabaseTypeList.Sqlite )
 		    {
 			    SQLitePCL.Batteries.Init();
 		    }
-		    
 
 
 
