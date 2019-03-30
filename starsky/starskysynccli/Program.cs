@@ -55,6 +55,7 @@ namespace starskysynccli
             {
 	            var storage = startupHelper.Storage();
 	            var exifTool = startupHelper.ExifTool();
+	            var readMeta = startupHelper.ReadMeta();
 
 				var isFolderOrFile = storage.IsFolderOrFile(subpath);
 
@@ -64,11 +65,11 @@ namespace starskysynccli
                 {
                     // If single file => create thumbnail
 	                var fileHash = new FileHash(storage).GetHashCode(subpath);
-                    new Thumbnail(storage,exifTool).CreateThumb(subpath,fileHash); // <= this uses subpath
+                    new Thumbnail(storage,exifTool,readMeta).CreateThumb(subpath,fileHash); // <= this uses subpath
                 }
                 else
                 {
-	                new Thumbnail(storage,exifTool).CreateThumb(subpath);
+	                new Thumbnail(storage,exifTool,readMeta).CreateThumb(subpath);
                 }
                 
                 Console.WriteLine("Thumbnail Done!");

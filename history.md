@@ -24,6 +24,7 @@
 - [x]   check: StarskySyncCli -t (thumbnail service)
 - [x]   check: /api/delete
 - [x]   check: /api/download photo
+- []    check: xmpSync for exiftool
 - []   check: starskyWebHtmlCli
 - []   check: ResizeOverlayImage in webHtmlCli
 - []   check: if (profile.MetaData) // todo: check if works

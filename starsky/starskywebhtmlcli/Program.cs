@@ -65,7 +65,7 @@ namespace starskywebhtmlcli
             
             // Create thumbnails from the source images 
        
-	        var thumbByDir = new Thumbnail(iStorage,startupHelper.ExifTool());
+	        var thumbByDir = new Thumbnail(iStorage,startupHelper.ExifTool(),startupHelper.ReadMeta());
             thumbByDir.CreateThumb(inputPath);
 
 	        var base64DataUri = new ToBase64DataUriList(iStorage).Create(fileIndexList);

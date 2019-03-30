@@ -22,7 +22,7 @@ namespace starskywebhtmlcli.Services
 			{
 				var item = fileIndexList[i];
 
-				using ( var stream = new Thumbnail(_iStorage, null).ResizeThumbnail(item.FilePath, 4, 0, 0, true,
+				using ( var stream = new Thumbnail(_iStorage, null,null).ResizeThumbnail(item.FilePath, 4, 0, 0, true,
 					ExtensionRolesHelper.ImageFormat.png) )
 				{
 					base64ImageArray[i] = "data:image/png;base64," + Base64Helper.ToBase64(stream);

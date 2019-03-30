@@ -189,8 +189,9 @@ namespace starskytest.Services
         {
 
             var newImage = new CreateAnImage();
+	        var iStorage = new StorageHostFullPathFilesystem();
 
-            var thumb = new Thumbnail(new StorageHostFullPathFilesystem(), new FakeExifTool()).ResizeThumbnail(newImage.FullFilePath, 1, 1, 75, true,
+            var thumb = new Thumbnail(iStorage, new FakeExifTool(),new ReadMeta(iStorage)).ResizeThumbnail(newImage.FullFilePath, 1, 1, 75, true,
 	            ExtensionRolesHelper.ImageFormat.jpg);
             Assert.AreEqual(true,thumb.CanRead);
         }
@@ -200,7 +201,9 @@ namespace starskytest.Services
         {
             var newImage = new CreateAnImage();
 
-	        var thumb = new Thumbnail(new StorageHostFullPathFilesystem(), new FakeExifTool()).ResizeThumbnail(newImage.FullFilePath, 1, 1, 75, true,
+	        var iStorage = new StorageHostFullPathFilesystem();
+
+	        var thumb = new Thumbnail(iStorage, new FakeExifTool(),new ReadMeta(iStorage)).ResizeThumbnail(newImage.FullFilePath, 1, 1, 75, true,
 		        ExtensionRolesHelper.ImageFormat.png);
             Assert.AreEqual(true,thumb.CanRead);
         }

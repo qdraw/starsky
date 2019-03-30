@@ -17,11 +17,13 @@ namespace starskycore.Services
 	{
 		private readonly IStorage _iStorage;
 		private readonly IExifTool _exifTool;
+		private readonly IReadMeta _readMeta;
 
-		public Thumbnail(IStorage iStorage, IExifTool exifTool)
+		public Thumbnail(IStorage iStorage, IExifTool exifTool, IReadMeta readMeta)
 		{
 			_iStorage = iStorage;
 			_exifTool = exifTool;
+			_readMeta = readMeta;
 		}
 
 		/// <summary>
@@ -128,7 +130,7 @@ namespace starskycore.Services
 		/// <returns>async true, is good</returns>
 #pragma warning disable 1998
 		private async Task<bool> ResizeThumbnailTimeOut(string subPath, string thumbHash, int width, int height = 0,  int quality = 75, int timeout = 140){
-		#pragma warning restore 1998
+#pragma warning restore 1998
             
 			var task = Task.Run(() => ResizeThumbnailPlain(subPath, thumbHash, width, height, quality));
 			if (task.Wait(TimeSpan.FromSeconds(timeout))) 
@@ -175,11 +177,12 @@ namespace starskycore.Services
                         image.MetaData.ExifProfile.SetValue(ExifTag.Software, "Starsky");
                     }
 
-//                    if (image.MetaData.ExifProfile != null && removeExif)
-//                    {
-//                        image.MetaData.ExifProfile = null;
-//                        image.MetaData.IccProfile?.Entries..Clear();
-//                    }
+                    if (image.MetaData.ExifProfile != null && removeExif)
+                    {
+                        image.MetaData.ExifProfile = null;
+                        image.MetaData.IccProfile = null;
+                    }
+	                
                     image.Mutate(x => x.AutoOrient());
                     image.Mutate(x => x
                         .Resize(width, height)
@@ -191,10 +194,12 @@ namespace starskycore.Services
             }
             catch (Exception ex)            
             {
-                if (!(ex is ImageFormatException) && !(ex is System.ArgumentException)) throw;
+                if (!(ex is ImageFormatException) && !(ex is ArgumentException)) throw;
                 Console.WriteLine(ex);
                 return null;
             }
+
+	        new ExifToolCmdHelper(_exifTool, _iStorage, _readMeta);
 	        
 	        // todo: add exif tool copy
 	        
@@ -220,13 +225,12 @@ namespace starskycore.Services
 					ColorType = PngColorType.Rgb, 
 					CompressionLevel = 9, 
 				});
+				return;
 			}
-			else
-			{
-				image.SaveAsJpeg(outputStream, new JpegEncoder{
-					Quality = quality
-				});
-			}
+
+			image.SaveAsJpeg(outputStream, new JpegEncoder{
+				Quality = quality
+			});
 		}
 		
 		
