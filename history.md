@@ -12,20 +12,21 @@
 - []   Search: support for complex and/or operators `(this || or) && that`
 
 # version 0.1.5.3 - tbd
-# (not yet implemented) refactoring connection to ExifTool to use iStorage
-# (not yet implemented) refactoring thumbnail service
+# refactoring connection to ExifTool to use iStorage
+# refactoring thumbnail service
+# changed Basic Auth middleware to use scoped
+- Features that are affected:
 - [x]   check UpdateWriteDiskDatabase / check update service
 - [x]   check rotation
 - [x]   check GeoLocationWrite
 - [x]   check: AddThumbnailToExifChangeList
 - [x]   check: rename thumb in starskyGeoCli
-- [x]   check: starskysynccli -t (thumbnail service)
-- []   check: /api/delete
-- []   check: /api/download photo
-- []   check starskyWebHtmlCli
+- [x]   check: StarskySyncCli -t (thumbnail service)
+- [x]   check: /api/delete
+- [x]   check: /api/download photo
+- []   check: starskyWebHtmlCli
 - []   check: ResizeOverlayImage in webHtmlCli
 - []   check: if (profile.MetaData) // todo: check if works
-# changed Basic Auth middleware to use scoped
 - []   check: sync from webUI with '+' in name
 
 # version 0.1.5.2 - 2019-03-22
