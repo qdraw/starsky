@@ -50,7 +50,7 @@ namespace starskyNetFrameworkShared
         /// </summary>
         public ConfigCliAppsStartupHelperNetFramework()
 	    {
-		    
+		    // ../starsky.netFramework/starskyNetFramework/bin/Debug/appsettings.{name}.patch.json
 			var baseDirectoryProject = new AppSettings().BaseDirectoryProject;
 	        var filePaths =  new List<string>
 	        {
