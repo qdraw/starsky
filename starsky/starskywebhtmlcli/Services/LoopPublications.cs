@@ -85,9 +85,7 @@ namespace starskywebhtmlcli.Services
             foreach (var item in fileIndexItemsList)
             {
 
-                var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
-
-                var outputPath = overlayImage.FilePathOverlayImage(fullFilePath, profile);
+                var outputPath = overlayImage.FilePathOverlayImage(item.FilePath, profile);
                         
                 // for less than 1000px
                 if (profile.SourceMaxWidth <= 1000)

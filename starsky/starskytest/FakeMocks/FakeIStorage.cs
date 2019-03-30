@@ -174,7 +174,16 @@ namespace starskytest.FakeMocks
 
 		public bool WriteStream(Stream stream, string path)
 		{
-			throw new NotImplementedException();
+			_outputSubPathFiles.Add(path);
+			
+			using (MemoryStream ms = new MemoryStream())
+			{
+				stream.CopyTo(ms);
+				var byteArray =  ms.ToArray();
+				_byteList.Add(path, byteArray);
+			}
+
+			return true;
 		}
 
 		/// <summary>
@@ -191,6 +200,15 @@ namespace starskytest.FakeMocks
 
 		public Stream ThumbnailRead(string fileHash)
 		{
+			if ( !ThumbnailExist(fileHash) ) throw new FileNotFoundException("fileHash");
+
+			var indexOf = _fileHashPerThumbnail.IndexOf(fileHash);
+
+			// return the actual image (not the thumb)
+			var result = _byteList.FirstOrDefault(p => p.Key == _outputSubPathFiles[indexOf]).Value;
+			MemoryStream stream1 = new MemoryStream(result);
+			return stream1;
+			
 			throw new NotImplementedException();
 		}
 
