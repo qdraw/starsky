@@ -811,13 +811,14 @@ namespace starskycore.Models
 			    IsoSpeed = (ushort) isoSpeed;
 	    }
 
+	    [NotMapped] 
+	    public string Software { get; set; }
+	    
+	    
 		/// <summary>
 		/// Private field to store MakeModel Data
 		/// </summary>
 	    private string _makeModel = string.Empty;
-
-	    [NotMapped] 
-	    public string Software { get; set; }
 
 	    /// <summary>
 	    /// Camera make and Model (saved comma separated String)
