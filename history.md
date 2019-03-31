@@ -11,6 +11,7 @@
 - []   Pagination on folders - Performance update for example 800 files
 - []   Search: support for complex and/or operators `(this || or) && that`
 - []   Add unit tests for importing raw's with .xmp files
+- []   Warnup script with variables
 
 # version 0.1.5.3 - 2019-03-31
 - refactoring connection to ExifTool to use iStorage
@@ -40,7 +41,7 @@
 - bugfix to searching filehashes with null content
 - include test with incomplete xmp file
 - ExifToolImportXmpCreate in appsettings
-- Bugfix / bug fix for: issue where import with spaces creates multiple items in the database 
+- Bugfix / bug fix for: issue where import with spaces creates multiple items in the database
 - Already exist: config scheme overwrite feature for command line e.g. --scheme:/yyyy
 
 # version 0.1.5.1 - 2019-03-17
