@@ -33,6 +33,7 @@ namespace starskycore.Services
 		{
 			var runner = new StreamToStreamRunner(_appSettings, _iStorage.ReadStream(subPath));
 			var stream = await runner.RunProcessAsync(command);
+			Console.Write("‘");
 			return _iStorage.WriteStream(stream, subPath);
 		}
 
@@ -72,14 +73,19 @@ namespace starskycore.Services
 
 				try
 				{
+					
+					// run with pipes
 					var cmd =  Default.Run(_appSettings.ExifToolPath, options: opts => {
 						opts.StartInfo(si => si.Arguments = args);
 					}) < _src > ms;
-
+					
 					var result = await cmd.Task.ConfigureAwait(false);
 
-					Console.WriteLine(result.Success);
-
+					// option without pipes:
+					//	await cmd.StandardInput.PipeFromAsync(_src).ConfigureAwait(false) await cmd.StandardOutput.BaseStream.CopyToAsync(ms).ConfigureAwait(false)
+					
+					if ( _appSettings.Verbose ) Console.WriteLine($"exifTool run {result.Success}");
+	
 					ms.Seek(0, SeekOrigin.Begin);
 
 					return ms;
