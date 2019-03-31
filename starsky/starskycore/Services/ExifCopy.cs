@@ -72,7 +72,7 @@ namespace starskycore.Services
 		}
 
 
-		private List<string> CompareAll(FileIndexItem fileIndexItem)
+		public List<string> CompareAll(FileIndexItem fileIndexItem)
 		{
 			return FileIndexCompareHelper.Compare(new FileIndexItem(), fileIndexItem);
 		}

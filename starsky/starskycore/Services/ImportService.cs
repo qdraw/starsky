@@ -201,17 +201,14 @@ namespace starskycore.Services
 		    
 		    
 		    // From here on the item is exit in the storage folder
-
-		    
-		    // Creation of a sidecar xmp file
-		    if ( _appSettings.ExifToolImportXmpCreate )
+		    // Creation of a sidecar xmp file --> NET CORE <--
+		    if ( _appSettings.ExifToolImportXmpCreate && !_appSettings.AddLegacyOverwrite )
 		    {
 			    var exifCopy = new ExifCopy(_inDbStorage, new ExifTool(_inDbStorage,_appSettings), new ReadMeta(_inDbStorage));
 			    exifCopy.XmpSync(fileIndexItem.FilePath);
 		    }
-		    
-            
-            // Update the contents to the file the imported item
+
+		    // Update the contents to the file the imported item
             if (importSettings.NeedExiftoolSync && ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName))
             {
 	            if ( _appSettings.Verbose ) Console.WriteLine("Do a exifToolSync");

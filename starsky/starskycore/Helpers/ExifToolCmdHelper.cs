@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -76,41 +73,6 @@ namespace starskycore.Helpers
         }
 
 	    
-
-	    
-//	    private List<bool> CreateXmpIfNotExist(List<string> inputSubPaths)
-//	    {
-//		    var existList = new List<bool>();
-//		    foreach ( var subPath in inputSubPaths )
-//		    {
-//				if (subPath.EndsWith(".xmp") &&  !_iStorage.ExistFile(subPath) )
-//				{
-//					new ExifCopy(_iStorage, _exifTool, _readMeta).XmpCreate(subPath);
-//					existList.Add(true);
-//					continue;
-//				}
-//			    
-//			    existList.Add(false);
-//		    }
-//		    return existList;
-//	    }
-	    
-//	    private void DoXmpSync(List<string> inputSubPaths)
-//	    {
-//		    foreach ( var subPath in inputSubPaths )
-//		    {
-//			    if (subPath.EndsWith(".xmp") &&  !_iStorage.ExistFile(subPath) )
-//			    {
-//				    new ExifCopy(_iStorage, _exifTool, _readMeta).XmpCreate(subPath);
-//				    existList.Add(true);
-//				    continue;
-//			    }
-//			    
-//			    existList.Add(false);
-//		    }
-//
-//	    }
-
 
 	    // Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
 	    private async Task<string> UpdateAsyncWrapperBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames)

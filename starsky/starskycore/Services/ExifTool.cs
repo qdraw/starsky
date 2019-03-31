@@ -24,7 +24,7 @@ namespace starskycore.Services
 		}
 		
 		/// <summary>
-		/// Write commands to ExifTool for ReadStream
+		/// Write commands to ExifTool for ReadStream (Does NOT work with mono/legacy)
 		/// </summary>
 		/// <param name="subPath">the location</param>
 		/// <param name="command">exifTool command line args</param>
@@ -38,7 +38,7 @@ namespace starskycore.Services
 		}
 
 		/// <summary>
-		/// Write commands to ExifTool for ThumbnailWriteStream
+		/// Write commands to ExifTool for ThumbnailWriteStream (Does NOT work with mono/legacy)
 		/// </summary>
 		/// <param name="fileHash">the location</param>
 		/// <param name="command">exifTool command line args</param>
@@ -65,6 +65,12 @@ namespace starskycore.Services
 			}
 
 
+			/// <summary>
+			/// Run Command async - (Does NOT work with mono/legacy)
+			/// </summary>
+			/// <param name="optionsArgs">exifTool args</param>
+			/// <returns>bool if success</returns>
+			/// <exception cref="ArgumentException">if exifTool is missing</exception>
 			public async Task<Stream> RunProcessAsync(string optionsArgs)
 			{
 				var args = $"{optionsArgs} -o - -";
@@ -92,8 +98,8 @@ namespace starskycore.Services
 				}
 				catch (Win32Exception ex)
 				{
-					throw new Exception("Error when trying to start the exiftool process.  " +
-					                    "Please make sure exiftool is installed, and its path is properly specified in the options.", ex);
+					throw new ArgumentException("Error when trying to start the exifTool process.  " +
+					                            "Please make sure exifTool is installed, and its path is properly specified in the options.", ex);
 				}
 			}
 			
