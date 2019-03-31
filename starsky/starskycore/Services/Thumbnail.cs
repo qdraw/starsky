@@ -154,13 +154,14 @@ namespace starskycore.Services
 		/// <param name="width">the width of the output image</param>
 		/// <param name="height">use 0 to keep ratio</param>
 		/// <param name="quality">only for jpeg, value 0 - 100</param>
-		/// <param name="removeExif">dont store exif in output memorystream</param>
+		/// <param name="removeExif">dont store exif in output memoryStream</param>
 		/// <param name="imageFormat">jpeg, or png in Enum</param>
 		/// <returns>MemoryStream with resized image</returns>
 		public MemoryStream ResizeThumbnail(string subPath, int width, int height = 0, int quality = 75, 
 			bool removeExif = false, ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
         {
-            var outputStream = new MemoryStream();
+	        var outputStream = new MemoryStream();
+	        
             try
             {
 	            
@@ -185,7 +186,9 @@ namespace starskycore.Services
                         .Resize(width, height)
                     );
 	                
-                    ResizeThumbnailImageFormat(image, imageFormat, outputStream, quality);
+	                ResizeThumbnailImageFormat(image, imageFormat, outputStream, quality);
+	                
+	                outputStream.Seek(0, SeekOrigin.Begin);
                 }
 
             }
@@ -212,16 +215,17 @@ namespace starskycore.Services
 			
 			if (imageFormat == ExtensionRolesHelper.ImageFormat.png)
 			{
-				image.SaveAsPng(outputStream, new PngEncoder{
+				image.Save(outputStream, new PngEncoder{
 					ColorType = PngColorType.Rgb, 
 					CompressionLevel = 9, 
 				});
 				return;
 			}
 
-			image.SaveAsJpeg(outputStream, new JpegEncoder{
-				Quality = quality
+			image.Save(outputStream, new JpegEncoder{
+				Quality = 100,
 			});
+	
 		}
 		
 		
