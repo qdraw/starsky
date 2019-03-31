@@ -59,7 +59,7 @@ namespace starskycore.Services
 				return false;
 			
 			// run resize sync
-			var resizeResult = ResizeThumbnailTimeoutWrap(subPath, fileHash, 1000).Result;
+			var resizeResult = ResizeThumbnailPlain(subPath, fileHash, 1000);
 			
 			// check if output any good
 			RemoveCorruptImage(fileHash);
@@ -99,46 +99,46 @@ namespace starskycore.Services
 			}
 		}
 
-		/// <summary>
-		/// Wrapper to Make a sync task sync
-		/// </summary>
-		/// <param name="subPath">sub path</param>
-		/// <param name="thumbHash">file hash</param>
-		/// <param name="width">width in pixels</param>
-		/// <param name="height">0 is keep aspect ratio</param>
-		/// <param name="timeout">wait in seconds (def: 300) before cancel</param>
-		/// <param name="quality">range 0-100</param>
-		/// <returns>async true, is good</returns>
-		private async Task<bool> ResizeThumbnailTimeoutWrap(string subPath, string thumbHash, int width, int height = 0,  int quality = 75, int timeout = 300)
-		{
-			//adding .ConfigureAwait(false) may NOT be what you want but google it.
-			return await Task.Run(() => ResizeThumbnailTimeOut(subPath, thumbHash, width, height, quality, timeout)).ConfigureAwait(false);
-		}
-
-		/// <summary>
-		/// Timeout feature to check if the service is answering within 8 seconds, Ignore Error CS1998
-		/// </summary>
-		/// <param name="subPath">sub path</param>
-		/// <param name="thumbHash">file hash</param>
-		/// <param name="width">width in pixels</param>
-		/// <param name="height">0 is keep aspect ratio</param>
-		/// <param name="quality">range 0-100</param>
-		/// <param name="timeout">wait in seconds (def: 300) before cancel</param>
-		/// <returns>async true, is good</returns>
-#pragma warning disable 1998
-		private async Task<bool> ResizeThumbnailTimeOut(string subPath, string thumbHash, int width, int height = 0,  int quality = 75, int timeout = 300){
-#pragma warning restore 1998
-            
-			var task = Task.Run(() => ResizeThumbnailPlain(subPath, thumbHash, width, height, quality));
-			if (task.Wait(TimeSpan.FromSeconds(timeout))) 
-				return task.Result;
-
-			Console.WriteLine(">>>>>>>>>>>            Timeout ThumbService "
-			                  + subPath 
-			                  + "            <<<<<<<<<<<<");
-              
-			return false;
-		}
+//		/// <summary>
+//		/// Wrapper to Make a sync task sync
+//		/// </summary>
+//		/// <param name="subPath">sub path</param>
+//		/// <param name="thumbHash">file hash</param>
+//		/// <param name="width">width in pixels</param>
+//		/// <param name="height">0 is keep aspect ratio</param>
+//		/// <param name="timeout">wait in seconds (def: 300) before cancel</param>
+//		/// <param name="quality">range 0-100</param>
+//		/// <returns>async true, is good</returns>
+//		private async Task<bool> ResizeThumbnailTimeoutWrap(string subPath, string thumbHash, int width, int height = 0,  int quality = 75, int timeout = 300)
+//		{
+//			//adding .ConfigureAwait(false) may NOT be what you want but google it.
+//			return await Task.Run(() => ResizeThumbnailTimeOut(subPath, thumbHash, width, height, quality, timeout)).ConfigureAwait(false);
+//		}
+//
+//		/// <summary>
+//		/// Timeout feature to check if the service is answering within 8 seconds, Ignore Error CS1998
+//		/// </summary>
+//		/// <param name="subPath">sub path</param>
+//		/// <param name="thumbHash">file hash</param>
+//		/// <param name="width">width in pixels</param>
+//		/// <param name="height">0 is keep aspect ratio</param>
+//		/// <param name="quality">range 0-100</param>
+//		/// <param name="timeout">wait in seconds (def: 300) before cancel</param>
+//		/// <returns>async true, is good</returns>
+//#pragma warning disable 1998
+//		private async Task<bool> ResizeThumbnailTimeOut(string subPath, string thumbHash, int width, int height = 0,  int quality = 75, int timeout = 300){
+//#pragma warning restore 1998
+//            
+//			var task = Task.Run(() => ResizeThumbnailPlain(subPath, thumbHash, width, height, quality));
+//			if (task.Wait(TimeSpan.FromSeconds(timeout))) 
+//				return task.Result;
+//
+//			Console.WriteLine(">>>>>>>>>>>            Timeout ThumbService "
+//			                  + subPath 
+//			                  + "            <<<<<<<<<<<<");
+//              
+//			return false;
+//		}
 
 		private bool ResizeThumbnailPlain(string subPath, string thumbHash, int width, int height = 0,  int quality = 75 )
 		{
