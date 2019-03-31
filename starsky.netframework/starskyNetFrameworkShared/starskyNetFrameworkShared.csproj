@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigCliAppsStartupHelperNetFramework.cs" />
+    <Compile Include="ExifToolCmdLegacyHelper.cs" />
     <Compile Include="ExifToolLegacy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

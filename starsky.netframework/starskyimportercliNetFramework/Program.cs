@@ -51,9 +51,13 @@ namespace starskyimportercliNetFramework
 				                  $"IndexMode {importSettings.IndexMode}");
 			}
             
-			startupHelper.ImportService().Import(inputPath, importSettings);
+			var result = startupHelper.ImportService().Import(inputPath, importSettings);
+
+			// -----> This is only for legacy <-----
+			new ExifToolCmdLegacyHelper(appSettings).XmpLegacySync(result);
            
-			Console.WriteLine("Done Importing");
+			
+			Console.WriteLine($"Done Importing {result.Count}");
 
 		}
 
