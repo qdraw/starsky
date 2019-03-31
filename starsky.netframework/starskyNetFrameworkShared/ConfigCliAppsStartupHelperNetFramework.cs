@@ -76,14 +76,22 @@ namespace starskyNetFrameworkShared
 			// Used to import Environment variables
 			new ArgsHelper(_appSettings).SetEnvironmentToAppSettings();
 
-		    //todo: change back
-		    //SQLitePCL.raw.SetProvider(new SQLite3Provider_e_sqlite3());
-		    
-		    // for running sqlite
+#if DEBUG
+		    if ( _appSettings.DatabaseType ==
+		         starskycore.Models.AppSettings.DatabaseTypeList.Sqlite )
+		    {
+			    SQLitePCL.raw.SetProvider(new SQLite3Provider_e_sqlite3());
+		    }
+#else
+			// for running sqlite
 		    if ( _appSettings.DatabaseType == starskycore.Models.AppSettings.DatabaseTypeList.Sqlite )
 		    {
 			    SQLitePCL.Batteries.Init();
 		    }
+#endif
+
+		    
+
 
 
 

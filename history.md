@@ -16,7 +16,7 @@
 - refactoring connection to ExifTool to use iStorage
 - refactoring thumbnail service
 - changed Basic Auth middleware to use scoped
-- bugfix: sync from webUI with '+' in name
+- bugFix: sync from webUI with '+' in name
 ## Features that are affected:
 - [x]   check UpdateWriteDiskDatabase / check update service
 - [x]   check rotation
@@ -31,7 +31,7 @@
 - [x]   check: ResizeOverlayImage in webHtmlCli
 - [x]   check: if (profile.MetaData) // todo: check if works
 - [x]   check: export to zip
-- []    check: legacy releases
+- [x]   check: legacy releases
 
 # version 0.1.5.2 - 2019-03-22
 - exifTool implementation write bug fixed
