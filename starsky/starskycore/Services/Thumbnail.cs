@@ -106,10 +106,10 @@ namespace starskycore.Services
 		/// <param name="thumbHash">file hash</param>
 		/// <param name="width">width in pixels</param>
 		/// <param name="height">0 is keep aspect ratio</param>
-		/// <param name="timeout">wait in seconds (def: 200) before cancel</param>
+		/// <param name="timeout">wait in seconds (def: 300) before cancel</param>
 		/// <param name="quality">range 0-100</param>
 		/// <returns>async true, is good</returns>
-		private async Task<bool> ResizeThumbnailTimeoutWrap(string subPath, string thumbHash, int width, int height = 0,  int quality = 75, int timeout = 200)
+		private async Task<bool> ResizeThumbnailTimeoutWrap(string subPath, string thumbHash, int width, int height = 0,  int quality = 75, int timeout = 300)
 		{
 			//adding .ConfigureAwait(false) may NOT be what you want but google it.
 			return await Task.Run(() => ResizeThumbnailTimeOut(subPath, thumbHash, width, height, quality, timeout)).ConfigureAwait(false);
@@ -123,10 +123,10 @@ namespace starskycore.Services
 		/// <param name="width">width in pixels</param>
 		/// <param name="height">0 is keep aspect ratio</param>
 		/// <param name="quality">range 0-100</param>
-		/// <param name="timeout">wait in seconds (def: 200) before cancel</param>
+		/// <param name="timeout">wait in seconds (def: 300) before cancel</param>
 		/// <returns>async true, is good</returns>
 #pragma warning disable 1998
-		private async Task<bool> ResizeThumbnailTimeOut(string subPath, string thumbHash, int width, int height = 0,  int quality = 75, int timeout = 200){
+		private async Task<bool> ResizeThumbnailTimeOut(string subPath, string thumbHash, int width, int height = 0,  int quality = 75, int timeout = 300){
 #pragma warning restore 1998
             
 			var task = Task.Run(() => ResizeThumbnailPlain(subPath, thumbHash, width, height, quality));
