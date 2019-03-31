@@ -33,7 +33,7 @@ namespace starskycore.Services
                 if ( _iStorage.ExistFile(xmpSubPath) )
                 {
                     // Read the text-content of the xmp file.
-                    var xmp = new PlainTextFileHelper().ReadFile(_iStorage.ReadStream(xmpSubPath));
+                    var xmp = new PlainTextFileHelper().StreamToString(_iStorage.ReadStream(xmpSubPath));
                     // Get the data from the xmp
                     databaseItem = GetDataFromString(xmp,databaseItem);
                 }

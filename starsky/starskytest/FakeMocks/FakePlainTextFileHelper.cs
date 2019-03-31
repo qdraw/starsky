@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using starskycore.Helpers;
 
 namespace starskytest.FakeMocks
@@ -11,12 +11,8 @@ namespace starskytest.FakeMocks
 		{
 			_outputValue = outputValue;
 		}
-		public override string ReadFirstFile(List<string> fullFilePaths)
-		{
-			return _outputValue;
-		}
 
-
+		[Obsolete]
 		public override void WriteFile(string fullFilePath, string writeString)
 		{
 		}

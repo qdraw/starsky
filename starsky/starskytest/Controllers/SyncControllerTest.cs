@@ -26,7 +26,7 @@ namespace starskytest.Controllers
 	public class SyncControllerTest
 	{
 		private readonly IQuery _query;
-		private readonly IExiftool _exiftool;
+		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
@@ -50,7 +50,7 @@ namespace starskytest.Controllers
 
 			// Inject Fake Exiftool; dependency injection
 			var services = new ServiceCollection();
-			services.AddSingleton<IExiftool, FakeExifTool>();
+			services.AddSingleton<IExifTool, FakeExifTool>();
 
 			// Fake the readmeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
@@ -88,7 +88,7 @@ namespace starskytest.Controllers
 			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
 			// inject fake exiftool
-			_exiftool = serviceProvider.GetRequiredService<IExiftool>();
+			_exifTool = new FakeExifTool(new FakeIStorage(),_appSettings );
 
 			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();

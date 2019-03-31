@@ -81,17 +81,13 @@ namespace starsky
                     }
                 );
 
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-				options.ForwardedHeaders =  ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
-           
+        
             services.AddScoped<IQuery, Query>();
             services.AddScoped<ISync, SyncService>();
             services.AddScoped<ISearch, SearchService>();
             services.AddScoped<IImport, ImportService>();
             services.AddScoped<IUserManager, UserManager>();
-            services.AddScoped<IExiftool, ExifTool>();
+            services.AddScoped<IExifTool, ExifTool>();
             services.AddScoped<IReadMeta, ReadMeta>();
 	        services.AddScoped<IStorage, StorageSubPathFilesystem>();
 

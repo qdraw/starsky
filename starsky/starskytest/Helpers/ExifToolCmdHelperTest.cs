@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskycore.Services;
+using starskytest.FakeMocks;
 using starskytest.Models;
 
 namespace starskytest.Helpers
@@ -13,19 +16,11 @@ namespace starskytest.Helpers
     [TestClass]
     public class ExifToolCmdHelperTest
     {
-        private readonly IExiftool _exiftool;
         private AppSettings _appSettings;
 
         public ExifToolCmdHelperTest()
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IExiftool, FakeExifTool>();    
-            
-            // build the service
-            var serviceProvider = services.BuildServiceProvider();
-            
-            _exiftool = serviceProvider.GetRequiredService<IExiftool>();
-            
+       
             // get the service
             _appSettings = new AppSettings();
             
@@ -64,12 +59,14 @@ namespace starskytest.Helpers
                 nameof(FileIndexItem.DateTime),
             };
             
-            var inputFullFilePaths = new List<string>
+            var inputSubPaths = new List<string>
             {
-                "test.jpg"
+                "/test.jpg"
             };
+	        var storage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>(),new List<string>{null});
 
-            var helperResult = new ExifToolCmdHelper(_appSettings, _exiftool).Update(updateModel, inputFullFilePaths, comparedNames);
+	        var fakeExifTool = new FakeExifTool(storage,_appSettings);
+            var helperResult = new ExifToolCmdHelper(fakeExifTool, storage ,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
             
             Assert.AreEqual(true,helperResult.Contains(updateModel.Tags));
             Assert.AreEqual(true,helperResult.Contains(updateModel.Description));
@@ -93,27 +90,29 @@ namespace starskytest.Helpers
                 nameof(FileIndexItem.LocationAltitude),
             };
             
-            var inputFullFilePaths = new List<string>();
+	        var folderPaths = new List<string>{"/"};
 
-            var helperResult = new ExifToolCmdHelper(_appSettings, _exiftool).Update(updateModel, inputFullFilePaths, comparedNames);
+            var inputSubPaths = new List<string>{"/test.jpg"};
+
+	        var storage =
+		        new FakeIStorage(folderPaths, inputSubPaths, null, new List<string> {"?"});
+	        var fakeExifTool = new FakeExifTool(storage,_appSettings);
+
+            var helperResult = new ExifToolCmdHelper(fakeExifTool, storage,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
             
             Assert.AreEqual(true,helperResult.Contains("-GPSAltitude=\"-41"));
             Assert.AreEqual(true,helperResult.Contains("gpsaltituderef#=\"1"));
 
         }
 
-        [TestMethod]
-        public void ExifToolCmdHelper_Quoted()
-        {
-            var helperResult = new ExifToolCmdHelper(_appSettings, _exiftool).Quoted(null, "test");
-            Assert.AreEqual("\"test\"",helperResult.ToString());
-        }
+//        [TestMethod]
+//        public void ExifToolCmdHelper_Quoted()
+//        {
+//            var helperResult = new ExifToolCmdHelper(_appSettings, _exifTool).Quoted(null, "test");
+//            Assert.AreEqual("\"test\"",helperResult.ToString());
+//        }
 
-        [TestMethod]
-        public void ExifToolCmdHelper_CopyExifPublish()
-        {
-            var helperResult = new ExifToolCmdHelper(_appSettings, _exiftool).CopyExifPublish("test", "test");
-            Assert.AreEqual(true,helperResult.Contains("HistorySoftwareAgent"));
-        }
+	    
+
     }
 }

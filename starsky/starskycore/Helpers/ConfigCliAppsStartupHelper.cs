@@ -20,7 +20,7 @@ namespace starskycore.Helpers
         private readonly SyncService _isync;
         private readonly ServiceProvider _serviceProvider;
         private readonly ReadMeta _readmeta;
-        private readonly IExiftool _exiftool;
+        private readonly IExifTool _exifTool;
 	    private readonly ThumbnailCleaner _thumbnailCleaner;
 	    private readonly IStorage _iStorage;
 
@@ -33,7 +33,6 @@ namespace starskycore.Helpers
 
             // Inject Fake Exiftool; dependency injection
             var services = new ServiceCollection();
-            services.AddSingleton<IExiftool, ExifTool>();
 
             // Inject Config helper
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
@@ -45,15 +44,23 @@ namespace starskycore.Helpers
             var configuration = builder.Build();
             // inject config as object to a service
             services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+	        
+	        // Inject Filesystem backend
+	        services.AddSingleton<IStorage, StorageSubPathFilesystem>();
+
+	        // Inject ExifTool
+	        services.AddSingleton<IExifTool, ExifTool>();
+	        
+	        
             // build the service
             _serviceProvider = services.BuildServiceProvider();
             // get the service
             var appSettings = _serviceProvider.GetRequiredService<AppSettings>();
 
-            // inject exiftool
-            _exiftool = _serviceProvider.GetRequiredService<IExiftool>();
+            // inject exifTool
+            _exifTool = _serviceProvider.GetRequiredService<IExifTool>();
 
-            // Build Datbase Context
+            // Build Database Context
             var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
             
             if(appSettings.Verbose) Console.WriteLine(appSettings.DatabaseConnection);
@@ -91,7 +98,7 @@ namespace starskycore.Helpers
             //   _exiftool = exiftool
             //   _appSettings = appSettings
             //   _readmeta = readmeta
-            _import = new ImportService(context, _isync, _exiftool, appSettings, null, _iStorage, true);
+            _import = new ImportService(context, _isync, _exifTool, appSettings, null, _iStorage, true);
 
 	        _thumbnailCleaner = new ThumbnailCleaner(query, appSettings);
 	        
@@ -163,9 +170,9 @@ namespace starskycore.Helpers
         /// Returns an filled ExifTool Interface
         /// </summary>
         /// <returns>ExifTool</returns>
-        public IExiftool ExifTool()
+        public IExifTool ExifTool()
         {
-            return _exiftool;
+            return _exifTool;
         }
 	    
 	    /// <summary>
@@ -177,6 +184,10 @@ namespace starskycore.Helpers
 		    return _thumbnailCleaner;
 	    }
 	    
+	    /// <summary>
+	    /// Storage Container
+	    /// </summary>
+	    /// <returns>IStorage</returns>
 	    public IStorage Storage()
 	    {
 		    return _iStorage;

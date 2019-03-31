@@ -39,6 +39,10 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MedallionShell, Version=1.5.1.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\MedallionShell.1.5.1\lib\net45\MedallionShell.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MetadataExtractor, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MetadataExtractor.2.0.0\lib\net45\MetadataExtractor.dll</HintPath>
     </Reference>
@@ -93,6 +97,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigCliAppsStartupHelperNetFramework.cs" />
+    <Compile Include="ExifToolCmdLegacyHelper.cs" />
+    <Compile Include="ExifToolLegacy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

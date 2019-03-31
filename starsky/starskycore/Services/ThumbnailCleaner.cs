@@ -12,10 +12,10 @@ namespace starskycore.Services
 		private readonly AppSettings _appSettings;
 		private readonly IQuery _query;
 
-		public ThumbnailCleaner(IQuery iquery, AppSettings appSettings)
+		public ThumbnailCleaner(IQuery iQuery, AppSettings appSettings)
 		{
 			_appSettings = appSettings;
-			_query = iquery;
+			_query = iQuery;
 		}
 
 	

@@ -13,6 +13,8 @@ namespace starskysynccli
 			new ArgsHelper().SetEnvironmentByArgs(args);
             
             var startupHelper = new ConfigCliAppsStartupHelper();
+	        
+	        // Todo: make feature of this -->
             var appSettings = startupHelper.AppSettings();
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
             
@@ -53,21 +55,21 @@ namespace starskysynccli
 
             if (new ArgsHelper(appSettings).GetThumbnail(args))
             {
+	            var storage = startupHelper.Storage();
 
-                var fullPath = appSettings.DatabasePathToFilePath(subpath);
-                var isFolderOrFile = FilesHelper.IsFolderOrFile(fullPath);
+				var isFolderOrFile = storage.IsFolderOrFile(subpath);
 
                 if (appSettings.Verbose) Console.WriteLine(isFolderOrFile);
-                var exiftool = startupHelper.ExifTool();
                 
                 if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
                 {
                     // If single file => create thumbnail
-                    new Thumbnail(appSettings,exiftool).CreateThumb(subpath); // <= this uses subpath
+	                var fileHash = new FileHash(storage).GetHashCode(subpath);
+                    new Thumbnail(storage).CreateThumb(subpath,fileHash); // <= this uses subpath
                 }
                 else
                 {
-                    new ThumbnailByDirectory(appSettings,exiftool).CreateThumb(fullPath); // <= this uses fullpath
+	                new Thumbnail(storage).CreateThumb(subpath);
                 }
                 
                 Console.WriteLine("Thumbnail Done!");

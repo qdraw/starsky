@@ -1,161 +1,176 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
+using System.Threading.Tasks;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskycore.Services;
 
 namespace starskycore.Helpers
 {
-    public class ExifToolCmdHelper
+    public partial class ExifToolCmdHelper
     {
-        private readonly IExiftool _exiftool;
-        private readonly AppSettings _appSettings;
+        private readonly IExifTool _exifTool;
 	    private readonly IStorage _iStorage;
+	    private readonly IReadMeta _readMeta;
 
-	    public ExifToolCmdHelper(AppSettings appSettings = null, IExiftool exiftool = null, IStorage iStorage  = null)
+	    public ExifToolCmdHelper(IExifTool exifTool, IStorage iStorage, IReadMeta readMeta)
         {
-            _exiftool = exiftool;
-            _appSettings = appSettings;
-//	        _iStorage = iStorage;
+            _exifTool = exifTool;
+	        _iStorage = iStorage;
+	        _readMeta = readMeta;
         }
 
 	    /// <summary>
-	    /// To update Exiftool
+	    /// To update Exiftool (both Thumbnail as Storage item)
 	    /// </summary>
 	    /// <param name="updateModel">update model</param>
-	    /// <param name="inputFullFilePath">filepath</param>
 	    /// <param name="comparedNames">list,string e.g. Tags</param>
 	    /// <returns></returns>
-        public string Update(FileIndexItem updateModel, string inputFullFilePath, List<string> comparedNames)
+        public string Update(FileIndexItem updateModel, List<string> comparedNames)
         {
             var exifUpdateFilePaths = new List<string>
             {
-                inputFullFilePath           
+                updateModel.FilePath           
             };
-            return Update(updateModel, exifUpdateFilePaths, comparedNames);
+	        return UpdateAsyncWrapperBoth(updateModel, exifUpdateFilePaths, comparedNames).Result;
         }
 
 	    /// <summary>
-	    /// Add a .xmp sidecar file
+	    /// To update Exiftool (both Thumbnail as Storage item)
 	    /// </summary>
-	    /// <param name="fullFilePath"></param>
+	    /// <param name="updateModel"></param>
+	    /// <param name="inputSubPaths"></param>
+	    /// <param name="comparedNames"></param>
 	    /// <returns></returns>
-	    public string XmpSync(string fullFilePath)
+	    public string Update(FileIndexItem updateModel, List<string> inputSubPaths,
+		    List<string> comparedNames)
 	    {
-		    if ( _exiftool == null ) throw new ArgumentException("exifTool missing");
-
-		    // only for raw files
-		    if ( !ExtensionRolesHelper.IsExtensionForceXmp(fullFilePath) ) return fullFilePath;
-
-		    var xmpFullPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(fullFilePath);
-                
-		    if (FilesHelper.IsFolderOrFile(xmpFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
-		    {
-			    _exiftool.BaseCommmand(" -overwrite_original -TagsFromFile \""  
-			                           + fullFilePath + "\"",  "\""+ xmpFullPath +  "\"");
-		    }
-		    return xmpFullPath;
+		    return UpdateAsyncWrapperBoth(updateModel, inputSubPaths, comparedNames).Result;
 	    }
-	    
-	    
+
+
 
         /// <summary>
-        /// For Raw files us an external .xmp sidecar file, and add this to the fullFilePathsList
+        /// For Raw files us an external .xmp sidecar file, and add this to the PathsList
         /// </summary>
-        /// <param name="inputFullFilePaths">list of files to update</param>
+        /// <param name="inputSubPaths">list of files to update</param>
         /// <returns>list of files, where needed for raw-files there are .xmp used</returns>
-        private List<string> FullFilePathsListTagsFromFile(List<string> inputFullFilePaths)
+        private List<string> PathsListTagsFromFile(List<string> inputSubPaths)
         {
-            var fullFilePathsList = new List<string>();
-            foreach (var fullFilePath in inputFullFilePaths)
+            var pathsList = new List<string>();
+            foreach (var subPath in inputSubPaths)
             {
-                if(ExtensionRolesHelper.IsExtensionForceXmp(fullFilePath))
+                if(ExtensionRolesHelper.IsExtensionForceXmp(subPath))
                 {
-	                var xmpFullPath = XmpSync(fullFilePath);
-                    // to continue as xmp file
-                    fullFilePathsList.Add(xmpFullPath);
+	                var xmpPath = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
+                    pathsList.Add(xmpPath);
                     continue;
                 }
-                fullFilePathsList.Add(fullFilePath);
+                pathsList.Add(subPath);
             }
-            return fullFilePathsList;
+            return pathsList;
         }
 
-        // Does not check in c# code if file exist
-        public string Update(FileIndexItem updateModel, List<string> inputFullFilePaths, List<string> comparedNames )
-        {
-            if(_exiftool == null) throw new ArgumentException("add exiftool please");
-            if(_appSettings == null) throw new ArgumentException("add _appSettings please");
+	    
 
-            var command = "-json -overwrite_original";
+	    // Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
+	    private async Task<string> UpdateAsyncWrapperBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames)
+	    {
+		    var task = Task.Run(() => UpdateASyncBoth(updateModel,inputSubPaths,comparedNames));
+		    return task.Wait(TimeSpan.FromSeconds(20)) ? task.Result : string.Empty;
+	    }
+
+
+	    
+	    public string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames )
+	    {
+		    var command = "-json -overwrite_original";
             var initCommand = command; // to check if nothing
 
             // Create an XMP File -> as those files don't support those tags
             // Check first if it is needed
 
-            var fullFilePathsList = FullFilePathsListTagsFromFile(inputFullFilePaths);
-
             command = UpdateKeywordsCommand(command, comparedNames, updateModel);
             command = UpdateDescriptionCommand(command, comparedNames, updateModel);
 
-            command = UpdateGPSLatitudeCommand(command, comparedNames, updateModel);
-            command = UpdateGPSLongitudeCommand(command, comparedNames, updateModel);
+            command = UpdateGpsLatitudeCommand(command, comparedNames, updateModel);
+            command = UpdateGpsLongitudeCommand(command, comparedNames, updateModel);
             command = UpdateLocationAltitudeCommand(command, comparedNames, updateModel);
 
             command = UpdateLocationCountryCommand(command, comparedNames, updateModel);
             command = UpdateLocationStateCommand(command, comparedNames, updateModel);
             command = UpdateLocationCityCommand(command, comparedNames, updateModel);
-            
-            if (comparedNames.Contains("Title"))
-            {
-                command += " -ObjectName=\"" + updateModel.Title + "\"" 
-                           + " \"-title\"=" + "\"" + updateModel.Title  + "\"" ;
-            }
-           
-            if (comparedNames.Contains("ColorClass") && updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
-            {
-                var intColorClass = (int) updateModel.ColorClass;
+		    
+	        command = UpdateSoftwareCommand(command, comparedNames, updateModel);
 
-                var colorDisplayName = EnumHelper.GetDisplayName(updateModel.ColorClass);
-                command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\""+ intColorClass + 
-                           "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
-            }
-            
-            // // exiftool -Orientation#=5
-            if (comparedNames.Contains("Orientation") && updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
-            {
-                var intOrientation = (int) updateModel.Orientation;
-                command += " \"-Orientation#="+ intOrientation +"\" ";
-            }
+			command = UpdateTitleCommand(command, comparedNames, updateModel);
+		    command = UpdateColorClassCommand(command, comparedNames, updateModel);
+		    command = UpdateOrientationCommand(command, comparedNames, updateModel);
+		    command = UpdateDateTimeCommand(command, comparedNames, updateModel);
 
-            if (comparedNames.Contains("DateTime") && updateModel.DateTime.Year > 2)
-            {
-                var exifToolString = updateModel.DateTime.ToString("yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture);
-                command += " -AllDates=\""+ exifToolString + "\" ";
-            }
-            
-            if (command != initCommand)
-            {
-                var exifBaseInputStringBuilder = new StringBuilder();
-                foreach (var fullFilePath in fullFilePathsList)
-                {
-	                if ( !FilesHelper.ExistFile(fullFilePath) ) continue;
-	                exifBaseInputStringBuilder = Quoted(exifBaseInputStringBuilder,fullFilePath);
-	                exifBaseInputStringBuilder.Append($" ");
-                }
-                
-                _exiftool.BaseCommmand(command, exifBaseInputStringBuilder.ToString());
-            }
+		    command = UpdateIsoSpeedCommand(command, comparedNames, updateModel);
+		    command = UpdateApertureCommand(command, comparedNames, updateModel);
+		    command = UpdateShutterSpeedCommand(command, comparedNames, updateModel);
+			command = UpdateMakeModelCommand(command, comparedNames, updateModel);
+		    
+		    if ( command == initCommand ) return string.Empty;
+		    
+		    return command;
+	    }
 
-            return command;
+	    private async Task CreateXmpFileIsNotExist(FileIndexItem updateModel, List<string> inputSubPaths)
+	    {
+		    foreach ( var subPath in inputSubPaths )
+		    {
+			    // only for raw files
+			    if ( !ExtensionRolesHelper.IsExtensionForceXmp(subPath) ) return;
+
+			    var withXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(subPath);
+
+			    if ( _iStorage.IsFolderOrFile(withXmp) !=
+			         FolderOrFileModel.FolderOrFileTypeList.Deleted ) continue;
+			    
+			    new ExifCopy(_iStorage,_exifTool,_readMeta).XmpCreate(withXmp);
+				    
+			    var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
+			    var command = ExifToolCommandLineArgs(updateModel, comparedNames);
+				    
+			    await _exifTool.WriteTagsAsync(withXmp, command);
+		    }
+	    }
+
+        private async Task<string> UpdateASyncBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames )
+        {
+	        // Creation and update .xmp file with all availeble content
+	        await CreateXmpFileIsNotExist(updateModel, inputSubPaths);
+
+	        // Rename .dng files .xmp to update in exifTool
+	        var subPathsList = PathsListTagsFromFile(inputSubPaths);
+
+	        var command = ExifToolCommandLineArgs(updateModel, comparedNames);
+        
+	        foreach (var path in subPathsList)
+	        {
+		        if ( ! _iStorage.ExistFile(path) ) continue;
+		        await _exifTool.WriteTagsAsync(path, command);
+	        }
+
+	        if (  _iStorage.ThumbnailExist(updateModel.FileHash) )
+	        {
+		        await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash, command);
+	        }
+
+	        return command;
         }
 
-        private string UpdateLocationAltitudeCommand(
+
+
+	    private string UpdateLocationAltitudeCommand(
 	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
             // -GPSAltitude="+160" -GPSAltitudeRef=above
-            if (comparedNames.Contains("LocationAltitude"))
+            if (comparedNames.Contains(nameof(FileIndexItem.LocationAltitude)))
             {
                 // 0 = "Above Sea Level"
                 // 1 = Below Sea Level
@@ -171,11 +186,14 @@ namespace starskycore.Helpers
             return command;
         }
 
-        private string UpdateGPSLatitudeCommand(
+        private string UpdateGpsLatitudeCommand(
 	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            // CultureInfo.InvariantCulture is used for systems where comma is the default seperator
-            if (comparedNames.Contains("Latitude"))
+	        // To Reset Image:
+	        // exiftool reset.jpg -gps:all= -xmp:geotag= -City= -xmp:City= -State= -xmp:State=
+
+	        // CultureInfo.InvariantCulture is used for systems where comma is the default seperator
+            if (comparedNames.Contains( nameof(FileIndexItem.Latitude) ))
             {
                 command += " -GPSLatitude=\"" + updateModel.Latitude.ToString(CultureInfo.InvariantCulture) 
                                                               + "\" -GPSLatitudeRef=\"" 
@@ -184,9 +202,9 @@ namespace starskycore.Helpers
             return command;
         }
         
-        private string UpdateGPSLongitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+        private string UpdateGpsLongitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains("Longitude"))
+            if (comparedNames.Contains( nameof(FileIndexItem.Longitude)))
             {
                 command += " -GPSLongitude=\"" + updateModel.Longitude.ToString(CultureInfo.InvariantCulture) 
                                               + "\" -GPSLongitudeRef=\"" 
@@ -197,7 +215,7 @@ namespace starskycore.Helpers
 
         private static string UpdateKeywordsCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains("Tags"))
+            if (comparedNames.Contains( nameof(FileIndexItem.Tags) ))
             {
                 command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags 
                                                               + "\" -Keywords=\"" + updateModel.Tags + "\" ";
@@ -207,7 +225,7 @@ namespace starskycore.Helpers
         
         private static string UpdateLocationCityCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains("LocationCity"))
+            if (comparedNames.Contains( nameof(FileIndexItem.LocationCity) ) )
             {
                 command += " -City=\"" + updateModel.LocationCity 
                                                    + "\" -xmp:City=\"" + updateModel.LocationCity + "\"";
@@ -217,7 +235,7 @@ namespace starskycore.Helpers
         
         private static string UpdateLocationStateCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains("LocationState"))
+            if (comparedNames.Contains( nameof(FileIndexItem.LocationState) ))
             {
                 command += " -State=\"" + updateModel.LocationState 
                                        + "\" -Province-State=\"" + updateModel.LocationState + "\"";
@@ -228,7 +246,7 @@ namespace starskycore.Helpers
         private static string UpdateLocationCountryCommand(
 	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains("LocationCountry"))
+            if (comparedNames.Contains( nameof(FileIndexItem.LocationCountry) ))
             {
                 command += " -Country=\"" + updateModel.LocationCountry 
                                         + "\" -Country-PrimaryLocationName=\"" + updateModel.LocationCountry + "\"";
@@ -238,48 +256,128 @@ namespace starskycore.Helpers
         
         private static string UpdateDescriptionCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains("Description"))
+            if (comparedNames.Contains( nameof(FileIndexItem.Description)    ))
             {
                 command += " -Caption-Abstract=\"" + updateModel.Description 
                                                    + "\" -Description=\"" + updateModel.Description + "\"";
             }
             return command;
         }
+	    
+	    private static string UpdateSoftwareCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+	    {
+		    if (comparedNames.Contains( nameof(FileIndexItem.Software) ))
+		    {
+			    command +=
+				    "-Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" -HistorySoftwareAgent=\"Qdraw 1.0\" -HistoryParameters=\"\" -PMVersion=\"\" ";
+		    }
+		    return command;
+	    }
+	    
+	    private static string UpdateTitleCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+	    {
+		    if (comparedNames.Contains(nameof(FileIndexItem.Title)))
+		    {
+			    command += " -ObjectName=\"" + updateModel.Title + "\"" 
+			               + " \"-title\"=" + "\"" + updateModel.Title  + "\"" ;
+		    }
+		    return command;
+	    }
 
-        public StringBuilder Quoted(StringBuilder inputStringBuilder, string fullFilePath)
-        {
-            if (inputStringBuilder == null)
-            {
-                inputStringBuilder = new StringBuilder();
-            }
-            inputStringBuilder.Append($"\"");
-            inputStringBuilder.Append(fullFilePath);
-            inputStringBuilder.Append($"\"");
-            return inputStringBuilder;
-        }
+	    private static string UpdateColorClassCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+	    {
+			if (comparedNames.Contains(nameof(FileIndexItem.ColorClass)) && updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
+			{
+				var intColorClass = (int) updateModel.ColorClass;
+	
+				var colorDisplayName = EnumHelper.GetDisplayName(updateModel.ColorClass);
+				command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\""+ intColorClass + 
+						   "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
+			}
+		    return command;
 
-        public string CopyExifPublish(string fullSourceImage, string thumbPath)
-        {
-            // add space before command
-            const string append = " -Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" " +
-                                  "-HistorySoftwareAgent=\"Qdraw 1.0\" -HistoryParameters=\"Publish to Web\" " +
-                                  "-PhotoshopQuality=\"\" -PMVersion=\"\" -Copyright=\"© Qdraw;Media www.qdraw.nl\"";
-            CopyExif(fullSourceImage, thumbPath, append);
-            return append;
-        }
+	    }
 
-        public void CopyExif(string fullSourceImage, string thumbPath, string append = "")
-        {
-			// ignore files that are not exist
-			if(FilesHelper.IsFolderOrFile(fullSourceImage) != FolderOrFileModel.FolderOrFileTypeList.File) return;
-	        if(FilesHelper.IsFolderOrFile(thumbPath) != FolderOrFileModel.FolderOrFileTypeList.File) return;
+	    private static string UpdateOrientationCommand(string command, List<string> comparedNames,
+		    FileIndexItem updateModel)
+	    {
+		    // // exiftool -Orientation#=5
+		    if (comparedNames.Contains( nameof(FileIndexItem.Orientation) ) && updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
+		    {
+			    var intOrientation = (int) updateModel.Orientation;
+			    command += " \"-Orientation#="+ intOrientation +"\" ";
+		    }
+		    return command;
+	    }
 
-			// Reset Orientation on thumbpath
-			// Do an ExifTool exif sync for the file
-			if(_exiftool == null && _appSettings.Verbose) Console.WriteLine("Exiftool disabled");
-			_exiftool?.BaseCommmand(" -overwrite_original -TagsFromFile \"" + fullSourceImage + "\"",
-				"\"" + thumbPath + "\"" + " -Orientation=" + append);
-			// Reset orentation
-        }
+
+	    private static string UpdateDateTimeCommand(string command, List<string> comparedNames,
+		    FileIndexItem updateModel)
+	    {
+
+		    if ( comparedNames.Contains(nameof(FileIndexItem.DateTime)) &&
+		         updateModel.DateTime.Year > 2 )
+		    {
+			    var exifToolString = updateModel.DateTime.ToString("yyyy:MM:dd HH:mm:ss",
+				    CultureInfo.InvariantCulture);
+			    command += " -AllDates=\"" + exifToolString + "\" ";
+		    }
+		    
+		    return command;
+	    }
+
+	    private static string UpdateIsoSpeedCommand(string command, List<string> comparedNames,
+		    FileIndexItem updateModel)
+	    {
+		    if ( comparedNames.Contains(nameof(FileIndexItem.IsoSpeed)) )
+		    {
+			    command += " -ISO=\"" + updateModel.IsoSpeed + "\"";
+		    }
+
+		    return command;
+	    }
+
+	    private static string UpdateApertureCommand(string command, List<string> comparedNames,
+		    FileIndexItem updateModel)
+	    {
+		    // Warning: Sorry, Aperture is not writable => FNumber is writable
+		    if ( comparedNames.Contains(nameof(FileIndexItem.Aperture)) )
+		    {
+			    command += " -FNumber=\"" + updateModel.Aperture.ToString(CultureInfo.InvariantCulture) + "\"";
+		    }
+		    return command;
+	    }
+
+	    
+	    private static string UpdateShutterSpeedCommand(string command, List<string> comparedNames,
+		    FileIndexItem updateModel)
+	    {
+		    // // -ExposureTime=1/31
+		    // Warning: Sorry, ShutterSpeed is not writable => ExposureTime is writable
+		    if ( comparedNames.Contains(nameof(FileIndexItem.ShutterSpeed)) )
+		    {
+			    command += " -ExposureTime=\"" + updateModel.ShutterSpeed + "\"";
+		    }
+
+		    return command;
+	    }
+
+
+	    private static string UpdateMakeModelCommand(string command, List<string> comparedNames,
+		    FileIndexItem updateModel)
+	    {
+		    // Make and Model are not writable so those never exist in this list
+		    if ( comparedNames.Contains(nameof(FileIndexItem.MakeModel)) )
+		    {
+			    var make = updateModel.Make;
+			    var model = updateModel.Model;
+			    command += " -make=\"" + make + "\"" + " -model=\"" + model + "\"";
+		    }
+
+		    return command;
+	    }
+
+
+
     }
 }

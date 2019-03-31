@@ -15,13 +15,17 @@ namespace starskywebhtmlcli.Services
     {
 
         private readonly AppSettings _appSettings;
-        private readonly IExiftool _exiftool;
+        private readonly IExifTool _exifTool;
+	    private readonly IStorage _iStorage;
+	    private readonly IReadMeta _readMeta;
 
-        public LoopPublications(AppSettings appSettings, IExiftool exiftool)
-        {
+	    public LoopPublications(IStorage iStorage, AppSettings appSettings, IExifTool exifTool, IReadMeta readMeta)
+	    {
+		    _iStorage = iStorage;
             _appSettings = appSettings;
-            _exiftool = exiftool;
-        }
+            _exifTool = exifTool;
+		    _readMeta = readMeta;
+	    }
 
         public void Render(List<FileIndexItem> fileIndexItemsList, string[] base64ImageArray)
         {
@@ -66,39 +70,41 @@ namespace starskywebhtmlcli.Services
                 item.FileName = _appSettings.GenerateSlug(item.FileCollectionName, true) + Path.GetExtension(item.FileName);
             }
 
-            // Files.DeleteFile(profile.Path)
-                    
+                  
             var embeddedResult = new ParseRazor().EmbeddedViews(profile.Template,viewModel).Result;
-            new PlainTextFileHelper().WriteFile(_appSettings.StorageFolder 
-                                                + profile.Path, embeddedResult);
+
+	        var stream = new PlainTextFileHelper().StringToStream(embeddedResult);
+	        _iStorage.WriteStream(stream, profile.Path);
+
             Console.WriteLine(embeddedResult);
         }
 
         private void GenerateJpeg(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-            var overlayImage = new OverlayImage(_appSettings,_exiftool);
+            var overlayImage = new OverlayImage(_iStorage, _appSettings,_exifTool);
 
             foreach (var item in fileIndexItemsList)
             {
 
-                var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
-
-                var outputFilePath = overlayImage.FilePathOverlayImage(fullFilePath, profile);
+                var outputPath = overlayImage.FilePathOverlayImage(item.FilePath, profile);
                         
                 // for less than 1000px
                 if (profile.SourceMaxWidth <= 1000)
                 {
-                    var inputFullFilePath = new Thumbnail(_appSettings).GetThumbnailPath(item.FileHash);
-                    new OverlayImage(_appSettings,_exiftool).ResizeOverlayImage(
-                        inputFullFilePath, outputFilePath,profile);
+	                overlayImage.ResizeOverlayImageThumbnails(item.FileHash, outputPath, profile);
+                }
+                else
+                {
+	                // Thumbs are 1000 px (and larger)
+	                overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
                 }
                             
-                // Thumbs are 1000 px
-                if (profile.SourceMaxWidth > 1000)
-                {
-                    overlayImage.ResizeOverlayImage(fullFilePath, outputFilePath, profile);
-                }
+	            if ( profile.MetaData )
+	            {
+		            new ExifCopy(_iStorage, _exifTool, _readMeta).CopyExifPublish(item.FilePath,
+			            outputPath);
+	            }
 
             }
         }
@@ -106,15 +112,13 @@ namespace starskywebhtmlcli.Services
         private void GenerateMoveSourceFiles(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-            var overlayImage = new OverlayImage(_appSettings,_exiftool);
+            var overlayImage = new OverlayImage(_iStorage, _appSettings,_exifTool);
 
             foreach (var item in fileIndexItemsList)
             {
-                var fullFilePath = _appSettings.DatabasePathToFilePath(item.FilePath);
-                var outputFilePath = overlayImage.FilePathOverlayImage(fullFilePath, profile);
-
-                File.Move(fullFilePath, outputFilePath);
-                item.ParentDirectory = profile.Folder;
+	            // input: item.FilePath
+                var outputPath = overlayImage.FilePathOverlayImage(item.FilePath, profile);
+	            _iStorage.FileMove(item.FilePath,outputPath);
             }
         }
 
@@ -128,13 +132,14 @@ namespace starskywebhtmlcli.Services
                 profileFolderStringBuilder.Append(parentFolder);
                 profileFolderStringBuilder.Append("/");
             }
+	        
             profileFolderStringBuilder.Append(profile.Folder);
-            var toCreateSubfolder = _appSettings.DatabasePathToFilePath(profileFolderStringBuilder.ToString(), false);
 
-            if (FilesHelper.IsFolderOrFile(toCreateSubfolder) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
-            {
-                Directory.CreateDirectory(toCreateSubfolder);
-            }
+	        if ( _iStorage.IsFolderOrFile(profileFolderStringBuilder.ToString()) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+	        {
+		        _iStorage.CreateDirectory(profileFolderStringBuilder.ToString());
+	        }
+	        
         }
 
         

@@ -15,6 +15,9 @@ namespace starskycore.Services
             var duplicateItemsByFilePath = databaseSubFolderList.GroupBy(item => item.FilePath)
                 .SelectMany(grp => grp.Skip(1).Take(1)).ToList();
             
+	        // to keep only non-duplicate files 
+	        // fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First()).ToList()
+	        
             // duplicateItemsByFilePath > 
             // If you have 3 item with the same name it will include 1 name
             // So we do a linq query to search simalar items

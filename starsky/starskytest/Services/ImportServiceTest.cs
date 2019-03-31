@@ -26,7 +26,7 @@ namespace starskytest.Services
         private readonly ImportService _import;
         private readonly Query _query;
         private readonly SyncService _isync;
-        private readonly IExiftool _exiftool;
+        private readonly IExifTool _exifTool;
         private readonly AppSettings _appSettings;
         private readonly CreateAnImage _createAnImage;
         private readonly ReadMeta _readmeta;
@@ -49,7 +49,7 @@ namespace starskytest.Services
             
             // Inject Fake Exiftool; dependency injection
             var services = new ServiceCollection();
-            services.AddSingleton<IExiftool, FakeExifTool>();    
+//            services.AddSingleton<IExifTool, FakeExifTool>();    
             
             // Inject Config helper
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
@@ -75,7 +75,7 @@ namespace starskytest.Services
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();
            
             // inject exiftool
-            _exiftool = serviceProvider.GetRequiredService<IExiftool>();
+            _exifTool = new FakeExifTool(_iStorage,_appSettings);
             
 	        _iStorage = new StorageSubPathFilesystem(_appSettings);
 	        _readmeta = new ReadMeta(_iStorage,_appSettings);
@@ -88,7 +88,7 @@ namespace starskytest.Services
             //   _appSettings = appSettings
 
 	        
-            _import = new ImportService(_context,_isync,_exiftool,_appSettings,null,_iStorage);
+            _import = new ImportService(_context,_isync,_exifTool,_appSettings,null,_iStorage);
             
             // Delete gpx files before importing
             // to avoid 1000 files in this folder

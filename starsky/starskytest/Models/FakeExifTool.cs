@@ -1,43 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 
 namespace starskytest.Models
 {
-    public class FakeExifTool : IExiftool
+    public class FakeExifTool : IExifTool
     {
-        public void Update(ExifToolModel updateModel, List<string> inputFullFilePaths)
-        {
-	        Console.WriteLine(inputFullFilePaths);
-        }
+	    private AppSettings _appSettings;
+	    private IStorage _iStorage;
 
-        public void Update(ExifToolModel updateModel, string fullFilePath)
-        {
-	        Console.WriteLine(fullFilePath);
-        }
-
-        public void Update(FileIndexItem updateModel, List<string> inputFullFilePaths)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Update(FileIndexItem updateModel, string inputFullFilePath)
-        {
-            throw new System.NotImplementedException();
-        }
+	    public FakeExifTool(IStorage iStorage, AppSettings appSettings)
+	    {
+		    _appSettings = appSettings;
+		    _iStorage = iStorage;
+	    }
 	    
+	    private const string xmpInjection = "<x:xmpmeta xmlns:x=\'adobe:ns:meta/\' x:xmptk=\'Image::ExifTool 11.30\'>" +
+	                                        "\n<rdf:RDF xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#\'>\n" + 
+	                                        "\n <rdf:Description rdf:about=\'\'\n  xmlns:dc=\'http://purl.org/dc/elements/1.1/\'>\n  <dc:subject>\n " +
+	                                        "  <rdf:Bag>\n    " + "<rdf:li>test</rdf:li>\n   </rdf:Bag>\n  </dc:subject>\n </rdf:Description>\n\n" +
+	                                        " <rdf:Description rdf:about=\'\'\n " + " xmlns:pdf=\'http://ns.adobe.com/pdf/1.3/\'>\n  " +
+	                                        "<pdf:Keywords>kamer</pdf:Keywords>\n </rdf:Description>\n</rdf:RDF>\n</x:xmpmeta>\n";
 
-        public string BaseCommmand(string options, string fullFilePathSpaceSeperated)
-        {
-            Console.WriteLine(options);
-            Console.WriteLine(fullFilePathSpaceSeperated);
-            return string.Empty;
-        }
+	    public Task<bool> WriteTagsAsync(string subPath, string command)
+		{
 
-        public ExifToolModel Info(string fullFilePath)
-        {
-            return new ExifToolModel();
-        }
+			if ( subPath.EndsWith(".xmp") )
+			{
+				var stream = new PlainTextFileHelper().StringToStream(xmpInjection);
+				_iStorage.WriteStream(stream, subPath);
+			}
+			
+			Console.WriteLine("Fake ExifTool + " + subPath + " " + command);
+			
+			return Task.FromResult(true);
+	    }
+
+	    public Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
+	    {
+		    return Task.FromResult(true);
+	    }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -8,11 +9,11 @@ namespace starskycore.Helpers
     public class PlainTextFileHelper
     {
 	    /// <summary>
-	    /// Read a text based file (not binary) file
+	    /// Stream to string (UTF8)
 	    /// </summary>
 	    /// <param name="stream">stream</param>
 	    /// <returns>content of the file as string</returns>
-	    public string ReadFile(Stream stream)
+	    public string StreamToString(Stream stream)
 	    {
 		    var reader = new StreamReader(stream, Encoding.UTF8);
 		    var result = reader.ReadToEnd();
@@ -21,32 +22,24 @@ namespace starskycore.Helpers
 	    }
 
 	    /// <summary>
-	    /// Return the content of the first file
+	    /// String (UTF8) to Stream
 	    /// </summary>
-	    /// <param name="fullFilePaths"></param>
+	    /// <param name="input"></param>
 	    /// <returns></returns>
-	    public virtual string ReadFirstFile(List<string> fullFilePaths)
+	    public Stream StringToStream(string input)
 	    {
-
-		    foreach ( var singleFilePath in fullFilePaths )
-		    {
-
-			    if ( FilesHelper.IsFolderOrFile(singleFilePath) ==
-			         FolderOrFileModel.FolderOrFileTypeList.File )
-			    {
-				    return new PlainTextFileHelper().ReadFile(singleFilePath);
-			    }
-		    }
-
-		    return string.Empty;
+		    byte[] byteArray = Encoding.UTF8.GetBytes(input);
+		    MemoryStream stream = new MemoryStream(byteArray);
+		    return stream;
 	    }
-	    
-        /// <summary>
-        /// Read a text based file (not binary) file
+
+	    /// <summary>
+        /// [Obsolete] Read a text based file (not binary) file
         /// </summary>
         /// <param name="fullFilePath">path on filesystem</param>
         /// <returns>content of the file as string</returns>
-        public virtual string ReadFile(string fullFilePath)
+        [Obsolete]
+        public string ReadFile(string fullFilePath)
         {
             if (!File.Exists(fullFilePath)) return string.Empty;
             
@@ -54,10 +47,11 @@ namespace starskycore.Helpers
         }
         
         /// <summary>
-        /// Write and create a new plain text file to the filesystem
+        /// [Obsolete] Write and create a new plain text file to the filesystem
         /// </summary>
         /// <param name="fullFilePath">path on filesystem</param>
         /// <param name="writeString">content of the file</param>
+        [Obsolete]
         public virtual void WriteFile(string fullFilePath, string writeString)
         {
             if (File.Exists(fullFilePath)) return;

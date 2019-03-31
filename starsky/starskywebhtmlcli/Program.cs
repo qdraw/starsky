@@ -16,6 +16,8 @@ namespace starskywebhtmlcli
             // Use args in application
             new ArgsHelper().SetEnvironmentByArgs(args);
             var startupHelper = new ConfigCliAppsStartupHelper();
+	        
+	        // Run feature:
             var appSettings = startupHelper.AppSettings();
             
             appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
@@ -57,16 +59,21 @@ namespace starskywebhtmlcli
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;
 
+	        var iStorage = startupHelper.Storage();
 			// use relative to StorageFolder
-	        var listOfFiles = startupHelper.Storage().GetAllFilesInDirectory("/")
+	        var listOfFiles = iStorage.GetAllFilesInDirectory("/")
 		        .Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
+	        
             var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
             
             // Create thumbnails from the source images 
-            var thumbByDir = new ThumbnailByDirectory(appSettings,startupHelper.ExifTool());
-            thumbByDir.CreateThumb(inputPath);
-            new LoopPublications(appSettings,startupHelper.ExifTool())
-                .Render(fileIndexList,thumbByDir.ToBase64DataUriList(fileIndexList));
+			new Thumbnail(iStorage).CreateThumb("/"); // <= subPath style
+//			new ExifCopy(iStorage, startupHelper.ExifTool(), startupHelper.ReadMeta()).CopyExifToThumbnail(fileIndexList);
+	        
+	        var base64DataUri = new ToBase64DataUriList(iStorage).Create(fileIndexList);
+	        
+            new LoopPublications(iStorage, appSettings,startupHelper.ExifTool(),startupHelper.ReadMeta())
+                .Render(fileIndexList,base64DataUri );
 
 			// Export all
 			new ExportManifest(appSettings,new PlainTextFileHelper()).Export();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using starskycore.Helpers;
 using starskycore.Models;
@@ -54,10 +55,10 @@ namespace starskyGeoCli
             // overwrite subpath with relative days
             // use -g or --SubpathRelative to use it.
             // envs are not supported
-            var getSubpathRelative = new ArgsHelper(appSettings).GetSubpathRelative(args);
-            if (getSubpathRelative != string.Empty)
+            var getSubPathRelative = new ArgsHelper(appSettings).GetSubpathRelative(args);
+            if (getSubPathRelative != string.Empty)
             {
-                inputPath = appSettings.DatabasePathToFilePath(getSubpathRelative);
+                inputPath = appSettings.DatabasePathToFilePath(getSubPathRelative);
             }
 
 	        if ( inputPath == null )
@@ -69,28 +70,44 @@ namespace starskyGeoCli
             
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;
+	        var storage = new StorageSubPathFilesystem(appSettings);
 
 	        // use relative to StorageFolder
-	        var listOfFiles = startupHelper.Storage().GetAllFilesInDirectory("/")
+	        var listOfFiles = storage.GetAllFilesInDirectory("/")
 		        .Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
+	        
 	        var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
 	        
-            var overwriteLocationNames = new ArgsHelper().GetAll(args);
-            
-            var gpxIndexMode = new ArgsHelper().GetIndexMode(args);
-
-            if (gpxIndexMode)
+			var toMetaFilesUpdate = new List<FileIndexItem>();
+	        if (new ArgsHelper().GetIndexMode(args))
             {
                 Console.WriteLine("CameraTimeZone " + appSettings.CameraTimeZone);
-                var toMetaFilesUpdate = new GeoIndexGpx(appSettings,startupHelper.ReadMeta(),startupHelper.Storage()).LoopFolder(fileIndexList);
-                new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(toMetaFilesUpdate,false);
+                toMetaFilesUpdate = new GeoIndexGpx(appSettings,startupHelper.ReadMeta(),storage).LoopFolder(fileIndexList);
+	            Console.Write("¬");
+	            new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(toMetaFilesUpdate,false);
             }
-            
-	        fileIndexList = new GeoReverseLookup(appSettings)
-                .LoopFolderLookup(fileIndexList,overwriteLocationNames);
-            new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(fileIndexList,true);
-            // update thumbs to avoid unnesseary re-generation
-            new Thumbnail(appSettings).RenameThumb(fileIndexList);
+	        
+	        Console.Write("®");
+
+			fileIndexList = new GeoReverseLookup(appSettings).LoopFolderLookup(fileIndexList,new ArgsHelper().GetAll(args));
+	        if ( fileIndexList.Count >= 1 )
+	        {
+		        Console.WriteLine("~No for names~");
+		        new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(fileIndexList,true);
+	        }
+
+	        Console.Write("^\n");
+	        
+	        // Loop though all options
+	        fileIndexList.AddRange(toMetaFilesUpdate);
+
+	        // update thumbs to avoid unnesseary re-generation
+	        foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First()).ToList() )
+	        {
+		        var newThumb = new FileHash(storage).GetHashCode(item.FilePath);
+				storage.ThumbnailMove(item.FileHash,newThumb);
+		        if ( appSettings.Verbose ) Console.WriteLine("thumb+ `"+ item.FileHash + "`"+ newThumb);
+	        }
 
 
         }

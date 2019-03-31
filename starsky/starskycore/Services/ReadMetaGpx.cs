@@ -73,7 +73,7 @@ namespace starskycore.Services
             if (geoList == null) geoList = new List<GeoListItem>();
 
 	        // Some files are having problems with gpxDoc.Load()
-	        var fileString = new PlainTextFileHelper().ReadFile(stream);
+	        var fileString = new PlainTextFileHelper().StreamToString(stream);
 	        
 	        try
 	        {

@@ -16,21 +16,21 @@ namespace starsky.Controllers
     public class ApiController : Controller
     {
         private readonly IQuery _query;
-        private readonly IExiftool _exiftool;
+        private readonly IExifTool _exifTool;
         private readonly AppSettings _appSettings;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
         private readonly IReadMeta _readMeta;
 	    private readonly IStorage _iStorage;
 
         public ApiController(
-            IQuery query, IExiftool exiftool, 
+            IQuery query, IExifTool exifTool, 
             AppSettings appSettings, IBackgroundTaskQueue queue,
             IReadMeta readMeta,
 			IStorage iStorage)
         {
             _appSettings = appSettings;
             _query = query;
-            _exiftool = exiftool;
+            _exifTool = exifTool;
             _bgTaskQueue = queue;
             _readMeta = readMeta;
 	        _iStorage = iStorage;
@@ -146,7 +146,7 @@ namespace starsky.Controllers
 					}
 
 					// Compare Rotation and All other tags
-					new UpdateService(_query, _exiftool, _appSettings, _readMeta,_iStorage)
+					new UpdateService(_query, _exifTool, _appSettings, _readMeta,_iStorage)
 						.CompareAllLabelsAndRotation(changedFileIndexItemName,
 							collectionsDetailView, statusModel, append, rotateClock);
 					
@@ -168,7 +168,7 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage)
+				new UpdateService(_query,_exifTool,_appSettings, _readMeta,_iStorage)
 					.Update(changedFileIndexItemName,fileIndexResultsList,inputModel,collections, append, rotateClock);
 			});
             
@@ -224,7 +224,7 @@ namespace starsky.Controllers
 						}
 					};
 					
-					new UpdateService(_query,_exiftool,_appSettings, _readMeta,_iStorage)
+					new UpdateService(_query,_exifTool,_appSettings, _readMeta,_iStorage)
 						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, collections, false, 0);
 					
 				}
@@ -345,7 +345,6 @@ namespace starsky.Controllers
                 if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                 
                 var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
-                var collectionFullDeletePaths = _appSettings.DatabasePathToFilePath(collectionSubPathList);
 
                 // display the to delete items
                 for (int i = 0; i < collectionSubPathList.Count; i++)
@@ -358,30 +357,31 @@ namespace starsky.Controllers
                     {
                         detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Unauthorized;
                         fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
-                        collectionFullDeletePaths[i] = null;
                         continue;
                     }
 	                // return a Ok, which means the file is deleted
 	                detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 
-                    // delete thumb
-                    collectionFullDeletePaths.Add(new Thumbnail(_appSettings)
-                        .GetThumbnailPath(detailViewItem.FileIndexItem.FileHash));
-                    // add to display
+					// remove thumbnail from disk
+	                _iStorage.ThumbnailDelete(detailViewItem.FileIndexItem.FileHash);
+
                     fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
-                    // remove from db
+	                
+                    // remove item from db
                     _query.RemoveItem(detailViewItem.FileIndexItem);
+
+	                // remove the sidecar file (if exist)
+	                if ( ExtensionRolesHelper.IsExtensionForceXmp(detailViewItem.FileIndexItem
+		                .FileName) )
+	                {
+		                _iStorage.FileDelete(
+			                ExtensionRolesHelper.ReplaceExtensionWithXmp(detailViewItem
+				                .FileIndexItem.FilePath));
+	                }
+	                
+	                // and remove the actual file
+	                _iStorage.FileDelete(detailViewItem.FileIndexItem.FilePath);
                 }
-
-                
-                // Add xmp to file to delete
-                var singleFilePath = collectionFullDeletePaths.FirstOrDefault();
-                if (singleFilePath == null) continue;
-                collectionFullDeletePaths.Add(singleFilePath.Replace(Path.GetExtension(singleFilePath), ".xmp"));
-                collectionFullDeletePaths.Add(singleFilePath.Replace(Path.GetExtension(singleFilePath), ".XMP"));
-
-                // Remove the file from disk
-                FilesHelper.DeleteFile(collectionFullDeletePaths);
             }
             
             // When all items are not found
@@ -578,8 +578,8 @@ namespace starsky.Controllers
                 // When you have a different tag in the database than on disk
                 thumbPath = _appSettings.ThumbnailTempFolder + searchItem.FileHash + ".jpg";
                     
-                var isSuccesCreateAThumb = new Thumbnail(_appSettings,_exiftool).CreateThumb(searchItem);
-                if (!isSuccesCreateAThumb)
+                var isCreateAThumb = new Thumbnail(_iStorage).CreateThumb(searchItem.FilePath, searchItem.FileHash);
+                if (!isCreateAThumb)
                 {
                     Response.StatusCode = 500;
                     return Json("Thumbnail generation failed");

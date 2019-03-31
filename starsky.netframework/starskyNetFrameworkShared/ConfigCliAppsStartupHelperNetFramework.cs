@@ -8,6 +8,7 @@ using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
+using SQLitePCL;
 
 namespace starskyNetFrameworkShared
 {
@@ -17,22 +18,40 @@ namespace starskyNetFrameworkShared
         private readonly ImportService _import;
         private readonly SyncService _isync;
         private readonly ReadMeta _readmeta;
-        private readonly IExiftool _exiftool;
+        private readonly IExifTool _exiftool;
 	    private readonly ThumbnailCleaner _thumbnailCleaner;
 	    private AppSettings _appSettings;
+	    private IStorage _iStorage;
 
 	    public class AppSettingsJsonBase
 	    {
 		    public AppSettings app { get; set; }
 	    }
 
+
+	    private string returnAfterFirstFile(List<string> filePaths)
+	    {
+		    var appSettingsString = string.Empty;
+
+		    foreach ( var singleFilePath in filePaths )
+		    {
+			    if ( !new StorageHostFullPathFilesystem().ExistFile(singleFilePath) ) continue;
+			    
+			    appSettingsString = new PlainTextFileHelper().StreamToString(
+				    new StorageHostFullPathFilesystem().ReadStream(singleFilePath)
+			    );
+			    return appSettingsString;
+		    }
+
+		    return appSettingsString;
+	    }
 	    
 	    /// <summary>
         /// Inject all services for the CLI applications
         /// </summary>
         public ConfigCliAppsStartupHelperNetFramework()
 	    {
-		    
+		    // ../starsky.netFramework/starskyNetFramework/bin/Debug/appsettings.{name}.patch.json
 			var baseDirectoryProject = new AppSettings().BaseDirectoryProject;
 	        var filePaths =  new List<string>
 	        {
@@ -42,8 +61,7 @@ namespace starskyNetFrameworkShared
 		        Path.Combine(baseDirectoryProject, "appsettings.json"),
 	        };
 
-	        
-	        var appSettingsString = new PlainTextFileHelper().ReadFirstFile(filePaths);
+		    var appSettingsString = returnAfterFirstFile(filePaths);
 
 		    if ( !string.IsNullOrEmpty(appSettingsString) )
 		    {
@@ -58,15 +76,23 @@ namespace starskyNetFrameworkShared
 			// Used to import Environment variables
 			new ArgsHelper(_appSettings).SetEnvironmentToAppSettings();
 
-		    
-		    // for running sqlite
+#if DEBUG
+		    if ( _appSettings.DatabaseType ==
+		         starskycore.Models.AppSettings.DatabaseTypeList.Sqlite )
+		    {
+			    SQLitePCL.raw.SetProvider(new SQLite3Provider_e_sqlite3());
+		    }
+#else
+			// for running sqlite
 		    if ( _appSettings.DatabaseType == starskycore.Models.AppSettings.DatabaseTypeList.Sqlite )
 		    {
 			    SQLitePCL.Batteries.Init();
 		    }
+#endif
+
 		    
-		    
-	        _exiftool = new ExifTool(_appSettings);
+
+
 
 
             // Build Datbase Context
@@ -94,11 +120,14 @@ namespace starskyNetFrameworkShared
             var options = builderDb.Options;
             var context = new ApplicationDbContext(options);
             var query = new Query(context);
-		    var iStorage = new StorageSubPathFilesystem(_appSettings);
             
-            _readmeta = new ReadMeta(iStorage,_appSettings);
+		     _iStorage = new StorageSubPathFilesystem(_appSettings);
+
+		    _exiftool = new ExifTool(_iStorage,_appSettings);
+		    
+            _readmeta = new ReadMeta(_iStorage,_appSettings);
             
-            _isync = new SyncService(query, _appSettings,_readmeta, iStorage);
+            _isync = new SyncService(query, _appSettings,_readmeta, _iStorage);
             
             // TOC:
             //   _context = context
@@ -106,7 +135,7 @@ namespace starskyNetFrameworkShared
             //   _exiftool = exiftool
             //   _appSettingsJsonSettings = appSettings
             //   _readmeta = readmeta
-			_import = new ImportService(context, _isync, _exiftool, _appSettings, null, iStorage);
+			_import = new ImportService(context, _isync, _exiftool, _appSettings, null, _iStorage);
 
 	        _thumbnailCleaner = new ThumbnailCleaner(query, _appSettings);
         }
@@ -151,7 +180,7 @@ namespace starskyNetFrameworkShared
         /// Returns an filled ExifTool Interface
         /// </summary>
         /// <returns>ExifTool</returns>
-        public IExiftool ExifTool()
+        public IExifTool ExifTool()
         {
             return _exiftool;
         }
@@ -163,6 +192,15 @@ namespace starskyNetFrameworkShared
 	    public ThumbnailCleaner ThumbnailCleaner()
 	    {
 		    return _thumbnailCleaner;
+	    }
+	    
+	    /// <summary>
+	    /// Storage Container
+	    /// </summary>
+	    /// <returns>IStorage</returns>
+	    public IStorage Storage()
+	    {
+		    return _iStorage;
 	    }
     }
 }

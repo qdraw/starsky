@@ -1,9 +1,13 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
+using starskycore.Services;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
+using starskytest.Models;
 using starskywebhtmlcli.Services;
 
 namespace starskytest.starskyWebHtmlCli.Services
@@ -26,21 +30,20 @@ namespace starskytest.starskyWebHtmlCli.Services
                     }
                 }
             };
-            var createAnImage = new CreateAnImage();
             
             appSettings.PublishProfiles.Add(new AppSettingsPublishProfiles
             {
                 ContentType = TemplateContentType.Jpeg,
-                Path = createAnImage.FullFilePath, 
-                // Folder = ""
+                Path = new CreateAnImage().FullFilePath,  // <== overlay image; depends on fs
+	            SourceMaxWidth = 150
             });
 
             // Add large image
             appSettings.PublishProfiles.Add(new AppSettingsPublishProfiles
             {
                 ContentType = TemplateContentType.Jpeg,
-                Path = createAnImage.FullFilePath, 
-                SourceMaxWidth = 1001
+                Path = new CreateAnImage().FullFilePath, // <== overlay image; depends on fs
+                SourceMaxWidth = 1200
             });
             
             
@@ -51,17 +54,19 @@ namespace starskytest.starskyWebHtmlCli.Services
                 ContentType = TemplateContentType.MoveSourceFiles,
             });
 
-            appSettings.StorageFolder = createAnImage.BasePath;
-            appSettings.ThumbnailTempFolder = createAnImage.BasePath;
+	        
             var list = new List<FileIndexItem> {new FileIndexItem
             {
-                FileName = createAnImage.FileName,
-                FileHash = createAnImage.FileName.Replace(".jpg",string.Empty)
+                FileName = "/test.jpg",
+                FileHash = "FILEHASH"
             }};
 
-            new LoopPublications(appSettings,null).Render(list,null);
-            
-            FilesHelper.DeleteFile(createAnImage.BasePath + Path.DirectorySeparatorChar + "index.html");
+	        var fakeStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg"},new List<byte[]>{CreateAnImage.Bytes},new List<string>{"FILEHASH"});
+	        
+            new LoopPublications(fakeStorage, appSettings,new FakeExifTool(fakeStorage,appSettings), new ReadMeta(fakeStorage)).Render(list,null);
+
+	        var dir = fakeStorage.GetAllFilesInDirectory("/").ToList();
+
         }
     }
 }

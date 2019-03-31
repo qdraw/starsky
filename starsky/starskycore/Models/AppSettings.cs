@@ -276,6 +276,8 @@ namespace starskycore.Models
         // For using <Link> in headers
         public bool AddHttp2Optimizations  { get; set; } = true;
 
+	    public bool AddLegacyOverwrite { get; set; } = Type.GetType("Mono.Runtime") != null;
+	    
 
 	    private string _webftp; 
 	    public string WebFtp

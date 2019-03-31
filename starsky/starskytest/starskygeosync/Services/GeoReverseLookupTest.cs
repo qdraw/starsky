@@ -99,5 +99,20 @@ namespace starskytest.starskygeosync.Services
 		    Assert.AreEqual(1, result.Count);
 	    }
 
+	    [TestMethod]
+	    public void GeoReverseLookup_RemoveNoUpdateItemsTest_IgnoreCity()
+	    {
+		    var list = new List<FileIndexItem>
+		    {
+			    new FileIndexItem{LocationCity = "Apeldoorn"},
+			    new FileIndexItem(),
+		    };
+		    
+		    // ignore city
+		    var result = new GeoReverseLookup(_appSettings).RemoveNoUpdateItems(list,false);
+		    Assert.AreEqual(0, result.Count);
+
+	    }
+	    
     }
 }

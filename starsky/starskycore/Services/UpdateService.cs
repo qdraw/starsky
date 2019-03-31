@@ -11,14 +11,14 @@ namespace starskycore.Services
 	public class UpdateService
 	{ 
 		private readonly IQuery _query;
-		private readonly IExiftool _exifTool;
+		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly IReadMeta _readMeta;
 		private readonly IStorage _iStorage;
 
 		public UpdateService(
 			IQuery query,
-			IExiftool exifTool, 
+			IExifTool exifTool, 
 			AppSettings appSettings,
 			IReadMeta readMeta,
 			IStorage iStorage)
@@ -114,21 +114,25 @@ namespace starskycore.Services
 		/// <param name="rotateClock">rotation value (if needed)</param>
 		public void UpdateWriteDiskDatabase(DetailView detailView, List<string> comparedNamesList, int rotateClock = 0)
 		{
-			var exiftool = new ExifToolCmdHelper(_appSettings,_exifTool);
-			var toUpdateFilePath = _appSettings.DatabasePathToFilePath(detailView.FileIndexItem.FilePath);
+			var exiftool = new ExifToolCmdHelper(_exifTool,_iStorage,_readMeta);
 					
-			// feature to exif update the thumbnails 
-			var exifUpdateFilePaths = AddThumbnailToExifChangeList(toUpdateFilePath, detailView.FileIndexItem);
+			// feature to exif update
+			var exifUpdateFilePaths = new List<string>
+			{
+				detailView.FileIndexItem.FilePath           
+			};
 
 			// do rotation on thumbs
-			RotationThumbnailExcute(rotateClock, detailView.FileIndexItem);
-					
+			RotationThumbnailExecute(rotateClock, detailView.FileIndexItem);
+
 			// Do an Exif Sync for all files, including thumbnails
-			exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
+			var exifResult = exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
+			
+			Console.WriteLine($"exifResult: {exifResult}");
                         
 			// change thumbnail names after the orginal is changed
 			var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath);
-			new Thumbnail(_appSettings).RenameThumb(detailView.FileIndexItem.FileHash,newFileHash);
+			_iStorage.ThumbnailMove(detailView.FileIndexItem.FileHash, newFileHash);
 					
 			// Update the hash in the database
 			detailView.FileIndexItem.FileHash = newFileHash;
@@ -139,7 +143,7 @@ namespace starskycore.Services
 			// > async > force you to read the file again
 			// do not include thumbs in MetaCache
 			// only the full path url of the source image
-			_readMeta.RemoveReadMetaCache(toUpdateFilePath);		
+			_readMeta.RemoveReadMetaCache(detailView.FileIndexItem.FilePath);		
 		}
 		
 		/// <summary>
@@ -164,29 +168,7 @@ namespace starskycore.Services
 			return fileIndexItem;
 		}
 
-		/// <summary>
-		/// Add a thumbnail to list to update exif with exifTool
-		/// </summary>
-		/// <param name="toUpdateFilePath">the fullPath of the source file, only the raw or jpeg</param>
-		/// <param name="fileIndexItem">main object with fileHash</param>
-		/// <returns>a list with a thumb full path (if exist) and the source fullPath</returns>
-		private List<string> AddThumbnailToExifChangeList(string toUpdateFilePath, FileIndexItem fileIndexItem)
-		{
-			// To Add an Thumbnail to the 'to update list for exifTool'
-			var exifUpdateFilePaths = new List<string>
-			{
-				toUpdateFilePath           
-			};
-			var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
 
-			//	 todo: Change to		_iStorage.ExistFile() BUT this is thumbnail
-			if (FilesHelper.ExistFile(thumbnailFullPath) && ExtensionRolesHelper.GetImageFormat(thumbnailFullPath) == ExtensionRolesHelper.ImageFormat.jpg)
-			{
-				exifUpdateFilePaths.Add(thumbnailFullPath);
-			}
-			return exifUpdateFilePaths;
-		}
-		
 		
 		/// <summary>
 		/// Run the Orientation changes on the thumbnail (only relative)
@@ -194,12 +176,11 @@ namespace starskycore.Services
 		/// <param name="rotateClock">-1 or 1</param>
 		/// <param name="fileIndexItem">object contains filehash</param>
 		/// <returns>updated image</returns>
-		private void RotationThumbnailExcute(int rotateClock, FileIndexItem fileIndexItem)
+		private void RotationThumbnailExecute(int rotateClock, FileIndexItem fileIndexItem)
 		{
-			var thumbnailFullPath = new Thumbnail(_appSettings).GetThumbnailPath(fileIndexItem.FileHash);
-
 			// Do orientation
-			if(FileIndexItem.IsRelativeOrientation(rotateClock)) new Thumbnail(null).RotateThumbnail(thumbnailFullPath,rotateClock);
+			if(FileIndexItem.IsRelativeOrientation(rotateClock)) 
+				new Thumbnail(_iStorage).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
 		}
 		
 		

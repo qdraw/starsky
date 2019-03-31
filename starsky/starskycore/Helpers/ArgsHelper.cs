@@ -272,6 +272,9 @@ namespace starskycore.Helpers
 			Console.WriteLine("Structure  (-u --structure) "+ _appSettings.Structure);
 			Console.WriteLine("Name " + _appSettings.Name);
 			Console.WriteLine("CameraTimeZone "+ _appSettings.CameraTimeZone);
+
+			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.Importer)
+				Console.WriteLine("Create xmp on import (ExifToolImportXmpCreate): " + _appSettings.ExifToolImportXmpCreate);
 			
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebFtp) 
 				Console.WriteLine("WebFtp " + _appSettings.WebFtp);

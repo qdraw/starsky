@@ -10,6 +10,28 @@
 - []   time zone shifting
 - []   Pagination on folders - Performance update for example 800 files
 - []   Search: support for complex and/or operators `(this || or) && that`
+- []   Add unit tests for importing raw's with .xmp files
+
+# version 0.1.5.3 - 2019-03-31
+- refactoring connection to ExifTool to use iStorage
+- refactoring thumbnail service
+- changed Basic Auth middleware to use scoped
+- bugFix: sync from webUI with '+' in name
+## Features that are affected:
+- [x]   check UpdateWriteDiskDatabase / check update service
+- [x]   check rotation
+- [x]   check GeoLocationWrite
+- [x]   check: AddThumbnailToExifChangeList (removed)
+- [x]   check: rename thumb in starskyGeoCli
+- [x]   check: StarskySyncCli -t (thumbnail service)
+- [x]   check: /api/delete
+- [x]   check: /api/download photo
+- [x]   check: xmpSync for exiftool
+- [x]   check: starskyWebHtmlCli
+- [x]   check: ResizeOverlayImage in webHtmlCli
+- [x]   check: if (profile.MetaData) // todo: check if works
+- [x]   check: export to zip
+- [x]   check: legacy releases
 
 # version 0.1.5.2 - 2019-03-22
 - exifTool implementation write bug fixed

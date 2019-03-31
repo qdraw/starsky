@@ -334,13 +334,15 @@ namespace starskycore.Helpers
             if (oldStringValue == newStringValue ||
                 (string.IsNullOrEmpty(newStringValue) && newStringValue != "/")) return;
             
-            if (propertyName == nameof(FileIndexItem.FileName)) return;
+            if (propertyName == nameof(FileIndexItem.FileName) ) return;
          
             var propertyObject = sourceIndexItem.GetType().GetProperty(propertyName);
                         
+	        if(!propertyObject.CanWrite) return;
+	        
             if (!append)
             {
-                propertyObject.SetValue(sourceIndexItem, newStringValue, null);
+	            propertyObject.SetValue(sourceIndexItem, newStringValue, null);
             }
             else if (propertyName == nameof(FileIndexItem.Tags))
             {

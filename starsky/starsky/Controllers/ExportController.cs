@@ -18,23 +18,24 @@ namespace starsky.Controllers
 	public class ExportController : Controller
 	{
 		private readonly IQuery _query;
-		private readonly IExiftool _exiftool;
+		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IStorage _iStorage;
+		private readonly IReadMeta _readMeta;
 
 		public ExportController(
-			IQuery query, IExiftool exiftool, 
+			IQuery query, IExifTool exifTool, 
 			AppSettings appSettings, IBackgroundTaskQueue queue,
-			IStorage iStorage
+			IStorage iStorage, IReadMeta readMeta
 		)
 		{
 			_appSettings = appSettings;
 			_query = query;
-			_exiftool = exiftool;
+			_exifTool = exifTool;
 			_bgTaskQueue = queue;
 			_iStorage = iStorage;
-
+			_readMeta = readMeta;
 		}
 		
 		/// <summary>
@@ -135,7 +136,7 @@ namespace starsky.Controllers
 					item.FileHash + ".jpg");
 
 				if ( thumbnail )
-					new Thumbnail(_appSettings, _exiftool).CreateThumb(item);
+					new Thumbnail(_iStorage).CreateThumb(item.FilePath, item.FileHash);
 
 				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
 				

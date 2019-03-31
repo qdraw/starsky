@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskyGeoCli.Services;
+using starskytest.FakeMocks;
 using starskytest.Models;
 
 namespace starskytest.starskygeosync.Services
@@ -11,22 +12,16 @@ namespace starskytest.starskygeosync.Services
     [TestClass]
     public class GeoLocationWriteTest
     {
-        private readonly IExiftool _exiftool;
+        private readonly IExifTool _exifTool;
         private readonly AppSettings _appSettings;
 
         public GeoLocationWriteTest()
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IExiftool, FakeExifTool>();    
-            
-            // build the service
-            var serviceProvider = services.BuildServiceProvider();
-            
-            _exiftool = serviceProvider.GetRequiredService<IExiftool>();
-            
-            // get the service
+			// get the service
             _appSettings = new AppSettings();
-            
+	        
+	        _exifTool = new FakeExifTool(new FakeIStorage(),_appSettings );
+
         }
 
         [TestMethod]
@@ -46,7 +41,7 @@ namespace starskytest.starskygeosync.Services
 		            LocationCountry = "country"
 	            }
             };
-            new GeoLocationWrite(_appSettings, _exiftool).LoopFolder(metaFilesInDirectory, true);
+            new GeoLocationWrite(_appSettings, _exifTool).LoopFolder(metaFilesInDirectory, true);
         }
     }
 }

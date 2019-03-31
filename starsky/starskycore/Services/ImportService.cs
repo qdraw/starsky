@@ -14,9 +14,10 @@ namespace starskycore.Services
 	public class ImportService : IImport
 	{
 		private readonly IStorage _filesystemHelper;
+		private readonly IStorage _inDbStorage;
 
 		private ApplicationDbContext _context;
-		private readonly IExiftool _exiftool;
+		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly IReadMeta _readmeta;
 		private readonly IServiceScopeFactory _scopeFactory;
@@ -25,7 +26,7 @@ namespace starskycore.Services
 
 		public ImportService(ApplicationDbContext context, // <= for table import-index
 			ISync isync, 
-			IExiftool exiftool, 
+			IExifTool exifTool, 
 			AppSettings appSettings, 
 			IServiceScopeFactory scopeFactory,
 			IStorage iStorage,
@@ -36,13 +37,14 @@ namespace starskycore.Services
 			_isConnection = _context.TestConnection(appSettings);
 				
 			_isync = isync;
-			_exiftool = exiftool;
+			_exifTool = exifTool;
 			_appSettings = appSettings;
 			
 			// This is used to handle files on the host system
 			if ( !ignoreIStorage ) _readmeta = new ReadMeta(iStorage);
 			if ( ignoreIStorage ) _readmeta = new ReadMeta(_filesystemHelper);
 
+			_inDbStorage = iStorage;
 			_scopeFactory = scopeFactory;
 		}
 		
@@ -186,20 +188,28 @@ namespace starskycore.Services
             
 		    // Do the copy to the storage folder
 		    _filesystemHelper.FileCopy(inputFileFullPath, destinationFullPath);
+
+
+		    // Support for include sidecar files
+		    var xmpFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(inputFileFullPath);
+		    if ( ExtensionRolesHelper.IsExtensionForceXmp(inputFileFullPath)  && 
+		         _filesystemHelper.ExistFile(xmpFullFilePath))
+		    {
+			    var destinationXmpFullPath =  ExtensionRolesHelper.ReplaceExtensionWithXmp(destinationFullPath);
+			    _filesystemHelper.FileCopy(xmpFullFilePath, destinationXmpFullPath);
+		    }
 		    
 		    
 		    // From here on the item is exit in the storage folder
-
-		    
-		    // Creation of a sidecar xmp file
-		    if ( _appSettings.ExifToolImportXmpCreate )
+		    // Creation of a sidecar xmp file --> NET CORE <--
+		    if ( _appSettings.ExifToolImportXmpCreate && !_appSettings.AddLegacyOverwrite )
 		    {
-			    new ExifToolCmdHelper(_appSettings,_exiftool).XmpSync(destinationFullPath);
+			    var exifCopy = new ExifCopy(_inDbStorage, new ExifTool(_inDbStorage,_appSettings), new ReadMeta(_inDbStorage));
+			    exifCopy.XmpSync(fileIndexItem.FilePath);
 		    }
-		    
-            
-            // Update the contents to the file the imported item
-            if (importSettings.NeedExiftoolSync && ExtensionRolesHelper.IsExtensionExifToolSupported(destinationFullPath))
+
+		    // Update the contents to the file the imported item
+            if (importSettings.NeedExiftoolSync && ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName))
             {
 	            if ( _appSettings.Verbose ) Console.WriteLine("Do a exifToolSync");
                
@@ -210,8 +220,7 @@ namespace starskycore.Services
                     nameof(FileIndexItem.Description),
                 };
 
-                new ExifToolCmdHelper(_appSettings, _exiftool).Update(fileIndexItem, destinationFullPath,
-                    comparedNamesList);
+                new ExifToolCmdHelper(_exifTool,_inDbStorage,_readmeta).Update(fileIndexItem, comparedNamesList);
             }
             
 	        // Ignore the sync part if the connection is missing

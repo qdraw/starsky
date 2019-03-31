@@ -65,11 +65,21 @@ namespace starskycore.Services
 			new StorageHostFullPathFilesystem().FileCopy(inputFileFullPath,toFileFullPath);
 		}
 		
+		/// <summary>
+		/// Check if file exist
+		/// </summary>
+		/// <param name="path">subPath</param>
+		/// <returns>bool</returns>
 		public bool FileDelete(string path)
 		{
-			return new StorageHostFullPathFilesystem().FileDelete(path);
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(path, false);
+			return new StorageHostFullPathFilesystem().FileDelete(inputFileFullPath);
 		}
 		
+		/// <summary>
+		/// Create an Directory 
+		/// </summary>
+		/// <param name="subPath">location</param>
 		public void CreateDirectory(string subPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(subPath, false);
@@ -142,6 +152,13 @@ namespace starskycore.Services
 			return _appSettings.RenameListItemsToDbStyle(folders.ToList());
 		}
 
+		/// <summary>
+		/// Get the file using a stream (don't forget to dispose this)
+		/// </summary>
+		/// <param name="path">subPath</param>
+		/// <param name="maxRead">number of bytes to read (default -1 = all)</param>
+		/// <returns>FileStream</returns>
+		/// <exception cref="FileNotFoundException">is file not exist, please check that first</exception>
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
@@ -163,15 +180,78 @@ namespace starskycore.Services
 
 			return fileStream;
 		}
-
-		public bool ExistThumbnail(string fileHash)
+		
+		
+		/// <summary>
+		/// Write fileStream to disk
+		/// </summary>
+		/// <param name="stream">some stream</param>
+		/// <param name="path">location</param>
+		/// <returns></returns>
+		/// <exception cref="FileNotFoundException"></exception>
+		public bool WriteStream(Stream stream, string path)
 		{
-			throw new NotImplementedException();
+			// should be able to write files that are not exist yet			
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
+
+			return new StorageHostFullPathFilesystem().WriteStream(stream, fullFilePath);
 		}
 
-		public Stream Thumbnail(string fileHash)
+
+		/// <summary>
+		/// Check if thumbnail exist
+		/// </summary>
+		/// <param name="fileHash">bash32 filehash</param>
+		/// <returns></returns>
+		public bool ThumbnailExist(string fileHash)
 		{
-			throw new NotImplementedException();
+			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg");
+			return new StorageHostFullPathFilesystem().ExistFile(filePath);
+		}
+
+		public Stream ThumbnailRead(string fileHash)
+		{
+			if ( !ThumbnailExist(fileHash) ) throw new FileNotFoundException(fileHash); 
+			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg");
+			return new StorageHostFullPathFilesystem().ReadStream(filePath);
+		}
+
+		/// <summary>
+		/// To Write the thumbnail stream
+		/// </summary>
+		/// <param name="stream">the output to write</param>
+		/// <param name="fileHash">the filehash</param>
+		/// <returns></returns>
+		public bool ThumbnailWriteStream(Stream stream, string fileHash)
+		{
+			return new StorageHostFullPathFilesystem()
+				.WriteStream(stream, Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg"));
+		}
+		
+		public void ThumbnailMove(string oldHashCode, string newHashCode)
+		{
+			var oldThumbPath = _appSettings.ThumbnailTempFolder + oldHashCode + ".jpg";
+			var newThumbPath = _appSettings.ThumbnailTempFolder + newHashCode + ".jpg";
+
+			var hostFilesystem = new StorageHostFullPathFilesystem();
+
+			var existOldFile = hostFilesystem.ExistFile(oldThumbPath);
+			var existNewFile = hostFilesystem.ExistFile(newThumbPath);
+
+			if (!existOldFile || existNewFile)
+			{
+				return;
+			}
+			hostFilesystem.FileMove(oldThumbPath,newThumbPath);
+		}
+
+		public bool ThumbnailDelete(string fileHash)
+		{
+			if ( !ThumbnailExist(fileHash) ) return false;
+
+			var thumbPath = _appSettings.ThumbnailTempFolder + fileHash + ".jpg";
+			var hostFilesystem = new StorageHostFullPathFilesystem();
+			return hostFilesystem.FileDelete(thumbPath);
 		}
 	}
 }

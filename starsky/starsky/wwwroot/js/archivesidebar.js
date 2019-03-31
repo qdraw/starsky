@@ -814,13 +814,15 @@ function queryDeleteApi() {
     
     var url = deleteApiBase + "?f=" + toupdateFiles + "&collections=false";
 
-    addNoClickToSidebar();
-    showPreloader();
+    setTimeout(function(){
+        console.log("dfknlsdflk")
+        hidePopupDialog();
+        showPreloader();
+        addNoClickToSidebar();
+    }, 10);
     
     loadJSON(url,
         function (data) {
-            hidePopupDialog();
-            showPreloader();
             setTimeout(function(){
                 location.reload();
             }, 2000);
@@ -838,11 +840,13 @@ function queryDeleteApi() {
 
 function showPreloader() {
     if (document.querySelectorAll(".preloader").length === 1){
+        console.log(document.querySelectorAll(".preloader").length);
         document.querySelector(".preloader").style.display = "block";
     }
 }
 function hidePreloader() {
     if (document.querySelectorAll(".preloader").length === 1) {
+        console.log("hide preloader");
         document.querySelector(".preloader").style.display = "none";
     }
 }
