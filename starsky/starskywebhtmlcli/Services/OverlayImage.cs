@@ -90,8 +90,12 @@ namespace starskywebhtmlcli.Services
 
 		    int xPoint = sourceImage.Width - overlayImage.Width;
 		    int yPoint = sourceImage.Height - overlayImage.Height;
-		    throw new NotImplementedException();
-//		    sourceImage.Mutate(x => x.DrawImage(overlayImage, new Point(xPoint, yPoint), 1F));
+			
+		    // For ImageSharp-0006
+		    // sourceImage.Mutate(x => x.DrawImage(overlayImage, new Point(xPoint, yPoint), 1F));
+		    
+		    // For ImageSharp-0005
+		    sourceImage.Mutate(x => x.DrawImage(overlayImage, PixelBlenderMode.Normal, 1F, new Point(xPoint, yPoint)));
 
 		    sourceImage.SaveAsJpeg(outputStream);
 
