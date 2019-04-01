@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        
+
         <TargetFramework>netstandard2.0</TargetFramework>
         <Description>An attempt to create a database driven photo library</Description>
         <Version>0.1.5.3</Version>
         <IsPackable>true</IsPackable>
-        
+
     </PropertyGroup>
-    
+
     <ItemGroup>
-        
+
         <PackageReference Include="MedallionShell" Version="1.5.1" />
         <PackageReference Include="MetadataExtractor" Version="2.0.0" />
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.6.1" />
@@ -18,8 +18,11 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.1.1" />
         <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.1" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
-        <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-dev002459" />
-        <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-dev002459" />
+        <!-- version beta0006 gives errors on raspi -->
+        <!-- <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-dev002459" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-dev002459" /> -->
+        <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0005" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
         <PackageReference Include="TimeZoneConverter" Version="2.5.1" />
         <PackageReference Include="XmpCore" Version="6.1.10" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.1.4" />
@@ -34,11 +37,11 @@
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
         <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="2.1.6" />
         <PackageReference Include="System.Buffers" Version="4.5.0" />
-        
+
     </ItemGroup>
 
     <ItemGroup Condition=" '$(hideMigrations)' == 'true' ">
-        
+
         <Compile Remove="Migrations\ApplicationDbContextModelSnapshot.cs" />
         <Compile Remove="Migrations\20180308104506_initDatabaseKey.cs" />
         <Compile Remove="Migrations\20180308104506_initDatabaseKey.Designer.cs" />
@@ -80,7 +83,7 @@
         <Compile Remove="Migrations\20190103194709_AddApertureShutterSpeedIsoSpeed.Designer.cs" />
         <Compile Remove="Migrations\20190111162308_MakeModel.cs" />
         <Compile Remove="Migrations\20190111162308_MakeModel.Designer.cs" />
-        
+
     </ItemGroup>
-    
+
 </Project>
