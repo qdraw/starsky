@@ -59,12 +59,13 @@ namespace starskycore.Services
 				return false;
 			
 			// run resize sync
-			var resizeResult = ResizeThumbnailPlain(subPath, fileHash, 1000);
+			ResizeThumbnail(subPath, 1000, fileHash);
 			
 			// check if output any good
 			RemoveCorruptImage(fileHash);
 			
-			if ( !resizeResult )
+			
+			if ( ! _iStorage.ThumbnailExist(fileHash) )
 			{
 				var stream = new PlainTextFileHelper().StringToStream("Thumbnail error");
 				_iStorage.WriteStream(stream, GetErrorLogItemFullPath(subPath));
@@ -97,6 +98,58 @@ namespace starskycore.Services
 			{
 				_iStorage.ThumbnailDelete(fileHash);
 			}
+		}
+
+		public MemoryStream ResizeThumbnail(string subPath, 
+			 int width, string outputHash = null,
+			bool removeExif = false,
+			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
+		{
+			var outputStream = new MemoryStream();
+				
+			try
+			{
+					
+				// resize the image and save it to the output stream
+				using (var inputStream = _iStorage.ReadStream(subPath))
+				using (var image = Image.Load(inputStream))
+				{
+					// Add orginal rotation to the image as json
+					if (image.MetaData.ExifProfile != null && !removeExif)
+					{
+						image.MetaData.ExifProfile.SetValue(ExifTag.Software, "Starsky");
+					}
+	
+					if (image.MetaData.ExifProfile != null && removeExif)
+					{
+						image.MetaData.ExifProfile = null;
+						image.MetaData.IccProfile = null;
+					}
+						
+					image.Mutate(x => x.AutoOrient());
+					image.Mutate(x => x
+						.Resize(width, 0)
+					);
+						
+					ResizeThumbnailImageFormat(image, imageFormat, outputStream);
+	
+					if ( !string.IsNullOrEmpty(outputHash) )
+					{
+						_iStorage.ThumbnailWriteStream(outputStream, outputHash);  
+						outputStream.Dispose();
+						return null;
+					}
+				}
+	
+			}
+			catch (Exception ex)            
+			{
+				if (!(ex is ImageFormatException) && !(ex is ArgumentException)) throw;
+				Console.WriteLine(ex);
+				return null;
+			}
+			return outputStream;
+			
 		}
 
 //		/// <summary>
@@ -140,66 +193,72 @@ namespace starskycore.Services
 //			return false;
 //		}
 
-		private bool ResizeThumbnailPlain(string subPath, string thumbHash, int width, int height = 0,  int quality = 75 )
-		{
-			var stream = ResizeThumbnail(subPath, width, height, quality);
-			return stream != null && _iStorage.ThumbnailWriteStream(stream, thumbHash);
-		} 
+//		private bool ResizeThumbnailPlain(string subPath, string thumbHash, int width, int height = 0,  int quality = 75 )
+//		{
+//			var stream = ResizeThumbnail(subPath, width, height, quality);
+//			return stream != null && _iStorage.ThumbnailWriteStream(stream, thumbHash);
+//		}
+//
+//
+//		/// <summary>
+//		/// Resize the thumbnail to object
+//		/// </summary>
+//		/// <param name="subPath">location</param>
+//		/// <param name="width">the width of the output image</param>
+//		/// <param name="save">need to save direct</param>
+//		/// <param name="height">use 0 to keep ratio</param>
+//		/// <param name="quality">only for jpeg, value 0 - 100</param>
+//		/// <param name="removeExif">dont store exif in output memoryStream</param>
+//		/// <param name="imageFormat">jpeg, or png in Enum</param>
+//		/// <returns>MemoryStream with resized image</returns>
+//		public MemoryStream ResizeThumbnail(string subPath, int width, bool save = false, int height = 0, int quality = 75, 
+//			bool removeExif = false, ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
+//        {
+//	        var outputStream = new MemoryStream();
+//	        
+//            try
+//            {
+//	            
+//                // resize the image and save it to the output stream
+//                using (var inputStream = _iStorage.ReadStream(subPath))
+//                using (var image = Image.Load(inputStream))
+//                {
+//                    // Add orginal rotation to the image as json
+//                    if (image.MetaData.ExifProfile != null && !removeExif)
+//                    {
+//                        image.MetaData.ExifProfile.SetValue(ExifTag.Software, "Starsky");
+//                    }
+//
+//                    if (image.MetaData.ExifProfile != null && removeExif)
+//                    {
+//                        image.MetaData.ExifProfile = null;
+//                        image.MetaData.IccProfile = null;
+//                    }
+//	                
+//                    image.Mutate(x => x.AutoOrient());
+//                    image.Mutate(x => x
+//                        .Resize(width, height)
+//                    );
+//	                
+//	                ResizeThumbnailImageFormat(image, imageFormat, outputStream, quality);
+//
+//	                if ( save )
+//	                {
+//		                _iStorage.ThumbnailWriteStream(outputStream, thumbHash);  
+//	                }
+//                }
+//
+//            }
+//            catch (Exception ex)            
+//            {
+//                if (!(ex is ImageFormatException) && !(ex is ArgumentException)) throw;
+//                Console.WriteLine(ex);
+//                return null;
+//            }
+//            return outputStream;
+//        }
+//		
 		
-		
-		/// <summary>
-		/// Resize the thumbnail to object
-		/// </summary>
-		/// <param name="subPath">location</param>
-		/// <param name="width">the width of the output image</param>
-		/// <param name="height">use 0 to keep ratio</param>
-		/// <param name="quality">only for jpeg, value 0 - 100</param>
-		/// <param name="removeExif">dont store exif in output memoryStream</param>
-		/// <param name="imageFormat">jpeg, or png in Enum</param>
-		/// <returns>MemoryStream with resized image</returns>
-		public MemoryStream ResizeThumbnail(string subPath, int width, int height = 0, int quality = 75, 
-			bool removeExif = false, ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
-        {
-	        var outputStream = new MemoryStream();
-	        
-            try
-            {
-	            
-                // resize the image and save it to the output stream
-                using (var inputStream = _iStorage.ReadStream(subPath))
-                using (var image = Image.Load(inputStream))
-                {
-                    // Add orginal rotation to the image as json
-                    if (image.MetaData.ExifProfile != null && !removeExif)
-                    {
-                        image.MetaData.ExifProfile.SetValue(ExifTag.Software, "Starsky");
-                    }
-
-                    if (image.MetaData.ExifProfile != null && removeExif)
-                    {
-                        image.MetaData.ExifProfile = null;
-                        image.MetaData.IccProfile = null;
-                    }
-	                
-                    image.Mutate(x => x.AutoOrient());
-                    image.Mutate(x => x
-                        .Resize(width, height)
-                    );
-	                
-	                ResizeThumbnailImageFormat(image, imageFormat, outputStream, quality);
-	                
-	                outputStream.Seek(0, SeekOrigin.Begin);
-                }
-
-            }
-            catch (Exception ex)            
-            {
-                if (!(ex is ImageFormatException) && !(ex is ArgumentException)) throw;
-                Console.WriteLine(ex);
-                return null;
-            }
-            return outputStream;
-        }
 		
 		/// <summary>
 		/// Used in ResizeThumbnailToStream to save based on the input settings
@@ -207,9 +266,8 @@ namespace starskycore.Services
 		/// <param name="image">Rgba32 image</param>
 		/// <param name="imageFormat">Files ImageFormat</param>
 		/// <param name="outputStream">input stream to save</param>
-		/// <param name="quality">default 75, only for jpegs</param>
 		private void ResizeThumbnailImageFormat(Image<Rgba32> image, ExtensionRolesHelper.ImageFormat imageFormat, 
-			MemoryStream outputStream, int quality = 75)
+			MemoryStream outputStream)
 		{
 			if ( outputStream == null ) throw new ArgumentNullException(nameof(outputStream));
 			
@@ -227,6 +285,8 @@ namespace starskycore.Services
 			});
 	
 		}
+		
+		
 		
 		
 		/// <summary>
@@ -257,7 +317,8 @@ namespace starskycore.Services
 					image.Mutate(x => x
 						.Rotate(rotateMode));
 					
-					ResizeThumbnailImageFormat(image, ExtensionRolesHelper.ImageFormat.jpg, stream, 90);
+					// Image<Rgba32> image, ExtensionRolesHelper.ImageFormat imageFormat, MemoryStream outputStream
+					ResizeThumbnailImageFormat(image, ExtensionRolesHelper.ImageFormat.jpg, stream);
 					_iStorage.ThumbnailWriteStream(stream, fileHash);
 				}
 			}
