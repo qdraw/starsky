@@ -1522,7 +1522,6 @@ div#popup .content
     margin-left:-150px;
     padding:20px;
     background-color:white;
-    /*z-index: 502;*/
     cursor: default;
 
 }
@@ -1531,7 +1530,7 @@ div#popup .content p {
 }
 
 div#popup {
-    z-index: 501;
+    z-index: 502;
     display: none;
     position: fixed;
     top: 0;
@@ -1540,12 +1539,35 @@ div#popup {
     height: 100%;
     background-color: rgba(0,0,0,0.5);
     cursor: pointer;
-
 }
 
 div#popup.on .content,
-div#popup.on {
+div#popup.on{
     display: block;
+}
+
+div#update.on {
+    transition-delay: 0s;
+    visibility: visible;
+    opacity: 1;
+}
+
+div#update {
+    position: fixed;
+    bottom:20px;
+    z-index: 501;
+    left:30px;
+    width:300px;
+    padding:20px;
+    background-color:#546E7A;
+    color: #fff;
+    cursor: default;
+    
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s linear 0.33s, opacity 0.33s linear;
+    
+
 }
 
 .js-toggle-issingleitem {

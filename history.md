@@ -4,7 +4,6 @@
 # Features planned (in random order)
 - []   Front-end for Replace API in folder view
 - []   Realtime Files API
-- []   Front-end copy ctrl+shift+c visual feedback
 - []   Front-end for Rename files
 - []   mp4/h.264 video support
 - []   time zone shifting
@@ -12,6 +11,10 @@
 - []   Search: support for complex and/or operators `(this || or) && that`
 - []   Add unit tests for importing raw's with .xmp files
 - []   Warnup script with variables
+
+# version 0.1.5.4 - tdb
+- fix: for readonly there is no TIFF label
+- Front-end copy ctrl+shift+c visual feedback
 
 # version 0.1.5.3 - 2019-03-31
 - refactoring connection to ExifTool to use iStorage

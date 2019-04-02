@@ -31,10 +31,12 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 }
                 else if (document.activeElement.className.indexOf("form-control") === -1
                 && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
-                    showPopupDialog("<p>Je bent al bij het eerste item, je kunt niet verder terug</p>\n" +
-                        "<p>\n" +
-                        "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
-                        "</p>\n", 3000);
+                    showUpdateDialog("Je bent al bij het laatste item, je kunt niet verder", 3000);
+
+                    // showPopupDialog("<p>Je bent al bij het eerste item, je kunt niet verder terug</p>\n" +
+                    //     "<p>\n" +
+                    //     "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
+                    //     "</p>\n", 3000);
                 }
                 break;
             case 38:
@@ -53,10 +55,12 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 }
                 else if (document.activeElement.className.indexOf("form-control") === -1
                 && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
-                    showPopupDialog( "<p>Je bent al bij het laatste item, je kunt niet verder</p>\n" +
-                        "<p>\n" +
-                        "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
-                        "</p>\n",3000); 
+                    showUpdateDialog("Je bent al bij het eerste item, je kunt niet verder",3000);
+
+                    // showPopupDialog( "<p>Je bent al bij het laatste item, je kunt niet verder</p>\n" +
+                    //     "<p>\n" +
+                    //     "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
+                    //     "</p>\n",3000); 
                 }
                 break;
             case 40:
@@ -117,6 +121,9 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                     var name = "copy_#" + formControl[i].parentElement.id + " - " + formControl[i].className;
                     var contentCopy = document.querySelectorAll(".form-control.js-allow-auto-copy")[i].textContent;
                     window.localStorage.setItem(name, contentCopy);
+
+                    showUpdateDialog("Je hebt nu de items gekopieerd",3000);
+
                 }
                 previousKey = [];
             }
@@ -137,6 +144,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                     }
                     // console.log("paste +> " + content);
                 }
+                showUpdateDialog("Je hebt nu de items geplakt",3000);
 
                 previousKey = [];
             }
@@ -230,10 +238,12 @@ function goRight() {
         document.activeElement.className.indexOf("form-control") === -1
         && document.activeElement.className.indexOf("leaflet-touch-drag") === -1)
     {
-        showPopupDialog("<p>Je bent al bij het eerste item, je kunt niet verder terug.</p>\n" +
-            "<p>\n" +
-            "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
-            "</p>\n", 3000);
+        showUpdateDialog("Je bent al bij het eerste item, je kunt niet verder",3000);
+
+        // showPopupDialog("<p>Je bent al bij het eerste item, je kunt niet verder terug.</p>\n" +
+        //     "<p>\n" +
+        //     "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
+        //     "</p>\n", 3000);
        
     }
 }
@@ -249,10 +259,12 @@ function goLeft() {
         document.activeElement.className.indexOf("form-control") === -1
         && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
 
-        showPopupDialog( "<p>Je bent al bij het laatste item, je kunt niet verder</p>\n" +
-            "<p>\n" +
-            "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oké</a>\n" +
-            "</p>\n",3000);
+        showUpdateDialog("Je bent al bij het laatste item, je kunt niet verder",3000);
+
+        // showPopupDialog( "<p>Je bent al bij het laatste item, je kunt niet verder</p>\n" +
+        //     "<p>\n" +
+        //     "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oké</a>\n" +
+        //     "</p>\n",3000);
 
     }
 } 
@@ -371,6 +383,28 @@ function hidePopupDialog(those) {
         document.querySelector("#popup").classList.remove("on");
     }
 }
+
+function showUpdateDialog(content,timeout) {
+    if (document.querySelectorAll("#update").length === 1) {
+        document.querySelector("#update").classList.add("on");
+
+        document.querySelector("#update").innerHTML = content;
+        
+        if (!isNaN(timeout)) {
+            setTimeout(function(){
+                hideUpdateDialog()
+            }, timeout);
+        }
+    }
+}
+
+
+function hideUpdateDialog() {
+    if (document.querySelectorAll("#update").length === 1) {
+        document.querySelector("#update").classList.remove("on");
+    }
+}
+
 
 function showPopupDialog(content,timeout) {
     if (document.querySelectorAll("#popup").length === 1) {

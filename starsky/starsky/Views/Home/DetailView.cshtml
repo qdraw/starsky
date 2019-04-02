@@ -192,7 +192,14 @@
 					<div>
 						<div class="js-collectionsswitch">
 							<h4>Collecties:</h4>
-							<div><a class="btn btn-default small" href="#">@Model.FileIndexItem.ImageFormat</a></div>
+							<div>
+								@foreach ( var collectionPath in @Model.FileIndexItem.CollectionPaths )
+								{
+									<a class="btn btn-default small" href="@Url.Action("Index", "Home", new {f = @collectionPath})">
+										@ExtensionRolesHelper.MapFileTypesToExtension(@collectionPath)
+									</a>
+								}
+							</div>
 						</div>
 
 					</div>
@@ -282,6 +289,8 @@
 	<div id="popup">
 		<div class="content">
 		</div>
+	</div>
+	<div id="update">
 	</div>
 	
 </div>
