@@ -7,6 +7,7 @@ cd "$(dirname "$0")"
 
 PM2NAME="starsky"
 RUNTIME="linux-arm"
+PORT=5000
 
 ARGUMENTS=("$@")
 
@@ -19,6 +20,7 @@ for ((i = 1; i <= $#; i++ )); do
     then
         echo "--name pm2name"
         echo "--runtime linux-arm"
+        echo "--port 5000"
     fi
     
     if [[ ${ARGUMENTS[PREV]} == "--name" ]];
@@ -31,6 +33,10 @@ for ((i = 1; i <= $#; i++ )); do
         RUNTIME="${ARGUMENTS[CURRENT]}"
     fi
     
+    if [[ ${ARGUMENTS[PREV]} == "--port" ]];
+    then
+        PORT="${ARGUMENTS[CURRENT]}"
+    fi
   fi
 done
 
@@ -102,4 +108,4 @@ fi
 pm2 start $PM2NAME
 
 ## WARMUP WITHOUT LOGIN
-bash pm2-warmup.sh
+bash pm2-warmup.sh --port $PORT
