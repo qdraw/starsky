@@ -4,7 +4,7 @@
 
         <TargetFramework>netstandard2.0</TargetFramework>
         <Description>An attempt to create a database driven photo library</Description>
-        <Version>0.1.5.3</Version>
+        <Version>0.1.5.4</Version>
         <IsPackable>true</IsPackable>
 
     </PropertyGroup>
