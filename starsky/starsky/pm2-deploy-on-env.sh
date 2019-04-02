@@ -20,7 +20,7 @@ for ((i = 1; i <= $#; i++ )); do
     then
         echo "--name pm2name"
         echo "--runtime linux-arm"
-        echo "--port 5000"
+        echo "--port 4823"
     fi
     
     if [[ ${ARGUMENTS[PREV]} == "--name" ]];
@@ -40,8 +40,8 @@ for ((i = 1; i <= $#; i++ )); do
   fi
 done
 
-
-echo $PM2NAME $RUNTIME
+# settings
+echo "pm2" $PM2NAME "runtime" $RUNTIME "port" $PORT
 
 if [ ! -f "starsky-$RUNTIME.zip" ]; then
     echo "> starsky-$RUNTIME.zip not found"
@@ -104,8 +104,16 @@ if [ -f starskywebhtmlcli ]; then
     chmod +x ./starskywebhtmlcli
 fi
 
+if [ -f pm2-deploy-on-env.sh ]; then
+    chmod +x ./pm2-deploy-on-env.sh
+fi
+
+if [ -f pm2-warmup.sh ]; then
+    chmod +x ./pm2-warmup.sh
+fi
 
 pm2 start $PM2NAME
 
 ## WARMUP WITHOUT LOGIN
+echo "warmup -->"
 bash pm2-warmup.sh --port $PORT

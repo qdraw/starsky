@@ -13,7 +13,7 @@ for ((i = 1; i <= $#; i++ )); do
 
     if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
     then
-        echo "--port 5000"
+        echo "--port 4823"
     fi
     
     if [[ ${ARGUMENTS[PREV]} == "--port" ]];
@@ -28,6 +28,8 @@ URL="http://localhost:$PORT"
 # no slash
 URL=${URL%/}
 
+echo "Running on:"
+echo $URL
 
 COUNTER=0
 MAXCOUNTER=30
