@@ -320,6 +320,8 @@ namespace starskycore.Services
 
 	            var model = GetContentNameSpace(property, "tiff:Model");
 	            if (model != null) item.SetMakeModel(model,1);
+
+                // Path=exif:FocalLength Namespace=http://ns.adobe.com/exif/1.0/ Value=200/1
 	            
             }
 	        

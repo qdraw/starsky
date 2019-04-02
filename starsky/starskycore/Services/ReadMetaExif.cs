@@ -156,6 +156,8 @@ namespace starskycore.Services
 	            {
 		            item.SetIsoSpeed(isoSpeed);
 	            }
+
+	            // [Exif SubIFD] Focal Length = 200 mm
 	            
 	            
 	            var make = GetMakeModel(exifItem,true);
