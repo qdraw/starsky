@@ -13,6 +13,9 @@
 - []   Add unit tests for importing raw's with .xmp files
 - []   Warnup script with variables
 
+# version 0.1.5.4 - tdb
+- fix: for readonly there is no TIFF label
+
 # version 0.1.5.3 - 2019-03-31
 - refactoring connection to ExifTool to use iStorage
 - refactoring thumbnail service
