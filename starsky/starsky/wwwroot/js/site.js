@@ -121,6 +121,9 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                     var name = "copy_#" + formControl[i].parentElement.id + " - " + formControl[i].className;
                     var contentCopy = document.querySelectorAll(".form-control.js-allow-auto-copy")[i].textContent;
                     window.localStorage.setItem(name, contentCopy);
+
+                    showUpdateDialog("Je hebt nu de items gekopieerd",3000);
+
                 }
                 previousKey = [];
             }
@@ -141,6 +144,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                     }
                     // console.log("paste +> " + content);
                 }
+                showUpdateDialog("Je hebt nu de items geplakt",3000);
 
                 previousKey = [];
             }
@@ -381,14 +385,12 @@ function hidePopupDialog(those) {
 }
 
 function showUpdateDialog(content,timeout) {
-    console.log("SDfdsf");
     if (document.querySelectorAll("#update").length === 1) {
         document.querySelector("#update").classList.add("on");
 
         document.querySelector("#update").innerHTML = content;
         
         if (!isNaN(timeout)) {
-            console.log(timeout);
             setTimeout(function(){
                 hideUpdateDialog()
             }, timeout);
