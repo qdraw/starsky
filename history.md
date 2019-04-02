@@ -14,7 +14,7 @@
 # version 0.1.5.4 - tdb
 - fix: for readonly there is no TIFF label
 - Front-end copy ctrl+shift+c visual feedback
-- Warnup script with variables
+- Warmup script with variables
 
 # version 0.1.5.3 - 2019-03-31
 - refactoring connection to ExifTool to use iStorage
