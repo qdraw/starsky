@@ -10,6 +10,7 @@
 - []   Pagination on folders - Performance update for example 800 files
 - []   Search: support for complex and/or operators `(this || or) && that`
 - []   Add unit tests for importing raw's with .xmp files
+- []   Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
 
 # version 0.1.5.4 - tdb
 - fix: for readonly there is no TIFF label

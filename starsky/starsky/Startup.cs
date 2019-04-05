@@ -107,11 +107,16 @@ namespace starsky
 
 	        
 			// to add support for swagger
-			new SwaggerHelper(_appSettings).Add01SwaggerGenHelper(services);	        
+			new SwaggerHelper(_appSettings).Add01SwaggerGenHelper(services);
 
+			// NET Core 3 -> removed newtonsoft from core
+#if NETCOREAPP3_0
 	        services.AddMvc()
-	            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-	        
+	            .AddNewtonsoftJson();
+#else
+	        services.AddMvc();
+#endif
+
 	        // Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
 			services.Configure<ForwardedHeadersOptions>(options =>
 			{
@@ -146,7 +151,6 @@ namespace starsky
             
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 app.UseStatusCodePages();
             }
@@ -177,17 +181,14 @@ namespace starsky
             app.UseAuthentication();
             app.UseBasicAuthentication();
 
-
 			app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-	        
-	        
 
-            // Run the latest migration on the database. 
+			// Run the latest migration on the database. 
             // To startover with a sqlite database please remove it and
             // it will add a new one
             try
