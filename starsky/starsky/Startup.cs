@@ -114,7 +114,7 @@ namespace starsky
 	        services.AddMvc()
 	            .AddNewtonsoftJson();
 #else
-			services.AddMvc()
+	        services.AddMvc();
 #endif
 
 	        // Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
