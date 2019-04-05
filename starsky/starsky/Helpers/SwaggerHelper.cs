@@ -25,18 +25,42 @@ namespace starsky.Helpers
 		public void Add01SwaggerGenHelper(IServiceCollection services)
 		{
 			var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			
+
 			services.AddSwaggerGen(c =>
 			{
-				c.SwaggerDoc(_appSettings.Name, new Info { Title = _appSettings.Name, Version = version });
+				// todo: Swagger 5.x code
+//				c.SwaggerDoc(_appSettings.Name, new OpenApiInfo { Title = _appSettings.Name, Version = version });
+//		        c.AddSecurityDefinition("basicAuth",new OpenApiSecurityScheme()
+//		        {
+//			        Type = SecuritySchemeType.Http,
+//			        Scheme = "basic",
+//			        Description = "Input your username and password to access this API"
+//		        }); 
+//		        
+//		        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+//		        {
+//			        {
+//				        new OpenApiSecurityScheme
+//				        {
+//					        Reference = new OpenApiReference {
+//						        Type = ReferenceType.SecurityScheme,
+//						        Id = "basicAuth" }
+//				        }, new List<string>() }
+//		        });
+
 		        
+//				// Done in swagger 4.x 				
+				c.SwaggerDoc(_appSettings.Name, new Info { Title = _appSettings.Name, Version = version });
 				c.AddSecurityDefinition("basic", new BasicAuthScheme {Type = "basic", Description = "basic authentication" }); 
 				c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> { { "basic", new string[] { } },});
-		        
+				
 				c.IncludeXmlComments(GetXmlCommentsPath());
 				c.DescribeAllEnumsAsStrings();
+				
+				// todo: break in Swagger 5.x
 				c.DocumentFilter<BasicAuthFilter>();
 			}); 
+			
 		}
 
 		public void Add02AppUseSwaggerAndUi(IApplicationBuilder app)
@@ -73,6 +97,7 @@ namespace starsky.Helpers
 		
 		private static string GenerateSwagger(IServiceScope serviceScope, string docName)
 		{
+			// todo: this feature will break in Swagger 5.x
 			var swaggerProvider = (ISwaggerProvider)serviceScope.ServiceProvider.GetService(typeof(ISwaggerProvider));
 			if ( swaggerProvider == null ) return string.Empty;
 
@@ -83,6 +108,7 @@ namespace starsky.Helpers
 				});
 		}
 
+		// todo: this feature will break in Swagger 5.x
 		private class BasicAuthFilter : IDocumentFilter
 		{
 			public void Apply(SwaggerDocument swaggerDoc, DocumentFilterContext context)

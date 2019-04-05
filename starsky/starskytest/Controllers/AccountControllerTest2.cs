@@ -40,6 +40,7 @@ namespace starskytest.Controllers
                 .AddDbContext<ApplicationDbContext>(b =>
                     b.UseInMemoryDatabase("test123").UseInternalServiceProvider(efServiceProvider));
 
+            // todo: breaking in net core 3.0 (AddEntityFrameworkStores)
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
