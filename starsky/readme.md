@@ -176,6 +176,15 @@ The script [`pm2-starksy-new.sh`](starsky/pm2-starksy-new.sh) is a script to set
  export ASPNETCORE_ENVIRONMENT="Production"
 ```
 
+### pm2 `pm2-deploy-on-env.sh`
+
+To remove the content of the parent folder of this script. The following content are not deleted: app settings, temp, zip files and database files. The starsky files will get executed and need to have those rights. The pm2 instance will be restarted.
+  
+### pm2 `pm2-warmup.sh`
+
+To warmup the installation after a restart this bash script is provided 
+
+
 ### Publish-scripts for 'self containing' binaries
 
 The scripts that are used to create a full build. (Linux has `libunwind8` and `gettext` as dependency)
