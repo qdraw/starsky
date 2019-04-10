@@ -99,10 +99,16 @@ git clone "https://bitbucket.org/qdraw/starsky.git"
 
 2.  On your laptop (x86/x64 machine). Get the `dotnet` 2.2 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
 
-3.  Compile the Starsky-installation on your x86/x64 machine first. I use the following wrapper to build all projects for Linux ARM [`publish-linux-arm.sh`](publish-linux-arm.sh)
+3.  Compile the Starsky-installation on your x86/x64 machine first. The cake build script with parameters can be used to build for this runtime.
 
+_Using bash (need mono first)_
 ```sh
-./publish-linux-arm.sh
+./build.sh --runtime="linux-arm"
+```
+
+_Using powershell_
+```powershell
+powershell -File build.ps1 -ScriptArgs '-runtime="linux-arm"'
 ```
 
 4.  Copy contents from the `linux-arm` folder to your Raspberry Pi
@@ -135,7 +141,8 @@ sudo apt-get install libimage-exiftool-perl
 ./starsky
 ```
 
-9.  Create a account in the starsky application. Those credentials are only required by the web application
+9.  Create a account in the Starsky application. Those credentials are only required by the web application
+
 > Security issue: Please be aware that this endpoint is always open to everyone
 
 ```
@@ -172,6 +179,28 @@ The script [`pm2-starksy-new.sh`](starsky/pm2-starksy-new.sh) is a script to set
 ### Publish-scripts for 'self containing' binaries
 
 The scripts that are used to create a full build. (Linux has `libunwind8` and `gettext` as dependency)
-  - [`publish-linux-arm.sh`](publish-linux-arm.sh) Linux ARM (Raspberry Pi 2/3)
-  - [`publish-mac.sh`](publish-mac.sh) OS X 10.12+
-  - [`publish-windows.sh`](publish-windows.sh) Windows 7+
+
+The Cake script provide options to build for specific runtimes. 
+
+#### To build for Mac
+
+_Using bash (need mono first)_
+```sh
+./build.sh --runtime="osx.10.12-x64"
+```
+
+_Using powershell_
+```powershell
+powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
+```
+#### To build for 32 bits Windows
+
+_Using bash (need mono first)_
+```sh
+./build.sh --runtime="win7-x86"
+```
+
+_Using powershell_
+```powershell
+powershell -File build.ps1 -ScriptArgs '-runtime="win7-x86"'
+```
