@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -109,6 +108,18 @@ namespace starsky
 			// to add support for swagger
 			new SwaggerHelper(_appSettings).Add01SwaggerGenHelper(services);
 
+			// Now only for dev
+			services.AddCors(options =>
+			{
+				options.AddPolicy("CorsDevelopment",
+					builder => builder
+						.WithOrigins("http://localhost:4200",
+							"http://localhost:8080")
+						.AllowAnyMethod()
+						.AllowAnyHeader()
+						.AllowCredentials() );
+			});
+			
 			// NET Core 3 -> removed newtonsoft from core
 #if NETCOREAPP3_0
 	        services.AddMvc()
@@ -153,6 +164,9 @@ namespace starsky
             {
                 app.UseDeveloperExceptionPage();
                 app.UseStatusCodePages();
+                
+                // Allow in dev to use localhost services
+                app.UseCors("CorsDevelopment");
             }
             else
             {
