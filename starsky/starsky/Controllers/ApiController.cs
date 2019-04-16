@@ -48,7 +48,8 @@ namespace starsky.Controllers
 	    /// <returns></returns>
 	    /// <response code="200">returns a list of items from the database</response>
 	    /// <response code="404">subpath not found in the database</response>
-		[HttpGet("/api")]
+	    /// <response code="401">User unauthorized</response>
+	    [HttpGet("/api")]
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(ArchiveViewModel),200)]
 		[ProducesResponseType(404)]
@@ -100,6 +101,7 @@ namespace starsky.Controllers
         /// <returns>update json</returns>
         /// <response code="200">the item including the updated content</response>
         /// <response code="404">item not found in the database or on disk</response>
+        /// <response code="401">User unauthorized</response>
         [IgnoreAntiforgeryToken]
 		[ProducesResponseType(typeof(List<FileIndexItem>),200)]
 		[ProducesResponseType(typeof(List<FileIndexItem>),404)]
@@ -198,6 +200,7 @@ namespace starsky.Controllers
 	    /// <param name="replace">replace [search] with this text</param>
 	    /// <param name="collections">enable collections</param>
 	    /// <returns>list of changed files</returns>
+	    /// <response code="401">User unauthorized</response>
 	    [HttpPost("/api/replace")]
 	    [Produces("application/json")]
 	    public IActionResult Replace(string f, string fieldName, string search, string replace, bool collections = true)
@@ -258,6 +261,7 @@ namespace starsky.Controllers
         /// <response code="200">the item on disk</response>
         /// <response code="404">item not found on disk</response>
         /// <response code="203">you are not allowed to edit this item</response>
+        /// <response code="401">User unauthorized</response>
         [HttpGet("/api/info")]
         [ProducesResponseType(typeof(List<FileIndexItem>),200)]
         [ProducesResponseType(typeof(List<FileIndexItem>),404)]
@@ -325,6 +329,7 @@ namespace starsky.Controllers
         /// <returns>list of deleted files</returns>
         /// <response code="200">file is gone</response>
         /// <response code="404">item not found on disk or !delete! tag is missing</response>
+        /// <response code="401">User unauthorized</response>
         [HttpDelete("/api/delete")]
         [ProducesResponseType(typeof(List<FileIndexItem>),200)]
         [ProducesResponseType(typeof(List<FileIndexItem>),404)]
@@ -405,6 +410,7 @@ namespace starsky.Controllers
         /// <response code="404">item not found on disk</response>
         /// <response code="409">Conflict, you did try get for example a thumbnail of a raw file</response>
         /// <response code="209">"Thumbnail is not ready yet"</response>
+        /// <response code="401">User unauthorized</response>
         [HttpGet("/api/thumbnail/{f}")]
         [ProducesResponseType(200)] // file
         [ProducesResponseType(404)] // not found
@@ -523,6 +529,7 @@ namespace starsky.Controllers
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
         /// <response code="404">source image missing</response>
         /// <response code="500">"Thumbnail generation failed"</response>
+        /// <response code="401">User unauthorized</response>
         [HttpGet("/api/downloadPhoto")]
         [ProducesResponseType(200)] // file
         [ProducesResponseType(404)] // not found
@@ -603,6 +610,7 @@ namespace starsky.Controllers
         /// <response code="412">"cache disabled in config"</response>
         /// <response code="400">ignored, please check if the 'f' path exist or use a folder string to clear the cache</response>
         /// <response code="302">redirect back to the url</response>
+        /// <response code="401">User unauthorized</response>
         [HttpGet("/api/RemoveCache")]
         [HttpPost("/api/RemoveCache")]
         [ProducesResponseType(200)] // "cache successful cleared"
