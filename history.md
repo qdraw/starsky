@@ -16,6 +16,8 @@
 - fix: for readonly there is no TIFF label
 - Front-end copy ctrl+shift+c visual feedback
 - Warmup script with variables
+- Allow CORS for DEBUG mode for localhost domains
+- __CHANGE:__ Unauthorised users return 401 on /api (instead of redirect)
 
 # version 0.1.5.3 - 2019-03-31
 - refactoring connection to ExifTool to use iStorage
