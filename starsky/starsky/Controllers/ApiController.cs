@@ -61,7 +61,15 @@ namespace starsky.Controllers
 			bool hidedelete = true
 		)
 		{
-			return new HomeController(_query, _appSettings).Index(f, colorClass, json, collections, hidedelete);
+			var homeController = new HomeController(_query, _appSettings)
+			{
+				ControllerContext =
+				{
+					HttpContext = HttpContext,
+				},
+				Url = Url
+			};
+			return homeController.Index(f, colorClass, json, collections, hidedelete);
 		}
 
 	    /// <summary>
