@@ -1,5 +1,8 @@
 using System;
 using System.IO;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -71,16 +74,19 @@ namespace starsky
                     sharedOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     sharedOptions.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+
                 })
                 .AddCookie(options =>
                     {
                         options.Cookie.Name = "_id";
                         options.ExpireTimeSpan = TimeSpan.FromDays(365);
                         options.SlidingExpiration = true;
+                        options.LoginPath = "/account/login";
+                        options.LogoutPath = "/account/logout";
+                        options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
                     }
                 );
 
-        
             services.AddScoped<IQuery, Query>();
             services.AddScoped<ISync, SyncService>();
             services.AddScoped<ISearch, SearchService>();
@@ -146,11 +152,29 @@ namespace starsky
 	        services.AddSingleton<IHttpProvider,HttpProvider>();
 	        services.AddSingleton<HttpClientHelper>();
 	        services.AddSingleton<System.Net.Http.HttpClient>();
-
+	       
         }
 
+        /// <summary>
+        /// Does the current user get a redirect or 401 page
+        /// </summary>
+        /// <param name="statusCode">current status code</param>
+        /// <param name="existingRedirector">func of RedirectContext</param>
+        /// <returns></returns>
+        static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, 
+	        Func<RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
+	        context => {
+		        if ( !context.Request.Path.StartsWithSegments("/api") )
+			        return existingRedirector(context);
+		        context.Response.StatusCode = (int)statusCode;
+		        return Task.CompletedTask;
+	        };
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        /// <param name="app">ApplicationBuilder</param>
+        /// <param name="env">Hosting Env</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
 	        
