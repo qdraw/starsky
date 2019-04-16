@@ -351,7 +351,10 @@ starsky-netframework-msbuild.zip
 **/Cake/*
 **/tools/nuget.exe
 **/tools/packages.config*
+**/tools/Addins/*/**
 **/tools/ReportGenerator*/*
 **/coveragereport/*
 **/__coveragereport/*
 **/coverage.report/*
+bundle.min.js
+bundle.min.js.map
