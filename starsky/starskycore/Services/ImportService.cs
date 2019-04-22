@@ -150,6 +150,10 @@ namespace starskycore.Services
 			// Item is good
 			importIndexItem.Status = ImportStatus.Ok;
 
+			// Store the location in the import database
+			// This field is NOT updated when you move a file
+			importIndexItem.FilePath = fileIndexItem.FilePath;
+
 			// Store fileindexitem inside ImportIndexIten
 			importIndexItem.FileIndexItem = fileIndexItem;
 			return importIndexItem;

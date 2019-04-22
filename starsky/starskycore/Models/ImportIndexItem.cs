@@ -29,7 +29,7 @@ namespace starskycore.Models
         private readonly AppSettings _appSettings;
 
         //  In order to create an instance of 'ImportIndexItem'
-        // EF requires that a parameterless constructor be declared.
+        // EF requires that a parameter-less constructor be declared.
         public ImportIndexItem()
         {
         }
@@ -40,13 +40,34 @@ namespace starskycore.Models
             Structure = _appSettings.Structure;
         }
 
+        /// <summary>
+        /// Database Number (isn't used anywhere)
+        /// </summary>
+        [JsonIgnore]
         public int Id { get; set; }
         
+        /// <summary>
+        /// FileHash before importing
+        /// When using a -ColorClass=1 overwrite the fileHash changes during the import process
+        /// </summary>
         public string FileHash { get; set; }
+        
+        /// <summary>
+        /// The location where the image should be stored.
+        /// When the user move an item this field is NOT updated
+        /// </summary>
+        [NotMapped]
+        public string FilePath { get; set; }
 
+        /// <summary>
+        /// UTC DateTime when the file is imported
+        /// </summary>
         public DateTime AddToDatabase { get; set; }
 
-        public DateTime DateTime{ get; set; } // Time of the photo
+        /// <summary>
+        /// DateTime of the photo/or when it is originally is made
+        /// </summary>
+        public DateTime DateTime{ get; set; }
 	    
 	    [NotMapped]
 	    [JsonConverter(typeof(StringEnumConverter))]
