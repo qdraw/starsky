@@ -195,6 +195,10 @@ namespace starskycore.Services
                                                                    +  " Please try again > to many failures;");
             if (destinationFullPath == null) return new ImportIndexItem{Status = ImportStatus.FileError};
             
+            // Store the location in the import database
+            // This field is NOT updated when you move a file
+            importIndexItem.FilePath = fileIndexItem.FilePath;
+            
 		    // Do the copy to the storage folder
 		    _filesystemHelper.FileCopy(inputFileFullPath, destinationFullPath);
 
