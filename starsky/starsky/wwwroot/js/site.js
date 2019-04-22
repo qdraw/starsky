@@ -20,9 +20,9 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
             case 37:
                 // left
                 setPrev();
-                if (prev != null 
+                if (prev != null
                     && (document.activeElement.className.indexOf("form-control") === -1
-                    && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) 
+                    && document.activeElement.className.indexOf("leaflet-touch-drag") === -1)
                     ) {
                     window.location.href = prev;
                 }
@@ -31,7 +31,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 }
                 else if (document.activeElement.className.indexOf("form-control") === -1
                 && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
-                    showUpdateDialog("Je bent al bij het laatste item, je kunt niet verder", 3000);
+                    showUpdateDialog("Je bent al bij het eerste item, je kunt niet verder", 3000);
 
                     // showPopupDialog("<p>Je bent al bij het eerste item, je kunt niet verder terug</p>\n" +
                     //     "<p>\n" +
@@ -55,12 +55,12 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 }
                 else if (document.activeElement.className.indexOf("form-control") === -1
                 && document.activeElement.className.indexOf("leaflet-touch-drag") === -1) {
-                    showUpdateDialog("Je bent al bij het eerste item, je kunt niet verder",3000);
+                    showUpdateDialog("Je bent al bij het laatste item, je kunt niet verder",3000);
 
                     // showPopupDialog( "<p>Je bent al bij het laatste item, je kunt niet verder</p>\n" +
                     //     "<p>\n" +
                     //     "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
-                    //     "</p>\n",3000); 
+                    //     "</p>\n",3000);
                 }
                 break;
             case 40:
@@ -106,8 +106,8 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 break;
 
         }
-        
-        
+
+
         // auto copy
         if(document.querySelectorAll(".archive").length === 1 || document.querySelectorAll(".detailview").length === 1) {
             // copy
@@ -149,9 +149,9 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
                 previousKey = [];
             }
         }
-        
+
     };
-    
+
     // swipes
 
     // document.addEventListener('touchstart', handleTouchStart, false);
@@ -168,7 +168,7 @@ if (document.querySelectorAll(".nextprev").length >= 1) {
     //         console.log(" User moved fingers further apart");
     //     }
     // }, false);
-    
+
 }
 
 // function handleTouchStart(evt) {
@@ -244,7 +244,7 @@ function goRight() {
         //     "<p>\n" +
         //     "<a data-onclick=\"hidePopupDialog()\" class=\"btn-sm btn btn-secondary\">Oke</a>\n" +
         //     "</p>\n", 3000);
-       
+
     }
 }
 
@@ -267,18 +267,18 @@ function goLeft() {
         //     "</p>\n",3000);
 
     }
-} 
+}
 
 var el = document.querySelector("body");
 swipedetect(el, function(swipedir){
 
-    if (swipedir === "left") 
+    if (swipedir === "left")
     {
         goLeft();
     }
     if (swipedir === "right") {
         goRight();
-    } 
+    }
 
     // swipedir contains either "none", "left", "right", "top", or "down"
 });
@@ -359,7 +359,7 @@ function hamburger(e) {
 
 if (document.querySelectorAll("#popup").length === 1) {
     document.querySelector("#popup")
-        .addEventListener("click", function(e){ 
+        .addEventListener("click", function(e){
             // on first button fail > reload entire page
             var statusFirstButton =  document.querySelectorAll("#popup .content a")[0].getAttribute("data-onclick");
             if (statusFirstButton === "location.reload()") {
@@ -373,12 +373,12 @@ if (document.querySelectorAll("#popup").length === 1) {
 
 
 function hidePopupDialog(those) {
-    
-    // use also direct  
+
+    // use also direct
     if (those !== undefined) {
         if (those.target.id !== "popup") return;
     }
-    
+
     if (document.querySelectorAll("#popup").length === 1) {
         document.querySelector("#popup").classList.remove("on");
     }
@@ -389,7 +389,7 @@ function showUpdateDialog(content,timeout) {
         document.querySelector("#update").classList.add("on");
 
         document.querySelector("#update").innerHTML = content;
-        
+
         if (!isNaN(timeout)) {
             setTimeout(function(){
                 hideUpdateDialog()
@@ -411,7 +411,7 @@ function showPopupDialog(content,timeout) {
         document.querySelector("#popup").classList.add("on");
         if (content !== undefined) {
             document.querySelector("#popup .content").innerHTML = content;
-            
+
             var links = document.querySelectorAll("#popup .content a");
             for (var i = 0; i < links.length; i++) {
 
