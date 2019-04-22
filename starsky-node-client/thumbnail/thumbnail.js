@@ -26,7 +26,6 @@ var currentPageNumber = 0;
 var maxPageNumber = 0;
 var searchQuery = parseArgs();
 
-
 function parseArgs() {
 	var args = process.argv.slice(2);
 	if (args.length >= 1) {
@@ -34,17 +33,18 @@ function parseArgs() {
 		if (isNaN(parsed)) {
 			return args[0];
 		}
+		else if(parsed === 0 ){
+			// Search for today
+			return "-Datetime>0 -ImageFormat:jpg -!delete";
+		}
 		else {
-			return "-Datetime>" + (parsed + 1)  + " -Datetime<"+ parsed + " -ImageFormat:jpg";
+			// 1 = yesterday
+			return "-Datetime>" + parsed  + " -Datetime<"+ (parsed - 1) + " -ImageFormat:jpg -!delete";
 		}
 	}
 
-	if (args === "nodate") {
-		return "-Datetime<59999 -ImageFormat:jpg"
-	}
-	
 	var parsedDefault = 1;
-	return "-Datetime>" + (parsedDefault)  + " -ImageFormat:jpg";
+	return "-Datetime>" + (parsedDefault)  + " -ImageFormat:jpg -!delete";
 }
 
 getSearchStart(searchQuery,0);
@@ -138,7 +138,7 @@ function downloadSourceTempFile(sourceFileHashesList,i) {
 			}
 		})
 	    .catch(function (err) {
-        console.log(err.message, i, sourceFileHashesList.length, sourceFileHashesList[i]);
+        	console.log(err.message, i, sourceFileHashesList.length, sourceFileHashesList[i]);
 			console.log("downloadrequestOptions - " + sourceFileHashesList[i]);
 			next(sourceFileHashesList, i, downloadSourceTempFile, done)
 	    });
@@ -204,29 +204,44 @@ function uploadTempFile(sourceFileHashesList, i,callback, finalCallback) {
 	uploadRequestOptions.encoding = 'binary';
 	uploadRequestOptions.method = "POST";
 
+	var fileHashLocation = path.join(getTempFolder(), fileHash + ".jpg");
+
 
 	uploadRequestOptions.formData = {
 			file: {
-				value: fs.createReadStream(path.join(getTempFolder(), fileHash + ".jpg")),
+				value: fs.createReadStream(fileHashLocation),
 				options: {
 					filename: fileHash + ".jpg",
 					contentType: 'image/jpg'
 				}
 			}
 		}
+
 	uploadRequestOptions.qs = {
 		f: fileHash,
 		issingleitem: 'true'
 	}
-	request(uploadRequestOptions)
-		.then(function (uploadResults) {
-			console.log(uploadResults.body);
+
+	fs.access(fileHashLocation, fs.constants.F_OK, (err) => {
+		if (err) {
+			console.log(">>== skip: " + fileHash);
 			next(sourceFileHashesList, i, callback, finalCallback);
-		})
-		.catch(function (err) {
-			console.log("uploadRequestOptions");
-			console.log(err);
-		});
+		}
+		else {
+			request(uploadRequestOptions)
+				.then(function (uploadResults) {
+					console.log("upload > ", uploadResults.body);
+					next(sourceFileHashesList, i, callback, finalCallback);
+				})
+				.catch(function (err) {
+					console.log("uploadRequestOptions");
+					console.log(err);
+				});
+		}
+	});
+
+
+
 }
 
 function deleteFile(sourceFileHashesList, i) {
@@ -268,11 +283,12 @@ function resizeImage(fileHash,callback) {
 			// Do stuff with the image.
 			copyExiftool(sourceFilePath, targetFilePath, fileHash, function (fileHash) {
 				callback(fileHash)
-		});
+			});
 
 	})
 	.catch(function (err) {
 		console.error(err);
+		callback(fileHash);
 	});
 
 }
