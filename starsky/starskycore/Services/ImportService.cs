@@ -164,8 +164,13 @@ namespace starskycore.Services
 			var fileIndexResultsList = hashList.Select((t, i) => PreflightByItem(inputFileFullPaths[i], t, importSettings)).ToList();
 		    return fileIndexResultsList;
 	    }
-		
-		
+
+		public List<ImportIndexItem> History()
+		{
+			return _context.ImportIndex.Where(p => p.AddToDatabase >= DateTime.Today).ToList();
+		}
+
+
 		public ImportIndexItem ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)
 	    {
 		    var hashCode = new FileHash(_filesystemHelper).GetHashCode(inputFileFullPath);
