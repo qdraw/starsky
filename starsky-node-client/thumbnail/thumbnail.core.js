@@ -1,0 +1,317 @@
+#!/usr/bin/env node
+
+var path = require('path');
+var request = require( 'request-promise-native');
+var fs = require('fs');
+var jimp = require('jimp');
+require('dotenv').config({path:path.join(__dirname,".env")});
+var execFile = require('child_process').execFile;
+var exiftool = require('dist-exiftool');
+
+var base_url = process.env.STARKSYBASEURL;
+var searchQuery = "";
+
+var requestOptions = {
+    uri: base_url,
+	method: "GET",
+    headers: {
+        'User-Agent': 'MS FrontPage Express',
+		'Authorization': 'Basic ' + process.env.STARKSYACCESSTOKEN,
+    },
+	resolveWithFullResponse: true,
+    json: true // Automatically parses the JSON string in the response
+};
+
+var currentPageNumber = 0;
+var maxPageNumber = 0;
+
+
+function getSearchStart(searchquery,pageNumber) {
+	var indexRequestOptions = requestOptions;
+	indexRequestOptions.uri = base_url + "search";
+	indexRequestOptions.qs = {
+		t: searchquery,
+		json: 'true',
+		p: pageNumber
+	};
+	getIndex(indexRequestOptions);
+}
+
+function getRights() {
+	ensureExistsFolder(getSourceTempFolder(), 0744, function(err) {
+		if (err) console.log(err);// handle folder creation error
+	});
+	ensureExistsFolder(getTempFolder(), 0744, function(err) {
+		if (err) console.log(err);// handle folder creation error
+	});
+}
+
+// function getIndexStart(subpath) {
+// 	var indexRequestOptions = requestOptions;
+// 	indexRequestOptions.uri = base_url;
+// 	indexRequestOptions.qs = {
+// 		f: subpath,
+// 		json: 'true'
+// 	};
+// 	getIndex(indexRequestOptions);
+// }
+
+function getIndex(indexRequestOptions) {
+
+	getRights();
+
+	request(requestOptions)
+	    .then(function (items) {
+			if(items.body.fileIndexItems === undefined) return;
+
+			console.log("searchQuery ~\n" + items.body.searchQuery);
+
+			var fileHashList = [];
+			for (var i in items.body.fileIndexItems) {
+
+				var item = items.body.fileIndexItems[i];
+				if(item === undefined ||  item === null ||  item.fileHash.length !== 26) continue;
+				if(item.imageFormat !== "jpg") continue;
+				fileHashList.push(item.fileHash)
+			}
+
+			if(fileHashList.length === 0) console.log("> 0 imageFormat:jpg items");
+
+			maxPageNumber = items.body.lastPageNumber;
+
+			if(fileHashList.length >= 1) {
+				downloadSourceTempFile(fileHashList,0,searchQuery);
+			}
+	    })
+	    .catch(function (err) {
+			console.log(err);
+			console.log("index: " + err.response.body);
+	        // API call failed...
+	    });
+}
+
+function downloadSourceTempFile(sourceFileHashesList,i,query) {
+
+	// temp storage
+	searchQuery = query;
+
+	var downloadrequestOptions = requestOptions;
+	downloadrequestOptions.uri = base_url + 'api/thumbnail/' + sourceFileHashesList[i];
+	downloadrequestOptions.method = "GET";
+	downloadrequestOptions.encoding = 'UTF-8';
+	delete downloadrequestOptions.formData;
+
+	downloadrequestOptions.qs = {
+		json: 'true',
+		f: sourceFileHashesList[i]
+	}
+
+
+	request(downloadrequestOptions)
+	    .then(function (result) {
+			if(result.statusCode === 202) {
+				console.log(result.statusCode, i, sourceFileHashesList.length, sourceFileHashesList[i]);
+				chain(sourceFileHashesList, i, downloadSourceTempFile, done)
+			}
+			else {
+				console.log("~", result.statusCode, i, sourceFileHashesList.length, sourceFileHashesList[i]);
+				next(sourceFileHashesList, i, downloadSourceTempFile, done)
+			}
+		})
+	    .catch(function (err) {
+        	console.log(err.message, "i:", i, "len:", sourceFileHashesList.length, sourceFileHashesList[i]);
+			console.log("downloadrequestOptions catch - " + sourceFileHashesList[i]);
+			next(sourceFileHashesList, i, downloadSourceTempFile, done)
+	    });
+}
+
+function done() {
+
+	if (maxPageNumber !== undefined && currentPageNumber <= maxPageNumber-1) {
+		currentPageNumber++;
+		getSearchStart(searchQuery,currentPageNumber);
+	}
+	else {
+		console.log("-- everything is done :)");
+	}
+
+}
+
+function chain(sourceFileHashesList, i, callback, finalCallback) {
+
+	var downloadFilerequestOptions = requestOptions;
+	downloadFilerequestOptions.uri = base_url + 'api/thumbnail/' + sourceFileHashesList[i];
+	downloadFilerequestOptions.encoding = 'binary';
+	downloadFilerequestOptions.method = "GET";
+	downloadFilerequestOptions.qs = {
+		f: sourceFileHashesList[i],
+		issingleitem: 'true'
+	}
+
+	request(downloadFilerequestOptions)
+		.then(function (fileResults) {
+			var filePath = path.join(getSourceTempFolder(),sourceFileHashesList[i] + ".jpg");
+
+			fs.writeFile(filePath, fileResults.body, 'binary', function (res) {
+				resizeImage(sourceFileHashesList[i],function (fileHash) {
+					uploadTempFile(sourceFileHashesList, i, callback, finalCallback);
+				})
+			});
+		})
+		.catch(function (err) {
+			console.log("downloadFilerequestOptions");
+			console.log(err);
+			next(sourceFileHashesList, i, callback, finalCallback)
+		});
+}
+
+function next(sourceFileHashesList, count, callback, finalCallback) {
+	deleteFile(sourceFileHashesList, count);
+
+	count++;
+	if(count < sourceFileHashesList.length) {
+		callback(sourceFileHashesList, count, callback, finalCallback)
+	}
+	else {
+		console.log("-- done query (" + currentPageNumber + "/" + maxPageNumber +")");
+		finalCallback(sourceFileHashesList);
+	}
+}
+
+function uploadTempFile(sourceFileHashesList, i,callback, finalCallback) {
+	var uploadRequestOptions = requestOptions;
+	var fileHash = sourceFileHashesList[i];
+	uploadRequestOptions.uri = base_url + 'import/thumbnail/' + fileHash;
+	uploadRequestOptions.encoding = 'binary';
+	uploadRequestOptions.method = "POST";
+
+	var fileHashLocation = path.join(getTempFolder(), fileHash + ".jpg");
+
+
+	uploadRequestOptions.formData = {
+			file: {
+				value: fs.createReadStream(fileHashLocation),
+				options: {
+					filename: fileHash + ".jpg",
+					contentType: 'image/jpg'
+				}
+			}
+		}
+
+	uploadRequestOptions.qs = {
+		f: fileHash,
+		issingleitem: 'true'
+	}
+
+	fs.access(fileHashLocation, fs.constants.F_OK, (err) => {
+		if (err) {
+			console.log(">>== skip: " + fileHash);
+			next(sourceFileHashesList, i, callback, finalCallback);
+		}
+		else {
+			request(uploadRequestOptions)
+				.then(function (uploadResults) {
+					console.log("upload > ", uploadResults.body);
+					next(sourceFileHashesList, i, callback, finalCallback);
+				})
+				.catch(function (err) {
+					console.log("uploadRequestOptions");
+					console.log(err);
+				});
+		}
+	});
+
+
+
+}
+
+function deleteFile(sourceFileHashesList, i) {
+	var file1 = path.join(getTempFolder(), sourceFileHashesList[i] + ".jpg");
+	fs.access(file1, fs.constants.F_OK, (err) => {
+		if(err) return;
+		fs.unlink(file1,function(err){
+			if(err) return console.log(err);
+		});
+	});
+
+	var file2 = path.join(getSourceTempFolder(), sourceFileHashesList[i] + ".jpg");
+	fs.access(file2, fs.constants.F_OK, (err) => {
+		if(err) return;
+		fs.unlink(file2,function(err){
+			if(err) return console.log(err);
+		});
+	});
+}
+
+
+
+
+function resizeImage(fileHash,callback) {
+
+	if(fileHash === undefined) {
+		console.log("fileHash === undefined");
+		return;
+	}
+	var sourceFilePath = path.join(getSourceTempFolder(),fileHash + ".jpg");
+	var targetFilePath = path.join(getTempFolder(),fileHash + ".jpg");
+
+
+	jimp.read(sourceFilePath).then(function (lenna) {
+		return lenna.resize(1000, jimp.AUTO)     // resize
+			.quality(80)                 // set JPEG quality
+			.write(targetFilePath); // save
+		}).then(image => {
+			// Do stuff with the image.
+			copyExiftool(sourceFilePath, targetFilePath, fileHash, function (fileHash) {
+				callback(fileHash)
+			});
+
+	})
+	.catch(function (err) {
+		console.error(err);
+		callback(fileHash);
+	});
+
+}
+
+
+
+function copyExiftool(sourceFilePath, targetFilePath,fileHash, callback) {
+	execFile(exiftool, ['-overwrite_original', '-TagsFromFile', sourceFilePath, targetFilePath, '-Orientation=', ], (error, stdout, stderr) => {
+	    if (error) {
+	        console.error(`exec error: ${error}`);
+	        return;
+	    }
+	    // console.log(`stdout: ${stdout}`);
+		if(stderr !== "") console.log(`stderr: ${stderr}`);
+		return callback(fileHash);
+	});
+}
+
+
+function getSourceTempFolder() {
+	return path.join(__dirname, "source_temp");
+}
+function getTempFolder() {
+	return path.join(__dirname, "temp");
+}
+
+
+function ensureExistsFolder(path, mask, cb) {
+    if (typeof mask == 'function') { // allow the `mask` parameter to be optional
+        cb = mask;
+        mask = 0777;
+    }
+    fs.mkdir(path, mask, function(err) {
+        if (err) {
+            if (err.code == 'EEXIST') cb(null); // ignore the error if the folder already exists
+            else cb(err); // something else went wrong
+        } else cb(null); // successfully created folder
+    });
+}
+
+module.exports = {
+	getSearchStart,
+	downloadSourceTempFile,
+	requestOptions
+}
