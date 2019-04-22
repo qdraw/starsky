@@ -56,7 +56,6 @@ namespace starskycore.Models
         /// The location where the image should be stored.
         /// When the user move an item this field is NOT updated
         /// </summary>
-        [NotMapped]
         public string FilePath { get; set; }
 
         /// <summary>
