@@ -647,5 +647,32 @@ namespace starskytest.Services
 		    FilesHelper.DeleteFile(path);
 	    }
 
+	    [TestMethod]
+	    public void ImportService_History_LastDayCheck()
+	    {
+		    // Check if last day
+		    var item01 = new ImportIndexItem
+		    {
+			    FileHash = "234567876543",
+		    };
+		    _context.ImportIndex.Add(item01);
+
+		    var item02 = new ImportIndexItem
+		    {
+			    FileHash = "938452784354",
+			    AddToDatabase = DateTime.Now
+		    };
+		    _context.ImportIndex.Add(item02);
+		    _context.SaveChanges();
+
+		    var history = _import.History();
+		    
+		    Assert.AreEqual(item02.FileHash, history.FirstOrDefault().FileHash);
+		    Assert.AreEqual(1, history.Count);
+
+		    _context.Remove(item01);
+		    _context.Remove(item02);
+	    }
+
     }
 }
