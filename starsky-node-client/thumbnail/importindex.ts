@@ -9,14 +9,18 @@ request(importRequestOptions)
 		console.log(items.body.length);
 
 		if(items.body.length >= 1) {
-			var fileHashList = [];
+			var searchQueryList = [];
+			var searchQuery = "";
 			for (var i in items.body) {
 				var item = items.body[i];
 				if(item === undefined ||  item === null ||  item.fileHash.length !== 26) continue;
-				fileHashList.push(item.fileHash)
+				searchQueryList.push(item.dateTime);
+				searchQuery += " -Datetime=" + searchQueryList[i] + " ||";
 			}
-			
-			core.downloadSourceTempFile(fileHashList,0,"historyAPI");
+
+			core.getSearchStart(searchQuery,0);
+
+			// core.downloadSourceTempFile(fileHashList,0,"historyAPI");
 		}
 	})
 	.catch(function (err) {

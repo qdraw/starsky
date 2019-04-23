@@ -4,15 +4,28 @@
   "description": "Client side thumbnail generation interacting with a Starsky WebApi ",
   "main": "thumbnail.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc thumbnail.ts && npm run serve",
+    "start": "npm run serve",
+    "serve": "node thumbnail.js",
+    "build-ts": "tsc thumbnail.ts",
+    "watch-ts": "tsc -w thumbnail.ts",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "watch-node": "nodemon thumbnail.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "dist-exiftool": "^10.53.0",
     "dotenv": "^6.1.0",
-    "jimp": "^0.5.6",
+    "jimp": "^0.6.1",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
+  },
+  "devDependencies": {
+    "@types/node": "^11.13.7",
+    "@types/request-promise-native": "^1.0.15",
+    "concurrently": "^3.5.1",
+    "typescript": "^3.3.3333"
   }
 }
