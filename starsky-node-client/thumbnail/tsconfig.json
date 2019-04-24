@@ -1,8 +1,13 @@
 {
     "compilerOptions": {
         "module": "commonjs",
+        "target": "es5",
         "resolveJsonModule": true,
         "esModuleInterop": true,
+        "removeComments": true,
         "outDir": "./dist"
-    }
+    },
+    "include": [
+        "./*.ts"
+      ]
 }

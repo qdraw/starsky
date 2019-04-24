@@ -16,4 +16,14 @@ STARKSYBASEURL=
 ```
 `STARKSYACCESSTOKEN` is a base64 encoded username and password
 `STARKSYBASEURL` is the root url of the installation
- 
+
+### Build Typescript files:
+
+```sh
+npm run build-ts
+```
+
+And start with the default options
+```sh
+npm run start
+```

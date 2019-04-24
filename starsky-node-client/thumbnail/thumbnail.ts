@@ -4,7 +4,7 @@ var path = require('path');
 
 import { Query } from './thumbnail-core';
 import { IResults } from './IResults';
-require('dotenv').config({path:path.join(__dirname,".env")});
+require('dotenv').config({path:path.join(__dirname,"../", ".env")});
 
 
 
