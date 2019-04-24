@@ -7,6 +7,7 @@ namespace starskycore.Interfaces
     {
         List<string> Import(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings);
 	    List<ImportIndexItem> Preflight(List<string> inputFullPathList, ImportSettingsModel importSettings);
+	    List<ImportIndexItem> History();
 
     }
 }

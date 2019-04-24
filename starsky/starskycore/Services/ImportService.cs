@@ -150,6 +150,10 @@ namespace starskycore.Services
 			// Item is good
 			importIndexItem.Status = ImportStatus.Ok;
 
+			// Store the location in the import database
+			// This field is NOT updated when you move a file
+			importIndexItem.FilePath = fileIndexItem.FilePath;
+
 			// Store fileindexitem inside ImportIndexIten
 			importIndexItem.FileIndexItem = fileIndexItem;
 			return importIndexItem;
@@ -164,8 +168,13 @@ namespace starskycore.Services
 			var fileIndexResultsList = hashList.Select((t, i) => PreflightByItem(inputFileFullPaths[i], t, importSettings)).ToList();
 		    return fileIndexResultsList;
 	    }
-		
-		
+
+		public List<ImportIndexItem> History()
+		{
+			return _context.ImportIndex.Where(p => p.AddToDatabase >= DateTime.Today).ToList();
+		}
+
+
 		public ImportIndexItem ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)
 	    {
 		    var hashCode = new FileHash(_filesystemHelper).GetHashCode(inputFileFullPath);
@@ -185,6 +194,10 @@ namespace starskycore.Services
                                                                    + " "  + fileIndexItem.FileName 
                                                                    +  " Please try again > to many failures;");
             if (destinationFullPath == null) return new ImportIndexItem{Status = ImportStatus.FileError};
+            
+            // Store the location in the import database
+            // This field is NOT updated when you move a file
+            importIndexItem.FilePath = fileIndexItem.FilePath;
             
 		    // Do the copy to the storage folder
 		    _filesystemHelper.FileCopy(inputFileFullPath, destinationFullPath);

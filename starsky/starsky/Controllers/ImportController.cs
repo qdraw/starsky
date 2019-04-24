@@ -144,5 +144,11 @@ namespace starsky.Controllers
             return Json(importedFiles);
         }
 
+	    [HttpGet("/import/history")]
+	    public IActionResult History()
+	    {
+		    return Json(_import.History());
+	    }
+
     }
 }

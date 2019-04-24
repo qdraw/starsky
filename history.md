@@ -18,6 +18,9 @@
 - Warmup script with variables
 - Allow CORS for DEBUG mode for localhost domains
 - __CHANGE:__ Unauthorised users return 401 on /api (instead of redirect)
+- add: `/import/history` API for viewing recent uploads (today only) _subject to change_
+- __CHANGE__ Database Structure: Field added in ImportDatabas
+  Update all your clients at once to avoid issues between *3 and *4
 
 # version 0.1.5.3 - 2019-03-31
 - refactoring connection to ExifTool to use iStorage
