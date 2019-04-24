@@ -9,7 +9,6 @@ import { OptionsWithUri, FullResponse } from "request-promise-native";
 import request = require('request-promise-native');
 
 import { IResults } from "./IResults";
-import { resolve } from 'path';
 var execFile = require('child_process').execFile;
 var exiftool = require('dist-exiftool');
 
@@ -106,11 +105,6 @@ export class Query {
 		}
 		return fileHashList;
 	}
-
-
-	// public async processResult(sourceFileHashesList : Array<string>): Promise<Array<string>> {
-
-	// }
 
 
 
@@ -246,6 +240,44 @@ export class Query {
 		});
 	}
 
+
+
+	public async isImportIndex(searchQuery : string): Promise<string> {
+
+		return new Promise<string>((resolve, reject) => {
+
+			if(searchQuery !== "import") resolve(searchQuery);
+
+			var importRequestOptions = this.requestOptions();
+			importRequestOptions.uri = this.base_url + 'import/history/';
+
+			request(importRequestOptions)
+				.then(function (items) {
+
+					if(items.body.length >= 1) {
+						var searchQueryList = [];
+						var searchQuery = "";
+
+						for (var i in items.body) {
+							var item = items.body[i];
+							if(item === undefined ||  item === null ||  item.fileHash.length !== 26) continue;
+							searchQueryList.push(item.dateTime);
+							searchQuery += " -Datetime=" + searchQueryList[i] + " ||";
+						}
+						resolve(searchQuery);
+
+					}
+				})
+				.catch(function (err) {
+					console.log(err);
+					console.log("index: " + err.response.body);
+					// API call failed...
+					reject();
+				});
+	
+		});
+			
+	}
 
 	public async downloadBinarySingleFile(hashItem : string): Promise<string> {
 
@@ -404,8 +436,6 @@ export class Query {
 					resolve(fileHash);
 				}
 				else {
-					console.log("----upload > ", fileHash);
-
 					request(uploadRequestOptions)
 						.then(function (uploadResults) {
 							console.log("upload > ", uploadResults.body, fileHash);
@@ -463,228 +493,3 @@ export class Query {
 
 
 }
-
-// resizeImage(sourceFileHashesList[i],function (fileHash) {
-// 	uploadTempFile(sourceFileHashesList, i, callback, finalCallback);
-// })
-
-// function getSearchStart(searchquery,pageNumber) {
-// 	var indexRequestOptions = requestOptions;
-// 	indexRequestOptions.uri = base_url + "search";
-// 	indexRequestOptions.qs = {
-// 		t: searchquery,
-// 		json: 'true',
-// 		p: pageNumber
-// 	};
-// 	getIndex(searchquery,indexRequestOptions);
-// }
-
-
-
-
-// function 
-
-// function downloadSourceTempFile(sourceFileHashesList,i,searchquery) {
-
-
-// 	var downloadrequestOptions = requestOptions;
-// 	downloadrequestOptions.uri = base_url + 'api/thumbnail/' + sourceFileHashesList[i];
-// 	downloadrequestOptions.method = "GET";
-// 	downloadrequestOptions.encoding = 'UTF-8';
-// 	delete downloadrequestOptions.formData;
-
-// 	downloadrequestOptions.qs = {
-// 		json: 'true',
-// 		f: sourceFileHashesList[i]
-// 	}
-
-
-// 	request(downloadrequestOptions)
-// 	    .then(function (result) {
-// 			if(result.statusCode === 202) {
-// 				console.log(result.statusCode, i, sourceFileHashesList.length, sourceFileHashesList[i]);
-// 				downloadFromApiChain(sourceFileHashesList, i, searchquery, downloadSourceTempFile, done)
-// 			}
-// 			else {
-// 				console.log(result.statusCode, i, sourceFileHashesList.length, sourceFileHashesList[i]);
-// 				next(sourceFileHashesList, i, searchquery, downloadSourceTempFile, done)
-// 			}
-// 		})
-// 	    .catch(function (err) {
-//         	console.log(err.message, "i:", i, "len:", sourceFileHashesList.length, sourceFileHashesList[i]);
-// 			console.log("downloadrequestOptions catch - " + sourceFileHashesList[i]);
-// 			next(sourceFileHashesList, i, searchquery, downloadSourceTempFile, done)
-// 	    });
-// }
-
-// function done() {
-
-// 	if (maxPageNumber !== undefined && currentPageNumber <= maxPageNumber-1) {
-// 		currentPageNumber++;
-// 		getSearchStart(searchQuery,currentPageNumber);
-// 	}
-// 	else {
-// 		console.log("-- everything is done :)");
-// 	}
-
-// }
-
-// function downloadFromApiChain(sourceFileHashesList, i, searchquery, callback, finalCallback) {
-
-// 	var downloadFilerequestOptions = requestOptions;
-// 	downloadFilerequestOptions.uri = base_url + 'api/thumbnail/' + sourceFileHashesList[i];
-// 	downloadFilerequestOptions.encoding = 'binary';
-// 	downloadFilerequestOptions.method = "GET";
-// 	downloadFilerequestOptions.qs = {
-// 		f: sourceFileHashesList[i],
-// 		issingleitem: 'true'
-// 	}
-
-// 	request(downloadFilerequestOptions)
-// 		.then(function (fileResults) {
-// 			var filePath = path.join(getSourceTempFolder(),sourceFileHashesList[i] + ".jpg");
-
-// 			fs.writeFile(filePath, fileResults.body, 'binary', function (res) {
-// 				resizeImage(sourceFileHashesList[i],function (fileHash) {
-// 					uploadTempFile(sourceFileHashesList, i, callback, finalCallback);
-// 				})
-// 			});
-// 		})
-// 		.catch(function (err) {
-// 			console.log("downloadFilerequestOptions");
-// 			console.log(err);
-// 			next(sourceFileHashesList, i, callback, finalCallback)
-// 		});
-// }
-
-// function next(sourceFileHashesList, count, searchquery, callback, finalCallback) {
-// 	deleteFile(sourceFileHashesList, count);
-
-// 	count++;
-// 	if(count < sourceFileHashesList.length) {
-// 		callback(sourceFileHashesList, count, callback, finalCallback)
-// 	}
-// 	else {
-// 		console.log("-- done query "+ searchquery +" (" + currentPageNumber + "/" + maxPageNumber +")");
-// 		finalCallback(sourceFileHashesList);
-// 	}
-// }
-
-// function uploadTempFile(sourceFileHashesList, i,callback, finalCallback) {
-// 	var uploadRequestOptions = requestOptions;
-// 	var fileHash = sourceFileHashesList[i];
-// 	uploadRequestOptions.uri = base_url + 'import/thumbnail/' + fileHash;
-// 	uploadRequestOptions.encoding = 'binary';
-// 	uploadRequestOptions.method = "POST";
-
-// 	var fileHashLocation = path.join(getTempFolder(), fileHash + ".jpg");
-
-
-// 	uploadRequestOptions.formData = {
-// 			file: {
-// 				value: fs.createReadStream(fileHashLocation),
-// 				options: {
-// 					filename: fileHash + ".jpg",
-// 					contentType: 'image/jpg'
-// 				}
-// 			}
-// 		}
-
-// 	uploadRequestOptions.qs = {
-// 		f: fileHash,
-// 		issingleitem: 'true'
-// 	}
-
-// 	fs.access(fileHashLocation, fs.constants.F_OK, (err) => {
-// 		if (err) {
-// 			console.log(">>== skip: " + fileHash);
-// 			next(sourceFileHashesList, i, callback, finalCallback);
-// 		}
-// 		else {
-// 			request(uploadRequestOptions)
-// 				.then(function (uploadResults) {
-// 					console.log("upload > ", uploadResults.body);
-// 					next(sourceFileHashesList, i, callback, finalCallback);
-// 				})
-// 				.catch(function (err) {
-// 					console.log("uploadRequestOptions");
-// 					console.log(err);
-// 				});
-// 		}
-// 	});
-
-
-
-// }
-
-// function deleteFile(sourceFileHashesList, i) {
-// 	var file1 = path.join(getTempFolder(), sourceFileHashesList[i] + ".jpg");
-// 	fs.access(file1, fs.constants.F_OK, (err) => {
-// 		if(err) return;
-// 		fs.unlink(file1,function(err){
-// 			if(err) return console.log(err);
-// 		});
-// 	});
-
-// 	var file2 = path.join(getSourceTempFolder(), sourceFileHashesList[i] + ".jpg");
-// 	fs.access(file2, fs.constants.F_OK, (err) => {
-// 		if(err) return;
-// 		fs.unlink(file2,function(err){
-// 			if(err) return console.log(err);
-// 		});
-// 	});
-// }
-
-
-
-
-// function resizeImage(fileHash,callback) {
-
-// 	if(fileHash === undefined) {
-// 		console.log("fileHash === undefined");
-// 		return;
-// 	}
-// 	var sourceFilePath = path.join(getSourceTempFolder(),fileHash + ".jpg");
-// 	var targetFilePath = path.join(getTempFolder(),fileHash + ".jpg");
-
-
-// 	jimp.read(sourceFilePath).then(function (lenna) {
-// 		return lenna.resize(1000, jimp.AUTO)     // resize
-// 			.quality(80)                 // set JPEG quality
-// 			.write(targetFilePath); // save
-// 		}).then(image => {
-// 			// Do stuff with the image.
-// 			copyExiftool(sourceFilePath, targetFilePath, fileHash, function (fileHash) {
-// 				callback(fileHash)
-// 			});
-
-// 	})
-// 	.catch(function (err) {
-// 		console.error(err);
-// 		callback(fileHash);
-// 	});
-
-// }
-
-
-
-// function copyExiftool(sourceFilePath, targetFilePath,fileHash, callback) {
-// 	execFile(exiftool, ['-overwrite_original', '-TagsFromFile', sourceFilePath, targetFilePath, '-Orientation=', ], (error, stdout, stderr) => {
-// 	    if (error) {
-// 	        console.error(`exec error: ${error}`);
-// 	        return;
-// 	    }
-// 	    // console.log(`stdout: ${stdout}`);
-// 		if(stderr !== "") console.log(`stderr: ${stderr}`);
-// 		return callback(fileHash);
-// 	});
-// }
-
-
-
-
-// module.exports = {
-// 	getSearchStart,
-// 	downloadSourceTempFile,
-// 	requestOptions
-// }

@@ -3,17 +3,26 @@
 var path = require('path');
 
 import { Query } from './thumbnail-core';
-// import { OptionsWithUri } from 'request-promise-native';
 import { IResults } from './IResults';
 require('dotenv').config({path:path.join(__dirname,".env")});
 
 
+
+function ShowHelpDialog() {
+	console.log("Starksy Remote Thumbnail Helper")
+	console.log("use numbers (e.g. 1-100) to search relative")
+	console.log("use the keyword 'import' to search for recent imported files")
+	console.log("use a keyword to search and check if thumbnails are created")
+}
 
 
 function parseArgs() {
 	var args = process.argv.slice(2);
 	if (args.length >= 1) {
 		var parsed = parseInt(args[0])
+		if (args[0] === "-h" || args[0] === "--h") {
+			ShowHelpDialog();
+		}
 		if (isNaN(parsed)) {
 			return args[0];
 		}
@@ -38,13 +47,11 @@ var access_token = process.env.STARKSYACCESSTOKEN;
 
 var query = new Query(base_url,access_token);
 
-var indexRequestOptions = query.indexRequestOptions(searchQuery);
-
-
-query.searchIndex(indexRequestOptions).then((result : IResults )  => {
-	return result;
+query.isImportIndex(searchQuery).then((searchQueryResult : string) => {
+	var indexRequestOptions = query.indexRequestOptions(searchQueryResult);
+	return query.searchIndex(indexRequestOptions);
 }).catch( err => {
-	console.log('err', err);
+	console.log('err- deleteFileChain', err);
 }).then((result : IResults) => {
 	// console.log('searchIndex => ', result);
 	return query.checkIfSingleFileNeedsToBeDownloadedApiChain(result.fileHashList);
@@ -55,12 +62,12 @@ query.searchIndex(indexRequestOptions).then((result : IResults )  => {
 }).catch( err => {
 	console.log('err- downloadBinaryApiChain', err);
 }).then((result : Array<string>) => {
-	console.log(result.length)
+	// console.log(result.length)
 	return query.resizeChain(result);
 }).catch( err => {
 	console.log('err- resizeChain', err);
 }).then((result : Array<string>) => {
-	console.log(result.length)
+	// console.log(result.length)
 	return query.uploadTempFileChain(result);
 }).catch( err => {
 	console.log('err- uploadTempFileChain', err);
@@ -69,4 +76,3 @@ query.searchIndex(indexRequestOptions).then((result : IResults )  => {
 }).catch( err => {
 	console.log('err- deleteFileChain', err);
 });
-
