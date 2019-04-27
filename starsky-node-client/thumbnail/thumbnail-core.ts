@@ -26,6 +26,9 @@ export class Query {
 	constructor(base_url: string, access_token : string) {		
 		this.base_url = base_url;
 		this.access_token = access_token;
+
+		// Make sure the output directories exist
+		this.getRights();
 	}
 
 	public requestOptions() : AxiosRequestConfig {
