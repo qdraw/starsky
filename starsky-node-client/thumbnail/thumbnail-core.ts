@@ -201,31 +201,31 @@ export class Query {
 				if (!err) {
 
 
-					sharp(sourceFilePath)
-						.rotate()
-						.resize({ width: 1000 })
-						.toFile(targetFilePath)
-						.then(() => {
+					// sharp(sourceFilePath)
+					// 	.rotate()
+					// 	.resize({ width: 1000 })
+					// 	.toFile(targetFilePath)
+					// 	.then(() => {
 					
-							process.stdout.write("≈");
-							resolve(true);
-
-					}).catch(() => {
-						resolve(false);
-					});
-
-					// await jimp.read(sourceFilePath)
-					// 	.then(image => {
-					// 		image.resize(1000, jimp.AUTO);
-					// 		image.write(targetFilePath);
-							
 					// 		process.stdout.write("≈");
 					// 		resolve(true);
-					// 	})
-					// 	.catch(err => {
-					// 		console.error(err);
-					// 		resolve(false);
-					// 	});	
+
+					// }).catch(() => {
+					// 	resolve(false);
+					// });
+
+					await jimp.read(sourceFilePath)
+						.then(image => {
+							image.resize(1000, jimp.AUTO);
+							image.write(targetFilePath);
+							
+							process.stdout.write("≈");
+							resolve(true);
+						})
+						.catch(err => {
+							console.error(err);
+							resolve(false);
+						});	
 										
 				}
 
