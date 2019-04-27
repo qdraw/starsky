@@ -224,15 +224,17 @@ export class Query {
 
 					await jimp.read(sourceFilePath)
 						.then(image => {
-							var width = image.getWidth();
-							var height = image.getHeight();
+							// var width = image.getWidth();
+							// var height = image.getHeight();
+							// var ratio = height/width;
 
-							if(width/height <= 1) {
-								image.resize(1000, jimp.AUTO);
-							}
-							else{
-								image.resize(jimp.AUTO,1000);
-							}
+							image.resize(1000,jimp.AUTO);
+
+							// if(width/height <= 1) {
+							// 	image.resize(jimp.AUTO,1000);
+							// }
+							// else{
+							// }
 							
 							image.write(targetFilePath);
 							
