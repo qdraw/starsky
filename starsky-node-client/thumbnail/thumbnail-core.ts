@@ -1,6 +1,9 @@
 
-var path = require('path');
-var fs = require('fs');
+// var path = require('path');
+import * as path from 'path';
+
+// var fs = require('fs');
+import * as fs from 'fs';
 
 import jimp from 'jimp';
 import sharp from 'sharp';
@@ -136,8 +139,8 @@ export class Query {
 			
 				response.data.pipe(writer);
 						
-				writer.on('finish', resolve(true))
-				writer.on('error', resolve(false))
+				writer.on('finish', resolve) // not able to return bool
+				writer.on('error', resolve)
 			
 			}).catch(function (thrown) {
 				resolve(false);
@@ -294,12 +297,6 @@ export class Query {
 		uploadRequestOptions.headers['Content-Type'] = 'image/jpeg';
 		uploadRequestOptions.headers['filename'] = fileHash + ".jpg";
 
-		console.log(uploadRequestOptions.headers);
-
-		// uploadRequestOptions.headers['Content-Type'] = 'multipart/form-data; charset=utf-8; boundary="another cool boundary";'
-		// uploadRequestOptions.headers['Content-Length'] = 0;
-
-
 		return new Promise<boolean>((resolve, reject) => {
 
 			fs.access(fileHashLocation, fs.constants.F_OK, (err) => {
@@ -308,13 +305,19 @@ export class Query {
 					resolve(false);
 				}
 
-				Axios(uploadRequestOptions).then((response : AxiosResponse) => {
+				fs.stat(fileHashLocation,(err, stats) => {
+					if( err || stats.size <= 50 ) return resolve(false);
 
-					console.log("upload > ", response.status, response.data, fileHash);
-					resolve(false);
-				}).catch(function (thrown) {
-					console.log(thrown);
-					resolve(false);
+
+					Axios(uploadRequestOptions).then((response : AxiosResponse) => {
+
+						//console.log("upload > ", response.status, response.data, fileHash);
+						process.stdout.write("∑");
+						resolve(false);
+					}).catch(function (thrown) {
+						console.log(thrown);
+						resolve(false);
+					});
 				});
 
 				
@@ -324,6 +327,22 @@ export class Query {
 
 	}
 
+	public async deleteSourceTempFolder(): Promise<void> {
+		return this.removeContentOfDirectory(this.getSourceTempFolder());
+	}
+
+	public async deleteTempFolder(): Promise<void> {
+		return this.removeContentOfDirectory(this.getTempFolder());
+	}
+
+	public async removeContentOfDirectory(dirPath : string): Promise<void> {
+		var content = await fs.promises.readdir(dirPath);
+
+		await content.forEach(element => {
+			var location = path.join(dirPath,element);
+			fs.promises.unlink(location);
+		});
+	}
 
 }
 

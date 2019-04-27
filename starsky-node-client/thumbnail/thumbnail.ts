@@ -50,6 +50,7 @@ var query = new Query(base_url,access_token);
 
 console.log("searchQuery", searchQuery);
 
+
 query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<string>) => {
 
 	// Down chain
@@ -57,9 +58,8 @@ query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<strin
 	const axiosResponses = await Promise.all(fileHashList.map(queueAxios.wrap(
 		async (fileHash : string) 	=> 	{
 			if(await query.checkIfSingleFileNeedsToBeDownloaded(fileHash)) {
-				if(await query.downloadBinarySingleFile(fileHash)) {
-					return fileHash;
-				}
+				await query.downloadBinarySingleFile(fileHash);
+				return fileHash;
 			}
 		}
 	)));
@@ -78,42 +78,13 @@ query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<strin
 		}
 	)));
 
-	console.log('resizeChain', resizeChain);
+	// and clean afterwards
+	query.deleteSourceTempFolder();
+	query.deleteTempFolder();
+
 
 }).catch( err => {
 	console.log('err- downloadBinaryApiChain', err);
 })
 
 
-
-// query.isImportIndex().then((searchQueryResult : string) => {
-// 	var indexRequestOptions = query.indexRequestOptions(searchQueryResult);
-// 	return query.searchIndex(indexRequestOptions);
-// }).catch( err => {
-// 	console.log('err- deleteFileChain', err);
-// }).then((result : IResults) => {
-// 	// console.log('searchIndex => ', result);
-// 	return query.checkIfSingleFileNeedsToBeDownloadedApiChain(result.fileHashList);
-// }).catch( err => {
-// 	console.log('err- checkIfSingleFileNeedsToBeDownloadedApiChain', err);
-// })
-
-// .then((result : Array<string>) => {
-// 	return query.downloadBinaryApiChain(result);
-// }).catch( err => {
-// 	console.log('err- downloadBinaryApiChain', err);
-// }).then((result : Array<string>) => {
-// 	// console.log(result.length)
-// 	return query.resizeChain(result);
-// }).catch( err => {
-// 	console.log('err- resizeChain', err);
-// }).then((result : Array<string>) => {
-// 	// console.log(result.length)
-// 	return query.uploadTempFileChain(result);
-// }).catch( err => {
-// 	console.log('err- uploadTempFileChain', err);
-// }).then((result : Array<string>) => {
-// 	return query.deleteFileChain(result);
-// }).catch( err => {
-// 	console.log('err- deleteFileChain', err);
-// });
