@@ -51,19 +51,32 @@ var query = new Query(base_url,access_token);
 console.log("searchQuery", searchQuery);
 
 query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<string>) => {
-	console.log(fileHashList);
 
-	const queue = new TaskQueue(Promise, query.MAX_SIMULTANEOUS_DOWNLOADS);
-	const axiosResponses = await Promise.all(fileHashList.map(queue.wrap(
-		async (fileHash : string) 	=> 		{
-
-			const toProcess = await query.checkIfSingleFileNeedsToBeDownloaded(fileHash);
-			if(toProcess) {
-				await query.downloadBinarySingleFile(fileHash);
-				await query.resizeImage(fileHash);
+	// Down chain
+	const queueAxios = new TaskQueue(Promise, query.MAX_SIMULTANEOUS_DOWNLOADS);
+	const axiosResponses = await Promise.all(fileHashList.map(queueAxios.wrap(
+		async (fileHash : string) 	=> 	{
+			if(await query.checkIfSingleFileNeedsToBeDownloaded(fileHash)) {
+				if(await query.downloadBinarySingleFile(fileHash)) {
+					return fileHash;
+				}
 			}
 		}
 	)));
+
+	process.stdout.write("%");
+
+	// Up chain
+	const queueResizeChain = new TaskQueue(Promise, query.MAX_SIMULTANEOUS_DOWNLOADS);
+	const resizeChain = await Promise.all(axiosResponses.map(queueResizeChain.wrap(
+		async (fileHash : string) 	=> 	{
+			if(await query.resizeImage(fileHash)) {
+				return fileHash;
+			}
+		}
+	)));
+
+	console.log('resizeChain', resizeChain);
 
 }).catch( err => {
 	console.log('err- downloadBinaryApiChain', err);

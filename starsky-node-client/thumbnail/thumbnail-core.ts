@@ -4,6 +4,7 @@ var fs = require('fs');
 
 // var Jimp = require('jimp'); //es6 -> fails
 import jimp from 'jimp';
+import sharp from 'sharp';
 
 // import { OptionsWithUri, FullResponse } from "request-promise-native";
 
@@ -40,17 +41,14 @@ export class Query {
 		}
 	};
 
-	public isImportOrDirectSearch(searchQuery : string) :  Promise<any> {
+	public async isImportOrDirectSearch(searchQuery : string) :  Promise<any> {
 		if(searchQuery === "IMPORT") {
 	
-			return this.isImportIndex().then((filePathList : Array<string>) => {
-				return this.searchIndexList(filePathList);
-			}).catch( err => {
-				console.log('err- deleteFileChain', err);
-			})
+			var filePathList : Array<string> = await this.isImportIndex();
+			return await this.searchIndexList(filePathList,true);
 		}
 		else {
-			return this.searchIndexList([searchQuery]);
+			return this.searchIndexList([searchQuery],false);
 		}
 	}
 	
@@ -111,6 +109,7 @@ export class Query {
 			.then(function (response) {
 
 				if(response.status === 202) {
+					process.stdout.write(".");
 					return true;
 				}
 				return false;
@@ -121,7 +120,9 @@ export class Query {
 
 	}
 
-	public async downloadBinarySingleFile(hashItem : string): Promise<any> {
+	public downloadBinarySingleFile(hashItem : string): Promise<boolean> {
+
+		this.getRights();
 
 		var downloadFileRequestOptions = this.requestOptions();
 		downloadFileRequestOptions.url = this.base_url + 'api/thumbnail/' + hashItem;
@@ -132,72 +133,66 @@ export class Query {
 			issingleitem: 'true'
 		}
 
-		var those = this;
-		return await axios(downloadFileRequestOptions)
-			.then(function (response) {
-				var filePath = path.join(those.getSourceTempFolder(), hashItem + ".jpg");
-				console.log(filePath)
-				response.data.pipe(fs.createWriteStream(filePath))
-		}).catch(function (err) {
-			console.log('downloadBinarySingleFile => error', hashItem, err.response.status , err.response.statusText)
-			// console.log('downloadBinarySingleFile ==> ', err.response)
-		});
+		var filePath = path.join(this.getSourceTempFolder(), hashItem + ".jpg");
+
+		return new Promise((resolve, reject) => {
+			Axios(downloadFileRequestOptions).then((response : AxiosResponse) => {
+				const writer = fs.createWriteStream(filePath)
+			
+				response.data.pipe(writer);
+						
+				writer.on('finish', resolve(true))
+				writer.on('error', resolve(false))
+			
+			}).catch(function (thrown) {
+				resolve(false);
+			});
+		})
+		
 	}
 
-	public async resizeImage(fileHash : string): Promise<string> {
+	public async resizeImage(fileHash : string): Promise<boolean> {
 
 		var sourceFilePath = path.join(this.getSourceTempFolder(),fileHash + ".jpg");
 		var targetFilePath = path.join(this.getTempFolder(),fileHash + ".jpg");
 
-		return new Promise<string>((resolve, reject) => {
+
+		return new Promise<boolean>((resolve, reject) => {
 
 			fs.access(sourceFilePath, fs.constants.F_OK, async (err) => {
 
+				// Very important!!
+				if (err) resolve(false);
+
 				if (!err) {
-					console.log(targetFilePath);
 
-					await jimp.read(sourceFilePath)
-					.then(image => {
-						image.resize(1000, jimp.AUTO);
-						image.write(targetFilePath);
 
-						// // Do stuff with the image.
-						this.copyExifTool(sourceFilePath, targetFilePath, fileHash, function (fileHash) {
-							resolve(fileHash);
-						});
-					})
-					.catch(err => {
-						console.error(err);
-						resolve();
-					});	
+					sharp(sourceFilePath)
+						.rotate()
+						.resize({ width: 1000 })
+						.toFile(targetFilePath)
+						.then(() => {
 					
+							process.stdout.write("≈");
+							resolve(true);
 
-					// Jimp.read(sourceFilePath)
+					}).catch(() => {
+						resolve(false);
+					});
+
+					// await jimp.read(sourceFilePath)
 					// 	.then(image => {
-					// 		return image
-					// 			.resize(1000, Jimp.AUTO)     // resize
-					// 			.quality(80)                 // set JPEG quality
-					// 			.write(targetFilePath); // save
+					// 		image.resize(1000, jimp.AUTO);
+					// 		image.write(targetFilePath);
+							
+					// 		process.stdout.write("≈");
+					// 		resolve(true);
 					// 	})
 					// 	.catch(err => {
 					// 		console.error(err);
-					// 		resolve();
-					// 	});
-					// .then(image => {
-					// 		fs.access(targetFilePath, fs.constants.F_OK, (err) => {
-					// 			if (err) {
-					// 				resolve(fileHash);
-					// 			}
-
-					// 			// // Do stuff with the image.
-					// 			// this.copyExifTool(sourceFilePath, targetFilePath, fileHash, function (fileHash) {
-					// 			// 	resolve(fileHash);
-					// 			// });
-					// 		});	
-					// 	}).catch(err => {
-					// 		console.error(err);
-					// 		resolve();
-					// 	});
+					// 		resolve(false);
+					// 	});	
+										
 				}
 
 			});	
@@ -206,14 +201,22 @@ export class Query {
 	}
 
 	private copyExifTool(sourceFilePath, targetFilePath, fileHash, callback) {
-		execFile(exiftool, ['-overwrite_original', '-TagsFromFile', sourceFilePath, targetFilePath, '-Orientation=', ], (error, stdout, stderr) => {
-			if (error) {
-				console.error(`exec error: ${error}`);
-				return;
-			}
-			// console.log(`stdout: ${stdout}`);
-			if(stderr !== "") console.log(`stderr: ${stderr}`);
-			return callback(fileHash);
+		
+		fs.stat(targetFilePath,(err, stats) => {
+			if( err || stats.size <= 50 ) return callback(fileHash);
+
+			// '-overwrite_original',
+			execFile(exiftool, [ '-TagsFromFile', sourceFilePath, targetFilePath, '-Orientation=', ], (error, stdout, stderr) => {
+				if (error) {
+					console.error(`exec error: ${error}`);
+					return;
+				}
+				// console.log(`stdout: ${stdout}`);
+				if(stderr !== "") console.log(`stderr: ${stderr}`);
+				process.stdout.write("~");
+				return callback(fileHash);
+			});
+
 		});
 	}
 
@@ -256,6 +259,30 @@ export class Query {
 
 		return returnBaseQueryList;
 
+	}
+
+	private ensureExistsFolder(path, mask, cb) {
+		if (typeof mask == 'function') { // allow the `mask` parameter to be optional
+			cb = mask;
+			mask = parseInt('0777',8);
+		}
+		fs.mkdir(path, mask, function(err) {
+			if (err) {
+				if (err.code == 'EEXIST') cb(null); // ignore the error if the folder already exists
+				else cb(err); // something else went wrong
+			} else cb(null); // successfully created folder
+		});
+	}
+
+
+
+	private getRights() {
+		this.ensureExistsFolder(this.getSourceTempFolder(), parseInt('0744',8) , function(err) {
+			if (err) console.log(err);// handle folder creation error
+		});
+		this.ensureExistsFolder(this.getTempFolder(), parseInt('0744',8), function(err) {
+			if (err) console.log(err);// handle folder creation error
+		});
 	}
 
 
@@ -310,29 +337,7 @@ export class Query {
 // 	}
 
 
-// 	private ensureExistsFolder(path, mask, cb) {
-// 		if (typeof mask == 'function') { // allow the `mask` parameter to be optional
-// 			cb = mask;
-// 			mask = parseInt('0777',8);
-// 		}
-// 		fs.mkdir(path, mask, function(err) {
-// 			if (err) {
-// 				if (err.code == 'EEXIST') cb(null); // ignore the error if the folder already exists
-// 				else cb(err); // something else went wrong
-// 			} else cb(null); // successfully created folder
-// 		});
-// 	}
 
-
-
-// 	private getRights() {
-// 		this.ensureExistsFolder(this.getSourceTempFolder(), parseInt('0744',8) , function(err) {
-// 			if (err) console.log(err);// handle folder creation error
-// 		});
-// 		this.ensureExistsFolder(this.getTempFolder(), parseInt('0744',8), function(err) {
-// 			if (err) console.log(err);// handle folder creation error
-// 		});
-// 	}
 
 // 	public parseFileIndexItems(items : FullResponse) : Array<string>{
 
