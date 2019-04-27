@@ -201,7 +201,10 @@ export class Query {
 			fs.access(sourceFilePath, fs.constants.F_OK, async (err) => {
 
 				// Very important!!
-				if (err) resolve(false);
+				if (err) {
+					process.stdout.write("†");
+					resolve(false);
+				}
 
 				if (!err) {
 
@@ -221,7 +224,16 @@ export class Query {
 
 					await jimp.read(sourceFilePath)
 						.then(image => {
-							image.resize(1000, jimp.AUTO);
+							var width = image.getWidth();
+							var height = image.getHeight();
+
+							if(width/height <= 1) {
+								image.resize(1000, jimp.AUTO);
+							}
+							else{
+								image.resize(jimp.AUTO,1000);
+							}
+							
 							image.write(targetFilePath);
 							
 							process.stdout.write("≈");
@@ -377,15 +389,15 @@ export class Query {
 	}
 
 	public async removeContentOfDirectory(dirPath : string): Promise<void> {
-		await fs.promises.readdir(dirPath).then((content : string[]) => {
-			content.forEach(element => {
+
+		fs.readdir(dirPath, (err, files) => {
+			files.forEach(element => {
 				var location = path.join(dirPath,element);
-				fs.promises.unlink(location);
+				fs.unlink(location,() => {
+				})
 			});
-		}).catch(function (thrown) {
-			console.log(thrown);
 		});
-		
+	
 	}
 
 }
