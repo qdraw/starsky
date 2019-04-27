@@ -106,7 +106,7 @@ export class Query {
 				var multiPageUrls = Array<AxiosRequestConfig>();
 				for (let lpIndex = 1; lpIndex <= lastPageNumber; lpIndex++) {
 					// console.log('index,', lpIndex,  filePathList[index],  );
-					multiPageUrls.push(this.searchRequestOptions(filePathList[index],index)) 
+					multiPageUrls.push(this.searchRequestOptions(filePathList[index],lpIndex)) 
 				}
 	
 				const axiosMultiResponses = await Promise.all(
@@ -114,9 +114,9 @@ export class Query {
 					await axios.request(url)))
 				);
 
-				axiosMultiResponses.forEach((response: AxiosResponse<IResults>)  => {
+				axiosMultiResponses.forEach((multiPageResponse: AxiosResponse<IResults>)  => {
 					
-					response.data.fileIndexItems.forEach(fileIndexItem => {
+					multiPageResponse.data.fileIndexItems.forEach(fileIndexItem => {
 						fileHashList.push(fileIndexItem.fileHash);
 					});
 				});
@@ -125,6 +125,8 @@ export class Query {
 			}
 		}
 		// END SUPPORT FOR PAGINATION
+
+		// console.log(fileHashList);
 
 		return fileHashList;
 
@@ -375,12 +377,15 @@ export class Query {
 	}
 
 	public async removeContentOfDirectory(dirPath : string): Promise<void> {
-		var content = await fs.promises.readdir(dirPath);
-
-		await content.forEach(element => {
-			var location = path.join(dirPath,element);
-			fs.promises.unlink(location);
+		await fs.promises.readdir(dirPath).then((content : string[]) => {
+			content.forEach(element => {
+				var location = path.join(dirPath,element);
+				fs.promises.unlink(location);
+			});
+		}).catch(function (thrown) {
+			console.log(thrown);
 		});
+		
 	}
 
 }
