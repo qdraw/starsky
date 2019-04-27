@@ -76,16 +76,57 @@ export class Query {
 				await axios.request(url))));
 
 		var fileHashList = Array<string>();
-		axiosResponses.forEach(response => {
 
-			// TODO: MISSING SUPPORT FOR PAGINATION
+		var lastPageNumberList = Array<number>();
+		await axiosResponses.forEach((response: AxiosResponse<IResults>)  => {
+
 			
-			if(response.data.searchCount >= 1) {
+			if(response.data.searchCount >= 1  ) {
 				response.data.fileIndexItems.forEach(fileIndexItem => {
 					fileHashList.push(fileIndexItem.fileHash);
 				});
 			}
+
+			// SUPPORT FOR PAGINATION
+			lastPageNumberList.push(response.data.lastPageNumber);
 		});
+
+		// SUPPORT FOR PAGINATION
+		for (let index = 0; index < lastPageNumberList.length; index++) {
+
+			const lastPageNumber = lastPageNumberList[index];
+
+			console.log('lastPageNumber,', lastPageNumber);
+
+			if(lastPageNumber >= 1) {
+
+				var multiPageUrls = Array<AxiosRequestConfig>();
+				for (let lpIndex = 1; lpIndex <= lastPageNumber; lpIndex++) {
+					console.log('index,', lpIndex,  filePathList[index],  );
+					multiPageUrls.push(this.searchRequestOptions(filePathList[index],index)) 
+				}
+	
+				const axiosMultiResponses = await Promise.all(
+					multiPageUrls.map(queue.wrap(async (url : AxiosRequestConfig) 	=> 
+					await axios.request(url)))
+				);
+
+				// console.log(axiosMultiResponses);
+
+				axiosMultiResponses.forEach((response: AxiosResponse<IResults>)  => {
+					console.log(response.data.pageNumber, response.data.fileIndexItems.length,  fileHashList.length)
+
+					
+					response.data.fileIndexItems.forEach(fileIndexItem => {
+						fileHashList.push(fileIndexItem.fileHash);
+
+					});
+				});
+
+		
+			}
+		}
+		// END SUPPORT FOR PAGINATION
 
 		return fileHashList;
 
