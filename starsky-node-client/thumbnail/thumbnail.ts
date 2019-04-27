@@ -71,7 +71,9 @@ query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<strin
 	const resizeChain = await Promise.all(axiosResponses.map(queueResizeChain.wrap(
 		async (fileHash : string) 	=> 	{
 			if(await query.resizeImage(fileHash)) {
-				return fileHash;
+				if(await query.uploadTempFile(fileHash)) {
+					return fileHash;
+				}
 			}
 		}
 	)));

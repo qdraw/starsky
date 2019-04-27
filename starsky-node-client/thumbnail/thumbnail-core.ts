@@ -2,13 +2,8 @@
 var path = require('path');
 var fs = require('fs');
 
-// var Jimp = require('jimp'); //es6 -> fails
 import jimp from 'jimp';
 import sharp from 'sharp';
-
-// import { OptionsWithUri, FullResponse } from "request-promise-native";
-
-// import request = require('request-promise-native');
 
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
@@ -283,6 +278,50 @@ export class Query {
 		this.ensureExistsFolder(this.getTempFolder(), parseInt('0744',8), function(err) {
 			if (err) console.log(err);// handle folder creation error
 		});
+	}
+
+	public async uploadTempFile(fileHash : string): Promise<boolean> {
+
+		var uploadRequestOptions = this.requestOptions();
+		uploadRequestOptions.url = this.base_url + 'import/thumbnail/' + fileHash;
+		// uploadRequestOptions.encoding = 'binary';
+		uploadRequestOptions.method = "POST";
+
+		var fileHashLocation = path.join(this.getTempFolder(), fileHash + ".jpg");
+		uploadRequestOptions.data = fs.createReadStream(fileHashLocation);
+
+
+		uploadRequestOptions.headers['Content-Type'] = 'image/jpeg';
+		uploadRequestOptions.headers['filename'] = fileHash + ".jpg";
+
+		console.log(uploadRequestOptions.headers);
+
+		// uploadRequestOptions.headers['Content-Type'] = 'multipart/form-data; charset=utf-8; boundary="another cool boundary";'
+		// uploadRequestOptions.headers['Content-Length'] = 0;
+
+
+		return new Promise<boolean>((resolve, reject) => {
+
+			fs.access(fileHashLocation, fs.constants.F_OK, (err) => {
+				if (err) {
+					console.log(">>== skip: " + fileHash);
+					resolve(false);
+				}
+
+				Axios(uploadRequestOptions).then((response : AxiosResponse) => {
+
+					console.log("upload > ", response.status, response.data, fileHash);
+					resolve(false);
+				}).catch(function (thrown) {
+					console.log(thrown);
+					resolve(false);
+				});
+
+				
+			});
+
+		});
+
 	}
 
 
