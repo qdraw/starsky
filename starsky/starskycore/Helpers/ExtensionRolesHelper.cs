@@ -361,6 +361,8 @@ namespace starskycore.Helpers
 			var tiff3 = new byte[] {77, 77, 0}; // DNG? //0
 			var jpeg = new byte[] {255, 216, 255, 224}; // jpeg
 			var jpeg2 = new byte[] {255, 216, 255, 225}; // jpeg canon
+			var jpeg3 = new byte[] {255, 216, 255, 219}; // other jpeg
+
 			var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
 			var gpx = new byte[] {60, 63, 120}; // gpx
 			
@@ -390,7 +392,10 @@ namespace starskycore.Helpers
 
 			if ( jpeg2.SequenceEqual(bytes.Take(jpeg2.Length)) )
 				return ImageFormat.jpg;
-
+			
+			if ( jpeg3.SequenceEqual(bytes.Take(jpeg3.Length)) )
+				return ImageFormat.jpg;
+			
 			if ( xmp.SequenceEqual(bytes.Take(xmp.Length)) )
 				return ImageFormat.xmp;
 

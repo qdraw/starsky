@@ -106,6 +106,12 @@ namespace starsky.Controllers
 			    thumbnailPaths.Add(thumbToUpperCase);
 		    }
 
+		    // Status if there is nothing uploaded
+		    if ( !thumbnailPaths.Any() )
+		    {
+			    Response.StatusCode = 206;
+		    }
+
 		    for ( int i = 0; i < tempImportPaths.Count; i++ )
 		    {
 			    System.IO.File.Move(tempImportPaths[i],thumbnailPaths[i]);

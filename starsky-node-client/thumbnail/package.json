@@ -16,15 +16,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
+    "cwait": "^1.1.2",
     "dist-exiftool": "^10.53.0",
     "dotenv": "^6.1.0",
     "jimp": "^0.6.1",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.5"
+    "p-iteration": "^1.1.8",
+    "sharp": "^0.22.1"
   },
   "devDependencies": {
-    "@types/node": "^11.13.7",
-    "@types/request-promise-native": "^1.0.15",
+    "@types/node": "^11.13.8",
     "concurrently": "^3.5.1",
     "typescript": "^3.3.3333"
   }

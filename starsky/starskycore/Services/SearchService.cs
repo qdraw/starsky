@@ -155,7 +155,7 @@ namespace starskycore.Services
 
 		    foreach (string keyword in tagsKeywords)
 		    {
-			    // Not ToLowerInvariant() due the fact that this is not supported in SQL
+			    // Not ToLowerInvariant() due the fact that this is not supported in EF SQL
 			    predicate = predicate.Or (p => p.Tags.ToLower().Contains (keyword));
 		    }
 		    model.FileIndexItems.AddRange(sourceList.Where(predicate));
@@ -207,8 +207,10 @@ namespace starskycore.Services
 					    ));
 					    break;
 				    case SearchViewModel.SearchInTypes.filepath:
+					    // The LINQ expression 'where [p].FilePath.ToLowerInvariant().Contains(__get_Item_0)'
+					    // could not be translated and will be evaluated locally.
 					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.FilePath.ToLowerInvariant().Contains(model.SearchFor[i])
+						    p => p.FilePath.ToLower().Contains(model.SearchFor[i])
 					    ));
 					    break;
 				    case SearchViewModel.SearchInTypes.parentdirectory:
