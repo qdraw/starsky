@@ -172,6 +172,7 @@ namespace starskycore.Services
 		public List<ImportIndexItem> History()
 		{
 			return _context.ImportIndex.Where(p => p.AddToDatabase >= DateTime.Today).ToList();
+			// for debug: p.AddToDatabase >= DateTime.UtcNow.AddDays(-2) && p.Id % 6 == 1
 		}
 
 
