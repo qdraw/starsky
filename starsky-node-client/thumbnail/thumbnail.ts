@@ -86,7 +86,7 @@ query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<strin
 	// and clean afterwards
 	query.deleteSourceTempFolder();
 	query.deleteTempFolder();
-
+	console.log("   `done");
 
 }).catch( err => {
 	console.log('err- downloadBinaryApiChain', err);

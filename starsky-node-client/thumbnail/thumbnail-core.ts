@@ -96,13 +96,13 @@ export class Query {
 
 			const lastPageNumber = lastPageNumberList[index];
 
-			console.log('lastPageNumber,', lastPageNumber);
+			// console.log('lastPageNumber,', lastPageNumber);
 
 			if(lastPageNumber >= 1) {
 
 				var multiPageUrls = Array<AxiosRequestConfig>();
 				for (let lpIndex = 1; lpIndex <= lastPageNumber; lpIndex++) {
-					console.log('index,', lpIndex,  filePathList[index],  );
+					// console.log('index,', lpIndex,  filePathList[index],  );
 					multiPageUrls.push(this.searchRequestOptions(filePathList[index],index)) 
 				}
 	
@@ -111,15 +111,10 @@ export class Query {
 					await axios.request(url)))
 				);
 
-				// console.log(axiosMultiResponses);
-
 				axiosMultiResponses.forEach((response: AxiosResponse<IResults>)  => {
-					console.log(response.data.pageNumber, response.data.fileIndexItems.length,  fileHashList.length)
-
 					
 					response.data.fileIndexItems.forEach(fileIndexItem => {
 						fileHashList.push(fileIndexItem.fileHash);
-
 					});
 				});
 
