@@ -48,73 +48,26 @@ var access_token = process.env.STARKSYACCESSTOKEN;
 
 var query = new Query(base_url,access_token);
 
+console.log("searchQuery", searchQuery);
 
-var skip = function() {
-	console.log("skip");
-};
+query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<string>) => {
+	console.log(fileHashList);
 
-if(searchQuery === "IMPORT") {
+	const queue = new TaskQueue(Promise, query.MAX_SIMULTANEOUS_DOWNLOADS);
+	const axiosResponses = await Promise.all(fileHashList.map(queue.wrap(
+		async (fileHash : string) 	=> 		{
 
-	query.isImportIndex().then(async (filePathList : Array<string>) => {
+			const toProcess = await query.checkIfSingleFileNeedsToBeDownloaded(fileHash);
+			if(toProcess) {
+				await query.downloadBinarySingleFile(fileHash);
+				await query.resizeImage(fileHash);
+			}
+		}
+	)));
 
-
-		await query.searchIndexList(filePathList);
-
-		// var requestQueue = filePathList.map(file => query.searchIndex(query.indexRequestOptions("-filePath:" + file)));
-		// console.log(requestQueue);
-
-		// requestQueue.reduce((curr, next) => {
-		// 	console.log(curr)
-		// 	return curr.then(() => next); // <- here
-		//   }, Promise.resolve())
-		// 	  .then((res) => console.log(res));
-
-
-
-		// console.log(filePathList.length);
-		// const finalResult = await query.searchIndex(indexRequestOptions);
-
-		// filePathList.forEach(async filePath => {
-		// 	var indexRequestOptions = query.indexRequestOptions("-filePath:" + filePath);
-		// 	console.log(finalResult);
-		// });
-
-
-
-
-		// var combineFileHashGetPromises = Array<Promise<IResults>>();
-		// filePathList.forEach(async filePath => {
-		// 	var indexRequestOptions = query.indexRequestOptions("-filePath:" + filePath);
-
-		// 	combineFileHashGetPromises.push(query.searchIndex);
-		// });
-		
-
-		// var searchQueryWithFilePathList = Array<string>();
-		// filePathList.forEach(element => {
-		// 	searchQueryWithFilePathList.push(element);
-		// });
-
-		// pMap(filePathList, async filePath => {
-		// 	var indexRequestOptions = query.indexRequestOptions("-filePath:" + filePath);
-		// 	await query.searchIndex(indexRequestOptions);
-		// });
-
-		// combineFileHashGetPromises.reduce(function(cur, next){
-		// 	return cur('').then(skip, next);
-		// }, Promise.reject()).then(function(){
-		// 	console.log("done");
-		// }, function() {
-		// 	console.log("failed");
-		// });
-	
-	}).catch( err => {
-		console.log('err- deleteFileChain', err);
-	})
-
-}
-
-
+}).catch( err => {
+	console.log('err- downloadBinaryApiChain', err);
+})
 
 
 

@@ -2,7 +2,8 @@
 var path = require('path');
 var fs = require('fs');
 
-var Jimp = require('jimp'); //es6 -> fails
+// var Jimp = require('jimp'); //es6 -> fails
+import jimp from 'jimp';
 
 // import { OptionsWithUri, FullResponse } from "request-promise-native";
 
@@ -21,7 +22,7 @@ export class Query {
 	base_url: string;
 	access_token: string;
 
-	readonly MAX_SIMULTANEOUS_DOWNLOADS  =  10;
+	public readonly  MAX_SIMULTANEOUS_DOWNLOADS  =  10;
 
 	constructor(base_url: string, access_token : string) {		
 		this.base_url = base_url;
@@ -39,12 +40,39 @@ export class Query {
 		}
 	};
 
-	public async searchIndexList(filePathList : Array<string>) :  Promise<Array<string>> {
+	public isImportOrDirectSearch(searchQuery : string) :  Promise<any> {
+		if(searchQuery === "IMPORT") {
+	
+			return this.isImportIndex().then((filePathList : Array<string>) => {
+				return this.searchIndexList(filePathList);
+			}).catch( err => {
+				console.log('err- deleteFileChain', err);
+			})
+		}
+		else {
+			return this.searchIndexList([searchQuery]);
+		}
+	}
+	
+	private getSourceTempFolder() {
+		return path.join(__dirname, "source_temp");
+	}
+
+	private getTempFolder() {
+		return path.join(__dirname, "temp");
+	}
+
+	public async searchIndexList(filePathList : Array<string>, isFilePath: boolean = false) :  Promise<Array<string>> {
 
 		const urls = Array<AxiosRequestConfig>();
 
 		filePathList.forEach(element => {
-			urls.push(this.searchRequestOptions(`-filePath:"${element}"`))
+			if(isFilePath) {
+				urls.push(this.searchRequestOptions(`-filePath:"${element}"`))
+			}
+			else {
+				urls.push(this.searchRequestOptions(element))
+			}
 		});
 	
 		const queue = new TaskQueue(Promise, this.MAX_SIMULTANEOUS_DOWNLOADS);
@@ -53,6 +81,9 @@ export class Query {
 
 		var fileHashList = Array<string>();
 		axiosResponses.forEach(response => {
+
+			// TODO: MISSING SUPPORT FOR PAGINATION
+			
 			if(response.data.searchCount >= 1) {
 				response.data.fileIndexItems.forEach(fileIndexItem => {
 					fileHashList.push(fileIndexItem.fileHash);
@@ -65,41 +96,126 @@ export class Query {
 	}
 
 
-	// public async searchIndex(indexRequestOptions : AxiosRequestConfig) : Promise<Array<string>>  {
+	public async checkIfSingleFileNeedsToBeDownloaded(hashItem : string): Promise<boolean> {
 
-	// 	const ops = [];
-	// 	let op = axios(indexRequestOptions);
-	// 	ops.push(op);
+		var downloadFileRequestOptions = this.requestOptions();;
+		downloadFileRequestOptions.url = this.base_url + 'api/thumbnail/' + hashItem;
+		downloadFileRequestOptions.method = "GET";
 
-	// 	let allQueryResult : Array<AxiosResponse> = await axios.all(ops);
-	// 	var returnBaseQueryList = new Array<string>();
+		downloadFileRequestOptions.params = {
+			json: 'true',
+			f: hashItem
+		}
 
-	// 	allQueryResult.forEach(oneQuery => {
+		return await axios(downloadFileRequestOptions)
+			.then(function (response) {
 
-	// 		console.log(oneQuery.data.length);
+				if(response.status === 202) {
+					return true;
+				}
+				return false;
+		}).catch(function (err) {
+			console.log('checkIfSingleFileNeedsToBeDownloaded ==> ',err.response)
+			return false;
+		});
 
-	// 		for (let index = 0; index < oneQuery.data.length; index++) {
-	// 			const item = oneQuery.data[index];
-	// 			if(item === undefined ||  item === null ||  item.fileHash.length !== 26) continue;
-	// 			returnBaseQueryList.push(item.addToDatabase);
-	// 		}
+	}
 
-	// 	});
+	public async downloadBinarySingleFile(hashItem : string): Promise<any> {
 
-	// 	return returnBaseQueryList;
+		var downloadFileRequestOptions = this.requestOptions();
+		downloadFileRequestOptions.url = this.base_url + 'api/thumbnail/' + hashItem;
+		downloadFileRequestOptions.responseType = 'stream'
+		downloadFileRequestOptions.method = "GET";
+		downloadFileRequestOptions.params = {
+			f: hashItem,
+			issingleitem: 'true'
+		}
 
-	// }
+		var those = this;
+		return await axios(downloadFileRequestOptions)
+			.then(function (response) {
+				var filePath = path.join(those.getSourceTempFolder(), hashItem + ".jpg");
+				console.log(filePath)
+				response.data.pipe(fs.createWriteStream(filePath))
+		}).catch(function (err) {
+			console.log('downloadBinarySingleFile => error', hashItem, err.response.status , err.response.statusText)
+			// console.log('downloadBinarySingleFile ==> ', err.response)
+		});
+	}
 
-	// public searchIndex(indexRequestOptions : AxiosRequestConfig) {
-	// 	// axios({
-	// 	// 	method:'get',
-	// 	// 	url:'http://bit.ly/2mTM3nY',
-	// 	// 	responseType:'stream'
-	// 	// })
-	// 	// .then(function (response) {
-	// 	// 	response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
-	// 	// });
-	// }
+	public async resizeImage(fileHash : string): Promise<string> {
+
+		var sourceFilePath = path.join(this.getSourceTempFolder(),fileHash + ".jpg");
+		var targetFilePath = path.join(this.getTempFolder(),fileHash + ".jpg");
+
+		return new Promise<string>((resolve, reject) => {
+
+			fs.access(sourceFilePath, fs.constants.F_OK, async (err) => {
+
+				if (!err) {
+					console.log(targetFilePath);
+
+					await jimp.read(sourceFilePath)
+					.then(image => {
+						image.resize(1000, jimp.AUTO);
+						image.write(targetFilePath);
+
+						// // Do stuff with the image.
+						this.copyExifTool(sourceFilePath, targetFilePath, fileHash, function (fileHash) {
+							resolve(fileHash);
+						});
+					})
+					.catch(err => {
+						console.error(err);
+						resolve();
+					});	
+					
+
+					// Jimp.read(sourceFilePath)
+					// 	.then(image => {
+					// 		return image
+					// 			.resize(1000, Jimp.AUTO)     // resize
+					// 			.quality(80)                 // set JPEG quality
+					// 			.write(targetFilePath); // save
+					// 	})
+					// 	.catch(err => {
+					// 		console.error(err);
+					// 		resolve();
+					// 	});
+					// .then(image => {
+					// 		fs.access(targetFilePath, fs.constants.F_OK, (err) => {
+					// 			if (err) {
+					// 				resolve(fileHash);
+					// 			}
+
+					// 			// // Do stuff with the image.
+					// 			// this.copyExifTool(sourceFilePath, targetFilePath, fileHash, function (fileHash) {
+					// 			// 	resolve(fileHash);
+					// 			// });
+					// 		});	
+					// 	}).catch(err => {
+					// 		console.error(err);
+					// 		resolve();
+					// 	});
+				}
+
+			});	
+		});
+
+	}
+
+	private copyExifTool(sourceFilePath, targetFilePath, fileHash, callback) {
+		execFile(exiftool, ['-overwrite_original', '-TagsFromFile', sourceFilePath, targetFilePath, '-Orientation=', ], (error, stdout, stderr) => {
+			if (error) {
+				console.error(`exec error: ${error}`);
+				return;
+			}
+			// console.log(`stdout: ${stdout}`);
+			if(stderr !== "") console.log(`stderr: ${stderr}`);
+			return callback(fileHash);
+		});
+	}
 
 	public searchRequestOptions(searchQuery: string, pageNumber = 0) : AxiosRequestConfig {
 	
@@ -207,13 +323,7 @@ export class Query {
 // 		});
 // 	}
 
-// 	private getSourceTempFolder() {
-// 		return path.join(__dirname, "source_temp");
-// 	}
 
-// 	private getTempFolder() {
-// 		return path.join(__dirname, "temp");
-// 	}
 
 // 	private getRights() {
 // 		this.ensureExistsFolder(this.getSourceTempFolder(), parseInt('0744',8) , function(err) {
