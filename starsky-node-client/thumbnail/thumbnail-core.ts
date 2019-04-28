@@ -148,9 +148,11 @@ export class Query {
 			.then(function (response) {
 
 				if(response.status === 202) {
-					process.stdout.write(".");
+					process.stdout.write("•");
 					return true;
 				}
+				process.stdout.write("≠");
+
 				return false;
 		}).catch(function (err) {
 			console.log('checkIfSingleFileNeedsToBeDownloaded ==> ',err.response)
@@ -201,12 +203,12 @@ export class Query {
 			fs.access(sourceFilePath, fs.constants.F_OK, async (err) => {
 
 				// Very important!!
-				if (err) {
+				if (err !== null) {
 					process.stdout.write("†");
 					resolve(false);
 				}
 
-				if (!err) {
+				if (err === null) {
 
 
 					// sharp(sourceFilePath)
@@ -222,7 +224,7 @@ export class Query {
 					// 	resolve(false);
 					// });
 
-					await jimp.read(sourceFilePath)
+					jimp.read(sourceFilePath)
 						.then(image => {
 							// var width = image.getWidth();
 							// var height = image.getHeight();
@@ -230,16 +232,12 @@ export class Query {
 
 							image.resize(1000,jimp.AUTO);
 
-							// if(width/height <= 1) {
-							// 	image.resize(jimp.AUTO,1000);
-							// }
-							// else{
-							// }
+		
+							image.write(targetFilePath,() =>{
+								process.stdout.write("≈");
+								resolve(true);
+							});
 							
-							image.write(targetFilePath);
-							
-							process.stdout.write("≈");
-							resolve(true);
 						})
 						.catch(err => {
 							console.error(err);
@@ -361,8 +359,10 @@ export class Query {
 				}
 
 				fs.stat(fileHashLocation,(err, stats) => {
-					if( err || stats.size <= 50 ) return resolve(false);
-
+					if( err || stats.size <= 50 ) {
+						console.log(">>== skip * err:: " + err + "~  stats size:", stats.size);
+						return resolve(false);
+					}
 
 					Axios(uploadRequestOptions).then((response : AxiosResponse) => {
 
@@ -382,22 +382,21 @@ export class Query {
 
 	}
 
-	public async deleteSourceTempFolder(): Promise<void> {
-		return this.removeContentOfDirectory(this.getSourceTempFolder());
+
+	public deleteSourceTempFolder(fileHashList : string[]) {
+		this.removeContentOfDirectory(this.getSourceTempFolder(),fileHashList);
 	}
 
-	public async deleteTempFolder(): Promise<void> {
-		return this.removeContentOfDirectory(this.getTempFolder());
+	public deleteTempFolder(fileHashList : string[]) {
+		this.removeContentOfDirectory(this.getTempFolder(),fileHashList);
 	}
 
-	public async removeContentOfDirectory(dirPath : string): Promise<void> {
+	private removeContentOfDirectory(dirPath : string, fileHashList : string[]) {
 
-		fs.readdir(dirPath, (err, files) => {
-			files.forEach(element => {
-				var location = path.join(dirPath,element);
-				fs.unlink(location,() => {
-				})
-			});
+		fileHashList.forEach(element => {
+			var location = path.join(dirPath,element);
+			fs.unlink(location,() => {
+			})
 		});
 	
 	}

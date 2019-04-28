@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import * as path from 'path';
-
 import { Query } from './thumbnail-core';
 require('dotenv').config({path:path.join(__dirname,"../", ".env")});
 import { TaskQueue } from 'cwait';
@@ -10,7 +9,7 @@ import { TaskQueue } from 'cwait';
 function ShowHelpDialog() {
 	console.log("Starksy Remote Thumbnail Helper")
 	console.log("use numbers (e.g. 1-100) to search relative")
-	console.log("use the keyword 'IMPORT' to search for recent imported files")
+	console.log("use the keyword 'IMPORT' to search for recent imported files (case-sensitive)")
 	console.log("use a keyword to search and check if thumbnails are created")
 }
 
@@ -73,19 +72,22 @@ query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<strin
 
 	// Up chain
 	const queueResizeChain = new TaskQueue(Promise, query.MAX_SIMULTANEOUS_DOWNLOADS);
-	const resizeChain = await Promise.all(filteredAxiosResponses.map(queueResizeChain.wrap(
+	await Promise.all(filteredAxiosResponses.map(queueResizeChain.wrap(
 		async (fileHash : string) 	=> 	{
 			if(await query.resizeImage(fileHash)) {
 				if(await query.uploadTempFile(fileHash)) {
-					return fileHash;
+					return fileHash; // return isn't working good
+					// resizeChain> [undefined,und..]
 				}
 			}
 		}
 	)));
 
+	
 	// and clean afterwards
-	query.deleteSourceTempFolder();
-	query.deleteTempFolder();
+	query.deleteSourceTempFolder(filteredAxiosResponses);
+	query.deleteTempFolder(filteredAxiosResponses);
+
 	console.log("   `done");
 
 }).catch( err => {
