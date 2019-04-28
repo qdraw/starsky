@@ -83,6 +83,14 @@ export class Query {
 		var lastPageNumberList = Array<number>();
 		await axiosResponses.forEach((response: AxiosResponse<IResults>)  => {
 
+			// To Display the query as is
+			if(!isFilePath) {
+				process.stdout.write("¶øπ¶ ");
+				response.data.searchFor.forEach(search => {
+					process.stdout.write(search + ", ");
+				});
+				process.stdout.write(" ¶πø¶\n");
+			}
 			
 			if(response.data.searchCount >= 1  ) {
 				response.data.fileIndexItems.forEach(fileIndexItem => {

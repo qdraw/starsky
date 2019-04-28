@@ -45,7 +45,7 @@ var access_token = process.env.STARKSYACCESSTOKEN;
 
 var query = new Query(base_url,access_token);
 
-console.log("searchQuery\n", searchQuery);
+console.log(searchQuery + "\n^^^^searchQuery^^^^");
 
 
 query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<string>) => {
