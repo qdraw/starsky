@@ -4,7 +4,8 @@
   "description": "",
   "main": "docs.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node docs.js"
   },
   "author": "",
   "license": "ISC",
