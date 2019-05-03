@@ -90,6 +90,8 @@ namespace starsky
             services.AddScoped<IQuery, Query>();
             services.AddScoped<ISync, SyncService>();
             services.AddScoped<ISearch, SearchService>();
+            services.AddScoped<ISearchSuggest, SearchSuggestionsService>();
+
             services.AddScoped<IImport, ImportService>();
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IExifTool, ExifTool>();
