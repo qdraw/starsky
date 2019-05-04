@@ -56,7 +56,9 @@ namespace starskycore.Services
 					}
 				}
 			}
-			_cache.Set(nameof(SearchSuggestionsService), suggestions, new TimeSpan(20,0,0));
+			
+			_cache.Set(nameof(SearchSuggestionsService), suggestions.Where(p => p.Value >= 2), 
+				new TimeSpan(20,0,0));
 
 			return suggestions;
 		}
