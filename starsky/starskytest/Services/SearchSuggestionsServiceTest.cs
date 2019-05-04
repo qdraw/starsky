@@ -40,23 +40,24 @@ namespace starskytest.Services
 		public void TestInitialize()
 		{
 
-			if (string.IsNullOrEmpty(_query.GetSubPathByHash("schipholairplane")))
+			if (string.IsNullOrEmpty(_query.GetSubPathByHash("schipholairplane2")))
 			{
 				_query.AddItem(new FileIndexItem
 				{
-					FileName = "schipholairplane.jpg",
+					FileName = "schipholairplane2.jpg",
 					ParentDirectory = "/stations",
-					FileHash = "schipholairplane",
+					FileHash = "schipholairplane2",
 					Tags = "schiphol, airplane, zebra",
 				});
 			}
 
-			if (string.IsNullOrEmpty(_query.GetSubPathByHash("lelystadcentrum")))
+			if (string.IsNullOrEmpty(_query.GetSubPathByHash("schipholairplane1")))
 			{
 				_query.AddItem(new FileIndexItem
 				{
 					FileName = "schipholairplane1.jpg",
 					ParentDirectory = "/stations",
+					FileHash = "schipholairplane1",
 					Tags = "schiphol, airplane",
 					DateTime = DateTime.Now
 				});
@@ -73,7 +74,6 @@ namespace starskytest.Services
 		[TestMethod]
 		public void SearchSuggestionsService_MoreThat2_StartArray()
 		{
-
 			// Schiphol is 2 times in the list
 			var result = _suggest.SearchSuggest("sch").ToList();
 			
