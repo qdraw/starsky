@@ -57,7 +57,7 @@ namespace starskycore.Services
 				}
 			}
 			
-			_cache.Set(nameof(SearchSuggestionsService), suggestions.Where(p => p.Value >= 2), 
+			_cache.Set(nameof(SearchSuggestionsService), suggestions.Where(p => p.Value >= 10), 
 				new TimeSpan(20,0,0));
 
 			return suggestions;
@@ -79,7 +79,7 @@ namespace starskycore.Services
 			if ( string.IsNullOrEmpty(query) ) return new List<string>();
 			if( _cache == null || _appSettings?.AddMemoryCache == false) return new List<string>();
 
-			return GetAllSuggestions().Where(p => p.Key.StartsWith(query) && p.Value >= 2).Take(MaxResult)
+			return GetAllSuggestions().Where(p => p.Key.StartsWith(query) && p.Value >= 10).Take(MaxResult)
 				.OrderByDescending(p => p.Value).Select(p => p.Key);
 		}
 

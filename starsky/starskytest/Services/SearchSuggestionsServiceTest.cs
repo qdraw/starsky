@@ -40,27 +40,34 @@ namespace starskytest.Services
 		public void TestInitialize()
 		{
 
-			if (string.IsNullOrEmpty(_query.GetSubPathByHash("schipholairplane2")))
+			if (string.IsNullOrEmpty(_query.GetSubPathByHash("schipholairplane2--suggestions")))
 			{
-				_query.AddItem(new FileIndexItem
+				for ( int i = 0; i < 9; i++ )
 				{
-					FileName = "schipholairplane2.jpg",
-					ParentDirectory = "/stations",
-					FileHash = "schipholairplane2",
-					Tags = "schiphol, airplane, zebra",
-				});
+					_query.AddItem(new FileIndexItem
+					{
+						FileName = "schipholairplane2.jpg",
+						ParentDirectory = "/stations",
+						FileHash = "schipholairplane2--suggestions",
+						Tags = "schiphol, airplane, zebra",
+					});
+				}
 			}
 
 			if (string.IsNullOrEmpty(_query.GetSubPathByHash("schipholairplane1")))
 			{
-				_query.AddItem(new FileIndexItem
+				for ( int i = 0; i < 9; i++ )
 				{
-					FileName = "schipholairplane1.jpg",
-					ParentDirectory = "/stations",
-					FileHash = "schipholairplane1",
-					Tags = "schiphol, airplane",
-					DateTime = DateTime.Now
-				});
+					_query.AddItem(new FileIndexItem
+					{
+						FileName = "schipholairplane1.jpg",
+						ParentDirectory = "/stations",
+						FileHash = "schipholairplane1--suggestions",
+						Tags = "schiphol, airplane",
+						DateTime = DateTime.Now
+					});
+				}
+
 			}
 
 		}
@@ -74,7 +81,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void SearchSuggestionsService_MoreThat2_StartArray()
 		{
-			// Schiphol is 2 times in the list
+			// Schiphol is 10 times in the list
 			var result = _suggest.SearchSuggest("sch").ToList();
 			
 			Assert.AreEqual("schiphol", result.FirstOrDefault());
@@ -85,7 +92,7 @@ namespace starskytest.Services
 		public void SearchSuggestionsService_MoreThat2_MiddleArray()
 		{
 
-			// airplane is 2 times in the list + middle of array
+			// airplane is 10 times in the list + middle of array
 			var result = _suggest.SearchSuggest("airpl").ToList();
 			
 			Assert.AreEqual("airplane", result.FirstOrDefault());
