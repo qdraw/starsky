@@ -31,10 +31,10 @@ namespace starskycore.Services
 		/// Used to fill the cache with an array of
 		/// </summary>
 		/// <returns></returns>
-		public Dictionary<string,int> Populate()
+		public List<KeyValuePair<string,int>> Populate()
 		{
 			if (_cache.TryGetValue(nameof(SearchSuggestionsService), 
-				out _)) return new Dictionary<string,int>();
+				out _)) return new Dictionary<string,int>().ToList();
 
 			var suggestions = new Dictionary<string,int>();
 			
@@ -56,19 +56,21 @@ namespace starskycore.Services
 					}
 				}
 			}
+
+			var suggestionsFiltered = suggestions.Where(p => p.Value >= 10).ToList();
 			
-			_cache.Set(nameof(SearchSuggestionsService), suggestions.Where(p => p.Value >= 10), 
+			_cache.Set(nameof(SearchSuggestionsService), suggestionsFiltered, 
 				new TimeSpan(20,0,0));
 
-			return suggestions;
+			return suggestionsFiltered;
 		}
 
-		private Dictionary<string,int> GetAllSuggestions()
+		private IEnumerable<KeyValuePair<string, int>> GetAllSuggestions()
 		{
 			if( _cache == null || _appSettings?.AddMemoryCache == false) return new Dictionary<string,int>();
 			
 			if (_cache.TryGetValue(nameof(SearchSuggestionsService), out var objectFileFolders))
-				return objectFileFolders as Dictionary<string,int>;
+				return objectFileFolders as List<KeyValuePair<string,int>>;
 			
 			return Populate();
 		
@@ -79,7 +81,7 @@ namespace starskycore.Services
 			if ( string.IsNullOrEmpty(query) ) return new List<string>();
 			if( _cache == null || _appSettings?.AddMemoryCache == false) return new List<string>();
 
-			return GetAllSuggestions().Where(p => p.Key.StartsWith(query) && p.Value >= 10).Take(MaxResult)
+			return GetAllSuggestions().Where(p => p.Key.StartsWith(query)).Take(MaxResult)
 				.OrderByDescending(p => p.Value).Select(p => p.Key);
 		}
 
