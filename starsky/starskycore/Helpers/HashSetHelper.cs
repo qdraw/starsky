@@ -15,6 +15,8 @@ namespace starskycore.Helpers
 		/// <returns>list/hashset with items in string</returns>
 		public static HashSet<string> StringToHashSet(string inputKeywords)
 		{
+			if ( string.IsNullOrEmpty(inputKeywords) ) return new HashSet<string>();
+			
 			var keywords = ReplaceSingleCommaWithCommaWithSpace(inputKeywords);
 
 			var dotcommaRegex = new Regex(", ");

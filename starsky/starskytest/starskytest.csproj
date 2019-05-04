@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
-      <PackageReference Include="Microsoft.AspNetCore.App" Version="3.0.0-preview3-19153-02"/>
+      <PackageReference Include="Microsoft.AspNetCore.App" Version="3.0.0-preview3-19153-02" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.0-preview3.19153.1" />
       <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
   </ItemGroup>
