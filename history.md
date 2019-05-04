@@ -12,7 +12,11 @@
 - []   Add unit tests for importing raw's with .xmp files
 - []   Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
 
-# version 0.1.5.4 - tdb
+# version 0.1.5.5 - tbd
+- implement search suggestions API `/suggest?t=d`
+
+
+# version 0.1.5.4 - 2019-04-24
 - fix: for readonly there is no TIFF label
 - Front-end copy ctrl+shift+c visual feedback
 - Warmup script with variables
