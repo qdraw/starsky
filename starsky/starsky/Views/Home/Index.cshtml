@@ -22,7 +22,7 @@
                 @if (@Model.RelativeObjects.PrevFilePath != null)
                 {
                     var urlPath = @Url.Action("Index", "Home", new {f = @Model.RelativeObjects.PrevFilePath});
-                    urlPath = urlPath.Replace("%2F", "/");
+	                urlPath = urlPath.Replace("%2F", "/");
                     <a class="prev" href="@urlPath">Vorige</a>
                 }
                 @if (@Model.RelativeObjects.NextFilePath != null ) 
@@ -193,7 +193,7 @@
 	var exportZipApiBase = @Url.Action("CreateZip", "Export");
 	exportZipApiBase = HttpUtility.UrlDecode(exportZipApiBase);
 	var subPath = HttpUtility.HtmlDecode(@Model.SubPath);
-	subPath = HttpUtility.UrlEncode(subPath);
+	subPath = HttpUtility.UrlEncode(subPath).Replace("+", " ");
 }      
                      
  <div id="js-settings" data-updateApiBase="@updateApiBase"
