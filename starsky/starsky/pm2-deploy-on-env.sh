@@ -1,8 +1,8 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-## DEPLOY +
-## WARMUP WITHOUT LOGIN
+## DEPLOY ONLY
+# for warnup check: ./pm2-warmup.sh
 
 
 PM2NAME="starsky"
@@ -114,6 +114,5 @@ fi
 
 pm2 start $PM2NAME
 
-## WARMUP WITHOUT LOGIN
-echo "warmup -->"
-bash pm2-warmup.sh --port $PORT
+echo "!> done with deploying"
+echo "!> you need to run: ./pm2-warmup.sh --port 4823"
