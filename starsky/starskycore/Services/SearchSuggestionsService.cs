@@ -31,7 +31,7 @@ namespace starskycore.Services
 		/// Used to fill the cache with an array of
 		/// </summary>
 		/// <returns></returns>
-		public List<KeyValuePair<string,int>> Populate()
+		public List<KeyValuePair<string,int>> Inflate()
 		{
 			if (_cache.TryGetValue(nameof(SearchSuggestionsService), 
 				out _)) return new Dictionary<string,int>().ToList();
@@ -60,19 +60,20 @@ namespace starskycore.Services
 			var suggestionsFiltered = suggestions.Where(p => p.Value >= 10).ToList();
 			
 			_cache.Set(nameof(SearchSuggestionsService), suggestionsFiltered, 
-				new TimeSpan(20,0,0));
+				new TimeSpan(100,0,0));
 
 			return suggestionsFiltered;
 		}
 
 		private IEnumerable<KeyValuePair<string, int>> GetAllSuggestions()
 		{
-			if( _cache == null || _appSettings?.AddMemoryCache == false) return new Dictionary<string,int>();
+			if( _cache == null || _appSettings?.AddMemoryCache == false) 
+				return new Dictionary<string,int>();
 			
 			if (_cache.TryGetValue(nameof(SearchSuggestionsService), out var objectFileFolders))
 				return objectFileFolders as List<KeyValuePair<string,int>>;
 			
-			return Populate();
+			return Inflate();
 		
 		}
 

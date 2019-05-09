@@ -236,8 +236,9 @@ namespace starsky
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
                     .CreateScope())
                 {
-                    serviceScope.ServiceProvider.GetService<ApplicationDbContext>()
-                        .Database.Migrate();
+                    var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+                    dbContext.Database.Migrate();
+
                 }
             }
             catch (MySql.Data.MySqlClient.MySqlException e)

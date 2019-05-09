@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starskycore.Interfaces;
 using starskycore.ViewModels;
@@ -23,12 +24,23 @@ namespace starsky.Controllers
 		/// <response code="200">the search results (enable json to get json results)</response>
 		[HttpGet("/suggest")]
 		[ProducesResponseType(typeof(SearchViewModel),200)] // ok
+		[Authorize] 
+		// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
 		public IActionResult Suggest(string t)
 		{
-			_suggest.Populate();
-			
 			var model = _suggest.SearchSuggest(t);
 			return Json(model);
+		}
+
+		/// <summary>
+		/// To fill the cache with the data (only if cache is not already filled)
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet("/suggest/inflate")]
+		public IActionResult Inflate()
+		{
+			_suggest.Inflate();
+			return Ok();
 		}
 	}
 }

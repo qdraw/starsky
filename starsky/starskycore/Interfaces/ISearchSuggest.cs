@@ -7,6 +7,6 @@ namespace starskycore.Interfaces
 	{
 		IEnumerable<string> SearchSuggest(string query);
 
-		List<KeyValuePair<string,int>> Populate();
+		List<KeyValuePair<string,int>> Inflate();
 	}
 }

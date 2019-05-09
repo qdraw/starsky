@@ -47,6 +47,8 @@ CURLHOMEOUTPUT=`curl -X GET --header "Authorization: Basic $BEARER" -LI "$URL"/?
 CURLENVOUTPUT=`curl -X GET --header "Authorization: Basic $BEARER" -LI "$URL"/api/env -o /dev/null -w '%{http_code}\n' -s`
 CURLSEARCHOUTPUT=`curl -X GET --header "Authorization: Basic $BEARER" -LI "$URL"/search?t= -o /dev/null -w '%{http_code}\n' -s`
 CURLIMPORTOUTPUT=`curl -X GET --header "Authorization: Basic $BEARER" -LI "$URL"/import -o /dev/null -w '%{http_code}\n' -s`
+CURLSUGGESTOUTPUT=`curl -X GET -LI "$URL"/suggest/inflate -o /dev/null -w '%{http_code}\n' -s`
 
-echo "!> done ~ home:$CURLHOMEOUTPUT - env:$CURLENVOUTPUT - search:$CURLSEARCHOUTPUT - import:$CURLIMPORTOUTPUT"
+
+echo "!> done ~ home:$CURLHOMEOUTPUT - env:$CURLENVOUTPUT - search:$CURLSEARCHOUTPUT - import:$CURLIMPORTOUTPUT -sug:$CURLSUGGESTOUTPUT"
 popd
