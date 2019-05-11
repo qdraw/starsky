@@ -25,6 +25,9 @@ namespace starskycore.Helpers
 
 			keywordList = TrimCommaInList(keywordList);
 
+			// remove only leading and trailing whitespaces,
+			keywordList = keywordList.Select(t => t.Trim()).ToArray();
+
 			HashSet<string> keywordsHashSet = new HashSet<string>(from x in keywordList
 				select x);
 

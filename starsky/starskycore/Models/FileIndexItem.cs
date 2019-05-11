@@ -174,13 +174,13 @@ namespace starskycore.Models
 		/// </value>
 		[NotMapped]
         public HashSet<string> Keywords {
-            get => HashSetHelper.StringToHashSet(Tags);
-            set
-            {
-                if (value == null) return;
-                _tags = HashSetHelper.HashSetToString(value);
-            } 
-        }
+			get => HashSetHelper.StringToHashSet(Tags.Trim());
+			set
+			{
+				if (value == null) return;
+				_tags = HashSetHelper.HashSetToString(value);
+			} 
+		}
 
         
 	    /// <summary>
