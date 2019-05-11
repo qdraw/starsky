@@ -2,9 +2,8 @@
 
 
 # Features planned (in random order)
-- []   Front-end for Replace API in folder view
+
 - []   Realtime Files API
-- []   Front-end for Rename files
 - []   mp4/h.264 video support
 - []   time zone shifting
 - []   Pagination on folders - Performance update for example 800 files
@@ -12,9 +11,15 @@
 - []   Add unit tests for importing raw's with .xmp files
 - []   Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
 
+## Work in progress `/feature/201904-react`
+- []   Front-end for Rename files
+- []   Front-end for Replace API in folder view
+
 # version 0.1.5.5 - tbd
 - implement search suggestions API `/suggest?t=d`
-
+- search suggestions are always lowercase
+- bugfix: `/api?f=detailView` pages are now working
+- suggestions are part of the warmup script
 
 # version 0.1.5.4 - 2019-04-24
 - fix: for readonly there is no TIFF label
