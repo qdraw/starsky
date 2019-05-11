@@ -29,6 +29,7 @@ namespace starskycore.Services
 
 		/// <summary>
 		/// Used to fill the cache with an array of
+		/// All keywords are stored lowercase
 		/// </summary>
 		/// <returns></returns>
 		public List<KeyValuePair<string,int>> Inflate()
@@ -44,8 +45,9 @@ namespace starskycore.Services
 			{
 				if(string.IsNullOrEmpty(file.Tags)) continue;
 
-				foreach ( var keyword in file.Keywords )
+				foreach ( var keywordCase in file.Keywords )
 				{
+					var keyword = keywordCase.ToLowerInvariant();
 					if ( suggestions.ContainsKey(keyword) )
 					{
 						suggestions[keyword]++;
@@ -65,6 +67,10 @@ namespace starskycore.Services
 			return suggestionsFiltered;
 		}
 
+		/// <summary>
+		/// Cache query to get all stored suggested keywords
+		/// </summary>
+		/// <returns>Key/Value pared list</returns>
 		private IEnumerable<KeyValuePair<string, int>> GetAllSuggestions()
 		{
 			if( _cache == null || _appSettings?.AddMemoryCache == false) 
@@ -77,12 +83,17 @@ namespace starskycore.Services
 		
 		}
 
+		/// <summary>
+		/// Request is case-insensitive 
+		/// </summary>
+		/// <param name="query">half a search query</param>
+		/// <returns>list of suggested keywords</returns>
 		public IEnumerable<string> SearchSuggest(string query)
 		{
 			if ( string.IsNullOrEmpty(query) ) return new List<string>();
 			if( _cache == null || _appSettings?.AddMemoryCache == false) return new List<string>();
 
-			return GetAllSuggestions().Where(p => p.Key.StartsWith(query)).Take(MaxResult)
+			return GetAllSuggestions().Where(p => p.Key.StartsWith( query.ToLowerInvariant() )).Take(MaxResult)
 				.OrderByDescending(p => p.Value).Select(p => p.Key);
 		}
 
