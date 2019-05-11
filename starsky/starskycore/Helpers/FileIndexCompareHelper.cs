@@ -344,9 +344,10 @@ namespace starskycore.Helpers
             {
 	            propertyObject.SetValue(sourceIndexItem, newStringValue, null);
             }
+            // only for appending tags: ==>
             else if (propertyName == nameof(FileIndexItem.Tags))
             {
-                propertyObject.SetValue(sourceIndexItem, oldStringValue + ", " + newStringValue,null);
+	            propertyObject.SetValue(sourceIndexItem, oldStringValue + ", " + newStringValue,null);
             }
             else
             {

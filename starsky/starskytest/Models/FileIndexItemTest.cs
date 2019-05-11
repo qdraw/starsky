@@ -24,7 +24,19 @@ namespace starskytest.Models
 		    // > read tags instead of keywords
 		    Assert.AreEqual(item.Tags,string.Empty);
 	    }
-        
+
+	    [TestMethod]
+	    public void FileIndexItem_DoubleSpaces()
+	    {
+		    var item = new FileIndexItem{Tags = "test0, test1  ,   test2,   test3, test4,   test5, test6, test7,   "};
+		    
+		    Assert.AreEqual("test1", item.Keywords.ToList()[1]);
+		    Assert.AreEqual("test2", item.Keywords.ToList()[2]);
+		    Assert.AreEqual("test5", item.Keywords.ToList()[5]);
+		    Assert.AreEqual("test7", item.Keywords.ToList()[7]);
+		    Assert.AreEqual(8,item.Keywords.Count);
+		}
+        	    
         [TestMethod]
         public void FileIndexItemTest_SetDescriptionsToNull()
         {

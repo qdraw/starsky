@@ -19,7 +19,7 @@ namespace starskycore.Helpers
 			
 			var keywords = ReplaceSingleCommaWithCommaWithSpace(inputKeywords);
 
-			var dotcommaRegex = new Regex(", ");
+			var dotcommaRegex = new Regex(@",\s");
 
 			var keywordList = dotcommaRegex.Split(keywords);
 
