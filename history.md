@@ -11,6 +11,10 @@
 - []   Add unit tests for importing raw's with .xmp files
 - []   Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
 - []   Docker support, including backend abstractions to get the data (partly working)
+- []   XMP disable option when importing using a flag (used for copying photos)
+- []   Health view, to make more clear when paths are configured right
+- []   Health view, to make more clear when the server time is not correct
+
 
 ## Work in progress `/feature/201904-react`
 
@@ -22,6 +26,7 @@
 - search suggestions are always lowercase
 - bugfix: `/api?f=detailView` pages are now working
 - suggestions are part of the warmup script
+- bugfix: spaces where not rendered correctly during the 'update' call in archive view
 
 # version 0.1.5.4 - 2019-04-24
 - fix: for readonly there is no TIFF label
