@@ -10,8 +10,10 @@
 - []   Search: support for complex and/or operators `(this || or) && that`
 - []   Add unit tests for importing raw's with .xmp files
 - []   Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
+- []   Docker support, including backend abstractions to get the data (partly working)
 
 ## Work in progress `/feature/201904-react`
+
 - []   Front-end for Rename files
 - []   Front-end for Replace API in folder view
 
