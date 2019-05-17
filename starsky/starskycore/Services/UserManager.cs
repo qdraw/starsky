@@ -105,8 +105,8 @@ public class UserManager : IUserManager
         /// Add a new user, including Roles and UserRoles
         /// </summary>
         /// <param name="name">Nice Name, default string.Emthy</param>
-        /// <param name="credentialTypeCode">usaly email</param>
-        /// <param name="identifier">Email</param>
+        /// <param name="credentialTypeCode">default is: Email</param>
+        /// <param name="identifier">an email address, e.g. dont@mail.us</param>
         /// <param name="secret">Password</param>
         /// <returns></returns>
         public SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret)
