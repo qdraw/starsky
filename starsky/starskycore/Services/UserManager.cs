@@ -280,10 +280,7 @@ public class UserManager : IUserManager
 		        if(IsCacheEnabled()) _cache.Set("credentialTypeCode_" + credentialTypeCode, credentialType, new TimeSpan(99,0,0));
 	        }
 
-	        
-            
-            
-            if (credentialType == null)
+	        if (credentialType == null)
             {
                 return new ValidateResult(success: false, error: ValidateResultError.CredentialTypeNotFound);
             }
@@ -296,14 +293,18 @@ public class UserManager : IUserManager
                 return new ValidateResult(success: false, error: ValidateResultError.CredentialNotFound);
             }
             
-            if (!string.IsNullOrEmpty(secret))
-            {
-                byte[] salt = Convert.FromBase64String(credential.Extra);
-                string hash = Pbkdf2Hasher.ComputeHash(secret, salt);
-                
-                if (credential.Secret != hash)
-                    return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
-            }
+            // No Password
+            if(string.IsNullOrWhiteSpace(secret))
+	            return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid); 
+            
+            
+            // To compare the secret
+            byte[] salt = Convert.FromBase64String(credential.Extra);
+            string hash = Pbkdf2Hasher.ComputeHash(secret, salt);
+            
+            if (credential.Secret != hash)
+                return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
+
 
 	        // Cache ValidateResult always query on passwords and return result
 	        ValidateResult validateResult; 
