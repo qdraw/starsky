@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.ViewModels.Account;
 using starskycore.Interfaces;
 using starskycore.Models.Account;
+using starskycore.ViewModels.Account;
 
 namespace starsky.Controllers
 {

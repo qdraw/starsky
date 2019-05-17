@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace starsky.ViewModels.Account
+namespace starskycore.ViewModels.Account
 {
     public class LoginViewModel
     {
@@ -12,7 +12,7 @@ namespace starsky.ViewModels.Account
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Display(Name = "Remember me?")]
-        public bool RememberMe { get; set; }
+        [Display(Name = "Remember me?")] 
+        public bool RememberMe { get; set; } = true;
     }
 }
