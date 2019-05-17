@@ -21,12 +21,13 @@
 - []   Front-end for Rename files
 - []   Front-end for Replace API in folder view
 
-# version 0.1.5.5 - tbd
+# version 0.1.5.5 - 2019-05-17
 - implement search suggestions API `/suggest?t=d`
 - search suggestions are always lowercase
 - bugfix: `/api?f=detailView` pages are now working
 - suggestions are part of the warmup script
 - bugfix: spaces where not rendered correctly during the 'update' call in archive view
+- bugfix: you could login without password
 
 # version 0.1.5.4 - 2019-04-24
 - fix: for readonly there is no TIFF label
