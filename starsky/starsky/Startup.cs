@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
 using starsky.Helpers;
 using starskycore.Data;
 using starskycore.Helpers;
@@ -128,6 +129,9 @@ namespace starsky
 						.AllowCredentials() );
 			});
 			
+			// Cache the response at the browser
+			services.AddResponseCaching();
+			
 			// NET Core 3 -> removed newtonsoft from core
 #if NETCOREAPP3_0
 	        services.AddMvc()
@@ -206,7 +210,15 @@ namespace starsky
 	        app.UseContentSecurityPolicy();
 
 	        // the Current Directory wwwroot directory
-	        app.UseStaticFiles();
+			app.UseStaticFiles(new StaticFileOptions
+			{
+				OnPrepareResponse = ctx =>
+				{
+					const int durationInSeconds = 60 * 60 * 24;
+					ctx.Context.Response.Headers[HeaderNames.CacheControl] =
+						"public,max-age=" + durationInSeconds;
+				}
+			});
 	        
 	        // Use in wwwroot in build directory; the default option assumes Current Directory
 	        if ( Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot")) )
