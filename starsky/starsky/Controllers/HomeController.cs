@@ -66,7 +66,7 @@ namespace starsky.Controllers
             {
                 FileIndexItems = _query.DisplayFileFolders(subpath,colorClassFilterList,collections,hidedelete),
                 ColorClassFilterList = 	colorClassFilterList,
-                RelativeObjects = _query.GetNextPrevInFolder(subpath),
+                RelativeObjects = _query.GetNextPrevInFolder(subpath), // Args are not shown in this view
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath),
                 SearchQuery = subpath.Split("/").LastOrDefault(),
                 SubPath = subpath,
