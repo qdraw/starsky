@@ -65,6 +65,7 @@ namespace starsky.Controllers
             var directoryModel = new ArchiveViewModel
             {
                 FileIndexItems = _query.DisplayFileFolders(subpath,colorClassFilterList,collections,hidedelete),
+                ColorClassFilterList = 	colorClassFilterList,
                 RelativeObjects = _query.GetNextPrevInFolder(subpath),
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath),
                 SearchQuery = subpath.Split("/").LastOrDefault(),

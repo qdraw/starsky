@@ -16,5 +16,6 @@ namespace starskycore.ViewModels
         public bool IsDirectory { get; set; } = true;
         public int CollectionsCount { get; set; }
         public bool IsReadOnly { get; set; }
+        public List<FileIndexItem.Color> ColorClassFilterList { get; set; }
     }
 }
