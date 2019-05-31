@@ -20,6 +20,7 @@ namespace starskycore.ViewModels
         
 	    // Used by react client
         public string PageType => PageViewType.PageType.DetailView.ToString();
+        
         // To return error codes// in the json it is always false
         public bool IsDirectory { get; set; }
         
