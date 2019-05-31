@@ -71,7 +71,7 @@ namespace starsky.Controllers
                 SearchQuery = subpath.Split("/").LastOrDefault(),
                 SubPath = subpath,
                 CollectionsCount = _query.DisplayFileFolders(subpath,null,false,hidedelete).Count(p => !p.IsDirectory),
-                IsReadOnly = true // update later
+                IsReadOnly = true // default values is updated in later point
             };
 
             if (singleItem == null)
