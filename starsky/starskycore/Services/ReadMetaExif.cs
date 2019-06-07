@@ -108,7 +108,7 @@ namespace starskycore.Services
                     item.DateTime = dateTime;
                 }
                 
-                // DateTime of image
+                // Orientation of image
                 var orientation = GetOrientation(exifItem);
                 if (orientation != FileIndexItem.Rotation.DoNotChange)
                 {

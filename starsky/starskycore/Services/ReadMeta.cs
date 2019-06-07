@@ -37,7 +37,7 @@ namespace starskycore.Services
 				return _readGpx.ReadGpxFromFileReturnAfterFirstField(_iStorage.ReadStream(subPath));
 	        }
 	        
-	        var fileIndexItemWithPath = new FileIndexItem(subPath);
+			var fileIndexItemWithPath = new FileIndexItem(subPath);
 
 	        // Read first the sidecar file
 	        var xmpFileIndexItem = _readXmp.XmpGetSidecarFile(fileIndexItemWithPath.Clone());
