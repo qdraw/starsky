@@ -169,9 +169,15 @@ namespace starskycore.Services
 	            if (model != string.Empty) // string.Empty = is not the right tag or empty tag
 	            {
 		            item.SetMakeModel(model,1);
-	            }        
+	            }
 
-
+	            
+	            var focalLength = GetFocalLength(exifItem);
+	            if (Math.Abs(focalLength) > 0.00001) 
+	            {
+		            item.FocalLength = focalLength;
+	            }
+	            
             }
             
             return item;
@@ -513,6 +519,32 @@ namespace starskycore.Services
             return locationCity;
         }
 	    
+        
+
+        /// <summary>
+        /// [Exif SubIFD] Focal Length
+        /// </summary>
+        /// <returns></returns>
+        public double GetFocalLength(Directory exifItem)
+        {
+	        var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Focal Length");
+	        if (tCounts < 1) return 0d;
+            
+	        var focalLengthString = exifItem.Tags.FirstOrDefault(
+		        p => p.DirectoryName == "Exif SubIFD" 
+		             && p.Name == "Focal Length")?.Description;
+
+	        if ( string.IsNullOrWhiteSpace(focalLengthString) ) return 0d;
+
+	        focalLengthString = focalLengthString.Replace(" mm", string.Empty);
+	        
+	        // Note: apertureString: (Dutch) 2,2 or (English) 2.2 based CultureInfo.CurrentCulture
+	        float.TryParse(focalLengthString, NumberStyles.Number, CultureInfo.CurrentCulture, out var focalLength);
+	        
+	        return focalLength;
+        }
+
+        
 	    public double GetAperture(MetadataExtractor.Directory exifItem)
 	    {
 		    var apertureString = string.Empty;

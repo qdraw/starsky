@@ -64,6 +64,8 @@ namespace starskytest.Services
             Assert.AreEqual("Epe",data.LocationCity);
             Assert.AreEqual("Gelderland",data.LocationState);
             Assert.AreEqual("Nederland",data.LocationCountry);
+            
+            Assert.AreEqual(28d, data.FocalLength);
 
             Assert.AreEqual(FileIndexItem.Color.Winner,data.ColorClass);
             

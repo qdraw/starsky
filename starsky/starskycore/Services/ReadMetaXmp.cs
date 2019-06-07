@@ -148,8 +148,8 @@ namespace starskycore.Services
 	            // Path=exif:ISOSpeedRatings[1] Namespace= Value=25
 	            var isoSpeed = GetNullNameSpace(property, "exif:ISOSpeedRatings[1]");
 	            if ( isoSpeed != null ) item.SetIsoSpeed(isoSpeed);
-               
-				//Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
+	            
+//				Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
 
 
             }
@@ -314,14 +314,17 @@ namespace starskycore.Services
 	            
 	            
 	            // Path=tiff:Make Namespace=http://ns.adobe.com/tiff/1.0/ Value=SONY
-	            // Path=tiff:Model Namespace=http://ns.adobe.com/tiff/1.0/ Value=SLT-A58
 	            var make = GetContentNameSpace(property, "tiff:Make");
 	            if (make != null) item.SetMakeModel(make,0);
 
+				// Path=tiff:Model Namespace=http://ns.adobe.com/tiff/1.0/ Value=SLT-A58
 	            var model = GetContentNameSpace(property, "tiff:Model");
 	            if (model != null) item.SetMakeModel(model,1);
 
-                // Path=exif:FocalLength Namespace=http://ns.adobe.com/exif/1.0/ Value=200/1
+				// Path=exif:FocalLength Namespace=http://ns.adobe.com/exif/1.0/ Value=200/1
+				// Path=exif:FocalLength Namespace=http://ns.adobe.com/exif/1.0/ Value=18/1
+				var focalLength = GetContentNameSpace(property, "exif:FocalLength");
+				if ( focalLength != null ) item.FocalLength = fraction(focalLength);
 	            
             }
 	        

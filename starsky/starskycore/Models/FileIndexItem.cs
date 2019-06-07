@@ -870,7 +870,15 @@ namespace starskycore.Models
 				return makeModelList[1];
 		    }
 	    }
+	    
+	    
+	    /// <summary>
+	    /// The Zoom of the camera
+	    /// </summary>
+	    [NotMapped]
+	    public double FocalLength { get; set; }
 
+	    
 	    /// <summary>
 	    /// To add Make (without comma and TitleCase) and second follow by Model (same as input)
 	    /// </summary>
