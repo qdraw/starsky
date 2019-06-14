@@ -21,6 +21,10 @@
 - []   Front-end for Rename files
 - []   Front-end for Replace API in folder view
 
+# version x - t.b.d.
+- change '/api/info' to support readonly meta display
+
+
 # version 0.1.5.5 - 2019-05-17
 - implement search suggestions API `/suggest?t=d`
 - search suggestions are always lowercase
