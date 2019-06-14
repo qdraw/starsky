@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
@@ -135,7 +136,40 @@ namespace starskytest.Helpers
 			var fileIndexResultsList = new List<FileIndexItem>();
 			var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
 				fileIndexResultsList);
+			Assert.AreEqual(false,statusBool);
+		}
+
+		[TestMethod]
+		public void StatusCodesHelperTest_ReadonlyDenied_true()
+		{
+			var statusModel = new FileIndexItem();
+			var statusResults = FileIndexItem.ExifStatus.ReadOnly;
+			var fileIndexResultsList = new List<FileIndexItem>();
+			var statusBool = new StatusCodesHelper().ReadonlyDenied(statusModel, statusResults,
+				fileIndexResultsList);
 			Assert.AreEqual(true,statusBool);
+		}
+		
+		[TestMethod]
+		public void StatusCodesHelperTest_ReadonlyDenied_false()
+		{
+			var statusModel = new FileIndexItem();
+			var statusResults = FileIndexItem.ExifStatus.Ok;
+			var fileIndexResultsList = new List<FileIndexItem>();
+			var statusBool = new StatusCodesHelper().ReadonlyDenied(statusModel, statusResults,
+				fileIndexResultsList);
+			Assert.AreEqual(false,statusBool);
+		}
+		
+		[TestMethod]
+		public void StatusCodesHelperTest_ReadonlyAllowed_true()
+		{
+			var statusModel = new FileIndexItem();
+			var statusResults = FileIndexItem.ExifStatus.ReadOnly;
+			var fileIndexResultsList = new List<FileIndexItem>();
+			new StatusCodesHelper().ReadonlyAllowed(statusModel, statusResults,
+				fileIndexResultsList);
+			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly,fileIndexResultsList.FirstOrDefault().Status);
 		}
 
 	}

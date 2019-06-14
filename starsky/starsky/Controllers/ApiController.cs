@@ -133,6 +133,10 @@ namespace starsky.Controllers
 				statusModel.IsDirectory = false;
 				statusModel.SetFilePath(subPath);
 				
+
+				// Readonly is not allowed
+				if(new StatusCodesHelper().ReadonlyDenied(statusModel, statusResults, fileIndexResultsList)) continue;
+				
 				// if one item fails, the status will added
 				if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 
@@ -284,15 +288,16 @@ namespace starsky.Controllers
             foreach (var subPath in inputFilePaths)
             {
                 var detailView = _query.SingleItem(subPath, null, collections, false);
-                
+               
                 // Check if extension is supported for ExtensionExifToolSupportedList
                 // Not all files are able to write with exifTool
                 if(detailView != null && !ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
                 {
-                    detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
-                    fileIndexResultsList.Add(detailView.FileIndexItem);
-                    continue;
+	                detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
+	                fileIndexResultsList.Add(detailView.FileIndexItem);
+	                continue;
                 }
+
                 var statusResults = new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 
                 var statusModel = new FileIndexItem(subPath);
@@ -306,7 +311,8 @@ namespace starsky.Controllers
 	            foreach ( var collectionSubPath in collectionSubPathList )
 	            {
 		            var collectionItem = _readMeta.ReadExifAndXmpFromFile(collectionSubPath);
-		            collectionItem.Status = FileIndexItem.ExifStatus.Ok;
+		            
+		            collectionItem.Status = statusResults;
 		            collectionItem.CollectionPaths = collectionSubPathList;
 		            collectionItem.ImageFormat =
 			            ExtensionRolesHelper.MapFileTypesToExtension(collectionSubPath);
@@ -354,6 +360,9 @@ namespace starsky.Controllers
                 var statusResults = new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 
                 var statusModel = new FileIndexItem(subPath);
+
+                // Readonly is not allowed
+                if(new StatusCodesHelper().ReadonlyDenied(statusModel, statusResults, fileIndexResultsList)) continue;
 
                 if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
                 

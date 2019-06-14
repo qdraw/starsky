@@ -76,7 +76,7 @@ namespace starskycore.Helpers
         /// <summary>
         /// Does deside if the loop should be stopped, true = stop
         /// Uses FileCollectionsCheck
-        /// Add for all types exept for OK!
+        /// Add for all types exept for OK/Readonly!
         /// </summary>
         /// <param name="statusModel">the main object to return later</param>
         /// <param name="statusResults">the status by FileCollectionsCheck</param>
@@ -105,12 +105,33 @@ namespace starskycore.Helpers
                     statusModel.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
                     fileIndexResultsList.Add(statusModel);
                     return true;
-                case FileIndexItem.ExifStatus.ReadOnly:
-                    statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
-                    fileIndexResultsList.Add(statusModel);
-                    return true;
             }
             return false;
         }
+
+        public bool ReadonlyDenied(FileIndexItem statusModel,
+	        FileIndexItem.ExifStatus statusResults, List<FileIndexItem> fileIndexResultsList)
+        {
+	        switch (statusResults)
+	        {
+		        case FileIndexItem.ExifStatus.ReadOnly:
+			        statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
+			        fileIndexResultsList.Add(statusModel);
+			        return true;
+	        }
+	        return false;
+        }
+
+        public void ReadonlyAllowed(FileIndexItem statusModel,
+	        FileIndexItem.ExifStatus statusResults, List<FileIndexItem> fileIndexResultsList)
+        {
+	        // Readonly is allowed
+	        if ( statusResults != FileIndexItem.ExifStatus.ReadOnly ) return;
+	        
+	        statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
+	        fileIndexResultsList.Add(statusModel);
+        }
+
+        
     }
 }
