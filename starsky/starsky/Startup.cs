@@ -208,18 +208,18 @@ namespace starsky
 	        new SwaggerHelper(_appSettings).Add03AppExport(app);
 
 	        app.UseContentSecurityPolicy();
-
-	        // the Current Directory wwwroot directory
-			app.UseStaticFiles(new StaticFileOptions
-			{
-				OnPrepareResponse = ctx =>
-				{
-					const int durationInSeconds = 60 * 60 * 24;
-					ctx.Context.Response.Headers[HeaderNames.CacheControl] =
-						"public,max-age=" + durationInSeconds;
-				}
-			});
 	        
+	        // Allow Current Directory and wwwroot in Base Directory
+	        app.UseStaticFiles(new StaticFileOptions
+		        {
+			        OnPrepareResponse = ctx =>
+			        {
+				        const int durationInSeconds = 60 * 60 * 24;
+				        ctx.Context.Response.Headers[HeaderNames.CacheControl] =
+					        "public,max-age=" + durationInSeconds;
+			        }
+	        });
+
 	        // Use in wwwroot in build directory; the default option assumes Current Directory
 	        if ( Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot")) )
 	        {
@@ -256,6 +256,16 @@ namespace starsky
             catch (MySql.Data.MySqlClient.MySqlException e)
             {
                 Console.WriteLine(e);
+            }
+
+            if ( _appSettings.AddSinglePageApplicationFallback )
+            {
+	            // handle client side routes
+	            app.Run( async (context) =>
+	            {
+		            context.Response.ContentType = "text/html";
+		            await context.Response.SendFileAsync(Path.Combine(env.WebRootPath,"index.html"));
+	            });
             }
 
 

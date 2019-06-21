@@ -278,6 +278,12 @@ namespace starskycore.Models
 
 	    public bool AddLegacyOverwrite { get; set; } = Type.GetType("Mono.Runtime") != null;
 	    
+	    
+	    /// <summary>
+	    /// To send all 404's to the index.html
+	    /// </summary>
+	    public bool AddSinglePageApplicationFallback  { get; set; } = false;
+
 
 	    private string _webftp; 
 	    public string WebFtp
