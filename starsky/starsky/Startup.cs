@@ -258,7 +258,7 @@ namespace starsky
                 Console.WriteLine(e);
             }
 
-            if ( _appSettings.AddSinglePageApplicationFallback )
+            if ( _appSettings.AddSinglePageApplicationFallback && File.Exists(Path.Combine(env.WebRootPath,"index.html")))
             {
 	            // handle client side routes
 	            app.Run( async (context) =>
