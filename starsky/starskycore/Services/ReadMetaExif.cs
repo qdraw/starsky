@@ -156,9 +156,6 @@ namespace starskycore.Services
 		            item.SetIsoSpeed(isoSpeed);
 	            }
 
-	            // [Exif SubIFD] Focal Length = 200 mm
-	            
-	            
 	            var make = GetMakeModel(exifItem,true);
 	            if (make != string.Empty) // string.Empty = is not the right tag or empty tag
 	            {
@@ -171,7 +168,7 @@ namespace starskycore.Services
 		            item.SetMakeModel(model,1);
 	            }
 
-	            
+	            // [Exif SubIFD] Focal Length = 200 mm
 	            var focalLength = GetFocalLength(exifItem);
 	            if (Math.Abs(focalLength) > 0.00001) 
 	            {
