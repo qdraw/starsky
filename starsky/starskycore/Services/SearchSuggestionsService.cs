@@ -71,7 +71,7 @@ namespace starskycore.Services
 		/// Cache query to get all stored suggested keywords
 		/// </summary>
 		/// <returns>Key/Value pared list</returns>
-		private IEnumerable<KeyValuePair<string, int>> GetAllSuggestions()
+		public IEnumerable<KeyValuePair<string, int>> GetAllSuggestions()
 		{
 			if( _cache == null || _appSettings?.AddMemoryCache == false) 
 				return new Dictionary<string,int>();

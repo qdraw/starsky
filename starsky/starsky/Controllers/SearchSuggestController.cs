@@ -33,6 +33,19 @@ namespace starsky.Controllers
 		}
 
 		/// <summary>
+		/// Show all items in the search suggest cache
+		/// </summary>
+		/// <returns>a keylist with search suggestions</returns>
+		[HttpGet("/suggest/all")]
+		[ProducesResponseType(typeof(SearchViewModel),200)] // ok
+		[Authorize] 
+		// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
+		public IActionResult All()
+		{
+			return Json(_suggest.GetAllSuggestions());
+		}
+
+		/// <summary>
 		/// To fill the cache with the data (only if cache is not already filled)
 		/// </summary>
 		/// <returns></returns>

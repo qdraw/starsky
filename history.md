@@ -23,7 +23,7 @@
 
 # version x - t.b.d.
 - change '/api/info' to support readonly meta display
-
+- add /suggest/all to show all suggestions
 
 # version 0.1.5.5 - 2019-05-17
 - implement search suggestions API `/suggest?t=d`
