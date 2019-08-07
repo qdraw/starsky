@@ -1,5 +1,6 @@
 @using System
 @using System.Linq
+@using System.Globalization;
 @model starskywebhtmlcli.ViewModels.WebHtmlViewModel
 
 <!doctype html>
@@ -10,59 +11,45 @@
     <meta name="generator" content="Qdraw 2.0">
 </head>
 <body>
-<div style="width:500px; margin: 0 auto 0 auto;">
+    <div style="width:500px; margin: 0 auto 0 auto;">
 
 
-    @{
+        @{
         var profile500 = Model.AppSettings.PublishProfiles.FirstOrDefault(p => p.SourceMaxWidth == 500);
         var fileFolder500 = profile500?.Folder ?? "500/";
         var append500 = profile500?.Append ?? string.Empty;
         var profile1000 = Model.AppSettings.PublishProfiles.FirstOrDefault(p => p.SourceMaxWidth == 1000);
         var fileFolder1000 = profile1000?.Folder ?? "1000/";
         var append1000 = profile1000?.Append ?? string.Empty;
-    }
+        }
 
 
-    @for (int i = 0; i < @Model.FileIndexItems.Count(); i++)
+        @for (int i = 0; i < @Model.FileIndexItems.Count(); i++)
     {
         var item = @Model.FileIndexItems[i];
         var count = i + 1;
-        var heightratio = Math.Round((double) @item.ImageHeight /@item.ImageWidth, 3);
-        var latitude = Math.Round(@item.Latitude, 6);
-        var longitude = Math.Round(@item.Longitude, 6);
+        var heightratio = Math.Round((double)@item.ImageHeight / @item.ImageWidth, 3).ToString(CultureInfo.InvariantCulture); ;
+        var latitude = Math.Round(@item.Latitude, 6).ToString(CultureInfo.InvariantCulture);
+        var longitude = Math.Round(@item.Longitude, 6).ToString(CultureInfo.InvariantCulture);
 
         //    // Logic to setup filename
-	    var filePath500 = @Model.AppSettings.GetWebSafeReplacedName(@Model.Profile.Prepend) + @fileFolder500 + @item.FileCollectionName + @append500 + @System.IO.Path.GetExtension(item.FileName);
-	    var filePath1000 = @Model.AppSettings.GetWebSafeReplacedName(@Model.Profile.Prepend) + @fileFolder1000 + @item.FileCollectionName + @append1000 + @System.IO.Path.GetExtension(item.FileName);
+        var filePath500 = @Model.AppSettings.GetWebSafeReplacedName(@Model.Profile.Prepend) + @fileFolder500 + @item.FileCollectionName + @append500 + @System.IO.Path.GetExtension(item.FileName);
+        var filePath1000 = @Model.AppSettings.GetWebSafeReplacedName(@Model.Profile.Prepend) + @fileFolder1000 + @item.FileCollectionName + @append1000 + @System.IO.Path.GetExtension(item.FileName);
 
-	    
+
         var displayTitleName = !string.IsNullOrEmpty(@item.Title) ? @item.Title : @Model.AppSettings.Name;
 
         <a href="@filePath1000" class="lightbox[blog]"
-           title="@Model.AppSettings.Name - @item.Title | foto @count" 
+           title="@Model.AppSettings.Name - @item.Title | foto @count"
            data-gps="@latitude,@longitude" data-heightratio="@heightratio">
-            <noscript><img src="@filePath500" alt=" @item.Title"/></noscript>
-            <img src="@Model.Base64ImageArray[i]" title="@displayTitleName | foto @count" alt="@Model.AppSettings.Name ; @item.Title ; @item.Tags"/>
+            <noscript><img src="@filePath500" alt=" @item.Title" /></noscript>
+            <img src="@Model.Base64ImageArray[i]" title="@displayTitleName | foto @count" alt="@Model.AppSettings.Name ; @item.Title ; @item.Tags" />
         </a>
-    }
+}
 
-    <script type="text/javascript">
-        var bigimages = document.querySelectorAll('a[class^=\'lightbox\'] img');
-        for (var i = 0; i < bigimages.length; i++) {
-            var noscriptItem = bigimages[i].parentNode.getElementsByTagName('noscript')[0]
-            if ( noscriptItem.innerHTML.length >= 10 ) {
-                var url = noscriptItem.innerHTML.match(/\"(.*?)\"/);
-                url = url[0].replace(/\"/ig, "");
-                bigimages[i].src = url;
-            }
-            var bigimagesTitle = document.createElement("span");
-            bigimagesTitle.className = "lightbox-title";
-            bigimagesTitle.innerHTML = bigimages[i].title;
-            bigimages[i].parentElement.appendChild(bigimagesTitle);
-        }
-    </script>
+    </div>
+    <script src="_bigimages-helper.js" type="text/javascript"></script>
 
-</div>
 </body>
 </html>
 

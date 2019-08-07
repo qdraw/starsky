@@ -17,14 +17,18 @@
 
 
 ## Work in progress `/feature/201904-react`
-
 - []   Front-end for Rename files
 - []   Front-end for Replace API in folder view
 
-# version x - t.b.d.
+# version 0.1.6 - tbd
+- no content
+
+# version 0.1.5.6 - 2019-08-07
 - change '/api/info' to support readonly meta display
 - add /suggest/all to show all suggestions
 - upgrade dependencies to support Debian 10 (to fix: No usable version of the libssl was found)
+- fix localisation issue with starskyWebHtmlCli
+- add copy of content folder in bin with starskyWebHtmlCli
 
 # version 0.1.5.5 - 2019-05-17
 - implement search suggestions API `/suggest?t=d`

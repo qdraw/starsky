@@ -68,12 +68,14 @@ namespace starskywebhtmlcli
             
             // Create thumbnails from the source images 
 			new Thumbnail(iStorage).CreateThumb("/"); // <= subPath style
-//			new ExifCopy(iStorage, startupHelper.ExifTool(), startupHelper.ReadMeta()).CopyExifToThumbnail(fileIndexList);
 	        
 	        var base64DataUri = new ToBase64DataUriList(iStorage).Create(fileIndexList);
-	        
-            new LoopPublications(iStorage, appSettings,startupHelper.ExifTool(),startupHelper.ReadMeta())
-                .Render(fileIndexList,base64DataUri );
+
+			new LoopPublications(iStorage, appSettings, startupHelper.ExifTool(), startupHelper.ReadMeta())
+				.Render(fileIndexList, base64DataUri);
+
+			// Copy all items in the subFolder content for example javascripts
+			new Content(appSettings, iStorage).CopyContent();
 
 			// Export all
 			new ExportManifest(appSettings,new PlainTextFileHelper()).Export();
