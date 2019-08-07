@@ -268,8 +268,9 @@ namespace starskycore.Helpers
 	    {
 		    if (comparedNames.Contains( nameof(FileIndexItem.Software) ))
 		    {
+				// add space before
 			    command +=
-				    "-Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" -HistorySoftwareAgent=\"Qdraw 1.0\" -HistoryParameters=\"\" -PMVersion=\"\" ";
+				    " -Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" -HistorySoftwareAgent=\"Qdraw 1.0\" -HistoryParameters=\"\" -PMVersion=\"\" ";
 		    }
 		    return command;
 	    }
