@@ -9,12 +9,24 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup>
+    <None Remove="Content\bigimages.js" />
+    <None Remove="Content\bigimages-helper.js" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="EmbeddedViews\**" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Content\bigimages.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="RazorLight" Version="2.0.0-beta1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\_bigimages-helper.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
