@@ -183,9 +183,13 @@ namespace starsky
         /// <param name="env">Hosting Env</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-	        
-	        // Enable X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
-	        app.UseForwardedHeaders();
+
+#if NETCOREAPP3_0
+			app.UseRouting();
+#endif
+
+			// Enable X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
+			app.UseForwardedHeaders();
 	        
             // Use the name of the application to use behind a reverse proxy
             app.UsePathBase(PathHelper.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
@@ -204,8 +208,6 @@ namespace starsky
             }
 	        
 	        new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
-
-	        new SwaggerHelper(_appSettings).Add03AppExport(app);
 
 	        app.UseContentSecurityPolicy();
 	        
@@ -230,20 +232,31 @@ namespace starsky
 		        });
 	        }
 
-            app.UseAuthentication();
+			app.UseAuthentication();
             app.UseBasicAuthentication();
 
-			app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+#if NETCOREAPP3_0
+			app.UseAuthorization();
+#endif
+
+#if NETCOREAPP3_0
+			app.UseEndpoints(endpoints =>
+			{
+				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+			});
+#else
+	        app.UseMvc(routes =>
+					 {
+						 routes.MapRoute(
+							 name: "default",
+							 template: "{controller=Home}/{action=Index}/{id?}");
+					 });
+#endif
 
 			// Run the latest migration on the database. 
-            // To startover with a sqlite database please remove it and
-            // it will add a new one
-            try
+			// To startover with a sqlite database please remove it and
+			// it will add a new one
+			try
             {
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
                     .CreateScope())
