@@ -65,24 +65,39 @@ namespace starskytest.Helpers
 				.UseUrls("http://localhost:5051")
 				.ConfigureServices(services =>
 				{
-					services.AddMvcCore().AddApiExplorer(); // use core and AddApiExplorer to make it faster
-					// https://offering.solutions/blog/articles/2017/02/07/difference-between-addmvc-addmvcore/
+
+#if NETCOREAPP3_0
+					services.AddMvcCore().AddApiExplorer()
+						.AddNewtonsoftJson();
+#else
+	services.AddMvcCore().AddApiExplorer(); // use core and AddApiExplorer to make it faster
+		// https://offering.solutions/blog/articles/2017/02/07/difference-between-addmvc-addmvcore/
+#endif
+
 					services.AddSwaggerGen();
 					new SwaggerHelper(_appSettings).Add01SwaggerGenHelper(services);
 
 				})
 				.Configure(app =>
 				{
-//					app.UseStaticFiles(); // disabled for now
-					app.UseMvc();
-					app.UseMvc(routes =>
+
+#if NETCOREAPP3_0
+					app.UseEndpoints(endpoints =>
 					{
-						routes.MapRoute(
-							name: "default",
-							template: "{controller=Home}/{action=Index}/{id?}");
+						endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 					});
+#else
+	        app.UseMvc(routes =>
+					 {
+						 routes.MapRoute(
+							 name: "default",
+							 template: "{controller=Home}/{action=Index}/{id?}");
+					 });
+#endif
+
+
 					new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app); 
-					new SwaggerHelper(_appSettings).Add03AppExport(app); 
+					//new SwaggerHelper(_appSettings).Add03AppExport(app); 
 				}).Build();
 
 			await host.StartAsync();

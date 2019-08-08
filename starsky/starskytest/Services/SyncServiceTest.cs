@@ -396,15 +396,24 @@ namespace starskytest.Services
             var createAnImage = new CreateAnImage();
             var testjpg = new FileIndexItem
             {
-                Id = 301,
+                Id = 905,
                 FileName = createAnImage.DbPath.Replace("/",string.Empty),
                 ParentDirectory = "/",
                 IsDirectory = false
             };
 
             _query.AddItem(testjpg);
-            testjpg.Id++;
-	        _query.AddItem(testjpg);
+
+
+			var testjpg2 = new FileIndexItem
+			{
+				Id = 906,
+				FileName = createAnImage.DbPath.Replace("/", string.Empty),
+				ParentDirectory = "/",
+				IsDirectory = false
+			};
+	        _query.AddItem(testjpg2);
+
 
             // this query is before syncing the api
             var inputWithoutSync = _query.GetAllFiles("/");
@@ -461,11 +470,6 @@ namespace starskytest.Services
             _syncservice.SyncFiles("/");
 
             var outputWithSync = _query.GetAllRecursive();
-
-//            var outputWithSync1 = _query.GetAllRecursive().Where(
-//                p => p.FilePath == "/exist" 
-//                     && !p.FilePath.Contains("/exist/")
-//            ).ToList();
 
             // test if the sync is working
             Assert.AreEqual(1,outputWithSync.Count(
