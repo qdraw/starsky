@@ -17,6 +17,12 @@ namespace starskyNetFrameworkShared
 		
 		public void XmpLegacySync(IEnumerable<string> listOfSubPaths)
 		{
+			if ( !_appSettings.ExifToolImportXmpCreate )
+			{
+				System.Console.WriteLine("ExifToolImportXmpCreate = disabled");
+				return;
+			}
+
 			foreach ( var subPath in listOfSubPaths )
 			{
 				XmpLegacySync(subPath);

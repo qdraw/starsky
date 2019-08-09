@@ -230,6 +230,7 @@ namespace starskycore.Helpers
 					Console.WriteLine("--structure == overwrite appsettings with filedirectory structure "+
 						"based on exif and filename create datetime");
 					Console.WriteLine("--index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true");
+					Console.WriteLine("--clean or -x == true is to add a xmp sidecar file for raws, default true");
 				break;
 				case AppSettings.StarskyAppType.Sync:
 					// When this change please update ./readme.md
