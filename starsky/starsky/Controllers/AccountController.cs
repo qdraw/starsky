@@ -1,6 +1,7 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,7 @@ namespace starsky.Controllers
 	    [ProducesResponseType(401)]
         public IActionResult Index(bool json = false)
 	    {
+			Console.WriteLine($"json {json} User.Identity.IsAuthenticated {User.Identity.IsAuthenticated}");
 		    if ( json && !User.Identity.IsAuthenticated ) return Unauthorized();
             if (!User.Identity.IsAuthenticated) return RedirectToLocal(null);
 
