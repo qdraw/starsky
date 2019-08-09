@@ -82,6 +82,7 @@ namespace starskytest.Helpers
 				{
 
 #if NETCOREAPP3_0
+					app.UseRouting();
 					app.UseEndpoints(endpoints =>
 					{
 						endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
@@ -96,8 +97,8 @@ namespace starskytest.Helpers
 #endif
 
 
-					new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app); 
-					//new SwaggerHelper(_appSettings).Add03AppExport(app); 
+					new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
+					new SwaggerHelper(_appSettings).Add03AppExport(app);
 				}).Build();
 
 			await host.StartAsync();

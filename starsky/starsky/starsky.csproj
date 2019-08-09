@@ -22,9 +22,7 @@
   </PropertyGroup>
   <!-- Microsoft.AspNetCore.All == not needed in net core 3 -->
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.8"><PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
-<Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
-</PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
@@ -61,6 +59,6 @@
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Http.Abstractions, Version=2.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
+    <!-- <Reference Include="Microsoft.AspNetCore.Http.Abstractions, Version=2.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" /> -->
   </ItemGroup>
 </Project>

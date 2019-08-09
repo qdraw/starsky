@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -103,8 +105,12 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext = httpContext;
 
 			// Get context for url (netcore3)
-			var urlHelper = _serviceProvider.GetService<IUrlHelper>();
-			controller.Url = new UrlHelper(urlHelper.ActionContext);
+			var routeData = new RouteData();
+			routeData.Values.Add("key1", "value1");
+			var actionDescriptor = new ActionDescriptor();
+
+			var actionContext = new ActionContext(httpContext, routeData, actionDescriptor);
+			controller.Url = new UrlHelper(actionContext);
 
 
 			var login = new LoginViewModel

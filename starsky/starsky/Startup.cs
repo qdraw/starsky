@@ -208,8 +208,9 @@ namespace starsky
             }
 	        
 	        new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
+			new SwaggerHelper(_appSettings).Add03AppExport(app);
 
-	        app.UseContentSecurityPolicy();
+			app.UseContentSecurityPolicy();
 	        
 	        // Allow Current Directory and wwwroot in Base Directory
 	        app.UseStaticFiles(new StaticFileOptions

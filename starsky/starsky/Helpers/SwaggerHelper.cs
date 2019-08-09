@@ -4,9 +4,13 @@ using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi;
+using Microsoft.OpenApi.Extensions;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using starskycore.Helpers;
 using starskycore.Models;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace starsky.Helpers
 {
@@ -22,108 +26,73 @@ namespace starsky.Helpers
 
 		public void Add01SwaggerGenHelper(IServiceCollection services)
 		{
+			var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc(_appSettings.Name, new OpenApiInfo { Title = _appSettings.Name, Version = version });
+				c.AddSecurityDefinition("basicAuth", new OpenApiSecurityScheme()
+				{
+					Type = SecuritySchemeType.Http,
+					Scheme = "basic",
+					Description = "Input your username and password to access this API"
+				});
+
+				c.AddSecurityRequirement(new OpenApiSecurityRequirement
+				{
+					{
+						new OpenApiSecurityScheme
+						{
+							Reference = new OpenApiReference {
+								Type = ReferenceType.SecurityScheme,
+								Id = "basicAuth (to logout use the logout api)" }
+						}, new List<string>() }
+				});
+			});
 		}
 
 		public void Add02AppUseSwaggerAndUi(IApplicationBuilder app)
 		{
+			// Use swagger only when enabled, default false
+			// recommend to disable in production
+			if ( !_appSettings.AddSwagger ) return;
+
+			app.UseSwagger(); // registers the two documents in separate routes
+			app.UseSwaggerUI(options =>
+			{
+				options.DocumentTitle = _appSettings.Name;
+				options.SwaggerEndpoint("/swagger/" + _appSettings.Name + "/swagger.json", _appSettings.Name);
+				options.OAuthAppName(_appSettings.Name + " - Swagger");
+			}); // makes the ui visible    
 		}
 
-		//var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+		public void Add03AppExport(IApplicationBuilder app)
+		{
+			if ( !_appSettings.AddSwagger || !_appSettings.AddSwaggerExport ) return;
+			using ( var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
+				.CreateScope() )
+			{
+				var swaggerJsonText = GenerateSwagger(serviceScope, _appSettings.Name);
+				if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ApplicationException("swaggerJsonText = null");
 
-		//services.AddSwaggerGen(c =>
-		//{
-		//	// todo: Swagger 5.x code
-		//	c.SwaggerDoc(_appSettings.Name, new OpenApiInfo { Title = _appSettings.Name, Version = version });
-		//	c.AddSecurityDefinition("basicAuth", new OpenApiSecurityScheme()
-		//	{
-		//		Type = SecuritySchemeType.Http,
-		//		Scheme = "basic",
-		//		Description = "Input your username and password to access this API"
-		//	});
+				var starskyJsonPath =
+					Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
+				FilesHelper.DeleteFile(starskyJsonPath);
+				new PlainTextFileHelper().WriteFile(starskyJsonPath, swaggerJsonText);
+				Console.WriteLine(starskyJsonPath);
+			}
+		}
 
-		//	c.AddSecurityRequirement(new OpenApiSecurityRequirement
-		//	{
-		//		{
-		//			new OpenApiSecurityScheme
-		//			{
-		//				Reference = new OpenApiReference {
-		//					Type = ReferenceType.SecurityScheme,
-		//					Id = "basicAuth" }
-		//			}, new List<string>() }
-		//	});
+		private static string GenerateSwagger(IServiceScope serviceScope, string docName)
+		{
+			// todo: this feature will break in Swagger 5.x
+			var swaggerProvider = ( ISwaggerProvider )serviceScope.ServiceProvider.GetService(typeof(ISwaggerProvider));
+			if ( swaggerProvider == null ) return string.Empty;
 
+			var swaggerDocument = swaggerProvider.GetSwagger(docName, null, "/");
 
-		//	////				// Done in swagger 4.x 				
-		//	//				c.SwaggerDoc(_appSettings.Name, new Info { Title = _appSettings.Name, Version = version });
-		//	//				c.AddSecurityDefinition("basic", new BasicAuthScheme {Type = "basic", Description = "basic authentication" }); 
-		//	//				c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> { { "basic", new string[] { } },});
-
-		//	//				c.IncludeXmlComments(GetXmlCommentsPath());
-		//	//				c.DescribeAllEnumsAsStrings();
-
-		//	//				// todo: break in Swagger 5.x
-		//	//				c.DocumentFilter<BasicAuthFilter>();
-		//}); 
-
-
-		//public void Add02AppUseSwaggerAndUi(IApplicationBuilder app)
-		//{
-		//	// Use swagger only when enabled, default false
-		//	// recommend to disable in production
-		//	if ( !_appSettings.AddSwagger ) return;
-
-		//	app.UseSwagger(); // registers the two documents in separate routes
-		//	app.UseSwaggerUI(options =>
-		//	{
-		//		options.DocumentTitle = _appSettings.Name;
-		//		options.SwaggerEndpoint("/swagger/" + _appSettings.Name + "/swagger.json", _appSettings.Name);
-		//		options.OAuthAppName(_appSettings.Name + " - Swagger");					
-		//	}); // makes the ui visible    
-		//}
-
-		//public void Add03AppExport(IApplicationBuilder app)
-		//{
-		//	if ( !_appSettings.AddSwagger || !_appSettings.AddSwaggerExport ) return;
-		//	using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
-		//		.CreateScope())
-		//	{
-		//		var swaggerJsonText = GenerateSwagger(serviceScope, _appSettings.Name);
-		//		if ( string.IsNullOrEmpty(swaggerJsonText)  ) throw new ApplicationException("swaggerJsonText = null");
-
-		//		var starskyJsonPath =
-		//			Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
-		//		FilesHelper.DeleteFile(starskyJsonPath);
-		//		new PlainTextFileHelper().WriteFile(starskyJsonPath,swaggerJsonText);
-		//		Console.WriteLine(starskyJsonPath);
-		//	}
-		//}
-
-		//private static string GenerateSwagger(IServiceScope serviceScope, string docName)
-		//{
-		//	// todo: this feature will break in Swagger 5.x
-		//	var swaggerProvider = (ISwaggerProvider)serviceScope.ServiceProvider.GetService(typeof(ISwaggerProvider));
-		//	if ( swaggerProvider == null ) return string.Empty;
-
-		//	var swaggerDocument = swaggerProvider.GetSwagger(docName, null, "/"); 
-		//	return JsonConvert.SerializeObject( swaggerDocument, Formatting.Indented, 
-		//		new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, 
-		//			ContractResolver = new SwaggerContractResolver(new JsonSerializerSettings()) 
-		//		});
-		//}
-
-		// todo: this feature will break in Swagger 5.x
-		//private class BasicAuthFilter : IDocumentFilter
-		//{
-		//	public void Apply(SwaggerDocument swaggerDoc, DocumentFilterContext context)
-		//	{
-		//		var securityRequirements = new Dictionary<string, IEnumerable<string>>()
-		//		{
-		//			{ "basic", new string[] { } }
-		//		};
-
-		//		swaggerDoc.Security = new IDictionary<string, IEnumerable<string>>[] { securityRequirements };
-		//	}
-		//}
+			return swaggerDocument.Serialize(OpenApiSpecVersion.OpenApi2_0, OpenApiFormat.Json);
+		}
 
 		private string GetXmlCommentsPath()
 		{
