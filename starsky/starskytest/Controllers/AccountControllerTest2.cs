@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +40,18 @@ namespace starskytest.Controllers
 
             var services = new ServiceCollection();
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-            services.AddOptions();
+
+			// For URLS
+			services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+			services.AddScoped<IUrlHelper>(factory =>
+			{
+				var actionContext = factory.GetService<IActionContextAccessor>()
+											   .ActionContext;
+				return new UrlHelper(actionContext);
+			});
+
+
+			services.AddOptions();
             services
                 .AddDbContext<ApplicationDbContext>(b =>
                     b.UseInMemoryDatabase("test123").UseInternalServiceProvider(efServiceProvider));
@@ -76,20 +91,29 @@ namespace starskytest.Controllers
         {
             // Arrange
             var userId = "TestUserA";
-//            var phone = "abcdefg";
             var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
 
             _serviceProvider.GetRequiredService<IUserManager>();
-            var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+
+			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
             httpContext.RequestServices = _serviceProvider;
  
             var schemeProvider = _serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();
-  
-            var controller = new AccountController(_userManager);
-            controller.ControllerContext.HttpContext = httpContext;
-            
-            var login = new LoginViewModel
+
+			AccountController controller = new AccountController(_userManager);
+			controller.ControllerContext.HttpContext = httpContext;
+
+			// Get context for url (netcore3)
+			var routeData = new RouteData();
+			routeData.Values.Add("key1", "value1");
+			var actionDescriptor = new ActionDescriptor();
+
+			var actionContext = new ActionContext(httpContext, routeData, actionDescriptor);
+			controller.Url = new UrlHelper(actionContext);
+
+
+			var login = new LoginViewModel
             {
                 Email = "shared@dion.local",
                 Password = "test"

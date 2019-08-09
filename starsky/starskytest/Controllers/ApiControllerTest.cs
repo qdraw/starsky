@@ -232,7 +232,8 @@ namespace starskytest.Controllers
                 //FilePath = "/fakeImage/fake.jpg",
                 ParentDirectory = "/fakeImage/",
                 FileName = "fake.jpg",
-                FileHash = "0986524678765456786543"
+                FileHash = "0986524678765456786543",
+				Id= 788,
             });
             var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,_readmeta,new StorageSubPathFilesystem(_appSettings));
             var actionResult = controller.Thumbnail(item.FileHash, false, true) as NotFoundObjectResult;

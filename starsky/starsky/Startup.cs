@@ -131,16 +131,16 @@ namespace starsky
 			
 			// Cache the response at the browser
 			services.AddResponseCaching();
-			
+
 			// NET Core 3 -> removed newtonsoft from core
 #if NETCOREAPP3_0
-	        services.AddMvc()
-	            .AddNewtonsoftJson();
+			services.AddMvc();
+				//.AddNewtonsoftJson();
 #else
 	        services.AddMvc();
 #endif
 
-	        // Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
+			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
 			services.Configure<ForwardedHeadersOptions>(options =>
 			{
 				options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
@@ -183,14 +183,17 @@ namespace starsky
         /// <param name="env">Hosting Env</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-	        
-	        // Enable X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
-	        app.UseForwardedHeaders();
+			// Enable X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
+			app.UseForwardedHeaders();
 	        
             // Use the name of the application to use behind a reverse proxy
-            app.UsePathBase(PathHelper.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
-            
-            if (env.IsDevelopment())
+            app.UsePathBase( PathHelper.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
+
+#if NETCOREAPP3_0
+			app.UseRouting();
+#endif
+
+			if ( env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseStatusCodePages();
@@ -202,12 +205,12 @@ namespace starsky
             {
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
-	        
-	        new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 
-	        new SwaggerHelper(_appSettings).Add03AppExport(app);
+			// temp disabled due missing support
+			//new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
+			//new SwaggerHelper(_appSettings).Add03AppExport(app);
 
-	        app.UseContentSecurityPolicy();
+			app.UseContentSecurityPolicy();
 	        
 	        // Allow Current Directory and wwwroot in Base Directory
 	        app.UseStaticFiles(new StaticFileOptions
@@ -230,20 +233,31 @@ namespace starsky
 		        });
 	        }
 
-            app.UseAuthentication();
+			app.UseAuthentication();
             app.UseBasicAuthentication();
 
-			app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+#if NETCOREAPP3_0
+			app.UseAuthorization();
+#endif
+
+#if NETCOREAPP3_0
+			app.UseEndpoints(endpoints =>
+			{
+				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+			});
+#else
+	        app.UseMvc(routes =>
+					 {
+						 routes.MapRoute(
+							 name: "default",
+							 template: "{controller=Home}/{action=Index}/{id?}");
+					 });
+#endif
 
 			// Run the latest migration on the database. 
-            // To startover with a sqlite database please remove it and
-            // it will add a new one
-            try
+			// To startover with a sqlite database please remove it and
+			// it will add a new one
+			try
             {
                 using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
                     .CreateScope())

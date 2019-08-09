@@ -82,7 +82,7 @@ namespace starskySyncNetFramework
                 startupHelper.SyncService().OrphanFolder(subpath);
             }
 
-	        if ( new ArgsHelper(appSettings).NeedCacheCleanup(args) )
+	        if ( new ArgsHelper(appSettings).NeedCleanup(args) )
 	        {
 		        Console.WriteLine(">>>>> Heavy CPU Feature => NeedCacheCleanup <<<<< ");
 		        startupHelper.ThumbnailCleaner().CleanAllUnusedFiles();

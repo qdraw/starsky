@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using starskycore.Helpers;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace starskycore.Models
 {
@@ -16,8 +17,11 @@ namespace starskycore.Models
         
         // Replace user Quoted input with single quote to avoid SQL Injection.
         private string _captionabstract;
-        [JsonProperty(PropertyName="Caption-Abstract")]
-        public string CaptionAbstract {
+
+
+        //[JsonProperty(PropertyName="Caption-Abstract")]
+		[JsonPropertyName("Caption-Abstract")]
+		public string CaptionAbstract {
             get { 
                     return _captionabstract;
                 }

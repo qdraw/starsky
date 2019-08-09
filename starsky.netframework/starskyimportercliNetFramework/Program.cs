@@ -55,8 +55,7 @@ namespace starskyimportercliNetFramework
 
 			// -----> This is only for legacy <-----
 			new ExifToolCmdLegacyHelper(appSettings).XmpLegacySync(result);
-           
-			
+
 			Console.WriteLine($"Done Importing {result.Count}");
 
 		}

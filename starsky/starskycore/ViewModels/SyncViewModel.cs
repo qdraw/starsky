@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using System.Text.Json.Serialization;
 using starskycore.Models;
 
 namespace starskycore.ViewModels
@@ -8,7 +7,7 @@ namespace starskycore.ViewModels
 	{
 		public string FilePath { get; set; }
 
-		[JsonConverter(typeof(StringEnumConverter))]
+		[JsonConverter(typeof(JsonStringEnumConverter))]
 		public FileIndexItem.ExifStatus Status { get; set; }
 	}
 }

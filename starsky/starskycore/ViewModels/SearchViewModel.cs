@@ -7,10 +7,8 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using starskycore.Helpers;
 using starskycore.Models;
 
@@ -146,7 +144,7 @@ namespace starskycore.ViewModels
 	    /// The search for types
 	    /// </summary>
 	    [DataContract]
-	    [JsonConverter(typeof(StringEnumConverter))]
+	    //[JsonConverter(typeof(JsonStringEnumConverter))]
 	    public enum SearchForOptionType
 	    {
 		    /// <summary>
@@ -178,7 +176,10 @@ namespace starskycore.ViewModels
 	    /// Private field: Search Options &gt;, &lt;,=. (greater than sign, less than sign, equal sign) to know which field use the same indexer in _searchIn or _searchFor
 	    /// </summary>
         private List<SearchForOptionType> _searchForOptions;
-	    
+
+		// todo: check output api (Json)
+
+
 	    /// <summary>
 	    /// Search Options eg &gt;, &lt;, =. (greater than sign, less than sign, equal sign)  to know which field use the same indexer in _searchIn or _searchFor
 	    /// </summary>

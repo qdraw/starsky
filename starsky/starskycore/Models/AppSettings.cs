@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using starskycore.Helpers;
 using TimeZoneConverter;
 
@@ -38,11 +37,11 @@ namespace starskycore.Models
 		    .Replace("starskywebhtmlcli", "starsky")
 		    .Replace("starskygeocli", "starsky")
 		    .Replace("starskytest", "starsky");
-        
-        public StarskyAppType ApplicationType { get; set; }
-	    
-        [JsonConverter(typeof(StringEnumConverter))]
-        public enum StarskyAppType
+
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+		public StarskyAppType ApplicationType { get; set; }
+
+		public enum StarskyAppType
         {
             WebController = 0,
             Importer = 1,
@@ -112,7 +111,7 @@ namespace starskycore.Models
 
         // Database
 
-	    [JsonConverter(typeof(StringEnumConverter))]
+	    //[JsonConverter(typeof(StringEnumConverter))]
         public DatabaseTypeList DatabaseType { get; set; } = DatabaseTypeList.Sqlite;
 
 
@@ -240,7 +239,7 @@ namespace starskycore.Models
         public string ExifToolPath { get; set; }
         
         // C# 6+ required for this
-        public bool ExifToolImportXmpCreate { get; set; } = false; //zz__
+        public bool ExifToolImportXmpCreate { get; set; } = true; // -x -clean command
 
 	    // fallback in contructor
 	    // use env variable: app__ReadOnlyFolders__0 - value

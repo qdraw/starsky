@@ -1,13 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using Newtonsoft.Json;
 using starskycore.Models;
-using starskycore.Services;
 
 namespace starskycore.Helpers
 {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
 using starsky.ViewModels;
 using starskycore.Models;
 

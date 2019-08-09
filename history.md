@@ -21,7 +21,16 @@
 - []   Front-end for Replace API in folder view
 
 # version 0.1.6 - tbd
-- no content
+- tbd
+
+# version 0.1.5.7 - 2019-08-09
+- Update Dot NET version to the `.Net Core 3 Preview 7` release
+- Update to C# version 8
+- Update to .netstandard2.1 and keep .netstandard2.0 for NetFramework reference
+- __Breaking API change__ from `/account?json=true` to `/account/status` `api`
+- __Breaking API change__ from `/api/` to `/api/index`
+- __Known issue__ Swagger support is disabled
+- Add support for command line -x or don't add xmp sidecar file
 
 # version 0.1.5.6 - 2019-08-07
 - change '/api/info' to support readonly meta display
@@ -46,7 +55,7 @@
 - __CHANGE:__ Unauthorised users return 401 on /api (instead of redirect)
 - add: `/import/history` API for viewing recent uploads (today only) _subject to change_
 - __CHANGE__ Database Structure: Field added in ImportDatabas
-  Update all your clients at once to avoid issues between *3 and *4
+  Update all your clients at once to avoid issues between -3 and -4
 
 # version 0.1.5.3 - 2019-03-31
 - refactoring connection to ExifTool to use iStorage

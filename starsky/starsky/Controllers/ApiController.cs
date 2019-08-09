@@ -49,7 +49,7 @@ namespace starsky.Controllers
 	    /// <response code="200">returns a list of items from the database</response>
 	    /// <response code="404">subpath not found in the database</response>
 	    /// <response code="401">User unauthorized</response>
-	    [HttpGet("/api")]
+	    [HttpGet("/api/index")]
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(ArchiveViewModel),200)]
 		[ProducesResponseType(404)]

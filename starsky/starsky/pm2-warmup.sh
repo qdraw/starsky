@@ -34,7 +34,7 @@ echo $URL
 COUNTER=0
 MAXCOUNTER=30
 while [ $COUNTER -lt $MAXCOUNTER ]; do
-	CURLOUTPUT=`curl -X GET -IL "$URL"/account?json=true -o /dev/null -w '%{http_code}\n' -s`
+	CURLOUTPUT=`curl -X GET -IL "$URL"/account/status -o /dev/null -w '%{http_code}\n' -s`
 	if [ $CURLOUTPUT != "401" ]; then
 		if ! (($COUNTER % 2)); then
 			echo "$COUNTER - $CURLOUTPUT - retry"

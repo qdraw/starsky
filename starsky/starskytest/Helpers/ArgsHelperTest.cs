@@ -74,11 +74,11 @@ namespace starskytest.Helpers
 	    public void ArgsHelper_NeedCacheCleanupTest()
 	    {
 		    var args = new List<string> {"-x"}.ToArray();
-		    Assert.AreEqual(new ArgsHelper(_appSettings).NeedCacheCleanup(args), true);
+		    Assert.AreEqual(new ArgsHelper(_appSettings).NeedCleanup(args), true);
             
 		    // Bool parse check
 		    args = new List<string> {"-x","true"}.ToArray();
-		    Assert.AreEqual(new ArgsHelper(_appSettings).NeedCacheCleanup(args), true);
+		    Assert.AreEqual(new ArgsHelper(_appSettings).NeedCleanup(args), true);
 	    }
 	    
 	    
@@ -384,8 +384,19 @@ namespace starskytest.Helpers
 				    shortTestList.Add("app__StorageFolder");
 				    continue; 
 			    }
-			    
-			    shortTestList.Add(i.ToString());
+
+				Console.WriteLine(envNameList[i]);
+
+				if ( envNameList[i] == "app__ExifToolImportXmpCreate" )
+				{
+					shortTestList.Add("true");
+					continue;
+				}
+
+				// Note:
+				// There are values add to the unknown values
+
+				shortTestList.Add(i.ToString());
 		    }
             
 		    // First inject values to evn

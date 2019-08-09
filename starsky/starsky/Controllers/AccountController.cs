@@ -1,6 +1,7 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,53 +21,77 @@ namespace starsky.Controllers
             _userManager = userManager;
         }
         
-	    /// <summary>
-	    /// View Account settings
-	    /// </summary>
-	    /// <param name="json">true => 200 == success, 401 is not logged</param>
-	    /// <returns>account page or status</returns>
-	    /// <response code="200">User exist</response>
-	    /// <response code="401">when using json=true, not logged in</response>
-	    [HttpGet("/account")]
-	    [ProducesResponseType(typeof(User), 200)]
-	    [ProducesResponseType(401)]
-        public IActionResult Index(bool json = false)
-	    {
-		    if ( json && !User.Identity.IsAuthenticated ) return Unauthorized();
-            if (!User.Identity.IsAuthenticated) return RedirectToLocal(null);
 
-// 			// Keep here: only using claims data
-//		    var claimsIdentity = (ClaimsIdentity)HttpContext.User.Identity;
-//		    var model = new User();
-//		    var userIdClaim = claimsIdentity.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-//		    if (userIdClaim != null)
-//		    {
-//			    model.Id = !string.IsNullOrEmpty(userIdClaim.Value) ? int.Parse(userIdClaim.Value) : -1;
-//		    }
-//		    
-//		    var nameClaim = claimsIdentity.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name);
-//		    if (nameClaim != null)
-//		    {
-//			    model.Name = nameClaim.Value;
-//		    }
- 
-		    // use model to avoid circulair references
-		    var model = new User
-		    {
-			    Name = _userManager.GetCurrentUser(HttpContext)?.Name,
-			    Id = _userManager.GetCurrentUser(HttpContext).Id,
-			    Created = _userManager.GetCurrentUser(HttpContext).Created,
-		    };
-	        if ( json ) return Json(model);
+		/// <summary>
+		/// Check the account status of the login (Json)
+		/// </summary>
+		/// <response code="200">logged in</response>
+		/// <response code="401">when not logged in</response>
+		/// <returns>account name, id, and create date</returns>
+		[HttpGet("/account/status")]
+		public IActionResult Status()
+		{
+			if ( !User.Identity.IsAuthenticated ) return Unauthorized("false");
+
+			// use model to avoid circulair references
+			var model = new User
+			{
+				Name = _userManager.GetCurrentUser(HttpContext)?.Name,
+				Id = _userManager.GetCurrentUser(HttpContext).Id,
+				Created = _userManager.GetCurrentUser(HttpContext).Created,
+			};
+
+			return Json(model);
+		}
+
+		/// <summary>
+		/// View Account settings
+		/// </summary>
+		/// <param name="json">true => 200 == success, 401 is not logged</param>
+		/// <returns>account page or status</returns>
+		/// <response code="200">User exist</response>
+		/// <response code="401">when using json=true, not logged in</response>
+		[ProducesResponseType(typeof(User), 200)]
+		[ProducesResponseType(401)]
+		public IActionResult Index(bool json = false)
+		{
+			Console.WriteLine($"json {json} User.Identity.IsAuthenticated {User.Identity.IsAuthenticated}");
+			if ( json && !User.Identity.IsAuthenticated ) return Unauthorized();
+			if ( !User.Identity.IsAuthenticated ) return RedirectToLocal(null);
+
+			// 			// Keep here: only using claims data
+			//		    var claimsIdentity = (ClaimsIdentity)HttpContext.User.Identity;
+			//		    var model = new User();
+			//		    var userIdClaim = claimsIdentity.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+			//		    if (userIdClaim != null)
+			//		    {
+			//			    model.Id = !string.IsNullOrEmpty(userIdClaim.Value) ? int.Parse(userIdClaim.Value) : -1;
+			//		    }
+			//		    
+			//		    var nameClaim = claimsIdentity.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name);
+			//		    if (nameClaim != null)
+			//		    {
+			//			    model.Name = nameClaim.Value;
+			//		    }
+
+			// use model to avoid circulair references
+			var model = new User
+			{
+				Name = _userManager.GetCurrentUser(HttpContext)?.Name,
+				Id = _userManager.GetCurrentUser(HttpContext).Id,
+				Created = _userManager.GetCurrentUser(HttpContext).Created,
+			};
+			if ( json ) return Json(model);
 			return View(model);
-        }
+		}
 
-        /// <summary>
-        /// Login form page
-        /// </summary>
-        /// <returns></returns>
-        /// <response code="200">Login form page</response>
-        [HttpGet("/account/login")]
+
+		/// <summary>
+		/// Login form page
+		/// </summary>
+		/// <returns></returns>
+		/// <response code="200">Login form page</response>
+		[HttpGet("/account/login")]
         [ProducesResponseType(200)]
         public IActionResult Login(string returnUrl = null)
         {

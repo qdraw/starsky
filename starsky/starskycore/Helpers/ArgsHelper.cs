@@ -38,7 +38,7 @@ namespace starskycore.Helpers
 		// -rf --readonlyfolders // no need to use in cli/importercli
 		// -u --structure
 		// -n --name
-		// -x --cachecleanup
+		// -x --clean
 		
 		/// <summary>
 		/// Simple injection
@@ -82,32 +82,32 @@ namespace starskycore.Helpers
 			}
 			return needDebug;
 		}
-	 
+
 		/// <summary>
 		/// short input args, use the same order as 'LongNameList' and 'EnvNameList'
 		/// </summary>
 		public readonly IEnumerable<string> ShortNameList = new List<string>
 		{
-			"-d","-c","-b","-f","-e","-u","-g","-n"
+			"-d","-c","-b","-f","-e","-u","-g","-n", "-x"
 		}.AsReadOnly();
-		
+
 		/// <summary>
 		/// Long input args, use this order as 'ShortNameList' and 'EnvNameList'
 		/// </summary>
 		public readonly IEnumerable<string> LongNameList = new List<string>
 		{
 			"--databasetype","--connection","--basepath","--thumbnailtempfolder",
-			"--exiftoolpath","--structure","--subpathrelative","--name"
+			"--exiftoolpath","--structure","--subpathrelative","--name", "--clean"
 		}
 		.AsReadOnly();
-	 
+
 		/// <summary>
 		/// name of the env__ (__=:) use this order as 'LongNameList' and 'ShortNameList'
 		/// </summary>
 		public readonly IEnumerable<string> EnvNameList = new List<string>
 		{
 			"app__DatabaseType","app__DatabaseConnection","app__StorageFolder","app__ThumbnailTempFolder",
-			"app__ExifToolPath", "app__Structure", "app__subpathrelative", "app__name"
+			"app__ExifToolPath", "app__Structure", "app__subpathrelative", "app__name", "app__ExifToolImportXmpCreate"
 		}.AsReadOnly();
 
 		/// <summary>
@@ -230,6 +230,7 @@ namespace starskycore.Helpers
 					Console.WriteLine("--structure == overwrite appsettings with filedirectory structure "+
 						"based on exif and filename create datetime");
 					Console.WriteLine("--index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true");
+					Console.WriteLine("--clean or -x == true is to add a xmp sidecar file for raws, default true");
 				break;
 				case AppSettings.StarskyAppType.Sync:
 					// When this change please update ./readme.md
@@ -242,7 +243,7 @@ namespace starskycore.Helpers
 					Console.WriteLine("-p, -s, -g == you need to select one of those tags");
 					Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
 					Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
-					Console.WriteLine("--cachecleanup or -x == parameter: (bool) ; enable checks in thumbnailtempfolder if thumbnails are needed, delete unused files");
+					Console.WriteLine("--clean or -x == parameter: (bool) ; enable checks in thumbnailtempfolder if thumbnails are needed, delete unused files");
 					Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder " +
 						"(heavy cpu usage), default false");
 					Console.WriteLine("--verbose or -v == verbose, more detailed info");
@@ -576,14 +577,14 @@ namespace starskycore.Helpers
 		/// </summary>
 		/// <param name="args">input args</param>
 		/// <returns>bool</returns>
-		public bool NeedCacheCleanup(IReadOnlyList<string> args)
+		public bool NeedCleanup(IReadOnlyList<string> args)
 		{
-			// -x --cachecleanup
+			// -x --clean
 			bool needCacheCleanup = false;
 			
 			for (int arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--cachecleanup" || args[arg].ToLower() == "-x"))
+				if ((args[arg].ToLower() == "--clean" || args[arg].ToLower() == "-x"))
 				{
 					needCacheCleanup = true;
 				}

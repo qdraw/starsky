@@ -304,7 +304,7 @@ namespace starskycore.Services
             {
                 _context.FileIndex.Add(updateStatusContent);
                 _context.SaveChanges();
-            }
+			}
             catch (MySqlException e)
             {
                 Console.WriteLine(updateStatusContent.FilePath);
@@ -314,7 +314,7 @@ namespace starskycore.Services
             
             AddCacheItem(updateStatusContent);
 
-            return updateStatusContent;
+			return updateStatusContent;
         }
         
 	    /// <summary>

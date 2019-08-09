@@ -36,8 +36,11 @@ namespace starskycore.Middleware
                 if (!validateResult.Success)
                 {
                     _context.Response.StatusCode = 401;
-                    _context.Response.Headers.Add("WWW-Authenticate", "Basic realm=\"Starsky " + validateResult.Error + " \"");
-                    return;
+					if(!_context.Response.Headers.ContainsKey("WWW-Authenticate") )
+					{
+						_context.Response.Headers.Add("WWW-Authenticate", "Basic realm=\"Starsky " + validateResult.Error + " \"");
+					}
+					return;
                 }
 
                 await _userManager.SignIn(_context, validateResult.User);
