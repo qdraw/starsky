@@ -74,11 +74,11 @@ namespace starskytest.Helpers
 	    public void ArgsHelper_NeedCacheCleanupTest()
 	    {
 		    var args = new List<string> {"-x"}.ToArray();
-		    Assert.AreEqual(new ArgsHelper(_appSettings).NeedCacheCleanup(args), true);
+		    Assert.AreEqual(new ArgsHelper(_appSettings).NeedCleanup(args), true);
             
 		    // Bool parse check
 		    args = new List<string> {"-x","true"}.ToArray();
-		    Assert.AreEqual(new ArgsHelper(_appSettings).NeedCacheCleanup(args), true);
+		    Assert.AreEqual(new ArgsHelper(_appSettings).NeedCleanup(args), true);
 	    }
 	    
 	    

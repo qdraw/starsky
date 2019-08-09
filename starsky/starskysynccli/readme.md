@@ -64,7 +64,7 @@ Starksy Sync Cli ~ Help:
 -p, -s, -g == you need to select one of those tags
 --index or -i == parameter: (bool) ; enable indexing, default true
 --thumbnail or -t == parameter: (bool) ; enable thumbnail, default false
---cachecleanup or -x == parameter: (bool) ; enable checks in thumbnailtempfolder if thumbnails are needed, delete unused files
+--clean or -x == parameter: (bool) ; enable checks in thumbnailtempfolder if thumbnails are needed, delete unused files
 --orphanfolder or -o == To delete files without a parent folder (heavy cpu usage), default false
 --verbose or -v == verbose, more detailed info
 --databasetype or -d == Overwrite EnvironmentVariable for DatabaseType

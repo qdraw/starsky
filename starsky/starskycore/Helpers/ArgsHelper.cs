@@ -38,7 +38,7 @@ namespace starskycore.Helpers
 		// -rf --readonlyfolders // no need to use in cli/importercli
 		// -u --structure
 		// -n --name
-		// -x --cachecleanup
+		// -x --clean
 		
 		/// <summary>
 		/// Simple injection
@@ -242,7 +242,7 @@ namespace starskycore.Helpers
 					Console.WriteLine("-p, -s, -g == you need to select one of those tags");
 					Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
 					Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
-					Console.WriteLine("--cachecleanup or -x == parameter: (bool) ; enable checks in thumbnailtempfolder if thumbnails are needed, delete unused files");
+					Console.WriteLine("--clean or -x == parameter: (bool) ; enable checks in thumbnailtempfolder if thumbnails are needed, delete unused files");
 					Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder " +
 						"(heavy cpu usage), default false");
 					Console.WriteLine("--verbose or -v == verbose, more detailed info");
@@ -576,14 +576,14 @@ namespace starskycore.Helpers
 		/// </summary>
 		/// <param name="args">input args</param>
 		/// <returns>bool</returns>
-		public bool NeedCacheCleanup(IReadOnlyList<string> args)
+		public bool NeedCleanup(IReadOnlyList<string> args)
 		{
-			// -x --cachecleanup
+			// -x --clean
 			bool needCacheCleanup = false;
 			
 			for (int arg = 0; arg < args.Count; arg++)
 			{
-				if ((args[arg].ToLower() == "--cachecleanup" || args[arg].ToLower() == "-x"))
+				if ((args[arg].ToLower() == "--clean" || args[arg].ToLower() == "-x"))
 				{
 					needCacheCleanup = true;
 				}
