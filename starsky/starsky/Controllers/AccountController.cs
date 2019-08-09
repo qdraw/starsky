@@ -22,7 +22,7 @@ namespace starsky.Controllers
         }
         
 	    /// <summary>
-	    /// View Account settings
+	    /// View Account settings (Razor-page)
 	    /// </summary>
 	    /// <returns>account page or status</returns>
 	    /// <response code="200">User exist</response>
@@ -33,7 +33,6 @@ namespace starsky.Controllers
 		[Authorize]
 		public IActionResult Index()
 	    {
-
 			// 			// Keep here: only using claims data
 			//		    var claimsIdentity = (ClaimsIdentity)HttpContext.User.Identity;
 			//		    var model = new User();
@@ -49,34 +48,29 @@ namespace starsky.Controllers
 			//			    model.Name = nameClaim.Value;
 			//		    }
 
-			// use model to avoid circulair references
-			var model = new User
-		    {
-			    Name = _userManager.GetCurrentUser(HttpContext)?.Name,
-			    Id = _userManager.GetCurrentUser(HttpContext).Id,
-			    Created = _userManager.GetCurrentUser(HttpContext).Created,
-		    };
-			return View(model);
-
+			return View(_userManager.GetCurrentUser(HttpContext));
 		}
 
 
 		/// <summary>
-		/// Check the account status of the login
+		/// Check the account status of the login (Json)
 		/// </summary>
 		/// <response code="200">logged in</response>
 		/// <response code="401">when not logged in</response>
-		/// <returns></returns>
+		/// <returns>account name, id, and create date</returns>
 		[HttpGet("/account/status")]
 		public IActionResult Status()
 		{
 			if ( !User.Identity.IsAuthenticated ) return Unauthorized("false");
+
+			// use model to avoid circulair references
 			var model = new User
 			{
 				Name = _userManager.GetCurrentUser(HttpContext)?.Name,
 				Id = _userManager.GetCurrentUser(HttpContext).Id,
 				Created = _userManager.GetCurrentUser(HttpContext).Created,
 			};
+
 			return Json(model);
 		}
 
