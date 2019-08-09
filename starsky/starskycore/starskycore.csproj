@@ -6,6 +6,7 @@
         <Description>An attempt to create a database driven photo library</Description>
         <Version>0.1.5.6</Version>
         <IsPackable>true</IsPackable>
+        <LangVersion>8.0</LangVersion>
 
     </PropertyGroup>
 
