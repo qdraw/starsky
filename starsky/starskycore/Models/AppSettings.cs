@@ -239,7 +239,7 @@ namespace starskycore.Models
         public string ExifToolPath { get; set; }
         
         // C# 6+ required for this
-        public bool ExifToolImportXmpCreate { get; set; } = false; //zz__
+        public bool ExifToolImportXmpCreate { get; set; } = true; // -x -clean command
 
 	    // fallback in contructor
 	    // use env variable: app__ReadOnlyFolders__0 - value

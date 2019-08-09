@@ -82,32 +82,32 @@ namespace starskycore.Helpers
 			}
 			return needDebug;
 		}
-	 
+
 		/// <summary>
 		/// short input args, use the same order as 'LongNameList' and 'EnvNameList'
 		/// </summary>
 		public readonly IEnumerable<string> ShortNameList = new List<string>
 		{
-			"-d","-c","-b","-f","-e","-u","-g","-n"
+			"-d","-c","-b","-f","-e","-u","-g","-n", "-x"
 		}.AsReadOnly();
-		
+
 		/// <summary>
 		/// Long input args, use this order as 'ShortNameList' and 'EnvNameList'
 		/// </summary>
 		public readonly IEnumerable<string> LongNameList = new List<string>
 		{
 			"--databasetype","--connection","--basepath","--thumbnailtempfolder",
-			"--exiftoolpath","--structure","--subpathrelative","--name"
+			"--exiftoolpath","--structure","--subpathrelative","--name", "--clean"
 		}
 		.AsReadOnly();
-	 
+
 		/// <summary>
 		/// name of the env__ (__=:) use this order as 'LongNameList' and 'ShortNameList'
 		/// </summary>
 		public readonly IEnumerable<string> EnvNameList = new List<string>
 		{
 			"app__DatabaseType","app__DatabaseConnection","app__StorageFolder","app__ThumbnailTempFolder",
-			"app__ExifToolPath", "app__Structure", "app__subpathrelative", "app__name"
+			"app__ExifToolPath", "app__Structure", "app__subpathrelative", "app__name", "app__ExifToolImportXmpCreate"
 		}.AsReadOnly();
 
 		/// <summary>

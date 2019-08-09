@@ -316,8 +316,7 @@ namespace starskycore.Models
 
                     if (createFolder)
                     {
-                        Console.WriteLine("childFullDirectory");
-                        Console.WriteLine(childFullDirectory);
+						Console.Write("+");
                         Directory.CreateDirectory(childFullDirectory);
                     }
                 }

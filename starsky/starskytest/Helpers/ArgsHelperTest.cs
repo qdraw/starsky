@@ -384,8 +384,19 @@ namespace starskytest.Helpers
 				    shortTestList.Add("app__StorageFolder");
 				    continue; 
 			    }
-			    
-			    shortTestList.Add(i.ToString());
+
+				Console.WriteLine(envNameList[i]);
+
+				if ( envNameList[i] == "app__ExifToolImportXmpCreate" )
+				{
+					shortTestList.Add("true");
+					continue;
+				}
+
+				// Note:
+				// There are values add to the unknown values
+
+				shortTestList.Add(i.ToString());
 		    }
             
 		    // First inject values to evn
