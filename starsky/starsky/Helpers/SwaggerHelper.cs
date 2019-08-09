@@ -79,7 +79,7 @@ namespace starsky.Helpers
 				if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ApplicationException("swaggerJsonText = null");
 
 				var starskyJsonPath =
-					Path.Join(_appSettings.TempFolder, _appSettings.Name + ".yaml");
+					Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
 				FilesHelper.DeleteFile(starskyJsonPath);
 				new PlainTextFileHelper().WriteFile(starskyJsonPath, swaggerJsonText);
 				Console.WriteLine(starskyJsonPath);
@@ -95,7 +95,7 @@ namespace starsky.Helpers
 
 			var swaggerDocument = swaggerProvider.GetSwagger(docName, null, "/");
 
-			return swaggerDocument.Serialize(OpenApiSpecVersion.OpenApi3_0, OpenApiFormat.Yaml);
+			return swaggerDocument.Serialize(OpenApiSpecVersion.OpenApi3_0, OpenApiFormat.Json);
 		}
 
 		private string GetXmlCommentsPath()

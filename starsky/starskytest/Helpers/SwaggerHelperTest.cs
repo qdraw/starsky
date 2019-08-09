@@ -57,7 +57,7 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public async Task SwaggerTest_Integration_Test()
 		{
-			var swaggerFilePath = Path.Join(_appSettings.TempFolder, _appSettings.Name + ".yaml");
+			var swaggerFilePath = Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
 
 			FilesHelper.DeleteFile(swaggerFilePath);
 			System.Console.WriteLine("swaggerFilePath " + swaggerFilePath);
@@ -106,7 +106,9 @@ namespace starskytest.Helpers
 			Assert.AreEqual(true,FilesHelper.ExistFile(swaggerFilePath));
 
 			var swaggerFileContent = new PlainTextFileHelper().ReadFile(swaggerFilePath);
-				
+
+			System.Console.WriteLine("swaggerFileContent " + swaggerFileContent);
+
 			Assert.AreEqual(true, swaggerFileContent.Contains($"\"title\": \"{_appSettings.Name}\""));
 			
 			
