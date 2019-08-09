@@ -57,18 +57,19 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public async Task SwaggerTest_Integration_Test()
 		{
-			var swaggerFilePath = Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
+			var swaggerFilePath = Path.Join(_appSettings.TempFolder, _appSettings.Name + ".yaml");
 
 			FilesHelper.DeleteFile(swaggerFilePath);
-			
+			System.Console.WriteLine("swaggerFilePath " + swaggerFilePath);
+
 			var host = WebHost.CreateDefaultBuilder()
 				.UseUrls("http://localhost:5051")
 				.ConfigureServices(services =>
 				{
 
 #if NETCOREAPP3_0
-					services.AddMvcCore().AddApiExplorer()
-						.AddNewtonsoftJson();
+					services.AddMvcCore().AddApiExplorer();
+						//.AddNewtonsoftJson();
 #else
 	services.AddMvcCore().AddApiExplorer(); // use core and AddApiExplorer to make it faster
 		// https://offering.solutions/blog/articles/2017/02/07/difference-between-addmvc-addmvcore/
@@ -95,8 +96,6 @@ namespace starskytest.Helpers
 							 template: "{controller=Home}/{action=Index}/{id?}");
 					 });
 #endif
-
-
 					new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 					new SwaggerHelper(_appSettings).Add03AppExport(app);
 				}).Build();

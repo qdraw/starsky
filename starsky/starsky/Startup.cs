@@ -131,16 +131,16 @@ namespace starsky
 			
 			// Cache the response at the browser
 			services.AddResponseCaching();
-			
+
 			// NET Core 3 -> removed newtonsoft from core
 #if NETCOREAPP3_0
-	        services.AddMvc()
-	            .AddNewtonsoftJson();
+			services.AddMvc();
+				//.AddNewtonsoftJson();
 #else
 	        services.AddMvc();
 #endif
 
-	        // Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
+			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
 			services.Configure<ForwardedHeadersOptions>(options =>
 			{
 				options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
@@ -206,9 +206,10 @@ namespace starsky
             {
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
-	        
-	        new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
-			new SwaggerHelper(_appSettings).Add03AppExport(app);
+
+			new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
+			// temp disabled due missing support
+			//new SwaggerHelper(_appSettings).Add03AppExport(app);
 
 			app.UseContentSecurityPolicy();
 	        

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using starskycore.Helpers;
 using TimeZoneConverter;
 
@@ -38,11 +37,11 @@ namespace starskycore.Models
 		    .Replace("starskywebhtmlcli", "starsky")
 		    .Replace("starskygeocli", "starsky")
 		    .Replace("starskytest", "starsky");
-        
-        public StarskyAppType ApplicationType { get; set; }
-	    
-        [JsonConverter(typeof(StringEnumConverter))]
-        public enum StarskyAppType
+
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+		public StarskyAppType ApplicationType { get; set; }
+
+		public enum StarskyAppType
         {
             WebController = 0,
             Importer = 1,
@@ -112,7 +111,7 @@ namespace starskycore.Models
 
         // Database
 
-	    [JsonConverter(typeof(StringEnumConverter))]
+	    //[JsonConverter(typeof(StringEnumConverter))]
         public DatabaseTypeList DatabaseType { get; set; } = DatabaseTypeList.Sqlite;
 
 

@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using starskycore.Helpers;
 using starskycore.Models;
 using Swashbuckle.AspNetCore.Swagger;
@@ -66,6 +65,10 @@ namespace starsky.Helpers
 			}); // makes the ui visible    
 		}
 
+		/// <summary>
+		///	Currently disabled
+		/// </summary>
+		/// <param name="app"></param>
 		public void Add03AppExport(IApplicationBuilder app)
 		{
 			if ( !_appSettings.AddSwagger || !_appSettings.AddSwaggerExport ) return;
@@ -76,7 +79,7 @@ namespace starsky.Helpers
 				if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ApplicationException("swaggerJsonText = null");
 
 				var starskyJsonPath =
-					Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
+					Path.Join(_appSettings.TempFolder, _appSettings.Name + ".yaml");
 				FilesHelper.DeleteFile(starskyJsonPath);
 				new PlainTextFileHelper().WriteFile(starskyJsonPath, swaggerJsonText);
 				Console.WriteLine(starskyJsonPath);
@@ -86,12 +89,13 @@ namespace starsky.Helpers
 		private static string GenerateSwagger(IServiceScope serviceScope, string docName)
 		{
 			// todo: this feature will break in Swagger 5.x
+			// https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/1152
 			var swaggerProvider = ( ISwaggerProvider )serviceScope.ServiceProvider.GetService(typeof(ISwaggerProvider));
 			if ( swaggerProvider == null ) return string.Empty;
 
 			var swaggerDocument = swaggerProvider.GetSwagger(docName, null, "/");
 
-			return swaggerDocument.Serialize(OpenApiSpecVersion.OpenApi2_0, OpenApiFormat.Json);
+			return swaggerDocument.Serialize(OpenApiSpecVersion.OpenApi3_0, OpenApiFormat.Yaml);
 		}
 
 		private string GetXmlCommentsPath()

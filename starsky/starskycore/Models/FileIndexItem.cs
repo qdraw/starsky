@@ -6,8 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Text.Json.Serialization;
 using starskycore.Helpers;
 using starskycore.Services;
 
@@ -42,7 +41,7 @@ namespace starskycore.Models
 		/// The identifier.
 		/// </value>
 		[JsonIgnore]
-        public int Id { get; set; }
+		public int Id { get; set; }
 
 	    /// <summary>
 	    /// Internal API for storing full file path's
@@ -234,8 +233,9 @@ namespace starskycore.Models
 		/// <value>
 		/// The display file status. (eg. NotFoundNotInIndex, Ok).
 		/// </value>
-		[JsonConverter(typeof(StringEnumConverter))]
-        [NotMapped]
+		//[JsonConverter(typeof(StringEnumConverter))]
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+		[NotMapped]
         public ExifStatus Status { get; set; } = ExifStatus.Default;
         
         /// <summary>
@@ -509,8 +509,9 @@ namespace starskycore.Models
 		/// <value>
 		/// The orientation as enum item
 		/// </value>
-		[JsonConverter(typeof(StringEnumConverter))]
-        public Rotation Orientation { get; set; } = Rotation.DoNotChange;
+		//[JsonConverter(typeof(StringEnumConverter))]
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+		public Rotation Orientation { get; set; } = Rotation.DoNotChange;
 
 		/// <summary>
 		/// Exit Rotation values
@@ -721,8 +722,9 @@ namespace starskycore.Models
 		/// <value>
 		/// The image format as enum item
 		/// </value>
-		[JsonConverter(typeof(StringEnumConverter))]
-        public ExtensionRolesHelper.ImageFormat ImageFormat { get; set; }
+		//[JsonConverter(typeof(StringEnumConverter))]
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+		public ExtensionRolesHelper.ImageFormat ImageFormat { get; set; }
 
 		/// <summary>
 		/// To show location of files with the same Filename without extension
