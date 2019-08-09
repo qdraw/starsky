@@ -183,18 +183,17 @@ namespace starsky
         /// <param name="env">Hosting Env</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+			// Enable X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
+			app.UseForwardedHeaders();
+	        
+            // Use the name of the application to use behind a reverse proxy
+            app.UsePathBase( PathHelper.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
 
 #if NETCOREAPP3_0
 			app.UseRouting();
 #endif
 
-			// Enable X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
-			app.UseForwardedHeaders();
-	        
-            // Use the name of the application to use behind a reverse proxy
-            app.UsePathBase(PathHelper.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
-            
-            if (env.IsDevelopment())
+			if ( env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseStatusCodePages();
@@ -207,8 +206,8 @@ namespace starsky
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
 
-			new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 			// temp disabled due missing support
+			//new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 			//new SwaggerHelper(_appSettings).Add03AppExport(app);
 
 			app.UseContentSecurityPolicy();

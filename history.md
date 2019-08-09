@@ -21,7 +21,8 @@
 - []   Front-end for Replace API in folder view
 
 # version 0.1.6 - tbd
-- no content
+- `.Net Core Preview 7` release
+- Change from /account?json=true to /account/status `api`
 
 # version 0.1.5.6 - 2019-08-07
 - change '/api/info' to support readonly meta display
