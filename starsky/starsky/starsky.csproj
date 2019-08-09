@@ -60,7 +60,4 @@
   <ItemGroup>
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <!-- <Reference Include="Microsoft.AspNetCore.Http.Abstractions, Version=2.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" /> -->
-  </ItemGroup>
 </Project>
