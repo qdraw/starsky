@@ -21,36 +21,6 @@ namespace starsky.Controllers
             _userManager = userManager;
         }
         
-	    /// <summary>
-	    /// View Account settings (Razor-page)
-	    /// </summary>
-	    /// <returns>account page or status</returns>
-	    /// <response code="200">User exist</response>
-	    /// <response code="301">Redirect to login page</response>
-	    [ProducesResponseType(typeof(User), 200)]
-	    [ProducesResponseType(401)]
-		[HttpGet("/account")]
-		[Authorize]
-		public IActionResult Index()
-	    {
-			// 			// Keep here: only using claims data
-			//		    var claimsIdentity = (ClaimsIdentity)HttpContext.User.Identity;
-			//		    var model = new User();
-			//		    var userIdClaim = claimsIdentity.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-			//		    if (userIdClaim != null)
-			//		    {
-			//			    model.Id = !string.IsNullOrEmpty(userIdClaim.Value) ? int.Parse(userIdClaim.Value) : -1;
-			//		    }
-			//		    
-			//		    var nameClaim = claimsIdentity.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name);
-			//		    if (nameClaim != null)
-			//		    {
-			//			    model.Name = nameClaim.Value;
-			//		    }
-
-			return View(_userManager.GetCurrentUser(HttpContext));
-		}
-
 
 		/// <summary>
 		/// Check the account status of the login (Json)
