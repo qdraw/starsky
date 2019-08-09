@@ -26,7 +26,7 @@
 # version 0.1.5.7 - 2019-08-09
 - Update Dot NET version to the `.Net Core 3 Preview 7` release
 - Update to C# version 8
-- Update to .netstandard2.1 and keep .netstandard2.0 for NetFramework reference
+- Keep the core .netstandard2.0 for NetFramework reference
 - __Breaking API change__ from `/account?json=true` to `/account/status` `api`
 - __Breaking API change__ from `/api/` to `/api/index`
 - __Known issue__ Swagger support is disabled
