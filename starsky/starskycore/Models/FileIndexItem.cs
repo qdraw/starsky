@@ -6,9 +6,15 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using starskycore.Helpers;
 using starskycore.Services;
+#if NETSTANDARD2_1
+using System.Text.Json;
+using System.Text.Json.Serialization;
+#else
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+#endif
 
 namespace starskycore.Models
 {
@@ -233,8 +239,11 @@ namespace starskycore.Models
 		/// <value>
 		/// The display file status. (eg. NotFoundNotInIndex, Ok).
 		/// </value>
-		//[JsonConverter(typeof(StringEnumConverter))]
+#if NETSTANDARD2_1
 		[JsonConverter(typeof(JsonStringEnumConverter))]
+#else
+		[JsonConverter(typeof(StringEnumConverter))]
+#endif
 		[NotMapped]
         public ExifStatus Status { get; set; } = ExifStatus.Default;
         
@@ -509,8 +518,11 @@ namespace starskycore.Models
 		/// <value>
 		/// The orientation as enum item
 		/// </value>
-		//[JsonConverter(typeof(StringEnumConverter))]
+#if NETSTANDARD2_1
 		[JsonConverter(typeof(JsonStringEnumConverter))]
+#else
+		[JsonConverter(typeof(StringEnumConverter))]
+#endif
 		public Rotation Orientation { get; set; } = Rotation.DoNotChange;
 
 		/// <summary>
@@ -722,8 +734,11 @@ namespace starskycore.Models
 		/// <value>
 		/// The image format as enum item
 		/// </value>
-		//[JsonConverter(typeof(StringEnumConverter))]
+#if NETSTANDARD2_1
 		[JsonConverter(typeof(JsonStringEnumConverter))]
+#else
+		[JsonConverter(typeof(StringEnumConverter))]
+#endif
 		public ExtensionRolesHelper.ImageFormat ImageFormat { get; set; }
 
 		/// <summary>

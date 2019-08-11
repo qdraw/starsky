@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+#if NETSTANDARD2_1
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.Primitives;
-using starsky.ViewModels;
+#else
+using Newtonsoft.Json;
+#endif
 using starskycore.Models;
 
 namespace starskycore.ViewModels

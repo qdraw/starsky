@@ -5,9 +5,16 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using starskycore.Helpers;
+
+#if NETSTANDARD2_1
+using System.Text.Json.Serialization;
+#else
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+#endif
+
 
 namespace starskycore.Models
 {
@@ -68,8 +75,11 @@ namespace starskycore.Models
         public DateTime DateTime{ get; set; }
 	    
 	    [NotMapped]
-	    //[JsonConverter(typeof(StringEnumConverter))]
+#if NETSTANDARD2_1
 		[JsonConverter(typeof(JsonStringEnumConverter))]
+#else
+		[JsonConverter(typeof(StringEnumConverter))]
+#endif
 		public ImportStatus Status { get; set; }
 	    
 	    [NotMapped]
