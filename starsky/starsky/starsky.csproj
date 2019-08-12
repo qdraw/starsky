@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">2.1.10</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">2.2.6</RuntimeFrameworkVersion>
     <Description>An attempt to create a database driven photo library</Description>
 	<Version>0.1.5.8</Version>
   </PropertyGroup>
