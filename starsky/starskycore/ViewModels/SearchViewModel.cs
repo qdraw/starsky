@@ -7,10 +7,15 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using starskycore.Helpers;
 using starskycore.Models;
+#if NETSTANDARD2_1
+using System.Text.Json;
+using System.Text.Json.Serialization;
+#else
+using Newtonsoft.Json;
+#endif
 
 namespace starskycore.ViewModels
 {

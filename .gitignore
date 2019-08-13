@@ -353,6 +353,8 @@ starsky-netframework-msbuild.zip
 **/tools/packages.config*
 **/tools/Addins/*/**
 **/tools/ReportGenerator*/*
+**/tools/MSBuild.SonarQube.Runner.Tool*/*
+**/tools/OpenCoverToCoberturaConverter*/*
 **/coveragereport/*
 **/__coveragereport/*
 **/coverage.report/*

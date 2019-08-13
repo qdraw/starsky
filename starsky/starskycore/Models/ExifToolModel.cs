@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using starskycore.Helpers;
+#if NETSTANDARD2_1
 using System.Text.Json;
 using System.Text.Json.Serialization;
+#else
+using Newtonsoft.Json;
+#endif
 
 namespace starskycore.Models
 {
@@ -19,8 +23,11 @@ namespace starskycore.Models
         private string _captionabstract;
 
 
-        //[JsonProperty(PropertyName="Caption-Abstract")]
+#if NETSTANDARD2_1
 		[JsonPropertyName("Caption-Abstract")]
+#else
+		[JsonProperty(PropertyName="Caption-Abstract")]
+#endif
 		public string CaptionAbstract {
             get { 
                     return _captionabstract;

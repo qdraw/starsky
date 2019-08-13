@@ -206,9 +206,9 @@ namespace starsky
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
 
-			// temp disabled due missing support
-			//new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
-			//new SwaggerHelper(_appSettings).Add03AppExport(app);
+			// need rewrite for netcore3
+			new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
+			new SwaggerHelper(_appSettings).Add03AppExport(app);
 
 			app.UseContentSecurityPolicy();
 	        

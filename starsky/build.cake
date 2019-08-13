@@ -11,6 +11,17 @@
 // For the step CoverageReport
 #tool "nuget:?package=ReportGenerator"
 
+// SonarQube
+#tool nuget:?package=MSBuild.SonarQube.Runner.Tool
+#addin nuget:?package=Cake.Sonar
+
+// Cake.OpenCoverToCoberturaConverter
+#addin "nuget:?package=Cake.OpenCoverToCoberturaConverter"
+#tool "nuget:?package=OpenCoverToCoberturaConverter"
+
+// Get Git info
+#addin nuget:?package=Cake.Git
+
 // Target - The task you want to start. Runs the Default task if not specified.
 var target = Argument("Target", "Default");
 var configuration = Argument("Configuration", "Release");
@@ -86,14 +97,6 @@ Task("Restore")
         DotNetCoreRestore(".",
             new DotNetCoreRestoreSettings());
 
-        /* -- foreach project --
-        foreach(var projectName in restoreProjectNames)
-        {
-            System.Console.WriteLine($"./{projectName}/{projectName}.csproj");
-            DotNetCoreRestore($"./{projectName}/{projectName}.csproj",
-                new DotNetCoreRestoreSettings());
-        } */
-
         if(runtime == genericName) return;
 
         System.Console.WriteLine($"> restore for {runtime}");
@@ -154,6 +157,7 @@ Task("Test")
         foreach(var project in projects)
         {
             Information("Testing project " + project);
+
             DotNetCoreTest(
                 project.ToString(),
                 new DotNetCoreTestSettings()
@@ -162,24 +166,52 @@ Task("Test")
                     NoBuild = true,
                     ArgumentCustomization = args => args.Append("--no-restore")
                                              .Append("/p:CollectCoverage=true")
-                                             .Append("/p:CoverletOutputFormat=cobertura")
+                                             .Append("/p:CoverletOutputFormat=opencover")
                                              .Append("/p:ThresholdType=line")
                                              .Append("/p:hideMigrations=\"true\"")
+                                             .Append("/p:Exclude=\"[starsky.Views]*\"")
                                              .Append("/p:ExcludeByFile=\"../starskycore/Migrations/*\"") // (, comma seperated)
-                                             .Append("/p:CoverletOutput=coverage.cobertura.xml")
+                                             .Append("/p:CoverletOutput=\"coverage.opencover.xml\"")
                 });
+
+            // Check if there is any output
+            string parent = System.IO.Directory.GetParent(project.ToString()).FullName;
+            string coverageFile = System.IO.Path.Combine(parent, "coverage.opencover.xml");
+
+            Information("CoverageFile " + coverageFile);
+
+            if (!FileExists(coverageFile)) {
+                throw new Exception("CoverageFile missing " + coverageFile); 
+            }
         }
     });
+
+
+Task("OpenCoverToCobertura")
+  .Does(() => {
+        var projects = GetFiles("./*test/*.csproj");
+        foreach(var project in projects)
+        {
+            // Check if there is any output
+            string parent = System.IO.Directory.GetParent(project.ToString()).FullName;
+            string inputCoverageFile = System.IO.Path.Combine(parent, "coverage.opencover.xml");
+            string outputCoverageFile = System.IO.Path.Combine(parent, "coverage.cobertura.xml");
+
+            Information("inputCoverageFile " + inputCoverageFile);
+            Information("outputCoverageFile " + outputCoverageFile);
+            OpenCoverToCoberturaConverter(inputCoverageFile, outputCoverageFile);
+        }
+  });
+
 
 Task("CoverageReport")
     .Does(() =>
     {
-        var projects = GetFiles("./*test/coverage.cobertura.xml");
+        var projects = GetFiles("./*test/coverage.opencover.xml");
         foreach(var project in projects)
         {
-            var reportFolder = project.ToString().Replace("cobertura.xml","report");
-            // change to: coverage.report
-            System.Console.WriteLine(reportFolder);
+            Information("CoverageReport project " + project);
+            var reportFolder = project.ToString().Replace("opencover.xml","report");
             ReportGenerator(project, reportFolder, new ReportGeneratorSettings{
                 ReportTypes = new[] { ReportGeneratorReportType.HtmlInline }
             });
@@ -235,6 +267,54 @@ Task("Zip")
 
     });
 
+Task("SonarBegin")
+   .Does(() => {
+        var key = EnvironmentVariable("STARSKY_SONAR_KEY");
+        var login = EnvironmentVariable("STARSKY_SONAR_LOGIN");
+        var organisation = EnvironmentVariable("STARSKY_SONAR_ORGANISATION");
+
+        var url = EnvironmentVariable("STARSKY_SONAR_URL");
+        if(string.IsNullOrEmpty(url)) {
+            url = "https://sonarcloud.io";
+        }
+
+        if( string.IsNullOrEmpty(key) || string.IsNullOrEmpty(login) || string.IsNullOrEmpty(organisation) ) {
+            Information($">> SonarQube is disabled $ key={key}|login={login}|organisation={organisation}");
+            return;
+        }
+
+        // get first test project
+        var firstTestProject = GetDirectories("./*test").FirstOrDefault().ToString();
+        string coverageFile = System.IO.Path.Combine(firstTestProject, "coverage.opencover.xml");
+
+        // Current branch name
+        string parent = System.IO.Directory.GetParent(".").FullName;
+        var gitBranch = GitBranchCurrent(parent);
+        var branchName = gitBranch.FriendlyName;
+
+        SonarBegin(new SonarBeginSettings{
+            Name = "Starsky",
+            Key = key,
+            Login = login,
+            Verbose = false,
+            Url = url,
+            Branch = branchName,
+            OpenCoverReportsPath = coverageFile,
+            ArgumentCustomization = args => args
+                .Append($"/o:" + organisation),
+        });
+
+  });
+Task("SonarEnd")
+  .Does(() => {
+    var login = EnvironmentVariable("STARSKY_SONAR_LOGIN");
+    if( string.IsNullOrEmpty(login) ) {
+        Information($">> SonarQube is disabled $ login={login}");
+        return;
+    }
+    SonarEnd(new SonarEndSettings { Login = login });
+  });
+
 // A meta-task that runs all the steps to Build and Test the app
 Task("BuildAndTest")
     .IsDependentOn("Clean")
@@ -246,8 +326,11 @@ Task("BuildAndTest")
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
 Task("Default")
+    .IsDependentOn("SonarBegin")
     .IsDependentOn("BuildAndTest")
+    .IsDependentOn("SonarEnd")
     .IsDependentOn("PublishWeb")
+    .IsDependentOn("OpenCoverToCobertura")
     .IsDependentOn("Zip");
 
 
