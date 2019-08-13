@@ -32,19 +32,20 @@ namespace starsky.Controllers
 			_bgTaskQueue = queue;
 			_iStorage = iStorage;
 		}
-		
+
 		/// <summary>
 		/// Export source files to an zip archive
 		/// </summary>
 		/// <param name="f">subpath to files</param>
 		/// <param name="collections">enable files with the same name (before the extension)</param>
+		/// <param name="thumbnail">export thumbnails</param>
 		/// <returns>name of a to generate zip file</returns>
 		/// <response code="200">the name of the to generated zip file</response>
 		/// <response code="404">files not found</response>
 		[HttpPost("/export/createZip")]
 		[ProducesResponseType(200)] // "zipHash"
 		[ProducesResponseType(404)] // "Not found"
-		public async Task<IActionResult> CreateZip(string f, bool collections = true, bool thumbnail = false)
+		public IActionResult CreateZip(string f, bool collections = true, bool thumbnail = false)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 			// the result list

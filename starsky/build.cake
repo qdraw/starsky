@@ -313,7 +313,10 @@ Task("SonarEnd")
         Information($">> SonarQube is disabled $ login={login}");
         return;
     }
-    SonarEnd(new SonarEndSettings { Login = login });
+    SonarEnd(new SonarEndSettings { 
+        Login = login,
+        Silent = true,
+    });
   });
 
 // A meta-task that runs all the steps to Build and Test the app
