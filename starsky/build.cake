@@ -291,6 +291,7 @@ Task("SonarBegin")
         string parent = System.IO.Directory.GetParent(".").FullName;
         var gitBranch = GitBranchCurrent(parent);
         var branchName = gitBranch.FriendlyName;
+        if(branchName == "(no branch)") branchName = "master";
 
         SonarBegin(new SonarBeginSettings{
             Name = "Starsky",
