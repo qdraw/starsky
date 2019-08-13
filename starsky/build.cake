@@ -86,14 +86,6 @@ Task("Restore")
         DotNetCoreRestore(".",
             new DotNetCoreRestoreSettings());
 
-        /* -- foreach project --
-        foreach(var projectName in restoreProjectNames)
-        {
-            System.Console.WriteLine($"./{projectName}/{projectName}.csproj");
-            DotNetCoreRestore($"./{projectName}/{projectName}.csproj",
-                new DotNetCoreRestoreSettings());
-        } */
-
         if(runtime == genericName) return;
 
         System.Console.WriteLine($"> restore for {runtime}");
@@ -154,6 +146,7 @@ Task("Test")
         foreach(var project in projects)
         {
             Information("Testing project " + project);
+
             DotNetCoreTest(
                 project.ToString(),
                 new DotNetCoreTestSettings()
@@ -165,9 +158,20 @@ Task("Test")
                                              .Append("/p:CoverletOutputFormat=cobertura")
                                              .Append("/p:ThresholdType=line")
                                              .Append("/p:hideMigrations=\"true\"")
+                                             .Append("/p:Exclude=\"[starsky.Views]*\"")
                                              .Append("/p:ExcludeByFile=\"../starskycore/Migrations/*\"") // (, comma seperated)
                                              .Append("/p:CoverletOutput=coverage.cobertura.xml")
                 });
+
+            // Check if there is any output
+            string parent = System.IO.Directory.GetParent(project.ToString()).FullName;
+            string coverageFile = System.IO.Path.Combine(parent, "coverage.cobertura.xml");
+
+            Information("CoverageFile " + coverageFile);
+
+            if (!FileExists(coverageFile)) {
+                throw new Exception("CoverageFile missing " + coverageFile); 
+            }
         }
     });
 
@@ -177,6 +181,7 @@ Task("CoverageReport")
         var projects = GetFiles("./*test/coverage.cobertura.xml");
         foreach(var project in projects)
         {
+            Information("CoverageReport project " + project);
             var reportFolder = project.ToString().Replace("cobertura.xml","report");
             // change to: coverage.report
             System.Console.WriteLine(reportFolder);
