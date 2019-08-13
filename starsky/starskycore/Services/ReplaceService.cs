@@ -65,7 +65,7 @@ namespace starskycore.Services
 				// if one item fails, the status will added
 				if ( new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
 					fileIndexResultsList) ) continue;
-				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
+				if ( detailView == null ) throw new ArgumentNullException("Detailview is null " + nameof(detailView));
 				
 				// current item is also ok
 				detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;

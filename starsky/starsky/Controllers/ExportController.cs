@@ -75,7 +75,7 @@ namespace starsky.Controllers
 				
 				if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 
-				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
+				if ( detailView == null ) throw new ArgumentNullException("Detailview is null " + nameof(detailView));
 
 				// Now Add Collection based images
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
