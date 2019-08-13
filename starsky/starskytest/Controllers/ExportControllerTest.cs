@@ -117,10 +117,10 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task ExportController_CreateZipNotFound()
 		{
-			var controller = new ExportController(_query, _exifTool, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings), _readmeta);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings), _readmeta);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = await controller.CreateZip("/fail", true, false) as NotFoundObjectResult;
+			var actionResult = controller.CreateZip("/fail", true, false) as NotFoundObjectResult;
 			Assert.AreEqual(404,actionResult.StatusCode);
 		}
 
@@ -140,7 +140,7 @@ namespace starskytest.Controllers
 			// the test
 			var createAnImage = InsertSearchData(true);
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
-			var controller = new ExportController(_query, _exifTool, _appSettings, backgroundQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
+			var controller = new ExportController(_query, _appSettings, backgroundQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			// to avoid skip of adding zip
@@ -154,7 +154,7 @@ namespace starskytest.Controllers
 				Console.WriteLine("kdlsf");
 			});
 
-			var actionResult = await controller.CreateZip(createAnImage.FilePath,true,false) as JsonResult;
+			var actionResult = controller.CreateZip(createAnImage.FilePath,true,false) as JsonResult;
 			Assert.AreNotEqual(actionResult, null);
 			var zipHash = actionResult.Value as string;
 
@@ -177,43 +177,10 @@ namespace starskytest.Controllers
 		}
 
 
-//		[TestMethod]
-//		public async Task ExportController_TestExportRaws()
-//		{
-//
-//			IServiceCollection services = new ServiceCollection();
-//			services.AddHostedService<BackgroundQueuedHostedService>();
-//			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-//			var serviceProvider = services.BuildServiceProvider();
-//			var backgroundQueue = serviceProvider.GetService<IBackgroundTaskQueue>();
-//
-//
-//			var controller = new ExportController(_query, _exiftool, _appSettings, backgroundQueue);
-//			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-//
-//			var createAnImageNoExif = new CreateAnImageNoExif();
-//			new PlainTextFileHelper().WriteFile(createAnImageNoExif.FullFilePathWithDate.Replace(".jpg",".xmp"),"test");
-//
-//			_query.AddItem(new FileIndexItem
-//			{
-//				FileName = createAnImageNoExif.FileName,
-//				ParentDirectory = "/",
-//				ImageFormat = Files.ImageFormat.tiff //<== not true but for test
-//			});
-//
-//			var all = _query.GetAllFiles("/");
-//
-//			var t = await controller.CreateZip($"/{createAnImageNoExif.FileName}", true, false) as JsonResult;
-//
-//			// todo: cleanup files
-//
-//		}
-		
-
 		[TestMethod]
 		public void ExportControllerTest__ThumbTrue_CreateListToExport()
 		{
-			var controller = new ExportController(_query, _exifTool, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
 
 			var item = new FileIndexItem
 			{
@@ -237,7 +204,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportControllerTest__ThumbFalse_CreateListToExport()
 		{
-			var controller = new ExportController(_query, _exifTool, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
 
 			var createAnImageNoExif = new CreateAnImageNoExif();
 
@@ -266,7 +233,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportControllerTest__ThumbFalse__FilePathToFileName()
 		{
-			var controller = new ExportController(_query, _exifTool, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
 			var filePaths = new List<string>
 			{
 				Path.Combine("test","file.jpg")
@@ -278,7 +245,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportControllerTest__ThumbTrue__FilePathToFileName()
 		{
-			var controller = new ExportController(_query, _exifTool, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
 			var filePaths = new List<string>
 			{
 				Path.Combine("test","thumb.jpg")
@@ -300,29 +267,11 @@ namespace starskytest.Controllers
 			
 		}
 
-//		[TestMethod]
-//		public void ExportControllerTest__AddXmpFilesToList()
-//		{
-//			var createAnImage = new CreateAnImage();
-//			var xmpFilePath = createAnImage.FullFilePath.Replace(".jpg", ".xmp");
-//			new PlainTextFileHelper().WriteFile(xmpFilePath,"test");
-//			
-//			var controller = new ExportController(_query, _exiftool, _appSettings, _bgTaskQueue);
-//
-//			var list = new List<string>{createAnImage.FullFilePath};
-//			list = controller.AddXmpFilesToList(list, false, true);
-//
-//			Assert.AreEqual(2,list.Count);
-//			Assert.AreEqual(true,list[1].Contains(".xmp"));
-//			//Files.DeleteFile(xmpFilePath);
-//
-//		}
-
 
 		[TestMethod]
 		public async Task ExportController_ZipNotFound()
 		{
-			var controller = new ExportController(_query, _exifTool, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = await controller.Zip("____fail", true) as NotFoundObjectResult;
