@@ -247,8 +247,10 @@ namespace starsky.Controllers
 					
 			// When all items are not found
 			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
-			return NotFound(fileIndexResultsList);
-		
+			{
+				return NotFound(fileIndexResultsList);
+			}
+
 			// Clone an new item in the list to display
 			var returnNewResultList = new List<FileIndexItem>();
 			foreach (var item in fileIndexResultsList)
