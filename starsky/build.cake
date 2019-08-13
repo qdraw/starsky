@@ -19,6 +19,9 @@
 #addin "nuget:?package=Cake.OpenCoverToCoberturaConverter"
 #tool "nuget:?package=OpenCoverToCoberturaConverter"
 
+// Get Git info
+#addin nuget:?package=Cake.Git
+
 // Target - The task you want to start. Runs the Default task if not specified.
 var target = Argument("Target", "Default");
 var configuration = Argument("Configuration", "Release");
@@ -279,14 +282,24 @@ Task("SonarBegin")
             Information($">> SonarQube is disabled $ key={key}|login={login}|organisation={organisation}");
             return;
         }
+
+        // get first test project
+        var firstTestProject = GetDirectories("./*test").FirstOrDefault().ToString();
+        string coverageFile = System.IO.Path.Combine(firstTestProject, "coverage.opencover.xml");
+
+        // Current branch name
+        string parent = System.IO.Directory.GetParent(".").FullName;
+        var gitBranch = GitBranchCurrent(parent);
+        var branchName = gitBranch.FriendlyName;
+
         SonarBegin(new SonarBeginSettings{
             Name = "Starsky",
             Key = key,
             Login = login,
             Verbose = false,
             Url = url,
-            Branch = "sonar",
-            OpenCoverReportsPath = "",
+            Branch = branchName,
+            OpenCoverReportsPath = coverageFile,
             ArgumentCustomization = args => args
                 .Append($"/o:" + organisation),
         });
