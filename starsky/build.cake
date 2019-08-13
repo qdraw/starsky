@@ -279,13 +279,14 @@ Task("SonarBegin")
             Information($">> SonarQube is disabled $ key={key}|login={login}|organisation={organisation}");
             return;
         }
-
         SonarBegin(new SonarBeginSettings{
             Name = "Starsky",
             Key = key,
             Login = login,
             Verbose = false,
             Url = url,
+            Branch = "sonar",
+            OpenCoverReportsPath = "",
             ArgumentCustomization = args => args
                 .Append($"/o:" + organisation),
         });
