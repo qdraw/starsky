@@ -5,18 +5,8 @@
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">2.2.6</RuntimeFrameworkVersion>
     <Description>An attempt to create a database driven photo library</Description>
 	<Version>0.1.5.8</Version>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Mac|AnyCPU' ">
-    <IntermediateOutputPath>obj\Mac</IntermediateOutputPath>
-    <DebugSymbols>false</DebugSymbols>
-    <!-- Required in both test/product projects. This is a temporary workaround for https://github.com/Microsoft/vstest/issues/800 -->
-    <DebugType>Full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Mac</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
-    <NoWarn>
-    </NoWarn>
+	<!-- SonarQube needs this -->
+  	<ProjectGuid>{c97b6e6d-c1e7-4c91-8bda-576038e67ddc}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningLevel>0</WarningLevel>

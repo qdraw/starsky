@@ -2,6 +2,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <!-- SonarQube needs this -->
+    <ProjectGuid>{47d7c0fd-cee7-494c-85c2-df63234e0e5b}</ProjectGuid>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">2.1.10</RuntimeFrameworkVersion>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">2.2.6</RuntimeFrameworkVersion>
   </PropertyGroup>
