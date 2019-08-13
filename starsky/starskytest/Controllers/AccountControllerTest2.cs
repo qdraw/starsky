@@ -137,8 +137,9 @@ namespace starskytest.Controllers
                 ConfirmPassword = "test",
                 Email = "shared@dion.local"
             };
+
             // Arange > new account
-            await controller.Register(newAccount,true,string.Empty);
+            controller.Register(newAccount,true,string.Empty);
             
             // Try login again > now it must be succesfull
             await controller.Login(login);
@@ -159,7 +160,7 @@ namespace starskytest.Controllers
             controller.ControllerContext.HttpContext = httpContext;
 
             var reg = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2"};
-            var actionResult = await controller.Register(reg,true) as JsonResult;
+            var actionResult = controller.Register(reg,true) as JsonResult;
             
             Assert.AreEqual("Model is not correct", actionResult.Value as string);
         }
