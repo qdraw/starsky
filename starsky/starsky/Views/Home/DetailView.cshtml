@@ -40,7 +40,7 @@
 		</h4>
 
 		<div class="thumbnail">
-			<img src="@Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash + ".jpg", issingleitem = true})" />
+			<img src="@Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash + ".jpg", issingleitem = true})" alt="@Model.FileIndexItem.Tags" />
 		</div>
 
 		<div class="form-inline form-wrapper" id="js-keywords-update">
@@ -283,7 +283,7 @@
     </h1>
 
 	<div class="main-image">
-		<img class="disabled-@Model.FileIndexItem.Orientation" src="@Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash + ".jpg", issingleitem = true})"/>
+		<img class="disabled-@Model.FileIndexItem.Orientation" alt="@Model.FileIndexItem.Tags" src="@Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash + ".jpg", issingleitem = true})"/>
 	</div>
 	
 	<div id="popup">

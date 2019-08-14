@@ -154,7 +154,6 @@ namespace starsky.Controllers
         [ProducesResponseType(200)]
         public IActionResult Register(string returnUrl = null)
         {
-            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
@@ -169,7 +168,7 @@ namespace starsky.Controllers
         [HttpPost("/account/register")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, bool json = false, string returnUrl = null)
+        public IActionResult Register(RegisterViewModel model, bool json = false, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid && model.ConfirmPassword == model.Password)
@@ -192,7 +191,7 @@ namespace starsky.Controllers
         /// <returns>302 redirect</returns>
         private IActionResult RedirectToLocal(string returnUrl)
         {
-            if (Url.IsLocalUrl(returnUrl))
+            if ( !string.IsNullOrEmpty(returnUrl) && !returnUrl.StartsWith("http") && Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }

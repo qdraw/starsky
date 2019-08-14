@@ -62,14 +62,6 @@ namespace starsky.Controllers
             if (json) return Json(model);
             return View("Trash", model);
         }
-
-        //public IActionResult Error()
-        //{
-        //    // copy to controller, this one below is only for copying
-        //    Response.StatusCode = 404;
-        //    return View();
-        //}
-        
-		
+	
     }
 }

@@ -44,8 +44,8 @@ namespace starskycore.Helpers
 			
 			for (var i = 0; i < inputFileSubPaths.Length; i++)
 			{
-				inputFileSubPaths[i] = PathHelper.RemoveLatestSlash(inputFileSubPaths[i]);
-				inputFileSubPaths[i] = PathHelper.PrefixDbSlash(inputFileSubPaths[i]);
+				var inputFileSubPath = PathHelper.RemoveLatestSlash(inputFileSubPaths[i]);
+				inputFileSubPaths[i] = PathHelper.PrefixDbSlash(inputFileSubPath);
 
 				var detailView = _query.SingleItem(inputFileSubPaths[i], null, collections, false);
 				if (detailView == null) inputFileSubPaths[i] = null;
@@ -54,8 +54,8 @@ namespace starskycore.Helpers
 			// To check if the file/or folder has a unique name (in database)
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{
-				toFileSubPaths[i] = PathHelper.RemoveLatestSlash(toFileSubPaths[i]);
-				toFileSubPaths[i] = PathHelper.PrefixDbSlash(toFileSubPaths[i]);
+				var toFileSubPath = PathHelper.RemoveLatestSlash(toFileSubPaths[i]);
+				toFileSubPaths[i] = PathHelper.PrefixDbSlash(toFileSubPath);
 
 				var detailView = _query.SingleItem(toFileSubPaths[i], null, collections, false);
 				

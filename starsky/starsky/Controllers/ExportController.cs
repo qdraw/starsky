@@ -18,38 +18,34 @@ namespace starsky.Controllers
 	public class ExportController : Controller
 	{
 		private readonly IQuery _query;
-		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IStorage _iStorage;
-		private readonly IReadMeta _readMeta;
 
 		public ExportController(
-			IQuery query, IExifTool exifTool, 
-			AppSettings appSettings, IBackgroundTaskQueue queue,
+			IQuery query, AppSettings appSettings, IBackgroundTaskQueue queue,
 			IStorage iStorage, IReadMeta readMeta
 		)
 		{
 			_appSettings = appSettings;
 			_query = query;
-			_exifTool = exifTool;
 			_bgTaskQueue = queue;
 			_iStorage = iStorage;
-			_readMeta = readMeta;
 		}
-		
+
 		/// <summary>
 		/// Export source files to an zip archive
 		/// </summary>
 		/// <param name="f">subpath to files</param>
 		/// <param name="collections">enable files with the same name (before the extension)</param>
+		/// <param name="thumbnail">export thumbnails</param>
 		/// <returns>name of a to generate zip file</returns>
 		/// <response code="200">the name of the to generated zip file</response>
 		/// <response code="404">files not found</response>
 		[HttpPost("/export/createZip")]
 		[ProducesResponseType(200)] // "zipHash"
 		[ProducesResponseType(404)] // "Not found"
-		public async Task<IActionResult> CreateZip(string f, bool collections = true, bool thumbnail = false)
+		public IActionResult CreateZip(string f, bool collections = true, bool thumbnail = false)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 			// the result list
@@ -75,7 +71,7 @@ namespace starsky.Controllers
 				
 				if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 
-				if ( detailView == null ) throw new ArgumentNullException(nameof(detailView));
+				if ( detailView == null ) throw new InvalidDataException("Detailview is null " + nameof(detailView));
 
 				// Now Add Collection based images
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);

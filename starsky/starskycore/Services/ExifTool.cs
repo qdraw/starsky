@@ -14,7 +14,7 @@ namespace starskycore.Services
 	/// </summary>
 	public class ExifTool : IExifTool
 	{
-		private static AppSettings _appSettings;
+		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
 
 		public ExifTool(IStorage iStorage, AppSettings appSettings)
@@ -56,7 +56,7 @@ namespace starskycore.Services
 		private class StreamToStreamRunner
 		{
 			private readonly Stream _src;
-
+			private readonly AppSettings _appSettings;
 
 			public StreamToStreamRunner(AppSettings appSettings, Stream src)
 			{
