@@ -23,6 +23,10 @@
 # version 0.1.6 - tbd
 - tbd
 
+# version 0.1.5.8 - 2019-08-14
+- Change Dot NET version to the `.Net Core 2.2` release
+- Rollback due Entity Framework performance issues with MySQL
+
 # version 0.1.5.7 - 2019-08-09
 - Update Dot NET version to the `.Net Core 3 Preview 7` release
 - Update to C# version 8
