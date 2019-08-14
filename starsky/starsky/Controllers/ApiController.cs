@@ -121,7 +121,7 @@ namespace starsky.Controllers
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
 			
-			// Per file stored  <string{fileHash} comma List<string>{FileIndexItem.name (e.g. Tags) that are changed}
+			// Per file stored key = string{fileHash} item = List<string> FileIndexItem.name (e.g. Tags) that are changed}
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
 			
 			foreach (var subPath in inputFilePaths)
@@ -140,7 +140,7 @@ namespace starsky.Controllers
 				// if one item fails, the status will added
 				if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 
-				if ( detailView == null ) throw new ArgumentNullException("Detailview is null " + nameof(detailView));
+				if ( detailView == null ) throw new InvalidDataException("Detailview is null " + nameof(detailView));
 				
 				
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
@@ -306,7 +306,7 @@ namespace starsky.Controllers
 
                 if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 	            
-	            if ( detailView == null ) throw new ArgumentNullException("Detailview is null " + nameof(detailView));
+	            if ( detailView == null ) throw new InvalidDataException("Detailview is null " + nameof(detailView));
 
                 var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
 

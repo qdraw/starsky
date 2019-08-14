@@ -191,7 +191,7 @@ namespace starsky.Controllers
         /// <returns>302 redirect</returns>
         private IActionResult RedirectToLocal(string returnUrl)
         {
-            if (Url.IsLocalUrl(returnUrl))
+            if ( !string.IsNullOrEmpty(returnUrl) && !returnUrl.StartsWith("http") && Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
