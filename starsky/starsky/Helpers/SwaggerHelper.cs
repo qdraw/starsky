@@ -62,7 +62,7 @@ namespace starsky.Helpers
 				.CreateScope() )
 			{
 				var swaggerJsonText = GenerateSwagger(serviceScope, _appSettings.Name);
-				if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ApplicationException("swaggerJsonText = null");
+				if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ArgumentNullException(app + " => swaggerJsonText = null");
 
 				var starskyJsonPath =
 					Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
