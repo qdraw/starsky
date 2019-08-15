@@ -16,15 +16,13 @@ namespace starsky.Controllers
         private readonly ISync _sync;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
         private readonly IQuery _query;
-        private readonly AppSettings _appSettings;
 	    private readonly IStorage _iStorage;
 
-        public SyncController(ISync sync, IBackgroundTaskQueue queue, IQuery query, AppSettings appSettings, IStorage iStorage)
+        public SyncController(ISync sync, IBackgroundTaskQueue queue, IQuery query, IStorage iStorage)
         {
             _sync = sync;
             _bgTaskQueue = queue;
             _query = query;
-            _appSettings = appSettings;
 	        _iStorage = iStorage;
         }
         

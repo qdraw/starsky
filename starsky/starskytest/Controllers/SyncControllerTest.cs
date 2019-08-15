@@ -137,7 +137,7 @@ namespace starskytest.Controllers
 				HttpContext = new DefaultHttpContext()
 			};
 
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, _appSettings,_iStorage);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query,_iStorage);
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex("/") as JsonResult;
@@ -157,7 +157,7 @@ namespace starskytest.Controllers
 			};
 			var iStorage = new FakeIStorage();
 
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, _appSettings, _iStorage);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, _iStorage);
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex(_createAnImage.DbPath) as JsonResult;
@@ -178,7 +178,7 @@ namespace starskytest.Controllers
 			};
 			var iStorage = new FakeIStorage();
 
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, _appSettings, iStorage);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, iStorage);
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex("/404") as JsonResult;
