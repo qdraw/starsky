@@ -302,9 +302,9 @@ Task("SonarBegin")
             Branch = branchName,
             OpenCoverReportsPath = coverageFile,
             ArgumentCustomization = args => args
-                .Append($"/o:" + organisation),
-                .Append($"/d:sonar.coverage.exclusions=\"**Tests*.cs,**Migrations*\"")
-                .Append($"/d:sonar.exclusions=\"**Tests*.cs,**Migrations*\"")
+                .Append($"/o:" + organisation)
+                .Append($"/d:sonar.coverage.exclusions=\"*wwwroot/js/*,starskycore/Migrations/*\"")
+                .Append($"/d:sonar.exclusions=\"wwwroot/js/*,starskycore/Migrations/*\"")
         });
 
   });
