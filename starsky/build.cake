@@ -303,6 +303,8 @@ Task("SonarBegin")
             OpenCoverReportsPath = coverageFile,
             ArgumentCustomization = args => args
                 .Append($"/o:" + organisation),
+                .Append($"/d:sonar.coverage.exclusions=\"**Tests*.cs,**Migrations*\"")
+                .Append($"/d:sonar.exclusions=\"**Tests*.cs,**Migrations*\"")
         });
 
   });
