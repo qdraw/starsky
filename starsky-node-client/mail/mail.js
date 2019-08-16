@@ -8,7 +8,7 @@ require('dotenv').config({path:path.join(__dirname,".env")});
 // process.env.STARKSYACCESSTOKEN < base64
 // process.env.STARKSYURL
 
-console.log(process.env.IMAPUSER);
+console.log("Checking mail for: " + process.env.IMAPUSER);
 
 var config = {
     imap: {
@@ -21,12 +21,21 @@ var config = {
     }
 };
 
+function slugify(text) {
+  return text.toString().toLowerCase()
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/[^\w\-\.]+/g, '')       // Remove all non-word chars (keep dots)
+    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+    .replace(/^-+/, '')             // Trim - from start of text
+    .replace(/-+$/, '');            // Trim - from end of text
+}
+
 imaps.connect(config).then(function (connection) {
 
     connection.openBox('INBOX').then(function () {
 
-		// Fetch emails from the last 48h
-		var delay = 48 * 3600 * 1000;
+		// Fetch emails from the last 60h
+		var delay = 60 * 3600 * 1000;
         var yesterday = new Date();
         yesterday.setTime(Date.now() - delay);
         yesterday = yesterday.toISOString();
@@ -77,7 +86,6 @@ imaps.connect(config).then(function (connection) {
 
         return Promise.all(attachments);
     }).then(function (attachments) {
-		console.log(attachments);
 
         // =>
         //    [ { filename: 'cats.jpg', data: Buffer() },
@@ -85,28 +93,27 @@ imaps.connect(config).then(function (connection) {
 
         for (var i = 0; i < attachments.length; i++) {
 
-
-
-
             // return non gpx
             // Need to have a gmail filter to white list the users
             if(attachments[i].filename.indexOf(".gpx") === -1) continue;
             if(attachments[i].label.indexOf("gpx") === -1) continue;
 
-            console.log(attachments[i]);
+            // Escape strange filenames
+            //    { filename: '=?UTF-8?Q?Dag_e=CC=81e=CC=81n_avondrit_9-8-2019.gpx?=' } }
+            var fileName = attachments[i].filename.replace(/(^=\?)|(UTF-8)|(\?Q\?)|(\?=$)/,"");
+            filename = slugify(fileName);
 
-
-
-
+            console.log("file: " + filename + " (" + attachments[i].filename +")");
 
             var formData = {
                 image_file: {
                     value: attachments[i].data, // Upload the first file in the multi-part post
                     options: {
-                       filename: attachments[i].filename
+                       filename: filename
                     }
                 }
             };
+
 
             request({
                 headers: {
