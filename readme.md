@@ -25,7 +25,15 @@ The general application is Starsky (sln). You need to [install the solution](sta
 
 ## Build status
 
-[![Visual Studio Team Services](https://img.shields.io/vso/build/qdraw/7bab52f1-7600-4295-a199-1bb81cc1e4d7/1.png)](https://qdraw.visualstudio.com/7bab52f1-7600-4295-a199-1bb81cc1e4d7/_apis/build/status/1) For the master branch using Windows and Visual Studio 2017
+### Windows 2019 with VS2019
+[![Build Status](https://qdraw.visualstudio.com/starsky/_apis/build/status/starsky-full%20build?branchName=master)](https://qdraw.visualstudio.com/starsky/_build/latest?definitionId=5&branchName=master)
+
+### Sonarqube
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=coverage)](https://sonarcloud.io/dashboard?id=starsky)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=bugs)](https://sonarcloud.io/dashboard?id=starsky)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=code_smells)](https://sonarcloud.io/dashboard?id=starsky)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=starsky)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=starsky)
 
 ## Changelog and history of this project
 
