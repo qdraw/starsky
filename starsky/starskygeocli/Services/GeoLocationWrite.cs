@@ -29,7 +29,8 @@ namespace starskyGeoCli.Services
             {
                 if (!ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) continue;
 
-                Console.WriteLine("Do a exifToolSync");
+				if ( _appSettings.Verbose ) Console.Write("*ExifSync*");
+
                 var comparedNamesList = new List<string>
                 {
                     nameof(FileIndexItem.Latitude),

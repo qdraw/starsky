@@ -39,17 +39,13 @@ namespace starskyGeoCli
             // -s = ifsubpath || -p is path
             if (new ArgsHelper(appSettings).IfSubpathOrPath(args))
             {
-                inputPath = appSettings.DatabasePathToFilePath(
+				inputPath = appSettings.DatabasePathToFilePath(
                     new ArgsHelper(appSettings).GetSubpathFormArgs(args)
-                    );
+                );
             }
             else
             {
                 inputPath = new ArgsHelper(appSettings).GetPathFormArgs(args,false);
-	            // overwrite if folder not exist
-	            if ( FilesHelper.IsFolderOrFile(inputPath) !=
-	                 FolderOrFileModel.FolderOrFileTypeList.Folder ) inputPath = null;
-
             }
             
             // overwrite subpath with relative days
@@ -61,16 +57,15 @@ namespace starskyGeoCli
                 inputPath = appSettings.DatabasePathToFilePath(getSubPathRelative);
             }
 
-	        if ( inputPath == null )
+			// used in this session to find the files back
+			appSettings.StorageFolder = inputPath;
+			var storage = new StorageSubPathFilesystem(appSettings);
+
+			if ( storage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 	        {
 		        Console.WriteLine($"Folder location is not found \nPlease try the `-h` command to get help ");
 		        return;
 	        }
-
-            
-            // used in this session to find the files back
-            appSettings.StorageFolder = inputPath;
-	        var storage = new StorageSubPathFilesystem(appSettings);
 
 	        // use relative to StorageFolder
 	        var listOfFiles = storage.GetAllFilesInDirectory("/")
@@ -87,7 +82,7 @@ namespace starskyGeoCli
 	            new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(toMetaFilesUpdate,false);
             }
 	        
-	        Console.Write("®");
+	        Console.Write("+®+");
 
 			fileIndexList = new GeoReverseLookup(appSettings).LoopFolderLookup(fileIndexList,new ArgsHelper().GetAll(args));
 	        if ( fileIndexList.Count >= 1 )
