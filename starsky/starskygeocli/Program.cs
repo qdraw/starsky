@@ -76,7 +76,9 @@ namespace starskyGeoCli
 			var toMetaFilesUpdate = new List<FileIndexItem>();
 	        if (new ArgsHelper().GetIndexMode(args))
             {
-                Console.WriteLine("CameraTimeZone " + appSettings.CameraTimeZone);
+                Console.WriteLine($"CameraTimeZone: {appSettings.CameraTimeZone}");
+				Console.WriteLine($"Folder: {inputPath}");
+
                 toMetaFilesUpdate = new GeoIndexGpx(appSettings,startupHelper.ReadMeta(),storage).LoopFolder(fileIndexList);
 	            Console.Write("¬");
 	            new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(toMetaFilesUpdate,false);
@@ -103,9 +105,6 @@ namespace starskyGeoCli
 				storage.ThumbnailMove(item.FileHash,newThumb);
 		        if ( appSettings.Verbose ) Console.WriteLine("thumb+ `"+ item.FileHash + "`"+ newThumb);
 	        }
-
-
         }
-
     }
 }
