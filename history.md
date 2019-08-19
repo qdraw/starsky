@@ -23,6 +23,10 @@
 # version 0.1.6 - tbd
 - tbd
 
+# version 0.1.5.9 - tbd
+- Entity Framework Add Indexes
+- __Breaking Change__  Entity Framework add Field for FocalLength
+
 # version 0.1.5.8 - 2019-08-14
 - Change Dot NET version to the `.Net Core 2.2` release
 - Rollback due Entity Framework performance issues with MySQL
