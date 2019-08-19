@@ -1,15 +1,5 @@
 
-```
-cd starsky
-```
-
-```
-dotnet ef migrations add ColorClassFeature
-```
-
-```bash
-dotnet ef database update
-```
+dotnet tool install -g dotnet-ef
 
 # from starskycore folder
 
