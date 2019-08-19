@@ -826,10 +826,13 @@ namespace starskycore.Models
 	    {
 		    if(isoSpeed >= 1 && isoSpeed <= ushort.MaxValue ) 
 			    IsoSpeed = (ushort) isoSpeed;
-	    }
+		}
 
-	    [NotMapped] 
-	    public string Software { get; set; }
+		/// <summary>
+		/// Edited with this program
+		/// </summary>
+		[NotMapped]
+		public string Software { get; set; }
 	    
 	    
 		/// <summary>
@@ -892,7 +895,6 @@ namespace starskycore.Models
 	    /// <summary>
 	    /// The Zoom of the camera
 	    /// </summary>
-	    [NotMapped]
 	    public double FocalLength { get; set; }
 
 	    

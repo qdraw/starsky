@@ -33,6 +33,7 @@ namespace starskytest.Controllers
 		private readonly ApplicationDbContext _context;
 		private readonly IReadMeta _readmeta;
 		private readonly IServiceScopeFactory _scopeFactory;
+		private IStorage _iStorage;
 		private readonly ISync _isync;
 
 		public SyncControllerTest()
@@ -102,9 +103,8 @@ namespace starskytest.Controllers
 
 		private FileIndexItem InsertSearchData()
 		{
-
-			var iStorage = new StorageSubPathFilesystem(_appSettings);
-			var fileHashCode = new FileHash(iStorage).GetHashCode(_createAnImage.DbPath);
+			_iStorage = new FakeIStorage(new List<string> { "/" }, new List<string> { _createAnImage.DbPath });
+			var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath);
 			
 			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)) )
 			{
@@ -136,9 +136,8 @@ namespace starskytest.Controllers
 			{
 				HttpContext = new DefaultHttpContext()
 			};
-			var iStorage = new FakeIStorage();
 
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, _appSettings,iStorage);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query,_iStorage);
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex("/") as JsonResult;
@@ -158,7 +157,7 @@ namespace starskytest.Controllers
 			};
 			var iStorage = new FakeIStorage();
 
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, _appSettings, iStorage);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, _iStorage);
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex(_createAnImage.DbPath) as JsonResult;
@@ -179,7 +178,7 @@ namespace starskytest.Controllers
 			};
 			var iStorage = new FakeIStorage();
 
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, _appSettings, iStorage);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, iStorage);
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex("/404") as JsonResult;

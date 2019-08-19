@@ -1,5 +1,0 @@
-brew install yarn
-
-1. npm install -g react-native-cli
-$
-react-native init starskyapp
