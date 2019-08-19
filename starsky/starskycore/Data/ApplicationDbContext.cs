@@ -38,7 +38,7 @@ namespace starskycore.Data
 			base.OnModelCreating(modelBuilder);
 
 			// Add Index to speed performance
-			modelBuilder.Entity<FileIndexItem>().HasIndex(x => new { x.FileHash, x.FilePath, x.FileName, x.Tags, x.ParentDirectory });
+			modelBuilder.Entity<FileIndexItem>().HasIndex(x => new { x.FileHash, x.FilePath, x.FileName, x.Tags, x.ParentDirectory, x.DateTime });
 
 			modelBuilder.Entity<User>(etb =>
 				{

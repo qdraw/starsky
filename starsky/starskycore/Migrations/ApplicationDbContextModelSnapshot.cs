@@ -210,7 +210,7 @@ namespace starskycore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileHash", "FilePath", "FileName", "Tags", "ParentDirectory");
+                    b.HasIndex("FileHash", "FilePath", "FileName", "Tags", "ParentDirectory", "DateTime");
 
                     b.ToTable("FileIndex");
                 });

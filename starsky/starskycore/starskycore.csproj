@@ -90,8 +90,8 @@
         <Compile Remove="Migrations\20190103194709_AddApertureShutterSpeedIsoSpeed.Designer.cs" />
         <Compile Remove="Migrations\20190111162308_MakeModel.cs" />
         <Compile Remove="Migrations\20190111162308_MakeModel.Designer.cs" />
-        <Compile Remove="Migrations\20190819111836_FocalLengthAndIndexes.cs" />
-        <Compile Remove="Migrations\20190819111836_FocalLengthAndIndexes.Designer.cs" />
+        <Compile Remove="Migrations\20190819153950_FocalLengthAndIndexes.cs" />
+        <Compile Remove="Migrations\20190819153950_FocalLengthAndIndexes.Designer.cs" />
     </ItemGroup>
 
 </Project>

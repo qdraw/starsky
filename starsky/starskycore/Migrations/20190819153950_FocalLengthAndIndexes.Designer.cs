@@ -9,7 +9,7 @@ using starskycore.Data;
 namespace starskycore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190819111836_FocalLengthAndIndexes")]
+    [Migration("20190819153950_FocalLengthAndIndexes")]
     partial class FocalLengthAndIndexes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -212,7 +212,7 @@ namespace starskycore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileHash", "FilePath", "FileName", "Tags", "ParentDirectory");
+                    b.HasIndex("FileHash", "FilePath", "FileName", "Tags", "ParentDirectory", "DateTime");
 
                     b.ToTable("FileIndex");
                 });
