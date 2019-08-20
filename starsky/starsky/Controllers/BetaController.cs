@@ -22,25 +22,36 @@ namespace starsky.Controllers
 			_appSettings = appSettings;
 		}
 
-		//[Route("/beta/")
-		// Route("/beta/fetchdata"), Route("/beta/counter")]
-		[Produces("text/html")]
-		public ContentResult Index()
+		public IActionResult Index(string f = "")
 		{
-			var path = Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", "index.html");
-			if ( !new StorageHostFullPathFilesystem().ExistFile(path) ) return new ContentResult
-			{
-				StatusCode = ( int )HttpStatusCode.NotFound,
-				Content = path,
-			};
+			var file = Path.Combine(Directory.GetCurrentDirectory(),
+				"clientapp", "build", "index.html");
 
-			StreamReader reader = new StreamReader(new StorageHostFullPathFilesystem().ReadStream(path));
-			return new ContentResult
-			{
-				ContentType = "text/html",
-				StatusCode = ( int )HttpStatusCode.OK,
-				Content = reader.ReadToEnd()
-			};
+			return PhysicalFile(file, "text/html");
 		}
+
+
+
+
+		////[Route("/beta/")
+		//// Route("/beta/fetchdata"), Route("/beta/counter")]
+		//[Produces("text/html")]
+		//public ContentResult Index1()
+		//{
+		//	var path = Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", "index.html");
+		//	if ( !new StorageHostFullPathFilesystem().ExistFile(path) ) return new ContentResult
+		//	{
+		//		StatusCode = ( int )HttpStatusCode.NotFound,
+		//		Content = path,
+		//	};
+
+		//	StreamReader reader = new StreamReader(new StorageHostFullPathFilesystem().ReadStream(path));
+		//	return new ContentResult
+		//	{
+		//		ContentType = "text/html",
+		//		StatusCode = ( int )HttpStatusCode.OK,
+		//		Content = reader.ReadToEnd()
+		//	};
+		//}
 	}
 }

@@ -2,7 +2,7 @@ import { Routes } from 'universal-router';
 
 const routes: Routes<any, { default: any }> = [
   {
-    path: '/index.html',
+    path: '/beta',
     action: () => import('../pages/first-page'),
   },
   {
