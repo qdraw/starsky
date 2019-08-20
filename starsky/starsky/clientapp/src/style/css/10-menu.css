@@ -1,0 +1,317 @@
+
+.header.header--main {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  height: 50px;
+  z-index: 9999;
+  background: #263238; 
+  color: #fff;
+}
+
+.header.header--edit {
+  width: calc(100% - 320px);
+}
+
+.header.header--bluegray700 {
+  background-color: #455A64;
+}
+
+.header .wrapper {
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  -ms-align-items: center;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%; 
+}
+
+.header .nav {
+  display: block;
+  margin-left: auto;
+}
+
+.header .menu {
+  /* margin: 10px; */
+}
+
+
+.header .menu a {
+  display: block;
+  padding: 5px 10px;
+  box-shadow: none;
+}
+
+.header .menu-item {
+  list-style: none;
+}
+
+
+/* only the hamburger */
+.header .hamburger__container {
+  display: block;
+  padding: 1rem;
+  margin: -1rem;
+  cursor: pointer;
+  margin-left: 15px;
+}
+
+.header .hamburger {
+  width: 1.20rem;
+  height: 0.9375rem;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+  transform: rotate(0deg); 
+}
+
+.header .hamburger i {
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 0.1875rem;
+  background: #FFF;
+  opacity: 1;
+  left: 0;
+  transform: rotate(0deg);
+  transition: all 0.25s cubic-bezier(0.215, 0.61, 0.355, 1); 
+}
+
+.header .hamburger i:nth-of-type(1) {
+  top: 0;
+  transform-origin: left center; 
+}
+
+.header .hamburger i:nth-of-type(2) {
+  top: 0.375rem;
+  transform-origin: left center; 
+}
+
+.header .hamburger i:nth-of-type(3) {
+  top: 0.75rem;
+  transform-origin: left center; 
+}
+
+.header .hamburger.open i:nth-of-type(1) {
+  transform: rotate(45deg) translate(0, -0.0625rem); 
+}
+
+.header .hamburger.open i:nth-of-type(2) {
+  opacity: 0;
+  width: 0%; 
+}
+
+.header .hamburger.open i:nth-of-type(3) {
+  transform: rotate(-45deg) translate(0, 0.0625rem); 
+}
+
+
+
+.header .menu-item {
+  font-size: 16px;
+  font-weight: 300;
+  background: #455A64;
+}
+
+.header .menu-item--half-extra{
+  height: 75px;
+}
+
+.header .menu-item--half-extra > form {
+  padding-top:20px;
+  padding-left: 25px;
+}
+
+.header .form-inline .form-control{
+  display: inline-block;
+  vertical-align: middle;
+  width: calc(100% - 25px);
+}
+
+.header .menu-item a {
+  padding-left: 25px;
+  height: 50px;
+  display : flex;
+  align-items : center;
+  width: 100%;
+  vertical-align: middle;
+  text-decoration: none;
+  color: #FFF;
+}
+
+
+/* To display the search results (NOT a form) */
+.header .menu-item a.search-icon::before {
+    background-color: white;
+    mask-image: url('../images/baseline-search-24px.svg');
+    mask-position: 0px 40%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    content: "";
+    padding-left: 24px;
+    margin-right: 12px;
+
+
+    /* fixes for webkit */
+    -webkit-mask-position: 0px 40%;
+    -webkit-mask-image: url('../images/baseline-search-24px.svg');
+}
+
+.header .menu-item:nth-child(2n) {
+  background-color: #607D8B;
+}
+
+
+.header .nav {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  height: 100%;
+  background: #263238;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.header .open {
+  opacity: 1;
+  right: 0;
+}
+
+.header .nav__container {
+  position: absolute;
+  margin-top: 50px;
+  /* padding: 80px 20px 30px; */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* These 2 below are all the magic: */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.header .logo, .hamburger__container {
+  position: relative;
+  z-index: 9999;
+  border: 0px;
+  background: transparent;
+}
+
+/* Quick menu */
+
+.header .item:before {
+    content: "";
+    background-color: white;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-position: center;
+    /* fixes for webkit */
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+
+    padding-left: 24px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-right: 10px;
+}
+
+@media screen and (max-width: 450px) {
+ .header .item:before {
+    margin-right: 4px;
+  }
+}
+
+.header > .wrapper > .item.item--labels,
+.header > .wrapper > .item.item--more,
+.header > .wrapper > .item.item--select,
+.header .item.item--close {
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.header .item.item--close:before {
+    mask-image: url("../images/s-cross.svg");
+}
+
+.header > .wrapper > .item.item--detective:before {
+    mask-image: url("../images/baseline-searcher-detective.svg");
+}
+
+.header > .wrapper > .item.item--select:before {
+    mask-image: url("../images/baseline-check_circle_outline-24px.svg");
+}
+
+.header > .wrapper > .item.item--labels:before {
+    mask-image: url("../images/s-edit.svg");
+}
+.header.header.header--edit > .wrapper > .item.item--labels:before {
+    mask-image: url("../images/baseline-pencil-off-24px.svg");
+}
+
+.header > .wrapper > .item.item--more:before {
+    mask-image: url("../images/baseline-more90-24px.svg");
+}
+
+.header > .wrapper > .item.item--more {
+  position: absolute;
+  right: 30px;
+  top: 18px;
+}
+
+@media screen and (max-width: 450px) {
+  .header > .wrapper > .item.item--more {
+    right: 12px;
+  }
+}
+
+.header > .wrapper > .item--first {
+  margin-left: 25px;
+}
+
+@media screen and (max-width: 450px) {
+  .header > .wrapper > .item--first {
+    margin-left: 10px;
+  }
+}
+
+.header > .wrapper > .item.item--labels,
+.header > .wrapper >  .item.item--select {
+  position: absolute;
+  right: 120px;
+  top: 18px;
+}
+@media screen and (max-width: 450px) {
+  .header > .wrapper > .item.item--labels,
+  .header > .wrapper >  .item.item--select {
+    right: 88px;
+  }
+}
+
+
+.header.header--sidebar {
+  width: 320px;
+  position: absolute;
+  right:0px;
+  top:0px;
+  background-color: #90A4AE;
+  line-height: 50px;
+}
+
+.header--sidebar .item.item--close {
+  color: #000;
+  margin-left: 5px;
+}
+
+.header--sidebar .item:before {
+    background-color: black;
+}
+
+@media screen and (max-width: 640px) {
+    .header.header--edit .wrapper{
+        display: none;
+    }
+}

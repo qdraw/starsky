@@ -1,0 +1,34 @@
+.relativelink {
+  height: 50px;
+  background-color: #ECEFF1;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.relativelink .nextprev a {
+  color: #263238;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 20ch;
+  text-decoration: none;
+  padding-left: 20px;
+  padding-right: 5px;
+  margin-top:7px;
+  border: #979797 1px solid;
+  border-radius: 5px;
+  width: 120px;
+  line-height: 32px;
+    
+}
+
+.relativelink .nextprev .next {
+  display: inline-block;
+  float: right;
+  text-align: right;
+  padding-right: 20px;
+}
+
+.relativelink .nextprev .prev {
+    float: left;
+}

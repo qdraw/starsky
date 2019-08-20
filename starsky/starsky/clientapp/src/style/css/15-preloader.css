@@ -1,0 +1,49 @@
+
+.preloader {
+
+}
+
+
+.preloader.preloader--overlay {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top:0px;
+  left:0px;
+  background-color: rgba(96, 125, 139, 0.7);
+  transition: background-color 500ms ease-in-out;
+  z-index: 410;
+  animation: preloader--overlay-fadein 4s;
+}
+
+
+@keyframes preloader--overlay-fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.preloader.preloader--icon {
+  position: fixed;
+  left: calc( 50% - 50px );
+  top: calc( 50% - 50px );
+  display: block;
+  width: 100px;
+  height: 100px;
+  background-image:url('../images/preloader-fancy.svg');
+  background-size: contain;
+}
+
+.preloader.preloader--overlay .preloader--icon {
+  background-image:unset;
+  background-color: white;
+  mask-image: url('../images/preloader-fancy.svg');
+  mask-size: contain;
+
+  /* for webkit */
+  -webkit-mask-image: url('../images/preloader-fancy.svg');
+  -webkit-mask-size: contain;
+}
+
+.preloader.preloader--hide {
+  display: none;
+}

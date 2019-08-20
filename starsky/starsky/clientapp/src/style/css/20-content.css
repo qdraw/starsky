@@ -1,0 +1,81 @@
+.content {
+}
+.content > div,
+.content > form {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+@media screen and (max-width: 450px) {
+  .content > div,
+  .content > form {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+.content--header {
+  height: 50px;
+  background-color: #CFD8DC;  
+  line-height: 50px;
+  padding-left: 10px;
+}
+
+.content--text {
+  padding: 10px;
+}
+.content--text h4 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.content--text h4:first-child {
+  margin-top: 0px;
+}
+
+.content > .content--login-form {
+  margin-top:20px;
+  width: 100%;
+}
+
+.content .warning-box,
+.content > form > .content--error-true {
+/* .content > form > .content--submitted-true--error-true,
+.content > form > .content--submitted-true--error-false { */
+  background-color: #283593;
+  color: white;
+  padding: 5px;
+  line-height: 24px;
+  border-radius: 5px;
+  margin-bottom: 8px;
+}
+
+.content .warning-box:before,
+.content > form > .content--error-true:before {
+    content: "";
+    background-color: white;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-position: center;
+    /* fixes for webkit */
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    height: 24px;
+    padding-left: 24px;
+    margin-right: 7px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+
+    -webkit-mask-image: url("../images/baseline-error-24px.svg");
+    mask-image: url("../images/baseline-error-24px.svg");
+}
+
+.content > .content--login-form > button,
+.content > .content--login-form > label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.content > .content--login-form > input {
+  margin-bottom: 15px;
+}
+

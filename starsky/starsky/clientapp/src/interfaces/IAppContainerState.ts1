@@ -1,0 +1,20 @@
+import { ExifStatus } from './ExifStatus';
+import { IArchive } from "./IArchive";
+import { IDetailView, PageType } from "./IDetailView";
+import { IFileIndexItem } from "./IFileIndexItem";
+
+export interface IAppContainerState {
+  PageType?: PageType;
+  fileIndexItems: Array<IFileIndexItem>;
+  name?: string;
+  path: string;
+  detailView?: IDetailView;
+  archive?: IArchive;
+  status: ExifStatus;
+  baseurl?: string;
+  statusCode: number;
+}
+
+export function newIAppContainerState(): IAppContainerState {
+  return {} as IAppContainerState;
+}
