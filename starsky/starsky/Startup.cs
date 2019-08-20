@@ -233,6 +233,19 @@ namespace starsky
 		        });
 	        }
 
+			// "clientapp", "build", "static"
+
+			
+			if ( Directory.Exists(Path.Combine(env.ContentRootPath, "clientapp", "build", "static")) )
+			{
+				app.UseStaticFiles(new StaticFileOptions
+				{
+					FileProvider = new PhysicalFileProvider(
+						Path.Combine(env.ContentRootPath, "clientapp", "build", "static")),
+						RequestPath = "/static"
+				});
+			}
+
 			app.UseAuthentication();
             app.UseBasicAuthentication();
 
