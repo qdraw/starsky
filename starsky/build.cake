@@ -22,6 +22,10 @@
 // Get Git info
 #addin nuget:?package=Cake.Git
 
+// For NPM
+#addin "Cake.Npm"
+
+
 // Target - The task you want to start. Runs the Default task if not specified.
 var target = Argument("Target", "Default");
 var configuration = Argument("Configuration", "Release");
@@ -82,6 +86,24 @@ Task("Clean")
         CleanDirectory(distDirectory);
         CleanDirectory(genericDistDirectory);
     });
+
+// Running Client Build
+Task("ClientRestore")
+    .Does(() =>
+    {
+        // Running `npm ci` instead of `npm install`
+        NpmCi(s => s.FromPath("./starsky/clientapp"));
+  });
+
+Task("ClientBuild")
+    .Does(() =>
+    {
+        NpmRunScript("build", s => s.FromPath("./starsky/clientapp/"));
+  });
+
+Task("Client")
+  .IsDependentOn("ClientRestore")
+  .IsDependentOn("ClientBuild");
 
 // Run dotnet restore to restore all package references.
 Task("Restore")
@@ -181,7 +203,7 @@ Task("Test")
             Information("CoverageFile " + coverageFile);
 
             if (!FileExists(coverageFile)) {
-                throw new Exception("CoverageFile missing " + coverageFile); 
+                throw new Exception("CoverageFile missing " + coverageFile);
             }
         }
     });
@@ -308,6 +330,7 @@ Task("SonarBegin")
         });
 
   });
+
 Task("SonarEnd")
   .Does(() => {
     var login = EnvironmentVariable("STARSKY_SONAR_LOGIN");
@@ -315,7 +338,7 @@ Task("SonarEnd")
         Information($">> SonarQube is disabled $ login={login}");
         return;
     }
-    SonarEnd(new SonarEndSettings { 
+    SonarEnd(new SonarEndSettings {
         Login = login,
         Silent = true,
     });
@@ -332,6 +355,7 @@ Task("BuildAndTest")
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
 Task("Default")
+    .IsDependentOn("Client")
     .IsDependentOn("SonarBegin")
     .IsDependentOn("BuildAndTest")
     .IsDependentOn("SonarEnd")
