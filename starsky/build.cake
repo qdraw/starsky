@@ -91,8 +91,15 @@ Task("Clean")
 Task("ClientRestore")
     .Does(() =>
     {
-        // Running `npm ci` instead of `npm install`
-        NpmCi(s => s.FromPath("./starsky/clientapp"));
+        if (!DirectoryExists($"./starsky/clientapp/node_modules/react"))
+        {
+            // Running `npm ci` instead of `npm install`
+            Information("npm ci restore for ./starsky/clientapp");
+            NpmCi(s => s.FromPath("./starsky/clientapp"));
+        }
+        else {
+            Information("Restore skipped for ./starsky/clientapp");
+        }
   });
 
 Task("ClientBuild")
