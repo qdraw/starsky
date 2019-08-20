@@ -18,7 +18,7 @@ const useAuthHandler = (initialState: UserAuth) => {
     }
     const getAccountStatus = async () => {
 
-      const response = await fetch("/account?json=true", {
+      const response = await fetch("/account/status", {
         credentials: "include",
         method: "GET",
       });

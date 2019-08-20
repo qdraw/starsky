@@ -21,7 +21,7 @@ export class Query {
     urlObject.colorClass = requested.colorClass;
 
     var url = new URLPath().RemovePrefixUrl(new URLPath().IUrlToString(urlObject));
-    return "/api/" + url;
+    return "/api/index" + url;
   }
 
   public UrlQueryInfoApi = (subPath: string) => {
