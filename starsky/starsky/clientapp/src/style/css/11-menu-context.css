@@ -44,6 +44,6 @@
   background-color: red;
 }
 
-menu-context .menu-options .menu-option:hover {
+.menu-context .menu-options .menu-option:hover {
   background: rgba(0, 0, 0, 0.2);
 }
