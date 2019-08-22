@@ -123,7 +123,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
 
       {fileIndexItem.latitude && fileIndexItem.longitude ?
-        <a className="box" target="_blank" href={"https://www.openstreetmap.org/?mlat=" +
+        <a className="box" target="_blank" rel="noopener noreferrer" href={"https://www.openstreetmap.org/?mlat=" +
           fileIndexItem.latitude + "&mlon=" + fileIndexItem.longitude + "#map=16/" +
           fileIndexItem.latitude + "/" + fileIndexItem.longitude}>
           <div className="icon icon--right icon--edit"></div>

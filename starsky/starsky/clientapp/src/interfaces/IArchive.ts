@@ -13,5 +13,5 @@ export interface IArchive {
 }
 
 export function newIArchive(): IArchive {
-    return <IArchive>{};
+    return {} as IArchive;
 }

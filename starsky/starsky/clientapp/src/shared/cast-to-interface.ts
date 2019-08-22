@@ -14,9 +14,10 @@ export class CastToInterface {
   }
 
   MediaArchive = (data: any): IMedia<'Archive'> => {
-    const media = <IMedia<'Archive'>>{
+    const media = {
       type: 'Archive',
-    }
+    } as IMedia<'Archive'>
+
     if (this.getPageType(data) === PageType.Archive) {
       media.data = data;
       return media;
@@ -26,9 +27,10 @@ export class CastToInterface {
   }
 
   MediaDetailView = (data: any): IMedia<'DetailView'> => {
-    const media = <IMedia<'DetailView'>>{
+    const media = {
       type: 'DetailView',
-    }
+    } as IMedia<'DetailView'>
+
     if (this.getPageType(data) === PageType.DetailView) {
       media.data = data;
       return media;
