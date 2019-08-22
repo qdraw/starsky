@@ -3,11 +3,11 @@ import { Routes } from 'universal-router';
 const routes: Routes<any, { default: any }> = [
   {
     path: '/beta',
-    action: () => import('../pages/first-page'),
+    action: () => import('../pages/content-page'),
   },
   {
     path: '/',
-    action: () => import('../pages/first-page'),
+    action: () => import('../pages/content-page'),
   },
   {
     path: '/index.html#search',

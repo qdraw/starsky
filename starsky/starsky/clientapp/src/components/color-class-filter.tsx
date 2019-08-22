@@ -37,7 +37,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
   }
 
   function updateColorClass(item: number): string {
-    var urlObject = new URLPath().StringToIUrl(history.location.hash);
+    var urlObject = new URLPath().StringToIUrl(history.location.search);
     if (!urlObject.colorClass) {
       urlObject.colorClass = [];
     }

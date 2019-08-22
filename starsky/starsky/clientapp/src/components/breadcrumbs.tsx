@@ -28,10 +28,10 @@ const Breadcrumb: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
 
           // For the home page
           if (item === props.subPath) {
-            return (<span key={item}><Link href={new URLPath().updateFilePath(history.location.hash, item)}>{name}</Link></span>);
+            return (<span key={item}><Link href={new URLPath().updateFilePath(history.location.search, item)}>{name}</Link></span>);
           }
 
-          return (<span key={item}><Link href={new URLPath().updateFilePath(history.location.hash, item)}>{name}</Link> <span> »</span> </span>);
+          return (<span key={item}><Link href={new URLPath().updateFilePath(history.location.search, item)}>{name}</Link> <span> »</span> </span>);
         })
       }
       {props.subPath.split("/")[props.subPath.split("/").length - 1]}

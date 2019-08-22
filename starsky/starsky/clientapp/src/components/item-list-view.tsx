@@ -30,7 +30,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
         {
           items.map((item, index) => (
             <div className="box box--view" key={index}>
-              <Link title={item.fileName} href={new URLPath().updateFilePath(history.location.hash, item.filePath)}
+              <Link title={item.fileName} href={new URLPath().updateFilePath(history.location.search, item.filePath)}
                 className={"box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
 
                 <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '?issingleitem=true'}></ListImage>

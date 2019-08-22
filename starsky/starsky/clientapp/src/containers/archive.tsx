@@ -22,7 +22,7 @@ interface IArchiveProps {
 function Archive(archive: IArchiveProps) {
 
   const history = useContext(HistoryContext);
-  const sidebar = new URLPath().StringToIUrl(history.location.hash).sidebar;
+  const sidebar = new URLPath().StringToIUrl(history.location.search).sidebar;
 
   if (!archive.colorClassUsage) return (<>no colorClassUsage</>)
 

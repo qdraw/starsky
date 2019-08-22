@@ -13,17 +13,17 @@ export interface IMenuProps {
 const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
 
   function toggle() {
-    var urlObject = new URLPath().StringToIUrl(history.location.hash)
+    var urlObject = new URLPath().StringToIUrl(history.location.search)
     urlObject.details = !isEditMode;
     history.replace(new URLPath().IUrlToString(urlObject))
   }
 
   // Get Close url
   const history = useContext(HistoryContext);
-  const parentUrl = props.parent ? new URLPath().updateFilePath(history.location.hash, props.parent) : "/";
+  const parentUrl = props.parent ? new URLPath().updateFilePath(history.location.search, props.parent) : "/";
 
   // Details-mode
-  const [isEditMode, setEditMode] = React.useState(new URLPath().StringToIUrl(history.location.hash).details);
+  const [isEditMode, setEditMode] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
 
   return (<>
 

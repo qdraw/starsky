@@ -79,12 +79,12 @@ export class URLPath {
 
 
   public RemovePrefixUrl(input: string): string {
-    let output = input.replace(/^#(\/)?/ig, "");
+    let output = input.replace(/^#?(\/)?/ig, "");
     return output.replace(/\+/ig, "%2B");
   }
 
   private addPrefixUrl(input: string): string {
-    return "#?" + input;
+    return "?" + input;
   }
 
   public getParent(locationHash: string): string {

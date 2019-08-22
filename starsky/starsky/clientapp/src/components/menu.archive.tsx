@@ -15,11 +15,11 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
   }
 
   const history = useContext(HistoryContext);
-  const [sidebar, setSidebar] = React.useState(new URLPath().StringToIUrl(history.location.hash).sidebar);
+  const [sidebar, setSidebar] = React.useState(new URLPath().StringToIUrl(history.location.search).sidebar);
 
 
   function sidebarToggle() {
-    var urlObject = new URLPath().StringToIUrl(history.location.hash);
+    var urlObject = new URLPath().StringToIUrl(history.location.search);
     if (!urlObject.sidebar) {
       urlObject.sidebar = [];
     }

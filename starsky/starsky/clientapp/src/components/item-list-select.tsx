@@ -23,14 +23,14 @@ const ItemListSelect: React.FunctionComponent<ItemListProps> = memo((props) => {
   const [sidebar, setSidebar] = React.useState(getArraySidebar());
 
   function getArraySidebar(): Array<string> {
-    var sidebar = new URLPath().StringToIUrl(history.location.hash).sidebar;
+    var sidebar = new URLPath().StringToIUrl(history.location.search).sidebar;
     if (!sidebar) return [];
     return sidebar;
   }
 
   function toggleSelection(fileName: string): void {
 
-    var urlObject = new URLPath().StringToIUrl(history.location.hash);
+    var urlObject = new URLPath().StringToIUrl(history.location.search);
     if (!urlObject.sidebar) {
       urlObject.sidebar = [];
     }

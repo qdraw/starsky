@@ -14,12 +14,12 @@ const useFileList = (): any | null => {
   const [pageType, setPageType] = useState(PageType.Loading);
   const [parent, setParent] = useState('/');
 
-  var location = new Query().UrlQueryServerApi(history.location.hash);
+  var location = new Query().UrlQueryServerApi(history.location.search);
   var responseObject = useFetch(location, 'get');
 
   useEffect(() => {
     if (!responseObject) return;
-    setParent(new URLPath().getParent(history.location.hash));
+    setParent(new URLPath().getParent(history.location.search));
     var pageType = new CastToInterface().getPageType(responseObject);
     setPageType(pageType);
     switch (pageType) {

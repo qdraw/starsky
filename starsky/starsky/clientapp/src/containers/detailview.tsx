@@ -21,7 +21,7 @@ const DetailView: React.FunctionComponent<IDetailView> = memo((props) => {
 
   // const [isEditMode, setEditMode] = React.useState(false);
   let isEditMode = false;
-  if (new URLPath().StringToIUrl(history.location.hash).details) {
+  if (new URLPath().StringToIUrl(history.location.search).details) {
     // setEditMode(true);
     isEditMode = true
   }
@@ -33,17 +33,17 @@ const DetailView: React.FunctionComponent<IDetailView> = memo((props) => {
   }
 
   function next() {
-    var next = new URLPath().updateFilePath(history.location.hash, relativeObjects.nextFilePath);
+    var next = new URLPath().updateFilePath(history.location.search, relativeObjects.nextFilePath);
     go(next);
   }
 
   function prev() {
-    var prev = new URLPath().updateFilePath(history.location.hash, relativeObjects.prevFilePath);
+    var prev = new URLPath().updateFilePath(history.location.search, relativeObjects.prevFilePath);
     go(prev);
   }
 
   useKeyboardEvent(/Escape/, (event: KeyboardEvent) => {
-    var parentDirectory = new URLPath().updateFilePath(history.location.hash, fileIndexItem.parentDirectory);
+    var parentDirectory = new URLPath().updateFilePath(history.location.search, fileIndexItem.parentDirectory);
     go(parentDirectory);
   })
 
