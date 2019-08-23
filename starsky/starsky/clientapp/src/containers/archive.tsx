@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
+import ArchiveSidebar from '../components/archive-sidebar';
 import Breadcrumb from '../components/breadcrumbs';
 import ColorClassFilter from '../components/color-class-filter';
-import DetailViewSidebar from '../components/detail-view-sidebar';
 import ItemListView from '../components/item-list-view';
 import RelativeLink from '../components/relative-link';
 import useLocation from '../hooks/use-location';
@@ -34,7 +34,7 @@ function Archive(archive: IArchiveProps) {
 
   return (
     <div className={!sidebar ? "archive" : "archive collapsed"}>
-      {sidebar ? <DetailViewSidebar fileIndexItem={archive.fileIndexItems[0]} filePath={"fileIndexItem.filePath"}></DetailViewSidebar> : ""}
+      {sidebar ? <ArchiveSidebar folderPath={archive.subPath}></ArchiveSidebar> : ""}
 
       <div className="content">
         <Breadcrumb breadcrumb={archive.breadcrumb} subPath={archive.subPath}></Breadcrumb>

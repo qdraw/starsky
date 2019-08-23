@@ -14,17 +14,11 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
 
   var history = useLocation();
 
-  const [sidebar, setSidebar] = React.useState(new URLPath().StringToIUrl(history.location.search).sidebar);
-  useEffect(() => {
-    setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar)
-  }, [history.location.search]);
-
-  // Change select to has no undefined
+  // Check if select exist or lenght 0 or more
   const [select, setSelect] = React.useState(new URLPath().StringToIUrl(history.location.search).select);
   useEffect(() => {
-    if (!select) {
-      setSelect([]);
-    }
+    var inSelect = new URLPath().StringToIUrl(history.location.search).select;
+    setSelect(inSelect);
   }, [history.location.search]);
 
   function toggleSelection(fileName: string): void {

@@ -63,7 +63,7 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
           </button> : null}
 
           {select && select.length === 0 ? <a onClick={() => { selectToggle() }}
-            className="item item--first item--close">Geen geselecteerd</a> : null}
+            className="item item--first item--close">Niks geselecteerd</a> : null}
           {select && select.length >= 1 ? <a onClick={() => { selectToggle() }}
             className="item item--first item--close">{select.length} geselecteerd</a> : null}
 
