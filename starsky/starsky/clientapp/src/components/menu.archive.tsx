@@ -15,7 +15,11 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
   }
 
   var history = useLocation();
+
   const [sidebar, setSidebar] = React.useState(new URLPath().StringToIUrl(history.location.search).sidebar);
+  useEffect(() => {
+    setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar)
+  }, [history.location.search]);
 
   const [select, setSelect] = React.useState(new URLPath().StringToIUrl(history.location.search).select);
   useEffect(() => {
@@ -25,8 +29,16 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
 
   function selectToggle() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
-    urlObject.sidebar = !urlObject.sidebar;
-    setSidebar(urlObject.sidebar)
+    if (!urlObject.select) {
+      urlObject.select = [];
+    }
+    else {
+      delete urlObject.sidebar;
+      delete urlObject.select;
+    }
+    setSelect(urlObject.select);
+    console.log(select);
+
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
@@ -40,9 +52,9 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
 
   return (
     <>
-      <header className={sidebar ? "header header--main header--edit" : "header header--main"}>
+      <header className={sidebar ? "header header--main header--edit" : select ? "header header--main header--bluegray800" : "header header--main "}>
         <div className="wrapper">
-          {!sidebar ? <button className="hamburger__container" onClick={() => { toggleHamburger(); }}>
+          {!select ? <button className="hamburger__container" onClick={() => { toggleHamburger(); }}>
             <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
               <i></i>
               <i></i>
@@ -50,16 +62,16 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
             </div>
           </button> : null}
 
-          {sidebar && !select ? <a onClick={() => { selectToggle() }}
+          {select && select.length === 0 ? <a onClick={() => { selectToggle() }}
             className="item item--first item--close">Geen geselecteerd</a> : null}
-          {sidebar && select ? <a onClick={() => { selectToggle() }}
+          {select && select.length >= 1 ? <a onClick={() => { selectToggle() }}
             className="item item--first item--close">{select.length} geselecteerd</a> : null}
 
-          {!sidebar ? <div className="item item--select" onClick={() => { selectToggle() }}>
+          {!select ? <div className="item item--select" onClick={() => { selectToggle() }}>
             Selecteer
-        </div> : null}
+            </div> : null}
 
-          {sidebar ? <div className="item item--labels" onClick={() => toggleLabels()}>Labels</div> : null}
+          {select ? <div className="item item--labels" onClick={() => toggleLabels()}>Labels</div> : null}
 
           <MoreMenu>
             <li className="menu-option">Werkt nog niet!</li>
@@ -77,7 +89,7 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
         </div>
       </header>
 
-      {sidebar ? <div className="header header--sidebar">
+      {select ? <div className="header header--sidebar">
         <div className="item item--close" onClick={() => { toggleLabels(); }}>Sluiten</div>
       </div> : ""}
 

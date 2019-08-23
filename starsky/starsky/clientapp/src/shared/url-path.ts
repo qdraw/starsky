@@ -115,7 +115,6 @@ export class URLPath {
     return getFilePath;
   }
 
-
   /**
    * Keep colorClass in URL
    */

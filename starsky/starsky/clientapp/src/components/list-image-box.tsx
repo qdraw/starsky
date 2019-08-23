@@ -48,7 +48,7 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
 
 
   // selected state
-  if (sidebar === true && select) {
+  if (select) {
     return (
       <div className="box box--select">
         <div onClick={() => toggleSelection(item.fileName)}
