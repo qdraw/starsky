@@ -1,7 +1,7 @@
-import React, { memo, useContext } from 'react';
+import React, { memo, useEffect } from 'react';
 import DetailViewSidebar from '../components/detail-view-sidebar';
-import HistoryContext from '../contexts/history-contexts';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
+import useLocation from '../hooks/use-location';
 import { IDetailView } from '../interfaces/IDetailView';
 import { Keyboard } from '../shared/keyboard';
 import { URLPath } from '../shared/url-path';
@@ -14,22 +14,33 @@ interface IDetailViewProps {
 const DetailView: React.FunctionComponent<IDetailView> = memo((props) => {
 
   if (!props.fileIndexItem) return (<>no fileIndexItem in detailView</>);
-  const history = useContext(HistoryContext);
+  var history = useLocation();
 
   var fileIndexItem = props.fileIndexItem;
   var relativeObjects = props.relativeObjects;
 
-  // const [isEditMode, setEditMode] = React.useState(false);
-  let isEditMode = false;
-  if (new URLPath().StringToIUrl(history.location.search).details) {
-    // setEditMode(true);
-    isEditMode = true
-  }
+  // Edit/Details screen
+  const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
+  useEffect(() => {
+    var details = new URLPath().StringToIUrl(history.location.search).details;
+    if (details) {
+      setDetails(details);
+    }
+    else {
+      setDetails(false);
+    }
+  }, [history.location.search]);
 
+
+  // Reset Error after changing page
   const [isError, setError] = React.useState(false);
+  useEffect(() => {
+    setError(false);
+  }, [props]);
+
 
   function go(path: string) {
-    history.push(path);
+    history.navigate(path);
   }
 
   function next() {
@@ -59,11 +70,11 @@ const DetailView: React.FunctionComponent<IDetailView> = memo((props) => {
     next();
   })
 
-  return (<div className={isEditMode ? "detailview detailview--edit" : "detailview"}>
+  return (<div className={isDetails ? "detailview detailview--edit" : "detailview"}>
 
     {/* {{isLoading ? <Preloader parent={fileIndexItem.parentDirectory} isDetailMenu={true} isOverlay={true}></Preloader> : ""}} */}
 
-    {isEditMode ? <DetailViewSidebar fileIndexItem={fileIndexItem} filePath={fileIndexItem.filePath}></DetailViewSidebar> : ""}
+    {isDetails ? <DetailViewSidebar fileIndexItem={fileIndexItem} filePath={fileIndexItem.filePath}></DetailViewSidebar> : ""}
 
     <div className={isError ? "main main--error" : "main main--" + fileIndexItem.imageFormat}>
 

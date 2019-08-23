@@ -39,11 +39,6 @@ export class URLPath {
           break;
       }
     }
-
-    if (!urlObject.select) {
-      urlObject.select = []
-    }
-
     return urlObject;
   }
 

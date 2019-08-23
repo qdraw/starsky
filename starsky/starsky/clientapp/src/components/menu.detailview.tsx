@@ -1,7 +1,8 @@
 
+import { Link } from '@reach/router';
 import React, { memo } from 'react';
+import useLocation from '../hooks/use-location';
 import { URLPath } from '../shared/url-path';
-import Link from './Link';
 import MoreMenu from './more-menu';
 
 export interface IMenuProps {
@@ -11,24 +12,25 @@ export interface IMenuProps {
 
 const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
 
+  var history = useLocation();
+  const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
+
   function toggle() {
-    var urlObject = new URLPath().StringToIUrl("props.searchQuery")
-    urlObject.details = !isEditMode;
-    throw Error("toggle");
-    // props.searchQuery.replace(new URLPath().IUrlToString(urlObject))
+    var urlObject = new URLPath().StringToIUrl(history.location.search);
+    urlObject.details = !urlObject.details;
+
+    setDetails(urlObject.details);
+    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
   }
 
   // Get Close url
   const parentUrl = props.parent ? new URLPath().updateFilePath("props.searchQuery", props.parent) : "/";
 
-  // Details-mode
-  const [isEditMode, setEditMode] = React.useState(new URLPath().StringToIUrl("props.searchQuery").details);
-
   return (<>
 
-    <header className={isEditMode ? "header header--main header--edit" : "header header--main"}>
+    <header className={isDetails ? "header header--main header--edit" : "header header--main"}>
       <div className="wrapper">
-        <Link className="item item--first item--close" href={parentUrl}>Sluiten</Link>
+        <Link className="item item--first item--close" to={parentUrl}>Sluiten</Link>
         <div className="item item--labels" onClick={() => { toggle() }}>Labels</div>
         <MoreMenu>
           <li className="menu-option">Werkt nog niet!</li>
@@ -43,7 +45,7 @@ const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
 
 
 
-    {isEditMode ? <div className="header header--sidebar">
+    {isDetails ? <div className="header header--sidebar">
       <div className="item item--close" onClick={() => { toggle(); }}>Sluiten</div>
     </div> : ""}
 
