@@ -1,0 +1,65 @@
+
+.archive.collapsed {
+  width: calc(100% - 300px);
+}
+
+
+.archive .sidebar {
+  width: 320px;
+  height: 100%;
+  overflow-y: auto;
+  right:0px;
+  position: fixed;
+  background-color: #fff;
+}
+
+
+.archive .box {
+  display: block;
+  margin-top: 10px;
+}
+
+.archive .box:first-child {
+  margin-top:0px;
+}
+
+.archive .box p,
+.archive .box b{
+  line-height: 1.3;
+  font-size: 14px
+}
+.archive .box b {
+  font-weight: 300;
+}
+
+.archive .box .icon {
+  float: left;
+  height: 35px;
+  width: 24px;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-right: 5px;
+}
+.archive .box .icon.icon--right {
+  float: right;
+}
+
+.archive .box .icon.icon--edit {
+  background-image: url('../images/s-edit.svg')
+}
+
+.archive .box .icon.icon--date {
+  background-image: url('../images/baseline-date_range-24px.svg')
+}
+
+.archive .box .icon.icon--last-edited {
+  background-image: url('../images/baseline-fingerprint-24px.svg')
+}
+
+.archive .box .icon.icon--shutter-speed {
+  background-image: url('../images/baseline-shutter_speed-24px.svg');
+}
+
+.archive .box .icon.icon--location {
+  background-image: url('../images/baseline-location_on-24px.svg');
+}
