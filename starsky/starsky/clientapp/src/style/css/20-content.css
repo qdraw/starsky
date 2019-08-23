@@ -39,8 +39,6 @@
 
 .content .warning-box,
 .content > form > .content--error-true {
-/* .content > form > .content--submitted-true--error-true,
-.content > form > .content--submitted-true--error-false { */
   background-color: #283593;
   color: white;
   padding: 5px;

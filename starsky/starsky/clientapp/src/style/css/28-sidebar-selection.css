@@ -2,6 +2,18 @@
   max-height: 150px;
   overflow-y: auto;
 }
+
+.sidebar-selection li.warning-box {
+  background-color: #283593;
+  color: white;
+  padding-left:10px;
+  line-height: 30px;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+
 .sidebar-selection li {
     white-space: nowrap;
     overflow: hidden;

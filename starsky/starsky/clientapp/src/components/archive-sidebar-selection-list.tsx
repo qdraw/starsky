@@ -22,7 +22,7 @@ const ArchiveSidebarSelectionList: React.FunctionComponent = memo((props) => {
 
   return (<div className="sidebar-selection">
     <ul>
-      {!select || select.length === 0 ? <li className="warning-box">Geen selectie</li> : ""}
+      {!select || select.length === 0 ? <li className="warning-box">Niks geselecteerd</li> : ""}
 
       {
         select ? select.map((item, index) => (
