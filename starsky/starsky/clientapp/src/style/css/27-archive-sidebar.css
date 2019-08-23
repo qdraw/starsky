@@ -24,10 +24,10 @@
   display: block;
   margin-top: 10px;
 }
-
+/* 
 .archive .box:first-child {
   margin-top:0px;
-}
+} */
 
 .archive .box p,
 .archive .box b{
