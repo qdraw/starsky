@@ -230,6 +230,7 @@
 .header > .wrapper > .item.item--labels,
 .header > .wrapper > .item.item--more,
 .header > .wrapper > .item.item--select,
+.header .item.item--continue,
 .header .item.item--close {
   color: #fff;
   text-decoration: none;
@@ -238,6 +239,10 @@
 
 .header .item.item--close:before {
     mask-image: url("../images/s-cross.svg");
+}
+
+.header .item.item--continue:before {
+    mask-image: url("../images/baseline-done-24px.svg");
 }
 
 .header > .wrapper > .item.item--detective:before {
@@ -304,6 +309,7 @@
   line-height: 50px;
 }
 
+.header--sidebar .item.item.item--continue,
 .header--sidebar .item.item--close {
   color: #000;
   margin-left: 5px;

@@ -3,10 +3,16 @@
   width: calc(100% - 300px);
 }
 
+@media screen and (max-width: 600px) {
+  .archive.collapsed .content{
+    display: none;
+  }
+}
+
 
 .archive .sidebar {
   width: 320px;
-  height: 100%;
+  height: calc(100% - 50px);
   overflow-y: auto;
   right:0px;
   position: fixed;
