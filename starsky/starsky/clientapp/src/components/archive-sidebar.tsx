@@ -1,4 +1,5 @@
 import React, { memo } from "react";
+import ArchiveSidebarSelectionList from './archive-sidebar-selection-list';
 
 interface IDetailViewSidebarProps {
   folderPath: string,
@@ -11,9 +12,7 @@ const ArchiveSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((p
     <div className="content--header">
       Selectie WIP
     </div>
-    <div className="content--text">
-
-    </div>
+    <ArchiveSidebarSelectionList></ArchiveSidebarSelectionList>
 
     <div className="content--header">
       Labels wijzigingen

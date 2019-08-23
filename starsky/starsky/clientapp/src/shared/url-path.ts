@@ -124,4 +124,21 @@ export class URLPath {
     return new URLPath().IUrlToString(url);
   }
 
+  public toggleSelection(fileName: string, locationHash: string): IUrl {
+
+    var urlObject = new URLPath().StringToIUrl(locationHash);
+    if (!urlObject.select) {
+      urlObject.select = [];
+    }
+
+    if (!urlObject.select || urlObject.select.indexOf(fileName) === -1) {
+      urlObject.select.push(fileName)
+    }
+    else {
+      var index = urlObject.select.indexOf(fileName);
+      if (index !== -1) urlObject.select.splice(index, 1);
+    }
+    return urlObject;
+  }
+
 }

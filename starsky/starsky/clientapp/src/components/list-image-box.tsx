@@ -22,24 +22,10 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
   }, [history.location.search]);
 
   function toggleSelection(fileName: string): void {
-
-    var urlObject = new URLPath().StringToIUrl(history.location.search);
-    if (!urlObject.select) {
-      urlObject.select = [];
-    }
-
-    if (!urlObject.select || urlObject.select.indexOf(fileName) === -1) {
-      urlObject.select.push(fileName)
-    }
-    else {
-      var index = urlObject.select.indexOf(fileName);
-      if (index !== -1) urlObject.select.splice(index, 1);
-    }
+    var urlObject = new URLPath().toggleSelection(fileName, history.location.search);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
-
     setSelect(urlObject.select);
   }
-
 
   // selected state
   if (select) {

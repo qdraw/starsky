@@ -1,0 +1,42 @@
+.sidebar-selection ul {
+  max-height: 150px;
+  overflow-y: auto;
+}
+.sidebar-selection li {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 30px;
+    width: 100%;
+}
+.sidebar-selection li:nth-child(2n) {
+  background-color: red;
+}
+
+.sidebar-selection li .close {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  opacity: 0.5;
+  position: relative;
+  margin-right:8px;
+
+}
+
+.sidebar-selection li .close::before, .sidebar-selection li .close::after {
+  position: absolute;
+  margin-top: 4px;
+  left: 13px;
+  content: ' ';
+  height: 28px;
+  width: 2px;
+  background-color: #333;
+}
+
+.sidebar-selection li .close:before {
+    transform: rotate(45deg);
+}
+.sidebar-selection li .close:after {
+    transform: rotate(-45deg);
+}

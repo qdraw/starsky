@@ -1,5 +1,5 @@
+import { Link } from '@reach/router';
 import React from 'react';
-import Link from '../components/Link';
 
 
 function ErrorPage() {
@@ -7,7 +7,7 @@ function ErrorPage() {
     <div>
       <h1>Error</h1>
       <p>
-        <Link href="/">To home page</Link>
+        <Link to="/">To home page</Link>
       </p>
     </div>
   );
