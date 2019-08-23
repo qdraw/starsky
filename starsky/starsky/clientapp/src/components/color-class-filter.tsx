@@ -1,8 +1,8 @@
-import React, { memo, useContext } from 'react';
-import HistoryContext from '../contexts/history-contexts';
+import { Link } from '@reach/router';
+import React, { memo } from 'react';
+import useLocation from '../hooks/use-location';
 import { newIUrl } from '../interfaces/IUrl';
 import { URLPath } from '../shared/url-path';
-import Link from './Link';
 
 //         <ColorClassFilter itemsCount={this.props.collectionsCount} subPath={this.props.subPath} colorClassFilterList={this.props.colorClassFilterList} colorClassUsage={this.props.colorClassUsage}></ColorClassFilter>
 export interface IColorClassProp {
@@ -14,7 +14,7 @@ export interface IColorClassProp {
 
 const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) => {
   // used for reading current location
-  const history = useContext(HistoryContext);
+  var history = useLocation();
 
   var colorContent: string[] = [
     "Geen",
@@ -37,7 +37,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
   }
 
   function updateColorClass(item: number): string {
-    var urlObject = new URLPath().StringToIUrl("history.location.search");
+    var urlObject = new URLPath().StringToIUrl(history.location.search);
     if (!urlObject.colorClass) {
       urlObject.colorClass = [];
     }
@@ -52,7 +52,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
     return new URLPath().IUrlToString(urlObject);
   }
 
-  let resetButton = <Link href={cleanFilePath()} className="btn colorclass colorclass--reset">{colorContent[9]}</Link>;
+  let resetButton = <Link to={cleanFilePath()} className="btn colorclass colorclass--reset">{colorContent[9]}</Link>;
 
   if (props.colorClassUsage.length === 1 && props.colorClassFilterList.length >= 1) return (<div className="colorclass colorclass--filter"> {resetButton}</div>);
   if (props.itemsCount === 0 || props.colorClassUsage.length === 1) return (<></>);

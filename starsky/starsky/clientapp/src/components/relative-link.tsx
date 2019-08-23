@@ -1,5 +1,5 @@
-import React, { memo, useContext } from "react";
-import HistoryContext from '../contexts/history-contexts';
+import React, { memo } from "react";
+import useLocation from '../hooks/use-location';
 import { IRelativeObjects } from "../interfaces/IDetailView";
 import { URLPath } from '../shared/url-path';
 
@@ -10,13 +10,13 @@ export interface IRelativeLink {
 const RelativeLink: React.FunctionComponent<IRelativeLink> = memo((props) => {
 
   // used for reading current location
-  const history = useContext(HistoryContext);
+  var history = useLocation();
 
   let { relativeObjects } = props;
   if (!relativeObjects) return (<div className="relativelink" />);
 
-  var prevUrl = new URLPath().updateFilePath("history.location.search", relativeObjects.prevFilePath);
-  var nextUrl = new URLPath().updateFilePath("history.location.search", relativeObjects.nextFilePath);
+  var prevUrl = new URLPath().updateFilePath(history.location.search, relativeObjects.prevFilePath);
+  var nextUrl = new URLPath().updateFilePath(history.location.search, relativeObjects.nextFilePath);
   let prev = relativeObjects.prevFilePath === null ? "" : <a className="prev" href={prevUrl}>Vorige</a>;
   let next = relativeObjects.nextFilePath === null ? "" : <a className="next" href={nextUrl}>Volgende</a>;
 

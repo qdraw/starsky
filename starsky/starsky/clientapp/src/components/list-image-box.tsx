@@ -75,7 +75,7 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
   // default state
   return (
     <div className="box box--view">
-      <Link title={item.fileName} to={new URLPath().updateFilePath("history.location.search", item.filePath)}
+      <Link title={item.fileName} to={new URLPath().updateFilePath(history.location.search, item.filePath)}
         className={"box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
 
         <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '?issingleitem=true'}></ListImage>
