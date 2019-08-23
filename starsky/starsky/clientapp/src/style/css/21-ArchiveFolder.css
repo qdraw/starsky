@@ -28,7 +28,8 @@
   transition: background ease-in-out .5s
 }
 
-.folder--select > .box > .isDirectory-false.box-content:before {
+/* select */
+.folder > .box--select > .isDirectory-false.box-content:before {
  position: absolute;
  margin-left:10px;
  margin-top:10px;
@@ -39,7 +40,9 @@
  border: #607D8B solid 5px;
  content: "";
 }
-.folder--select > .box > .isDirectory-false.box-content--selected:before {
+
+/* select */
+.folder > .box--select > .isDirectory-false.box-content--selected:before {
   border: #fff solid 0px;
   background-color: #283593;
   width: 45px;

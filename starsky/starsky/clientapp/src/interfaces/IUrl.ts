@@ -1,7 +1,8 @@
 export interface IUrl {
   f?: string;
   details?: boolean,
-  sidebar?: Array<string> | null;
+  sidebar?: boolean,
+  select?: Array<string> | null;
   colorClass?: Array<number>
 }
 

@@ -1,14 +1,11 @@
 import React from 'react';
 import * as ReactDOM from "react-dom";
-import Preloader from './components/preloader';
-import Router from './routes/router';
-import routes from './routes/routes';
+import RouterApp from './routes/router';
 import * as serviceWorker from "./service-worker";
-import history from './shared/history';
 import './style/css/00-index.css';
 
 ReactDOM.render(
-  <Router history={history} routes={routes} fallback={<Preloader isOverlay={true} isDetailMenu={false}></Preloader>} />,
+  <RouterApp />,
   document.getElementById('root'),
 );
 

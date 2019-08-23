@@ -18,17 +18,32 @@ export class URLPath {
             urlObject.details = true
           }
           break;
+        case 'sidebar'.toLowerCase():
+          if (key[1] === "true") {
+            urlObject.sidebar = true
+          }
+          else {
+            urlObject.sidebar = false
+          }
+          break;
         case 'f':
           urlObject.f = key[1];
           break;
-        case 'sidebar'.toLowerCase():
-          if (key[1] === 'null') continue;
-          urlObject.sidebar = this.getStringArrayFromCommaSeparatedString(key[1]);
+        case 'select'.toLowerCase():
+          if (key[1] === 'null') {
+            continue;
+          };
+          urlObject.select = this.getStringArrayFromCommaSeparatedString(key[1]);
           break;
         default:
           break;
       }
     }
+
+    if (!urlObject.select) {
+      urlObject.select = []
+    }
+
     return urlObject;
   }
 

@@ -1,6 +1,6 @@
 
-import React, { memo, useContext } from 'react';
-import HistoryContext from '../contexts/history-contexts';
+import React, { memo, useEffect } from 'react';
+import useLocation from '../hooks/use-location';
 import { IMenuProps } from '../interfaces/IMenuProps';
 import { URLPath } from '../shared/url-path';
 import { MenuSearchBar } from './menu.searchbar';
@@ -14,20 +14,20 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
     setHamburgerMenu(!hamburgerMenu);
   }
 
-  const history = useContext(HistoryContext);
+  var history = useLocation();
   const [sidebar, setSidebar] = React.useState(new URLPath().StringToIUrl(history.location.search).sidebar);
 
+  const [select, setSelect] = React.useState(new URLPath().StringToIUrl(history.location.search).select);
+  useEffect(() => {
+    setSelect(new URLPath().StringToIUrl(history.location.search).select)
+  }, [history.location.search]);
 
-  function sidebarToggle() {
+
+  function selectToggle() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
-    if (!urlObject.sidebar) {
-      urlObject.sidebar = [];
-    }
-    else {
-      urlObject.sidebar = null;
-    }
+    urlObject.sidebar = !urlObject.sidebar;
     setSidebar(urlObject.sidebar)
-    history.replace(new URLPath().IUrlToString(urlObject))
+    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
   return (
@@ -41,9 +41,9 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
           </div>
         </button> : null}
 
-        {sidebar ? <a onClick={() => { sidebarToggle() }} className="item item--first item--close">{sidebar.length} geselecteerd</a> : null}
+        {sidebar && select ? <a onClick={() => { selectToggle() }} className="item item--first item--close">{select.length} geselecteerd</a> : null}
 
-        {!sidebar ? <div className="item item--select" onClick={() => { sidebarToggle() }}>
+        {!sidebar ? <div className="item item--select" onClick={() => { selectToggle() }}>
           Selecteer
         </div> : null}
 

@@ -1,9 +1,6 @@
-import React, { memo, useContext } from 'react';
-import HistoryContext from '../contexts/history-contexts';
+import React, { memo } from 'react';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
-import { URLPath } from '../shared/url-path';
-import Link from './Link';
-import ListImage from './list-image';
+import ListImageBox from './list-image-box';
 
 interface ItemListProps {
   fileIndexItems: Array<IFileIndexItem>,
@@ -18,9 +15,6 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
 
   if (!items) return (<div className="folder">no content</div>);
 
-  // used for reading current location
-  const history = useContext(HistoryContext);
-
   return (
     <>
       <div className="folder">
@@ -29,23 +23,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
 
         {
           items.map((item, index) => (
-            <div className="box box--view" key={index}>
-              <Link title={item.fileName} href={new URLPath().updateFilePath(history.location.search, item.filePath)}
-                className={"box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
-
-                <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '?issingleitem=true'}></ListImage>
-
-                <div className="caption">
-                  <div className="name">
-                    {item.fileName}
-                  </div>
-                  <div className="tags">
-                    {item.tags}
-                  </div>
-                </div>
-              </Link>
-
-            </div>
+            <ListImageBox item={item} key={index}></ListImageBox>
           ))
         }
       </div>

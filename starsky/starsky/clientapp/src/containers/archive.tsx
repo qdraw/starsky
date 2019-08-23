@@ -1,10 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Breadcrumb from '../components/breadcrumbs';
 import ColorClassFilter from '../components/color-class-filter';
-import ItemListSelect from '../components/item-list-select';
 import ItemListView from '../components/item-list-view';
 import RelativeLink from '../components/relative-link';
-import HistoryContext from '../contexts/history-contexts';
 import { IRelativeObjects } from '../interfaces/IDetailView';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { URLPath } from '../shared/url-path';
@@ -17,12 +15,12 @@ interface IArchiveProps {
   colorClassFilterList: Array<number>;
   colorClassUsage: Array<number>;
   collectionsCount: number;
+  searchQuery: string;
 }
 
 function Archive(archive: IArchiveProps) {
 
-  const history = useContext(HistoryContext);
-  const sidebar = new URLPath().StringToIUrl(history.location.search).sidebar;
+  const sidebar = new URLPath().StringToIUrl(archive.subPath).sidebar;
 
   if (!archive.colorClassUsage) return (<>no colorClassUsage</>)
 
@@ -37,9 +35,7 @@ function Archive(archive: IArchiveProps) {
         <ColorClassFilter itemsCount={archive.collectionsCount} subPath={archive.subPath}
           colorClassFilterList={archive.colorClassFilterList} colorClassUsage={archive.colorClassUsage}></ColorClassFilter>
 
-        {!sidebar ? <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListView> : null}
-        {sidebar ? <ItemListSelect {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListSelect> : null}
-
+        <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListView>
       </div>
 
     </div>

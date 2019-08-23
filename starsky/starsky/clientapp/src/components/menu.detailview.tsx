@@ -1,6 +1,5 @@
 
-import React, { memo, useContext } from 'react';
-import HistoryContext from '../contexts/history-contexts';
+import React, { memo } from 'react';
 import { URLPath } from '../shared/url-path';
 import Link from './Link';
 import MoreMenu from './more-menu';
@@ -13,17 +12,17 @@ export interface IMenuProps {
 const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
 
   function toggle() {
-    var urlObject = new URLPath().StringToIUrl(history.location.search)
+    var urlObject = new URLPath().StringToIUrl("props.searchQuery")
     urlObject.details = !isEditMode;
-    history.replace(new URLPath().IUrlToString(urlObject))
+    throw Error("toggle");
+    // props.searchQuery.replace(new URLPath().IUrlToString(urlObject))
   }
 
   // Get Close url
-  const history = useContext(HistoryContext);
-  const parentUrl = props.parent ? new URLPath().updateFilePath(history.location.search, props.parent) : "/";
+  const parentUrl = props.parent ? new URLPath().updateFilePath("props.searchQuery", props.parent) : "/";
 
   // Details-mode
-  const [isEditMode, setEditMode] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
+  const [isEditMode, setEditMode] = React.useState(new URLPath().StringToIUrl("props.searchQuery").details);
 
   return (<>
 
