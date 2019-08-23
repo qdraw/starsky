@@ -22,7 +22,7 @@
     width: 100%;
 }
 .sidebar-selection li:nth-child(2n) {
-  background-color: red;
+  background-color: #ECEFF1;
 }
 
 .sidebar-selection li .close {
