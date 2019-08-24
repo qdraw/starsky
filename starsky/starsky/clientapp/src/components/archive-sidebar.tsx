@@ -1,6 +1,7 @@
 import React, { memo, useEffect } from "react";
 import useLocation from '../hooks/use-location';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import FetchPost from '../shared/fetchpost';
 import { URLPath } from '../shared/url-path';
 import ArchiveSidebarSelectionList from './archive-sidebar-selection-list';
 
@@ -9,19 +10,11 @@ interface IDetailViewSidebarProps {
   colorClassUsage: Array<number>,
 }
 
-// enum ISidebarUpdateTypes {
-//   tags,
-//   description,
-//   title,
-// }
-
 interface ISidebarUpdate {
   tags: string,
   description: string,
   title: string,
 }
-
-
 
 const ArchiveSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((archive) => {
 
@@ -61,14 +54,25 @@ const ArchiveSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((a
   }
 
   function pushUpdate() {
-    var params = new URLSearchParams();
+    var bodyParams = new URLSearchParams();
     for (let key of Object.entries(update)) {
       if (key[1] && key[1].length >= 1) {
-        params.set(key[0], key[1]);
+        bodyParams.set(key[0], key[1]);
       }
     }
 
-    console.log(params.toString());
+    if (bodyParams.toString().length === 0) return;
+
+    var selectParams = new URLSearchParams();
+    for (let key of Object.entries(select)) {
+      if (key[1] && key[1].length >= 1) {
+        selectParams.set(key[0], key[1]);
+      }
+    }
+    console.log(selectParams.toString());
+
+    FetchPost('post', bodyParams.toString());
+
 
   }
 
