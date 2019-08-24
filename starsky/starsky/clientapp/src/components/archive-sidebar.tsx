@@ -6,6 +6,7 @@ import ArchiveSidebarSelectionList from './archive-sidebar-selection-list';
 interface IDetailViewSidebarProps {
   fileIndexItems: Array<IFileIndexItem>,
   colorClassUsage: Array<number>,
+  subPath: string;
 }
 
 interface ISidebarUpdate {

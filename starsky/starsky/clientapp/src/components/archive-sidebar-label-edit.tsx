@@ -1,21 +1,21 @@
 import React, { memo, useEffect } from "react";
 import useLocation from '../hooks/use-location';
-import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetchpost';
 import { URLPath } from '../shared/url-path';
-
-interface IDetailViewSidebarProps {
-  fileIndexItems: Array<IFileIndexItem>,
-  colorClassUsage: Array<number>,
-}
 
 interface ISidebarUpdate {
   tags: string,
   description: string,
-  title: string
+  title: string,
+  append: boolean,
+  collections: boolean,
 }
 
-const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarProps> = memo((archive) => {
+interface IDetailViewSidebarLabelEditProps {
+  subPath: string;
+}
+
+const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEditProps> = memo((archive) => {
 
   var history = useLocation();
 
@@ -26,7 +26,10 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarProps> 
   }, [history.location.search]);
 
 
-  const [update, setUpdate] = React.useState({} as ISidebarUpdate)
+  const [update, setUpdate] = React.useState({
+    append: true,
+    collections: true,
+  } as ISidebarUpdate)
 
   const [isEnabled, setEnabled] = React.useState(false)
 
@@ -53,35 +56,44 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarProps> 
     }
 
     setUpdate(update);
-    setEnabled(updateToString(update).length !== 0);
+    setEnabled(updateToUrlSearchParams(update).toString().length !== 0);
   }
 
-  function updateToString(toUpdate: ISidebarUpdate): string {
+  function updateToUrlSearchParams(toUpdate: ISidebarUpdate): URLSearchParams {
     var bodyParams = new URLSearchParams();
     for (let key of Object.entries(toUpdate)) {
       if (key[1] && key[1].length >= 1) {
         bodyParams.set(key[0], key[1]);
       }
+      if (key[1] === true || key[1] === false) {
+        bodyParams.set(key[0], key[1]);
+      }
     }
     console.log(bodyParams.toString().length);
 
-    return bodyParams.toString();
+    return bodyParams;
   }
 
   function pushUpdate() {
 
-    var bodyParams = updateToString(update);
-    if (bodyParams.length === 0) return;
+    var bodyParams = updateToUrlSearchParams(update);
+    if (bodyParams.toString().length === 0) return;
 
-    var selectParams = new URLSearchParams();
-    for (let key of Object.entries(select)) {
-      if (key[1] && key[1].length >= 1) {
-        selectParams.set(key[0], key[1]);
+    var selectParams = "";
+    for (let index = 0; index < select.length; index++) {
+      const element = select[index];
+      selectParams += archive.subPath + "/" + element;
+      if (index !== select.length - 1) {
+        selectParams += ";";
       }
     }
-    console.log(selectParams.toString());
 
-    FetchPost('post', bodyParams.toString());
+    if (selectParams.length === 0) return;
+    bodyParams.append("f", selectParams)
+
+    console.log(bodyParams.toString());
+
+    FetchPost("/api/update", bodyParams.toString());
 
 
   }
