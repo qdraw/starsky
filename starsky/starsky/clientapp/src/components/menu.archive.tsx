@@ -87,7 +87,7 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
         </div>
       </header>
 
-      {select ? <div className="header header--sidebar">
+      {select ? <div className="header header--sidebar header--border-left">
         <div className="item item--continue" onClick={() => { toggleLabels(); }}>Verder selecteren</div>
       </div> : ""}
 

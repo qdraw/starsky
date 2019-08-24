@@ -309,6 +309,11 @@
   line-height: 50px;
 }
 
+.header.header--sidebar.header--border-left {
+  border-left: 1px solid #607D8B;
+}
+
+
 .header--sidebar .item.item.item--continue,
 .header--sidebar .item.item--close {
   color: #000;

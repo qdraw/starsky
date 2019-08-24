@@ -2,7 +2,7 @@ export interface IUrl {
   f?: string;
   details?: boolean,
   sidebar?: boolean,
-  select?: Array<string> | null;
+  select?: Array<string>;
   colorClass?: Array<number>
 }
 

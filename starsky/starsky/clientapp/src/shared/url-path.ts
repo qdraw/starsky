@@ -141,4 +141,16 @@ export class URLPath {
     return urlObject;
   }
 
+  /**
+   * Get an non-null list 
+   * @param historyLocationSearch 
+   */
+  public getSelect(historyLocationSearch: string) {
+    var selectList = new Array<string>();
+    if (new URLPath().StringToIUrl(historyLocationSearch).select != undefined) {
+      var selectList = new URLPath().StringToIUrl(historyLocationSearch).select;
+    }
+    return selectList;
+  }
+
 }

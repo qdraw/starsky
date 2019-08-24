@@ -11,7 +11,6 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
   var isEnabled = true;
 
   var history = useLocation();
-
   const [select, setSelect] = React.useState(new URLPath().StringToIUrl(history.location.search).select);
   useEffect(() => {
     setSelect(new URLPath().StringToIUrl(history.location.search).select);
