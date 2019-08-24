@@ -1,8 +1,6 @@
-import React, { memo, useEffect } from "react";
-import useLocation from '../hooks/use-location';
+import React, { memo } from "react";
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
-import FetchPost from '../shared/fetchpost';
-import { URLPath } from '../shared/url-path';
+import ArchiveSidebarLabelEdit from './archive-sidebar-label-edit';
 import ArchiveSidebarSelectionList from './archive-sidebar-selection-list';
 
 interface IDetailViewSidebarProps {
@@ -13,68 +11,10 @@ interface IDetailViewSidebarProps {
 interface ISidebarUpdate {
   tags: string,
   description: string,
-  title: string,
+  title: string
 }
 
 const ArchiveSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((archive) => {
-
-  var history = useLocation();
-
-  // show select info
-  const [select, setSelect] = React.useState(new URLPath().getSelect(history.location.search));
-  useEffect(() => {
-    setSelect(new URLPath().getSelect(history.location.search));
-  }, [history.location.search]);
-
-
-  const [update, setUpdate] = React.useState({} as ISidebarUpdate)
-
-  function handleChange(event: React.ChangeEvent<HTMLDivElement>) {
-    let value = event.currentTarget.innerText;
-    let name = event.currentTarget.dataset["name"];
-
-    if (!name) return;
-    if (!value) return;
-
-    value = value.replace(/\n/g, "");
-
-    var toUpdate = update;
-    switch (name) {
-      case "tags":
-        toUpdate.tags = value;
-        break;
-      case "description":
-        toUpdate.description = value;
-        break;
-      case "title":
-        toUpdate.title = value;
-        break;
-    }
-    setUpdate(toUpdate);
-  }
-
-  function pushUpdate() {
-    var bodyParams = new URLSearchParams();
-    for (let key of Object.entries(update)) {
-      if (key[1] && key[1].length >= 1) {
-        bodyParams.set(key[0], key[1]);
-      }
-    }
-
-    if (bodyParams.toString().length === 0) return;
-
-    var selectParams = new URLSearchParams();
-    for (let key of Object.entries(select)) {
-      if (key[1] && key[1].length >= 1) {
-        selectParams.set(key[0], key[1]);
-      }
-    }
-    console.log(selectParams.toString());
-
-    FetchPost('post', bodyParams.toString());
-
-
-  }
 
   return (<div className="sidebar">
     <div className="content--header">
@@ -85,31 +25,7 @@ const ArchiveSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((a
     <div className="content--header">
       Labels wijzigingen
     </div>
-    <div className="content--text">
-      <h4>Tags:</h4>
-      <div data-name="tags"
-        onBlur={handleChange}
-        suppressContentEditableWarning={true}
-        contentEditable={select.length !== 0}
-        className={select.length !== 0 ? "form-control" : "form-control disabled"}>
-      </div>
-      <h4>Info</h4>
-      <div
-        onBlur={handleChange}
-        data-name="description"
-        suppressContentEditableWarning={true}
-        contentEditable={select.length !== 0}
-        className={select.length !== 0 ? "form-control" : "form-control disabled"}>
-      </div>
-      <h4>Titel</h4>
-      <div data-name="title"
-        onBlur={handleChange}
-        suppressContentEditableWarning={true}
-        contentEditable={select.length !== 0}
-        className={select.length !== 0 ? "form-control" : "form-control disabled"}>
-      </div>
-      <a className="btn btn--default" onClick={() => pushUpdate()}>Push me</a>
-    </div>
+    <ArchiveSidebarLabelEdit {...archive}></ArchiveSidebarLabelEdit>
 
     <div className="content--header">
       Kleur-Classificatie
