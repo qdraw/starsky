@@ -51,3 +51,7 @@
 .sidebar-selection li .close:after {
     transform: rotate(-45deg);
 }
+
+.sidebar-selection .btn {
+  margin-right:5px;
+}
