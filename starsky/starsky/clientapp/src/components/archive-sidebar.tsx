@@ -1,18 +1,20 @@
 import React, { memo } from "react";
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import ArchiveSidebarSelectionList from './archive-sidebar-selection-list';
 
 interface IDetailViewSidebarProps {
-  folderPath: string,
+  fileIndexItems: Array<IFileIndexItem>,
+  colorClassUsage: Array<number>,
 }
 
-const ArchiveSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((props) => {
+const ArchiveSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((archive) => {
   var isEnabled = true;
 
   return (<div className="sidebar">
     <div className="content--header">
-      Selectie WIP
+      Selectie
     </div>
-    <ArchiveSidebarSelectionList></ArchiveSidebarSelectionList>
+    <ArchiveSidebarSelectionList {...archive}></ArchiveSidebarSelectionList>
 
     <div className="content--header">
       Labels wijzigingen

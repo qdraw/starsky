@@ -1,5 +1,5 @@
 .sidebar-selection ul {
-  max-height: 150px;
+  max-height: 135px;
   overflow-y: auto;
 }
 
@@ -15,11 +15,11 @@
 
 
 .sidebar-selection li {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 30px;
-    width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 30px;
+  width: 100%;
 }
 .sidebar-selection li:nth-child(2n) {
   background-color: #ECEFF1;
@@ -33,7 +33,6 @@
   opacity: 0.5;
   position: relative;
   margin-right:8px;
-
 }
 
 .sidebar-selection li .close::before, .sidebar-selection li .close::after {

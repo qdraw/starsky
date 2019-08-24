@@ -9,7 +9,6 @@
   }
 }
 
-
 .archive .sidebar {
   width: 320px;
   height: calc(100% - 50px);
@@ -19,15 +18,10 @@
   background-color: #fff;
 }
 
-
 .archive .box {
   display: block;
   margin-top: 10px;
 }
-/* 
-.archive .box:first-child {
-  margin-top:0px;
-} */
 
 .archive .box p,
 .archive .box b{

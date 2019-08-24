@@ -20,6 +20,10 @@
   padding-left: 10px;
 }
 
+.content--header--bluegray50 {
+  background-color: #ECEFF1;  
+}
+
 .content--text {
   padding: 10px;
 }

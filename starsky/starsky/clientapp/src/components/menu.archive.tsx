@@ -37,8 +37,6 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
       delete urlObject.select;
     }
     setSelect(urlObject.select);
-    console.log(select);
-
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 

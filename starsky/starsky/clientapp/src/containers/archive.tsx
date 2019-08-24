@@ -34,7 +34,7 @@ function Archive(archive: IArchiveProps) {
 
   return (
     <div className={!sidebar ? "archive" : "archive collapsed"}>
-      {sidebar ? <ArchiveSidebar folderPath={archive.subPath}></ArchiveSidebar> : ""}
+      {sidebar ? <ArchiveSidebar {...archive}></ArchiveSidebar> : ""}
 
       <div className="content">
         <Breadcrumb breadcrumb={archive.breadcrumb} subPath={archive.subPath}></Breadcrumb>
