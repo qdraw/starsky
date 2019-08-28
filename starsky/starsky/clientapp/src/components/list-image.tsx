@@ -1,4 +1,4 @@
-import React, { memo, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import useIntersection from '../hooks/use-intersection-observer';
 
 interface IListImageProps {
@@ -7,11 +7,20 @@ interface IListImageProps {
 }
 
 const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
-  const [error, setError] = useState(false);
 
   var alt = props.alt ? props.alt : 'afbeelding';
 
   const target = useRef<HTMLDivElement>(null);
+
+
+  // Reset Loading after changing page
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+    setError(false);
+  }, [props]);
 
   const intersected = useIntersection(target, {
     rootMargin: '250px',
@@ -23,8 +32,13 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   }
 
   return (
-    <div ref={target} className={error ? "img-box--error" : "img-box"}>
-      {intersected ? <img {...props} alt={alt} onError={() => setError(true)} /> : <div className="img-box--loading"></div>}
+    <div ref={target} className={error ? "img-box--error" : isLoading ? "img-box img-box--loading" : "img-box"}>
+      {intersected ? <img {...props} alt={alt}
+        onLoad={() => {
+          setError(false)
+          setIsLoading(false)
+        }}
+        onError={() => setError(true)} /> : <div className="img-box--loading"></div>}
     </div>
   );
 

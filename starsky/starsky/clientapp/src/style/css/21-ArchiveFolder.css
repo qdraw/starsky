@@ -198,6 +198,7 @@
 }
 
 
+.folder > .box .box-content .img-box--loading,
 .folder > .box > .box-content.isDirectory-true > .img-box,
 .folder > .box > .box-content > .img-box--error {
   height: 73%;
@@ -219,3 +220,11 @@
   background-image: url("../images/baseline-broken_image-24px.svg");
 }
 
+.folder > .box > .box-content > .img-box--loading > img {
+  width: 0px;
+  height: 0px;
+}
+
+.folder > .box .box-content .img-box--loading {
+  background-image: url('../images/preloader-fancy.svg');
+}
