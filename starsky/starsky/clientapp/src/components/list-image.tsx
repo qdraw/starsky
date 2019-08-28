@@ -8,10 +8,8 @@ interface IListImageProps {
 
 const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
 
-  var alt = props.alt ? props.alt : 'afbeelding';
-
   const target = useRef<HTMLDivElement>(null);
-
+  var alt = props.alt ? props.alt : 'afbeelding';
 
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = useState(true);
