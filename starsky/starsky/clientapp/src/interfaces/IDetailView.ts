@@ -2,10 +2,11 @@ import { IFileIndexItem } from "./IFileIndexItem";
 
 export enum PageType {
     Loading,
-    Unknown,
     Archive, // index
     DetailView,
-    Search
+    Search,
+    ApplicationException,
+    NotFound,
 }
 export interface IRelativeObjects {
     nextFilePath: string;

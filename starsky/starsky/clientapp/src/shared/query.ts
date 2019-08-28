@@ -18,7 +18,9 @@ export class Query {
     if (requested.f) {
       urlObject.f = requested.f;
     }
-    urlObject.colorClass = requested.colorClass;
+    if (requested.colorClass) {
+      urlObject.colorClass = requested.colorClass;
+    }
 
     var url = new URLPath().RemovePrefixUrl(new URLPath().IUrlToString(urlObject));
     return "/api/index" + url;

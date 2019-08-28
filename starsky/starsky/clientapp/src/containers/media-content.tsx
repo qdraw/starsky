@@ -2,29 +2,36 @@ import React from 'react';
 import Preloader from '../components/preloader';
 import useFileList from '../hooks/use-filelist';
 import useLocation from '../hooks/use-location';
-import { PageType } from '../interfaces/IDetailView';
+import { IArchive } from '../interfaces/IArchive';
+import { IDetailView, PageType } from '../interfaces/IDetailView';
 import Archive from './archive';
 import DetailView from './detailview';
 import Menu from './menu';
 
-interface IMediaContentProps {
-}
 
-const MediaContent: React.FC<IMediaContentProps> = (props) => {
+const MediaContent: React.FC = () => {
   console.log('-----------------MediaContent (rendered again)-------------------');
 
-  var location = useLocation();
-  var uses = useFileList(location.location.search);
+  var history = useLocation();
+  var usesFileList = useFileList(history.location.search);
 
-  const { parent, pageType, archive, detailView } = uses;
+  const parent = usesFileList ? usesFileList.parent : "/?";
+  const pageType = usesFileList ? usesFileList.pageType : PageType.Loading;
+  const archive: IArchive | undefined = usesFileList ? usesFileList.archive : undefined;
+  const detailView: IDetailView | undefined = usesFileList ? usesFileList.detailView : undefined;
+
+  if (!usesFileList) {
+    return (<><br />The application failed</>)
+  }
 
   return (
     <div>
       <Menu parent={parent} isDetailMenu={pageType === PageType.DetailView}></Menu>
-      {pageType === PageType.Loading ? <Preloader isOverlay={true} isDetailMenu={false} ></Preloader> : null}
-      {pageType === PageType.Unknown ? <>not found</> : null}
-      {pageType === PageType.Archive ? <Archive {...archive} /> : null}
-      {pageType === PageType.DetailView ? <DetailView {...detailView} /> : null}
+      {pageType === PageType.Loading ? <Preloader isOverlay={true} isDetailMenu={false} >tttt</Preloader> : null}
+      {pageType === PageType.NotFound ? <>not found</> : null}
+      {pageType === PageType.ApplicationException ? <>ApplicationException</> : null}
+      {pageType === PageType.Archive && archive ? <Archive {...archive} /> : null}
+      {pageType === PageType.DetailView && detailView ? <DetailView {...detailView} /> : null}
     </div>
   );
 }

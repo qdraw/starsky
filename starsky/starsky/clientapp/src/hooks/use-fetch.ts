@@ -6,6 +6,7 @@ const useFetch = (url: string, method: 'get' | 'post'): any | null => {
   useEffect(() => {
     let mounted = true;
     const abortController = new AbortController();
+
     (async () => {
       try {
         const res: Response = await fetch(url, {
@@ -13,25 +14,29 @@ const useFetch = (url: string, method: 'get' | 'post'): any | null => {
           credentials: "include",
           method: method
         });
-
-        if (res.status === 404 || res.status === 500) {
-          return {
-            pageType: PageType.Unknown,
-            statusCode: res.status
-          }
-        }
-
         const response = await res.json();
         response.statusCode = res.status;
         response.url = res.url;
+
+        if (res.status === 404) {
+          return {
+            pageType: PageType.NotFound,
+          }
+        }
+        else if (res.status >= 400 && res.status <= 550) {
+          return {
+            pageType: PageType.ApplicationException,
+          }
+        }
 
         if (mounted) {
           setData(response);
         }
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     })();
+
     const cleanup = () => {
       mounted = false;
       abortController.abort();

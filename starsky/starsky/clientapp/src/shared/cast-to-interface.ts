@@ -8,6 +8,8 @@ import { IMedia } from '../interfaces/IMedia';
 export class CastToInterface {
 
   getPageType = (data: any): PageType => {
+    if (!data) return PageType.ApplicationException;
+
     let output: IDetailView = data;
     let pageType = PageType[output.pageType as keyof typeof PageType];
     return pageType;

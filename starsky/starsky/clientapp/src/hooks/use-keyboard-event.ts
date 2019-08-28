@@ -1,26 +1,19 @@
 import { useEffect } from 'react';
 
-function useKeyboardEvent(regex: RegExp, callback: Function) {
+function useKeyboardEvent(regex: RegExp, callback: Function, dependencies: any = []) {
+
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
-
-      // if regex match
       if (regex && event.key.match(regex)) {
         callback(event)
         return;
       }
-
-      // // string match
-      // if (event.key === key) {
-      //   callback(event);
-      //   return;
-      // }
     }
     window.addEventListener('keydown', handler)
     return () => {
       window.removeEventListener('keydown', handler)
     }
-  }, [])
+  }, dependencies)
 }
 
 export default useKeyboardEvent;

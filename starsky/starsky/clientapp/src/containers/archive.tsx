@@ -17,13 +17,14 @@ interface IArchiveProps {
   colorClassFilterList: Array<number>;
   colorClassUsage: Array<number>;
   collectionsCount: number;
-  searchQuery: string;
 }
 
 function Archive(archive: IArchiveProps) {
 
 
   var history = useLocation();
+
+  // The sidebar
   const [sidebar, setSidebar] = React.useState(new URLPath().StringToIUrl(history.location.search).sidebar);
   useEffect(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar)
