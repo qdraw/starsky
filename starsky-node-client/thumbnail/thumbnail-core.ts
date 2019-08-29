@@ -379,7 +379,12 @@ export class Query {
 						process.stdout.write("∑");
 						resolve(false);
 					}).catch(function (thrown : AxiosError) {
-						console.log('upload failed: ', thrown.config.url, thrown.response.status);
+						var errorMessage = 'upload failed: '+  thrown.config.url + " ";
+						if(thrown.response.status) {
+							errorMessage += thrown.response.status
+						}
+						console.log(errorMessage);
+						
 						resolve(false);
 					});
 				});
