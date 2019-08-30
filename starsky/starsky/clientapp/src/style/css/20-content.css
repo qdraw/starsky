@@ -27,10 +27,14 @@
 .content--text {
   padding: 10px;
 }
+
 .content--text .btn,
 .content--text h4 {
   margin-top: 10px;
   margin-bottom: 5px;
+}
+.content--text .btn {
+  margin-right:10px;
 }
 
 .content--text h4:first-child {

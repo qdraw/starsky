@@ -90,7 +90,8 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
     return bodyParams;
   }
 
-  function pushUpdate() {
+  function pushUpdate(append: boolean) {
+    update.append = append;
 
     var bodyParams = updateToUrlSearchParams(update);
     if (bodyParams.toString().length === 0) return;
@@ -137,7 +138,9 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
             contentEditable={select.length !== 0}
             className={select.length !== 0 ? "form-control" : "form-control disabled"}>
           </div>
-          {isEnabled && select.length !== 0 ? <a className="btn btn--default" onClick={() => pushUpdate()}>Toevoegen</a> : <a className="btn btn--default disabled" >Eerst invoeren</a>}
+
+          {isEnabled && select.length !== 0 ? <a className="btn btn" onClick={() => pushUpdate(false)}>Overschrijven</a> : <a className="btn btn--default disabled" >Overschrijven</a>}
+          {isEnabled && select.length !== 0 ? <a className="btn btn--default" onClick={() => pushUpdate(true)}>Toevoegen</a> : <a className="btn btn--default disabled" >Toevoegen</a>}
         </> : null}
 
       {isReplaceMode ?
