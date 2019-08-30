@@ -47,10 +47,8 @@ const DetailView: React.FC<IDetailView> = (props) => {
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
   }
 
-  useKeyboardEvent(/(i|e)/, (event: KeyboardEvent) => {
+  useKeyboardEvent(/(i|e)$/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
-    console.log('t');
-
     toggleLabels();
   }, [history.location.search])
 
