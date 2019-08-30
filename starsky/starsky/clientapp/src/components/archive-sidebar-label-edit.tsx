@@ -137,7 +137,7 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
             contentEditable={select.length !== 0}
             className={select.length !== 0 ? "form-control" : "form-control disabled"}>
           </div>
-          {isEnabled && select.length !== 0 ? <a className="btn btn--default" onClick={() => pushUpdate()}>Push me</a> : <a className="btn btn--default disabled" >disabled</a>}
+          {isEnabled && select.length !== 0 ? <a className="btn btn--default" onClick={() => pushUpdate()}>Toevoegen</a> : <a className="btn btn--default disabled" >Eerst invoeren</a>}
         </> : null}
 
       {isReplaceMode ?
