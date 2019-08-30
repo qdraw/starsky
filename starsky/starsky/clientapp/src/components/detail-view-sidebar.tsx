@@ -118,7 +118,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           <div className="icon icon--shutter-speed"></div>
           <b>{fileIndexItem.make} {fileIndexItem.model}</b>
           <p>f/{fileIndexItem.aperture}&nbsp;&nbsp;&nbsp;{fileIndexItem.shutterSpeed} sec&nbsp;&nbsp;&nbsp;
-             {fileIndexItem.focalLength.toFixed(1)} mm&nbsp;&nbsp;&nbsp;ISO {fileIndexItem.isoSpeed}</p>
+             {fileIndexItem.focalLength.toFixed(1)} mm&nbsp;&nbsp;&nbsp;{fileIndexItem.isoSpeed !== 0 ? <>ISO {fileIndexItem.isoSpeed}</> : null}</p>
         </div> : ""}
 
 
