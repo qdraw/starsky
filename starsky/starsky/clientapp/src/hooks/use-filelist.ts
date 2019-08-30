@@ -19,9 +19,10 @@ const useFileList = (locationSearch: string): IFileList | null => {
   const [pageType, setPageType] = useState(PageType.Loading);
   const [parent, setParent] = useState('/');
 
+  var location = new Query().UrlQueryServerApi(locationSearch);
+
   useEffect(() => {
     const abortController = new AbortController();
-    var location = new Query().UrlQueryServerApi(locationSearch);
 
     (async () => {
       try {
@@ -70,7 +71,7 @@ const useFileList = (locationSearch: string): IFileList | null => {
       abortController.abort();
     };
     return cleanup;
-  }, [locationSearch]);
+  }, [location]);
 
   return {
     archive,
