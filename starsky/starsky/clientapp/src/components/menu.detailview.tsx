@@ -18,7 +18,6 @@ const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
   function toggleLabels() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
     urlObject.details = !urlObject.details;
-
     setDetails(urlObject.details);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
   }
