@@ -3,6 +3,7 @@ import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
 import FetchPost from '../shared/fetchpost';
 import { URLPath } from '../shared/url-path';
+import SwitchButton from './switch-button';
 
 interface ISidebarUpdate {
   tags: string,
@@ -55,10 +56,27 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
         break;
     }
 
-    setUpdate(update);
-    setEnabled(updateToUrlSearchParams(update).toString().length !== 0);
+    setEnabled(isFormUsed());
   }
 
+  function isFormUsed(): boolean {
+    var totalChars = 0;
+    if (update.tags) {
+      totalChars += update.tags.length
+    }
+    if (update.description) {
+      totalChars += update.description.length
+    }
+    if (update.title) {
+      totalChars += update.title.length
+    }
+    return totalChars !== 0
+  }
+
+  /**
+   * append=true&collections=true&tags=update
+   * @param toUpdate 
+   */
   function updateToUrlSearchParams(toUpdate: ISidebarUpdate): URLSearchParams {
     var bodyParams = new URLSearchParams();
     for (let key of Object.entries(toUpdate)) {
@@ -77,14 +95,7 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
     var bodyParams = updateToUrlSearchParams(update);
     if (bodyParams.toString().length === 0) return;
 
-    var selectParams = "";
-    for (let index = 0; index < select.length; index++) {
-      const element = select[index];
-      selectParams += archive.subPath + "/" + element;
-      if (index !== select.length - 1) {
-        selectParams += ";";
-      }
-    }
+    var selectParams = new URLPath().ArrayToCommaSeperatedString(select, archive.subPath)
 
     if (selectParams.length === 0) return;
     bodyParams.append("f", selectParams)
@@ -94,31 +105,45 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
     dispatch({ type: 'update', ...update, select });
   }
 
+  const [isReplaceMode, setReplaceMode] = React.useState(false)
+
   return (
     <div className="content--text">
-      <h4>Tags:</h4>
-      <div data-name="tags"
-        onInput={handleChange}
-        suppressContentEditableWarning={true}
-        contentEditable={select.length !== 0}
-        className={select.length !== 0 ? "form-control" : "form-control disabled"}>
-      </div>
-      <h4>Info</h4>
-      <div
-        onInput={handleChange}
-        data-name="description"
-        suppressContentEditableWarning={true}
-        contentEditable={select.length !== 0}
-        className={select.length !== 0 ? "form-control" : "form-control disabled"}>
-      </div>
-      <h4>Titel</h4>
-      <div data-name="title"
-        onInput={handleChange}
-        suppressContentEditableWarning={true}
-        contentEditable={select.length !== 0}
-        className={select.length !== 0 ? "form-control" : "form-control disabled"}>
-      </div>
-      {isEnabled && select.length !== 0 ? <a className="btn btn--default" onClick={() => pushUpdate()}>Push me</a> : <a className="btn btn--default disabled" >disabled</a>}
+
+      <SwitchButton on="Wijzigen" off="Vervangen" onToggle={(value) => setReplaceMode(value)}></SwitchButton>
+
+      {!isReplaceMode ?
+        <>
+          <h4>Tags:</h4>
+          <div data-name="tags"
+            onInput={handleChange}
+            onKeyPress={handleChange}
+            suppressContentEditableWarning={true}
+            contentEditable={select.length !== 0}
+            className={select.length !== 0 ? "form-control" : "form-control disabled"}>
+          </div>
+          <h4>Info</h4>
+          <div
+            onInput={handleChange}
+            data-name="description"
+            suppressContentEditableWarning={true}
+            contentEditable={select.length !== 0}
+            className={select.length !== 0 ? "form-control" : "form-control disabled"}>
+          </div>
+          <h4>Titel</h4>
+          <div data-name="title"
+            onInput={handleChange}
+            suppressContentEditableWarning={true}
+            contentEditable={select.length !== 0}
+            className={select.length !== 0 ? "form-control" : "form-control disabled"}>
+          </div>
+          {isEnabled && select.length !== 0 ? <a className="btn btn--default" onClick={() => pushUpdate()}>Push me</a> : <a className="btn btn--default disabled" >disabled</a>}
+        </> : null}
+
+      {isReplaceMode ?
+        <>
+          <h4>Nog niet beschikbaar</h4>
+        </> : null}
 
     </div >);
 });

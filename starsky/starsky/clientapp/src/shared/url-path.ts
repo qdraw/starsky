@@ -112,7 +112,7 @@ export class URLPath {
     let search = new URLSearchParams(hash);
     let getFilePath = search.get("f");
     if (!getFilePath) return "/";
-    return getFilePath;
+    return getFilePath.replace(/\/$/, "");
   }
 
   /**
@@ -151,6 +151,18 @@ export class URLPath {
       var selectList = new URLPath().StringToIUrl(historyLocationSearch).select;
     }
     return selectList;
+  }
+
+  public ArrayToCommaSeperatedString(select: string[], parent: string): string {
+    var selectParams = "";
+    for (let index = 0; index < select.length; index++) {
+      const element = select[index];
+      selectParams += parent + "/" + element;
+      if (index !== select.length - 1) {
+        selectParams += ";";
+      }
+    }
+    return selectParams;
   }
 
 }

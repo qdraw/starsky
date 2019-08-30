@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import ArchiveSidebarColorClass from './archive-sidebar-color-class';
 import ArchiveSidebarLabelEdit from './archive-sidebar-label-edit';
 import ArchiveSidebarSelectionList from './archive-sidebar-selection-list';
 
@@ -7,12 +8,6 @@ interface IDetailViewSidebarProps {
   fileIndexItems: Array<IFileIndexItem>,
   colorClassUsage: Array<number>,
   subPath: string;
-}
-
-interface ISidebarUpdate {
-  tags: string,
-  description: string,
-  title: string
 }
 
 const ArchiveSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((archive) => {
@@ -32,7 +27,7 @@ const ArchiveSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((a
       Kleur-Classificatie
       </div>
     <div className="content--text">
-      {/* <ColorClassSelect filePath={fileIndexItem.filePath} currentColorClass={fileIndexItem.colorClass} isEnabled={isEnabled}></ColorClassSelect> */}
+      <ArchiveSidebarColorClass></ArchiveSidebarColorClass>
     </div>
 
 
