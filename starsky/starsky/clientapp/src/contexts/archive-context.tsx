@@ -41,6 +41,7 @@ export function archiveReducer(state: State, action: Action): State {
       updated.fileIndexItems.forEach((item, index) => {
         if (select.indexOf(item.fileName) !== -1) {
           if (append) {
+            // bug: duplicate keywords are added, in the api those are filtered
             if (tags) state.fileIndexItems[index].tags += ", " + tags;
             if (description) state.fileIndexItems[index].description += description;
             if (title) state.fileIndexItems[index].title += title;

@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import ArchiveSidebar from '../components/archive-sidebar';
-import { ArchiveUpdate } from '../components/archive-test';
 import Breadcrumb from '../components/breadcrumbs';
 import ColorClassFilter from '../components/color-class-filter';
 import ItemListView from '../components/item-list-view';
@@ -39,7 +38,6 @@ function Archive(archive: IArchiveProps) {
       {sidebar ? <ArchiveSidebar {...archive}></ArchiveSidebar> : ""}
 
       <div className="content">
-        <ArchiveUpdate></ArchiveUpdate>
         <Breadcrumb breadcrumb={archive.breadcrumb} subPath={archive.subPath}></Breadcrumb>
         <RelativeLink relativeObjects={archive.relativeObjects}></RelativeLink>
 

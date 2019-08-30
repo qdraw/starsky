@@ -43,7 +43,7 @@ const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
     </header>
 
     {isDetails ? <div className="header header--sidebar">
-      <div className="item item--close" onClick={() => { toggleLabels(); }}>Sluiten</div>
+      <div className="item item--close" onClick={() => { toggleLabels(); }}>Sluit detailscherm</div>
     </div> : ""}
 
   </>);

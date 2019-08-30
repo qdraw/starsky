@@ -17,7 +17,6 @@ function ArchiveWrapper(archive: IArchiveProps) {
   const [archiveList, setArchiveList] = React.useState(archive);
   useEffect(() => {
     if (!state.fileIndexItems) return;
-    if (state.fileIndexItems.length === 0) return;
     setArchiveList(state);
   }, [state]);
 

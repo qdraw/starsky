@@ -1,7 +1,6 @@
 import { Link } from '@reach/router';
 import React, { memo } from 'react';
 import useLocation from '../hooks/use-location';
-import { newIUrl } from '../interfaces/IUrl';
 import { URLPath } from '../shared/url-path';
 
 //         <ColorClassFilter itemsCount={this.props.collectionsCount} subPath={this.props.subPath} colorClassFilterList={this.props.colorClassFilterList} colorClassUsage={this.props.colorClassUsage}></ColorClassFilter>
@@ -29,10 +28,10 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
     "Herstel Filter"
   ];
 
-  function cleanFilePath(): string {
+  function cleanColorClass(): string {
     if (!props.subPath) return "/";
-    var urlObject = newIUrl();
-    urlObject.f = props.subPath;
+    var urlObject = new URLPath().StringToIUrl(history.location.search);
+    urlObject.colorClass = [];
     return new URLPath().IUrlToString(urlObject);
   }
 
@@ -52,20 +51,22 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
     return new URLPath().IUrlToString(urlObject);
   }
 
-  let resetButton = <Link to={cleanFilePath()} className="btn colorclass colorclass--reset">{colorContent[9]}</Link>;
+  let resetButton = <Link to={cleanColorClass()} className="btn colorclass colorclass--reset">{colorContent[9]}</Link>;
+  let resetButtonDisabled = <div className="btn colorclass colorclass--reset disabled">{colorContent[9]}</div>;
 
+  // there is no content ?
   if (props.colorClassUsage.length === 1 && props.colorClassFilterList.length >= 1) return (<div className="colorclass colorclass--filter"> {resetButton}</div>);
+
   if (props.itemsCount === 0 || props.colorClassUsage.length === 1) return (<></>);
   return (<div className="colorclass colorclass--filter">
     {
-      resetButton
+      props.colorClassFilterList.length !== 0 ? resetButton : resetButtonDisabled
     }
     {
-      // onClick = {() => updateColorClass(item)}
       props.colorClassUsage.map((item, index) => (
-        item >= 0 && item <= 8 ? <a key={item} href={updateColorClass(item)}
+        item >= 0 && item <= 8 ? <Link key={item} to={updateColorClass(item)}
           className={props.colorClassFilterList.indexOf(item) >= 0 ? "btn btn--default colorclass colorclass--" + item + " active" : "btn colorclass colorclass--" + item}>
-          <label></label><span>{colorContent[item]}</span> </a>
+          <label></label><span>{colorContent[item]}</span> </Link>
           : <span key={item}></span>
       ))
     }

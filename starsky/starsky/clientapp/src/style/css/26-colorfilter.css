@@ -10,6 +10,7 @@
   }
 }
 
+.colorclass > div.colorclass,
 .colorclass > a.colorclass {
   text-decoration: none;
   color: #263238;
@@ -18,6 +19,7 @@
 
 }
 
+.colorclass > div.colorclass label,
 .colorclass > a.colorclass label {
     height: 20px;
     width: 20px;
@@ -29,6 +31,7 @@
     cursor: pointer;
 }
 
+.colorclass > div.colorclass.active label:before,
 .colorclass > a.colorclass.active label:before {
     content: "";
     display: inline-block;
