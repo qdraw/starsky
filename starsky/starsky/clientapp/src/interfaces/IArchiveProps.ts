@@ -9,4 +9,5 @@ export interface IArchiveProps {
   colorClassFilterList: Array<number>;
   colorClassUsage: Array<number>;
   collectionsCount: number;
+  lastUpdated?: Date; // used to trigger in context updates
 }

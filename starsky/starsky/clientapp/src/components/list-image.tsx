@@ -14,18 +14,12 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [src, setSrc] = useState(props.src);
-
-  // To prevent set Loading when a url already is loaded
-  useEffect(() => {
-    setIsLoading(true);
-  }, [src]);
 
   // to update the url, and trigger loading if the url is changed
   useEffect(() => {
     setError(false);
-    setSrc(props.src)
-  }, [props]);
+    setIsLoading(true);
+  }, [props.src]);
 
   const intersected = useIntersection(target, {
     rootMargin: '250px',
@@ -38,7 +32,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
 
   return (
     <div ref={target} className={error ? "img-box--error" : isLoading ? "img-box img-box--loading" : "img-box"}>
-      {intersected ? <img src={src} alt={alt}
+      {intersected ? <img {...props} alt={alt}
         onLoad={() => {
           setError(false)
           setIsLoading(false)

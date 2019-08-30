@@ -14,7 +14,7 @@ type IContext = {
 type CountProviderProps = { children: React.ReactNode }
 type Action = {
   type: 'update', tags: string,
-  description: string, title: string, select: string[]
+  description: string, title: string, append: boolean, select: string[]
 } | { type: 'reset', payload: IArchiveProps } | { type: 'add' }
 
 type State = IArchiveProps
@@ -35,49 +35,27 @@ export function archiveReducer(state: State, action: Action): State {
       var updated = state;
 
 
-      var { select, tags, description, title } = action;
+      var { select, tags, description, title, append } = action;
       console.log(state, select);
 
       updated.fileIndexItems.forEach((item, index) => {
         if (select.indexOf(item.fileName) !== -1) {
-          // var removed = state.fileIndexItems.splice(index, 1)[0];
-          // removed.tags = "sdfdsf";
-          // removed.filePath = "sdfdsf";
-          // console.log(removed, index);
-
-          // updated.fileIndexItems.splice(index, 0, removed);
-          // // state.fileIndexItems.push(removed);
-
-          state.fileIndexItems[index].tags = tags;
-          state.fileIndexItems[index].lastEdited = Math.random().toString();
-
+          if (append) {
+            if (tags) state.fileIndexItems[index].tags += ", " + tags;
+            if (description) state.fileIndexItems[index].description += description;
+            if (title) state.fileIndexItems[index].title += title;
+          }
+          else {
+            if (tags) state.fileIndexItems[index].tags = tags;
+            if (description) state.fileIndexItems[index].description = description;
+            if (title) state.fileIndexItems[index].title = title;
+          }
+          state.fileIndexItems[index].lastEdited = new Date().toISOString();
         }
       });
 
-      // // if (!state.fileIndexItems) return state;
-      // var index = 1;
-      // updated.fileIndexItems = updated.fileIndexItems.splice(index, 1)
-
-      // updated.fileIndexItems[1].tags = "t" + action.tags;
-      // updated.fileIndexItems[1].description = action.tags;
-      // if (state.fileIndexItems.length >= 1) {
-      // //   // // console.log(state);
-
-      // //   // state.fileIndexItems[1].fileHash = action.tags;
-      // //   // state.fileIndexItems[1].tags = action.tags;
-      // //   // console.log(state.fileIndexItems[1]);
-      // //   state.fileIndexItems.push(removed);
-      // // }
-
-      // // state.fileIndexItems[1].tags = "sdkfnldf";
-      // console.log(updated.fileIndexItems[1]);
-
-      // // subPath: "~"
-      // // subPath: Math.random().toString()
-
-
       // Need to update otherwise other events are not triggerd
-      return { ...updated, subPath: Math.random().toString() };
+      return { ...updated, lastUpdated: new Date() };
     case "reset":
       return action.payload;
     case "add":

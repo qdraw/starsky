@@ -21,7 +21,7 @@ export function ArchiveUpdate() {
       <button onClick={() => dispatch({ type: 'add' })}>
         add
     </button>
-      <button onClick={() => dispatch({ type: 'update', tags: 'test', description: '', title: '', select: ["20170713_124839-eneco-low-alt.jpg"] })}>
+      <button onClick={() => dispatch({ type: 'update', append: true, tags: 'test', description: '', title: '', select: ["20170713_124839-eneco-low-alt.jpg"] })}>
         update
     </button>
     </>

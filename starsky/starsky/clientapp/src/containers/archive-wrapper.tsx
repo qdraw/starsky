@@ -18,18 +18,6 @@ function ArchiveWrapper(archive: IArchiveProps) {
   useEffect(() => {
     if (!state.fileIndexItems) return;
     if (state.fileIndexItems.length === 0) return;
-
-    // state.fileIndexItems.forEach((element, index) => {
-    //   state.fileIndexItems.splice(index, 1)
-    //   state.fileIndexItems.push(element);
-    // });
-
-    // state.fileIndexItems.sort(function (a, b) {
-    //   var x = a.fileName.toLowerCase();
-    //   var y = b.fileName.toLowerCase();
-    //   return x < y ? -1 : x > y ? 1 : 0;
-    // });
-
     setArchiveList(state);
   }, [state]);
 
