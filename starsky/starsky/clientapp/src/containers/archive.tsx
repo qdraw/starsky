@@ -19,17 +19,6 @@ function Archive(archive: IArchiveProps) {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar)
   }, [history.location.search]);
 
-  // // To update the list of items
-  // const [archiveList, setArchiveList] = React.useState(archive);
-  // let { state } = React.useContext(ArchiveContext);
-  // useEffect(() => {
-  //   setArchiveList(state);
-  //   console.log('u');
-  // }, [archive]);
-
-  // // var archiveList = archive;
-  // // // console.log(archive);
-
   if (!archive) return (<>no archive</>)
   if (!archive.colorClassUsage) return (<>no colorClassUsage</>)
 

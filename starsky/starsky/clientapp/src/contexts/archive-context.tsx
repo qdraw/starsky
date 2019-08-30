@@ -13,8 +13,8 @@ type IContext = {
 
 type CountProviderProps = { children: React.ReactNode }
 type Action = {
-  type: 'update', tags: string,
-  description: string, title: string, append: boolean, select: string[]
+  type: 'update', tags?: string, colorclass?: number,
+  description?: string, title?: string, append?: boolean, select: string[]
 } | { type: 'reset', payload: IArchiveProps } | { type: 'add' }
 
 type State = IArchiveProps
@@ -34,9 +34,7 @@ export function archiveReducer(state: State, action: Action): State {
     case "update":
       var updated = state;
 
-
-      var { select, tags, description, title, append } = action;
-      console.log(state, select);
+      var { select, tags, description, title, append, colorclass } = action;
 
       updated.fileIndexItems.forEach((item, index) => {
         if (select.indexOf(item.fileName) !== -1) {
@@ -51,6 +49,7 @@ export function archiveReducer(state: State, action: Action): State {
             if (description) state.fileIndexItems[index].description = description;
             if (title) state.fileIndexItems[index].title = title;
           }
+          if (colorclass) state.fileIndexItems[index].colorClass = colorclass;
           state.fileIndexItems[index].lastEdited = new Date().toISOString();
         }
       });

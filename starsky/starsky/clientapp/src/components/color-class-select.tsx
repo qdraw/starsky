@@ -7,6 +7,8 @@ export interface IColorClassSelectProps {
   currentColorClass?: number;
   isEnabled: boolean;
   filePath: string;
+  clearAfter?: boolean;
+  onToggle(value: number): void;
 }
 
 const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((props) => {
@@ -31,6 +33,14 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
     new Query().queryUpdateApi(props.filePath, "colorClass", colorClass.toString()).then(item => {
       setCurrentColorClass(colorClass);
     });
+
+    props.onToggle(colorClass);
+
+    if (!props.clearAfter) return;
+
+    setTimeout(function () {
+      setCurrentColorClass(undefined);
+    }, 500);
   }
 
   useKeyboardEvent(/[0-8]/, (event: KeyboardEvent) => {
