@@ -27,6 +27,7 @@
 .content--text {
   padding: 10px;
 }
+.content--text .btn,
 .content--text h4 {
   margin-top: 10px;
   margin-bottom: 5px;
