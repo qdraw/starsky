@@ -9,12 +9,10 @@ import { URLPath } from '../shared/url-path';
 
 const DetailView: React.FC<IDetailView> = (props) => {
 
-
   var history = useLocation();
 
   let fileIndexItem = props.fileIndexItem;
   let relativeObjects = props.relativeObjects;
-
 
   // Edit/Details screen
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
@@ -23,14 +21,12 @@ const DetailView: React.FC<IDetailView> = (props) => {
     setDetails(details);
   }, [history.location.search]);
 
-
   useKeyboardEvent(/ArrowLeft/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     if (!relativeObjects) return;
     if (!relativeObjects.prevFilePath) return;
     prev();
   }, [relativeObjects])
-
 
   useKeyboardEvent(/ArrowRight/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
@@ -44,12 +40,25 @@ const DetailView: React.FC<IDetailView> = (props) => {
     history.navigate(parentDirectory, {});
   }, [fileIndexItem])
 
+  function toggleLabels() {
+    var urlObject = new URLPath().StringToIUrl(history.location.search);
+    urlObject.details = !urlObject.details;
+    setDetails(urlObject.details);
+    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
+  }
+
+  useKeyboardEvent(/(i|e)/, (event: KeyboardEvent) => {
+    if (new Keyboard().isInForm(event)) return;
+    console.log('t');
+
+    toggleLabels();
+  }, [history.location.search])
+
   // Reset Error after changing page
   const [isError, setError] = React.useState(false);
   useEffect(() => {
     setError(false);
   }, [props]);
-
 
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = React.useState(true);
