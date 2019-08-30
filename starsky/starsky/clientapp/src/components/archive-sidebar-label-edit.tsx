@@ -1,4 +1,5 @@
 import React, { memo, useEffect } from "react";
+import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
 import FetchPost from '../shared/fetchpost';
 import { URLPath } from '../shared/url-path';
@@ -18,6 +19,7 @@ interface IDetailViewSidebarLabelEditProps {
 const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEditProps> = memo((archive) => {
 
   var history = useLocation();
+  let { state, dispatch } = React.useContext(ArchiveContext);
 
   // show select info
   const [select, setSelect] = React.useState(new URLPath().getSelect(history.location.search));
@@ -32,8 +34,6 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
   } as ISidebarUpdate)
 
   const [isEnabled, setEnabled] = React.useState(false)
-
-  console.log(update);
 
   function handleChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
     let value = event.currentTarget.innerText;
@@ -69,8 +69,6 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
         bodyParams.set(key[0], key[1]);
       }
     }
-    console.log(bodyParams.toString().length);
-
     return bodyParams;
   }
 
@@ -91,11 +89,9 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
     if (selectParams.length === 0) return;
     bodyParams.append("f", selectParams)
 
-    console.log(bodyParams.toString());
-
     FetchPost("/api/update", bodyParams.toString());
 
-
+    dispatch({ type: 'update', ...update, select });
   }
 
   return (

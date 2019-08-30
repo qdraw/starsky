@@ -4,7 +4,7 @@ import useFileList from '../hooks/use-filelist';
 import useLocation from '../hooks/use-location';
 import { IArchive } from '../interfaces/IArchive';
 import { IDetailView, PageType } from '../interfaces/IDetailView';
-import Archive from './archive';
+import ArchiveContextWrapper from './archive-wrapper';
 import DetailView from './detailview';
 import Menu from './menu';
 
@@ -30,7 +30,7 @@ const MediaContent: React.FC = () => {
       {pageType === PageType.Loading ? <Preloader isOverlay={true} isDetailMenu={false} >tttt</Preloader> : null}
       {pageType === PageType.NotFound ? <>not found</> : null}
       {pageType === PageType.ApplicationException ? <>ApplicationException</> : null}
-      {pageType === PageType.Archive && archive ? <Archive {...archive} /> : null}
+      {pageType === PageType.Archive && archive ? <ArchiveContextWrapper {...archive} /> : null}
       {pageType === PageType.DetailView && detailView ? <DetailView {...detailView} /> : null}
     </div>
   );

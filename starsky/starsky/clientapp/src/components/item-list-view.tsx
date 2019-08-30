@@ -12,23 +12,37 @@ interface ItemListProps {
 const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
 
   let items = props.fileIndexItems;
-
   if (!items) return (<div className="folder">no content</div>);
 
   return (
-    <>
-      <div className="folder">
+    <div className="folder">
+      {items.length === 0 ? props.colorClassUsage.length >= 1 ? <div className="warning-box warning-box--left">Er zijn meer items, maar deze vallen buiten je filters</div> : <div className="warning-box"> Er zijn geen foto's in deze map</div> : ""}
+      {
+        items.map((item, index) => (
+          <ListImageBox item={item} key={index}></ListImageBox>
+        ))
+      }
+    </div>)
 
-        {items.length === 0 ? props.colorClassUsage.length >= 1 ? <div className="warning-box warning-box--left">Er zijn meer items, maar deze vallen buiten je filters</div> : <div className="warning-box"> Er zijn geen foto's in deze map</div> : ""}
 
-        {
-          items.map((item, index) => (
-            <ListImageBox item={item} key={index}></ListImageBox>
-          ))
-        }
-      </div>
-    </>
-  );
+  // return (
+  //   <>
+  //     <ArchiveContextConsumer>
+  //       {appContext =>
+  //         appContext && (
+  //           <div className="folder">
+  //             {appContext.state.fileIndexItems.length === 0 ? appContext.state.colorClassUsage.length >= 1 ? <div className="warning-box warning-box--left">Er zijn meer items, maar deze vallen buiten je filters</div> : <div className="warning-box"> Er zijn geen foto's in deze map</div> : ""}
+  //             {
+  //               appContext.state.fileIndexItems.map((item, index) => (
+  //                 <ListImageBox item={item} key={item.fileName}></ListImageBox>
+  //               ))
+  //             }
+  //           </div>
+  //         )
+  //       }
+  //     </ArchiveContextConsumer>
+  //   </>
+  // );
 });
 
 export default ItemListView
