@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { ArchiveContext, ArchiveContextProvider } from '../contexts/archive-context';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
-import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import Archive from './archive';
 
 function ArchiveContextWrapper(archive: IArchiveProps) {
@@ -18,13 +17,20 @@ function ArchiveWrapper(archive: IArchiveProps) {
   const [archiveList, setArchiveList] = React.useState(archive);
   useEffect(() => {
     if (!state.fileIndexItems) return;
-    var fileIndexItems = newIFileIndexItemArray();
-    state.fileIndexItems.forEach(item => {
-      fileIndexItems.push(item)
-    });
-    var updatedState = state;
-    updatedState.fileIndexItems = fileIndexItems;
-    setArchiveList(updatedState);
+    if (state.fileIndexItems.length === 0) return;
+
+    // state.fileIndexItems.forEach((element, index) => {
+    //   state.fileIndexItems.splice(index, 1)
+    //   state.fileIndexItems.push(element);
+    // });
+
+    // state.fileIndexItems.sort(function (a, b) {
+    //   var x = a.fileName.toLowerCase();
+    //   var y = b.fileName.toLowerCase();
+    //   return x < y ? -1 : x > y ? 1 : 0;
+    // });
+
+    setArchiveList(state);
   }, [state]);
 
   if (!state.fileIndexItems) return (<></>);

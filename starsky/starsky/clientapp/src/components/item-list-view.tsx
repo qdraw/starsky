@@ -19,7 +19,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
       {items.length === 0 ? props.colorClassUsage.length >= 1 ? <div className="warning-box warning-box--left">Er zijn meer items, maar deze vallen buiten je filters</div> : <div className="warning-box"> Er zijn geen foto's in deze map</div> : ""}
       {
         items.map((item, index) => (
-          <ListImageBox item={item} key={index}></ListImageBox>
+          <ListImageBox item={item} key={item.lastEdited}></ListImageBox>
         ))
       }
     </div>)

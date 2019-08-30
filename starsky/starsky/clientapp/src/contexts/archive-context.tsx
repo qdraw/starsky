@@ -40,15 +40,16 @@ export function archiveReducer(state: State, action: Action): State {
 
       updated.fileIndexItems.forEach((item, index) => {
         if (select.indexOf(item.fileName) !== -1) {
-          var removed = state.fileIndexItems.splice(index, 1)[0];
-          removed.tags = "sdfdsf";
-          removed.filePath = "sdfdsf";
-          console.log(removed, index);
+          // var removed = state.fileIndexItems.splice(index, 1)[0];
+          // removed.tags = "sdfdsf";
+          // removed.filePath = "sdfdsf";
+          // console.log(removed, index);
 
-          updated.fileIndexItems.splice(index, 0, removed);
-          // state.fileIndexItems.push(removed);
+          // updated.fileIndexItems.splice(index, 0, removed);
+          // // state.fileIndexItems.push(removed);
 
-          // state.fileIndexItems[index].tags = "sdfdsf";
+          state.fileIndexItems[index].tags = tags;
+          state.fileIndexItems[index].lastEdited = Math.random().toString();
 
         }
       });
@@ -57,21 +58,25 @@ export function archiveReducer(state: State, action: Action): State {
       // var index = 1;
       // updated.fileIndexItems = updated.fileIndexItems.splice(index, 1)
 
-      updated.fileIndexItems[1].tags = "t" + action.tags;
-      updated.fileIndexItems[1].description = action.tags;
+      // updated.fileIndexItems[1].tags = "t" + action.tags;
+      // updated.fileIndexItems[1].description = action.tags;
       // if (state.fileIndexItems.length >= 1) {
-      //   // // console.log(state);
+      // //   // // console.log(state);
 
-      //   // state.fileIndexItems[1].fileHash = action.tags;
-      //   // state.fileIndexItems[1].tags = action.tags;
-      //   // console.log(state.fileIndexItems[1]);
-      //   state.fileIndexItems.push(removed);
-      // }
+      // //   // state.fileIndexItems[1].fileHash = action.tags;
+      // //   // state.fileIndexItems[1].tags = action.tags;
+      // //   // console.log(state.fileIndexItems[1]);
+      // //   state.fileIndexItems.push(removed);
+      // // }
 
-      // state.fileIndexItems[1].tags = "sdkfnldf";
-      console.log(updated.fileIndexItems[1]);
+      // // state.fileIndexItems[1].tags = "sdkfnldf";
+      // console.log(updated.fileIndexItems[1]);
 
-      // subPath: "~"
+      // // subPath: "~"
+      // // subPath: Math.random().toString()
+
+
+      // Need to update otherwise other events are not triggerd
       return { ...updated, subPath: Math.random().toString() };
     case "reset":
       return action.payload;
