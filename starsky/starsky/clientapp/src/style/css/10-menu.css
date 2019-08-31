@@ -5,7 +5,7 @@
   top: 0;
   left: 0;
   height: 50px;
-  z-index: 9999;
+  z-index: 500;
   background: #263238; 
   color: #fff;
 }
@@ -199,7 +199,7 @@
 
 .header .logo, .hamburger__container {
   position: relative;
-  z-index: 9999;
+  z-index: 500;
   border: 0px;
   background: transparent;
 }

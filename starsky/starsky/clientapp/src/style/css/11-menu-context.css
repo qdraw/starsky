@@ -38,12 +38,18 @@
   cursor: pointer;
   line-height: 50px;
   vertical-align: middle;
+  padding-left: 15px;
 }
 
 .menu-context .menu-options .menu-option:nth-child(even) {
-  background-color: red;
+  background-color: #ECEFF1;
 }
 
 .menu-context .menu-options .menu-option:hover {
   background: rgba(0, 0, 0, 0.2);
+}
+
+.menu-context .menu-options .menu-option.disabled {
+  cursor: not-allowed; 
+  text-decoration: line-through;
 }

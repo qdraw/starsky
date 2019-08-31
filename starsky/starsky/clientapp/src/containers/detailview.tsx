@@ -37,6 +37,7 @@ const DetailView: React.FC<IDetailView> = (props) => {
   }, [relativeObjects])
 
   useKeyboardEvent(/Escape/, (event: KeyboardEvent) => {
+    if (new Keyboard().isInForm(event)) return;
     var parentDirectory = new URLPath().updateFilePath(history.location.search, fileIndexItem.parentDirectory);
 
     history.navigate(parentDirectory, {
@@ -54,7 +55,7 @@ const DetailView: React.FC<IDetailView> = (props) => {
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
   }
 
-  useKeyboardEvent(/(i|e)$/, (event: KeyboardEvent) => {
+  useKeyboardEvent(/^(i|e)$/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     toggleLabels();
   }, [history.location.search])
