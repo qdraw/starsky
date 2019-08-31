@@ -101,7 +101,7 @@ const DetailView: React.FC<IDetailView> = (props) => {
         onError={() => {
           setError(true)
           setIsLoading(false)
-        }} src={"/api/thumbnail/" + fileIndexItem.fileHash + ".jpg?issingleitem=True"} />}
+        }} src={"/api/thumbnail/" + fileIndexItem.fileHash + ".jpg?issingleitem=true"} />}
 
       {relativeObjects.nextFilePath ?
         <div onClick={() => next()} className="nextprev nextprev--next"><div className="icon"></div></div>
