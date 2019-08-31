@@ -22,26 +22,21 @@ const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
   // Get Close url
   const parentUrl = props.parent ? new URLPath().updateFilePath(history.location.search, props.parent) : "/";
 
-  // To the models that are activated
-  // const [isTrashModalOpen, setTrashModalOpen] = React.useState(false);
-
-  // console.log('props.isMarkedAsDeleted', props.isMarkedAsDeleted);
-
-
+  // Get the status from the props
   function getIsMarkedAsDeletedFromProps(): boolean {
     if (!props.detailView || !props.detailView.fileIndexItem) return false;
     return props.detailView.fileIndexItem.status === "Deleted";
   }
 
   const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(getIsMarkedAsDeletedFromProps());
+
   // update props after a file change
   useEffect(() => {
     setMarkedAsDeleted(getIsMarkedAsDeletedFromProps())
   }, [props.detailView]);
 
+  // Delete and Undo Delete
   function DeleteFile() {
-    console.log(isMarkedAsDeleted);
-
     if (!props.detailView) return;
 
     var bodyParams = new URLSearchParams();
