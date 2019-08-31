@@ -12,6 +12,7 @@
     -ms-touch-action: manipulation;
     touch-action: manipulation;
     cursor: pointer;
+    font-family: inherit;
     user-select: none;
     background-image: none;
     border: 1px solid transparent;
@@ -29,9 +30,13 @@
     background-color: #455A64;
 }
 
+.btn--info {
+    color: #263238;
+    background-color: #fff;
+    border: 1px solid #263238;
+}
 
-
-.btn-danger {
+/* .btn-danger {
     color: #fff;
     background-color: #BF360C;
     border-color: #B71C1C;
@@ -51,7 +56,7 @@
     color: #fff;
     background-color: #5a6268;
     border-color: #545b62;
-}
+} */
 
 .btn.disabled,
 .btn:disabled {

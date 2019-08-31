@@ -15,12 +15,15 @@
 
 .content--header {
   height: 50px;
-  background-color: #CFD8DC;  
   line-height: 50px;
   padding-left: 10px;
+  background-color: #CFD8DC;  
 }
 
-.content--header--bluegray50 {
+.content--subheader {
+    height: 50px;
+  line-height: 50px;
+  padding-left: 10px;
   background-color: #ECEFF1;  
 }
 

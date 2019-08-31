@@ -2,14 +2,10 @@
 import { Link } from '@reach/router';
 import React, { memo } from 'react';
 import useLocation from '../hooks/use-location';
+import { IMenuProps } from '../interfaces/IMenuProps';
 import { URLPath } from '../shared/url-path';
-import Modal from './modal';
+import ModalTrash from './modal-trash';
 import MoreMenu from './more-menu';
-
-export interface IMenuProps {
-  isDetailMenu: boolean;
-  parent?: string;
-}
 
 const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
 
@@ -32,16 +28,7 @@ const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
 
   return (<>
 
-    <Modal
-      id="trash-modal"
-      root="root"
-      isOpen={isTrashModalOpen}
-      handleExit={() => setTrashModalOpen(false)}
-    >
-
-      Eh fakke e swa
-
-    </Modal>
+    <ModalTrash isOpen={isTrashModalOpen} isFileDeleted={false}></ModalTrash>
 
     <header className={isDetails ? "header header--main header--edit" : "header header--main"}>
       <div className="wrapper">

@@ -46,7 +46,7 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
   }
 
   return (<div className="sidebar-selection">
-    <div className="content--header content--header--bluegray50">
+    <div className="content--header content--subheader">
       {!select || select.length !== props.fileIndexItems.length ? <a className="btn btn--default" onClick={() => allSelection()}>Alles</a> : ""}
       {!select || select.length !== 0 ? <a className="btn btn--default" onClick={() => undoSelection()}>Undo</a> : ""}
     </div>
