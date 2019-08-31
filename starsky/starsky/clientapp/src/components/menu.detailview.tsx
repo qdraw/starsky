@@ -4,7 +4,6 @@ import React, { memo } from 'react';
 import useLocation from '../hooks/use-location';
 import { IMenuProps } from '../interfaces/IMenuProps';
 import { URLPath } from '../shared/url-path';
-import ModalTrash from './modal-trash';
 import MoreMenu from './more-menu';
 
 const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
@@ -23,12 +22,21 @@ const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
   const parentUrl = props.parent ? new URLPath().updateFilePath(history.location.search, props.parent) : "/";
 
   // To the models that are activated
-  const [isTrashModalOpen, setTrashModalOpen] = React.useState(false);
+  // const [isTrashModalOpen, setTrashModalOpen] = React.useState(false);
 
+  // console.log('props.isMarkedAsDeleted', props.isMarkedAsDeleted);
+
+  function DeleteFile(isMarkedAsDeleted: boolean) {
+
+    // Undo delete
+    if (isMarkedAsDeleted) {
+
+    }
+  }
 
   return (<>
 
-    <ModalTrash isOpen={isTrashModalOpen} isFileDeleted={false}></ModalTrash>
+    {/* <ModalTrash isOpen={isTrashModalOpen} isMarkedAsDeleted={props.isMarkedAsDeleted}></ModalTrash> */}
 
     <header className={isDetails ? "header header--main header--edit" : "header header--main"}>
       <div className="wrapper">
@@ -38,7 +46,8 @@ const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
           <li className="menu-option disabled" onClick={() => { alert("Exporteer werkt nog niet"); }}>Exporteer</li>
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Naam wijzigen</li>
-          <li className="menu-option" onClick={() => { setTrashModalOpen(true); }}>Weggooien</li>
+          <li className="menu-option" onClick={() => { DeleteFile(true); }}>{!props.isMarkedAsDeleted ? "Weggooien" : "Undo Weggooien"}</li>
+
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Roteer naar rechts</li>
         </MoreMenu>
       </div>
