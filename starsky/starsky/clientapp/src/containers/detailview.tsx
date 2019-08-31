@@ -4,6 +4,7 @@ import Preloader from '../components/preloader';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IDetailView } from '../interfaces/IDetailView';
+import { INavigateState } from '../interfaces/INavigateState';
 import { Keyboard } from '../shared/keyboard';
 import { URLPath } from '../shared/url-path';
 
@@ -37,7 +38,13 @@ const DetailView: React.FC<IDetailView> = (props) => {
 
   useKeyboardEvent(/Escape/, (event: KeyboardEvent) => {
     var parentDirectory = new URLPath().updateFilePath(history.location.search, fileIndexItem.parentDirectory);
-    history.navigate(parentDirectory, {});
+
+    history.navigate(parentDirectory, {
+      state: {
+        fileName: fileIndexItem.fileName
+      } as INavigateState
+    });
+
   }, [fileIndexItem])
 
   function toggleLabels() {

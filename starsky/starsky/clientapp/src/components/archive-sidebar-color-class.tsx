@@ -15,8 +15,6 @@ const ArchiveSidebarColorClass: React.FunctionComponent<any> = memo((props) => {
   useEffect(() => {
     setSelect(new URLPath().getSelect(history.location.search));
     var path = new URLPath().getFilePath(history.location.search)
-    console.log(path);
-
     var selectParams = new URLPath().ArrayToCommaSeperatedString(select, path)
     setSelectParams(selectParams);
   }, [history.location.search]);
@@ -25,7 +23,6 @@ const ArchiveSidebarColorClass: React.FunctionComponent<any> = memo((props) => {
 
   return (<ColorClassSelect onToggle={(colorclass) => {
     dispatch({ type: 'update', colorclass, select });
-
-  }} filePath={selectParams} isEnabled={true} clearAfter={true} ></ColorClassSelect>)
+  }} filePath={selectParams} isEnabled={select.length !== 0} clearAfter={true} ></ColorClassSelect>)
 });
 export default ArchiveSidebarColorClass

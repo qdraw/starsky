@@ -11,6 +11,15 @@ interface ItemListProps {
  */
 const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
 
+  // todo: implement feature that saves the scroll height
+  // var history = useLocation();
+  // useEffect(() => {
+  //   var state = history.location.state as INavigateState;
+  //   if (!state.fileName) return;
+
+  //   console.log(state.fileName);
+  // }, [history.location.state]);
+
   let items = props.fileIndexItems;
   if (!items) return (<div className="folder">no content</div>);
 
