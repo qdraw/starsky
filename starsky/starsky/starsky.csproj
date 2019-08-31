@@ -54,4 +54,15 @@
   <ItemGroup>
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
   </ItemGroup>
+  <ItemGroup>
+   <Content Remove="clientapp\build\*.*" />
+   <Content Include="clientapp\build\*.*">
+     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+   </Content>
+   <Content Remove="clientapp\build\static\*\*.*" />
+   <Content Include="clientapp\build\static\*\*.*">
+     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+   </Content>
+ </ItemGroup>
+
 </Project>

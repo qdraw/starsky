@@ -1,0 +1,60 @@
+
+.detailview .sidebar {
+  width: 320px;
+  height: 100%;
+  overflow-y: auto;
+  right:0px;
+  position: absolute;
+  background-color: #fff;
+}
+
+
+.detailview .box {
+  display: block;
+  margin-top: 10px;
+}
+
+.detailview .box:first-child {
+  margin-top:0px;
+}
+
+.detailview .box p,
+.detailview .box b{
+  line-height: 1.3;
+  font-size: 14px
+}
+.detailview .box b {
+  font-weight: 300;
+}
+
+.detailview .box .icon {
+  float: left;
+  height: 35px;
+  width: 24px;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-right: 5px;
+}
+.detailview .box .icon.icon--right {
+  float: right;
+}
+
+.detailview .box .icon.icon--edit {
+  background-image: url('../images/s-edit.svg')
+}
+
+.detailview .box .icon.icon--date {
+  background-image: url('../images/baseline-date_range-24px.svg')
+}
+
+.detailview .box .icon.icon--last-edited {
+  background-image: url('../images/baseline-fingerprint-24px.svg')
+}
+
+.detailview .box .icon.icon--shutter-speed {
+  background-image: url('../images/baseline-shutter_speed-24px.svg');
+}
+
+.detailview .box .icon.icon--location {
+  background-image: url('../images/baseline-location_on-24px.svg');
+}

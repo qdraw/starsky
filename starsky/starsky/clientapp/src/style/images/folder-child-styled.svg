@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>Custom Preset</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Custom-Preset">
+            <path d="M23.876983,10.2998447 L41.8652821,10.2998447 C44.6217607,10.3293382 46,11.8699338 46,14.9216313 C46,17.9733289 46,25.406654 46,37.2216068 C45.985041,39.7405356 44.6068017,41 41.8652821,41 C39.1237624,41 27.2875457,41 6.35663208,41 C3.45221069,40.5631062 2,39.1196534 2,36.6696417 C2,34.21963 2,25.1695856 2,9.51950841 C2.07729006,7.17316947 3.76919558,6 7.07571656,6 C10.3822375,6 14.6815371,6 19.9736151,6 L23.876983,10.2998447 Z" id="Path-2-Copy-2" stroke="#FFFFFF" stroke-width="3" fill="#263238"></path>
+            <polygon id="Path-3" fill="#FFFFFF" points="8.35954588 33.1254924 17.6971131 18.7190918 24.4766085 28.3932488 30.7724141 23.2981975 39.1041341 33.1254924"></polygon>
+        </g>
+    </g>
+</svg>

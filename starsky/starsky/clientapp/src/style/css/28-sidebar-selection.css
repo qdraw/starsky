@@ -1,0 +1,64 @@
+.sidebar-selection ul {
+  max-height: 135px;
+  overflow-y: auto;
+}
+
+.sidebar-selection li.warning-box {
+  background-color: #283593;
+  color: white;
+  padding-left:10px;
+  line-height: 30px;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+    margin-left:10px;
+  margin-right:10px;
+    width: calc(100% - 20px);
+
+}
+
+
+.sidebar-selection li {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 30px;
+  width: 100%;
+  padding-left:10px;
+  padding-right:10px;
+}
+
+.sidebar-selection li:nth-child(2n) {
+  background-color: #ECEFF1;
+}
+
+.sidebar-selection li .close {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  opacity: 0.5;
+  position: relative;
+  margin-right:8px;
+}
+
+.sidebar-selection li .close::before, .sidebar-selection li .close::after {
+  position: absolute;
+  margin-top: 4px;
+  left: 13px;
+  content: ' ';
+  height: 28px;
+  width: 2px;
+  background-color: #333;
+}
+
+.sidebar-selection li .close:before {
+    transform: rotate(45deg);
+}
+.sidebar-selection li .close:after {
+    transform: rotate(-45deg);
+}
+
+.sidebar-selection .btn {
+  margin-right:5px;
+}

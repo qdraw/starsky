@@ -1,0 +1,153 @@
+.colorclass.colorclass--filter {
+  margin-left: 10px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+@media screen and (max-width: 450px) {
+  .colorclass.colorclass--filter {
+    margin-left: 0px;
+  }
+}
+
+.colorclass > div.colorclass,
+.colorclass > a.colorclass {
+  text-decoration: none;
+  color: #263238;
+  margin-right: 10px;
+  margin-top: 10px;
+
+}
+
+.colorclass > div.colorclass label,
+.colorclass > a.colorclass label {
+    height: 20px;
+    width: 20px;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.5);
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.colorclass > div.colorclass.active label:before,
+.colorclass > a.colorclass.active label:before {
+    content: "";
+    display: inline-block;
+    height: 6px;
+    width: 9px;
+    border-left: 2px solid;
+    border-bottom: 2px solid;
+    transform: translate(0px, -2px) rotate(-45deg);
+}
+
+/* disabled state **/
+.colorclass.colorclass--disabled > a.colorclass {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.colorclass.colorclass--disabled > a.colorclass label {
+  cursor: not-allowed;
+}
+
+.colorclass--select > a.colorclass.active label:before {
+    content: '';
+    border:0px;
+    background: #263238;
+    height: 14px;
+    width: 14px;
+    margin-top:5px;
+    border-radius: 100%;
+}
+
+
+.colorclass > a.colorclass--reset {
+    background-color: #90A4AE;
+}
+
+/* geen */
+.colorclass > a.colorclass--0.active {
+  background-color: #90A4AE;
+}
+.colorclass > a.colorclass--0 {
+    background-color: #CFD8DC;
+}
+
+/* pink */
+.colorclass > a.colorclass--1.active  {
+  background-color: #F06292;
+}
+.colorclass > a.colorclass--1 {
+    background-color: #F48FB1;
+}
+
+
+
+/* red */
+.colorclass > a.colorclass--2.active  {
+  background-color: #EF5350;
+}
+
+.colorclass > a.colorclass--2  {
+  background-color: #EF9A9A;
+}
+
+
+/* Orange */
+.colorclass > a.colorclass--3.active  {
+  background-color: #FFB74D;
+  /* background-color: #FFE0B2; */
+}
+
+.colorclass > a.colorclass--3  {
+  background-color: #FFE0B2;
+}
+
+
+
+/* yellow */
+.colorclass > a.colorclass--4.active  {
+  background-color: #FFEB3B;
+  /* background-color: #FFF59D; */
+}
+
+.colorclass > a.colorclass--4  {
+  background-color: #FFF59D;
+}
+
+
+/* green */
+.colorclass > a.colorclass--5.active  {
+  background-color: #66BB6A;
+}
+
+.colorclass > a.colorclass--5  {
+  background-color: #C8E6C9;
+}
+
+/* azure */
+.colorclass > a.colorclass--6.active  {
+    background-color: #26C6DA;
+}
+.colorclass > a.colorclass--6  {
+  background-color: #B2EBF2;
+}
+
+/* blue */
+.colorclass > a.colorclass--7.active {
+  background-color: #5C6BC0;
+}
+.colorclass > a.colorclass--7 {
+  background-color: #BBDEFB;
+}
+
+
+/* grey = 8*/
+.colorclass > a.colorclass--8.active {
+  /* background-color: #455A64; */
+  background-color: #546E7A;
+}
+.colorclass > a.colorclass--8 {
+  background-color: #78909C;
+}
