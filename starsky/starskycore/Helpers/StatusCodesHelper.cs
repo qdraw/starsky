@@ -64,6 +64,11 @@ namespace starskycore.Helpers
                     detailView.FileIndexItem.CollectionPaths.Remove(collectionSubPath);
                 }
             }
+            
+            if (detailView.FileIndexItem.Tags.Contains("!delete!"))
+            {
+	            return FileIndexItem.ExifStatus.Deleted;
+            }
 
             if (detailView.FileIndexItem.CollectionPaths.Count == 0)
             {

@@ -50,6 +50,23 @@ namespace starskytest.Helpers
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,status);
 		}
 		
+		
+		[TestMethod]
+		public void StatusCodesHelperTest_InjectFakeIStorage_FileDeletedTag()
+		{
+			var appSettings = new AppSettings();
+			var detailView = new DetailView
+			{
+				IsDirectory = false,
+				SubPath = "/test.jpg",
+				FileIndexItem = new FileIndexItem{ParentDirectory = "/", Tags = "!delete!", FileName = "test.jpg", CollectionPaths = new List<string>{"/test.jpg"}}
+			};
+			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var status = new StatusCodesHelper(appSettings,istorage).FileCollectionsCheck(detailView);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,status);
+		}
+		
 		[TestMethod]
 		public void StatusCodesHelperTest_InjectFakeIStorage_NotExitSituation()
 		{

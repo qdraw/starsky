@@ -331,7 +331,7 @@ namespace starsky.Controllers
             }
                 
             // When all items are not found
-            if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+            if (fileIndexResultsList.All(p => (p.Status != FileIndexItem.ExifStatus.Ok && p.Status != FileIndexItem.ExifStatus.Deleted)))
                 return NotFound(fileIndexResultsList);
             
             return Json(fileIndexResultsList);

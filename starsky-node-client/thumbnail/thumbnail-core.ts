@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import jimp from 'jimp';
 import sharp from 'sharp';
 
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
 import { IResults } from "./IResults";
 import Axios from 'axios';
@@ -153,7 +153,7 @@ export class Query {
 		}
 
 		return await axios(downloadFileRequestOptions)
-			.then(function (response) {
+			.then(function (response: AxiosResponse) {
 
 				if(response.status === 202) {
 					process.stdout.write("•");
@@ -162,8 +162,8 @@ export class Query {
 				process.stdout.write("≠");
 
 				return false;
-		}).catch(function (err) {
-			console.log('checkIfSingleFileNeedsToBeDownloaded ==> ',err.response)
+		}).catch(function (err : AxiosError) {
+			console.log('checkIfSingleFileNeedsToBeDownloaded ==> ',err.response.status, err.config.url)
 			return false;
 		});
 
@@ -239,6 +239,7 @@ export class Query {
 							// var ratio = height/width;
 
 							image.resize(1000,jimp.AUTO);
+							image.quality(80);
 
 		
 							image.write(targetFilePath,() =>{
@@ -377,8 +378,13 @@ export class Query {
 						//console.log("upload > ", response.status, response.data, fileHash);
 						process.stdout.write("∑");
 						resolve(false);
-					}).catch(function (thrown) {
-						console.log(thrown);
+					}).catch(function (thrown : AxiosError) {
+						var errorMessage = 'upload failed: '+  thrown.config.url + " ";
+						if(thrown.response.status) {
+							errorMessage += thrown.response.status
+						}
+						console.log(errorMessage);
+						
 						resolve(false);
 					});
 				});
