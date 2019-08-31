@@ -5,6 +5,7 @@ interface IModalTrashProps {
   isOpen: boolean;
   isMarkedAsDeleted?: boolean;
 }
+{/* <ModalTrash isOpen={isTrashModalOpen} isMarkedAsDeleted={props.isMarkedAsDeleted}></ModalTrash> */ }
 
 const ModalTrash: React.FunctionComponent<IModalTrashProps> = memo((props) => {
   const [isTrashModalOpen, setTrashModalOpen] = React.useState(false);
@@ -12,6 +13,7 @@ const ModalTrash: React.FunctionComponent<IModalTrashProps> = memo((props) => {
 
   useEffect(() => {
     setTrashModalOpen(props.isOpen);
+    if (!props.isMarkedAsDeleted) return;
     setMarkedAsDeleted(props.isMarkedAsDeleted);
   }, [props]);
 

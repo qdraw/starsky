@@ -14,6 +14,10 @@
   width: calc(100% - 320px);
 }
 
+.header.header--deleted {
+  background: #01579B; 
+}
+
 .header.header--bluegray700 {
   background-color: #455A64;
 }
