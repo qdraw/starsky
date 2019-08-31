@@ -50,7 +50,7 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
 
   return (
     <>
-      <header className={sidebar ? "header header--main header--edit" : select ? "header header--main header--bluegray800" : "header header--main "}>
+      <header className={sidebar ? "header header--main header--select header--edit" : select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
           {!select ? <button className="hamburger__container" onClick={() => { toggleHamburger(); }}>
             <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
@@ -72,9 +72,8 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
           {select ? <div className="item item--labels" onClick={() => toggleLabels()}>Labels</div> : null}
 
           <MoreMenu>
-            <li className="menu-option">Werkt nog niet!</li>
-            <li className="menu-option" onClick={() => { alert("Map maken werkt nog niet"); }}>Map maken</li>
-            <li className="menu-option" onClick={() => { alert("Uploaden nog niet"); }}>Uploaden</li>
+            <li className="menu-option disabled" onClick={() => { alert("Map maken werkt nog niet"); }}>Map maken</li>
+            <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
           </MoreMenu>
 
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
