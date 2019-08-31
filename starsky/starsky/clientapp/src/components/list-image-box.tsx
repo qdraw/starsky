@@ -4,6 +4,7 @@ import useLocation from '../hooks/use-location';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { URLPath } from '../shared/url-path';
 import ListImage from './list-image';
+import Preloader from './preloader';
 
 interface IListImageBox {
   item: IFileIndexItem
@@ -26,6 +27,9 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
     setSelect(urlObject.select);
   }
+
+  var preloader = <Preloader isOverlay={true} isDetailMenu={false}></Preloader>
+  const [isPreloaderState, setPreloaderState] = React.useState(false);
 
   // selected state
   if (select) {
@@ -55,7 +59,9 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
   // default state
   return (
     <div className="box box--view">
-      <Link title={item.fileName} to={new URLPath().updateFilePath(history.location.search, item.filePath)}
+      {/* for slow connections */}
+      {isPreloaderState ? preloader : null}
+      <Link onClick={() => setPreloaderState(true)} title={item.fileName} to={new URLPath().updateFilePath(history.location.search, item.filePath)}
         className={"box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
 
         <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '?issingleitem=true'}></ListImage>

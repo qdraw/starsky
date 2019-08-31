@@ -27,7 +27,7 @@ const MediaContent: React.FC = () => {
   return (
     <div>
       <Menu parent={parent} isDetailMenu={pageType === PageType.DetailView}></Menu>
-      {pageType === PageType.Loading ? <Preloader isOverlay={true} isDetailMenu={false} >tttt</Preloader> : null}
+      {pageType === PageType.Loading ? <Preloader isOverlay={true} isDetailMenu={false}></Preloader> : null}
       {pageType === PageType.NotFound ? <>not found</> : null}
       {pageType === PageType.ApplicationException ? <>ApplicationException</> : null}
       {pageType === PageType.Archive && archive ? <ArchiveContextWrapper {...archive} /> : null}
