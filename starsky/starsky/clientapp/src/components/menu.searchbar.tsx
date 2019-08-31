@@ -1,6 +1,8 @@
+import { Link } from '@reach/router';
 import * as React from "react";
 import { useEffect } from 'react';
 import useFetch from '../hooks/use-fetch';
+import useLocation from '../hooks/use-location';
 
 export function MenuSearchBar() {
   var defaultMenu = [
@@ -9,6 +11,7 @@ export function MenuSearchBar() {
     { "name": "Account", url: "/account" },
     { "name": "Importeren", url: "/import" }
   ];
+  var history = useLocation();
 
   // the results
   const [data, setData] = React.useState({
@@ -36,7 +39,7 @@ export function MenuSearchBar() {
   function onFormSubmit(e: React.FormEvent) {
     e.preventDefault();
     // To do change to search page
-    document.location.href = "/search?t=" + query;
+    history.navigate("/search?t=" + query, { replace: true })
   }
 
   /**
@@ -64,7 +67,7 @@ export function MenuSearchBar() {
       }
       {data.hits.map(item => (
         <li key={item} className="menu-item">
-          <a href={"/search?t=" + item} className="search-icon">{item}</a>
+          <Link to={"/search?t=" + item} className="search-icon">{item}</Link>
         </li>
       ))}
     </>

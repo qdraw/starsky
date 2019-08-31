@@ -1,7 +1,7 @@
 
 import { RouteComponentProps } from '@reach/router';
 import React, { FunctionComponent } from 'react';
-import Modal from '../components/modal';
+import Menu from '../containers/menu';
 
 
 
@@ -9,46 +9,24 @@ interface ISearchPageProps {
 }
 
 const Search: FunctionComponent<RouteComponentProps<ISearchPageProps>> = (props) => {
-  const [isModalOpen, setModalOpen] = React.useState(false);
+  var sidebar = false;
+  return (<div>
+    <Menu detailView={undefined} parent={"parent"} isDetailMenu={false}></Menu>
 
-  // for some reason "name" here is possibly undefined
-  if (props && props.location && props.navigate) {
-    // props.location.search = "/?sidebar=true";
-    // props.navigate("/some/where", { replace: true });
+    {props.path}
+    {/* <div className={!sidebar ? "archive" : "archive collapsed"}>
+      {sidebar ? <ArchiveSidebar {...archive}></ArchiveSidebar> : ""}
 
+      <div className="content">
+        <Breadcrumb breadcrumb={archive.breadcrumb} subPath={archive.subPath}></Breadcrumb>
+        <RelativeLink relativeObjects={archive.relativeObjects}></RelativeLink>
 
-    return (
-      <><Modal
-        id="modal-root"
-        root="root"
-        isOpen={isModalOpen}
-        handleExit={() => setModalOpen(false)}
-      >
-        <div className={`modal-bg ${isModalOpen ? " modal-bg--open" : ""}`}>
-          <div
-            className={`modal-content ${
-              isModalOpen ? " modal-content--show" : ""
-              }`}
-          >
-            <ul>
-              <li>Exit button is immediately focused</li>
-              <li>
-                Current scroll position is cached and overlayed content is
-                unscrollable
-              </li>
-              <li>Focusable elements overlayed are now unfocusable</li>
-              <li>Click esc to close modal</li>
-            </ul>
-          </div>
-        </div>
-      </Modal>
-        <button className="button" onClick={() => setModalOpen(true)}>
-          Toggle Modal
-        </button>
-      </>
-    );
-  }
-  return null;
+        <ColorClassFilter itemsCount={archive.collectionsCount} subPath={archive.subPath}
+          colorClassFilterList={archive.colorClassFilterList} colorClassUsage={archive.colorClassUsage}></ColorClassFilter>
+        <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListView>
+      </div>
+    </div> */}
+  </div>)
 }
 
 
