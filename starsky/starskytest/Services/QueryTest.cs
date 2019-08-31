@@ -45,7 +45,6 @@ namespace starskytest.Services
                 _insertSearchDatahiJpgInput = _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi.jpg",
-                    //FilePath = "/basic/hi.jpg",
                     ParentDirectory = "/basic",
                     FileHash = "09876543456789",
                     ColorClass = FileIndexItem.Color.Winner, // 1
@@ -56,7 +55,6 @@ namespace starskytest.Services
                 _insertSearchDatahi2JpgInput =  _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi2.jpg",
-                    //FilePath = "/basic/hi2.jpg",
                     Tags = "!delete!",
                     ParentDirectory = "/basic"
                 });
@@ -64,7 +62,6 @@ namespace starskytest.Services
                 _insertSearchDatahi3JpgInput =  _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi3.jpg",
-                    //FilePath = "/basic/hi3.jpg",
                     ParentDirectory = "/basic",
                     ColorClass = FileIndexItem.Color.Trash // 9
                 });
@@ -72,7 +69,6 @@ namespace starskytest.Services
                 _insertSearchDatahi4JpgInput =  _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi4.jpg",
-                    //FilePath = "/basic/hi4.jpg",
                     ParentDirectory = "/basic",
                     ColorClass = FileIndexItem.Color.Winner // 1
                 });
@@ -80,7 +76,6 @@ namespace starskytest.Services
                 _insertSearchDatahi2SubfolderJpgInput =  _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi2.jpg",
-                    //FilePath = "/basic/subfolder/hi2.jpg",
                     ParentDirectory = "/basic/subfolder",
                     FileHash = "234567876543"
                 });
@@ -200,6 +195,15 @@ namespace starskytest.Services
             var prev = _query.SingleItem("/basic/hi4.jpg", colorClassFilterList).RelativeObjects.PrevFilePath;
             Assert.AreEqual("/basic/hi.jpg", prev);
         }
+        
+        [TestMethod]
+        public void QueryAddSingleItemDeletedStatus()
+        {       
+	        InsertSearchData();
+	        var status = _query.SingleItem("/basic/hi2.jpg").FileIndexItem.Status;
+	        Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, status);
+        }
+
 
         [TestMethod]
         [ExcludeFromCoverage]

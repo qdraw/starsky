@@ -230,7 +230,8 @@ namespace starskycore.Models
             DirReadOnly,
             ReadOnly,
             Unauthorized,
-            Ok
+            Ok,
+            Deleted
         }
 
 		/// <summary>

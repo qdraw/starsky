@@ -69,6 +69,12 @@ namespace starskycore.Services
             var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
             if (currentFileIndexItem == null) return null;
 
+            // To know when a file is deleted
+            if ( currentFileIndexItem.Tags.Contains("!delete!") )
+            {
+	            currentFileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
+            }
+            
             if(currentFileIndexItem.IsDirectory) return new DetailView
             {
                 IsDirectory = true,
