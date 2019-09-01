@@ -50,11 +50,6 @@
   margin-left: auto;
 }
 
-.header .menu {
-  /* margin: 10px; */
-}
-
-
 .header .menu a {
   display: block;
   padding: 5px 10px;
@@ -146,6 +141,7 @@
   width: calc(100% - 25px);
 }
 
+.header .menu-item button,
 .header .menu-item a {
   padding-left: 25px;
   height: 50px;
@@ -155,10 +151,18 @@
   vertical-align: middle;
   text-decoration: none;
   color: #FFF;
+  background: none;
+  border:0px;
+  font:inherit;
+  cursor: pointer;
 }
 
+.header .menu-item button:focus {
+  background-color:#283593;
+}
 
 /* To display the search results (NOT a form) */
+.header .menu-item button.search-icon::before,
 .header .menu-item a.search-icon::before {
     background-color: white;
     mask-image: url('../images/baseline-search-24px.svg');
@@ -168,11 +172,6 @@
     content: "";
     padding-left: 24px;
     margin-right: 12px;
-
-
-    /* fixes for webkit */
-    -webkit-mask-position: 0px 40%;
-    -webkit-mask-image: url('../images/baseline-search-24px.svg');
 }
 
 .header .menu-item:nth-child(2n) {

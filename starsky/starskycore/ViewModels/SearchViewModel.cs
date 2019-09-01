@@ -73,6 +73,12 @@ namespace starskycore.ViewModels
         public int SearchCount { get; set; }
 
 	    /// <summary>
+	    /// Number of search results (Different name)
+	    /// </summary>
+	    public int CollectionsCount => SearchCount;
+
+
+	    /// <summary>
 	    /// Types to search in e.g. -Title=Test
 	    /// </summary>
         public enum SearchInTypes

@@ -33,7 +33,8 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
     if (!urlObject || !lastPageNumber) return <></>;
     var nextObject = { ...urlObject };
     nextObject.p = nextObject.p ? nextObject.p + 1 : 1;
-    if (urlObject.p === undefined || urlObject.p < 0 || lastPageNumber <= urlObject.p) return <></>; // if(urlObject.p) also means 0
+    // if(urlObject.p) also means 0
+    if (urlObject.p === undefined || urlObject.p < 0 || lastPageNumber <= urlObject.p) return <></>; // undefined=0
     return <Link className="next" to={new URLPath().IUrlToString(nextObject)}> Volgende</ Link>;
   }
 
