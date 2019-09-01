@@ -10,8 +10,8 @@ interface IMenuSearchBarProps {
 
 const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props) => {
   var defaultMenu = [
-    { "name": "Home", "url": "/" },
-    { "name": "Foto's van deze week", "url": "/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22" },
+    { "name": "Home", "url": "/beta" },
+    { "name": "Foto's van deze week", "url": "/beta/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22" },
     { "name": "Account", url: "/account" },
     { "name": "Importeren", url: "/import" }
   ];

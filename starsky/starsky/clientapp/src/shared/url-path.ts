@@ -16,8 +16,6 @@ export class URLPath {
           break;
         case 'details'.toLowerCase():
           if (key[1] === "true") {
-            console.log("true", locationHash);
-
             urlObject.details = true
           }
           else {
@@ -95,10 +93,9 @@ export class URLPath {
   public IUrlToString(urlObject: IUrl): string {
     var params = new URLSearchParams();
     for (let key of Object.entries(urlObject)) {
-      params.set(key[0], key[1].toString());
+      params.set(key[0], key[1]);
     }
     var url = this.addPrefixUrl(params.toString());
-    var string = params.toString();
     return url.replace(/\+/ig, " ").replace(/%2F/ig, "/").replace(/%2C/ig, ",");
   }
 
