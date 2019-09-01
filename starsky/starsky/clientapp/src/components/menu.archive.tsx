@@ -63,13 +63,17 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
           {!select ? <div className="item item--select" onClick={() => { selectToggle() }}>
             Selecteer
             </div> : null}
-
           {select ? <div className="item item--labels" onClick={() => toggleLabels()}>Labels</div> : null}
 
-          <MoreMenu>
+          {!select ? <MoreMenu>
             <li className="menu-option disabled" onClick={() => { alert("Map maken werkt nog niet"); }}>Map maken</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
-          </MoreMenu>
+          </MoreMenu> : null}
+
+          {/* In the select context there are more options */}
+          {select ? <MoreMenu>
+            <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
+          </MoreMenu> : null}
 
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
             <div className="nav__container">
