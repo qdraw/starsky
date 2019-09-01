@@ -30,7 +30,7 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
   }, [props]);
 
   // used for color of icon
-  const [inputFocus, setInputFocus] = React.useState(false);
+  const [inputFocus, setInputFocus] = React.useState(true);
 
   // can't set this inside effect or if ==> performance issue, runs to often
   const responseObject = useFetch("/suggest/?t=" + query, 'get');

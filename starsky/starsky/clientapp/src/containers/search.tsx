@@ -25,8 +25,6 @@ function Search(archive: IArchiveProps) {
   if (!archive) return (<>(Search) => no archive</>)
   if (!archive.colorClassUsage) return (<>(Search) => no colorClassUsage</>)
 
-  console.log(archive, 't');
-
 
   return (
     <div className={!sidebar ? "archive" : "archive collapsed"}>
@@ -40,6 +38,7 @@ function Search(archive: IArchiveProps) {
         <SearchPagination {...archive}></SearchPagination>
         {archive.collectionsCount >= 1 ? <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListView> : null}
         {archive.collectionsCount === 0 ? <div className="folder"><div className="warning-box"> Probeer een andere zoekopdracht</div></div> : null}
+        {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive}></SearchPagination> : null}
       </div>
     </div>
   )

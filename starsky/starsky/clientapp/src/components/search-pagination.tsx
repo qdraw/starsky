@@ -16,21 +16,22 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
   const [urlObject, setUrlObject] = React.useState(new URLPath().StringToIUrl(history.location.search));
 
   useEffect(() => {
-    // console.log(props.lastPageNumber);
     setLastPageNumber(props.lastPageNumber ? props.lastPageNumber : -1);
     setUrlObject(new URLPath().StringToIUrl(history.location.search))
   }, [props]);
 
   function prev(): JSX.Element {
-    if (!urlObject || !lastPageNumber) return <></>;
+    if (!urlObject || !lastPageNumber) return <>tt</>;
+    urlObject.p = urlObject.p ? urlObject.p : 0;
     var prevObject = { ...urlObject };
     prevObject.p = prevObject.p ? prevObject.p - 1 : 1;
-    if (!urlObject.p || urlObject.p <= 0 || lastPageNumber < urlObject.p) return <></>;
+    if (!urlObject.p || urlObject.p < 0 || lastPageNumber < urlObject.p) return <></>;
     return <Link className="prev" to={new URLPath().IUrlToString(prevObject)}> Vorige</ Link>;
   }
 
   function next(): JSX.Element {
     if (!urlObject || !lastPageNumber) return <></>;
+    urlObject.p = urlObject.p ? urlObject.p : 0;
     var nextObject = { ...urlObject };
     nextObject.p = nextObject.p ? nextObject.p + 1 : 1;
     // if(urlObject.p) also means 0
