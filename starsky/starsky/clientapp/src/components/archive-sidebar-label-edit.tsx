@@ -1,6 +1,7 @@
 import React, { memo, useEffect } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetchpost';
 import { URLPath } from '../shared/url-path';
 import SwitchButton from './switch-button';
@@ -15,6 +16,7 @@ interface ISidebarUpdate {
 
 interface IDetailViewSidebarLabelEditProps {
   subPath: string;
+  fileIndexItems: Array<IFileIndexItem>,
 }
 
 const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEditProps> = memo((archive) => {
@@ -96,7 +98,9 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
     var bodyParams = updateToUrlSearchParams(update);
     if (bodyParams.toString().length === 0) return;
 
-    var selectParams = new URLPath().ArrayToCommaSeperatedString(select, archive.subPath)
+    var subPaths = new URLPath().MergeSelectFileIndexItem(select, archive.fileIndexItems);
+    if (!subPaths) return;
+    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "")
 
     if (selectParams.length === 0) return;
     bodyParams.append("f", selectParams)
@@ -139,8 +143,13 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
             className={select.length !== 0 ? "form-control" : "form-control disabled"}>
           </div>
 
-          {isEnabled && select.length !== 0 ? <button className="btn btn" onClick={() => pushUpdate(false)}>Overschrijven</button> : <a className="btn btn--default disabled" >Overschrijven</a>}
-          {isEnabled && select.length !== 0 ? <button className="btn btn--default" onClick={() => pushUpdate(true)}>Toevoegen</button> : <a className="btn btn--default disabled" >Toevoegen</a>}
+          {isEnabled && select.length !== 0 ? <button className="btn btn"
+            onClick={() => pushUpdate(false)}>Overschrijven</button> :
+            <button disabled className="btn btn--default disabled" >Overschrijven</button>}
+          {isEnabled && select.length !== 0 ?
+            <button className="btn btn--default" onClick={() => pushUpdate(true)}>Toevoegen</button> :
+            <button disabled className="btn btn--default disabled" >Toevoegen</button>}
+
         </> : null}
 
       {isReplaceMode ?

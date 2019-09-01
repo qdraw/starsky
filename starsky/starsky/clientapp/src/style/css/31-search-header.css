@@ -1,0 +1,74 @@
+
+.search-header {
+  height: 75px;
+  background-color: #455A64;
+}
+.search-header .menu-item--default {
+  display: none;
+}
+
+.search-header .menu-item--half-extra > form {
+    padding-top: 20px;
+}
+
+.search-header .menu-item {
+  list-style: none;
+}
+
+
+.search-header .form-inline .form-control {
+    display: inline-block;
+    vertical-align: middle;
+    width: 300px;
+}
+
+
+.search-header .menu-item a.search-icon::before {
+    background-color: white;
+    mask-image: url('../images/baseline-search-24px.svg');
+    mask-position: 0px 40%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    content: "";
+    padding-left: 24px;
+    margin-right: 12px;
+}
+
+
+.search-header  .menu-item {
+  z-index: 6;
+  position: relative;
+  font-size: 16px;
+  font-weight: 300;
+  background: #455A64;
+  background-color: rgb(69, 90, 100);
+  width: 300px;
+}
+
+.search-header .menu-item button,
+.search-header .menu-item a {
+  padding-left: 25px;
+  height: 50px;
+  display : flex;
+  align-items : center;
+  width: 100%;
+  vertical-align: middle;
+  text-decoration: none;
+  color: #FFF;
+  background: none;
+  border:0px;
+  font:inherit;
+  cursor: pointer;
+}
+
+.search-header  .blur .menu-item.menu-item--results {
+  display: none
+}
+
+.search-header .menu-item button:focus {
+  background-color:#283593;
+}
+
+.search-header  .menu-item:nth-child(2n) {
+    background-color: #607D8B;
+}

@@ -1,3 +1,4 @@
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { IUrl } from '../interfaces/IUrl';
 
 export class URLPath {
@@ -17,6 +18,9 @@ export class URLPath {
           if (key[1] === "true") {
             urlObject.details = true
           }
+          else {
+            urlObject.details = false
+          }
           break;
         case 'sidebar'.toLowerCase():
           if (key[1] === "true") {
@@ -28,6 +32,14 @@ export class URLPath {
           break;
         case 'f':
           urlObject.f = key[1];
+          break;
+        case 't': // used for search queries
+          urlObject.t = key[1];
+          break;
+        case 'p': // used for search pagination
+          var pagination = Number(key[1]);
+          if (isNaN(pagination)) continue;
+          urlObject.p = pagination;
           break;
         case 'select'.toLowerCase():
           if (key[1] === 'null') {
@@ -121,7 +133,7 @@ export class URLPath {
   public updateFilePath(historyLocationHash: string, toUpdateFilePath: string): string {
     var url = new URLPath().StringToIUrl(historyLocationHash);
     url.f = toUpdateFilePath;
-    return new URLPath().IUrlToString(url);
+    return "/beta" + new URLPath().IUrlToString(url);
   }
 
   public toggleSelection(fileName: string, locationHash: string): IUrl {
@@ -146,14 +158,26 @@ export class URLPath {
    * @param historyLocationSearch 
    */
   public getSelect(historyLocationSearch: string) {
-    var selectList = new Array<string>();
-    if (new URLPath().StringToIUrl(historyLocationSearch).select != undefined) {
-      var selectList = new URLPath().StringToIUrl(historyLocationSearch).select;
+    let selectList = new Array<string>();
+    var selectResult = new URLPath().StringToIUrl(historyLocationSearch).select
+    if (selectResult !== undefined) {
+      selectList = selectResult;
     }
     return selectList;
   }
 
-  public ArrayToCommaSeperatedString(select: string[], parent: string): string {
+  public MergeSelectFileIndexItem(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
+    var subPaths: string[] = [];
+
+    fileIndexItems.forEach(item => {
+      if (select.indexOf(item.fileName) >= 0) {
+        subPaths.push(item.parentDirectory + "/" + item.fileName)
+      }
+    });
+    return subPaths;
+  }
+
+  public ArrayToCommaSeperatedStringOneParent(select: string[], parent: string): string {
     var selectParams = "";
     for (let index = 0; index < select.length; index++) {
       const element = select[index];

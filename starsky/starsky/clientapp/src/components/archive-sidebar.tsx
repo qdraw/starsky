@@ -27,7 +27,7 @@ const ArchiveSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((a
       Kleur-Classificatie
       </div>
     <div className="content--text">
-      <ArchiveSidebarColorClass></ArchiveSidebarColorClass>
+      <ArchiveSidebarColorClass {...archive}></ArchiveSidebarColorClass>
     </div>
 
 

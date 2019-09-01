@@ -11,10 +11,14 @@ const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
 
   var history = useLocation();
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
+  useEffect(() => {
+    var details = new URLPath().StringToIUrl(history.location.search).details;
+    setDetails(details);
+  }, [history.location.search]);
 
   function toggleLabels() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
-    urlObject.details = !urlObject.details;
+    urlObject.details = !isDetails;
     setDetails(urlObject.details);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
   }

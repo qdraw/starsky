@@ -1,18 +1,14 @@
 
 import React, { memo, useEffect } from 'react';
+import MenuSearchBar from '../components/menu.searchbar';
 import useLocation from '../hooks/use-location';
 import { IMenuProps } from '../interfaces/IMenuProps';
 import { URLPath } from '../shared/url-path';
-import { MenuSearchBar } from './menu.searchbar';
 import MoreMenu from './more-menu';
 
 const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
-
-  function toggleHamburger() {
-    setHamburgerMenu(!hamburgerMenu);
-  }
 
   var history = useLocation();
 
@@ -25,7 +21,6 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
   useEffect(() => {
     setSelect(new URLPath().StringToIUrl(history.location.search).select)
   }, [history.location.search]);
-
 
   function selectToggle() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
@@ -52,7 +47,7 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
     <>
       <header className={sidebar ? "header header--main header--select header--edit" : select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
-          {!select ? <button className="hamburger__container" onClick={() => { toggleHamburger(); }}>
+          {!select ? <button className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
             <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
               <i></i>
               <i></i>
@@ -68,18 +63,22 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
           {!select ? <div className="item item--select" onClick={() => { selectToggle() }}>
             Selecteer
             </div> : null}
-
           {select ? <div className="item item--labels" onClick={() => toggleLabels()}>Labels</div> : null}
 
-          <MoreMenu>
+          {!select ? <MoreMenu>
             <li className="menu-option disabled" onClick={() => { alert("Map maken werkt nog niet"); }}>Map maken</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
-          </MoreMenu>
+          </MoreMenu> : null}
+
+          {/* In the select context there are more options */}
+          {select ? <MoreMenu>
+            <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
+          </MoreMenu> : null}
 
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
             <div className="nav__container">
               <ul className="menu">
-                <MenuSearchBar></MenuSearchBar>
+                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)}></MenuSearchBar>
               </ul>
             </div>
           </nav>

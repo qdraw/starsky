@@ -39,6 +39,7 @@
  border-radius: 20px;
  border: #607D8B solid 5px;
  content: "";
+ z-index: 5;
 }
 
 /* select */
@@ -49,6 +50,7 @@
   height: 45px;
   mask-image: url("../images/baseline-check_circle-24px.svg");
   mask-size: cover;
+  z-index: 5;
 }
 
 

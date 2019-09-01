@@ -55,8 +55,20 @@ namespace starskycore.Services
             _cache.Set(queryCacheName, objectSearchModel, new TimeSpan(0,10,0));
             return SkipSearchItems(objectSearchModel, pageNumber);
         }
-
-        /// <summary>
+	    
+	    public bool? RemoveCache(string query)
+	    {
+		    // Add protection for disabled caching
+		    if( _cache == null || _appSettings?.AddMemoryCache == false) return null;
+            
+		    var queryCacheName = "search-" + query;
+		    if (!_cache.TryGetValue(queryCacheName, out _)) return false;
+		    _cache.Remove(queryCacheName);
+		    return true;
+	    }
+	    
+	    
+	    /// <summary>
         /// Skip un-needed items
         /// </summary>
         /// <param name="objectSearchModel"></param>

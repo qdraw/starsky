@@ -13,4 +13,21 @@ export class Keyboard {
     }
     return false;
   }
+
+  public SetFocusOnEndField(current: HTMLDivElement): void {
+    // no content in field
+    if (current.childNodes.length === 0) {
+      current.focus();
+      return;
+    }
+    if (!current.childNodes[0].textContent) return;
+    // Set selection to the end of the element
+    var range = document.createRange();
+    var sel = window.getSelection();
+    range.setStart(current.childNodes[0], current.childNodes[0].textContent.length);
+    range.collapse(true);
+    if (!sel) return;
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
 }
