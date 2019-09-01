@@ -145,10 +145,10 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
 
           {isEnabled && select.length !== 0 ? <button className="btn btn"
             onClick={() => pushUpdate(false)}>Overschrijven</button> :
-            <a className="btn btn--default disabled" >Overschrijven</a>}
+            <button disabled className="btn btn--default disabled" >Overschrijven</button>}
           {isEnabled && select.length !== 0 ?
             <button className="btn btn--default" onClick={() => pushUpdate(true)}>Toevoegen</button> :
-            <a className="btn btn--default disabled" >Toevoegen</a>}
+            <button disabled className="btn btn--default disabled" >Toevoegen</button>}
 
         </> : null}
 

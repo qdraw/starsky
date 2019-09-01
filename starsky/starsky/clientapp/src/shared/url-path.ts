@@ -16,7 +16,12 @@ export class URLPath {
           break;
         case 'details'.toLowerCase():
           if (key[1] === "true") {
+            console.log("true", locationHash);
+
             urlObject.details = true
+          }
+          else {
+            urlObject.details = false
           }
           break;
         case 'sidebar'.toLowerCase():
@@ -90,9 +95,10 @@ export class URLPath {
   public IUrlToString(urlObject: IUrl): string {
     var params = new URLSearchParams();
     for (let key of Object.entries(urlObject)) {
-      params.set(key[0], key[1]);
+      params.set(key[0], key[1].toString());
     }
     var url = this.addPrefixUrl(params.toString());
+    var string = params.toString();
     return url.replace(/\+/ig, " ").replace(/%2F/ig, "/").replace(/%2C/ig, ",");
   }
 
@@ -155,9 +161,10 @@ export class URLPath {
    * @param historyLocationSearch 
    */
   public getSelect(historyLocationSearch: string) {
-    var selectList = new Array<string>();
-    if (new URLPath().StringToIUrl(historyLocationSearch).select != undefined) {
-      var selectList = new URLPath().StringToIUrl(historyLocationSearch).select;
+    let selectList = new Array<string>();
+    var selectResult = new URLPath().StringToIUrl(historyLocationSearch).select
+    if (selectResult !== undefined) {
+      selectList = selectResult;
     }
     return selectList;
   }

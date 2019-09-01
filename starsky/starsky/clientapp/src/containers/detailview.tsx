@@ -15,7 +15,6 @@ const DetailView: React.FC<IDetailView> = (props) => {
   let fileIndexItem = props.fileIndexItem;
   let relativeObjects = props.relativeObjects;
 
-  // Edit/Details screen
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
   useEffect(() => {
     var details = new URLPath().StringToIUrl(history.location.search).details;
@@ -50,12 +49,12 @@ const DetailView: React.FC<IDetailView> = (props) => {
 
   function toggleLabels() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
-    urlObject.details = !urlObject.details;
+    urlObject.details = !isDetails;
     setDetails(urlObject.details);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
   }
 
-  useKeyboardEvent(/^(i|e)$/, (event: KeyboardEvent) => {
+  useKeyboardEvent(/^(d)$/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     toggleLabels();
   }, [history.location.search])
@@ -71,16 +70,25 @@ const DetailView: React.FC<IDetailView> = (props) => {
 
   function next() {
     if (!relativeObjects) return;
-    var next = new URLPath().updateFilePath(history.location.search, relativeObjects.nextFilePath);
+    var next = updateUrl(relativeObjects.nextFilePath);
     setIsLoading(true)
-    history.navigate(next, {});
+    history.navigate(next, { replace: true });
+  }
+
+  function updateUrl(toUpdateFilePath: string) {
+    var url = new URLPath().StringToIUrl(history.location.search);
+    url.f = toUpdateFilePath;
+    url.details = isDetails;
+    return "/beta" + new URLPath().IUrlToString(url);
   }
 
   function prev() {
     if (!relativeObjects) return;
-    var prev = new URLPath().updateFilePath(history.location.search, relativeObjects.prevFilePath);
+    var prev = updateUrl(relativeObjects.prevFilePath);
+    console.log(prev);
+
     setIsLoading(true)
-    history.navigate(prev, {});
+    history.navigate(prev, { replace: true });
   }
 
   if (!fileIndexItem || !relativeObjects) {
@@ -89,12 +97,10 @@ const DetailView: React.FC<IDetailView> = (props) => {
 
   return (<div className={isDetails ? "detailview detailview--edit" : "detailview"}>
     {isLoading ? <Preloader parent={fileIndexItem.parentDirectory} isDetailMenu={true} isOverlay={true}></Preloader> : ""}
-
-    {isDetails ? <DetailViewSidebar fileIndexItem={fileIndexItem} filePath={fileIndexItem.filePath}></DetailViewSidebar> : ""}
-
+    {isDetails ? <DetailViewSidebar fileIndexItem={fileIndexItem} filePath={fileIndexItem.filePath}></DetailViewSidebar> : null}
     <div className={isError ? "main main--error" : "main main--" + fileIndexItem.imageFormat}>
 
-      {isError ? "" : <img className={"image--default " + fileIndexItem.orientation}
+      {isError ? "" : <img alt={fileIndexItem.tags} className={"image--default " + fileIndexItem.orientation}
         onLoad={() => {
           setError(false)
           setIsLoading(false)

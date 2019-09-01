@@ -24,7 +24,10 @@ export class Query {
     if (requested.colorClass) {
       urlObject.colorClass = requested.colorClass;
     }
-
+    // Not needed in API, but the context is used in detailview (without this the results in issues in the sidemenu)
+    if (requested.details) {
+      urlObject.details = requested.details;
+    }
     var url = new URLPath().RemovePrefixUrl(new URLPath().IUrlToString(urlObject));
     return "/api/index" + url;
   }

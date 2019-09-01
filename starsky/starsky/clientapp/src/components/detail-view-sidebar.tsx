@@ -1,8 +1,10 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import useFetch from '../hooks/use-fetch';
+import useKeyboardEvent from '../hooks/use-keyboard-event';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { CastToInterface } from '../shared/cast-to-interface';
 import { isValidDate, parseDate, parseRelativeDate, parseTime } from '../shared/date';
+import { Keyboard } from '../shared/keyboard';
 import { Query } from '../shared/query';
 import ColorClassSelect from './color-class-select';
 interface IDetailViewSidebarProps {
@@ -49,6 +51,16 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     });
   }
 
+  // To fast go the tags field
+  const tagsReference = useRef<HTMLDivElement>(null);
+  useKeyboardEvent(/^(t|i)$/, (event: KeyboardEvent) => {
+    if (new Keyboard().isInForm(event)) return;
+    event.preventDefault();
+    var current = tagsReference.current as HTMLDivElement;
+    new Keyboard().SetFocusOnEndField(current);
+  }, [props])
+
+
   return (<div className="sidebar">
     <div className="content--header">
       Tags
@@ -56,7 +68,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     <div className="content--text">
       <div onBlur={handleChange}
         data-name="tags"
-        // ref={this.textInput}
+        ref={tagsReference}
         suppressContentEditableWarning={true}
         contentEditable={isEnabled}
         className={isEnabled ? "form-control" : "form-control disabled"}>
