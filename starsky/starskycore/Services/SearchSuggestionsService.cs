@@ -103,7 +103,7 @@ namespace starskycore.Services
 
 		private IEnumerable<string> SystemResults()
 		{
-			return new List<string>
+			return new HashSet<string>
 			{
 				"-Datetime>7 -ImageFormat-\"tiff\"",
 				"-ImageFormat:jpg",
@@ -116,7 +116,6 @@ namespace starskycore.Services
 				"-filename:",
 				"-parentDirectory:",
 				"-description",
-				"-ImageFormat:tiff",
 				"-Datetime>12 -Datetime<2",
 				"-addtodatabase: -Datetime>2",
 				"-title:",
