@@ -1,5 +1,7 @@
 export interface IUrl {
-  f?: string;
+  f?: string; // filenames
+  t?: string; // used for search
+  p?: number; // pagination
   details?: boolean,
   sidebar?: boolean,
   select?: Array<string>;

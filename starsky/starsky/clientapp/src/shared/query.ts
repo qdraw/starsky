@@ -10,6 +10,9 @@ export class Query {
     return output.replace(/\+/ig, "%2B");
   }
 
+  public UrlQuerySearchApi = (query: string, pageNumber = 0) => {
+    return "/search?json=true&t=" + query + "&p=" + pageNumber;
+  }
 
   public UrlQueryServerApi = (historyLocationHash: string) => {
     var requested = new URLPath().StringToIUrl(historyLocationHash);

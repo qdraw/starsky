@@ -19,8 +19,8 @@ function Archive(archive: IArchiveProps) {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar)
   }, [history.location.search]);
 
-  if (!archive) return (<>no archive</>)
-  if (!archive.colorClassUsage) return (<>no colorClassUsage</>)
+  if (!archive) return (<>(Archive) => no archive</>)
+  if (!archive.colorClassUsage) return (<>(Archive) => no colorClassUsage</>)
 
   return (
     <div className={!sidebar ? "archive" : "archive collapsed"}>

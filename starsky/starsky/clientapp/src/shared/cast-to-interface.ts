@@ -20,7 +20,7 @@ export class CastToInterface {
       type: 'Archive',
     } as IMedia<'Archive'>
 
-    if (this.getPageType(data) === PageType.Archive) {
+    if (this.getPageType(data) === PageType.Archive || this.getPageType(data) === PageType.Search) {
       media.data = data;
       return media;
     }

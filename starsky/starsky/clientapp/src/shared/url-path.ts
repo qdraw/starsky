@@ -29,6 +29,14 @@ export class URLPath {
         case 'f':
           urlObject.f = key[1];
           break;
+        case 't': // used for search queries
+          urlObject.t = key[1];
+          break;
+        case 'p': // used for search pagination
+          var pagination = Number(key[1]);
+          if (isNaN(pagination)) continue;
+          urlObject.p = pagination;
+          break;
         case 'select'.toLowerCase():
           if (key[1] === 'null') {
             continue;
@@ -121,7 +129,7 @@ export class URLPath {
   public updateFilePath(historyLocationHash: string, toUpdateFilePath: string): string {
     var url = new URLPath().StringToIUrl(historyLocationHash);
     url.f = toUpdateFilePath;
-    return new URLPath().IUrlToString(url);
+    return "/beta" + new URLPath().IUrlToString(url);
   }
 
   public toggleSelection(fileName: string, locationHash: string): IUrl {
