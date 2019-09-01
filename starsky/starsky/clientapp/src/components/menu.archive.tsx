@@ -74,7 +74,7 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
             <div className="nav__container">
               <ul className="menu">
-                <MenuSearchBar hideOnBlur={false} callback={() => setHamburgerMenu(!hamburgerMenu)}></MenuSearchBar>
+                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)}></MenuSearchBar>
               </ul>
             </div>
           </nav>

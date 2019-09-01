@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import ArchiveSidebar from '../components/archive-sidebar';
 import ItemListView from '../components/item-list-view';
 import MenuSearchBar from '../components/menu.searchbar';
 import SearchPagination from '../components/search-pagination';
@@ -28,11 +29,11 @@ function Search(archive: IArchiveProps) {
 
   return (
     <div className={!sidebar ? "archive" : "archive collapsed"}>
-      {/* {sidebar ? <ArchiveSidebar {...archive}></ArchiveSidebar> : ""} */}
+      {sidebar ? <ArchiveSidebar {...archive}></ArchiveSidebar> : ""}
 
       <div className="content">
         <div className="search-header">
-          <MenuSearchBar hideOnBlur={true} defaultText={query}></MenuSearchBar>
+          <MenuSearchBar defaultText={query}></MenuSearchBar>
         </div>
         <div className="content--header">{archive.collectionsCount ? <>{archive.collectionsCount} resultaten</> : "Geen resultaat"}</div>
         <SearchPagination {...archive}></SearchPagination>

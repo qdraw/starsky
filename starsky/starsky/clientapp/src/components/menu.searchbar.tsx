@@ -5,7 +5,6 @@ import useLocation from '../hooks/use-location';
 
 interface IMenuSearchBarProps {
   defaultText?: string;
-  hideOnBlur: boolean; // false to use in fullscreen mode
   callback?(query: string): void;
 }
 
