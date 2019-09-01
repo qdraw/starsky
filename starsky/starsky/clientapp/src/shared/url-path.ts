@@ -1,3 +1,4 @@
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { IUrl } from '../interfaces/IUrl';
 
 export class URLPath {
@@ -161,7 +162,18 @@ export class URLPath {
     return selectList;
   }
 
-  public ArrayToCommaSeperatedString(select: string[], parent: string): string {
+  public MergeSelectFileIndexItem(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
+    var subPaths: string[] = [];
+
+    fileIndexItems.forEach(item => {
+      if (select.indexOf(item.fileName) >= 0) {
+        subPaths.push(item.parentDirectory + "/" + item.fileName)
+      }
+    });
+    return subPaths;
+  }
+
+  public ArrayToCommaSeperatedStringOneParent(select: string[], parent: string): string {
     var selectParams = "";
     for (let index = 0; index < select.length; index++) {
       const element = select[index];

@@ -36,6 +36,7 @@
 
 
 .search-header  .menu-item {
+  z-index: 6;
   position: relative;
   font-size: 16px;
   font-weight: 300;

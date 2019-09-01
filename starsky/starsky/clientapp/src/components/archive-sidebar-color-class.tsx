@@ -1,11 +1,15 @@
 import React, { memo, useEffect } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { URLPath } from '../shared/url-path';
 import ColorClassSelect from './color-class-select';
 
+interface IArchiveSidebarColorClassProps {
+  fileIndexItems: Array<IFileIndexItem>,
+}
 
-const ArchiveSidebarColorClass: React.FunctionComponent<any> = memo((props) => {
+const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClassProps> = memo((archive) => {
   var history = useLocation();
 
   // show select info
@@ -14,8 +18,8 @@ const ArchiveSidebarColorClass: React.FunctionComponent<any> = memo((props) => {
 
   useEffect(() => {
     setSelect(new URLPath().getSelect(history.location.search));
-    var path = new URLPath().getFilePath(history.location.search)
-    var selectParams = new URLPath().ArrayToCommaSeperatedString(select, path)
+    var subPaths = new URLPath().MergeSelectFileIndexItem(select, archive.fileIndexItems);
+    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "")
     setSelectParams(selectParams);
   }, [history.location.search]);
 
