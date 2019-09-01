@@ -117,7 +117,10 @@ namespace starskycore.Services
 				"-parentDirectory:",
 				"-description",
 				"-ImageFormat:tiff",
-				"-Datetime>12 -Datetime<2 "
+				"-Datetime>12 -Datetime<2",
+				"-addtodatabase: -Datetime>2",
+				"-title:",
+				"-isdirectory:false"
 			};
 		}
 
