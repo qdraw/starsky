@@ -277,7 +277,7 @@ namespace starskycore.Services
 
         public void RemoveCacheParentItem(string directoryName)
         {
-            // Add protection for disabeling caching
+            // Add protection for disabled caching
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
             
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 

@@ -142,7 +142,40 @@ namespace starskytest.Services
 
 	    }
 
-        [TestMethod]
+	    [TestMethod]
+	    public void SearchService_RemoveCache_Test()
+	    {
+		    _memoryCache.Set("search-test", new SearchViewModel {SearchQuery = "cache"},
+			    new TimeSpan(0, 10, 0));
+		    var search = new SearchService(_dbContext,_memoryCache);
+		    
+		    // Test if the pre-condition is good
+		    var cachedResult = search.Search("test").SearchQuery;
+			Assert.AreEqual(cachedResult,"cache");
+			
+			// Remove cache
+			search.RemoveCache("test");
+			
+			// test if cache is removed
+		    var result = search.Search("test");
+		    Assert.AreEqual("test",result.SearchQuery);
+	    }
+
+	    [TestMethod]
+	    public void SearchService_RemoveCache_Disabled_Test()
+	    {
+		    var search = new SearchService(_dbContext,null); // cache is null!
+		    Assert.AreEqual(null,search.RemoveCache("test"));
+	    }
+	    
+	    [TestMethod]
+	    public void SearchService_RemoveCache_NoCachedItem_Test()
+	    {
+		    var search = new SearchService(_dbContext,_memoryCache);
+		    Assert.AreEqual(false,search.RemoveCache("test"));
+	    }
+
+	    [TestMethod]
         public void SearchService_SearchNull()
         {
             InsertSearchData();

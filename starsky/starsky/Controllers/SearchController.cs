@@ -62,6 +62,23 @@ namespace starsky.Controllers
             if (json) return Json(model);
             return View("Trash", model);
         }
-	
+
+		/// <summary>
+		/// Clear search cache to show the correct results
+		/// </summary>
+		/// <param name="t">search query</param>
+		/// <returns>status</returns>
+		[HttpPost("/search/removeCache")]
+	    public IActionResult RemoveCache(string t = "")
+	    {
+		    var cache = _search.RemoveCache(t);
+
+		    if ( cache != null )
+			    return Json(cache == false ? "there is no cached item" : "cache cleared");
+		    
+		    Response.StatusCode = 412;
+		    return Json("cache disabled in config");
+	    }
+
     }
 }

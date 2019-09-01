@@ -92,9 +92,33 @@ namespace starskycore.Services
 		{
 			if ( string.IsNullOrEmpty(query) ) return new List<string>();
 			if( _cache == null || _appSettings?.AddMemoryCache == false) return new List<string>();
+			
+			var results = GetAllSuggestions().Where(p => p.Key.ToLowerInvariant().StartsWith( query.ToLowerInvariant() )).Take(MaxResult)
+				.OrderByDescending(p => p.Value).Select(p => p.Key).ToList();
+			
+			results.AddRange(SystemResults().Where(p => p.ToLowerInvariant().StartsWith(query.ToLowerInvariant()))
+				.Take(MaxResult) );
+			return results;
+		}
 
-			return GetAllSuggestions().Where(p => p.Key.StartsWith( query.ToLowerInvariant() )).Take(MaxResult)
-				.OrderByDescending(p => p.Value).Select(p => p.Key);
+		private IEnumerable<string> SystemResults()
+		{
+			return new List<string>
+			{
+				"-Datetime>7 -ImageFormat-\"tiff\"",
+				"-ImageFormat:jpg",
+				"-inurl:",
+				"-ImageFormat:gpx",
+				"-ImageFormat:tiff",
+				"-DateTime=1",
+				"-fileHash:",
+				"-filepath:",
+				"-filename:",
+				"-parentDirectory:",
+				"-description",
+				"-ImageFormat:tiff",
+				"-Datetime>12 -Datetime<2 "
+			};
 		}
 
 	}
