@@ -155,6 +155,7 @@
   border:0px;
   font:inherit;
   cursor: pointer;
+  text-align: left;
 }
 
 .header .menu-item button:focus {

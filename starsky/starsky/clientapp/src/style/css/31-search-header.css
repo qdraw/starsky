@@ -59,6 +59,7 @@
   border:0px;
   font:inherit;
   cursor: pointer;
+  text-align: left;
 }
 
 .search-header  .blur .menu-item.menu-item--results {
