@@ -36,13 +36,14 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
     // compare
     var fileIndexObject: any = fileIndexItem
-    if (!fileIndexObject[name]) return;
+    if (!fileIndexObject[name] === undefined) return; //to update emthy start to first fill
 
     var currentString: string = fileIndexObject[name];
     if (value === currentString) return;
 
     // Sorry no empty strings are supported
     if (event.currentTarget.innerText.length === 1) {
+      fileIndexObject[name] = "."
       console.log('not supported');
     }
 
