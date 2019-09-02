@@ -30,7 +30,13 @@ namespace starsky.Controllers
 			return PhysicalFile(file, "text/html");
 		}
 
+		public IActionResult Search(string t= "")
+		{
+			var file = Path.Combine(Directory.GetCurrentDirectory(),
+				"clientapp", "build", "index.html");
 
+			return PhysicalFile(file, "text/html");
+		}
 
 
 		////[Route("/beta/")
