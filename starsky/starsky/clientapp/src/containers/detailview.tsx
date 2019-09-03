@@ -26,6 +26,13 @@ const DetailView: React.FC<IDetailView> = (props) => {
   const [isTranslateRotation, setTranslateRotation] = React.useState(false);
   useEffect(() => {
     if (!props.fileIndexItem) return;
+
+    // Safari for iOS don't need thumbnail rotation (for Mac it does need rotation)
+    if ('WebkitAppearance' in document.documentElement.style && navigator.userAgent.indexOf("Safari") !== -1 &&
+      (navigator.userAgent.indexOf("iPad") !== -1 || navigator.userAgent.indexOf("iPhone") !== -1)) {
+      return;
+    };
+
     (async () => {
       var thumbnailIsReady = await new Query().queryThumbnailApi(props.fileIndexItem.fileHash)
       setTranslateRotation(!thumbnailIsReady);
