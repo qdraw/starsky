@@ -44,7 +44,7 @@ export class Query {
     return "/api/update";
   }
 
-  queryUpdateApi = (subPath: string, type: string | undefined, value: string): Promise<IFileIndexItem[]> => {
+  public queryUpdateApi = (subPath: string, type: string | undefined, value: string): Promise<IFileIndexItem[]> => {
     let location = this.urlQueryUpdateApi(subPath);
     let post = "f=" + this.urlReplacePath(subPath) + "&" + type + "=" + value;
     var controller = new AbortController();
@@ -77,7 +77,31 @@ export class Query {
       });
   }
 
-  queryInfoApi = (subPath: string): Promise<IFileIndexItem[]> => {
+  public UrlQueryThumbnailApi = (fileHash: string) => {
+    return "/api/thumbnail/" + fileHash + "?json=true";
+  }
+
+  queryThumbnailApi = (fileHash: string): Promise<boolean> => {
+    let location = this.UrlQueryThumbnailApi(fileHash);
+
+    return new Promise(
+      // The resolver function is called with the ability to resolve or
+      // reject the promise
+      function (resolve, reject) {
+        fetch(location, {
+          credentials: "include"
+        })
+          .then(function (response) {
+            return response;
+          })
+          .then(function (response) {
+            // true = if thumbnail is there
+            resolve(response.status === 200);
+          });
+      });
+  }
+
+  public queryInfoApi = (subPath: string): Promise<IFileIndexItem[]> => {
 
     let location = this.UrlQueryInfoApi(subPath);
 
@@ -103,4 +127,5 @@ export class Query {
           });
       });
   }
+
 }

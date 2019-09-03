@@ -6,6 +6,7 @@ import useLocation from '../hooks/use-location';
 import { IDetailView } from '../interfaces/IDetailView';
 import { INavigateState } from '../interfaces/INavigateState';
 import { Keyboard } from '../shared/keyboard';
+import { Query } from '../shared/query';
 import { URLPath } from '../shared/url-path';
 
 const DetailView: React.FC<IDetailView> = (props) => {
@@ -20,6 +21,16 @@ const DetailView: React.FC<IDetailView> = (props) => {
     var details = new URLPath().StringToIUrl(history.location.search).details;
     setDetails(details);
   }, [history.location.search]);
+
+
+  const [isTranslateRotation, setTranslateRotation] = React.useState(false);
+  useEffect(() => {
+    if (!props.fileIndexItem) return;
+    (async () => {
+      var thumbnailIsReady = await new Query().queryThumbnailApi(props.fileIndexItem.fileHash)
+      setTranslateRotation(!thumbnailIsReady);
+    })();
+  }, [props.subPath]);
 
   useKeyboardEvent(/ArrowLeft/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
@@ -100,7 +111,7 @@ const DetailView: React.FC<IDetailView> = (props) => {
     {isDetails ? <DetailViewSidebar fileIndexItem={fileIndexItem} filePath={fileIndexItem.filePath}></DetailViewSidebar> : null}
     <div className={isError ? "main main--error" : "main main--" + fileIndexItem.imageFormat}>
 
-      {isError ? "" : <img alt={fileIndexItem.tags} className={"image--default " + fileIndexItem.orientation}
+      {!isError ? <img alt={fileIndexItem.tags} className={isTranslateRotation ? "image--default " + fileIndexItem.orientation : "image--default Horizontal"}
         onLoad={() => {
           setError(false)
           setIsLoading(false)
@@ -108,7 +119,7 @@ const DetailView: React.FC<IDetailView> = (props) => {
         onError={() => {
           setError(true)
           setIsLoading(false)
-        }} src={"/api/thumbnail/" + fileIndexItem.fileHash + ".jpg?issingleitem=true"} />}
+        }} src={"/api/thumbnail/" + fileIndexItem.fileHash + ".jpg?issingleitem=true"} /> : null}
 
       {relativeObjects.nextFilePath ?
         <div onClick={() => next()} className="nextprev nextprev--next"><div className="icon"></div></div>
