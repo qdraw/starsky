@@ -74,7 +74,7 @@ const DetailView: React.FC<IDetailView> = (props) => {
   const [isError, setError] = React.useState(false);
   useEffect(() => {
     setError(false);
-  }, [props]);
+  }, [props.subPath]);
 
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = React.useState(true);
