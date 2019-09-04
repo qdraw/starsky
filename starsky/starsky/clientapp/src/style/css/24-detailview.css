@@ -33,7 +33,7 @@
 }
 .detailview .image--default.Horizontal {
   max-width: 100%;
-  max-height: calc(100vh - 50px);
+  max-height: calc(100% - 50px);
   transform: translatex(calc(50vw - 50%)) translatey(calc(50vh - 25px  - 50%));
 }
 .detailview--edit .image--default.Horizontal {
