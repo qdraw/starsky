@@ -26,7 +26,6 @@ function Search(archive: IArchiveProps) {
   if (!archive) return (<>(Search) => no archive</>)
   if (!archive.colorClassUsage) return (<>(Search) => no colorClassUsage</>)
 
-
   return (
     <div className={!sidebar ? "archive" : "archive collapsed"}>
       {sidebar ? <ArchiveSidebar {...archive}></ArchiveSidebar> : ""}
