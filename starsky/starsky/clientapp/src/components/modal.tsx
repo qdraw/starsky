@@ -13,7 +13,7 @@ type ModalPropTypes = {
 export default function Modal({
   children,
   id = "modal-root",
-  root,
+  root = "root",
   isOpen,
   handleExit,
   focusAfterExit
