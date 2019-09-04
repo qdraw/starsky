@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { ArchiveContext, ArchiveContextProvider } from '../contexts/archive-context';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
+import DocumentTitle from '../shared/document-title';
 import Archive from './archive';
 import Search from './search';
 
@@ -23,6 +24,11 @@ function ArchiveWrapper(archive: IArchiveProps) {
   useEffect(() => {
     if (!state.fileIndexItems) return;
     setArchiveList(state);
+  }, [state]);
+
+  useEffect(() => {
+    if (!state) return;
+    new DocumentTitle().SetDocumentTitle(state);
   }, [state]);
 
   if (!state) return (<>(ArchiveWrapper) => no state</>)

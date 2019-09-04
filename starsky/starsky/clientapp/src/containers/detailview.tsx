@@ -5,6 +5,8 @@ import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IDetailView } from '../interfaces/IDetailView';
 import { INavigateState } from '../interfaces/INavigateState';
+import BrowserDetect from '../shared/browser-detect';
+import DocumentTitle from '../shared/document-title';
 import { Keyboard } from '../shared/keyboard';
 import { Query } from '../shared/query';
 import { URLPath } from '../shared/url-path';
@@ -22,17 +24,18 @@ const DetailView: React.FC<IDetailView> = (props) => {
     setDetails(details);
   }, [history.location.search]);
 
+  useEffect(() => {
+    if (!props) return;
+    new DocumentTitle().SetDocumentTitle(props);
+  }, [props]);
 
   const [isTranslateRotation, setTranslateRotation] = React.useState(false);
   useEffect(() => {
     if (!props.fileIndexItem) return;
-
     // Safari for iOS I don't need thumbnail rotation (for Mac it does need rotation)
-    if ('WebkitAppearance' in document.documentElement.style && navigator.userAgent.indexOf("Safari") !== -1 &&
-      (navigator.userAgent.indexOf("iPad") !== -1 || navigator.userAgent.indexOf("iPhone") !== -1)) {
+    if (new BrowserDetect().IsIOS()) {
       return;
     };
-
     (async () => {
       var thumbnailIsReady = await new Query().queryThumbnailApi(props.fileIndexItem.fileHash)
       setTranslateRotation(!thumbnailIsReady);
@@ -62,7 +65,6 @@ const DetailView: React.FC<IDetailView> = (props) => {
         fileName: fileIndexItem.fileName
       } as INavigateState
     });
-
   }, [fileIndexItem])
 
   function toggleLabels() {
@@ -103,8 +105,6 @@ const DetailView: React.FC<IDetailView> = (props) => {
   function prev() {
     if (!relativeObjects) return;
     var prev = updateUrl(relativeObjects.prevFilePath);
-    console.log(prev);
-
     setIsLoading(true)
     history.navigate(prev, { replace: true });
   }
