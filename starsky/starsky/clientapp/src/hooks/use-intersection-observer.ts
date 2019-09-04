@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import shallowEqual from '../shared/shallow-equal';
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void;
 
+// Polyfill needed for Safari 12.0 and older (12.1+ has native support)
+require('intersection-observer');
+
 // credits for: https://github.com/cats-oss/use-intersection
 
 export type IntersectionOptions = {
