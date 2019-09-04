@@ -1,6 +1,7 @@
 import React, { memo, useEffect, useRef } from "react";
 import useFetch from '../hooks/use-fetch';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
+import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { CastToInterface } from '../shared/cast-to-interface';
 import { isValidDate, parseDate, parseRelativeDate, parseTime } from '../shared/date';
@@ -10,11 +11,11 @@ import ColorClassSelect from './color-class-select';
 interface IDetailViewSidebarProps {
   fileIndexItem: IFileIndexItem,
   filePath: string,
+  status: IExifStatus
 }
 
 const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((props) => {
 
-  var isEnabled = true;
   const [fileIndexItem, setFileIndexItem] = React.useState(props.fileIndexItem);
 
   var location = new Query().UrlQueryInfoApi(props.filePath);
@@ -26,6 +27,34 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     infoFileIndexItem[0].lastEdited = fileIndexItem.lastEdited;
     setFileIndexItem(infoFileIndexItem[0]);
   }, [responseObject]);
+
+  // var isFormEnabled = true;
+  // const [isEnabled, setIsEnabled] = React.useState(true);
+  // useEffect(() => {
+  //   if (!fileIndexItem.status) return;
+  //   if (fileIndexItem.status == "Ok") return;
+  //   console.log(fileIndexItem.status);
+
+  //   setIsEnabled(false);
+  // }, [fileIndexItem]);
+
+  // For the display
+  const [isFormEnabled, setFormEnabled] = React.useState(true);
+  useEffect(() => {
+    if (!props.fileIndexItem.status) return;
+    console.log("sdfsdf", props.fileIndexItem.status);
+
+    switch (props.fileIndexItem.status) {
+      case IExifStatus.Deleted:
+      case IExifStatus.ReadOnly:
+        setFormEnabled(false);
+        break;
+      default:
+        setFormEnabled(true);
+        break;
+    }
+  }, [props.status]);
+
 
   function handleChange(event: React.ChangeEvent<HTMLDivElement>) {
     let value = event.currentTarget.innerText;
@@ -63,6 +92,13 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
 
   return (<div className="sidebar">
+    {fileIndexItem.status === IExifStatus.Deleted ? <><div className="content--header">
+      Status
+    </div> <div className="content--text">
+        {fileIndexItem.status}
+        Niet gevonden
+    </div></> : null}
+
     <div className="content--header">
       Tags
       </div>
@@ -71,8 +107,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         data-name="tags"
         ref={tagsReference}
         suppressContentEditableWarning={true}
-        contentEditable={isEnabled}
-        className={isEnabled ? "form-control" : "form-control disabled"}>
+        contentEditable={isFormEnabled}
+        className={isFormEnabled ? "form-control" : "form-control disabled"}>
         {fileIndexItem.tags}
       </div>
     </div>
@@ -85,16 +121,16 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       <div onBlur={handleChange}
         data-name="description"
         suppressContentEditableWarning={true}
-        contentEditable={isEnabled}
-        className={isEnabled ? "form-control" : "form-control disabled"}>
+        contentEditable={isFormEnabled}
+        className={isFormEnabled ? "form-control" : "form-control disabled"}>
         {fileIndexItem.description}
       </div>
       <h4>Titel</h4>
       <div onBlur={handleChange}
         data-name="title"
         suppressContentEditableWarning={true}
-        contentEditable={isEnabled}
-        className={isEnabled ? "form-control" : "form-control disabled"}>
+        contentEditable={isFormEnabled}
+        className={isFormEnabled ? "form-control" : "form-control disabled"}>
         {fileIndexItem.title}
       </div>
     </div>
@@ -103,7 +139,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       Kleur-Classificatie
       </div>
     <div className="content--text">
-      <ColorClassSelect onToggle={() => { }} filePath={fileIndexItem.filePath} currentColorClass={fileIndexItem.colorClass} isEnabled={isEnabled}></ColorClassSelect>
+      <ColorClassSelect onToggle={() => { }} filePath={fileIndexItem.filePath} currentColorClass={fileIndexItem.colorClass} isEnabled={isFormEnabled}></ColorClassSelect>
     </div>
 
     {fileIndexItem.latitude || fileIndexItem.longitude || isValidDate(fileIndexItem.dateTime) || fileIndexItem.make || fileIndexItem.model || fileIndexItem.aperture || fileIndexItem.focalLength ?

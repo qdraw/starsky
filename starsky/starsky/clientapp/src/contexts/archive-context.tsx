@@ -10,8 +10,7 @@ type IContext = {
   dispatch: React.Dispatch<Action>,
 }
 
-
-type CountProviderProps = { children: React.ReactNode }
+type ReactNodeProps = { children: React.ReactNode }
 type Action = {
   type: 'update', tags?: string, colorclass?: number,
   description?: string, title?: string, append?: boolean, select: string[]
@@ -64,7 +63,7 @@ export function archiveReducer(state: State, action: Action): State {
   }
 };
 
-function ArchiveContextProvider({ children }: CountProviderProps) {
+function ArchiveContextProvider({ children }: ReactNodeProps) {
   // [A]
   let [state, dispatch] = React.useReducer(archiveReducer, initialState);
   let value1 = { state, dispatch };

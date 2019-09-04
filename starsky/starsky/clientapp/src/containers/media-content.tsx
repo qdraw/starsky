@@ -1,11 +1,11 @@
 import React from 'react';
 import Preloader from '../components/preloader';
+import ArchiveContextWrapper from '../contexts-wrappers/archive-wrapper';
+import DetailViewContextWrapper from '../contexts-wrappers/detailview-wrapper';
 import useFileList from '../hooks/use-filelist';
 import useLocation from '../hooks/use-location';
 import { IArchive } from '../interfaces/IArchive';
 import { IDetailView, PageType } from '../interfaces/IDetailView';
-import ArchiveContextWrapper from './archive-wrapper';
-import DetailView from './detailview';
 import Menu from './menu';
 
 
@@ -31,7 +31,7 @@ const MediaContent: React.FC = () => {
       {pageType === PageType.NotFound ? <>not found</> : null}
       {pageType === PageType.ApplicationException ? <>ApplicationException</> : null}
       {pageType === PageType.Archive && archive ? <ArchiveContextWrapper {...archive} /> : null}
-      {pageType === PageType.DetailView && detailView ? <DetailView {...detailView} /> : null}
+      {pageType === PageType.DetailView && detailView ? <DetailViewContextWrapper {...detailView} /> : null}
     </div>
   );
 }

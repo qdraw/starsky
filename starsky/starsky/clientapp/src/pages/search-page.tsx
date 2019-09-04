@@ -2,7 +2,7 @@
 import { RouteComponentProps } from '@reach/router';
 import React, { FunctionComponent } from 'react';
 import MenuSearch from '../components/menu-search';
-import ArchiveContextWrapper from '../containers/archive-wrapper';
+import ArchiveContextWrapper from '../contexts-wrappers/archive-wrapper';
 import useLocation from '../hooks/use-location';
 import useSearchList from '../hooks/use-searchlist';
 import { URLPath } from '../shared/url-path';

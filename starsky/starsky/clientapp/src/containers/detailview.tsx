@@ -4,6 +4,7 @@ import Preloader from '../components/preloader';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IDetailView } from '../interfaces/IDetailView';
+import { IExifStatus } from '../interfaces/IExifStatus';
 import { INavigateState } from '../interfaces/INavigateState';
 import BrowserDetect from '../shared/browser-detect';
 import DocumentTitle from '../shared/document-title';
@@ -88,6 +89,14 @@ const DetailView: React.FC<IDetailView> = (props) => {
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = React.useState(true);
 
+  // update states
+  const [status, setStatus] = React.useState(IExifStatus.Default);
+  useEffect(() => {
+    if (!fileIndexItem || !fileIndexItem.status) return;
+    setStatus(fileIndexItem.status);
+  }, [props]);
+
+
   function next() {
     if (!relativeObjects) return;
     var next = updateUrl(relativeObjects.nextFilePath);
@@ -115,7 +124,7 @@ const DetailView: React.FC<IDetailView> = (props) => {
 
   return (<div className={isDetails ? "detailview detailview--edit" : "detailview"}>
     {isLoading ? <Preloader parent={fileIndexItem.parentDirectory} isDetailMenu={true} isOverlay={true}></Preloader> : ""}
-    {isDetails ? <DetailViewSidebar fileIndexItem={fileIndexItem} filePath={fileIndexItem.filePath}></DetailViewSidebar> : null}
+    {isDetails ? <DetailViewSidebar status={IExifStatus.Default} fileIndexItem={fileIndexItem} filePath={fileIndexItem.filePath}></DetailViewSidebar> : null}
     <div className={isError ? "main main--error" : "main main--" + fileIndexItem.imageFormat}>
 
       {!isError ? <img alt={fileIndexItem.tags} className={isTranslateRotation ? "image--default " + fileIndexItem.orientation : "image--default Horizontal"}

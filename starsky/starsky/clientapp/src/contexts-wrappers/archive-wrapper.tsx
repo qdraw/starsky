@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
+import Archive from '../containers/archive';
+import Search from '../containers/search';
 import { ArchiveContext, ArchiveContextProvider } from '../contexts/archive-context';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import DocumentTitle from '../shared/document-title';
-import Archive from './archive';
-import Search from './search';
 
 /**
- * USed for search and list of files
+ * Used for search and list of files
  * @param archive the archive props 
  */
 function ArchiveContextWrapper(archive: IArchiveProps) {

@@ -1,3 +1,4 @@
+import { IExifStatus } from './IExifStatus';
 
 export enum Color {
     Winner = 1, // Paars - purple
@@ -19,7 +20,7 @@ export interface IFileIndexItem {
     fileHash: string;
     parentDirectory: string;
     keywords?: [];
-    status?: string;
+    status: IExifStatus;
     description?: string;
     isDirectory?: boolean;
     title?: string;

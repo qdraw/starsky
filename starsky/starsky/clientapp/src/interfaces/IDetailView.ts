@@ -1,3 +1,4 @@
+import { IExifStatus } from './IExifStatus';
 import { IFileIndexItem } from "./IFileIndexItem";
 
 export enum PageType {
@@ -28,8 +29,9 @@ export interface IDetailView {
     fileIndexItem: IFileIndexItem;
     relativeObjects: IRelativeObjects;
     subPath: string;
-    status: string | null;
+    status: IExifStatus | null;
     colorClassFilterList: Array<number>;
+    lastUpdated?: Date;
 }
 
 export function newDetailView(): IDetailView {

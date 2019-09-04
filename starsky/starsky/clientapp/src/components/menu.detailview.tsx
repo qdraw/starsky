@@ -1,7 +1,9 @@
 
 import { Link } from '@reach/router';
 import React, { memo, useEffect } from 'react';
+import { DetailViewContext } from '../contexts/detailview-context';
 import useLocation from '../hooks/use-location';
+import { IExifStatus } from '../interfaces/IExifStatus';
 import { IMenuProps } from '../interfaces/IMenuProps';
 import FetchPost from '../shared/fetchpost';
 import { URLPath } from '../shared/url-path';
@@ -10,6 +12,8 @@ import MoreMenu from './more-menu';
 const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
 
   var history = useLocation();
+  let { state, dispatch } = React.useContext(DetailViewContext);
+
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
   useEffect(() => {
     var details = new URLPath().StringToIUrl(history.location.search).details;
@@ -29,7 +33,7 @@ const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
   // Get the status from the props
   function getIsMarkedAsDeletedFromProps(): boolean {
     if (!props.detailView || !props.detailView.fileIndexItem) return false;
-    return props.detailView.fileIndexItem.status === "Deleted";
+    return props.detailView.fileIndexItem.status === IExifStatus.Deleted;
   }
 
   const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(getIsMarkedAsDeletedFromProps());
@@ -51,12 +55,16 @@ const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
       bodyParams.set("Tags", "!delete!");
       bodyParams.set("append", "true");
       FetchPost("/api/update", bodyParams.toString())
+      dispatch({ 'type': 'add', tags: "!delete!" });
+      dispatch({ 'type': 'update', status: IExifStatus.Deleted });
     }
     // Undo delete
     else {
       bodyParams.set("fieldName", "tags");
       bodyParams.set("search", "!delete!");
       FetchPost("/api/replace", bodyParams.toString())
+      dispatch({ 'type': 'remove', tags: "!delete!" });
+      dispatch({ 'type': 'update', status: IExifStatus.Ok });
     }
     setMarkedAsDeleted(!isMarkedAsDeleted)
   }
