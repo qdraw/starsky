@@ -2,13 +2,15 @@ import { IExifStatus } from './IExifStatus';
 import { IFileIndexItem } from "./IFileIndexItem";
 
 export enum PageType {
-    Loading,
-    Archive, // index
-    DetailView,
-    Search,
-    ApplicationException,
-    NotFound,
+    Loading = "Loading" as any,
+    Archive = "Archive" as any,
+    DetailView = "DetailView" as any,
+    Search = "Search" as any,
+    ApplicationException = "ApplicationException" as any,
+    NotFound = "NotFound" as any,
 }
+
+
 export interface IRelativeObjects {
     nextFilePath: string;
     prevFilePath: string;

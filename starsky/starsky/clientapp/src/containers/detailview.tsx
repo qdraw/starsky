@@ -7,6 +7,7 @@ import useFetch from '../hooks/use-fetch';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IDetailView, newIRelativeObjects } from '../interfaces/IDetailView';
+import { Orientation } from '../interfaces/IFileIndexItem';
 import { INavigateState } from '../interfaces/INavigateState';
 import BrowserDetect from '../shared/browser-detect';
 import DocumentTitle from '../shared/document-title';
@@ -37,19 +38,22 @@ const DetailView: React.FC<IDetailView> = () => {
   }, [history.location.search]);
 
   // To Get the rotation update
-  const [isTranslateRotation, setTranslateRotation] = React.useState(false);
+  const [isTranslateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);
   var location = new Query().UrlQueryThumbnailApi(state.fileIndexItem.fileHash);
   const responseObject = useFetch(location, 'get');
   useEffect(() => {
     if (!responseObject) return;
+    if (!state.fileIndexItem.orientation) return;
     // Safari for iOS I don't need thumbnail rotation (for Mac it require rotation)
     if (new BrowserDetect().IsIOS()) {
       return;
     };
     var statusCode: number = responseObject.statusCode;
     if (statusCode === 202) {
-      setTranslateRotation(!isTranslateRotation);
+      setTranslateRotation(state.fileIndexItem.orientation);
+      return;
     }
+    setTranslateRotation(Orientation.Horizontal);
   }, [responseObject]);
 
   useKeyboardEvent(/ArrowLeft/, (event: KeyboardEvent) => {
@@ -141,7 +145,7 @@ const DetailView: React.FC<IDetailView> = () => {
       <div className={isError ? "main main--error" : "main main--" + state.fileIndexItem.imageFormat}>
 
         {!isError && state.fileIndexItem.fileHash ? <img alt={state.fileIndexItem.tags}
-          className={isTranslateRotation ? "image--default " + state.fileIndexItem.orientation : "image--default Horizontal"}
+          className={"image--default " + state.fileIndexItem.orientation}
           onLoad={() => {
             setError(false)
             setIsLoading(false)

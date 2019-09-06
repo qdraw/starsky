@@ -1,4 +1,4 @@
-import { IRelativeObjects } from '../interfaces/IDetailView';
+import { IRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 
 export interface IArchiveProps {
@@ -10,7 +10,7 @@ export interface IArchiveProps {
   colorClassUsage: Array<number>;
   collectionsCount: number;
   lastUpdated?: Date; // used to trigger in context updates
-  pageType?: string; // Search or Archive
+  pageType: PageType; // Search or Archive
   pageNumber?: number;
   lastPageNumber?: number;
   isReadOnly: boolean;

@@ -3,6 +3,7 @@ import Archive from '../containers/archive';
 import Search from '../containers/search';
 import { ArchiveContext, ArchiveContextProvider } from '../contexts/archive-context';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
+import { PageType } from '../interfaces/IDetailView';
 import DocumentTitle from '../shared/document-title';
 
 /**
@@ -35,7 +36,7 @@ function ArchiveWrapper(archive: IArchiveProps) {
   if (!state.fileIndexItems) return (<></>);
   if (!state.pageType) return (<></>);
 
-  if (state.pageType === "Search") {
+  if (state.pageType === PageType.Search) {
     return (
       <Search {...archiveList} />
     )

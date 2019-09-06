@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
-import { newIRelativeObjects } from '../interfaces/IDetailView';
+import { newIRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { newIFileIndexItem } from '../interfaces/IFileIndexItem';
 
 const ArchiveContext = React.createContext<IContext>({} as IContext)
@@ -27,6 +27,7 @@ const initialState: State = {
   colorClassFilterList: [],
   colorClassUsage: [],
   isReadOnly: false,
+  pageType: PageType.Loading
 }
 
 export function archiveReducer(state: State, action: Action): State {
