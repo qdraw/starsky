@@ -132,11 +132,13 @@ namespace starskycore.Services
             {
                 // currentFolder != "/" >= on the home folder you will automaticly go to a subfolder
                 relativeObject.NextFilePath = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FilePath;
+                relativeObject.NextHash = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FileHash;
             }
 
             if (photoIndexOfSubFolder >= 1)
             {
                 relativeObject.PrevFilePath = itemsInSubFolder[photoIndexOfSubFolder - 1]?.FilePath;
+                relativeObject.PrevHash = itemsInSubFolder[photoIndexOfSubFolder - 1]?.FileHash;
             }
 
             return relativeObject;
