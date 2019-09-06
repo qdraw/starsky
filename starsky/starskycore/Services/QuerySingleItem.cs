@@ -124,12 +124,15 @@ namespace starskycore.Services
             if (currentIndex != fileIndexItemsList.Count - 1)
             {
                 relativeObject.NextFilePath = fileIndexItemsList[currentIndex + 1].FilePath;
+                relativeObject.NextHash = fileIndexItemsList[currentIndex + 1].FileHash;
             }
-            if (currentIndex >= 1)
+
+            if ( currentIndex >= 1 )
             {
-                relativeObject.PrevFilePath = fileIndexItemsList[currentIndex - 1].FilePath;
+	            relativeObject.PrevFilePath = fileIndexItemsList[currentIndex - 1].FilePath;
+	            relativeObject.PrevHash = fileIndexItemsList[currentIndex - 1].FileHash;	            
             }
-            
+
             return relativeObject;
         }
   

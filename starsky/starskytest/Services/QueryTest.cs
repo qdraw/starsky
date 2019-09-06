@@ -401,6 +401,80 @@ namespace starskytest.Services
             
         }
 
+
+        [TestMethod]
+        public void QueryTest_TestPreviousFileHash()
+        {
+	        // For previous item check if caching has no conflicts
+
+	        _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "001.jpg",
+		        ParentDirectory = "/QueryTest_prev_hash",
+		        FileHash = "09457777777",
+		        Tags = string.Empty,
+		        IsDirectory = false
+	        });
+
+	        _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "002.jpg",
+		        ParentDirectory = "/QueryTest_prev_hash",
+		        FileHash = "09457847385873",
+		        Tags = string.Empty,
+		        IsDirectory = false
+	        });
+
+	        // For previous item; 
+	        var single004 =
+		        _query.SingleItem("/QueryTest_prev_hash/002.jpg");
+	        
+	        // check hash
+	        Assert.AreEqual("09457777777",
+		        single004.RelativeObjects.PrevHash);
+	        
+	        // check path
+	        Assert.AreEqual("/QueryTest_prev_hash/001.jpg",
+		        single004.RelativeObjects.PrevFilePath);
+        }
+        
+        
+        [TestMethod]
+        public void QueryTest_TestNextFileHash()
+        {
+	        // For NEXT item check if caching has no conflicts
+
+	        _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "001.jpg",
+		        ParentDirectory = "/QueryTest_next_hash",
+		        FileHash = "09457777777",
+		        Tags = string.Empty,
+		        IsDirectory = false
+	        });
+
+	        _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "002.jpg",
+		        ParentDirectory = "/QueryTest_next_hash",
+		        FileHash = "09457847385873",
+		        Tags = string.Empty,
+		        IsDirectory = false
+	        });
+
+	        // For previous item; 
+	        var single004 =
+		        _query.SingleItem("/QueryTest_next_hash/001.jpg");
+	        
+	        // check hash
+	        Assert.AreEqual("09457847385873",
+		        single004.RelativeObjects.NextHash);
+	        
+	        // check path
+	        Assert.AreEqual("/QueryTest_next_hash/002.jpg",
+		        single004.RelativeObjects.NextFilePath);
+        }
+
         [TestMethod]
         public void QueryTest_CachingDirectoryConflicts_CheckIfContentIsInCacheUpdated()
         {
