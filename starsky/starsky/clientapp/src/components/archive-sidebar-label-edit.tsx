@@ -2,7 +2,7 @@ import React, { memo, useEffect } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
-import FetchPost from '../shared/fetchpost';
+import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
 import SwitchButton from './switch-button';
 

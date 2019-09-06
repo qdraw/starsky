@@ -4,8 +4,9 @@ import React, { useEffect } from 'react';
 import { DetailViewContext } from '../contexts/detailview-context';
 import useLocation from '../hooks/use-location';
 import { IExifStatus } from '../interfaces/IExifStatus';
-import FetchPost from '../shared/fetchpost';
+import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
+import ModalExport from './modal-export';
 import MoreMenu from './more-menu';
 
 const MenuDetailView: React.FunctionComponent = () => {
@@ -75,13 +76,17 @@ const MenuDetailView: React.FunctionComponent = () => {
   var headerName = isDetails ? "header header--main header--edit" : "header header--main";
   if (isMarkedAsDeleted) headerName += " " + "header--deleted"
 
+  const [isModalExportOpen, setModalExportOpen] = React.useState(false);
+
   return (<>
+    {isModalExportOpen ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)} select={[detailView.subPath]} isOpen={isModalExportOpen} /> : null}
+
     <header className={headerName}>
       <div className="wrapper">
         <Link className="item item--first item--close" to={new URLPath().updateFilePath(history.location.search, parentDirectory)}>Sluiten</Link>
         <div className="item item--labels" onClick={() => { toggleLabels() }}>Labels</div>
         <MoreMenu>
-          <li className="menu-option disabled" onClick={() => { alert("Exporteer werkt nog niet"); }}>Exporteer</li>
+          <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Naam wijzigen</li>
           <li className="menu-option" onClick={() => { DeleteFile(); }}>{!isMarkedAsDeleted ? "Weggooien" : "Undo Weggooien"}</li>

@@ -34,7 +34,9 @@ export default function Modal({
     if (!hasUpdated) forceUpdate(true);
 
     return () => {
-      if (modal.current) document.body.removeChild(modal.current);
+      if (modal.current) {
+        document.body.removeChild(modal.current);
+      }
     };
   }, []);
 
@@ -48,8 +50,8 @@ export default function Modal({
       return {
         freeze: () => {
           // @ts-ignore
-          document.body.style = `position: fixed; top: ${cachedPosition *
-            -1}px; width: 100%;`;
+          document.body.style =
+            `position: fixed; top: ${cachedPosition * -1}px; width: 100%;`;
         },
         unfreeze: () => {
           document.body.removeAttribute("style");
@@ -74,9 +76,9 @@ export default function Modal({
     };
 
     const handleKeyDown = (e: any) => {
-      if (e.key === "Escape") {
-        handleExit();
-      }
+      // if (e.key === "Escape") {
+      //   handleExit();
+      // }
     };
 
     const { freeze, unfreeze } = capturePosition();
@@ -116,7 +118,6 @@ export default function Modal({
         <div onClick={(event) => {
           var target = event.target as HTMLElement
           if (target.className.indexOf("modal-bg--open") === -1) return;
-          console.log(event);
           handleExit()
         }
         } className={`modal-bg ${isOpen ? " modal-bg--open" : ""}`}>
@@ -129,7 +130,9 @@ export default function Modal({
               <button
                 className={`modal-exit-button ${isOpen ? " modal-exit-button--showing" : ""}`}
                 ref={exitButton}
-                onClick={() => handleExit()}
+                onClick={() => {
+                  handleExit()
+                }}
               >
                 Sluiten
               </button>

@@ -82,25 +82,19 @@ export class Query {
     return "/api/thumbnail/" + fileHash + "?json=true";
   }
 
-  // queryThumbnailApi = (fileHash: string): Promise<boolean> => {
-  //   let location = this.UrlQueryThumbnailApi(fileHash);
+  // http://localhost:5000/api/downloadPhoto?f=%2F__starsky%2F0001-readonly%2F4.jpg&isThumbnail=True
+  public UrlDownloadPhotoApi = (f: string, isThumbnail: boolean = true) => {
+    return "/api/downloadPhoto?f=" + f + "&isThumbnail=" + isThumbnail;
+  }
 
-  //   return new Promise(
-  //     // The resolver function is called with the ability to resolve or
-  //     // reject the promise
-  //     function (resolve, reject) {
-  //       fetch(location, {
-  //         credentials: "include"
-  //       })
-  //         .then(function (response) {
-  //           return response;
-  //         })
-  //         .then(function (response) {
-  //           // true = if thumbnail is there
-  //           resolve(response.status === 200);
-  //         });
-  //     });
-  // }
+  public UrlExportPostZipApi = () => {
+    return "/export/createZip/"
+  }
+
+  // export/zip/SR497519527.zip?json=true
+  public UrlExportZipApi = (createZipId: string, json: boolean = true) => {
+    return "/export/zip/" + createZipId + ".zip" + "?json=" + json;
+  }
 
   public queryInfoApi = (subPath: string): Promise<IFileIndexItem[]> => {
 

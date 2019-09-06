@@ -167,6 +167,17 @@ export class URLPath {
     return selectList;
   }
 
+  public MergeSelectParent(select: string[] | undefined, parent: string | undefined): string[] {
+    var subPaths: string[] = [];
+    if (select === undefined || parent === undefined) return subPaths;
+
+    select.forEach(item => {
+      subPaths.push(parent + "/" + item)
+    });
+    return subPaths;
+  }
+
+
   public MergeSelectFileIndexItem(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
     var subPaths: string[] = [];
 
@@ -179,6 +190,8 @@ export class URLPath {
   }
 
   public ArrayToCommaSeperatedStringOneParent(select: string[], parent: string): string {
+    if (select === undefined || parent === undefined) return "";
+
     var selectParams = "";
     for (let index = 0; index < select.length; index++) {
       const element = select[index];
