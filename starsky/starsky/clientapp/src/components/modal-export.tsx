@@ -1,8 +1,9 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import useInterval from '../hooks/use-interval';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
 import { Query } from '../shared/query';
+import { URLPath } from '../shared/url-path';
 import Modal from './modal';
 
 interface IModalTrashProps {
@@ -69,6 +70,25 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = memo((props) => {
     }
   }, 1500)
 
+
+  const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] = React.useState(true);
+
+  /* some filetypes don't allow to be thumnailed by the backend server */
+  async function getThumbnailSingleFileStatus() {
+    if (!props.select || props.select.length !== 1) return;
+
+    var result = await FetchGet(new Query().UrlDownloadPhotoApi(props.select[0], true));
+
+    if (result && result.statusCode && result.statusCode === 500) {
+      setSingleFileThumbnailStatus(false);
+      return;
+    }
+    setSingleFileThumbnailStatus(true);
+  }
+  useEffect(() => {
+    getThumbnailSingleFileStatus();
+  }, [props]);
+
   return (<Modal
     id="detailview-export-modal"
     isOpen={props.isOpen}
@@ -78,10 +98,11 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = memo((props) => {
 
     <div className="modal content--subheader">Exporteer selectie</div>
     <div className="modal content--text">
-
       {isProcessing === ProcessingState.default && props.select && props.select.length === 1 ? <>
-        <a href={new Query().UrlDownloadPhotoApi(props.select[0], false)} download target="_blank" className="btn btn--info">Orgineel</a>
-        <a href={new Query().UrlDownloadPhotoApi(props.select[0], true)} download target="_blank" className="btn btn--default">Thumbnail</a>
+        <a href={new Query().UrlDownloadPhotoApi(props.select[0], false)} download={new URLPath().FileNameBreadcrumb(props.select[0])}
+          target="_blank" className="btn btn--info">Orgineel</a>
+        {singleFileThumbnailStatus ? <a href={new Query().UrlDownloadPhotoApi(props.select[0], true)} download={new URLPath().FileNameBreadcrumb(props.select[0])}
+          target="_blank" className={"btn btn--default"}>Thumbnail</a> : null}
       </> : null}
 
       {isProcessing === ProcessingState.default && props.select && props.select.length >= 2 ? <>

@@ -3,6 +3,10 @@ import { IUrl } from '../interfaces/IUrl';
 
 export class URLPath {
 
+  public FileNameBreadcrumb(filePath: string) {
+    return filePath.split("/")[filePath.split("/").length - 1]
+  }
+
   public StringToIUrl(locationHash: string): IUrl {
     let hash = this.RemovePrefixUrl(locationHash);
     let params = new URLSearchParams(hash).entries();
