@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -125,6 +126,30 @@ namespace starskytest.Services
 			Assert.AreEqual("test1, test",output[0].Tags);
 			
 			_query.RemoveItem(item1);
+		}
+
+		[TestMethod]
+		public void SearchAndReplace_ReplaceDeletedTag_Default()
+		{
+			var items = new List<FileIndexItem>{new FileIndexItem{Tags = "test, !keyword!", Status = FileIndexItem.ExifStatus.Ok}};
+			var result =  _replace.SearchAndReplace(items, "Tags", "!keyword!", "");
+			Assert.AreEqual("test",result.FirstOrDefault().Tags);
+		}
+		
+		[TestMethod]
+		public void SearchAndReplace_ReplaceDeletedTag_LowerCase()
+		{
+			var items = new List<FileIndexItem>{new FileIndexItem{Tags = "test, !keyword!", Status = FileIndexItem.ExifStatus.Ok}};
+			var result =  _replace.SearchAndReplace(items, "tags", "!keyword!", "");
+			Assert.AreEqual("test",result.FirstOrDefault().Tags);
+		}
+		
+		[TestMethod]
+		public void SearchAndReplace_ReplaceDeletedTag_StatusDeleted()
+		{
+			var items = new List<FileIndexItem>{new FileIndexItem{Tags = "test, !delete!", Status = FileIndexItem.ExifStatus.Deleted}};
+			var result =  _replace.SearchAndReplace(items, "tags", "!delete!", "");
+			Assert.AreEqual("test",result.FirstOrDefault().Tags);
 		}
 	}
 }
