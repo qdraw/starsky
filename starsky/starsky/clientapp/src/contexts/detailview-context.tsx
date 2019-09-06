@@ -30,20 +30,29 @@ type IContext = {
 export function archiveReducer(state: State, action: Action): State {
   switch (action.type) {
     case "remove":
-      var updated = state;
-      // updated.status
+      var { tags } = action;
+      if (tags && state.fileIndexItem.tags !== undefined) state.fileIndexItem.tags = state.fileIndexItem.tags.replace(tags, "");
+      console.log(state.fileIndexItem.tags);
+
       // Need to update otherwise other events are not triggerd
-      return { ...updated, lastUpdated: new Date() };
+      return { ...state, lastUpdated: new Date() };
     case "add":
-      var updated = state;
-      // updated.status
+      var { tags } = action;
+      if (tags) state.fileIndexItem.tags += "," + tags;
+      console.log(state.fileIndexItem.tags);
       // Need to update otherwise other events are not triggerd
-      return { ...updated, lastUpdated: new Date() };
+      return { ...state, lastUpdated: new Date() };
     case "update":
-      var updated = state;
-      // updated.status
+      var { tags, description, title, status, colorclass } = action;
+
+      if (tags) state.fileIndexItem.tags = tags;
+      if (description) state.fileIndexItem.description = description;
+      if (title) state.fileIndexItem.title = title;
+      if (colorclass) state.fileIndexItem.colorClass = colorclass;
+      if (status) state.fileIndexItem.status = status;
+
       // Need to update otherwise other events are not triggerd
-      return { ...updated, lastUpdated: new Date() };
+      return { ...state, lastUpdated: new Date() };
     case "reset":
       return action.payload;
   }

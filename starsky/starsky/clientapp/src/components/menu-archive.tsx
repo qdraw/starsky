@@ -1,12 +1,14 @@
 
 import React, { memo, useEffect } from 'react';
-import MenuSearchBar from '../components/menu.searchbar';
 import useLocation from '../hooks/use-location';
-import { IMenuProps } from '../interfaces/IMenuProps';
 import { URLPath } from '../shared/url-path';
+import MenuSearchBar from './menu.searchbar';
 import MoreMenu from './more-menu';
 
-const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
+interface IMenuArchiveProps {
+}
+
+const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo((props) => {
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
 

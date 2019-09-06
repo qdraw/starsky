@@ -6,7 +6,6 @@ import useFileList from '../hooks/use-filelist';
 import useLocation from '../hooks/use-location';
 import { IArchive } from '../interfaces/IArchive';
 import { IDetailView, PageType } from '../interfaces/IDetailView';
-import Menu from './menu';
 
 
 const MediaContent: React.FC = () => {
@@ -26,7 +25,7 @@ const MediaContent: React.FC = () => {
 
   return (
     <div>
-      <Menu detailView={detailView} parent={parent} isDetailMenu={pageType === PageType.DetailView}></Menu>
+      {/* <Menu detailView={detailView} parent={parent} isDetailMenu={pageType === PageType.DetailView}></Menu> */}
       {pageType === PageType.Loading ? <Preloader isOverlay={true} isDetailMenu={false}></Preloader> : null}
       {pageType === PageType.NotFound ? <>not found</> : null}
       {pageType === PageType.ApplicationException ? <>ApplicationException</> : null}

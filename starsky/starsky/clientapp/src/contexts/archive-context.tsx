@@ -31,11 +31,11 @@ const initialState: State = {
 export function archiveReducer(state: State, action: Action): State {
   switch (action.type) {
     case "update":
-      var updated = state;
+      // var updated = state;
 
       var { select, tags, description, title, append, colorclass } = action;
 
-      updated.fileIndexItems.forEach((item, index) => {
+      state.fileIndexItems.forEach((item, index) => {
         if (select.indexOf(item.fileName) !== -1) {
           if (append) {
             // bug: duplicate keywords are added, in the api those are filtered
@@ -54,7 +54,7 @@ export function archiveReducer(state: State, action: Action): State {
       });
 
       // Need to update otherwise other events are not triggerd
-      return { ...updated, lastUpdated: new Date() };
+      return { ...state, lastUpdated: new Date() };
     case "reset":
       return action.payload;
     case "add":

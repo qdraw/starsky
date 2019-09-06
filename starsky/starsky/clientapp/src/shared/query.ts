@@ -32,7 +32,8 @@ export class Query {
     return "/api/index" + url;
   }
 
-  public UrlQueryInfoApi = (subPath: string) => {
+  public UrlQueryInfoApi = (subPath: string): string => {
+    if (!subPath) return "";
     var url = this.urlReplacePath(subPath);
     if (url === "") {
       url = "/";

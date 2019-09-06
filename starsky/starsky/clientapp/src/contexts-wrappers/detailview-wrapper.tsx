@@ -32,10 +32,12 @@ function DetailViewWrapper(detailViewProp: IDetailView) {
 
   if (!state) return (<>(DetailViewWrapper) => no state</>)
   if (!state.fileIndexItem) return (<></>);
-  console.log(state);
+  if (!detailView) return (<></>);
 
   return (
-    <DetailView {...detailView} />
+    <>
+      <DetailView {...detailView} />
+    </>
   )
 };
 

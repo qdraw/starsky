@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useRef } from "react";
+import { DetailViewContext } from '../contexts/detailview-context';
 import useFetch from '../hooks/use-fetch';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import { IExifStatus } from '../interfaces/IExifStatus';
@@ -16,8 +17,10 @@ interface IDetailViewSidebarProps {
 
 const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((props) => {
 
-  const [fileIndexItem, setFileIndexItem] = React.useState(props.fileIndexItem);
+  let { state, dispatch } = React.useContext(DetailViewContext);
+  const [fileIndexItem, setFileIndexItem] = React.useState(state.fileIndexItem);
 
+  // To Get information from /Api/Info
   var location = new Query().UrlQueryInfoApi(props.filePath);
   const responseObject = useFetch(location, 'get');
   useEffect(() => {
@@ -27,6 +30,12 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     infoFileIndexItem[0].lastEdited = fileIndexItem.lastEdited;
     setFileIndexItem(infoFileIndexItem[0]);
   }, [responseObject]);
+
+  useEffect(() => {
+    console.log(state.fileIndexItem);
+
+    setFileIndexItem(state.fileIndexItem);
+  }, [state]);
 
   // var isFormEnabled = true;
   // const [isEnabled, setIsEnabled] = React.useState(true);
@@ -70,7 +79,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     var currentString: string = fileIndexObject[name];
     if (value === currentString) return;
 
-    // Sorry no empty strings are supported
+    // Empty strings are NOT supported
     if (event.currentTarget.innerText.length === 1) {
       fileIndexObject[name] = "."
       console.log('not supported');

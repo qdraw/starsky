@@ -33,6 +33,7 @@ function ArchiveWrapper(archive: IArchiveProps) {
 
   if (!state) return (<>(ArchiveWrapper) => no state</>)
   if (!state.fileIndexItems) return (<></>);
+  if (!state.pageType) return (<></>);
 
   if (state.pageType === "Search") {
     return (
