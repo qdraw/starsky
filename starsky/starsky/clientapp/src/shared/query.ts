@@ -93,7 +93,7 @@ export class Query {
 
   // export/zip/SR497519527.zip?json=true
   public UrlExportZipApi = (createZipId: string, json: boolean = true) => {
-    return "/export/zip/" + createZipId + ".zip" + "?json=" + json;
+    return "/export/zip/" + createZipId + ".zip?json=" + json;
   }
 
   public queryInfoApi = (subPath: string): Promise<IFileIndexItem[]> => {

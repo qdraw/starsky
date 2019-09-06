@@ -91,6 +91,7 @@ Task("Clean")
 Task("ClientRestore")
     .Does(() =>
     {
+        Environment.SetEnvironmentVariable("CI","true");
         if (!DirectoryExists($"./starsky/clientapp/node_modules/react"))
         {
             // Running `npm ci` instead of `npm install`
@@ -105,12 +106,21 @@ Task("ClientRestore")
 Task("ClientBuild")
     .Does(() =>
     {
+        Environment.SetEnvironmentVariable("CI","false");
         NpmRunScript("build", s => s.FromPath("./starsky/clientapp/"));
+  });
+
+Task("ClientTest")
+    .Does(() =>
+    {
+        Environment.SetEnvironmentVariable("CI","true");
+        NpmRunScript("test", s => s.FromPath("./starsky/clientapp/"));
   });
 
 Task("Client")
   .IsDependentOn("ClientRestore")
-  .IsDependentOn("ClientBuild");
+  .IsDependentOn("ClientBuild")
+  .IsDependentOn("ClientTest");
 
 // Run dotnet restore to restore all package references.
 Task("Restore")

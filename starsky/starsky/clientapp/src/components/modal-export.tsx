@@ -73,19 +73,19 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = memo((props) => {
 
   const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] = React.useState(true);
 
-  /* some filetypes don't allow to be thumnailed by the backend server */
-  async function getThumbnailSingleFileStatus() {
-    if (!props.select || props.select.length !== 1) return;
-
-    var result = await FetchGet(new Query().UrlDownloadPhotoApi(props.select[0], true));
-
-    if (result && result.statusCode && result.statusCode === 500) {
-      setSingleFileThumbnailStatus(false);
-      return;
-    }
-    setSingleFileThumbnailStatus(true);
-  }
   useEffect(() => {
+    /* some filetypes don't allow to be thumnailed by the backend server */
+    async function getThumbnailSingleFileStatus() {
+      if (!props.select || props.select.length !== 1) return;
+
+      var result = await FetchGet(new Query().UrlDownloadPhotoApi(props.select[0], true));
+
+      if (result && result.statusCode && result.statusCode === 500) {
+        setSingleFileThumbnailStatus(false);
+        return;
+      }
+      setSingleFileThumbnailStatus(true);
+    }
     getThumbnailSingleFileStatus();
   }, [props]);
 
@@ -100,9 +100,9 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = memo((props) => {
     <div className="modal content--text">
       {isProcessing === ProcessingState.default && props.select && props.select.length === 1 ? <>
         <a href={new Query().UrlDownloadPhotoApi(props.select[0], false)} download={new URLPath().FileNameBreadcrumb(props.select[0])}
-          target="_blank" className="btn btn--info">Orgineel</a>
+          target="_blank" rel="noopener noreferrer" className="btn btn--info">Orgineel</a>
         {singleFileThumbnailStatus ? <a href={new Query().UrlDownloadPhotoApi(props.select[0], true)} download={new URLPath().FileNameBreadcrumb(props.select[0])}
-          target="_blank" className={"btn btn--default"}>Thumbnail</a> : null}
+          target="_blank" rel="noopener noreferrer" className={"btn btn--default"}>Thumbnail</a> : null}
       </> : null}
 
       {isProcessing === ProcessingState.default && props.select && props.select.length >= 2 ? <>
@@ -122,7 +122,7 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = memo((props) => {
       </> : null}
 
       {isProcessing === ProcessingState.ready ? <>
-        <a className="btn btn--default" href={new Query().UrlExportZipApi(createZipKey, false)} download target="_blank">
+        <a className="btn btn--default" href={new Query().UrlExportZipApi(createZipKey, false)} download rel="noopener noreferrer" target="_blank">
           Start je download
         </a>
       </> : null}
