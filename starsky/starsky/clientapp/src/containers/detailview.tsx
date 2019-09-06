@@ -3,16 +3,16 @@ import DetailViewSidebar from '../components/detail-view-sidebar';
 import MenuDetailView from '../components/menu-detailview';
 import Preloader from '../components/preloader';
 import { DetailViewContext } from '../contexts/detailview-context';
+import useFetch from '../hooks/use-fetch';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IDetailView, newIRelativeObjects } from '../interfaces/IDetailView';
 import { INavigateState } from '../interfaces/INavigateState';
+import BrowserDetect from '../shared/browser-detect';
 import DocumentTitle from '../shared/document-title';
 import { Keyboard } from '../shared/keyboard';
+import { Query } from '../shared/query';
 import { URLPath } from '../shared/url-path';
-// const DetailView: React.FC<IDetailView> = () => {
-//   return (<></>)
-// };
 
 const DetailView: React.FC<IDetailView> = () => {
 
@@ -36,19 +36,21 @@ const DetailView: React.FC<IDetailView> = () => {
     new DocumentTitle().SetDocumentTitle(state);
   }, [history.location.search]);
 
+  // To Get the rotation update
   const [isTranslateRotation, setTranslateRotation] = React.useState(false);
-  // useEffect(() => {
-  //   if (!state) return;
-  //   if (!state.fileIndexItem) return;
-  //   // Safari for iOS I don't need thumbnail rotation (for Mac it does need rotation)
-  //   if (new BrowserDetect().IsIOS()) {
-  //     return;
-  //   };
-  //   (async () => {
-  //     var thumbnailIsReady = await new Query().queryThumbnailApi(state.fileIndexItem.fileHash)
-  //     setTranslateRotation(!thumbnailIsReady);
-  //   })();
-  // }, [state.subPath]);
+  var location = new Query().UrlQueryThumbnailApi(state.fileIndexItem.fileHash);
+  const responseObject = useFetch(location, 'get');
+  useEffect(() => {
+    if (!responseObject) return;
+    // Safari for iOS I don't need thumbnail rotation (for Mac it require rotation)
+    if (new BrowserDetect().IsIOS()) {
+      return;
+    };
+    var statusCode: number = responseObject.statusCode;
+    if (statusCode === 202) {
+      setTranslateRotation(!isTranslateRotation);
+    }
+  }, [responseObject]);
 
   useKeyboardEvent(/ArrowLeft/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
@@ -100,10 +102,11 @@ const DetailView: React.FC<IDetailView> = () => {
   function next() {
     if (!relativeObjects) return;
     var next = updateUrl(relativeObjects.nextFilePath);
-    setIsLoading(true)
+    // Keeps loading forever
+    if (relativeObjects.nextHash !== state.fileIndexItem.fileHash) {
+      setIsLoading(true)
+    }
     history.navigate(next, { replace: true });
-    console.log('next');
-
   }
 
   function updateUrl(toUpdateFilePath: string) {
@@ -116,17 +119,16 @@ const DetailView: React.FC<IDetailView> = () => {
   function prev() {
     if (!relativeObjects) return;
     var prev = updateUrl(relativeObjects.prevFilePath);
-    setIsLoading(true)
+    // Keeps loading forever
+    if (relativeObjects.prevHash !== state.fileIndexItem.fileHash) {
+      setIsLoading(true)
+    }
     history.navigate(prev, { replace: true });
-    console.log('prev', relativeObjects, prev, ".", state.fileIndexItem.fileName, history.location.search);
-
   }
 
   if (!state.fileIndexItem || !relativeObjects) {
     return (<Preloader parent={"/"} isDetailMenu={true} isOverlay={true}></Preloader>)
   }
-
-  console.log(state.fileIndexItem.filePath, state.subPath, state.fileIndexItem.fileHash);
 
   return (<>
     <MenuDetailView />

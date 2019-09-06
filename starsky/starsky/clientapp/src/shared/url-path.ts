@@ -97,7 +97,6 @@ export class URLPath {
     }
     var url = this.addPrefixUrl(params.toString());
     url = url.replace(/\+/ig, " ").replace(/%2F/ig, "/").replace(/%2C/ig, ",");
-    console.log(url);
     return url;
   }
 

@@ -12,6 +12,8 @@ export enum PageType {
 export interface IRelativeObjects {
     nextFilePath: string;
     prevFilePath: string;
+    nextHash: string,
+    prevHash: string,
     args: Array<string>;
 }
 
@@ -19,6 +21,8 @@ export function newIRelativeObjects(): IRelativeObjects {
     return {
         nextFilePath: "",
         prevFilePath: "",
+        nextHash: "",
+        prevHash: "",
         args: new Array<string>(),
     } as IRelativeObjects;
 }

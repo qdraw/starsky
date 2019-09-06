@@ -82,25 +82,25 @@ export class Query {
     return "/api/thumbnail/" + fileHash + "?json=true";
   }
 
-  queryThumbnailApi = (fileHash: string): Promise<boolean> => {
-    let location = this.UrlQueryThumbnailApi(fileHash);
+  // queryThumbnailApi = (fileHash: string): Promise<boolean> => {
+  //   let location = this.UrlQueryThumbnailApi(fileHash);
 
-    return new Promise(
-      // The resolver function is called with the ability to resolve or
-      // reject the promise
-      function (resolve, reject) {
-        fetch(location, {
-          credentials: "include"
-        })
-          .then(function (response) {
-            return response;
-          })
-          .then(function (response) {
-            // true = if thumbnail is there
-            resolve(response.status === 200);
-          });
-      });
-  }
+  //   return new Promise(
+  //     // The resolver function is called with the ability to resolve or
+  //     // reject the promise
+  //     function (resolve, reject) {
+  //       fetch(location, {
+  //         credentials: "include"
+  //       })
+  //         .then(function (response) {
+  //           return response;
+  //         })
+  //         .then(function (response) {
+  //           // true = if thumbnail is there
+  //           resolve(response.status === 200);
+  //         });
+  //     });
+  // }
 
   public queryInfoApi = (subPath: string): Promise<IFileIndexItem[]> => {
 
