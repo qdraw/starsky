@@ -25,7 +25,8 @@ const initialState: State = {
   breadcrumb: [],
   collectionsCount: 0,
   colorClassFilterList: [],
-  colorClassUsage: []
+  colorClassUsage: [],
+  isReadOnly: false,
 }
 
 export function archiveReducer(state: State, action: Action): State {

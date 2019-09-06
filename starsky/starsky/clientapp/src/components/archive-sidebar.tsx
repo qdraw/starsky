@@ -4,15 +4,23 @@ import ArchiveSidebarColorClass from './archive-sidebar-color-class';
 import ArchiveSidebarLabelEdit from './archive-sidebar-label-edit';
 import ArchiveSidebarSelectionList from './archive-sidebar-selection-list';
 
-interface IDetailViewSidebarProps {
+interface IArchiveSidebarProps {
   fileIndexItems: Array<IFileIndexItem>,
   colorClassUsage: Array<number>,
   subPath: string;
+  isReadOnly: boolean;
 }
 
-const ArchiveSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((archive) => {
+const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((archive) => {
 
   return (<div className="sidebar">
+
+    {archive.isReadOnly ? <>
+      <div className="content--header">Status</div>
+      <div className="content content--text">
+        <div className="warning-box">Alleen lezen map</div>
+      </div> </> : null}
+
     <div className="content--header">
       Selectie
     </div>
@@ -29,7 +37,6 @@ const ArchiveSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((a
     <div className="content--text">
       <ArchiveSidebarColorClass {...archive}></ArchiveSidebarColorClass>
     </div>
-
 
   </div>);
 });

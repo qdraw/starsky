@@ -10,6 +10,7 @@ export interface IArchive {
     colorClassFilterList: Array<number>;
     colorClassUsage: Array<number>;
     collectionsCount: number;
+    isReadOnly: boolean;
 }
 
 export function newIArchive(): IArchive {

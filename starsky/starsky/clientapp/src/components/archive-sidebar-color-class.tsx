@@ -7,6 +7,7 @@ import ColorClassSelect from './color-class-select';
 
 interface IArchiveSidebarColorClassProps {
   fileIndexItems: Array<IFileIndexItem>,
+  isReadOnly: boolean,
 }
 
 const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClassProps> = memo((archive) => {
@@ -27,6 +28,6 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
 
   return (<ColorClassSelect onToggle={(colorclass) => {
     dispatch({ type: 'update', colorclass, select });
-  }} filePath={selectParams} isEnabled={select.length !== 0} clearAfter={true} ></ColorClassSelect>)
+  }} filePath={selectParams} isEnabled={!archive.isReadOnly && select.length !== 0} clearAfter={true} ></ColorClassSelect>)
 });
 export default ArchiveSidebarColorClass
