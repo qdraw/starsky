@@ -89,7 +89,9 @@ namespace starskycore.Services
 
 		public List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList, string fieldName, string search, string replace)
 		{
-			foreach ( var fileIndexItem in fileIndexResultsList.Where( p => p.Status == FileIndexItem.ExifStatus.Ok) )
+			foreach ( var fileIndexItem in fileIndexResultsList.Where( 
+				p => p.Status == FileIndexItem.ExifStatus.Ok 
+				     || p.Status == FileIndexItem.ExifStatus.Deleted) )
 			{
 				var searchInObject = FileIndexCompareHelper.Get(fileIndexItem, fieldName);
 				var replacedToObject = new object();
