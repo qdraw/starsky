@@ -78,7 +78,7 @@ const MenuDetailView: React.FunctionComponent = () => {
   return (<>
     <header className={headerName}>
       <div className="wrapper">
-        <Link className="item item--first item--close" to={parentDirectory}>Sluiten</Link>
+        <Link className="item item--first item--close" to={new URLPath().updateFilePath(history.location.search, parentDirectory)}>Sluiten</Link>
         <div className="item item--labels" onClick={() => { toggleLabels() }}>Labels</div>
         <MoreMenu>
           <li className="menu-option disabled" onClick={() => { alert("Exporteer werkt nog niet"); }}>Exporteer</li>

@@ -18,22 +18,18 @@ const useFetch = (url: string, method: 'get' | 'post'): any | null => {
         response.statusCode = res.status;
         response.url = res.url;
 
-        if (res.status === 404) {
-          return {
-            pageType: PageType.NotFound,
-          }
-        }
-        else if (res.status >= 400 && res.status <= 550) {
-          return {
+        if (res.status >= 400 && res.status <= 550 && res.status !== 404) {
+          setData({
             pageType: PageType.ApplicationException,
-          }
+          } as any)
+          return;
         }
 
         if (mounted) {
           setData(response);
         }
-      } catch (e) {
-        console.error(e);
+      } catch (event) {
+        console.error("use-fetch", event);
       }
     })();
 

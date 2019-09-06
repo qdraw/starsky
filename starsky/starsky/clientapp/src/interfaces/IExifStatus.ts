@@ -12,8 +12,9 @@
 // }
 
 export enum IExifStatus {
-  Default = <any>"Default",
-  ReadOnly = <any>"ReadOnly",
-  Ok = <any>"Ok",
-  Deleted = <any>"Deleted"
+  Default = "Default" as any,
+  ReadOnly = "ReadOnly" as any,
+  Ok = "Ok" as any,
+  Deleted = "Deleted" as any,
+  NotFoundSourceMissing = "NotFoundSourceMissing" as any,
 }

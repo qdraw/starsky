@@ -96,7 +96,9 @@ export class URLPath {
       params.set(key[0], key[1]);
     }
     var url = this.addPrefixUrl(params.toString());
-    return url.replace(/\+/ig, " ").replace(/%2F/ig, "/").replace(/%2C/ig, ",");
+    url = url.replace(/\+/ig, " ").replace(/%2F/ig, "/").replace(/%2C/ig, ",");
+    console.log(url);
+    return url;
   }
 
 

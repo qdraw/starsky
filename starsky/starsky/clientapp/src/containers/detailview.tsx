@@ -20,8 +20,6 @@ const DetailView: React.FC<IDetailView> = () => {
 
   let { state, dispatch } = React.useContext(DetailViewContext);
 
-  // var state: IDetailView | undefined = undefined;
-
   let relativeObjects = newIRelativeObjects();
   if (state && state.relativeObjects) {
     relativeObjects = state.relativeObjects;
@@ -36,7 +34,7 @@ const DetailView: React.FC<IDetailView> = () => {
   useEffect(() => {
     if (!state) return;
     new DocumentTitle().SetDocumentTitle(state);
-  }, [state]);
+  }, [history.location.search]);
 
   const [isTranslateRotation, setTranslateRotation] = React.useState(false);
   // useEffect(() => {
@@ -99,27 +97,13 @@ const DetailView: React.FC<IDetailView> = () => {
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = React.useState(true);
 
-  // // update states
-  // const [status, setStatus] = React.useState(IExifStatus.Default);
-  // useEffect(() => {
-  //   if (!state.fileIndexItem || !state.fileIndexItem.status) return;
-  //   setStatus(state.fileIndexItem.status);
-  // }, [state]);
-
-
-  // // update states
-  // const [fileIndexItem, setFileIndexItem] = React.useState(newIFileIndexItem());
-  // useEffect(() => {
-  //   if (!state.fileIndexItem || !state.fileIndexItem) return;
-  //   setFileIndexItem(state.fileIndexItem);
-  // }, [state.fileIndexItem]);
-
-
   function next() {
     if (!relativeObjects) return;
     var next = updateUrl(relativeObjects.nextFilePath);
     setIsLoading(true)
     history.navigate(next, { replace: true });
+    console.log('next');
+
   }
 
   function updateUrl(toUpdateFilePath: string) {
@@ -134,11 +118,15 @@ const DetailView: React.FC<IDetailView> = () => {
     var prev = updateUrl(relativeObjects.prevFilePath);
     setIsLoading(true)
     history.navigate(prev, { replace: true });
+    console.log('prev', relativeObjects, prev, ".", state.fileIndexItem.fileName, history.location.search);
+
   }
 
   if (!state.fileIndexItem || !relativeObjects) {
     return (<Preloader parent={"/"} isDetailMenu={true} isOverlay={true}></Preloader>)
   }
+
+  console.log(state.fileIndexItem.filePath, state.subPath, state.fileIndexItem.fileHash);
 
   return (<>
     <MenuDetailView />
@@ -150,7 +138,7 @@ const DetailView: React.FC<IDetailView> = () => {
 
       <div className={isError ? "main main--error" : "main main--" + state.fileIndexItem.imageFormat}>
 
-        {!isError ? <img alt={state.fileIndexItem.tags}
+        {!isError && state.fileIndexItem.fileHash ? <img alt={state.fileIndexItem.tags}
           className={isTranslateRotation ? "image--default " + state.fileIndexItem.orientation : "image--default Horizontal"}
           onLoad={() => {
             setError(false)
