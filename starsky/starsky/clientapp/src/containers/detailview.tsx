@@ -38,7 +38,7 @@ const DetailView: React.FC<IDetailView> = () => {
   }, [history.location.search]);
 
   // To Get the rotation update
-  const [isTranslateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);
+  const [translateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);
   var location = new Query().UrlQueryThumbnailApi(state.fileIndexItem.fileHash);
   const responseObject = useFetch(location, 'get');
   useEffect(() => {
@@ -145,7 +145,7 @@ const DetailView: React.FC<IDetailView> = () => {
       <div className={isError ? "main main--error" : "main main--" + state.fileIndexItem.imageFormat}>
 
         {!isError && state.fileIndexItem.fileHash ? <img alt={state.fileIndexItem.tags}
-          className={"image--default " + state.fileIndexItem.orientation}
+          className={"image--default " + translateRotation}
           onLoad={() => {
             setError(false)
             setIsLoading(false)
