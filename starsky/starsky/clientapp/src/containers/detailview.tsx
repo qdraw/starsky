@@ -49,12 +49,15 @@ const DetailView: React.FC<IDetailView> = () => {
       return;
     };
     var statusCode: number = responseObject.statusCode;
-    if (statusCode === 202) {
+    if (statusCode === 200) {
+      setTranslateRotation(Orientation.Horizontal);
+    }
+    else if (statusCode === 202) {
       setTranslateRotation(state.fileIndexItem.orientation);
       return;
     }
-    setTranslateRotation(Orientation.Horizontal);
   }, [responseObject]);
+  console.log(translateRotation);
 
   useKeyboardEvent(/ArrowLeft/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
