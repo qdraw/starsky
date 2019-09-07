@@ -349,8 +349,8 @@ Task("SonarBegin")
             OpenCoverReportsPath = netCoreCoverageFile,
             ArgumentCustomization = args => args
                 .Append($"/o:" + organisation)
-                .Append($"/d:sonar.coverage.exclusions=\"*wwwroot/js/*,starskycore/Migrations/*,*spec.tsx\"")
-                .Append($"/d:sonar.exclusions=\"wwwroot/js/*,starskycore/Migrations/*\"")
+                .Append($"/d:sonar.coverage.exclusions=\"*wwwroot/js/*,starskycore/Migrations/*,*spec.tsx,*/src/index.tsx\"")
+                .Append($"/d:sonar.exclusions=\"wwwroot/js/*,starskycore/Migrations/*,*spec.tsx,*/src/index.tsx\"")
         });
 
   });

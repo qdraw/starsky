@@ -65,11 +65,11 @@
 				{
 					<p>Datum: <em>@Model.FileIndexItem.DateTime.ToString(cultureInfo)</em></p>
 				}
-				
+
 				if ( Model.FileIndexItem.LastEdited.Year >= 2 )
 				{
 					var timeSpan = (DateTime.UtcNow - @Model.FileIndexItem.LastEdited);
-					
+
 					var minutes = ( int ) timeSpan.TotalMinutes;
 					var hours = ( int ) timeSpan.TotalHours;
 					var days = ( int ) timeSpan.TotalDays;
@@ -90,8 +90,8 @@
 					{
 						<p class="js-lastedited">Bewerkt: <em>@days dagen geleden</em></p>
 					}
-				}   
-				
+				}
+
 				if ( Model.FileIndexItem.Make != string.Empty && Model.FileIndexItem.Model != string.Empty
 				     && Model.FileIndexItem.IsoSpeed != 0 && Model.FileIndexItem.ShutterSpeed != string.Empty && Math.Abs(Model.FileIndexItem.Aperture) > 0 )
 				{
@@ -105,7 +105,7 @@
 			}
 
 
-			
+
 		</div>
 				<div class="add-colorclass">
 					@{
@@ -167,7 +167,7 @@
 							 && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationState)
 							 && !string.IsNullOrEmpty(@Model.FileIndexItem.LocationState))
 						{
-							<a target="_blank"
+							<a target="_blank" rel="noopener noreferrer"
 							   href="https://www.openstreetmap.org/?mlat=@Model.FileIndexItem.Latitude&mlon=
 									@Model.FileIndexItem.Longitude#map=15/@Model.FileIndexItem.Latitude/@Model.FileIndexItem.Longitude">
 								@Model.FileIndexItem.LocationCity, @Model.FileIndexItem.LocationState (@Model.FileIndexItem.LocationCountry)
@@ -177,7 +177,7 @@
 						else if (Math.Abs(@Model.FileIndexItem.Latitude) > 0.001
 								  && Math.Abs(@Model.FileIndexItem.Longitude) > 0.001)
 						{
-							<a target="_blank"
+							<a target="_blank" rel="noopener noreferrer"
 							   href="https://www.openstreetmap.org/?mlat=@Model.FileIndexItem.Latitude&mlon=
 									@Model.FileIndexItem.Longitude#map=15/@Model.FileIndexItem.Latitude/@Model.FileIndexItem.Longitude">
 								@Math.Round(@Model.FileIndexItem.Latitude, 5),@Math.Round(@Model.FileIndexItem.Longitude, 5)
@@ -285,14 +285,14 @@
 	<div class="main-image">
 		<img class="disabled-@Model.FileIndexItem.Orientation" alt="@Model.FileIndexItem.Tags" src="@Url.Action("Thumbnail", "Api", new {f = @Model.FileIndexItem.FileHash + ".jpg", issingleitem = true})"/>
 	</div>
-	
+
 	<div id="popup">
 		<div class="content">
 		</div>
 	</div>
 	<div id="update">
 	</div>
-	
+
 </div>
 
 
@@ -313,14 +313,14 @@
 	infoApiBase = HttpUtility.HtmlDecode(infoApiBase);
 	infoApiBase = infoApiBase.Replace("+", "%2B");
 
-	var downloadUrl = @Url.Action("DownloadPhoto", "Api", 
+	var downloadUrl = @Url.Action("DownloadPhoto", "Api",
 		new {f = @Model.FileIndexItem.FilePath, isThumbnail = false});
 	downloadUrl = HttpUtility.HtmlDecode(downloadUrl);
 	downloadUrl = downloadUrl.Replace("+", "%2B");
 
 }
 
-<div id="js-settings" data-updateApiBase="@updateApiBase" 
+<div id="js-settings" data-updateApiBase="@updateApiBase"
      data-infoApiBase="@infoApiBase" data-thumbnailApiBase="@thumbnailApiBase"
      data-subPath="@Model.SubPath" data-downloadUrl="@downloadUrl"></div>
 
