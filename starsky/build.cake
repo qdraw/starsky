@@ -15,10 +15,6 @@
 #tool nuget:?package=MSBuild.SonarQube.Runner.Tool
 #addin nuget:?package=Cake.Sonar
 
-// Cake.OpenCoverToCoberturaConverter
-#addin "nuget:?package=Cake.OpenCoverToCoberturaConverter"
-#tool "nuget:?package=OpenCoverToCoberturaConverter"
-
 // Get Git info
 #addin nuget:?package=Cake.Git
 
@@ -91,6 +87,7 @@ Task("Clean")
 Task("ClientRestore")
     .Does(() =>
     {
+        Environment.SetEnvironmentVariable("CI","true");
         if (!DirectoryExists($"./starsky/clientapp/node_modules/react"))
         {
             // Running `npm ci` instead of `npm install`
@@ -105,12 +102,15 @@ Task("ClientRestore")
 Task("ClientBuild")
     .Does(() =>
     {
+        Environment.SetEnvironmentVariable("CI","false");
         NpmRunScript("build", s => s.FromPath("./starsky/clientapp/"));
   });
 
-Task("Client")
-  .IsDependentOn("ClientRestore")
-  .IsDependentOn("ClientBuild");
+Task("ClientTest")
+    .Does(() =>
+    {
+        NpmRunScript("test:ci", s => s.FromPath("./starsky/clientapp/"));
+  });
 
 // Run dotnet restore to restore all package references.
 Task("Restore")
@@ -200,12 +200,12 @@ Task("Test")
                                              .Append("/p:hideMigrations=\"true\"")
                                              .Append("/p:Exclude=\"[starsky.Views]*\"")
                                              .Append("/p:ExcludeByFile=\"../starskycore/Migrations/*\"") // (, comma seperated)
-                                             .Append("/p:CoverletOutput=\"coverage.opencover.xml\"")
+                                             .Append("/p:CoverletOutput=\"netcore-coverage.opencover.xml\"")
                 });
 
             // Check if there is any output
             string parent = System.IO.Directory.GetParent(project.ToString()).FullName;
-            string coverageFile = System.IO.Path.Combine(parent, "coverage.opencover.xml");
+            string coverageFile = System.IO.Path.Combine(parent, "netcore-coverage.opencover.xml");
 
             Information("CoverageFile " + coverageFile);
 
@@ -216,31 +216,40 @@ Task("Test")
     });
 
 
-Task("OpenCoverToCobertura")
+Task("MergeCoverageFiles")
   .Does(() => {
-        var projects = GetFiles("./*test/*.csproj");
-        foreach(var project in projects)
-        {
-            // Check if there is any output
-            string parent = System.IO.Directory.GetParent(project.ToString()).FullName;
-            string inputCoverageFile = System.IO.Path.Combine(parent, "coverage.opencover.xml");
-            string outputCoverageFile = System.IO.Path.Combine(parent, "coverage.cobertura.xml");
 
-            Information("inputCoverageFile " + inputCoverageFile);
-            Information("outputCoverageFile " + outputCoverageFile);
-            OpenCoverToCoberturaConverter(inputCoverageFile, outputCoverageFile);
-        }
+    var outputCoverageFile = $"./starskytest/coverage-merge-cobertura.xml";
+
+    if (FileExists(outputCoverageFile)) {
+      DeleteFile(outputCoverageFile);
+    }
+
+    // Gets the coverage file from the client folder
+    if (FileExists($"./starsky/clientapp/coverage/cobertura-coverage.xml")) {
+        CopyFile($"./starsky/clientapp/coverage/cobertura-coverage.xml", $"./starskytest/jest-coverage.cobertura.xml");
+    }
+
+    // Merge all cobertura files
+    ReportGenerator($"./starskytest/*coverage.*.xml", $"./starskytest/", new ReportGeneratorSettings{
+        ReportTypes = new[] { ReportGeneratorReportType.Cobertura }
+    });
+
+    // And rename it
+    MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
+
+
   });
 
 
 Task("CoverageReport")
     .Does(() =>
     {
-        var projects = GetFiles("./*test/coverage.opencover.xml");
+        var projects = GetFiles("./*test/coverage-merge-cobertura.xml");
         foreach(var project in projects)
         {
             Information("CoverageReport project " + project);
-            var reportFolder = project.ToString().Replace("opencover.xml","report");
+            var reportFolder = project.ToString().Replace("merge-cobertura.xml","report");
             ReportGenerator(project, reportFolder, new ReportGeneratorSettings{
                 ReportTypes = new[] { ReportGeneratorReportType.HtmlInline }
             });
@@ -314,13 +323,19 @@ Task("SonarBegin")
 
         // get first test project
         var firstTestProject = GetDirectories("./*test").FirstOrDefault().ToString();
-        string coverageFile = System.IO.Path.Combine(firstTestProject, "coverage.opencover.xml");
+        string netCoreCoverageFile = System.IO.Path.Combine(firstTestProject, "netcore-coverage.opencover.xml");
+
+        // get jest
+        var clientAppProject = GetDirectories("./starsky/clientapp/").FirstOrDefault().ToString();
+        string jestCoverageFile = System.IO.Path.Combine(clientAppProject, "coverage", "lcov.info");
 
         // Current branch name
         string parent = System.IO.Directory.GetParent(".").FullName;
         var gitBranch = GitBranchCurrent(parent);
         var branchName = gitBranch.FriendlyName;
         if(branchName == "(no branch)") branchName = "master";
+
+        /* branchName = "master"; */
 
         SonarBegin(new SonarBeginSettings{
             Name = "Starsky",
@@ -329,10 +344,12 @@ Task("SonarBegin")
             Verbose = false,
             Url = url,
             Branch = branchName,
-            OpenCoverReportsPath = coverageFile,
+            UseCoreClr = true,
+            TypescriptCoverageReportsPath = jestCoverageFile,
+            OpenCoverReportsPath = netCoreCoverageFile,
             ArgumentCustomization = args => args
                 .Append($"/o:" + organisation)
-                .Append($"/d:sonar.coverage.exclusions=\"*wwwroot/js/*,starskycore/Migrations/*\"")
+                .Append($"/d:sonar.coverage.exclusions=\"*wwwroot/js/*,starskycore/Migrations/*,*spec.tsx\"")
                 .Append($"/d:sonar.exclusions=\"wwwroot/js/*,starskycore/Migrations/*\"")
         });
 
@@ -351,30 +368,37 @@ Task("SonarEnd")
     });
   });
 
+// React app build steps
+Task("Client")
+  .IsDependentOn("ClientRestore")
+  .IsDependentOn("ClientBuild")
+  .IsDependentOn("ClientTest");
+
 // A meta-task that runs all the steps to Build and Test the app
-Task("BuildAndTest")
+Task("BuildNetCoreAndTest")
     .IsDependentOn("Clean")
     .IsDependentOn("Restore")
     .IsDependentOn("Build")
-    .IsDependentOn("Test")
-    .IsDependentOn("CoverageReport");
+    .IsDependentOn("Test");
 
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
 Task("Default")
     .IsDependentOn("Client")
     .IsDependentOn("SonarBegin")
-    .IsDependentOn("BuildAndTest")
+    .IsDependentOn("BuildNetCoreAndTest")
     .IsDependentOn("SonarEnd")
     .IsDependentOn("PublishWeb")
-    .IsDependentOn("OpenCoverToCobertura")
+    .IsDependentOn("MergeCoverageFiles")
+    .IsDependentOn("CoverageReport")
     .IsDependentOn("Zip");
 
 
 // Run only Starsky MVC and tests
 Task("CI")
+    .IsDependentOn("Client")
     .IsDependentOn("PrepStarskyOnly")
-    .IsDependentOn("BuildAndTest")
+    .IsDependentOn("BuildNetCoreAndTest")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("Zip");
 

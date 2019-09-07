@@ -356,7 +356,11 @@ starsky-netframework-msbuild.zip
 **/tools/MSBuild.SonarQube.Runner.Tool*/*
 **/tools/OpenCoverToCoberturaConverter*/*
 **/coveragereport/*
-**/__coveragereport/*
 **/coverage.report/*
+**/coverage-report/*
+**/netcore-coverage.opencover.xml
+**/jest-coverage.cobertura.xml
+**/coverage-merge-report/*
+
 bundle.min.js
 bundle.min.js.map
