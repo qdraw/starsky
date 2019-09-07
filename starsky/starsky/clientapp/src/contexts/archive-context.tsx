@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
-import { newIRelativeObjects } from '../interfaces/IDetailView';
+import { newIRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { newIFileIndexItem } from '../interfaces/IFileIndexItem';
 
 const ArchiveContext = React.createContext<IContext>({} as IContext)
@@ -10,8 +10,7 @@ type IContext = {
   dispatch: React.Dispatch<Action>,
 }
 
-
-type CountProviderProps = { children: React.ReactNode }
+type ReactNodeProps = { children: React.ReactNode }
 type Action = {
   type: 'update', tags?: string, colorclass?: number,
   description?: string, title?: string, append?: boolean, select: string[]
@@ -26,17 +25,19 @@ const initialState: State = {
   breadcrumb: [],
   collectionsCount: 0,
   colorClassFilterList: [],
-  colorClassUsage: []
+  colorClassUsage: [],
+  isReadOnly: false,
+  pageType: PageType.Loading
 }
 
 export function archiveReducer(state: State, action: Action): State {
   switch (action.type) {
     case "update":
-      var updated = state;
+      // var updated = state;
 
       var { select, tags, description, title, append, colorclass } = action;
 
-      updated.fileIndexItems.forEach((item, index) => {
+      state.fileIndexItems.forEach((item, index) => {
         if (select.indexOf(item.fileName) !== -1) {
           if (append) {
             // bug: duplicate keywords are added, in the api those are filtered
@@ -55,7 +56,7 @@ export function archiveReducer(state: State, action: Action): State {
       });
 
       // Need to update otherwise other events are not triggerd
-      return { ...updated, lastUpdated: new Date() };
+      return { ...state, lastUpdated: new Date() };
     case "reset":
       return action.payload;
     case "add":
@@ -64,7 +65,7 @@ export function archiveReducer(state: State, action: Action): State {
   }
 };
 
-function ArchiveContextProvider({ children }: CountProviderProps) {
+function ArchiveContextProvider({ children }: ReactNodeProps) {
   // [A]
   let [state, dispatch] = React.useReducer(archiveReducer, initialState);
   let value1 = { state, dispatch };

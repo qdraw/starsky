@@ -3,6 +3,10 @@ import { IUrl } from '../interfaces/IUrl';
 
 export class URLPath {
 
+  public FileNameBreadcrumb(filePath: string) {
+    return filePath.split("/")[filePath.split("/").length - 1]
+  }
+
   public StringToIUrl(locationHash: string): IUrl {
     let hash = this.RemovePrefixUrl(locationHash);
     let params = new URLSearchParams(hash).entries();
@@ -71,6 +75,15 @@ export class URLPath {
     return colorClassArray;
   }
 
+  public GetReturnUrl(locationHash: string): string {
+    // ?ReturnUrl=%2F
+    let hash = this.RemovePrefixUrl(locationHash);
+    let search = new URLSearchParams(hash);
+    let getReturnUrl = search.get("ReturnUrl");
+    if (!getReturnUrl) return this.addPrefixUrl("f=/");
+    return this.addPrefixUrl(getReturnUrl);
+  }
+
   /**
    * Convert a comma separated string to a Array of numbers
    * @param colorClassText 
@@ -96,7 +109,8 @@ export class URLPath {
       params.set(key[0], key[1]);
     }
     var url = this.addPrefixUrl(params.toString());
-    return url.replace(/\+/ig, " ").replace(/%2F/ig, "/").replace(/%2C/ig, ",");
+    url = url.replace(/\+/ig, " ").replace(/%2F/ig, "/").replace(/%2C/ig, ",");
+    return url;
   }
 
 
@@ -166,6 +180,17 @@ export class URLPath {
     return selectList;
   }
 
+  public MergeSelectParent(select: string[] | undefined, parent: string | undefined): string[] {
+    var subPaths: string[] = [];
+    if (select === undefined || parent === undefined) return subPaths;
+
+    select.forEach(item => {
+      subPaths.push(parent + "/" + item)
+    });
+    return subPaths;
+  }
+
+
   public MergeSelectFileIndexItem(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
     var subPaths: string[] = [];
 
@@ -178,6 +203,8 @@ export class URLPath {
   }
 
   public ArrayToCommaSeperatedStringOneParent(select: string[], parent: string): string {
+    if (select === undefined || parent === undefined) return "";
+
     var selectParams = "";
     for (let index = 0; index < select.length; index++) {
       const element = select[index];

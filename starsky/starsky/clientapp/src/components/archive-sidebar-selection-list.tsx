@@ -8,7 +8,6 @@ interface IDetailViewSidebarSelectionListProps {
 }
 
 const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSelectionListProps> = memo((props) => {
-  var isEnabled = true;
 
   var history = useLocation();
   const [select, setSelect] = React.useState(new URLPath().StringToIUrl(history.location.search).select);

@@ -34,7 +34,7 @@ const Breadcrumb: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
           return (<span key={item}><Link to={new URLPath().updateFilePath(history.location.search, item)}>{name}</Link> <span> »</span> </span>);
         })
       }
-      {props.subPath.split("/")[props.subPath.split("/").length - 1]}
+      {new URLPath().FileNameBreadcrumb(props.subPath)}
     </div>
   );
 });

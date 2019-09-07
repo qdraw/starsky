@@ -2,7 +2,7 @@ import React, { memo, useEffect } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
-import FetchPost from '../shared/fetchpost';
+import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
 import SwitchButton from './switch-button';
 
@@ -17,6 +17,7 @@ interface ISidebarUpdate {
 interface IDetailViewSidebarLabelEditProps {
   subPath: string;
   fileIndexItems: Array<IFileIndexItem>,
+  isReadOnly: boolean
 }
 
 const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEditProps> = memo((archive) => {
@@ -36,7 +37,16 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
     collections: true,
   } as ISidebarUpdate)
 
-  const [isEnabled, setEnabled] = React.useState(false)
+  const [isInputEnabled, setInputEnabled] = React.useState(false);
+
+
+  // useEffect(() => {
+  //   if (archive.isReadOnly) {
+  //     setSelect([]);
+  //     setEnabled(false);
+  //   };
+  // }, [archive]);
+
 
   function handleChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
     let value = event.currentTarget.innerText;
@@ -58,7 +68,7 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
         break;
     }
 
-    setEnabled(isFormUsed());
+    setInputEnabled(isFormUsed());
   }
 
   function isFormUsed(): boolean {
@@ -114,8 +124,7 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
 
   return (
     <div className="content--text">
-
-      <SwitchButton on="Wijzigen" off="Vervangen" onToggle={(value) => setReplaceMode(value)}></SwitchButton>
+      <SwitchButton isEnabled={!archive.isReadOnly} on="Wijzigen" off="Vervangen" onToggle={(value) => setReplaceMode(value)}></SwitchButton>
 
       {!isReplaceMode ?
         <>
@@ -124,29 +133,29 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
             onInput={handleChange}
             onKeyPress={handleChange}
             suppressContentEditableWarning={true}
-            contentEditable={select.length !== 0}
-            className={select.length !== 0 ? "form-control" : "form-control disabled"}>
+            contentEditable={!archive.isReadOnly && select.length !== 0}
+            className={!archive.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
           </div>
           <h4>Info</h4>
           <div
             onInput={handleChange}
             data-name="description"
             suppressContentEditableWarning={true}
-            contentEditable={select.length !== 0}
-            className={select.length !== 0 ? "form-control" : "form-control disabled"}>
+            contentEditable={!archive.isReadOnly && select.length !== 0}
+            className={!archive.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
           </div>
           <h4>Titel</h4>
           <div data-name="title"
             onInput={handleChange}
             suppressContentEditableWarning={true}
-            contentEditable={select.length !== 0}
-            className={select.length !== 0 ? "form-control" : "form-control disabled"}>
+            contentEditable={!archive.isReadOnly && select.length !== 0}
+            className={!archive.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
           </div>
 
-          {isEnabled && select.length !== 0 ? <button className="btn btn"
+          {isInputEnabled && select.length !== 0 ? <button className="btn btn"
             onClick={() => pushUpdate(false)}>Overschrijven</button> :
             <button disabled className="btn btn--default disabled" >Overschrijven</button>}
-          {isEnabled && select.length !== 0 ?
+          {isInputEnabled && select.length !== 0 ?
             <button className="btn btn--default" onClick={() => pushUpdate(true)}>Toevoegen</button> :
             <button disabled className="btn btn--default disabled" >Toevoegen</button>}
 

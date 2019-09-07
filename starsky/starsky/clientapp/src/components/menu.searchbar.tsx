@@ -46,10 +46,10 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
     e.preventDefault();
     navigate(query);
   }
+  // const [isLoading, setLoading] = React.useState(false);
 
   function navigate(defQuery: string) {
-    console.log("nav", defQuery);
-
+    // setLoading(true);
     // To do change to search page
     history.navigate("/beta/search?t=" + defQuery)
     setFormFocus(false);
@@ -78,27 +78,31 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
   }
 
   return (
-    <div className={!formFocus ? "blur" : ""} onFocus={() => setFormFocus(true)}>
-      <li className="menu-item menu-item--half-extra">
-        <form className="form-inline form-nav icon-addon" onSubmit={onFormSubmit}>
+    <>
+      {/* {isLoading ? <Preloader isOverlay={false} isDetailMenu={false}></Preloader> : null} */}
 
-          <label htmlFor="search" className={inputFocus ? "icon-addon--search" : "icon-addon--search-focus"}></label>
-          <input className={"form-control icon-addon--input"}
-            onBlur={() => { setInputFocus(!inputFocus) }} onFocus={() => { setInputFocus(!inputFocus) }}
-            autoComplete="off" value={query} onChange={e => setQuery(e.target.value)} />
-        </form>
-      </li>
-      {data.hits.length === 0 ?
-        defaultMenu.map((value, index) => {
-          return <li className="menu-item menu-item--default" key={index}><a href={value.url}>{value.name}</a> </li>;
-        }) : null
-      }
-      {data.hits.map(item => (
-        <li key={item} className="menu-item menu-item--results">
-          <button onClick={() => navigate(item)} className="search-icon">{item}</button>
+      <div className={!formFocus ? "blur" : ""} onFocus={() => setFormFocus(true)}>
+        <li className="menu-item menu-item--half-extra">
+          <form className="form-inline form-nav icon-addon" onSubmit={onFormSubmit}>
+
+            <label htmlFor="search" className={inputFocus ? "icon-addon--search" : "icon-addon--search-focus"}></label>
+            <input className={"form-control icon-addon--input"}
+              onBlur={() => { setInputFocus(!inputFocus) }} onFocus={() => { setInputFocus(!inputFocus) }}
+              autoComplete="off" value={query} onChange={e => setQuery(e.target.value)} />
+          </form>
         </li>
-      ))}
-    </div>
+        {data.hits.length === 0 ?
+          defaultMenu.map((value, index) => {
+            return <li className="menu-item menu-item--default" key={index}><a href={value.url}>{value.name}</a> </li>;
+          }) : null
+        }
+        {data.hits.map(item => (
+          <li key={item} className="menu-item menu-item--results">
+            <button onClick={() => navigate(item)} className="search-icon">{item}</button>
+          </li>
+        ))}
+      </div>
+    </>
   );
 
 });

@@ -2,7 +2,7 @@
 .detailview {
   position: absolute;
   top: 50px;
-  bottom: 0;
+  bottom: 0px;
   height: calc(100% - 50px);
   width: 100%;
   background-color: #000;
@@ -11,27 +11,11 @@
 
 .detailview .main {
   height: 100%;
+  overflow: hidden;
 }
 
 .detailview--edit .main{
-    width: calc(100% - 320px);
-}
-
-/* .detailview .main .image--error, */
-.detailview .main .image--default{
-  /* max-height: 100%;
-  height: 100%; */
-  max-width: 100%; 
-  max-height: 100%;
-  /* max-height: calc(100% - 50px); */
-  /* max-width: 100%; */
-  /* width: auto; */
-  /* for smaller images */
-  /* height: calc(100vh - 50px); */
-  vertical-align: middle;
-  display: table;
-  margin-left:auto;
-  margin-right:auto;
+  width: calc(100% - 320px);
 }
 
 .detailview .main.main--error {
@@ -41,6 +25,50 @@
   background-repeat: no-repeat;
   background-size: 48px;
 }
+.detailview .image--default.Horizontal {
+  max-width: 100%;
+  max-height: 100%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.detailview--edit .image--default.Horizontal {
+  max-width: calc(100% - 160px);
+  left: calc(50% - 160px);
+}
+
+/* 180 deg*/
+.detailview .image--default.Rotate180 {
+  max-width: 100%;
+  max-height: 100vh;
+  transform: translatex(calc(50vw - 50%)) translatey(calc(50vh - 25px - 50%)) rotate(180deg);
+}
+.detailview.detailview--edit .image--default.Rotate180 {
+  max-width: calc(100% - 160px);
+  transform: translatex(calc(50vw - 160px - 50%)) translatey(calc(50vh - 25px - 50%)) rotate(180deg);
+}
+
+/* 90 deg*/
+.detailview .image--default.Rotate90Cw {
+  max-width: calc(100vh - 50px);
+  max-height: calc(100vw);
+  transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%)) rotate(90deg);
+}
+.detailview--edit .image--default.Rotate90Cw {
+  max-height: calc(100vw - 160px); /* is width */
+  transform: translateX(calc(50vw - 160px - 50%)) translateY(calc(50vh - 25px - 50%)) rotate(90deg);
+}
+
+/* 270 deg*/
+.detailview .image--default.Rotate270Cw {
+  max-width: calc(100vh - 50px);
+  max-height: calc(100vw);
+  transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%)) rotate(270deg);
+}
+.detailview--edit .image--default.Rotate270Cw {
+  max-height: calc(100vw - 160px); /* is width */
+  transform: translateX(calc(50vw - 160px - 50%)) translateY(calc(50vh - 25px - 50%)) rotate(270deg);}
 
 .detailview .main .nextprev:focus {
   box-shadow: 0px 0px 0px #fff;

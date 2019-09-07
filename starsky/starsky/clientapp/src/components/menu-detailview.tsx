@@ -1,15 +1,27 @@
 
 import { Link } from '@reach/router';
-import React, { memo, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { DetailViewContext } from '../contexts/detailview-context';
 import useLocation from '../hooks/use-location';
-import { IMenuProps } from '../interfaces/IMenuProps';
-import FetchPost from '../shared/fetchpost';
+import { IExifStatus } from '../interfaces/IExifStatus';
+import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
+import ModalExport from './modal-export';
 import MoreMenu from './more-menu';
 
-const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
+const MenuDetailView: React.FunctionComponent = () => {
 
   var history = useLocation();
+
+  let { state, dispatch } = React.useContext(DetailViewContext);
+  var detailView = state;
+
+  var parentDirectory = "/";
+  if (detailView && detailView.fileIndexItem && detailView.fileIndexItem.parentDirectory) {
+    parentDirectory = detailView.fileIndexItem.parentDirectory;
+  }
+
+
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
   useEffect(() => {
     var details = new URLPath().StringToIUrl(history.location.search).details;
@@ -23,13 +35,10 @@ const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
   }
 
-  // Get Close url
-  const parentUrl = props.parent ? new URLPath().updateFilePath(history.location.search, props.parent) : "/";
-
   // Get the status from the props
   function getIsMarkedAsDeletedFromProps(): boolean {
-    if (!props.detailView || !props.detailView.fileIndexItem) return false;
-    return props.detailView.fileIndexItem.status === "Deleted";
+    if (!detailView) return false;
+    return detailView.fileIndexItem.status === IExifStatus.Deleted;
   }
 
   const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(getIsMarkedAsDeletedFromProps());
@@ -37,40 +46,47 @@ const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
   // update props after a file change
   useEffect(() => {
     setMarkedAsDeleted(getIsMarkedAsDeletedFromProps())
-  }, [props.detailView]);
+  }, [detailView]);
 
   // Delete and Undo Delete
   function DeleteFile() {
-    if (!props.detailView) return;
+    if (!detailView) return;
 
     var bodyParams = new URLSearchParams();
-    bodyParams.set("f", props.detailView.subPath);
+    bodyParams.set("f", detailView.subPath);
 
     // Add remove tag
     if (!isMarkedAsDeleted) {
       bodyParams.set("Tags", "!delete!");
       bodyParams.set("append", "true");
       FetchPost("/api/update", bodyParams.toString())
+      dispatch({ 'type': 'add', tags: "!delete!" });
+      dispatch({ 'type': 'update', status: IExifStatus.Deleted });
     }
     // Undo delete
     else {
       bodyParams.set("fieldName", "tags");
       bodyParams.set("search", "!delete!");
       FetchPost("/api/replace", bodyParams.toString())
+      dispatch({ 'type': 'remove', tags: "!delete!" });
+      dispatch({ 'type': 'update', status: IExifStatus.Ok });
     }
-    setMarkedAsDeleted(!isMarkedAsDeleted)
   }
 
   var headerName = isDetails ? "header header--main header--edit" : "header header--main";
   if (isMarkedAsDeleted) headerName += " " + "header--deleted"
 
+  const [isModalExportOpen, setModalExportOpen] = React.useState(false);
+
   return (<>
+    {isModalExportOpen ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)} select={[detailView.subPath]} isOpen={isModalExportOpen} /> : null}
+
     <header className={headerName}>
       <div className="wrapper">
-        <Link className="item item--first item--close" to={parentUrl}>Sluiten</Link>
+        <Link className="item item--first item--close" to={new URLPath().updateFilePath(history.location.search, parentDirectory)}>Sluiten</Link>
         <div className="item item--labels" onClick={() => { toggleLabels() }}>Labels</div>
         <MoreMenu>
-          <li className="menu-option disabled" onClick={() => { alert("Exporteer werkt nog niet"); }}>Exporteer</li>
+          <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Naam wijzigen</li>
           <li className="menu-option" onClick={() => { DeleteFile(); }}>{!isMarkedAsDeleted ? "Weggooien" : "Undo Weggooien"}</li>
@@ -84,7 +100,7 @@ const MenuDetailView: React.FunctionComponent<IMenuProps> = memo((props) => {
     </div> : ""}
 
   </>);
-});
+};
 
 export default MenuDetailView
 

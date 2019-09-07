@@ -1,6 +1,8 @@
 import React, { memo, useEffect, useRef } from "react";
+import { DetailViewContext } from '../contexts/detailview-context';
 import useFetch from '../hooks/use-fetch';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
+import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { CastToInterface } from '../shared/cast-to-interface';
 import { isValidDate, parseDate, parseRelativeDate, parseTime } from '../shared/date';
@@ -10,13 +12,19 @@ import ColorClassSelect from './color-class-select';
 interface IDetailViewSidebarProps {
   fileIndexItem: IFileIndexItem,
   filePath: string,
+  status: IExifStatus
 }
 
 const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((props) => {
 
-  var isEnabled = true;
-  const [fileIndexItem, setFileIndexItem] = React.useState(props.fileIndexItem);
+  let { state, dispatch } = React.useContext(DetailViewContext);
 
+  const [fileIndexItem, setFileIndexItem] = React.useState(state.fileIndexItem);
+  useEffect(() => {
+    setFileIndexItem(state.fileIndexItem);
+  }, [state]);
+
+  // To Get information from /Api/Info
   var location = new Query().UrlQueryInfoApi(props.filePath);
   const responseObject = useFetch(location, 'get');
   useEffect(() => {
@@ -24,8 +32,25 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     var infoFileIndexItem = new CastToInterface().InfoFileIndexArray(responseObject);
     // there is a bug in the api
     infoFileIndexItem[0].lastEdited = fileIndexItem.lastEdited;
-    setFileIndexItem(infoFileIndexItem[0]);
+    dispatch({ 'type': 'update', ...infoFileIndexItem[0] })
   }, [responseObject]);
+
+  // For the display
+  const [isFormEnabled, setFormEnabled] = React.useState(true);
+  useEffect(() => {
+    if (!state.fileIndexItem.status) return;
+    switch (state.fileIndexItem.status) {
+      case IExifStatus.Deleted:
+      case IExifStatus.ReadOnly:
+      case IExifStatus.NotFoundSourceMissing:
+        setFormEnabled(false);
+        break;
+      default:
+        setFormEnabled(true);
+        break;
+    }
+  }, [state.fileIndexItem.status]);
+
 
   function handleChange(event: React.ChangeEvent<HTMLDivElement>) {
     let value = event.currentTarget.innerText;
@@ -41,7 +66,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     var currentString: string = fileIndexObject[name];
     if (value === currentString) return;
 
-    // Sorry no empty strings are supported
+    // Empty strings are NOT supported
     if (event.currentTarget.innerText.length === 1) {
       fileIndexObject[name] = "."
       console.log('not supported');
@@ -63,6 +88,14 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
 
   return (<div className="sidebar">
+    {fileIndexItem.status === IExifStatus.Deleted || fileIndexItem.status === IExifStatus.ReadOnly || fileIndexItem.status === IExifStatus.NotFoundSourceMissing ? <><div className="content--header">
+      Status
+    </div> <div className="content content--text">
+        {fileIndexItem.status === IExifStatus.Deleted ? <><div className="warning-box">Staat in de prullenmand </div> Undo weggooien om het item te bewerken</> : null}
+        {fileIndexItem.status === IExifStatus.NotFoundSourceMissing ? <><div className="warning-box">Mist in de index </div> </> : null}
+        {fileIndexItem.status === IExifStatus.ReadOnly ? <><div className="warning-box">Alleen lezen bestand</div> </> : null}
+      </div></> : null}
+
     <div className="content--header">
       Tags
       </div>
@@ -71,8 +104,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         data-name="tags"
         ref={tagsReference}
         suppressContentEditableWarning={true}
-        contentEditable={isEnabled}
-        className={isEnabled ? "form-control" : "form-control disabled"}>
+        contentEditable={isFormEnabled}
+        className={isFormEnabled ? "form-control" : "form-control disabled"}>
         {fileIndexItem.tags}
       </div>
     </div>
@@ -85,16 +118,16 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       <div onBlur={handleChange}
         data-name="description"
         suppressContentEditableWarning={true}
-        contentEditable={isEnabled}
-        className={isEnabled ? "form-control" : "form-control disabled"}>
+        contentEditable={isFormEnabled}
+        className={isFormEnabled ? "form-control" : "form-control disabled"}>
         {fileIndexItem.description}
       </div>
       <h4>Titel</h4>
       <div onBlur={handleChange}
         data-name="title"
         suppressContentEditableWarning={true}
-        contentEditable={isEnabled}
-        className={isEnabled ? "form-control" : "form-control disabled"}>
+        contentEditable={isFormEnabled}
+        className={isFormEnabled ? "form-control" : "form-control disabled"}>
         {fileIndexItem.title}
       </div>
     </div>
@@ -103,7 +136,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       Kleur-Classificatie
       </div>
     <div className="content--text">
-      <ColorClassSelect onToggle={() => { }} filePath={fileIndexItem.filePath} currentColorClass={fileIndexItem.colorClass} isEnabled={isEnabled}></ColorClassSelect>
+      <ColorClassSelect onToggle={() => { }} filePath={fileIndexItem.filePath} currentColorClass={fileIndexItem.colorClass} isEnabled={isFormEnabled}></ColorClassSelect>
     </div>
 
     {fileIndexItem.latitude || fileIndexItem.longitude || isValidDate(fileIndexItem.dateTime) || fileIndexItem.make || fileIndexItem.model || fileIndexItem.aperture || fileIndexItem.focalLength ?

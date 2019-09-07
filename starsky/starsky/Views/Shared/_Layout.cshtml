@@ -1,6 +1,6 @@
 ﻿
 <!DOCTYPE html>
-<html>
+<html lang="nl" xml:lang="nl">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,7 +10,7 @@
     </environment>
     <environment exclude="Development">
     </environment>
-    
+
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="~/apple-touch-icon.png">
     <link rel="stylesheet" href="~/css/site.css" />
@@ -18,7 +18,7 @@
 	@* Currently for privacy reasons disabled *@
 	@* @inject starsky.Helpers.ApplicationInsightsJsHelper AiJsHelper *@
 	@* @Html.Raw(AiJsHelper.Script) *@
-	
+
 </head>
 <body>
 
@@ -58,7 +58,7 @@
 		</ul>
 	</div>
 	<a href="#hamburger" id="hamburger" class="hamburger">Menu</a>
-	
+
 	<div class="form-logo show900">
 		<form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-nav">
 			<input name="t" class="form-control" value="@ViewData["SearchQuery"]" autocomplete="off"/>

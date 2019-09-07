@@ -1,8 +1,7 @@
 import React, { memo } from 'react';
-import MenuSearchBar from '../components/menu.searchbar';
-import { IMenuProps } from '../interfaces/IMenuProps';
+import MenuSearchBar from './menu.searchbar';
 
-const MenuSearch: React.FunctionComponent<IMenuProps> = memo((props) => {
+const MenuSearch: React.FunctionComponent<any> = memo((props) => {
   var sidebar = false;
   var select = false;
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);

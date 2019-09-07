@@ -1,8 +1,8 @@
 import * as React from "react";
 import Button from '../components/Button';
+import useLocation from '../hooks/use-location';
+import { URLPath } from '../shared/url-path';
 /** Context */
-import { authContext } from "../contexts/AuthContext";
-import "../style/css/00-index.css";
 /** Presentation */
 // import ErrorMessage from "../components/ErrorMessage";
 /** Custom Hooks */
@@ -11,10 +11,12 @@ import useErrorHandler from "../utils/custom-hooks/ErrorHandler";
 import { validateLoginForm } from "../utils/Helpers";
 
 function Login() {
+  var history = useLocation();
+
   const [userEmail, setUserEmail] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const auth = React.useContext(authContext);
+  // const auth = React.useContext(authContext);
   const { error, showError } = useErrorHandler(null);
   const MessageApplicationName: string = "Starsky";
   const MessageWrongUsernamePassword: string = "Je gebruikersnaam of wachtwoord is niet juist. Probeer het opnieuw";
@@ -33,7 +35,7 @@ function Login() {
     try {
       setLoading(true);
 
-      const response = await fetch("/account/login", {
+      const response = await fetch("/account/login?json=true", {
         credentials: "include",
         method: "POST",
         headers: {
@@ -45,12 +47,14 @@ function Login() {
         showError(MessageConnection);
       }
       else if (response.status === 401) {
-        auth.setUnauthStatus();
         setLoading(false);
         showError(MessageWrongUsernamePassword);
       }
       else {
-        auth.setAuthStatus({ login: true, username: userEmail });
+        // redirect
+        var returnUrl = new URLPath().GetReturnUrl(history.location.search);
+        console.log("redirect", returnUrl);
+        history.navigate(returnUrl, { replace: true });
       }
     } catch (err) {
       setLoading(false);

@@ -104,13 +104,15 @@ namespace starsky.Controllers
         /// Login the current HttpContext in
         /// </summary>
         /// <param name="model">Email, password and remember me bool</param>
+        /// <param name="json">return json instead of 302 redirect</param>
         /// <param name="returnUrl">null or localurl</param>
         /// <returns></returns>
- 	    /// <response code="200">successful login</response>
+        /// <response code="200">successful login (with json flag)</response>
+        /// <response code="302">successful login</response>
         /// <response code="401">login failed</response>
         [HttpPost("/account/login")]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model, bool json = false, string returnUrl = null)
         {
             ValidateResult validateResult = _userManager.Validate("Email", model.Email, model.Password);
             ViewData["ReturnUrl"] = returnUrl;
@@ -123,11 +125,11 @@ namespace starsky.Controllers
             } 
             
             await _userManager.SignIn(HttpContext, validateResult.User,model.RememberMe);
-            if (User.Identity.IsAuthenticated)
+            if ( User.Identity.IsAuthenticated && json )
             {
-                return RedirectToLocal(returnUrl);
+	            return Json("Login Success");
             }
-            return View(model);
+            return User.Identity.IsAuthenticated ? RedirectToLocal(returnUrl) : View(model);
         }
 
         /// <summary>

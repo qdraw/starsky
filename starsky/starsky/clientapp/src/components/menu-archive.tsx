@@ -1,12 +1,15 @@
 
 import React, { memo, useEffect } from 'react';
-import MenuSearchBar from '../components/menu.searchbar';
 import useLocation from '../hooks/use-location';
-import { IMenuProps } from '../interfaces/IMenuProps';
 import { URLPath } from '../shared/url-path';
+import MenuSearchBar from './menu.searchbar';
+import ModalExport from './modal-export';
 import MoreMenu from './more-menu';
 
-const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
+interface IMenuArchiveProps {
+}
+
+const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo((props) => {
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
 
@@ -42,9 +45,14 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
     setSidebar(urlObject.details);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
   }
+  const [isModalExportOpen, setModalExportOpen] = React.useState(false);
 
   return (
     <>
+      {isModalExportOpen ? <ModalExport handleExit={() =>
+        setModalExportOpen(!isModalExportOpen)} select={new URLPath().MergeSelectParent(select, new URLPath().StringToIUrl(history.location.search).f)}
+        isOpen={isModalExportOpen} /> : null}
+
       <header className={sidebar ? "header header--main header--select header--edit" : select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
           {!select ? <button className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
@@ -72,6 +80,7 @@ const MenuArchive: React.FunctionComponent<IMenuProps> = memo((props) => {
 
           {/* In the select context there are more options */}
           {select ? <MoreMenu>
+            <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
           </MoreMenu> : null}
 

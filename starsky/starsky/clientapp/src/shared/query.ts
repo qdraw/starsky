@@ -32,7 +32,8 @@ export class Query {
     return "/api/index" + url;
   }
 
-  public UrlQueryInfoApi = (subPath: string) => {
+  public UrlQueryInfoApi = (subPath: string): string => {
+    if (!subPath) return "";
     var url = this.urlReplacePath(subPath);
     if (url === "") {
       url = "/";
@@ -44,7 +45,7 @@ export class Query {
     return "/api/update";
   }
 
-  queryUpdateApi = (subPath: string, type: string | undefined, value: string): Promise<IFileIndexItem[]> => {
+  public queryUpdateApi = (subPath: string, type: string | undefined, value: string): Promise<IFileIndexItem[]> => {
     let location = this.urlQueryUpdateApi(subPath);
     let post = "f=" + this.urlReplacePath(subPath) + "&" + type + "=" + value;
     var controller = new AbortController();
@@ -77,7 +78,25 @@ export class Query {
       });
   }
 
-  queryInfoApi = (subPath: string): Promise<IFileIndexItem[]> => {
+  public UrlQueryThumbnailApi = (fileHash: string) => {
+    return "/api/thumbnail/" + fileHash + "?json=true";
+  }
+
+  // http://localhost:5000/api/downloadPhoto?f=%2F__starsky%2F0001-readonly%2F4.jpg&isThumbnail=True
+  public UrlDownloadPhotoApi = (f: string, isThumbnail: boolean = true) => {
+    return "/api/downloadPhoto?f=" + f + "&isThumbnail=" + isThumbnail;
+  }
+
+  public UrlExportPostZipApi = () => {
+    return "/export/createZip/"
+  }
+
+  // export/zip/SR497519527.zip?json=true
+  public UrlExportZipApi = (createZipId: string, json: boolean = true) => {
+    return "/export/zip/" + createZipId + ".zip?json=" + json;
+  }
+
+  public queryInfoApi = (subPath: string): Promise<IFileIndexItem[]> => {
 
     let location = this.UrlQueryInfoApi(subPath);
 
@@ -103,4 +122,5 @@ export class Query {
           });
       });
   }
+
 }

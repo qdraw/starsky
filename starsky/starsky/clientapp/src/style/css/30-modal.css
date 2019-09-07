@@ -38,6 +38,15 @@ div.modal-content {
   cursor: default;
 }
 
+
+@media screen and (max-width: 450px) {
+  div.modal-content {
+    max-width: 320px;
+  }
+}
+
+
+
 div.modal-content > .modal-close-bar {
   height: 50px;
   background-color: #CFD8DC;

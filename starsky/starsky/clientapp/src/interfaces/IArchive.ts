@@ -1,15 +1,16 @@
-import { IRelativeObjects } from "./IDetailView";
+import { IRelativeObjects, PageType } from "./IDetailView";
 import { IFileIndexItem } from "./IFileIndexItem";
 
 export interface IArchive {
     breadcrumb: Array<string>;
-    pageType: string; // casting enums fails
+    pageType: PageType;
     fileIndexItems: Array<IFileIndexItem>;
     relativeObjects: IRelativeObjects;
     subPath: string;
     colorClassFilterList: Array<number>;
     colorClassUsage: Array<number>;
     collectionsCount: number;
+    isReadOnly: boolean;
 }
 
 export function newIArchive(): IArchive {

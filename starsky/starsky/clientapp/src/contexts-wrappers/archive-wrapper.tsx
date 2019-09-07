@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
+import Archive from '../containers/archive';
+import Search from '../containers/search';
 import { ArchiveContext, ArchiveContextProvider } from '../contexts/archive-context';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
-import Archive from './archive';
-import Search from './search';
+import { PageType } from '../interfaces/IDetailView';
+import DocumentTitle from '../shared/document-title';
 
 /**
- * USed for search and list of files
+ * Used for search and list of files
  * @param archive the archive props 
  */
 function ArchiveContextWrapper(archive: IArchiveProps) {
@@ -25,10 +27,16 @@ function ArchiveWrapper(archive: IArchiveProps) {
     setArchiveList(state);
   }, [state]);
 
+  useEffect(() => {
+    if (!state) return;
+    new DocumentTitle().SetDocumentTitle(state);
+  }, [state]);
+
   if (!state) return (<>(ArchiveWrapper) => no state</>)
   if (!state.fileIndexItems) return (<></>);
+  if (!state.pageType) return (<></>);
 
-  if (state.pageType === "Search") {
+  if (state.pageType === PageType.Search) {
     return (
       <Search {...archiveList} />
     )

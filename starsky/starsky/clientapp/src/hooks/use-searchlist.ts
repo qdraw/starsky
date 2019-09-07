@@ -26,7 +26,11 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
     (async () => {
       try {
 
-        if (!location) return;
+        if (!location) {
+          setPageType(PageType.NotFound);
+          return;
+        }
+
         const res: Response = await fetch(location, {
           signal: abortController.signal,
           credentials: "include",

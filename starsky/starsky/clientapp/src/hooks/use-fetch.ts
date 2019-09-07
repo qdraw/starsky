@@ -15,25 +15,27 @@ const useFetch = (url: string, method: 'get' | 'post'): any | null => {
           method: method
         });
         const response = await res.json();
-        response.statusCode = res.status;
-        response.url = res.url;
 
-        if (res.status === 404) {
-          return {
-            pageType: PageType.NotFound,
-          }
-        }
-        else if (res.status >= 400 && res.status <= 550) {
-          return {
+        if (res.status >= 400 && res.status <= 550 && res.status !== 404) {
+          setData({
+            statusCode: res.status,
             pageType: PageType.ApplicationException,
-          }
+          } as any)
+          return;
+        }
+
+        if (typeof response === "string" && mounted) {
+          setData({
+            statusCode: res.status,
+            data: response
+          } as any);
         }
 
         if (mounted) {
           setData(response);
         }
-      } catch (e) {
-        console.error(e);
+      } catch (event) {
+        console.error("use-fetch", event);
       }
     })();
 

@@ -23,7 +23,6 @@ const ModalTrash: React.FunctionComponent<IModalTrashProps> = memo((props) => {
 
   return (<Modal
     id="trash-modal"
-    root="root"
     isOpen={isTrashModalOpen}
     handleExit={() => setTrashModalOpen(false)}
   >

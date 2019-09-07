@@ -1,3 +1,4 @@
+import { IExifStatus } from './IExifStatus';
 
 export enum Color {
     Winner = 1, // Paars - purple
@@ -19,7 +20,7 @@ export interface IFileIndexItem {
     fileHash: string;
     parentDirectory: string;
     keywords?: [];
-    status?: string;
+    status: IExifStatus;
     description?: string;
     isDirectory?: boolean;
     title?: string;
@@ -28,7 +29,7 @@ export interface IFileIndexItem {
     latitude?: number;
     longitude?: number;
     colorClass?: number;
-    orientation?: string;
+    orientation?: Orientation;
     imageFormat?: string;
     make?: string;
     model?: string;
@@ -39,6 +40,15 @@ export interface IFileIndexItem {
     locationCountry?: string;
     locationCity?: string;
 }
+
+export enum Orientation {
+    Horizontal = "Horizontal" as any,
+    Rotate90Cw = "Rotate90Cw" as any,
+    Rotate180 = "Rotate180" as any,
+    Rotate270Cw = "Rotate270Cw" as any
+}
+
+
 
 // Warning: Input elements should not switch from uncontrolled to controlled https://fb.me/react-controlled-components
 export function newIFileIndexItem(): IFileIndexItem {

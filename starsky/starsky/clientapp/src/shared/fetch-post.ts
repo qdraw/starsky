@@ -9,7 +9,10 @@ const FetchPost = async (url: string, body: string): Promise<any> => {
   }
 
   const response = await fetch(url, settings);
-  if (!response.ok) throw Error(response.status.toString());
+  if (!response.ok) {
+    console.error(response.status.toString())
+    return null;
+  }
 
   try {
     const data = await response.json();
