@@ -36,6 +36,10 @@ const useFileList = (locationSearch: string): IFileList | null => {
           setPageType(PageType.NotFound);
           return;
         }
+        else if (res.status === 401) {
+          setPageType(PageType.Unauthorized);
+          return;
+        }
         else if (res.status >= 400 && res.status <= 550) {
           setPageType(PageType.ApplicationException);
           return;

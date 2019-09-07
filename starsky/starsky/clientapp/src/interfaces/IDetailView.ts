@@ -8,6 +8,7 @@ export enum PageType {
     Search = "Search" as any,
     ApplicationException = "ApplicationException" as any,
     NotFound = "NotFound" as any,
+    Unauthorized = "Unauthorized" as any,
 }
 
 

@@ -6,6 +6,7 @@ import useFileList from '../hooks/use-filelist';
 import useLocation from '../hooks/use-location';
 import { IArchive } from '../interfaces/IArchive';
 import { IDetailView, PageType } from '../interfaces/IDetailView';
+import Login from './login';
 
 
 const MediaContent: React.FC = () => {
@@ -25,6 +26,7 @@ const MediaContent: React.FC = () => {
     <div>
       {pageType === PageType.Loading ? <Preloader isOverlay={true} isDetailMenu={false}></Preloader> : null}
       {pageType === PageType.NotFound ? <>not found</> : null}
+      {pageType === PageType.Unauthorized ? <Login></Login> : null}
       {pageType === PageType.ApplicationException ? <>ApplicationException</> : null}
       {pageType === PageType.Archive && archive ? <ArchiveContextWrapper {...archive} /> : null}
       {pageType === PageType.DetailView && detailView ? <DetailViewContextWrapper {...detailView} /> : null}

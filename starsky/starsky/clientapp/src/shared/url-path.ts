@@ -75,6 +75,15 @@ export class URLPath {
     return colorClassArray;
   }
 
+  public GetReturnUrl(locationHash: string): string {
+    // ?ReturnUrl=%2F
+    let hash = this.RemovePrefixUrl(locationHash);
+    let search = new URLSearchParams(hash);
+    let getReturnUrl = search.get("ReturnUrl");
+    if (!getReturnUrl) return this.addPrefixUrl("f=/");
+    return this.addPrefixUrl(getReturnUrl);
+  }
+
   /**
    * Convert a comma separated string to a Array of numbers
    * @param colorClassText 
