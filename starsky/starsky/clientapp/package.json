@@ -16,7 +16,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "test:ci": "react-scripts test --watchAll=false --coverage --reporters=default"
+    "test:ci": "react-scripts test --watchAll=false --coverage --reporters=default 2>&1"
   },
   "eslintConfig": {
     "extends": "react-app"
