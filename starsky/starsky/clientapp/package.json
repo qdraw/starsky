@@ -4,12 +4,10 @@
   "private": true,
   "dependencies": {
     "@reach/router": "^1.2.1",
-    "history": "^4.9.0",
     "intersection-observer": "^0.7.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
-    "react-scripts": "3.1.1",
-    "universal-router": "^8.2.0"
+    "react-scripts": "3.1.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -52,7 +50,6 @@
   },
   "proxy": "http://localhost:5000",
   "devDependencies": {
-    "@types/history": "^4.7.2",
     "@types/jest": "24.0.18",
     "@types/node": "12.7.2",
     "@types/reach__router": "^1.2.4",
