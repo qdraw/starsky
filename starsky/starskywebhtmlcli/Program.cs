@@ -75,7 +75,7 @@ namespace starskywebhtmlcli
 				.Render(fileIndexList, base64DataUri);
 
 			// Copy all items in the subFolder content for example javascripts
-			new Content(appSettings, iStorage).CopyContent();
+			new Content(iStorage).CopyContent();
 
 			// Export all
 			new ExportManifest(appSettings,new PlainTextFileHelper()).Export();

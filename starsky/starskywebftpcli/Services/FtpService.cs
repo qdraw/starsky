@@ -1,18 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Web;
 using starskycore.Helpers;
+using starskycore.Interfaces;
 using starskycore.Models;
-using starskycore.Services;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starskywebftpcli.Services
 {
 	public class FtpService
 	{
 		private readonly AppSettings _appSettings;
-		
+		private readonly IStorage _storage;
+
 		/// <summary>
 		/// [0] is username, [1] password
 		/// </summary>
@@ -23,15 +27,18 @@ namespace starskywebftpcli.Services
 		/// </summary>
 		private readonly string _webFtpNoLogin;
 
+
 		/// <summary>
 		/// Use ftp://username:password@ftp.service.tld/pushfolder to extract credentials
 		/// Encode content using html for @ use %40 for example
 		/// </summary>
 		/// <param name="appSettings">the location of the settings</param>
-		public FtpService(AppSettings appSettings)
+		/// <param name="storage">storage provider for source files</param>
+		public FtpService(AppSettings appSettings, IStorage storage)
 		{
 			_appSettings = appSettings;
-			
+			_storage = storage;
+
 			var uri = new Uri(_appSettings.WebFtp);
 			_appSettingsCredentials = uri.UserInfo.Split(":".ToCharArray());
 
@@ -46,7 +53,7 @@ namespace starskywebftpcli.Services
 		/// Makes a list of containing: the root folder, subfolders to create on the ftp service
 		/// </summary>
 		/// <returns></returns>
-		private IEnumerable<string> CreateListOfRemoteDirectories()
+		internal IEnumerable<string> CreateListOfRemoteDirectories()
 		{
 			var pushDirectory = _webFtpNoLogin + "/" + _appSettings.GenerateSlug(_appSettings.Name,true);
 
@@ -72,7 +79,7 @@ namespace starskywebftpcli.Services
 		/// Makes a list of 'full file paths' of files on disk to copy
 		/// </summary>
 		/// <returns></returns>
-		private List<string> CreateListOfRemoteFiles()
+		internal HashSet<string> CreateListOfRemoteFiles()
 		{
 			// copy content of dir
 			var copyThisFiles = new List<string>();
@@ -82,12 +89,13 @@ namespace starskywebftpcli.Services
 				{
 					case TemplateContentType.Jpeg when publishProfile.Copy:
 					{
-						var folderPath = Path.Combine(_appSettings.StorageFolder,publishProfile.Folder);
-						copyThisFiles.AddRange(FilesHelper.GetFilesInDirectory(folderPath));
+						var files = _storage.GetAllFilesInDirectory(publishProfile.Folder)
+							.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
+						copyThisFiles.AddRange(files);
 						break;
 					}
 					case TemplateContentType.Html when publishProfile.Copy:
-						copyThisFiles.Add(Path.Combine(_appSettings.StorageFolder,publishProfile.Path));
+						copyThisFiles.Add(publishProfile.Path);
 						break;
 					case TemplateContentType.None:
 						break;
@@ -95,9 +103,14 @@ namespace starskywebftpcli.Services
 						break;
 				}
 			}
+			
+			// Add PublishedContent (content in main-folder)
+			var publishedContent = _storage.GetAllFilesInDirectory("/").ToList();
+			copyThisFiles.AddRange(publishedContent);
 
-			return copyThisFiles;
+			return copyThisFiles.ToHashSet();
 		}
+
 
 		/// <summary>
 		/// Copy all content to the ftp disk
@@ -114,22 +127,32 @@ namespace starskywebftpcli.Services
 				return false;
 			}
 
-			var copyThisFilesFullPaths = CreateListOfRemoteFiles();
-			var subPathCopyThisFiles = _appSettings.RenameListItemsToDbStyle(copyThisFilesFullPaths);
-
-			for ( int i = 0; i < copyThisFilesFullPaths.Count; i++ )
-			{
-				var toFtpPath =  PathHelper.RemoveLatestSlash(_webFtpNoLogin) + "/" +
-				                _appSettings.GenerateSlug(_appSettings.Name,true) + "/" +
-				                subPathCopyThisFiles[i];
-
-				Console.Write(".");
-				if ( Upload(copyThisFilesFullPaths[i], toFtpPath) ) continue;
-				Console.WriteLine($"Fail > upload file => {copyThisFilesFullPaths[i]} {toFtpPath}");
-				return false;
-			}
+			// content of the publication folder
+			var copyThisFilesSubPaths = CreateListOfRemoteFiles();
+			if(!MakeUpload(copyThisFilesSubPaths)) return false;
 
 			Console.Write("\n");
+			return true;
+		}
+
+		/// <summary>
+		/// Preflight + the upload to the service
+		/// </summary>
+		/// <param name="copyThisFilesSubPaths">list of files (subPath style)</param>
+		/// <returns>false = fail</returns>
+		private bool MakeUpload(IEnumerable<string> copyThisFilesSubPaths)
+		{
+			foreach ( var item in copyThisFilesSubPaths )
+			{
+				var toFtpPath =  PathHelper.RemoveLatestSlash(_webFtpNoLogin) + "/" +
+				                 _appSettings.GenerateSlug(_appSettings.Name,true) + "/" +
+				                 item;
+
+				Console.Write(".");
+				if ( Upload(item, toFtpPath) ) continue;
+				Console.WriteLine($"Fail > upload file => {item} {toFtpPath}");
+				return false;
+			}
 			return true;
 		}
 
@@ -137,25 +160,24 @@ namespace starskywebftpcli.Services
 		/// <summary>
 		/// Upload a single file to the ftp service
 		/// </summary>
-		/// <param name="fullFilePath">on disk</param>
+		/// <param name="subPath">on disk</param>
 		/// <param name="toFtpPath">ftp path eg ftp://service.nl/drop/test//index.html</param>
 		/// <returns></returns>
-		private bool Upload(string fullFilePath, string toFtpPath)
+		private bool Upload(string subPath, string toFtpPath)
 		{
-			if ( !new StorageHostFullPathFilesystem().ExistFile(fullFilePath) ) return false;
+			if(!_storage.ExistFile(subPath)) return false;
 			
 			FtpWebRequest request =
 				(FtpWebRequest)WebRequest.Create(toFtpPath);
 			request.Credentials = new NetworkCredential(_appSettingsCredentials[0], _appSettingsCredentials[1]);
 			request.Method = WebRequestMethods.Ftp.UploadFile;  
 
-			using (Stream fileStream = File.OpenRead(fullFilePath))
+			using (Stream fileStream = _storage.ReadStream(subPath))
 			using (Stream ftpStream = request.GetRequestStream())
 			{
 				fileStream.CopyTo(ftpStream);
 			}
 			return true;
-
 		}
 		
 		/// <summary>
@@ -168,32 +190,26 @@ namespace starskywebftpcli.Services
 
 			try
 			{
-				//create the directory
-				FtpWebRequest requestDir = (FtpWebRequest) FtpWebRequest.Create(directory);
+				// create the directory
+				var requestDir = (FtpWebRequest) WebRequest.Create(directory);
 				requestDir.Method = WebRequestMethods.Ftp.MakeDirectory;
 				requestDir.Credentials = new NetworkCredential(_appSettingsCredentials[0], _appSettingsCredentials[1]);
 				requestDir.UsePassive = true;
 				requestDir.UseBinary = true;
 				requestDir.KeepAlive = false;
-				FtpWebResponse response = (FtpWebResponse)requestDir.GetResponse();
-				Stream ftpStream = response.GetResponseStream();
+				var ftpWebResponse = (FtpWebResponse)requestDir.GetResponse();
+				var ftpStream = ftpWebResponse.GetResponseStream();
 
-				ftpStream.Close();
-				response.Close();
+				ftpStream?.Close();
+				ftpWebResponse.Close();
 
 				return true;
 			}
 			catch (WebException ex)
 			{
-				FtpWebResponse response = (FtpWebResponse)ex.Response;
-
-				response.Close();
-
-				if (response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
-				{
-					return true;
-				}
-				return false;
+				var ftpWebResponse = (FtpWebResponse)ex.Response;
+				ftpWebResponse.Close();
+				return ftpWebResponse.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable;
 			}
 		}
 		

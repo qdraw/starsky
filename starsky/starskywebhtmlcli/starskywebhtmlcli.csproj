@@ -20,6 +20,6 @@
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Content\**" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="PublishedContent\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

@@ -2,13 +2,7 @@ import * as React from "react";
 import Button from '../components/Button';
 import useLocation from '../hooks/use-location';
 import { URLPath } from '../shared/url-path';
-/** Context */
-/** Presentation */
-// import ErrorMessage from "../components/ErrorMessage";
-/** Custom Hooks */
-import useErrorHandler from "../utils/custom-hooks/ErrorHandler";
-/** Utils */
-import { validateLoginForm } from "../utils/Helpers";
+import { validateLoginForm } from '../shared/validate-login-form';
 
 function Login() {
   var history = useLocation();
@@ -16,8 +10,10 @@ function Login() {
   const [userEmail, setUserEmail] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  // const auth = React.useContext(authContext);
-  const { error, showError } = useErrorHandler(null);
+
+  const useErrorHandler = (initialState: string | null) => { return initialState };
+  const [error, setError] = React.useState(useErrorHandler(null));
+
   const MessageApplicationName: string = "Starsky";
   const MessageWrongUsernamePassword: string = "Je gebruikersnaam of wachtwoord is niet juist. Probeer het opnieuw";
   const MessageUsername: string = "E-mailadres of telefoonnummer";
@@ -27,9 +23,7 @@ function Login() {
   const MessageExamplePassword: string = "superveilig";
   const MessageExampleUsername: string = "dont@mail.me";
 
-
   const MessageLogin: string = "Inloggen";
-
 
   const authHandler = async () => {
     try {
@@ -44,11 +38,11 @@ function Login() {
         body: 'Email=' + userEmail + '&Password=' + userPassword
       })
       if (!response) {
-        showError(MessageConnection);
+        setError(MessageConnection);
       }
       else if (response.status === 401) {
         setLoading(false);
-        showError(MessageWrongUsernamePassword);
+        setError(MessageWrongUsernamePassword);
       }
       else {
         // redirect
@@ -58,7 +52,7 @@ function Login() {
       }
     } catch (err) {
       setLoading(false);
-      showError(err.message);
+      setError(err.message);
     }
   };
 
@@ -76,8 +70,8 @@ function Login() {
           className="content--login-form form-inline form-nav"
           onSubmit={e => {
             e.preventDefault();
-            showError(null);
-            if (validateLoginForm(userEmail, userPassword, showError)) {
+            setError(null);
+            if (validateLoginForm(userEmail, userPassword, setError)) {
               authHandler();
             }
           }}

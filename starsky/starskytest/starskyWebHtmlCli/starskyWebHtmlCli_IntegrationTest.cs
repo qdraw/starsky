@@ -24,9 +24,5 @@ namespace starskytest.starskyWebHtmlCli
             Program.Main(args);
             // There is a console log
         }
-
-
-
-
     }
 }
