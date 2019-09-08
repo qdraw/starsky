@@ -2,7 +2,7 @@
 const isValidDate = (inputDateTime: string | undefined): boolean => {
   if (inputDateTime) {
     let input = new Date(inputDateTime).valueOf();
-    return (input > 0) ? true : false;
+    return input > 0;
   }
   return false;
 }

@@ -14,7 +14,7 @@ function ArchiveContextWrapper(archive: IArchiveProps) {
   return (<ArchiveContextProvider>
     <ArchiveWrapper {...archive} />
   </ArchiveContextProvider>)
-};
+}
 
 function ArchiveWrapper(archive: IArchiveProps) {
   let { state, dispatch } = React.useContext(ArchiveContext);
@@ -44,6 +44,6 @@ function ArchiveWrapper(archive: IArchiveProps) {
   return (
     <Archive {...archiveList} />
   )
-};
+}
 
 export default ArchiveContextWrapper;

@@ -8,7 +8,6 @@ interface ISwitchButtonProps {
 }
 
 function SwitchButton(props: ISwitchButtonProps) {
-
   var random = Math.ceil(Math.random() * 100);
   return (<div className={props.isEnabled !== false ? "switch" : "switch disabled"}>
     <input type="radio" disabled={props.isEnabled === false} className="switch-input" name="view" value="true" id={"on_" + random} defaultChecked onClick={() => props.onToggle(false)} />
@@ -17,7 +16,7 @@ function SwitchButton(props: ISwitchButtonProps) {
     <label htmlFor={"off_" + random} className="switch-label switch-label-on">{props.off}</label>
     <span className="switch-selection"></span>
   </div>);
-};
+}
 export default SwitchButton
 
 
