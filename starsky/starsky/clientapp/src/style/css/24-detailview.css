@@ -34,7 +34,7 @@
   transform: translate(-50%, -50%);
 }
 .detailview--edit .image--default.Horizontal {
-  max-width: calc(100% - 160px);
+  max-width: calc(100% - 321px);
   left: calc(50% - 160px);
 }
 
