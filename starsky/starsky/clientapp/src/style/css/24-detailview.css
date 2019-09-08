@@ -33,9 +33,15 @@
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
 .detailview--edit .image--default.Horizontal {
   max-width: calc(100% - 160px);
   left: calc(50% - 160px);
+}
+@media screen and (max-width: 450px) {
+  .detailview--edit .image--default.Horizontal {
+    display: none;
+  }
 }
 
 /* 180 deg*/
@@ -48,6 +54,11 @@
   max-width: calc(100% - 160px);
   transform: translatex(calc(50vw - 160px - 50%)) translatey(calc(50vh - 25px - 50%)) rotate(180deg);
 }
+@media screen and (max-width: 450px) {
+  .detailview.detailview--edit .image--default.Rotate180 {
+    display: none;
+  }
+}
 
 /* 90 deg*/
 .detailview .image--default.Rotate90Cw {
@@ -59,6 +70,11 @@
   max-height: calc(100vw - 160px); /* is width */
   transform: translateX(calc(50vw - 160px - 50%)) translateY(calc(50vh - 25px - 50%)) rotate(90deg);
 }
+@media screen and (max-width: 450px) {
+  .detailview.detailview--edit .image--default.Rotate90Cw {
+    display: none;
+  }
+}
 
 /* 270 deg*/
 .detailview .image--default.Rotate270Cw {
@@ -68,7 +84,13 @@
 }
 .detailview--edit .image--default.Rotate270Cw {
   max-height: calc(100vw - 160px); /* is width */
-  transform: translateX(calc(50vw - 160px - 50%)) translateY(calc(50vh - 25px - 50%)) rotate(270deg);}
+  transform: translateX(calc(50vw - 160px - 50%)) translateY(calc(50vh - 25px - 50%)) rotate(270deg);
+}
+@media screen and (max-width: 450px) {
+  .detailview.detailview--edit .image--default.Rotate270Cw {
+    display: none;
+  }
+}
 
 .detailview .main .nextprev:focus {
   box-shadow: 0px 0px 0px #fff;
