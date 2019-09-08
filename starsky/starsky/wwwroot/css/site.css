@@ -627,17 +627,13 @@ h2 {
     height: 45vh;
     object-fit: cover;
     object-position: center;
-    font-family: 'object-fit: cover';
+	font-family: 'object-fit: cover', serif;
     transition: transform .5s ease-in-out;
     overflow: hidden;
     position: relative;
-    /*background-color: #B0BEC5;*/
-    /*background-color: #0D47A1;*/
-    
     background-color: rgba(69, 90, 100, 0.6);
-
-    /*background-color: rgba(109, 199, 256, 0.6);*/
 }
+
 .wrapper .halfitem.directory-true img {
     opacity: 0.4;
 }
@@ -1258,7 +1254,7 @@ float: left;
     background-color: #ddd;
 }
 .sidebar .content .thumbnail img {
-    font-family: "object-fit: contain";
+	font-family: "object-fit: contain", serif;
     object-fit: contain;
     object-position: center; 
 }
