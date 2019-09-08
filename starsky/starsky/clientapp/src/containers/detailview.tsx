@@ -19,7 +19,7 @@ const DetailView: React.FC<IDetailView> = () => {
 
   var history = useLocation();
 
-  let { state, dispatch } = React.useContext(DetailViewContext);
+  let { state } = React.useContext(DetailViewContext);
 
   let relativeObjects = newIRelativeObjects();
   if (state && state.relativeObjects) {
