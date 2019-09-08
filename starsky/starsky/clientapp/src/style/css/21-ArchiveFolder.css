@@ -29,6 +29,7 @@
 }
 
 /* select */
+.folder > .box--select > .isDirectory-true.box-content:before,
 .folder > .box--select > .isDirectory-false.box-content:before {
  position: absolute;
  margin-left:10px;
@@ -43,6 +44,7 @@
 }
 
 /* select */
+.folder > .box--select > .isDirectory-true.box-content--selected:before,
 .folder > .box--select > .isDirectory-false.box-content--selected:before {
   border: #fff solid 0px;
   background-color: #283593;

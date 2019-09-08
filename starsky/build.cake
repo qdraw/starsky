@@ -88,6 +88,7 @@ Task("ClientRestore")
     .Does(() =>
     {
         Environment.SetEnvironmentVariable("CI","true");
+        Environment.SetEnvironmentVariable("DISABLE_OPENCOLLECTIVE","true"); // core-js
         if (!DirectoryExists($"./starsky/clientapp/node_modules/react"))
         {
             // Running `npm ci` instead of `npm install`

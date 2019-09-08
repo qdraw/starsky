@@ -1,3 +1,8 @@
+import 'abortcontroller-polyfill/dist/polyfill-patch-fetch';
+import 'core-js/features/object'; // Object.entries is not a function
+import 'core-js/features/promise';
+import 'core-js/features/set';
+import 'core-js/features/symbol';
 import React from 'react';
 import * as ReactDOM from "react-dom";
 import RouterApp from './routes/router';

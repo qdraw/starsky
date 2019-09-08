@@ -47,6 +47,13 @@ em, i {
     font-style: italic;
 }
 
+button {
+    border:0px;
+    font:inherit;
+    padding:0;
+    text-align: left;
+}
+
 @font-face {
     font-family: 'Gloriola Std';
     font-style: normal;
@@ -77,6 +84,7 @@ html {
     box-sizing: border-box;
 }
 
+html,
 body {
     font-family: "Gloriola Std", sans-serif;
     font-weight: 100;
