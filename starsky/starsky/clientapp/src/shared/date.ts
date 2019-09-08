@@ -8,7 +8,7 @@ const isValidDate = (inputDateTime: string | undefined): boolean => {
 }
 
 
-const leftPad = (n: Number) => {
+const leftPad = (n: number) => {
   return n > 9 ? "" + n : "0" + n;
 }
 
