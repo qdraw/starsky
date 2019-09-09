@@ -115,15 +115,18 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = memo((props) => {
         }} className="btn btn--default">Thumbnails</button>
       </> : null}
 
-      {isProcessing === ProcessingState.server ? <>Loading
+      {isProcessing === ProcessingState.server ? <>
+        <b>Een moment geduld s.v.p.</b><br />
+        Op de achtergrond worden de afbeeldingen klaar gezet
       </> : null}
 
       {isProcessing === ProcessingState.fail ? <>Er is iets mis gegaan met exporteren
       </> : null}
 
       {isProcessing === ProcessingState.ready ? <>
+        Het bestand ‘{createZipKey}` is klaar met exporteren.
         <a className="btn btn--default" href={new Query().UrlExportZipApi(createZipKey, false)} download rel="noopener noreferrer" target="_blank">
-          Start je download
+          Download als zip-achief
         </a>
       </> : null}
     </div>

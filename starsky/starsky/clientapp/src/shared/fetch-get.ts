@@ -17,7 +17,7 @@ const FetchGet = async (url: string): Promise<any> => {
   }
 
   if (!response.ok) {
-    console.error(response.status.toString())
+    console.error(response.status)
     return null;
   }
 

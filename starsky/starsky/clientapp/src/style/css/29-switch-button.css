@@ -1,73 +1,46 @@
-
-.switch {
-  background: white;
-  border-radius: 15px;
-  height: 32px;
-  width: 222px;
-  border: 1px solid #263238;
+.switch-field input {
+    position: absolute;
+    height: 1px;
+    width: 1px;
+    border: 0;
+    overflow: hidden;
 }
 
-.switch.disabled {
-  border: 1px solid #ECEFF1;
-}
-
-.switch-label {
-  position: relative;
-  z-index: 2;
-  float: left;
-  width: 110px;
-  top:-1px;
-  line-height: 32px;
-  font-size: 14px;
-  border-radius: 15px;
-  color: #263238;
+.switch-field label {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  width: 140px;
+  background-color: #fff;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 16px;
   text-align: center;
-  cursor: pointer;
+  text-shadow: none;
+  padding: 7px 10px;
+  transition: all 0.1s ease-in-out;
 }
 
-.switch.disabled .switch-label {
-  cursor: default;
+.switch-field label:hover {
+	cursor: pointer;
 }
 
-.switch .switch-label:active {
-  background-color:white;
+.switch-field input:checked + label {
+  background-color: #263238;
+	color: #fff;
+  box-shadow: none;
 }
 
-.switch .switch-label-off {
-  padding-left: 2px;
-}
-
-.switch .switch-label-on {
-  padding-right: 2px;
-}
-
-.switch .switch-input {
-  display: none;
-}
-
-.switch .switch-input:checked + .switch-label {
-  background-color:#263238;
-  transition: 0.15s ease-out background-color;
-  color: white;
-}
-
-.switch.disabled .switch-input:checked + .switch-label {
-  background-color:#ECEFF1;
+.switch-field.disabled input:checked + label{
+  background-color: #ECEFF1;
   color: #263238;
 }
 
-.switch .switch-input:checked + .switch-label-on ~ .switch-selection {
-  left: 60px;
-  /* Note: left: 50%; doesn't transition in WebKit */
+.switch-field label:first-of-type {
+  border-radius: 16px 0 0 16px;
 }
 
-.switch .switch-selection {
-  position: absolute;
-  z-index: 1;
-  top: 2px;
-  left: 2px;
-  display: block;
-  height: 32px;
-  border-radius: 3px;
-  transition: left 0.15s ease-out;
+.switch-field label:last-of-type {
+  border-radius: 0 16px 16px 0;
 }
+
+/* https://codepen.io/coralsea/pen/mMwwBz */

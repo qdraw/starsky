@@ -3,23 +3,35 @@ import React, { memo, useEffect } from 'react';
 import useLocation from '../hooks/use-location';
 import { URLPath } from '../shared/url-path';
 import MenuSearchBar from './menu.searchbar';
+import ModalDisplayOptions from './modal-display-options';
 import ModalExport from './modal-export';
 import MoreMenu from './more-menu';
 
 interface IMenuArchiveProps {
 }
 
-const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo((props) => {
+const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
 
   var history = useLocation();
 
+  // Sidebar
   const [sidebar, setSidebar] = React.useState(new URLPath().StringToIUrl(history.location.search).sidebar);
   useEffect(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar)
   }, [history.location.search]);
 
+  function toggleLabels() {
+    var urlObject = new URLPath().StringToIUrl(history.location.search);
+    urlObject.sidebar = !urlObject.sidebar;
+
+    setSidebar(urlObject.details);
+    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
+  }
+  const [isModalExportOpen, setModalExportOpen] = React.useState(false);
+
+  // Selection
   const [select, setSelect] = React.useState(new URLPath().StringToIUrl(history.location.search).select);
   useEffect(() => {
     setSelect(new URLPath().StringToIUrl(history.location.search).select)
@@ -38,20 +50,16 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo((props) => 
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
-  function toggleLabels() {
-    var urlObject = new URLPath().StringToIUrl(history.location.search);
-    urlObject.sidebar = !urlObject.sidebar;
-
-    setSidebar(urlObject.details);
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
-  }
-  const [isModalExportOpen, setModalExportOpen] = React.useState(false);
+  const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
 
   return (
     <>
       {isModalExportOpen ? <ModalExport handleExit={() =>
         setModalExportOpen(!isModalExportOpen)} select={new URLPath().MergeSelectParent(select, new URLPath().StringToIUrl(history.location.search).f)}
         isOpen={isModalExportOpen} /> : null}
+
+      {isDisplayOptionsOpen ? <ModalDisplayOptions parentFolder={new URLPath().StringToIUrl(history.location.search).f} handleExit={() =>
+        setDisplayOptionsOpen(!isDisplayOptionsOpen)} isOpen={isDisplayOptionsOpen} /> : null}
 
       <header className={sidebar ? "header header--main header--select header--edit" : select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
@@ -76,6 +84,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo((props) => 
           {!select ? <MoreMenu>
             <li className="menu-option disabled" onClick={() => { alert("Map maken werkt nog niet"); }}>Map maken</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
+            <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>Weergave opties</li>
+
           </MoreMenu> : null}
 
           {/* In the select context there are more options */}
