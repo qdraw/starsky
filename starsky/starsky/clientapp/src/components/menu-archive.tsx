@@ -9,17 +9,28 @@ import MoreMenu from './more-menu';
 interface IMenuArchiveProps {
 }
 
-const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo((props) => {
+const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
 
   var history = useLocation();
 
+  // Sidebar
   const [sidebar, setSidebar] = React.useState(new URLPath().StringToIUrl(history.location.search).sidebar);
   useEffect(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar)
   }, [history.location.search]);
 
+  function toggleLabels() {
+    var urlObject = new URLPath().StringToIUrl(history.location.search);
+    urlObject.sidebar = !urlObject.sidebar;
+
+    setSidebar(urlObject.details);
+    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
+  }
+  const [isModalExportOpen, setModalExportOpen] = React.useState(false);
+
+  // Selection
   const [select, setSelect] = React.useState(new URLPath().StringToIUrl(history.location.search).select);
   useEffect(() => {
     setSelect(new URLPath().StringToIUrl(history.location.search).select)
@@ -38,14 +49,19 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo((props) => 
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
-  function toggleLabels() {
-    var urlObject = new URLPath().StringToIUrl(history.location.search);
-    urlObject.sidebar = !urlObject.sidebar;
+  const [collections, setCollections] = React.useState(new URLPath().StringToIUrl(history.location.search).collections);
+  useEffect(() => {
+    setCollections(new URLPath().StringToIUrl(history.location.search).collections)
+  }, [history.location.search]);
 
-    setSidebar(urlObject.details);
+  function toggleCollections() {
+    console.log(collections);
+
+    var urlObject = new URLPath().StringToIUrl(history.location.search);
+    urlObject.collections = !urlObject.collections;
+    setCollections(urlObject.collections);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
   }
-  const [isModalExportOpen, setModalExportOpen] = React.useState(false);
 
   return (
     <>
@@ -76,6 +92,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo((props) => 
           {!select ? <MoreMenu>
             <li className="menu-option disabled" onClick={() => { alert("Map maken werkt nog niet"); }}>Map maken</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
+            <li className="menu-option" onClick={() => toggleCollections()}>{collections ? "Laat alle bestanden zien" : "Toon als collectie"}</li>
+
           </MoreMenu> : null}
 
           {/* In the select context there are more options */}

@@ -5,7 +5,8 @@ export interface IUrl {
   details?: boolean,
   sidebar?: boolean,
   select?: Array<string>;
-  colorClass?: Array<number>
+  colorClass?: Array<number>;
+  collections?: boolean;
 }
 
 export function newIUrl(): IUrl {

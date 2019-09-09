@@ -18,6 +18,15 @@ export class URLPath {
           const colorClassText = key[1];
           urlObject.colorClass = this.stringToNumberArray(colorClassText)
           break;
+        case 'collections'.toLowerCase():
+          // default is true
+          if (key[1] === "false") {
+            urlObject.collections = false
+          }
+          else {
+            urlObject.collections = true
+          }
+          break;
         case 'details'.toLowerCase():
           if (key[1] === "true") {
             urlObject.details = true

@@ -24,6 +24,9 @@ export class Query {
     if (requested.colorClass) {
       urlObject.colorClass = requested.colorClass;
     }
+    if (requested.collections === false) {
+      urlObject.collections = requested.collections;
+    }
     // Not needed in API, but the context is used in detailview (without this the results in issues in the sidemenu)
     if (requested.details) {
       urlObject.details = requested.details;
