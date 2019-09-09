@@ -19,9 +19,6 @@
 ## Work in progress `/feature/201909-react`
 - []   Front-end for Rename files
 - []   Front-end for Replace API in folder view
-- []   ForceSync in UI
-- []   Cache-clean for folders in UI
-- []   Collections toggle in UI
 - []   Account page
 - []   Trash page
 - []   Import page
@@ -36,6 +33,11 @@
   - [x]  Search UI
   - [x]  Export/ Dialog/ Single + Select UI
   - [x]  DetailView (include details) UI
+  - [x]  Collections toggle in UI
+  - [x]  ForceSync in UI (under Display options)
+  - [x]  Cache-clean for folders in UI (under Display options)
+  - [x]  Toggle for isSingleItem (under Display options)
+  - [x]  Toggle for Collections view (under Display options)
 - Build CI changes to run Jest tests (1.2% coverage yet)
 - IE11 and some older browsers are not supported on /beta
 - Added ExifStatus.Deleted including in ReplaceService
