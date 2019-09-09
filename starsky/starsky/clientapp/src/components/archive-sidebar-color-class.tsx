@@ -24,7 +24,7 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
     setSelectParams(selectParams);
   }, [history.location.search]);
 
-  let { state, dispatch } = React.useContext(ArchiveContext);
+  let { dispatch } = React.useContext(ArchiveContext);
 
   return (<ColorClassSelect onToggle={(colorclass) => {
     dispatch({ type: 'update', colorclass, select });

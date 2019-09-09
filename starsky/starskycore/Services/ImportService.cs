@@ -34,7 +34,7 @@ namespace starskycore.Services
 		{
 			_filesystemHelper = new StorageHostFullPathFilesystem();
 			_context = context;
-			_isConnection = _context.TestConnection(appSettings);
+			_isConnection = _context.TestConnection();
 				
 			_isync = isync;
 			_exifTool = exifTool;

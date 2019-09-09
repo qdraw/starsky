@@ -45,6 +45,7 @@
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
     <ProjectReference Include="..\starskygeocli\starskygeocli.csproj" />
     <ProjectReference Include="..\starskysynccli\starskysynccli.csproj" />
+    <ProjectReference Include="..\starskywebftpcli\starskywebftpcli.csproj" />
     <ProjectReference Include="..\starskywebhtmlcli\starskywebhtmlcli.csproj" />
     <ProjectReference Include="..\starsky\starsky.csproj" />
   </ItemGroup>
@@ -53,11 +54,17 @@
     </ItemGroup>
     <ItemGroup>
       <Compile Remove="coverage.report\**" />
+      <Compile Remove="coverage-report\**" />
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Remove="coverage.report\**" />
+      <EmbeddedResource Remove="coverage-report\**" />
     </ItemGroup>
     <ItemGroup>
       <None Remove="coverage.report\**" />
+      <None Remove="coverage-report\**" />
+      <None Remove="coverage-merge-cobertura.xml" />
+      <None Remove="jest-coverage.cobertura.xml" />
+      <None Remove="netcore-coverage.opencover.xml" />
     </ItemGroup>
 </Project>

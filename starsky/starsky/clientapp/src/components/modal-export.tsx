@@ -106,9 +106,9 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = memo((props) => {
       </> : null}
 
       {isProcessing === ProcessingState.default && props.select && props.select.length >= 2 ? <>
-        <a onClick={() => {
+        <button onClick={() => {
           postZip(false)
-        }} className="btn btn--info">Orginelen</a>
+        }} className="btn btn--info">Orginelen</button>
 
         <button onClick={() => {
           postZip(true)

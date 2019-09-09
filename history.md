@@ -16,14 +16,31 @@
 - []   Health view, to make more clear when the server time is not correct
 
 
-## Work in progress `/feature/201904-react`
+## Work in progress `/feature/201909-react`
 - []   Front-end for Rename files
 - []   Front-end for Replace API in folder view
+- []   ForceSync in UI
+- []   Cache-clean for folders in UI
+- []   Collections toggle in UI
+- []   Account page
+- []   Trash page
+- []   Import page
 
-# version 0.1.6 - tbd
-- tbd
+# version 0.1.5.10 - tbd
+- Add /beta Renewed UI with most of the functionality of the old UI
+  - [x]  Folder/Archive UI
+  - [x]  Folder/Archive ColorClass filter UI
+  - [x]  Folder/Archive Select UI
+  - [x]  Folder/Archive Labels Add UI
+  - [x]  Folder/Archive Labels Overwrite UI
+  - [x]  Search UI
+  - [x]  Export/ Dialog/ Single + Select UI
+  - [x]  DetailView (include details) UI
+- Build CI changes to run Jest tests (1.2% coverage yet)
+- IE11 and some older browsers are not supported on /beta
+- Added ExifStatus.Deleted including in ReplaceService
 
-# version 0.1.5.9 - tbd
+# version 0.1.5.9 - 2019-08-19
 - Entity Framework Add Indexes
 - __Breaking Change__  Entity Framework add Field for FocalLength
 

@@ -1,9 +1,4 @@
 
-.preloader {
-
-}
-
-
 .preloader.preloader--overlay {
   position: fixed;
   height: 100%;
@@ -15,7 +10,6 @@
   z-index: 410;
   animation: preloader--overlay-fadein 4s;
 }
-
 
 @keyframes preloader--overlay-fadein {
     from { opacity: 0; }
@@ -38,10 +32,6 @@
   background-color: white;
   mask-image: url('../images/preloader-fancy.svg');
   mask-size: contain;
-
-  /* for webkit */
-  -webkit-mask-image: url('../images/preloader-fancy.svg');
-  -webkit-mask-size: contain;
 }
 
 .preloader.preloader--hide {
