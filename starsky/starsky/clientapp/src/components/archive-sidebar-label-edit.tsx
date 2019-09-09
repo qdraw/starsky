@@ -124,7 +124,7 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
 
   return (
     <div className="content--text">
-      <SwitchButton isEnabled={!archive.isReadOnly} on="Wijzigen" off="Vervangen" onToggle={(value) => setReplaceMode(value)}></SwitchButton>
+      <SwitchButton isEnabled={!archive.isReadOnly} leftLabel="Wijzigen" rightLabel="Vervangen" onToggle={(value) => setReplaceMode(value)}></SwitchButton>
 
       {!isReplaceMode ?
         <>

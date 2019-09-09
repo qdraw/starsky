@@ -26,7 +26,6 @@
   padding-left: 10px;
   background-color: #ECEFF1;  
 }
-
 .content--text {
   padding: 10px;
 }
@@ -36,6 +35,8 @@
   margin-top: 10px;
   margin-bottom: 5px;
 }
+
+.content--header .btn,
 .content--text .btn {
   margin-right:10px;
 }

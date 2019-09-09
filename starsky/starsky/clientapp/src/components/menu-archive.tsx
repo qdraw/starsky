@@ -3,6 +3,7 @@ import React, { memo, useEffect } from 'react';
 import useLocation from '../hooks/use-location';
 import { URLPath } from '../shared/url-path';
 import MenuSearchBar from './menu.searchbar';
+import ModalDisplayOptions from './modal-display-options';
 import ModalExport from './modal-export';
 import MoreMenu from './more-menu';
 
@@ -49,25 +50,16 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
-  const [collections, setCollections] = React.useState(new URLPath().StringToIUrl(history.location.search).collections);
-  useEffect(() => {
-    setCollections(new URLPath().StringToIUrl(history.location.search).collections)
-  }, [history.location.search]);
-
-  function toggleCollections() {
-    console.log(collections);
-
-    var urlObject = new URLPath().StringToIUrl(history.location.search);
-    urlObject.collections = !urlObject.collections;
-    setCollections(urlObject.collections);
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
-  }
+  const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
 
   return (
     <>
       {isModalExportOpen ? <ModalExport handleExit={() =>
         setModalExportOpen(!isModalExportOpen)} select={new URLPath().MergeSelectParent(select, new URLPath().StringToIUrl(history.location.search).f)}
         isOpen={isModalExportOpen} /> : null}
+
+      {isDisplayOptionsOpen ? <ModalDisplayOptions parentFolder={new URLPath().StringToIUrl(history.location.search).f} handleExit={() =>
+        setDisplayOptionsOpen(!isDisplayOptionsOpen)} isOpen={isDisplayOptionsOpen} /> : null}
 
       <header className={sidebar ? "header header--main header--select header--edit" : select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
@@ -92,7 +84,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           {!select ? <MoreMenu>
             <li className="menu-option disabled" onClick={() => { alert("Map maken werkt nog niet"); }}>Map maken</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
-            <li className="menu-option" onClick={() => toggleCollections()}>{collections ? "Laat alle bestanden zien" : "Toon als collectie"}</li>
+            <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>Weergave opties</li>
 
           </MoreMenu> : null}
 

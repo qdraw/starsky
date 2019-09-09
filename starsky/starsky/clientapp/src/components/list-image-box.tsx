@@ -31,6 +31,13 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
   var preloader = <Preloader isOverlay={true} isDetailMenu={false}></Preloader>
   const [isPreloaderState, setPreloaderState] = React.useState(false);
 
+  // For low connections/ option to don't download large images
+  const [isSingleItem, setIsSingleItem] = React.useState(true);
+  useEffect(() => {
+    var singleItem = localStorage.getItem("issingleitem");
+    setIsSingleItem(singleItem !== "false")
+  }, [localStorage.getItem("issingleitem")]);
+
   // selected state
   if (select) {
     return (
@@ -40,7 +47,7 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
             "box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory :
             "box-content box-content--selected colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
 
-          <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '.jpg?issingleitem=true'}></ListImage>
+          <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '.jpg?issingleitem=' + isSingleItem.toString()}></ListImage>
 
           <div className="caption">
             <div className="name">
@@ -64,7 +71,7 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
       <Link onClick={() => setPreloaderState(true)} title={item.fileName} to={new URLPath().updateFilePath(history.location.search, item.filePath)}
         className={"box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
 
-        <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '.jpg?issingleitem=true'}></ListImage>
+        <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '.jpg?issingleitem=' + isSingleItem.toString()}></ListImage>
 
         <div className="caption">
           <div className="name">
