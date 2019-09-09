@@ -56,7 +56,7 @@ export function archiveReducer(state: State, action: Action): State {
     case "reset":
       return action.payload;
   }
-};
+}
 
 function DetailViewContextProvider({ children }: ReactNodeProps) {
   // [A]

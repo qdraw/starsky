@@ -55,16 +55,12 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
         if (pageType === PageType.NotFound || pageType === PageType.ApplicationException) return;
 
         setPageType(pageType);
-        switch (pageType) {
-          case PageType.Search:
-            var archiveMedia = new CastToInterface().MediaArchive(responseObject);
-            // We don't know those values in the search context
-            archiveMedia.data.colorClassUsage = [];
-            archiveMedia.data.colorClassFilterList = [];
-            setArchive(archiveMedia.data);
-            break;
-          default:
-            break;
+        if (pageType === PageType.Search) {
+          var archiveMedia = new CastToInterface().MediaArchive(responseObject);
+          // We don't know those values in the search context
+          archiveMedia.data.colorClassUsage = [];
+          archiveMedia.data.colorClassFilterList = [];
+          setArchive(archiveMedia.data);
         }
 
       } catch (e) {

@@ -12,7 +12,7 @@ function DetailViewContextWrapper(detailview: IDetailView) {
   return (<DetailViewContextProvider>
     <DetailViewWrapper {...detailview} />
   </DetailViewContextProvider>)
-};
+}
 
 function DetailViewWrapper(detailViewProp: IDetailView) {
   let { state, dispatch } = React.useContext(DetailViewContext);
@@ -39,6 +39,6 @@ function DetailViewWrapper(detailViewProp: IDetailView) {
       <DetailView {...detailView} />
     </>
   )
-};
+}
 
 export default DetailViewContextWrapper;
