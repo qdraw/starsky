@@ -32,6 +32,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     localStorage.setItem("issingleitem", isSingleItem.toString())
   }
 
+  // todo: make a clear screen that the item is disabled
   const [removeCacheEnabled, setRemoveCacheEnabled] = React.useState(true);
   function removeCache() {
     FetchGet("/api/RemoveCache?json=true&f=" + props.parentFolder)
@@ -64,7 +65,6 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     <div className="modal content--header">
       <button disabled={!forceSyncEnabled} className="btn btn--info" onClick={() => forceSync()}>Forceer sync</button>
       <button disabled={!removeCacheEnabled} className="btn btn--info" onClick={() => removeCache()}>Vernieuw</button>
-
     </div>
   </Modal>)
 }
