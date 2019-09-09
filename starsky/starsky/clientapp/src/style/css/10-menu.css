@@ -45,19 +45,10 @@
   height: 100%; 
 }
 
-.header .nav {
-  display: block;
-  margin-left: auto;
-}
-
 .header .menu a {
   display: block;
   padding: 5px 10px;
   box-shadow: none;
-}
-
-.header .menu-item {
-  list-style: none;
 }
 
 
@@ -118,9 +109,8 @@
   transform: rotate(-45deg) translate(0, 0.0625rem); 
 }
 
-
-
 .header .menu-item {
+  list-style: none;
   font-size: 16px;
   font-weight: 300;
   background: #455A64;
@@ -181,6 +171,8 @@
 
 
 .header .nav {
+  display: block;
+  margin-left: auto;
   position: fixed;
   top: 0;
   right: -100%;

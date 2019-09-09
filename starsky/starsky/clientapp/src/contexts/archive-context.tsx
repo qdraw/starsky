@@ -63,7 +63,7 @@ export function archiveReducer(state: State, action: Action): State {
       state.fileIndexItems.push(newIFileIndexItem());
       return { ...state, subPath: "/" };
   }
-};
+}
 
 function ArchiveContextProvider({ children }: ReactNodeProps) {
   // [A]

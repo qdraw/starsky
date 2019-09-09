@@ -35,7 +35,7 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
   if (select) {
     return (
       <div className="box box--select">
-        <div onClick={() => toggleSelection(item.fileName)}
+        <button onClick={() => toggleSelection(item.fileName)}
           className={select.indexOf(item.fileName) === -1 ?
             "box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory :
             "box-content box-content--selected colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
@@ -50,7 +50,7 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
               {item.tags}
             </div>
           </div>
-        </div>
+        </button>
 
       </div>
     )

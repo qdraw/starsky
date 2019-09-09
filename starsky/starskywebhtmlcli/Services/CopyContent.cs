@@ -8,20 +8,18 @@ namespace starskywebhtmlcli.Services
 {
 	public class Content
 	{
-		private readonly AppSettings _appSettings;
 		private readonly IStorage _istorage;
 
-		public Content(AppSettings appSettings, IStorage storage)
+		public Content(IStorage storage)
 		{
-			_appSettings = appSettings;
 			_istorage = storage;
 		}
 
-		public string GetContentFolder()
+		private string GetContentFolder()
 		{
 			return AppDomain.CurrentDomain.BaseDirectory +
 				   Path.DirectorySeparatorChar +
-				   "Content";
+				   "PublishedContent";
 		}
 
 		public void CopyContent()

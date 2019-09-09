@@ -2,6 +2,7 @@
 using System.Linq;
 using starskycore.Helpers;
 using starskycore.Models;
+using starskycore.Services;
 using starskywebftpcli.Services;
 
 namespace starskywebftpcli
@@ -38,9 +39,16 @@ namespace starskywebftpcli
 				return;
 			}
             
-			// check if inputPath is valid
-			if(FilesHelper.IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
-				Console.WriteLine("Please add a valid folder: " + inputPath);
+			// used in this session to find the files back
+			appSettings.StorageFolder = inputPath;
+			var storage = new StorageSubPathFilesystem(appSettings);
+
+			if ( storage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			{
+				Console.WriteLine($"Folder location {inputPath} is not found \nPlease try the `-h` command to get help ");
+				return;
+			}
+
 			
 			// check if settings is valid
 			if ( string.IsNullOrEmpty(appSettings.WebFtp) )
@@ -62,7 +70,7 @@ namespace starskywebftpcli
 			}
 
 			//  now run the service
-			var ftpService = new FtpService(appSettings).Run();
+			var ftpService = new FtpService(appSettings,storage).Run();
 			if ( !ftpService ) return;
 			
 			// get prepend path to show

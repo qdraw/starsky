@@ -18,7 +18,7 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
   useEffect(() => {
     setLastPageNumber(props.lastPageNumber ? props.lastPageNumber : -1);
     setUrlObject(new URLPath().StringToIUrl(history.location.search))
-  }, [props]);
+  }, [props, history.location.search]);
 
   function prev(): JSX.Element {
     if (!urlObject || !lastPageNumber) return <>tt</>;

@@ -1,5 +1,5 @@
-.content {
-}
+/* content */
+
 .content > div,
 .content > form {
   padding-left: 25px;
@@ -21,7 +21,7 @@
 }
 
 .content--subheader {
-    height: 50px;
+  height: 50px;
   line-height: 50px;
   padding-left: 10px;
   background-color: #ECEFF1;  

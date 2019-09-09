@@ -13,7 +13,8 @@ function useKeyboardEvent(regex: RegExp, callback: Function, dependencies: any =
     return () => {
       window.removeEventListener('keydown', handler)
     }
-  }, dependencies)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...dependencies, regex, callback])
 }
 
 export default useKeyboardEvent;
