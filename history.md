@@ -1,6 +1,5 @@
 [< readme](readme.md)
 
-
 # Features planned (in random order)
 
 - []   Realtime Files API
@@ -11,10 +10,8 @@
 - []   Add unit tests for importing raw's with .xmp files
 - []   Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
 - []   Docker support, including backend abstractions to get the data (partly working)
-- []   XMP disable option when importing using a flag (used for copying photos)
 - []   Health view, to make more clear when paths are configured right
 - []   Health view, to make more clear when the server time is not correct
-
 
 ## Work in progress `/feature/201909-react`
 - []   Front-end for Rename files
@@ -58,6 +55,7 @@
 - __Breaking API change__ from `/api/` to `/api/index`
 - __Known issue__ Swagger support is disabled
 - Add support for command line -x or don't add xmp sidecar file
+- [x]   XMP disable option when importing using a flag (used for copying photos)
 
 # version 0.1.5.6 - 2019-08-07
 - change '/api/info' to support readonly meta display
