@@ -15,21 +15,23 @@ namespace starsky.Controllers
 	[Authorize]
 	public class HomeController : Controller
 	{
+		private readonly string  _clientApp;
+
+		public HomeController()
+		{
+			_clientApp = Path.Combine(Directory.GetCurrentDirectory(),
+				"clientapp", "build", "index.html");
+		}
+		
 		public IActionResult Index(string f = "")
 		{
-			var file = Path.Combine(Directory.GetCurrentDirectory(),
-				"clientapp", "build", "index.html");
-
-			return PhysicalFile(file, "text/html");
+			return PhysicalFile(_clientApp, "text/html");
 		}
 
 		[HttpGet("/search")]
 		public IActionResult Search(string t= "")
 		{
-			var file = Path.Combine(Directory.GetCurrentDirectory(),
-				"clientapp", "build", "index.html");
-
-			return PhysicalFile(file, "text/html");
+			return PhysicalFile(_clientApp, "text/html");
 		}
 		
 		// Error pages should be always visible
@@ -37,7 +39,7 @@ namespace starsky.Controllers
 		[AllowAnonymous]
 		public IActionResult Error()
 		{
-			return View();
+			return PhysicalFile(_clientApp, "text/html");
 		}
 	}
 }

@@ -67,6 +67,13 @@ namespace starsky.Controllers
 			return RedirectToAction("Search", new {t, p = 0 });
 		}
 		
+		[HttpGet("/v1/import")]
+		public IActionResult Import()
+		{
+			return View("Import");
+		}
+
+		
 		/// <summary>
 		/// List of files with the tag: !delete!
 		/// Caching is disabled on this api call

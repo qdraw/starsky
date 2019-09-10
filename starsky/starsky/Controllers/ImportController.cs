@@ -33,14 +33,7 @@ namespace starsky.Controllers
 	        _httpClientHelper = httpClientHelper;
 	        _iStorage = iStorage; //<= not yet implemented
         }
-
-        [HttpGet]
-        [ActionName("Index")]
-        public IActionResult Index()
-        {
-            return View("Index");
-        }
-
+	    
         
 		/// <summary>
 		/// Import a file using the structure format

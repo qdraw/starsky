@@ -65,7 +65,7 @@
    </Content>
  </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\Index" />
+    <Folder Include="Views\Import" />
   </ItemGroup>
 
 </Project>
