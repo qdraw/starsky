@@ -85,7 +85,6 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             <li className="menu-option disabled" onClick={() => { alert("Map maken werkt nog niet"); }}>Map maken</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
             <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>Weergave opties</li>
-
           </MoreMenu> : null}
 
           {/* In the select context there are more options */}
