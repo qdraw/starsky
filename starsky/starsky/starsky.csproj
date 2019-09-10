@@ -64,8 +64,5 @@
      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
    </Content>
  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\Import" />
-  </ItemGroup>
 
 </Project>
