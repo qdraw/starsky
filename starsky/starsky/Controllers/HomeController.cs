@@ -34,6 +34,18 @@ namespace starsky.Controllers
 			return PhysicalFile(_clientApp, "text/html");
 		}
 		
+		[HttpGet("/trash")]
+		public IActionResult Trash()
+		{
+			return PhysicalFile(_clientApp, "text/html");
+		}
+
+		[HttpGet("/import")]
+		public IActionResult Import()
+		{
+			return PhysicalFile(_clientApp, "text/html");
+		}
+		
 		// Error pages should be always visible
 		// curl: (47) Maximum (50) redirects followed
 		[AllowAnonymous]
