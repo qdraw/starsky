@@ -50,12 +50,18 @@
 - __Breaking API change__ from `/search/trash` to `/api/search/trash`
 
 # version 0.1.5.9 - 2019-08-19
-- Entity Framework Add Indexes
-- __Breaking Change__  Entity Framework add Field for FocalLength
+- Entity Framework add database indexes
+- __Breaking Change__  Entity Framework add database Field for FocalLength
 
 # version 0.1.5.8 - 2019-08-14
-- Change Dot NET version to the `.Net Core 2.2` release
-- Rollback due Entity Framework performance issues with MySQL
+- Change Dot NET version to the `.Net Core 2.2` release (C# 7)
+- Rollback version due Entity Framework performance issues with MySQL
+- Swagger is enabled
+## The following changes from 0.1.5.7 are included in this release
+- __Breaking API change__ from `/account?json=true` to `/account/status` `api`
+- __Breaking API change__ from `/api/` to `/api/index`
+- Add support for command line -x or don't add xmp sidecar file
+- [x]   XMP disable option when importing using a flag (used for copying photos)
 
 # version 0.1.5.7 - 2019-08-09
 - Update Dot NET version to the `.Net Core 3 Preview 7` release
@@ -80,7 +86,7 @@
 - bugfix: `/api?f=detailView` pages are now working
 - suggestions are part of the warmup script
 - bugfix: spaces where not rendered correctly during the 'update' call in archive view
-- bugfix: you could login without password
+- __bugfix: you could login without password__
 
 # version 0.1.5.4 - 2019-04-24
 - fix: for readonly there is no TIFF label
