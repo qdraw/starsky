@@ -32,7 +32,7 @@ function Trash(archive: IArchiveProps) {
           <div className="content--header">{archive.collectionsCount ? <>{archive.collectionsCount} resultaten</> : "Geen resultaat"}</div>
           <SearchPagination {...archive}></SearchPagination>
           {archive.collectionsCount >= 1 ? <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListView> : null}
-          {archive.collectionsCount === 0 ? <div className="folder"><div className="warning-box"> Probeer een andere zoekopdracht</div></div> : null}
+          {archive.collectionsCount === 0 ? <div className="folder"><div className="warning-box"> Er staat niks in de prullenmand</div></div> : null}
           {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive}></SearchPagination> : null}
         </div>
       </div>
