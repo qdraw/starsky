@@ -21,7 +21,6 @@
 
 # planned for 0.1.6
 - []   Trash page
-- []   Not Found page
 
 # version 0.1.6 - tbd
 - __Breaking change__ the V1 layout is now at `/v1`
@@ -42,6 +41,7 @@
   - [x]  Import page __Has link to V1 layout__
   - [x]  Account page __Deprecated in V2 layout__
   - [x]  Login __is in V1 layout style__
+  - [x]  Not Found page
 - Build CI changes to run Jest tests (1.2% coverage yet)
 - IE11 (Internet Explorer) is not working anymore with this application
 - Some older Safari, Chrome and Firefox browsers are not supported in the new layout
