@@ -23,13 +23,13 @@
                 @if (Model.PageNumber >= 1)
                 {
                     var prevpage = @Model.PageNumber - 1;
-                    <a class="prev" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
+                    <a class="prev" asp-controller="v1" asp-action="Search" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
                 }
 
                 @if (Model.PageNumber < Model.LastPageNumber)
                 {
                     var nextpage = @Model.PageNumber + 1;
-                    <a class="next" asp-controller="Search" asp-action="Index" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
+                    <a class="next" asp-controller="v1" asp-action="Search" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
                 }
             </h4>
             <div class="selections">
@@ -52,20 +52,20 @@
         @if (Model.PageNumber >= 1)
         {
             var prevpage = @Model.PageNumber - 1;
-            <a asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
+            <a asp-controller="v1" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
         }
 
         @if (Model.PageNumber < Model.LastPageNumber)
         {
             var nextpage = @Model.PageNumber + 1;
-            <a class="next" asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
+            <a class="next" asp-controller="v1" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
         }
     </h4>
 
     <h1 class="breadcrumb">
-        <a asp-controller="Home" asp-action="Index">Home</a>
+        <a asp-controller="v1" asp-action="Index">Home</a>
         <span> &raquo;</span>
-        <a asp-controller="Search" asp-action="Trash">Prullenmand</a>
+        <a asp-controller="v1" asp-action="Trash">Prullenmand</a>
     </h1>
 
 
@@ -80,7 +80,7 @@
                  data-tagnl="@FileIndexItem.GetAllColorUserInterface().FirstOrDefault(p => (int) p == enumValue)">
                 <div class="caption">
                     <h2>
-                        <div class="checkbox"></div> <a asp-controller="Home" asp-action="Index" asp-route-f="@item.FilePath">@item.FileName</a></h2>
+                        <div class="checkbox"></div> <a asp-controller="v1" asp-action="Index" asp-route-f="@item.FilePath">@item.FileName</a></h2>
 @*                    <p><a onclick="Remove('@item.FilePath')"class="btn-sm btn btn-danger">Verwijder van schijf</a></p>*@
                 </div>
                 <div class="filter"></div>
@@ -95,13 +95,13 @@
         @if (Model.PageNumber >= 1)
         {
             var prevpage = @Model.PageNumber - 1;
-            <a asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
+            <a asp-controller="v1" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@prevpage">Vorig resultaat</a>
         }
 
         @if (Model.PageNumber < Model.LastPageNumber)
         {
             var nextpage = @Model.PageNumber + 1;
-            <a class="next" asp-controller="Search" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
+            <a class="next" asp-controller="v1" asp-action="Trash" asp-route-t="@Model.SearchQuery" asp-route-p="@nextpage">Volgend resultaat</a>
         }
     </h4>
 </div>

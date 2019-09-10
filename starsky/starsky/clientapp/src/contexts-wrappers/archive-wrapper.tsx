@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Archive from '../containers/archive';
 import Search from '../containers/search';
+import Trash from '../containers/trash';
 import { ArchiveContext, ArchiveContextProvider } from '../contexts/archive-context';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { PageType } from '../interfaces/IDetailView';
@@ -36,11 +37,18 @@ function ArchiveWrapper(archive: IArchiveProps) {
   if (!state.fileIndexItems) return (<></>);
   if (!state.pageType) return (<></>);
 
+  if (state.pageType === PageType.Trash) {
+    return (
+      <Trash {...archiveList} />
+    )
+  }
+
   if (state.pageType === PageType.Search) {
     return (
       <Search {...archiveList} />
     )
   }
+
   return (
     <Archive {...archiveList} />
   )

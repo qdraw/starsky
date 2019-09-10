@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import ArchiveSidebar from '../components/archive-sidebar';
 import ItemListView from '../components/item-list-view';
+import MenuSearch from '../components/menu-search';
 import MenuSearchBar from '../components/menu.searchbar';
 import SearchPagination from '../components/search-pagination';
 import useLocation from '../hooks/use-location';
@@ -26,7 +27,8 @@ function Search(archive: IArchiveProps) {
   if (!archive) return (<>(Search) => no archive</>)
   if (!archive.colorClassUsage) return (<>(Search) => no colorClassUsage</>)
 
-  return (
+  return (<>
+    <MenuSearch></MenuSearch>
     <div className={!sidebar ? "archive" : "archive collapsed"}>
       {sidebar ? <ArchiveSidebar {...archive}></ArchiveSidebar> : ""}
 
@@ -41,6 +43,7 @@ function Search(archive: IArchiveProps) {
         {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive}></SearchPagination> : null}
       </div>
     </div>
+  </>
   )
 }
 export default Search;

@@ -47,21 +47,20 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
         }
 
         const responseObject = await res.json();
-        console.log(responseObject);
-
-        // setParent(new URLPath().getParent(locationSearch));
 
         var pageType = new CastToInterface().getPageType(responseObject);
         if (pageType === PageType.NotFound || pageType === PageType.ApplicationException) return;
-
         setPageType(pageType);
-        if (pageType === PageType.Search) {
-          var archiveMedia = new CastToInterface().MediaArchive(responseObject);
-          // We don't know those values in the search context
-          archiveMedia.data.colorClassUsage = [];
-          archiveMedia.data.colorClassFilterList = [];
-          setArchive(archiveMedia.data);
-        }
+
+        if (pageType !== PageType.Search && pageType !== PageType.Trash) return;
+        var archiveMedia = new CastToInterface().MediaArchive(responseObject);
+
+        // for trash
+        archiveMedia.data.pageType = pageType;
+        // We don't know those values in the search context
+        archiveMedia.data.colorClassUsage = [];
+        archiveMedia.data.colorClassFilterList = [];
+        setArchive(archiveMedia.data);
 
       } catch (e) {
         console.error(e);

@@ -236,9 +236,7 @@ namespace starsky
 				        Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot"))
 		        });
 	        }
-
-			// "clientapp", "build", "static"
-
+	        
 			
 			if ( Directory.Exists(Path.Combine(env.ContentRootPath, "clientapp", "build", "static")) )
 			{
