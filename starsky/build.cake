@@ -250,10 +250,13 @@ Task("CoverageReport")
         foreach(var project in projects)
         {
             Information("CoverageReport project " + project);
+            // Generate html files for reports
             var reportFolder = project.ToString().Replace("merge-cobertura.xml","report");
             ReportGenerator(project, reportFolder, new ReportGeneratorSettings{
                 ReportTypes = new[] { ReportGeneratorReportType.HtmlInline }
             });
+            // Zip entire folder
+            Zip(reportFolder, $"{reportFolder}.zip");
         }
     });
 
@@ -296,10 +299,12 @@ Task("PublishWeb")
 Task("Zip")
     .Does(() =>
     {
+        // for generic projects
         System.Console.WriteLine($"./{genericDistDirectory}", $"starsky-{genericDistDirectory}.zip");
         Zip($"./{genericDistDirectory}", $"starsky-{genericDistDirectory}.zip");
 
         if(runtime == genericName) return;
+        // for runtime projects e.g. linux-arm or osx.10.12-x64
 
         System.Console.WriteLine($"./{distDirectory}", $"starsky-{distDirectory}.zip");
         Zip($"./{distDirectory}", $"starsky-{distDirectory}.zip");
