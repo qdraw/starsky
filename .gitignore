@@ -358,6 +358,7 @@ starsky-netframework-msbuild.zip
 **/coveragereport/*
 **/coverage.report/*
 **/coverage-report/*
+**/coverage-report.zip
 **/netcore-coverage.opencover.xml
 **/jest-coverage.cobertura.xml
 **/coverage-merge-report/*
