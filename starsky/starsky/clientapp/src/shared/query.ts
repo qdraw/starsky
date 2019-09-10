@@ -14,6 +14,10 @@ export class Query {
     return "/api/search?json=true&t=" + query + "&p=" + pageNumber;
   }
 
+  public UrlSearchTrashApi = (pageNumber = 0) => {
+    return "/api/search/trash?p=" + pageNumber;
+  }
+
   public UrlQueryServerApi = (historyLocationHash: string) => {
     var requested = new URLPath().StringToIUrl(historyLocationHash);
 

@@ -4,7 +4,7 @@ import React, { FunctionComponent } from 'react';
 import Preloader from '../components/preloader';
 import ArchiveContextWrapper from '../contexts-wrappers/archive-wrapper';
 import useLocation from '../hooks/use-location';
-import useSearchList from '../hooks/use-searchlist';
+import useTrashList from '../hooks/use-trashlist';
 import { PageType } from '../interfaces/IDetailView';
 import { URLPath } from '../shared/url-path';
 
@@ -17,7 +17,7 @@ const TrashPage: FunctionComponent<RouteComponentProps<ITrashPageProps>> = (prop
   var history = useLocation();
 
   var urlObject = new URLPath().StringToIUrl(history.location.search);
-  var searchList = useSearchList("!delete!", urlObject.p);
+  var searchList = useTrashList(urlObject.p);
 
   if (!searchList) return (<>Something went wrong</>)
   if (!searchList.archive) return (<>Something went wrong</>)

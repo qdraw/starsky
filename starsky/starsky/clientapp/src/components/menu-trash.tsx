@@ -51,7 +51,6 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
             Selecteer
             </div> : null}
 
-
           {/* When in normal state */}
           {!select ? <MoreMenu></MoreMenu> : null}
 

@@ -37,7 +37,6 @@ namespace starsky.Controllers
 	    /// Caching is disabled on this api call
 	    /// </summary>
 	    /// <param name="p">page number</param>
-	    /// <param name="json">enable json response</param>
 	    /// <returns>the delete files results</returns>
 	    /// <response code="200">the search results (enable json to get json results)</response>
 	    [HttpGet("/api/search/trash")]
