@@ -16,12 +16,16 @@
 ## Work in progress `/feature/201909-react`
 - []   Front-end for Rename files
 - []   Front-end for Replace API in folder view
-- []   Account page
-- []   Trash page
-- []   Import page
+- []   Import page (without link)
+- []   Login in V2 layout
 
-# version 0.1.5.10 - tbd
-- Add /beta Renewed UI with most of the functionality of the old UI
+# planned for 0.1.6
+- []   Trash page
+- []   Not Found page
+
+# version 0.1.6 - tbd
+- __Breaking change__ the V1 layout is now at `/v1`
+- Add Renewed UI with most of the functionality of the old UI (default on)
   - [x]  Folder/Archive UI
   - [x]  Folder/Archive ColorClass filter UI
   - [x]  Folder/Archive Select UI
@@ -35,9 +39,15 @@
   - [x]  Cache-clean for folders in UI (under Display options)
   - [x]  Toggle for isSingleItem (under Display options)
   - [x]  Toggle for Collections view (under Display options)
+  - [x]  Import page __Has link to V1 layout__
+  - [x]  Account page __Deprecated in V2 layout__
+  - [x]  Login __is in V1 layout style__
 - Build CI changes to run Jest tests (1.2% coverage yet)
-- IE11 and some older browsers are not supported on /beta
-- Added ExifStatus.Deleted including in ReplaceService
+- IE11 (Internet Explorer) is not working anymore with this application
+- Some older Safari, Chrome and Firefox browsers are not supported in the new layout
+- Added `ExifStatus.Deleted` including in `ReplaceService`
+- __Breaking API change__ from `/search/` to `/api/search`
+- __Breaking API change__ from `/search/trash` to `/api/search/trash`
 
 # version 0.1.5.9 - 2019-08-19
 - Entity Framework Add Indexes
