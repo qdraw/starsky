@@ -35,16 +35,16 @@
 	<div id="menu">
 		<ul class="moveaway">
 			<li class="hide900">
-				<form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-nav">
+				<form asp-controller="v1" asp-action="Search" method="post" class="form-inline form-nav">
 					<input name="t" class="form-control" value="@ViewData["SearchQuery"]" autocomplete="off"/>
 					<button class="btn btn-default" type="submit">Zoek</button>
 				</form>
 			</li>
 			<li>
-				<a href="@Url.Action("Index", "Home")">Home</a>
+				<a href="@Url.Action("Index", "v1")">Home</a>
 			</li>
 			<li>
-				<a href="@Url.Action("Index", "Search", new {t = "-Datetime>7 -ImageFormat-\"tiff\""})">Foto's van deze week</a>
+				<a href="@Url.Action("Search", "v1", new {t = "-Datetime>7 -ImageFormat-\"tiff\""})">Foto's van deze week</a>
 			</li>
 			<li>
 				<a href="@Url.Action("Index", "Account")">Account</a>
@@ -60,7 +60,7 @@
 	<a href="#hamburger" id="hamburger" class="hamburger">Menu</a>
 
 	<div class="form-logo show900">
-		<form asp-controller="Search" asp-action="Index" method="post" class="form-inline form-nav">
+		<form asp-controller="v1" asp-action="Search" method="post" class="form-inline form-nav">
 			<input name="t" class="form-control" value="@ViewData["SearchQuery"]" autocomplete="off"/>
 			<button class="btn btn-default" type="submit">Zoek</button>
 		</form>

@@ -6,9 +6,9 @@ import SearchPage from '../pages/search-page';
 const RouterApp = () => (
   <Router>
     <ContentPage path="/" />
-    <ContentPage path="beta" />
+    <ContentPage path="starsky" />
     <SearchPage path="search" />
-    <SearchPage path="beta/search" />
+    <SearchPage path="starsky/search" />
   </Router>
 );
 

@@ -11,7 +11,7 @@ export class Query {
   }
 
   public UrlQuerySearchApi = (query: string, pageNumber = 0) => {
-    return "/search?json=true&t=" + query + "&p=" + pageNumber;
+    return "/api/search?json=true&t=" + query + "&p=" + pageNumber;
   }
 
   public UrlQueryServerApi = (historyLocationHash: string) => {

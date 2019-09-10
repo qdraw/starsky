@@ -64,5 +64,8 @@
      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
    </Content>
  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Index" />
+  </ItemGroup>
 
 </Project>

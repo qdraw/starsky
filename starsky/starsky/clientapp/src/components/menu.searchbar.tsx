@@ -10,9 +10,8 @@ interface IMenuSearchBarProps {
 
 const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props) => {
   var defaultMenu = [
-    { "name": "Home", "url": "/beta" },
-    { "name": "Foto's van deze week", "url": "/beta/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22" },
-    { "name": "Account", url: "/account" },
+    { "name": "Home", "url": "/" },
+    { "name": "Foto's van deze week", "url": "/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22" },
     { "name": "Importeren", url: "/import" }
   ];
   var history = useLocation();
@@ -51,7 +50,7 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
   function navigate(defQuery: string) {
     // setLoading(true);
     // To do change to search page
-    history.navigate("/beta/search?t=" + defQuery)
+    history.navigate("/search?t=" + defQuery)
     setFormFocus(false);
 
     if (!props.callback) return;
