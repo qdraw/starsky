@@ -4,6 +4,7 @@ import useLocation from '../hooks/use-location';
 import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
 import MenuSearchBar from './menu.searchbar';
+import Modal from './modal';
 import MoreMenu from './more-menu';
 
 
@@ -36,27 +37,22 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
 
   let { state, dispatch } = React.useContext(ArchiveContext);
 
-  // function TrashFile() {
-  //   var bodyParams = new URLSearchParams();
-  //   bodyParams.set("f", detailView.subPath);
+  function forceDelete() {
+    if (!select) return;
 
-  //   // Add remove tag
-  //   if (!isMarkedAsDeleted) {
-  //     bodyParams.set("Tags", "!delete!");
-  //     bodyParams.set("append", "true");
-  //     FetchPost("/api/update", bodyParams.toString())
-  //     dispatch({ 'type': 'add', tags: "!delete!" });
-  //     dispatch({ 'type': 'update', status: IExifStatus.Deleted });
-  //   }
-  //   // Undo trash
-  //   else {
-  //     bodyParams.set("fieldName", "tags");
-  //     bodyParams.set("search", "!delete!");
-  //     FetchPost("/api/replace", bodyParams.toString())
-  //     dispatch({ 'type': 'remove', tags: "!delete!" });
-  //     dispatch({ 'type': 'update', status: IExifStatus.Ok });
-  //   }
-  // }
+    var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
+    if (!toUndoTrashList) return;
+    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "")
+    if (selectParams.length === 0) return;
+
+    dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
+
+    var bodyParams = new URLSearchParams();
+    bodyParams.append("f", selectParams);
+    FetchPost("/api/delete", bodyParams.toString(), 'delete')
+
+    removeSelectionFromUrl();
+  }
 
   function undoTrash() {
     if (!select) return;
@@ -64,25 +60,24 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!toUndoTrashList) return;
     var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "")
-
     if (selectParams.length === 0) return;
 
     var bodyParams = new URLSearchParams();
-
     bodyParams.set("fieldName", "tags");
     bodyParams.set("search", "!delete!");
-
     bodyParams.append("f", selectParams);
 
+    dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
     // to replace
     // dispatch({ 'type': 'replace', 'fieldName': 'tags', files: toUpdatePaths, 'from': '!delete!', 'to': "" });
-
-    dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
     FetchPost("/api/replace", bodyParams.toString())
 
+    removeSelectionFromUrl();
+  }
+
+  function removeSelectionFromUrl() {
     // Remove from selection
     var urlObject = new URLPath().StringToIUrl(history.location.search);
-    console.log(urlObject);
 
     if (urlObject.select) {
       urlObject.select = [];
@@ -90,9 +85,28 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
     setSelect([]);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
+  const [isModalDeleteOpen, setModalDeleteOpen] = React.useState(false);
 
   return (
     <>
+      {isModalDeleteOpen ? <Modal
+        id="delete-modal"
+        isOpen={isModalDeleteOpen}
+        handleExit={() => {
+          setModalDeleteOpen(false)
+        }}><>
+          <div className="modal content--subheader">Verwijderen</div>
+          <div className="modal content--text">
+            Weet je zeker dat je dit bestand wil verpaatsen naar null?
+             <br />
+            <a onClick={() => setModalDeleteOpen(false)} className="btn btn--info">Annuleren</a>
+            <button onClick={() => {
+              forceDelete();
+              setModalDeleteOpen(false);
+            }} className="btn btn--default">Verwijderen</button>
+          </div>
+        </></Modal> : null}
+
       <header className={select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
 
@@ -120,7 +134,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
 
           {select && select.length >= 1 ? <MoreMenu>
             <li className="menu-option" onClick={() => undoTrash()}>Undo weggooien</li>
-            <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Verwijderen</li>
+            <li className="menu-option" onClick={() => setModalDeleteOpen(true)}>Verwijderen</li>
           </MoreMenu> : null}
 
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
