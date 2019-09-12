@@ -224,185 +224,6 @@ body {
     left: 110px;
 }
 
-/*!* HEADER *!*/
-/*!* MENU *!*/
-
-/*.head {*/
-    /*width: 100%;*/
-    /*height: 50px;*/
-    /*position: absolute;*/
-    /*top: 0px;*/
-    /*left: 0px;*/
-    /*background-color: #263238;*/
-    /*z-index: 10;*/
-    /*transition: background .5s ease-in-out;*/
-/*}*/
-/*.collapsed .head {*/
-    /*width: calc( 100% - 300px);*/
-/*}*/
-
-/*.head .logo {*/
-    /*background-image: url("../images/starsky.png");*/
-    /*padding: 20px 0px 0px 10px;*/
-    /*font-size: 17px;*/
-    /*color: white;*/
-    /*display: inline-block;*/
-    /*text-decoration: none;*/
-    /*width: 80px;*/
-    /*position: absolute;*/
-    /*top: 10px;*/
-    /*margin-left: 3vw;*/
-    /*height: calc(50px - 20px);*/
-    /*text-indent: -999px;*/
-    /*background-repeat: no-repeat;*/
-    /*background-position: center;*/
-    /*background-size: contain;*/
-    /*transition: background .5s ease-in-out;*/
-/*}*/
-/*!*@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {*!*/
-    /*!*.head .logo {*!*/
-        /*!*background-image: url("../images/logo.svg");*!*/
-    /*!*}*!*/
-/*!*}*!*/
-
-/*.head .hamburger {*/
-    /*display: none;*/
-/*}*/
-
-/*#menu ul {*/
-    /*position: relative;*/
-    /*float: right;*/
-/*}*/
-
-/*#menu li {*/
-    /*float: left;*/
-    /*height: calc(64px - 20px);*/
-    /*transition: height 1s;*/
-/*}*/
-
-/*#menu li a {*/
-    /*height: 46px;*/
-    /*padding: 18px 11px 0px 11px;*/
-    /*margin-left: 15px;*/
-    /*display: block;*/
-    /*color: white;*/
-    /*text-decoration: none;*/
-    /*font-size: 17px;*/
-    /*transition: background .8s ease-in-out;*/
-/*}*/
-
-
-/*#menu .moveaway {*/
-    /*transform: translate(0px, -140%);*/
-    /*transition: transform 500ms ease-in-out;*/
-/*}*/
-
-/*#menu .moveawayinitial {*/
-    /*transition: none;*/
-/*}*/
-
-
-/*#menu .moveto {*/
-    /*transform: translate(0px, 0%);*/
-    /*transition: transform 500ms ease-in-out;*/
-/*}*/
-
-/*#menu li:last-child {*/
-    /*margin-right: 50px;*/
-/*}*/
-
-/*#menu li a:hover {*/
-    /*background: #37474f;*/
-    /*transition: background .5s ease-in-out;*/
-/*}*/
-
-/*#menu .active a {*/
-    /*background-color: red;*/
-    /*background: #37474f;*/
-/*}*/
-
-/*@media screen and (max-width: 900000px) {*/
-    /**/
-    /*.head .close,*/
-    /*.head .hamburger {*/
-        /*background-image: url("../images/hamburger.svg");*/
-        /*background-repeat: no-repeat;*/
-        /*position: absolute;*/
-        /*top: 0px;*/
-        /*left: 3vw;*/
-        /*margin-top: 10px;*/
-        /*width: 50px;*/
-        /*height: 30px;*/
-        /*background-size: contain;*/
-        /*z-index: 11;*/
-        /*display: inline-block;*/
-        /*text-indent: -9999px;*/
-        /*transition: background .5s ease-in-out;*/
-    /*}*/
-    /*.head .close {*/
-        /*transition: background .9s ease-in-out;*/
-        /*background-image: url("../images/close.svg");*/
-    /*}*/
-
-    /*.head .logo {*/
-        /*width: 97%;*/
-        /*position: absolute;*/
-        /*top: 10px;*/
-        /*background-size: 96px 36px;*/
-    /*}*/
-    /*.head .form-logo {*/
-        /*position: absolute;*/
-        /*top: -10px;*/
-        /*left: 12vw;*/
-    /*}*/
-    /**/
-    /*.head .form-inline {*/
-        /*margin-top: 10px;*/
-        /*margin-left: 10px;*/
-    /*}*/
-    /*.head .form-inline .form-control {*/
-        /*width: calc( 70vw - 330px);*/
-    /*}*/
-    /**/
-    /*.head #menu ul {*/
-        /*margin-top: 50px;*/
-        /*background-color: rgba(55, 71, 79, 0.9);*/
-    /*}*/
-    /*.head #menu .default {*/
-        /*transform: translate(0px, -120%);*/
-    /*}*/
-
-    /*.head #menu li {*/
-        /*height: 70px;*/
-        /*display: table;*/
-    /*}*/
-    /*.head #menu li:nth-child(2n) {*/
-        /*background-color: rgba(55, 71, 79, 0.4);*/
-    /*}*/
-    /*.head #menu li a {*/
-        /*width: 95vw;*/
-        /*padding: 0px;*/
-        /*vertical-align: middle;*/
-        /*display: table-cell;*/
-        /*padding-left: 3vw;*/
-        /*font-size: 24px;*/
-    /*}*/
-
-    /*#menu li:last-child {*/
-        /*margin-right: 0px;*/
-    /*}*/
-/*}*/
-/*@media screen and (min-width: 200px) and (max-width: 600px) {*/
-    /*.head .form-inline .form-control {*/
-        /*width: calc(100vw - 100px);*/
-    /*}*/
-    /*.collapsed .head {*/
-        /*width: 100%;*/
-    /*}*/
-/*}*/
-    /**/
-/*!* end menu *!*/
-
 h1 {
     font-size: 24px;
     line-height: 1.1;
@@ -536,20 +357,14 @@ h1 {
     background-color: #ccc;
     position: relative;
     transform-origin: center center;
-    /*transition: all 1.5s ease-in-out;*/
+	color: white;
 }
 
-.collapsed .halfitem {
-    
-}
+
 @media screen and (max-width: 767px) {
     .wrapper .halfitem {
         width: 100%;
     }
-}
-
-.wrapper .halfitem {
-    color: white;
 }
 
 

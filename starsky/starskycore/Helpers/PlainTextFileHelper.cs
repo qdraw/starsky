@@ -38,7 +38,7 @@ namespace starskycore.Helpers
         /// </summary>
         /// <param name="fullFilePath">path on filesystem</param>
         /// <returns>content of the file as string</returns>
-        [Obsolete]
+        [Obsolete("Has a direct dependency on the filesystem")]
         public string ReadFile(string fullFilePath)
         {
             if (!File.Exists(fullFilePath)) return string.Empty;
@@ -51,7 +51,7 @@ namespace starskycore.Helpers
         /// </summary>
         /// <param name="fullFilePath">path on filesystem</param>
         /// <param name="writeString">content of the file</param>
-        [Obsolete]
+        [Obsolete("Has a direct dependency on the filesystem")]
         public virtual void WriteFile(string fullFilePath, string writeString)
         {
             if (File.Exists(fullFilePath)) return;

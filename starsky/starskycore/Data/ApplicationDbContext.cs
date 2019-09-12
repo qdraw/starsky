@@ -28,6 +28,7 @@ namespace starskycore.Data
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
+			// Do nothing because of that in debug mode this only triggered
 			#if (DEBUG) 
 				optionsBuilder.EnableSensitiveDataLogging();
 			#endif

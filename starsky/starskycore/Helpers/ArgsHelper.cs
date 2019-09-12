@@ -348,7 +348,7 @@ namespace starskycore.Helpers
 		/// <exception cref="ArgumentNullException">appsettings is missing</exception>
 		public string GetPathFormArgs(IReadOnlyList<string> args, bool dbStyle = true)
 		{
-			if ( _appSettings == null ) throw new ArgumentNullException(nameof(_appSettings));
+			if ( _appSettings == null ) throw new FieldAccessException("use with _appsettings");
 			var path = string.Empty;
 			
 			for (int arg = 0; arg < args.Count; arg++)

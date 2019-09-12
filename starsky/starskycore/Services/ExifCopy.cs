@@ -9,9 +9,9 @@ namespace starskycore.Services
 {
 	public class ExifCopy
 	{
-		private IStorage _iStorage;
-		private IReadMeta _readMeta;
-		private IExifTool _exifTool;
+		private readonly IStorage _iStorage;
+		private readonly IReadMeta _readMeta;
+		private readonly IExifTool _exifTool;
 
 		public ExifCopy(IStorage iStorage, IExifTool exifTool, IReadMeta readMeta)
 		{

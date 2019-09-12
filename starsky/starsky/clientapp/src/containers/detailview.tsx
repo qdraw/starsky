@@ -47,7 +47,7 @@ const DetailView: React.FC<IDetailView> = () => {
     // Safari for iOS I don't need thumbnail rotation (for Mac it require rotation)
     if (new BrowserDetect().IsIOS()) {
       return;
-    };
+    }
     var statusCode: number = responseObject.statusCode;
     if (statusCode === 200) {
       setTranslateRotation(Orientation.Horizontal);
