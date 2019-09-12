@@ -19,10 +19,7 @@
 - []   Import page (without link)
 - []   Login in V2 layout
 
-# planned for 0.1.6
-- []   Trash page
-
-# version 0.1.6 - tbd
+# version 0.1.6 - 2019-09-12
 - __Breaking change__ the V1 layout is now at `/v1`
 - Add Renewed UI with most of the functionality of the old UI (default on)
   - [x]  Folder/Archive UI
@@ -42,6 +39,7 @@
   - [x]  Account page __Deprecated in V2 layout__
   - [x]  Login __is in V1 layout style__
   - [x]  Not Found page
+  - [x]  Trash page
 - Build CI changes to run Jest tests (1.2% coverage yet)
 - IE11 (Internet Explorer) is not working anymore with this application
 - Some older Safari, Chrome and Firefox browsers are not supported in the new layout
