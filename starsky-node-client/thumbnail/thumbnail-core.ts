@@ -287,7 +287,7 @@ export class Query {
 	public searchRequestOptions(searchQuery: string, pageNumber = 0) : AxiosRequestConfig {
 	
 		var indexRequestOptions : AxiosRequestConfig = this.requestOptions();
-		indexRequestOptions.url = this.base_url + "search"; //todo
+		indexRequestOptions.url = this.base_url + "api/search";
 		indexRequestOptions.params = {
 			t: searchQuery,
 			json: 'true',
