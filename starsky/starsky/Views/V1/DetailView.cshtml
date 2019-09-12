@@ -23,7 +23,7 @@
 			{
 				var args = new Dictionary<string, string> {{"f", @Model.RelativeObjects.PrevFilePath}};
 				args = args.Concat(@Model.RelativeObjects.Args).ToDictionary(kv => kv.Key, kv => kv.Value);
-				var urlPath = @Url.Action("Index", "Home",args);
+				var urlPath = @Url.Action("Index", "v1",args);
 				urlPath = HttpUtility.UrlDecode(urlPath);
 				urlPath = urlPath.Replace("+", "%2B");
 				<a class="prev" href="@urlPath">Vorige</a>
@@ -32,7 +32,7 @@
 			{
 				var args = new Dictionary<string, string> {{"f", @Model.RelativeObjects.NextFilePath}};
 				args = args.Concat(@Model.RelativeObjects.Args).ToDictionary(kv => kv.Key, kv => kv.Value);
-				var urlPath = @Url.Action("Index", "Home", args);
+				var urlPath = @Url.Action("Index", "v1", args);
 				urlPath = HttpUtility.UrlDecode(urlPath);
 				urlPath = urlPath.Replace("+", "%2B");
 				<a class="next" href="@urlPath">Volgende</a>
@@ -195,7 +195,7 @@
 							<div>
 								@foreach ( var collectionPath in @Model.FileIndexItem.CollectionPaths )
 								{
-									<a class="btn btn-default small" href="@Url.Action("Index", "Home", new {f = @collectionPath})">
+									<a class="btn btn-default small" href="@Url.Action("Index", "v1", new {f = @collectionPath})">
 										@ExtensionRolesHelper.MapFileTypesToExtension(@collectionPath)
 									</a>
 								}
@@ -222,7 +222,7 @@
         {
 	        var args = new Dictionary<string, string> {{"f", @Model.RelativeObjects.PrevFilePath}};
 	        args = args.Concat(@Model.RelativeObjects.Args).ToDictionary(kv => kv.Key, kv => kv.Value);
-            var urlPath = @Url.Action("Index", "Home", args);
+            var urlPath = @Url.Action("Index", "v1", args);
 	        urlPath = HttpUtility.UrlDecode(urlPath);
 	        urlPath = urlPath.Replace("+", "%2B");
             <a class="prev" href="@urlPath">Vorige</a>
@@ -255,7 +255,7 @@
         {
 	        var args = new Dictionary<string, string> {{"f", @Model.RelativeObjects.NextFilePath}};
 	        args = args.Concat(@Model.RelativeObjects.Args).ToDictionary(kv => kv.Key, kv => kv.Value);
-	        var urlPath = @Url.Action("Index", "Home", args);
+	        var urlPath = @Url.Action("Index", "v1", args);
 	        urlPath = HttpUtility.UrlDecode(urlPath);
 	        urlPath = urlPath.Replace("+", "%2B");
             <a class="next" href="@urlPath">Volgende</a>
@@ -271,7 +271,7 @@
                 name = "Home";
             }
 
-            var urlPath = @Url.Action("Index", "Home", new {f = @item});
+            var urlPath = @Url.Action("Index", "v1", new {f = @item});
             urlPath = urlPath.Replace("%2F", "/");
             <a href="@urlPath">@name</a>
 

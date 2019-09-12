@@ -11,11 +11,6 @@
     padding-top: 20px;
 }
 
-.search-header .menu-item {
-  list-style: none;
-}
-
-
 .search-header .form-inline .form-control {
     display: inline-block;
     vertical-align: middle;
@@ -36,6 +31,7 @@
 
 
 .search-header  .menu-item {
+  list-style: none;
   z-index: 6;
   position: relative;
   font-size: 16px;

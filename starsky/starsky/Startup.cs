@@ -228,18 +228,24 @@ namespace starsky
 	        {
 		        app.UseStaticFiles(new StaticFileOptions
 		        {
+			        OnPrepareResponse = ctx =>
+			        {
+				        ctx.Context.Response.Headers.Append("Cache-Control", "public, max-age=604800");
+			        },
 			        FileProvider = new PhysicalFileProvider(
 				        Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot"))
 		        });
 	        }
-
-			// "clientapp", "build", "static"
-
+	        
 			
 			if ( Directory.Exists(Path.Combine(env.ContentRootPath, "clientapp", "build", "static")) )
 			{
 				app.UseStaticFiles(new StaticFileOptions
 				{
+					OnPrepareResponse = ctx =>
+					{
+						ctx.Context.Response.Headers.Append("Cache-Control", "public, max-age=604800");
+					},
 					FileProvider = new PhysicalFileProvider(
 						Path.Combine(env.ContentRootPath, "clientapp", "build", "static")),
 						RequestPath = "/static"

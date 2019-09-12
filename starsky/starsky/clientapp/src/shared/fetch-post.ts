@@ -1,6 +1,6 @@
-const FetchPost = async (url: string, body: string): Promise<any> => {
+const FetchPost = async (url: string, body: string, method: 'post' | 'delete' = 'post'): Promise<any> => {
   const settings = {
-    method: 'POST',
+    method: method,
     body,
     headers: {
       'Accept': 'application/json',

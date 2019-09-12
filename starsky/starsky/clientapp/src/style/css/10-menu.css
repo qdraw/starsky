@@ -231,6 +231,10 @@
   }
 }
 
+.header .disabled.item:before {
+  background-color: #90A4AE;
+}
+
 .header > .wrapper > .item.item--labels,
 .header > .wrapper > .item.item--more,
 .header > .wrapper > .item.item--select,
@@ -239,6 +243,11 @@
   color: #fff;
   text-decoration: none;
   cursor: pointer;
+}
+
+.header > .wrapper > .item.item--more.disabled {
+  color: #90A4AE;
+  cursor: not-allowed;
 }
 
 .header .item.item--close:before {

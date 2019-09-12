@@ -156,7 +156,7 @@ export class URLPath {
   public updateFilePath(historyLocationHash: string, toUpdateFilePath: string): string {
     var url = new URLPath().StringToIUrl(historyLocationHash);
     url.f = toUpdateFilePath;
-    return "/beta" + new URLPath().IUrlToString(url);
+    return "/" + new URLPath().IUrlToString(url);
   }
 
   public toggleSelection(fileName: string, locationHash: string): IUrl {

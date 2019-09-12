@@ -1,6 +1,5 @@
 [< readme](readme.md)
 
-
 # Features planned (in random order)
 
 - []   Realtime Files API
@@ -11,20 +10,18 @@
 - []   Add unit tests for importing raw's with .xmp files
 - []   Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
 - []   Docker support, including backend abstractions to get the data (partly working)
-- []   XMP disable option when importing using a flag (used for copying photos)
 - []   Health view, to make more clear when paths are configured right
 - []   Health view, to make more clear when the server time is not correct
-
 
 ## Work in progress `/feature/201909-react`
 - []   Front-end for Rename files
 - []   Front-end for Replace API in folder view
-- []   Account page
-- []   Trash page
-- []   Import page
+- []   Import page (without link)
+- []   Login in V2 layout
 
-# version 0.1.5.10 - tbd
-- Add /beta Renewed UI with most of the functionality of the old UI
+# version 0.1.6 - 2019-09-12
+- __Breaking change__ the V1 layout is now at `/v1`
+- Add Renewed UI with most of the functionality of the old UI (default on)
   - [x]  Folder/Archive UI
   - [x]  Folder/Archive ColorClass filter UI
   - [x]  Folder/Archive Select UI
@@ -38,17 +35,31 @@
   - [x]  Cache-clean for folders in UI (under Display options)
   - [x]  Toggle for isSingleItem (under Display options)
   - [x]  Toggle for Collections view (under Display options)
+  - [x]  Import page __Has link to V1 layout__
+  - [x]  Account page __Deprecated in V2 layout__
+  - [x]  Login __is in V1 layout style__
+  - [x]  Not Found page
+  - [x]  Trash page
 - Build CI changes to run Jest tests (1.2% coverage yet)
-- IE11 and some older browsers are not supported on /beta
-- Added ExifStatus.Deleted including in ReplaceService
+- IE11 (Internet Explorer) is not working anymore with this application
+- Some older Safari, Chrome and Firefox browsers are not supported in the new layout
+- Added `ExifStatus.Deleted` including in `ReplaceService`
+- __Breaking API change__ from `/search/` to `/api/search`
+- __Breaking API change__ from `/search/trash` to `/api/search/trash`
 
 # version 0.1.5.9 - 2019-08-19
-- Entity Framework Add Indexes
-- __Breaking Change__  Entity Framework add Field for FocalLength
+- Entity Framework add database indexes
+- __Breaking Change__  Entity Framework add database Field for FocalLength
 
 # version 0.1.5.8 - 2019-08-14
-- Change Dot NET version to the `.Net Core 2.2` release
-- Rollback due Entity Framework performance issues with MySQL
+- Change Dot NET version to the `.Net Core 2.2` release (C# 7)
+- Rollback version due Entity Framework performance issues with MySQL
+- Swagger is enabled
+## The following changes from 0.1.5.7 are included in this release
+- __Breaking API change__ from `/account?json=true` to `/account/status` `api`
+- __Breaking API change__ from `/api/` to `/api/index`
+- Add support for command line -x or don't add xmp sidecar file
+- [x]   XMP disable option when importing using a flag (used for copying photos)
 
 # version 0.1.5.7 - 2019-08-09
 - Update Dot NET version to the `.Net Core 3 Preview 7` release
@@ -58,6 +69,7 @@
 - __Breaking API change__ from `/api/` to `/api/index`
 - __Known issue__ Swagger support is disabled
 - Add support for command line -x or don't add xmp sidecar file
+- [x]   XMP disable option when importing using a flag (used for copying photos)
 
 # version 0.1.5.6 - 2019-08-07
 - change '/api/info' to support readonly meta display
@@ -72,7 +84,7 @@
 - bugfix: `/api?f=detailView` pages are now working
 - suggestions are part of the warmup script
 - bugfix: spaces where not rendered correctly during the 'update' call in archive view
-- bugfix: you could login without password
+- __bugfix: you could login without password__
 
 # version 0.1.5.4 - 2019-04-24
 - fix: for readonly there is no TIFF label

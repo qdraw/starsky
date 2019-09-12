@@ -117,11 +117,13 @@ namespace starskycore.Models
                 if(checkIfExist) throw new FileNotFoundException("source image not found");
             }
             
-            var structuredFileName = Structure.Split("/".ToCharArray()).LastOrDefault();
-            if (structuredFileName == null) return null;
+            if (string.IsNullOrEmpty(Structure)) return null;
 
-            // Escape feature to Replace Astriks
-            structuredFileName = structuredFileName?.Replace("*", "");
+            var structuredFileName = Structure.Split("/".ToCharArray()).LastOrDefault();
+            if (string.IsNullOrEmpty(structuredFileName)) return null;
+
+            // Escape feature to replace asterisk
+            structuredFileName = structuredFileName.Replace("*", "");
 
             if (structuredFileName.Contains(".ext"))
             {

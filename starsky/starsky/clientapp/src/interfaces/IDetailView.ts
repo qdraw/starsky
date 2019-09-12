@@ -9,6 +9,7 @@ export enum PageType {
     ApplicationException = "ApplicationException" as any,
     NotFound = "NotFound" as any,
     Unauthorized = "Unauthorized" as any,
+    Trash = "Trash" as any,
 }
 
 

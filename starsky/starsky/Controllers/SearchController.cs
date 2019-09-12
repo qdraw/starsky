@@ -14,21 +14,8 @@ namespace starsky.Controllers
         {
             _search = search;
         }
-        
-	    /// <summary>
-	    /// Post a form to search and redirect to the first page (no json)
-	    /// </summary>
-	    /// <param name="t">search query</param>
-	    /// <returns>redirect to search page</returns>
-	    /// <response code="301">redirect to search page (no json)</response>
-	    [HttpPost("/search")]
-	    [ProducesResponseType(301)] // redirect
-	    public IActionResult IndexPost(string t)
-        {
-			return RedirectToAction("Index", new {t, p = 0 });
-        }
 
-	    /// <summary>
+        /// <summary>
 	    /// Gets the list of search results (cached)
 	    /// </summary>
 	    /// <param name="t">search query</param>
@@ -36,14 +23,13 @@ namespace starsky.Controllers
 	    /// <param name="json">enable json response</param>
 	    /// <returns>the search results</returns>
 	    /// <response code="200">the search results (enable json to get json results)</response>
-	    [HttpGet("/search")]
+	    [HttpGet("/api/search")]
 	    [ProducesResponseType(typeof(SearchViewModel),200)] // ok
-        public IActionResult Index(string t, int p = 0, bool json = false)
+        public IActionResult Index(string t, int p = 0)
         {
             // Json api && View()            
             var model = _search.Search(t, p);
-            if (json) return Json(model);
-            return View("Index", model);
+            return Json(model);
         }
 
 	    /// <summary>
@@ -51,16 +37,14 @@ namespace starsky.Controllers
 	    /// Caching is disabled on this api call
 	    /// </summary>
 	    /// <param name="p">page number</param>
-	    /// <param name="json">enable json response</param>
 	    /// <returns>the delete files results</returns>
 	    /// <response code="200">the search results (enable json to get json results)</response>
-	    [HttpGet("/search/trash")]
+	    [HttpGet("/api/search/trash")]
 	    [ProducesResponseType(typeof(SearchViewModel),200)] // ok
-        public IActionResult Trash(int p = 0, bool json = false)
+        public IActionResult Trash(int p = 0)
         {
             var model = _search.Search("!delete!", p, false);
-            if (json) return Json(model);
-            return View("Trash", model);
+	        return Json(model);
         }
 
 		/// <summary>
@@ -68,7 +52,7 @@ namespace starsky.Controllers
 		/// </summary>
 		/// <param name="t">search query</param>
 		/// <returns>status</returns>
-		[HttpPost("/search/removeCache")]
+		[HttpPost("/api/search/removeCache")]
 	    public IActionResult RemoveCache(string t = "")
 	    {
 		    var cache = _search.RemoveCache(t);

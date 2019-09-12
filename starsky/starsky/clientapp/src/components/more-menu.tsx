@@ -1,22 +1,23 @@
-import React, { memo } from 'react';
+import React from 'react';
 
-const MoreMenu: React.FunctionComponent<any> = memo((props) => {
+const MoreMenu: React.FunctionComponent = ({ children }) => {
   const [enabledMenu, setEnabledMenu] = React.useState(false);
 
   function toggle() {
+    if (!children) return;
     setEnabledMenu(!enabledMenu);
   }
+
   return (
-    <div className="item item--more" onClick={() => toggle()}>
+    <div className={!children ? "item item--more disabled" : "item item--more"} onClick={() => toggle()}>
       <span>Meer</span>
       <div onClick={() => toggle()} className={enabledMenu ? "menu-context" : "menu-context menu-context--hide"}>
         <ul className="menu-options">
-          {/* <li className="menu-option" onClick={() => { alert("hi"); }}>Back</li> */}
-          {props.children}
+          {children}
         </ul>
       </div>
     </div>
   );
-});
+}
 
 export default MoreMenu

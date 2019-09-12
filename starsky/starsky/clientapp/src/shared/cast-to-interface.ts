@@ -12,6 +12,9 @@ export class CastToInterface {
 
     let output: IDetailView = data;
     let pageType = PageType[output.pageType as keyof typeof PageType];
+    if (data.searchQuery && data.searchQuery === "!delete!") {
+      pageType = PageType.Trash;
+    }
     return pageType;
   }
 
@@ -20,7 +23,7 @@ export class CastToInterface {
       type: 'Archive',
     } as IMedia<'Archive'>
 
-    if (this.getPageType(data) === PageType.Archive || this.getPageType(data) === PageType.Search) {
+    if (this.getPageType(data) === PageType.Archive || this.getPageType(data) === PageType.Search || this.getPageType(data) === PageType.Trash) {
       media.data = data;
       return media;
     }
@@ -44,97 +47,5 @@ export class CastToInterface {
   InfoFileIndexArray = (data: any): Array<IFileIndexItem> => {
     return data as Array<IFileIndexItem>;
   }
-
-
-  // AppContainerState = (data: any): IAppContainerState => {
-  //   let appContainerState: IAppContainerState = data;
-  //   if (!appContainerState) {
-  //     return {
-  //       statusCode: 999,
-  //       status: ExifStatus.ServerFail,
-  //       FileIndexItems: newIFileIndexItemArray(),
-  //       path: '.',
-  //     };
-  //   }
-  //   return appContainerState;
-  // }
-
-  // fileIndexItemsDetailView = (data: any): Array<IFileIndexItem> => {
-  //   if (this.getPageType(data) !== PageType.DetailView) return new Array<IFileIndexItem>();
-  //   let DetailView: IDetailView = data;
-  //   return new Array<IFileIndexItem>(DetailView.fileIndexItem);
-  // }
-
-  // fileIndexItemsArchive = (data: any): Array<IFileIndexItem> => {
-  //   if (this.getPageType(data) !== PageType.Archive) return new Array<IFileIndexItem>();
-  //   let archive: IArchive = data;
-  //   // console.log(archive.fileIndexItems);
-  //   return archive.fileIndexItems;
-  // }
-
-  // AppContainerStateWithDefaults = (responseObject: Object | null): IAppContainerState => {
-  //   var fallBack = {
-  //     statusCode: 999,
-  //     status: ExifStatus.ServerFail,
-  //     FileIndexItems: newIFileIndexItemArray(),
-  //     path: '.',
-  //   };
-
-  //   if (!responseObject) {
-  //     return fallBack;
-  //   }
-
-  //   var response = new CastToInterface().AppContainerState(responseObject);
-  //   switch (response.status) {
-  //     case 404: {
-  //       return {
-  //         statusCode: 404,
-  //         FileIndexItems: newIFileIndexItemArray(),
-  //         status: ExifStatus.NotFoundNotInIndex
-  //       };
-  //     }
-  //     case 401: {
-  //       return {
-  //         statusCode: 401,
-  //         FileIndexItems: newIFileIndexItemArray(),
-  //         status: ExifStatus.Unauthorized
-  //       };
-  //     }
-  //     case 504: {
-  //       return {
-  //         statusCode: 504,
-  //         FileIndexItems: newIFileIndexItemArray(),
-  //         status: ExifStatus.ServerFail
-  //       };
-  //     }
-  //   }
-
-  //   let pageType = new CastToInterface().getPageType(response);
-
-  //   if (pageType === PageType.DetailView) {
-  //     console.log("those.setState >= DetailView");
-  //     return {
-  //       statusCode: 200,
-  //       PageType: PageType.DetailView,
-  //       FileIndexItems: new CastToInterface().fileIndexItemsDetailView(response),
-  //       detailView: response.detailView,
-  //       path: 'subPathdetailView',
-  //       status: ExifStatus.Ok
-  //     };
-  //   }
-  //   else if (pageType === PageType.Archive) {
-  //     console.log('response', response);
-
-  //     return {
-  //       statusCode: 200,
-  //       PageType: PageType.Archive,
-  //       FileIndexItems: new CastToInterface().fileIndexItemsArchive(response),
-  //       path: 'subPathArchive',
-  //       archive: response.archive,
-  //       status: ExifStatus.Ok
-  //     };
-  //   }
-  //   return fallBack;
-  // }
 
 }

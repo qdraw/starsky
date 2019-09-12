@@ -75,17 +75,16 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             className="item item--first item--close">Niks geselecteerd</a> : null}
           {select && select.length >= 1 ? <a onClick={() => { selectToggle() }}
             className="item item--first item--close">{select.length} geselecteerd</a> : null}
-
           {!select ? <div className="item item--select" onClick={() => { selectToggle() }}>
             Selecteer
             </div> : null}
+
           {select ? <div className="item item--labels" onClick={() => toggleLabels()}>Labels</div> : null}
 
           {!select ? <MoreMenu>
             <li className="menu-option disabled" onClick={() => { alert("Map maken werkt nog niet"); }}>Map maken</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
             <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>Weergave opties</li>
-
           </MoreMenu> : null}
 
           {/* In the select context there are more options */}

@@ -21,7 +21,6 @@ const MenuDetailView: React.FunctionComponent = () => {
     parentDirectory = detailView.fileIndexItem.parentDirectory;
   }
 
-
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
   useEffect(() => {
     var details = new URLPath().StringToIUrl(history.location.search).details;
@@ -48,8 +47,8 @@ const MenuDetailView: React.FunctionComponent = () => {
     setMarkedAsDeleted(getIsMarkedAsDeletedFromProps())
   }, [detailView]);
 
-  // Delete and Undo Delete
-  function DeleteFile() {
+  // Trash and Undo Trash
+  function TrashFile() {
     if (!detailView) return;
 
     var bodyParams = new URLSearchParams();
@@ -63,7 +62,7 @@ const MenuDetailView: React.FunctionComponent = () => {
       dispatch({ 'type': 'add', tags: "!delete!" });
       dispatch({ 'type': 'update', status: IExifStatus.Deleted });
     }
-    // Undo delete
+    // Undo trash
     else {
       bodyParams.set("fieldName", "tags");
       bodyParams.set("search", "!delete!");
@@ -89,7 +88,7 @@ const MenuDetailView: React.FunctionComponent = () => {
           <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Naam wijzigen</li>
-          <li className="menu-option" onClick={() => { DeleteFile(); }}>{!isMarkedAsDeleted ? "Weggooien" : "Undo Weggooien"}</li>
+          <li className="menu-option" onClick={() => { TrashFile(); }}>{!isMarkedAsDeleted ? "Weggooien" : "Undo Weggooien"}</li>
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Roteer naar rechts</li>
         </MoreMenu>
       </div>

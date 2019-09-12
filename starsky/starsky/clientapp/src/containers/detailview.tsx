@@ -120,7 +120,7 @@ const DetailView: React.FC<IDetailView> = () => {
     var url = new URLPath().StringToIUrl(history.location.search);
     url.f = toUpdateFilePath;
     url.details = isDetails;
-    return "/beta" + new URLPath().IUrlToString(url);
+    return "/" + new URLPath().IUrlToString(url);
   }
 
   function prev() {

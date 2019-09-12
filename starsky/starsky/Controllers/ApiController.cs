@@ -37,40 +37,7 @@ namespace starsky.Controllers
 
         }
 
-	    /// <summary>
-	    /// The database-view of a directory
-	    /// </summary>
-	    /// <param name="f">subPath</param>
-	    /// <param name="colorClass">filter on colorClass (use int)</param>
-	    /// <param name="json">to not show as webpage</param>
-	    /// <param name="collections">to combine files with the same name before the extension</param>
-	    /// <param name="hidedelete">ignore deleted files</param>
-	    /// <returns></returns>
-	    /// <response code="200">returns a list of items from the database</response>
-	    /// <response code="404">subpath not found in the database</response>
-	    /// <response code="401">User unauthorized</response>
-	    [HttpGet("/api/index")]
-		[Produces("application/json")]
-		[ProducesResponseType(typeof(ArchiveViewModel),200)]
-		[ProducesResponseType(404)]
-		public IActionResult Index(
-			string f = "/",
-			string colorClass = null,
-			bool json = true,
-			bool collections = true,
-			bool hidedelete = true
-		)
-		{
-			var homeController = new HomeController(_query, _appSettings)
-			{
-				ControllerContext =
-				{
-					HttpContext = HttpContext,
-				},
-				Url = Url
-			};
-			return homeController.Index(f, colorClass, json, collections, hidedelete);
-		}
+
 
 	    /// <summary>
         /// Show the runtime settings (allow AllowAnonymous)
@@ -638,13 +605,13 @@ namespace starsky.Controllers
         [ProducesResponseType(412)] // "cache disabled in config"
         [ProducesResponseType(400)] // "ignored, please check if the 'f' path exist or use a folder string to clear the cache"
         [ProducesResponseType(302)] // redirect back to the url
-        public IActionResult RemoveCache(string f = "/", bool json = false)
+        public IActionResult RemoveCache(string f = "/", bool json = true)
         {
             //For folder paths only
             if (!_appSettings.AddMemoryCache)
             {
 				Response.StatusCode = 412;
-				if(!json) return RedirectToAction("Index", "Home", new { f });
+				if(!json) return RedirectToAction("Index", "v1", new { f });
 				return Json("cache disabled in config");
             }
 
@@ -652,11 +619,11 @@ namespace starsky.Controllers
             if (singleItem != null && singleItem.IsDirectory)
             {
                 _query.RemoveCacheParentItem(f);
-                if(!json) return RedirectToAction("Index", "Home", new { f });
+                if(!json) return RedirectToAction("Index", "v1", new { f });
                 return Json("cache successful cleared");
             }
 
-            if(!json) return RedirectToAction("Index", "Home", new { f });
+            if(!json) return RedirectToAction("Index", "v1", new { f });
             return BadRequest("ignored, please check if the 'f' path exist or use a folder string to clear the cache");
         }
 

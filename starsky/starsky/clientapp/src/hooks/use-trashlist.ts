@@ -4,19 +4,17 @@ import { PageType } from '../interfaces/IDetailView';
 import { CastToInterface } from '../shared/cast-to-interface';
 import { Query } from '../shared/query';
 
-export interface ISearchList {
+export interface IuseTrashList {
   archive?: IArchive,
   pageType: PageType,
 }
 
-const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList | null => {
+const useTrashList = (pageNumber = 0): IuseTrashList | null => {
 
   const [archive, setArchive] = useState(newIArchive());
-  // const [detailView, setDetailView] = useState(newDetailView());
   const [pageType, setPageType] = useState(PageType.Loading);
-  // const [parent, setParent] = useState('/');
 
-  var location = query ? new Query().UrlQuerySearchApi(query, pageNumber) : undefined;
+  var location = new Query().UrlSearchTrashApi(pageNumber)
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -35,11 +33,8 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
           method: 'GET'
         });
 
-        if (res.status === 404) {
-          setPageType(PageType.NotFound);
-          return;
-        }
-        else if (res.status >= 400 && res.status <= 550) {
+
+        if (res.status >= 400 && res.status <= 550) {
           setPageType(PageType.ApplicationException);
           return;
         }
@@ -70,8 +65,6 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
     };
     return cleanup;
   }, [location]);
-  // detailView,
-  // parent
 
   return {
     archive,
@@ -79,4 +72,4 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
   };
 };
 
-export default useSearchList;
+export default useTrashList;

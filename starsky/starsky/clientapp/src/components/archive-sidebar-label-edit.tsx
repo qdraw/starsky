@@ -152,7 +152,7 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
             className={!archive.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
           </div>
 
-          {isInputEnabled && select.length !== 0 ? <button className="btn btn"
+          {isInputEnabled && select.length !== 0 ? <button className="btn btn--info"
             onClick={() => pushUpdate(false)}>Overschrijven</button> :
             <button disabled className="btn btn--default disabled" >Overschrijven</button>}
           {isInputEnabled && select.length !== 0 ?
