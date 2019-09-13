@@ -85,6 +85,10 @@ export class Query {
 
 			// To Display the query as is
 			if(!isFilePath) {
+				if(response.data.searchFor === undefined) {
+					console.log('<<< FATAL ERROR: >>> \n the field searchFor is missing in the API');
+					return;
+				}
 				process.stdout.write("¶øπ¶ ");
 				response.data.searchFor.forEach(search => {
 					process.stdout.write(search + ", ");
@@ -283,7 +287,7 @@ export class Query {
 	public searchRequestOptions(searchQuery: string, pageNumber = 0) : AxiosRequestConfig {
 	
 		var indexRequestOptions : AxiosRequestConfig = this.requestOptions();
-		indexRequestOptions.url = this.base_url + "search";
+		indexRequestOptions.url = this.base_url + "api/search";
 		indexRequestOptions.params = {
 			t: searchQuery,
 			json: 'true',
@@ -380,11 +384,10 @@ export class Query {
 						resolve(false);
 					}).catch(function (thrown : AxiosError) {
 						var errorMessage = 'upload failed: '+  thrown.config.url + " ";
-						if(thrown.response.status) {
+						if(thrown && thrown.response && thrown.response.status) {
 							errorMessage += thrown.response.status
 						}
 						console.log(errorMessage);
-						
 						resolve(false);
 					});
 				});
