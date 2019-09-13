@@ -51,11 +51,14 @@
   },
   "proxy": "http://localhost:5000",
   "devDependencies": {
+    "@types/enzyme": "^3.10.3",
     "@types/jest": "24.0.18",
     "@types/node": "12.7.2",
     "@types/reach__router": "^1.2.4",
     "@types/react": "16.9.2",
     "@types/react-dom": "16.9.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
     "typescript": "3.5.3"
   }
 }

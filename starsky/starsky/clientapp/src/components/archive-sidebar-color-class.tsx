@@ -10,6 +10,9 @@ interface IArchiveSidebarColorClassProps {
   isReadOnly: boolean,
 }
 
+/**
+ * Use for updating/writing multiple files with one colorClass label
+ */
 const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClassProps> = memo((archive) => {
   var history = useLocation();
 
