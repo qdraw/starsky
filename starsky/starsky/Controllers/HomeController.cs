@@ -1,16 +1,10 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using starskycore;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starskycore.Services;
-using starskycore.Models;
-using System.Net;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.Controllers
 {
 	[Authorize]
@@ -61,7 +55,7 @@ namespace starsky.Controllers
 			return PhysicalFile(_clientApp, "text/html");
 		}
 
-		private string CaseSensitiveRedirect(HttpRequest request)
+		internal string CaseSensitiveRedirect(HttpRequest request)
 		{
 			if ( request.Path.Value != request.Path.Value.ToLowerInvariant() )
 			{
