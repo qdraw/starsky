@@ -113,8 +113,8 @@ namespace starskytest.Helpers
         }
 
 	    [TestMethod]
-	    [ExpectedException(typeof(ArgumentNullException))]
-	    public void ArgsHelper_GetPathFormArgsTest_ArgumentNullException()
+	    [ExpectedException(typeof(FieldAccessException))]
+	    public void ArgsHelper_GetPathFormArgsTest_FieldAccessException()
 	    {
 		    // inject appsettings!
 		    var args = new List<string> {"-p", "/"}.ToArray();
