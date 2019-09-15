@@ -86,6 +86,7 @@ const MenuDetailView: React.FunctionComponent = () => {
         <div className="item item--labels" onClick={() => { toggleLabels() }}>Labels</div>
         <MoreMenu>
           <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
+          {!isDetails ? <li className="menu-option" onClick={() => { toggleLabels() }}>Labels</li> : null}
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Naam wijzigen</li>
           <li className="menu-option" onClick={() => { TrashFile(); }}>{!isMarkedAsDeleted ? "Weggooien" : "Undo Weggooien"}</li>
