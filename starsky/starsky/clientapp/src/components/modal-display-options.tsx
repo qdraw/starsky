@@ -37,13 +37,15 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   // todo: make a clear screen that the item is disabled
   const [removeCacheEnabled, setRemoveCacheEnabled] = React.useState(true);
   function removeCache() {
-    FetchGet("/api/RemoveCache?json=true&f=" + props.parentFolder)
+    var parentFolder = props.parentFolder ? props.parentFolder : "/";
+    FetchGet("/api/RemoveCache?json=true&f=" + parentFolder)
     setRemoveCacheEnabled(false)
   }
 
   const [forceSyncEnabled, setForceSyncEnabled] = React.useState(true);
   function forceSync() {
-    FetchGet("/sync/?f=" + props.parentFolder)
+    var parentFolder = props.parentFolder ? props.parentFolder : "/";
+    FetchGet("/sync/?f=" + parentFolder)
     setForceSyncEnabled(false);
   }
 
