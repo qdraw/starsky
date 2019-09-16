@@ -1,6 +1,5 @@
 import { mount, shallow } from "enzyme";
 import React from 'react';
-import { ArchiveContextProvider } from '../contexts/archive-context';
 import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import ArchiveSidebarColorClass from './archive-sidebar-color-class';
 
@@ -20,43 +19,43 @@ describe("ArchiveSidebarColorClass", () => {
       expect(wrapper.exists('.disabled')).toBeFalsy()
     });
 
-    it("not d2222isabled", () => {
+    // it("not d2222isabled", () => {
 
-      var a = wrapper.find('a.colorclass--1'); // .simulate('click');
+    //   var a = wrapper.find('a.colorclass--1'); // .simulate('click');
 
-      a.first().simulate('click'); // does nothing
-    });
-
-
-    it("not222 disabled", () => {
-
-      const setState = jest.fn();
-      const useStateSpy = jest.spyOn(React, 'useContext')
-      useStateSpy.mockImplementation((init) => [init, setState]);
-
-      const TestComponent = () => (
-        <ArchiveContextProvider>
-          <ArchiveSidebarColorClass fileIndexItems={newIFileIndexItemArray()} isReadOnly={false} />
-        </ArchiveContextProvider>
-      );
-
-      const element = mount(<TestComponent />);
-
-      expect(element.find('a.colorclass--1')).toBeTruthy()
-
-      // var dom: HTMLElement = element.find('a.colorclass--1').getDOMNode();
-      // dom.click();
-      // console.log(element.find('a.colorclass--1').html());
-
-      // Fake news
-      var a = element.find('a.colorclass--1'); // .simulate('click');
-
-      a.first().simulate('click');
-
-      expect(useStateSpy).toBeCalledTimes(2)
+    //   a.first().simulate('click'); // does nothing
+    // });
 
 
-    });
+    // it("not222 disabled", () => {
+
+    //   const setState = jest.fn();
+    //   const useStateSpy = jest.spyOn(React, 'useContext')
+    //   useStateSpy.mockImplementation((init) => [init, setState]);
+
+    //   const TestComponent = () => (
+    //     <ArchiveContextProvider>
+    //       <ArchiveSidebarColorClass fileIndexItems={newIFileIndexItemArray()} isReadOnly={false} />
+    //     </ArchiveContextProvider>
+    //   );
+
+    //   const element = mount(<TestComponent />);
+
+    //   expect(element.find('a.colorclass--1')).toBeTruthy()
+
+    //   // var dom: HTMLElement = element.find('a.colorclass--1').getDOMNode();
+    //   // dom.click();
+    //   // console.log(element.find('a.colorclass--1').html());
+
+    //   // Fake news
+    //   var a = element.find('a.colorclass--1'); // .simulate('click');
+
+    //   a.first().simulate('click');
+
+    //   expect(useStateSpy).toBeCalledTimes(2)
+
+
+    // });
 
 
   });
