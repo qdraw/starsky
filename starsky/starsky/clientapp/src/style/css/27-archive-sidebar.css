@@ -3,12 +3,6 @@
   width: calc(100% - 300px);
 }
 
-@media screen and (max-width: 600px) {
-  .archive.collapsed .content{
-    display: none;
-  }
-}
-
 .archive .sidebar {
   border-left: 1px solid #607D8B;
   width: 320px;
@@ -17,6 +11,7 @@
   right:0px;
   position: fixed;
   background-color: #fff;
+  z-index: 7;
 }
 
 .archive .box {

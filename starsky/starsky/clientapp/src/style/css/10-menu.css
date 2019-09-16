@@ -320,6 +320,7 @@
   top:0px;
   background-color: #90A4AE;
   line-height: 50px;
+  z-index: 7;
 }
 
 .header.header--sidebar.header--border-left {
