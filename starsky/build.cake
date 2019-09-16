@@ -117,6 +117,7 @@ Task("ClientTest")
 Task("Restore")
     .Does(() =>
     {
+        Environment.SetEnvironmentVariable("DOTNET_CLI_TELEMETRY_OPTOUT","true");
 
         // make a new list
         var restoreProjectNames = new List<string>(projectNames);
