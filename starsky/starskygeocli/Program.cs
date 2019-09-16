@@ -56,24 +56,24 @@ namespace starskyGeoCli
         inputPath = appSettings.DatabasePathToFilePath(getSubPathRelative);
       }
 
-			// used in this session to find the files back
-			appSettings.StorageFolder = inputPath;
-			var storage = new StorageSubPathFilesystem(appSettings);
+      // used in this session to find the files back
+      appSettings.StorageFolder = inputPath;
+      var storage = new StorageSubPathFilesystem(appSettings);
 
-			if ( storage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
-	    {
-		    Console.WriteLine($"Folder location is not found \nPlease try the `-h` command to get help ");
-		    return;
-	    }
+      if ( storage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
+      {
+	      Console.WriteLine($"Folder location is not found \nPlease try the `-h` command to get help ");
+	      return;
+      }
 
-	    // use relative to StorageFolder
-	    var listOfFiles = storage.GetAllFilesInDirectory("/")
-		    .Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
+      // use relative to StorageFolder
+      var listOfFiles = storage.GetAllFilesInDirectory("/")
+	      .Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
-	    var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
+      var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
 
-			var toMetaFilesUpdate = new List<FileIndexItem>();
-	    if (new ArgsHelper().GetIndexMode(args))
+      var toMetaFilesUpdate = new List<FileIndexItem>();
+      if (new ArgsHelper().GetIndexMode(args))
       {
         Console.WriteLine($"CameraTimeZone: {appSettings.CameraTimeZone}");
 				Console.WriteLine($"Folder: {inputPath}");
@@ -84,24 +84,24 @@ namespace starskyGeoCli
 		    Console.Write("(gps added)");
       }
 
-			fileIndexList = new GeoReverseLookup(appSettings).LoopFolderLookup(fileIndexList,new ArgsHelper().GetAll(args));
-	    if ( fileIndexList.Count >= 1 )
-	    {
-		    Console.Write("~ Add city, state and country info ~");
-		    new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(fileIndexList,true);
-	    }
-	    Console.Write("^\n");
+      fileIndexList = new GeoReverseLookup(appSettings).LoopFolderLookup(fileIndexList,new ArgsHelper().GetAll(args));
+      if ( fileIndexList.Count >= 1 )
+      {
+	      Console.Write("~ Add city, state and country info ~");
+	      new GeoLocationWrite(appSettings,startupHelper.ExifTool()).LoopFolder(fileIndexList,true);
+      }
+      Console.Write("^\n");
 
-	    // Loop though all options
-	    fileIndexList.AddRange(toMetaFilesUpdate);
+      // Loop though all options
+      fileIndexList.AddRange(toMetaFilesUpdate);
 
-	    // update thumbs to avoid unnesseary re-generation
-	    foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First()).ToList() )
-	    {
-		    var newThumb = new FileHash(storage).GetHashCode(item.FilePath);
-				storage.ThumbnailMove(item.FileHash,newThumb);
-		    if ( appSettings.Verbose ) Console.WriteLine("thumb+ `"+ item.FileHash + "`"+ newThumb);
-	    }
+      // update thumbs to avoid unnecessary re-generation
+      foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First()).ToList() )
+      {
+	      var newThumb = new FileHash(storage).GetHashCode(item.FilePath);
+	      storage.ThumbnailMove(item.FileHash,newThumb);
+	      if ( appSettings.Verbose ) Console.WriteLine("thumb+ `"+ item.FileHash + "`"+ newThumb);
+      }
     }
   }
 }
