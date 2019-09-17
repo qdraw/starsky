@@ -524,7 +524,7 @@ namespace starskycore.Services
 	    /// The amount of search results on one single page
 	    /// Including the trash page
 	    /// </summary>
-        private const int NumberOfResultsInView = 20;
+        private const int NumberOfResultsInView = 120;
 
 	    /// <summary>
 	    /// Get the last page number

@@ -37,7 +37,11 @@ namespace starskytest.Services
             _search = new SearchService(_dbContext);
             _query = new Query(_dbContext,_memoryCache);
         }
+	    
+	    private const int NumberOfResultsInView = 120;
+	    private const int NumberOfFakeResults = 241;
 
+	    
         public void InsertSearchData()
         {
             if (string.IsNullOrEmpty(_query.GetSubPathByHash("schipholairplane")))
@@ -105,9 +109,9 @@ namespace starskytest.Services
 
             if (string.IsNullOrEmpty(_query.GetSubPathByHash("cityloop9")))
             {
-                for (var i = 0; i < 61; i++)
+                for (var i = 0; i < NumberOfFakeResults; i++)
                 {
-                    // 61 > used for three pages
+                    // NumberOfFakeResults > used for three pages
                     _query.AddItem(new FileIndexItem
                     {
                         FileName = "cityloop" + i + ".jpg",
@@ -115,6 +119,7 @@ namespace starskytest.Services
                         ParentDirectory = "/cities",
                         FileHash = "cityloop" + i,
                         Tags = "cityloop",
+                        Id = 5000 + i,
                         DateTime = new DateTime(2018,1,1,1,1,1)
                     });
                 }
@@ -198,7 +203,7 @@ namespace starskytest.Services
         public void SearchService_SearchLastPageCityloopTest()
         {
             InsertSearchData();
-            Assert.AreEqual(3, _search.Search("cityloop").LastPageNumber);
+            Assert.AreEqual(2, _search.Search("cityloop").LastPageNumber);
         }
 	    
 	    
@@ -220,7 +225,7 @@ namespace starskytest.Services
 	    public void SearchService_SearchForDatetimeGreaterThen()
 	    {
 		    InsertSearchData();
-		    Assert.AreEqual(62, _search.Search("-Datetime>\"2018-01-01 01:01:01\"").SearchCount);
+		    Assert.AreEqual(NumberOfFakeResults+1, _search.Search("-Datetime>\"2018-01-01 01:01:01\"").SearchCount);
 	    }
 
         [TestMethod]
@@ -257,7 +262,7 @@ namespace starskytest.Services
         public void SearchService_SearchCityloopTest()
         {
             InsertSearchData();
-            Assert.AreEqual(61, _search.Search("cityloop").SearchCount);
+            Assert.AreEqual(NumberOfFakeResults, _search.Search("cityloop").SearchCount);
         }
         
         [TestMethod]
@@ -309,7 +314,7 @@ namespace starskytest.Services
         {
              InsertSearchData();
              //    Check case sensitive!
-             Assert.AreEqual(61, _search.Search("CityLoop").SearchCount);
+             Assert.AreEqual(NumberOfFakeResults, _search.Search("CityLoop").SearchCount);
         }
 
         [TestMethod]
@@ -317,28 +322,28 @@ namespace starskytest.Services
         {
             // Test TRIM
             InsertSearchData();
-            Assert.AreEqual(61, _search.Search("   cityloop    ").SearchCount);
+            Assert.AreEqual(NumberOfFakeResults, _search.Search("   cityloop    ").SearchCount);
         }
         
         [TestMethod]
         public void SearchService_SearchCityloopFilePathTest()
         {
             InsertSearchData();
-            Assert.AreEqual(61, _search.Search("-FilePath:cityloop").SearchCount);
+            Assert.AreEqual(NumberOfFakeResults, _search.Search("-FilePath:cityloop").SearchCount);
         }
         
         [TestMethod]
         public void SearchService_SearchCityloopFileNameTest()
         {
             InsertSearchData();
-            Assert.AreEqual(61, _search.Search("-FilePath:cityloop").SearchCount);
+            Assert.AreEqual(NumberOfFakeResults, _search.Search("-FilePath:cityloop").SearchCount);
         }
         
         [TestMethod]
         public void SearchService_SearchCityloopParentDirectoryTest()
         {
             InsertSearchData();
-            Assert.AreEqual(61, _search.Search("-ParentDirectory:/cities").SearchCount);
+            Assert.AreEqual(NumberOfFakeResults, _search.Search("-ParentDirectory:/cities").SearchCount);
         }
 	    
 	    
@@ -537,7 +542,7 @@ namespace starskytest.Services
         [TestMethod]
         public void SearchService_RoundUpTest()
         {
-            Assert.AreEqual(_search.RoundUp(8),20); // NumberOfResultsInView
+            Assert.AreEqual(_search.RoundUp(8),120); // NumberOfResultsInView
         }
 
 
@@ -755,22 +760,6 @@ namespace starskytest.Services
 		    // defaults to today
 		    Assert.AreEqual(DateTime.Parse("2018-09-11"),p);
 	    }
-	    
-//	    [TestMethod]
-//	    public void SearchService_DoubleSearchOnOnlyDay()
-//	    {
-//		    InsertSearchData();
-//
-//		    var item = _search.Search("-DateTime=2016-01-01 || -DateTime=0");
-//		    // This are actually four queries
-//		    
-//		    // todo: test FAIL
-//		    // Assert.AreEqual failed. Expected:<2>. Actual:<0>. 
-//		    Assert.AreEqual(2, item.SearchCount);
-//	    }
-
-	    // "lelystadcentrum -lelystadcentrum2"
-//			var result = _search.Search("lelystadcentrum -lelystadcentrum2");
 	    
 		[TestMethod]
 		public void SearchService_NotSingleKeywordsSearch()
