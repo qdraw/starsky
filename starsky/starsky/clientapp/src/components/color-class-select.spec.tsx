@@ -1,35 +1,75 @@
-import { shallow } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import React from 'react';
 import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { Query } from '../shared/query';
 import ColorClassSelect from './color-class-select';
 
 describe("ArchiveSidebarColorClass", () => {
+
   it("renders", () => {
     shallow(<ColorClassSelect isEnabled={true} filePath={"/test"} onToggle={() => { }}></ColorClassSelect>)
   });
 
-  it("onClick value return", (done) => {
+  afterEach
 
-    var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test"} onToggle={(value) => {
-      expect(value).toBe(1);
-      done();
-    }}></ColorClassSelect>)
+  it("onClick value return", () => {
+    const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
+    var spy = jest.spyOn(Query.prototype, 'queryUpdateApi').mockImplementationOnce(() => mockFetchAsXml);
 
-    wrapper.find('a.colorclass--1').simulate('click');
+    var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }}></ColorClassSelect>)
 
+    wrapper.find('a.colorclass--2').simulate('click');
+
+    // expect
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith("/test1", "colorClass", "2");
+
+    // Cleanup: To avoid that mocks are shared
+    spy.mockClear();
   });
 
   it("onClick value return keypress", () => {
-    const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
-    // jest.spyOn(Query.prototype, 'queryUpdateApi').mockImplementationOnce(() => mockFetchAsXml);
+
+    const mockDismissCallback = jest.fn();
+    document.addEventListener('keydown', mockDismissCallback)
+
+    const onToggle = jest.fn();
+
+    const root = document.createElement('div');
+    document.body.appendChild(root);
+    const wrapper = mount(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test2"} onToggle={onToggle}></ColorClassSelect>, { attachTo: root });
+
+    const event = new KeyboardEvent('keydown', { keyCode: 49, bubbles: true } as KeyboardEventInit);
+    const targetNode = wrapper.getDOMNode();
+    document.dispatchEvent(event);
+
+    console.log(document.body.innerHTML);
 
 
+    // expect(onToggle).toHaveBeenCalledTimes(1);
 
-    // var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test"} onToggle={(value) => {
-    //   expect(value).toBe(1);
-    //   done();
+    // const KEYBOARD_ESCAPE_CODE = 49;
+    // const mockDismissCallback = jest.fn();
+
+
+    // var wrapper = mount(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test2"} onToggle={mockDismissCallback}></ColorClassSelect>)
+
+    // var element = wrapper.getDOMNode() as HTMLElement;
+    // const event = new window.KeyboardEvent('keydown', { keyCode: 27, bubbles: true } as KeyboardEventInit);
+    // document.dispatchEvent(event);
+
+    // expect(mockDismissCallback).toHaveBeenCalled();
+
+    // // const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
+    // // var spy = jest.spyOn(Query.prototype, 'queryUpdateApi').mockImplementationOnce(() => mockFetchAsXml);
+
+    // var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test2"} onToggle={(value) => {
+    //   console.log(value);
+    //   done()
     // }}></ColorClassSelect>)
-    // wrapper.simulate('keydown', { keyCode: 49 }); // keyCode === 1
+    // wrapper.simulate('keydown', { keyCode: 49 }); // keyCode 49 === 1
 
+    // // expect(spy).toHaveBeenCalledTimes(1);
+    // // expect(spy).toHaveBeenCalledWith("/test", "colorClass", "1");
   });
 });
