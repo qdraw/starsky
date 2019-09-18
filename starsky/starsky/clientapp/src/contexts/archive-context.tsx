@@ -123,7 +123,7 @@ function ArchiveContextProvider({ children }: ReactNodeProps) {
 let ArchiveContextConsumer = ArchiveContext.Consumer;
 
 // [C]
-export { IContext, ArchiveContext, ArchiveContextProvider, ArchiveContextConsumer };
+export { ArchiveContext, ArchiveContextProvider, ArchiveContextConsumer };
 
 // exporter
 export const useArchiveContext = () => React.useContext(ArchiveContext)
