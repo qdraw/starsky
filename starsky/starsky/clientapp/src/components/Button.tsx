@@ -23,7 +23,6 @@ const Button: React.FunctionComponent<IButtonProps> = memo((props) => {
     <button
       type={props.type || 'button'}
       disabled={props.disabled}
-      // disabled={props.disabled || loading}
       className={props.className}
     // onClick={onClickHandler}
     >
