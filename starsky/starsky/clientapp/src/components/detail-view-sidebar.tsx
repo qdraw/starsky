@@ -149,14 +149,15 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
     <div className="content--text">
 
-      {isValidDate(fileIndexItem.dateTime) ? <div className="box">
-        <div className="icon icon--date"></div>
-        <b>{parseDate(fileIndexItem.dateTime)}</b>
-        <p>{parseTime(fileIndexItem.dateTime)}</p>
-      </div> : ""}
-
       {isValidDate(fileIndexItem.dateTime) ?
-        <div className="box">
+        <div className="box" data-test="dateTime">
+          <div className="icon icon--date"></div>
+          <b>{parseDate(fileIndexItem.dateTime)}</b>
+          <p>{parseTime(fileIndexItem.dateTime)}</p>
+        </div> : ""}
+
+      {isValidDate(fileIndexItem.lastEdited) ?
+        <div className="box" data-test="lastEdited">
           <div className="icon icon--last-edited"></div>
           <b>{parseRelativeDate(fileIndexItem.lastEdited)}</b>
           <p>geleden bewerkt</p>
