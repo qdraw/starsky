@@ -19,6 +19,9 @@
 - []   Import page (without link)
 - []   Login in V2 layout
 
+# version 0.1.6.1 - tbd
+- Nothing yet
+
 # version 0.1.6 - 2019-09-12
 - __Breaking change__ the V1 layout is now at `/v1`
 - Add Renewed UI with most of the functionality of the old UI (default on)
@@ -46,6 +49,7 @@
 - Added `ExifStatus.Deleted` including in `ReplaceService`
 - __Breaking API change__ from `/search/` to `/api/search`
 - __Breaking API change__ from `/search/trash` to `/api/search/trash`
+- __API change__ change number of search results per page from 20 to 120
 
 # version 0.1.5.9 - 2019-08-19
 - Entity Framework add database indexes
