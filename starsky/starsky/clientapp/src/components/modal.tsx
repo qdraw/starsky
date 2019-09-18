@@ -29,7 +29,7 @@ export default function Modal({
     modal.current.id = id;
 
     if (!document.body.querySelector(`#${id}`)) {
-      document.body.prepend(modal.current);
+      document.body.insertBefore(modal.current, document.body.firstChild);
     }
 
     if (!hasUpdated) forceUpdate(true);
