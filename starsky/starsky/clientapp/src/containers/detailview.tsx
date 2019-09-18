@@ -142,8 +142,7 @@ const DetailView: React.FC<IDetailView> = () => {
     <div className={isDetails ? "detailview detailview--edit" : "detailview"}>
       {isLoading ? <Preloader parent={state.fileIndexItem.parentDirectory} isDetailMenu={true} isOverlay={true}></Preloader> : ""}
 
-      {isDetails ? <DetailViewSidebar status={state.fileIndexItem.status}
-        fileIndexItem={state.fileIndexItem} filePath={state.fileIndexItem.filePath}></DetailViewSidebar> : null}
+      {isDetails ? <DetailViewSidebar status={state.fileIndexItem.status} filePath={state.fileIndexItem.filePath}></DetailViewSidebar> : null}
 
       <div className={isError ? "main main--error" : "main main--" + state.fileIndexItem.imageFormat}>
 
