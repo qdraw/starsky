@@ -60,6 +60,7 @@ const localtunnel = require('localtunnel');
 
   // the assigned public url for your tunnel
   // i.e. https://abcdefgjhij.localtunnel.me
+  console.log("Your localtunnel is ready on:");
   console.log(tunnel.url);
 
   tunnel.on('close', () => {
