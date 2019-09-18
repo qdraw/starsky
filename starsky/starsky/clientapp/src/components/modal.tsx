@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import capturePosition from '../hooks/use-capture-position';
 
 type ModalPropTypes = {
   children: React.ReactNode;
@@ -44,23 +45,6 @@ export default function Modal({
   React.useEffect(() => {
     const rootContainer = document.querySelector(`#${root}`);
     const modalContainer = document.querySelector(`#${id}`);
-
-    const capturePosition = () => {
-      const cachedPosition = window.pageYOffset;
-      return {
-        freeze: () => {
-          // @ts-ignore
-          document.body.style =
-            `position: fixed; top: ${cachedPosition * -1}px; width: 100%;`;
-        },
-        unfreeze: () => {
-          document.body.removeAttribute("style");
-          window.scrollTo({
-            top: cachedPosition
-          });
-        }
-      };
-    };
 
     const toggleTabIndex = (type: "on" | "off", container: Element) => {
       const focusableElements = container.querySelectorAll(

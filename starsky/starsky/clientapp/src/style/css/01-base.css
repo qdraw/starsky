@@ -92,13 +92,14 @@ body {
     height: 100%;
 }
 
-html.no-scroll {
-    overflow: hidden;
-}
-
-body.no-scroll {
-    overflow: visible;
-    height: 100%;
+@media screen and (max-width: 600px) {
+    body.lock-screen {
+        position: fixed;
+        touch-action: none;
+    }
+    body.lock-screen .archive .content {
+        pointer-events: none;
+    }
 }
 
 #root,
