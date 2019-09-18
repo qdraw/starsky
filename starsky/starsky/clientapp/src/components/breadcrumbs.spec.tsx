@@ -3,7 +3,7 @@ import React from 'react';
 import Breadcrumb from './breadcrumbs';
 
 
-describe("Breadcrumbs", () => {
+describe("Breadcrumb", () => {
   it("renders", () => {
     shallow(<Breadcrumb subPath="/" breadcrumb={["/"]} />)
   });

@@ -4,7 +4,7 @@ import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndex
 import { Query } from '../shared/query';
 import ColorClassSelect from './color-class-select';
 
-describe("ArchiveSidebarColorClass", () => {
+describe("ColorClassSelect", () => {
 
   it("renders", () => {
     shallow(<ColorClassSelect isEnabled={true} filePath={"/test"} onToggle={() => { }}></ColorClassSelect>)
