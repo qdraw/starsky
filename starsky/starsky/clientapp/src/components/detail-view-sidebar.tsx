@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef } from "react";
-import { DetailViewContext } from '../contexts/detailview-context';
+import { useDetailViewContext } from '../contexts/detailview-context';
 import useFetch from '../hooks/use-fetch';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import { IExifStatus } from '../interfaces/IExifStatus';
@@ -16,7 +16,7 @@ interface IDetailViewSidebarProps {
 
 const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((props) => {
 
-  let { state, dispatch } = React.useContext(DetailViewContext);
+  let { state, dispatch } = useDetailViewContext();
 
   const [fileIndexItem, setFileIndexItem] = React.useState(state ? state.fileIndexItem : { status: IExifStatus.ServerError } as IFileIndexItem);
   useEffect(() => {
