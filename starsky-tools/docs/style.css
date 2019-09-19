@@ -379,7 +379,7 @@ h2 {
 }
 h3 {
     font-weight: 300;
-    font-size: 20px;
+    font-size: 22px;
     -webkit-hyphens: auto;
     -ms-hyphens: auto;
     hyphens: auto;
@@ -390,6 +390,7 @@ h4 {
     -webkit-hyphens: auto;
     -ms-hyphens: auto;
     hyphens: auto;
+    font-size: 18px;
 }
 
 .container .entry-content code {
@@ -420,7 +421,7 @@ pre code {
 
 .container .entry-content strong {
     font-weight: 300;
-
+    /* font-weight: bold; */
 }
 .container .entry-content ul > li {
     list-style: square;
