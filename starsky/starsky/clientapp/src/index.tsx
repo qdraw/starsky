@@ -12,7 +12,6 @@ import RouterApp from './routes/router';
 import * as serviceWorker from "./service-worker";
 import './style/css/00-index.css';
 
-
 ReactDOM.render(
   <RouterApp />,
   document.getElementById('root'),
