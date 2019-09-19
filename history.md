@@ -21,7 +21,8 @@
 
 # version 0.1.6.1 - tbd
 - (V2 UI) LastEdited is now also shown when there is no Datetime
-
+- (bugfix) after account is created the redirect to a 404 page
+- (bugfix) (layout v1) import to the right controller
 
 # version 0.1.6 - 2019-09-12
 - __Breaking change__ the V1 layout is now at `/v1`
