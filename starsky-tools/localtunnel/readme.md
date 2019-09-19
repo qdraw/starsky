@@ -1,4 +1,4 @@
-[< starsky/starsky-node-client docs](../readme.md)
+[< starsky/starsky-tools docs](../readme.md)
 
 ## localtunnel
 

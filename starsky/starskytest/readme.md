@@ -11,7 +11,7 @@
     * [starskycore](../../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
     * __[starskyTest](../../starsky/starskytest/readme.md)  mstest unit tests__
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
- * [starsky-node-client](../../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
+ * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
 ## starsky/starskyTest docs

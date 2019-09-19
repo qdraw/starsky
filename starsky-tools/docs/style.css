@@ -49,6 +49,9 @@ html {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch; }
 
+a {
+  color:#263238
+}
   /* HEADER */
   /* MENU */
 
@@ -298,21 +301,21 @@ html {
   font-family: 'Gloriola Std';
   font-style: normal;
   font-weight: 100;
-  src: local("Gloriola Std Light"), local("Gloriola-Std-Light"), url(fonts/GloriolaStd-Light.woff2) format("woff2"), url(../fonts/GloriolaStd-Light.woff) format("woff");
+  src: local("Gloriola Std Light"), local("Gloriola-Std-Light"), url(../GloriolaStd-Light.woff2) format("woff2"), url(../GloriolaStd-Light.woff) format("woff");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
 
 @font-face {
   font-family: 'Gloriola Std';
   font-style: normal;
   font-weight: 300;
-  src: local("Gloriola Std Medium"), local("Gloriola-Std-Medium"), url(fonts/GloriolaStd-Medium.woff2) format("woff2"), url(../fonts/GloriolaStd-Medium.woff) format("woff");
+  src: local("Gloriola Std Medium"), local("Gloriola-Std-Medium"), url(../GloriolaStd-Medium.woff2) format("woff2"), url(../GloriolaStd-Medium.woff) format("woff");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
 
 @font-face {
   font-family: 'Gloriola Std';
   font-style: normal;
   font-weight: 800;
-  src: local("Gloriola Std Bold"), local("Gloriola-Std-Bold"), url(fonts/GloriolaStd-Bold.woff2) format("woff2"), url(../fonts/GloriolaStd-Bold.woff) format("woff");
+  src: local("Gloriola Std Bold"), local("Gloriola-Std-Bold"), url(../GloriolaStd-Bold.woff2) format("woff2"), url(../GloriolaStd-Bold.woff) format("woff");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
 
 

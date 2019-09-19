@@ -27,7 +27,7 @@ var prefixPath = "../../";
 var filePathList = [
 	"readme.md",
 	"history.md",
-	"starsky-node-client/readme.md",
+	"starsky-tools/readme.md",
 	"inotify-settings/readme.md",
 	"starsky/readme.md",
 	"starsky/starsky/readme.md",
@@ -41,10 +41,10 @@ var filePathList = [
 	"starsky/starskywebhtmlcli/readme.md",
 	"starsky.netframework/readme.md",
 	"starskyapp/readme.md",
-	"starsky-node-client/docs/readme.md",
-	"starsky-node-client/mail/readme.md",
-	"starsky-node-client/localtunnel/readme.md",
-	"starsky-node-client/sync/readme.md"
+	"starsky-tools/docs/readme.md",
+	"starsky-tools/mail/readme.md",
+	"starsky-tools/localtunnel/readme.md",
+	"starsky-tools/sync/readme.md"
 ];
 
 var blobPathList = [
@@ -52,7 +52,6 @@ var blobPathList = [
 	"starsky/publish-linux-arm.sh",
 	"starsky/publish-mac.sh",
 	"starsky/publish-windows.sh",
-	// "starsky/tools/starsky-warmup.sh"
 ];
 
 // create dirs

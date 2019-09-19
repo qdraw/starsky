@@ -1,4 +1,4 @@
-[< starsky/starsky-node-client docs](../readme.md)
+[< starsky/starsky-tools docs](../readme.md)
 
 ## Node Mail Docs
 The goal is to auto download gpx files from gmail and import them into Starksy
