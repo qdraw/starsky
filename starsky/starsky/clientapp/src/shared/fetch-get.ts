@@ -1,6 +1,7 @@
 const FetchGet = async (url: string): Promise<any> => {
   const settings = {
     method: 'GET',
+    credentials: "include" as RequestCredentials,
     headers: {
       'Accept': 'application/json',
     }

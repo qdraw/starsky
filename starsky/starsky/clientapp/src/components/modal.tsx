@@ -1,3 +1,4 @@
+import 'core-js/features/dom-collections/for-each';
 import React from "react";
 import ReactDOM from "react-dom";
 import capturePosition from '../hooks/use-capture-position';
