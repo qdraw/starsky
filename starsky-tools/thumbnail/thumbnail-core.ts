@@ -1,19 +1,41 @@
 
-// var path = require('path');
 import { AxiosError, AxiosRequestConfig, AxiosResponse, default as axios, default as Axios } from 'axios';
 import { TaskQueue } from 'cwait';
-// var fs = require('fs');
 import * as fs from 'fs';
 import jimp from 'jimp';
 import * as path from 'path';
 import { IResults } from "./IResults";
 
-
-
-
 var execFile = require('child_process').execFile;
 var exiftool = require('dist-exiftool');
 
+export class Parser {
+	public parseRanges(args: string[]): string[] {
+		var start = Number(args[0].split("-")[0]);
+		var end = Number(args[0].split("-")[1]);
+
+		if (isNaN(start) || isNaN(end)) {
+			console.log("Use numbers in a range (now searching for " + args[0] + ")");
+			return [args[0]];
+		}
+
+		if (start >= end) {
+			console.log(">> Rejected << Use the lowest value first");
+			return [];
+		}
+
+		var queries = [];
+		for (let index = start; index <= end; index++) {
+			if (index === 0) {
+				// Search for today (use 0)
+				queries.push("-Datetime>0 -ImageFormat:jpg -!delete");
+				continue;
+			}
+			queries.push("-Datetime>" + index + " -Datetime<" + (index - 1) + " -ImageFormat:jpg -!delete")
+		}
+		return queries;
+	}
+}
 
 export class Query {
 	base_url: string;

@@ -2,7 +2,7 @@
 
 import { TaskQueue } from 'cwait';
 import * as path from 'path';
-import { Query } from './thumbnail-core';
+import { Parser, Query } from './thumbnail-core';
 require('dotenv').config({ path: path.join(__dirname, "../", ".env") });
 
 var base_url = process.env.STARKSYBASEURL;
@@ -19,32 +19,6 @@ function ShowHelpDialog() {
 	console.log("use a keyword to search and check if thumbnails are created")
 }
 
-function parseRanges(args: string[]): string[] {
-	var start = Number(args[0].split("-")[0]);
-	var end = Number(args[0].split("-")[1]);
-
-	if (isNaN(start) || isNaN(end)) {
-		console.log("Use numbers in a range (now searching for " + args[0] + ")");
-		return [args[0]];
-	}
-
-	if (start >= end) {
-		console.log(">> Rejected << Use the lowest value first");
-		return [];
-	}
-
-	var queries = [];
-	for (let index = start; index <= end; index++) {
-		if (index === 0) {
-			// Search for today (use 0)
-			queries.push("-Datetime>0 -ImageFormat:jpg -!delete");
-			continue;
-		}
-		queries.push("-Datetime>" + index + " -Datetime<" + (index - 1) + " -ImageFormat:jpg -!delete")
-	}
-	return queries;
-}
-
 function parseArgs(): string[] {
 	var args = process.argv.slice(2);
 	if (args.length >= 1) {
@@ -55,7 +29,7 @@ function parseArgs(): string[] {
 			ShowHelpDialog();
 		}
 		else if (isRange && args[0].split("-").length === 2) {
-			return parseRanges(args);
+			return new Parser().parseRanges(args);
 		}
 		if (isNaN(parsedInt)) {
 			return [args[0]];
@@ -117,7 +91,6 @@ function runQueryChain(index = 0, searchQueries: string[]) {
 			}
 		)));
 
-
 		// and clean afterwards
 		query.deleteSourceTempFolder(filteredAxiosResponses);
 		query.deleteTempFolder(filteredAxiosResponses);
@@ -133,4 +106,3 @@ function runQueryChain(index = 0, searchQueries: string[]) {
 	})
 
 }
-
