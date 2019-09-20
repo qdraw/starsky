@@ -381,6 +381,14 @@ namespace starskycore.ViewModels
 		    {
 			    if ( string.IsNullOrEmpty(regexInUrl.Value) ) continue;
 
+			    if ( regexInUrl.Value.Length <= 2 )
+			    {
+				    SetAddSearchForOptions("=");
+				    SetAddSearchFor(regexInUrl.Value);
+				    SetAddSearchInStringType("tags");
+				    continue;
+			    }
+			    
 			    var startIndexer = regexInUrl.Index;
 			    var startLength = regexInUrl.Length;
 			    var lastChar = defaultQuery[startIndexer + regexInUrl.Length -1 ];
@@ -401,18 +409,16 @@ namespace starskycore.ViewModels
 			    
 			    SetAddSearchFor(searchForQuery);
 			    SetAddSearchInStringType("tags");
-			    
-				// Detecting Not Queries
+
+			    // Detecting Not Queries (string must be at least 3 chars)
 			    if ( ( regexInUrl.Index - 1 >= 0 && defaultQuery[regexInUrl.Index - 1] == '-' ) 
 			         || ( regexInUrl.Index + 2 <= regexInUrl.Length  && defaultQuery[regexInUrl.Index + 2] == '-' ) )
 				{
 					SetAddSearchForOptions("-");
 					continue;
 				}
-			    
 			    SetAddSearchForOptions("=");
-			    
-		    }
+			}
 
 		    // fallback situation
 		    // search on for example: '%'
