@@ -197,7 +197,7 @@ namespace starsky.Controllers
             {
                 return Redirect(returnUrl);
             }
-            return RedirectToAction(nameof(IndexController.Index), "Index");
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
         
     }

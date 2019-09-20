@@ -64,5 +64,7 @@
      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
    </Content>
  </ItemGroup>
-
+<PropertyGroup>
+    <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
+</PropertyGroup>
 </Project>

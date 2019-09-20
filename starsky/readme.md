@@ -11,7 +11,7 @@
     * [starskycore](../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
     * [starskyTest](../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../starsky.netframework/readme.md) _Client for older machines_
- * [starsky-node-client](../starsky-node-client/readme.md) _nodejs tools to add-on tasks_
+ * [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
 ## General Starsky (sln) docs
@@ -157,6 +157,14 @@ http://localhost:5000/account/register
     export ASPNETCORE_ENVIRONMENT="Production"
 ```
 
+11. SonarQube scanner
+To enable SonarScanner you need to set the following environment variables
+
+`STARSKY_SONAR_KEY` - the public name of the project
+`STARSKY_SONAR_LOGIN` - the token to login
+`STARSKY_SONAR_ORGANISATION` - the name of the organisation
+`STARSKY_SONAR_URL` - defaults to sonarcloud.io
+
 #### Errors
 When using SQLite as databasetype without `SQLitePCLRaw.lib.e_sqlite3.linux` the following error appears:
 `System.DllNotFoundException: Unable to load DLL 'e_sqlite3'`
@@ -179,17 +187,17 @@ The script [`pm2-starksy-new.sh`](starsky/pm2-starksy-new.sh) is a script to set
 ### pm2 `pm2-deploy-on-env.sh`
 
 To remove the content of the parent folder of this script. The following content are not deleted: app settings, temp, zip files and database files. The starsky files will get executed and need to have those rights. The pm2 instance will be restarted.
-  
+
 ### pm2 `pm2-warmup.sh`
 
-To warmup the installation after a restart this bash script is provided 
+To warmup the installation after a restart this bash script is provided
 
 
 ### Publish-scripts for 'self containing' binaries
 
 The scripts that are used to create a full build. (Linux has `libunwind8` and `gettext` as dependency)
 
-The Cake script provide options to build for specific runtimes. 
+The Cake script provide options to build for specific runtimes.
 
 #### To build for Mac
 

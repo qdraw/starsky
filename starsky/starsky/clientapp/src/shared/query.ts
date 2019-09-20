@@ -39,7 +39,7 @@ export class Query {
     return "/api/index" + url;
   }
 
-  public UrlQueryInfoApi = (subPath: string): string => {
+  public UrlQueryInfoApi(subPath: string): string {
     if (!subPath) return "";
     var url = this.urlReplacePath(subPath);
     if (url === "") {
@@ -52,7 +52,7 @@ export class Query {
     return "/api/update";
   }
 
-  public queryUpdateApi = (subPath: string, type: string | undefined, value: string): Promise<IFileIndexItem[]> => {
+  public queryUpdateApi(subPath: string, type: string | undefined, value: string): Promise<IFileIndexItem[]> {
     let location = this.urlQueryUpdateApi(subPath);
     let post = "f=" + this.urlReplacePath(subPath) + "&" + type + "=" + value;
     var controller = new AbortController();

@@ -5,6 +5,7 @@ import { newIRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { newIFileIndexItem } from '../interfaces/IFileIndexItem';
 
 const ArchiveContext = React.createContext<IContext>({} as IContext)
+
 type IContext = {
   state: State,
   dispatch: React.Dispatch<Action>,
@@ -124,3 +125,5 @@ let ArchiveContextConsumer = ArchiveContext.Consumer;
 // [C]
 export { ArchiveContext, ArchiveContextProvider, ArchiveContextConsumer };
 
+// exporter
+export const useArchiveContext = () => React.useContext(ArchiveContext)

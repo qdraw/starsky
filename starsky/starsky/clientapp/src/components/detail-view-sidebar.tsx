@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef } from "react";
-import { DetailViewContext } from '../contexts/detailview-context';
+import { useDetailViewContext } from '../contexts/detailview-context';
 import useFetch from '../hooks/use-fetch';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import { IExifStatus } from '../interfaces/IExifStatus';
@@ -10,17 +10,17 @@ import { Keyboard } from '../shared/keyboard';
 import { Query } from '../shared/query';
 import ColorClassSelect from './color-class-select';
 interface IDetailViewSidebarProps {
-  fileIndexItem: IFileIndexItem,
   filePath: string,
   status: IExifStatus
 }
 
 const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((props) => {
 
-  let { state, dispatch } = React.useContext(DetailViewContext);
+  let { state, dispatch } = useDetailViewContext();
 
-  const [fileIndexItem, setFileIndexItem] = React.useState(state.fileIndexItem);
+  const [fileIndexItem, setFileIndexItem] = React.useState(state ? state.fileIndexItem : { status: IExifStatus.ServerError } as IFileIndexItem);
   useEffect(() => {
+    if (!state) return;
     setFileIndexItem(state.fileIndexItem);
   }, [state]);
 
@@ -38,10 +38,11 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   // For the display
   const [isFormEnabled, setFormEnabled] = React.useState(true);
   useEffect(() => {
-    if (!state.fileIndexItem.status) return;
-    switch (state.fileIndexItem.status) {
+    if (!fileIndexItem.status) return;
+    switch (fileIndexItem.status) {
       case IExifStatus.Deleted:
       case IExifStatus.ReadOnly:
+      case IExifStatus.ServerError:
       case IExifStatus.NotFoundSourceMissing:
         setFormEnabled(false);
         break;
@@ -49,7 +50,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         setFormEnabled(true);
         break;
     }
-  }, [state.fileIndexItem.status]);
+  }, [fileIndexItem.status]);
 
 
   function handleChange(event: React.ChangeEvent<HTMLDivElement>) {
@@ -88,13 +89,15 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
 
   return (<div className="sidebar">
-    {fileIndexItem.status === IExifStatus.Deleted || fileIndexItem.status === IExifStatus.ReadOnly || fileIndexItem.status === IExifStatus.NotFoundSourceMissing ? <><div className="content--header">
-      Status
+    {fileIndexItem.status === IExifStatus.Deleted || fileIndexItem.status === IExifStatus.ReadOnly
+      || fileIndexItem.status === IExifStatus.NotFoundSourceMissing || fileIndexItem.status === IExifStatus.ServerError ? <><div className="content--header">
+        Status
     </div> <div className="content content--text">
-        {fileIndexItem.status === IExifStatus.Deleted ? <><div className="warning-box">Staat in de prullenmand </div> Undo weggooien om het item te bewerken</> : null}
-        {fileIndexItem.status === IExifStatus.NotFoundSourceMissing ? <><div className="warning-box">Mist in de index </div> </> : null}
-        {fileIndexItem.status === IExifStatus.ReadOnly ? <><div className="warning-box">Alleen lezen bestand</div> </> : null}
-      </div></> : null}
+          {fileIndexItem.status === IExifStatus.Deleted ? <><div className="warning-box">Staat in de prullenmand </div> Undo weggooien om het item te bewerken</> : null}
+          {fileIndexItem.status === IExifStatus.NotFoundSourceMissing ? <><div className="warning-box">Mist in de index </div> </> : null}
+          {fileIndexItem.status === IExifStatus.ReadOnly ? <><div className="warning-box">Alleen lezen bestand</div> </> : null}
+          {fileIndexItem.status === IExifStatus.ServerError ? <><div className="warning-box">Er is iets mis met de input</div> </> : null}
+        </div></> : null}
 
     <div className="content--header">
       Tags
@@ -146,14 +149,15 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
     <div className="content--text">
 
-      {isValidDate(fileIndexItem.dateTime) ? <div className="box">
-        <div className="icon icon--date"></div>
-        <b>{parseDate(fileIndexItem.dateTime)}</b>
-        <p>{parseTime(fileIndexItem.dateTime)}</p>
-      </div> : ""}
-
       {isValidDate(fileIndexItem.dateTime) ?
-        <div className="box">
+        <div className="box" data-test="dateTime">
+          <div className="icon icon--date"></div>
+          <b>{parseDate(fileIndexItem.dateTime)}</b>
+          <p>{parseTime(fileIndexItem.dateTime)}</p>
+        </div> : ""}
+
+      {isValidDate(fileIndexItem.lastEdited) ?
+        <div className="box" data-test="lastEdited">
           <div className="icon icon--last-edited"></div>
           <b>{parseRelativeDate(fileIndexItem.lastEdited)}</b>
           <p>geleden bewerkt</p>

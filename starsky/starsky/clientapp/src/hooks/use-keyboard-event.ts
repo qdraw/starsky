@@ -1,3 +1,4 @@
+import 'core-js/features/string/match'; // event.key.match
 import { useEffect } from 'react';
 
 function useKeyboardEvent(regex: RegExp, callback: Function, dependencies: any = []) {

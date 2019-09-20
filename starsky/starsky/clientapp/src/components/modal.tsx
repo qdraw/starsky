@@ -1,3 +1,4 @@
+import 'core-js/features/dom-collections/for-each';
 import React from "react";
 import ReactDOM from "react-dom";
 import capturePosition from '../hooks/use-capture-position';
@@ -29,7 +30,7 @@ export default function Modal({
     modal.current.id = id;
 
     if (!document.body.querySelector(`#${id}`)) {
-      document.body.prepend(modal.current);
+      document.body.insertBefore(modal.current, document.body.firstChild);
     }
 
     if (!hasUpdated) forceUpdate(true);

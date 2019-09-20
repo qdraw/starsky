@@ -2,6 +2,7 @@ const FetchPost = async (url: string, body: string, method: 'post' | 'delete' = 
   const settings = {
     method: method,
     body,
+    credentials: "include" as RequestCredentials,
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/x-www-form-urlencoded',

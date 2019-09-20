@@ -327,12 +327,12 @@ starskyapp/ios/main.jsbundle
 **/.env
 **/.starskyenv
 
-starsky-node-client/docs/*.sh
-starsky-node-client/docs/*/*.sh
-starsky-node-client/docs/*/*/*.sh
-starsky-node-client/docs/*.html
-starsky-node-client/docs/*/*.html
-starsky-node-client/docs/*/*/*.html
+starsky-tools/docs/*.sh
+starsky-tools/docs/*/*.sh
+starsky-tools/docs/*/*/*.sh
+starsky-tools/docs/*.html
+starsky-tools/docs/*/*.html
+starsky-tools/docs/*/*/*.html
 
 
 **/osx.10.12-x64/*
