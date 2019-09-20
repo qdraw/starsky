@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
+import { TaskQueue } from 'cwait';
 import * as path from 'path';
 import { Query } from './thumbnail-core';
-require('dotenv').config({path:path.join(__dirname,"../", ".env")});
-import { TaskQueue } from 'cwait';
+require('dotenv').config({ path: path.join(__dirname, "../", ".env") });
 
 var base_url = process.env.STARKSYBASEURL;
 var access_token = process.env.STARKSYACCESSTOKEN;
 
-if(!base_url || !access_token) {
-	throw new Error ("Missing env's STARKSYBASEURL or STARKSYACCESSTOKEN")
+if (!base_url || !access_token) {
+	throw new Error("Missing env's STARKSYBASEURL or STARKSYACCESSTOKEN")
 }
 
 function ShowHelpDialog() {
@@ -20,46 +20,52 @@ function ShowHelpDialog() {
 }
 
 
-function parseArgs() : string[] {
+function parseArgs(): string[] {
 	var args = process.argv.slice(2);
 	if (args.length >= 1) {
-		var parsed = parseInt(args[0])
+		var parsedInt = parseInt(args[0])
+		var isRange = args[0].indexOf("-") >= 1;
+
 		if (args[0] === "-h" || args[0] === "--h" || args[0] === "help") {
 			ShowHelpDialog();
 		}
-		if (isNaN(parsed)) {
+		if (isNaN(parsedInt)) {
 			return [args[0]];
 		}
-		else if(parsed === 0 ){
+		else if (parsedInt === 0) {
 			// Search for today
 			return ["-Datetime>0 -ImageFormat:jpg -!delete"];
 		}
+		else if (isRange) {
+			console.log(args[0]);
+
+		}
 		else {
 			// 1 = yesterday
-			return ["-Datetime>" + parsed  + " -Datetime<"+ (parsed - 1) + " -ImageFormat:jpg -!delete"];
+			return ["-Datetime>" + parsedInt + " -Datetime<" + (parsedInt - 1) + " -ImageFormat:jpg -!delete"];
 		}
 	}
 
 	var parsedDefault = 1;
-	return ["-Datetime>" + (parsedDefault)  + " -ImageFormat:jpg -!delete"];
+	return ["-Datetime>" + (parsedDefault) + " -ImageFormat:jpg -!delete"];
 }
 
 var searchQueries = parseArgs();
 
-var query = new Query(base_url,access_token);
+var query = new Query(base_url, access_token);
 
-searchQueries.forEach(function(searchQuery) {
+searchQueries.forEach(function (searchQuery) {
 	console.log(searchQuery + "\n^^^^searchQuery^^^^");
 
-	query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<string>) => {
+	query.isImportOrDirectSearch(searchQuery).then(async (fileHashList: Array<string>) => {
 
 		process.stdout.write("∞ " + fileHashList.length + " ∞");
 
 		// Down chain
 		const queueAxios = new TaskQueue(Promise, query.MAX_SIMULTANEOUS_DOWNLOADS);
 		const axiosResponses = await Promise.all(fileHashList.map(queueAxios.wrap(
-			async (fileHash : string) 	=> 	{
-				if(await query.checkIfSingleFileNeedsToBeDownloaded(fileHash)) {
+			async (fileHash: string) => {
+				if (await query.checkIfSingleFileNeedsToBeDownloaded(fileHash)) {
 					await query.downloadBinarySingleFile(fileHash);
 					return fileHash;
 				}
@@ -67,7 +73,7 @@ searchQueries.forEach(function(searchQuery) {
 		)));
 
 		// Filter before send it to the up chain
-		var filteredAxiosResponses : Array<string> = axiosResponses.filter(function (el) {
+		var filteredAxiosResponses: Array<string> = axiosResponses.filter(function (el) {
 			return el != undefined;
 		});
 
@@ -76,9 +82,9 @@ searchQueries.forEach(function(searchQuery) {
 		// Up chain
 		const queueResizeChain = new TaskQueue(Promise, query.MAX_SIMULTANEOUS_DOWNLOADS);
 		await Promise.all(filteredAxiosResponses.map(queueResizeChain.wrap(
-			async (fileHash : string) 	=> 	{
-				if(await query.resizeImage(fileHash)) {
-					if(await query.uploadTempFile(fileHash)) {
+			async (fileHash: string) => {
+				if (await query.resizeImage(fileHash)) {
+					if (await query.uploadTempFile(fileHash)) {
 						return fileHash; // return isn't working good
 						// resizeChain> [undefined,und..]
 					}
@@ -93,7 +99,7 @@ searchQueries.forEach(function(searchQuery) {
 
 		console.log("   `done");
 
-	}).catch( err => {
+	}).catch(err => {
 		console.log('err- downloadBinaryApiChain', err);
 	})
 });
