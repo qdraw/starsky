@@ -5,6 +5,12 @@ import { Query } from './thumbnail-core';
 require('dotenv').config({path:path.join(__dirname,"../", ".env")});
 import { TaskQueue } from 'cwait';
 
+var base_url = process.env.STARKSYBASEURL;
+var access_token = process.env.STARKSYACCESSTOKEN;
+
+if(!base_url || !access_token) {
+	throw new Error ("Missing env's STARKSYBASEURL or STARKSYACCESSTOKEN")
+}
 
 function ShowHelpDialog() {
 	console.log("Starksy Remote Thumbnail Helper")
@@ -14,7 +20,7 @@ function ShowHelpDialog() {
 }
 
 
-function parseArgs() {
+function parseArgs() : string[] {
 	var args = process.argv.slice(2);
 	if (args.length >= 1) {
 		var parsed = parseInt(args[0])
@@ -22,33 +28,29 @@ function parseArgs() {
 			ShowHelpDialog();
 		}
 		if (isNaN(parsed)) {
-			return args[0];
+			return [args[0]];
 		}
 		else if(parsed === 0 ){
 			// Search for today
-			return "-Datetime>0 -ImageFormat:jpg -!delete";
+			return ["-Datetime>0 -ImageFormat:jpg -!delete"];
 		}
 		else {
 			// 1 = yesterday
-			return "-Datetime>" + parsed  + " -Datetime<"+ (parsed - 1) + " -ImageFormat:jpg -!delete";
+			return ["-Datetime>" + parsed  + " -Datetime<"+ (parsed - 1) + " -ImageFormat:jpg -!delete"];
 		}
 	}
 
 	var parsedDefault = 1;
-	return "-Datetime>" + (parsedDefault)  + " -ImageFormat:jpg -!delete";
+	return ["-Datetime>" + (parsedDefault)  + " -ImageFormat:jpg -!delete"];
 }
 
-var searchQuery = parseArgs();
-
-var base_url = process.env.STARKSYBASEURL;
-var access_token = process.env.STARKSYACCESSTOKEN;
+var searchQueries = parseArgs();
 
 var query = new Query(base_url,access_token);
 
-console.log(searchQuery + "\n^^^^searchQuery^^^^");
+console.log(searchQueries[0] + "\n^^^^searchQuery^^^^");
 
-
-query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<string>) => {
+query.isImportOrDirectSearch(searchQueries[0]).then(async (fileHashList : Array<string>) => {
 
 	process.stdout.write("∞ " + fileHashList.length + " ∞");
 
@@ -83,7 +85,7 @@ query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<strin
 		}
 	)));
 
-	
+
 	// and clean afterwards
 	query.deleteSourceTempFolder(filteredAxiosResponses);
 	query.deleteTempFolder(filteredAxiosResponses);
@@ -93,5 +95,3 @@ query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<strin
 }).catch( err => {
 	console.log('err- downloadBinaryApiChain', err);
 })
-
-
