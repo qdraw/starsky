@@ -19,6 +19,31 @@ function ShowHelpDialog() {
 	console.log("use a keyword to search and check if thumbnails are created")
 }
 
+function parseRanges(args: string[]): string[] {
+	var start = Number(args[0].split("-")[0]);
+	var end = Number(args[0].split("-")[1]);
+
+	if (isNaN(start) || isNaN(end)) {
+		console.log("Use numbers in a range (now searching for " + args[0] + ")");
+		return [args[0]];
+	}
+
+	if (start >= end) {
+		console.log(">> Rejected << Use the lowest value first");
+		return [];
+	}
+
+	var queries = [];
+	for (let index = start; index <= end; index++) {
+		if (index === 0) {
+			// Search for today (use 0)
+			queries.push("-Datetime>0 -ImageFormat:jpg -!delete");
+			continue;
+		}
+		queries.push("-Datetime>" + index + " -Datetime<" + (index - 1) + " -ImageFormat:jpg -!delete")
+	}
+	return queries;
+}
 
 function parseArgs(): string[] {
 	var args = process.argv.slice(2);
@@ -29,6 +54,9 @@ function parseArgs(): string[] {
 		if (args[0] === "-h" || args[0] === "--h" || args[0] === "help") {
 			ShowHelpDialog();
 		}
+		else if (isRange && args[0].split("-").length === 2) {
+			return parseRanges(args);
+		}
 		if (isNaN(parsedInt)) {
 			return [args[0]];
 		}
@@ -36,29 +64,26 @@ function parseArgs(): string[] {
 			// Search for today
 			return ["-Datetime>0 -ImageFormat:jpg -!delete"];
 		}
-		else if (isRange) {
-			console.log(args[0]);
-
-		}
 		else {
 			// 1 = yesterday
 			return ["-Datetime>" + parsedInt + " -Datetime<" + (parsedInt - 1) + " -ImageFormat:jpg -!delete"];
 		}
 	}
-
 	var parsedDefault = 1;
 	return ["-Datetime>" + (parsedDefault) + " -ImageFormat:jpg -!delete"];
 }
 
-var searchQueries = parseArgs();
-
 var query = new Query(base_url, access_token);
 
-searchQueries.forEach(function (searchQuery) {
-	console.log(searchQuery + "\n^^^^searchQuery^^^^");
+runQueryChain(0, parseArgs());
 
-	query.isImportOrDirectSearch(searchQuery).then(async (fileHashList: Array<string>) => {
+function runQueryChain(index = 0, searchQueries: string[]) {
+	if (searchQueries.length === 0) return;
+	if (index >= searchQueries.length) return;
 
+	console.log(searchQueries[index] + "\n^^^^searchQuery^^^^");
+
+	query.isImportOrDirectSearch(searchQueries[index]).then(async (fileHashList: Array<string>) => {
 		process.stdout.write("∞ " + fileHashList.length + " ∞");
 
 		// Down chain
@@ -97,9 +122,15 @@ searchQueries.forEach(function (searchQuery) {
 		query.deleteSourceTempFolder(filteredAxiosResponses);
 		query.deleteTempFolder(filteredAxiosResponses);
 
-		console.log("   `done");
+		console.log("   `done " + index + "/" + (searchQueries.length - 1));
+
+		// Next
+		index++;
+		runQueryChain(index, searchQueries);
 
 	}).catch(err => {
 		console.log('err- downloadBinaryApiChain', err);
 	})
-});
+
+}
+
