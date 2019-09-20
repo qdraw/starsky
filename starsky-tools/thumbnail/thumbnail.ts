@@ -48,50 +48,52 @@ var searchQueries = parseArgs();
 
 var query = new Query(base_url,access_token);
 
-console.log(searchQueries[0] + "\n^^^^searchQuery^^^^");
+searchQueries.forEach(function(searchQuery) {
+	console.log(searchQuery + "\n^^^^searchQuery^^^^");
 
-query.isImportOrDirectSearch(searchQueries[0]).then(async (fileHashList : Array<string>) => {
+	query.isImportOrDirectSearch(searchQuery).then(async (fileHashList : Array<string>) => {
 
-	process.stdout.write("∞ " + fileHashList.length + " ∞");
+		process.stdout.write("∞ " + fileHashList.length + " ∞");
 
-	// Down chain
-	const queueAxios = new TaskQueue(Promise, query.MAX_SIMULTANEOUS_DOWNLOADS);
-	const axiosResponses = await Promise.all(fileHashList.map(queueAxios.wrap(
-		async (fileHash : string) 	=> 	{
-			if(await query.checkIfSingleFileNeedsToBeDownloaded(fileHash)) {
-				await query.downloadBinarySingleFile(fileHash);
-				return fileHash;
-			}
-		}
-	)));
-
-	// Filter before send it to the up chain
-	var filteredAxiosResponses : Array<string> = axiosResponses.filter(function (el) {
-		return el != undefined;
-	});
-
-	process.stdout.write("% " + filteredAxiosResponses.length + " %");
-
-	// Up chain
-	const queueResizeChain = new TaskQueue(Promise, query.MAX_SIMULTANEOUS_DOWNLOADS);
-	await Promise.all(filteredAxiosResponses.map(queueResizeChain.wrap(
-		async (fileHash : string) 	=> 	{
-			if(await query.resizeImage(fileHash)) {
-				if(await query.uploadTempFile(fileHash)) {
-					return fileHash; // return isn't working good
-					// resizeChain> [undefined,und..]
+		// Down chain
+		const queueAxios = new TaskQueue(Promise, query.MAX_SIMULTANEOUS_DOWNLOADS);
+		const axiosResponses = await Promise.all(fileHashList.map(queueAxios.wrap(
+			async (fileHash : string) 	=> 	{
+				if(await query.checkIfSingleFileNeedsToBeDownloaded(fileHash)) {
+					await query.downloadBinarySingleFile(fileHash);
+					return fileHash;
 				}
 			}
-		}
-	)));
+		)));
+
+		// Filter before send it to the up chain
+		var filteredAxiosResponses : Array<string> = axiosResponses.filter(function (el) {
+			return el != undefined;
+		});
+
+		process.stdout.write("% " + filteredAxiosResponses.length + " %");
+
+		// Up chain
+		const queueResizeChain = new TaskQueue(Promise, query.MAX_SIMULTANEOUS_DOWNLOADS);
+		await Promise.all(filteredAxiosResponses.map(queueResizeChain.wrap(
+			async (fileHash : string) 	=> 	{
+				if(await query.resizeImage(fileHash)) {
+					if(await query.uploadTempFile(fileHash)) {
+						return fileHash; // return isn't working good
+						// resizeChain> [undefined,und..]
+					}
+				}
+			}
+		)));
 
 
-	// and clean afterwards
-	query.deleteSourceTempFolder(filteredAxiosResponses);
-	query.deleteTempFolder(filteredAxiosResponses);
+		// and clean afterwards
+		query.deleteSourceTempFolder(filteredAxiosResponses);
+		query.deleteTempFolder(filteredAxiosResponses);
 
-	console.log("   `done");
+		console.log("   `done");
 
-}).catch( err => {
-	console.log('err- downloadBinaryApiChain', err);
-})
+	}).catch( err => {
+		console.log('err- downloadBinaryApiChain', err);
+	})
+});
