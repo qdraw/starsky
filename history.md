@@ -24,7 +24,7 @@
 - (bugfix) after account is created the redirect to a 404 page
 - (bugfix) (layout v1) import to the right controller
 - (alpha api/subject to change json output) /api/health to check the status of the application
-- rename of 'starsky-node-client → starsky-tools'
+- __Breaking change__ rename of 'starsky-node-client → starsky-tools'
 - starsky-tools/localtunnel to test local builds
 
 # version 0.1.6 - 2019-09-12
