@@ -26,6 +26,7 @@
 - (alpha api/subject to change json output) /api/health to check the status of the application
 - __Breaking change__ rename of 'starsky-node-client → starsky-tools'
 - starsky-tools/localtunnel to test local builds
+- starsky-tools/thumbnail, added auto cleanup, allow ranges e.g. 1-20 ago
 
 # version 0.1.6 - 2019-09-12
 - __Breaking change__ the V1 layout is now at `/v1`
