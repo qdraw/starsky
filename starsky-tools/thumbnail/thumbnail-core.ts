@@ -149,10 +149,7 @@ export class Query {
 		}
 		// END SUPPORT FOR PAGINATION
 
-		console.log(fileHashList);
-
 		return fileHashList;
-
 	}
 
 
