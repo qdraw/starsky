@@ -37,6 +37,35 @@ export class Parser {
 	}
 }
 
+export class Files {
+
+	public RemoveOldFiles() {
+		this.cleanFolder(path.join(__dirname, "temp"));
+		this.cleanFolder(path.join(__dirname, "source_temp"));
+	}
+
+	private cleanFolder(folderPath: string) {
+		fs.readdir(folderPath, function (_err, files) {
+			if (!files) return; // ignore if not exist
+			files.forEach(function (file) {
+				fs.stat(path.join(folderPath, file), function (err, stat) {
+					var endTime, now;
+					if (err) {
+						return console.error(err);
+					}
+					now = new Date().getTime();
+					endTime = new Date(stat.ctime).getTime() + (3600000 * 5); // 5 hours
+					if (now > endTime && stat.isFile) {
+						fs.unlink(path.join(folderPath, file), () => { });
+					}
+				});
+			});
+		});
+	}
+}
+
+
+
 export class Query {
 	base_url: string;
 	access_token: string;
@@ -230,7 +259,7 @@ export class Query {
 
 				if (err === null) {
 
-
+					// // Sharp example code
 					// sharp(sourceFilePath)
 					// 	.rotate()
 					// 	.resize({ width: 1000 })
@@ -246,13 +275,9 @@ export class Query {
 
 					jimp.read(sourceFilePath)
 						.then(image => {
-							// var width = image.getWidth();
-							// var height = image.getHeight();
-							// var ratio = height/width;
 
 							image.resize(1000, jimp.AUTO);
 							image.quality(80);
-
 
 							image.write(targetFilePath, () => {
 								process.stdout.write("≈");
@@ -264,9 +289,7 @@ export class Query {
 							console.error(err);
 							resolve(false);
 						});
-
 				}
-
 			});
 		});
 

@@ -2,7 +2,7 @@
 
 import { TaskQueue } from 'cwait';
 import * as path from 'path';
-import { Parser, Query } from './thumbnail-core';
+import { Files, Parser, Query } from './thumbnail-core';
 require('dotenv').config({ path: path.join(__dirname, "../", ".env") });
 
 var base_url = process.env.STARKSYBASEURL;
@@ -11,6 +11,9 @@ var access_token = process.env.STARKSYACCESSTOKEN;
 if (!base_url || !access_token) {
 	throw new Error("Missing env's STARKSYBASEURL or STARKSYACCESSTOKEN")
 }
+
+// Cleanup old files
+new Files().RemoveOldFiles();
 
 function ShowHelpDialog() {
 	console.log("Starksy Remote Thumbnail Helper")
