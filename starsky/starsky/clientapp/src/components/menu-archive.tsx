@@ -1,5 +1,6 @@
 
 import React, { memo, useEffect } from 'react';
+import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
 import { URLPath } from '../shared/url-path';
 import MenuSearchBar from './menu.searchbar';
@@ -13,6 +14,7 @@ interface IMenuArchiveProps {
 const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
+  let { state, dispatch } = React.useContext(ArchiveContext);
 
   var history = useLocation();
 
@@ -36,6 +38,23 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   useEffect(() => {
     setSelect(new URLPath().StringToIUrl(history.location.search).select)
   }, [history.location.search]);
+
+  // Select All items
+  function allSelection() {
+    if (!select) return;
+    var updatedSelect = new URLPath().GetAllSelection(select, state.fileIndexItems);
+
+    var urlObject = new URLPath().updateSelection(history.location.search, updatedSelect);
+    setSelect(urlObject.select);
+    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
+  }
+
+  // Undo Selection
+  function undoSelection() {
+    var urlObject = new URLPath().updateSelection(history.location.search, []);
+    setSelect(urlObject.select);
+    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
+  }
 
   function selectToggle() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
@@ -89,6 +108,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           {/* In the select context there are more options */}
           {select ? <MoreMenu>
+            {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>Undo selectie</li> : null}
+            {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>Alles selecteren</li> : null}
             <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
           </MoreMenu> : null}

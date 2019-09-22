@@ -21,25 +21,18 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
     setSelect(urlObject.select);
   }
 
+  // Select All items
   function allSelection() {
     if (!select) return;
-
-    props.fileIndexItems.forEach(fileIndexItem => {
-      var include = select.includes(fileIndexItem.fileName);
-      if (!include) {
-        select.push(fileIndexItem.fileName)
-      }
-    });
-
-    var urlObject = new URLPath().StringToIUrl(history.location.search);
-    urlObject.select = select;
+    var updatedSelect = new URLPath().GetAllSelection(select, props.fileIndexItems);
+    var urlObject = new URLPath().updateSelection(history.location.search, updatedSelect);
     setSelect(urlObject.select);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
+  // Undo Selection
   function undoSelection() {
-    var urlObject = new URLPath().StringToIUrl(history.location.search);
-    urlObject.select = [];
+    var urlObject = new URLPath().updateSelection(history.location.search, []);
     setSelect(urlObject.select);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }

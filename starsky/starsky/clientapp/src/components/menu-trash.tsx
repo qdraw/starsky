@@ -19,6 +19,23 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
     setSelect(new URLPath().StringToIUrl(history.location.search).select)
   }, [history.location.search]);
 
+  // Select All items
+  function allSelection() {
+    if (!select) return;
+    var updatedSelect = new URLPath().GetAllSelection(select, state.fileIndexItems);
+
+    var urlObject = new URLPath().updateSelection(history.location.search, updatedSelect);
+    setSelect(urlObject.select);
+    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
+  }
+
+  // Undo Selection
+  function undoSelection() {
+    var urlObject = new URLPath().updateSelection(history.location.search, []);
+    setSelect(urlObject.select);
+    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
+  }
+
   function selectToggle() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
     var selectVar: string[] = urlObject.select ? urlObject.select : [];
@@ -67,12 +84,12 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
     bodyParams.set("search", "!delete!");
     bodyParams.append("f", selectParams);
 
-    dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
     // to replace
     // dispatch({ 'type': 'replace', 'fieldName': 'tags', files: toUpdatePaths, 'from': '!delete!', 'to': "" });
     FetchPost("/api/replace", bodyParams.toString())
 
     removeSelectionFromUrl();
+    dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
   }
 
   function removeSelectionFromUrl() {
@@ -97,7 +114,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
         }}><>
           <div className="modal content--subheader">Verwijderen</div>
           <div className="modal content--text">
-            Weet je zeker dat je dit bestand wil verpaatsen naar null?
+            Weet je zeker dat je dit bestand wilt verwijderen van alle devices?
              <br />
             <a onClick={() => setModalDeleteOpen(false)} className="btn btn--info">Annuleren</a>
             <button onClick={() => {
@@ -122,7 +139,13 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
             className="item item--first item--close">Niks geselecteerd</a> : null}
           {select && select.length >= 1 ? <a onClick={() => { selectToggle() }}
             className="item item--first item--close">{select.length} geselecteerd</a> : null}
-          {!select ? <div className="item item--select" onClick={() => { selectToggle() }}>
+
+          {!select && state.fileIndexItems.length >= 1 ? <div className="item item--select" onClick={() => { selectToggle() }}>
+            Selecteer
+            </div> : null}
+
+          {/* there are no items in the trash */}
+          {!select && state.fileIndexItems.length === 0 ? <div className="item item--select disabled">
             Selecteer
             </div> : null}
 
@@ -130,12 +153,18 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
           {!select ? <MoreMenu></MoreMenu> : null}
 
           {/* In the select context there are more options */}
-          {select && select.length === 0 ? <MoreMenu></MoreMenu> : null}
+          {select && select.length === 0 ?
+            <MoreMenu>
+              <li className="menu-option" onClick={() => allSelection()}>Alles selecteren</li>
+            </MoreMenu> : null}
 
-          {select && select.length >= 1 ? <MoreMenu>
-            <li className="menu-option" onClick={() => undoTrash()}>Undo weggooien</li>
-            <li className="menu-option" onClick={() => setModalDeleteOpen(true)}>Verwijderen</li>
-          </MoreMenu> : null}
+          {select && select.length >= 1 ?
+            <MoreMenu>
+              {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>Undo selectie</li> : null}
+              {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>Alles selecteren</li> : null}
+              <li className="menu-option" onClick={() => undoTrash()}>Undo weggooien</li>
+              <li className="menu-option" onClick={() => setModalDeleteOpen(true)}>Verwijderen</li>
+            </MoreMenu> : null}
 
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
             <div className="nav__container">

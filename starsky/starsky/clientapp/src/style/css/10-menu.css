@@ -245,7 +245,7 @@
   cursor: pointer;
 }
 
-.header > .wrapper > .item.item--more.disabled {
+.header > .wrapper > .item.disabled {
   color: #90A4AE;
   cursor: not-allowed;
 }
