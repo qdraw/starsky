@@ -9,6 +9,7 @@ import FetchPost from '../shared/fetch-post';
 import { Keyboard } from '../shared/keyboard';
 import { URLPath } from '../shared/url-path';
 import ModalExport from './modal-export';
+import ModalRenameFile from './modal-rename-file';
 import MoreMenu from './more-menu';
 
 const MenuDetailView: React.FunctionComponent = () => {
@@ -83,9 +84,11 @@ const MenuDetailView: React.FunctionComponent = () => {
   if (isMarkedAsDeleted) headerName += " " + "header--deleted"
 
   const [isModalExportOpen, setModalExportOpen] = React.useState(false);
+  const [isModalRenameFileOpen, setModalRenameFileOpen] = React.useState(false);
 
   return (<>
     {isModalExportOpen ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)} select={[detailView.subPath]} isOpen={isModalExportOpen} /> : null}
+    {isModalRenameFileOpen ? <ModalRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)} isOpen={isModalRenameFileOpen} /> : null}
 
     <header className={headerName}>
       <div className="wrapper">
@@ -95,7 +98,7 @@ const MenuDetailView: React.FunctionComponent = () => {
           <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
           {!isDetails ? <li className="menu-option" onClick={() => { toggleLabels() }}>Labels</li> : null}
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
-          <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Naam wijzigen</li>
+          <li className="menu-option disabled" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>
           <li className="menu-option" onClick={() => { TrashFile(); }}>{!isMarkedAsDeleted ? "Weggooien" : "Undo Weggooien"}</li>
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Roteer naar rechts</li>
         </MoreMenu>
