@@ -2,9 +2,11 @@
 import { Link } from '@reach/router';
 import React, { useEffect } from 'react';
 import { DetailViewContext } from '../contexts/detailview-context';
+import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import FetchPost from '../shared/fetch-post';
+import { Keyboard } from '../shared/keyboard';
 import { URLPath } from '../shared/url-path';
 import ModalExport from './modal-export';
 import MoreMenu from './more-menu';
@@ -71,6 +73,11 @@ const MenuDetailView: React.FunctionComponent = () => {
       dispatch({ 'type': 'update', status: IExifStatus.Ok });
     }
   }
+
+  useKeyboardEvent(/(Delete)/, (event: KeyboardEvent) => {
+    if (new Keyboard().isInForm(event)) return;
+    TrashFile();
+  })
 
   var headerName = isDetails ? "header header--main header--edit" : "header header--main";
   if (isMarkedAsDeleted) headerName += " " + "header--deleted"

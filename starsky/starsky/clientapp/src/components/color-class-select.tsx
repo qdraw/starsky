@@ -44,8 +44,6 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
   }
 
   useKeyboardEvent(/[0-8]/, (event: KeyboardEvent) => {
-    console.log("ke");
-
     if (new Keyboard().isInForm(event)) return;
     handleChange(Number(event.key));
   })
