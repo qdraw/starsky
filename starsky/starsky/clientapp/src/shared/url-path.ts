@@ -23,9 +23,6 @@ export class URLPath {
           if (key[1] === "false") {
             urlObject.collections = false
           }
-          else {
-            urlObject.collections = true
-          }
           break;
         case 'details'.toLowerCase():
           if (key[1] === "true") {
