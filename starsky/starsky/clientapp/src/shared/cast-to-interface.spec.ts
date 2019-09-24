@@ -55,4 +55,14 @@ describe("cast-to-interface", () => {
       expect(test.data.fileIndexItems[0].tags).toBe("test");
     });
   });
+
+  describe("InfoFileIndexArray", () => {
+    it("one item", () => {
+      var test = new CastToInterface().InfoFileIndexArray([
+        { "tags": "test" }
+      ]);
+      expect(test[0].tags).toBe("test");
+    });
+  });
+
 });

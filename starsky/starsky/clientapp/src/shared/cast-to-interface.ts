@@ -15,9 +15,6 @@ export class CastToInterface {
 
     let output: IDetailView = data;
     let pageType = PageType[output.pageType as keyof typeof PageType];
-    if (data.searchQuery && data.searchQuery === "!delete!") {
-      pageType = PageType.Trash;
-    }
     return pageType;
   }
 

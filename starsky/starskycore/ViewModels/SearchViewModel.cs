@@ -231,9 +231,15 @@ namespace starskycore.ViewModels
 	    }
 
 	    /// <summary>
-	    /// The type of page returns, always Search
+	    /// The type of page returns, (Search or Trash)
 	    /// </summary>
-        public string PageType { get; } = PageViewType.PageType.Search.ToString();
+        public string PageType {
+		    get
+		    {
+			    if (string.IsNullOrEmpty(SearchQuery) ) return PageViewType.PageType.Search.ToString();
+			    return SearchQuery == "!delete!" ? PageViewType.PageType.Trash.ToString() : PageViewType.PageType.Search.ToString();
+		    } 
+	    }
 
 	    /// <summary>
 	    /// Private field: Know in seconds how much time a database query is.
