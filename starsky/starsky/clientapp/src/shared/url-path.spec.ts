@@ -15,6 +15,14 @@ describe("url-path", () => {
       var test = urlPath.StringToIUrl("?colorClass=1,2")
       expect(test.colorClass).toStrictEqual([1, 2])
     });
+    it("colorClass 2 NaN items", () => {
+      var test = urlPath.StringToIUrl("?colorClass=NaN,5")
+      expect(test.colorClass).toStrictEqual([5])
+    });
+    it("colorClass 1 NaN items", () => {
+      var test = urlPath.StringToIUrl("?colorClass=NaN")
+      expect(test.colorClass).toStrictEqual([])
+    });
     it("collections false", () => {
       var test = urlPath.StringToIUrl("?collections=false")
       expect(test.collections).toStrictEqual(false)
