@@ -91,7 +91,7 @@ export class URLPath {
     let search = new URLSearchParams(hash);
     let getReturnUrl = search.get("ReturnUrl");
     if (!getReturnUrl) return this.addPrefixUrl("f=/");
-    return this.addPrefixUrl(getReturnUrl);
+    return getReturnUrl;
   }
 
   /**

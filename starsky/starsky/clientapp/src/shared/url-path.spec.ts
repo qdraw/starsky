@@ -1,8 +1,8 @@
 import { URLPath } from './url-path';
 
 describe("url-path", () => {
+  var urlPath = new URLPath();
   describe("StringToIUrl", () => {
-    var urlPath = new URLPath();
     it("default", () => {
       var test = urlPath.StringToIUrl("")
       expect(test).toStrictEqual({})
@@ -63,9 +63,24 @@ describe("url-path", () => {
       var test = urlPath.StringToIUrl("?p=15")
       expect(test.p).toBe(15)
     });
-    it("select", () => {
+    it("select 2 items", () => {
       var test = urlPath.StringToIUrl("?select=test,test2")
       expect(test.select).toStrictEqual(["test", "test2"])
     });
+    it("select 1 item", () => {
+      var test = urlPath.StringToIUrl("?select=test")
+      expect(test.select).toStrictEqual(["test"])
+    });
   });
+  describe("GetReturnUrl", () => {
+    it("default", () => {
+      var test = urlPath.GetReturnUrl("?");
+      expect(test).toStrictEqual("?f=/")
+    });
+    it("url", () => {
+      var test = urlPath.GetReturnUrl("ReturnUrl=test");
+      expect(test).toStrictEqual("test")
+    });
+  });
+
 });
