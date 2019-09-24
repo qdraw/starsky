@@ -55,9 +55,10 @@ export class URLPath {
           urlObject.p = pagination;
           break;
         case 'select'.toLowerCase():
-          if (key[1] === 'null') {
-            continue;
-          }
+          // remove?
+          // if (key[1] === 'null') {
+          //   continue;
+          // }
           urlObject.select = this.getStringArrayFromCommaSeparatedString(key[1]);
           break;
         default:

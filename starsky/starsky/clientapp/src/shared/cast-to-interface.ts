@@ -52,6 +52,9 @@ export class CastToInterface {
     return media;
   }
 
+  /**
+   * Return casted list
+   */
   InfoFileIndexArray = (data: any): Array<IFileIndexItem> => {
     return data as Array<IFileIndexItem>;
   }
