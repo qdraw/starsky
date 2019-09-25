@@ -103,8 +103,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     new Keyboard().SetFocusOnEndField(current);
   }, [props])
 
-  console.log(state);
-
+  function subString(input: string): string {
+    if (input.length <= 30) return input;
+    return input.substring(0, 30) + "..."
+  }
 
   return (<div className="sidebar">
     {fileIndexItem.status === IExifStatus.Deleted || fileIndexItem.status === IExifStatus.ReadOnly
@@ -209,7 +211,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       {collections.map((item, index) => (
         <div key={index} className="box" data-test="collections">
           <div className="icon icon--photo"></div>
-          <b><Link to={new URLPath().updateFilePath(history.location.search, item)}>{new URLPath().getChild(item)}</Link></b>
+          <b><Link to={new URLPath().updateFilePath(history.location.search, item)}>{subString(new URLPath().getChild(item))}</Link></b>
           <p>In een collectie: {index + 1} van {collections.length}</p>
         </div>
       ))}
