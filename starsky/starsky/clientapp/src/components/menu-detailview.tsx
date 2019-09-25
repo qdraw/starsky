@@ -51,7 +51,7 @@ const MenuDetailView: React.FunctionComponent = () => {
   }, [detailView]);
 
   // Trash and Undo Trash
-  function TrashFile() {
+  async function TrashFile() {
     if (!detailView) return;
 
     var bodyParams = new URLSearchParams();
@@ -61,7 +61,10 @@ const MenuDetailView: React.FunctionComponent = () => {
     if (!isMarkedAsDeleted) {
       bodyParams.set("Tags", "!delete!");
       bodyParams.set("append", "true");
-      FetchPost("/api/update", bodyParams.toString())
+      var resultDo = await FetchPost("/api/update", bodyParams.toString());
+      if (resultDo === null) {
+        return;
+      }
       dispatch({ 'type': 'add', tags: "!delete!" });
       dispatch({ 'type': 'update', status: IExifStatus.Deleted });
     }
@@ -69,7 +72,10 @@ const MenuDetailView: React.FunctionComponent = () => {
     else {
       bodyParams.set("fieldName", "tags");
       bodyParams.set("search", "!delete!");
-      FetchPost("/api/replace", bodyParams.toString())
+      var resultUndo = await FetchPost("/api/replace", bodyParams.toString())
+      if (resultUndo === null) {
+        return;
+      }
       dispatch({ 'type': 'remove', tags: "!delete!" });
       dispatch({ 'type': 'update', status: IExifStatus.Ok });
     }
@@ -97,12 +103,10 @@ const MenuDetailView: React.FunctionComponent = () => {
         <MoreMenu>
           <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
           {!isDetails ? <li className="menu-option" onClick={() => { toggleLabels() }}>Labels</li> : null}
-          {detailView.fileIndexItem.status === IExifStatus.Ok || detailView.fileIndexItem.status === IExifStatus.Deleted ? <>
-            <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
-            <li className="menu-option disabled" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>
-            <li className="menu-option" onClick={() => { TrashFile(); }}>{!isMarkedAsDeleted ? "Verplaats naar prullenmand" : "Zet terug uit prullenmand"}</li>
-            <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Roteer naar rechts</li>
-          </> : null}
+          <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
+          <li className="menu-option disabled" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>
+          <li className="menu-option" onClick={() => { TrashFile(); }}>{!isMarkedAsDeleted ? "Verplaats naar prullenmand" : "Zet terug uit prullenmand"}</li>
+          <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Roteer naar rechts</li>
         </MoreMenu>
       </div>
     </header>
