@@ -26,12 +26,12 @@ namespace starsky.Controllers
 		{
 			const string buildVersionMetadataPrefix = "+build";
 			var attribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-			if ( attribute?.InformationalVersion == null ) return default;
+			if ( attribute?.InformationalVersion == null ) return new DateTime();
 			var value = attribute.InformationalVersion;
 			var index = value.IndexOf(buildVersionMetadataPrefix, StringComparison.Ordinal);
-			if ( index <= 0 ) return default;
+			if ( index <= 0 ) return new DateTime();
 			value = value.Substring(index + buildVersionMetadataPrefix.Length);
-			return DateTime.TryParseExact(value, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var result) ? result : default;
+			return DateTime.TryParseExact(value, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var result) ? result : new DateTime();
 		}
 	}
 }

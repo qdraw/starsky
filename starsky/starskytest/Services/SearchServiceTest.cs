@@ -723,8 +723,7 @@ namespace starskytest.Services
 	    }
 
 	    [TestMethod]
-	    public void
-		    SearchViewModel_SearchOperatorOptions_ShortWord()
+	    public void SearchViewModel_SearchOperatorOptions_ShortWord()
 	    {
 		    // of -> wrong detected due searching for not queries
 		    var modelSearchQuery = "query of";
@@ -732,6 +731,19 @@ namespace starskytest.Services
 		    searchViewModel.ParseDefaultOption(modelSearchQuery);
 		    Assert.AreEqual("query", searchViewModel.SearchFor[0]);
 		    Assert.AreEqual("of", searchViewModel.SearchFor[1]);
+	    }
+	    
+	    [TestMethod]
+	    public void SearchViewModel_TwoCharWords_ShortWord()
+	    {
+		    // two chars used have an exception
+		    var modelSearchQuery = "ns";
+		    var searchViewModel = new SearchViewModel();
+		    searchViewModel.ParseDefaultOption(modelSearchQuery);
+
+		    Assert.AreEqual(SearchViewModel.SearchForOptionType.Equal, searchViewModel.SearchForOptions[0]);
+		    Assert.AreEqual("Tags", searchViewModel.SearchIn[0]);
+		    Assert.AreEqual("ns", searchViewModel.SearchFor[0]);
 	    }
 
 	    [TestMethod]

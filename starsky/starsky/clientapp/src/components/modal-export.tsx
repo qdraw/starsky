@@ -131,8 +131,6 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = memo((props) => {
       </> : null}
     </div>
   </Modal>)
-
-
 });
 
 export default ModalExport

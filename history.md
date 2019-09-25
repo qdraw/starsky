@@ -19,13 +19,16 @@
 - []   Import page (without link)
 - []   Login in V2 layout
 
-# version 0.1.6.1 - tbd
+# version 0.1.6.1 - 2019-09-27
 - (V2 UI) LastEdited is now also shown when there is no Datetime
 - (bugfix) after account is created the redirect to a 404 page
 - (bugfix) (layout v1) import to the right controller
 - (alpha api/subject to change json output) /api/health to check the status of the application
 - __Breaking change__ rename of 'starsky-node-client → starsky-tools'
 - starsky-tools/localtunnel to test local builds
+- starsky-tools/thumbnail, added auto cleanup, allow ranges e.g. 1-20 ago
+- (V2 UI Archive/Trash) add Select all/Undo selection to menu
+- (bugfix) search queries shorter than 2 digits are working
 
 # version 0.1.6 - 2019-09-12
 - __Breaking change__ the V1 layout is now at `/v1`

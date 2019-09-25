@@ -163,8 +163,8 @@ const DetailView: React.FC<IDetailView> = () => {
 
         {relativeObjects.prevFilePath ?
           <div onClick={() => prev()}
-            className="nextprev"><div className="icon"></div></div>
-          : <div className="nextprev"></div>}
+            className="nextprev nextprev--prev"><div className="icon"></div></div>
+          : <div className="nextprev nextprev"></div>}
 
       </div>
     </div>

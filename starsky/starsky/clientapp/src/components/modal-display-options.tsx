@@ -21,6 +21,8 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
 
   function toggleCollections() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
+    // set the default option
+    if (urlObject.collections === undefined) urlObject.collections = true;
     urlObject.collections = !urlObject.collections;
     setCollections(urlObject.collections);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })

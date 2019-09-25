@@ -23,9 +23,6 @@ export class URLPath {
           if (key[1] === "false") {
             urlObject.collections = false
           }
-          else {
-            urlObject.collections = true
-          }
           break;
         case 'details'.toLowerCase():
           if (key[1] === "true") {
@@ -189,6 +186,15 @@ export class URLPath {
     return "/" + new URLPath().IUrlToString(url);
   }
 
+  /**
+   * updateSelection
+   */
+  public updateSelection(historyLocationHash: string, toUpdateSelect: string[]): IUrl {
+    var urlObject = new URLPath().StringToIUrl(historyLocationHash);
+    urlObject.select = toUpdateSelect;
+    return urlObject;
+  }
+
   public toggleSelection(fileName: string, locationHash: string): IUrl {
 
     var urlObject = new URLPath().StringToIUrl(locationHash);
@@ -229,7 +235,27 @@ export class URLPath {
     return subPaths;
   }
 
+  /**
+   * To give back a fileName list of all items 
+   * Merge without parent path
+   * @param select the current selection
+   * @param fileIndexItems the current folder
+   */
+  public GetAllSelection(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
+    fileIndexItems.forEach(fileIndexItem => {
+      var include = select.includes(fileIndexItem.fileName);
+      if (!include) {
+        select.push(fileIndexItem.fileName)
+      }
+    });
+    return select;
+  }
 
+  /**
+   * Merge with parent path
+   * @param select List of items that are already selected
+   * @param fileIndexItems 
+   */
   public MergeSelectFileIndexItem(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
     var subPaths: string[] = [];
 
