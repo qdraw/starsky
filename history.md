@@ -1,7 +1,6 @@
 [< readme](readme.md)
 
-# Features planned (in random order)
-
+# Features planned (in random order) and lower priority
 - []   Realtime Files API
 - []   mp4/h.264 video support
 - []   time zone shifting
@@ -12,8 +11,12 @@
 - []   Docker support, including backend abstractions to get the data (partly working)
 - []   Health view, to make more clear when paths are configured right
 - []   Health view, to make more clear when the server time is not correct
+- []   (front-end) Search details show exact query behind modal
+- []   Upload to direct folder API + front-end
+- []   (front-end) 'Rotate to Right'
+- []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
-## Work in progress `/feature/201909-react`
+## High priority features planned
 - []   Front-end for Rename files
 - []   Import page (without link)
 - []   Login in V2 layout
