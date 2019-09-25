@@ -3,8 +3,12 @@ import { URLPath } from './url-path';
 describe("url-path", () => {
   var urlPath = new URLPath();
   describe("StringToIUrl", () => {
-    it("default", () => {
+    it("default no content", () => {
       var test = urlPath.StringToIUrl("")
+      expect(test).toStrictEqual({})
+    });
+    it("default fallback", () => {
+      var test = urlPath.StringToIUrl("?random1=tr")
       expect(test).toStrictEqual({})
     });
     it("colorClass 1 item", () => {
@@ -82,5 +86,15 @@ describe("url-path", () => {
       expect(test).toStrictEqual("test")
     });
   });
+  describe("getParent", () => {
+    it("one parent", () => {
+      var test = urlPath.getParent("?f=/test");
+      expect(test).toStrictEqual("/")
+    });
+    // it("two parents", () => {
+    //   var test = urlPath.getParent("?f=/test/test");
+    //   expect(test).toStrictEqual("/test")
+    // });
 
+  });
 });
