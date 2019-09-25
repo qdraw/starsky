@@ -93,7 +93,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       || fileIndexItem.status === IExifStatus.NotFoundSourceMissing || fileIndexItem.status === IExifStatus.ServerError ? <><div className="content--header">
         Status
     </div> <div className="content content--text">
-          {fileIndexItem.status === IExifStatus.Deleted ? <><div className="warning-box">Staat in de prullenmand </div> Undo weggooien om het item te bewerken</> : null}
+          {fileIndexItem.status === IExifStatus.Deleted ? <><div className="warning-box">Staat in de prullenmand </div> 'Zet terug uit prullenmand' om het item te bewerken</> : null}
           {fileIndexItem.status === IExifStatus.NotFoundSourceMissing ? <><div className="warning-box">Mist in de index </div> </> : null}
           {fileIndexItem.status === IExifStatus.ReadOnly ? <><div className="warning-box">Alleen lezen bestand</div> </> : null}
           {fileIndexItem.status === IExifStatus.ServerError ? <><div className="warning-box">Er is iets mis met de input</div> </> : null}

@@ -68,7 +68,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
     bodyParams.append("f", selectParams);
     FetchPost("/api/delete", bodyParams.toString(), 'delete')
 
-    removeSelectionFromUrl();
+    undoSelection();
   }
 
   function undoTrash() {
@@ -88,20 +88,10 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
     // dispatch({ 'type': 'replace', 'fieldName': 'tags', files: toUpdatePaths, 'from': '!delete!', 'to': "" });
     FetchPost("/api/replace", bodyParams.toString())
 
-    removeSelectionFromUrl();
+    undoSelection();
     dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
   }
 
-  function removeSelectionFromUrl() {
-    // Remove from selection
-    var urlObject = new URLPath().StringToIUrl(history.location.search);
-
-    if (urlObject.select) {
-      urlObject.select = [];
-    }
-    setSelect([]);
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
-  }
   const [isModalDeleteOpen, setModalDeleteOpen] = React.useState(false);
 
   return (
@@ -162,8 +152,8 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
             <MoreMenu>
               {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>Undo selectie</li> : null}
               {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>Alles selecteren</li> : null}
-              <li className="menu-option" onClick={() => undoTrash()}>Undo weggooien</li>
-              <li className="menu-option" onClick={() => setModalDeleteOpen(true)}>Verwijderen</li>
+              <li className="menu-option" onClick={() => undoTrash()}>Zet terug uit prullenmand</li>
+              <li className="menu-option" onClick={() => setModalDeleteOpen(true)}>Verwijder onmiddelijk</li>
             </MoreMenu> : null}
 
           <nav className={hamburgerMenu ? "nav open" : "nav"}>

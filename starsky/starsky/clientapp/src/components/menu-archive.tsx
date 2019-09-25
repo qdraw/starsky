@@ -2,6 +2,7 @@
 import React, { memo, useEffect } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
+import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
 import MenuSearchBar from './menu.searchbar';
 import ModalDisplayOptions from './modal-display-options';
@@ -69,6 +70,25 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
+  function TrashSelection() {
+    if (!select) return;
+
+    var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
+    if (!toUndoTrashList) return;
+    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "")
+    if (selectParams.length === 0) return;
+
+    var bodyParams = new URLSearchParams();
+
+    bodyParams.set("Tags", "!delete!");
+    bodyParams.set("append", "true");
+    FetchPost("/api/update", bodyParams.toString())
+
+    undoSelection();
+    dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
+  }
+
+
   const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
 
   return (
@@ -111,6 +131,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>Undo selectie</li> : null}
             {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>Alles selecteren</li> : null}
             <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
+            <li className="menu-option" onClick={() => TrashSelection()}>Verplaats naar prullenmand</li>
+
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
           </MoreMenu> : null}
 
