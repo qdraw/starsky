@@ -1,13 +1,16 @@
+import { Link } from '@reach/router';
 import React, { memo, useEffect, useRef } from "react";
 import { useDetailViewContext } from '../contexts/detailview-context';
 import useFetch from '../hooks/use-fetch';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
+import useLocation from '../hooks/use-location';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { CastToInterface } from '../shared/cast-to-interface';
 import { isValidDate, parseDate, parseRelativeDate, parseTime } from '../shared/date';
 import { Keyboard } from '../shared/keyboard';
 import { Query } from '../shared/query';
+import { URLPath } from '../shared/url-path';
 import ColorClassSelect from './color-class-select';
 interface IDetailViewSidebarProps {
   filePath: string,
@@ -17,6 +20,7 @@ interface IDetailViewSidebarProps {
 const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((props) => {
 
   let { state, dispatch } = useDetailViewContext();
+  var history = useLocation();
 
   const [fileIndexItem, setFileIndexItem] = React.useState(state ? state.fileIndexItem : { status: IExifStatus.ServerError } as IFileIndexItem);
   useEffect(() => {
@@ -24,16 +28,28 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     setFileIndexItem(state.fileIndexItem);
   }, [state]);
 
+  const [collections, setCollections] = React.useState([] as string[]);
+
   // To Get information from /Api/Info
   var location = new Query().UrlQueryInfoApi(props.filePath);
   const responseObject = useFetch(location, 'get');
   useEffect(() => {
     if (!responseObject) return;
     var infoFileIndexItem = new CastToInterface().InfoFileIndexArray(responseObject);
+    updateCollections(infoFileIndexItem);
+
     // there is a bug in the api
     infoFileIndexItem[0].lastEdited = fileIndexItem.lastEdited;
     dispatch({ 'type': 'update', ...infoFileIndexItem[0] })
   }, [responseObject]);
+
+  function updateCollections(infoFileIndexItem: IFileIndexItem[]) {
+    var collectionsList: string[] = [];
+    infoFileIndexItem.forEach(element => {
+      collectionsList.push(element.filePath)
+    });
+    setCollections(collectionsList);
+  }
 
   // For the display
   const [isFormEnabled, setFormEnabled] = React.useState(true);
@@ -86,6 +102,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     var current = tagsReference.current as HTMLDivElement;
     new Keyboard().SetFocusOnEndField(current);
   }, [props])
+
+  console.log(state);
 
 
   return (<div className="sidebar">
@@ -142,13 +160,13 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       <ColorClassSelect onToggle={() => { }} filePath={fileIndexItem.filePath} currentColorClass={fileIndexItem.colorClass} isEnabled={isFormEnabled}></ColorClassSelect>
     </div>
 
-    {fileIndexItem.latitude || fileIndexItem.longitude || isValidDate(fileIndexItem.dateTime) || fileIndexItem.make || fileIndexItem.model || fileIndexItem.aperture || fileIndexItem.focalLength ?
+    {fileIndexItem.latitude || fileIndexItem.longitude || isValidDate(fileIndexItem.dateTime) || isValidDate(fileIndexItem.lastEdited) ||
+      fileIndexItem.make || fileIndexItem.model || fileIndexItem.aperture || fileIndexItem.focalLength ?
       <div className="content--header">
         Details
       </div> : null}
 
     <div className="content--text">
-
       {isValidDate(fileIndexItem.dateTime) ?
         <div className="box" data-test="dateTime">
           <div className="icon icon--date"></div>
@@ -171,7 +189,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
              {fileIndexItem.focalLength.toFixed(1)} mm&nbsp;&nbsp;&nbsp;{fileIndexItem.isoSpeed !== 0 ? <>ISO {fileIndexItem.isoSpeed}</> : null}</p>
         </div> : ""}
 
-
       {fileIndexItem.latitude && fileIndexItem.longitude ?
         <a className="box" target="_blank" rel="noopener noreferrer" href={"https://www.openstreetmap.org/?mlat=" +
           fileIndexItem.latitude + "&mlon=" + fileIndexItem.longitude + "#map=16/" +
@@ -188,6 +205,13 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
             </>}
 
         </a> : ""}
+
+      {collections.map((item, index) => (
+        <div key={index} className="box" data-test="collections">
+          <div className="icon icon--photo"></div>
+          <Link to={new URLPath().updateFilePath(history.location.search, item)} className="middle">{new URLPath().getChild(item)}</Link>
+        </div>
+      ))}
 
     </div>
 

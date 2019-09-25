@@ -218,9 +218,8 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
         </> : null}
 
       {isReplaceMode && !localStorage.getItem('beta_replace') ? <>
-        <h4>Work in progress</h4>
+        <h4><button className='btn btn--default' onClick={() => { localStorage.setItem('beta_replace', 'true'); setReplaceMode(true); }}>Alpha Functionaliteit aanzetten (Herlaad)</button></h4>
       </> : null}
-      {}
 
       {isReplaceMode && localStorage.getItem('beta_replace') ?
         <>
