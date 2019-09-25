@@ -97,10 +97,12 @@ const MenuDetailView: React.FunctionComponent = () => {
         <MoreMenu>
           <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
           {!isDetails ? <li className="menu-option" onClick={() => { toggleLabels() }}>Labels</li> : null}
-          <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
-          <li className="menu-option disabled" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>
-          <li className="menu-option" onClick={() => { TrashFile(); }}>{!isMarkedAsDeleted ? "Verplaats naar prullenmand" : "Zet terug uit prullenmand"}</li>
-          <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Roteer naar rechts</li>
+          {detailView.fileIndexItem.status === IExifStatus.Ok || detailView.fileIndexItem.status === IExifStatus.Deleted ? <>
+            <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
+            <li className="menu-option disabled" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>
+            <li className="menu-option" onClick={() => { TrashFile(); }}>{!isMarkedAsDeleted ? "Verplaats naar prullenmand" : "Zet terug uit prullenmand"}</li>
+            <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Roteer naar rechts</li>
+          </> : null}
         </MoreMenu>
       </div>
     </header>
