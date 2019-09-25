@@ -91,10 +91,14 @@ describe("url-path", () => {
       var test = urlPath.getParent("?f=/test");
       expect(test).toStrictEqual("/")
     });
-    // it("two parents", () => {
-    //   var test = urlPath.getParent("?f=/test/test");
-    //   expect(test).toStrictEqual("/test")
-    // });
+    it("two parents", () => {
+      var test = urlPath.getParent("?f=/test/test");
+      expect(test).toStrictEqual("/test")
+    });
 
+    it("three parents", () => {
+      var test = urlPath.getParent("?f=/test/test/item.jpg");
+      expect(test).toStrictEqual("/test/test")
+    });
   });
 });
