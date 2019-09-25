@@ -87,6 +87,10 @@ describe("url-path", () => {
     });
   });
   describe("getParent", () => {
+    it("default", () => {
+      var test = urlPath.getParent("");
+      expect(test).toStrictEqual("/")
+    });
     it("one parent", () => {
       var test = urlPath.getParent("?f=/test");
       expect(test).toStrictEqual("/")
@@ -101,4 +105,31 @@ describe("url-path", () => {
       expect(test).toStrictEqual("/test/test")
     });
   });
+  describe("getFilePath", () => {
+    it("default", () => {
+      var test = urlPath.getFilePath("");
+      expect(test).toStrictEqual("/")
+    });
+    it("one", () => {
+      var test = urlPath.getFilePath("?f=/test");
+      expect(test).toStrictEqual("/test")
+    });
+  });
+  describe("toggleSelection", () => {
+    it("add", () => {
+      var test = urlPath.toggleSelection("test.jpg", "");
+      if (!test.select) throw Error('select is null');
+      expect(test.select[0]).toStrictEqual("test.jpg")
+    });
+
+    it("add + remove (aka toggle)", () => {
+      // two times
+      var first = urlPath.toggleSelection("test.jpg", "");
+      var test = urlPath.toggleSelection("test.jpg", urlPath.IUrlToString(first));
+      if (test.select === undefined) throw Error('select is null');
+      expect(test.select.length).toStrictEqual(0)
+    });
+
+  });
+
 });
