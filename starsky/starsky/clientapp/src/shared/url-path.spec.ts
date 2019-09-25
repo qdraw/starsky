@@ -1,3 +1,4 @@
+import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import { URLPath } from './url-path';
 
 describe("url-path", () => {
@@ -129,7 +130,61 @@ describe("url-path", () => {
       if (test.select === undefined) throw Error('select is null');
       expect(test.select.length).toStrictEqual(0)
     });
+  });
+  describe("getSelect", () => {
+    it("default", () => {
+      var test = urlPath.getSelect("");
+      expect(test).toStrictEqual([])
+    });
+    it("selectResult !== undefined", () => {
+      var test = urlPath.getSelect("?select=");
+      expect(test).toStrictEqual([])
+    });
+  });
+  describe("MergeSelectParent", () => {
+    it("default", () => {
+      var test = urlPath.MergeSelectParent([], undefined);
+      expect(test).toStrictEqual([])
+    });
+    it("default (2)", () => {
+      var test = urlPath.MergeSelectParent(undefined, "");
+      expect(test).toStrictEqual([])
+    });
 
+    it("merge", () => {
+      var test = urlPath.MergeSelectParent(["test.jpg"], "/test");
+      expect(test[0]).toStrictEqual("/test/test.jpg")
+    });
+  });
+  describe("MergeSelectFileIndexItem", () => {
+    it("default", () => {
+      var test = urlPath.MergeSelectFileIndexItem([], newIFileIndexItemArray());
+      expect(test).toStrictEqual([])
+    });
+
+    it("item already exist", () => {
+      var list = newIFileIndexItemArray();
+      list.push({ parentDirectory: '/test', fileName: 'test.jpg' } as IFileIndexItem)
+      var test = urlPath.MergeSelectFileIndexItem(["test.jpg"], list);
+      expect(test[0]).toStrictEqual("/test/test.jpg")
+      expect(test.length).toStrictEqual(1)
+    });
+  });
+  describe("ArrayToCommaSeperatedStringOneParent", () => {
+
+    it("default", () => {
+      var test = urlPath.ArrayToCommaSeperatedStringOneParent([], "");
+      expect(test).toStrictEqual("")
+    });
+
+    it("list 1 item", () => {
+      var test = urlPath.ArrayToCommaSeperatedStringOneParent(["test.jpg"], "/parent");
+      expect(test).toStrictEqual("/parent/test.jpg")
+    });
+    it("list 2 items", () => {
+      var test = urlPath.ArrayToCommaSeperatedStringOneParent(["test.jpg", "test2.jpg"], "/parent");
+      expect(test).toStrictEqual("/parent/test.jpg;/parent/test2.jpg")
+    });
   });
 
 });
