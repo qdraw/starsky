@@ -7,17 +7,20 @@ import { IMedia } from '../interfaces/IMedia';
 
 export class CastToInterface {
 
+  /**
+   * Get the type of the page by the object
+   */
   getPageType = (data: any): PageType => {
     if (!data) return PageType.ApplicationException;
 
     let output: IDetailView = data;
     let pageType = PageType[output.pageType as keyof typeof PageType];
-    if (data.searchQuery && data.searchQuery === "!delete!") {
-      pageType = PageType.Trash;
-    }
     return pageType;
   }
 
+  /**
+   * Plain JS-object to casted object for Archive, Search and Trash pages
+   */
   MediaArchive = (data: any): IMedia<'Archive'> => {
     const media = {
       type: 'Archive',
@@ -27,10 +30,14 @@ export class CastToInterface {
       media.data = data;
       return media;
     }
+    // default situation
     media.data = newIArchive();
     return media;
   }
 
+  /**
+  * Plain JS-object to casted object for DetailView pages
+  */
   MediaDetailView = (data: any): IMedia<'DetailView'> => {
     const media = {
       type: 'DetailView',
@@ -40,10 +47,14 @@ export class CastToInterface {
       media.data = data;
       return media;
     }
+    // default situation
     media.data = newDetailView();
     return media;
   }
 
+  /**
+   * Return casted list
+   */
   InfoFileIndexArray = (data: any): Array<IFileIndexItem> => {
     return data as Array<IFileIndexItem>;
   }

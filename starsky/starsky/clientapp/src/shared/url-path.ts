@@ -55,9 +55,10 @@ export class URLPath {
           urlObject.p = pagination;
           break;
         case 'select'.toLowerCase():
-          if (key[1] === 'null') {
-            continue;
-          }
+          // remove?
+          // if (key[1] === 'null') {
+          //   continue;
+          // }
           urlObject.select = this.getStringArrayFromCommaSeparatedString(key[1]);
           break;
         default:
@@ -90,7 +91,7 @@ export class URLPath {
     let search = new URLSearchParams(hash);
     let getReturnUrl = search.get("ReturnUrl");
     if (!getReturnUrl) return this.addPrefixUrl("f=/");
-    return this.addPrefixUrl(getReturnUrl);
+    return getReturnUrl;
   }
 
   /**
@@ -138,8 +139,37 @@ export class URLPath {
     let getFilePath = search.get("f");
 
     if (!getFilePath) return "/";
-    var array = getFilePath.split('/');
-    return getFilePath.replace(array[array.length - 1], '');
+    getFilePath = this.endOnSlash(getFilePath);
+
+    var parentPath = "";
+    var filePathArray = getFilePath.split("/");
+    for (let index = 0; index < filePathArray.length; index++) {
+      const element = filePathArray[index];
+      if (index <= filePathArray.length - 3) {
+        parentPath += element + "/";
+      }
+    }
+    if (filePathArray.length <= 3) return "/";
+
+    parentPath = this.startOnSlash(parentPath);
+    parentPath = this.removeEndOnSlash(parentPath);
+    return parentPath;
+  }
+
+  private removeEndOnSlash(input: string): string {
+    if (!input.endsWith("/")) return input;
+    var output = input.substring(0, input.length - 1);
+    return output;
+  }
+
+  private startOnSlash(input: string): string {
+    if (input.startsWith("/")) return input;
+    return "/" + input;
+  }
+
+  private endOnSlash(input: string): string {
+    if (input.endsWith("/")) return input;
+    return input + "/";
   }
 
   public getFilePath(locationHash: string): string {
@@ -212,8 +242,6 @@ export class URLPath {
   }
 
   public ArrayToCommaSeperatedStringOneParent(select: string[], parent: string): string {
-    if (select === undefined || parent === undefined) return "";
-
     var selectParams = "";
     for (let index = 0; index < select.length; index++) {
       const element = select[index];
