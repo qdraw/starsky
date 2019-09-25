@@ -24,7 +24,7 @@ describe("cast-to-interface", () => {
   describe("MediaDetailView", () => {
     it("DetailView default", () => {
       var test = new CastToInterface().MediaDetailView({});
-      expect(test.data.status).toBeNull();
+      expect(test.data.lastUpdated).toBeUndefined();
     });
 
     it("DetailView", () => {
