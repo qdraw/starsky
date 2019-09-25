@@ -35,7 +35,7 @@
 - (bugfix) search queries shorter than 2 digits are working
 - __(behind feature flag)__ Front-end for Replace API in folder view (add localStorage item with name `beta_replace`)
 - (front-end) show collections in DetailView
-- (front-end) hide edit items from menu when readonly
+- (front-end) reject delete button when a file is read-only mode
 - (front-end) add to-trash-button and select all button to archive view
 - (front-end) add keyboard shortcut for delete
 
