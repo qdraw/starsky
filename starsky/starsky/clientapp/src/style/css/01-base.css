@@ -78,6 +78,8 @@ html {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     font-family: 'Gloriola Std', sans-serif;
+    /* only for firefox*/
+    scrollbar-color: #263238 #ECEFF1;
 }
 *, *:before, *:after {
     box-sizing: border-box;
