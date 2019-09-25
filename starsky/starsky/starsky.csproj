@@ -4,7 +4,7 @@
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">2.1.10</RuntimeFrameworkVersion>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">2.2.6</RuntimeFrameworkVersion>
     <Description>An attempt to create a database driven photo library</Description>
-	<Version>0.1.6</Version>
+	<Version>0.1.7</Version>
 	<!-- SonarQube needs this -->
   	<ProjectGuid>{c97b6e6d-c1e7-4c91-8bda-576038e67ddc}</ProjectGuid>
   </PropertyGroup>
