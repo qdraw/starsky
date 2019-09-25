@@ -15,7 +15,6 @@
 
 ## Work in progress `/feature/201909-react`
 - []   Front-end for Rename files
-- []   Front-end for Replace API in folder view
 - []   Import page (without link)
 - []   Login in V2 layout
 
@@ -29,6 +28,11 @@
 - starsky-tools/thumbnail, added auto cleanup, allow ranges e.g. 1-20 ago
 - (V2 UI Archive/Trash) add Select all/Undo selection to menu
 - (bugfix) search queries shorter than 2 digits are working
+- __(behind feature flag)__ Front-end for Replace API in folder view (add localStorage item with name `beta_replace`)
+- (front-end) show collections in DetailView
+- (front-end) hide edit items from menu when readonly
+- (front-end) add to-trash-button and select all button to archive view
+- (front-end) add keyboard shortcut for delete
 
 # version 0.1.6 - 2019-09-12
 - __Breaking change__ the V1 layout is now at `/v1`
