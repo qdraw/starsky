@@ -81,6 +81,24 @@ html {
     /* only for firefox*/
     scrollbar-color: #263238 #ECEFF1;
 }
+
+/* for Chrome + Safari */
+::-webkit-scrollbar {
+    width: 15px;
+    height: 15px;
+}
+
+::-webkit-scrollbar-track-piece  {
+    background-color: #ECEFF1;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+    height: 30px;
+    background-color: #263238;
+    border-radius: 15px;
+    border: 2px solid #ECEFF1;
+}
+
 *, *:before, *:after {
     box-sizing: border-box;
 }
