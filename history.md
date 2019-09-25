@@ -1,6 +1,7 @@
 [< readme](readme.md)
 
-# Features planned (in random order) and lower priority
+# Todo:
+## Features planned (in random order) and lower priority
 - []   Realtime Files API
 - []   mp4/h.264 video support
 - []   time zone shifting
@@ -20,6 +21,7 @@
 - []   Front-end for Rename files
 - []   Import page (without link)
 - []   Login in V2 layout
+
 
 # version 0.1.6.1 - 2019-09-27
 - (V2 UI) LastEdited is now also shown when there is no Datetime
