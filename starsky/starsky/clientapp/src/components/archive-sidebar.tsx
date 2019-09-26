@@ -13,6 +13,9 @@ interface IArchiveSidebarProps {
 
 const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((archive) => {
 
+  /**
+   * Scroll lock sidebar for mobile devices
+   */
   useEffect(() => {
     document.body.style.top = `-${window.scrollY}px`;
     document.body.classList.add("lock-screen");
