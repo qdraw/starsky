@@ -21,8 +21,9 @@
 .detailview .box p,
 .detailview .box b{
   line-height: 1.3;
-  font-size: 14px
+  font-size: 14px;
 }
+
 .detailview .box b {
   font-weight: 300;
 }
@@ -57,4 +58,8 @@
 
 .detailview .box .icon.icon--location {
   background-image: url('../images/baseline-location_on-24px.svg');
+}
+
+.detailview .box .icon.icon--photo {
+  background-image: url('../images/baseline-photo-24px.svg');
 }

@@ -13,7 +13,6 @@ const initialState: State = {
   fileIndexItem: newIFileIndexItem(),
   relativeObjects: {} as IRelativeObjects,
   subPath: "/",
-  status: IExifStatus.Default,
   pageType: 'DetailView',
   colorClassFilterList: [],
 }

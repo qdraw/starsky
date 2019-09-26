@@ -132,6 +132,12 @@ export class URLPath {
   private addPrefixUrl(input: string): string {
     return "?" + input;
   }
+  public getChild(getFilePath: string): string {
+    if (!getFilePath) return "";
+    getFilePath = this.removeEndOnSlash(getFilePath);
+    var result = getFilePath.split("/")[getFilePath.split("/").length - 1]
+    return result;
+  }
 
   public getParent(locationHash: string): string {
     let hash = this.RemovePrefixUrl(locationHash);

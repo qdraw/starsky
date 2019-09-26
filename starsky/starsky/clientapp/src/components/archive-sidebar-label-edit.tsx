@@ -37,38 +37,58 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
     collections: true,
   } as ISidebarUpdate)
 
+  const [updateReplace, setUpdateReplace] = React.useState({
+    append: true,
+    collections: true,
+  } as ISidebarUpdate)
+
   const [isInputEnabled, setInputEnabled] = React.useState(false);
 
 
-  // useEffect(() => {
-  //   if (archive.isReadOnly) {
-  //     setSelect([]);
-  //     setEnabled(false);
-  //   };
-  // }, [archive]);
+  function handleUpdateChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
+    let fieldValue = event.currentTarget.innerText.trim();
+    let fieldName = event.currentTarget.dataset["name"];
+    if (!fieldName) return;
+    if (!fieldValue) return;
 
+    var updateSidebar = updated(fieldName, fieldValue, update);
+    setUpdate(updateSidebar);
+    setInputEnabled(isFormUsed());
+  }
 
-  function handleChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
-    let value = event.currentTarget.innerText;
-    let name = event.currentTarget.dataset["name"];
+  function handleUpdateReplaceChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
+    let fieldValue = event.currentTarget.innerText.trim();
+    let fieldName = event.currentTarget.dataset["name"];
+    if (!fieldName) return;
+    if (!fieldValue) return;
 
-    if (!name) return;
-    if (!value) return;
+    var updateSidebar = updated(fieldName, fieldValue, updateReplace);
+    setUpdateReplace(updateSidebar);
+  }
 
-    value = value.replace(/\n/g, "");
-    switch (name) {
+  /**
+   * Cast Update Fields to ISidebarUpdate
+   * @param fieldName e.g. tags
+   * @param fieldValue the value
+   * @param updateSidebar 'From Object'
+   */
+  function updated(fieldName: string, fieldValue: string, updateSidebar: ISidebarUpdate): ISidebarUpdate {
+    if (!fieldName) return updateSidebar;
+    if (!fieldValue) return updateSidebar;
+
+    fieldValue = fieldValue.replace(/\n/g, "");
+    switch (fieldName) {
       case "tags":
-        update.tags = value;
+        updateSidebar.tags = fieldValue;
         break;
       case "description":
-        update.description = value;
+        updateSidebar.description = fieldValue;
         break;
       case "title":
-        update.title = value;
+        updateSidebar.title = fieldValue;
         break;
     }
-
-    setInputEnabled(isFormUsed());
+    return updateSidebar;
   }
 
   function isFormUsed(): boolean {
@@ -102,6 +122,10 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
     return bodyParams;
   }
 
+  /**
+   * To update the archive
+   * @param append to Add to the existing 
+   */
   function pushUpdate(append: boolean) {
     update.append = append;
 
@@ -120,6 +144,39 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
     dispatch({ type: 'update', ...update, select });
   }
 
+  /**
+   * To search and replace
+   */
+  function pushSearchAndReplace() {
+    update.append = false;
+    var subPaths = new URLPath().MergeSelectFileIndexItem(select, archive.fileIndexItems);
+    if (!subPaths) return;
+    var selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "")
+
+    if (selectPaths.length === 0) return;
+
+    var bodyParams = new URLSearchParams();
+    bodyParams.append("f", selectPaths);
+
+    for (let key of Object.entries(update)) {
+      if (key[1] && key[1].length >= 1) {
+        console.log(key);
+        bodyParams.set("fieldName", key[0]);
+        bodyParams.set("search", key[1]);
+        var replace: string = (updateReplace as any)[key[0]] ? (updateReplace as any)[key[0]] : "";
+        bodyParams.set("replace", replace);
+
+        if (key[0] === "tags") {
+          var regexer = new RegExp(key[1], "g")
+          update.tags = update.tags.replace(regexer, replace)
+        }
+
+        FetchPost("/api/replace", bodyParams.toString())
+        dispatch({ type: 'update', ...update, select });
+      }
+    }
+  }
+
   const [isReplaceMode, setReplaceMode] = React.useState(false)
 
   return (
@@ -130,15 +187,14 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
         <>
           <h4>Tags:</h4>
           <div data-name="tags"
-            onInput={handleChange}
-            onKeyPress={handleChange}
+            onInput={handleUpdateChange}
             suppressContentEditableWarning={true}
             contentEditable={!archive.isReadOnly && select.length !== 0}
             className={!archive.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
           </div>
           <h4>Info</h4>
           <div
-            onInput={handleChange}
+            onInput={handleUpdateChange}
             data-name="description"
             suppressContentEditableWarning={true}
             contentEditable={!archive.isReadOnly && select.length !== 0}
@@ -146,7 +202,7 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
           </div>
           <h4>Titel</h4>
           <div data-name="title"
-            onInput={handleChange}
+            onInput={handleUpdateChange}
             suppressContentEditableWarning={true}
             contentEditable={!archive.isReadOnly && select.length !== 0}
             className={!archive.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
@@ -161,9 +217,65 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent<IDetailViewSidebarLabelEd
 
         </> : null}
 
-      {isReplaceMode ?
+      {isReplaceMode && !localStorage.getItem('beta_replace') ? <>
+        <h4><button className='btn btn--default' onClick={() => { localStorage.setItem('beta_replace', 'true'); setReplaceMode(true); }}>Alpha Functionaliteit aanzetten (Herlaad)</button></h4>
+      </> : null}
+
+      {isReplaceMode && localStorage.getItem('beta_replace') ?
         <>
-          <h4>Nog niet beschikbaar</h4>
+          <h4>Tags:</h4>
+          <div data-name="tags"
+            onInput={handleUpdateChange}
+            suppressContentEditableWarning={true}
+            contentEditable={!archive.isReadOnly && select.length !== 0}
+            className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+            &nbsp;
+          </div>
+          <div data-name="tags"
+            onInput={handleUpdateReplaceChange}
+            suppressContentEditableWarning={true}
+            contentEditable={!archive.isReadOnly && select.length !== 0}
+            className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+            &nbsp;
+          </div>
+          <h4>Info</h4>
+          <div
+            onInput={handleUpdateChange}
+            data-name="description"
+            suppressContentEditableWarning={true}
+            contentEditable={!archive.isReadOnly && select.length !== 0}
+            className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+            &nbsp;
+          </div>
+          <div
+            onInput={handleUpdateReplaceChange}
+            data-name="description"
+            suppressContentEditableWarning={true}
+            contentEditable={!archive.isReadOnly && select.length !== 0}
+            className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+            &nbsp;
+          </div>
+          <h4>Titel</h4>
+          <div data-name="title"
+            onInput={handleUpdateChange}
+            suppressContentEditableWarning={true}
+            contentEditable={!archive.isReadOnly && select.length !== 0}
+            className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+            &nbsp;
+          </div>
+          <div data-name="title"
+            onInput={handleUpdateReplaceChange}
+            suppressContentEditableWarning={true}
+            contentEditable={!archive.isReadOnly && select.length !== 0}
+            className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+            &nbsp;
+          </div>
+
+          {isInputEnabled && select.length !== 0 ?
+            <button className="btn btn--default" onClick={() => pushSearchAndReplace()}>Vervangen</button> :
+            <button disabled className="btn btn--default disabled" >Vervangen</button>}
+
+
         </> : null}
 
     </div >);

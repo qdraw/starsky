@@ -1,7 +1,7 @@
 [< readme](readme.md)
 
-# Features planned (in random order)
-
+# Todo:
+## Features planned (in random order) and lower priority
 - []   Realtime Files API
 - []   mp4/h.264 video support
 - []   time zone shifting
@@ -12,14 +12,18 @@
 - []   Docker support, including backend abstractions to get the data (partly working)
 - []   Health view, to make more clear when paths are configured right
 - []   Health view, to make more clear when the server time is not correct
+- []   (front-end) Search details show exact query behind modal
+- []   Upload to direct folder API + front-end
+- []   (front-end) 'Rotate to Right'
+- []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
-## Work in progress `/feature/201909-react`
+## High priority features planned
 - []   Front-end for Rename files
-- []   Front-end for Replace API in folder view
 - []   Import page (without link)
 - []   Login in V2 layout
 
-# version 0.1.6.1 - 2019-09-27
+
+# version 0.1.7 - 2019-09-27
 - (V2 UI) LastEdited is now also shown when there is no Datetime
 - (bugfix) after account is created the redirect to a 404 page
 - (bugfix) (layout v1) import to the right controller
@@ -29,6 +33,11 @@
 - starsky-tools/thumbnail, added auto cleanup, allow ranges e.g. 1-20 ago
 - (V2 UI Archive/Trash) add Select all/Undo selection to menu
 - (bugfix) search queries shorter than 2 digits are working
+- __(behind feature flag)__ Front-end for Replace API in folder view (add localStorage item with name `beta_replace`)
+- (front-end) show collections in DetailView
+- (front-end) reject delete button when a file is read-only mode
+- (front-end) add to-trash-button and select all button to archive view
+- (front-end) add keyboard shortcut for delete
 
 # version 0.1.6 - 2019-09-12
 - __Breaking change__ the V1 layout is now at `/v1`
@@ -59,11 +68,11 @@
 - __Breaking API change__ from `/search/trash` to `/api/search/trash`
 - __API change__ change number of search results per page from 20 to 120
 
-# version 0.1.5.9 - 2019-08-19
+# version 0.1.5.9 - 2019-08-19 _Version does not match SemVer_
 - Entity Framework add database indexes
 - __Breaking Change__  Entity Framework add database Field for FocalLength
 
-# version 0.1.5.8 - 2019-08-14
+# version 0.1.5.8 - 2019-08-14 _Version does not match SemVer_
 - Change Dot NET version to the `.Net Core 2.2` release (C# 7)
 - Rollback version due Entity Framework performance issues with MySQL
 - Swagger is enabled
@@ -73,7 +82,7 @@
 - Add support for command line -x or don't add xmp sidecar file
 - [x]   XMP disable option when importing using a flag (used for copying photos)
 
-# version 0.1.5.7 - 2019-08-09
+# version 0.1.5.7 - 2019-08-09 _Version does not match SemVer_
 - Update Dot NET version to the `.Net Core 3 Preview 7` release
 - Update to C# version 8
 - Keep the core .netstandard2.0 for NetFramework reference
