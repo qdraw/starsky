@@ -13,6 +13,9 @@ interface IArchiveSidebarProps {
 
 const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((archive) => {
 
+  /**
+   * Scroll lock sidebar for mobile devices
+   */
   useEffect(() => {
     document.body.style.top = `-${window.scrollY}px`;
     document.body.classList.add("lock-screen");
@@ -23,30 +26,6 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
       document.body.style.top = '';
     };
   });
-
-
-  // useEffect(() => {
-  //   const handleResize = (event: Event) => {
-  //     if (!event.target) return;
-  //     var target = event.target as Element;
-
-  //     if (target.className.indexOf("sidebar") !== -1 || target.className.indexOf("content-") !== -1) {
-  //       console.log(target.className);
-
-  //     }
-  //     else {
-  //       console.log('preventDefault');
-  //       event.preventDefault();
-  //       event.stopImmediatePropagation();
-  //     }
-
-  //     return false;
-  //   };
-  //   document.body.addEventListener('touchmove', handleResize, true);
-  //   return () => {
-  //     document.body.removeEventListener('touchmove', handleResize, true);
-  //   };
-  // });
 
   return (<div className="sidebar">
 

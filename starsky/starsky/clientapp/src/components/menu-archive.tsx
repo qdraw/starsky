@@ -1,6 +1,8 @@
 
 import React, { memo, useEffect } from 'react';
+import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
+import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
 import MenuSearchBar from './menu.searchbar';
 import ModalDisplayOptions from './modal-display-options';
@@ -13,6 +15,7 @@ interface IMenuArchiveProps {
 const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
+  let { state, dispatch } = React.useContext(ArchiveContext);
 
   var history = useLocation();
 
@@ -37,6 +40,23 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     setSelect(new URLPath().StringToIUrl(history.location.search).select)
   }, [history.location.search]);
 
+  // Select All items
+  function allSelection() {
+    if (!select) return;
+    var updatedSelect = new URLPath().GetAllSelection(select, state.fileIndexItems);
+
+    var urlObject = new URLPath().updateSelection(history.location.search, updatedSelect);
+    setSelect(urlObject.select);
+    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
+  }
+
+  // Undo Selection
+  function undoSelection() {
+    var urlObject = new URLPath().updateSelection(history.location.search, []);
+    setSelect(urlObject.select);
+    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
+  }
+
   function selectToggle() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
     if (!urlObject.select) {
@@ -49,6 +69,25 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     setSelect(urlObject.select);
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
+
+  function TrashSelection() {
+    if (!select) return;
+
+    var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
+    if (!toUndoTrashList) return;
+    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "")
+    if (selectParams.length === 0) return;
+
+    var bodyParams = new URLSearchParams();
+
+    bodyParams.set("Tags", "!delete!");
+    bodyParams.set("append", "true");
+    FetchPost("/api/update", bodyParams.toString())
+
+    undoSelection();
+    dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
+  }
+
 
   const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
 
@@ -89,7 +128,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           {/* In the select context there are more options */}
           {select ? <MoreMenu>
+            {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>Undo selectie</li> : null}
+            {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>Alles selecteren</li> : null}
             <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
+            <li className="menu-option" onClick={() => TrashSelection()}>Verplaats naar prullenmand</li>
+
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
           </MoreMenu> : null}
 

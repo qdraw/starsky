@@ -19,7 +19,6 @@ export const validateLoginForm = (
     setError("Controleer je email adres");
     return false;
   }
-
   return true;
 };
 

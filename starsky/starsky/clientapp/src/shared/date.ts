@@ -12,6 +12,12 @@ const leftPad = (n: number) => {
   return n > 9 ? "" + n : "0" + n;
 }
 
+const differenceInDate = (date: number): number => {
+  let now = new Date().valueOf();
+  let difference = (now - date) / 60000;
+  return difference;
+}
+
 const parseRelativeDate = (inputDateTime: string | undefined): string => {
   let date = "";
 
@@ -19,9 +25,7 @@ const parseRelativeDate = (inputDateTime: string | undefined): string => {
     let input = new Date(inputDateTime).valueOf();
     if (input) {
 
-      let now = new Date().valueOf();
-
-      let difference = (now - input) / 60000;
+      let difference = differenceInDate(input);
 
       switch (true) {
         case (difference <= 1):

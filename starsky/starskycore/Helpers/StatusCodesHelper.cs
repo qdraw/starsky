@@ -56,7 +56,7 @@ namespace starskycore.Helpers
                 if (! _iStorage.ExistFile(collectionSubPath)
                     && detailView.FileIndexItem.CollectionPaths.Count == 1)
                 {
-                    return FileIndexItem.ExifStatus.NotFoundSourceMissing;  //
+                    return FileIndexItem.ExifStatus.NotFoundSourceMissing;
                 }
                 // When there are more items in the list
                 if (!_iStorage.ExistFile(collectionSubPath) )

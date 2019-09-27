@@ -37,20 +37,20 @@ namespace starskycore.Services
         }
 
         /// <summary>
-        /// Returns a Base32 case insensitive fileHash, used with the default timeout of 8 seconds
+        /// Returns a Base32 case insensitive fileHash, used with the default timeout of 20 seconds
         /// </summary>
         /// <param name="subPath">subPath</param>
         /// <param name="timeoutSeconds">Timeout in seconds, before a random string will be returned</param>
         /// <returns>base32 hash</returns>
-        public string GetHashCode(string subPath, int timeoutSeconds = 8)
+        public string GetHashCode(string subPath, int timeoutSeconds = 20)
         {
             return _calcHashCode(subPath,timeoutSeconds);
         }
-        
+
         // Here are some tricks used to avoid that CalculateMd5Async keeps waiting forever.
         // In some cases hashing a file keeps waiting forever (at least on linux-arm)
 
-        private string _calcHashCode(string subPath, int timeoutSeconds = 8)
+        private string _calcHashCode(string subPath, int timeoutSeconds = 20)
         {
             var q = Md5TimeoutAsyncWrapper(subPath,timeoutSeconds).Result;
             return q;
