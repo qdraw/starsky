@@ -31,7 +31,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
 
   // to stop loading images after a url change
   var history = useLocation();
-  const historyLocation = history.location.search
+  const [historyLocation] = useState(history.location.search);
   useEffect(() => {
     if (historyLocation !== history.location.search && isLoading) {
       setSrc('data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI=;')
