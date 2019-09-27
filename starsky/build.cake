@@ -181,7 +181,7 @@ Task("Restore")
 
 // Look under a 'Tests' folder and run dotnet test against all of those projects.
 // Then drop the XML test results file in the Artifacts folder at the root.
-Task("Test")
+Task("TestNetCore")
     .Does(() =>
     {
         var projects = GetFiles("./*test/*.csproj");
@@ -393,20 +393,25 @@ Task("Default")
     .IsDependentOn("Client")
     .IsDependentOn("SonarBegin")
     .IsDependentOn("BuildNetCore")
-    .IsDependentOn("Test")
+    .IsDependentOn("TestNetCore")
     .IsDependentOn("SonarEnd")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("MergeCoverageFiles")
     .IsDependentOn("CoverageReport")
     .IsDependentOn("Zip");
 
+// To get fast all (net core) assemblies
+// ./build.sh --Runtime=osx.10.12-x64 --Target=BuildPublishWithoutTest
+Task("BuildPublishWithoutTest")
+    .IsDependentOn("BuildNetCore")
+    .IsDependentOn("PublishWeb");
 
 // Run only Starsky MVC and tests
 Task("CI")
     .IsDependentOn("Client")
     .IsDependentOn("PrepStarskyOnly")
     .IsDependentOn("BuildNetCore")
-    .IsDependentOn("Test")
+    .IsDependentOn("TestNetCore")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("Zip");
 
