@@ -7,7 +7,7 @@ dotenv.config();
 
 // all urls to proxy
 app.all("/*", function (req, res, next) {
-  if (req.originalUrl.startsWith("/api") || req.originalUrl.startsWith("/account")) {
+  if (req.originalUrl.startsWith("/api") || req.originalUrl.startsWith("/account") || req.originalUrl.startsWith("/suggest/")) {
     NetCoreAppRouteRoute(req, res, next);
   }
   else {
@@ -35,21 +35,48 @@ if (!process.env.STARSKYURL) {
   console.log('running on default: use STARSKYURL to customize ');
 }
 
+// To change for example to a different domain
 if (process.env.STARSKYURL) {
   netCoreAppRouteUrl = process.env.STARSKYURL;
   console.log('running on ' + netCoreAppRouteUrl);
 }
 
 function NetCoreAppRouteRoute(req, res, next) {
+  // Watch for Secure Cookies and remove the secure-label
+  apiProxy.on('proxyRes', function (proxyRes, req, res, options) {
+    const sc = proxyRes.headers['set-cookie'];
+    if (Array.isArray(sc)) {
+      proxyRes.headers['set-cookie'] = sc.map(sc => {
+        return sc.split(';')
+          .filter(v => v.trim().toLowerCase() !== 'secure')
+          .join('; ')
+      });
+    }
+  });
+
   apiProxy.web(req, res,
     {
       target: netCoreAppRouteUrl,
       changeOrigin: true,
       secure: false,
       autoRewrite: true,
-      xfwd: true
+      xfwd: true,
+      cookieDomainRewrite: {
+        '*': req.headers.host
+      },
+      ws: false,
     }
   );
+
+  // Error: socket hang up
+  apiProxy.on('error', function (error, req, res) {
+    var json;
+    if (!res.headersSent) {
+      res.writeHead(500, { 'content-type': 'application/json' });
+    }
+    json = { error: 'proxy_error', reason: error.message };
+    res.end(JSON.stringify(json));
+  });
 }
 
 // setup express
