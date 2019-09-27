@@ -5,7 +5,7 @@
     <!-- SonarQube needs this -->
     <ProjectGuid>{a030c158-2f79-4317-a9f9-bdd46d66d1d8}</ProjectGuid>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">2.1.10</RuntimeFrameworkVersion>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">2.2.6</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">2.2.7</RuntimeFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <IntermediateOutputPath></IntermediateOutputPath>
