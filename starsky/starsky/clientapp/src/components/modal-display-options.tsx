@@ -20,7 +20,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   const [isLoading, setIsLoading] = useState(false);
 
   var history = useLocation();
-  let { state, dispatch } = React.useContext(ArchiveContext);
+  let { dispatch } = React.useContext(ArchiveContext);
 
   // the default is true
   var defaultCollections = new URLPath().StringToIUrl(history.location.search).collections
