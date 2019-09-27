@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
 import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
+import { CastToInterface } from '../shared/cast-to-interface';
 import FetchPost from '../shared/fetch-post';
 import { SidebarUpdate } from '../shared/sidebar-update';
 import { URLPath } from '../shared/url-path';
+import Preloader from './preloader';
 
 
 const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
@@ -28,6 +30,9 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   // Add/Hide disabled state
   const [isInputEnabled, setInputEnabled] = React.useState(false);
 
+  // preloading icon
+  const [isLoading, setIsLoading] = useState(false);
+
   // Update the disabled state + Local variable with input data
   function handleUpdateChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
     let fieldValue = event.currentTarget.innerText.trim();
@@ -45,6 +50,10 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
    * @param append to Add to the existing 
    */
   function pushUpdate(append: boolean) {
+    // loading + update button
+    setIsLoading(true);
+    setInputEnabled(false);
+
     update.append = append;
 
     var bodyParams = new URLPath().ObjectToSearchParams(update);
@@ -57,13 +66,27 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     if (selectParams.length === 0) return;
     bodyParams.append("f", selectParams)
 
-    FetchPost("/api/update", bodyParams.toString());
+    FetchPost("/api/update", bodyParams.toString()).then((anyData) => {
+      var result = new CastToInterface().InfoFileIndexArray(anyData);
+      result.forEach(element => {
+        dispatch({ type: 'update', ...element, select });
+      });
 
-    dispatch({ type: 'update', ...update, select });
+      // loading + update button
+      setIsLoading(false);
+      setInputEnabled(true);
+
+    }).catch(() => {
+      // loading + update button
+      setIsLoading(false);
+      setInputEnabled(true);
+    })
   }
 
   return (
     <>
+      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false}></Preloader> : ""}
+
       <h4>Tags:</h4>
       <div data-name="tags"
         onInput={handleUpdateChange}
