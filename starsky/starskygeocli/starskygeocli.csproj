@@ -15,6 +15,7 @@
     <TreatWarningsAsErrors></TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.7" />
     <PackageReference Include="NGeoNames" Version="1.5.1" />
   </ItemGroup>
   <ItemGroup>

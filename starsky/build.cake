@@ -382,18 +382,18 @@ Task("Client")
   .IsDependentOn("ClientTest");
 
 // A meta-task that runs all the steps to Build and Test the app
-Task("BuildNetCoreAndTest")
+Task("BuildNetCore")
     .IsDependentOn("Clean")
     .IsDependentOn("Restore")
-    .IsDependentOn("Build")
-    .IsDependentOn("Test");
+    .IsDependentOn("Build");
 
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
 Task("Default")
     .IsDependentOn("Client")
     .IsDependentOn("SonarBegin")
-    .IsDependentOn("BuildNetCoreAndTest")
+    .IsDependentOn("BuildNetCore")
+    .IsDependentOn("Test")
     .IsDependentOn("SonarEnd")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("MergeCoverageFiles")
@@ -405,7 +405,8 @@ Task("Default")
 Task("CI")
     .IsDependentOn("Client")
     .IsDependentOn("PrepStarskyOnly")
-    .IsDependentOn("BuildNetCoreAndTest")
+    .IsDependentOn("BuildNetCore")
+    .IsDependentOn("Test")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("Zip");
 
