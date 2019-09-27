@@ -5,6 +5,9 @@ var apiProxy = httpProxy.createProxyServer();
 var dotenv = require('dotenv');
 dotenv.config();
 
+const http = require('http');
+const https = require('https');
+
 // all urls to proxy
 app.all("/*", function (req, res, next) {
   if (req.originalUrl.startsWith("/api") || req.originalUrl.startsWith("/account") || req.originalUrl.startsWith("/suggest/")) {
@@ -40,6 +43,23 @@ if (process.env.STARSKYURL) {
   netCoreAppRouteUrl = process.env.STARSKYURL;
   console.log('running on ' + netCoreAppRouteUrl);
 }
+
+// To check if the services are ready/started
+[netCoreAppRouteUrl, createReactAppRouteUrl].forEach(url => {
+  if (url.startsWith("https")) {
+    https.get(url, (resp) => {
+    }).on("error", (err) => {
+      console.log("Error: " + err.message);
+    });
+  }
+  else {
+    http.get(url, (resp) => {
+    }).on("error", (err) => {
+      console.log("Error: " + err.message);
+    });
+  }
+});
+
 
 function NetCoreAppRouteRoute(req, res, next) {
   // Watch for Secure Cookies and remove the secure-label
