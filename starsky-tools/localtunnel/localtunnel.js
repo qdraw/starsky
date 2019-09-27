@@ -117,6 +117,10 @@ const localtunnel = require('localtunnel');
   console.log("Your localtunnel is ready on:");
   console.log(tunnel.url);
 
+  tunnel.on('error', () => {
+    console.log('err');
+  });
+
   tunnel.on('close', () => {
     // tunnels are closed
   });
