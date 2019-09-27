@@ -38,6 +38,9 @@
 - (front-end) reject delete button when a file is read-only mode
 - (front-end) add to-trash-button and select all button to archive view
 - (front-end) add keyboard shortcut for delete
+- (front-end) add feature to cancel image loading if the page change
+- (front-end) refresh/forceSync does reload page
+- (dotnet) version from 2.2.6 to 2.2.7
 
 # version 0.1.6 - 2019-09-12
 - __Breaking change__ the V1 layout is now at `/v1`
