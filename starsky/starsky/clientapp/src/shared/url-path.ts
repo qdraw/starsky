@@ -113,6 +113,10 @@ export class URLPath {
     return colorClassArray;
   }
 
+  /**
+   * Write it down to a string
+   * @param urlObject Casted Object that holds the url state
+   */
   public IUrlToString(urlObject: IUrl): string {
     var params = new URLSearchParams();
     for (let key of Object.entries(urlObject)) {
@@ -121,6 +125,23 @@ export class URLPath {
     var url = this.addPrefixUrl(params.toString());
     url = url.replace(/\+/ig, " ").replace(/%2F/ig, "/").replace(/%2C/ig, ",");
     return url;
+  }
+
+  /**
+ * append=true&collections=true&tags=update
+ * @param toUpdate 
+ */
+  public ObjectToSearchParams(toUpdate: Object): URLSearchParams {
+    var bodyParams = new URLSearchParams();
+    for (let key of Object.entries(toUpdate)) {
+      if (key[1] && key[1].length >= 1) {
+        bodyParams.set(key[0], key[1]);
+      }
+      if (key[1] === true || key[1] === false) {
+        bodyParams.set(key[0], key[1]);
+      }
+    }
+    return bodyParams;
   }
 
 
@@ -132,6 +153,7 @@ export class URLPath {
   private addPrefixUrl(input: string): string {
     return "?" + input;
   }
+
   public getChild(getFilePath: string): string {
     if (!getFilePath) return "";
     getFilePath = this.removeEndOnSlash(getFilePath);
