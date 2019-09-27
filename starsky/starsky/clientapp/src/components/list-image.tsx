@@ -34,7 +34,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   const [historyLocation] = useState(history.location.search);
   useEffect(() => {
     if (historyLocation !== history.location.search && isLoading) {
-      setSrc('data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI=;')
+      setSrc('data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI=')
     }
   }, [history.location.search]);
 
