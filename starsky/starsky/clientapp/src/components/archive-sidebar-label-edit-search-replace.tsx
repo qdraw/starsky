@@ -1,9 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
 import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
+import { CastToInterface } from '../shared/cast-to-interface';
+import FetchPost from '../shared/fetch-post';
 import { SidebarUpdate } from '../shared/sidebar-update';
 import { URLPath } from '../shared/url-path';
+import Preloader from './preloader';
 
 
 const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
@@ -24,6 +27,9 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   // Add/Hide disabled state
   const [isInputEnabled, setInputEnabled] = React.useState(false);
 
+  // preloading icon
+  const [isLoading, setIsLoading] = useState(false);
+
   // Update the disabled state + Local variable with input data
   function handleUpdateChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
     let fieldValue = event.currentTarget.innerText.trim();
@@ -36,10 +42,20 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     setInputEnabled(new SidebarUpdate().IsFormUsed(update));
   }
 
+  const Capitalize = (s: string) => {
+    if (typeof s !== 'string') return ''
+    return s.charAt(0).toUpperCase() + s.slice(1)
+  }
+
   /**
    * To search and replace
    */
   function pushSearchAndReplace() {
+
+    // loading + update button
+    setIsLoading(true);
+    setInputEnabled(false);
+
     update.append = false;
     var subPaths = new URLPath().MergeSelectFileIndexItem(select, archive.fileIndexItems);
     if (!subPaths) return;
@@ -51,27 +67,42 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     bodyParams.append("f", selectPaths);
 
     for (let key of Object.entries(update)) {
-      if (key[1] && key[1].length >= 1) {
-        console.log(key);
-        bodyParams.set("fieldName", key[0]);
-        bodyParams.set("search", key[1]);
+      var fieldName = key[0];
+      var fieldValue = key[1];
 
-        // var replace: string = (updateReplace as any)[key[0]] ? (updateReplace as any)[key[0]] : "";
-        // bodyParams.set("replace", replace);
+      if (fieldName && !fieldName.startsWith("replace") && fieldValue.length >= 1) {
+        bodyParams.set("fieldName", fieldName);
+        bodyParams.set("search", fieldValue);
 
-        // if (key[0] === "tags") {
-        //   var regexer = new RegExp(key[1], "g")
-        //   update.tags = update.tags.replace(regexer, replace)
-        // }
+        var replaceFieldName = "replace" + Capitalize(fieldName);
+        var replaceAnyValue = (update as any)[replaceFieldName];
+        var replaceValue: string = replaceAnyValue ? replaceAnyValue : "";
 
-        // FetchPost("/api/replace", bodyParams.toString())
-        dispatch({ type: 'update', ...update, select });
+        bodyParams.set("replace", replaceValue);
+
+        FetchPost("/api/replace", bodyParams.toString()).then((anyData) => {
+          var result = new CastToInterface().InfoFileIndexArray(anyData);
+          result.forEach(element => {
+            dispatch({ type: 'update', ...element, select });
+          });
+
+          // loading + update button
+          setIsLoading(false);
+          setInputEnabled(true);
+
+        }).catch(() => {
+          // loading + update button
+          setIsLoading(false);
+          setInputEnabled(true);
+        })
       }
     }
   }
 
   return (
     <>
+      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false}></Preloader> : ""}
+
       <h4>Tags:</h4>
       <div data-name="tags"
         onInput={handleUpdateChange}
@@ -79,14 +110,14 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         contentEditable={!archive.isReadOnly && select.length !== 0}
         className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
-          </div>
-      <div data-name="replaceToTags"
+      </div>
+      <div data-name="replace-tags"
         onInput={handleUpdateChange}
         suppressContentEditableWarning={true}
         contentEditable={!archive.isReadOnly && select.length !== 0}
         className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
-          </div>
+      </div>
       <h4>Info</h4>
       <div
         onInput={handleUpdateChange}
@@ -95,15 +126,15 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         contentEditable={!archive.isReadOnly && select.length !== 0}
         className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
-          </div>
+      </div>
       <div
         onInput={handleUpdateChange}
-        data-name="replaceTodescription"
+        data-name="replace-description"
         suppressContentEditableWarning={true}
         contentEditable={!archive.isReadOnly && select.length !== 0}
         className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
-          </div>
+      </div>
       <h4>Titel</h4>
       <div data-name="title"
         onInput={handleUpdateChange}
@@ -111,14 +142,14 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         contentEditable={!archive.isReadOnly && select.length !== 0}
         className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
-          </div>
-      <div data-name="replaceTotitle"
+      </div>
+      <div data-name="replace-title"
         onInput={handleUpdateChange}
         suppressContentEditableWarning={true}
         contentEditable={!archive.isReadOnly && select.length !== 0}
         className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
-          </div>
+      </div>
 
       <div className="warning-box">Test functionaliteit is aangezet</div>
 

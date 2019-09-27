@@ -13,7 +13,7 @@ export class SidebarUpdate {
     if (!fieldValue) return updateSidebar;
 
     fieldValue = fieldValue.replace(/\n/g, "");
-    switch (fieldName) {
+    switch (fieldName.toLowerCase()) {
       case "tags":
         updateSidebar.tags = fieldValue;
         break;
@@ -22,6 +22,16 @@ export class SidebarUpdate {
         break;
       case "title":
         updateSidebar.title = fieldValue;
+        break;
+      // now the updated types
+      case "replace-tags":
+        updateSidebar.replaceTags = fieldValue;
+        break;
+      case "replace-description":
+        updateSidebar.replaceDescription = fieldValue;
+        break;
+      case "replace-title":
+        updateSidebar.replaceTitle = fieldValue;
         break;
     }
     return updateSidebar;

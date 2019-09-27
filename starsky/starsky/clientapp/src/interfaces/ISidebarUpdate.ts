@@ -8,7 +8,7 @@ export interface ISidebarUpdate {
   append?: boolean,
 
   // used for replaceing
-  replaceToTags?: string,
-  replaceToDescription?: string,
-  replaceTotitle?: string,
+  replaceTags?: string,
+  replaceDescription?: string,
+  replaceTitle?: string,
 }
