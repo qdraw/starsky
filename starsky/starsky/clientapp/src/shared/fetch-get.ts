@@ -8,23 +8,23 @@ const FetchGet = async (url: string): Promise<any> => {
   }
 
   const res = await fetch(url, settings);
-  const response = await res.json();
-
-  if (typeof response === "string") {
-    return {
-      statusCode: res.status,
-      data: response
-    } as any;
-  }
-
-  if (!response.ok) {
-    console.error(response.status)
-    return null;
-  }
-
   try {
-    const data = await response.json();
-    return data;
+
+    const response = await res.json();
+
+    if (typeof response === "string") {
+      return {
+        statusCode: res.status,
+        data: response
+      } as any;
+    }
+
+    if (!res.ok) {
+      console.error(response)
+      return null;
+    }
+
+    return response;
   } catch (err) {
     throw err;
   }
