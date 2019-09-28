@@ -70,7 +70,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
-  function TrashSelection() {
+  async function TrashSelection() {
     if (!select) return;
 
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
@@ -80,10 +80,15 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
     var bodyParams = new URLSearchParams();
 
+    bodyParams.append("f", selectParams);
     bodyParams.set("Tags", "!delete!");
     bodyParams.set("append", "true");
-    FetchPost("/api/update", bodyParams.toString())
+    bodyParams.set("Colorclass", "8");
 
+    var resultDo = await FetchPost("/api/update", bodyParams.toString());
+    if (resultDo === null) {
+      return;
+    }
     undoSelection();
     dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
   }
