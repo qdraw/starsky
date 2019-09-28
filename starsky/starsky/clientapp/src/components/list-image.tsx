@@ -1,6 +1,7 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import useIntersection from '../hooks/use-intersection-observer';
 import useLocation from '../hooks/use-location';
+import { URLPath } from '../shared/url-path';
 
 interface IListImageProps {
   src: string;
@@ -33,7 +34,9 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   var history = useLocation();
   const [historyLocation] = useState(history.location.search);
   useEffect(() => {
-    if (historyLocation !== history.location.search && isLoading) {
+    // use ?f only to support details
+    if (new URLPath().getFilePath(historyLocation) !== new URLPath().getFilePath(history.location.search)
+      && isLoading) {
       // data:images are blocked by a strict CSP 
       setSrc('./images/empty-image.gif') // 26 bytes
     }
