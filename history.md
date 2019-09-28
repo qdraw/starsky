@@ -24,6 +24,7 @@
 
 
 # version 0.1.7 - 2019-09-27
+_Works with  .NET Core SDK 3.0.100_
 - (bugfix) LastEdited (in front-end) is now also shown when there is no Datetime
 - (bugfix) after account is created the redirect to a 404 page
 - (bugfix) (layout v1) import to the right controller
@@ -45,8 +46,8 @@
 - (dotnet) Microsoft.AspNetCore.App 2.2.7 is added as dependency to avoid mixed version errors 
 - (bugfix) menu-archive press TrashSelection gives no 404 error anymore
 
-
 # version 0.1.6 - 2019-09-12
+__For this version you need to downgrade the .NET Core SDK to SDK 2.2.401__ 
 - __Breaking change__ the V1 layout is now at `/v1`
 - Add Renewed UI with most of the functionality of the old UI (default on)
   - [x]  Folder/Archive UI
