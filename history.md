@@ -76,11 +76,13 @@ __For this version you need to downgrade the .NET Core SDK to SDK 2.2.401__
 - __Breaking API change__ from `/search/trash` to `/api/search/trash`
 - __API change__ change number of search results per page from 20 to 120
 
-# version 0.1.5.9 - 2019-08-19 _Version does not match SemVer_
+# version 0.1.5.9 - 2019-08-19 
+_Version number does not match SemVer_
 - Entity Framework add database indexes
 - __Breaking Change__  Entity Framework add database Field for FocalLength
 
-# version 0.1.5.8 - 2019-08-14 _Version does not match SemVer_
+# version 0.1.5.8 - 2019-08-14
+_Version number does not match SemVer_
 - Change Dot NET version to the `.Net Core 2.2` release (C# 7)
 - Rollback version due Entity Framework performance issues with MySQL
 - Swagger is enabled
@@ -90,7 +92,8 @@ __For this version you need to downgrade the .NET Core SDK to SDK 2.2.401__
 - Add support for command line -x or don't add xmp sidecar file
 - [x]   XMP disable option when importing using a flag (used for copying photos)
 
-# version 0.1.5.7 - 2019-08-09 _Version does not match SemVer_
+# version 0.1.5.7 - 2019-08-09
+_Version number does not match SemVer_
 - Update Dot NET version to the `.Net Core 3 Preview 7` release
 - Update to C# version 8
 - Keep the core .netstandard2.0 for NetFramework reference
