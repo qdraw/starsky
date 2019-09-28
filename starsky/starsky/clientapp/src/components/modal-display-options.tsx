@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
+import { CastToInterface } from '../shared/cast-to-interface';
 import FetchGet from '../shared/fetch-get';
 import { URLPath } from '../shared/url-path';
 import Modal from './modal';
+import Preloader from './preloader';
 import SwitchButton from './switch-button';
 
 interface IModalDisplayOptionsProps {
@@ -13,7 +16,11 @@ interface IModalDisplayOptionsProps {
 
 const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = (props) => {
 
+  // preloading icon
+  const [isLoading, setIsLoading] = useState(false);
+
   var history = useLocation();
+  let { dispatch } = React.useContext(ArchiveContext);
 
   // the default is true
   var defaultCollections = new URLPath().StringToIUrl(history.location.search).collections
@@ -36,19 +43,38 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     localStorage.setItem("issingleitem", isSingleItem.toString())
   }
 
-  // todo: make a clear screen that the item is disabled
-  const [removeCacheEnabled, setRemoveCacheEnabled] = React.useState(true);
   function removeCache() {
+    setIsLoading(true);
+
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    FetchGet("/api/RemoveCache?json=true&f=" + parentFolder)
-    setRemoveCacheEnabled(false)
+    FetchGet("/api/RemoveCache?json=true&f=" + parentFolder).then((result) => {
+      setTimeout(() => {
+        FetchGet("/api/index/?f=" + parentFolder).then((anyData) => {
+          var result = new CastToInterface().MediaArchive(anyData);
+          result.data.fileIndexItems.forEach(element => {
+            dispatch({ type: 'update', tags: element.tags, select: [element.fileName] });
+          });
+          props.handleExit();
+        });
+      }, 500);
+    });
   }
 
-  const [forceSyncEnabled, setForceSyncEnabled] = React.useState(true);
   function forceSync() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    FetchGet("/sync/?f=" + parentFolder)
-    setForceSyncEnabled(false);
+    console.log(parentFolder);
+    setIsLoading(true);
+    FetchGet("/sync/?f=" + parentFolder).then((result) => {
+      setTimeout(() => {
+        FetchGet("/api/index/?f=" + parentFolder).then((anyData) => {
+          var result = new CastToInterface().MediaArchive(anyData);
+          result.data.fileIndexItems.forEach(element => {
+            dispatch({ type: 'update', tags: element.tags, select: [element.fileName] });
+          });
+          props.handleExit();
+        });
+      }, 5000);
+    });
   }
 
   return (<Modal
@@ -57,6 +83,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     handleExit={() => {
       props.handleExit()
     }}>
+    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true}></Preloader> : ""}
 
     <div className="modal content--subheader">Weergave opties</div>
     <div className="content--text">
@@ -69,8 +96,8 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     </div>
 
     <div className="modal content--header">
-      <button disabled={!forceSyncEnabled} className="btn btn--info" onClick={() => forceSync()}>Forceer sync</button>
-      <button disabled={!removeCacheEnabled} className="btn btn--info" onClick={() => removeCache()}>Vernieuw</button>
+      <button className="btn btn--info" onClick={() => forceSync()}>Forceer sync</button>
+      <button className="btn btn--info" onClick={() => removeCache()}>Vernieuw</button>
     </div>
   </Modal>)
 }

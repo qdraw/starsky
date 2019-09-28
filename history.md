@@ -24,20 +24,27 @@
 
 
 # version 0.1.7 - 2019-09-27
-- (V2 UI) LastEdited is now also shown when there is no Datetime
+- (bugfix) LastEdited (in front-end) is now also shown when there is no Datetime
 - (bugfix) after account is created the redirect to a 404 page
 - (bugfix) (layout v1) import to the right controller
 - (alpha api/subject to change json output) /api/health to check the status of the application
-- __Breaking change__ rename of 'starsky-node-client → starsky-tools'
-- starsky-tools/localtunnel to test local builds
+- __Breaking change__ rename of `starsky-node-client` → `starsky-tools`
+- (starsky-tools/localtunnel) to test local builds
 - starsky-tools/thumbnail, added auto cleanup, allow ranges e.g. 1-20 ago
 - (V2 UI Archive/Trash) add Select all/Undo selection to menu
 - (bugfix) search queries shorter than 2 digits are working
-- __(behind feature flag)__ Front-end for Replace API in folder view (add localStorage item with name `beta_replace`)
+- __(behind feature flag)__ Front-end for Replace API `archive-sidebar-label-edit` in folder view (add localStorage item with name `beta_replace`)
+- (front-end) `archive-sidebar-label-edit` split in separate components
 - (front-end) show collections in DetailView
 - (front-end) reject delete button when a file is read-only mode
 - (front-end) add to-trash-button and select all button to archive view
 - (front-end) add keyboard shortcut for delete
+- (front-end) add feature to cancel image loading if the page change
+- (front-end) refresh/forceSync does reload page
+- (dotnet) version from 2.2.6 to 2.2.7
+- (dotnet) Microsoft.AspNetCore.App 2.2.7 is added as dependency to avoid mixed version errors 
+- (bugfix) menu-archive press TrashSelection gives no 404 error anymore
+
 
 # version 0.1.6 - 2019-09-12
 - __Breaking change__ the V1 layout is now at `/v1`

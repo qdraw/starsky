@@ -4,8 +4,6 @@ const capturePosition = () => {
   let cachedPosition = window.pageYOffset;
   return {
     freeze: () => {
-      // cachedPosition = window.pageYOffset;
-      console.log('cachedPosition', cachedPosition);
       // @ts-ignore
       document.body.style =
         `position: fixed; top: ${cachedPosition * -1}px; width: 100%;`;

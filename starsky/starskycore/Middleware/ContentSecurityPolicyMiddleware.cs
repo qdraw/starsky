@@ -27,7 +27,7 @@ namespace starskycore.Middleware
 				httpContext.Response.Headers
 					.Add("Content-Security-Policy",
 						$"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' https://az416426.vo.msecnd.net \'nonce-{nonce}\'; " +
-						$"connect-src 'self' https://dc.services.visualstudio.com;");
+						$"connect-src 'self' https://dc.services.visualstudio.com; style-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none' ");
 			}
 				
 			await _next(httpContext);

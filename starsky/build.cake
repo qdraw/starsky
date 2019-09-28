@@ -181,7 +181,7 @@ Task("Restore")
 
 // Look under a 'Tests' folder and run dotnet test against all of those projects.
 // Then drop the XML test results file in the Artifacts folder at the root.
-Task("Test")
+Task("TestNetCore")
     .Does(() =>
     {
         var projects = GetFiles("./*test/*.csproj");
@@ -382,30 +382,36 @@ Task("Client")
   .IsDependentOn("ClientTest");
 
 // A meta-task that runs all the steps to Build and Test the app
-Task("BuildNetCoreAndTest")
+Task("BuildNetCore")
     .IsDependentOn("Clean")
     .IsDependentOn("Restore")
-    .IsDependentOn("Build")
-    .IsDependentOn("Test");
+    .IsDependentOn("Build");
 
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
 Task("Default")
     .IsDependentOn("Client")
     .IsDependentOn("SonarBegin")
-    .IsDependentOn("BuildNetCoreAndTest")
+    .IsDependentOn("BuildNetCore")
+    .IsDependentOn("TestNetCore")
     .IsDependentOn("SonarEnd")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("MergeCoverageFiles")
     .IsDependentOn("CoverageReport")
     .IsDependentOn("Zip");
 
+// To get fast all (net core) assemblies
+// ./build.sh --Runtime=osx.10.12-x64 --Target=BuildPublishWithoutTest
+Task("BuildPublishWithoutTest")
+    .IsDependentOn("BuildNetCore")
+    .IsDependentOn("PublishWeb");
 
 // Run only Starsky MVC and tests
 Task("CI")
     .IsDependentOn("Client")
     .IsDependentOn("PrepStarskyOnly")
-    .IsDependentOn("BuildNetCoreAndTest")
+    .IsDependentOn("BuildNetCore")
+    .IsDependentOn("TestNetCore")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("Zip");
 
