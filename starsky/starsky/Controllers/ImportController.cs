@@ -79,7 +79,7 @@ namespace starsky.Controllers
 	    [HttpPost]
 	    [ActionName("Thumbnail")]
 	    [DisableFormValueModelBinding]
-	    [RequestSizeLimit(160000000)] // in bytes, 160mb
+	    [RequestSizeLimit(320_000_000)] // in bytes, 305MB
 	    public async Task<IActionResult> Thumbnail()
 	    {
 		    var tempImportPaths = await Request.StreamFile(_appSettings);
