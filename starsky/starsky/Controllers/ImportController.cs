@@ -43,8 +43,9 @@ namespace starsky.Controllers
 		/// <response code="206">file already imported</response>
 		[HttpPost("/import")]
         [DisableFormValueModelBinding]
-		[RequestSizeLimit(100_000_000)] // 100,000,000 bytes.
-        [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
+		[RequestFormLimits(MultipartBodyLengthLimit = 320_000_000)]
+		[RequestSizeLimit(320_000_000)] // in bytes, 305MB
+		[ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
         [ProducesResponseType(typeof(List<ImportIndexItem>),206)]  // When all items are already imported
         public async Task<IActionResult> IndexPost()
         {
@@ -79,7 +80,8 @@ namespace starsky.Controllers
 	    [HttpPost]
 	    [ActionName("Thumbnail")]
 	    [DisableFormValueModelBinding]
-	    [RequestSizeLimit(320_000_000)] // in bytes, 305MB
+	    [RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
+	    [RequestSizeLimit(100_000_000)] // in bytes, 100MB
 	    public async Task<IActionResult> Thumbnail()
 	    {
 		    var tempImportPaths = await Request.StreamFile(_appSettings);
