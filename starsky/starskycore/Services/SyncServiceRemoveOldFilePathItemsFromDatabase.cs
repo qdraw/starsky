@@ -47,7 +47,7 @@ namespace starskycore.Services
                     continue;
                 }
 
-                Console.Write("*");
+                Console.Write("¬");
 
                 // Remove different item from list
                 databaseSubFolderList.Remove(ditem);
@@ -61,14 +61,14 @@ namespace starskycore.Services
                 // 3. The files are keeped in the index
                 // RemoveOldFilePathItemsFromDatabase => remove this items from database
                 
-                // todo: not shure if this function is any good
+                // todo: not sure if this function is any good
                 
                 if (!ditem.IsDirectory) continue;
 
 	            var orphanPictures = _query.GetAllFiles(ditem.FilePath);
                 foreach (var orphanItem in orphanPictures)
                 {
-                    Console.Write("$");
+                    Console.Write("ø");
                     _query.RemoveItem(orphanItem);
                 }
             }

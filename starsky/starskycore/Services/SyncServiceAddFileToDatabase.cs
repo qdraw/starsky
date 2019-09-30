@@ -28,7 +28,7 @@ namespace starskycore.Services
                 if (dbFolderMatchFirst == null)
                 {
                     // photo
-                    Console.Write(".");
+                    Console.Write("+");
                     if(_appSettings.Verbose) Console.WriteLine("\nAddFileToDatabase: " + singleFolderDbStyle);
 
 
