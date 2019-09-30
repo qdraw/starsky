@@ -43,7 +43,7 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
       {!select || select.length !== 0 ? <a className="btn btn--default" onClick={() => undoSelection()}>Undo</a> : ""}
     </div>
     <ul>
-      {!select || select.length === 0 ? <li className="warning-box">Niks geselecteerd</li> : ""}
+      {!select || select.length === 0 ? <li className="warning-box">Niets geselecteerd</li> : ""}
 
       {
         select ? select.map((item, index) => (
