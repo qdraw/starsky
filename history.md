@@ -20,11 +20,11 @@
 ## High priority features planned
 - []   Front-end for Rename files
 - []   Import page (without link)
-- []   Login in V2 layout
 
 # version 0.1.8 - tbd
 - (bugfix) ignore directories without reading rights (instead of crashing)
 - (change) Import API has now a limit of 320 MB instead of 32MB
+- [x]   Login in V2 layout
 
 
 # version 0.1.7 - 2019-09-27
