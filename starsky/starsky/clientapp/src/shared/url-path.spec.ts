@@ -80,7 +80,7 @@ describe("url-path", () => {
   describe("GetReturnUrl", () => {
     it("default", () => {
       var test = urlPath.GetReturnUrl("?");
-      expect(test).toStrictEqual("?f=/")
+      expect(test).toStrictEqual("/?f=/")
     });
     it("url", () => {
       var test = urlPath.GetReturnUrl("ReturnUrl=test");
