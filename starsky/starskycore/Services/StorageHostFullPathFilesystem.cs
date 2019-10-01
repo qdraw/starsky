@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using starskycore.Interfaces;
 using starskycore.Models;
 
@@ -15,7 +16,16 @@ namespace starskycore.Services
 
 		public IEnumerable<string> GetAllFilesInDirectory(string fullFilePath)
 		{
-			string[] allFiles = Directory.GetFiles(fullFilePath);
+			var allFiles = new string[]{};
+			try
+			{
+				 allFiles = Directory.GetFiles(fullFilePath);
+			}
+			catch ( UnauthorizedAccessException e )
+			{
+				Console.WriteLine(e);
+				return allFiles;
+			}
 
 			var imageFilesList = new List<string>();
 			foreach (var file in allFiles)
@@ -41,7 +51,30 @@ namespace starskycore.Services
 
 		public IEnumerable<string> GetDirectoryRecursive(string fullFilePath)
 		{
-			return Directory.GetDirectories(fullFilePath, "*", SearchOption.AllDirectories);
+			var folders = new Queue<string>();
+			folders.Enqueue(fullFilePath);
+			var folderList = new List<string>();
+			while (folders.Count != 0) {
+				var currentFolder = folders.Dequeue();
+				try
+				{
+					var foldersInCurrent = Directory.GetDirectories(currentFolder,
+						"*.*", SearchOption.TopDirectoryOnly);
+					foreach ( var current in foldersInCurrent )
+					{
+						folders.Enqueue(current);
+						if ( Directory.GetLastAccessTime(current).Year != 1 )
+						{
+							folderList.Add(current);
+						}
+					}
+				}
+				catch(UnauthorizedAccessException e) 
+				{
+					Console.WriteLine(e);
+				}
+			}
+			return folderList;
 		}
 
 		public Stream ReadStream(string path, int maxRead = -1)
