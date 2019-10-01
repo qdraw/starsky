@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,13 +16,15 @@ namespace starsky.Controllers
     public class AccountController : Controller
     {
         private readonly IUserManager _userManager;
+        private readonly string  _clientApp;
 
         public AccountController(IUserManager userManager)
         {
             _userManager = userManager;
+            _clientApp = Path.Combine(Directory.GetCurrentDirectory(),
+	            "clientapp", "build", "index.html");
         }
         
-
 		/// <summary>
 		/// Check the account status of the login (Json)
 		/// </summary>
@@ -93,11 +96,9 @@ namespace starsky.Controllers
 		/// <response code="200">Login form page</response>
 		[HttpGet("/account/login")]
         [ProducesResponseType(200)]
-        public IActionResult Login(string returnUrl = null)
+        public IActionResult Login()
         {
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
+	        return PhysicalFile(_clientApp, "text/html");
         }
 
         /// <summary>
@@ -120,6 +121,7 @@ namespace starsky.Controllers
             if (!validateResult.Success)
             {
                 Response.StatusCode = 401;
+                
                 ModelState.AddModelError("All", "Login Failed");
                 return View(model);
             } 

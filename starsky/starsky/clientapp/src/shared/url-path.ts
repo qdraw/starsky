@@ -90,7 +90,7 @@ export class URLPath {
     let hash = this.RemovePrefixUrl(locationHash);
     let search = new URLSearchParams(hash);
     let getReturnUrl = search.get("ReturnUrl");
-    if (!getReturnUrl) return this.addPrefixUrl("f=/");
+    if (!getReturnUrl) return "/" + this.addPrefixUrl("f=/");
     return getReturnUrl;
   }
 
