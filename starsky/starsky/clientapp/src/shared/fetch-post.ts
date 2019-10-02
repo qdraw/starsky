@@ -1,12 +1,15 @@
-const FetchPost = async (url: string, body: string, method: 'post' | 'delete' = 'post'): Promise<any> => {
-  const settings = {
+const FetchPost = async (url: string, body: string | FormData, method: 'post' | 'delete' = 'post'): Promise<any> => {
+  const settings: RequestInit = {
     method: method,
     body,
     credentials: "include" as RequestCredentials,
     headers: {
       'Accept': 'application/json',
-      'Content-type': 'application/x-www-form-urlencoded',
-    }
+    },
+  }
+
+  if (typeof body === "string") {
+    (settings.headers as any)['Content-type'] = 'application/x-www-form-urlencoded';
   }
 
   const response = await fetch(url, settings);
