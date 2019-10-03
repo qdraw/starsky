@@ -151,6 +151,11 @@ const DropArea = ({ children }: ReactNodeProps) => {
     document.body.classList.remove('drag');
   }, [dragActive]);
 
+  useEffect(() => {
+    console.log('dsfsdfl');
+
+  }, [state]);
+
 
   return (<>
     {children}
