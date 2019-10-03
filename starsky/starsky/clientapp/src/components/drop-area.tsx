@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { IExifStatus } from '../interfaces/IExifStatus';
+import { newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { CastToInterface } from '../shared/cast-to-interface';
 import FetchPost from '../shared/fetch-post';
+import ItemTextListView from './item-text-list-view';
 
 
 
@@ -11,10 +15,15 @@ const DropArea = ({ children }: ReactNodeProps) => {
 
   const [state, setState] = useState(new Array<string | boolean>());
   const [dragActive, setDrag] = useState(false);
+  const [dragTarget, setDragTarget] = useState(new EventTarget());
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [resultList, setResult] = useState(newIFileIndexItemArray());
+
 
   const onDrop = (event: DragEvent) => {
     event.preventDefault();
-    event.stopPropagation()
+    setDrag(false);
 
     if (!event.dataTransfer) return;
 
@@ -35,16 +44,29 @@ const DropArea = ({ children }: ReactNodeProps) => {
     var formData = new FormData();
 
     filesList.forEach(file => {
-      const { size, type } = file;
+      const { size, type, name } = file;
 
       if (!fileTypes.includes(type)) {
         state.push("File format must be either png or jpg")
         setState(state);
+
+        var test = CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError);
+        console.log(test);
+
+        resultList.push(CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError));
+        setResult(resultList);
         return;
       }
       if (size / 1024 / 1024 > 250) {
         state.push("File size exceeded the limit of 250MB")
         setState(state);
+
+        var test = CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError);
+        console.log(test);
+
+        resultList.push(CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError));
+        setResult(resultList);
+
         return;
       }
       state.push(true)
@@ -53,48 +75,71 @@ const DropArea = ({ children }: ReactNodeProps) => {
       formData.append("files", file);
     });
 
-    FetchPost('/import', formData).then((result) => {
-      console.log(result);
+    FetchPost('/import', formData).then((data) => {
+      console.log(data);
 
+      Array.from(data).forEach(element => {
+        if (!element) return;
+        (element as any).pageType = "DetailView";
+
+        var castedItem = new CastToInterface()
+          .MediaDetailView(element).data.fileIndexItem;
+        console.log(castedItem);
+
+        if (!castedItem) {
+          var duplicateItem = CastFileIndexItem(element, IExifStatus.IgnoredAlreadyImported)
+          resultList.push(duplicateItem)
+          console.log(duplicateItem);
+          return
+        };
+        resultList.push(castedItem)
+      });
+
+      setResult(resultList);
     });
   };
 
-  const handleDragIn = (event: DragEvent) => {
+  const CastFileIndexItem = (element: any, status: IExifStatus) => {
+    var duplicateItem = newIFileIndexItem();
+    duplicateItem.fileHash = (element as any).fileHash
+    duplicateItem.filePath = (element as any).filePath;
+    duplicateItem.status = status;
+    return duplicateItem;
+  }
+
+  const onDragEnter = (event: DragEvent) => {
     event.preventDefault();
-    event.stopPropagation();
-    if (!event.dataTransfer) return;
-    if (event.dataTransfer.items && event.dataTransfer.items.length > 0) {
-      setDrag(true);
+    if (!event.target) return;
+
+    setDrag(true);
+    setDragTarget(event.target);
+  };
+
+  const onDragLeave = (event: DragEvent) => {
+    event.preventDefault();
+    if (event.target === dragTarget) {
+      setDrag(false);
     }
   };
 
-  const handleDragOut = (event: DragEvent) => {
+  const onDragOver = (event: DragEvent) => {
     event.preventDefault();
-    event.stopPropagation()
-    setDrag(false);
   };
-
-  // <div>
-  //   <div
-  //     className={drag ? "drop drop--drag" : "drop"}
-  //     onDrop={e => onDrop(e)}
-  //     onDragStart={e => onDragStart(e)}
-  //     onDragOver={e => onDragOver(e)}
-  //   >
-  //   </div>
-  // </div>
 
 
   useEffect(() => {
     // Bind the event listener
-    document.addEventListener("drop", onDrop);
-    document.addEventListener('dragenter', handleDragIn)
-    document.addEventListener('dragleave', handleDragOut)
+    window.addEventListener('dragenter', onDragEnter);
+    window.addEventListener('dragleave', onDragLeave);
+    window.addEventListener('dragover', onDragOver);
+    window.addEventListener('drop', onDrop);
+
     return () => {
       // Unbind the event listener on clean up
-      document.removeEventListener("drop", onDrop);
-      document.removeEventListener('dragenter', handleDragIn)
-      document.removeEventListener('dragleave', handleDragOut)
+      window.removeEventListener('dragenter', onDragEnter);
+      window.removeEventListener('dragleave', onDragLeave);
+      window.removeEventListener('dragover', onDragOver);
+      window.removeEventListener('drop', onDrop);
     };
   });
 
@@ -107,9 +152,9 @@ const DropArea = ({ children }: ReactNodeProps) => {
   }, [dragActive]);
 
 
-
   return (<>
     {children}
+    <ItemTextListView colorClassUsage={[]} fileIndexItems={resultList}></ItemTextListView>
   </>
   );
 };
