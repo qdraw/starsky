@@ -91,6 +91,11 @@ function runQueryChain(index = 0, searchQueries: string[]) {
 						// resizeChain> [undefined,und..]
 					}
 				}
+				else {
+					// continue if a single file fails e.g. RangeError: Array buffer allocation failed
+					process.stdout.write('>>> image has failed: ' + fileHash);
+					return fileHash;
+				}
 			}
 		)));
 
