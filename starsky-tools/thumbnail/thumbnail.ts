@@ -17,7 +17,8 @@ new Files().RemoveOldFiles();
 
 function ShowHelpDialog() {
 	console.log("Starksy Remote Thumbnail Helper")
-	console.log("use numbers (e.g. 1-100) to search relative")
+	console.log("use numbers (e.g. 1) to search relative")
+	console.log("use a range to search relative in that range (e.g. 1-7 to search for last week)")
 	console.log("use the keyword 'IMPORT' to search for recent imported files (case-sensitive)")
 	console.log("use a keyword to search and check if thumbnails are created")
 }
