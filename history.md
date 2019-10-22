@@ -26,6 +26,9 @@
 - (change) Import API has now a limit of 320 MB instead of 32MB
 - [x]   Login in V2 layout
 
+# version 0.1.8 - ?
+- (bugfix) Catch is used for example the region VA (Vatican City)
+
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_
