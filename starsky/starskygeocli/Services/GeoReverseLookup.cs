@@ -116,7 +116,16 @@ namespace starskyGeoCli.Services
                 // if less than 40 kilometers from that place add it to the object
 
                 metaFileItem.LocationCity = nearestPlace.NameASCII;
-                metaFileItem.LocationCountry = new RegionInfo(nearestPlace.CountryCode).NativeName;
+                
+                // Catch is used for example the region VA (Vatican City)
+                try
+                {
+	                metaFileItem.LocationCountry = new RegionInfo(nearestPlace.CountryCode).NativeName;
+                }
+                catch ( ArgumentException e )
+                {
+	                Console.WriteLine(e);
+                }
                 metaFileItem.LocationState = GetAdmin1Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
             }
             return metaFilesInDirectory;
