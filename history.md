@@ -25,6 +25,7 @@
 - []   (feature) when a disk is full, show a warning
 - []   (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses)
 - []   (bug) Force sync and renew for directories that contain a + sign are passing the wrong values
+- []   (bug) GPX, tiff, dng  files uploads are not allowed in new UI
 
 # version 0.1.8 - tbd
 - (bugfix) ignore directories without reading rights (instead of crashing)
