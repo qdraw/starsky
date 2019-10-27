@@ -19,14 +19,16 @@ function ArchiveContextWrapper(archive: IArchiveProps) {
 
 function ArchiveWrapper(archive: IArchiveProps) {
   let { state, dispatch } = React.useContext(ArchiveContext);
-  dispatch({ type: 'reset', payload: archive })
 
-  // To update the list of items
-  const [archiveList, setArchiveList] = React.useState(archive);
+  // running on load
   useEffect(() => {
-    if (!state.fileIndexItems) return;
-    setArchiveList(state);
-  }, [state]);
+    if (archive.subPath) {
+      console.log('running dispatch');
+      dispatch({ type: 'reset', payload: archive })
+    }
+  }, [archive]);
+
+  var archiveList = state;
 
   useEffect(() => {
     if (!state) return;

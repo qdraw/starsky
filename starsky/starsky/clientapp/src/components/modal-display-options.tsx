@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
+import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchGet from '../shared/fetch-get';
 import { URLPath } from '../shared/url-path';
@@ -51,9 +52,8 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
       setTimeout(() => {
         FetchGet("/api/index/?f=" + parentFolder).then((anyData) => {
           var result = new CastToInterface().MediaArchive(anyData);
-          result.data.fileIndexItems.forEach(element => {
-            dispatch({ type: 'update', tags: element.tags, select: [element.fileName] });
-          });
+          var payload = result.data as IArchiveProps;
+          dispatch({ type: 'reset', payload });
           props.handleExit();
         });
       }, 500);
@@ -62,18 +62,16 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
 
   function forceSync() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    console.log(parentFolder);
     setIsLoading(true);
     FetchGet("/sync/?f=" + parentFolder).then((result) => {
       setTimeout(() => {
         FetchGet("/api/index/?f=" + parentFolder).then((anyData) => {
           var result = new CastToInterface().MediaArchive(anyData);
-          result.data.fileIndexItems.forEach(element => {
-            dispatch({ type: 'update', tags: element.tags, select: [element.fileName] });
-          });
+          var payload = result.data as IArchiveProps;
+          dispatch({ type: 'reset', payload });
           props.handleExit();
         });
-      }, 5000);
+      }, 7000);
     });
   }
 
