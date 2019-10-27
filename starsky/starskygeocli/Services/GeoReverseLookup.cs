@@ -7,6 +7,7 @@ using NGeoNames;
 using NGeoNames.Entities;
 using starskycore.Helpers;
 using starskycore.Models;
+using starskycore.Services;
 
 namespace starskyGeoCli.Services
 {
@@ -15,18 +16,32 @@ namespace starskyGeoCli.Services
         private readonly ReverseGeoCode<ExtendedGeoName> _reverseGeoCode;
         private readonly IEnumerable<Admin1Code> _admin1CodesAscii;
 
+        
         private const string CountryName = "cities1000";
+        private const long MinimumSizeInBytes = 7000000; // 7 MB
 
+        /// <summary>
+        /// Getting GeoData
+        /// </summary>
+        /// <param name="appSettings">to know where to store the temp files</param>
         public GeoReverseLookup(AppSettings appSettings)
         {
-            // The class for geodata
-            var downloader = GeoFileDownloader.CreateGeoFileDownloader();
-            downloader.DownloadFile(CountryName + ".zip", appSettings.TempFolder);    
-            // Zipfile will be automatically extracted
-            
-            // code for the second administrative division, a county in the US, see file admin2Codes.txt; varchar(80)
-            downloader.DownloadFile("admin1CodesASCII.txt", appSettings.TempFolder);
+	        var downloader = GeoFileDownloader.CreateGeoFileDownloader();
 
+	        RemoveFailedDownload(appSettings);
+	        
+	        if(!new StorageHostFullPathFilesystem().ExistFile(Path.Join(appSettings.TempFolder,CountryName + ".txt")) )
+	        {
+		        downloader.DownloadFile(CountryName + ".zip", appSettings.TempFolder);    
+		        // Zipfile will be automatically extracted
+	        }
+
+	        if(!new StorageHostFullPathFilesystem().ExistFile(Path.Join(appSettings.TempFolder,"admin1CodesASCII.txt")))
+	        {
+	            // code for the second administrative division, a county in the US, see file admin2Codes.txt; varchar(80)
+	            downloader.DownloadFile("admin1CodesASCII.txt", appSettings.TempFolder);
+	        }
+	        
             _admin1CodesAscii = GeoFileReader.ReadAdmin1Codes(
                 Path.Combine(appSettings.TempFolder, "admin1CodesASCII.txt"));
             
@@ -34,7 +49,24 @@ namespace starskyGeoCli.Services
             _reverseGeoCode = new ReverseGeoCode<ExtendedGeoName>(
                 GeoFileReader.ReadExtendedGeoNames(Path.Combine(appSettings.TempFolder, CountryName + ".txt"))
             );
-            // end geodata
+        }
+
+        /// <summary>
+        /// Check if the .zip file exist and if its larger then MinimumSizeInBytes
+        /// </summary>
+        /// <param name="appSettings">to find temp folder</param>
+        private void RemoveFailedDownload(AppSettings appSettings)
+        {
+	        if ( !new StorageHostFullPathFilesystem().ExistFile(Path.Join(appSettings.TempFolder,
+		        CountryName + ".zip")) ) return;
+	        
+	        // When trying to download a file
+	        var zipLength = new StorageHostFullPathFilesystem()
+		        .ReadStream(Path.Join(appSettings.TempFolder, CountryName + ".zip"))
+		        .Length;
+	        if ( zipLength > MinimumSizeInBytes ) return;
+	        new StorageHostFullPathFilesystem().FileDelete(Path.Join(appSettings.TempFolder,
+		        CountryName + ".zip"));
         }
 
         private string GetAdmin1Name(string countryCode, string[] admincodes)
@@ -88,15 +120,7 @@ namespace starskyGeoCli.Services
             bool overwriteLocationNames)
         {
             metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory,overwriteLocationNames);
-            
-            foreach (var metaFiles in metaFilesInDirectory)
-            {
-                Console.WriteLine("~~~~ " + metaFiles.Latitude + " " +
-                                  metaFiles.Longitude + " " +
-                                  metaFiles.LocationCity + " " 
-                                  + metaFiles.LocationCountry + " "  +metaFiles.LocationState);
-            }  
-            
+          
             foreach (var metaFileItem in metaFilesInDirectory)
             {
                 // Create a point from a lat/long pair from which we want to conduct our search(es) (center)

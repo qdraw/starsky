@@ -23,8 +23,8 @@
 - []   (feature) Geo from Web Interface (including status)
 - []   (feature) Creating thumbnails from Web Interface (including status)
 - []   (bug) when offline geoReverseLookup creates an 0 byte zip
-- []   (bug) when using a .local domain you can't login
 - []   (feature) when a disk is full, show a warning
+- []   (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses)
 
 # version 0.1.8 - tbd
 - (bugfix) ignore directories without reading rights (instead of crashing)
