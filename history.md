@@ -22,7 +22,6 @@
 - []   Import page (without link)
 - []   (feature) Geo from Web Interface (including status)
 - []   (feature) Creating thumbnails from Web Interface (including status)
-- []   (bug) when offline geoReverseLookup creates an 0 byte zip
 - []   (feature) when a disk is full, show a warning
 - []   (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses)
 
@@ -31,7 +30,7 @@
 - (change) Import API has now a limit of 320 MB instead of 32MB
 - [x]   Login in V2 layout
 - (bugfix) Catch is used for example the region VA (Vatican City)
-
+- [x]   (bugfix) when offline geoReverseLookup creates an 0 byte zip
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_

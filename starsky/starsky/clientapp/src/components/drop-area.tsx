@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
-import { CastToInterface } from '../shared/cast-to-interface';
 import FetchPost from '../shared/fetch-post';
+import { URLPath } from '../shared/url-path';
 import ItemTextListView from './item-text-list-view';
+import Modal from './modal';
 
 
 
@@ -13,12 +14,15 @@ type ReactNodeProps = { children: React.ReactNode }
 
 const DropArea = ({ children }: ReactNodeProps) => {
 
-  const [state, setState] = useState(new Array<string | boolean>());
   const [dragActive, setDrag] = useState(false);
   const [dragTarget, setDragTarget] = useState(new EventTarget());
   const [isLoading, setIsLoading] = useState(false);
 
-  const [resultList, setResult] = useState(newIFileIndexItemArray());
+  const [isOpen, setOpen] = useState(false);
+  const [lastUploaded, setLastUploaded] = useState(new Date());
+
+  // used to force react to update the array
+  const [uploadFilesList, setUploadFiles] = useState(newIFileIndexItemArray());
 
 
   const onDrop = (event: DragEvent) => {
@@ -47,64 +51,46 @@ const DropArea = ({ children }: ReactNodeProps) => {
       const { size, type, name } = file;
 
       if (!fileTypes.includes(type)) {
-        state.push("File format must be either png or jpg")
-        setState(state);
-
-        var test = CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError);
-        console.log(test);
-
-        resultList.push(CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError));
-        setResult(resultList);
+        uploadFilesList.push(CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError));
         return;
       }
       if (size / 1024 / 1024 > 250) {
-        state.push("File size exceeded the limit of 250MB")
-        setState(state);
-
-        var test = CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError);
-        console.log(test);
-
-        resultList.push(CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError));
-        setResult(resultList);
-
+        uploadFilesList.push(CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError));
         return;
       }
-      state.push(true)
-      setState(state);
 
       formData.append("files", file);
     });
 
     FetchPost('/import', formData).then((data) => {
-      console.log(data);
+      console.log('/import >= data', data);
 
-      Array.from(data).forEach(element => {
-        if (!element) return;
-        (element as any).pageType = "DetailView";
 
-        var castedItem = new CastToInterface()
-          .MediaDetailView(element).data.fileIndexItem;
-        console.log(castedItem);
 
-        if (!castedItem) {
-          var duplicateItem = CastFileIndexItem(element, IExifStatus.IgnoredAlreadyImported)
-          resultList.push(duplicateItem)
-          console.log(duplicateItem);
-          return
-        };
-        resultList.push(castedItem)
+      Array.from(data).forEach(dataItem => {
+        if (!dataItem) return;
+        var status = IExifStatus.Ok;
+        if ((dataItem as any).status === "IgnoredAlreadyImported") {
+          status = IExifStatus.IgnoredAlreadyImported;
+        }
+        var uploadFileObject = CastFileIndexItem(dataItem, status);
+        uploadFilesList.push(uploadFileObject);
+
       });
 
-      setResult(resultList);
+      setOpen(true);
+      setLastUploaded(new Date());
     });
   };
 
   const CastFileIndexItem = (element: any, status: IExifStatus) => {
-    var duplicateItem = newIFileIndexItem();
-    duplicateItem.fileHash = (element as any).fileHash
-    duplicateItem.filePath = (element as any).filePath;
-    duplicateItem.status = status;
-    return duplicateItem;
+    var uploadFileObject = newIFileIndexItem();
+    uploadFileObject.fileHash = (element as any).fileHash
+    uploadFileObject.filePath = (element as any).filePath;
+    uploadFileObject.fileName = new URLPath().getChild(uploadFileObject.filePath);
+    uploadFileObject.lastEdited = new Date().toISOString();
+    uploadFileObject.status = status;
+    return uploadFileObject;
   }
 
   const onDragEnter = (event: DragEvent) => {
@@ -124,6 +110,7 @@ const DropArea = ({ children }: ReactNodeProps) => {
 
   const onDragOver = (event: DragEvent) => {
     event.preventDefault();
+    setDrag(true);
   };
 
 
@@ -152,15 +139,23 @@ const DropArea = ({ children }: ReactNodeProps) => {
   }, [dragActive]);
 
   useEffect(() => {
-    console.log('dsfsdfl');
+    console.log('resultList/eeff');
 
-  }, [state]);
+    console.log(uploadFilesList);
 
+  }, [isOpen]);
 
   return (<>
     {children}
-    <ItemTextListView colorClassUsage={[]} fileIndexItems={resultList}></ItemTextListView>
-  </>
-  );
+    {/* <input type="file" onChange={onDrop}></input> */}
+    <Modal
+      id="detailview-drop-modal"
+      isOpen={isOpen}
+      handleExit={() => {
+        setOpen(false)
+      }}>
+      <ItemTextListView lastUploaded={lastUploaded} fileIndexItems={uploadFilesList}></ItemTextListView>
+    </Modal>
+  </>);
 };
 export default DropArea;
