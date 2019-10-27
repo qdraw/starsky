@@ -35,6 +35,21 @@ const DropArea = ({ children }: ReactNodeProps) => {
       dataTransfer: { files }
     } = event;
 
+    uploadFiles(files);
+  }
+
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return;
+    const {
+      target: { files }
+    } = event;
+
+    uploadFiles(files);
+  }
+
+  const uploadFiles = (files: FileList) => {
+
+
     var filesList = Array.from(files);
 
     console.log("Files: ", files);
@@ -147,7 +162,9 @@ const DropArea = ({ children }: ReactNodeProps) => {
 
   return (<>
     {children}
-    {/* <input type="file" onChange={onDrop}></input> */}
+
+    <input type="file" onChange={onChange}></input>
+
     <Modal
       id="detailview-drop-modal"
       isOpen={isOpen}
