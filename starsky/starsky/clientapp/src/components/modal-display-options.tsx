@@ -50,10 +50,12 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     FetchGet("/api/RemoveCache?json=true&f=" + parentFolder).then((result) => {
       setTimeout(() => {
-        FetchGet("/api/index/?f=" + parentFolder).then((anyData) => {
+        FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
           var result = new CastToInterface().MediaArchive(anyData);
           var payload = result.data as IArchiveProps;
-          dispatch({ type: 'reset', payload });
+          if (payload.fileIndexItems) {
+            dispatch({ type: 'reset', payload });
+          }
           props.handleExit();
         });
       }, 500);
@@ -63,12 +65,14 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   function forceSync() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     setIsLoading(true);
-    FetchGet("/sync/?f=" + parentFolder).then((result) => {
+    FetchGet("/sync/?f=" + new URLPath().encodeURI(parentFolder)).then((result) => {
       setTimeout(() => {
         FetchGet("/api/index/?f=" + parentFolder).then((anyData) => {
           var result = new CastToInterface().MediaArchive(anyData);
           var payload = result.data as IArchiveProps;
-          dispatch({ type: 'reset', payload });
+          if (payload.fileIndexItems) {
+            dispatch({ type: 'reset', payload });
+          }
           props.handleExit();
         });
       }, 7000);

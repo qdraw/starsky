@@ -24,6 +24,7 @@
 - []   (feature) Creating thumbnails from Web Interface (including status)
 - []   (feature) when a disk is full, show a warning
 - []   (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses)
+- []   (bug) Force sync and renew for directories that contain a + sign are passing the wrong values
 
 # version 0.1.8 - tbd
 - (bugfix) ignore directories without reading rights (instead of crashing)
@@ -31,7 +32,8 @@
 - [x]   Login in V2 layout
 - (bugfix) Catch is used for example the region VA (Vatican City)
 - [x]   (bugfix) when offline geoReverseLookup creates an 0 byte zip
-- [x]   (bugfix) in archive mode, selecting and deselecting ColorClass does not include filepaths in request.
+- [x]   (bugfix) (UI) in archive mode, selecting and deselecting ColorClass does not include filepaths in request.
+- [x]   (bugfix) (UI) when pressing force sync and renew now the view is updated
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_

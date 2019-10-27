@@ -127,6 +127,11 @@ export class URLPath {
     return url;
   }
 
+  public encodeURI(url: string): string {
+    // var url = url.replace(/\+/ig, "%2B");
+    return encodeURI(url);
+  }
+
   /**
  * append=true&collections=true&tags=update
  * @param toUpdate 

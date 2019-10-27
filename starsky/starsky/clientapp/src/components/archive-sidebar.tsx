@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useEffect, useLayoutEffect } from "react";
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import ArchiveSidebarColorClass from './archive-sidebar-color-class';
 import ArchiveSidebarLabelEdit from './archive-sidebar-label-edit';
@@ -24,6 +24,20 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
       const scrollY = document.body.style.top;
       window.scrollTo(0, parseInt(scrollY || '0') * -1);
       document.body.style.top = '';
+    };
+  });
+
+  /**
+   * to avoid changes in location when scrolling while the sidebar is open
+   *  */
+  const listener = (e: Event) => {
+    document.body.style.top = `-${window.scrollY}px`;
+  }
+
+  useLayoutEffect(() => {
+    window.addEventListener("scroll", listener);
+    return () => {
+      window.removeEventListener("scroll", listener);
     };
   });
 
