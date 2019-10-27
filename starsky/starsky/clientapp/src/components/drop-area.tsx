@@ -6,12 +6,18 @@ import { URLPath } from '../shared/url-path';
 import ItemTextListView from './item-text-list-view';
 import Modal from './modal';
 
-
-
 const fileTypes = ["image/jpeg", "image/jpg", "image/png"];
 
 type ReactNodeProps = { children: React.ReactNode }
 
+// todo: add parameter for drag'n drop
+// todo: add parameter for button only
+// todo: add loading icon
+
+/**
+ * Todo
+ * @param param0 
+ */
 const DropArea = ({ children }: ReactNodeProps) => {
 
   const [dragActive, setDrag] = useState(false);
@@ -24,7 +30,10 @@ const DropArea = ({ children }: ReactNodeProps) => {
   // used to force react to update the array
   const [uploadFilesList, setUploadFiles] = useState(newIFileIndexItemArray());
 
-
+  /**
+   * On a mouse drop
+   * @param event Drag'n drop event
+   */
   const onDrop = (event: DragEvent) => {
     event.preventDefault();
     setDrag(false);
@@ -38,6 +47,9 @@ const DropArea = ({ children }: ReactNodeProps) => {
     uploadFiles(files);
   }
 
+  /**
+   * on selecting a file
+   */
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return;
     const {
@@ -47,8 +59,11 @@ const DropArea = ({ children }: ReactNodeProps) => {
     uploadFiles(files);
   }
 
+  /**
+   * Pushing content to the server
+   * @param files FileList
+   */
   const uploadFiles = (files: FileList) => {
-
 
     var filesList = Array.from(files);
 
@@ -80,8 +95,6 @@ const DropArea = ({ children }: ReactNodeProps) => {
     FetchPost('/import', formData).then((data) => {
       console.log('/import >= data', data);
 
-
-
       Array.from(data).forEach(dataItem => {
         if (!dataItem) return;
         var status = IExifStatus.Ok;
@@ -108,6 +121,10 @@ const DropArea = ({ children }: ReactNodeProps) => {
     return uploadFileObject;
   }
 
+  /**
+   * Show different style for drag
+   * @param event DragEvent
+   */
   const onDragEnter = (event: DragEvent) => {
     event.preventDefault();
     if (!event.target) return;
@@ -116,6 +133,10 @@ const DropArea = ({ children }: ReactNodeProps) => {
     setDragTarget(event.target);
   };
 
+  /**
+  * Restore style after dragging
+  * @param event DragEvent
+  */
   const onDragLeave = (event: DragEvent) => {
     event.preventDefault();
     if (event.target === dragTarget) {
@@ -123,6 +144,10 @@ const DropArea = ({ children }: ReactNodeProps) => {
     }
   };
 
+  /**
+  * Show different style for drag
+  * @param event DragEvent
+  */
   const onDragOver = (event: DragEvent) => {
     event.preventDefault();
     setDrag(true);
@@ -152,13 +177,6 @@ const DropArea = ({ children }: ReactNodeProps) => {
     }
     document.body.classList.remove('drag');
   }, [dragActive]);
-
-  useEffect(() => {
-    console.log('resultList/eeff');
-
-    console.log(uploadFilesList);
-
-  }, [isOpen]);
 
   return (<>
     {children}
