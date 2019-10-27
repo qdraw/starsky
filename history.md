@@ -31,6 +31,7 @@
 - [x]   Login in V2 layout
 - (bugfix) Catch is used for example the region VA (Vatican City)
 - [x]   (bugfix) when offline geoReverseLookup creates an 0 byte zip
+- [x]   (bugfix) selecting and deselecting ColorClass does not include filepaths in request.
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_
