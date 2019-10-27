@@ -29,11 +29,10 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
 
   /**
    * to avoid changes in location when scrolling while the sidebar is open
-   *  */
+   */
   const listener = (e: Event) => {
     document.body.style.top = `-${window.scrollY}px`;
   }
-
   useLayoutEffect(() => {
     window.addEventListener("scroll", listener);
     return () => {
