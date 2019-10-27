@@ -131,6 +131,11 @@ const DropArea = ({ children }: ReactNodeProps) => {
 
     setDrag(true);
     setDragTarget(event.target);
+
+    // to add the plus sign (only for layout)
+    if (!event.dataTransfer) return;
+    event.dataTransfer.effectAllowed = "copy";
+
   };
 
   /**
@@ -151,6 +156,10 @@ const DropArea = ({ children }: ReactNodeProps) => {
   const onDragOver = (event: DragEvent) => {
     event.preventDefault();
     setDrag(true);
+
+    // to remove the plus sign (only for layout)
+    if (!event.dataTransfer) return;
+    event.dataTransfer.dropEffect = "copy";
   };
 
 
