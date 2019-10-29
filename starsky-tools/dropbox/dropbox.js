@@ -6,8 +6,16 @@ var dropboxCore = require('./dropbox-core');
 
 var dropbox = new dropboxCore(process.env.DROPBOX_ACCESSTOKEN, process.env.STARSKYIMPORTERCLI);
 
+// Command line args
+var args = process.argv.slice(2)[0];
+if (args === undefined) args = "/Camera Uploads"
+if (args === "--h" | args === "--help") {
+    console.log("1. update .env file\n 2. add as arg the folder in the dropbox, default = 'Camera Uploads'");
+    process.exit(1);
+}
+
 dropbox.ensureExistsFile(process.env.STARSKYIMPORTERCLI).then(() => {
-    dropbox.listFiles("/test").then((entries) => {
+    dropbox.listFiles(args).then((entries) => {
 
         var entries = dropbox.filterList(entries);
         console.log('results: ', entries.length);
