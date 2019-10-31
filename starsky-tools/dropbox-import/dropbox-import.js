@@ -22,7 +22,7 @@ for (var arg = 0; arg < argsArray.length; arg++)
     colorClassString = argsArray[arg + 1];
 }
 
-var dropboxFolder = 'Camera Uploads';
+var dropboxFolder = '/Camera Uploads';
 for (var arg = 0; arg < argsArray.length; arg++)
 {
     if ((argsArray[arg].toLowerCase() == "--path" || argsArray[arg].toLowerCase() == "-p") && (arg + 1) != argsArray.length) {
