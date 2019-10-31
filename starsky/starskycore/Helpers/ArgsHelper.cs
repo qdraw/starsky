@@ -39,6 +39,7 @@ namespace starskycore.Helpers
 		// -u --structure
 		// -n --name
 		// -x --clean
+		// --colorclass (no shorthand)
 		
 		/// <summary>
 		/// Simple injection
