@@ -41,6 +41,8 @@ dropbox.ensureExistsFile(process.env.STARSKYIMPORTERCLI).then(() => {
 
         dropbox.downloadList(entries).then((entries) => {
             dropbox.runStarskyList(entries,colorClassString).then((entries) => {
+                if (process.env.DEBUG === "true") console.log("DEBUG MODE == NO DELETE");
+                if (process.env.DEBUG === "true") return;
                 dropbox.removeList(entries).then((entries) => {
                     console.log("DONE :)");
                 });
