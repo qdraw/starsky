@@ -17,9 +17,10 @@
 ## Starsky node client docs
 
 ### Introduction
-'Node Client tools' are tools that you could use on the side and are helpers to use in combination with the starsky mvc application
+'Starsky Tools' are tools that you could use on the side and are helpers to use in combination with the starsky (mvc) application
 
 - [docs](docs/readme.md) convert markdown to html
+- [dropbox import](dropbox-import/readme.md) import from dropbox to the starskyImporterCli
 - [localtunnel](localtunnel/readme.md) debug clientapp (port 3000 + 5000) on mobile
 - [mail](mail/readme.md) imap mail client to import files in Starsky
 - [sync](sync/readme.md) sync, not working

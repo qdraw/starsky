@@ -1,10 +1,11 @@
 {
-  "name": "dropbox",
+  "name": "dropbox-import",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dropbox-import.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dropbox-import"
   },
   "dependencies": {
     "axios": "^0.19.0",
