@@ -5,6 +5,7 @@ import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
 import ItemTextListView from './item-text-list-view';
 import Modal from './modal';
+import Preloader from './preloader';
 
 const fileTypes = ["image/jpeg", "image/jpg", "image/png"];
 
@@ -64,6 +65,7 @@ const DropArea = ({ children }: ReactNodeProps) => {
    * @param files FileList
    */
   const uploadFiles = (files: FileList) => {
+    setIsLoading(true);
 
     var filesList = Array.from(files);
 
@@ -93,6 +95,11 @@ const DropArea = ({ children }: ReactNodeProps) => {
     });
 
     FetchPost('/import', formData).then((data) => {
+      if (!data) {
+        setOpen(true);
+        setIsLoading(false);
+        return;
+      }
       console.log('/import >= data', data);
 
       Array.from(data).forEach(dataItem => {
@@ -107,6 +114,7 @@ const DropArea = ({ children }: ReactNodeProps) => {
       });
 
       setOpen(true);
+      setIsLoading(false);
       setLastUploaded(new Date());
     });
   };
@@ -190,6 +198,7 @@ const DropArea = ({ children }: ReactNodeProps) => {
   return (<>
     {children}
 
+    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true}></Preloader> : ""}
     <input type="file" onChange={onChange}></input>
 
     <Modal

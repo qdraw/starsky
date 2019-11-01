@@ -12,7 +12,8 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = memo((props) =>
 
   if (!props.fileIndexItems) return (<div className="folder">no content</div>);
 
-  return (
+  return (<>
+    {props.fileIndexItems.length === 0 ? <div className="warning-box"> Er zijn geen foto's</div> : ""}
     <ul>
       {
         props.fileIndexItems.map((item, index) => (
@@ -21,7 +22,7 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = memo((props) =>
           </li>
         ))
       }
-    </ul>)
+    </ul></>)
 });
 
 export default ItemTextListView
