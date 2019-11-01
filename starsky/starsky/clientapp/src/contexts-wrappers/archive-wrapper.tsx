@@ -22,7 +22,7 @@ function ArchiveWrapper(archive: IArchiveProps) {
 
   // running on load
   useEffect(() => {
-    if (archive.subPath) {
+    if (archive.fileIndexItems) {
       console.log('running dispatch');
       dispatch({ type: 'reset', payload: archive })
     }
