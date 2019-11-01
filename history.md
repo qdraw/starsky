@@ -36,6 +36,7 @@
 - [x]   (bugfix) (UI) in archive mode, selecting and deselecting ColorClass does not include filepaths in request.
 - [x]   (bugfix) (UI) when pressing force sync and renew now the view is updated
 - [x]   (tools) add Dropbox Import tool
+- __Breaking API change__ from `/import/` to `/api/import`
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_

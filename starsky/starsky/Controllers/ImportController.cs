@@ -70,6 +70,16 @@ namespace starsky.Controllers
 
             return Json(fileIndexResultsList);
         }
+		
+		/// <summary>
+		/// A (string) list of allowed MimeTypes for the import API
+		/// </summary>
+		/// <returns>Json list</returns>
+		[HttpGet("/api/import/allowed")]
+		public IActionResult AllowedImport()
+		{
+			return Json("");
+		} 
 
 	    
 	    /// <summary>
@@ -77,8 +87,7 @@ namespace starsky.Controllers
 	    /// Make sure that the filename is correct, a base32 hash of length 26;
 	    /// </summary>
 	    /// <returns>json of thumbnail urls</returns>
-	    [HttpPost]
-	    [ActionName("Thumbnail")]
+	    [HttpPost("/api/import/thumbnail")]
 	    [DisableFormValueModelBinding]
 	    [RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
 	    [RequestSizeLimit(100_000_000)] // in bytes, 100MB
@@ -117,7 +126,7 @@ namespace starsky.Controllers
 
 
 	    /// <summary>
-	    /// Import file from weburl (only whitelisted domains) and import this file into the application
+	    /// Import file from web-url (only whitelisted domains) and import this file into the application
 	    /// </summary>
 	    /// <param name="fileUrl">the url</param>
 	    /// <param name="filename">the filename (optional, random used if empty)</param>
@@ -126,7 +135,7 @@ namespace starsky.Controllers
 	    /// <response code="200">done</response>
 	    /// <response code="206">file already imported</response>
 	    /// <response code="404">the file url is not found or the domain is not whitelisted</response>
-	    [HttpPost("/import/fromUrl")]
+	    [HttpPost("/api/import/fromUrl")]
 	    [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
 	    [ProducesResponseType(typeof(List<ImportIndexItem>),206)] // file already imported
 	    [ProducesResponseType(404)] // url 404
@@ -145,7 +154,7 @@ namespace starsky.Controllers
             return Json(importedFiles);
         }
 
-	    [HttpGet("/import/history")]
+	    [HttpGet("/api/import/history")]
 	    public IActionResult History()
 	    {
 		    return Json(_import.History());
