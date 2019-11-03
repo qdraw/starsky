@@ -7,8 +7,6 @@ import ItemTextListView from './item-text-list-view';
 import Modal from './modal';
 import Preloader from './preloader';
 
-const fileTypes = ["image/jpeg", "image/jpg", "image/png"];
-
 type ReactNodeProps = { children: React.ReactNode }
 
 // todo: add parameter for drag'n drop
@@ -82,10 +80,6 @@ const DropArea = ({ children }: ReactNodeProps) => {
     filesList.forEach(file => {
       const { size, type, name } = file;
 
-      if (!fileTypes.includes(type)) {
-        uploadFilesList.push(CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError));
-        return;
-      }
       if (size / 1024 / 1024 > 250) {
         uploadFilesList.push(CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError));
         return;

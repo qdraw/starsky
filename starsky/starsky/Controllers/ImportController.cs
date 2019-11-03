@@ -47,6 +47,7 @@ namespace starsky.Controllers
 		[RequestSizeLimit(320_000_000)] // in bytes, 305MB
 		[ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
         [ProducesResponseType(typeof(List<ImportIndexItem>),206)]  // When all items are already imported
+		[ProducesResponseType(typeof(List<ImportIndexItem>),415)]  // Wrong input (e.g. wrong extenstion type)
         public async Task<IActionResult> IndexPost()
         {
             var tempImportPaths = await Request.StreamFile(_appSettings);
@@ -67,6 +68,9 @@ namespace starsky.Controllers
             
             // When all items are already imported
             if (importSettings.IndexMode && fileIndexResultsList.All(p => p.Status != ImportStatus.Ok)) Response.StatusCode = 206;
+            
+            // Wrong input (extension is not allowed)
+            if (fileIndexResultsList.All(p => p.Status == ImportStatus.FileError)) Response.StatusCode = 415;
 
             return Json(fileIndexResultsList);
         }
