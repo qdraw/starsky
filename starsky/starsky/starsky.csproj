@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
+    <ProjectReference Include="..\starskygeocore\starskygeocore.csproj" />
   </ItemGroup>
   <ItemGroup>
    <Content Remove="clientapp\build\*.*" />
