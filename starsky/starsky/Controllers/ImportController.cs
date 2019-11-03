@@ -72,13 +72,14 @@ namespace starsky.Controllers
         }
 		
 		/// <summary>
-		/// A (string) list of allowed MimeTypes for the import API
+		/// A (string) list of allowed ExtensionSyncSupportedList MimeTypes for the import API
 		/// </summary>
 		/// <returns>Json list</returns>
 		[HttpGet("/api/import/allowed")]
 		public IActionResult AllowedImport()
 		{
-			return Json("");
+			var mimeTypes = ExtensionRolesHelper.ExtensionSyncSupportedList.Select(MimeHelper.GetMimeType).ToHashSet();
+			return Json(mimeTypes);
 		} 
 
 	    
@@ -87,7 +88,7 @@ namespace starsky.Controllers
 	    /// Make sure that the filename is correct, a base32 hash of length 26;
 	    /// </summary>
 	    /// <returns>json of thumbnail urls</returns>
-	    [HttpPost("/api/import/thumbnail")]
+	    [HttpPost("/import/thumbnail")]
 	    [DisableFormValueModelBinding]
 	    [RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
 	    [RequestSizeLimit(100_000_000)] // in bytes, 100MB
@@ -154,7 +155,7 @@ namespace starsky.Controllers
             return Json(importedFiles);
         }
 
-	    [HttpGet("/api/import/history")]
+	    [HttpGet("/import/history")]
 	    public IActionResult History()
 	    {
 		    return Json(_import.History());
