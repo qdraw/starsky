@@ -7,7 +7,7 @@ namespace starsky.Controllers
 	public class GeoController : Controller
 	{
 		/// <summary>
-		/// Reverse lookup for Geo Information and/or add Geo location based on a GPX file within the same directory
+		/// WIP Alpha API -- Reverse lookup for Geo Information and/or add Geo location based on a GPX file within the same directory
 		/// </summary>
 		/// <param name="f">subPath</param>
 		/// <param name="colorClass">filter on colorClass (use int)</param>
