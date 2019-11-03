@@ -25,7 +25,7 @@
 - []   (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses)
 - []   (bug) Force sync and renew for directories that contain a + sign are passing the wrong values
 
-# version 0.1.8 - tbd
+# version 0.1.8 - 2019-11-??
 - (bugfix) ignore directories without reading rights (instead of crashing)
 - (change) Import API has now a limit of 320 MB instead of 32MB
 - [x]   Login in V2 layout
