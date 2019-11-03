@@ -12,16 +12,16 @@
 - []   Docker support, including backend abstractions to get the data (partly working)
 - []   Health view, to make more clear when paths are configured right
 - []   Health view, to make more clear when the server time is not correct
+- []   Health view (feature) when a disk is full, show a warning
 - []   (front-end) Search details show exact query behind modal
 - []   Upload to direct folder API + front-end
 - []   (front-end) 'Rotate to Right'
 - []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
 ## High priority features planned
-- []   Front-end for Rename files
 - []   (feature) Geo from Web Interface (including status)
 - []   (feature) Creating thumbnails from Web Interface (including status)
-- []   (feature) when a disk is full, show a warning
+- []   Front-end for Rename files
 - []   (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses)
 - []   (bug) Force sync and renew for directories that contain a + sign are passing the wrong values
 
