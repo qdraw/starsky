@@ -18,4 +18,5 @@ export enum IExifStatus {
   Deleted = "Deleted" as any,
   NotFoundSourceMissing = "NotFoundSourceMissing" as any,
   ServerError = "ServerError" as any,
+  IgnoredAlreadyImported = "IgnoredAlreadyImported" as any,
 }

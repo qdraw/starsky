@@ -17,15 +17,18 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
   var history = useLocation();
 
   // show select info
-  const [selectParams, setSelectParams] = React.useState("");
   const [select, setSelect] = React.useState(new URLPath().getSelect(history.location.search));
-
   useEffect(() => {
     setSelect(new URLPath().getSelect(history.location.search));
+  }, [history.location.search]);
+
+  // updated parameters based on select
+  const [selectParams, setSelectParams] = React.useState("");
+  useEffect(() => {
     var subPaths = new URLPath().MergeSelectFileIndexItem(select, archive.fileIndexItems);
     var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "")
     setSelectParams(selectParams);
-  }, [history.location.search]);
+  }, [select]);
 
   let { dispatch } = React.useContext(ArchiveContext);
 

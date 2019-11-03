@@ -39,7 +39,8 @@ namespace starskyimportercli
                 DeleteAfter = new ArgsHelper(appSettings).GetMove(args),
                 AgeFileFilterDisabled = new ArgsHelper(appSettings).GetAll(args),
                 RecursiveDirectory = new ArgsHelper().NeedRecursive(args),
-	            IndexMode = new ArgsHelper().GetIndexMode(args)
+	            IndexMode = new ArgsHelper().GetIndexMode(args),
+	            ColorClass = new ArgsHelper().GetColorClass(args),
             };
 
 	        if ( appSettings.Verbose ) 
@@ -47,6 +48,8 @@ namespace starskyimportercli
 		        Console.WriteLine($"Options: DeleteAfter: {importSettings.DeleteAfter}, " +
 					$"AgeFileFilterDisabled: {importSettings.AgeFileFilterDisabled},  " +
 					$"RecursiveDirectory {importSettings.RecursiveDirectory}, " +
+					$"ColorClass (overwrite) {importSettings.ColorClass}, " +
+					$"Structure {appSettings.Structure}, " +
 					$"IndexMode {importSettings.IndexMode}");
 	        }
             

@@ -11,6 +11,9 @@ export interface IColorClassSelectProps {
   onToggle(value: number): void;
 }
 
+/**
+ * Used to update colorclasses
+ */
 const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((props) => {
   var colorContent: Array<string> = [
     "Geen",
@@ -26,15 +29,17 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
 
   const [currentColorClass, setCurrentColorClass] = React.useState(props.currentColorClass);
 
+  // Used for Updating Colorclasses
   var handleChange = (colorClass: number) => {
     if (!props.isEnabled) return;
 
     // push content to server
     new Query().queryUpdateApi(props.filePath, "colorClass", colorClass.toString()).then(item => {
       setCurrentColorClass(colorClass);
+      props.onToggle(colorClass);
+    }).catch(() => {
+      alert("Request failed");
     });
-
-    props.onToggle(colorClass);
 
     if (!props.clearAfter) return;
 

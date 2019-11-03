@@ -104,7 +104,12 @@ namespace starskycore.Services
 		{
 			                				
 			// If is in the ImportIndex, ignore it and don't delete it
-			if (importSettings.IndexMode && IsHashInImportDb(fileHashCode)) return new ImportIndexItem{Status = ImportStatus.IgnoredAlreadyImported};
+			if (importSettings.IndexMode && IsHashInImportDb(fileHashCode))
+			{
+				var alreadyImportedResult = GetItemByHash(fileHashCode);
+				alreadyImportedResult.Status = ImportStatus.IgnoredAlreadyImported;
+				return alreadyImportedResult;
+			}
 				
 				
 			// Only accept files with correct meta data
@@ -144,7 +149,7 @@ namespace starskycore.Services
 			// Feature to overwrite default ColorClass Setting
 			// First check and I is defferent than default enable sync
 			fileIndexItem.ColorClass = fileIndexItem.GetColorClass(importSettings.ColorClass.ToString());
-			if (fileIndexItem.ColorClass != FileIndexItem.Color.None)
+			if (fileIndexItem.ColorClass != FileIndexItem.Color.None && fileIndexItem.ColorClass != FileIndexItem.Color.DoNotChange)
 				importSettings.NeedExiftoolSync = true;
 
 			// Item is good

@@ -19,9 +19,24 @@
 
 ## High priority features planned
 - []   Front-end for Rename files
-- []   Import page (without link)
-- []   Login in V2 layout
+- []   (feature) Geo from Web Interface (including status)
+- []   (feature) Creating thumbnails from Web Interface (including status)
+- []   (feature) when a disk is full, show a warning
+- []   (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses)
+- []   (bug) Force sync and renew for directories that contain a + sign are passing the wrong values
+- []   (bug) GPX, tiff, dng  files uploads are not allowed in new UI
 
+# version 0.1.8 - tbd
+- (bugfix) ignore directories without reading rights (instead of crashing)
+- (change) Import API has now a limit of 320 MB instead of 32MB
+- [x]   Login in V2 layout
+- (bugfix) Catch is used for example the region VA (Vatican City)
+- [x]   (bugfix) when offline geoReverseLookup creates an 0 byte zip
+- [x]   (bugfix) (UI) in archive mode, selecting and deselecting ColorClass does not include filepaths in request.
+- [x]   (bugfix) (UI) when pressing force sync and renew now the view is updated
+- [x]   (tools) add Dropbox Import tool
+- __Breaking API change__ from `/import/fromUrl/` to `/api/import/fromUrl`
+- [x]   Import page (without link)
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_
@@ -43,11 +58,11 @@ _Works with  .NET Core SDK 3.0.100_
 - (front-end) add feature to cancel image loading if the page change
 - (front-end) refresh/forceSync does reload page
 - (dotnet) version from 2.2.6 to 2.2.7
-- (dotnet) Microsoft.AspNetCore.App 2.2.7 is added as dependency to avoid mixed version errors 
+- (dotnet) Microsoft.AspNetCore.App 2.2.7 is added as dependency to avoid mixed version errors
 - (bugfix) menu-archive press TrashSelection gives no 404 error anymore
 
 # version 0.1.6 - 2019-09-12
-__For this version you need to downgrade the .NET Core SDK to SDK 2.2.401__ 
+__For this version you need to downgrade the .NET Core SDK to SDK 2.2.401__
 - __Breaking change__ the V1 layout is now at `/v1`
 - Add Renewed UI with most of the functionality of the old UI (default on)
   - [x]  Folder/Archive UI
@@ -76,7 +91,7 @@ __For this version you need to downgrade the .NET Core SDK to SDK 2.2.401__
 - __Breaking API change__ from `/search/trash` to `/api/search/trash`
 - __API change__ change number of search results per page from 20 to 120
 
-# version 0.1.5.9 - 2019-08-19 
+# version 0.1.5.9 - 2019-08-19
 _Version number does not match SemVer_
 - Entity Framework add database indexes
 - __Breaking Change__  Entity Framework add database Field for FocalLength

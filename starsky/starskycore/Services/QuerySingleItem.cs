@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using starsky.ViewModels;
 using starskycore.Helpers;
@@ -65,8 +66,25 @@ namespace starskycore.Services
             // RemoveLatestSlash is for '/' folder
             var fileName = singleItemDbPath.Replace(
                 PathHelper.RemoveLatestSlash(parentFolder) + "/", string.Empty);
-
+            
+            // Home has no parent, so return a value 
+            if ( fileName == string.Empty && parentFolder == "/" && GetObjectByFilePath("/") != null)
+            {
+	            return new DetailView
+	            {
+		            FileIndexItem = GetObjectByFilePath("/"),
+		            RelativeObjects = new RelativeObjects(),
+		            Breadcrumb = new List<string>{"/"},
+		            GetAllColor = FileIndexItem.GetAllColorUserInterface(),
+		            ColorClassFilterList = colorClassFilterList,
+		            IsDirectory = true,
+		            SubPath = "/",
+		            Collections = enableCollections
+	            };
+            }
+            
             var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
+
             if (currentFileIndexItem == null) return null;
 
             // To know when a file is deleted

@@ -421,6 +421,29 @@ namespace starskytest.Helpers
 			    Environment.SetEnvironmentVariable(t,string.Empty);
 		    }
 	    }
-
+	    
+	    [TestMethod]
+	    public void ArgsHelper_GetColorClass()
+	    {
+		    var args = new List<string> {"--colorclass", "1"}.ToArray();
+		    var value = new ArgsHelper(_appSettings).GetColorClass(args);
+		    Assert.AreEqual(1, value);
+	    }
+	    
+	    [TestMethod]
+	    public void ArgsHelper_GetColorClass_99_Fallback()
+	    {
+		    var args = new List<string> {"--colorclass", "99"}.ToArray();
+		    var value = new ArgsHelper(_appSettings).GetColorClass(args);
+		    Assert.AreEqual(-1, value);
+	    }
+	    
+	    [TestMethod]
+	    public void ArgsHelper_GetColorClassFallback()
+	    {
+		    var args = new List<string> {}.ToArray();
+		    var value = new ArgsHelper(_appSettings).GetColorClass(args);
+		    Assert.AreEqual(-1, value);
+	    }
     }
 }

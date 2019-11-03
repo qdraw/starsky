@@ -1,0 +1,10 @@
+.drag::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  z-index: 700;
+  position: absolute;
+  top:0px;
+  left: 0px;
+  border: 10px dashed #1565C0;
+}

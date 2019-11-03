@@ -90,7 +90,7 @@ export class URLPath {
     let hash = this.RemovePrefixUrl(locationHash);
     let search = new URLSearchParams(hash);
     let getReturnUrl = search.get("ReturnUrl");
-    if (!getReturnUrl) return this.addPrefixUrl("f=/");
+    if (!getReturnUrl) return "/" + this.addPrefixUrl("f=/");
     return getReturnUrl;
   }
 
@@ -125,6 +125,11 @@ export class URLPath {
     var url = this.addPrefixUrl(params.toString());
     url = url.replace(/\+/ig, " ").replace(/%2F/ig, "/").replace(/%2C/ig, ",");
     return url;
+  }
+
+  public encodeURI(url: string): string {
+    // var url = url.replace(/\+/ig, "%2B");
+    return encodeURI(url);
   }
 
   /**

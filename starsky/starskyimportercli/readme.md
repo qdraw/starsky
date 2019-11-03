@@ -88,6 +88,7 @@ Starksy Importer Cli ~ Help:
 --structure == overwrite appsettings with filedirectory structure based on exif and filename create datetime
 --index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true
 --clean or -x == true is to add a xmp sidecar file for raws, default true
+--colorclass == update colorclass to this number value, default don't change
 --verbose or -v == verbose, more detailed info
   use -v -help to show settings:
 ```

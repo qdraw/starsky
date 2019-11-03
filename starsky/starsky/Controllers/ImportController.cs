@@ -43,8 +43,9 @@ namespace starsky.Controllers
 		/// <response code="206">file already imported</response>
 		[HttpPost("/import")]
         [DisableFormValueModelBinding]
-		[RequestSizeLimit(100_000_000)] // 100,000,000 bytes.
-        [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
+		[RequestFormLimits(MultipartBodyLengthLimit = 320_000_000)]
+		[RequestSizeLimit(320_000_000)] // in bytes, 305MB
+		[ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
         [ProducesResponseType(typeof(List<ImportIndexItem>),206)]  // When all items are already imported
         public async Task<IActionResult> IndexPost()
         {
@@ -69,6 +70,17 @@ namespace starsky.Controllers
 
             return Json(fileIndexResultsList);
         }
+		
+		/// <summary>
+		/// A (string) list of allowed ExtensionSyncSupportedList MimeTypes for the import API
+		/// </summary>
+		/// <returns>Json list</returns>
+		[HttpGet("/api/import/allowed")]
+		public IActionResult AllowedImport()
+		{
+			var mimeTypes = ExtensionRolesHelper.ExtensionSyncSupportedList.Select(MimeHelper.GetMimeType).ToHashSet();
+			return Json(mimeTypes);
+		} 
 
 	    
 	    /// <summary>
@@ -76,10 +88,10 @@ namespace starsky.Controllers
 	    /// Make sure that the filename is correct, a base32 hash of length 26;
 	    /// </summary>
 	    /// <returns>json of thumbnail urls</returns>
-	    [HttpPost]
-	    [ActionName("Thumbnail")]
+	    [HttpPost("/import/thumbnail")]
 	    [DisableFormValueModelBinding]
-	    [RequestSizeLimit(160000000)] // in bytes, 160mb
+	    [RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
+	    [RequestSizeLimit(100_000_000)] // in bytes, 100MB
 	    public async Task<IActionResult> Thumbnail()
 	    {
 		    var tempImportPaths = await Request.StreamFile(_appSettings);
@@ -115,7 +127,7 @@ namespace starsky.Controllers
 
 
 	    /// <summary>
-	    /// Import file from weburl (only whitelisted domains) and import this file into the application
+	    /// Import file from web-url (only whitelisted domains) and import this file into the application
 	    /// </summary>
 	    /// <param name="fileUrl">the url</param>
 	    /// <param name="filename">the filename (optional, random used if empty)</param>
@@ -124,7 +136,7 @@ namespace starsky.Controllers
 	    /// <response code="200">done</response>
 	    /// <response code="206">file already imported</response>
 	    /// <response code="404">the file url is not found or the domain is not whitelisted</response>
-	    [HttpPost("/import/fromUrl")]
+	    [HttpPost("/api/import/fromUrl")]
 	    [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
 	    [ProducesResponseType(typeof(List<ImportIndexItem>),206)] // file already imported
 	    [ProducesResponseType(404)] // url 404

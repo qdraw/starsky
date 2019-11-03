@@ -39,6 +39,7 @@ namespace starskycore.Helpers
 		// -u --structure
 		// -n --name
 		// -x --clean
+		// --colorclass (no shorthand)
 		
 		/// <summary>
 		/// Simple injection
@@ -231,6 +232,7 @@ namespace starskycore.Helpers
 						"based on exif and filename create datetime");
 					Console.WriteLine("--index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true");
 					Console.WriteLine("--clean or -x == true is to add a xmp sidecar file for raws, default true");
+					Console.WriteLine("--colorclass == update colorclass to this number value, default don't change");
 				break;
 				case AppSettings.StarskyAppType.Sync:
 					// When this change please update ./readme.md
@@ -591,6 +593,25 @@ namespace starskycore.Helpers
 			}
 			return needCacheCleanup;
 		}
-	 
+
+		/// <summary>
+		/// Get colorClass value from args
+		/// </summary>
+		/// <param name="args">input args</param>
+		/// <returns>number, but valid with colorClass</returns>
+		public int GetColorClass(IReadOnlyList<string> args)
+		{	
+			// --colorclass
+			var colorClass = -1;
+			
+			for (var arg = 0; arg < args.Count; arg++)
+			{
+				if ( args[arg].ToLower() != "--colorclass" || ( arg + 1 ) == args.Count ) continue;
+				var colorClassString = args[arg + 1];
+				var color =  new FileIndexItem().GetColorClass(colorClassString);
+				colorClass = (int) color;
+			}
+			return colorClass;
+		}
 	}
 }
