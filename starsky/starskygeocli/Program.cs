@@ -4,7 +4,7 @@ using System.Linq;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
-using starskyGeoCli.Services;
+using starskygeocore.Services;
 
 namespace starskyGeoCli
 {
