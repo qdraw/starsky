@@ -49,7 +49,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     setIsLoading(true);
 
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    FetchGet("/api/RemoveCache?json=true&f=" + parentFolder).then((result) => {
+    FetchGet("/api/RemoveCache?json=true&f=" + new URLPath().encodeURI(parentFolder)).then((result) => {
       setTimeout(() => {
         FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
           var removeCacheResult = new CastToInterface().MediaArchive(anyData);
@@ -97,7 +97,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     setIsLoading(true);
     FetchGet("/sync/?f=" + new URLPath().encodeURI(parentFolder)).then((result) => {
       setTimeout(() => {
-        FetchGet("/api/index/?f=" + parentFolder).then((anyData) => {
+        FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
           var forceSyncResult = new CastToInterface().MediaArchive(anyData);
           var payload = forceSyncResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
