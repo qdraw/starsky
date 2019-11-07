@@ -61,7 +61,7 @@ namespace starskytest.starskyGeoCore.Services
 
 	        var fakeIStorage = new FakeIStorage(new List<string>{"/"},new List<string>{_metaFilesDirectory[0].FilePath}, new List<byte[]>{CreateAnGpx.Bytes} );
                
-            var returnFileIndexItems = new GeoIndexGpx(_appSettings,_readMeta,fakeIStorage).LoopFolder(exampleFiles);
+            var returnFileIndexItems = new GeoIndexGpx(_appSettings,fakeIStorage).LoopFolder(exampleFiles);
             
             Assert.AreEqual(null,returnFileIndexItems.FirstOrDefault(p => p.FileName == "NotInRange.jpg"));
             Assert.AreEqual("01.jpg",returnFileIndexItems.FirstOrDefault(p => p.FileName == "01.jpg")?.FileName);

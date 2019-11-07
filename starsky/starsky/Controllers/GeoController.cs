@@ -70,7 +70,7 @@ namespace starsky.Controllers
 				if ( index )
 				{
 					toMetaFilesUpdate =
-						new GeoIndexGpx(_appSettings, _readMeta, _iStorage).LoopFolder(
+						new GeoIndexGpx(_appSettings, _iStorage).LoopFolder(
 							fileIndexList);
 					Console.Write("¬");
 					new GeoLocationWrite(_appSettings, _exifTool).LoopFolder(
