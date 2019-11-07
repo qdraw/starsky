@@ -45,15 +45,12 @@ namespace starskygeocore.Services
                     nameof(FileIndexItem.LocationCountry),
                 });
                 
-				// todo: check if works
 	            var iStorage = new StorageSubPathFilesystem(_appSettings);
 	            
                 new ExifToolCmdHelper(_exifTool, iStorage,new ReadMeta(iStorage))
 	                .Update(metaFileItem, comparedNamesList);
 	            
 	            if ( _appSettings.Verbose ) Console.WriteLine(metaFileItem.FilePath);
-
-                
             }
 
         }

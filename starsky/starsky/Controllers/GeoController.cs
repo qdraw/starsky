@@ -14,21 +14,18 @@ namespace starsky.Controllers
 	[Authorize]
 	public class GeoController : Controller
 	{
-		private readonly IQuery _query;
 		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IReadMeta _readMeta;
 		private readonly IStorage _iStorage;
 
-		public GeoController(
-			IQuery query, IExifTool exifTool, 
+		public GeoController(IExifTool exifTool, 
 			AppSettings appSettings, IBackgroundTaskQueue queue,
 			IReadMeta readMeta,
 			IStorage iStorage)
 		{
 			_appSettings = appSettings;
-			_query = query;
 			_exifTool = exifTool;
 			_bgTaskQueue = queue;
 			_readMeta = readMeta;
@@ -59,46 +56,51 @@ namespace starsky.Controllers
 				return NotFound("Folder location is not found");
 			}
 			
-			// use relative to StorageFolder
-			var listOfFiles = _iStorage.GetAllFilesInDirectory(f)
-				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
+			// Update >
+			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			{
+				// use relative to StorageFolder
+				var listOfFiles = _iStorage.GetAllFilesInDirectory(f)
+					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
-			var fileIndexList = _readMeta
-				.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
+				var fileIndexList = _readMeta
+					.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
 			
-			var toMetaFilesUpdate = new List<FileIndexItem>();
-			if ( index )
-			{
-				toMetaFilesUpdate =
-					new GeoIndexGpx(_appSettings, _readMeta, _iStorage).LoopFolder(
-						fileIndexList);
-				Console.Write("¬");
-				new GeoLocationWrite(_appSettings, _exifTool).LoopFolder(
-					toMetaFilesUpdate, false);
-				Console.Write("(gps added)");
-			}
+				var toMetaFilesUpdate = new List<FileIndexItem>();
+				if ( index )
+				{
+					toMetaFilesUpdate =
+						new GeoIndexGpx(_appSettings, _readMeta, _iStorage).LoopFolder(
+							fileIndexList);
+					Console.Write("¬");
+					new GeoLocationWrite(_appSettings, _exifTool).LoopFolder(
+						toMetaFilesUpdate, false);
+					Console.Write("(gps added)");
+				}
 
-			fileIndexList =
-				new GeoReverseLookup(_appSettings).LoopFolderLookup(fileIndexList,
-					overwriteLocationNames);
-			if ( fileIndexList.Count >= 1 )
-			{
-				new GeoLocationWrite(_appSettings, _exifTool).LoopFolder(
-					fileIndexList, true);
-			}
+				fileIndexList =
+					new GeoReverseLookup(_appSettings).LoopFolderLookup(fileIndexList,
+						overwriteLocationNames);
+				if ( fileIndexList.Count >= 1 )
+				{
+					new GeoLocationWrite(_appSettings, _exifTool).LoopFolder(
+						fileIndexList, true);
+				}
 
-			// Loop though all options
-			fileIndexList.AddRange(toMetaFilesUpdate);
+				// Loop though all options
+				fileIndexList.AddRange(toMetaFilesUpdate);
 
-			// update thumbs to avoid unnecessary re-generation
-			foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
-				.ToList() )
-			{
-				var newThumb = new FileHash(_iStorage).GetHashCode(item.FilePath);
-				_iStorage.ThumbnailMove(item.FileHash, newThumb);
-				if ( _appSettings.Verbose )
-					Console.WriteLine("thumb+ `" + item.FileHash + "`" + newThumb);
-			}
+				// update thumbs to avoid unnecessary re-generation
+				foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
+					.ToList() )
+				{
+					var newThumb = new FileHash(_iStorage).GetHashCode(item.FilePath);
+					_iStorage.ThumbnailMove(item.FileHash, newThumb);
+					if ( _appSettings.Verbose )
+						Console.WriteLine("thumb+ `" + item.FileHash + "`" + newThumb);
+				}
+			});
+			
 			return Json("");
 		}
 	}
