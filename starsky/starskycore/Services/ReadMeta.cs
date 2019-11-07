@@ -90,10 +90,6 @@ namespace starskycore.Services
             return fileIndexList;
         }
 
-//	    public FileIndexItem ReadExifAndXmpFromFile(FileIndexItem fileIndexItemWithLocation)
-//	    {
-//			return ReadExifAndXmpFromFile(fileIndexItemWithLocation.FilePath);
-//	    }
 
 	    // Cached view >> IMemoryCache
         // Short living cache Max 15. minutes

@@ -69,8 +69,9 @@ namespace starskycore.Services
         #pragma warning restore 1998
 
             var task = Task.Run(() => CalculateMd5Async(fullFileName));
-                if (task.Wait(TimeSpan.FromSeconds(timeoutSeconds)))
-                return task.Result;
+            if (task.Wait(TimeSpan.FromSeconds(timeoutSeconds))){
+				return task.Result;
+            }
 
             // Sometimes a Calc keeps waiting for days
             Console.WriteLine(">>>>>>>>>>>            Timeout Md5 Hashing::: "

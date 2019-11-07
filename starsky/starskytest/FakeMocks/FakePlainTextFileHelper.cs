@@ -12,7 +12,7 @@ namespace starskytest.FakeMocks
 			_outputValue = outputValue;
 		}
 
-		[Obsolete]
+		[Obsolete("Replaced")]
 		public override void WriteFile(string fullFilePath, string writeString)
 		{
 		}

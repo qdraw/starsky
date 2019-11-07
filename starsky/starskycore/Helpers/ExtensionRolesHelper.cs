@@ -299,7 +299,7 @@ namespace starskycore.Helpers
 		/// </summary>
 		/// <param name="filePath">the full path on the system</param>
 		/// <returns>ImageFormat enum</returns>
-		[Obsolete]
+		[Obsolete("Has a direct dependency on the filesystem")]
 		public static ImageFormat GetImageFormat(string filePath)
 		{
 			if ( !File.Exists(filePath) ) return ImageFormat.notfound;
