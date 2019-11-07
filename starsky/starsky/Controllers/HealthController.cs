@@ -3,8 +3,6 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Mvc;
-using starskycore.Interfaces;
-using starskycore.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.Controllers

@@ -22,13 +22,11 @@ namespace starsky.Controllers
 		private readonly IReadMeta _readMeta;
 		private readonly IStorage _iStorage;
 		private readonly IMemoryCache _cache;
-		private readonly IQuery _query;
 
 		public GeoController(IExifTool exifTool, 
 			AppSettings appSettings, IBackgroundTaskQueue queue,
 			IReadMeta readMeta,
 			IStorage iStorage, 
-			IQuery query,
 			IMemoryCache memoryCache = null )
 		{
 			_appSettings = appSettings;
@@ -37,7 +35,6 @@ namespace starsky.Controllers
 			_readMeta = readMeta;
 			_iStorage = iStorage;
 			_cache = memoryCache;
-			_query = query;
 		}
 
 		
