@@ -342,7 +342,7 @@ Task("SonarBegin")
         var branchName = gitBranch.FriendlyName;
         if(branchName == "(no branch)") branchName = "master";
 
-        branchName = "master";
+        /* branchName = "master"; */
 
         SonarBegin(new SonarBeginSettings{
             Name = "Starsky",
