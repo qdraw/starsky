@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
@@ -62,6 +62,32 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     });
   }
 
+  const [geoSyncPercentage, setGeoSyncPercentage] = useState(0);
+
+  function geoSync() {
+
+  }
+
+  function geoSyncStatus() {
+    setInterval(() => {
+      var parentFolder = props.parentFolder ? props.parentFolder : "/";
+      FetchGet("/api/geo/status/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
+        if (anyData.current === 0 && anyData.total === 0) {
+          setGeoSyncPercentage(0);
+          return;
+        }
+
+        console.log(anyData.current);
+        console.log(anyData.total);
+        setGeoSyncPercentage(anyData.current / anyData.total);
+      });
+    }, 1000);
+  }
+
+  useEffect(() => {
+    geoSyncStatus();
+  }, [history.location.search]);
+
   function forceSync() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     setIsLoading(true);
@@ -100,6 +126,8 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     <div className="modal content--header">
       <button className="btn btn--info" onClick={() => forceSync()}>Forceer sync</button>
       <button className="btn btn--info" onClick={() => removeCache()}>Vernieuw</button>
+      <button className="btn btn--info btn--percentage" onClick={() => geoSync()}>Geo sync {geoSyncPercentage}%</button>
+
     </div>
   </Modal>)
 }
