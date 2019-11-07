@@ -13,9 +13,9 @@ namespace starskygeocore.Services
     public class GeoIndexGpx
     {
 	    private readonly AppSettings _appSettings;
-	    private ReadMetaGpx _readMetaGpx;
-	    private IStorage _iStorage;
-	    private IMemoryCache _cache;
+	    private readonly ReadMetaGpx _readMetaGpx;
+	    private readonly IStorage _iStorage;
+	    private readonly IMemoryCache _cache;
 
 	    public GeoIndexGpx(AppSettings appSettings, IStorage iStorage, IMemoryCache memoryCache = null )
         {

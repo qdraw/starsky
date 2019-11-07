@@ -126,7 +126,7 @@ namespace starsky.Controllers
 					}
 
 					// Compare Rotation and All other tags
-					new UpdateService(_query, _exifTool, _appSettings, _readMeta,_iStorage)
+					new UpdateService(_query, _exifTool, _readMeta,_iStorage)
 						.CompareAllLabelsAndRotation(changedFileIndexItemName,
 							collectionsDetailView, statusModel, append, rotateClock);
 					
@@ -148,7 +148,7 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				new UpdateService(_query,_exifTool,_appSettings, _readMeta,_iStorage)
+				new UpdateService(_query,_exifTool, _readMeta,_iStorage)
 					.Update(changedFileIndexItemName,fileIndexResultsList,inputModel,collections, append, rotateClock);
 			});
             
@@ -205,7 +205,7 @@ namespace starsky.Controllers
 						}
 					};
 					
-					new UpdateService(_query,_exifTool,_appSettings, _readMeta,_iStorage)
+					new UpdateService(_query,_exifTool, _readMeta,_iStorage)
 						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, collections, false, 0);
 					
 				}
