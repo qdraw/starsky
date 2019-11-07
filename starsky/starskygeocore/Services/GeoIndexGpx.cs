@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -13,12 +14,14 @@ namespace starskygeocore.Services
 	    private readonly AppSettings _appSettings;
 	    private ReadMetaGpx _readMetaGpx;
 	    private IStorage _iStorage;
+	    private IMemoryCache _cache;
 
-	    public GeoIndexGpx(AppSettings appSettings, IStorage iStorage)
+	    public GeoIndexGpx(AppSettings appSettings, IStorage iStorage, IMemoryCache memoryCache = null )
         {
 	        _readMetaGpx = new ReadMetaGpx();
             _appSettings = appSettings;
 	        _iStorage = iStorage;
+	        _cache = memoryCache;
         }
         
         private List<FileIndexItem> GetNoLocationItems(IEnumerable<FileIndexItem> metaFilesInDirectory,
@@ -51,6 +54,13 @@ namespace starskygeocore.Services
             return geoList;
         }
 
+        private void UpdateCacheStatus(string path, int current)
+        {
+	        if(_cache == null) return;
+	        var queryCacheName = nameof(GeoIndexGpx) + path + "current";
+	        _cache.Set(queryCacheName, current, new TimeSpan(10,0,0));
+        }
+
         public List<FileIndexItem> LoopFolder(List<FileIndexItem> metaFilesInDirectory)
         {
             var toUpdateMetaFiles = new List<FileIndexItem>();
@@ -60,9 +70,9 @@ namespace starskygeocore.Services
 
             metaFilesInDirectory = GetNoLocationItems(metaFilesInDirectory);
 
-            foreach (var metaFileItem in metaFilesInDirectory)
+            foreach (var metaFileItem in metaFilesInDirectory.Select((value, index) => new { value, index }))
             {
-                var dateTimeCameraUtc = TimeZoneInfo.ConvertTime(metaFileItem.DateTime, _appSettings.CameraTimeZoneInfo,
+                var dateTimeCameraUtc = TimeZoneInfo.ConvertTime(metaFileItem.value.DateTime, _appSettings.CameraTimeZoneInfo,
                     TimeZoneInfo.Utc); 
                 
                 var fileGeoData = gpxList.OrderBy(p => Math.Abs((p.DateTime - dateTimeCameraUtc).Ticks)).FirstOrDefault();
@@ -71,11 +81,14 @@ namespace starskygeocore.Services
                 var minutesDifference = (dateTimeCameraUtc - fileGeoData.DateTime).TotalMinutes;
                 if(minutesDifference < -5 || minutesDifference > 5) continue;
                 
-                metaFileItem.Latitude = fileGeoData.Latitude;
-                metaFileItem.Longitude = fileGeoData.Longitude;
-                metaFileItem.LocationAltitude = fileGeoData.Altitude;
+                metaFileItem.value.Latitude = fileGeoData.Latitude;
+                metaFileItem.value.Longitude = fileGeoData.Longitude;
+                metaFileItem.value.LocationAltitude = fileGeoData.Altitude;
                 
-                toUpdateMetaFiles.Add(metaFileItem);
+                toUpdateMetaFiles.Add(metaFileItem.value);
+                
+                // status update
+                UpdateCacheStatus(metaFileItem.value.ParentDirectory, metaFileItem.index);
             }
             return toUpdateMetaFiles;
         }

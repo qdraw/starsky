@@ -79,8 +79,9 @@ namespace starskyGeoCli
 				Console.WriteLine($"Folder: {inputPath}");
 
 				toMetaFilesUpdate =
-					new GeoIndexGpx(appSettings, storage).LoopFolder(
-						fileIndexList);
+					new GeoIndexGpx(appSettings, storage)
+												.LoopFolder(fileIndexList);
+				
 				Console.Write("¬");
 				new GeoLocationWrite(appSettings, startupHelper.ExifTool()).LoopFolder(
 					toMetaFilesUpdate, false);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 using NGeoNames;
 using NGeoNames.Entities;
 using starskycore.Helpers;
@@ -15,8 +16,8 @@ namespace starskygeocore.Services
     {
         private readonly ReverseGeoCode<ExtendedGeoName> _reverseGeoCode;
         private readonly IEnumerable<Admin1Code> _admin1CodesAscii;
+        private readonly IMemoryCache _cache;
 
-        
         private const string CountryName = "cities1000";
         private const long MinimumSizeInBytes = 7000000; // 7 MB
 
@@ -24,7 +25,8 @@ namespace starskygeocore.Services
         /// Getting GeoData
         /// </summary>
         /// <param name="appSettings">to know where to store the temp files</param>
-        public GeoReverseLookup(AppSettings appSettings)
+        /// <param name="memoryCache">for keeping status</param>
+        public GeoReverseLookup(AppSettings appSettings, IMemoryCache memoryCache = null)
         {
 	        var downloader = GeoFileDownloader.CreateGeoFileDownloader();
 
@@ -49,6 +51,8 @@ namespace starskygeocore.Services
             _reverseGeoCode = new ReverseGeoCode<ExtendedGeoName>(
                 GeoFileReader.ReadExtendedGeoNames(Path.Combine(appSettings.TempFolder, CountryName + ".txt"))
             );
+            
+            _cache = memoryCache;
         }
 
         /// <summary>
@@ -109,6 +113,12 @@ namespace starskygeocore.Services
                     ).ToList();
         }
 
+        private void UpdateCacheStatus(string path, int current)
+        {
+	        if(_cache == null) return;
+	        var queryCacheName = nameof(GeoReverseLookup) + path + "current";
+	        _cache.Set(queryCacheName, current, new TimeSpan(10,0,0));
+        }
 
 	    /// <summary>
 	    /// Reverse Geo Syncing for a folder
@@ -121,10 +131,10 @@ namespace starskygeocore.Services
         {
             metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory,overwriteLocationNames);
           
-            foreach (var metaFileItem in metaFilesInDirectory)
+            foreach (var metaFileItem in metaFilesInDirectory.Select((value, index) => new { value, index }))
             {
                 // Create a point from a lat/long pair from which we want to conduct our search(es) (center)
-                var place = _reverseGeoCode.CreateFromLatLong(metaFileItem.Latitude, metaFileItem.Longitude);
+                var place = _reverseGeoCode.CreateFromLatLong(metaFileItem.value.Latitude, metaFileItem.value.Longitude);
             
                 // Find nearest
                 var nearestPlace = _reverseGeoCode.NearestNeighbourSearch(place, 1).FirstOrDefault();
@@ -133,24 +143,26 @@ namespace starskygeocore.Services
                 var distanceTo = GeoDistanceTo.GetDistance(
                     nearestPlace.Latitude, 
                     nearestPlace.Longitude, 
-                    metaFileItem.Latitude,
-                    metaFileItem.Longitude);
+                    metaFileItem.value.Latitude,
+                    metaFileItem.value.Longitude);
 
-                if (distanceTo > 40) continue; 
-                // if less than 40 kilometers from that place add it to the object
+                UpdateCacheStatus(metaFileItem.value.ParentDirectory, metaFileItem.index);
+	                
+                if (distanceTo > 35) continue; 
+                // if less than 35 kilometers from that place add it to the object
 
-                metaFileItem.LocationCity = nearestPlace.NameASCII;
+                metaFileItem.value.LocationCity = nearestPlace.NameASCII;
                 
                 // Catch is used for example the region VA (Vatican City)
                 try
                 {
-	                metaFileItem.LocationCountry = new RegionInfo(nearestPlace.CountryCode).NativeName;
+	                metaFileItem.value.LocationCountry = new RegionInfo(nearestPlace.CountryCode).NativeName;
                 }
                 catch ( ArgumentException e )
                 {
 	                Console.WriteLine(e);
                 }
-                metaFileItem.LocationState = GetAdmin1Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
+                metaFileItem.value.LocationState = GetAdmin1Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
             }
             return metaFilesInDirectory;
         }

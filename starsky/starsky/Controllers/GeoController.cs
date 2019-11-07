@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -23,7 +24,8 @@ namespace starsky.Controllers
 		public GeoController(IExifTool exifTool, 
 			AppSettings appSettings, IBackgroundTaskQueue queue,
 			IReadMeta readMeta,
-			IStorage iStorage)
+			IStorage iStorage, 
+			IMemoryCache memoryCache = null )
 		{
 			_appSettings = appSettings;
 			_exifTool = exifTool;
@@ -39,7 +41,7 @@ namespace starsky.Controllers
 		/// <param name="index">-i in cli</param>
 		/// <param name="overwriteLocationNames"> -a in cli</param>
 		/// <returns></returns>
-		/// <response code="200">returns a list of items from the database</response>
+		/// <response code="200">event is fired</response>
 		/// <response code="404">subpath not found in the database</response>
 		/// <response code="401">User unauthorized</response>
 		[HttpGet("/api/geo/sync")]
@@ -101,7 +103,7 @@ namespace starsky.Controllers
 				}
 			});
 			
-			return Json("");
+			return Json("event fired");
 		}
 	}
 }
