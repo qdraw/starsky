@@ -78,7 +78,6 @@ function Login() {
             </div>
           </header>
           <div className="content"><div className="content--header">{MessageLogin}</div>
-            {!isLogin ? null : null}
             <form
               className="content--login-form form-inline form-nav"
               onSubmit={e => {
