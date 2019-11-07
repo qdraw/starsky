@@ -44,7 +44,8 @@ var filePathList = [
 	"starsky-tools/docs/readme.md",
 	"starsky-tools/mail/readme.md",
 	"starsky-tools/localtunnel/readme.md",
-	"starsky-tools/sync/readme.md"
+	"starsky-tools/sync/readme.md",
+	"starsky-tools/dropbox-import/readme.md"
 ];
 
 var blobPathList = [

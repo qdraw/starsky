@@ -44,6 +44,7 @@
     <Content Include="pm2-warmup.sh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Remove="clientapp\node_modules\**" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="appsettings.json">
@@ -52,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
+    <ProjectReference Include="..\starskygeocore\starskygeocore.csproj" />
   </ItemGroup>
   <ItemGroup>
    <Content Remove="clientapp\build\*.*" />
@@ -63,6 +65,15 @@
      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
    </Content>
  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="clientapp\node_modules\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="clientapp\node_modules\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="clientapp\node_modules\**" />
+  </ItemGroup>
 <PropertyGroup>
     <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
 </PropertyGroup>

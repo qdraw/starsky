@@ -49,11 +49,11 @@ const useFileList = (locationSearch: string): IFileList | null => {
 
         setParent(new URLPath().getParent(locationSearch));
 
-        var pageType = new CastToInterface().getPageType(responseObject);
-        if (pageType === PageType.NotFound || pageType === PageType.ApplicationException) return;
+        var pageTypeLocal = new CastToInterface().getPageType(responseObject);
+        if (pageTypeLocal === PageType.NotFound || pageTypeLocal === PageType.ApplicationException) return;
 
-        setPageType(pageType);
-        switch (pageType) {
+        setPageType(pageTypeLocal);
+        switch (pageTypeLocal) {
           case PageType.Archive:
             var archiveMedia = new CastToInterface().MediaArchive(responseObject);
             setArchive(archiveMedia.data);

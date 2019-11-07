@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.Runtime.Serialization;
 using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 using starskycore.Helpers;
@@ -12,7 +11,7 @@ namespace starskycore.Services
 {
 	public class ReadMetaXmp
 	{
-		private IStorage _iStorage;
+		private readonly IStorage _iStorage;
 
 		public ReadMetaXmp(IStorage iStorage, IMemoryCache memoryCache = null)
 		{

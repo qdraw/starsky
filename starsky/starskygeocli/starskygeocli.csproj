@@ -16,9 +16,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.7" />
-    <PackageReference Include="NGeoNames" Version="1.5.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
+    <ProjectReference Include="..\starskygeocore\starskygeocore.csproj" />
   </ItemGroup>
 </Project>

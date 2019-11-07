@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using starsky.ViewModels;
 using starskycore.Models;
 using starskycore.ViewModels;
 

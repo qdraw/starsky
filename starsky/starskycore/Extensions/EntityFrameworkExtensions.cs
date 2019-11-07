@@ -1,8 +1,6 @@
 using System;
-using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
-using starskycore.Models;
 
 namespace starskycore.Extensions
 {

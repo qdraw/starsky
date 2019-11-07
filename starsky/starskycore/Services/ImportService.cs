@@ -110,8 +110,16 @@ namespace starskycore.Services
 				alreadyImportedResult.Status = ImportStatus.IgnoredAlreadyImported;
 				return alreadyImportedResult;
 			}
-				
-				
+
+			// Check if the file is correct
+			var imageFormat = ExtensionRolesHelper.GetImageFormat(
+				new StorageHostFullPathFilesystem().ReadStream(inputFileFullPath, 512));
+
+			if ( ! ExtensionRolesHelper.ExtensionSyncSupportedList.Contains($"{imageFormat}") )
+			{
+				return new ImportIndexItem {FileHash = fileHashCode, Status = ImportStatus.FileError};
+			}
+			
 			// Only accept files with correct meta data
 			// Check if there is a xmp file that contains data
 			var fileIndexItem = ReadExifAndXmpFromFile(inputFileFullPath);

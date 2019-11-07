@@ -12,18 +12,15 @@ namespace starskycore.Services
 	{ 
 		private readonly IQuery _query;
 		private readonly IExifTool _exifTool;
-		private readonly AppSettings _appSettings;
 		private readonly IReadMeta _readMeta;
 		private readonly IStorage _iStorage;
 
 		public UpdateService(
 			IQuery query,
 			IExifTool exifTool, 
-			AppSettings appSettings,
 			IReadMeta readMeta,
 			IStorage iStorage)
 		{
-			_appSettings = appSettings;
 			_query = query;
 			_exifTool = exifTool;
 			_readMeta = readMeta;

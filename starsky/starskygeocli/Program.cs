@@ -4,7 +4,7 @@ using System.Linq;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
-using starskyGeoCli.Services;
+using starskygeocore.Services;
 
 namespace starskyGeoCli
 {
@@ -79,8 +79,9 @@ namespace starskyGeoCli
 				Console.WriteLine($"Folder: {inputPath}");
 
 				toMetaFilesUpdate =
-					new GeoIndexGpx(appSettings, startupHelper.ReadMeta(), storage).LoopFolder(
-						fileIndexList);
+					new GeoIndexGpx(appSettings, storage)
+												.LoopFolder(fileIndexList);
+				
 				Console.Write("¬");
 				new GeoLocationWrite(appSettings, startupHelper.ExifTool()).LoopFolder(
 					toMetaFilesUpdate, false);

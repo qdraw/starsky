@@ -961,9 +961,8 @@ namespace starskycore.Models
 
 		    return toBeAddedKeywords;
 	    }
-
-
-	} // end class
+	    
+    } // end class
 	
 	
     
