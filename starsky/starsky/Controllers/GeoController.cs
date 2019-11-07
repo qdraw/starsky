@@ -66,7 +66,7 @@ namespace starsky.Controllers
 		/// <response code="200">event is fired</response>
 		/// <response code="404">subpath not found in the database</response>
 		/// <response code="401">User unauthorized</response>
-		[HttpGet("/api/geo/sync")]
+		[HttpPost("/api/geo/sync")]
 		[Produces("application/json")]
 		[ProducesResponseType(404)]
 		public IActionResult SyncFolder(

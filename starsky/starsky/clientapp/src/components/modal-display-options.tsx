@@ -4,6 +4,7 @@ import useLocation from '../hooks/use-location';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchGet from '../shared/fetch-get';
+import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
 import Modal from './modal';
 import Preloader from './preloader';
@@ -65,27 +66,30 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   const [geoSyncPercentage, setGeoSyncPercentage] = useState(0);
 
   function geoSync() {
+    var parentFolder = props.parentFolder ? props.parentFolder : "/";
+    var bodyParams = new URLSearchParams();
+    bodyParams.set("f", parentFolder);
 
+    FetchPost("/api/geo/sync", bodyParams.toString()).then((anyData) => {
+    });
   }
 
   function geoSyncStatus() {
-    setInterval(() => {
-      var parentFolder = props.parentFolder ? props.parentFolder : "/";
-      FetchGet("/api/geo/status/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
-        if (anyData.current === 0 && anyData.total === 0) {
-          setGeoSyncPercentage(0);
-          return;
-        }
-
-        console.log(anyData.current);
-        console.log(anyData.total);
-        setGeoSyncPercentage(anyData.current / anyData.total);
-      });
-    }, 1000);
+    var parentFolder = props.parentFolder ? props.parentFolder : "/";
+    FetchGet("/api/geo/status/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
+      if (anyData.current === 0 && anyData.total === 0) {
+        setGeoSyncPercentage(0);
+        return;
+      }
+      setGeoSyncPercentage(anyData.current / anyData.total * 100);
+    });
   }
 
   useEffect(() => {
     geoSyncStatus();
+
+    let id = setInterval(geoSyncStatus, 2720);
+    return () => clearInterval(id);
   }, [history.location.search]);
 
   function forceSync() {

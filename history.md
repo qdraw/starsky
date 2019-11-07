@@ -19,7 +19,6 @@
 - []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
 ## High priority features planned
-- []   (feature) Geo from Web Interface (including status)
 - []   (feature) Creating thumbnails from Web Interface (including status)
 - []   Front-end for Rename files
 - []   (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses)
@@ -37,6 +36,7 @@
 - __Breaking API change__ from `/import/fromUrl/` to `/api/import/fromUrl`
 - [x]   Import page (without link)
 - [x]   (bug) GPX, tiff, dng  files uploads are not allowed in new UI (fixed)
+- [x]   (feature) Geo from Web Interface (including status) - in preview status
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_
