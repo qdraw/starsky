@@ -9,6 +9,7 @@ using NGeoNames.Entities;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
+using starskygeocore.Models;
 
 namespace starskygeocore.Services
 {
@@ -113,12 +114,7 @@ namespace starskygeocore.Services
                     ).ToList();
         }
 
-        private void UpdateCacheStatus(string path, int current)
-        {
-	        if(_cache == null) return;
-	        var queryCacheName = nameof(GeoReverseLookup) + path + "current";
-	        _cache.Set(queryCacheName, current, new TimeSpan(10,0,0));
-        }
+
 
 	    /// <summary>
 	    /// Reverse Geo Syncing for a folder
@@ -130,7 +126,10 @@ namespace starskygeocore.Services
             bool overwriteLocationNames)
         {
             metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory,overwriteLocationNames);
-          
+
+            var subPath = metaFilesInDirectory.FirstOrDefault()?.ParentDirectory;
+	        new GeoCacheStatusService(_cache).Update(subPath, metaFilesInDirectory.Count, StatusType.Total);
+
             foreach (var metaFileItem in metaFilesInDirectory.Select((value, index) => new { value, index }))
             {
                 // Create a point from a lat/long pair from which we want to conduct our search(es) (center)
@@ -146,7 +145,8 @@ namespace starskygeocore.Services
                     metaFileItem.value.Latitude,
                     metaFileItem.value.Longitude);
 
-                UpdateCacheStatus(metaFileItem.value.ParentDirectory, metaFileItem.index);
+                new GeoCacheStatusService(_cache).Update(metaFileItem.value.ParentDirectory, 
+	                metaFileItem.index, StatusType.Current);
 	                
                 if (distanceTo > 35) continue; 
                 // if less than 35 kilometers from that place add it to the object
@@ -164,6 +164,11 @@ namespace starskygeocore.Services
                 }
                 metaFileItem.value.LocationState = GetAdmin1Name(nearestPlace.CountryCode, nearestPlace.Admincodes);
             }
+            
+            // Ready signal
+            new GeoCacheStatusService(_cache).Update(subPath,
+	            metaFilesInDirectory.Count, StatusType.Current);
+            
             return metaFilesInDirectory;
         }
         

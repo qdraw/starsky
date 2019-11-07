@@ -6,6 +6,7 @@ using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
+using starskygeocore.Models;
 
 namespace starskygeocore.Services
 {
@@ -54,13 +55,6 @@ namespace starskygeocore.Services
             return geoList;
         }
 
-        private void UpdateCacheStatus(string path, int current)
-        {
-	        if(_cache == null) return;
-	        var queryCacheName = nameof(GeoIndexGpx) + path + "current";
-	        _cache.Set(queryCacheName, current, new TimeSpan(10,0,0));
-        }
-
         public List<FileIndexItem> LoopFolder(List<FileIndexItem> metaFilesInDirectory)
         {
             var toUpdateMetaFiles = new List<FileIndexItem>();
@@ -70,6 +64,10 @@ namespace starskygeocore.Services
 
             metaFilesInDirectory = GetNoLocationItems(metaFilesInDirectory);
 
+            var subPath = metaFilesInDirectory.FirstOrDefault()?.ParentDirectory;
+            new GeoCacheStatusService(_cache).Update(subPath,
+	            metaFilesInDirectory.Count, StatusType.Total);
+            
             foreach (var metaFileItem in metaFilesInDirectory.Select((value, index) => new { value, index }))
             {
                 var dateTimeCameraUtc = TimeZoneInfo.ConvertTime(metaFileItem.value.DateTime, _appSettings.CameraTimeZoneInfo,
@@ -88,8 +86,14 @@ namespace starskygeocore.Services
                 toUpdateMetaFiles.Add(metaFileItem.value);
                 
                 // status update
-                UpdateCacheStatus(metaFileItem.value.ParentDirectory, metaFileItem.index);
+                new GeoCacheStatusService(_cache).Update(metaFileItem.value.ParentDirectory, 
+	                metaFileItem.index, StatusType.Current);
             }
+            
+            // Ready signal
+            new GeoCacheStatusService(_cache).Update(subPath,
+	            metaFilesInDirectory.Count, StatusType.Current);
+            
             return toUpdateMetaFiles;
         }
     }
