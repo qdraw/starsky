@@ -46,6 +46,7 @@ namespace starskycore.Services
         /// fileIndexItemsList, Create an detailview object
         /// </summary>
         /// <param name="fileIndexItemsList">list of fileindexitems</param>
+        /// <param name="singleItemDbPath">database style path</param>
         /// <param name="colorClassFilterList">list of colorclasses to show, default show all</param>
         /// <param name="enableCollections">enable collections feature > default true</param>
         /// <param name="hideDeleted">do not show deleted files > default true</param>
