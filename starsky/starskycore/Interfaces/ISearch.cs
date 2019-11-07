@@ -1,5 +1,4 @@
-﻿using starsky.ViewModels;
-using starskycore.ViewModels;
+﻿using starskycore.ViewModels;
 
 namespace starskycore.Interfaces
 {

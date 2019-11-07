@@ -189,8 +189,7 @@ export class Query {
 		downloadFileRequestOptions.method = "GET";
 
 		downloadFileRequestOptions.params = {
-			json: 'true',
-			f: hashItem
+			json: 'true'
 		}
 
 		return await axios(downloadFileRequestOptions)
@@ -383,8 +382,7 @@ export class Query {
 	public async uploadTempFile(fileHash: string): Promise<boolean> {
 
 		var uploadRequestOptions = this.requestOptions();
-		uploadRequestOptions.url = this.base_url + 'import/thumbnail/' + fileHash;
-		// uploadRequestOptions.encoding = 'binary';
+		uploadRequestOptions.url = this.base_url + 'import/thumbnail/';
 		uploadRequestOptions.method = "POST";
 
 		var fileHashLocation = path.join(this.getTempFolder(), fileHash + ".jpg");

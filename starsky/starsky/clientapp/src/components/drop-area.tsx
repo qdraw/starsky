@@ -7,8 +7,6 @@ import ItemTextListView from './item-text-list-view';
 import Modal from './modal';
 import Preloader from './preloader';
 
-const fileTypes = ["image/jpeg", "image/jpg", "image/png"];
-
 type ReactNodeProps = { children: React.ReactNode }
 
 // todo: add parameter for drag'n drop
@@ -80,12 +78,8 @@ const DropArea = ({ children }: ReactNodeProps) => {
     var formData = new FormData();
 
     filesList.forEach(file => {
-      const { size, type, name } = file;
+      const { size, name } = file;
 
-      if (!fileTypes.includes(type)) {
-        uploadFilesList.push(CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError));
-        return;
-      }
       if (size / 1024 / 1024 > 250) {
         uploadFilesList.push(CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError));
         return;
@@ -121,8 +115,8 @@ const DropArea = ({ children }: ReactNodeProps) => {
 
   const CastFileIndexItem = (element: any, status: IExifStatus) => {
     var uploadFileObject = newIFileIndexItem();
-    uploadFileObject.fileHash = (element as any).fileHash
-    uploadFileObject.filePath = (element as any).filePath;
+    uploadFileObject.fileHash = element.fileHash;
+    uploadFileObject.filePath = element.filePath;
     uploadFileObject.fileName = new URLPath().getChild(uploadFileObject.filePath);
     uploadFileObject.lastEdited = new Date().toISOString();
     uploadFileObject.status = status;

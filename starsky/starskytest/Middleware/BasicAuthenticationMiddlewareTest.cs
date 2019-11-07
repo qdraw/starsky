@@ -84,7 +84,6 @@ namespace starskytest.Middleware
 	        
             // Arrange
             var userId = "TestUserA";
-            var phone = "abcdefg";
             var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
 
             var iUserManager = _serviceProvider.GetRequiredService<IUserManager>();

@@ -108,12 +108,12 @@ const DetailView: React.FC<IDetailView> = () => {
 
   function next() {
     if (!relativeObjects) return;
-    var next = updateUrl(relativeObjects.nextFilePath);
+    var nextPath = updateUrl(relativeObjects.nextFilePath);
     // Keeps loading forever
     if (relativeObjects.nextHash !== state.fileIndexItem.fileHash) {
       setIsLoading(true)
     }
-    history.navigate(next, { replace: true });
+    history.navigate(nextPath, { replace: true });
   }
 
   function updateUrl(toUpdateFilePath: string) {
@@ -125,12 +125,12 @@ const DetailView: React.FC<IDetailView> = () => {
 
   function prev() {
     if (!relativeObjects) return;
-    var prev = updateUrl(relativeObjects.prevFilePath);
+    var prevPath = updateUrl(relativeObjects.prevFilePath);
     // Keeps loading forever
     if (relativeObjects.prevHash !== state.fileIndexItem.fileHash) {
       setIsLoading(true)
     }
-    history.navigate(prev, { replace: true });
+    history.navigate(prevPath, { replace: true });
   }
 
   if (!state.fileIndexItem || !relativeObjects) {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
-using starsky.ViewModels;
 using starskycore.Models;
 using starskycore.ViewModels;
 

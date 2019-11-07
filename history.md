@@ -12,21 +12,19 @@
 - []   Docker support, including backend abstractions to get the data (partly working)
 - []   Health view, to make more clear when paths are configured right
 - []   Health view, to make more clear when the server time is not correct
+- []   Health view (feature) when a disk is full, show a warning
 - []   (front-end) Search details show exact query behind modal
 - []   Upload to direct folder API + front-end
 - []   (front-end) 'Rotate to Right'
 - []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
 ## High priority features planned
-- []   Front-end for Rename files
-- []   (feature) Geo from Web Interface (including status)
 - []   (feature) Creating thumbnails from Web Interface (including status)
-- []   (feature) when a disk is full, show a warning
+- []   Front-end for Rename files
 - []   (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses)
 - []   (bug) Force sync and renew for directories that contain a + sign are passing the wrong values
-- []   (bug) GPX, tiff, dng  files uploads are not allowed in new UI
 
-# version 0.1.8 - tbd
+# version 0.1.8 - 2019-11-??
 - (bugfix) ignore directories without reading rights (instead of crashing)
 - (change) Import API has now a limit of 320 MB instead of 32MB
 - [x]   Login in V2 layout
@@ -37,6 +35,8 @@
 - [x]   (tools) add Dropbox Import tool
 - __Breaking API change__ from `/import/fromUrl/` to `/api/import/fromUrl`
 - [x]   Import page (without link)
+- [x]   (bug) GPX, tiff, dng  files uploads are not allowed in new UI (fixed)
+- [x]   (feature) Geo from Web Interface (including status) - in preview status
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_

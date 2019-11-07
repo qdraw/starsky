@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\starskycore\starskycore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NGeoNames" Version="1.5.1" />
+  </ItemGroup>
+
+</Project>

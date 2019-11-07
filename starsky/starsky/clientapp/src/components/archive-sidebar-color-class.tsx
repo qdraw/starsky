@@ -26,8 +26,8 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
   const [selectParams, setSelectParams] = React.useState("");
   useEffect(() => {
     var subPaths = new URLPath().MergeSelectFileIndexItem(select, archive.fileIndexItems);
-    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "")
-    setSelectParams(selectParams);
+    var selectParamsLocal = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "")
+    setSelectParams(selectParamsLocal);
   }, [select]);
 
   let { dispatch } = React.useContext(ArchiveContext);

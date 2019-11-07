@@ -153,7 +153,7 @@ namespace starskytest.Controllers
         }
 
         [TestMethod]
-        public async Task AccountController_Model_is_not_correct()
+        public void AccountController_Model_is_not_correct()
         {
             var controller = new AccountController(_userManager);
             var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
