@@ -15,29 +15,29 @@ namespace starsky.Helpers
     public static class FileStreamingHelper
     {
         private static readonly FormOptions DefaultFormOptions = new FormOptions();
-
-        public static async Task<List<string>> StreamFile(this HttpRequest request, AppSettings appSettings)
-        {
-            // The Header 'filename' is for uploading on file without a form.
-            return await StreamFile(request.ContentType, request.Body, appSettings, HeaderFileName(request,appSettings));            
-        }
-
+        
         // Support for plain text input and base64 strings
         // Use for single files only
         public static string HeaderFileName(HttpRequest request, AppSettings appSettings)
         {
-            // > when you do nothing
-            if (string.IsNullOrEmpty(request.Headers["filename"]))
-                return Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
+	        // > when you do nothing
+	        if (string.IsNullOrEmpty(request.Headers["filename"]))
+		        return Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
             
-            // file without base64 encoding; return slug based url
-            if (Base64Helper.TryParse(request.Headers["filename"]).Length == 0)
-                return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(request.Headers["filename"]))
-                       + Path.GetExtension(request.Headers["filename"]);
+	        // file without base64 encoding; return slug based url
+	        if (Base64Helper.TryParse(request.Headers["filename"]).Length == 0)
+		        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(request.Headers["filename"]))
+		               + Path.GetExtension(request.Headers["filename"]);
             
-            var requestHeadersBytes = Base64Helper.TryParse(request.Headers["filename"]);
-            var requestHeaders = Encoding.ASCII.GetString(requestHeadersBytes);
-            return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders)) + Path.GetExtension(requestHeaders);
+	        var requestHeadersBytes = Base64Helper.TryParse(request.Headers["filename"]);
+	        var requestHeaders = Encoding.ASCII.GetString(requestHeadersBytes);
+	        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders)) + Path.GetExtension(requestHeaders);
+        }
+        
+        public static async Task<List<string>> StreamFile(this HttpRequest request, AppSettings appSettings)
+        {
+            // The Header 'filename' is for uploading on file without a form.
+            return await StreamFile(request.ContentType, request.Body, appSettings, HeaderFileName(request,appSettings));            
         }
 
         public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, AppSettings appSettings, string headerFileName = null)
