@@ -128,7 +128,7 @@ export class URLPath {
   }
 
   public encodeURI(url: string): string {
-    var url = encodeURI(url);
+    url = encodeURI(url);
     url = url.replace(/\+/ig, "%2B");
     return url;
   }

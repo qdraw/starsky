@@ -342,7 +342,7 @@ Task("SonarBegin")
         var branchName = gitBranch.FriendlyName;
         if(branchName == "(no branch)") branchName = "master";
 
-        /* branchName = "master"; */
+        branchName = "master";
 
         SonarBegin(new SonarBeginSettings{
             Name = "Starsky",
@@ -356,8 +356,8 @@ Task("SonarBegin")
             OpenCoverReportsPath = netCoreCoverageFile,
             ArgumentCustomization = args => args
                 .Append($"/o:" + organisation)
-                .Append($"/d:sonar.coverage.exclusions=\"*wwwroot/js/*,starskycore/Migrations/*,*spec.tsx,*/src/index.tsx\"")
-                .Append($"/d:sonar.exclusions=\"wwwroot/js/*,starskycore/Migrations/*,*spec.tsx,*/src/index.tsx\"")
+                .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starskycore/Migrations/*,**/*spec.ts,**/*spec.tsx,**/src/index.tsx\"")
+                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starskycore/Migrations/*,**/*spec.tsx,**/*spec.ts,**/src/index.tsx\"")
         });
 
   });
