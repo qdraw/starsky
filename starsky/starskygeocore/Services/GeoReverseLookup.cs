@@ -86,7 +86,7 @@ namespace starskygeocore.Services
         /// If extension in exifTool supported, so no gpx
         /// </summary>
         /// <param name="metaFilesInDirectory">List of files with metadata</param>
-        /// <param name="overwriteLocationNames"></param>
+        /// <param name="overwriteLocationNames">true = overwrite the location names, that have a gps location </param>
         /// <returns>list that can be updated</returns>
         public List<FileIndexItem> RemoveNoUpdateItems(IEnumerable<FileIndexItem> metaFilesInDirectory, 
             bool overwriteLocationNames)
@@ -111,10 +111,10 @@ namespace starskygeocore.Services
 
 
 	    /// <summary>
-	    /// 
+	    /// Reverse Geo Syncing for a folder
 	    /// </summary>
-	    /// <param name="metaFilesInDirectory"></param>
-	    /// <param name="overwriteLocationNames"></param>
+	    /// <param name="metaFilesInDirectory">list of files to lookup</param>
+	    /// <param name="overwriteLocationNames">true = overwrite the location names, that have a gps location</param>
 	    /// <returns></returns>
 	    public List<FileIndexItem> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory,
             bool overwriteLocationNames)

@@ -10,12 +10,12 @@ namespace starskygeocore.Services
 {
     public class GeoIndexGpx
     {
-        private readonly ReadMeta _readMeta;
+        private readonly IReadMeta _readMeta;
         private readonly AppSettings _appSettings;
 	    private ReadMetaGpx _readMetaGpx;
 	    private IStorage _iStorage;
 
-	    public GeoIndexGpx(AppSettings appSettings, ReadMeta readMeta, IStorage iStorage)
+	    public GeoIndexGpx(AppSettings appSettings, IReadMeta readMeta, IStorage iStorage)
         {
             _readMeta = readMeta;
 	        _readMetaGpx = new ReadMetaGpx();

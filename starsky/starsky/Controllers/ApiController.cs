@@ -34,7 +34,6 @@ namespace starsky.Controllers
             _bgTaskQueue = queue;
             _readMeta = readMeta;
 	        _iStorage = iStorage;
-
         }
 
 
