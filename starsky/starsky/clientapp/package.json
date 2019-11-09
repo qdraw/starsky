@@ -38,6 +38,8 @@
       "!coverage/**",
       "!node_modules/**",
       "!src/index.tsx",
+      "!src/service-worker.ts",
+      "!src/react-app-env.d.ts",
       "!src/setupTests.js",
       "!public/**",
       "!build/**"
