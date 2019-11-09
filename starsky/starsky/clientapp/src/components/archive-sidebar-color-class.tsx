@@ -13,7 +13,7 @@ interface IArchiveSidebarColorClassProps {
 /**
  * Use for updating/writing multiple files with one colorClass label
  */
-const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClassProps> = memo((archive) => {
+const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClassProps> = memo((props) => {
   var history = useLocation();
 
   // show select info
@@ -25,15 +25,19 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
   // updated parameters based on select
   const [selectParams, setSelectParams] = React.useState("");
   useEffect(() => {
-    var subPaths = new URLPath().MergeSelectFileIndexItem(select, archive.fileIndexItems);
+    var subPaths = new URLPath().MergeSelectFileIndexItem(select, props.fileIndexItems);
     var selectParamsLocal = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "")
     setSelectParams(selectParamsLocal);
   }, [select]);
 
   let { dispatch } = React.useContext(ArchiveContext);
 
+  console.log(!props.isReadOnly && select.length !== 0);
+
   return (<ColorClassSelect onToggle={(colorclass) => {
+    console.error("sdfsdfdsfsd");
+
     dispatch({ type: 'update', colorclass, select });
-  }} filePath={selectParams} isEnabled={!archive.isReadOnly && select.length !== 0} clearAfter={true} ></ColorClassSelect>)
+  }} filePath={selectParams} isEnabled={!props.isReadOnly && select.length !== 0} clearAfter={true} ></ColorClassSelect>)
 });
 export default ArchiveSidebarColorClass

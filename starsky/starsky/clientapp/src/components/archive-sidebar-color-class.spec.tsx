@@ -1,9 +1,12 @@
+import { globalHistory } from '@reach/router';
 import { mount, shallow } from "enzyme";
 import React from 'react';
-import { ArchiveContextProvider } from '../contexts/archive-context';
-import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { act } from 'react-dom/test-utils';
+import * as AppContext from '../contexts/archive-context';
+import { newIArchive } from '../interfaces/IArchive';
+import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { Query } from '../shared/query';
 import ArchiveSidebarColorClass from './archive-sidebar-color-class';
-
 
 describe("ArchiveSidebarColorClass", () => {
   it("renders", () => {
@@ -21,70 +24,78 @@ describe("ArchiveSidebarColorClass", () => {
       expect(wrapper.exists('.disabled')).toBeFalsy()
     });
 
-    // it("not d2222isabled", () => {
+    it("FAIL ==== test click", () => {
 
-    //   var a = wrapper.find('a.colorclass--1'); // .simulate('click');
+      // use this: ==> import * as AppContext from '../contexts/archive-context';
+      const contextValues = {
+        state: newIArchive(),
+        dispatch: jest.fn(),
+      } as AppContext.IArchiveContext;
 
-    //   a.first().simulate('click'); // does nothing
-    // });
+      jest
+        .spyOn(AppContext, 'useArchiveContext')
+        .mockImplementation(() => contextValues);
+
+      jest.mock('@reach/router', () => ({
+        navigate: jest.fn(),
+        globalHistory: jest.fn(),
+      }))
+
+      // dit faalt gewoon 100%
+      // jest.mock('./color-class-select', () => () => <div />);
+
+      // Fake child element
+      // const mockColorClassSelect = <div />
+      // jest
+      //   .spyOn(ColorClassSelect)
+      //   .mockReturnValue(mockColorClassSelect);
+      // // .mockImplementation(() => mockColorClassSelect);
+
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/?select=test.jpg");
+      });
+
+      // spy on fetch
+      const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
+      var spy = jest.spyOn(Query.prototype, 'queryUpdateApi').mockImplementationOnce(() => mockFetchAsXml);
+
+
+      // act(() => {
+      // const TestComponent = () => (
+      //   <ArchiveContextProvider>
+      //     <ArchiveSidebarColorClass isReadOnly={true} fileIndexItems={newIFileIndexItemArray()} />
+      //   </ArchiveContextProvider>
+      // );
+      // });
+
+
+      const element = mount(<ArchiveSidebarColorClass isReadOnly={false} fileIndexItems={newIFileIndexItemArray()} />);
 
 
 
-    // it("not22122222 disabled", () => {
-    //   const app = shallow(<ArchiveSidebarColorClass fileIndexItems={newIFileIndexItemArray()} isReadOnly={false} />);
-    //   const onButtonClickSpy = jest.spyOn(app.instance(), "dispatch");
-
-    //   // # This should do the trick
-    //   app.update();
-    //   app.instance().forceUpdate();
-
-    //   const button = app.find("button");
-    //   button.simulate("click");
-    //   expect(onButtonClickSpy).toHaveBeenCalled();
-    // });
+      // Make sure that the element exist in the first place
+      expect(element.find('a.colorclass--1')).toBeTruthy();
 
 
-    it("not222 disabled", () => {
+      element.find('a.colorclass--1').simulate("click");
+      console.log(element.html());
 
-      //   const app = shallow(<App />);
-      //   const onButtonClickSpy = jest.spyOn(app.instance(), "onButtonClick");
 
-      //   // # This should do the trick
-      // app.update();
-      //   app.instance().forceUpdate();
 
-      //   const button = app.find("button");
-      //   button.simulate("click");
-      //   expect(onButtonClickSpy).toHaveBeenCalled();
 
-      const setState = jest.fn();
-      const useStateSpy = jest.spyOn(React, 'useContext')
-      useStateSpy.mockImplementation((init) => [init, setState]);
+      // expect(contextValues.dispatch).toHaveBeenCalled();
 
-      const TestComponent = () => (
-        <ArchiveContextProvider>
-          <ArchiveSidebarColorClass fileIndexItems={newIFileIndexItemArray()} isReadOnly={false} />
-        </ArchiveContextProvider>
-      );
 
-      const element = mount(<TestComponent />);
 
-      expect(element.find('a.colorclass--1')).toBeTruthy()
+      // expect(contextValues.dispatch).toHaveBeenCalled();
 
-      var dom: HTMLElement = element.find('a.colorclass--1').getDOMNode();
-      // console.log(dom);
+      // // var dom: HTMLElement = element.find('a.colorclass--1').getDOMNode();
+      // // dom.click();
 
-      dom.click();
-      // console.log(element.find('a.colorclass--1').html());
+      // console.log(dom.classList);
 
-      // Fake news
-      // var a = element.find('a.colorclass--1'); // .simulate('click');
-
-      // a.simulate('click');
-
-      // not working
-      // expect(useStateSpy).toBeCalledTimes(2)
-
+      // throw Error();
 
     });
 

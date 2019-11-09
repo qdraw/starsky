@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
+import { newIArchive } from '../interfaces/IArchive';
 import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchPost from '../shared/fetch-post';
@@ -13,7 +14,12 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
 
   var history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
-  var archive = state;
+
+  // state without any context
+  if (state === undefined) {
+    state = newIArchive();
+    state.isReadOnly = true;
+  }
 
   // show select info
   const [select, setSelect] = React.useState(new URLPath().getSelect(history.location.search));
@@ -59,7 +65,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     var bodyParams = new URLPath().ObjectToSearchParams(update);
     if (bodyParams.toString().length === 0) return;
 
-    var subPaths = new URLPath().MergeSelectFileIndexItem(select, archive.fileIndexItems);
+    var subPaths = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!subPaths) return;
     var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "")
 
@@ -91,23 +97,23 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       <div data-name="tags"
         onInput={handleUpdateChange}
         suppressContentEditableWarning={true}
-        contentEditable={!archive.isReadOnly && select.length !== 0}
-        className={!archive.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
+        contentEditable={!state.isReadOnly && select.length !== 0}
+        className={!state.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
       </div>
       <h4>Info</h4>
       <div
         onInput={handleUpdateChange}
         data-name="description"
         suppressContentEditableWarning={true}
-        contentEditable={!archive.isReadOnly && select.length !== 0}
-        className={!archive.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
+        contentEditable={!state.isReadOnly && select.length !== 0}
+        className={!state.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
       </div>
       <h4>Titel</h4>
       <div data-name="title"
         onInput={handleUpdateChange}
         suppressContentEditableWarning={true}
-        contentEditable={!archive.isReadOnly && select.length !== 0}
-        className={!archive.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
+        contentEditable={!state.isReadOnly && select.length !== 0}
+        className={!state.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
       </div>
 
       {isInputEnabled && select.length !== 0 ? <button className="btn btn--info"
