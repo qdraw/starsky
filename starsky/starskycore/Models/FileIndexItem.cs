@@ -599,11 +599,7 @@ namespace starskycore.Models
             if (currentOrentation + relativeRotation == -1) {
                 return _orderRotation[_orderRotation.Count-1]; //changed
             }
-            if (currentOrentation+relativeRotation >= _orderRotation.Count) {
-                return _orderRotation[0];
-            }
-            
-            return Rotation.DoNotChange;
+            return _orderRotation[0];
         }
 
 		/// <summary>
