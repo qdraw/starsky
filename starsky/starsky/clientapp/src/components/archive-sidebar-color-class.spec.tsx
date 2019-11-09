@@ -31,6 +31,7 @@ describe("ArchiveSidebarColorClass", () => {
 
 
       // is used in multiple ways
+      // use this: ==> import * as AppContext from '../contexts/archive-context';
       var useContextSpy = jest
         .spyOn(React, 'useContext')
         .mockImplementation(() => contextValues);
