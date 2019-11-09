@@ -32,11 +32,7 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
 
   let { dispatch } = React.useContext(ArchiveContext);
 
-  console.log(!props.isReadOnly && select.length !== 0);
-
   return (<ColorClassSelect onToggle={(colorclass) => {
-    console.error("sdfsdfdsfsd");
-
     dispatch({ type: 'update', colorclass, select });
   }} filePath={selectParams} isEnabled={!props.isReadOnly && select.length !== 0} clearAfter={true} ></ColorClassSelect>)
 });

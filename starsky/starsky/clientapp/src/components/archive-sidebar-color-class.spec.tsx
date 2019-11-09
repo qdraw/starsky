@@ -24,32 +24,33 @@ describe("ArchiveSidebarColorClass", () => {
       expect(wrapper.exists('.disabled')).toBeFalsy()
     });
 
-    it("FAIL ==== test click", () => {
+    it("Fire event when clicked", () => {
 
-      // use this: ==> import * as AppContext from '../contexts/archive-context';
+
+      // Warning: An update to null inside a test was not wrapped in act(...)
+
+
+      // is used in multiple ways
+      var useContextSpy = jest
+        .spyOn(React, 'useContext')
+        .mockImplementation(() => contextValues);
+
+      var dispatch = jest.fn()
       const contextValues = {
         state: newIArchive(),
-        dispatch: jest.fn(),
+        dispatch,
       } as AppContext.IArchiveContext;
 
-      jest
-        .spyOn(AppContext, 'useArchiveContext')
-        .mockImplementation(() => contextValues);
+      // use this: ==> import * as AppContext from '../contexts/archive-context';
+      // var useContext = jest
+      //   .spyOn(AppContext, 'useArchiveContext')
+      //   .mockImplementation(() => contextValues);
 
       jest.mock('@reach/router', () => ({
         navigate: jest.fn(),
         globalHistory: jest.fn(),
       }))
 
-      // dit faalt gewoon 100%
-      // jest.mock('./color-class-select', () => () => <div />);
-
-      // Fake child element
-      // const mockColorClassSelect = <div />
-      // jest
-      //   .spyOn(ColorClassSelect)
-      //   .mockReturnValue(mockColorClassSelect);
-      // // .mockImplementation(() => mockColorClassSelect);
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
@@ -60,65 +61,18 @@ describe("ArchiveSidebarColorClass", () => {
       const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
       var spy = jest.spyOn(Query.prototype, 'queryUpdateApi').mockImplementationOnce(() => mockFetchAsXml);
 
-
-      // act(() => {
-      // const TestComponent = () => (
-      //   <ArchiveContextProvider>
-      //     <ArchiveSidebarColorClass isReadOnly={true} fileIndexItems={newIFileIndexItemArray()} />
-      //   </ArchiveContextProvider>
-      // );
-      // });
-
-
       const element = mount(<ArchiveSidebarColorClass isReadOnly={false} fileIndexItems={newIFileIndexItemArray()} />);
-
-
 
       // Make sure that the element exist in the first place
       expect(element.find('a.colorclass--1')).toBeTruthy();
 
-
       element.find('a.colorclass--1').simulate("click");
-      console.log(element.html());
 
+      expect(spy).toHaveBeenCalledTimes(1);
 
-
-
-      // expect(contextValues.dispatch).toHaveBeenCalled();
-
-
-
-      // expect(contextValues.dispatch).toHaveBeenCalled();
-
-      // // var dom: HTMLElement = element.find('a.colorclass--1').getDOMNode();
-      // // dom.click();
-
-      // console.log(dom.classList);
-
-      // throw Error();
+      useContextSpy.mockClear()
 
     });
-
-
   });
-
-  // it("not disabled2", () => {
-
-  //   const TestComponent = () => (
-  //     <ArchiveContextProvider>
-  //       <ArchiveSidebarColorClass fileIndexItems={newIFileIndexItemArray()} isReadOnly={false} />
-  //     </ArchiveContextProvider>
-  //   );
-  //   const element = shallow(<TestComponent />);
-  //   var find = element.find('a.colorclass--1')
-  //   console.log(find.html());
-
-  //   expect(element.find(ArchiveSidebarColorClass).dive().text()).toBe("Provided Value");
-
-  //   // wrapper.find('a.colorclass--1').simulate('click');
-
-  // });
-
 });
 
-// https://kevsoft.net/2019/05/28/testing-custom-react-hooks.html
