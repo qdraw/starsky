@@ -4,15 +4,15 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as AppContext from '../contexts/archive-context';
 import { IArchive } from '../interfaces/IArchive';
-import ArchiveSidebarLabelEditAddOverwrite from './archive-sidebar-label-edit-add-overwrite';
+import ArchiveSidebarLabelEditSearchReplace from './archive-sidebar-label-edit-search-replace';
 
-describe("ArchiveSidebarLabelEditAddOverwrite", () => {
+describe("ArchiveSidebarLabelEditSearchReplace", () => {
   it("renders", () => {
-    shallow(<ArchiveSidebarLabelEditAddOverwrite />)
+    shallow(<ArchiveSidebarLabelEditSearchReplace />)
   });
 
   it("isReadOnly: true", () => {
-    const mainElement = shallow(<ArchiveSidebarLabelEditAddOverwrite />);
+    const mainElement = shallow(<ArchiveSidebarLabelEditSearchReplace />);
 
     var formControl = mainElement.find('.form-control');
 
@@ -58,17 +58,19 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
     it("isReadOnly: false", () => {
 
-      const mainElement = shallow(<ArchiveSidebarLabelEditAddOverwrite />);
+      const mainElement = shallow(<ArchiveSidebarLabelEditSearchReplace />);
 
       var formControl = mainElement.find('.form-control');
 
-      // there are 3 classes [title,info,description]
+      // there are 3 classes [title,info,description] 
+      // but those exist 2 times!
       formControl.forEach(element => {
         expect(element.props()["contentEditable"]).toBeTruthy();
       });
 
       // if there is no contentEditable it should fail
-      expect(formControl.length).toBeGreaterThanOrEqual(3);
+      // double amount of classes
+      expect(formControl.length).toBeGreaterThanOrEqual(6);
 
     });
 

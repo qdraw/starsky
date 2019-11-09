@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
+import { newIArchive } from '../interfaces/IArchive';
 import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchPost from '../shared/fetch-post';
@@ -13,7 +14,11 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
   var history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
-  var archive = state;
+  // state without any context
+  if (state === undefined) {
+    state = newIArchive();
+    state.isReadOnly = true;
+  }
 
   // show select info
   const [select, setSelect] = React.useState(new URLPath().getSelect(history.location.search));
@@ -57,7 +62,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     setInputEnabled(false);
 
     update.append = false;
-    var subPaths = new URLPath().MergeSelectFileIndexItem(select, archive.fileIndexItems);
+    var subPaths = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!subPaths) return;
     var selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "")
 
@@ -107,15 +112,15 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       <div data-name="tags"
         onInput={handleUpdateChange}
         suppressContentEditableWarning={true}
-        contentEditable={!archive.isReadOnly && select.length !== 0}
-        className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+        contentEditable={!state.isReadOnly && select.length !== 0}
+        className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
       </div>
       <div data-name="replace-tags"
         onInput={handleUpdateChange}
         suppressContentEditableWarning={true}
-        contentEditable={!archive.isReadOnly && select.length !== 0}
-        className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+        contentEditable={!state.isReadOnly && select.length !== 0}
+        className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
       </div>
       <h4>Info</h4>
@@ -123,31 +128,31 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         onInput={handleUpdateChange}
         data-name="description"
         suppressContentEditableWarning={true}
-        contentEditable={!archive.isReadOnly && select.length !== 0}
-        className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+        contentEditable={!state.isReadOnly && select.length !== 0}
+        className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
       </div>
       <div
         onInput={handleUpdateChange}
         data-name="replace-description"
         suppressContentEditableWarning={true}
-        contentEditable={!archive.isReadOnly && select.length !== 0}
-        className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+        contentEditable={!state.isReadOnly && select.length !== 0}
+        className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
       </div>
       <h4>Titel</h4>
       <div data-name="title"
         onInput={handleUpdateChange}
         suppressContentEditableWarning={true}
-        contentEditable={!archive.isReadOnly && select.length !== 0}
-        className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+        contentEditable={!state.isReadOnly && select.length !== 0}
+        className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
       </div>
       <div data-name="replace-title"
         onInput={handleUpdateChange}
         suppressContentEditableWarning={true}
-        contentEditable={!archive.isReadOnly && select.length !== 0}
-        className={!archive.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+        contentEditable={!state.isReadOnly && select.length !== 0}
+        className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
       </div>
 
