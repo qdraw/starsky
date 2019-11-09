@@ -42,8 +42,6 @@ describe("ColorClassSelect", () => {
     spy.mockClear();
   });
 
-
-
   // it("onClick value return keypress [FAIL]", () => {
 
   //   const mockDismissCallback = jest.fn();
