@@ -35,7 +35,13 @@ describe("DetailViewSidebar", () => {
             title: 'title!',
             colorClass: 3,
             dateTime: '2019-09-15T17:29:59',
-            lastEdited: new Date().toISOString()
+            lastEdited: new Date().toISOString(),
+            make: 'apple',
+            model: 'iPhone',
+            aperture: 2,
+            focalLength: 10,
+            longitude: 1,
+            latitude: 1,
           } as IFileIndexItem,
           relativeObjects: {} as IRelativeObjects,
           subPath: "/",
@@ -89,6 +95,32 @@ describe("DetailViewSidebar", () => {
       var lastEdited = Component.find('[data-test="lastEdited"]')
       expect(lastEdited.text()).toBe("minder dan 1 minuutgeleden bewerkt")
     });
+
+    it("test if make from the context is displayed", () => {
+      var description = Component.find('[data-test="make"]')
+      expect(description.text()).toBe('apple')
+    });
+
+    it("test if model from the context is displayed", () => {
+      var description = Component.find('[data-test="model"]')
+      expect(description.text()).toBe('iPhone')
+    });
+
+    it("test if aperture from the context is displayed", () => {
+      var description = Component.find('[data-test="aperture"]')
+      expect(description.text()).toBe('2')
+    });
+
+    it("test if focalLength from the context is displayed", () => {
+      var description = Component.find('[data-test="focalLength"]')
+      expect(description.text()).toBe('10.0')
+    });
+
+    it("test if lat/long icon from the context is displayed", () => {
+      expect(Component.exists('.icon--location')).toBeTruthy()
+    });
+
+
 
   });
 });

@@ -14,6 +14,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
   var history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
+
   // state without any context
   if (state === undefined) {
     state = newIArchive();

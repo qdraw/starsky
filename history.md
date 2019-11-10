@@ -7,7 +7,6 @@
 - []   time zone shifting
 - []   Pagination on folders - Performance update for example 800 files
 - []   Search: support for complex and/or operators `(this || or) && that`
-- []   Add unit tests for importing raw's with .xmp files
 - []   Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
 - []   Docker support, including backend abstractions to get the data (partly working)
 - []   Health view, to make more clear when paths are configured right
@@ -23,7 +22,7 @@
 - []   Front-end for Rename files
 - []   (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses)
 
-# version 0.1.8 - 2019-11-??
+# version 0.1.8 - 2019-11-10
 - (bugfix) ignore directories without reading rights (instead of crashing)
 - (change) Import API has now a limit of 320 MB instead of 32MB
 - [x]   Login in V2 layout
@@ -37,6 +36,7 @@
 - [x]   (bug) GPX, tiff, dng  files uploads are not allowed in new UI (fixed)
 - [x]   (feature) Geo from Web Interface (including status) - in preview status
 - [x]   (bug) Force sync and renew for directories that contain a + sign are passing the wrong values (fixed)
+- [x]   Add unit tests for importing raw's with .xmp files
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_
