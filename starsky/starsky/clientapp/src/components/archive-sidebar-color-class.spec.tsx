@@ -1,9 +1,12 @@
+import { globalHistory } from '@reach/router';
 import { mount, shallow } from "enzyme";
 import React from 'react';
-import { ArchiveContextProvider } from '../contexts/archive-context';
-import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { act } from 'react-dom/test-utils';
+import * as AppContext from '../contexts/archive-context';
+import { newIArchive } from '../interfaces/IArchive';
+import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { Query } from '../shared/query';
 import ArchiveSidebarColorClass from './archive-sidebar-color-class';
-
 
 describe("ArchiveSidebarColorClass", () => {
   it("renders", () => {
@@ -21,93 +24,56 @@ describe("ArchiveSidebarColorClass", () => {
       expect(wrapper.exists('.disabled')).toBeFalsy()
     });
 
-    // it("not d2222isabled", () => {
-
-    //   var a = wrapper.find('a.colorclass--1'); // .simulate('click');
-
-    //   a.first().simulate('click'); // does nothing
-    // });
+    it("Fire event when clicked", () => {
 
 
-
-    // it("not22122222 disabled", () => {
-    //   const app = shallow(<ArchiveSidebarColorClass fileIndexItems={newIFileIndexItemArray()} isReadOnly={false} />);
-    //   const onButtonClickSpy = jest.spyOn(app.instance(), "dispatch");
-
-    //   // # This should do the trick
-    //   app.update();
-    //   app.instance().forceUpdate();
-
-    //   const button = app.find("button");
-    //   button.simulate("click");
-    //   expect(onButtonClickSpy).toHaveBeenCalled();
-    // });
+      // Warning: An update to null inside a test was not wrapped in act(...)
 
 
-    it("not222 disabled", () => {
+      // is used in multiple ways
+      // use this: ==> import * as AppContext from '../contexts/archive-context';
+      var useContextSpy = jest
+        .spyOn(React, 'useContext')
+        .mockImplementation(() => contextValues);
 
-      //   const app = shallow(<App />);
-      //   const onButtonClickSpy = jest.spyOn(app.instance(), "onButtonClick");
+      var dispatch = jest.fn()
+      const contextValues = {
+        state: newIArchive(),
+        dispatch,
+      } as AppContext.IArchiveContext;
 
-      //   // # This should do the trick
-      // app.update();
-      //   app.instance().forceUpdate();
+      // use this: ==> import * as AppContext from '../contexts/archive-context';
+      // var useContext = jest
+      //   .spyOn(AppContext, 'useArchiveContext')
+      //   .mockImplementation(() => contextValues);
 
-      //   const button = app.find("button");
-      //   button.simulate("click");
-      //   expect(onButtonClickSpy).toHaveBeenCalled();
+      jest.mock('@reach/router', () => ({
+        navigate: jest.fn(),
+        globalHistory: jest.fn(),
+      }))
 
-      const setState = jest.fn();
-      const useStateSpy = jest.spyOn(React, 'useContext')
-      useStateSpy.mockImplementation((init) => [init, setState]);
 
-      const TestComponent = () => (
-        <ArchiveContextProvider>
-          <ArchiveSidebarColorClass fileIndexItems={newIFileIndexItemArray()} isReadOnly={false} />
-        </ArchiveContextProvider>
-      );
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/?select=test.jpg");
+      });
 
-      const element = mount(<TestComponent />);
+      // spy on fetch
+      const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
+      var spy = jest.spyOn(Query.prototype, 'queryUpdateApi').mockImplementationOnce(() => mockFetchAsXml);
 
-      expect(element.find('a.colorclass--1')).toBeTruthy()
+      const element = mount(<ArchiveSidebarColorClass isReadOnly={false} fileIndexItems={newIFileIndexItemArray()} />);
 
-      var dom: HTMLElement = element.find('a.colorclass--1').getDOMNode();
-      // console.log(dom);
+      // Make sure that the element exist in the first place
+      expect(element.find('a.colorclass--1')).toBeTruthy();
 
-      dom.click();
-      // console.log(element.find('a.colorclass--1').html());
+      element.find('a.colorclass--1').simulate("click");
 
-      // Fake news
-      // var a = element.find('a.colorclass--1'); // .simulate('click');
+      expect(spy).toHaveBeenCalledTimes(1);
 
-      // a.simulate('click');
-
-      // not working
-      // expect(useStateSpy).toBeCalledTimes(2)
-
+      useContextSpy.mockClear()
 
     });
-
-
   });
-
-  // it("not disabled2", () => {
-
-  //   const TestComponent = () => (
-  //     <ArchiveContextProvider>
-  //       <ArchiveSidebarColorClass fileIndexItems={newIFileIndexItemArray()} isReadOnly={false} />
-  //     </ArchiveContextProvider>
-  //   );
-  //   const element = shallow(<TestComponent />);
-  //   var find = element.find('a.colorclass--1')
-  //   console.log(find.html());
-
-  //   expect(element.find(ArchiveSidebarColorClass).dive().text()).toBe("Provided Value");
-
-  //   // wrapper.find('a.colorclass--1').simulate('click');
-
-  // });
-
 });
 
-// https://kevsoft.net/2019/05/28/testing-custom-react-hooks.html

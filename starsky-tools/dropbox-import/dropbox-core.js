@@ -208,14 +208,19 @@ module.exports = class Dropbox {
      * Run the StarskyImporterCli with a single file
      * @param {entries} entries list of items
      * @param {colorClassString} to overwrite the colorclass
+     * @param {structure} to set the structure
      */
-    runStarskyList(entries,colorClassString) {
+    runStarskyList(entries, colorClassString, structure) {
         return new Promise((resolve, reject) => {
             (async () => {
                 var index = 0;
                 while (index != entries.length) {
                     var filePath = path.join(this.getTempFolder(), entries[index].name);
-                    const { stdout, stderr } = await exec(this.starskyCli + ' -p \"' + filePath + "\"" + " --colorclass " + colorClassString);
+
+                    var exe = this.starskyCli + ' -p \"' + filePath + "\"" + " --colorclass " + colorClassString;
+                    if (structure) exe += " --structure " + structure;
+
+                    const { stdout, stderr } = await exec(exe);
                     if (stderr) {
                         console.log(stderr);
                         reject();

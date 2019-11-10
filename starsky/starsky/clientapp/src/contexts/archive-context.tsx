@@ -4,9 +4,9 @@ import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { newIRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { newIFileIndexItem } from '../interfaces/IFileIndexItem';
 
-const ArchiveContext = React.createContext<IContext>({} as IContext)
+const ArchiveContext = React.createContext<IArchiveContext>({} as IArchiveContext)
 
-type IContext = {
+export type IArchiveContext = {
   state: State,
   dispatch: React.Dispatch<Action>,
 }

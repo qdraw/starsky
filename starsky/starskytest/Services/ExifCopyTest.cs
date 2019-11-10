@@ -36,6 +36,37 @@ namespace starskytest.Services
 			Assert.AreEqual(true,helperResult.Contains("HistorySoftwareAgent"));
 		}
 
+		[TestMethod]
+		public void ExifToolCmdHelper_XmpSync()
+		{
+			var folderPaths = new List<string>{"/"};
+			var inputSubPaths = new List<string>{"/test.dng"};
+			var storage =
+				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, new List<string> {"?"});
+
+			var fakeReadMeta = new ReadMeta(storage);
+			var fakeExifTool = new FakeExifTool(storage,_appSettings);
+			var helperResult = new ExifCopy(storage, fakeExifTool, fakeReadMeta).XmpSync("/test.dng");
+			Assert.AreEqual("/test.xmp",helperResult);
+
+		}
+
+		[TestMethod]
+		public void ExifToolCmdHelper_XmpCreate()
+		{
+			var folderPaths = new List<string>{"/"};
+			var inputSubPaths = new List<string>{"/test.dng"};
+			var storage =
+				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, new List<string> {"?"});
+
+			var fakeReadMeta = new ReadMeta(storage);
+			var fakeExifTool = new FakeExifTool(storage,_appSettings);
+			
+			new ExifCopy(storage, fakeExifTool, fakeReadMeta).XmpCreate("/test.xmp");
+			var result = new PlainTextFileHelper().StreamToString(storage.ReadStream("/test.xmp"));
+			Assert.AreEqual("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Starsky'>\n<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n</rdf:RDF>\n</x:xmpmeta>",result);
+		}
+
 //		[TestMethod]
 //		public void ExifToolCmdHelper_TestForFakeExifToolInjection()
 //		{

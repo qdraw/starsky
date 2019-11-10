@@ -75,21 +75,21 @@ namespace starskycore.Services
 			return FileIndexCompareHelper.Compare(new FileIndexItem(), fileIndexItem);
 		}
 
-		/// <summary>
-		/// Copy for list all items (ignore if file already exist)
-		/// </summary>
-		/// <param name="fileIndexList">List with all content to be synced</param>
-		public void CopyExifToThumbnail(IEnumerable<FileIndexItem> fileIndexList)
-		{
-			foreach ( var updateModel in fileIndexList )
-			{
-				if ( ! _iStorage.ThumbnailExist(updateModel.FileHash) ) continue;
-				var comparedNames = CompareAll(updateModel);
-				comparedNames.Add(nameof(FileIndexItem.Software));
-				new ExifToolCmdHelper(_exifTool,_iStorage,_readMeta).UpdateThumbnail(updateModel, comparedNames);
-			}
-		}
-	    
+//		/// <summary>
+//		/// Copy for list all items (ignore if file already exist)
+//		/// </summary>
+//		/// <param name="fileIndexList">List with all content to be synced</param>
+//		public void CopyExifToThumbnail(IEnumerable<FileIndexItem> fileIndexList)
+//		{
+//			foreach ( var updateModel in fileIndexList )
+//			{
+//				if ( ! _iStorage.ThumbnailExist(updateModel.FileHash) ) continue;
+//				var comparedNames = CompareAll(updateModel);
+//				comparedNames.Add(nameof(FileIndexItem.Software));
+//				new ExifToolCmdHelper(_exifTool,_iStorage,_readMeta).UpdateThumbnail(updateModel, comparedNames);
+//			}
+//		}
+//	    
 //		public void CopyExifToThumbnail(string subPath, string thumbPath)
 //		{
 //			var updateModel = _readMeta.ReadExifAndXmpFromFile(subPath);

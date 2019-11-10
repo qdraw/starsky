@@ -31,13 +31,15 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
 
   // Used for Updating Colorclasses
   var handleChange = (colorClass: number) => {
+
     if (!props.isEnabled) return;
 
     // push content to server
     new Query().queryUpdateApi(props.filePath, "colorClass", colorClass.toString()).then(item => {
       setCurrentColorClass(colorClass);
       props.onToggle(colorClass);
-    }).catch(() => {
+    }).catch((error) => {
+      console.error(error);
       alert("Request failed");
     });
 
