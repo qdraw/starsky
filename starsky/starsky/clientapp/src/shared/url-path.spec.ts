@@ -187,4 +187,28 @@ describe("url-path", () => {
     });
   });
 
+  describe("ObjectToSearchParams", () => {
+    it("default bool", () => {
+      var bodyParams = new URLPath().ObjectToSearchParams({ append: true });
+      expect(bodyParams.toString()).toBe("append=true")
+    });
+
+    it("default value", () => {
+      var bodyParams = new URLPath().ObjectToSearchParams({ number: "1" });
+      expect(bodyParams.toString()).toBe("number=1")
+    });
+  });
+
+  describe("encodeURI", () => {
+    it("default", () => {
+      var encoded = new URLPath().encodeURI("€£@test")
+      expect(encoded).toBe("%E2%82%AC%C2%A3@test")
+    });
+
+    it("+", () => {
+      var encoded = new URLPath().encodeURI("+")
+      expect(encoded).toBe("%2B")
+    });
+  });
+
 });
