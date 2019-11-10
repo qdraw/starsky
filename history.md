@@ -37,6 +37,8 @@
 - [x]   (feature) Geo from Web Interface (including status) - in preview status
 - [x]   (bug) Force sync and renew for directories that contain a + sign are passing the wrong values (fixed)
 - [x]   Add unit tests for importing raw's with .xmp files
+- [x]   (starsky-tools) add Dropbox import helper tool
+
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_
