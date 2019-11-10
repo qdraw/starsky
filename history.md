@@ -21,6 +21,10 @@
 - []   (feature) Creating thumbnails from Web Interface (including status)
 - []   Front-end for Rename files
 - []   (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses)
+- []   Improve Unit test coverage
+
+# version 0.1.9 - t.b.d
+- nothing yet
 
 # version 0.1.8 - 2019-11-10
 - (bugfix) ignore directories without reading rights (instead of crashing)
