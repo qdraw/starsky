@@ -7,9 +7,12 @@ namespace starskycore.Services
 {
     public static class Breadcrumbs
     {
-        // Breadcrumb returns a list of parent folders
-        // it does not contain the current folder
-        
+	    /// <summary>
+        /// Breadcrumb returns a list of parent folders
+        /// it does not contain the current folder
+        /// </summary>
+        /// <param name="filePath">subpath (unix style)</param>
+        /// <returns>list of parent folders</returns>
         public static List<string> BreadcrumbHelper(string filePath)
         {
             if (filePath == null) return new List<string>(); 
@@ -27,7 +30,7 @@ namespace starskycore.Services
             var dir = 0;
             while (dir < filePathArray.Length - 1)
             {
-                if (String.IsNullOrEmpty(filePathArray[dir]))
+                if (string.IsNullOrEmpty(filePathArray[dir]))
                 {
                     breadcrumb.Add("/");
                 }
@@ -37,7 +40,7 @@ namespace starskycore.Services
                     
                     for (int i = 0; i <= dir; i++)
                     {
-                        if (!String.IsNullOrEmpty(filePathArray[i]))
+                        if (!string.IsNullOrEmpty(filePathArray[i]))
                         {
                             itemStringBuilder.Append("/" + filePathArray[i]);
                         }
