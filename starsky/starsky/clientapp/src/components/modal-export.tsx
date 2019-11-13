@@ -2,8 +2,8 @@ import React, { memo, useEffect } from 'react';
 import useInterval from '../hooks/use-interval';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
-import { Query } from '../shared/query';
 import { URLPath } from '../shared/url-path';
+import { Query } from '../shared/url-query';
 import Modal from './modal';
 
 interface IModalTrashProps {

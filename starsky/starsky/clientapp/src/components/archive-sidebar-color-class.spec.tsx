@@ -5,7 +5,7 @@ import { act } from 'react-dom/test-utils';
 import * as AppContext from '../contexts/archive-context';
 import { newIArchive } from '../interfaces/IArchive';
 import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
-import { Query } from '../shared/query';
+import * as FetchPost from '../shared/fetch-post';
 import ArchiveSidebarColorClass from './archive-sidebar-color-class';
 
 describe("ArchiveSidebarColorClass", () => {
@@ -59,8 +59,9 @@ describe("ArchiveSidebarColorClass", () => {
       });
 
       // spy on fetch
+      // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
-      var spy = jest.spyOn(Query.prototype, 'queryUpdateApi').mockImplementationOnce(() => mockFetchAsXml);
+      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
 
       const element = mount(<ArchiveSidebarColorClass isReadOnly={false} fileIndexItems={newIFileIndexItemArray()} />);
 

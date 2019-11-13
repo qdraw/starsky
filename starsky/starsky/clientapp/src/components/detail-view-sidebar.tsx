@@ -8,9 +8,10 @@ import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { CastToInterface } from '../shared/cast-to-interface';
 import { isValidDate, parseDate, parseRelativeDate, parseTime } from '../shared/date';
+import FetchPost from '../shared/fetch-post';
 import { Keyboard } from '../shared/keyboard';
-import { Query } from '../shared/query';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 import ColorClassSelect from './color-class-select';
 interface IDetailViewSidebarProps {
   filePath: string,
@@ -31,7 +32,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   const [collections, setCollections] = React.useState([] as string[]);
 
   // To Get information from /Api/Info
-  var location = new Query().UrlQueryInfoApi(props.filePath);
+  var location = new UrlQuery().UrlQueryInfoApi(props.filePath);
   const responseObject = useFetch(location, 'get');
   useEffect(() => {
     if (!responseObject) return;
@@ -89,7 +90,13 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       console.log('not supported');
     }
 
-    new Query().queryUpdateApi(props.filePath, name, event.currentTarget.innerText).then(item => {
+    var updateObject: any = { f: fileIndexItem.filePath }
+    updateObject[name] = value;
+
+    var updateApiUrl = new UrlQuery().UrlQueryUpdateApi();
+    var bodyParams = new URLPath().ObjectToSearchParams(updateObject);
+
+    FetchPost(updateApiUrl, bodyParams.toString()).then(item => {
       setFileIndexItem(item[0]);
     });
   }

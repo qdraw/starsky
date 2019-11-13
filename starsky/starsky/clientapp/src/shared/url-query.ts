@@ -1,9 +1,8 @@
-import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { newIUrl } from '../interfaces/IUrl';
 import { URLPath } from './url-path';
 
 
-export class Query {
+export class UrlQuery {
 
   private urlReplacePath(input: string): string {
     let output = input.replace("#", "");
@@ -48,41 +47,8 @@ export class Query {
     return "/api/info?f=" + url + "&json=true";
   }
 
-  private urlQueryUpdateApi = (subPath: string) => {
+  public UrlQueryUpdateApi = () => {
     return "/api/update";
-  }
-
-  public queryUpdateApi(subPath: string, type: string | undefined, value: string): Promise<IFileIndexItem[]> {
-    let location = this.urlQueryUpdateApi(subPath);
-    let post = "f=" + this.urlReplacePath(subPath) + "&" + type + "=" + value;
-    var controller = new AbortController();
-
-    return new Promise(
-      // The resolver function is called with the ability to resolve or
-      // reject the promise
-      function (resolve, reject) {
-        if (!subPath || !type || !value) reject();
-
-        fetch(location, {
-          signal: controller.signal,
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          body: post,
-          credentials: "include"
-        })
-          .then(function (response) {
-            return response;
-          })
-          .then(function (response) {
-            return response.json();
-          })
-          .then(function (data) {
-            let detailView: IFileIndexItem[] = data;
-            resolve(detailView);
-          });
-      });
   }
 
   public UrlQueryThumbnailApi = (fileHash: string) => {
@@ -101,33 +67,6 @@ export class Query {
   // export/zip/SR497519527.zip?json=true
   public UrlExportZipApi = (createZipId: string, json: boolean = true) => {
     return "/export/zip/" + createZipId + ".zip?json=" + json;
-  }
-
-  public queryInfoApi = (subPath: string): Promise<IFileIndexItem[]> => {
-
-    let location = this.UrlQueryInfoApi(subPath);
-
-    return new Promise(
-      // The resolver function is called with the ability to resolve or
-      // reject the promise
-      function (resolve, reject) {
-        fetch(location, {
-          credentials: "include"
-        })
-          .then(function (response) {
-            return response;
-          })
-          .then(function (response) {
-            return response.json();
-          })
-          .then(function (data) {
-
-            let detailView: IFileIndexItem[] = data;
-            // data.status.
-            resolve(detailView);
-
-          });
-      });
   }
 
 }

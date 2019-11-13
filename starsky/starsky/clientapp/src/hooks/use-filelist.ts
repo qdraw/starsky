@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { IArchive, newIArchive } from '../interfaces/IArchive';
 import { IDetailView, newDetailView, PageType } from '../interfaces/IDetailView';
 import { CastToInterface } from '../shared/cast-to-interface';
-import { Query } from '../shared/query';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 
 export interface IFileList {
   archive?: IArchive,
@@ -19,7 +19,7 @@ const useFileList = (locationSearch: string): IFileList | null => {
   const [pageType, setPageType] = useState(PageType.Loading);
   const [parent, setParent] = useState('/');
 
-  var location = new Query().UrlQueryServerApi(locationSearch);
+  var location = new UrlQuery().UrlQueryServerApi(locationSearch);
 
   useEffect(() => {
     const abortController = new AbortController();

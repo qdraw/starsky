@@ -51,7 +51,6 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
         )) : ""
       }
     </ul>
-
   </div>);
 });
 export default ArchiveSidebarSelectionList

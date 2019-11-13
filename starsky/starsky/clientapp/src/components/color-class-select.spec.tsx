@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
-import { Query } from '../shared/query';
+import * as FetchPost from '../shared/fetch-post';
 import ColorClassSelect from './color-class-select';
 
 describe("ColorClassSelect", () => {
@@ -11,8 +11,10 @@ describe("ColorClassSelect", () => {
   });
 
   it("onClick value", () => {
+    // spy on fetch
+    // use this import => import * as FetchPost from '../shared/fetch-post';
     const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
-    var spy = jest.spyOn(Query.prototype, 'queryUpdateApi').mockImplementationOnce(() => mockFetchAsXml);
+    var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
 
     var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }}></ColorClassSelect>)
 
@@ -20,7 +22,7 @@ describe("ColorClassSelect", () => {
 
     // expect
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith("/test1", "colorClass", "2");
+    expect(spy).toHaveBeenCalledWith("/api/update", "filePath=%2Ftest1");
 
     // Cleanup: To avoid that mocks are shared
     spy.mockClear();
@@ -29,7 +31,7 @@ describe("ColorClassSelect", () => {
 
   it("onClick disabled", () => {
     const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
-    var spy = jest.spyOn(Query.prototype, 'queryUpdateApi').mockImplementationOnce(() => mockFetchAsXml);
+    var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
 
     var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={false} filePath={"/test1"} onToggle={(value) => { }}></ColorClassSelect>)
 

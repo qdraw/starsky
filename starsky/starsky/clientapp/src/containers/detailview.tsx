@@ -12,8 +12,8 @@ import { INavigateState } from '../interfaces/INavigateState';
 import BrowserDetect from '../shared/browser-detect';
 import DocumentTitle from '../shared/document-title';
 import { Keyboard } from '../shared/keyboard';
-import { Query } from '../shared/query';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 
 const DetailView: React.FC<IDetailView> = () => {
 
@@ -39,7 +39,7 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // To Get the rotation update
   const [translateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);
-  var location = new Query().UrlQueryThumbnailApi(state.fileIndexItem.fileHash);
+  var location = new UrlQuery().UrlQueryThumbnailApi(state.fileIndexItem.fileHash);
   const responseObject = useFetch(location, 'get');
   useEffect(() => {
     if (!responseObject) return;
