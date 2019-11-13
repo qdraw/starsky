@@ -9,5 +9,5 @@ export interface ILogin {
 }
 
 export function newILogin(): ILogin {
-  return <ILogin>{};
+  return {} as ILogin;
 }
