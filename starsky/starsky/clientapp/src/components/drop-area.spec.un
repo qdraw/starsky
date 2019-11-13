@@ -1,0 +1,34 @@
+import * as React from 'react';
+import { shallow } from 'enzyme';
+import ParentComponent from '../ParentComponent';
+
+test('uploads the file after a click event', () => {
+  const fileUploaderMock = jest.fn();
+  const component = shallow(<ParentComponent
+    files={files}
+    onFilesUploaded={fileUploaderMock}
+  />);
+
+  const file = {
+    name: 'test.jpg',
+    type: 'image/jpg',
+  } as File;
+
+  const fileList: FileList = {
+    length: 1,
+    item: () => null,
+    0: file,
+  };
+
+  const event = {
+    currentTarget: {
+      files: fileList,
+    }
+  } as React.ChangeEvent<HTMLInputElement>;
+
+  const instance = component.instance() as ParentComponent;
+  instance.handleUploadFile(event);
+  expect(fileUploaderMock).toBeCalledWith(fileList);
+});
+
+https://medium.com/@evanteague/creating-fake-test-events-with-typescript-jest-778018379d1e
