@@ -21,26 +21,23 @@ const differenceInDate = (date: number): number => {
 const parseRelativeDate = (inputDateTime: string | undefined): string => {
   let date = "";
 
-  if (inputDateTime) {
-    let input = new Date(inputDateTime).valueOf();
-    if (input) {
+  if (!inputDateTime) return date;
+  let input = new Date(inputDateTime).valueOf();
 
-      let difference = differenceInDate(input);
+  if (!input) return date;
 
-      switch (true) {
-        case (difference <= 1):
-          return "minder dan 1 minuut";
-        case (difference < 60):
-          return difference.toFixed(0) + " minuten";
-        case (difference < 1440):
-          return "gisteren";
-        default:
-          return parseDate(inputDateTime);
-      }
-
-    }
+  let difference = differenceInDate(input);
+  switch (true) {
+    case (difference <= 1):
+      return "minder dan 1 minuut";
+    case (difference < 60):
+      return difference.toFixed(0) + " minuten";
+    case (difference < 1440):
+      return "gisteren";
+    default:
+      return parseDate(inputDateTime);
   }
-  return date;
+
 }
 
 const parseDate = (dateTime: string | undefined): string => {
@@ -69,5 +66,5 @@ const parseTime = (dateTime: string | undefined): string => {
   return date;
 }
 
-export { isValidDate, parseRelativeDate, parseDate, parseTime };
+export { isValidDate, parseRelativeDate, parseDate, parseTime, leftPad };
 

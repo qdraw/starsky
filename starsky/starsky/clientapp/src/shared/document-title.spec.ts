@@ -29,7 +29,5 @@ describe("document-title", () => {
       new DocumentTitle().SetDocumentTitle(state)
       expect(document.title).toContain("search");
     });
-
-
   });
 });
