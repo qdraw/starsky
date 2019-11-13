@@ -41,9 +41,6 @@ export class UrlQuery {
   public UrlQueryInfoApi(subPath: string): string {
     if (!subPath) return "";
     var url = this.urlReplacePath(subPath);
-    if (url === "") {
-      url = "/";
-    }
     return "/api/info?f=" + url + "&json=true";
   }
 
@@ -60,11 +57,16 @@ export class UrlQuery {
     return "/api/downloadPhoto?f=" + f + "&isThumbnail=" + isThumbnail;
   }
 
+  /**
+   * url create a zip
+   */
   public UrlExportPostZipApi = () => {
     return "/export/createZip/"
   }
 
-  // export/zip/SR497519527.zip?json=true
+  /**
+   * export/zip/SR497519527.zip?json=true
+   */
   public UrlExportZipApi = (createZipId: string, json: boolean = true) => {
     return "/export/zip/" + createZipId + ".zip?json=" + json;
   }
