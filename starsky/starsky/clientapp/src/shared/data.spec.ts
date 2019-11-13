@@ -35,9 +35,9 @@ describe("date", () => {
     });
 
     it("yesterday", () => {
-      var yesterday = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate() - 1}T${leftPad(new Date().getHours())}:${leftPad(new Date().getMinutes())}:${leftPad(new Date().getSeconds())}+00:00`;
+      var yesterday = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate() - 1} ${leftPad(new Date().getHours())}:${leftPad(new Date().getMinutes())}:${leftPad(new Date().getSeconds())}`;
       var result = parseRelativeDate(yesterday);
-      expect(result).toBe("gisteren");
+      expect(result).toBe("24 uur");
     });
 
     it("less than a hour", () => {

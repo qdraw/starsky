@@ -12,6 +12,10 @@ const leftPad = (n: number) => {
   return n > 9 ? "" + n : "0" + n;
 }
 
+/**
+ * Return difference in Minutes
+ * @param date a Javascript Datetime stamp (unix*1000)
+ */
 const differenceInDate = (date: number): number => {
   let now = new Date().valueOf();
   let difference = (now - date) / 60000;
@@ -27,13 +31,14 @@ const parseRelativeDate = (inputDateTime: string | undefined): string => {
   if (!input) return date;
 
   let difference = differenceInDate(input);
+
   switch (true) {
     case (difference <= 1):
       return "minder dan 1 minuut";
     case (difference < 60):
       return difference.toFixed(0) + " minuten";
-    case (difference < 1440):
-      return "gisteren";
+    case (difference < 1441):
+      return Math.round(difference / 60) + " uur";
     default:
       return parseDate(inputDateTime);
   }
@@ -66,5 +71,5 @@ const parseTime = (dateTime: string | undefined): string => {
   return date;
 }
 
-export { isValidDate, parseRelativeDate, parseDate, parseTime, leftPad };
+export { isValidDate, parseRelativeDate, parseDate, parseTime, leftPad, };
 
