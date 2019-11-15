@@ -1,8 +1,8 @@
-import { newIMedia } from './IMedia';
+import { IMedia, newIMedia } from './IMedia';
 
 describe("IMedia", () => {
   it("newIMedia", () => {
     var media = newIMedia();
-    expect(media).toBe(media);
+    expect(media).toStrictEqual({} as IMedia);
   });
 });
