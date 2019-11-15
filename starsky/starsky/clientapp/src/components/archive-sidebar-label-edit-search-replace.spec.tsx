@@ -4,7 +4,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as AppContext from '../contexts/archive-context';
 import { IArchive } from '../interfaces/IArchive';
-import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import * as FetchPost from '../shared/fetch-post';
 import ArchiveSidebarLabelEditSearchReplace from './archive-sidebar-label-edit-search-replace';
 
@@ -92,7 +92,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
     });
 
     it('click replace', () => {
-      const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
+      const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve([{ fileName: 'test.jpg', parentDirectory: '/' }] as IFileIndexItem[]);
       var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
 
       const component = mount(<ArchiveSidebarLabelEditSearchReplace />);

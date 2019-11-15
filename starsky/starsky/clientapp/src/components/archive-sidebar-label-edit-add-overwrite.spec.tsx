@@ -4,7 +4,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as AppContext from '../contexts/archive-context';
 import { IArchive } from '../interfaces/IArchive';
-import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import * as FetchPost from '../shared/fetch-post';
 import ArchiveSidebarLabelEditAddOverwrite from './archive-sidebar-label-edit-add-overwrite';
 
@@ -87,8 +87,8 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       expect(className).toBe('btn btn--default')
     });
 
-    it('click replace', () => {
-      const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
+    it('click append', () => {
+      const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve([{ fileName: 'test.jpg', parentDirectory: '/' }] as IFileIndexItem[]);
       var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
 
       const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
