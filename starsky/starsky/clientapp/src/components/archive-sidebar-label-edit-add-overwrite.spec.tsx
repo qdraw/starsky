@@ -1,9 +1,11 @@
 import { globalHistory } from '@reach/router';
-import { shallow } from "enzyme";
+import { mount, shallow } from "enzyme";
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as AppContext from '../contexts/archive-context';
 import { IArchive } from '../interfaces/IArchive';
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import * as FetchPost from '../shared/fetch-post';
 import ArchiveSidebarLabelEditAddOverwrite from './archive-sidebar-label-edit-add-overwrite';
 
 describe("ArchiveSidebarLabelEditAddOverwrite", () => {
@@ -35,7 +37,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .mockImplementation(() => contextValues);
 
       const contextValues = {
-        state: { isReadOnly: false } as IArchive,
+        state: { isReadOnly: false, fileIndexItems: [{ fileName: 'test.jpg', parentDirectory: '/' }] } as IArchive,
         dispatch: jest.fn(),
       } as AppContext.IArchiveContext;
 
@@ -72,16 +74,35 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
     });
 
-    // it("click", () => {
-    //   const mainElement = shallow(<ArchiveSidebarLabelEditAddOverwrite />);
-    //   var formControl = mainElement.find('.form-control');
-    //   formControl.forEach(element => {
-    //     // element.simulate('change', { target: { value: 'Hello' } })
-    //     element.simulate('keydown', { keyCode: 49 });
-    //     // element.props().value = "foo";
-    //   });
-    //   console.log(mainElement.html());
-    // });
+    it('Should change value when onChange was called', () => {
+      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+
+      // update component
+      component.find('[data-name="tags"]').getDOMNode().textContent = "a";
+
+      // now press a key
+      component.find('[data-name="tags"]').simulate('input', { key: 'a' })
+
+      var className = component.find('.btn.btn--default').getDOMNode().className
+      expect(className).toBe('btn btn--default')
+    });
+
+    it('click append', () => {
+      const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve([{ fileName: 'test.jpg', parentDirectory: '/' }] as IFileIndexItem[]);
+      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
+
+      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+
+      // update component + now press a key
+      component.find('[data-name="tags"]').getDOMNode().textContent = "a";
+      component.find('[data-name="tags"]').simulate('input', { key: 'a' })
+
+      component.find('.btn.btn--default').simulate('click');
+
+
+      expect(spy).toBeCalled();
+      expect(spy).toBeCalledWith("/api/update", "append=true&collections=true&tags=a&f=%2F%2F%2Ftest.jpg");
+    });
 
   });
 

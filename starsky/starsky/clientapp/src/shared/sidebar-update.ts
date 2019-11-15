@@ -8,7 +8,7 @@ export class SidebarUpdate {
   * @param fieldValue the value
   * @param updateSidebar 'From Object'
   */
-  CastToISideBarUpdate = (fieldName: string, fieldValue: string, updateSidebar: ISidebarUpdate): ISidebarUpdate => {
+  public CastToISideBarUpdate = (fieldName: string, fieldValue: string, updateSidebar: ISidebarUpdate): ISidebarUpdate => {
     if (!fieldName) return updateSidebar;
     if (!fieldValue) return updateSidebar;
 
@@ -37,7 +37,18 @@ export class SidebarUpdate {
     return updateSidebar;
   }
 
-  IsFormUsed = (updateSidebar: ISidebarUpdate): boolean => {
+  public Change = (event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>, update: ISidebarUpdate): ISidebarUpdate | null => {
+    if (!event.currentTarget.textContent) return null;
+    let fieldValue = event.currentTarget.textContent.trim();
+    let fieldName = event.currentTarget.dataset["name"];
+
+    if (!fieldName) return null;
+    if (!fieldValue) return null;
+
+    return new SidebarUpdate().CastToISideBarUpdate(fieldName, fieldValue, update);
+  }
+
+  public IsFormUsed = (updateSidebar: ISidebarUpdate): boolean => {
     var totalChars = 0;
     if (updateSidebar.tags) {
       totalChars += updateSidebar.tags.length

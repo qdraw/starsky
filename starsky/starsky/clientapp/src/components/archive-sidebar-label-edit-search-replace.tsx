@@ -38,13 +38,9 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
   // Update the disabled state + Local variable with input data
   function handleUpdateChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
-    let fieldValue = event.currentTarget.innerText.trim();
-    let fieldName = event.currentTarget.dataset["name"];
-    if (!fieldName) return;
-    if (!fieldValue) return;
-
-    var updateSidebar = new SidebarUpdate().CastToISideBarUpdate(fieldName, fieldValue, update);
-    setUpdate(updateSidebar);
+    var sideBarUpdate = new SidebarUpdate().Change(event, update);
+    if (!sideBarUpdate) return;
+    setUpdate(sideBarUpdate);
     setInputEnabled(new SidebarUpdate().IsFormUsed(update));
   }
 

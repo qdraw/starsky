@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { IArchive, newIArchive } from '../interfaces/IArchive';
 import { PageType } from '../interfaces/IDetailView';
 import { CastToInterface } from '../shared/cast-to-interface';
-import { Query } from '../shared/query';
+import { UrlQuery } from '../shared/url-query';
 
 export interface ISearchList {
   archive?: IArchive,
@@ -16,7 +16,7 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
   const [pageType, setPageType] = useState(PageType.Loading);
   // const [parent, setParent] = useState('/');
 
-  var location = query ? new Query().UrlQuerySearchApi(query, pageNumber) : undefined;
+  var location = query ? new UrlQuery().UrlQuerySearchApi(query, pageNumber) : undefined;
 
   useEffect(() => {
     const abortController = new AbortController();

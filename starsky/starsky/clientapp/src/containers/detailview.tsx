@@ -6,20 +6,25 @@ import { DetailViewContext } from '../contexts/detailview-context';
 import useFetch from '../hooks/use-fetch';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
-import { IDetailView, newIRelativeObjects } from '../interfaces/IDetailView';
+import { IDetailView, newDetailView, newIRelativeObjects } from '../interfaces/IDetailView';
 import { Orientation } from '../interfaces/IFileIndexItem';
 import { INavigateState } from '../interfaces/INavigateState';
 import BrowserDetect from '../shared/browser-detect';
 import DocumentTitle from '../shared/document-title';
 import { Keyboard } from '../shared/keyboard';
-import { Query } from '../shared/query';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 
 const DetailView: React.FC<IDetailView> = () => {
 
   var history = useLocation();
 
   let { state } = React.useContext(DetailViewContext);
+
+  // if there is no state
+  if (!state) {
+    state = newDetailView();
+  }
 
   let relativeObjects = newIRelativeObjects();
   if (state && state.relativeObjects) {
@@ -39,16 +44,17 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // To Get the rotation update
   const [translateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);
-  var location = new Query().UrlQueryThumbnailApi(state.fileIndexItem.fileHash);
-  const responseObject = useFetch(location, 'get');
+  let fileHash: string = "";
+  if (state.fileIndexItem && state.fileIndexItem.fileHash) fileHash = state.fileIndexItem.fileHash;
+  const thumbResponseObject = useFetch(new UrlQuery().UrlQueryThumbnailApi(fileHash), 'get');
   useEffect(() => {
-    if (!responseObject) return;
+    if (!thumbResponseObject) return;
     if (!state.fileIndexItem.orientation) return;
     // Safari for iOS I don't need thumbnail rotation (for Mac it require rotation)
     if (new BrowserDetect().IsIOS()) {
       return;
     }
-    var statusCode: number = responseObject.statusCode;
+    var statusCode: number = thumbResponseObject.statusCode;
     if (statusCode === 200) {
       setTranslateRotation(Orientation.Horizontal);
     }
@@ -56,8 +62,7 @@ const DetailView: React.FC<IDetailView> = () => {
       setTranslateRotation(state.fileIndexItem.orientation);
       return;
     }
-  }, [responseObject]);
-  console.log(translateRotation);
+  }, [thumbResponseObject]);
 
   useKeyboardEvent(/ArrowLeft/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;

@@ -199,6 +199,23 @@ describe("url-path", () => {
     });
   });
 
+  describe("getChild", () => {
+    it("slash", () => {
+      var path = urlPath.getChild("/");
+      expect(path).toBe("")
+    });
+
+    it("get image without ending slash", () => {
+      var path = urlPath.getChild("/test/img");
+      expect(path).toBe("img")
+    });
+
+    it("get image ending slash", () => {
+      var path = urlPath.getChild("/test/img/");
+      expect(path).toBe("img")
+    });
+  });
+
   describe("encodeURI", () => {
     it("default", () => {
       var encoded = new URLPath().encodeURI("€£@test")

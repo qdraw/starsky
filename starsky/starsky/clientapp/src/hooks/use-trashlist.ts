@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { IArchive, newIArchive } from '../interfaces/IArchive';
 import { PageType } from '../interfaces/IDetailView';
 import { CastToInterface } from '../shared/cast-to-interface';
-import { Query } from '../shared/query';
+import { UrlQuery } from '../shared/url-query';
 
 export interface IuseTrashList {
   archive?: IArchive,
@@ -14,7 +14,7 @@ const useTrashList = (pageNumber = 0): IuseTrashList | null => {
   const [archive, setArchive] = useState(newIArchive());
   const [pageType, setPageType] = useState(PageType.Loading);
 
-  var location = new Query().UrlSearchTrashApi(pageNumber)
+  var location = new UrlQuery().UrlSearchTrashApi(pageNumber)
 
   useEffect(() => {
     const abortController = new AbortController();
