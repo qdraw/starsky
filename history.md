@@ -24,7 +24,7 @@
 - []   Improve Unit test coverage
 
 # version 0.1.9 - t.b.d
-- nothing yet
+- use for example '3 hours' instead of yesterday in detailview
 
 # version 0.1.8 - 2019-11-10
 - (bugfix) ignore directories without reading rights (instead of crashing)
