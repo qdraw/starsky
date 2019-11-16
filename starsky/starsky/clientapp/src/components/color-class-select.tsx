@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import FetchPost from '../shared/fetch-post';
 import { Keyboard } from '../shared/keyboard';
@@ -29,6 +29,11 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
   ];
 
   const [currentColorClass, setCurrentColorClass] = React.useState(props.currentColorClass);
+
+  /** re-render when switching page */
+  useEffect(() => {
+    setCurrentColorClass(props.currentColorClass)
+  }, [props.currentColorClass]);
 
   /**
    * Used for Updating Colorclasses
