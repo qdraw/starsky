@@ -22,7 +22,7 @@ describe("ColorClassSelect", () => {
 
     // expect
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith("/api/update", "filePath=%2Ftest1");
+    expect(spy).toHaveBeenCalledWith("/api/update", "f=%2Ftest1&colorclass=2");
 
     // Cleanup: To avoid that mocks are shared
     spy.mockClear();

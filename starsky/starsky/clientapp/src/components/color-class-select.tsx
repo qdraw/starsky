@@ -1,9 +1,7 @@
 import React, { memo } from 'react';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
-import { newIFileIndexItem } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { Keyboard } from '../shared/keyboard';
-import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 
 export interface IColorClassSelectProps {
@@ -32,17 +30,19 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
 
   const [currentColorClass, setCurrentColorClass] = React.useState(props.currentColorClass);
 
-  // Used for Updating Colorclasses
+  /**
+   * Used for Updating Colorclasses
+   * @param colorClass value to update
+   */
   var handleChange = (colorClass: number) => {
 
     if (!props.isEnabled) return;
 
-    var updateObject = newIFileIndexItem();
-    updateObject.colorClass = colorClass;
-    updateObject.filePath = props.filePath;
-
     var updateApiUrl = new UrlQuery().UrlQueryUpdateApi();
-    var bodyParams = new URLPath().ObjectToSearchParams(updateObject);
+
+    var bodyParams = new URLSearchParams();
+    bodyParams.append("f", props.filePath);
+    bodyParams.append("colorclass", colorClass.toString());
 
     FetchPost(updateApiUrl, bodyParams.toString()).then(item => {
       setCurrentColorClass(colorClass);
