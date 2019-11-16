@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useLayoutEffect } from "react";
+import { PageType } from '../interfaces/IDetailView';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import ArchiveSidebarColorClass from './archive-sidebar-color-class';
 import ArchiveSidebarLabelEdit from './archive-sidebar-label-edit';
@@ -9,6 +10,7 @@ interface IArchiveSidebarProps {
   colorClassUsage: Array<number>,
   subPath: string;
   isReadOnly: boolean;
+  pageType: PageType;
 }
 
 const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((archive) => {
@@ -39,6 +41,11 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
       window.removeEventListener("scroll", listener);
     };
   });
+
+  /** to avoid wrong props passed */
+  if (archive.pageType === PageType.Loading) {
+    return (<div className="sidebar"></div>)
+  }
 
   return (<div className="sidebar">
 
