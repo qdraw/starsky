@@ -25,6 +25,7 @@
 
 # version 0.1.9 - t.b.d
 - use for example '3 hours' instead of yesterday in detailview
+- (bugfix) EventTarget issue (Safari) when using /import
 
 # version 0.1.8 - 2019-11-10
 - (bugfix) ignore directories without reading rights (instead of crashing)

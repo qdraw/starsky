@@ -4,6 +4,7 @@ describe("keyboard", () => {
   var keyboard = new Keyboard();
   describe("isInForm", () => {
     it("null input", () => {
+      // new EventTarget() = not supported in Safari
       var eventTarget: EventTarget = new EventTarget()
       var event = new KeyboardEvent('keydown', { 'keyCode': 37, 'target': eventTarget } as KeyboardEventInit);
 

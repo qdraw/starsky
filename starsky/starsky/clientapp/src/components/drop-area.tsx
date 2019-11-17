@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
@@ -7,27 +7,22 @@ import ItemTextListView from './item-text-list-view';
 import Modal from './modal';
 import Preloader from './preloader';
 
-type ReactNodeProps = { children: React.ReactNode }
+export interface IDropAreaProps {
+  enableInputField?: boolean;
+  enableDragAndDrop?: boolean;
+}
 
-// todo: add parameter for drag'n drop
-// todo: add parameter for button only
-// todo: add loading icon
-
-/**
- * Todo
- * @param param0 
- */
-const DropArea = ({ children }: ReactNodeProps) => {
+const DropArea: React.FunctionComponent<IDropAreaProps> = memo((props) => {
 
   const [dragActive, setDrag] = useState(false);
-  const [dragTarget, setDragTarget] = useState(new EventTarget());
+  const [dragTarget, setDragTarget] = useState(document.createElement("span") as Element);
   const [isLoading, setIsLoading] = useState(false);
 
   const [isOpen, setOpen] = useState(false);
   const [lastUploaded, setLastUploaded] = useState(new Date());
 
   // used to force react to update the array
-  const [uploadFilesList, setUploadFiles] = useState(newIFileIndexItemArray());
+  const [uploadFilesList] = useState(newIFileIndexItemArray());
 
   /**
    * On a mouse drop
@@ -132,40 +127,43 @@ const DropArea = ({ children }: ReactNodeProps) => {
     if (!event.target) return;
 
     setDrag(true);
-    setDragTarget(event.target);
-
-    // to add the plus sign (only for layout)
-    if (!event.dataTransfer) return;
-    event.dataTransfer.effectAllowed = "copy";
-
+    setDragTarget(event.target as Element);
+    setDropEffect(event);
   };
 
   /**
-  * Restore style after dragging
+  * Occurs when the dragged element leaves from the drop target.
+  * The target is the window in this case
   * @param event DragEvent
   */
   const onDragLeave = (event: DragEvent) => {
     event.preventDefault();
-    if (event.target === dragTarget) {
+    if (event.target as Element === dragTarget) {
       setDrag(false);
     }
   };
 
   /**
-  * Show different style for drag
+  * Occurs when the dragged element is over the drop target.
   * @param event DragEvent
   */
   const onDragOver = (event: DragEvent) => {
     event.preventDefault();
     setDrag(true);
-
-    // to remove the plus sign (only for layout)
-    if (!event.dataTransfer) return;
-    event.dataTransfer.dropEffect = "copy";
+    setDropEffect(event);
   };
 
+  /**
+   * to remove the plus sign (only for layout)
+   */
+  const setDropEffect = (event: DragEvent): void => {
+    if (!event.dataTransfer) return;
+    event.dataTransfer.dropEffect = "copy";
+  }
 
   useEffect(() => {
+    if (!props.enableDragAndDrop) return;
+
     // Bind the event listener
     window.addEventListener('dragenter', onDragEnter);
     window.addEventListener('dragleave', onDragLeave);
@@ -190,10 +188,9 @@ const DropArea = ({ children }: ReactNodeProps) => {
   }, [dragActive]);
 
   return (<>
-    {children}
-
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true}></Preloader> : ""}
-    <input type="file" onChange={onChange}></input>
+
+    {props.enableInputField ? <input type="file" onChange={onChange}></input> : null}
 
     <Modal
       id="detailview-drop-modal"
@@ -204,5 +201,5 @@ const DropArea = ({ children }: ReactNodeProps) => {
       <ItemTextListView lastUploaded={lastUploaded} fileIndexItems={uploadFilesList}></ItemTextListView>
     </Modal>
   </>);
-};
+});
 export default DropArea;

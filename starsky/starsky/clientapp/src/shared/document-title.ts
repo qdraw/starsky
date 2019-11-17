@@ -8,7 +8,7 @@ export class DocumentTitle {
     var name = archive.breadcrumb[archive.breadcrumb.length - 1];
 
     // The breadcrumb implementation of Archive/DetailView does not include the current item
-    if (archive.subPath && (archive.pageType == PageType.Archive || archive.pageType == PageType.DetailView)) {
+    if (archive.subPath && (archive.pageType === PageType.Archive || archive.pageType === PageType.DetailView)) {
       name = archive.subPath.split("/")[archive.subPath.split("/").length - 1];
       if (name.length === 0) {
         name = "Home";
