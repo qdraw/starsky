@@ -128,10 +128,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = memo((props) => {
 
     setDrag(true);
     setDragTarget(event.target as Element);
-
-    // to add the plus sign (only for layout)
-    if (!event.dataTransfer) return;
-    event.dataTransfer.effectAllowed = "copy";
+    setDropEffect(event);
   };
 
   /**
@@ -153,12 +150,16 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = memo((props) => {
   const onDragOver = (event: DragEvent) => {
     event.preventDefault();
     setDrag(true);
-
-    // to remove the plus sign (only for layout)
-    if (!event.dataTransfer) return;
-    event.dataTransfer.dropEffect = "copy";
+    setDropEffect(event);
   };
 
+  /**
+   * to remove the plus sign (only for layout)
+   */
+  const setDropEffect = (event: DragEvent): void => {
+    if (!event.dataTransfer) return;
+    event.dataTransfer.dropEffect = "copy";
+  }
 
   useEffect(() => {
     if (!props.enableDragAndDrop) return;
