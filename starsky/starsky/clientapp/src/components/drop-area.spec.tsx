@@ -33,7 +33,7 @@ describe("DropArea", () => {
       scrollToSpy.mockClear()
     });
 
-    it("Test Drop", () => {
+    it("Test Drop a file", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve([newIFileIndexItem()] as IFileIndexItem[]);
@@ -73,7 +73,7 @@ describe("DropArea", () => {
     it("Test dragenter and then dragleave", () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        mount(<DropArea enableDragAndDrop={true}></DropArea>);
+        shallow(<DropArea enableDragAndDrop={true}></DropArea>);
       });
 
       act(() => {
@@ -92,7 +92,7 @@ describe("DropArea", () => {
     it("Test dragover", () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        mount(<DropArea enableDragAndDrop={true}></DropArea>);
+        shallow(<DropArea enableDragAndDrop={true}></DropArea>);
       });
 
       act(() => {
