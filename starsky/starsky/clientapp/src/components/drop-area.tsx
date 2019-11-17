@@ -132,11 +132,11 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = memo((props) => {
     // to add the plus sign (only for layout)
     if (!event.dataTransfer) return;
     event.dataTransfer.effectAllowed = "copy";
-
   };
 
   /**
-  * Restore style after dragging
+  * Occurs when the dragged element leaves from the drop target.
+  * The target is the window in this case
   * @param event DragEvent
   */
   const onDragLeave = (event: DragEvent) => {
@@ -147,7 +147,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = memo((props) => {
   };
 
   /**
-  * Show different style for drag
+  * Occurs when the dragged element is over the drop target.
   * @param event DragEvent
   */
   const onDragOver = (event: DragEvent) => {

@@ -11,48 +11,100 @@ describe("DropArea", () => {
     shallow(<DropArea></DropArea>)
   });
 
+  describe("with events", () => {
+    const exampleFile = new Blob(["file contents"], { type: "text/plain" });
 
-  it("Test Drop", () => {
+    function createDnDEvent(eventType: 'dragenter' | 'dragleave' | 'dragover' | 'drop'): CustomEvent & { dataTransfer?: DataTransfer } {
+      // Create a non-null file
+      var event: CustomEvent & { dataTransfer?: DataTransfer } = new CustomEvent("CustomEvent");
+      event.initCustomEvent(eventType, true, true, null)
+      event.dataTransfer = { files: [exampleFile] } as unknown as DataTransfer;
+      return event;
+    }
 
-    const scrollToSpy = jest.fn();
-    window.scrollTo = scrollToSpy;
+    var scrollToSpy = jest.fn();
 
-    // spy on fetch
-    // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve([newIFileIndexItem()] as IFileIndexItem[]);
-    var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
-
-    act(() => {
-      // to use with: => import { act } from 'react-dom/test-utils';
-      mount(<DropArea enableDragAndDrop={true}></DropArea>);
+    beforeEach(() => {
+      window.scrollTo = scrollToSpy;
     });
 
-    // Create a non-null file
-    var event: CustomEvent & { dataTransfer?: DataTransfer } = new CustomEvent("CustomEvent");
-
-    const fileContents = "file contents";
-    const file = new Blob([fileContents], { type: "text/plain" });
-
-    event.initCustomEvent('drop', true, true, null)
-    event.dataTransfer = { files: [file] } as unknown as DataTransfer
-
-    act(() => {
-      document.dispatchEvent(event);
+    afterEach(() => {
+      // and clean your room afterwards
+      scrollToSpy.mockClear()
     });
 
-    var compareFormData = new FormData();
-    compareFormData.append("files", file);
+    it("Test Drop", () => {
+      // spy on fetch
+      // use this import => import * as FetchPost from '../shared/fetch-post';
+      const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve([newIFileIndexItem()] as IFileIndexItem[]);
+      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
 
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        mount(<DropArea enableDragAndDrop={true}></DropArea>);
+      });
 
-    expect(spy).toBeCalled()
-    expect(spy).toBeCalledTimes(1);
-    expect(spy).toBeCalledWith("/import", compareFormData)
+      act(() => {
+        document.dispatchEvent(createDnDEvent('drop'));
+      });
 
-    scrollToSpy.mockClear();
+      var compareFormData = new FormData();
+      compareFormData.append("files", exampleFile);
+
+      expect(spy).toBeCalled()
+      expect(spy).toBeCalledTimes(1);
+      expect(spy).toBeCalledWith("/import", compareFormData)
+
+    });
+
+    it("Test dragenter", () => {
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        mount(<DropArea enableDragAndDrop={true}></DropArea>);
+      });
+
+      act(() => {
+        document.dispatchEvent(createDnDEvent('dragenter'));
+      });
+
+      expect(document.body.className).toBe('drag');
+    });
+
+    it("Test dragenter and then dragleave", () => {
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        mount(<DropArea enableDragAndDrop={true}></DropArea>);
+      });
+
+      act(() => {
+        document.dispatchEvent(createDnDEvent('dragenter'));
+      });
+
+      expect(document.body.className).toBe('drag');
+
+      act(() => {
+        document.dispatchEvent(createDnDEvent('dragleave'));
+      });
+
+      expect(document.body.className).toBe('');
+    });
+
+    it("Test dragover", () => {
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        mount(<DropArea enableDragAndDrop={true}></DropArea>);
+      });
+
+      act(() => {
+        document.dispatchEvent(createDnDEvent('dragover'));
+      });
+
+      expect(document.body.className).toBe('drag');
+    });
+
   });
-  it("Test Drag", () => {
+});
 
-  });
 
   // it("WIP renders2", () => {
 
@@ -96,7 +148,7 @@ describe("DropArea", () => {
 
   //   scrollToSpy.mockClear();
   // });
-});
+
 
 
 // test('uploads the file after a click event', () => {
