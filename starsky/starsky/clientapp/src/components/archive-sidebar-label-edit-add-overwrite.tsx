@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
-import { newIArchive } from '../interfaces/IArchive';
 import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchPost from '../shared/fetch-post';
@@ -16,10 +15,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   let { state, dispatch } = React.useContext(ArchiveContext);
 
   // state without any context
-  if (state === undefined) {
-    state = newIArchive();
-    state.isReadOnly = true;
-  }
+  state = new CastToInterface().UndefinedIArchiveReadonly(state);
 
   // show select info
   const [select, setSelect] = React.useState(new URLPath().getSelect(history.location.search));
