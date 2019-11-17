@@ -12,7 +12,7 @@ const ImportPage: FunctionComponent<RouteComponentProps> = (props) => {
     <div className="content">
       <div className="content--header">Importeren</div>
       <div className="content--subheader"><a href="/v1/import"><u>Test functionaliteit: Ga naar oude weergave</u></a></div>
-      <DropArea><></></DropArea>
+      <DropArea enableInputField={true} enableDragAndDrop={true}></DropArea>
     </div>
   </div>
   )
