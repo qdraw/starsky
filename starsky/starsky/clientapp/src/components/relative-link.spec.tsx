@@ -5,10 +5,6 @@ import RelativeLink from './relative-link';
 
 describe("RelativeLink", () => {
 
-  it("renders", () => {
-    shallow(<RelativeLink></RelativeLink>)
-  });
-
   it("renders new object", () => {
     shallow(<RelativeLink relativeObjects={newIRelativeObjects()}></RelativeLink>)
   });
