@@ -18,8 +18,11 @@ const RelativeLink: React.FunctionComponent<IRelativeLink> = memo((props) => {
 
   var prevUrl = new URLPath().updateFilePath(history.location.search, relativeObjects.prevFilePath);
   var nextUrl = new URLPath().updateFilePath(history.location.search, relativeObjects.nextFilePath);
-  let prev = relativeObjects.prevFilePath === null ? "" : <Link className="prev" to={prevUrl}>Vorige</Link>;
-  let next = relativeObjects.nextFilePath === null ? "" : <Link className="next" to={nextUrl}>Volgende</Link>;
+
+  let prev = relativeObjects.prevFilePath !== null ?
+    <Link className="prev" to={prevUrl}>Vorige</Link> : null;
+  let next = relativeObjects.nextFilePath !== null ?
+    <Link className="next" to={nextUrl}>Volgende</Link> : null;
 
   return (<div className="relativelink"><h4 className="nextprev">
     {prev}
