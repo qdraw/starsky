@@ -29,8 +29,6 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = memo((props) => {
    * @param event Drag'n drop event
    */
   const onDrop = (event: DragEvent) => {
-    console.log(event);
-
     event.preventDefault();
     setDrag(false);
 
