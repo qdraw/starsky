@@ -20,7 +20,7 @@ type ReactNodeProps = { children: React.ReactNode }
 const DropArea = ({ children }: ReactNodeProps) => {
 
   const [dragActive, setDrag] = useState(false);
-  const [dragTarget, setDragTarget] = useState(new EventTarget());
+  const [dragTarget, setDragTarget] = useState(document.createElement("p") as Element);
   const [isLoading, setIsLoading] = useState(false);
 
   const [isOpen, setOpen] = useState(false);
@@ -132,7 +132,7 @@ const DropArea = ({ children }: ReactNodeProps) => {
     if (!event.target) return;
 
     setDrag(true);
-    setDragTarget(event.target);
+    setDragTarget(event.target as Element);
 
     // to add the plus sign (only for layout)
     if (!event.dataTransfer) return;
@@ -146,7 +146,7 @@ const DropArea = ({ children }: ReactNodeProps) => {
   */
   const onDragLeave = (event: DragEvent) => {
     event.preventDefault();
-    if (event.target === dragTarget) {
+    if (event.target as Element === dragTarget) {
       setDrag(false);
     }
   };
