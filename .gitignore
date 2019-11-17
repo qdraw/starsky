@@ -269,7 +269,16 @@ paket-files/
 *.sln.iml
 
 # VScode
-.vscode/
+# https://stackoverflow.com/questions/32964920/should-i-commit-the-vscode-folder-to-source-control
+**/clientapp/.vscode/*
+!**/clientapp/.vscode/settings.json
+!**/clientapp/.vscode/tasks.json
+!**/clientapp/.vscode/launch.json
+!**/clientapp/.vscode/extensions.json
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+**/.history
 
 # CodeRush
 .cr/
