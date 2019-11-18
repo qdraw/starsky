@@ -7,6 +7,8 @@
 // Windows 32 bits: 'win7-x86'
 // Mac: 'osx.10.12-x64'
 // Raspberry Pi: 'linux-arm'
+// ARM64: 'linux-arm64'
+
 
 // For the step CoverageReport
 #tool "nuget:?package=ReportGenerator"
