@@ -29,7 +29,5 @@ const RelativeLink: React.FunctionComponent<IRelativeLink> = memo((props) => {
     {prev}
     {next}
   </h4></div>);
-
-
 });
 export default RelativeLink

@@ -7,5 +7,4 @@ describe("DetailView", () => {
   it("renders", () => {
     shallow(<DetailView {...newDetailView()} />)
   });
-
 });

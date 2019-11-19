@@ -1,11 +1,16 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
 import Button from '../components/Button';
 import useLocation from '../hooks/use-location';
 import FetchGet from '../shared/fetch-get';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 import { validateLoginForm } from '../shared/validate-login-form';
 
-function Login() {
+export interface ILoginProps {
+  defaultLoginStatus?: boolean;
+}
+
+const Login: React.FunctionComponent<ILoginProps> = memo((props) => {
   var history = useLocation();
 
   const [userEmail, setUserEmail] = React.useState("");
@@ -23,19 +28,17 @@ function Login() {
   const MessagePassword: string = "Geef je wachtwoord op";
   const MessageExamplePassword: string = "superveilig";
   const MessageExampleUsername: string = "dont@mail.me";
-
   const MessageLogin: string = "Inloggen";
   const MessageLogout: string = "Uitloggen";
 
-  // We don't want to login twich
+  // We don't want to login twich 
+  // var defaultLoginStatus = props.defaultLoginStatus ? props.defaultLoginStatus : true;
   const [isLogin, setLogin] = React.useState(true);
   useEffect(() => {
-    (async function () {
-      var status = await FetchGet("/account/status");
+    FetchGet(new UrlQuery().UrlAccountStatus()).then((status) => {
       setLogin(status.statusCode === 401);
-    })();
+    });
   }, []);
-
 
   const authHandler = async () => {
     try {
@@ -140,6 +143,6 @@ function Login() {
         : null}
     </>
   );
-}
+});
 
 export default Login;
