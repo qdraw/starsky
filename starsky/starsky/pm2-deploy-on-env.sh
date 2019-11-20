@@ -2,12 +2,10 @@
 cd "$(dirname "$0")"
 
 ## DEPLOY ONLY
-# for warnup check: ./pm2-warmup.sh
-
+# for warnup check: ./pm2-warmup.sh --port 4823
 
 PM2NAME="starsky"
 RUNTIME="linux-arm"
-PORT=5000
 
 ARGUMENTS=("$@")
 
@@ -20,7 +18,7 @@ for ((i = 1; i <= $#; i++ )); do
     then
         echo "--name pm2name"
         echo "--runtime linux-arm"
-        echo "--port 4823"
+        echo "(or:) --runtime linux-arm64"
     fi
     
     if [[ ${ARGUMENTS[PREV]} == "--name" ]];
@@ -32,16 +30,11 @@ for ((i = 1; i <= $#; i++ )); do
     then
         RUNTIME="${ARGUMENTS[CURRENT]}"
     fi
-    
-    if [[ ${ARGUMENTS[PREV]} == "--port" ]];
-    then
-        PORT="${ARGUMENTS[CURRENT]}"
-    fi
   fi
 done
 
 # settings
-echo "pm2" $PM2NAME "runtime" $RUNTIME "port" $PORT
+echo "pm2" $PM2NAME "runtime" $RUNTIME
 
 if [ ! -f "starsky-$RUNTIME.zip" ]; then
     echo "> starsky-$RUNTIME.zip not found"
@@ -115,4 +108,4 @@ fi
 pm2 start $PM2NAME
 
 echo "!> done with deploying"
-echo "!> you need to run: ./pm2-warmup.sh --port 4823"
+echo "!> to warmup, you need to run: ./pm2-warmup.sh --port 4823"
