@@ -1,8 +1,23 @@
 pool:
-  name: Hosted Windows 2019 with VS2019
+  vmImage: windows-2019
   demands:
   - msbuild
   - java
+
+trigger:
+  branches:
+    include:
+    - master
+    - releases/*
+    exclude:
+    - feature/*
+  paths:
+      include:
+      - starsky/*
+      exclude:
+      - starskyapp/*
+      - starsky-tools/*
+      - starsky.netframework/*
 
 steps:
 - task: PowerShell@2
