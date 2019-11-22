@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
-import { newIArchive } from '../interfaces/IArchive';
+import { CastToInterface } from '../shared/cast-to-interface';
 import ArchiveSidebarLabelEditAddOverwrite from './archive-sidebar-label-edit-add-overwrite';
 import ArchiveSidebarLabelEditSearchReplace from './archive-sidebar-label-edit-search-replace';
 import SwitchButton from './switch-button';
@@ -14,10 +14,7 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent = () => {
   let { state } = React.useContext(ArchiveContext);
 
   // state without any context
-  if (state === undefined) {
-    state = newIArchive();
-    state.isReadOnly = true;
-  }
+  state = new CastToInterface().UndefinedIArchiveReadonly(state);
 
   return (
     <div className="content--text">

@@ -1,5 +1,5 @@
 // import { IAppContainerState } from '../interfaces/IAppContainerState';
-import { newIArchive } from '../interfaces/IArchive';
+import { IArchive, newIArchive } from '../interfaces/IArchive';
 import { IDetailView, newDetailView, PageType } from '../interfaces/IDetailView';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { IMedia } from '../interfaces/IMedia';
@@ -57,6 +57,17 @@ export class CastToInterface {
    */
   InfoFileIndexArray = (data: any): Array<IFileIndexItem> => {
     return data as Array<IFileIndexItem>;
+  }
+
+  /**
+   * state without any context
+   */
+  UndefinedIArchiveReadonly = (state: IArchive | undefined): IArchive => {
+    if (state === undefined) {
+      state = newIArchive();
+      state.isReadOnly = true;
+    }
+    return state;
   }
 
 }

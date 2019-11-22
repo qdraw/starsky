@@ -17,6 +17,10 @@ export class UrlQuery {
     return "/api/search/trash?p=" + pageNumber;
   }
 
+  public UrlAccountStatus = () => {
+    return "/account/status";
+  }
+
   public UrlQueryServerApi = (historyLocationHash: string) => {
     var requested = new URLPath().StringToIUrl(historyLocationHash);
 
