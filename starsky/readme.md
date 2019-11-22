@@ -25,7 +25,7 @@
 git clone "https://bitbucket.org/qdraw/starsky.git"
 ```
 
-2.  Get the `dotnet` 2.2 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
+2.  Get the `dotnet` 3.0 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
 
 3.  Download and install [ExifTool by Phil Harvey](https://www.sno.phy.queensu.ca/~phil/exiftool/)
 
@@ -41,23 +41,20 @@ choco install exiftool
 
 4. Make a build of all the projects and run the tests
 from the root folder of the repository
-When using powershell:
+
+_When using powershell:_
 
 ```powershell
     .\build.ps1
 ```
 
-or using bash. You need to have `mono` installed
-
-```sh
-brew install mono
-```
-
+_Or using bash (on Linux and Mac OS)_
 ```sh
     ./build.sh
 ```
 
 4.  Link `starsky/starsky/appsettings.json` to the exiftool excutable
+
 >>   Windows: use double escape `\\` in config directory paths
 
 ```json
@@ -67,10 +64,12 @@ brew install mono
     }
 }   
 ```
+
 >>   Tip: You could use machine specific configuration files: appsettings.{machinename}.json _(and replace {machinename} with your computer name in lowercase)_
 
 
 5.  Run
+
 ```sh
 dotnet run --project starsky/starsky
 ```
@@ -97,11 +96,11 @@ But in this guide we build it first on your laptop and copy to your Raspberry Pi
 git clone "https://bitbucket.org/qdraw/starsky.git"
 ```
 
-2.  On your laptop (x86/x64 machine). Get the `dotnet` 2.2 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
+2.  On your laptop (x86/x64 machine). Get the `dotnet` 3.0 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
 
 3.  Compile the Starsky-installation on your x86/x64 machine first. The cake build script with parameters can be used to build for this runtime.
 
-_Using bash (need mono first)_
+_Using bash_
 ```sh
 ./build.sh --runtime="linux-arm"
 ```
@@ -158,14 +157,14 @@ http://localhost:5000/account/register
 ```
 
 11. SonarQube scanner
-To enable SonarScanner you need to set the following environment variables
 
-`STARSKY_SONAR_KEY` - the public name of the project
-`STARSKY_SONAR_LOGIN` - the token to login
-`STARSKY_SONAR_ORGANISATION` - the name of the organisation
-`STARSKY_SONAR_URL` - defaults to sonarcloud.io
+To enable SonarScanner you need to set the following environment variables:
+- `STARSKY_SONAR_KEY` - the public name of the project
+- `STARSKY_SONAR_LOGIN` - the token to login
+- `STARSKY_SONAR_ORGANISATION` - the name of the organisation
+- `STARSKY_SONAR_URL` - defaults to sonarcloud.io
 
-#### Errors
+#### Known errors
 When using SQLite as databasetype without `SQLitePCLRaw.lib.e_sqlite3.linux` the following error appears:
 `System.DllNotFoundException: Unable to load DLL 'e_sqlite3'`
 
@@ -199,9 +198,9 @@ The scripts that are used to create a full build. (Linux has `libunwind8` and `g
 
 The Cake script provide options to build for specific runtimes.
 
-#### To build for Mac
+#### To build for Mac OS
 
-_Using bash (need mono first)_
+_Using bash_
 ```sh
 ./build.sh --runtime="osx.10.12-x64"
 ```
@@ -212,7 +211,7 @@ powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
 ```
 #### To build for 32 bits Windows
 
-_Using bash (need mono first)_
+_Using bash_
 ```sh
 ./build.sh --runtime="win7-x86"
 ```

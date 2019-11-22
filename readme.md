@@ -26,7 +26,10 @@ The general application is Starsky (sln). You need to [install the solution](sta
 ## Build status
 
 ### Windows 2019 with VS2019
-[![Build Status](https://qdraw.visualstudio.com/starsky/_apis/build/status/starsky-full%20build?branchName=master)](https://qdraw.visualstudio.com/starsky/_build/latest?definitionId=5&branchName=master)
+[![Build Status](https://qdraw.visualstudio.com/starsky/_apis/build/status/azure-pipelines-starsky.yml?branchName=master)](https://qdraw.visualstudio.com/starsky/_build/latest?definitionId=15&branchName=master)
+
+_See `./azure-pipelines-starsky.yml` for details_
+
 
 ### Sonarqube
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=coverage)](https://sonarcloud.io/dashboard?id=starsky)
