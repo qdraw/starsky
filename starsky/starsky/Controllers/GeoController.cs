@@ -8,7 +8,6 @@ using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
-using starskygeocore.Models;
 using starskygeocore.Services;
 
 namespace starsky.Controllers
