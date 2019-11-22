@@ -1,0 +1,38 @@
+pool:
+  name: Hosted Windows 2019 with VS2019
+  demands:
+  - msbuild
+  - java
+
+steps:
+- task: PowerShell@2
+  displayName: 'Cake Powershell'
+  inputs:
+    targetType: filePath
+    filePath: './$(Build.SourcesDirectory)\starsky\build.ps1 '
+    arguments: '-ScriptArgs ''-runtime="linux-arm"'''
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish code coverage from $(Build.SourcesDirectory)\starsky\starskytest\coverage-merge-cobertura.xml'
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(Build.SourcesDirectory)\starsky\starskytest\coverage-merge-cobertura.xml'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: linux-arm'
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)\starsky\starsky-linux-arm.zip'
+    ArtifactName: 'linux-arm'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: generic-netcore'
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)\starsky\starsky-generic-netcore.zip'
+    ArtifactName: 'generic-netcore'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: coverage.report zip'
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)\starsky\starskytest\coverage-report.zip'
+    ArtifactName: coverage.report

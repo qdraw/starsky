@@ -120,6 +120,7 @@ Task("Restore")
     .Does(() =>
     {
         Environment.SetEnvironmentVariable("DOTNET_CLI_TELEMETRY_OPTOUT","true");
+        Environment.SetEnvironmentVariable("DOTNET_SKIP_FIRST_TIME_EXPERIENCE","1");
 
         // make a new list
         var restoreProjectNames = new List<string>(projectNames);
