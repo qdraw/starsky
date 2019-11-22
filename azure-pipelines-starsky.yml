@@ -9,7 +9,7 @@ steps:
   displayName: 'Cake Powershell'
   inputs:
     targetType: filePath
-    filePath: './$(Build.SourcesDirectory)\starsky\build.ps1 '
+    filePath: 'starsky\build.ps1 '
     arguments: '-ScriptArgs ''-runtime="linux-arm"'''
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
