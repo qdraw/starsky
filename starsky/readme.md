@@ -55,7 +55,7 @@ _Or using bash (on Linux and Mac OS)_
     ./build.sh
 ```
 
-4.  Link `starsky/starsky/appsettings.json` to the exiftool excutable
+4.  Link `starsky/starsky/appsettings.json` to the exiftool executable
 
 >>   Windows: use double escape `\\` in config directory paths
 
@@ -151,7 +151,7 @@ http://localhost:5000/account/register
 ```
 
 #### Optional steps  
-10.  The script [`pm2-starksy-new.sh`](starsky/pm2-starksy-new.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
+10.  The script [`pm2-new-instance.sh`](starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
 
 ```sh
     export ASPNETCORE_URLS="http://localhost:4823/"
@@ -178,8 +178,21 @@ To avoid the error: `System.IO.FileLoadException` `Microsoft.Extensions.Options,
 
 Those scripts are optional and used for configuation.
 
-### pm2 `pm2-starksy-new.sh`
-The script [`pm2-starksy-new.sh`](starsky/pm2-starksy-new.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
+### cannot open shared object file: Permission denied
+
+```
+./starsky
+Failed to load ?? error: <yourpath>/libhostfxr.so: cannot open shared object file: Permission denied
+The library libhostfxr.so was found, but loading it from <yourpath>/libhostfxr.so failed
+  - Installing .NET Core prerequisites might help resolve this problem.
+     https://go.microsoft.com/fwlink/?LinkID=798306&clcid=0x409
+```
+
+Check your file rights in the folders, they should be 644 for files and 755 for folders.
+except for the executable  files
+
+### pm2 `pm2-new-instance.sh`
+The script [`pm2-new-instance.sh`](starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
 ```sh
  export ASPNETCORE_URLS="http://localhost:4823/"
  export ASPNETCORE_ENVIRONMENT="Production"

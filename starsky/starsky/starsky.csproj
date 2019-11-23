@@ -35,7 +35,7 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="pm2-starksy-new.sh">
+    <Content Include="pm2-new-instance.sh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="pm2-deploy-on-env.sh">
