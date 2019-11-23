@@ -134,8 +134,8 @@ namespace starsky
 
 			// NET Core 3 -> removed newtonsoft from core
 #if NETCOREAPP3_0
-			services.AddMvc();
-				//.AddNewtonsoftJson();
+			services.AddMvc().
+				AddNewtonsoftJson();
 #else
 	        services.AddMvc();
 #endif
