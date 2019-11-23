@@ -336,13 +336,14 @@ starskyapp/ios/main.jsbundle
 **/.env
 **/.starskyenv
 
+starsky-tools/docs/*.yml
 starsky-tools/docs/*.sh
 starsky-tools/docs/*/*.sh
 starsky-tools/docs/*/*/*.sh
 starsky-tools/docs/*.html
 starsky-tools/docs/*/*.html
 starsky-tools/docs/*/*/*.html
-
+starsky-tools/docs/*/*/*/*.html
 
 **/osx.10.12-x64/*
 **/linux-arm/*

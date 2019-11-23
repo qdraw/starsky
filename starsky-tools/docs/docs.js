@@ -31,7 +31,9 @@ var filePathList = [
 	"inotify-settings/readme.md",
 	"starsky/readme.md",
 	"starsky/starsky/readme.md",
+	"starsky/starsky/clientapp/readme.md",
 	"starsky/starskycore/readme.md",
+	"starsky/starskygeocore/readme.md",
 	"starsky/starsky/readme_api.md",
 	"starsky/starskygeocli/readme.md",
 	"starsky/starskyimportercli/readme.md",
@@ -50,9 +52,7 @@ var filePathList = [
 
 var blobPathList = [
 	"starsky/starsky/pm2-starksy-new.sh",
-	"starsky/publish-linux-arm.sh",
-	"starsky/publish-mac.sh",
-	"starsky/publish-windows.sh",
+	"azure-pipelines-starsky.yml",
 ];
 
 // create dirs
@@ -100,7 +100,7 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
 		relativeCssPath += "../";
 	}
 
-	var menuHtml = '<div class="head"><div id="menu"> <ul> <li><a href="' + relativeCssPath + 'readme.html">Home</a></li> <li><a href="https://qdraw.nl//contact.html">Contact</a></li> </ul> </div> <a href="#hamburger" id="hamburger" class="hamburger">Menu</a> <a href="' + relativeCssPath + 'readme.html" class="logo">Qdraw.nl</a></div>';
+	var menuHtml = '<div class="head"><div id="menu"> <ul> <li><a href="' + relativeCssPath + 'readme.html">Home</a></li> <li><a href="https://qdraw.nl/contact.html">Contact</a></li> </ul> </div> <a href="#hamburger" id="hamburger" class="hamburger">Menu</a> <a href="' + relativeCssPath + 'readme.html" class="logo">Qdraw.nl</a></div>';
 	var outputHtml = contentsHtml.replace(/<\/head>\n<body>/ig, "<link rel=\"stylesheet\" href=\"" + relativeCssPath + "style.css\"><\/head>\n<body>\n" + menuHtml + "\n<div class=\"container\"><div class=\"entry-content\">");
 
 	contentsHtml = outputHtml.replace(/<\/body>\n/ig, "</div>\n</div>\n <script defer src=\"" + relativeCssPath + "menu.js\"></script></body>\n");
