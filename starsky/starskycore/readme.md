@@ -9,7 +9,8 @@
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
-    * __[starskycore](../../starsky/starskycore/readme.md) business logic (netstandard 2.0)__
+    * __[starskyCore](../../starsky/starskycore/readme.md) business logic (netstandard 2.0)__
+    * [starskyGeoCore](../../starsky/starskygeocore/readme.md) _business geolocation logic (netstandard 2.0)_    
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_

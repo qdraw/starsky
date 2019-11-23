@@ -2,20 +2,23 @@
 ## List of [Starsky](../../../readme.md) Projects
  * [inotify-settings](../../../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../../../starsky/readme.md) _database photo index & import index project_
-    * __[starsky](../../../starsky/starsky/readme.md) web api application / interface__
-      *  [clientapp](../../../starsky/starsky/clientapp/readme.md) _react front-end application_
+    * [starsky](../../../starsky/starsky/readme.md) _web api application / interface_
+      *  __[clientapp](../../../starsky/starsky/clientapp/readme.md) react front-end application__
     * [starskySyncCli](../../../starsky/starskysynccli/readme.md)  _database command line interface_
     * [starskyImporterCli](../../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyGeoCli](../../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
     * [starskyWebHtmlCli](../../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
-    * [starskycore](../../../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
+    * [starskyCore](../../../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
+    * [starskyGeoCore](../../../starsky/starskygeocore/readme.md) _business geolocation logic (netstandard 2.0)_
     * [starskyTest](../../../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-tools](../../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
 ## starsky/starsky/clientapp docs
+
+On top of the Starsky API there is React front-end
 
 ## Available Scripts
 
@@ -28,6 +31,8 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
+
+Make sure you run the Starsky API on http://localhost:5000 or us a localtunnel proxy (which you can find in `starsky-tools`)
 
 ### `npm test`
 
@@ -42,17 +47,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+In this application we use the `build.sh` or `build.ps1` to combine the frontend application with the .NET Core backend.
 
 ## Learn More
 
