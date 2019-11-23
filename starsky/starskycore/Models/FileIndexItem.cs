@@ -61,7 +61,7 @@ namespace starskycore.Models
 		/// The file path.
 		/// </value>
 		[Column(Order = 2)]
-		[MaxLength(760)]
+		[MaxLength(380)]
         public string FilePath
         {
             get { return PathHelper.RemoveLatestSlash(ParentDirectory) + PathHelper.PrefixDbSlash(FileName); }
@@ -99,7 +99,7 @@ namespace starskycore.Models
 		/// </value>
 		/// <example>/folder/image.jpg</example>
 		[Column(Order = 1)]
-		[MaxLength(380)]
+		[MaxLength(190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
         public string FileName
         {
             get => _fileName ?? string.Empty;
@@ -121,7 +121,7 @@ namespace starskycore.Models
 		/// The file hash.
 		/// </value>
 		/// <example>OZHCK4I47QPHOT53QBRE7Z4RLI</example>
-		[MaxLength(255)]
+		[MaxLength(190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
 		public string FileHash { get; set; }
 
 		/// <summary>
@@ -151,7 +151,7 @@ namespace starskycore.Models
 		/// The parent directory in subpath style
 		/// </value>
 		/// <example>/folder</example>
-		[MaxLength(380)]
+		[MaxLength(190)] // Index column size too large. The maximum column size is 767 bytes (767/4)
 		public string ParentDirectory
         {
             get => _parentDirectory ?? string.Empty;

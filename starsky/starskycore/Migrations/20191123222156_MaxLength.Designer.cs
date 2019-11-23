@@ -166,7 +166,7 @@ namespace starskycore.Migrations
                         .HasMaxLength(255);
 
                     b.Property<string>("FileName")
-                        .HasMaxLength(380);
+                        .HasMaxLength(190);
 
                     b.Property<string>("FilePath")
                         .HasMaxLength(380);
@@ -205,7 +205,7 @@ namespace starskycore.Migrations
                     b.Property<int>("Orientation");
 
                     b.Property<string>("ParentDirectory")
-                        .HasMaxLength(380);
+                        .HasMaxLength(190);
 
                     b.Property<string>("ShutterSpeed")
                         .HasMaxLength(20);
