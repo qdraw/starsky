@@ -32,7 +32,7 @@ namespace starskywebhtmlcli.Services
             if(!_appSettings.PublishProfiles.Any()) Console.WriteLine("There are no config items");
             if(base64ImageArray == null) base64ImageArray = new string[fileIndexItemsList.Count];
             
-            // Order alphabetcly
+            // Order alphabetically
             fileIndexItemsList = fileIndexItemsList.OrderBy(p => p.FileName).ToList();
             
             foreach (var profile in _appSettings.PublishProfiles)
