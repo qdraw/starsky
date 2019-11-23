@@ -407,13 +407,13 @@ namespace starskycore.Services
 
             if (string.IsNullOrWhiteSpace(altitudeString) ||
                 (altitudeRef != "Below sea level" && altitudeRef != "Sea level")) return 0;
-            
-            var altitude = int.Parse(altitudeString, CultureInfo.InvariantCulture);
+
             // this value is always an int
+            double.TryParse(altitudeString, NumberStyles.Number, CultureInfo.InvariantCulture, out var altitude);
             
             if (altitudeRef == "Below sea level") altitude = altitude * -1;
                 
-            return altitude;
+            return (int) altitude;
         }
         
         
