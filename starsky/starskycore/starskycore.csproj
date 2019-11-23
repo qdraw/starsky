@@ -20,7 +20,7 @@
         <PackageReference Include="TimeZoneConverter" Version="3.2.0" />
         <PackageReference Include="XmpCore" Version="6.1.10" />
 
-        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.8.0" />
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.8.2" />
         <PackageReference Include="System.Buffers" Version="4.5.0" />
     </ItemGroup>
 
