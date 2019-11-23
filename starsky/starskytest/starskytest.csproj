@@ -57,5 +57,6 @@
       <None Remove="coverage-merge-cobertura.xml" />
       <None Remove="jest-coverage.cobertura.xml" />
       <None Remove="netcore-coverage.opencover.xml" />
+      <None Remove="coverage-report.zip" />
     </ItemGroup>
 </Project>

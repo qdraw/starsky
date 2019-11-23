@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
@@ -12,7 +10,7 @@ using starskywebhtmlcli.Services;
 
 namespace starskytest.starskyWebHtmlCli.Services
 {
-    [TestClass]
+	[TestClass]
     public class LoopPublicationsTest
     {
         [TestMethod]

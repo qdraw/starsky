@@ -6,13 +6,14 @@
     <Description>An attempt to create a database driven photo library</Description>
 	<Version>0.1.8</Version>
 	<!-- SonarQube needs this -->
-  	<ProjectGuid>{c97b6e6d-c1e7-4c91-8bda-576038e67ddc}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningLevel>0</WarningLevel>
   </PropertyGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.7"><PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
+<Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
+</PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
