@@ -10,7 +10,7 @@ RUNTIME="linux-arm"
 ARGUMENTS=("$@")
 
 for ((i = 1; i <= $#; i++ )); do
-  if [ $i -gt 1 ]; then 
+  if [ $i -gt 1 ]; then
     PREV=$(($i-2))
     CURRENT=$(($i-1))
 
@@ -20,12 +20,12 @@ for ((i = 1; i <= $#; i++ )); do
         echo "--runtime linux-arm"
         echo "(or:) --runtime linux-arm64"
     fi
-    
+
     if [[ ${ARGUMENTS[PREV]} == "--name" ]];
     then
         PM2NAME="${ARGUMENTS[CURRENT]}"
     fi
-    
+
     if [[ ${ARGUMENTS[PREV]} == "--runtime" ]];
     then
         RUNTIME="${ARGUMENTS[CURRENT]}"
@@ -71,38 +71,42 @@ else
    exit
 fi
 
+# reset rights if those are wrong
+/usr/bin/find . -type d -exec chmod 755 {} \;
+/usr/bin/find . -type f -exec chmod 644 {} \;
 
+# excute right for specific files
 
 if [ -f starsky ]; then
-    chmod +x ./starsky
+    chmod +rwx ./starsky
 fi
 
 if [ -f starskygeocli ]; then
-    chmod +x ./starskygeocli
+    chmod +rwx ./starskygeocli
 fi
 
 if [ -f starskyimportercli ]; then
-    chmod +x ./starskyimportercli
+    chmod +rwx ./starskyimportercli
 fi
 
 if [ -f starskysynccli ]; then
-    chmod +x ./starskysynccli
+    chmod +rwx ./starskysynccli
 fi
 
 if [ -f starskywebftpcli ]; then
-    chmod +x ./starskywebftpcli
+    chmod +rwx ./starskywebftpcli
 fi
 
 if [ -f starskywebhtmlcli ]; then
-    chmod +x ./starskywebhtmlcli
+    chmod +rwx ./starskywebhtmlcli
 fi
 
 if [ -f pm2-deploy-on-env.sh ]; then
-    chmod +x ./pm2-deploy-on-env.sh
+    chmod +rwx ./pm2-deploy-on-env.sh
 fi
 
 if [ -f pm2-warmup.sh ]; then
-    chmod +x ./pm2-warmup.sh
+    chmod +rwx ./pm2-warmup.sh
 fi
 
 pm2 start $PM2NAME

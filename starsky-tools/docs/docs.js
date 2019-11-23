@@ -51,7 +51,7 @@ var filePathList = [
 ];
 
 var blobPathList = [
-	"starsky/starsky/pm2-starksy-new.sh",
+	"starsky/starsky/pm2-new-instance.sh",
 	"azure-pipelines-starsky.yml",
 ];
 
