@@ -19,6 +19,19 @@ trigger:
       - starsky-tools/*
       - starsky.netframework/*
 
+# specific path build
+pr:
+  branches:
+    exclude:
+    - master
+  paths:
+    include:
+    - starsky/*
+    exclude:
+    - starskyapp/*
+    - starsky-tools/*
+    - starsky.netframework/*
+
 steps:
 - task: PowerShell@2
   displayName: 'Cake Powershell'
