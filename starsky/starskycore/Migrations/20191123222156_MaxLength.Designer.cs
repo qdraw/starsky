@@ -211,7 +211,7 @@ namespace starskycore.Migrations
                         .HasMaxLength(20);
 
                     b.Property<string>("Tags")
-	                    .HasMaxLength(2048);
+	                    .HasMaxLength(1024);
 
                     b.Property<string>("Title");
 

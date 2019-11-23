@@ -22,11 +22,13 @@
 - []   Front-end for Rename files
 - []   (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses)
 - []   Improve Unit test coverage
+-  23:00   > 54 |       expect(result).toBe(`${new Date().getDate() - 2}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`);
 
 # version 0.1.9 - t.b.d
 - use for example '3 hours' instead of yesterday in detailview
 - (bugfix) EventTarget issue (Safari) when using /import
 - (azure-pipeline) add yaml file to replace classic pipelines
+- [x] Indexes are working now for MySQL at the first time run
 
 # version 0.1.8 - 2019-11-10
 - (bugfix) ignore directories without reading rights (instead of crashing)

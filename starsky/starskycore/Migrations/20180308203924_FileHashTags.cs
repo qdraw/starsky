@@ -17,7 +17,7 @@ namespace starskycore.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "Tags",
                 table: "FileIndex",
-                maxLength: 2048,
+                maxLength: 1024,
                 nullable: true);
         }
 
