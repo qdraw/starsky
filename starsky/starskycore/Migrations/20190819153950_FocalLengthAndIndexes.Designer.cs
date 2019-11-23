@@ -213,8 +213,7 @@ namespace starskycore.Migrations
 
                     b.HasKey("Id");
 
-                    // "FileHash", "FileName", "Tags", "ParentDirectory"
-                    b.HasIndex("FileHash", "FileName", "Tags", "ParentDirectory");
+                    b.HasIndex("FileName", "ParentDirectory");
 
                     b.ToTable("FileIndex");
                 });

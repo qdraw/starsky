@@ -61,7 +61,7 @@ namespace starskycore.Models
 		/// The file path.
 		/// </value>
 		[Column(Order = 2)]
-		[MaxLength(510)]
+		[MaxLength(760)]
         public string FilePath
         {
             get { return PathHelper.RemoveLatestSlash(ParentDirectory) + PathHelper.PrefixDbSlash(FileName); }
@@ -99,7 +99,7 @@ namespace starskycore.Models
 		/// </value>
 		/// <example>/folder/image.jpg</example>
 		[Column(Order = 1)]
-		[MaxLength(510)]
+		[MaxLength(380)]
         public string FileName
         {
             get => _fileName ?? string.Empty;
@@ -151,7 +151,7 @@ namespace starskycore.Models
 		/// The parent directory in subpath style
 		/// </value>
 		/// <example>/folder</example>
-		[MaxLength(510)]
+		[MaxLength(380)]
 		public string ParentDirectory
         {
             get => _parentDirectory ?? string.Empty;

@@ -15,7 +15,7 @@ namespace starskycore.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_FileIndex_FileHash_FilePath_FileName_Tags_ParentDirectory_DateTime",
                 table: "FileIndex",
-                columns: new[] { "FileHash", "FileName", "Tags", "ParentDirectory"});
+                columns: new[] { "FileName", "ParentDirectory"});
             // Specified key was too long; max key length is 3072 bytes
         }
 
