@@ -2,7 +2,8 @@
 ## List of [Starsky](../../readme.md) Projects
  * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
-    * __[starsky](../../starsky/starsky/readme.md) mvc application / web interface__
+    * __[starsky](../../starsky/starsky/readme.md) web api application / interface__
+      *  [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
     * [starskySyncCli](../../starsky/starskysynccli/readme.md)  _database command line interface_
     * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
