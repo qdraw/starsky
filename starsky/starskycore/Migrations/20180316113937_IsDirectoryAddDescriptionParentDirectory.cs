@@ -12,6 +12,7 @@ namespace starskycore.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "ParentDirectory",
                 table: "FileIndex",
+                maxLength: 510,
                 nullable: true);
 
             // SQLite does not support this migration operation ('RenameColumnOperation'). For more information, see http://go.microsoft.com/fwlink/?LinkId=723262.

@@ -14,8 +14,8 @@ namespace starskycore.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    FileName = table.Column<string>(nullable: true),
-                    FilePath = table.Column<string>(nullable: true)
+                    FileName = table.Column<string>(maxLength: 510, nullable: true),
+                    FilePath = table.Column<string>(maxLength: 510, nullable: true)
                 },
                 constraints: table =>
                 {

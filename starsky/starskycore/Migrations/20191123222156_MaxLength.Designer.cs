@@ -210,7 +210,8 @@ namespace starskycore.Migrations
                     b.Property<string>("ShutterSpeed")
                         .HasMaxLength(20);
 
-                    b.Property<string>("Tags");
+                    b.Property<string>("Tags")
+	                    .HasMaxLength(2048);
 
                     b.Property<string>("Title");
 

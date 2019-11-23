@@ -205,6 +205,7 @@ namespace starskycore.Models
 		/// The tags.
 		/// </value>
 		/// <example>tag1, tag2</example>
+		[MaxLength(2048)]
 		public string Tags
         {
             get => _tags ?? string.Empty;
