@@ -270,15 +270,18 @@ public class UserManager : IUserManager
         {
 	        // Add caching for credentialType
 	        CredentialType credentialType;
-	        if (IsCacheEnabled() && _cache.TryGetValue("credentialTypeCode_" + credentialTypeCode, out var objectCredentialTypeCode))
+	        if (IsCacheEnabled() && _cache.TryGetValue("credentialTypeCode_" + credentialTypeCode, 
+		            out var objectCredentialTypeCode))
 	        {
 		        credentialType = ( CredentialType ) objectCredentialTypeCode;
 	        }
 	        else
 	        {
 		        credentialType = _storage.CredentialTypes.FirstOrDefault(
-			        ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
-		        if(IsCacheEnabled()) _cache.Set("credentialTypeCode_" + credentialTypeCode, credentialType, new TimeSpan(99,0,0));
+			        ct => ct.Code.ToLower().Equals(credentialTypeCode.ToLower()));
+		        if(IsCacheEnabled() && credentialType != null ) 
+			        _cache.Set("credentialTypeCode_" + credentialTypeCode, credentialType, 
+				        new TimeSpan(99,0,0));
 	        }
 
 	        if (credentialType == null)
@@ -309,14 +312,16 @@ public class UserManager : IUserManager
 
 	        // Cache ValidateResult always query on passwords and return result
 	        ValidateResult validateResult; 
-	        if (IsCacheEnabled() && _cache.TryGetValue("ValidateResult_" + credential.UserId, out var objectValidateResult))
+	        if (IsCacheEnabled() && _cache.TryGetValue("ValidateResult_" + credential.Secret + credential.UserId, out var objectValidateResult))
 	        {
 		        validateResult = ( ValidateResult ) objectValidateResult;
 	        }
 	        else
 	        {
 		        validateResult = new ValidateResult(user: this._storage.Users.Find(credential.UserId), success: true);
-		        if(IsCacheEnabled()) _cache.Set("ValidateResult_" + credential.UserId, validateResult, new TimeSpan(99,0,0));
+		        if(IsCacheEnabled())
+			        _cache.Set("ValidateResult_" + credential.Secret + credential.UserId, 
+				        validateResult, new TimeSpan(99,0,0));
 	        }
             return validateResult;
         }
