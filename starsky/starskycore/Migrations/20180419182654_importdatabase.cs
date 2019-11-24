@@ -14,7 +14,8 @@ namespace starskycore.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("Sqlite:Autoincrement", true)
+                        .Annotation("MySql:ValueGeneratedOnAdd", true),
                     AddToDatabase = table.Column<DateTime>(nullable: false),
                     FileHash = table.Column<string>(nullable: true)
                 },
