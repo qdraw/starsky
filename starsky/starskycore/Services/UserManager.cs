@@ -53,7 +53,7 @@ public class UserManager : IUserManager
 		    var roles = new List<Role>();
 		    foreach ( var roleName in existingRoleNames )
 		    {
-			    Role role = _storage.Roles.FirstOrDefault(p => p.Code.ToLowerInvariant() == roleName.ToLowerInvariant());
+			    Role role = _storage.Roles.FirstOrDefault(p => p.Code.ToLower().Equals(roleName.ToLower()));
 
 			    if ( role == null )
 			    {
@@ -67,7 +67,7 @@ public class UserManager : IUserManager
 			    _storage.SaveChanges();
 
 			    // Get the Int Ids from the database
-			    role = _storage.Roles.FirstOrDefault(p => p.Code.ToLowerInvariant() == roleName.ToLowerInvariant());
+			    role = _storage.Roles.FirstOrDefault(p => p.Code.ToLower().Equals(roleName.ToLower()));
 			    
 			    roles.Add(role);
 		    }
@@ -82,8 +82,9 @@ public class UserManager : IUserManager
 	    /// <returns></returns>
 	    public CredentialType AddDefaultCredentialType(string credentialTypeCode)
 	    {
-		    CredentialType credentialType = _storage.CredentialTypes.FirstOrDefault(
-			    ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
+		     CredentialType credentialType = _storage
+			     .CredentialTypes.FirstOrDefault(p => p.Code.ToLower()
+				     .Equals(credentialTypeCode.ToLower()));
 
 		    // When not exist add it
 		    if (credentialType == null && credentialTypeCode.ToLower() == "email" )
