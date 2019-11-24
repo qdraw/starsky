@@ -27,8 +27,7 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
       <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0-preview3-19153-02" />
-    <!--version: 5.0.0-rc2 had breaking changes-->
-      <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc2" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc4" />
   </ItemGroup>
 
   <ItemGroup>
