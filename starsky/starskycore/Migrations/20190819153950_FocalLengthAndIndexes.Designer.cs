@@ -206,13 +206,14 @@ namespace starskycore.Migrations
                     b.Property<string>("ShutterSpeed")
                         .HasMaxLength(20);
 
-                    b.Property<string>("Tags");
+                    b.Property<string>("Tags")
+	                    .HasMaxLength(1024);
 
                     b.Property<string>("Title");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileHash", "FilePath", "FileName", "Tags", "ParentDirectory", "DateTime");
+                    b.HasIndex("FileName", "ParentDirectory");
 
                     b.ToTable("FileIndex");
                 });

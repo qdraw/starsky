@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.IO;
@@ -50,6 +51,8 @@ namespace starskycore.Models
         /// Database Number (isn't used anywhere)
         /// </summary>
         [JsonIgnore]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         
         /// <summary>

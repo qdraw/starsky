@@ -13,15 +13,16 @@ namespace starskycore.Migrations
                 defaultValue: 0.0);
 
             migrationBuilder.CreateIndex(
-                name: "IX_FileIndex_FileHash_FilePath_FileName_Tags_ParentDirectory_DateTime",
+                name: "IX_FileIndex_FileName_ParentDirectory",
                 table: "FileIndex",
-                columns: new[] { "FileHash", "FilePath", "FileName", "Tags", "ParentDirectory", "DateTime" });
+                columns: new[] { "FileName", "ParentDirectory"});
+            // Specified key was too long; max key length is 3072 bytes
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "IX_FileIndex_FileHash_FilePath_FileName_Tags_ParentDirectory_DateTime",
+                name: "IX_FileIndex_FileName_ParentDirectory",
                 table: "FileIndex");
 
             migrationBuilder.DropColumn(

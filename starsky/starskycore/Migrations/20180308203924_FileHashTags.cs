@@ -11,11 +11,13 @@ namespace starskycore.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "FileHash",
                 table: "FileIndex",
+                maxLength: 190,
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "Tags",
                 table: "FileIndex",
+                maxLength: 1024,
                 nullable: true);
         }
 
