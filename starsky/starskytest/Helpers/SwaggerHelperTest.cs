@@ -57,26 +57,6 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public async Task SwaggerTest_Integration_Test()
 		{
-			
-			
-			
-			
-			
-			
-			
-			
-			return;
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
 			var swaggerFilePath = Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
 
 			FilesHelper.DeleteFile(swaggerFilePath);
@@ -129,7 +109,7 @@ namespace starskytest.Helpers
 
 			System.Console.WriteLine("swaggerFileContent " + swaggerFileContent);
 
-			Assert.AreEqual(true, swaggerFileContent.Contains($"\"title\": \"{_appSettings.Name}\""));
+			Assert.AreEqual(true, swaggerFileContent.Contains($"\"Title\": \"{_appSettings.Name}\""));
 			
 			
 		}
