@@ -29,6 +29,7 @@
 - (bugfix) EventTarget issue (Safari) when using /import
 - (azure-pipeline) add yaml file to replace classic pipelines
 - [x] Indexes are working now for MySQL at the first time run
+- [x] Upgrade to .NET Core & EF Core 3.1-preview3 (EF Core is missing PredicateBuilder support)
 
 # version 0.1.8 - 2019-11-10
 - (bugfix) ignore directories without reading rights (instead of crashing)
