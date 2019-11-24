@@ -33,6 +33,12 @@ pr:
     - starsky.netframework/*
 
 steps:
+- task: DotNetCoreInstaller@0
+  displayName: 'Use .NET Core sdk 3.0.101'
+  inputs:
+    version: '3.0.101'
+  enabled: true
+  
 - task: PowerShell@2
   displayName: 'Cake Powershell'
   inputs:
