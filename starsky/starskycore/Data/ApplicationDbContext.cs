@@ -44,7 +44,9 @@ namespace starskycore.Data
 			modelBuilder.Entity<User>(etb =>
 				{
 					etb.HasKey(e => e.Id);
-					etb.Property(e => e.Id).ValueGeneratedOnAdd();
+					etb.Property(e => e.Id)
+						.ValueGeneratedOnAdd()
+						.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 					etb.Property(e => e.Name).IsRequired().HasMaxLength(64);
 					etb.ToTable("Users");
 				}
@@ -53,7 +55,9 @@ namespace starskycore.Data
 			modelBuilder.Entity<CredentialType>(etb =>
 				{
 					etb.HasKey(e => e.Id);
-					etb.Property(e => e.Id).ValueGeneratedOnAdd();
+					etb.Property(e => e.Id)
+						.ValueGeneratedOnAdd()
+						.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 					etb.Property(e => e.Code).IsRequired().HasMaxLength(32);
 					etb.Property(e => e.Name).IsRequired().HasMaxLength(64);
 					etb.ToTable("CredentialTypes");
@@ -63,7 +67,9 @@ namespace starskycore.Data
 			modelBuilder.Entity<Credential>(etb =>
 				{
 					etb.HasKey(e => e.Id);
-					etb.Property(e => e.Id).ValueGeneratedOnAdd();
+					etb.Property(e => e.Id)
+						.ValueGeneratedOnAdd()
+						.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 					etb.Property(e => e.Identifier).IsRequired().HasMaxLength(64);
 					etb.Property(e => e.Secret).HasMaxLength(1024);
 					etb.ToTable("Credentials");
@@ -73,7 +79,9 @@ namespace starskycore.Data
 			modelBuilder.Entity<Role>(etb =>
 				{
 					etb.HasKey(e => e.Id);
-					etb.Property(e => e.Id).ValueGeneratedOnAdd();
+					etb.Property(e => e.Id)
+						.ValueGeneratedOnAdd()
+						.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 					etb.Property(e => e.Code).IsRequired().HasMaxLength(32);
 					etb.Property(e => e.Name).IsRequired().HasMaxLength(64);
 					etb.ToTable("Roles");
@@ -90,7 +98,9 @@ namespace starskycore.Data
 			modelBuilder.Entity<Permission>(etb =>
 				{
 					etb.HasKey(e => e.Id);
-					etb.Property(e => e.Id).ValueGeneratedOnAdd();
+					etb.Property(e => e.Id)
+						.ValueGeneratedOnAdd()
+						.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 					etb.Property(e => e.Code).IsRequired().HasMaxLength(32);
 					etb.Property(e => e.Name).IsRequired().HasMaxLength(64);
 					etb.ToTable("Permissions");

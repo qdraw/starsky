@@ -19,7 +19,8 @@ namespace starskycore.Migrations
             modelBuilder.Entity("starskycore.Models.Account.Credential", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 
                     b.Property<int>("CredentialTypeId");
 
@@ -46,7 +47,8 @@ namespace starskycore.Migrations
             modelBuilder.Entity("starskycore.Models.Account.CredentialType", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -66,7 +68,8 @@ namespace starskycore.Migrations
             modelBuilder.Entity("starskycore.Models.Account.Permission", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -86,7 +89,8 @@ namespace starskycore.Migrations
             modelBuilder.Entity("starskycore.Models.Account.Role", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -119,7 +123,8 @@ namespace starskycore.Migrations
             modelBuilder.Entity("starskycore.Models.Account.User", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 
                     b.Property<DateTime>("Created");
 
@@ -208,13 +213,14 @@ namespace starskycore.Migrations
                     b.Property<string>("ShutterSpeed")
                         .HasMaxLength(20);
 
-                    b.Property<string>("Tags");
+                    b.Property<string>("Tags")
+                        .HasMaxLength(1024);
 
                     b.Property<string>("Title");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileHash", "FilePath", "FileName", "Tags", "ParentDirectory", "DateTime");
+                    b.HasIndex("FileName", "ParentDirectory");
 
                     b.ToTable("FileIndex");
                 });
