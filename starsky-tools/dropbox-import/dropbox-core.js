@@ -217,7 +217,7 @@ module.exports = class Dropbox {
                 while (index != entries.length) {
                     var filePath = path.join(this.getTempFolder(), entries[index].name);
 
-                    var exe = this.starskyCli + ' -p \"' + filePath + "\"" + " --colorclass " + colorClassString;
+                    var exe = this.starskyCli + ' -v -p \"' + filePath + "\"" + " --colorclass " + colorClassString;
                     if (structure) exe += " --structure " + structure;
 
                     const { stdout, stderr } = await exec(exe);
