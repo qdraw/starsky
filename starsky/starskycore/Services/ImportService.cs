@@ -191,7 +191,11 @@ namespace starskycore.Services
 
 		public ImportIndexItem ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)
 	    {
+		    if(_appSettings.Verbose) Console.Write("î");
+		    
 		    var hashCode = new FileHash(_filesystemHelper).GetHashCode(inputFileFullPath);
+		    
+		    if(_appSettings.Verbose) Console.Write($"œ{hashCode}¥");
 
 			var importIndexItem = PreflightByItem(inputFileFullPath, hashCode, importSettings);
 
