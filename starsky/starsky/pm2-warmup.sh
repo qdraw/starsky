@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+
 ## WARMUP WITHOUT LOGIN
 
 ARGUMENTS=("$@")
@@ -7,7 +8,7 @@ ARGUMENTS=("$@")
 PORT=5000
 
 for ((i = 1; i <= $#; i++ )); do
-  if [ $i -gt 1 ]; then 
+  if [ $i -gt 1 ]; then
     PREV=$(($i-2))
     CURRENT=$(($i-1))
 
@@ -15,19 +16,20 @@ for ((i = 1; i <= $#; i++ )); do
     then
         echo "--port 4823"
     fi
-    
+
     if [[ ${ARGUMENTS[PREV]} == "--port" ]];
     then
         PORT="${ARGUMENTS[CURRENT]}"
     fi
-    
+
   fi
 done
 
-URL="http://localhost:$PORT" 
+URL="http://localhost:$PORT"
 # no slash
 URL=${URL%/}
 
+echo "bash pm2-warmup.sh --port 4823"
 echo "Running on:"
 echo $URL
 
