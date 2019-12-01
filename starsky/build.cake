@@ -236,6 +236,7 @@ Task("MergeCoverageFiles")
 
     // Gets the coverage file from the client folder
     if (FileExists($"./starsky/clientapp/coverage/cobertura-coverage.xml")) {
+        Information($"Copy ./starsky/clientapp/coverage/cobertura-coverage.xml ./starskytest/jest-coverage.cobertura.xml");
         CopyFile($"./starsky/clientapp/coverage/cobertura-coverage.xml", $"./starskytest/jest-coverage.cobertura.xml");
     }
 
