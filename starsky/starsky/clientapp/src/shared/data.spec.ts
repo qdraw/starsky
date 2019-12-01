@@ -35,7 +35,12 @@ describe("date", () => {
     });
 
     it("yesterday", () => {
-      var yesterday = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate() - 1} ${leftPad(new Date().getHours())}:${leftPad(new Date().getMinutes())}:${leftPad(new Date().getSeconds())}`;
+      var yesterdayDate = new Date();
+      // to get 24 hours ago
+      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+
+      var yesterday = `${yesterdayDate.getFullYear()}-${yesterdayDate.getMonth() + 1}-${yesterdayDate.getDate()} ${leftPad(yesterdayDate.getHours())}:${leftPad(yesterdayDate.getMinutes())}:${leftPad(yesterdayDate.getSeconds())}`;
+
       var result = parseRelativeDate(yesterday);
       expect(result).toBe("24 uur");
     });
@@ -49,9 +54,15 @@ describe("date", () => {
     });
 
     it("day before yesterday", () => {
-      var yesterday = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate() - 2}T${leftPad(new Date().getHours())}:${leftPad(new Date().getMinutes())}:${leftPad(new Date().getSeconds())}+00:00`;
-      var result = parseRelativeDate(yesterday);
-      expect(result).toBe(`${new Date().getDate() - 2}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`);
+
+      var dayBeforeYesterdayDate = new Date();
+      // to get 48 hours ago
+      dayBeforeYesterdayDate.setDate(dayBeforeYesterdayDate.getDate() - 2);
+
+      var dayBeforeYesterday = `${dayBeforeYesterdayDate.getFullYear()}-${dayBeforeYesterdayDate.getMonth() + 1}-${dayBeforeYesterdayDate.getDate()}T${leftPad(dayBeforeYesterdayDate.getHours())}:${leftPad(dayBeforeYesterdayDate.getMinutes())}:${leftPad(dayBeforeYesterdayDate.getSeconds())}`;
+
+      var result = parseRelativeDate(dayBeforeYesterday);
+      expect(result).toBe(`${dayBeforeYesterdayDate.getDate()}-${dayBeforeYesterdayDate.getMonth() + 1}-${dayBeforeYesterdayDate.getFullYear()}`);
     });
   });
 });
