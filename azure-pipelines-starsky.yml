@@ -1,6 +1,3 @@
-variables:
-  NODE_PATH: $(Build.SourcesDirectory)/node_modules/
-
 pool:
   vmImage: windows-2019
   demands:
@@ -36,10 +33,12 @@ pr:
     - starsky.netframework/*
 
 steps:
-- task: DotNetCoreInstaller@0
-  displayName: 'Use .NET Core sdk 3.0.101'
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk'
   inputs:
-    version: '3.0.101'
+    packageType: sdk
+    version: 3.0.101
+    installationPath: $(Agent.ToolsDirectory)/dotnet
   enabled: true
 
 - task: PowerShell@2
