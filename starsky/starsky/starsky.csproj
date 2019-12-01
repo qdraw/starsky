@@ -5,7 +5,8 @@
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">2.2.7</RuntimeFrameworkVersion>
     <Description>An attempt to create a database driven photo library</Description>
 	<Version>0.1.8</Version>
-	<!-- SonarQube needs this -->
+    <!-- SonarQube needs this -->
+    <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningLevel>0</WarningLevel>
