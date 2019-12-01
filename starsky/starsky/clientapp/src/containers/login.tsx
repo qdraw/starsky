@@ -1,6 +1,7 @@
 import React, { memo, useEffect } from "react";
 import Button from '../components/Button';
 import useLocation from '../hooks/use-location';
+import BrowserDetect from '../shared/browser-detect';
 import FetchGet from '../shared/fetch-get';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
@@ -70,6 +71,15 @@ const Login: React.FunctionComponent<ILoginProps> = memo((props) => {
       setError(err.message);
     }
   };
+
+  /**
+   * If you use a starsky.local address in Safari then the cookies are not shared, so your login will fail
+   */
+  useEffect(() => {
+    if (history.location.hostname && history.location.hostname.match(/\.local$/ig) && new BrowserDetect().IsIOS()) {
+      setError("Probeer in te loggen via een ip-adres of een echt domein, local adressen werken niet in Safari op iOS");
+    }
+  }, [history.location.search]);
 
   return (
     <>
