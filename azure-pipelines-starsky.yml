@@ -33,12 +33,10 @@ pr:
     - starsky.netframework/*
 
 steps:
-- task: UseDotNet@2
-  displayName: 'Use .NET Core sdk'
+- task: DotNetCoreInstaller@0
+  displayName: 'Use .NET Core sdk 3.0.101'
   inputs:
-    packageType: sdk
-    version: 3.0.101
-    installationPath: $(Agent.ToolsDirectory)/dotnet
+    version: '3.0.101'
   enabled: true
 
 - task: PowerShell@2
