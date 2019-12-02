@@ -68,8 +68,8 @@ namespace starskytest.Helpers
 				{
 
 #if NETCOREAPP3_0
-					services.AddMvcCore().AddApiExplorer();
-						//.AddNewtonsoftJson();
+					services.AddMvcCore().AddApiExplorer()
+						.AddNewtonsoftJson();
 #else
 	services.AddMvcCore().AddApiExplorer(); // use core and AddApiExplorer to make it faster
 		// https://offering.solutions/blog/articles/2017/02/07/difference-between-addmvc-addmvcore/
@@ -109,7 +109,7 @@ namespace starskytest.Helpers
 
 			System.Console.WriteLine("swaggerFileContent " + swaggerFileContent);
 
-			Assert.AreEqual(true, swaggerFileContent.Contains($"\"title\": \"{_appSettings.Name}\""));
+			Assert.AreEqual(true, swaggerFileContent.Contains($"\"Title\": \"{_appSettings.Name}\""));
 			
 			
 		}

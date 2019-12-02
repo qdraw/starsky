@@ -33,12 +33,18 @@ pr:
     - starsky.netframework/*
 
 steps:
+- task: DotNetCoreInstaller@0
+  displayName: 'Use .NET Core sdk 3.0.101'
+  inputs:
+    version: '3.0.101'
+  enabled: true
+
 - task: PowerShell@2
   displayName: 'Cake Powershell'
   inputs:
-    targetType: filePath
-    filePath: 'starsky\build.ps1 '
-    arguments: '-ScriptArgs ''-runtime="linux-arm"'''
+    filePath: 'starsky\build.ps1'
+    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"'''
+    pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
 - task: PublishCodeCoverageResults@1
@@ -52,6 +58,12 @@ steps:
   inputs:
     PathtoPublish: '$(Build.SourcesDirectory)\starsky\starsky-linux-arm.zip'
     ArtifactName: 'linux-arm'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: linux-arm64'
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)\starsky\starsky-linux-arm64.zip'
+    ArtifactName: 'linux-arm64'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: generic-netcore'

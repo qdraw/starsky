@@ -134,8 +134,8 @@ namespace starsky
 
 			// NET Core 3 -> removed newtonsoft from core
 #if NETCOREAPP3_0
-			services.AddMvc();
-				//.AddNewtonsoftJson();
+			services.AddMvc().
+				AddNewtonsoftJson();
 #else
 	        services.AddMvc();
 #endif
@@ -206,10 +206,10 @@ namespace starsky
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
 
-			// need rewrite for netcore3
+			// No CSP for swagger
 			new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 			new SwaggerHelper(_appSettings).Add03AppExport(app);
-
+			
 			app.UseContentSecurityPolicy();
 	        
 	        // Allow Current Directory and wwwroot in Base Directory

@@ -5,7 +5,6 @@
 - []   Realtime Files API
 - []   mp4/h.264 video support
 - []   time zone shifting
-- []   Pagination on folders - Performance update for example 800 files
 - []   Search: support for complex and/or operators `(this || or) && that`
 - []   Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
 - []   Docker support, including backend abstractions to get the data (partly working)
@@ -20,15 +19,16 @@
 ## High priority features planned
 - []   (feature) Creating thumbnails from Web Interface (including status)
 - []   Front-end for Rename files
-- []   (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses)
 - []   Improve Unit test coverage
--  23:00   > 54 |       expect(result).toBe(`${new Date().getDate() - 2}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`);
 
-# version 0.1.9 - t.b.d
-- use for example '3 hours' instead of yesterday in detailview
-- (bugfix) EventTarget issue (Safari) when using /import
-- (azure-pipeline) add yaml file to replace classic pipelines
+# version 0.1.9 - 2019-12-01
+- [x] use for example '3 hours' instead of yesterday in detailview
+- [x] (bugfix) EventTarget issue (Safari) when using /import
+- [x] (azure-pipeline) add yaml file to replace classic build pipeline
 - [x] Indexes are working now for MySQL at the first time run
+- [x] Upgrade to .NET Core & EF Core 3.1-preview3 (EF Core 3.0 is missing PredicateBuilder support)
+- [x] (bugfix) 23:00 o'clock/first of month date.spec unittest
+- []  (Add warning) (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses) __bug is not fixed__
 
 # version 0.1.8 - 2019-11-10
 - (bugfix) ignore directories without reading rights (instead of crashing)

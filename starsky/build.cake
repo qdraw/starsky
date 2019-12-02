@@ -1,48 +1,54 @@
-// CAKE FILE
+// CAKE FILE - a C# make file
 
-// powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
-// ./build.sh --runtime="osx.10.12-x64"
-// or: ./build.sh -Target="CI"
+/*
+powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
+./build.sh --runtime="osx.10.12-x64"
+// or:
+ ./build.sh --runtime="linux-arm,linux-arm64"
 
-// Windows 32 bits: 'win7-x86'
-// Mac: 'osx.10.12-x64'
-// Raspberry Pi: 'linux-arm'
-// ARM64: 'linux-arm64'
-
+Windows 32 bits: 'win7-x86'
+Mac: 'osx.10.12-x64'
+Raspberry Pi: 'linux-arm'
+ARM64: 'linux-arm64'
+*/
 
 // For the step CoverageReport
-#tool "nuget:?package=ReportGenerator"
+#tool "nuget:?package=ReportGenerator&version=4.3.6"
 
 // SonarQube
-#tool nuget:?package=MSBuild.SonarQube.Runner.Tool
-#addin nuget:?package=Cake.Sonar
+#tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.6.0
+#addin nuget:?package=Cake.Sonar&version=1.1.22
 
 // Get Git info
-#addin nuget:?package=Cake.Git
+#addin nuget:?package=Cake.Git&version=0.21.0
 
 // For NPM
-#addin "Cake.Npm"
-
+#addin "Cake.Npm&version=0.17.0"
 
 // Target - The task you want to start. Runs the Default task if not specified.
 var target = Argument("Target", "Default");
 var configuration = Argument("Configuration", "Release");
 
 var genericName = "generic-netcore";
-var runtime = Argument("runtime", genericName);
+var runtimeInput = Argument("runtime", genericName);
 
+/* to get a list with the generic item */
+var runtimes = runtimeInput.Split(",").ToList();
+if(!runtimes.Contains(genericName)) {
+  // always the first item
+  runtimes.Insert(0, genericName);
+}
+
+/* Build information, just to show */
+var buildForInformation = new StringBuilder(">> Going to build for: ");
+foreach(var runtime in runtimes)
+{
+  buildForInformation.Append($"{runtime} - ");
+}
+System.Console.WriteLine(buildForInformation.ToString());
+/* done, build info*/
 
 Information($"Running target {target} in configuration {configuration}");
-Information($"\n>> Try to build on {runtime}");
-
-if(runtime == null || runtime == "" ) runtime = genericName;
-var distDirectory = Directory($"./{runtime}");
-var genericDistDirectory = Directory($"./{genericName}");
-
-// output for CI build -- overwrite when needed
-var distDirectoryStarskyOnly = Directory($"./{runtime}-starskyonly");
-var genericDistDirectoryStarskyOnly = Directory($"./{genericName}-starskyonly");
-
 
 var projectNames = new List<string>{
     "starskygeocli",
@@ -51,38 +57,28 @@ var projectNames = new List<string>{
     "starskywebftpcli",
     "starskywebhtmlcli",
     "starsky"
-}; // ignore starskycore
+}; // ignore starskycore + starskygeocore
 
 
 var testProjectNames = new List<string>{
     "starskytest"
 };
 
-Task("PrepStarskyOnly")
-    .Does(() =>
-    {
-        projectNames = new List<string>{"starsky"};
-        distDirectory = distDirectoryStarskyOnly;
-        genericDistDirectory = genericDistDirectoryStarskyOnly;
-    });
-
 // Deletes the contents of the Artifacts folder if it contains anything from a previous build.
-Task("Clean")
+Task("CleanNetCore")
     .Does(() =>
     {
-
-        if (FileExists($"starsky-{genericDistDirectory}.zip"))
+        foreach(var runtime in runtimes)
         {
-            DeleteFile($"starsky-{genericDistDirectory}.zip");
-        }
+            if (FileExists($"starsky-{runtime}.zip"))
+            {
+                DeleteFile($"starsky-{runtime}.zip");
+            }
+            var distDirectory = Directory($"./{runtime}");
+            CleanDirectory(distDirectory);
 
-        if (FileExists($"starsky-{distDirectory}.zip"))
-        {
-            DeleteFile($"starsky-{distDirectory}.zip");
+            CleanDirectory($"obj/Release/netcoreapp3.0/{runtime}");
         }
-
-        CleanDirectory(distDirectory);
-        CleanDirectory(genericDistDirectory);
     });
 
 // Running Client Build
@@ -102,6 +98,7 @@ Task("ClientRestore")
         }
   });
 
+// npm run build
 Task("ClientBuild")
     .Does(() =>
     {
@@ -109,6 +106,7 @@ Task("ClientBuild")
         NpmRunScript("build", s => s.FromPath("./starsky/clientapp/"));
   });
 
+// npm run test:ci
 Task("ClientTest")
     .Does(() =>
     {
@@ -116,7 +114,7 @@ Task("ClientTest")
   });
 
 // Run dotnet restore to restore all package references.
-Task("Restore")
+Task("RestoreNetCore")
     .Does(() =>
     {
         Environment.SetEnvironmentVariable("DOTNET_CLI_TELEMETRY_OPTOUT","true");
@@ -126,31 +124,51 @@ Task("Restore")
         var restoreProjectNames = new List<string>(projectNames);
         restoreProjectNames.AddRange(testProjectNames);
 
-        // now restore test with generic settings (always)
-        // used to get all dependencies
-        DotNetCoreRestore(".",
-            new DotNetCoreRestoreSettings());
 
-        if(runtime == genericName) return;
-
-        System.Console.WriteLine($"> restore for {runtime}");
-
-        var dotnetRestoreSettings = new DotNetCoreRestoreSettings{
-            Runtime = runtime
-        };
-
-        foreach(var projectName in projectNames)
+        foreach(var runtime in runtimes)
         {
-            System.Console.WriteLine($"./{projectName}/{projectName}.csproj");
-            DotNetCoreRestore($"./{projectName}/{projectName}.csproj",
-                dotnetRestoreSettings);
+            if (runtime == genericName)
+            {
+              System.Console.WriteLine(genericName);
+
+              DotNetCoreRestore(".",
+                  new DotNetCoreRestoreSettings());
+              continue;
+            }
+
+            var dotnetRestoreSettings = new DotNetCoreRestoreSettings{
+                Runtime = runtime
+            };
+
+            foreach(var projectName in projectNames)
+            {
+                System.Console.WriteLine($"Restore ./{projectName}/{projectName}.csproj for {runtime}");
+                DotNetCoreRestore($"./{projectName}/{projectName}.csproj",
+                    dotnetRestoreSettings);
+
+                // Copy for runtime
+                CopyFile($"./{projectName}/obj/project.assets.json",  $"./{projectName}/obj/project.assets_{runtime}.json");
+            }
         }
-
-
     });
 
-// Build using the build configuration specified as an argument.
- Task("Build")
+// Build for Generic items
+Task("BuildNetCoreGeneric")
+  .Does(() =>
+  {
+      var dotnetBuildSettings = new DotNetCoreBuildSettings()
+      {
+          Configuration = configuration,
+          ArgumentCustomization = args => args.Append("--no-restore"),
+      };
+      DotNetCoreBuild(".",
+          dotnetBuildSettings);
+  });
+
+
+// Build for non-generic builds
+// Generic must build first
+ Task("BuildNetCoreRuntimeSpecific")
     .Does(() =>
     {
         var dotnetBuildSettings = new DotNetCoreBuildSettings()
@@ -159,27 +177,27 @@ Task("Restore")
             ArgumentCustomization = args => args.Append("--no-restore"),
         };
 
-        System.Console.WriteLine($"> build: {runtime}");
-        // generic build for mstest
-        DotNetCoreBuild(".",
-            dotnetBuildSettings);
+        foreach(var runtime in runtimes)
+        {
+            if (runtime == genericName)
+            {
+              // see BuildNetCoreGeneric
+              continue;
+            }
 
-        // rebuild for specific target
-        if(runtime != genericName) {
-
-            System.Console.WriteLine($"> rebuild for specific target {runtime}");
             dotnetBuildSettings.Runtime = runtime;
 
             foreach(var projectName in projectNames)
             {
-                System.Console.WriteLine($"./{projectName}/{projectName}.csproj");
+              System.Console.WriteLine($"Build ./{projectName}/{projectName}.csproj for {runtime}");
+
+              // Restore project assets file to match the right runtime   // Not needed for generic-netcore
+              CopyFile($"./{projectName}/obj/project.assets_{runtime}.json", $"./{projectName}/obj/project.assets.json");
+
                 DotNetCoreBuild($"./{projectName}/{projectName}.csproj",
                     dotnetBuildSettings);
             }
-
         }
-
-
     });
 
 // Look under a 'Tests' folder and run dotnet test against all of those projects.
@@ -203,8 +221,8 @@ Task("TestNetCore")
                                              .Append("/p:CoverletOutputFormat=opencover")
                                              .Append("/p:ThresholdType=line")
                                              .Append("/p:hideMigrations=\"true\"")
-                                             .Append("/p:Exclude=\"[starsky.Views]*\"")
-                                             .Append("/p:ExcludeByFile=\"../starskycore/Migrations/*\"") // (, comma seperated)
+                                             .Append("/p:Exclude=\"[MySqlConnector]*%2c[starsky.Views]*\"")
+                                             .Append("/p:ExcludeByFile=\"*C:\\projects\\mysqlconnector\\src\\MySqlConnector*%2c../starskycore/Migrations/*\"") // (, comma seperated)
                                              .Append("/p:CoverletOutput=\"netcore-coverage.opencover.xml\"")
                 });
 
@@ -220,9 +238,17 @@ Task("TestNetCore")
         }
     });
 
-
+// Merge front-end and backend coverage files
 Task("MergeCoverageFiles")
   .Does(() => {
+
+    if (! FileExists($"./starsky/clientapp/coverage/cobertura-coverage.xml")) {
+        throw new Exception($"Missing jest coverage file ./starsky/clientapp/coverage/cobertura-coverage.xml");
+    }
+
+    if (! FileExists("./starskytest/netcore-coverage.opencover.xml")) {
+      throw new Exception($"Missing .NET Core coverage file ./starskytest/netcore-coverage.opencover.xml");
+    }
 
     var outputCoverageFile = $"./starskytest/coverage-merge-cobertura.xml";
 
@@ -232,21 +258,20 @@ Task("MergeCoverageFiles")
 
     // Gets the coverage file from the client folder
     if (FileExists($"./starsky/clientapp/coverage/cobertura-coverage.xml")) {
+        Information($"Copy ./starsky/clientapp/coverage/cobertura-coverage.xml ./starskytest/jest-coverage.cobertura.xml");
         CopyFile($"./starsky/clientapp/coverage/cobertura-coverage.xml", $"./starskytest/jest-coverage.cobertura.xml");
     }
 
-    // Merge all cobertura files
+    // Merge all coverage files
     ReportGenerator($"./starskytest/*coverage.*.xml", $"./starskytest/", new ReportGeneratorSettings{
         ReportTypes = new[] { ReportGeneratorReportType.Cobertura }
     });
 
     // And rename it
     MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
-
-
   });
 
-
+// Create a nice report and zip it
 Task("CoverageReport")
     .Does(() =>
     {
@@ -257,7 +282,7 @@ Task("CoverageReport")
             // Generate html files for reports
             var reportFolder = project.ToString().Replace("merge-cobertura.xml","report");
             ReportGenerator(project, reportFolder, new ReportGeneratorSettings{
-                ReportTypes = new[] { ReportGeneratorReportType.HtmlInline }
+                ReportTypes = new[] { ReportGeneratorReportType.HtmlInline, ReportGeneratorReportType.Badges, ReportGeneratorReportType.PngChart }
             });
             // Zip entire folder
             Zip(reportFolder, $"{reportFolder}.zip");
@@ -268,53 +293,49 @@ Task("CoverageReport")
 Task("PublishWeb")
     .Does(() =>
     {
-        foreach (var projectName in projectNames)
+        foreach(var projectName in projectNames)
         {
-            System.Console.WriteLine($"./{projectName}/{projectName}.csproj");
-
-            var dotnetPublishSettings = new DotNetCorePublishSettings()
+            foreach(var runtime in runtimes)
             {
-                Configuration = configuration,
-                OutputDirectory = genericDistDirectory, // <= first to generic
-                ArgumentCustomization = args => args.Append("--no-restore"),
-            };
+                var distDirectory = Directory($"./{runtime}");
 
-            // The items are already build {generic build}
-            DotNetCorePublish(
-                $"./{projectName}/{projectName}.csproj",
-                dotnetPublishSettings
-            );
+                var dotnetPublishSettings = new DotNetCorePublishSettings()
+                {
+                    Configuration = configuration,
+                    OutputDirectory = distDirectory, // <= first to generic
+                    ArgumentCustomization = args => args.Append("--no-restore --no-build --force"),
+                };
 
-            // also publish the other files for runtimes
-            if(runtime == genericName) continue;
+                if(runtime != genericName) {
+                    dotnetPublishSettings.Runtime = runtime;
 
-            dotnetPublishSettings.Runtime = runtime;
-            dotnetPublishSettings.OutputDirectory = distDirectory; // <= then to linux-arm
+                    // Restore project assets file to match the right runtime   // Not needed for generic-netcore
+                    CopyFile($"./{projectName}/obj/project.assets_{runtime}.json", $"./{projectName}/obj/project.assets.json");
+                }
 
-            DotNetCorePublish(
-                $"./{projectName}/{projectName}.csproj",
-                dotnetPublishSettings
-            );
+                System.Console.WriteLine($"Publish ./{projectName}/{projectName}.csproj for {runtime}");
 
+                DotNetCorePublish(
+                    $"./{projectName}/{projectName}.csproj",
+                    dotnetPublishSettings
+                );
+            }
         }
-
     });
 
+// zip the runtime folders
 Task("Zip")
     .Does(() =>
     {
-        // for generic projects
-        System.Console.WriteLine($"./{genericDistDirectory}", $"starsky-{genericDistDirectory}.zip");
-        Zip($"./{genericDistDirectory}", $"starsky-{genericDistDirectory}.zip");
-
-        if(runtime == genericName) return;
-        // for runtime projects e.g. linux-arm or osx.10.12-x64
-
-        System.Console.WriteLine($"./{distDirectory}", $"starsky-{distDirectory}.zip");
-        Zip($"./{distDirectory}", $"starsky-{distDirectory}.zip");
-
+        foreach(var runtime in runtimes)
+        {
+            var distDirectory = Directory($"./{runtime}");
+            System.Console.WriteLine($"./{distDirectory}", $"starsky-{distDirectory}.zip");
+            Zip($"./{distDirectory}", $"starsky-{distDirectory}.zip");
+        }
     });
 
+// Start SonarQube, you must also end it
 Task("SonarBegin")
    .Does(() => {
         var key = EnvironmentVariable("STARSKY_SONAR_KEY");
@@ -362,9 +383,9 @@ Task("SonarBegin")
                 .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starskycore/Migrations/*,**/*spec.ts,**/*spec.tsx,**/src/index.tsx\"")
                 .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starskycore/Migrations/*,**/*spec.tsx,**/*spec.ts,**/src/index.tsx\"")
         });
-
   });
 
+// End the task and send it SonarCloud
 Task("SonarEnd")
   .Does(() => {
     var login = EnvironmentVariable("STARSKY_SONAR_LOGIN");
@@ -386,9 +407,9 @@ Task("Client")
 
 // A meta-task that runs all the steps to Build and Test the app
 Task("BuildNetCore")
-    .IsDependentOn("Clean")
-    .IsDependentOn("Restore")
-    .IsDependentOn("Build");
+    .IsDependentOn("CleanNetCore")
+    .IsDependentOn("RestoreNetCore")
+    .IsDependentOn("BuildNetCoreGeneric");
 
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
@@ -398,6 +419,7 @@ Task("Default")
     .IsDependentOn("BuildNetCore")
     .IsDependentOn("TestNetCore")
     .IsDependentOn("SonarEnd")
+    .IsDependentOn("BuildNetCoreRuntimeSpecific")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("MergeCoverageFiles")
     .IsDependentOn("CoverageReport")
@@ -408,16 +430,6 @@ Task("Default")
 Task("BuildPublishWithoutTest")
     .IsDependentOn("BuildNetCore")
     .IsDependentOn("PublishWeb");
-
-// Run only Starsky MVC and tests
-Task("CI")
-    .IsDependentOn("Client")
-    .IsDependentOn("PrepStarskyOnly")
-    .IsDependentOn("BuildNetCore")
-    .IsDependentOn("TestNetCore")
-    .IsDependentOn("PublishWeb")
-    .IsDependentOn("Zip");
-
 
 
 // Executes the task specified in the target argument.

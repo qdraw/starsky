@@ -38,7 +38,8 @@ echo "pm2" $PM2NAME "runtime" $RUNTIME
 
 if [ ! -f "starsky-$RUNTIME.zip" ]; then
     echo "> starsky-$RUNTIME.zip not found"
-    exit
+    echo "./pm2-deploy-on-env.sh --runtime linux-arm64"
+    exit 1
 fi
 
 pm2 stop $PM2NAME
@@ -61,14 +62,16 @@ if [ -f starsky.dll ]; then
             echo "$ENTRY"
         fi
     done
+else
+   echo "> starsky.dll File not found"
 fi
 
-
+# UnZIP archive
 if [ -f starsky-$RUNTIME.zip ]; then
    unzip -o starsky-$RUNTIME.zip
 else
    echo "> starsky-$RUNTIME.zip File not found"
-   exit
+   exit 1
 fi
 
 # reset rights if those are wrong
@@ -76,7 +79,6 @@ fi
 /usr/bin/find . -type f -exec chmod 644 {} \;
 
 # excute right for specific files
-
 if [ -f starsky ]; then
     chmod +rwx ./starsky
 fi
@@ -112,4 +114,5 @@ fi
 pm2 start $PM2NAME
 
 echo "!> done with deploying"
-echo "!> to warmup, you need to run: ./pm2-warmup.sh --port 4823"
+echo "!> to warmup, you need to run:"
+echo "./pm2-warmup.sh --port 4823"

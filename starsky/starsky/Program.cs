@@ -10,8 +10,7 @@ namespace starsky
 			CreateWebHostBuilder(args).Build().Run();
 		}
 
-		// for swagger > public
-		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+		private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
 				.UseKestrel(options =>
 				{
