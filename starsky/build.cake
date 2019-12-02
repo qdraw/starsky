@@ -228,6 +228,14 @@ Task("TestNetCore")
 Task("MergeCoverageFiles")
   .Does(() => {
 
+    if (! FileExists($"./starsky/clientapp/coverage/cobertura-coverage.xml")) {
+        throw new Exception($"Missing jest coverage file ./starsky/clientapp/coverage/cobertura-coverage.xml");
+    }
+
+    if (! FileExists("./starskytest/netcore-coverage.opencover.xml")) {
+      throw new Exception($"Missing .NET Core coverage file ./starskytest/netcore-coverage.opencover.xml");
+    }
+
     var outputCoverageFile = $"./starskytest/coverage-merge-cobertura.xml";
 
     if (FileExists(outputCoverageFile)) {
@@ -241,7 +249,7 @@ Task("MergeCoverageFiles")
     }
 
     // Merge all coverage files
-    ReportGenerator(new[] { $"./starsky/clientapp/coverage/cobertura-coverage.xml", "./starskytest/netcore-coverage.opencover.xml" }, $"./starskytest/", new ReportGeneratorSettings{
+    ReportGenerator($"./starskytest/*coverage.*.xml", $"./starskytest/", new ReportGeneratorSettings{
         ReportTypes = new[] { ReportGeneratorReportType.Cobertura }
     });
 
@@ -392,10 +400,10 @@ Task("BuildNetCore")
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
 Task("Default")
-    /* .IsDependentOn("Client") */
+    .IsDependentOn("Client")
     .IsDependentOn("SonarBegin")
     .IsDependentOn("BuildNetCore")
-    /* .IsDependentOn("TestNetCore") */
+    .IsDependentOn("TestNetCore")
     .IsDependentOn("SonarEnd")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("MergeCoverageFiles")
