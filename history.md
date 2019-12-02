@@ -6,7 +6,6 @@
 - []   mp4/h.264 video support
 - []   time zone shifting
 - []   Search: support for complex and/or operators `(this || or) && that`
-- []   Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
 - []   Docker support, including backend abstractions to get the data (partly working)
 - []   Health view, to make more clear when paths are configured right
 - []   Health view, to make more clear when the server time is not correct
@@ -22,6 +21,7 @@
 - []   Improve Unit test coverage
 
 # version 0.1.9 - 2019-12-01
+_Upgrade to .NET Core 3.0 & EF Core 3.1-preview3_
 - [x] use for example '3 hours' instead of yesterday in detailview
 - [x] (bugfix) EventTarget issue (Safari) when using /import
 - [x] (azure-pipeline) add yaml file to replace classic build pipeline
@@ -29,6 +29,8 @@
 - [x] Upgrade to .NET Core & EF Core 3.1-preview3 (EF Core 3.0 is missing PredicateBuilder support)
 - [x] (bugfix) 23:00 o'clock/first of month date.spec unittest
 - []  (Add warning) (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses) __bug is not fixed__
+- [x] Update build pipeline to support multiple runtimes in 1 run
+- [x] Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
 
 # version 0.1.8 - 2019-11-10
 - (bugfix) ignore directories without reading rights (instead of crashing)
