@@ -39,7 +39,7 @@ echo "pm2" $PM2NAME "runtime" $RUNTIME
 if [ ! -f "starsky-$RUNTIME.zip" ]; then
     echo "> starsky-$RUNTIME.zip not found"
     echo "./pm2-deploy-on-env.sh --runtime linux-arm64"
-    exit
+    exit 1
 fi
 
 pm2 stop $PM2NAME
@@ -66,12 +66,19 @@ else
    echo "> starsky.dll File not found"
 fi
 
+# UnZIP archive
+if [ -f starsky-$RUNTIME.zip ]; then
+   unzip -o starsky-$RUNTIME.zip
+else
+   echo "> starsky-$RUNTIME.zip File not found"
+   exit 1
+fi
+
 # reset rights if those are wrong
 /usr/bin/find . -type d -exec chmod 755 {} \;
 /usr/bin/find . -type f -exec chmod 644 {} \;
 
 # excute right for specific files
-
 if [ -f starsky ]; then
     chmod +rwx ./starsky
 fi
