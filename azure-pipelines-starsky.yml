@@ -8,7 +8,7 @@ trigger:
   branches:
     include:
     - master
-    - releases/*
+    - release/*
     exclude:
     - feature/*
   paths:
