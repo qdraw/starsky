@@ -14,5 +14,5 @@ $cakeArguments = @("$Script");
 if ($Target) { $cakeArguments += "--target=$Target" }
 $cakeArguments += $ScriptArgs
 
-& dotnet tool run dotnet-cake -- $cakeArguments --verbosity=Diagnostic
+& dotnet tool run dotnet-cake -- $cakeArguments --verbosity=Normal
 exit $LASTEXITCODE
