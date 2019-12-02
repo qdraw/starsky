@@ -42,9 +42,9 @@ steps:
 - task: PowerShell@2
   displayName: 'Cake Powershell'
   inputs:
-    targetType: filePath
-    filePath: 'starsky\build.ps1 '
+    filePath: 'starsky\build.ps1'
     arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"'''
+    pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
 - task: PublishCodeCoverageResults@1
