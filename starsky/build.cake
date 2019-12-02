@@ -65,7 +65,7 @@ var testProjectNames = new List<string>{
 };
 
 // Deletes the contents of the Artifacts folder if it contains anything from a previous build.
-Task("Clean")
+Task("CleanNetCore")
     .Does(() =>
     {
         foreach(var runtime in runtimes)
@@ -114,7 +114,7 @@ Task("ClientTest")
   });
 
 // Run dotnet restore to restore all package references.
-Task("Restore")
+Task("RestoreNetCore")
     .Does(() =>
     {
         Environment.SetEnvironmentVariable("DOTNET_CLI_TELEMETRY_OPTOUT","true");
@@ -152,8 +152,23 @@ Task("Restore")
         }
     });
 
-// Build using the build configuration specified as an argument.
- Task("Build")
+// Build for Generic items
+Task("BuildNetCoreGeneric")
+  .Does(() =>
+  {
+      var dotnetBuildSettings = new DotNetCoreBuildSettings()
+      {
+          Configuration = configuration,
+          ArgumentCustomization = args => args.Append("--no-restore"),
+      };
+      DotNetCoreBuild(".",
+          dotnetBuildSettings);
+  });
+
+
+// Build for non-generic builds
+// Generic must build first
+ Task("BuildNetCoreRuntimeSpecific")
     .Does(() =>
     {
         var dotnetBuildSettings = new DotNetCoreBuildSettings()
@@ -166,8 +181,7 @@ Task("Restore")
         {
             if (runtime == genericName)
             {
-              DotNetCoreBuild(".",
-                  dotnetBuildSettings);
+              // see BuildNetCoreGeneric
               continue;
             }
 
@@ -393,9 +407,9 @@ Task("Client")
 
 // A meta-task that runs all the steps to Build and Test the app
 Task("BuildNetCore")
-    .IsDependentOn("Clean")
-    .IsDependentOn("Restore")
-    .IsDependentOn("Build");
+    .IsDependentOn("CleanNetCore")
+    .IsDependentOn("RestoreNetCore")
+    .IsDependentOn("BuildNetCoreGeneric");
 
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
@@ -405,6 +419,7 @@ Task("Default")
     .IsDependentOn("BuildNetCore")
     .IsDependentOn("TestNetCore")
     .IsDependentOn("SonarEnd")
+    .IsDependentOn("BuildNetCoreRuntimeSpecific")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("MergeCoverageFiles")
     .IsDependentOn("CoverageReport")
