@@ -240,8 +240,8 @@ Task("MergeCoverageFiles")
         CopyFile($"./starsky/clientapp/coverage/cobertura-coverage.xml", $"./starskytest/jest-coverage.cobertura.xml");
     }
 
-    // Merge all cobertura files
-    ReportGenerator($"./starskytest/*coverage.*.xml", $"./starskytest/", new ReportGeneratorSettings{
+    // Merge all coverage files
+    ReportGenerator(new[] { $"./starsky/clientapp/coverage/cobertura-coverage.xml", "./starskytest/netcore-coverage.opencover.xml" }, $"./starskytest/", new ReportGeneratorSettings{
         ReportTypes = new[] { ReportGeneratorReportType.Cobertura }
     });
 
@@ -260,7 +260,7 @@ Task("CoverageReport")
             // Generate html files for reports
             var reportFolder = project.ToString().Replace("merge-cobertura.xml","report");
             ReportGenerator(project, reportFolder, new ReportGeneratorSettings{
-                ReportTypes = new[] { ReportGeneratorReportType.HtmlInline }
+                ReportTypes = new[] { ReportGeneratorReportType.HtmlInline, ReportGeneratorReportType.Badges, ReportGeneratorReportType.PngChart }
             });
             // Zip entire folder
             Zip(reportFolder, $"{reportFolder}.zip");
