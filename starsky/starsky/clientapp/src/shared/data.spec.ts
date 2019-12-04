@@ -59,7 +59,7 @@ describe("date", () => {
       // to get 48 hours ago
       dayBeforeYesterdayDate.setDate(dayBeforeYesterdayDate.getDate() - 2);
 
-      var dayBeforeYesterday = `${dayBeforeYesterdayDate.getFullYear()}-${dayBeforeYesterdayDate.getMonth() + 1}-${dayBeforeYesterdayDate.getDate()}T${leftPad(dayBeforeYesterdayDate.getHours())}:${leftPad(dayBeforeYesterdayDate.getMinutes())}:${leftPad(dayBeforeYesterdayDate.getSeconds())}`;
+      var dayBeforeYesterday = `${dayBeforeYesterdayDate.getFullYear()}-${leftPad(dayBeforeYesterdayDate.getMonth() + 1)}-${leftPad(dayBeforeYesterdayDate.getDate())}T${leftPad(dayBeforeYesterdayDate.getHours())}:${leftPad(dayBeforeYesterdayDate.getMinutes())}:${leftPad(dayBeforeYesterdayDate.getSeconds())}`;
 
       var result = parseRelativeDate(dayBeforeYesterday);
       expect(result).toBe(`${dayBeforeYesterdayDate.getDate()}-${dayBeforeYesterdayDate.getMonth() + 1}-${dayBeforeYesterdayDate.getFullYear()}`);
