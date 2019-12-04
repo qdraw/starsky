@@ -10,14 +10,13 @@ describe("ArchiveSidebar", () => {
     shallow(<ArchiveSidebar pageType={PageType.Loading} subPath={"/"} isReadOnly={true} colorClassUsage={[]} fileIndexItems={newIFileIndexItemArray()} />)
   });
 
-  describe("ArchiveSidebar", () => {
+  describe("with mount", () => {
 
     beforeEach(() => {
       jest.spyOn(React, 'useLayoutEffect').mockImplementation(React.useEffect);
     });
 
     it("restore scroll after unmount", () => {
-
       var scrollTo = jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
       var component = mount(<ArchiveSidebar pageType={PageType.Archive} subPath={"/"} isReadOnly={true} colorClassUsage={[]} fileIndexItems={newIFileIndexItemArray()} />)
 
