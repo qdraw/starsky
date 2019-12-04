@@ -41,8 +41,8 @@ describe("url-query", () => {
     expect(result).toContain("update")
   });
 
-  it("UrlQueryThumbnailApi", () => {
-    var result = urlQuery.UrlQueryThumbnailApi("0000");
+  it("UrlQueryThumbnailJsonApi", () => {
+    var result = urlQuery.UrlQueryThumbnailJsonApi("0000");
     expect(result).toContain("0000")
   });
 
