@@ -17,16 +17,32 @@ const initialState: State = {
   colorClassFilterList: [],
 }
 
-type Action = { type: 'add', tags?: string } | { type: 'remove', tags?: string } | {
-  type: 'update', tags?: string, colorclass?: number,
-  description?: string, title?: string, append?: boolean, status?: IExifStatus
-} | { type: 'reset', payload: IDetailView };
+type Action = {
+  type: 'append',
+  tags?: string
+} |
+{
+  type: 'remove',
+  tags?: string
+} |
+{
+  type: 'update',
+  tags?: string,
+  colorclass?: number,
+  description?: string,
+  title?: string,
+  status?: IExifStatus
+} |
+{
+  type: 'reset',
+  payload: IDetailView
+};
 
 type IContext = {
   state: State,
   dispatch: React.Dispatch<Action>,
 }
-export function archiveReducer(state: State, action: Action): State {
+export function detailviewReducer(state: State, action: Action): State {
   switch (action.type) {
     case "remove":
       var { tags } = action;
@@ -35,10 +51,9 @@ export function archiveReducer(state: State, action: Action): State {
 
       // Need to update otherwise other events are not triggerd
       return { ...state, lastUpdated: new Date() };
-    case "add":
+    case "append":
       var { tags } = action;
       if (tags) state.fileIndexItem.tags += "," + tags;
-      console.log(state.fileIndexItem.tags);
       // Need to update otherwise other events are not triggerd
       return { ...state, lastUpdated: new Date() };
     case "update":
@@ -59,7 +74,7 @@ export function archiveReducer(state: State, action: Action): State {
 
 function DetailViewContextProvider({ children }: ReactNodeProps) {
   // [A]
-  let [state, dispatch] = React.useReducer(archiveReducer, initialState);
+  let [state, dispatch] = React.useReducer(detailviewReducer, initialState);
   let value1 = { state, dispatch };
 
   // [B]

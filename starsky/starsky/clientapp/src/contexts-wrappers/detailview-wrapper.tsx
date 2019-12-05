@@ -21,6 +21,7 @@ function DetailViewWrapper(detailViewProp: IDetailView) {
   // To update the list of items
   const [detailView, setDetailView] = React.useState(detailViewProp);
   useEffect(() => {
+    if (!state) return;
     if (!state.fileIndexItem) return;
     setDetailView(state);
   }, [state]);
@@ -32,7 +33,6 @@ function DetailViewWrapper(detailViewProp: IDetailView) {
 
   if (!state) return (<>(DetailViewWrapper) => no state</>)
   if (!state.fileIndexItem) return (<></>);
-  if (!detailView) return (<></>);
 
   return (
     <>

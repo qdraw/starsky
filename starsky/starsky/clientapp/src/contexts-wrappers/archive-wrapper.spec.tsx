@@ -9,7 +9,7 @@ import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import ArchiveContextWrapper from './archive-wrapper';
 
 
-describe("SwitchButton", () => {
+describe("ArchiveContextWrapper", () => {
 
   it("renders", () => {
     shallow(<ArchiveContextWrapper {...newIArchive()}></ArchiveContextWrapper>)

@@ -65,7 +65,7 @@ const MenuDetailView: React.FunctionComponent = () => {
       if (resultDo === null) {
         return;
       }
-      dispatch({ 'type': 'add', tags: "!delete!" });
+      dispatch({ 'type': 'append', tags: "!delete!" });
       dispatch({ 'type': 'update', status: IExifStatus.Deleted });
     }
     // Undo trash
