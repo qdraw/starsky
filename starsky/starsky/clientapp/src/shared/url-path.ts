@@ -152,6 +152,7 @@ export class URLPath {
 
 
   public RemovePrefixUrl(input: string): string {
+    if (!input) return "";
     let output = input.replace(/^#?(\/)?/ig, "");
     return output.replace(/\+/ig, "%2B");
   }
