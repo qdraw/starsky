@@ -1,10 +1,10 @@
 import { mount } from 'enzyme';
 import React from 'react';
 import { TestHook } from './test-hook';
-import useFetch from './use-fetch';
+import useFileList from './use-filelist';
 
 
-describe("UseFetch", () => {
+describe("UseFileList", () => {
 
   const testHook = (callback: any) => {
     return mount(<TestHook callback={callback} />);
@@ -16,7 +16,7 @@ describe("UseFetch", () => {
       return [setState, setState]
     })
 
-    var fetch = jest.spyOn(window, 'fetch').mockImplementationOnce(() => {
+    jest.spyOn(window, 'fetch').mockImplementationOnce(() => {
       return Promise.resolve(
         {
           json: () => { },
@@ -25,10 +25,11 @@ describe("UseFetch", () => {
       )
     })
 
-    testHook(useFetch);
+    testHook(useFileList);
 
     expect(fetch).toHaveBeenCalled()
     expect(useStateSpy).toHaveBeenCalled()
-
   });
+
+
 });
