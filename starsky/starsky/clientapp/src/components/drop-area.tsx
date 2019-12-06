@@ -83,15 +83,15 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = memo((props) => {
       formData.append("files", file);
     });
 
-    FetchPost('/import', formData).then((data) => {
-      if (!data) {
+    FetchPost('/import', formData).then((response) => {
+      if (!response.data) {
         setOpen(true);
         setIsLoading(false);
         return;
       }
-      console.log('/import >= data', data);
+      console.log('/import >= data', response.data);
 
-      Array.from(data).forEach(dataItem => {
+      Array.from(response.data).forEach(dataItem => {
         if (!dataItem) return;
         var status = IExifStatus.Ok;
         if ((dataItem as any).status === "IgnoredAlreadyImported") {

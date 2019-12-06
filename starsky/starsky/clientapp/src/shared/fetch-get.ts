@@ -1,4 +1,6 @@
-const FetchGet = async (url: string): Promise<any> => {
+import { IConnectionDefault } from '../interfaces/IConnectionDefault';
+
+const FetchGet = async (url: string): Promise<IConnectionDefault> => {
   const settings = {
     method: 'GET',
     credentials: "include" as RequestCredentials,
@@ -9,24 +11,19 @@ const FetchGet = async (url: string): Promise<any> => {
 
   const res = await fetch(url, settings);
   try {
-
     const response = await res.json();
 
-    if (typeof response === "string") {
-      return {
-        statusCode: res.status,
-        data: response
-      } as any;
-    }
+    return {
+      statusCode: res.status,
+      data: response
+    } as IConnectionDefault;
 
-    if (!res.ok) {
-      console.error(response)
-      return null;
-    }
-
-    return response;
   } catch (err) {
-    throw err;
+    console.error(err);
+    return {
+      statusCode: res.status,
+      data: null
+    } as IConnectionDefault;
   }
 };
 

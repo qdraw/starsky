@@ -23,7 +23,8 @@ describe("fetch-get", () => {
 
     expect(spy).toBeCalledWith("/test", { "credentials": "include", "headers": { "Accept": "application/json" }, "method": "GET" })
     expect(result).toStrictEqual({
-      "test": true,
+      "data": { "test": true },
+      "statusCode": 200
     });
   });
 

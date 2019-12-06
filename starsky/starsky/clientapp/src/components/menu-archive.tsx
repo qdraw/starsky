@@ -4,6 +4,7 @@ import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
 import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 import MenuSearchBar from './menu.searchbar';
 import ModalDisplayOptions from './modal-display-options';
 import ModalExport from './modal-export';
@@ -85,8 +86,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     bodyParams.set("append", "true");
     bodyParams.set("Colorclass", "8");
 
-    var resultDo = await FetchPost("/api/update", bodyParams.toString());
-    if (resultDo === null) {
+    var resultDo = await FetchPost(new UrlQuery().UrlQueryUpdateApi(), bodyParams.toString());
+    if (resultDo.statusCode !== 404 && resultDo.statusCode !== 200) {
       return;
     }
     undoSelection();

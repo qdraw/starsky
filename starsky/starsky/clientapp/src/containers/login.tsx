@@ -3,6 +3,7 @@ import Button from '../components/Button';
 import useLocation from '../hooks/use-location';
 import BrowserDetect from '../shared/browser-detect';
 import FetchGet from '../shared/fetch-get';
+import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import { validateLoginForm } from '../shared/validate-login-form';
@@ -45,19 +46,11 @@ const Login: React.FunctionComponent<ILoginProps> = memo((props) => {
   const authHandler = async () => {
     try {
       setLoading(true);
-
-      const response = await fetch("/account/login?json=true", {
-        credentials: "include",
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: 'Email=' + userEmail + '&Password=' + userPassword
-      })
-      if (!response) {
+      const response = await FetchPost(new UrlQuery().UrlLogin(), 'Email=' + userEmail + '&Password=' + userPassword)
+      if (!response || !response.data) {
         setError(MessageConnection);
       }
-      else if (response.status === 401) {
+      else if (response.statusCode === 401 || response.statusCode === 302) {
         setLoading(false);
         setError(MessageWrongUsernamePassword);
       }

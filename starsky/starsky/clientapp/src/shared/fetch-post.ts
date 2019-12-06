@@ -1,4 +1,6 @@
-const FetchPost = async (url: string, body: string | FormData, method: 'post' | 'delete' = 'post'): Promise<any> => {
+import { IConnectionDefault } from '../interfaces/IConnectionDefault';
+
+const FetchPost = async (url: string, body: string | FormData, method: 'post' | 'delete' = 'post'): Promise<IConnectionDefault> => {
   const settings: RequestInit = {
     method: method,
     body,
@@ -12,17 +14,20 @@ const FetchPost = async (url: string, body: string | FormData, method: 'post' | 
     (settings.headers as any)['Content-type'] = 'application/x-www-form-urlencoded';
   }
 
-  const response = await fetch(url, settings);
-  if (!response.ok) {
-    console.error(response.status.toString())
-    return null;
-  }
+  const res = await fetch(url, settings);
 
   try {
-    const data = await response.json();
-    return data;
+    const data = await res.json();
+    return {
+      statusCode: res.status,
+      data
+    } as IConnectionDefault;
   } catch (err) {
-    throw err;
+    console.error(err);
+    return {
+      statusCode: res.status,
+      data: null
+    } as IConnectionDefault;
   }
 };
 

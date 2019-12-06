@@ -35,8 +35,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   var location = new UrlQuery().UrlQueryInfoApi(props.filePath);
   const responseObject = useFetch(location, 'get');
   useEffect(() => {
-    if (!responseObject) return;
-    var infoFileIndexItem = new CastToInterface().InfoFileIndexArray(responseObject);
+    if (!responseObject.data) return;
+    var infoFileIndexItem = new CastToInterface().InfoFileIndexArray(responseObject.data);
     updateCollections(infoFileIndexItem);
 
     // there is a bug in the api
@@ -97,7 +97,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     var bodyParams = new URLPath().ObjectToSearchParams(updateObject);
 
     FetchPost(updateApiUrl, bodyParams.toString()).then(item => {
-      setFileIndexItem(item[0]);
+      if (item.statusCode !== 200) return;
+      setFileIndexItem(item.data[0]);
     });
   }
 

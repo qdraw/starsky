@@ -9,6 +9,10 @@ export class UrlQuery {
     return output.replace(/\+/ig, "%2B");
   }
 
+  public UrlLogin() {
+    return "/account/login?json=true";
+  }
+
   public UrlQuerySearchApi = (query: string, pageNumber = 0) => {
     return "/api/search?json=true&t=" + query + "&p=" + pageNumber;
   }

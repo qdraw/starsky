@@ -1,35 +1,31 @@
 import { useEffect, useState } from 'react';
-import { PageType } from '../interfaces/IDetailView';
+import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
 
-const useFetch = (url: string, method: 'get' | 'post'): any | null => {
-  const [data, setData] = useState(null);
+/**
+ * With abort signal
+ * @param url http/https url
+ * @param method ;get or post
+ */
+const useFetch = (url: string, method: 'get' | 'post'): IConnectionDefault => {
+  const [data, setData] = useState(newIConnectionDefault());
   useEffect(() => {
     let mounted = true;
     const abortController = new AbortController();
 
     (async () => {
+
       try {
         const res: Response = await fetch(url, {
           signal: abortController.signal,
           credentials: "include",
           method: method
         });
-        const response = await res.json();
+        const data = await res.json();
 
-        if (res.status >= 400 && res.status <= 550 && res.status !== 404) {
-          setData({
-            statusCode: res.status,
-            pageType: PageType.ApplicationException,
-          } as any)
-          return;
-        }
-
-        if (typeof response === "string" && mounted) {
-          setData({
-            statusCode: res.status,
-            data: response
-          } as any);
-        }
+        var response = {
+          statusCode: res.status,
+          data
+        } as IConnectionDefault;
 
         if (mounted) {
           setData(response);
@@ -37,6 +33,7 @@ const useFetch = (url: string, method: 'get' | 'post'): any | null => {
       } catch (event) {
         console.error("use-fetch", event);
       }
+
     })();
 
     const cleanup = () => {
@@ -50,6 +47,7 @@ const useFetch = (url: string, method: 'get' | 'post'): any | null => {
 
 export default useFetch;
 
-// ????? https://github.com/bghveding/use-fetch
+// Source:
+// https://github.com/bghveding/use-fetch
 
 

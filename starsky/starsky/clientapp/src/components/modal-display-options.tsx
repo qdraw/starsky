@@ -77,11 +77,16 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   function geoSyncStatus() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     FetchGet("/api/geo/status/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
-      if (anyData.current === 0 && anyData.total === 0) {
+
+      if (anyData.statusCode !== 200) {
+        setGeoSyncPercentage(-1);
+      }
+
+      if (anyData.data.current === 0 && anyData.data.total === 0) {
         setGeoSyncPercentage(0);
         return;
       }
-      setGeoSyncPercentage(anyData.current / anyData.total * 100);
+      setGeoSyncPercentage(anyData.data.current / anyData.data.total * 100);
     });
   }
 

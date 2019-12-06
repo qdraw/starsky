@@ -36,8 +36,8 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
   const responseObject = useFetch("/suggest/?t=" + query, 'get');
 
   useEffect(() => {
-    if (!responseObject) return;
-    var result: Array<string> = responseObject;
+    if (!responseObject.data) return;
+    var result: Array<string> = responseObject.data;
     setData({
       hits: result,
     })
@@ -92,12 +92,12 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
               autoComplete="off" value={query} onChange={e => setQuery(e.target.value)} />
           </form>
         </li>
-        {data.hits.length === 0 ?
+        {data.hits && data.hits.length === 0 ?
           defaultMenu.map((value, index) => {
             return <li className="menu-item menu-item--default" key={index}><a href={value.url}>{value.name}</a> </li>;
           }) : null
         }
-        {data.hits.map(item => (
+        {data.hits && data.hits.map(item => (
           <li key={item} className="menu-item menu-item--results">
             <button onClick={() => navigate(item)} className="search-icon">{item}</button>
           </li>

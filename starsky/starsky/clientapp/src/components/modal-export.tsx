@@ -54,20 +54,24 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = memo((props) => {
     bodyParams.set("collections", "true");
     setProcessing(ProcessingState.server);
 
-    var zipKey = await FetchPost(new UrlQuery().UrlExportPostZipApi(), bodyParams.toString());
-    setCreateZipKey(zipKey);
+    var zipKeyResult = await FetchPost(new UrlQuery().UrlExportPostZipApi(), bodyParams.toString());
+
+    if (zipKeyResult.statusCode !== 200 || !zipKeyResult.data) {
+      setProcessing(ProcessingState.fail);
+      return;
+    }
+    setCreateZipKey(zipKeyResult.data);
   }
 
   useInterval(async () => {
     if (isProcessing !== ProcessingState.server) return;
+    if (!createZipKey) return;
     var result = await FetchGet(new UrlQuery().UrlExportZipApi(createZipKey, true));
     if (result.statusCode === 200) {
       setProcessing(ProcessingState.ready);
       return;
     }
-    if (result.statusCode !== 206) {
-      setProcessing(ProcessingState.fail);
-    }
+    setProcessing(ProcessingState.fail);
   }, 1500)
 
 

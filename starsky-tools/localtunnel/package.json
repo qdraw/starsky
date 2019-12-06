@@ -1,5 +1,5 @@
 {
-  "name": "localtunnel",
+  "name": "localtunnel-project",
   "version": "1.0.0",
   "description": "",
   "main": "localtunnel.js",
@@ -10,9 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^8.1.0",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "http-proxy": "^1.17.0",
+    "http-proxy": "^1.18.0",
     "localtunnel": "^2.0.0"
   }
 }

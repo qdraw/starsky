@@ -9,7 +9,7 @@ describe("fetch-post", () => {
     var result = await FetchPost("/test", "")
 
     expect(spy).toBeCalledWith("/test", { "body": "", "credentials": "include", "headers": { "Accept": "application/json", "Content-type": "application/x-www-form-urlencoded" }, "method": "post" })
-    expect(result).toStrictEqual("response");
+    expect(result.data).toStrictEqual("response");
   });
 
   it("default object response", async () => {
@@ -19,7 +19,7 @@ describe("fetch-post", () => {
     var result = await FetchPost("/test", "")
 
     expect(spy).toBeCalledWith("/test", { "body": "", "credentials": "include", "headers": { "Accept": "application/json", "Content-type": "application/x-www-form-urlencoded" }, "method": "post" })
-    expect(result).toStrictEqual({
+    expect(result.data).toStrictEqual({
       "test": true,
     });
   });
@@ -34,7 +34,7 @@ describe("fetch-post", () => {
     var result = await FetchPost("/test", "")
 
     expect(spy).toBeCalledWith("/test", { "body": "", "credentials": "include", "headers": { "Accept": "application/json", "Content-type": "application/x-www-form-urlencoded" }, "method": "post" })
-    expect(result).toBe(null)
+    expect(result.data).toBe("response")
   });
 
 });
