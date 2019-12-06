@@ -54,7 +54,7 @@ if [ -f starsky.dll ]; then
         if [[ $ENTRY != "appsettings"* && $ENTRY != "pm2-"*
         && $ENTRY != "thumbnailTempFolder"
         && $ENTRY != "temp"
-        && $ENTRY != "starsky-$RUNTIME.zip"
+        && $ENTRY != "starsky-"*
         && $ENTRY != *".db" ]];
         then
             rm -rf "$ENTRY"
