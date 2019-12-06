@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using starsky.Helpers;
 using starskycore.Data;
@@ -161,6 +162,7 @@ namespace starsky
 	       
         }
 
+        
         /// <summary>
         /// Does the current user get a redirect or 401 page
         /// </summary>
@@ -168,13 +170,16 @@ namespace starsky
         /// <param name="existingRedirector">func of RedirectContext</param>
         /// <returns></returns>
         static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, 
-	        Func<RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
-	        context => {
-		        if ( !context.Request.Path.StartsWithSegments("/api") )
-			        return existingRedirector(context);
-		        context.Response.StatusCode = (int)statusCode;
-		        return Task.CompletedTask;
-	        };
+	        Func<RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) => 
+	        context => 
+			{
+				if ( !context.Request.Path.StartsWithSegments("/api") )
+					return existingRedirector(context);
+				context.Response.StatusCode = ( int ) statusCode;
+				// used to fetch in the process to catch
+				context.Response.Headers["X-Status"] = new StringValues((( int ) statusCode).ToString());
+				return Task.CompletedTask;
+			};
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -254,6 +259,21 @@ namespace starsky
 
 			app.UseAuthentication();
             app.UseBasicAuthentication();
+
+			/// For some reason the pipe is not ending after its closed. This is new in NET CORE 3.0 and this is a work around to give the right status code back
+            app.Use(async (HttpContext context, Func<Task> next) =>
+            {
+	            await next.Invoke(); //execute the request pipeline
+
+	            var statusStringValues = context.Response.Headers["X-Status"];
+	            if ( !string.IsNullOrEmpty(statusStringValues) )
+	            {
+		            if ( int.TryParse(statusStringValues, out var status) )
+		            {
+			            context.Response.StatusCode = status;
+		            }
+	            }
+            });
 
 #if NETCOREAPP3_0
 			app.UseAuthorization();
