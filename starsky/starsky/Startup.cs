@@ -26,7 +26,6 @@ using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
-
 namespace starsky
 {
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -99,7 +98,6 @@ namespace starsky
             services.AddScoped<IExifTool, ExifTool>();
             services.AddScoped<IReadMeta, ReadMeta>();
 	        services.AddScoped<IStorage, StorageSubPathFilesystem>();
-
 	        
             // AddHostedService in .NET Core 2.1 / background service
             services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
@@ -113,7 +111,6 @@ namespace starsky
                     options.HeaderName = "X-XSRF-TOKEN";
                 }
             );
-
 	        
 			// to add support for swagger
 			new SwaggerHelper(_appSettings).Add01SwaggerGenHelper(services);
@@ -159,9 +156,7 @@ namespace starsky
 	        services.AddSingleton<IHttpProvider,HttpProvider>();
 	        services.AddSingleton<HttpClientHelper>();
 	        services.AddSingleton<System.Net.Http.HttpClient>();
-	       
         }
-
         
         /// <summary>
         /// Does the current user get a redirect or 401 page
@@ -241,7 +236,6 @@ namespace starsky
 				        Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot"))
 		        });
 	        }
-	        
 			
 			if ( Directory.Exists(Path.Combine(env.ContentRootPath, "clientapp", "build", "static")) )
 			{
@@ -320,10 +314,6 @@ namespace starsky
 		            await context.Response.SendFileAsync(Path.Combine(env.WebRootPath,"index.html"));
 	            });
             }
-
-
         }
-	    
-
     }
 }
