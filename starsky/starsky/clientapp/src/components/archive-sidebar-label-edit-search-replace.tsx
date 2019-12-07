@@ -79,7 +79,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         bodyParams.set("replace", replaceValue);
 
         FetchPost("/api/replace", bodyParams.toString()).then((anyData) => {
-          var result = new CastToInterface().InfoFileIndexArray(anyData);
+          var result = new CastToInterface().InfoFileIndexArray(anyData.data);
           result.forEach(element => {
             dispatch({ type: 'update', ...element, select });
           });
