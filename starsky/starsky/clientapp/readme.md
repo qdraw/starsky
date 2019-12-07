@@ -49,6 +49,22 @@ Your app is ready to be deployed!
 
 In this application we use the `build.sh` or `build.ps1` to combine the frontend application with the .NET Core backend.
 
+### Upgrade `Create React App`
+
+The default Create React App package is used to keep future upgrades less painfull.
+
+The following packages are added:
+```
+npm install abortcontroller-polyfill --save
+npm install @reach/router --save
+npm install intersection-observer --save
+npm install @types/reach__router --save-dev
+npm install --save-dev enzyme
+npm install --save-dev enzyme-adapter-react-16
+```
+
+With jest `collectCoverageFrom` and `coverageReporters` are used to get the right output
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
