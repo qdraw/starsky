@@ -62,13 +62,12 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
     var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "")
     if (selectParams.length === 0) return;
 
-    dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
-
     var bodyParams = new URLSearchParams();
     bodyParams.append("f", selectParams);
     FetchPost("/api/delete", bodyParams.toString(), 'delete')
 
     undoSelection();
+    dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
   }
 
   function undoTrash() {
@@ -89,6 +88,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
     FetchPost("/api/replace", bodyParams.toString())
 
     undoSelection();
+    // is removed from the trash list but shown in the directory
     dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
   }
 
