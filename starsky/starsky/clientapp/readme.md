@@ -63,6 +63,12 @@ npm install --save-dev enzyme
 npm install --save-dev enzyme-adapter-react-16
 ```
 
+#### Proxy tag for backend services:
+```json
+"proxy": "http://localhost:5000",
+```
+
+
 With jest `collectCoverageFrom` and `coverageReporters` are used to get the right output
 
 ## Learn More
