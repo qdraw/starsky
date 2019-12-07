@@ -52,7 +52,11 @@ export class UrlQuery {
     return "/api/update";
   }
 
-  public UrlQueryThumbnailApi = (fileHash: string) => {
+  public UrlQueryThumbnailImage = (fileHash: string) => {
+    return "/api/thumbnail/" + fileHash + ".jpg?issingleitem=true";
+  }
+
+  public UrlQueryThumbnailJsonApi = (fileHash: string) => {
     return "/api/thumbnail/" + fileHash + "?json=true";
   }
 

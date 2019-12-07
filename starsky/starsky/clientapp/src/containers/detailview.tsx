@@ -46,7 +46,7 @@ const DetailView: React.FC<IDetailView> = () => {
   const [translateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);
   let fileHash: string = "";
   if (state.fileIndexItem && state.fileIndexItem.fileHash) fileHash = state.fileIndexItem.fileHash;
-  const thumbResponseObject = useFetch(new UrlQuery().UrlQueryThumbnailApi(fileHash), 'get');
+  const thumbResponseObject = useFetch(new UrlQuery().UrlQueryThumbnailJsonApi(fileHash), 'get');
   useEffect(() => {
     if (!thumbResponseObject) return;
     if (!state.fileIndexItem.orientation) return;
@@ -160,7 +160,7 @@ const DetailView: React.FC<IDetailView> = () => {
           onError={() => {
             setError(true)
             setIsLoading(false)
-          }} src={"/api/thumbnail/" + state.fileIndexItem.fileHash + ".jpg?issingleitem=true"} /> : null}
+          }} src={new UrlQuery().UrlQueryThumbnailImage(state.fileIndexItem.fileHash)} /> : null}
 
         {relativeObjects.nextFilePath ?
           <div onClick={() => next()} className="nextprev nextprev--next"><div className="icon"></div></div>
