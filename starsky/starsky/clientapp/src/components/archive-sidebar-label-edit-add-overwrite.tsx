@@ -65,7 +65,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     bodyParams.append("f", selectParams)
 
     FetchPost("/api/update", bodyParams.toString()).then((anyData) => {
-      var result = new CastToInterface().InfoFileIndexArray(anyData);
+      var result = new CastToInterface().InfoFileIndexArray(anyData.data);
       result.forEach(element => {
         dispatch({ type: 'update', ...element, select });
       });
