@@ -13,19 +13,19 @@
   }
 }
 
-.content--header {
-  height: 50px;
-  line-height: 50px;
+.content--header,
+.content--subheader {
+  padding:15px;
   padding-left: 10px;
+  min-height: 50px;
+  line-height: 20px;
   background-color: #CFD8DC;  
 }
 
 .content--subheader {
-  height: 50px;
-  line-height: 50px;
-  padding-left: 10px;
   background-color: #ECEFF1;  
 }
+
 .content--text {
   padding: 10px;
 }

@@ -60,6 +60,7 @@ npm install @reach/router --save
 npm install intersection-observer --save
 npm install @types/reach__router --save-dev
 npm install --save-dev enzyme
+npm install --save-dev @types/enzyme
 npm install --save-dev enzyme-adapter-react-16
 ```
 
