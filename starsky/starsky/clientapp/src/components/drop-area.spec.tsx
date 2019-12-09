@@ -1,7 +1,7 @@
 import { mount, shallow } from 'enzyme';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { IFileIndexItem, newIFileIndexItem } from '../interfaces/IFileIndexItem';
+import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
 import * as FetchPost from '../shared/fetch-post';
 import DropArea from './drop-area';
 
@@ -36,7 +36,7 @@ describe("DropArea", () => {
     it("Test Drop a file", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve([newIFileIndexItem()] as IFileIndexItem[]);
+      const mockFetchAsXml: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
       var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
 
       act(() => {

@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from "react";
+import React, { useEffect } from "react";
 import Button from '../components/Button';
 import useLocation from '../hooks/use-location';
 import BrowserDetect from '../shared/browser-detect';
@@ -12,9 +12,9 @@ export interface ILoginProps {
   defaultLoginStatus?: boolean;
 }
 
-const Login: React.FunctionComponent<ILoginProps> = memo((props) => {
-  var history = useLocation();
+const Login: React.FC<ILoginProps> = () => {
 
+  var history = useLocation();
   const [userEmail, setUserEmail] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -147,6 +147,6 @@ const Login: React.FunctionComponent<ILoginProps> = memo((props) => {
         : null}
     </>
   );
-});
+};
 
 export default Login;

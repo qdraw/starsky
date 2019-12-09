@@ -4,9 +4,7 @@ import React, { FunctionComponent } from 'react';
 import DropArea from '../components/drop-area';
 import MenuSearch from '../components/menu-search';
 
-
 const ImportPage: FunctionComponent<RouteComponentProps> = (props) => {
-
   return (<div>
     <MenuSearch></MenuSearch>
     <div className="content">
