@@ -8,8 +8,8 @@ describe("ImportPage", () => {
   it("default check if MenuSearch is called", () => {
     var menuSearchSpy = jest.spyOn(MenuSearch, 'default').mockImplementationOnce(() => { return <></> });
     var dropAreaSpy = jest.spyOn(DropArea, 'default').mockImplementationOnce(() => { return <></> });
-
     mount(<ImportPage></ImportPage>);
-    expect(menuSearchSpy).toBeCalled()
+    expect(menuSearchSpy).toBeCalled();
+    expect(dropAreaSpy).toBeCalled()
   });
 });
