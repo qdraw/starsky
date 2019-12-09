@@ -194,9 +194,16 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       {fileIndexItem.make && fileIndexItem.model && fileIndexItem.aperture && fileIndexItem.focalLength ?
         <div className="box">
           <div className="icon icon--shutter-speed"></div>
-          <b><span data-test="make">{fileIndexItem.make}</span> <span data-test="model">{fileIndexItem.model}</span></b>
-          <p>f/<span data-test="aperture">{fileIndexItem.aperture}</span>&nbsp;&nbsp;&nbsp;{fileIndexItem.shutterSpeed} sec&nbsp;&nbsp;&nbsp;
-             <span data-test="focalLength">{fileIndexItem.focalLength.toFixed(1)}</span> mm&nbsp;&nbsp;&nbsp;{fileIndexItem.isoSpeed !== 0 ? <>ISO {fileIndexItem.isoSpeed}</> : null}</p>
+          <b>
+            <span data-test="make">{fileIndexItem.make}</span>&nbsp;
+            <span data-test="model">{fileIndexItem.model}</span>
+          </b>
+          <p>
+            f/<span data-test="aperture">{fileIndexItem.aperture}</span>&nbsp;&nbsp;&nbsp;
+            {fileIndexItem.shutterSpeed} sec&nbsp;&nbsp;&nbsp;
+            <span data-test="focalLength">{fileIndexItem.focalLength.toFixed(1)}</span> mm&nbsp;&nbsp;&nbsp;
+            {fileIndexItem.isoSpeed !== 0 ? <>ISO {fileIndexItem.isoSpeed}</> : null}
+          </p>
         </div> : ""}
 
       {fileIndexItem.latitude && fileIndexItem.longitude ?
@@ -220,7 +227,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         <div key={index} className="box" data-test="collections">
           <div className="icon icon--photo"></div>
           <b><Link to={new URLPath().updateFilePath(history.location.search, item)}>{subString(new URLPath().getChild(item))}</Link></b>
-          <p>In een collectie: {index + 1} van {collections.length}</p>
+          <p>
+            In een collectie: {index + 1} van {collections.length}.
+            {item === fileIndexItem.filePath && fileIndexItem.imageWidth !== 0 && fileIndexItem.imageHeight !== 0 ? <span>&nbsp;&nbsp;{fileIndexItem.imageWidth}&times;{fileIndexItem.imageHeight} pixels</span> : null}
+          </p>
         </div>
       ))}
 
