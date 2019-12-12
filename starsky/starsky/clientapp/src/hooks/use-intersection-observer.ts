@@ -15,6 +15,35 @@ export type IntersectionOptions = {
   defaultIntersecting?: boolean;
 };
 
+
+export const newIntersectionObserver = (
+  ref: React.RefObject<Element>,
+  setIntersecting: React.Dispatch<any>,
+  once: boolean | undefined,
+  optsRef: React.MutableRefObject<any>,
+  callback?: IntersectionChangeHandler,
+): IntersectionObserver => {
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      setIntersecting(entry.isIntersecting);
+
+      if (callback != null) {
+        callback(entry);
+      }
+
+      if (once && entry.isIntersecting && ref.current != null) {
+        observer.unobserve(ref.current);
+      }
+    },
+    {
+      ...optsRef.current,
+      root: optsRef.current.root != null ? optsRef.current.root.current : null,
+    },
+  );
+  return observer;
+}
+
+
 export const useIntersection = (
   ref: React.RefObject<Element>,
   options: IntersectionOptions = {},
@@ -34,24 +63,7 @@ export const useIntersection = (
     if (ref.current == null) {
       return;
     }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIntersecting(entry.isIntersecting);
-
-        if (callback != null) {
-          callback(entry);
-        }
-
-        if (once && entry.isIntersecting && ref.current != null) {
-          observer.unobserve(ref.current);
-        }
-      },
-      {
-        ...optsRef.current,
-        root: optsRef.current.root != null ? optsRef.current.root.current : null,
-      },
-    );
+    var observer = newIntersectionObserver(ref, setIntersecting, once, optsRef, callback)
 
     observer.observe(ref.current);
 

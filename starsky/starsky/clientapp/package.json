@@ -20,6 +20,7 @@
   },
   "proxy": "http://localhost:5000",
   "devDependencies": {
+    "@types/enzyme": "^3.10.4",
     "@types/reach__router": "^1.2.6",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1"
@@ -51,7 +52,15 @@
       "lcov",
       "json",
       "cobertura"
-    ]
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 50,
+        "functions": 56,
+        "lines": 64,
+        "statements": 60
+      }
+    }
   },
   "browserslist": {
     "production": [

@@ -7,7 +7,7 @@ export class Keyboard {
     if (!event) return null;
 
     const target = event.target as HTMLElement;
-    if (!target) return null;
+    if (!target || !target.className) return null;
     return target.className.indexOf("form-control") !== -1 || target.className.indexOf("modal") !== -1;
   }
 

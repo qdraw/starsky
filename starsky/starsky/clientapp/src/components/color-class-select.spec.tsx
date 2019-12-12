@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme';
 import React from 'react';
-import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
 import * as FetchPost from '../shared/fetch-post';
 import ColorClassSelect from './color-class-select';
 
@@ -13,8 +13,8 @@ describe("ColorClassSelect", () => {
   it("onClick value", () => {
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
-    var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
+    var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
     var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }}></ColorClassSelect>)
 
@@ -30,8 +30,8 @@ describe("ColorClassSelect", () => {
 
 
   it("onClick disabled", () => {
-    const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
-    var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
+    var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
     var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={false} filePath={"/test1"} onToggle={(value) => { }}></ColorClassSelect>)
 

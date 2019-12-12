@@ -39,6 +39,8 @@ export interface IFileIndexItem {
     focalLength?: number;
     locationCountry?: string;
     locationCity?: string;
+    imageWidth: number;
+    imageHeight: number;
 }
 
 export enum Orientation {

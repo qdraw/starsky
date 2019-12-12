@@ -2,9 +2,7 @@ import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only'; // for the
 import 'core-js/features/dom-collections/for-each'; // queryselector.forEach
 import 'core-js/features/object'; // Object.entries is not a function
 import 'core-js/features/promise'; // Yes I promise
-// import 'core-js/features/set';
 import 'core-js/features/string/match'; // event.key.match
-// import 'core-js/features/symbol';
 import 'core-js/features/url-search-params'; // new UrlSearchParams
 import React from 'react';
 import * as ReactDOM from "react-dom";

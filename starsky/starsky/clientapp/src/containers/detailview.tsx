@@ -49,6 +49,7 @@ const DetailView: React.FC<IDetailView> = () => {
   const thumbResponseObject = useFetch(new UrlQuery().UrlQueryThumbnailJsonApi(fileHash), 'get');
   useEffect(() => {
     if (!thumbResponseObject) return;
+    if (!state || !state.fileIndexItem) return;
     if (!state.fileIndexItem.orientation) return;
     // Safari for iOS I don't need thumbnail rotation (for Mac it require rotation)
     if (new BrowserDetect().IsIOS()) {

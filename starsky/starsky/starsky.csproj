@@ -70,23 +70,15 @@
  </ItemGroup>
   <ItemGroup>
     <Compile Remove="clientapp\node_modules\**" />
-    <Compile Remove="clientapp\src\**" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove="clientapp\node_modules\**" />
-    <EmbeddedResource Remove="clientapp\src\**" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="clientapp\node_modules\**" />
-    <Content Remove="clientapp\tsconfig.json" />
-    <Content Remove="clientapp\src\**" />
-    <Content Remove="clientapp\package-lock.json" />
-    <Content Remove="clientapp\package.json" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="clientapp\node_modules\**" />
-    <None Remove="clientapp\src\**" />
-    <None Remove="clientapp\.env" />
   </ItemGroup>
 <PropertyGroup>
     <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>

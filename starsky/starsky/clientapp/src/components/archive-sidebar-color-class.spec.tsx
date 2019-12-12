@@ -4,7 +4,8 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as AppContext from '../contexts/archive-context';
 import { newIArchive } from '../interfaces/IArchive';
-import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
+import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import * as FetchPost from '../shared/fetch-post';
 import ArchiveSidebarColorClass from './archive-sidebar-color-class';
 
@@ -60,8 +61,8 @@ describe("ArchiveSidebarColorClass", () => {
 
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
-      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
+      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
       const element = mount(<ArchiveSidebarColorClass isReadOnly={false} fileIndexItems={newIFileIndexItemArray()} />);
 

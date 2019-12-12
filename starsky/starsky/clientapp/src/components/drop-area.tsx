@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
@@ -12,7 +12,7 @@ export interface IDropAreaProps {
   enableDragAndDrop?: boolean;
 }
 
-const DropArea: React.FunctionComponent<IDropAreaProps> = memo((props) => {
+const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
 
   const [dragActive, setDrag] = useState(false);
   const [dragTarget, setDragTarget] = useState(document.createElement("span") as Element);
@@ -201,5 +201,5 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = memo((props) => {
       <ItemTextListView lastUploaded={lastUploaded} fileIndexItems={uploadFilesList}></ItemTextListView>
     </Modal>
   </>);
-});
+};
 export default DropArea;

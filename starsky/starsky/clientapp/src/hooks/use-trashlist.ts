@@ -4,12 +4,12 @@ import { PageType } from '../interfaces/IDetailView';
 import { CastToInterface } from '../shared/cast-to-interface';
 import { UrlQuery } from '../shared/url-query';
 
-export interface IuseTrashList {
+export interface IUseTrashList {
   archive?: IArchive,
   pageType: PageType,
 }
 
-const useTrashList = (pageNumber = 0): IuseTrashList | null => {
+const useTrashList = (pageNumber = 0): IUseTrashList | null => {
 
   const [archive, setArchive] = useState(newIArchive());
   const [pageType, setPageType] = useState(PageType.Loading);
