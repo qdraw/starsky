@@ -10,6 +10,11 @@ max_line_length=100
 csharp_space_between_parentheses=expressions, type_casts, control_flow_statements
 csharp_style_var_for_built_in_types=true
 
+[*.{ts,tsx}]
+charset = utf-8
+indent_size=2
+insert_final_newline = true
+
 [*.{js,cs,css,cshtml}]
 charset = utf-8
 indent_style = tab

@@ -8,7 +8,7 @@ jest.mock('../hooks/use-intersection-observer');
 describe("ListImageTest", () => {
 
   it("renders", () => {
-    shallow(<ListImage alt={'alt'} src={'src'}></ListImage>)
+    shallow(<ListImage alt={'alt'} src={'src'}/>)
   });
 
   it('useIntersection = true', () => {

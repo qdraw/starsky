@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { IArchive, newIArchive } from '../interfaces/IArchive';
-import { PageType } from '../interfaces/IDetailView';
-import { CastToInterface } from '../shared/cast-to-interface';
-import { UrlQuery } from '../shared/url-query';
+import {useEffect, useState} from 'react';
+import {IArchive, newIArchive} from '../interfaces/IArchive';
+import {PageType} from '../interfaces/IDetailView';
+import {CastToInterface} from '../shared/cast-to-interface';
+import {UrlQuery} from '../shared/url-query';
 
 export interface ISearchList {
   archive?: IArchive,
@@ -64,11 +64,10 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
         console.error(e);
       }
     })();
-
-    const cleanup = () => {
-      abortController.abort();
+  
+    return () => {
+        abortController.abort();
     };
-    return cleanup;
   }, [location]);
   // detailView,
   // parent

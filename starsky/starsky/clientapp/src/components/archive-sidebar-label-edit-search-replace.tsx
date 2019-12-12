@@ -24,7 +24,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   }, [history.location.search]);
 
   // The Updated that is send to the api
-  const [update, setUpdate] = React.useState({} as ISidebarUpdate)
+  const [update, setUpdate] = React.useState({} as ISidebarUpdate);
 
   // Add/Hide disabled state
   const [isInputEnabled, setInputEnabled] = React.useState(false);
@@ -41,9 +41,8 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   }
 
   const Capitalize = (s: string) => {
-    if (typeof s !== 'string') return ''
     return s.charAt(0).toUpperCase() + s.slice(1)
-  }
+  };
 
   /**
    * To search and replace
@@ -57,7 +56,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     update.append = false;
     var subPaths = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!subPaths) return;
-    var selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "")
+    var selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "");
 
     if (selectPaths.length === 0) return;
 
@@ -97,9 +96,10 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     }
   }
 
+  // noinspection HtmlUnknownAttribute
   return (
     <>
-      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false}></Preloader> : ""}
+      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false}/> : ""}
 
       <h4>Tags:</h4>
       <div data-name="tags"

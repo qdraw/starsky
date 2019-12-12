@@ -34,7 +34,7 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
    */
   const listener = (e: Event) => {
     document.body.style.top = `-${window.scrollY}px`;
-  }
+  };
   useLayoutEffect(() => {
     window.addEventListener("scroll", listener);
     return () => {
@@ -44,11 +44,10 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
 
   /** to avoid wrong props passed */
   if (archive.pageType === PageType.Loading) {
-    return (<div className="sidebar"></div>)
+    return (<div className="sidebar"/>)
   }
 
   return (<div className="sidebar">
-
     {archive.isReadOnly ? <>
       <div className="content--header">Status</div>
       <div className="content content--text">
@@ -58,20 +57,20 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
     <div className="content--header">
       Selectie
     </div>
-    <ArchiveSidebarSelectionList {...archive}></ArchiveSidebarSelectionList>
+    <ArchiveSidebarSelectionList {...archive}/>
 
     <div className="content--header">
       Labels wijzigingen
     </div>
-    <ArchiveSidebarLabelEdit {...archive}></ArchiveSidebarLabelEdit>
+    <ArchiveSidebarLabelEdit {...archive}/>
 
     <div className="content--header">
       Kleur-Classificatie
       </div>
     <div className="content--text">
-      <ArchiveSidebarColorClass {...archive}></ArchiveSidebarColorClass>
+      <ArchiveSidebarColorClass {...archive}/>
     </div>
-
   </div>);
 });
+
 export default ArchiveSidebar

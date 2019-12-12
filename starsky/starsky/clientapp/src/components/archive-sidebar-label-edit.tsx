@@ -18,7 +18,7 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent = () => {
 
   return (
     <div className="content--text">
-      <SwitchButton isEnabled={!state.isReadOnly} leftLabel="Wijzigen" rightLabel="Vervangen" onToggle={(value) => setReplaceMode(value)}></SwitchButton>
+      <SwitchButton isEnabled={!state.isReadOnly} leftLabel="Wijzigen" rightLabel="Vervangen" onToggle={(value) => setReplaceMode(value)}/>
       {!isReplaceMode ? <ArchiveSidebarLabelEditAddOverwrite /> : null}
       {/* feature toggle */}
       {isReplaceMode && !isFeatureToggle ?

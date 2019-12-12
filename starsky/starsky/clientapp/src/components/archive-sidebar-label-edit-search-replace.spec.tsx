@@ -46,7 +46,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
       jest.mock('@reach/router', () => ({
         navigate: jest.fn(),
         globalHistory: jest.fn(),
-      }))
+      }));
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
@@ -86,9 +86,9 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
       component.find('[data-name="tags"]').getDOMNode().textContent = "a";
 
       // now press a key
-      component.find('[data-name="tags"]').simulate('input', { key: 'a' })
+      component.find('[data-name="tags"]').simulate('input', { key: 'a' });
 
-      var className = component.find('.btn.btn--default').getDOMNode().className
+      var className = component.find('.btn.btn--default').getDOMNode().className;
       expect(className).toBe('btn btn--default')
     });
 
@@ -104,7 +104,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
 
       // update component + now press a key
       component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-      component.find('[data-name="tags"]').simulate('input', { key: 'a' })
+      component.find('[data-name="tags"]').simulate('input', { key: 'a' });
 
       component.find('.btn.btn--default').simulate('click');
 

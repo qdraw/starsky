@@ -2,7 +2,6 @@ import { mount } from 'enzyme';
 import React, { memo } from 'react';
 import useKeyboardEvent from './use-keyboard-event';
 
-
 describe("useKeyboardEvent", () => {
 
   interface UseKeyboardEventComponentTestProps {
@@ -18,7 +17,7 @@ describe("useKeyboardEvent", () => {
 
   it("check if is called once", () => {
     var callback = jest.fn()
-    mount(<UseKeyboardEventComponentTest dependencies={[]} regex={new RegExp("q")} callback={callback}></UseKeyboardEventComponentTest>);
+    mount(<UseKeyboardEventComponentTest dependencies={[]} regex={new RegExp("q")} callback={callback}/>);
 
     var event = new KeyboardEvent("keydown", {
       bubbles: true,
@@ -34,7 +33,7 @@ describe("useKeyboardEvent", () => {
 
   it("to be not called input z => check for q", () => {
     var callback = jest.fn()
-    mount(<UseKeyboardEventComponentTest dependencies={[]} regex={new RegExp("q")} callback={callback}></UseKeyboardEventComponentTest>);
+    mount(<UseKeyboardEventComponentTest dependencies={[]} regex={new RegExp("q")} callback={callback}/>);
 
     var event = new KeyboardEvent("keydown", {
       bubbles: true,

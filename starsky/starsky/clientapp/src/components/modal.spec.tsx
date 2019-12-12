@@ -13,7 +13,7 @@ describe("Modal", () => {
   });
 
   describe("Close Modal", () => {
-    var handleExit = jest.fn()
+    var handleExit = jest.fn();
     var element = mount(<Modal
       id="test-modal"
       isOpen={true}
@@ -36,17 +36,17 @@ describe("Modal", () => {
     const spyScrollTo = jest.fn();
     Object.defineProperty(window, 'scrollTo', { value: spyScrollTo });
 
-    var handleExit = jest.fn()
+    var handleExit = jest.fn();
     mount(<div><Modal
       id="test-modal"
       isOpen={false}
       handleExit={handleExit}>
-    </Modal><div className="root"></div></div>)
+    </Modal><div className="root"/></div>);
 
     it("modal-exit-button", () => {
       expect(spyScrollTo).toBeCalledWith({
         "top": 0,
-      })
+      });
       spyScrollTo.mockClear();
     });
   });

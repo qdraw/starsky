@@ -78,7 +78,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     if (!value) return;
 
     // compare
-    var fileIndexObject: any = fileIndexItem
+    var fileIndexObject: any = fileIndexItem;
     if (!fileIndexObject[name] === undefined) return; //to update emthy start to first fill
 
     var currentString: string = fileIndexObject[name];
@@ -86,11 +86,11 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
     // Empty strings are NOT supported
     if (event.currentTarget.innerText.length === 1) {
-      fileIndexObject[name] = "."
+      fileIndexObject[name] = ".";
       console.log('not supported');
     }
 
-    var updateObject: any = { f: fileIndexItem.filePath }
+    var updateObject: any = { f: fileIndexItem.filePath };
     updateObject[name] = value;
 
     var updateApiUrl = new UrlQuery().UrlQueryUpdateApi();
@@ -104,18 +104,19 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
   // To fast go the tags field
   const tagsReference = useRef<HTMLDivElement>(null);
-  useKeyboardEvent(/^(t|i)$/, (event: KeyboardEvent) => {
+  useKeyboardEvent(/^([ti])$/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     event.preventDefault();
     var current = tagsReference.current as HTMLDivElement;
     new Keyboard().SetFocusOnEndField(current);
-  }, [props])
+  }, [props]);
 
   function subString(input: string): string {
     if (input.length <= 30) return input;
     return input.substring(0, 30) + "..."
   }
 
+  // noinspection HtmlUnknownAttribute
   return (<div className="sidebar">
     {fileIndexItem.status === IExifStatus.Deleted || fileIndexItem.status === IExifStatus.ReadOnly
       || fileIndexItem.status === IExifStatus.NotFoundSourceMissing || fileIndexItem.status === IExifStatus.ServerError ? <><div className="content--header">
@@ -167,7 +168,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       Kleur-Classificatie
       </div>
     <div className="content--text">
-      <ColorClassSelect onToggle={() => { }} filePath={fileIndexItem.filePath} currentColorClass={fileIndexItem.colorClass} isEnabled={isFormEnabled}></ColorClassSelect>
+      <ColorClassSelect onToggle={() => {}} filePath={fileIndexItem.filePath} 
+                        currentColorClass={fileIndexItem.colorClass} isEnabled={isFormEnabled}/>
     </div>
 
     {fileIndexItem.latitude || fileIndexItem.longitude || isValidDate(fileIndexItem.dateTime) || isValidDate(fileIndexItem.lastEdited) ||
@@ -179,7 +181,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     <div className="content--text">
       {isValidDate(fileIndexItem.dateTime) ?
         <div className="box" data-test="dateTime">
-          <div className="icon icon--date"></div>
+          <div className="icon icon--date"/>
           <b>{parseDate(fileIndexItem.dateTime)}</b>
           <p>{parseTime(fileIndexItem.dateTime)}</p>
         </div> : ""}
@@ -193,7 +195,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
       {fileIndexItem.make && fileIndexItem.model && fileIndexItem.aperture && fileIndexItem.focalLength ?
         <div className="box">
-          <div className="icon icon--shutter-speed"></div>
+          <div className="icon icon--shutter-speed"/>
           <b>
             <span data-test="make">{fileIndexItem.make}</span>&nbsp;
             <span data-test="model">{fileIndexItem.model}</span>
@@ -210,8 +212,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         <a className="box" target="_blank" rel="noopener noreferrer" href={"https://www.openstreetmap.org/?mlat=" +
           fileIndexItem.latitude + "&mlon=" + fileIndexItem.longitude + "#map=16/" +
           fileIndexItem.latitude + "/" + fileIndexItem.longitude}>
-          <div className="icon icon--right icon--edit"></div>
-          <div className="icon icon--location"></div>
+          <div className="icon icon--right icon--edit"/>
+          <div className="icon icon--location"/>
           {fileIndexItem.locationCity && fileIndexItem.locationCountry ?
             <>
               <b>{fileIndexItem.locationCity}</b>
@@ -225,7 +227,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
       {collections.map((item, index) => (
         <div key={index} className="box" data-test="collections">
-          <div className="icon icon--photo"></div>
+          <div className="icon icon--photo"/>
           <b><Link to={new URLPath().updateFilePath(history.location.search, item)}>{subString(new URLPath().getChild(item))}</Link></b>
           <p>
             In een collectie: {index + 1} van {collections.length}.

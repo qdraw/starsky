@@ -6,7 +6,7 @@ import DocumentTitle from '../shared/document-title';
 
 /**
  * Used for search and list of files
- * @param archive the archive props 
+ * @param detailview Detailview content
  */
 function DetailViewContextWrapper(detailview: IDetailView) {
   return (<DetailViewContextProvider>
@@ -16,7 +16,7 @@ function DetailViewContextWrapper(detailview: IDetailView) {
 
 function DetailViewWrapper(detailViewProp: IDetailView) {
   let { state, dispatch } = React.useContext(DetailViewContext);
-  dispatch({ type: 'reset', payload: detailViewProp })
+  dispatch({ type: 'reset', payload: detailViewProp });
 
   // To update the list of items
   const [detailView, setDetailView] = React.useState(detailViewProp);

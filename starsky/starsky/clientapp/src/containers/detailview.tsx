@@ -70,14 +70,14 @@ const DetailView: React.FC<IDetailView> = () => {
     if (!relativeObjects) return;
     if (!relativeObjects.prevFilePath) return;
     prev();
-  }, [relativeObjects])
+  }, [relativeObjects]);
 
   useKeyboardEvent(/ArrowRight/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     if (!relativeObjects) return;
     if (!relativeObjects.nextFilePath) return;
     next();
-  }, [relativeObjects])
+  }, [relativeObjects]);
 
   useKeyboardEvent(/Escape/, (event: KeyboardEvent) => {
     if (!history.location) return;
@@ -89,7 +89,7 @@ const DetailView: React.FC<IDetailView> = () => {
         fileName: state.fileIndexItem.fileName
       } as INavigateState
     });
-  }, [state.fileIndexItem])
+  }, [state.fileIndexItem]);
 
   function toggleLabels() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
@@ -101,7 +101,7 @@ const DetailView: React.FC<IDetailView> = () => {
   useKeyboardEvent(/^(d)$/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     toggleLabels();
-  }, [history.location.search])
+  }, [history.location.search]);
 
   // Reset Error after changing page
   const [isError, setError] = React.useState(false);
@@ -140,37 +140,37 @@ const DetailView: React.FC<IDetailView> = () => {
   }
 
   if (!state.fileIndexItem || !relativeObjects) {
-    return (<Preloader parent={"/"} isDetailMenu={true} isOverlay={true}></Preloader>)
+    return (<Preloader parent={"/"} isDetailMenu={true} isOverlay={true}/>)
   }
 
   return (<>
     <MenuDetailView />
     <div className={isDetails ? "detailview detailview--edit" : "detailview"}>
-      {isLoading ? <Preloader parent={state.fileIndexItem.parentDirectory} isDetailMenu={true} isOverlay={true}></Preloader> : ""}
+      {isLoading ? <Preloader parent={state.fileIndexItem.parentDirectory} isDetailMenu={true} isOverlay={true}/> : ""}
 
-      {isDetails ? <DetailViewSidebar status={state.fileIndexItem.status} filePath={state.fileIndexItem.filePath}></DetailViewSidebar> : null}
+      {isDetails ? <DetailViewSidebar status={state.fileIndexItem.status} filePath={state.fileIndexItem.filePath}/> : null}
 
       <div className={isError ? "main main--error" : "main main--" + state.fileIndexItem.imageFormat}>
 
         {!isError && state.fileIndexItem.fileHash ? <img alt={state.fileIndexItem.tags}
           className={"image--default " + translateRotation}
           onLoad={() => {
-            setError(false)
-            setIsLoading(false)
+            setError(false);
+            setIsLoading(false);
           }}
           onError={() => {
-            setError(true)
-            setIsLoading(false)
+            setError(true);
+            setIsLoading(false);
           }} src={new UrlQuery().UrlQueryThumbnailImage(state.fileIndexItem.fileHash)} /> : null}
 
         {relativeObjects.nextFilePath ?
-          <div onClick={() => next()} className="nextprev nextprev--next"><div className="icon"></div></div>
+          <div onClick={() => next()} className="nextprev nextprev--next"><div className="icon"/></div>
           : ""}
 
         {relativeObjects.prevFilePath ?
           <div onClick={() => prev()}
-            className="nextprev nextprev--prev"><div className="icon"></div></div>
-          : <div className="nextprev nextprev"></div>}
+            className="nextprev nextprev--prev"><div className="icon"/></div>
+          : <div className="nextprev nextprev"/>}
 
       </div>
     </div>

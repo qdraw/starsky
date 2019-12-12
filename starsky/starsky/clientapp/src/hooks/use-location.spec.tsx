@@ -14,9 +14,9 @@ describe("useLocation", () => {
     const setState = jest.fn();
     const useStateSpy = jest.spyOn(React, 'useState').mockImplementationOnce(() => {
       return [setState, setState]
-    })
+    });
 
-    mount(<UseLocationComponentTest></UseLocationComponentTest>);
+    mount(<UseLocationComponentTest/>);
 
     expect(useStateSpy).toBeCalled();
   });

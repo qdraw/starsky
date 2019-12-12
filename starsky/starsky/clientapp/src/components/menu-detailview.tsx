@@ -72,7 +72,7 @@ const MenuDetailView: React.FunctionComponent = () => {
     else {
       bodyParams.set("fieldName", "tags");
       bodyParams.set("search", "!delete!");
-      var resultUndo = await FetchPost("/api/replace", bodyParams.toString())
+      var resultUndo = await FetchPost("/api/replace", bodyParams.toString());
       if (resultUndo === null) {
         return;
       }
@@ -84,10 +84,10 @@ const MenuDetailView: React.FunctionComponent = () => {
   useKeyboardEvent(/(Delete)/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     TrashFile();
-  })
+  });
 
   var headerName = isDetails ? "header header--main header--edit" : "header header--main";
-  if (isMarkedAsDeleted) headerName += " " + "header--deleted"
+  if (isMarkedAsDeleted) headerName += " " + "header--deleted";
 
   const [isModalExportOpen, setModalExportOpen] = React.useState(false);
   const [isModalRenameFileOpen, setModalRenameFileOpen] = React.useState(false);

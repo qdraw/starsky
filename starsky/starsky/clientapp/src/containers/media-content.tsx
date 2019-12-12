@@ -26,14 +26,16 @@ const MediaContent: React.FC = () => {
 
   return (
     <div>
-      {pageType === PageType.Loading ? <Preloader isOverlay={true} isDetailMenu={false}></Preloader> : null}
+      {pageType === PageType.Loading ? <Preloader isOverlay={true} isDetailMenu={false}/> : null}
       {pageType === PageType.NotFound ? <NotFoundPage>not found</NotFoundPage> : null}
-      {pageType === PageType.Unauthorized ? <Login></Login> : null}
-      {pageType === PageType.ApplicationException ? <><MenuDefault isEnabled={false}></MenuDefault><div className="content--header">We hebben op dit moment een verstoring op de applicatie</div><div className="content--subheader">Probeer de pagina te herladen</div></> : null}
+      {pageType === PageType.Unauthorized ? <Login/> : null}
+      {pageType === PageType.ApplicationException ? <><MenuDefault isEnabled={false}/>
+      <div className="content--header">We hebben op dit moment een verstoring op de applicatie</div>
+          <div className="content--subheader">Probeer de pagina te herladen</div></> : null}
       {pageType === PageType.Archive && archive ? <ArchiveContextWrapper {...archive} /> : null}
       {pageType === PageType.DetailView && detailView ? <DetailViewContextWrapper {...detailView} /> : null}
     </div>
   );
-}
+};
 
 export default MediaContent;

@@ -6,7 +6,7 @@ import SearchPagination from './search-pagination';
 
 describe("SearchPagination", () => {
   it("renders", () => {
-    shallow(<SearchPagination></SearchPagination>)
+    shallow(<SearchPagination/>)
   });
 
   it("next page exist", () => {
@@ -15,7 +15,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=0");
     });
 
-    var component = mount(<SearchPagination lastPageNumber={2}></SearchPagination>)
+    var component = mount(<SearchPagination lastPageNumber={2}/>)
     expect(component.find('a.next').props().href).toBe('/?p=1')
   });
 
@@ -25,7 +25,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=1");
     });
 
-    var component = mount(<SearchPagination lastPageNumber={2}></SearchPagination>)
+    var component = mount(<SearchPagination lastPageNumber={2}/>)
     expect(component.find('a.prev').props().href).toBe('/?p=0')
   });
 

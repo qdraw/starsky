@@ -38,7 +38,7 @@ describe("DetailView", () => {
     status: IExifStatus.Default,
     pageType: 'DetailView',
     colorClassFilterList: [],
-  } as any
+  } as any;
 
   describe("With context and test if image is loaded", () => {
     let contextProvider: any;
@@ -67,21 +67,22 @@ describe("DetailView", () => {
     });
 
     afterAll(() => {
-      Component = mount(<></>)
-      TestComponent = () => (<></>)
+      Component = mount(<></>);
+      TestComponent = () => (<></>);
     });
 
     it("test if image is loaded", () => {
-      var image = Component.find('.image--default')
+      var image = Component.find('.image--default');
       act(() => {
         image.simulate('load');
       });
-      expect(image.props().src).toBe(new UrlQuery().UrlQueryThumbnailImage(contextProvider.state.fileIndexItem.fileHash))
+      expect(image.props().src).toBe(
+          new UrlQuery().UrlQueryThumbnailImage(contextProvider.state.fileIndexItem.fileHash));
       expect(Component.exists('.main--error')).toBeFalsy();
     });
 
     it("test if image is failed", () => {
-      var image = Component.find('.image--default')
+      var image = Component.find('.image--default');
       image.simulate('error');
       expect(Component.exists('.main--error')).toBeTruthy()
     });
@@ -115,15 +116,15 @@ describe("DetailView", () => {
     });
 
     it("Next Click", () => {
-      var navigateSpy = jest.fn()
+      var navigateSpy = jest.fn();
       var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
         return {
           location: globalHistory.location,
           navigate: navigateSpy,
         }
-      })
+      });
 
-      var detailview = mount(<TestComponent />)
+      var detailview = mount(<TestComponent />);
 
       detailview.find(".nextprev--next").simulate('click');
       expect(locationSpy).toBeCalled();
@@ -133,17 +134,17 @@ describe("DetailView", () => {
     });
 
     it("Prev Click", () => {
-      var navigateSpy = jest.fn()
-      var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
-        return {
-          location: globalHistory.location,
-          navigate: navigateSpy,
-        }
-      })
+        const navigateSpy = jest.fn();
+        const locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
+            return {
+                location: globalHistory.location,
+                navigate: navigateSpy,
+            }
+        });
 
-      var detailview = mount(<TestComponent />)
+        const detailview = mount(<TestComponent/>);
 
-      detailview.find(".nextprev--prev").simulate('click');
+        detailview.find(".nextprev--prev").simulate('click');
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();
@@ -151,15 +152,15 @@ describe("DetailView", () => {
     });
 
     it("Prev Keyboard", () => {
-      var navigateSpy = jest.fn()
+      var navigateSpy = jest.fn();
       var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
         return {
           location: globalHistory.location,
           navigate: navigateSpy,
         }
-      })
+      });
 
-      mount(<TestComponent />)
+      mount(<TestComponent />);
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,
@@ -176,15 +177,15 @@ describe("DetailView", () => {
     });
 
     it("Next Keyboard", () => {
-      var navigateSpy = jest.fn()
+      var navigateSpy = jest.fn();
       var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
         return {
           location: globalHistory.location,
           navigate: navigateSpy,
         }
-      })
+      });
 
-      mount(<TestComponent />)
+      mount(<TestComponent />);
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,
@@ -201,15 +202,15 @@ describe("DetailView", () => {
     });
 
     it("Escape key Keyboard", () => {
-      var navigateSpy = jest.fn()
+      var navigateSpy = jest.fn();
       var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
         return {
           location: { ...globalHistory.location, search: "" },
           navigate: navigateSpy,
         }
-      })
+      });
 
-      mount(<TestComponent />)
+      mount(<TestComponent />);
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,

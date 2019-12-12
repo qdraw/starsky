@@ -14,7 +14,7 @@ describe("UseFileList", () => {
     const setState = jest.fn();
     const useStateSpy = jest.spyOn(React, 'useState').mockImplementationOnce(() => {
       return [setState, setState]
-    })
+    });
 
     jest.spyOn(window, 'fetch').mockImplementationOnce(() => {
       return Promise.resolve(
@@ -23,7 +23,7 @@ describe("UseFileList", () => {
           status: 200
         } as Response,
       )
-    })
+    });
 
     testHook(useFileList);
 

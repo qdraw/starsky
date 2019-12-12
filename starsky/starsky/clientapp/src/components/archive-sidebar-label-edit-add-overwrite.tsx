@@ -27,7 +27,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   const [update, setUpdate] = React.useState({
     append: true,
     collections: true,
-  } as ISidebarUpdate)
+  } as ISidebarUpdate);
 
   // Add/Hide disabled state
   const [isInputEnabled, setInputEnabled] = React.useState(false);
@@ -59,10 +59,10 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
 
     var subPaths = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!subPaths) return;
-    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "")
+    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "");
 
     if (selectParams.length === 0) return;
-    bodyParams.append("f", selectParams)
+    bodyParams.append("f", selectParams);
 
     FetchPost("/api/update", bodyParams.toString()).then((anyData) => {
       var result = new CastToInterface().InfoFileIndexArray(anyData.data);
@@ -81,9 +81,10 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     })
   }
 
+  // noinspection HtmlUnknownAttribute
   return (
     <>
-      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false}></Preloader> : ""}
+      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false}/> : ""}
 
       <h4>Tags:</h4>
       <div data-name="tags"

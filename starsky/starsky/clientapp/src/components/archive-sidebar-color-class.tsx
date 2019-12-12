@@ -14,7 +14,7 @@ interface IArchiveSidebarColorClassProps {
  * Use for updating/writing multiple files with one colorClass label
  */
 const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClassProps> = memo((props) => {
-  var history = useLocation();
+  const history = useLocation();
 
   // show select info
   const [select, setSelect] = React.useState(new URLPath().getSelect(history.location.search));
@@ -33,7 +33,8 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
   let { dispatch } = React.useContext(ArchiveContext);
 
   return (<ColorClassSelect onToggle={(colorclass) => {
-    dispatch({ type: 'update', colorclass, select });
-  }} filePath={selectParams} isEnabled={!props.isReadOnly && select.length !== 0} clearAfter={true} ></ColorClassSelect>)
+      dispatch({type: 'update', colorclass, select});
+    }} 
+    filePath={selectParams} isEnabled={!props.isReadOnly && select.length !== 0} clearAfter={true} />)
 });
 export default ArchiveSidebarColorClass

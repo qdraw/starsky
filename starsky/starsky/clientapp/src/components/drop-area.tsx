@@ -39,7 +39,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     } = event;
 
     uploadFiles(files);
-  }
+  };
 
   /**
    * on selecting a file
@@ -116,7 +116,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     uploadFileObject.lastEdited = new Date().toISOString();
     uploadFileObject.status = status;
     return uploadFileObject;
-  }
+  };
 
   /**
    * Show different style for drag
@@ -159,7 +159,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   const setDropEffect = (event: DragEvent): void => {
     if (!event.dataTransfer) return;
     event.dataTransfer.dropEffect = "copy";
-  }
+  };
 
   useEffect(() => {
     if (!props.enableDragAndDrop) return;
@@ -188,9 +188,9 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   }, [dragActive]);
 
   return (<>
-    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true}></Preloader> : ""}
+    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true}/> : ""}
 
-    {props.enableInputField ? <input type="file" onChange={onChange}></input> : null}
+    {props.enableInputField ? <input type="file" onChange={onChange}/> : null}
 
     <Modal
       id="detailview-drop-modal"
@@ -198,7 +198,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       handleExit={() => {
         setOpen(false)
       }}>
-      <ItemTextListView lastUploaded={lastUploaded} fileIndexItems={uploadFilesList}></ItemTextListView>
+      <ItemTextListView lastUploaded={lastUploaded} fileIndexItems={uploadFilesList}/>
     </Modal>
   </>);
 };

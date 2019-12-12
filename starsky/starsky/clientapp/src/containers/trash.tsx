@@ -26,21 +26,21 @@ function Trash(archive: IArchiveProps) {
     setCollectionsCount(state.collectionsCount)
   }, [history.location.search]);
 
-  if (!archive) return (<>(Search) => no archive</>)
-  if (!archive.colorClassUsage) return (<>(Search) => no colorClassUsage</>)
+  if (!archive) return (<>(Search) => no archive</>);
+  if (!archive.colorClassUsage) return (<>(Search) => no colorClassUsage</>);
 
   return (
     <>
-      <MenuTrash></MenuTrash>
+      <MenuTrash/>
       <div className={!sidebar ? "archive" : "archive collapsed"}>
-        {sidebar ? <ArchiveSidebar {...archive}></ArchiveSidebar> : ""}
+        {sidebar ? <ArchiveSidebar {...archive}/> : ""}
 
         <div className="content">
           <div className="content--header">{collectionsCount !== 0 ? <>{collectionsCount} resultaten</> : "Geen resultaat"}</div>
-          <SearchPagination {...archive}></SearchPagination>
+          <SearchPagination {...archive}/>
           {collectionsCount >= 1 ? <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListView> : null}
           {collectionsCount === 0 ? <div className="folder"><div className="warning-box"> Er staat niets in de prullenmand</div></div> : null}
-          {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive}></SearchPagination> : null}
+          {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive}/> : null}
         </div>
       </div>
     </>

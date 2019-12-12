@@ -24,23 +24,23 @@ function Search(archive: IArchiveProps) {
     setQuery(new URLPath().StringToIUrl(history.location.search).t)
   }, [history.location.search]);
 
-  if (!archive) return (<>(Search) => no archive</>)
-  if (!archive.colorClassUsage) return (<>(Search) => no colorClassUsage</>)
+  if (!archive) return (<>(Search) => no archive</>);
+  if (!archive.colorClassUsage) return (<>(Search) => no colorClassUsage</>);
 
   return (<>
-    <MenuSearch></MenuSearch>
+    <MenuSearch/>
     <div className={!sidebar ? "archive" : "archive collapsed"}>
-      {sidebar ? <ArchiveSidebar {...archive}></ArchiveSidebar> : ""}
+      {sidebar ? <ArchiveSidebar {...archive}/> : ""}
 
       <div className="content">
         <div className="search-header">
-          <MenuSearchBar defaultText={query}></MenuSearchBar>
+          <MenuSearchBar defaultText={query}/>
         </div>
         <div className="content--header">{archive.collectionsCount ? <>{archive.collectionsCount} resultaten</> : "Geen resultaat"}</div>
-        <SearchPagination {...archive}></SearchPagination>
+        <SearchPagination {...archive}/>
         {archive.collectionsCount >= 1 ? <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListView> : null}
         {archive.collectionsCount === 0 ? <div className="folder"><div className="warning-box"> Probeer een andere zoekopdracht</div></div> : null}
-        {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive}></SearchPagination> : null}
+        {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive}/> : null}
       </div>
     </div>
   </>

@@ -13,7 +13,7 @@ describe("DetailViewContext", () => {
       pageType: 'DetailView',
       colorClassFilterList: [],
     } as IDetailView;
-    var action = { type: 'update', tags: 'tags', colorclass: 1, description: 'description', title: 'title', status: IExifStatus.Ok } as any
+    var action = { type: 'update', tags: 'tags', colorclass: 1, description: 'description', title: 'title', status: IExifStatus.Ok } as any;
 
     var result = detailviewReducer(state, action);
 
@@ -49,7 +49,7 @@ describe("DetailViewContext", () => {
     } as IDetailView;
     state.fileIndexItem.tags = "!delete!"
 
-    var action = { type: 'remove', tags: '!delete!' } as any
+    var action = { type: 'remove', tags: '!delete!' } as any;
 
     var result = detailviewReducer(state, action);
     expect(result.fileIndexItem.tags).toBe('');
