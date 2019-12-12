@@ -36,8 +36,8 @@ describe("DropArea", () => {
     it("Test Drop a file", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockFetchAsXml: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
-      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
+      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';

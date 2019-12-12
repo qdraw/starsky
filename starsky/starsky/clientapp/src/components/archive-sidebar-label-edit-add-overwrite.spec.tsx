@@ -4,6 +4,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as AppContext from '../contexts/archive-context';
 import { IArchive } from '../interfaces/IArchive';
+import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import * as FetchPost from '../shared/fetch-post';
 import ArchiveSidebarLabelEditAddOverwrite from './archive-sidebar-label-edit-add-overwrite';
@@ -88,8 +89,12 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     });
 
     it('click append', () => {
-      const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve([{ fileName: 'test.jpg', parentDirectory: '/' }] as IFileIndexItem[]);
-      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockFetchAsXml);
+      var connectionDefault: IConnectionDefault = {
+        statusCode: 200,
+        data: [{ fileName: 'test.jpg', parentDirectory: '/' }] as IFileIndexItem[]
+      };
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
+      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
 
