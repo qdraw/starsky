@@ -18,6 +18,6 @@ const MoreMenu: React.FunctionComponent = ({ children }) => {
       </div>
     </div>
   );
-}
+};
 
 export default MoreMenu

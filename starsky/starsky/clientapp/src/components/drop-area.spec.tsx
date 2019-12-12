@@ -8,7 +8,7 @@ import DropArea from './drop-area';
 describe("DropArea", () => {
 
   it("renders", () => {
-    shallow(<DropArea></DropArea>)
+    shallow(<DropArea/>)
   });
 
   describe("with events", () => {
@@ -17,7 +17,7 @@ describe("DropArea", () => {
     function createDnDEvent(eventType: 'dragenter' | 'dragleave' | 'dragover' | 'drop'): CustomEvent & { dataTransfer?: DataTransfer } {
       // Create a non-null file
       var event: CustomEvent & { dataTransfer?: DataTransfer } = new CustomEvent("CustomEvent");
-      event.initCustomEvent(eventType, true, true, null)
+      event.initCustomEvent(eventType, true, true, null);
       event.dataTransfer = { files: [exampleFile] } as unknown as DataTransfer;
       return event;
     }
@@ -41,7 +41,7 @@ describe("DropArea", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        mount(<DropArea enableDragAndDrop={true}></DropArea>);
+        mount(<DropArea enableDragAndDrop={true}/>);
       });
 
       act(() => {
@@ -51,16 +51,16 @@ describe("DropArea", () => {
       var compareFormData = new FormData();
       compareFormData.append("files", exampleFile);
 
-      expect(spy).toBeCalled()
+      expect(spy).toBeCalled();
       expect(spy).toBeCalledTimes(1);
-      expect(spy).toBeCalledWith("/import", compareFormData)
+      expect(spy).toBeCalledWith("/import", compareFormData);
 
     });
 
     it("Test dragenter", () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        mount(<DropArea enableDragAndDrop={true}></DropArea>);
+        mount(<DropArea enableDragAndDrop={true}/>);
       });
 
       act(() => {
@@ -73,7 +73,7 @@ describe("DropArea", () => {
     it("Test dragenter and then dragleave", () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        shallow(<DropArea enableDragAndDrop={true}></DropArea>);
+        shallow(<DropArea enableDragAndDrop={true}/>);
       });
 
       act(() => {
@@ -92,7 +92,7 @@ describe("DropArea", () => {
     it("Test dragover", () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        shallow(<DropArea enableDragAndDrop={true}></DropArea>);
+        shallow(<DropArea enableDragAndDrop={true}/>);
       });
 
       act(() => {

@@ -25,7 +25,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   let { dispatch } = React.useContext(ArchiveContext);
 
   // the default is true
-  var defaultCollections = new URLPath().StringToIUrl(history.location.search).collections
+  const defaultCollections = new URLPath().StringToIUrl(history.location.search).collections;
   const [collections, setCollections] = React.useState(defaultCollections ? defaultCollections : true);
 
   function toggleCollections() {
@@ -41,7 +41,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   const [isSingleItem, setIsSingleItem] = React.useState(singleItem === "false");
 
   function toggleSlowFiles() {
-    setIsSingleItem(!isSingleItem)
+    setIsSingleItem(!isSingleItem);
     localStorage.setItem("issingleitem", isSingleItem.toString())
   }
 
@@ -49,7 +49,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     setIsLoading(true);
 
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    FetchGet("/api/RemoveCache?json=true&f=" + new URLPath().encodeURI(parentFolder)).then((result) => {
+    FetchGet("/api/RemoveCache?json=true&f=" + new URLPath().encodeURI(parentFolder)).then((_) => {
       setTimeout(() => {
         FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
           var removeCacheResult = new CastToInterface().MediaArchive(anyData);
@@ -100,7 +100,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   function forceSync() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     setIsLoading(true);
-    FetchGet("/sync/?f=" + new URLPath().encodeURI(parentFolder)).then((result) => {
+    FetchGet("/sync/?f=" + new URLPath().encodeURI(parentFolder)).then((_) => {
       setTimeout(() => {
         FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
           var forceSyncResult = new CastToInterface().MediaArchive(anyData);
@@ -120,18 +120,17 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     handleExit={() => {
       props.handleExit()
     }}>
-    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true}></Preloader> : ""}
+    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true}/> : ""}
 
     <div className="modal content--subheader">Weergave opties</div>
     <div className="content--text">
-      <SwitchButton isOn={!collections} isEnabled={true} leftLabel="Collecties aan" onToggle={() => toggleCollections()} rightLabel="Per bestand"></SwitchButton>
+      <SwitchButton isOn={!collections} isEnabled={true} leftLabel="Collecties aan" onToggle={() => toggleCollections()} rightLabel="Per bestand"/>
     </div>
     <div className="modal content--subheader">
-      <SwitchButton isOn={isSingleItem} isEnabled={true} leftLabel="Alles inladen" rightLabel="Klein inladen" onToggle={() => toggleSlowFiles()}></SwitchButton>
+      <SwitchButton isOn={isSingleItem} isEnabled={true} leftLabel="Alles inladen" rightLabel="Klein inladen" onToggle={() => toggleSlowFiles()}/>
     </div>
     <div className="modal content--text">
     </div>
-
     <div className="modal content--header">
       <button className="btn btn--info" onClick={() => forceSync()}>Forceer sync</button>
       <button className="btn btn--info" onClick={() => removeCache()}>Vernieuw</button>

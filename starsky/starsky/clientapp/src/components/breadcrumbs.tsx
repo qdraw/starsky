@@ -10,7 +10,7 @@ interface IBreadcrumbProps {
 
 const Breadcrumb: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
 
-  if (!props.subPath || !props.breadcrumb) return (<div className="breadcrumb"></div>);
+  if (!props.subPath || !props.breadcrumb) return (<div className="breadcrumb"/>);
 
   // used for reading current location
   var history = useLocation();

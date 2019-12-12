@@ -49,7 +49,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
     bodyParams.append("f", props.filePath);
     bodyParams.append("colorclass", colorClass.toString());
 
-    FetchPost(updateApiUrl, bodyParams.toString()).then(item => {
+    FetchPost(updateApiUrl, bodyParams.toString()).then(_ => {
       setCurrentColorClass(colorClass);
       props.onToggle(colorClass);
     });
@@ -59,19 +59,19 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
     setTimeout(function () {
       setCurrentColorClass(undefined);
     }, 500);
-  }
+  };
 
   useKeyboardEvent(/[0-8]/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     handleChange(Number(event.key));
-  })
+  });
 
   return (<div className={props.isEnabled ? "colorclass colorclass--select" : "colorclass colorclass--select colorclass--disabled"}>
     {
       colorContent.map((item, index) => (
         <a key={index} onClick={() => { handleChange(index); }}
           className={currentColorClass === index ? "btn btn--default colorclass colorclass--" + index + " active" : "btn colorclass colorclass--" + index}>
-          <label></label><span>{item}</span>
+          <label/><span>{item}</span>
         </a>
       ))
     }

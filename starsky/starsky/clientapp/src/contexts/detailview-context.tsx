@@ -87,4 +87,4 @@ let DetailViewContextConsumer = DetailViewContext.Consumer;
 
 export { DetailViewContext, DetailViewContextProvider, DetailViewContextConsumer };
 
-export const useDetailViewContext = () => React.useContext(DetailViewContext)
+export const useDetailViewContext = () => React.useContext(DetailViewContext);

@@ -7,8 +7,7 @@ import MenuSearchBar from './menu.searchbar';
 import Modal from './modal';
 import MoreMenu from './more-menu';
 
-
-const MenuTrash: React.FunctionComponent<any> = memo((props) => {
+const MenuTrash: React.FunctionComponent<any> = memo((_) => {
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
 
   var history = useLocation();
@@ -59,12 +58,12 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
 
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!toUndoTrashList) return;
-    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "")
+    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "");
     if (selectParams.length === 0) return;
 
     var bodyParams = new URLSearchParams();
     bodyParams.append("f", selectParams);
-    FetchPost("/api/delete", bodyParams.toString(), 'delete')
+    FetchPost("/api/delete", bodyParams.toString(), 'delete');
 
     undoSelection();
     dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
@@ -75,7 +74,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
 
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!toUndoTrashList) return;
-    var selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "")
+    var selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "");
     if (selectPaths.length === 0) return;
 
     var bodyParams = new URLSearchParams();
@@ -85,7 +84,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
 
     // to replace
     // dispatch({ 'type': 'replace', 'fieldName': 'tags', files: toUpdatePaths, 'from': '!delete!', 'to': "" });
-    FetchPost("/api/replace", bodyParams.toString())
+    FetchPost("/api/replace", bodyParams.toString());
 
     undoSelection();
     // is removed from the trash list but shown in the directory
@@ -119,9 +118,9 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
 
           {!select ? <button className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
             <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
-              <i></i>
-              <i></i>
-              <i></i>
+              <i/>
+              <i/>
+              <i/>
             </div>
           </button> : null}
 
@@ -140,7 +139,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
             </div> : null}
 
           {/* When in normal state */}
-          {!select ? <MoreMenu></MoreMenu> : null}
+          {!select ? <MoreMenu/> : null}
 
           {/* In the select context there are more options */}
           {select && select.length === 0 ?
@@ -159,7 +158,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((props) => {
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
             <div className="nav__container">
               <ul className="menu">
-                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)}></MenuSearchBar>
+                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)}/>
               </ul>
             </div>
           </nav>

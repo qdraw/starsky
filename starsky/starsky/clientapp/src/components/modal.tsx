@@ -60,24 +60,16 @@ export default function Modal({
       });
     };
 
-    const handleKeyDown = (e: any) => {
-      // if (e.key === "Escape") {
-      //   handleExit();
-      // }
-    };
-
     const { freeze, unfreeze } = capturePosition();
 
     if (isOpen) {
       if (exitButton.current) exitButton.current.focus();
       if (modalContainer) toggleTabIndex("on", modalContainer);
       if (rootContainer) toggleTabIndex("off", rootContainer);
-      window.addEventListener("keydown", handleKeyDown);
       freeze();
     } else {
       if (modalContainer) toggleTabIndex("off", modalContainer);
       if (rootContainer) toggleTabIndex("on", rootContainer);
-      window.removeEventListener("keydown", handleKeyDown);
       unfreeze();
       if (focusAfterExit) focusAfterExit.focus();
 
@@ -91,7 +83,6 @@ export default function Modal({
 
     return () => {
       if (isOpen) {
-        window.removeEventListener("keydown", handleKeyDown);
         unfreeze();
       }
     };
@@ -101,7 +92,7 @@ export default function Modal({
     return ReactDOM.createPortal(
       <>
         <div onClick={(event) => {
-          var target = event.target as HTMLElement
+          const target = event.target as HTMLElement;
           if (target.className.indexOf("modal-bg--open") === -1) return;
           handleExit()
         }

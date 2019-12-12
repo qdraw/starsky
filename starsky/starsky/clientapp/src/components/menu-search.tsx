@@ -1,7 +1,7 @@
 import React from 'react';
 import MenuSearchBar from './menu.searchbar';
 
-export const MenuSearch: React.FunctionComponent<any> = (props) => {
+export const MenuSearch: React.FunctionComponent<any> = (_) => {
   var sidebar = false;
   var select = false;
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
@@ -12,16 +12,16 @@ export const MenuSearch: React.FunctionComponent<any> = (props) => {
 
         {!select ? <button className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
           <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
-            <i></i>
-            <i></i>
-            <i></i>
+            <i/>
+            <i/>
+            <i/>
           </div>
         </button> : null}
 
         <nav className={hamburgerMenu ? "nav open" : "nav"}>
           <div className="nav__container">
             <ul className="menu">
-              <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)}></MenuSearchBar>
+              <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)}/>
             </ul>
           </div>
         </nav>

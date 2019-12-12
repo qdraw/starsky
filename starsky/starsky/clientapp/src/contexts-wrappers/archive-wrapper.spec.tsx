@@ -12,7 +12,7 @@ import ArchiveContextWrapper from './archive-wrapper';
 describe("ArchiveContextWrapper", () => {
 
   it("renders", () => {
-    shallow(<ArchiveContextWrapper {...newIArchive()}></ArchiveContextWrapper>)
+    shallow(<ArchiveContextWrapper {...newIArchive()}/>)
   });
 
 
@@ -23,7 +23,7 @@ describe("ArchiveContextWrapper", () => {
       var archive = jest.spyOn(Archive, 'default').mockImplementationOnce(() => { return <></> })
 
       args.fileIndexItems.push({} as IFileIndexItem);
-      mount(<ArchiveContextWrapper {...args}></ArchiveContextWrapper>);
+      mount(<ArchiveContextWrapper {...args}/>);
       expect(archive).toBeCalled();
     });
 

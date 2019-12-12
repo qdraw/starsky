@@ -15,7 +15,7 @@ const RelativeLink: React.FunctionComponent<IRelativeLink> = memo((props) => {
 
   let { relativeObjects } = props;
 
-  if (!relativeObjects) return (<div className="relativelink"></div>)
+  if (!relativeObjects) return (<div className="relativelink"/>)
 
   var prevUrl = new URLPath().updateFilePath(history.location.search, relativeObjects.prevFilePath);
   var nextUrl = new URLPath().updateFilePath(history.location.search, relativeObjects.nextFilePath);

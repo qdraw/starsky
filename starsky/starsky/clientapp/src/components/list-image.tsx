@@ -28,7 +28,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   var intersected = useIntersection(target, {
     rootMargin: '250px',
     once: true
-  })
+  });
 
   // to stop loading images after a url change
   var history = useLocation();
@@ -43,17 +43,17 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   }, [history.location.search]);
 
   if (!props.src || props.src.toLowerCase().endsWith('null.jpg?issingleitem=true')) {
-    return (<div ref={target} className="img-box--error"></div>);
+    return (<div ref={target} className="img-box--error"/>);
   }
 
   return (
     <div ref={target} className={error ? "img-box--error" : isLoading ? "img-box img-box--loading" : "img-box"}>
       {intersected ? <img src={src} alt={alt}
         onLoad={() => {
-          setError(false)
+          setError(false);
           setIsLoading(false)
         }}
-        onError={() => setError(true)} /> : <div className="img-box--loading"></div>}
+        onError={() => setError(true)} /> : <div className="img-box--loading"/>}
     </div>
   );
 

@@ -76,7 +76,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!toUndoTrashList) return;
-    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "")
+    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "");
     if (selectParams.length === 0) return;
 
     var bodyParams = new URLSearchParams();
@@ -110,9 +110,9 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
         <div className="wrapper">
           {!select ? <button className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
             <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
-              <i></i>
-              <i></i>
-              <i></i>
+              <i/>
+              <i/>
+              <i/>
             </div>
           </button> : null}
 
@@ -145,7 +145,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
             <div className="nav__container">
               <ul className="menu">
-                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)}></MenuSearchBar>
+                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)}/>
               </ul>
             </div>
           </nav>

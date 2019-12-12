@@ -7,10 +7,8 @@ export interface IPreloaderProps {
 }
 
 const Preloader: React.FunctionComponent<IPreloaderProps> = memo((props) => {
-
   return (
     <>
-      {/* {props.isDetailMenu ? <MenuDetailView parent={props.parent}></MenuDetailView> : <Menu></Menu>} */}
       {
         props.isOverlay ? <div className={"preloader preloader--overlay"}>
           <div className="preloader preloader--icon">
@@ -18,7 +16,6 @@ const Preloader: React.FunctionComponent<IPreloaderProps> = memo((props) => {
         </div> : <div className="preloader preloader--icon">
           </div>
       }
-
     </>
   );
 });

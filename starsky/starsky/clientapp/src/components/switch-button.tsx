@@ -17,8 +17,7 @@ function SwitchButton(props: ISwitchButtonProps) {
   }, []);
 
   const [checked, setChecked] = React.useState(props.isOn ? props.isOn : false);
-
-
+  
   return (
     <form className={props.isEnabled !== false ? "switch-field" : "switch-field disabled"}>
       <input
@@ -28,7 +27,7 @@ function SwitchButton(props: ISwitchButtonProps) {
         name="switchToggle"
         value={props.leftLabel}
         onChange={() => {
-          setChecked(!checked)
+          setChecked(!checked);
           props.onToggle(!checked);
         }}
         checked={!checked}
@@ -42,7 +41,7 @@ function SwitchButton(props: ISwitchButtonProps) {
         name="switchToggle"
         value={props.rightLabel}
         onChange={() => {
-          setChecked(!checked)
+          setChecked(!checked);
           props.onToggle(!checked);
         }}
         checked={checked}

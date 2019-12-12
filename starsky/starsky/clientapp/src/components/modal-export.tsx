@@ -72,7 +72,7 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = memo((props) => {
       return;
     }
     setProcessing(ProcessingState.fail);
-  }, 1500)
+  }, 1500);
 
 
   const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] = React.useState(true);
