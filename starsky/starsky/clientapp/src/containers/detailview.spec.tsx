@@ -65,6 +65,11 @@ describe("DetailView", () => {
       Component = mount(<TestComponent />);
     });
 
+    afterAll(() => {
+      Component = mount(<></>)
+      TestComponent = () => (<></>)
+    });
+
     it("test if image is loaded", () => {
       var image = Component.find('.image--default')
       act(() => {
@@ -84,12 +89,14 @@ describe("DetailView", () => {
       expect(Component.exists('.sidebar')).toBeTruthy()
     });
 
-
   });
 
   describe("Nexts/Prev clicks", () => {
     let TestComponent: () => JSX.Element;
-    let Component: ReactWrapper<any, Readonly<{}>>;
+
+    beforeAll(() => {
+      globalHistory.navigate("/?details=true");
+    });
 
     // // Setup mock
     beforeEach(() => {
@@ -103,6 +110,7 @@ describe("DetailView", () => {
           <DetailView {...newDetailView()} />
         </ContextDetailview.DetailViewContext.Provider>
       );
+
     });
 
     it("Next Click", () => {
@@ -139,6 +147,56 @@ describe("DetailView", () => {
 
       expect(navigateSpy).toBeCalled();
       expect(navigateSpy).toBeCalledWith("/?details=true&f=prev", { "replace": true });
+    });
+
+    it("Prev Keyboard", () => {
+      var navigateSpy = jest.fn()
+      var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
+        return {
+          location: globalHistory.location,
+          navigate: navigateSpy,
+        }
+      })
+
+      mount(<TestComponent />)
+
+      var event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "ArrowLeft",
+        shiftKey: true,
+      });
+      window.dispatchEvent(event);
+
+      expect(locationSpy).toBeCalled();
+
+      expect(navigateSpy).toBeCalled();
+      expect(navigateSpy).toBeCalledWith("/?details=true&f=prev", { "replace": true });
+    });
+
+    it("Next Keyboard", () => {
+      var navigateSpy = jest.fn()
+      var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
+        return {
+          location: globalHistory.location,
+          navigate: navigateSpy,
+        }
+      })
+
+      mount(<TestComponent />)
+
+      var event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "ArrowRight",
+        shiftKey: true,
+      });
+      window.dispatchEvent(event);
+
+      expect(locationSpy).toBeCalled();
+
+      expect(navigateSpy).toBeCalled();
+      expect(navigateSpy).toBeCalledWith("/?details=true&f=next", { "replace": true });
     });
 
   });
