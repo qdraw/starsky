@@ -31,9 +31,10 @@ describe("DetailView", () => {
       focalLength: 10,
       longitude: 1,
       latitude: 1,
+      fileName: 'test.jpg',
+      parentDirectory: '/parentDirectory'
     } as IFileIndexItem,
     relativeObjects: { nextFilePath: 'next', prevFilePath: 'prev' } as IRelativeObjects,
-    subPath: "/",
     status: IExifStatus.Default,
     pageType: 'DetailView',
     colorClassFilterList: [],
@@ -197,6 +198,31 @@ describe("DetailView", () => {
 
       expect(navigateSpy).toBeCalled();
       expect(navigateSpy).toBeCalledWith("/?details=true&f=next", { "replace": true });
+    });
+
+    it("Escape key Keyboard", () => {
+      var navigateSpy = jest.fn()
+      var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
+        return {
+          location: { ...globalHistory.location, search: "" },
+          navigate: navigateSpy,
+        }
+      })
+
+      mount(<TestComponent />)
+
+      var event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "Escape",
+        shiftKey: true,
+      });
+      window.dispatchEvent(event);
+
+      expect(locationSpy).toBeCalled();
+
+      expect(navigateSpy).toBeCalled();
+      expect(navigateSpy).toHaveBeenNthCalledWith(1, "/?f=/parentDirectory", { "state": { "fileName": "test.jpg" } });
     });
 
   });
