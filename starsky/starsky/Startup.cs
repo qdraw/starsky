@@ -149,7 +149,10 @@ namespace starsky
 	        
 	        // Application Insights
 	        var appInsightsKey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
-	        if ( !string.IsNullOrWhiteSpace(appInsightsKey) ) services.AddApplicationInsightsTelemetry();
+	        if ( !string.IsNullOrWhiteSpace(appInsightsKey) )
+	        {
+		        services.AddApplicationInsightsTelemetry();
+	        }
 	        services.AddScoped<ApplicationInsightsJsHelper>();
 
 	        // For the import service
@@ -305,15 +308,6 @@ namespace starsky
                 Console.WriteLine(e);
             }
 
-            if ( _appSettings.AddSinglePageApplicationFallback && File.Exists(Path.Combine(env.WebRootPath,"index.html")))
-            {
-	            // handle client side routes
-	            app.Run( async (context) =>
-	            {
-		            context.Response.ContentType = "text/html";
-		            await context.Response.SendFileAsync(Path.Combine(env.WebRootPath,"index.html"));
-	            });
-            }
         }
     }
 }
