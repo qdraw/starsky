@@ -22,19 +22,19 @@ describe("ArchiveContextWrapper", () => {
       var args = { ...newIArchive(), fileIndexItems: [], pageType: PageType.Archive } as IArchiveProps;
       var archive = jest.spyOn(Archive, 'default').mockImplementationOnce(() => { return <></> })
 
-      args.fileIndexItems.push({} as IFileIndexItem)
+      args.fileIndexItems.push({} as IFileIndexItem);
       mount(<ArchiveContextWrapper {...args}></ArchiveContextWrapper>);
       expect(archive).toBeCalled();
     });
 
     it("check if search is mounted", () => {
       var args = { ...newIArchive(), fileIndexItems: [], pageType: PageType.Search } as IArchiveProps;
-      var search = jest.spyOn(Search, 'default').mockImplementationOnce(() => { return <></> })
+      var search = jest.spyOn(Search, 'default').mockImplementationOnce(() => { return <></> });
 
       // for loading
-      jest.spyOn(Archive, 'default').mockImplementationOnce(() => { return <></> })
+      jest.spyOn(Archive, 'default').mockImplementationOnce(() => { return <></> });
 
-      args.fileIndexItems.push({} as IFileIndexItem)
+      args.fileIndexItems.push({} as IFileIndexItem);
 
       mount(<ArchiveContextWrapper {...args}></ArchiveContextWrapper>);
       expect(search).toBeCalled();

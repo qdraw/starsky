@@ -41,7 +41,7 @@ const initialState: State = {
   colorClassUsage: [],
   isReadOnly: false,
   pageType: PageType.Loading
-}
+};
 
 export function archiveReducer(state: State, action: Action): State {
   switch (action.type) {

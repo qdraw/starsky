@@ -26,14 +26,15 @@ function Archive(archive: IArchiveProps) {
     <>
       <MenuArchive />
       <div className={!sidebar ? "archive" : "archive collapsed"}>
-        {sidebar ? <ArchiveSidebar {...archive}></ArchiveSidebar> : ""}
+        {sidebar ? <ArchiveSidebar {...archive}/> : ""}
 
         <div className="content">
-          <Breadcrumb breadcrumb={archive.breadcrumb} subPath={archive.subPath}></Breadcrumb>
-          <RelativeLink relativeObjects={archive.relativeObjects}></RelativeLink>
+          <Breadcrumb breadcrumb={archive.breadcrumb} subPath={archive.subPath}/>
+          <RelativeLink relativeObjects={archive.relativeObjects}/>
 
-          <ColorClassFilter itemsCount={archive.collectionsCount} subPath={archive.subPath}
-            colorClassFilterList={archive.colorClassFilterList} colorClassUsage={archive.colorClassUsage}></ColorClassFilter>
+          <ColorClassFilter itemsCount={archive.collectionsCount} subPath={archive.subPath} 
+                            colorClassFilterList={archive.colorClassFilterList} 
+                            colorClassUsage={archive.colorClassUsage}/>
           <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListView>
         </div>
       </div>

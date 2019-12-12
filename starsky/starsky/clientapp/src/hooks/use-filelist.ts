@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { IArchive, newIArchive } from '../interfaces/IArchive';
-import { IDetailView, newDetailView, PageType } from '../interfaces/IDetailView';
-import { CastToInterface } from '../shared/cast-to-interface';
-import { URLPath } from '../shared/url-path';
-import { UrlQuery } from '../shared/url-query';
+import {useEffect, useState} from 'react';
+import {IArchive, newIArchive} from '../interfaces/IArchive';
+import {IDetailView, newDetailView, PageType} from '../interfaces/IDetailView';
+import {CastToInterface} from '../shared/cast-to-interface';
+import {URLPath} from '../shared/url-path';
+import {UrlQuery} from '../shared/url-query';
 
 export interface IFileList {
   archive?: IArchive,
@@ -70,11 +70,10 @@ const useFileList = (locationSearch: string): IFileList | null => {
         console.error(e);
       }
     })();
-
-    const cleanup = () => {
-      abortController.abort();
+  
+    return () => {
+        abortController.abort();
     };
-    return cleanup;
   }, [location]);
 
   return {

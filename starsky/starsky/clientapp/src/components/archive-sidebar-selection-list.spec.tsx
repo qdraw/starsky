@@ -18,7 +18,7 @@ describe("archive-sidebar-selection-list", () => {
       jest.mock('@reach/router', () => ({
         navigate: jest.fn(),
         globalHistory: jest.fn(),
-      }))
+      }));
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
@@ -27,7 +27,7 @@ describe("archive-sidebar-selection-list", () => {
 
     });
 
-    var items = [{ fileName: 'test.jpg', parentDirectory: '/' }, { fileName: 'to-select.jpg', parentDirectory: '/' }] as IFileIndexItem[]
+    var items = [{ fileName: 'test.jpg', parentDirectory: '/' }, { fileName: 'to-select.jpg', parentDirectory: '/' }] as IFileIndexItem[];
 
 
     it("with items, check first item", () => {
@@ -46,7 +46,7 @@ describe("archive-sidebar-selection-list", () => {
       var first = component.find('ul li').first();
       first.find('.close').simulate('click');
 
-      expect(spy).toBeCalledTimes(1)
+      expect(spy).toBeCalledTimes(1);
 
       spy.mockClear();
     });
@@ -54,13 +54,13 @@ describe("archive-sidebar-selection-list", () => {
     it("allSelection", () => {
 
       const component = shallow(<ArchiveSidebarSelectionList fileIndexItems={items} />);
-      var allSelectionButton = component.find('[data-test="allSelection"]')
+      var allSelectionButton = component.find('[data-test="allSelection"]');
 
       var spy = jest.spyOn(URLPath.prototype, 'GetAllSelection');
 
       allSelectionButton.simulate('click');
 
-      expect(spy).toBeCalledTimes(1)
+      expect(spy).toBeCalledTimes(1);
 
       spy.mockClear();
     });

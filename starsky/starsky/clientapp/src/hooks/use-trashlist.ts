@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { IArchive, newIArchive } from '../interfaces/IArchive';
-import { PageType } from '../interfaces/IDetailView';
-import { CastToInterface } from '../shared/cast-to-interface';
-import { UrlQuery } from '../shared/url-query';
+import {useEffect, useState} from 'react';
+import {IArchive, newIArchive} from '../interfaces/IArchive';
+import {PageType} from '../interfaces/IDetailView';
+import {CastToInterface} from '../shared/cast-to-interface';
+import {UrlQuery} from '../shared/url-query';
 
 export interface IUseTrashList {
   archive?: IArchive,
@@ -59,11 +59,10 @@ const useTrashList = (pageNumber = 0): IUseTrashList | null => {
         console.error(e);
       }
     })();
-
-    const cleanup = () => {
-      abortController.abort();
+  
+    return () => {
+        abortController.abort();
     };
-    return cleanup;
   }, [location]);
 
   return {

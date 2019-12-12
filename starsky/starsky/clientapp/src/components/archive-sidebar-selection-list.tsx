@@ -37,6 +37,7 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
+  // noinspection HtmlUnknownAttribute
   return (<div className="sidebar-selection">
     <div className="content--header content--subheader">
       {!select || select.length !== props.fileIndexItems.length ? <a data-test="allSelection" className="btn btn--default" onClick={() => allSelection()}>Alles</a> : ""}
@@ -47,7 +48,7 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
 
       {
         select ? select.map((item, index) => (
-          <li key={index} ><span onClick={() => toggleSelection(item)} className="close"></span>{item}</li>
+          <li key={index} ><span onClick={() => toggleSelection(item)} className="close"/>{item}</li>
         )) : ""
       }
     </ul>

@@ -37,7 +37,7 @@ describe("ArchiveSidebarColorClass", () => {
         .spyOn(React, 'useContext')
         .mockImplementation(() => contextValues);
 
-      var dispatch = jest.fn()
+      var dispatch = jest.fn();
       const contextValues = {
         state: newIArchive(),
         dispatch,
@@ -51,7 +51,7 @@ describe("ArchiveSidebarColorClass", () => {
       jest.mock('@reach/router', () => ({
         navigate: jest.fn(),
         globalHistory: jest.fn(),
-      }))
+      }));
 
 
       act(() => {

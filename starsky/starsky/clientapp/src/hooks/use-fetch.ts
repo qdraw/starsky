@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
+import {useEffect, useState} from 'react';
+import {IConnectionDefault, newIConnectionDefault} from '../interfaces/IConnectionDefault';
 
 /**
  * With abort signal
@@ -35,12 +35,11 @@ const useFetch = (url: string, method: 'get' | 'post'): IConnectionDefault => {
       }
 
     })();
-
-    const cleanup = () => {
-      mounted = false;
-      abortController.abort();
+  
+    return () => {
+        mounted = false;
+        abortController.abort();
     };
-    return cleanup;
   }, [url, method]);
   return data;
 };

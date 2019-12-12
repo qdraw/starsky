@@ -41,7 +41,7 @@ export const newIntersectionObserver = (
     },
   );
   return observer;
-}
+};
 
 
 export const useIntersection = (

@@ -6,7 +6,7 @@ describe("useIntersection", () => {
 
   const IntersectionComponentTest = () => {
     const target = useRef<HTMLDivElement>(null);
-    shallow(<div ref={target}></div>)
+    shallow(<div ref={target}/>);
     useIntersection(target);
     return null;
   };
@@ -22,7 +22,7 @@ describe("useIntersection", () => {
 
   const NewIntersectionComponentTest = () => {
     const target = useRef<HTMLDivElement>(null);
-    mount(<div ref={target}></div>)
+    mount(<div ref={target}/>);
     const tagRef = { current: { scrollHeight: 100, clientHeight: 200 } };
     newIntersectionObserver(target, jest.fn(), true, tagRef);
     return null;
