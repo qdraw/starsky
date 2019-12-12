@@ -52,7 +52,15 @@
       "lcov",
       "json",
       "cobertura"
-    ]
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 50,
+        "functions": 56,
+        "lines": 63,
+        "statements": 60
+      }
+    }
   },
   "browserslist": {
     "production": [
