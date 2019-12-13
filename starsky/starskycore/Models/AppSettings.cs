@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Converters;
 using starskycore.Helpers;
 using TimeZoneConverter;
-#if NETSTANDARD2_1
-	using System.Text.Json.Serialization;
-#else
-	using Newtonsoft.Json;
-	using Newtonsoft.Json.Converters;
-#endif
+using Newtonsoft.Json;
 
 namespace starskycore.Models
 {
@@ -43,12 +39,8 @@ namespace starskycore.Models
 		    .Replace("starskygeocli", "starsky")
 		    .Replace("starskytest", "starsky");
 
-#if NETSTANDARD2_1
-		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-		[JsonConverter(typeof(StringEnumConverter))]
-#endif
-		public StarskyAppType ApplicationType { get; set; }
+	    [JsonConverter(typeof(StringEnumConverter))]
+	    public StarskyAppType ApplicationType { get; set; }
 
 		public enum StarskyAppType
         {
@@ -118,9 +110,10 @@ namespace starskycore.Models
         }
         
 
-        // Database
-
-	    //[JsonConverter(typeof(StringEnumConverter))]
+        /// <summary>
+        /// Type of the database, sqlite, mysql or inmemory
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
         public DatabaseTypeList DatabaseType { get; set; } = DatabaseTypeList.Sqlite;
 
 
