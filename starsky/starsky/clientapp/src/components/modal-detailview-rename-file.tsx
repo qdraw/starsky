@@ -46,8 +46,12 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     }
   }, [fileIndexItem.status]);
 
+  // to show errors
   const useErrorHandler = (initialState: string | null) => { return initialState };
   const [error, setError] = React.useState(useErrorHandler(null));
+
+  // when you are waiting on the API
+  const [loading, setIsLoading] = React.useState(false);
 
   // The Updated that is send to the api
   const [fileName, setFileName] = React.useState(fileIndexItem.fileName);
@@ -69,8 +73,14 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
 
 
   async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
+
+    // Show icon with load ++ disable forms
+    setFormEnabled(false);
+    setIsLoading(true);
+
     var filePathAfterChange = state.fileIndexItem.filePath.replace(state.fileIndexItem.fileName, fileName);
 
+    // API call
     var bodyParams = new URLSearchParams();
     bodyParams.append("f", state.fileIndexItem.filePath);
     bodyParams.append("to", filePathAfterChange);
@@ -79,6 +89,9 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
 
     if (result.statusCode !== 200) {
       setError(GeneralError);
+      // and renable
+      setIsLoading(false);
+      setFormEnabled(true);
       return;
     };
 
@@ -111,9 +124,9 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
 
           {error && <div className="warning-box--under-form warning-box">{error}</div>}
 
-          <button disabled={fileIndexItem.fileName === fileName || !isFormEnabled}
+          <button disabled={fileIndexItem.fileName === fileName || !isFormEnabled || loading}
             className="btn btn--default" onClick={pushRenameChange}>
-            Opslaan
+            {loading ? 'Loading...' : 'Opslaan'}
           </button>
         </div>
       </div>
