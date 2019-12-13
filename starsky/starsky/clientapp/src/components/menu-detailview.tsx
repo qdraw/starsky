@@ -8,8 +8,8 @@ import { IExifStatus } from '../interfaces/IExifStatus';
 import FetchPost from '../shared/fetch-post';
 import { Keyboard } from '../shared/keyboard';
 import { URLPath } from '../shared/url-path';
+import ModalDetailviewRenameFile from './modal-detailview-rename-file';
 import ModalExport from './modal-export';
-import ModalRenameFile from './modal-rename-file';
 import MoreMenu from './more-menu';
 
 const MenuDetailView: React.FunctionComponent = () => {
@@ -94,7 +94,7 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   return (<>
     {isModalExportOpen ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)} select={[detailView.subPath]} isOpen={isModalExportOpen} /> : null}
-    {isModalRenameFileOpen ? <ModalRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)} isOpen={isModalRenameFileOpen} /> : null}
+    {isModalRenameFileOpen ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)} isOpen={isModalRenameFileOpen} /> : null}
 
     <header className={headerName}>
       <div className="wrapper">
