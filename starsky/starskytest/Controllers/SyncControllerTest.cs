@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
@@ -186,6 +187,50 @@ namespace starskytest.Controllers
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, list[0].Status);
 			
+		}
+		
+		[TestMethod]
+		public void SyncControllerTest_Rename_NotFoundInIndex()
+		{
+
+			var context = new ControllerContext
+			{
+				HttpContext = new DefaultHttpContext()
+			};
+			var iStorage = new FakeIStorage();
+
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, iStorage);
+			controller.ControllerContext = context;
+
+			var result = controller.Rename("/notfound-image.jpg", "/test.jpg") as NotFoundObjectResult;
+			
+			Assert.AreEqual(404,result.StatusCode);
+		}
+		
+		[TestMethod]
+		public void SyncControllerTest_Rename_Good()
+		{
+			InsertSearchData();
+
+			var context = new ControllerContext
+			{
+				HttpContext = new DefaultHttpContext()
+			};
+			
+			var iStorage =  new FakeIStorage(new List<string> { "/" }, 
+				new List<string> { _createAnImage.DbPath });
+
+			var controller =
+				new SyncController(_isync, _bgTaskQueue, _query, iStorage)
+				{
+					ControllerContext = context
+				};
+			
+			var result = controller.Rename(_createAnImage.DbPath, "/test.jpg") as JsonResult;
+			var list = result.Value as List<FileIndexItem>;
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.Default,list.FirstOrDefault().Status);
+
 		}
 	}
 }

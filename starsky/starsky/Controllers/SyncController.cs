@@ -111,7 +111,7 @@ namespace starsky.Controllers
 		    var rename = new RenameFs(_query, _sync, _iStorage).Rename(f, to, collections);
 		    
 		    // When all items are not found
-		    if (rename.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+		    if (rename.All(p => p.Status != FileIndexItem.ExifStatus.Default))
 			    return NotFound(rename);
 		    
 			return Json(rename);
