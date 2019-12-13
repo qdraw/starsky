@@ -62,7 +62,7 @@ const MenuDetailView: React.FunctionComponent = () => {
       bodyParams.set("Tags", "!delete!");
       bodyParams.set("append", "true");
       var resultDo = await FetchPost("/api/update", bodyParams.toString());
-      if (resultDo === null) {
+      if (resultDo.statusCode !== 200) {
         return;
       }
       dispatch({ 'type': 'append', tags: "!delete!" });
@@ -73,7 +73,7 @@ const MenuDetailView: React.FunctionComponent = () => {
       bodyParams.set("fieldName", "tags");
       bodyParams.set("search", "!delete!");
       var resultUndo = await FetchPost("/api/replace", bodyParams.toString());
-      if (resultUndo === null) {
+      if (resultUndo.statusCode !== 200) {
         return;
       }
       dispatch({ 'type': 'remove', tags: "!delete!" });
@@ -104,7 +104,7 @@ const MenuDetailView: React.FunctionComponent = () => {
           <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
           {!isDetails ? <li className="menu-option" onClick={() => { toggleLabels() }}>Labels</li> : null}
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
-          <li className="menu-option disabled" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>
+          <li className="menu-option" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>
           <li className="menu-option" onClick={() => { TrashFile(); }}>{!isMarkedAsDeleted ? "Verplaats naar prullenmand" : "Zet terug uit prullenmand"}</li>
           <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Roteer naar rechts</li>
         </MoreMenu>

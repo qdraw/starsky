@@ -18,7 +18,7 @@ describe("DetailViewSidebar", () => {
     expect(wrapper.find('.sidebar').find('.warning-box')).toHaveLength(1);
   });
 
-  describe("useContext", () => {
+  describe("useContext-test", () => {
     let contextProvider: any;
     let TestComponent: () => JSX.Element;
     let Component: ReactWrapper<any, Readonly<{}>>;
