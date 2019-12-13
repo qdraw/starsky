@@ -60,6 +60,11 @@
   margin-bottom: 8px;
 }
 
+.warning-box.warning-box--under-form {
+  margin-top:25px;
+}
+
+
 .content .warning-box:before,
 .content > form > .content--error-true:before {
     content: "";

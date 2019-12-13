@@ -2,11 +2,14 @@
 export class FileExtensions {
 
   public MatchExtension(from: string, to: string): (boolean | null) {
-    var extensionRegex = /^([^\\]*)\.(\w+)$/;
-    if (!from.match(extensionRegex)) return null;
-    if (!to.match(extensionRegex)) return false;
+    var extensionRegex = /\.[0-9a-z]+$/;
 
-    return null;
+    var fromExtMatchArray = from.match(extensionRegex);
+    if (!fromExtMatchArray) return null;
+
+    var toExtMatchArray = to.match(extensionRegex);
+    if (!toExtMatchArray) return false;
+    return toExtMatchArray[0] === fromExtMatchArray[0];
   }
 }
 

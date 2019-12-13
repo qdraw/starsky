@@ -83,4 +83,11 @@ export class UrlQuery {
     return "/export/zip/" + createZipId + ".zip?json=" + json;
   }
 
+  /**
+   * Rename the file on disk and in the database
+   */
+  public UrlSyncRename(): string {
+    return "/sync/rename";
+  }
+
 }

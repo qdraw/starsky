@@ -1,6 +1,11 @@
 import React, { memo, useEffect } from 'react';
 import { DetailViewContext } from '../contexts/detailview-context';
+import useLocation from '../hooks/use-location';
 import { IExifStatus } from '../interfaces/IExifStatus';
+import FetchPost from '../shared/fetch-post';
+import { FileExtensions } from '../shared/file-extensions';
+import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 import Modal from './modal';
 
 interface IModalRenameFileProps {
@@ -10,7 +15,13 @@ interface IModalRenameFileProps {
 
 const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> = memo((props) => {
 
+  const ChangeToDifferentExtension: string = "Let op! Je veranderd de extensie van het bestand, deze kan hierdoor onleesbaar worden";
+  const GeneralError: string = "Er is iets misgegaan met de aanvraag, probeer het later opnieuw";
+
   let { state, dispatch } = React.useContext(DetailViewContext);
+
+  // to know where you are
+  var history = useLocation();
 
   // For the display
   const [isFormEnabled, setFormEnabled] = React.useState(true);
@@ -29,6 +40,9 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     }
   }, [state.fileIndexItem.status]);
 
+  const useErrorHandler = (initialState: string | null) => { return initialState };
+  const [error, setError] = React.useState(useErrorHandler(null));
+
   // The Updated that is send to the api
   const [fileName, setFileName] = React.useState(state.fileIndexItem.fileName);
 
@@ -36,16 +50,38 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     if (!isFormEnabled) return;
     if (!event.currentTarget.textContent) return null;
     let fieldValue = event.currentTarget.textContent.trim();
-    setFileName(fieldValue);
-    if (fieldValue.endsWith('.jpg')) {
-      console.log('hi');
 
+    setFileName(fieldValue);
+    var extensionsState = new FileExtensions().MatchExtension(state.fileIndexItem.fileName, fieldValue);
+    if (!extensionsState) {
+      setError(ChangeToDifferentExtension)
+    }
+    else {
+      setError(null)
     }
   }
 
 
-  function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
+  async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
+    var filePathAfterChange = state.fileIndexItem.filePath.replace(state.fileIndexItem.fileName, fileName);
 
+    var bodyParams = new URLSearchParams();
+    bodyParams.append("f", state.fileIndexItem.filePath);
+    bodyParams.append("to", filePathAfterChange);
+
+    var result = await FetchPost(new UrlQuery().UrlSyncRename(), bodyParams.toString())
+
+    if (result.statusCode !== 200) {
+      setError(GeneralError);
+      return;
+    };
+
+    // redirect to new path (so if you press refresh the image is shown)
+    var replacePath = new URLPath().updateFilePath(history.location.search, filePathAfterChange);
+    history.navigate(replacePath, { replace: true });
+
+    // Close window
+    props.handleExit();
   }
 
   return (<>
@@ -55,19 +91,25 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
       handleExit={() => {
         props.handleExit()
       }}>
-      <div className="modal content--subheader">Naam wijzigen</div>
-      <div className="modal content--text">
+      <div className="content">
+        <div className="modal content--subheader">Naam wijzigen</div>
+        <div className="modal content--text">
 
-        <div data-name="filename"
-          onInput={handleUpdateChange}
-          suppressContentEditableWarning={true}
-          contentEditable={isFormEnabled}
-          className={isFormEnabled ? "form-control" : "form-control disabled"}>
-          {state.fileIndexItem.fileName}
+          <div data-name="filename"
+            onInput={handleUpdateChange}
+            suppressContentEditableWarning={true}
+            contentEditable={isFormEnabled}
+            className={isFormEnabled ? "form-control" : "form-control disabled"}>
+            {state.fileIndexItem.fileName}
+          </div>
+
+          {error && <div className="warning-box--under-form warning-box">{error}</div>}
+
+          <button disabled={state.fileIndexItem.fileName === fileName || !isFormEnabled}
+            className="btn btn--default" onClick={pushRenameChange}>
+            Opslaan
+          </button>
         </div>
-
-        <button className="btn btn--default" onClick={pushRenameChange}>Opslaan</button>
-
       </div>
     </Modal>
   </>)
