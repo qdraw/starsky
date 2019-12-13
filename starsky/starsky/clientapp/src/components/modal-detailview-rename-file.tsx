@@ -2,6 +2,7 @@ import React, { memo, useEffect } from 'react';
 import { DetailViewContext } from '../contexts/detailview-context';
 import useLocation from '../hooks/use-location';
 import { IExifStatus } from '../interfaces/IExifStatus';
+import { newIFileIndexItem } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { FileExtensions } from '../shared/file-extensions';
 import { URLPath } from '../shared/url-path';
@@ -18,7 +19,12 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
   const ChangeToDifferentExtension: string = "Let op! Je veranderd de extensie van het bestand, deze kan hierdoor onleesbaar worden";
   const GeneralError: string = "Er is iets misgegaan met de aanvraag, probeer het later opnieuw";
 
-  let { state, dispatch } = React.useContext(DetailViewContext);
+  let { state, } = React.useContext(DetailViewContext);
+
+  var fileIndexItem = newIFileIndexItem();
+  if (state) {
+    fileIndexItem = state.fileIndexItem;
+  }
 
   // to know where you are
   var history = useLocation();
@@ -38,13 +44,13 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
         setFormEnabled(true);
         break;
     }
-  }, [state.fileIndexItem.status]);
+  }, [fileIndexItem.status]);
 
   const useErrorHandler = (initialState: string | null) => { return initialState };
   const [error, setError] = React.useState(useErrorHandler(null));
 
   // The Updated that is send to the api
-  const [fileName, setFileName] = React.useState(state.fileIndexItem.fileName);
+  const [fileName, setFileName] = React.useState(fileIndexItem.fileName);
 
   function handleUpdateChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
     if (!isFormEnabled) return;
@@ -100,12 +106,12 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
             suppressContentEditableWarning={true}
             contentEditable={isFormEnabled}
             className={isFormEnabled ? "form-control" : "form-control disabled"}>
-            {state.fileIndexItem.fileName}
+            {fileIndexItem.fileName}
           </div>
 
           {error && <div className="warning-box--under-form warning-box">{error}</div>}
 
-          <button disabled={state.fileIndexItem.fileName === fileName || !isFormEnabled}
+          <button disabled={fileIndexItem.fileName === fileName || !isFormEnabled}
             className="btn btn--default" onClick={pushRenameChange}>
             Opslaan
           </button>
