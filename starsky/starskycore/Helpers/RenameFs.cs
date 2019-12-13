@@ -116,13 +116,17 @@ namespace starskycore.Helpers
 				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 				     && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
-					//move entire folder
+					// move entire folder
 					_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
 					
 					fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
 					// Rename child items
-					fileIndexItems.ForEach(p => 
-						p.ParentDirectory = p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath)
+					fileIndexItems.ForEach(p =>
+						{
+							p.ParentDirectory =
+								p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath);
+							p.Status = FileIndexItem.ExifStatus.Ok;
+						}
 					);
 
 				}
@@ -161,9 +165,14 @@ namespace starskycore.Helpers
 					// Replace all Recursive items in Query
 					// Does only replace in existing database items
 					fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
+					
 					// Rename child items
-					fileIndexItems.ForEach(p => 
-						p.ParentDirectory = p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath)
+					fileIndexItems.ForEach(p =>
+						{
+							p.ParentDirectory =
+								p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath);
+							p.Status = FileIndexItem.ExifStatus.Ok;
+						}
 					);
 					
 					// todo: remove folder from disk + remove duplicate database item 
@@ -194,15 +203,13 @@ namespace starskycore.Helpers
 				
 				// Rename parent item >eg the folder or file
 				detailView.FileIndexItem.SetFilePath(toFileSubPath);
+				detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 				fileIndexItems.Add(detailView.FileIndexItem);
 	
-
 				// To update the results
 				_query.UpdateItem(fileIndexItems);
 
-				
 				fileIndexResultsList.AddRange(fileIndexItems);
-
 			}
 
 	        return fileIndexResultsList;
