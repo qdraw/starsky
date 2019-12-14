@@ -226,7 +226,6 @@ namespace starskytest.Helpers
 			Assert.AreEqual("test2.jpg",singleItem.FileIndexItem.FileName);			
 
 			Assert.AreEqual(1,renameFs.Count);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, renameFs.FirstOrDefault().Status );
 
 			RemoveFoldersAndFilesInDatabase();
 		}
