@@ -27,4 +27,17 @@ describe("keyboard", () => {
       expect(result).toBeTruthy();
     });
   });
+
+  describe("ValidFileName", () => {
+    it("valid filename", () => {
+      var result = fileExt.ValidFileName("222.jpg");
+      expect(result).toBeTruthy();
+    });
+
+    it("only extension filename (non valid)", () => {
+      var result = fileExt.ValidFileName(".jpg");
+      expect(result).toBeFalsy();
+    });
+  });
+
 });
