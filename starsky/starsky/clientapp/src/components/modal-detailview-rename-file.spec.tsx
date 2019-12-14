@@ -19,7 +19,6 @@ describe("ModalDetailviewRenameFile", () => {
 
   describe("rename", () => {
     it("to wrong extension", () => {
-
       var state = {
         fileIndexItem: { status: IExifStatus.Ok, filePath: "/test/image.jpg", fileName: "image.jpg" }
       } as IDetailView;
@@ -28,6 +27,34 @@ describe("ModalDetailviewRenameFile", () => {
       jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
         .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues });
+
+      var modal = mount(<ModalDetailviewRenameFile
+        isOpen={true}
+        handleExit={() => { }}></ModalDetailviewRenameFile>);
+
+      var submitButtonBefore = (modal.find('.btn--default').getDOMNode() as HTMLButtonElement).disabled
+      expect(submitButtonBefore).toBeTruthy();
+
+      modal.find('[data-name="filename"]').getDOMNode().textContent = "file-with-different-extension.tiff";
+      modal.find('[data-name="filename"]').simulate('input');
+
+      expect(modal.exists('.warning-box')).toBeTruthy();
+
+      var submitButtonAfter = (modal.find('.btn--default').getDOMNode() as HTMLButtonElement).disabled
+      expect(submitButtonAfter).toBeFalsy();
+    });
+
+    it("to non valid extension", () => {
+      var state = {
+        fileIndexItem: { status: IExifStatus.Ok, filePath: "/test/image.jpg", fileName: "image.jpg" }
+      } as IDetailView;
+      var contextValues = { state, dispatch: jest.fn() }
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues });
 
       var modal = mount(<ModalDetailviewRenameFile
         isOpen={true}
@@ -41,8 +68,8 @@ describe("ModalDetailviewRenameFile", () => {
 
       expect(modal.exists('.warning-box')).toBeTruthy();
 
-      var submitButtonAfter = (modal.find('.btn--default').getDOMNode() as HTMLButtonElement).disabled
-      expect(submitButtonAfter).toBeFalsy();
+      var submitButtonAfter = (modal.find('.btn--default').getDOMNode() as HTMLButtonElement).disabled;
+      expect(submitButtonAfter).toBeTruthy();
     });
 
     it("submit filename change", () => {

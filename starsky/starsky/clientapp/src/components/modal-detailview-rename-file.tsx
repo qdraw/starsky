@@ -16,6 +16,7 @@ interface IModalRenameFileProps {
 
 const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> = memo((props) => {
 
+  const NonValidExtension: string = "Dit bestand kan zo niet worden weggeschreven";
   const ChangeToDifferentExtension: string = "Let op! Je veranderd de extensie van het bestand, deze kan hierdoor onleesbaar worden";
   const GeneralError: string = "Er is iets misgegaan met de aanvraag, probeer het later opnieuw";
 
@@ -56,24 +57,33 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
   // The Updated that is send to the api
   const [fileName, setFileName] = React.useState(fileIndexItem.fileName);
 
+  // allow summit
+  const [buttonState, setButtonState] = React.useState(false);
+
   function handleUpdateChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
     if (!isFormEnabled) return;
     if (!event.currentTarget.textContent) return null;
     let fieldValue = event.currentTarget.textContent.trim();
 
     setFileName(fieldValue);
+    setButtonState(true)
+
     var extensionsState = new FileExtensions().MatchExtension(state.fileIndexItem.fileName, fieldValue);
-    if (!extensionsState) {
-      setError(ChangeToDifferentExtension)
+    var validFileName = new FileExtensions().ValidFileName(fieldValue);
+
+    if (!validFileName) {
+      setError(NonValidExtension);
+      setButtonState(false);
+    }
+    else if (!extensionsState) {
+      setError(ChangeToDifferentExtension);
     }
     else {
-      setError(null)
+      setError(null);
     }
   }
 
-
   async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
-
     // Show icon with load ++ disable forms
     setFormEnabled(false);
     setIsLoading(true);
@@ -124,7 +134,8 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
 
           {error && <div className="warning-box--under-form warning-box">{error}</div>}
 
-          <button disabled={fileIndexItem.fileName === fileName || !isFormEnabled || loading}
+          <button disabled={fileIndexItem.fileName === fileName || !isFormEnabled ||
+            loading || !buttonState}
             className="btn btn--default" onClick={pushRenameChange}>
             {loading ? 'Loading...' : 'Opslaan'}
           </button>
