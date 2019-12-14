@@ -7,6 +7,6 @@ This is using the following environment variables
 ```sh
 IMAPUSER=
 IMAPPASSWORD=
-STARKSYACCESSTOKEN=
-STARKSYURL=
+STARKSYACCESSTOKEN=base64-username:password
+STARKSYURL=https://example.com/import
 ```
