@@ -1,6 +1,11 @@
 
 export class FileExtensions {
 
+  /**
+   * Match two filenames, make sure those are having the same extensions
+   * @param from input.jpg
+   * @param to changeto.jpg
+   */
   public MatchExtension(from: string, to: string): (boolean | null) {
     var extensionRegex = /\.[0-9a-z]+$/;
 
