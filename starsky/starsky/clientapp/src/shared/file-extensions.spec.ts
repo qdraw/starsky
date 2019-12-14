@@ -38,6 +38,10 @@ describe("keyboard", () => {
       var result = fileExt.ValidFileName(".jpg");
       expect(result).toBeFalsy();
     });
-  });
 
+    it("start with underscore _.com", () => {
+      var result = fileExt.ValidFileName("_.com");
+      expect(result).toBeTruthy();
+    });
+  });
 });
