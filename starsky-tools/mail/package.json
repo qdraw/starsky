@@ -9,8 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^6.0.0",
-    "imap-simple": "^4.1.0",
+    "dotenv": "^8.2.0",
+    "imap-simple": "^4.3.0",
     "request": "^2.88.0"
   }
 }
