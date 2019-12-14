@@ -229,7 +229,7 @@ namespace starskytest.Controllers
 			var result = controller.Rename(_createAnImage.DbPath, "/test.jpg") as JsonResult;
 			var list = result.Value as List<FileIndexItem>;
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.Default,list.FirstOrDefault().Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list.FirstOrDefault().Status);
 
 		}
 	}
