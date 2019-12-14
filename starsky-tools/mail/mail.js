@@ -126,6 +126,14 @@ imaps.connect(config).then(function (connection) {
                     throw new Error(err);
                 }
                 console.log(res.statusCode);
+                if(!body) return;
+
+                var document = JSON.parse(body);
+                if(!document[0]) {
+                  console.log(body);
+                  return;
+                };
+                console.log(document[0].filePath);
             });
         }
         connection.end();
