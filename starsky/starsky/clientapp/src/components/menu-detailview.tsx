@@ -35,7 +35,7 @@ const MenuDetailView: React.FunctionComponent = () => {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
     urlObject.details = !isDetails;
     setDetails(urlObject.details);
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
+    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
   // Get the status from the props
@@ -94,7 +94,7 @@ const MenuDetailView: React.FunctionComponent = () => {
   const [isModalRenameFileOpen, setModalRenameFileOpen] = React.useState(false);
 
   return (<>
-    {isModalExportOpen ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)} select={[detailView.subPath]} isOpen={isModalExportOpen} /> : null}
+    {isModalExportOpen && detailView ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)} select={[detailView.subPath]} isOpen={isModalExportOpen} /> : null}
     {isModalRenameFileOpen ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)} isOpen={isModalRenameFileOpen} /> : null}
 
     <header className={headerName}>
