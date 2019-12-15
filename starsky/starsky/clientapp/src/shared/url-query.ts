@@ -1,4 +1,4 @@
-import { newIUrl } from '../interfaces/IUrl';
+import { IUrl, newIUrl } from '../interfaces/IUrl';
 import { URLPath } from './url-path';
 
 
@@ -45,17 +45,14 @@ export class UrlQuery {
     if (requested.details) {
       urlObject.details = requested.details;
     }
-    if (urlObject.f !== undefined) {
-      return this.UrlIndexServerApi(urlObject.f);
-    }
-    return this.UrlIndexServerApi("/");
+    return this.UrlIndexServerApi(urlObject);
   }
 
   /**
    * Get Direct api/index
    */
-  public UrlIndexServerApi = (subPath: string) => {
-    return "/api/index?f=" + new URLPath().encodeURI(subPath);
+  public UrlIndexServerApi = (urlObject: IUrl) => {
+    return "/api/index" + new URLPath().IUrlToString(urlObject)
   }
 
   public UrlQueryInfoApi(subPath: string): string {
