@@ -48,8 +48,6 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   // Trash and Undo Trash
   async function TrashFile() {
-    console.log('trash');
-
     if (!detailView) return;
 
     setMarkedAsDeleted(null);
@@ -88,8 +86,6 @@ const MenuDetailView: React.FunctionComponent = () => {
   useKeyboardEvent(/(Delete)/, (event: KeyboardEvent) => {
     event.preventDefault();
     if (new Keyboard().isInForm(event)) return;
-    console.log('keyboard event fired');
-    console.log(event.key);
     TrashFile();
   });
 
