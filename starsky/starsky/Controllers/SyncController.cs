@@ -94,16 +94,27 @@ namespace starsky.Controllers
         }
 			   
 	    /// <summary>
-	    /// Work in progress: Rename file/folder and update it in the database
+	    /// Rename file/folder and update it in the database
 	    /// </summary>
 	    /// <param name="f">from subpath</param>
 	    /// <param name="to">to subpath</param>
 	    /// <param name="collections">is collections bool</param>
 	    /// <returns>list of details form changed files</returns>
+	    /// <response code="200">the item including the updated content</response>
+	    /// <response code="404">item not found in the database or on disk</response>
+	    /// <response code="401">User unauthorized</response>
+	    [ProducesResponseType(typeof(List<FileIndexItem>),200)]
+	    [ProducesResponseType(typeof(List<FileIndexItem>),404)]
 		[HttpPost("/sync/rename")]
 		public IActionResult Rename(string f, string to, bool collections = true)
 	    {
-			return Json(new RenameFs(_query,_sync,_iStorage).Rename(f,to,collections));
+		    var rename = new RenameFs(_query, _sync, _iStorage).Rename(f, to, collections);
+		    
+		    // When all items are not found
+		    if (rename.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+			    return NotFound(rename);
+		    
+			return Json(rename);
 		}
 
     }

@@ -8,10 +8,15 @@
   z-index: 500;
   background: #263238; 
   color: #fff;
+  transition: background 400ms ease-in-out;
 }
 
 .header.header--edit {
   width: calc(100% - 320px);
+}
+
+.header.header--loading {
+  background: #8D6E63; /*brown400*/
 }
 
 .header.header--deleted {

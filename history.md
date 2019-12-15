@@ -12,18 +12,18 @@
 - []   Health view (feature) when a disk is full, show a warning
 - []   (front-end) Search details show exact query behind modal
 - []   Upload to direct folder API + front-end
-- []   (front-end) 'Rotate to Right'
 - []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
 ## High priority features planned
 - []   (feature) Creating thumbnails from Web Interface (including status)
-- []   Front-end for Rename files
-- []   Improve Unit test coverage (at least 80% on SonarQube)
 
-# version 0.1.10 - 2019-12-??
-- [] (bug) `/starsky` paths are not supported __not fixed__
+# version 0.1.10 - 2019-12-15
 - [x] (bugfix) Archive => After pressing 'Apply' the updates are not shown
 - [x] Upgrade ClientApp from React 16.9.0 to 16.9.15
+- [x] Front-end for Rename files (in detailview)
+- [x] (front-end) 'Rotate to Right'
+- [x] Improve Unit test coverage (at least 80% on coverage-report _561 mstest and 271 jest tests_)
+- [] (bug) `/starsky` paths are not supported __not fixed__
 
 # version 0.1.9 - 2019-12-01
 _Upgrade to .NET Core 3.0 & EF Core 3.1-preview3_

@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Converters;
 using starskycore.Helpers;
 using starskycore.Models;
 #if NETSTANDARD2_1
@@ -155,7 +156,6 @@ namespace starskycore.ViewModels
 	    /// The search for types
 	    /// </summary>
 	    [DataContract]
-	    //[JsonConverter(typeof(JsonStringEnumConverter))]
 	    public enum SearchForOptionType
 	    {
 		    /// <summary>

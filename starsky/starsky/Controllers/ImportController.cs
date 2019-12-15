@@ -25,7 +25,8 @@ namespace starsky.Controllers
 	    private readonly IStorage _iStorage; //<= not yet implemented
 
 	    public ImportController(IImport import, AppSettings appSettings, 
-            IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue, HttpClientHelper httpClientHelper, IStorage iStorage)
+            IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue, 
+            HttpClientHelper httpClientHelper, IStorage iStorage)
         {
             _appSettings = appSettings;
             _import = import;
@@ -41,6 +42,7 @@ namespace starsky.Controllers
 		/// <returns>the ImportIndexItem of the imported files</returns>
 		/// <response code="200">done</response>
 		/// <response code="206">file already imported</response>
+		/// <response code="415">Wrong input (e.g. wrong extenstion type)</response>
 		[HttpPost("/import")]
         [DisableFormValueModelBinding]
 		[RequestFormLimits(MultipartBodyLengthLimit = 320_000_000)]

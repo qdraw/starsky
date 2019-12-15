@@ -25,6 +25,9 @@ export class UrlQuery {
     return "/account/status";
   }
 
+  /**
+   * Used with localisation hash
+   */
   public UrlQueryServerApi = (historyLocationHash: string) => {
     var requested = new URLPath().StringToIUrl(historyLocationHash);
 
@@ -43,7 +46,14 @@ export class UrlQuery {
       urlObject.details = requested.details;
     }
     var url = new URLPath().RemovePrefixUrl(new URLPath().IUrlToString(urlObject));
-    return "/api/index" + url;
+    return this.UrlIndexServerApi(url.replace("?f=", ""));
+  }
+
+  /**
+   * Get Direct api/index
+   */
+  public UrlIndexServerApi = (subPath: string) => {
+    return "/api/index?f=" + subPath;
   }
 
   public UrlQueryInfoApi(subPath: string): string {
@@ -52,15 +62,19 @@ export class UrlQuery {
     return "/api/info?f=" + url + "&json=true";
   }
 
-  public UrlQueryUpdateApi = () => {
+  public UrlUpdateApi = () => {
     return "/api/update";
   }
 
-  public UrlQueryThumbnailImage = (fileHash: string) => {
+  public UrlReplaceApi = () => {
+    return "/api/replace";
+  }
+
+  public UrlThumbnailImage = (fileHash: string) => {
     return "/api/thumbnail/" + fileHash + ".jpg?issingleitem=true";
   }
 
-  public UrlQueryThumbnailJsonApi = (fileHash: string) => {
+  public UrlThumbnailJsonApi = (fileHash: string) => {
     return "/api/thumbnail/" + fileHash + "?json=true";
   }
 
@@ -81,6 +95,13 @@ export class UrlQuery {
    */
   public UrlExportZipApi = (createZipId: string, json: boolean = true) => {
     return "/export/zip/" + createZipId + ".zip?json=" + json;
+  }
+
+  /**
+   * Rename the file on disk and in the database
+   */
+  public UrlSyncRename(): string {
+    return "/sync/rename";
   }
 
 }

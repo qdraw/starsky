@@ -1,7 +1,7 @@
 var imaps = require('imap-simple');
 var request = require('request');
 var path = require('path');
-require('dotenv').config({path:path.join(__dirname,".env")});
+require('dotenv').config({ path: path.join(__dirname, ".env") });
 
 // process.env.IMAPUSER
 // process.env.IMAPPASSWORD
@@ -17,25 +17,26 @@ var config = {
         host: 'imap.gmail.com',
         port: 993,
         tls: true,
-        authTimeout: 3000
+        authTimeout: 3000,
+        tlsOptions: { servername: 'imap.gmail.com' }
     }
 };
 
 function slugify(text) {
-  return text.toString().toLowerCase()
-    .replace(/\s+/g, '-')           // Replace spaces with -
-    .replace(/[^\w\-\.]+/g, '')       // Remove all non-word chars (keep dots)
-    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-    .replace(/^-+/, '')             // Trim - from start of text
-    .replace(/-+$/, '');            // Trim - from end of text
+    return text.toString().toLowerCase()
+        .replace(/\s+/g, '-')           // Replace spaces with -
+        .replace(/[^\w\-\.]+/g, '')       // Remove all non-word chars (keep dots)
+        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+        .replace(/^-+/, '')             // Trim - from start of text
+        .replace(/-+$/, '');            // Trim - from end of text
 }
 
 imaps.connect(config).then(function (connection) {
 
     connection.openBox('INBOX').then(function () {
 
-		// Fetch emails from the last 60h
-		var delay = 60 * 3600 * 1000;
+        // Fetch emails from the last 60h
+        var delay = 60 * 3600 * 1000;
         var yesterday = new Date();
         yesterday.setTime(Date.now() - delay);
         yesterday = yesterday.toISOString();
@@ -60,21 +61,18 @@ imaps.connect(config).then(function (connection) {
                 return connection.getPartData(message, part)
                     .then(function (partData) {
 
-						var filename = "default";
-						if(part !== undefined) {
-							if(part.disposition !== undefined &&
-								part.disposition !== null) {
-								if(part.disposition.params !== undefined  &&
-									part.disposition.params !== null) {
-
-									console.log(part.disposition);
-									if(part.disposition.params.filename !== undefined) {
-
-										filename = part.disposition.params.filename
-									}
-								}
-							}
-						}
+                        var filename = "default";
+                        if (part !== undefined) {
+                            if (part.disposition !== undefined &&
+                                part.disposition !== null) {
+                                if (part.disposition.params !== undefined &&
+                                    part.disposition.params !== null) {
+                                    if (part.disposition.params.filename !== undefined) {
+                                        filename = part.disposition.params.filename
+                                    }
+                                }
+                            }
+                        }
                         return {
                             filename: filename,
                             data: partData,
@@ -95,25 +93,24 @@ imaps.connect(config).then(function (connection) {
 
             // return non gpx
             // Need to have a gmail filter to white list the users
-            if(attachments[i].filename.indexOf(".gpx") === -1) continue;
-            if(attachments[i].label.indexOf("gpx") === -1) continue;
+            if (attachments[i].filename.indexOf(".gpx") === -1) continue;
+            if (attachments[i].label.indexOf("gpx") === -1) continue;
 
             // Escape strange filenames
             //    { filename: '=?UTF-8?Q?Dag_e=CC=81e=CC=81n_avondrit_9-8-2019.gpx?=' } }
-            var fileName = attachments[i].filename.replace(/(^=\?)|(UTF-8)|(\?Q\?)|(\?=$)/,"");
+            var fileName = attachments[i].filename.replace(/(^=\?)|(UTF-8)|(\?Q\?)|(\?=$)/, "");
             filename = slugify(fileName);
 
-            console.log("file: " + filename + " (" + attachments[i].filename +")");
+            console.log("file: " + filename + " (" + attachments[i].filename + ")");
 
             var formData = {
                 image_file: {
                     value: attachments[i].data, // Upload the first file in the multi-part post
                     options: {
-                       filename: filename
+                        filename: filename
                     }
                 }
             };
-
 
             request({
                 headers: {
@@ -123,14 +120,22 @@ imaps.connect(config).then(function (connection) {
                 formData: formData,
                 uri: process.env.STARKSYURL,
                 method: 'POST'
-                }, function (err, res, body) {
-                    console.log(res.statusCode);
-                    console.log(body);
+            }, function (err, res, body) {
+                console.log('>> sending to starsky');
+                if (err) {
+                    throw new Error(err);
+                }
+                console.log(res.statusCode);
+                if(!body) return;
+
+                var document = JSON.parse(body);
+                if(!document[0]) {
+                  console.log(body);
+                  return;
+                };
+                console.log(document[0].filePath);
             });
         }
-
-
         connection.end();
-
     });
 });

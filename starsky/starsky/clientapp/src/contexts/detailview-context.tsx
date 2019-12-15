@@ -1,7 +1,7 @@
 import React from 'react';
 import { IDetailView, IRelativeObjects } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
-import { newIFileIndexItem } from '../interfaces/IFileIndexItem';
+import { newIFileIndexItem, Orientation } from '../interfaces/IFileIndexItem';
 
 const DetailViewContext = React.createContext<IContext>({} as IContext)
 
@@ -31,6 +31,8 @@ type Action = {
   colorclass?: number,
   description?: string,
   title?: string,
+  fileHash?: string,
+  orientation?: Orientation,
   status?: IExifStatus
 } |
 {
@@ -57,13 +59,15 @@ export function detailviewReducer(state: State, action: Action): State {
       // Need to update otherwise other events are not triggerd
       return { ...state, lastUpdated: new Date() };
     case "update":
-      var { tags, description, title, status, colorclass } = action;
+      var { tags, description, title, status, colorclass, fileHash, orientation } = action;
 
       if (tags) state.fileIndexItem.tags = tags;
       if (description) state.fileIndexItem.description = description;
       if (title) state.fileIndexItem.title = title;
       if (colorclass) state.fileIndexItem.colorClass = colorclass;
       if (status) state.fileIndexItem.status = status;
+      if (fileHash) state.fileIndexItem.fileHash = fileHash;
+      if (orientation) state.fileIndexItem.orientation = orientation;
 
       // Need to update otherwise other events are not triggerd
       return { ...state, lastUpdated: new Date() };

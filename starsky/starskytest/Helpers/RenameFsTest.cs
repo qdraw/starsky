@@ -64,8 +64,6 @@ namespace starskytest.Helpers
 			_iStorageSubPath = new StorageSubPathFilesystem(_appSettings);
 
 			_sync = new SyncService(_query,_appSettings,readMeta,_iStorageSubPath);
-			
-
 		}
 
 		[TestMethod]
@@ -76,6 +74,8 @@ namespace starskytest.Helpers
 			if(!File.Exists(fileAlreadyExist)) new PlainTextFileHelper().WriteFile(fileAlreadyExist,"test");
 			var renameFs = new RenameFs( _query,_sync,_iStorageSubPath).Rename(_newImage.DbPath, "/already.txt");
 			Assert.AreEqual(new PlainTextFileHelper().ReadFile(fileAlreadyExist).Contains("test"), true);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, renameFs.FirstOrDefault().Status );
+
 			// test with newline at the end
 			FilesHelper.DeleteFile(fileAlreadyExist);
 		}
@@ -84,7 +84,7 @@ namespace starskytest.Helpers
 		public void RenameFsTest_MoveFileWithoutAnyItems()
 		{
 			var renameFs = new RenameFs(_query,_sync,_iStorageSubPath).Rename("/non-exist.jpg", "/non-exist2.jpg");
-			Assert.AreEqual(renameFs.FirstOrDefault().Status,FileIndexItem.ExifStatus.NotFoundNotInIndex);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, renameFs.FirstOrDefault().Status );
 		}
 		
 
@@ -117,7 +117,8 @@ namespace starskytest.Helpers
 			// use cached view
 			var singleItem = _query.SingleItem("/exist/test2.jpg");
 			Assert.AreEqual("test2.jpg",singleItem.FileIndexItem.FileName);		
-			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
+
 			FilesHelper.DeleteDirectory(Path.Combine(_newImage.BasePath, "exist"));
 		}
 
@@ -148,6 +149,7 @@ namespace starskytest.Helpers
 			var selectFile3 = all2.FirstOrDefault(p => p.FileName == "test3.jpg");
 			Assert.AreEqual("test3.jpg",selectFile3.FileName);
 			Assert.AreEqual("/dir2",selectFile3.ParentDirectory);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
 			
 			var dir2FullDirPath = Path.Combine(_newImage.BasePath, "dir2");
 
@@ -224,6 +226,7 @@ namespace starskytest.Helpers
 			Assert.AreEqual("test2.jpg",singleItem.FileIndexItem.FileName);			
 
 			Assert.AreEqual(1,renameFs.Count);
+
 			RemoveFoldersAndFilesInDatabase();
 		}
 
@@ -245,8 +248,8 @@ namespace starskytest.Helpers
 			// check if files are moved
 			var values = istorage.GetAllFilesInDirectory("/nonExist").ToList();
 			Assert.AreEqual("/nonExist/test5.jpg", values.FirstOrDefault(p => p == "/nonExist/test5.jpg"));
-			
-			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
+
 			RemoveFoldersAndFilesInDatabase();
 		}
 		
@@ -299,6 +302,7 @@ namespace starskytest.Helpers
 			Assert.AreEqual("/folder1/file.jpg",all2.FirstOrDefault(p => p.FileName == "file.jpg").FilePath);
 			Assert.AreEqual("/folder1/subfolder",all2.FirstOrDefault(p => p.FileName == "subfolder").FilePath);
 			Assert.AreEqual("/folder1/subfolder/child.jpg",all2.FirstOrDefault(p => p.FileName == "child.jpg").FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
 
 			_query.RemoveItem(existSubFolder);
 			_query.RemoveItem(existSubFolderChildJpg);
@@ -314,7 +318,7 @@ namespace starskytest.Helpers
 			var istorage = new FakeIStorage(initFolderList,initFileList);
 			var renameFs = new RenameFs(_query, _sync, istorage).Rename("/same", "/same");
 			Assert.AreEqual(1,renameFs.Count);
-			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,renameFs[0].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, renameFs.FirstOrDefault().Status);
 
 		}
 
@@ -340,7 +344,7 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public void RenameFsTest_MergeToLowerPath()
 		{
-			//todo: add this
+			// todo: add this
 		}
 
 	}

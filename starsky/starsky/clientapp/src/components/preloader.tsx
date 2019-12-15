@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 export interface IPreloaderProps {
   isOverlay: boolean;
-  isDetailMenu: boolean;
+  isDetailMenu?: boolean;
   parent?: string;
 }
 

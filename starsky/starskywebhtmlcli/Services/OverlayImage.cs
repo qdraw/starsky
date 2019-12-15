@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using starskycore.Helpers;
+﻿using System.IO;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
@@ -16,14 +14,12 @@ namespace starskywebhtmlcli.Services
         private readonly AppSettings _appSettings;
         private readonly IExifTool _exifTool;
 	    private IStorage _iStorage;
-//	    private IReadMeta _readMeta;
 
 	    public OverlayImage(IStorage iStorage, AppSettings appSettings, IExifTool exifTool)
         {
 	        _iStorage = iStorage;
             _appSettings = appSettings;
             _exifTool = exifTool;
-//	        _readMeta = readMeta;
         }
 
         public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)

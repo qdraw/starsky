@@ -37,12 +37,12 @@ describe("url-query", () => {
   });
 
   it("UrlQueryUpdateApi", () => {
-    var result = urlQuery.UrlQueryUpdateApi();
+    var result = urlQuery.UrlUpdateApi();
     expect(result).toContain("update")
   });
 
   it("UrlQueryThumbnailJsonApi", () => {
-    var result = urlQuery.UrlQueryThumbnailJsonApi("0000");
+    var result = urlQuery.UrlThumbnailJsonApi("0000");
     expect(result).toContain("0000")
   });
 

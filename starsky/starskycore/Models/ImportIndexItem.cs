@@ -9,12 +9,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using starskycore.Helpers;
 
-#if NETSTANDARD2_1
-using System.Text.Json.Serialization;
-#else
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-#endif
 
 
 namespace starskycore.Models
@@ -78,12 +74,8 @@ namespace starskycore.Models
         public DateTime DateTime{ get; set; }
 	    
 	    [NotMapped]
-#if NETSTANDARD2_1
-		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-		[JsonConverter(typeof(StringEnumConverter))]
-#endif
-		public ImportStatus Status { get; set; }
+	    [JsonConverter(typeof(StringEnumConverter))]
+	    public ImportStatus Status { get; set; }
 	    
 	    [NotMapped]
 		public FileIndexItem FileIndexItem { get; set; }

@@ -93,7 +93,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     var updateObject: any = { f: fileIndexItem.filePath };
     updateObject[name] = value;
 
-    var updateApiUrl = new UrlQuery().UrlQueryUpdateApi();
+    var updateApiUrl = new UrlQuery().UrlUpdateApi();
     var bodyParams = new URLPath().ObjectToSearchParams(updateObject);
 
     FetchPost(updateApiUrl, bodyParams.toString()).then(item => {
@@ -168,8 +168,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       Kleur-Classificatie
       </div>
     <div className="content--text">
-      <ColorClassSelect onToggle={() => {}} filePath={fileIndexItem.filePath} 
-                        currentColorClass={fileIndexItem.colorClass} isEnabled={isFormEnabled}/>
+      <ColorClassSelect onToggle={() => { }} filePath={fileIndexItem.filePath}
+        currentColorClass={fileIndexItem.colorClass} isEnabled={isFormEnabled} />
     </div>
 
     {fileIndexItem.latitude || fileIndexItem.longitude || isValidDate(fileIndexItem.dateTime) || isValidDate(fileIndexItem.lastEdited) ||
@@ -181,7 +181,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     <div className="content--text">
       {isValidDate(fileIndexItem.dateTime) ?
         <div className="box" data-test="dateTime">
-          <div className="icon icon--date"/>
+          <div className="icon icon--date" />
           <b>{parseDate(fileIndexItem.dateTime)}</b>
           <p>{parseTime(fileIndexItem.dateTime)}</p>
         </div> : ""}
@@ -195,7 +195,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
       {fileIndexItem.make && fileIndexItem.model && fileIndexItem.aperture && fileIndexItem.focalLength ?
         <div className="box">
-          <div className="icon icon--shutter-speed"/>
+          <div className="icon icon--shutter-speed" />
           <b>
             <span data-test="make">{fileIndexItem.make}</span>&nbsp;
             <span data-test="model">{fileIndexItem.model}</span>
@@ -212,8 +212,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         <a className="box" target="_blank" rel="noopener noreferrer" href={"https://www.openstreetmap.org/?mlat=" +
           fileIndexItem.latitude + "&mlon=" + fileIndexItem.longitude + "#map=16/" +
           fileIndexItem.latitude + "/" + fileIndexItem.longitude}>
-          <div className="icon icon--right icon--edit"/>
-          <div className="icon icon--location"/>
+          <div className="icon icon--right icon--edit" />
+          <div className="icon icon--location" />
           {fileIndexItem.locationCity && fileIndexItem.locationCountry ?
             <>
               <b>{fileIndexItem.locationCity}</b>
@@ -227,7 +227,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
       {collections.map((item, index) => (
         <div key={index} className="box" data-test="collections">
-          <div className="icon icon--photo"/>
+          <div className="icon icon--photo" />
           <b><Link to={new URLPath().updateFilePath(history.location.search, item)}>{subString(new URLPath().getChild(item))}</Link></b>
           <p>
             In een collectie: {index + 1} van {collections.length}.
