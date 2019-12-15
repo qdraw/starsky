@@ -38,13 +38,12 @@ const MenuDetailView: React.FunctionComponent = () => {
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
-  // Get the status from the props
+  // Get the status from the props (null == loading)
   function getIsMarkedAsDeletedFromProps(): boolean | null {
     if (!detailView) return false;
     return detailView.fileIndexItem.status === IExifStatus.Deleted;
   }
 
-  // null == loading 
   const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(getIsMarkedAsDeletedFromProps());
 
   // Trash and Undo Trash
@@ -89,6 +88,7 @@ const MenuDetailView: React.FunctionComponent = () => {
   useKeyboardEvent(/(Delete)/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     console.log('keyboard event fired');
+    console.log(event);
     TrashFile();
   });
 
