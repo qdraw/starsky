@@ -102,8 +102,19 @@ describe("MenuDetailView", () => {
 
       expect(spy).toBeCalled();
       expect(spy).toBeCalledTimes(1);
-      expect(spy).toBeCalledWith(new UrlQuery().UrlQueryUpdateApi(), "f=%2Ftest%2Fimage.jpg&Tags=%21delete%21&append=true")
+      expect(spy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftest%2Fimage.jpg&Tags=%21delete%21&append=true")
     });
+
+    it("move click [Not implemented]", () => {
+      // var moveModal = jest.spyOn(ModalExport, 'default')
+      //   .mockImplementationOnce(() => { return <></> });
+
+      // var item = Component.find('[data-test="move"]');
+      // item.simulate('click');
+
+      // expect(moveModal).toBeCalled();
+    });
+
   });
 
   describe("file is marked as deleted", () => {
@@ -164,7 +175,7 @@ describe("MenuDetailView", () => {
       window.dispatchEvent(event);
 
       expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(new UrlQuery().UrlQueryUpdateApi(), "f=%2Ftest%2Fimage.jpg&Tags=%21delete%21&append=true");
+      expect(spy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftest%2Fimage.jpg&Tags=%21delete%21&append=true");
       // in the test the 'keyboard event fired' three times, but in the real world once
     });
 

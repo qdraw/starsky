@@ -3,7 +3,6 @@ import DetailViewSidebar from '../components/detail-view-sidebar';
 import MenuDetailView from '../components/menu-detailview';
 import Preloader from '../components/preloader';
 import { DetailViewContext } from '../contexts/detailview-context';
-import useFetch from '../hooks/use-fetch';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IDetailView, newDetailView, newIRelativeObjects } from '../interfaces/IDetailView';
@@ -11,6 +10,7 @@ import { Orientation } from '../interfaces/IFileIndexItem';
 import { INavigateState } from '../interfaces/INavigateState';
 import BrowserDetect from '../shared/browser-detect';
 import DocumentTitle from '../shared/document-title';
+import FetchGet from '../shared/fetch-get';
 import { Keyboard } from '../shared/keyboard';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
@@ -23,7 +23,7 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // if there is no state
   if (!state) {
-    state = newDetailView();
+    state = { fileIndexItem: { fileHash: '' }, ...newDetailView() };
   }
 
   let relativeObjects = newIRelativeObjects();
@@ -44,26 +44,25 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // To Get the rotation update
   const [translateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);
-  let fileHash: string = "";
-  if (state.fileIndexItem && state.fileIndexItem.fileHash) fileHash = state.fileIndexItem.fileHash;
-  const thumbResponseObject = useFetch(new UrlQuery().UrlQueryThumbnailJsonApi(fileHash), 'get');
   useEffect(() => {
-    if (!thumbResponseObject) return;
-    if (!state || !state.fileIndexItem) return;
+    if (!state) return;
     if (!state.fileIndexItem.orientation) return;
     // Safari for iOS I don't need thumbnail rotation (for Mac it require rotation)
     if (new BrowserDetect().IsIOS()) {
       return;
     }
-    var statusCode: number = thumbResponseObject.statusCode;
-    if (statusCode === 200) {
-      setTranslateRotation(Orientation.Horizontal);
-    }
-    else if (statusCode === 202) {
-      setTranslateRotation(state.fileIndexItem.orientation);
-      return;
-    }
-  }, [thumbResponseObject]);
+    FetchGet(new UrlQuery().UrlThumbnailJsonApi(state.fileIndexItem.fileHash)).then((result) => {
+      if (!state.fileIndexItem.orientation) return;
+      if (result.statusCode === 202) {
+        // "Thumbnail is not ready yet"
+        setTranslateRotation(state.fileIndexItem.orientation);
+      }
+      else if (result.statusCode === 200) {
+        // thumbnail is alreay rotated (but need to be called due change of image)
+        setTranslateRotation(Orientation.Horizontal);
+      }
+    });
+  }, [state.fileIndexItem.fileHash]);
 
   useKeyboardEvent(/ArrowLeft/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
@@ -140,15 +139,15 @@ const DetailView: React.FC<IDetailView> = () => {
   }
 
   if (!state.fileIndexItem || !relativeObjects) {
-    return (<Preloader parent={"/"} isDetailMenu={true} isOverlay={true}/>)
+    return (<Preloader parent={"/"} isDetailMenu={true} isOverlay={true} />)
   }
 
   return (<>
     <MenuDetailView />
     <div className={isDetails ? "detailview detailview--edit" : "detailview"}>
-      {isLoading ? <Preloader parent={state.fileIndexItem.parentDirectory} isDetailMenu={true} isOverlay={true}/> : ""}
+      {isLoading ? <Preloader parent={state.fileIndexItem.parentDirectory} isDetailMenu={true} isOverlay={true} /> : ""}
 
-      {isDetails ? <DetailViewSidebar status={state.fileIndexItem.status} filePath={state.fileIndexItem.filePath}/> : null}
+      {isDetails ? <DetailViewSidebar status={state.fileIndexItem.status} filePath={state.fileIndexItem.filePath} /> : null}
 
       <div className={isError ? "main main--error" : "main main--" + state.fileIndexItem.imageFormat}>
 
@@ -161,16 +160,16 @@ const DetailView: React.FC<IDetailView> = () => {
           onError={() => {
             setError(true);
             setIsLoading(false);
-          }} src={new UrlQuery().UrlQueryThumbnailImage(state.fileIndexItem.fileHash)} /> : null}
+          }} src={new UrlQuery().UrlThumbnailImage(state.fileIndexItem.fileHash)} /> : null}
 
         {relativeObjects.nextFilePath ?
-          <div onClick={() => next()} className="nextprev nextprev--next"><div className="icon"/></div>
+          <div onClick={() => next()} className="nextprev nextprev--next"><div className="icon" /></div>
           : ""}
 
         {relativeObjects.prevFilePath ?
           <div onClick={() => prev()}
-            className="nextprev nextprev--prev"><div className="icon"/></div>
-          : <div className="nextprev nextprev"/>}
+            className="nextprev nextprev--prev"><div className="icon" /></div>
+          : <div className="nextprev nextprev" />}
 
       </div>
     </div>

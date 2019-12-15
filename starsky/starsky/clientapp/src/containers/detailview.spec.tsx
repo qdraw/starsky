@@ -77,7 +77,7 @@ describe("DetailView", () => {
         image.simulate('load');
       });
       expect(image.props().src).toBe(
-          new UrlQuery().UrlQueryThumbnailImage(contextProvider.state.fileIndexItem.fileHash));
+        new UrlQuery().UrlThumbnailImage(contextProvider.state.fileIndexItem.fileHash));
       expect(Component.exists('.main--error')).toBeFalsy();
     });
 
@@ -134,17 +134,17 @@ describe("DetailView", () => {
     });
 
     it("Prev Click", () => {
-        const navigateSpy = jest.fn();
-        const locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
-            return {
-                location: globalHistory.location,
-                navigate: navigateSpy,
-            }
-        });
+      const navigateSpy = jest.fn();
+      const locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
+        return {
+          location: globalHistory.location,
+          navigate: navigateSpy,
+        }
+      });
 
-        const detailview = mount(<TestComponent/>);
+      const detailview = mount(<TestComponent />);
 
-        detailview.find(".nextprev--prev").simulate('click');
+      detailview.find(".nextprev--prev").simulate('click');
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();

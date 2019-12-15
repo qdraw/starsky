@@ -86,7 +86,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     bodyParams.set("append", "true");
     bodyParams.set("Colorclass", "8");
 
-    var resultDo = await FetchPost(new UrlQuery().UrlQueryUpdateApi(), bodyParams.toString());
+    var resultDo = await FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString());
     if (resultDo.statusCode !== 404 && resultDo.statusCode !== 200) {
       return;
     }
@@ -110,9 +110,9 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
         <div className="wrapper">
           {!select ? <button className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
             <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
-              <i/>
-              <i/>
-              <i/>
+              <i />
+              <i />
+              <i />
             </div>
           </button> : null}
 
@@ -145,7 +145,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
             <div className="nav__container">
               <ul className="menu">
-                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)}/>
+                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
               </ul>
             </div>
           </nav>

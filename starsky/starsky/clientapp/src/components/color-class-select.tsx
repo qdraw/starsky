@@ -43,7 +43,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
 
     if (!props.isEnabled) return;
 
-    var updateApiUrl = new UrlQuery().UrlQueryUpdateApi();
+    var updateApiUrl = new UrlQuery().UrlUpdateApi();
 
     var bodyParams = new URLSearchParams();
     bodyParams.append("f", props.filePath);
@@ -71,7 +71,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
       colorContent.map((item, index) => (
         <a key={index} onClick={() => { handleChange(index); }}
           className={currentColorClass === index ? "btn btn--default colorclass colorclass--" + index + " active" : "btn colorclass colorclass--" + index}>
-          <label/><span>{item}</span>
+          <label /><span>{item}</span>
         </a>
       ))
     }
