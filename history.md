@@ -24,6 +24,7 @@
 - [x] Upgrade ClientApp from React 16.9.0 to 16.9.15
 - [x] Improve Unit test coverage (at least 80% on coverage-report _551 mstest and 244 jest_)
 - [x] Front-end for Rename files (in detailview)
+- [] 
 
 # version 0.1.9 - 2019-12-01
 _Upgrade to .NET Core 3.0 & EF Core 3.1-preview3_

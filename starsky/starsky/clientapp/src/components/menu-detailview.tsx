@@ -53,8 +53,6 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   // Trash and Undo Trash
   async function TrashFile() {
-    console.log(detailView);
-
     if (!detailView) return;
 
     var bodyParams = new URLSearchParams();
