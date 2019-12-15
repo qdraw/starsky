@@ -98,6 +98,29 @@ const MenuDetailView: React.FunctionComponent = () => {
   }
 
   /**
+   * Checks if the hash is changes and update Context:  orientation + fileHash
+   */
+  async function requestNewFileHash(): Promise<boolean | null> {
+    var resultGet = await FetchGet(new UrlQuery().UrlIndexServerApi(state.subPath));
+    if (resultGet.statusCode !== 200) {
+      console.error(resultGet);
+      setIsLoading(false);
+      return null;
+    }
+    var media = new CastToInterface().MediaDetailView(resultGet.data).data;
+    var orientation = media.fileIndexItem && media.fileIndexItem.orientation ? media.fileIndexItem.orientation : Orientation.Horizontal;
+
+    // the hash changes if you rotate an image
+    if (media.fileIndexItem.fileHash === state.fileIndexItem.fileHash) return false;
+
+    dispatch({ 'type': 'update', orientation });
+    // triggered on this one
+    dispatch({ 'type': 'update', fileHash: media.fileIndexItem.fileHash });
+    setIsLoading(false);
+    return true;
+  }
+
+  /**
    * Update the rotation status
    */
   async function rotateImage90() {
@@ -112,21 +135,15 @@ const MenuDetailView: React.FunctionComponent = () => {
       return;
     }
 
+    // there is an async backend event triggered, sometimes there is an que
     setTimeout(async () => {
-      var resultGet = await FetchGet(new UrlQuery().UrlIndexServerApi(state.subPath));
-      if (resultGet.statusCode !== 200) {
-        console.error(resultGet);
-        setIsLoading(false);
-        return;
+      var result = await requestNewFileHash();
+      if (result === false) {
+        setTimeout(async () => {
+          await requestNewFileHash();
+        }, 7000);
       }
-      var media = new CastToInterface().MediaDetailView(resultGet.data).data;
-      var orientation = media.fileIndexItem && media.fileIndexItem.orientation ? media.fileIndexItem.orientation : Orientation.Horizontal;
-
-      dispatch({ 'type': 'update', orientation });
-      // triggered on this one
-      dispatch({ 'type': 'update', fileHash: media.fileIndexItem.fileHash });
-      setIsLoading(false);
-    }, 4800)
+    }, 3000);
   }
 
   useKeyboardEvent(/(Delete)/, (event: KeyboardEvent) => {

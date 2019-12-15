@@ -17,6 +17,9 @@
 ## High priority features planned
 - []   (feature) Creating thumbnails from Web Interface (including status)
 
+# version 0.1.11 - tba
+- [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
+
 # version 0.1.10 - 2019-12-15
 - [x] (bugfix) Archive => After pressing 'Apply' the updates are not shown
 - [x] Upgrade ClientApp from React 16.9.0 to 16.9.15

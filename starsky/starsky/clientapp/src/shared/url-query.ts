@@ -45,15 +45,17 @@ export class UrlQuery {
     if (requested.details) {
       urlObject.details = requested.details;
     }
-    var url = new URLPath().RemovePrefixUrl(new URLPath().IUrlToString(urlObject));
-    return this.UrlIndexServerApi(url.replace("?f=", ""));
+    if (urlObject.f !== undefined) {
+      return this.UrlIndexServerApi(urlObject.f);
+    }
+    return this.UrlIndexServerApi("/");
   }
 
   /**
    * Get Direct api/index
    */
   public UrlIndexServerApi = (subPath: string) => {
-    return "/api/index?f=" + subPath;
+    return "/api/index?f=" + new URLPath().encodeURI(subPath);
   }
 
   public UrlQueryInfoApi(subPath: string): string {
