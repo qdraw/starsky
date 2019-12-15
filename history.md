@@ -18,12 +18,12 @@
 - []   (feature) Creating thumbnails from Web Interface (including status)
 
 # version 0.1.10 - 2019-12-15
-- [] (bug) `/starsky` paths are not supported __not fixed__
 - [x] (bugfix) Archive => After pressing 'Apply' the updates are not shown
 - [x] Upgrade ClientApp from React 16.9.0 to 16.9.15
 - [x] Front-end for Rename files (in detailview)
 - [x] (front-end) 'Rotate to Right'
 - [x] Improve Unit test coverage (at least 80% on coverage-report _561 mstest and 271 jest tests_)
+- [] (bug) `/starsky` paths are not supported __not fixed__
 
 # version 0.1.9 - 2019-12-01
 _Upgrade to .NET Core 3.0 & EF Core 3.1-preview3_
