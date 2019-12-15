@@ -39,23 +39,21 @@ const MenuDetailView: React.FunctionComponent = () => {
   }
 
   // Get the status from the props
-  function getIsMarkedAsDeletedFromProps(): boolean {
+  function getIsMarkedAsDeletedFromProps(): boolean | null {
     if (!detailView) return false;
     return detailView.fileIndexItem.status === IExifStatus.Deleted;
   }
 
+  // null == loading 
   const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(getIsMarkedAsDeletedFromProps());
-
-  // update props after a file change
-  useEffect(() => {
-    setMarkedAsDeleted(getIsMarkedAsDeletedFromProps())
-  }, [detailView]);
 
   // Trash and Undo Trash
   async function TrashFile() {
     console.log('trash');
 
     if (!detailView) return;
+
+    setMarkedAsDeleted(null);
 
     var bodyParams = new URLSearchParams();
     bodyParams.set("f", detailView.subPath);
@@ -66,10 +64,12 @@ const MenuDetailView: React.FunctionComponent = () => {
       bodyParams.set("append", "true");
       var resultDo = await FetchPost(new UrlQuery().UrlQueryUpdateApi(), bodyParams.toString());
       if (resultDo.statusCode !== 200) {
+        console.error(resultDo);
         return;
       }
       dispatch({ 'type': 'append', tags: "!delete!" });
       dispatch({ 'type': 'update', status: IExifStatus.Deleted });
+      setMarkedAsDeleted(true);
     }
     // Undo trash
     else {
@@ -77,10 +77,12 @@ const MenuDetailView: React.FunctionComponent = () => {
       bodyParams.set("search", "!delete!");
       var resultUndo = await FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString());
       if (resultUndo.statusCode !== 200) {
+        console.error(resultUndo);
         return;
       }
       dispatch({ 'type': 'remove', tags: "!delete!" });
       dispatch({ 'type': 'update', status: IExifStatus.Ok });
+      setMarkedAsDeleted(false);
     }
   }
 
@@ -92,6 +94,7 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   var headerName = isDetails ? "header header--main header--edit" : "header header--main";
   if (isMarkedAsDeleted) headerName += " " + "header--deleted";
+  if (isMarkedAsDeleted === null) headerName += " " + "header--loading";
 
   const [isModalExportOpen, setModalExportOpen] = React.useState(false);
   const [isModalRenameFileOpen, setModalRenameFileOpen] = React.useState(false);
