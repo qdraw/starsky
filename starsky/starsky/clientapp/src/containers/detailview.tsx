@@ -54,7 +54,8 @@ const DetailView: React.FC<IDetailView> = () => {
     FetchGet(new UrlQuery().UrlThumbnailJsonApi(state.fileIndexItem.fileHash)).then((result) => {
       if (!state.fileIndexItem.orientation) return;
       if (result.statusCode === 202) {
-        // "Thumbnail is not ready yet"
+        // result from API is: "Thumbnail is not ready yet"
+        console.log(state.fileIndexItem.orientation);
         setTranslateRotation(state.fileIndexItem.orientation);
       }
       else if (result.statusCode === 200) {

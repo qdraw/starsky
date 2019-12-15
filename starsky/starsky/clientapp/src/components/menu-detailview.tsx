@@ -111,8 +111,6 @@ const MenuDetailView: React.FunctionComponent = () => {
       return;
     }
 
-    console.log('rotate');
-
     setTimeout(async () => {
       var resultGet = await FetchGet(new UrlQuery().UrlIndexServerApi(state.subPath));
       if (resultGet.statusCode !== 200) {
@@ -121,9 +119,7 @@ const MenuDetailView: React.FunctionComponent = () => {
         return;
       }
       var media = new CastToInterface().MediaDetailView(resultGet.data).data;
-
       var orientation = media.fileIndexItem && media.fileIndexItem.orientation ? media.fileIndexItem.orientation : Orientation.Horizontal;
-      console.log(media.fileIndexItem);
 
       dispatch({ 'type': 'update', orientation });
       // triggered on this one

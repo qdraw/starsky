@@ -4,9 +4,11 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as ContextDetailview from '../contexts/detailview-context';
 import * as useLocation from '../hooks/use-location';
-import { IRelativeObjects, newDetailView } from '../interfaces/IDetailView';
+import { IConnectionDefault } from '../interfaces/IConnectionDefault';
+import { IDetailView, IRelativeObjects, newDetailView } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
-import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import { IFileIndexItem, Orientation } from '../interfaces/IFileIndexItem';
+import * as FetchGet from '../shared/fetch-get';
 import { UrlQuery } from '../shared/url-query';
 import DetailView from './detailview';
 
@@ -31,6 +33,7 @@ describe("DetailView", () => {
       focalLength: 10,
       longitude: 1,
       latitude: 1,
+      orientation: Orientation.Horizontal,
       fileName: 'test.jpg',
       parentDirectory: '/parentDirectory'
     } as IFileIndexItem,
@@ -38,7 +41,8 @@ describe("DetailView", () => {
     status: IExifStatus.Default,
     pageType: 'DetailView',
     colorClassFilterList: [],
-  } as any;
+    subPath: '/parentDirectory/test.jpg',
+  } as IDetailView;
 
   describe("With context and test if image is loaded", () => {
     let contextProvider: any;
@@ -91,9 +95,10 @@ describe("DetailView", () => {
       expect(Component.exists('.sidebar')).toBeTruthy()
     });
 
+
   });
 
-  describe("Nexts/Prev clicks", () => {
+  describe("Nexts/Prev clicks ++ Rotation check", () => {
     let TestComponent: () => JSX.Element;
 
     beforeAll(() => {
@@ -102,6 +107,7 @@ describe("DetailView", () => {
 
     // // Setup mock
     beforeEach(() => {
+      defaultState.fileIndexItem.orientation = Orientation.Rotate270Cw;
       const contextProvider = {
         dispatch: () => jest.fn(),
         state: defaultState
@@ -113,6 +119,34 @@ describe("DetailView", () => {
         </ContextDetailview.DetailViewContext.Provider>
       );
 
+    });
+
+    it("Rotation API is called return 202", () => {
+
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 202, data: {
+          subPath: "/test/image.jpg",
+          pageType: 'DetailView',
+          fileIndexItem: { orientation: Orientation.Rotate270Cw, fileHash: 'needed', status: IExifStatus.Ok, filePath: "/test/image.jpg", fileName: "image.jpg" }
+        } as IDetailView
+      } as IConnectionDefault);
+      var spyGet = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
+
+      mount(<TestComponent />);
+
+      expect(spyGet).toBeCalled();
+      expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi('hash'));
+    });
+
+    it("Rotation API is called return 200", () => {
+
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      var spyGet = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
+
+      mount(<TestComponent />);
+
+      expect(spyGet).toBeCalled();
+      expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi('hash'));
     });
 
     it("Next Click", () => {
