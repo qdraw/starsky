@@ -49,22 +49,32 @@ export class UrlQuery {
   }
 
   /**
-   * Get Direct api/index
+   * Get Direct api/index with IUrl
    */
   public UrlIndexServerApi = (urlObject: IUrl) => {
     return "/api/index" + new URLPath().IUrlToString(urlObject)
   }
 
+  /**
+   * GET: Gets the realtime API
+   * @param subPath subpath style
+   */
   public UrlQueryInfoApi(subPath: string): string {
     if (!subPath) return "";
     var url = this.urlReplacePath(subPath);
     return "/api/info?f=" + url + "&json=true";
   }
 
+  /**
+   * POST to this to update meta information
+   */
   public UrlUpdateApi = () => {
     return "/api/update";
   }
 
+  /**
+   * POST to this to search and replace meta information like: tags, descriptions and titles
+   */
   public UrlReplaceApi = () => {
     return "/api/replace";
   }
