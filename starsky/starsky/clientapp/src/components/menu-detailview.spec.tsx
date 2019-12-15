@@ -1,9 +1,11 @@
 import { globalHistory } from '@reach/router';
+import { act } from '@testing-library/react';
 import { mount, ReactWrapper, shallow } from 'enzyme';
 import React from 'react';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IDetailView } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
+import * as FetchGet from '../shared/fetch-get';
 import * as FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
@@ -25,14 +27,21 @@ describe("MenuDetailView", () => {
     beforeEach(() => {
       var state = {
         subPath: "/test/image.jpg",
-        fileIndexItem: { status: IExifStatus.Ok, filePath: "/test/image.jpg", fileName: "image.jpg" }
+        fileIndexItem: {
+          status: IExifStatus.Ok,
+          fileHash: '000',
+          filePath: "/test/image.jpg",
+          fileName: "image.jpg"
+        }
       } as IDetailView;
       contextValues = { state, dispatch: jest.fn() }
 
       jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
 
-      Component = mount(<MenuDetailView />)
+      act(() => {
+        Component = mount(<MenuDetailView />)
+      })
     });
 
     it("export click", () => {
@@ -105,14 +114,37 @@ describe("MenuDetailView", () => {
       expect(spy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftest%2Fimage.jpg&Tags=%21delete%21&append=true")
     });
 
-    it("move click [Not implemented]", () => {
-      // var moveModal = jest.spyOn(ModalExport, 'default')
-      //   .mockImplementationOnce(() => { return <></> });
+    it("rotate click", async () => {
 
-      // var item = Component.find('[data-test="move"]');
-      // item.simulate('click');
+      jest.useFakeTimers();
+      jest.spyOn(global, 'setTimeout');
 
-      // expect(moveModal).toBeCalled();
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      var spyPost = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200, data: {
+          subPath: "/test/image.jpg",
+          pageType: 'DetailView',
+          fileIndexItem: { fileHash: 'needed', status: IExifStatus.Ok, filePath: "/test/image.jpg", fileName: "image.jpg" }
+        } as IDetailView
+      } as IConnectionDefault);
+      var spyGet = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
+
+      var item = Component.find('[data-test="rotate"]');
+
+      // need to await here
+      await item.simulate('click');
+
+      jest.advanceTimersByTime(5000);
+
+      expect(spyPost).toBeCalled();
+      expect(spyPost).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftest%2Fimage.jpg&rotateClock=1");
+
+      expect(spyGet).toBeCalled();
+      expect(spyGet).toBeCalledWith(new UrlQuery().UrlIndexServerApi("/test/image.jpg"));
+
+      jest.useRealTimers();
     });
 
   });

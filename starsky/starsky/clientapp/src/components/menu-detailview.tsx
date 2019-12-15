@@ -5,6 +5,7 @@ import { DetailViewContext } from '../contexts/detailview-context';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IExifStatus } from '../interfaces/IExifStatus';
+import { Orientation } from '../interfaces/IFileIndexItem';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
@@ -110,6 +111,8 @@ const MenuDetailView: React.FunctionComponent = () => {
       return;
     }
 
+    console.log('rotate');
+
     setTimeout(async () => {
       var resultGet = await FetchGet(new UrlQuery().UrlIndexServerApi(state.subPath));
       if (resultGet.statusCode !== 200) {
@@ -119,7 +122,10 @@ const MenuDetailView: React.FunctionComponent = () => {
       }
       var media = new CastToInterface().MediaDetailView(resultGet.data).data;
 
-      dispatch({ 'type': 'update', orientation: media.fileIndexItem.orientation });
+      var orientation = media.fileIndexItem && media.fileIndexItem.orientation ? media.fileIndexItem.orientation : Orientation.Horizontal;
+      console.log(media.fileIndexItem);
+
+      dispatch({ 'type': 'update', orientation });
       // triggered on this one
       dispatch({ 'type': 'update', fileHash: media.fileIndexItem.fileHash });
       setIsLoading(false);
@@ -134,7 +140,7 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   var headerName = isDetails ? "header header--main header--edit" : "header header--main";
   if (isMarkedAsDeleted) headerName += " header--deleted"; // add space before
-  if (isMarkedAsDeleted === null) headerName += " header--loading"; // add space before
+  // if (isLoading) headerName += " header--loading"; // add space before
 
   const [isModalExportOpen, setModalExportOpen] = React.useState(false);
   const [isModalRenameFileOpen, setModalRenameFileOpen] = React.useState(false);
@@ -155,7 +161,7 @@ const MenuDetailView: React.FunctionComponent = () => {
           <li className="menu-option disabled" data-test="move" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
           <li className="menu-option" data-test="rename" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>
           <li className="menu-option" data-test="trash" onClick={TrashFile}>{!isMarkedAsDeleted ? "Verplaats naar prullenmand" : "Zet terug uit prullenmand"}</li>
-          <li className="menu-option disabled" data-test="rotate" onClick={rotateImage90}>Roteer naar rechts</li>
+          <li className="menu-option" data-test="rotate" onClick={rotateImage90}>Roteer naar rechts</li>
         </MoreMenu>
       </div>
     </header>
