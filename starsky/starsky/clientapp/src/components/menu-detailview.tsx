@@ -101,6 +101,7 @@ const MenuDetailView: React.FunctionComponent = () => {
    * Update the rotation status
    */
   async function rotateImage90() {
+    if (isMarkedAsDeleted) return;
     setIsLoading(true);
 
     var bodyParams = newBodyParams();
