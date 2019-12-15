@@ -8,6 +8,7 @@ import { IExifStatus } from '../interfaces/IExifStatus';
 import FetchPost from '../shared/fetch-post';
 import { Keyboard } from '../shared/keyboard';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 import ModalDetailviewRenameFile from './modal-detailview-rename-file';
 import ModalExport from './modal-export';
 import MoreMenu from './more-menu';
@@ -52,6 +53,8 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   // Trash and Undo Trash
   async function TrashFile() {
+    console.log(detailView);
+
     if (!detailView) return;
 
     var bodyParams = new URLSearchParams();
@@ -61,7 +64,7 @@ const MenuDetailView: React.FunctionComponent = () => {
     if (!isMarkedAsDeleted) {
       bodyParams.set("Tags", "!delete!");
       bodyParams.set("append", "true");
-      var resultDo = await FetchPost("/api/update", bodyParams.toString());
+      var resultDo = await FetchPost(new UrlQuery().UrlQueryUpdateApi(), bodyParams.toString());
       if (resultDo.statusCode !== 200) {
         return;
       }
@@ -72,7 +75,7 @@ const MenuDetailView: React.FunctionComponent = () => {
     else {
       bodyParams.set("fieldName", "tags");
       bodyParams.set("search", "!delete!");
-      var resultUndo = await FetchPost("/api/replace", bodyParams.toString());
+      var resultUndo = await FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString());
       if (resultUndo.statusCode !== 200) {
         return;
       }
@@ -101,12 +104,12 @@ const MenuDetailView: React.FunctionComponent = () => {
         <Link className="item item--first item--close" to={new URLPath().updateFilePath(history.location.search, parentDirectory)}>Sluiten</Link>
         <div className="item item--labels" onClick={() => { toggleLabels() }}>Labels</div>
         <MoreMenu>
-          <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
-          {!isDetails ? <li className="menu-option" onClick={() => { toggleLabels() }}>Labels</li> : null}
-          <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
-          <li className="menu-option" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>
-          <li className="menu-option" onClick={() => { TrashFile(); }}>{!isMarkedAsDeleted ? "Verplaats naar prullenmand" : "Zet terug uit prullenmand"}</li>
-          <li className="menu-option disabled" onClick={() => { alert("werkt nog niet"); }}>Roteer naar rechts</li>
+          <li className="menu-option" data-test="export" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
+          {!isDetails ? <li className="menu-option" data-test="labels" onClick={() => { toggleLabels() }}>Labels</li> : null}
+          <li className="menu-option disabled" data-test="move" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
+          <li className="menu-option" data-test="rename" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>
+          <li className="menu-option" data-test="trash" onClick={() => { TrashFile(); }}>{!isMarkedAsDeleted ? "Verplaats naar prullenmand" : "Zet terug uit prullenmand"}</li>
+          <li className="menu-option disabled" data-test="rotate" onClick={() => { alert("werkt nog niet"); }}>Roteer naar rechts</li>
         </MoreMenu>
       </div>
     </header>

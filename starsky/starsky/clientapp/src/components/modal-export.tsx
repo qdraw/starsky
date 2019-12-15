@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import useInterval from '../hooks/use-interval';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
@@ -20,7 +20,7 @@ enum ProcessingState {
   fail
 }
 
-const ModalExport: React.FunctionComponent<IModalTrashProps> = memo((props) => {
+const ModalExport: React.FunctionComponent<IModalTrashProps> = (props) => {
 
   const [isProcessing, setProcessing] = React.useState(ProcessingState.default);
   const [createZipKey, setCreateZipKey] = React.useState("");
@@ -135,6 +135,6 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = memo((props) => {
       </> : null}
     </div>
   </Modal>)
-});
+};
 
 export default ModalExport

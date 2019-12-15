@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { DetailViewContext } from '../contexts/detailview-context';
 import useLocation from '../hooks/use-location';
 import { IExifStatus } from '../interfaces/IExifStatus';
@@ -14,7 +14,7 @@ interface IModalRenameFileProps {
   handleExit: Function;
 }
 
-const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> = memo((props) => {
+const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> = (props) => {
 
   const NonValidExtension: string = "Dit bestand kan zo niet worden weggeschreven";
   const ChangeToDifferentExtension: string = "Let op! Je veranderd de extensie van het bestand, deze kan hierdoor onleesbaar worden";
@@ -143,6 +143,6 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
       </div>
     </Modal>
   </>)
-});
+};
 
 export default ModalDetailviewRenameFile

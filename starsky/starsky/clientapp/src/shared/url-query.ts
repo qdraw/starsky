@@ -56,6 +56,10 @@ export class UrlQuery {
     return "/api/update";
   }
 
+  public UrlReplaceApi = () => {
+    return "/api/replace";
+  }
+
   public UrlQueryThumbnailImage = (fileHash: string) => {
     return "/api/thumbnail/" + fileHash + ".jpg?issingleitem=true";
   }
