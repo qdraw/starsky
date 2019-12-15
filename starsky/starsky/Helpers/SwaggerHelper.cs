@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using starskycore.Helpers;
 using starskycore.Models;
 using Newtonsoft.Json;

@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using starskycore.Interfaces;
-using starskycore.Models;
 using starskycore.Services;
 
 namespace starskywebhtmlcli.Services
