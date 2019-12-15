@@ -126,7 +126,7 @@ const MenuDetailView: React.FunctionComponent = () => {
       // triggered on this one
       dispatch({ 'type': 'update', fileHash: media.fileIndexItem.fileHash });
       setIsLoading(false);
-    }, 3000)
+    }, 4000)
   }
 
   useKeyboardEvent(/(Delete)/, (event: KeyboardEvent) => {
