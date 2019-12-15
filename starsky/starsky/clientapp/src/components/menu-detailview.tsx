@@ -101,7 +101,7 @@ const MenuDetailView: React.FunctionComponent = () => {
    * Checks if the hash is changes and update Context:  orientation + fileHash
    */
   async function requestNewFileHash(): Promise<boolean | null> {
-    var resultGet = await FetchGet(new UrlQuery().UrlIndexServerApi(state.subPath));
+    var resultGet = await FetchGet(new UrlQuery().UrlIndexServerApi({ f: state.subPath }));
     if (resultGet.statusCode !== 200) {
       console.error(resultGet);
       setIsLoading(false);

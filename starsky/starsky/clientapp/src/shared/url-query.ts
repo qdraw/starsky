@@ -1,4 +1,4 @@
-import { newIUrl } from '../interfaces/IUrl';
+import { IUrl, newIUrl } from '../interfaces/IUrl';
 import { URLPath } from './url-path';
 
 
@@ -45,29 +45,36 @@ export class UrlQuery {
     if (requested.details) {
       urlObject.details = requested.details;
     }
-    if (urlObject.f !== undefined) {
-      return this.UrlIndexServerApi(urlObject.f);
-    }
-    return this.UrlIndexServerApi("/");
+    return this.UrlIndexServerApi(urlObject);
   }
 
   /**
-   * Get Direct api/index
+   * Get Direct api/index with IUrl
    */
-  public UrlIndexServerApi = (subPath: string) => {
-    return "/api/index?f=" + new URLPath().encodeURI(subPath);
+  public UrlIndexServerApi = (urlObject: IUrl) => {
+    return "/api/index" + new URLPath().IUrlToString(urlObject)
   }
 
+  /**
+   * GET: Gets the realtime API
+   * @param subPath subpath style
+   */
   public UrlQueryInfoApi(subPath: string): string {
     if (!subPath) return "";
     var url = this.urlReplacePath(subPath);
     return "/api/info?f=" + url + "&json=true";
   }
 
+  /**
+   * POST to this to update meta information
+   */
   public UrlUpdateApi = () => {
     return "/api/update";
   }
 
+  /**
+   * POST to this to search and replace meta information like: tags, descriptions and titles
+   */
   public UrlReplaceApi = () => {
     return "/api/replace";
   }
