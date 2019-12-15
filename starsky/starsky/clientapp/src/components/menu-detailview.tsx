@@ -86,6 +86,7 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   useKeyboardEvent(/(Delete)/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
+    console.log('keyboard event fired');
     TrashFile();
   });
 
