@@ -49,7 +49,18 @@ describe("MenuDetailView", () => {
       expect(exportModal).toBeCalled();
     });
 
-    it("labels click", () => {
+    it("labels click .item--labels", () => {
+      var item = mount(<MenuDetailView />).find('.item.item--labels');
+      item.simulate('click');
+
+      var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
+      expect(urlObject.details).toBeTruthy();
+
+      // reset afterwards
+      globalHistory.navigate("/");
+    });
+
+    it("labels click (in MoreMenu)", () => {
       var item = mount(<MenuDetailView />).find('[data-test="labels"]');
       item.simulate('click');
 
