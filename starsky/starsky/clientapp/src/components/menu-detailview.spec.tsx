@@ -142,7 +142,7 @@ describe("MenuDetailView", () => {
       expect(spyPost).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftest%2Fimage.jpg&rotateClock=1");
 
       expect(spyGet).toBeCalled();
-      expect(spyGet).toBeCalledWith(new UrlQuery().UrlIndexServerApi("/test/image.jpg"));
+      expect(spyGet).toBeCalledWith(new UrlQuery().UrlIndexServerApi({ f: "/test/image.jpg" }));
 
       jest.useRealTimers();
     });
