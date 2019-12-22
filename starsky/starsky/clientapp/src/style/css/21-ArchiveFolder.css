@@ -53,6 +53,7 @@
   mask-image: url("../images/baseline-check_circle-24px.svg");
   mask-size: cover;
   z-index: 5;
+  border: 5px solid #283593;
 }
 
 
