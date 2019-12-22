@@ -94,6 +94,10 @@ describe("MenuDetailView", () => {
       var renameModal = jest.spyOn(ModalDetailviewRenameFile, 'default')
         .mockImplementationOnce(() => { return <></> });
 
+      // one extra spy
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+
       var item = Component.find('[data-test="rename"]');
       item.simulate('click');
 
@@ -165,6 +169,7 @@ describe("MenuDetailView", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+
       var spy = jest.spyOn(FetchPost, 'default')
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -209,6 +214,31 @@ describe("MenuDetailView", () => {
       expect(spy).toBeCalled();
       expect(spy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftest%2Fimage.jpg&Tags=%21delete%21&append=true");
       // in the test the 'keyboard event fired' three times, but in the real world once
+    });
+
+    it("navigate to next item and reset some states", () => {
+
+      var state = {
+        subPath: "/trashed/test1.jpg",
+        fileIndexItem: { status: IExifStatus.Deleted, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
+      } as IDetailView;
+      var contextValues = { state, dispatch: jest.fn() }
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+
+
+      // globalHistory.navigate("/?f=/test1.jpg");
+
+      const component = mount(<MenuDetailView />)
+
+      globalHistory.navigate("/?f=/test2.jpg");
+
+
+      expect(component.find('header').getDOMNode().className).toBe("header header--main")
+
+      // globalHistory.navigate("/");
+
     });
 
   });
