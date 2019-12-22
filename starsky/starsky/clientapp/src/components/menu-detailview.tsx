@@ -33,6 +33,8 @@ const MenuDetailView: React.FunctionComponent = () => {
   useEffect(() => {
     var details = new URLPath().StringToIUrl(history.location.search).details;
     setDetails(details);
+    // the state of the image
+    setMarkedAsDeleted(getIsMarkedAsDeletedFromProps())
   }, [history.location.search]);
 
   function toggleLabels() {
@@ -152,10 +154,6 @@ const MenuDetailView: React.FunctionComponent = () => {
     TrashFile();
   });
 
-  var headerName = isDetails ? "header header--main header--edit" : "header header--main";
-  if (isMarkedAsDeleted) headerName += " header--deleted"; // add space before
-  // if (isLoading) headerName += " header--loading"; // add space before
-
   const [isModalExportOpen, setModalExportOpen] = React.useState(false);
   const [isModalRenameFileOpen, setModalRenameFileOpen] = React.useState(false);
 
@@ -165,7 +163,8 @@ const MenuDetailView: React.FunctionComponent = () => {
     {isModalExportOpen && detailView ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)} select={[detailView.subPath]} isOpen={isModalExportOpen} /> : null}
     {isModalRenameFileOpen && detailView ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)} isOpen={isModalRenameFileOpen} /> : null}
 
-    <header className={headerName}>
+    <header className={isDetails ? isMarkedAsDeleted ? "header header--main header--edit header--deleted" : "header header--main header--edit" :
+      isMarkedAsDeleted ? "header header--main header--deleted" : "header header--main"}>
       <div className="wrapper">
         <Link className="item item--first item--close" to={new URLPath().updateFilePath(history.location.search, parentDirectory)}>Sluiten</Link>
         <div className="item item--labels" onClick={() => { toggleLabels() }}>Labels</div>
