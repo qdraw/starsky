@@ -16,7 +16,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
   var history = useLocation();
 
   var colorContent: string[] = [
-    "Geen",
+    "Kleurloos",
     "Paars",
     "Rood",
     "Oranje",
@@ -65,10 +65,10 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
     {
       props.colorClassUsage.map((item, index) => (
         item >= 0 && item <= 8 ? <Link key={item} to={updateColorClass(item)}
-          className={props.colorClassFilterList.indexOf(item) >= 0 ? 
+          className={props.colorClassFilterList.indexOf(item) >= 0 ?
             "btn btn--default colorclass colorclass--" + item + " active" : "btn colorclass colorclass--" + item}>
-          <label/><span>{colorContent[item]}</span> </Link>
-          : <span key={item}/>
+          <label /><span>{colorContent[item]}</span> </Link>
+          : <span key={item} />
       ))
     }
   </div>);
