@@ -17,7 +17,8 @@
   color: #263238;
   margin-right: 10px;
   margin-top: 10px;
-
+  padding-left: 5.5px;
+  padding-right: 5px;
 }
 
 .colorclass > div.colorclass label,
@@ -38,7 +39,7 @@
     display: inline-block;
     height: 6px;
     width: 9px;
-    border-left: 2px solid;
+    border-left: 2px solid; /* check icon */
     border-bottom: 2px solid;
     transform: translate(0px, -2px) rotate(-45deg);
 }
