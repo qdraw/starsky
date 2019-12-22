@@ -163,7 +163,7 @@ const MenuDetailView: React.FunctionComponent = () => {
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
     {isModalExportOpen && detailView ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)} select={[detailView.subPath]} isOpen={isModalExportOpen} /> : null}
-    {isModalRenameFileOpen ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)} isOpen={isModalRenameFileOpen} /> : null}
+    {isModalRenameFileOpen && detailView ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)} isOpen={isModalRenameFileOpen} /> : null}
 
     <header className={headerName}>
       <div className="wrapper">
