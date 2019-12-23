@@ -25,3 +25,13 @@
   }
 }
 
+@media screen and (max-width: 600px) {
+    .collapsed .breadcrumb span{
+        display: none;
+    }
+}
+@media screen and (max-width: 400px) {
+    .collapsed .breadcrumb{
+        display: none;
+    }
+}

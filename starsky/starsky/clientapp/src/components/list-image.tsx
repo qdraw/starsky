@@ -2,6 +2,7 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import useIntersection from '../hooks/use-intersection-observer';
 import useLocation from '../hooks/use-location';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 
 interface IListImageProps {
   src: string;
@@ -40,10 +41,11 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       // data:images are blocked by a strict CSP 
       setSrc('./images/empty-image.gif') // 26 bytes
     }
-  }, [history.location.search]);
+    // the api url does not include details or other menus
+  }, [new UrlQuery().UrlQueryServerApi(history.location.search)]);
 
   if (!props.src || props.src.toLowerCase().endsWith('null.jpg?issingleitem=true')) {
-    return (<div ref={target} className="img-box--error"/>);
+    return (<div ref={target} className="img-box--error" />);
   }
 
   return (
@@ -53,7 +55,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
           setError(false);
           setIsLoading(false)
         }}
-        onError={() => setError(true)} /> : <div className="img-box--loading"/>}
+        onError={() => setError(true)} /> : <div className="img-box--loading" />}
     </div>
   );
 

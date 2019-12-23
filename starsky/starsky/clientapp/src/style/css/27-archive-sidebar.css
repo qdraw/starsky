@@ -3,6 +3,12 @@
   width: calc(100% - 300px);
 }
 
+@media screen and (max-width: 600px) {
+  .archive.collapsed .content{
+    opacity: 0.2;
+  }
+}
+
 .archive .sidebar {
   top: 50px;
   border-left: 1px solid #607D8B;

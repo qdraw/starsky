@@ -23,12 +23,24 @@
 }
 
 .relativelink .nextprev .next {
-  display: inline-block;
-  float: right;
   text-align: right;
+  float: right;
   padding-right: 20px;
 }
 
 .relativelink .nextprev .prev {
     float: left;
+}
+
+
+@media screen and (max-width: 600px) {
+    .collapsed .relativelink{
+        display: none;
+    }
+}
+@media screen and (max-width: 400px) {
+    .collapsed .relativelink .nextprev .next,
+    .collapsed .relativelink .nextprev .prev {
+        display: none;
+    }
 }

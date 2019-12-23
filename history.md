@@ -16,13 +16,12 @@
 
 ## High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
-- []   (bugfix) _Front-end_ _Archive_ After press 'Select' and return the scrollstate keeps on the same position
+- []   (bugfix) _Front-end_ _Archive_ _iOS_ After press 'Select' and return the scrollstate keeps on the same position
 - []   (bugfix) _Front-end_ When going from Archive to Detailview and back the scrollstate is still the same
-- []   (bugfix) _Front-end_ _Archive_ when press 'Select' the images are not reloaded
-- [x]   (bugfix) _Front-end_ _Detailview_ when press Delete and switch image, the next image should be marked as not deleted (Fixed)
-- []   (bugfix) _Front-end_ Rename handle newlines in dialog
 
 # version 0.1.11 - tba
+- [x]   (bugfix) _Front-end_ _Detailview_ when press Delete and switch image, the next image should be marked as not deleted (Fixed)
+- [x]   (bugfix) _Front-end_ _Archive_ when press 'Select' the images are not reloaded (Fixed)
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
 
 # version 0.1.10 - 2019-12-15

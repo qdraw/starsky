@@ -343,7 +343,7 @@
     background-color: black;
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 700px) {
     .header.header--edit .wrapper{
         display: none;
     }

@@ -11,17 +11,16 @@ const https = require('https');
 // all urls to proxy
 app.all("/*", function (req, res, next) {
 
-  if(req.originalUrl.startsWith("/sockjs-node")) {
+  if (req.originalUrl.startsWith("/sockjs-node")) {
     res.status(503);
     res.json("not allowed");
   }
 
   if (req.originalUrl.startsWith("/api") ||
-  req.originalUrl.startsWith("/account")  ||
-  req.originalUrl.startsWith("/sync/")  ||
-  req.originalUrl.startsWith("/suggest/")  ||
-  req.originalUrl.startsWith("/export/")  )
-  {
+    req.originalUrl.startsWith("/account") ||
+    req.originalUrl.startsWith("/sync/") ||
+    req.originalUrl.startsWith("/suggest/") ||
+    req.originalUrl.startsWith("/export/")) {
     NetCoreAppRouteRoute(req, res, next);
   }
   else {
@@ -133,6 +132,6 @@ const localtunnel = require('localtunnel');
   });
 
   tunnel.on('close', () => {
-    // tunnels are closed
+    console.log('tunnels are closed');
   });
 })();
