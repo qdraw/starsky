@@ -1,7 +1,7 @@
 import { mount, ReactWrapper, shallow } from 'enzyme';
 import React from 'react';
 import { DetailViewContext } from '../contexts/detailview-context';
-import { IRelativeObjects } from '../interfaces/IDetailView';
+import { IRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import DetailViewSidebar from './detail-view-sidebar';
@@ -46,7 +46,7 @@ describe("DetailViewSidebar", () => {
           relativeObjects: {} as IRelativeObjects,
           subPath: "/",
           status: IExifStatus.Default,
-          pageType: 'DetailView',
+          pageType: PageType.DetailView,
           colorClassFilterList: [],
         } as any
       };

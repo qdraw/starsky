@@ -4,6 +4,7 @@ import { IUrl } from '../interfaces/IUrl';
 export class URLPath {
 
   public FileNameBreadcrumb(filePath: string) {
+    if (!filePath) return "/";
     return filePath.split("/")[filePath.split("/").length - 1]
   }
 

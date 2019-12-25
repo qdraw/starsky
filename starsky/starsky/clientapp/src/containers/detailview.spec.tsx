@@ -5,7 +5,7 @@ import { act } from 'react-dom/test-utils';
 import * as ContextDetailview from '../contexts/detailview-context';
 import * as useLocation from '../hooks/use-location';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
-import { IDetailView, IRelativeObjects, newDetailView } from '../interfaces/IDetailView';
+import { IDetailView, IRelativeObjects, newDetailView, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem, Orientation } from '../interfaces/IFileIndexItem';
 import * as FetchGet from '../shared/fetch-get';
@@ -39,7 +39,7 @@ describe("DetailView", () => {
     } as IFileIndexItem,
     relativeObjects: { nextFilePath: 'next', prevFilePath: 'prev' } as IRelativeObjects,
     status: IExifStatus.Default,
-    pageType: 'DetailView',
+    pageType: PageType.DetailView,
     colorClassFilterList: [],
     subPath: '/parentDirectory/test.jpg',
   } as IDetailView;
