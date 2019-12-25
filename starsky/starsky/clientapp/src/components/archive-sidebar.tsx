@@ -1,6 +1,8 @@
 import React, { memo, useEffect, useLayoutEffect } from "react";
+import useLocation from '../hooks/use-location';
 import { PageType } from '../interfaces/IDetailView';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import { URLPath } from '../shared/url-path';
 import ArchiveSidebarColorClass from './archive-sidebar-color-class';
 import ArchiveSidebarLabelEdit from './archive-sidebar-label-edit';
 import ArchiveSidebarSelectionList from './archive-sidebar-selection-list';
@@ -15,26 +17,39 @@ interface IArchiveSidebarProps {
 
 const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((archive) => {
 
-  /**
-   * Scroll lock sidebar for mobile devices
+  // Update view based on url parameters
+  var history = useLocation();
+  const [isSidebar, setIsSidebar] = React.useState(new URLPath().StringToIUrl(history.location.search).sidebar);
+  useEffect(() => {
+    var sidebarLocal = new URLPath().StringToIUrl(history.location.search).sidebar;
+    setIsSidebar(sidebarLocal);
+  }, [history.location.search]);
+
+  /** 
+   * toggle when activate &sidebar=true 
    */
   useEffect(() => {
-    document.body.style.top = `-${window.scrollY}px`;
-    document.body.classList.add("lock-screen");
+    if (isSidebar) {
+      document.body.classList.add("lock-screen");
+    }
+    else {
+      document.body.classList.remove("lock-screen");
+      window.scrollTo(0, parseInt(document.body.style.top || '0') * -1);
+    }
     return () => {
       document.body.classList.remove("lock-screen");
-      const scrollY = document.body.style.top;
-      window.scrollTo(0, parseInt(scrollY || '0') * -1);
-      document.body.style.top = '';
+      window.scrollTo(0, parseInt(document.body.style.top || '0') * -1);
     };
-  });
+  }, [isSidebar]);
 
   /**
    * to avoid changes in location when scrolling while the sidebar is open
    */
   const listener = (e: Event) => {
+    if (!window.scrollY) return;
     document.body.style.top = `-${window.scrollY}px`;
   };
+
   useLayoutEffect(() => {
     window.addEventListener("scroll", listener);
     return () => {
@@ -44,7 +59,11 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
 
   /** to avoid wrong props passed */
   if (archive.pageType === PageType.Loading) {
-    return (<div className="sidebar"/>)
+    return (<div className="sidebar" />)
+  }
+
+  if (!isSidebar) {
+    return <></>
   }
 
   return (<div className="sidebar">
@@ -57,18 +76,18 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
     <div className="content--header">
       Selectie
     </div>
-    <ArchiveSidebarSelectionList {...archive}/>
+    <ArchiveSidebarSelectionList {...archive} />
 
     <div className="content--header">
       Labels wijzigingen
     </div>
-    <ArchiveSidebarLabelEdit {...archive}/>
+    <ArchiveSidebarLabelEdit {...archive} />
 
     <div className="content--header">
       Kleur-Classificatie
       </div>
     <div className="content--text">
-      <ArchiveSidebarColorClass {...archive}/>
+      <ArchiveSidebarColorClass {...archive} />
     </div>
   </div>);
 });

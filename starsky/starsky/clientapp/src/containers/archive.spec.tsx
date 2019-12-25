@@ -9,15 +9,19 @@ describe("Archive", () => {
   });
 
   it("no colorclass usage", () => {
-      const container = shallow(<Archive {...newIArchive()} />);
-      expect(container.text()).toBe('(Archive) => no colorClassLists')
+    const container = shallow(<Archive {...newIArchive()} />);
+    expect(container.text()).toBe('(Archive) => no colorClassLists')
   });
 
   it("check if warning exist with no items in the list", () => {
-      const container = mount(<Archive {...newIArchive()}
-                                       colorClassFilterList={[]}
-                                       colorClassUsage={[]}
-                                       fileIndexItems={[]}/>);
-      expect(container.exists('.warning-box')).toBeTruthy()
+
+    jest.spyOn(window, 'scrollTo')
+      .mockImplementationOnce(() => { });
+
+    const container = mount(<Archive {...newIArchive()}
+      colorClassFilterList={[]}
+      colorClassUsage={[]}
+      fileIndexItems={[]} />);
+    expect(container.exists('.warning-box')).toBeTruthy()
   });
 });
