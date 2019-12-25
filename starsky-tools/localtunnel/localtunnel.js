@@ -117,6 +117,8 @@ console.log("http://localhost:" + port);
 const localtunnel = require('localtunnel');
 
 (async () => {
+
+  // lt -p 8080 -h http://localtunnel.me --local-https false
   const tunnel = await localtunnel({
     subdomain: process.env.SUBDOMAIN,
     host: 'http://localtunnel.me',
