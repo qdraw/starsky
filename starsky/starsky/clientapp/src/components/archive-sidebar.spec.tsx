@@ -1,3 +1,4 @@
+import { globalHistory } from '@reach/router';
 import { mount, shallow } from "enzyme";
 import React from 'react';
 import { PageType } from '../interfaces/IDetailView';
@@ -16,6 +17,8 @@ describe("ArchiveSidebar", () => {
       jest.spyOn(window, 'scrollTo')
         .mockImplementationOnce(() => { })
       jest.spyOn(React, 'useLayoutEffect').mockImplementation(React.useEffect);
+
+      globalHistory.navigate("/?sidebar=true")
     });
 
     it("restore scroll after unmount", () => {
@@ -44,5 +47,32 @@ describe("ArchiveSidebar", () => {
         fileIndexItems={newIFileIndexItemArray()} />);
       expect(component.find('.warning-box')).toBeTruthy();
     });
+
+    it("scroll event and set body style with scroll", () => {
+
+      mount(<ArchiveSidebar pageType={PageType.Archive} subPath={"/"}
+        isReadOnly={false} colorClassUsage={[]} fileIndexItems={newIFileIndexItemArray()} />);
+
+      Object.defineProperty(window, 'scrollY', { value: 1 });
+      window.dispatchEvent(new Event('scroll'));
+
+      expect(document.body.style.top).toBe("-1px")
+
+      // reset
+      Object.defineProperty(window, 'scrollY', { value: 0 });
+      document.body.style.top = "";
+    });
+
+    it("scroll event and set body style no scroll ", () => {
+
+      mount(<ArchiveSidebar pageType={PageType.Archive} subPath={"/"}
+        isReadOnly={false} colorClassUsage={[]} fileIndexItems={newIFileIndexItemArray()} />);
+
+      window.dispatchEvent(new Event('scroll'));
+      expect(document.body.style.top).toBe("")
+
+    });
+
+
   });
 });
