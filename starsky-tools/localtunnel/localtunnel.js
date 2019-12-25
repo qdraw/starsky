@@ -119,7 +119,11 @@ const localtunnel = require('localtunnel');
 (async () => {
   const tunnel = await localtunnel({
     subdomain: process.env.SUBDOMAIN,
-    port: port
+    host: 'http://localtunnel.me',
+    port: port,
+    local_https: false
+  }).catch(err => {
+    throw err;
   });
 
   // the assigned public url for your tunnel
