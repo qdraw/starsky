@@ -1,8 +1,8 @@
-import {useEffect, useState} from 'react';
-import {IArchive, newIArchive} from '../interfaces/IArchive';
-import {PageType} from '../interfaces/IDetailView';
-import {CastToInterface} from '../shared/cast-to-interface';
-import {UrlQuery} from '../shared/url-query';
+import { useEffect, useState } from 'react';
+import { IArchive, newIArchive } from '../interfaces/IArchive';
+import { PageType } from '../interfaces/IDetailView';
+import { CastToInterface } from '../shared/cast-to-interface';
+import { UrlQuery } from '../shared/url-query';
 
 export interface IUseTrashList {
   archive?: IArchive,
@@ -41,15 +41,11 @@ const useTrashList = (pageNumber = 0): IUseTrashList | null => {
 
         const responseObject = await res.json();
 
-        var pageType = new CastToInterface().getPageType(responseObject);
-        if (pageType === PageType.NotFound || pageType === PageType.ApplicationException) return;
-        setPageType(pageType);
-
-        if (pageType !== PageType.Search && pageType !== PageType.Trash) return;
         var archiveMedia = new CastToInterface().MediaArchive(responseObject);
+        setPageType(archiveMedia.data.pageType);
 
-        // for trash
-        archiveMedia.data.pageType = pageType;
+        if (archiveMedia.data.pageType !== PageType.Trash) return;
+
         // We don't know those values in the search context
         archiveMedia.data.colorClassUsage = [];
         archiveMedia.data.colorClassFilterList = [];
@@ -59,9 +55,9 @@ const useTrashList = (pageNumber = 0): IUseTrashList | null => {
         console.error(e);
       }
     })();
-  
+
     return () => {
-        abortController.abort();
+      abortController.abort();
     };
   }, [location]);
 

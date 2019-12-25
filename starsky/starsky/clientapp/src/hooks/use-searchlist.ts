@@ -1,8 +1,8 @@
-import {useEffect, useState} from 'react';
-import {IArchive, newIArchive} from '../interfaces/IArchive';
-import {PageType} from '../interfaces/IDetailView';
-import {CastToInterface} from '../shared/cast-to-interface';
-import {UrlQuery} from '../shared/url-query';
+import { useEffect, useState } from 'react';
+import { IArchive, newIArchive } from '../interfaces/IArchive';
+import { PageType } from '../interfaces/IDetailView';
+import { CastToInterface } from '../shared/cast-to-interface';
+import { UrlQuery } from '../shared/url-query';
 
 export interface ISearchList {
   archive?: IArchive,
@@ -46,15 +46,11 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
 
         const responseObject = await res.json();
 
-        var pageType = new CastToInterface().getPageType(responseObject);
-        if (pageType === PageType.NotFound || pageType === PageType.ApplicationException) return;
-        setPageType(pageType);
-
-        if (pageType !== PageType.Search && pageType !== PageType.Trash) return;
         var archiveMedia = new CastToInterface().MediaArchive(responseObject);
+        setPageType(archiveMedia.data.pageType);
 
-        // for trash
-        archiveMedia.data.pageType = pageType;
+        if (archiveMedia.data.pageType !== PageType.Search) return;
+
         // We don't know those values in the search context
         archiveMedia.data.colorClassUsage = [];
         archiveMedia.data.colorClassFilterList = [];
@@ -64,13 +60,11 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
         console.error(e);
       }
     })();
-  
+
     return () => {
-        abortController.abort();
+      abortController.abort();
     };
   }, [location]);
-  // detailView,
-  // parent
 
   return {
     archive,

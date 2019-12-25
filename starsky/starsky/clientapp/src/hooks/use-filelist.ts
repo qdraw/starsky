@@ -1,9 +1,9 @@
-import {useEffect, useState} from 'react';
-import {IArchive, newIArchive} from '../interfaces/IArchive';
-import {IDetailView, newDetailView, PageType} from '../interfaces/IDetailView';
-import {CastToInterface} from '../shared/cast-to-interface';
-import {URLPath} from '../shared/url-path';
-import {UrlQuery} from '../shared/url-query';
+import { useEffect, useState } from 'react';
+import { IArchive, newIArchive } from '../interfaces/IArchive';
+import { IDetailView, newDetailView, PageType } from '../interfaces/IDetailView';
+import { CastToInterface } from '../shared/cast-to-interface';
+import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 
 export interface IFileList {
   archive?: IArchive,
@@ -49,11 +49,10 @@ const useFileList = (locationSearch: string): IFileList | null => {
 
         setParent(new URLPath().getParent(locationSearch));
 
-        var pageTypeLocal = new CastToInterface().getPageType(responseObject);
-        if (pageTypeLocal === PageType.NotFound || pageTypeLocal === PageType.ApplicationException) return;
+        if (responseObject.pageType === PageType.NotFound || responseObject.pageType === PageType.ApplicationException) return;
 
-        setPageType(pageTypeLocal);
-        switch (pageTypeLocal) {
+        setPageType(responseObject.pageType);
+        switch (responseObject.pageType) {
           case PageType.Archive:
             var archiveMedia = new CastToInterface().MediaArchive(responseObject);
             setArchive(archiveMedia.data);
@@ -70,9 +69,9 @@ const useFileList = (locationSearch: string): IFileList | null => {
         console.error(e);
       }
     })();
-  
+
     return () => {
-        abortController.abort();
+      abortController.abort();
     };
   }, [location]);
 

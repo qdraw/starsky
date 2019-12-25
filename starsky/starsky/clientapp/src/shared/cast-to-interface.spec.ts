@@ -3,24 +3,7 @@ import { IMedia } from '../interfaces/IMedia';
 import { CastToInterface } from './cast-to-interface';
 
 describe("cast-to-interface", () => {
-  describe("getPageType", () => {
-    it("getPageType null", () => {
-      var test = new CastToInterface().getPageType(null);
-      expect(test).toBe(PageType.ApplicationException);
-    });
 
-    it("getPageType toBeUndefined", () => {
-      var test = new CastToInterface().getPageType({});
-      expect(test).toBeUndefined();
-    });
-
-    it("getPageType DetailView", () => {
-      var test = new CastToInterface().getPageType({
-        "pageType": "DetailView"
-      });
-      expect(test).toBe(PageType.DetailView);
-    });
-  });
   describe("MediaDetailView", () => {
     it("DetailView default", () => {
       var test = new CastToInterface().MediaDetailView({});

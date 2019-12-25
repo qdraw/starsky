@@ -1,22 +1,11 @@
 // import { IAppContainerState } from '../interfaces/IAppContainerState';
 import { IArchive, newIArchive } from '../interfaces/IArchive';
-import { IDetailView, newDetailView, PageType } from '../interfaces/IDetailView';
+import { newDetailView, PageType } from '../interfaces/IDetailView';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { IMedia } from '../interfaces/IMedia';
 
 
 export class CastToInterface {
-
-  /**
-   * Get the type of the page by the object
-   */
-  getPageType = (data: any): PageType => {
-    if (!data) return PageType.ApplicationException;
-
-    let output: IDetailView = data;
-    let pageType = PageType[output.pageType as keyof typeof PageType];
-    return pageType;
-  }
 
   /**
    * Plain JS-object to casted object for Archive, Search and Trash pages
@@ -26,7 +15,7 @@ export class CastToInterface {
       type: 'Archive',
     } as IMedia<'Archive'>
 
-    if (this.getPageType(data) === PageType.Archive || this.getPageType(data) === PageType.Search || this.getPageType(data) === PageType.Trash) {
+    if (data.pageType === PageType.Archive || data.pageType === PageType.Search || data.pageType === PageType.Trash) {
       media.data = data;
       return media;
     }
@@ -43,7 +32,7 @@ export class CastToInterface {
       type: 'DetailView',
     } as IMedia<'DetailView'>
 
-    if (this.getPageType(data) === PageType.DetailView) {
+    if (data.pageType === PageType.DetailView) {
       media.data = data;
       return media;
     }
