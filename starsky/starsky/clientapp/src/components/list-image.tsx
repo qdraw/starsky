@@ -2,7 +2,6 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import useIntersection from '../hooks/use-intersection-observer';
 import useLocation from '../hooks/use-location';
 import { URLPath } from '../shared/url-path';
-import { UrlQuery } from '../shared/url-query';
 
 interface IListImageProps {
   src: string;
@@ -28,8 +27,10 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
 
   var intersected = useIntersection(target, {
     rootMargin: '250px',
-    once: true
+    once: true,
+    threshold: 0.3
   });
+  // threshold = indicate at what percentage of the target's visibility the callback is executed. (default = 0)
 
   // to stop loading images after a url change
   var history = useLocation();
@@ -41,8 +42,8 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       // data:images are blocked by a strict CSP 
       setSrc('./images/empty-image.gif') // 26 bytes
     }
-    // the api url does not include details or other menus
-  }, [new UrlQuery().UrlQueryServerApi(history.location.search)]);
+    // need to refresh
+  }, [history.location.search]);
 
   if (!props.src || props.src.toLowerCase().endsWith('null.jpg?issingleitem=true')) {
     return (<div ref={target} className="img-box--error" />);
