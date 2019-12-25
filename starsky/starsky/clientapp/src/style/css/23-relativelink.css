@@ -5,6 +5,12 @@
   font-weight: 300;
 }
 
+@media (prefers-color-scheme: dark) {
+  .relativelink {
+    background-color: #455A64;
+  }
+}
+
 .relativelink .nextprev a {
   color: #263238;
   white-space: nowrap;
@@ -19,7 +25,13 @@
   border-radius: 5px;
   width: 120px;
   line-height: 32px;
-    
+}
+
+@media (prefers-color-scheme: dark) {
+  .relativelink .nextprev a {
+      border: #fff 1px solid;
+      color: #fff;
+  }
 }
 
 .relativelink .nextprev .next {

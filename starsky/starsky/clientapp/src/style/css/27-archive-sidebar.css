@@ -19,6 +19,14 @@
   position: fixed;
   background-color: #fff;
   z-index: 7;
+  color: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+  .archive .sidebar {
+    background-color: #37474F;
+    color: #fff;
+  }
 }
 
 .archive .sidebar .warning-box {

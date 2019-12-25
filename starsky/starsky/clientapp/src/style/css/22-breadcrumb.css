@@ -13,6 +13,16 @@
   color: #263238;
 }
 
+@media (prefers-color-scheme: dark) {
+  .breadcrumb {
+    background-color: #37474F;
+    color: #fff;
+  }
+  .breadcrumb a {
+    color: #fff;
+  }
+}
+
 @media (max-width: 400px) {
   
   .breadcrumb {

@@ -22,6 +22,12 @@
   transition: background ease-in-out .5s
 }
 
+@media (prefers-color-scheme: dark) {
+  .folder > .box > .box-content {
+    background-color: #78909C;
+  }
+}
+
 @media screen and (min-width: 400px) and (max-width: 660px) {
 
   .folder > .box {

@@ -26,6 +26,15 @@
   background-color: #ECEFF1;  
 }
 
+@media (prefers-color-scheme: dark) {
+  .content--header {
+    background-color: #455A64;
+  }
+  .content--subheader {
+    background-color: #546E7A;
+  }
+}
+
 .content--text {
   padding: 10px;
 }

@@ -38,6 +38,12 @@ div.modal-content {
   cursor: default;
 }
 
+@media (prefers-color-scheme: dark) {
+  div.modal-content {
+    background-color: #37474F;
+    color: #fff;
+  }
+}
 
 @media screen and (max-width: 450px) {
   div.modal-content {
