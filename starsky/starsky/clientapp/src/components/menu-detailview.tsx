@@ -25,6 +25,7 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   let { state, dispatch } = React.useContext(DetailViewContext);
 
+  // fallback state
   if (!state) {
     state = {
       pageType: PageType.Loading,
@@ -34,14 +35,18 @@ const MenuDetailView: React.FunctionComponent = () => {
         filePath: "/"
       }
     } as IDetailView;
-
   }
-
 
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
   useEffect(() => {
     var details = new URLPath().StringToIUrl(history.location.search).details;
     setDetails(details);
+  }, [history.location.search]);
+
+  // know if you searching ?t= in url
+  const [isSearchQuery, setIsSearchQuery] = React.useState(!!new URLPath().StringToIUrl(history.location.search).t);
+  useEffect(() => {
+    setIsSearchQuery(!!new URLPath().StringToIUrl(history.location.search).t);
   }, [history.location.search]);
 
   /* only update when the state is changed */
@@ -66,6 +71,9 @@ const MenuDetailView: React.FunctionComponent = () => {
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * Create body params to do url queries
+   */
   function newBodyParams(): URLSearchParams {
     var bodyParams = new URLSearchParams();
     bodyParams.set("f", state.subPath);
@@ -176,9 +184,16 @@ const MenuDetailView: React.FunctionComponent = () => {
     <header className={isDetails ? isMarkedAsDeleted ? "header header--main header--edit header--deleted" : "header header--main header--edit" :
       isMarkedAsDeleted ? "header header--main header--deleted" : "header header--main"}>
       <div className="wrapper">
-        <Link className="item item--first item--close"
+
+        {/* in directory state */}
+        {!isSearchQuery ? <Link className="item item--first item--close"
           state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
-          to={new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory)}>Sluiten</Link>
+          to={new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory)}>Sluiten</Link> : null}
+
+        {/* to search */}
+        {isSearchQuery ? <Link className="item item--first item--search"
+          state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
+          to={new URLPath().Search(history.location.search)}>Verder zoeken</Link> : null}
 
         <div className="item item--labels" onClick={() => { toggleLabels() }}>Labels</div>
         <MoreMenu>

@@ -34,7 +34,6 @@ const Login: React.FC<ILoginProps> = () => {
   const MessageLogout: string = "Uitloggen";
 
   // We don't want to login twich 
-  // var defaultLoginStatus = props.defaultLoginStatus ? props.defaultLoginStatus : true;
   const [isLogin, setLogin] = React.useState(true);
   useEffect(() => {
     FetchGet(new UrlQuery().UrlAccountStatus()).then((status) => {

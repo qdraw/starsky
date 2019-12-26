@@ -250,6 +250,7 @@
 .header > .wrapper > .item.item--more,
 .header > .wrapper > .item.item--select,
 .header .item.item--continue,
+.header .item.item--search,
 .header .item.item--close {
   color: #fff;
   text-decoration: none;
@@ -263,6 +264,10 @@
 
 .header .item.item--close:before {
     mask-image: url("../images/s-cross.svg");
+}
+
+.header .item.item--search:before {
+    mask-image: url("../images/baseline-search-24px.svg");
 }
 
 .header .item.item--continue:before {

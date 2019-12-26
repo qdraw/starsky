@@ -49,7 +49,9 @@ const useFileList = (locationSearch: string): IFileList | null => {
 
         setParent(new URLPath().getParent(locationSearch));
 
-        if (responseObject.pageType === PageType.NotFound || responseObject.pageType === PageType.ApplicationException) return;
+        if (!responseObject || !responseObject.pageType
+          || responseObject.pageType === PageType.NotFound
+          || responseObject.pageType === PageType.ApplicationException) return;
 
         setPageType(responseObject.pageType);
         switch (responseObject.pageType) {

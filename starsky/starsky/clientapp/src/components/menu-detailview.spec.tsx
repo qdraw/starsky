@@ -1,6 +1,7 @@
 import { globalHistory } from '@reach/router';
 import { mount, shallow } from 'enzyme';
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IDetailView, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
@@ -36,7 +37,20 @@ describe("MenuDetailView", () => {
 
       jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
+    });
 
+    it("as search Result", () => {
+      // add search query to url
+      globalHistory.navigate("/?t=test&p=0");
+
+      var component = mount(<MenuDetailView />);
+
+      console.log(component.html());
+
+
+      // reset afterwards
+      component.unmount();
+      globalHistory.navigate("/");
     });
 
     it("export click [menu]", () => {
@@ -50,8 +64,9 @@ describe("MenuDetailView", () => {
       var component = mount(<MenuDetailView />);
 
       var item = component.find('[data-test="export"]');
-      item.simulate('click');
-
+      act(() => {
+        item.simulate('click');
+      });
       expect(exportModal).toBeCalled();
 
       // to avoid polling afterwards

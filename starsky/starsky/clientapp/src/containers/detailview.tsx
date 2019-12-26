@@ -23,13 +23,10 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // if there is no state
   if (!state) {
-    state = { fileIndexItem: { fileHash: '' }, ...newDetailView() };
+    state = { relativeObjects: newIRelativeObjects(), fileIndexItem: { fileHash: '' }, ...newDetailView() };
   }
 
-  let relativeObjects = newIRelativeObjects();
-  if (state && state.relativeObjects) {
-    relativeObjects = state.relativeObjects;
-  }
+  const [relativeObjects, setRelativeObjects] = React.useState(state.relativeObjects);
 
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
   useEffect(() => {
@@ -63,6 +60,21 @@ const DetailView: React.FC<IDetailView> = () => {
       }
     });
   }, [state.fileIndexItem.fileHash]);
+
+  // know if you searching ?t= in url
+  const [isSearchQuery, setIsSearchQuery] = React.useState(!!new URLPath().StringToIUrl(history.location.search).t);
+  useEffect(() => {
+    setIsSearchQuery(!!new URLPath().StringToIUrl(history.location.search).t);
+  }, [history.location.search]);
+
+  // update relative next prev buttons for search queries
+  useEffect(() => {
+    if (state.subPath === "/") return;
+    FetchGet(new UrlQuery().UrlSearchRelativeApi(state.subPath, new URLPath().StringToIUrl(history.location.search).t, new URLPath().StringToIUrl(history.location.search).p)).then((result) => {
+      if (result.statusCode !== 200) return;
+      setRelativeObjects(result.data);
+    });
+  }, [isSearchQuery, state.subPath]);
 
   useKeyboardEvent(/ArrowLeft/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;

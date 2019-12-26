@@ -222,6 +222,14 @@ export class URLPath {
   }
 
   /**
+   * Search path based on Location Hash
+   */
+  public Search(historyLocationHash: string): string {
+    var url = new URLPath().StringToIUrl(historyLocationHash);
+    return "/search" + new URLPath().IUrlToString(url);
+  }
+
+  /**
    * updateSelection
    */
   public updateSelection(historyLocationHash: string, toUpdateSelect: string[]): IUrl {

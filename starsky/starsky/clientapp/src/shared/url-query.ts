@@ -13,6 +13,12 @@ export class UrlQuery {
     return "/account/login?json=true";
   }
 
+  public UrlSearchRelativeApi = (f: string, t: string | undefined, pageNumber = 0): string => {
+    return "/api/search/relativeObjects?f=" + f + "&t=" +
+      t +
+      "&p=" + pageNumber;
+  }
+
   public UrlQuerySearchApi = (query: string, pageNumber = 0): string => {
     return "/api/search?json=true&t=" + query + "&p=" + pageNumber;
   }
