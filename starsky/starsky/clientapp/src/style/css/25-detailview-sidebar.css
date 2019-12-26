@@ -45,6 +45,7 @@
   background-position: center;
   margin-right: 5px;
 }
+
 .detailview .box .icon.icon--right {
   float: right;
 }
@@ -71,4 +72,10 @@
 
 .detailview .box .icon.icon--photo {
   background-image: url('../images/baseline-photo-24px.svg');
+}
+
+@media (prefers-color-scheme: dark) {
+  .detailview .box .icon {
+    filter: invert(100%);
+  }
 }
