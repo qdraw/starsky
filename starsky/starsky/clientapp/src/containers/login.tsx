@@ -57,6 +57,11 @@ const Login: React.FC<ILoginProps> = () => {
         // redirect
         var returnUrl = new URLPath().GetReturnUrl(history.location.search);
         history.navigate(returnUrl, { replace: true });
+
+        // for chrome navigate isn't enough
+        setTimeout(() => {
+          document.location.reload();
+        }, 100);
       }
     } catch (err) {
       setLoading(false);

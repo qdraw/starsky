@@ -27,6 +27,12 @@
   background-color: #455A64;
 }
 
+@media (prefers-color-scheme: dark) {
+  .header.header--bluegray700 {
+    background-color: #000;
+  }
+}
+
 .header.header--bluegray800 {
   background-color: #37474F;
 }

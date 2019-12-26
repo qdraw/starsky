@@ -125,6 +125,10 @@ namespace starsky
 						.AllowAnyMethod()
 						.AllowAnyHeader()
 						.AllowCredentials() );
+				
+				options.AddPolicy("CorsProduction",
+					builder => builder
+						.AllowCredentials() );
 			});
 			
 			// Cache the response at the browser
@@ -206,6 +210,7 @@ namespace starsky
             }
             else
             {
+	            app.UseCors("CorsProduction");   
                 app.UseStatusCodePagesWithReExecute("/Home/Error");
             }
 

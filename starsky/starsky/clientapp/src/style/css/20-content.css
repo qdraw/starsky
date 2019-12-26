@@ -29,9 +29,11 @@
 @media (prefers-color-scheme: dark) {
   .content--header {
     background-color: #455A64;
+    color: #fff;
   }
   .content--subheader {
     background-color: #546E7A;
+    color: #fff;
   }
 }
 
@@ -57,6 +59,12 @@
 .content > .content--login-form {
   margin-top:20px;
   width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .content > .content--login-form {
+    color: #fff;
+  }
 }
 
 .content .warning-box,
