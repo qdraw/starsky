@@ -35,6 +35,7 @@ describe("DetailView", () => {
       latitude: 1,
       orientation: Orientation.Horizontal,
       fileName: 'test.jpg',
+      filePath: '/parentDirectory/test.jpg',
       parentDirectory: '/parentDirectory'
     } as IFileIndexItem,
     relativeObjects: { nextFilePath: 'next', prevFilePath: 'prev' } as IRelativeObjects,
@@ -257,7 +258,7 @@ describe("DetailView", () => {
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();
-      expect(navigateSpy).toHaveBeenNthCalledWith(1, "/?f=/parentDirectory", { "state": { "fileName": "test.jpg" } });
+      expect(navigateSpy).toHaveBeenNthCalledWith(1, "/?f=/parentDirectory", { "state": { "filePath": "/parentDirectory/test.jpg" } });
     });
 
   });

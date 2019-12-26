@@ -55,7 +55,6 @@ const DetailView: React.FC<IDetailView> = () => {
       if (!state.fileIndexItem.orientation) return;
       if (result.statusCode === 202) {
         // result from API is: "Thumbnail is not ready yet"
-        console.log(state.fileIndexItem.orientation);
         setTranslateRotation(state.fileIndexItem.orientation);
       }
       else if (result.statusCode === 200) {
@@ -86,7 +85,7 @@ const DetailView: React.FC<IDetailView> = () => {
 
     history.navigate(parentDirectory, {
       state: {
-        fileName: state.fileIndexItem.fileName
+        filePath: state.fileIndexItem.filePath
       } as INavigateState
     });
   }, [state.fileIndexItem]);

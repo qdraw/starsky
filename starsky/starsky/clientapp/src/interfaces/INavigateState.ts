@@ -1,4 +1,4 @@
 
 export interface INavigateState {
-  fileName: string;
+  filePath: string;
 }

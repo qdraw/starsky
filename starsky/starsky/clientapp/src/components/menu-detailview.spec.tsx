@@ -65,20 +65,16 @@ describe("MenuDetailView", () => {
       jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
 
-      console.log('renderdddd');
-
-
       var component = mount(<MenuDetailView />);
-      console.log(component.html());
 
       var find = component.find('.item.item--labels');
       find.simulate('click');
 
       var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
-      console.log(urlObject);
 
       expect(urlObject.details).toBeTruthy();
 
+      // dont keep any menus open
       component.unmount();
 
       // reset afterwards

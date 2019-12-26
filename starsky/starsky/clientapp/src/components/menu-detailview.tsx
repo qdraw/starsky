@@ -7,6 +7,7 @@ import useLocation from '../hooks/use-location';
 import { IDetailView, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { Orientation } from '../interfaces/IFileIndexItem';
+import { INavigateState } from '../interfaces/INavigateState';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
@@ -29,6 +30,7 @@ const MenuDetailView: React.FunctionComponent = () => {
       pageType: PageType.Loading,
       fileIndexItem: {
         parentDirectory: "/",
+        fileName: '',
         filePath: "/"
       }
     } as IDetailView;
@@ -111,7 +113,6 @@ const MenuDetailView: React.FunctionComponent = () => {
    * Checks if the hash is changes and update Context:  orientation + fileHash
    */
   async function requestNewFileHash(): Promise<boolean | null> {
-    console.log('fetch!!!!');
     var resultGet = await FetchGet(new UrlQuery().UrlIndexServerApi({ f: state.subPath }));
     if (resultGet.statusCode !== 200) {
       console.error(resultGet);
@@ -175,7 +176,10 @@ const MenuDetailView: React.FunctionComponent = () => {
     <header className={isDetails ? isMarkedAsDeleted ? "header header--main header--edit header--deleted" : "header header--main header--edit" :
       isMarkedAsDeleted ? "header header--main header--deleted" : "header header--main"}>
       <div className="wrapper">
-        <Link className="item item--first item--close" to={new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory)}>Sluiten</Link>
+        <Link className="item item--first item--close"
+          state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
+          to={new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory)}>Sluiten</Link>
+
         <div className="item item--labels" onClick={() => { toggleLabels() }}>Labels</div>
         <MoreMenu>
           <li className="menu-option" data-test="export" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>

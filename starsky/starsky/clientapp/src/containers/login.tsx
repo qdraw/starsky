@@ -38,7 +38,6 @@ const Login: React.FC<ILoginProps> = () => {
   const [isLogin, setLogin] = React.useState(true);
   useEffect(() => {
     FetchGet(new UrlQuery().UrlAccountStatus()).then((status) => {
-      console.log(status.statusCode === 401);
       setLogin(status.statusCode === 401);
     });
   }, [history.location.search]);

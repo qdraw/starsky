@@ -28,7 +28,7 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
     setSelect(urlObject.select);
   }
 
-  var preloader = <Preloader isOverlay={true} isDetailMenu={false}/>
+  var preloader = <Preloader isOverlay={true} isDetailMenu={false} />
   const [isPreloaderState, setPreloaderState] = React.useState(false);
 
   // For low connections/ option to don't download large images
@@ -46,9 +46,7 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
           className={select.indexOf(item.fileName) === -1 ?
             "box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory :
             "box-content box-content--selected colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
-
-          <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '.jpg?issingleitem=' + isSingleItem.toString()}/>
-
+          <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '.jpg?issingleitem=' + isSingleItem.toString()} />
           <div className="caption">
             <div className="name">
               {item.fileName}
@@ -64,15 +62,14 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
   }
 
   // default state
+  // data-filepath is needed to scroll to
   return (
-    <div className="box box--view">
-      {/* for slow connections */}
+    <div className="box box--view" data-filepath={item.filePath}>
+      {/* for slow connections show preloader icon */}
       {isPreloaderState ? preloader : null}
       <Link onClick={() => setPreloaderState(true)} title={item.fileName} to={new URLPath().updateFilePath(history.location.search, item.filePath)}
         className={"box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
-
-        <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '.jpg?issingleitem=' + isSingleItem.toString()}/>
-
+        <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '.jpg?issingleitem=' + isSingleItem.toString()} />
         <div className="caption">
           <div className="name">
             {item.fileName}
@@ -82,10 +79,9 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
           </div>
         </div>
       </Link>
-
     </div>
   );
-  
+
 });
 
 export default ListImageBox
