@@ -29,6 +29,7 @@
 - [x]   (bugfix) _CORS_ Add AllowCredentials policy for production
 - [x]   (feature) _Front-end_ Next/Prev back in Detailview is now also support when searching
 - [x]   (feature) _API_ Add new endpoint `/api/search/relativeObjects`
+- [x]   (bugfix) _Front-end_ change default outline for Chrome/Safari
 
 # version 0.1.10 - 2019-12-15
 - [x] (bugfix) Archive => After pressing 'Apply' the updates are not shown
