@@ -39,14 +39,13 @@ describe("MenuDetailView", () => {
         .mockImplementationOnce(() => { return contextValues })
     });
 
-    it("as search Result", () => {
+    it("as search Result button exist", () => {
       // add search query to url
       globalHistory.navigate("/?t=test&p=0");
 
       var component = mount(<MenuDetailView />);
 
-      console.log(component.html());
-
+      expect(component.exists('.item--search')).toBeTruthy();
 
       // reset afterwards
       component.unmount();
@@ -83,8 +82,9 @@ describe("MenuDetailView", () => {
       var component = mount(<MenuDetailView />);
 
       var find = component.find('.item.item--labels');
-      find.simulate('click');
-
+      act(() => {
+        find.simulate('click');
+      });
       var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
 
       expect(urlObject.details).toBeTruthy();
@@ -98,7 +98,10 @@ describe("MenuDetailView", () => {
 
     it("labels click (in MoreMenu)", () => {
       var item = mount(<MenuDetailView />).find('[data-test="labels"]');
-      item.simulate('click');
+
+      act(() => {
+        item.simulate('click');
+      });
 
       var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
       expect(urlObject.details).toBeTruthy();
@@ -126,7 +129,9 @@ describe("MenuDetailView", () => {
         .mockImplementationOnce(() => { return contextValues })
 
       var item = mount(<MenuDetailView />).find('[data-test="rename"]');
-      item.simulate('click');
+      act(() => {
+        item.simulate('click');
+      });
 
       expect(renameModal).toBeCalled();
     });
@@ -138,7 +143,9 @@ describe("MenuDetailView", () => {
       var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
       var item = mount(<MenuDetailView />).find('[data-test="trash"]');
-      item.simulate('click');
+      act(() => {
+        item.simulate('click');
+      });
 
       expect(spy).toBeCalled();
       expect(spy).toBeCalledTimes(1);
