@@ -221,7 +221,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: calc(100vw - 175px);
 }
 
 .header .item:before {
@@ -310,6 +309,8 @@
 
 .header > .wrapper > .item--first {
   margin-left: 25px;
+  /* for small screens */
+  max-width: calc(100vw - 175px);
 }
 
 @media screen and (max-width: 450px) {
