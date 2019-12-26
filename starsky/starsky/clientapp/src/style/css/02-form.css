@@ -19,7 +19,7 @@
   color: #555;
   background-color: #fff;
   border: 0px solid #000;
-  border-bottom: 4px solid #263238;
+  border-bottom: 5px solid #263238;
   box-shadow: inset 0 1px 4px #CFD8DC;
   transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s, background-color ease-in-out .15s;
   font-family: "Gloriola Std", sans-serif;
@@ -31,8 +31,9 @@
 }
 
 .form-control:focus {
-  border-bottom: 4px solid #283593;
-  box-shadow: inset 0 0px 3px #9FA8DA;
+  border-bottom: 5px solid #283593;
+  box-shadow: inset 0px 0px 8px #9FA8DA;
+  outline: none;
 }
 
 .form-control.form-control--half {

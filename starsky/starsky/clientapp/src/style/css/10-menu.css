@@ -221,7 +221,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: calc(100vw - 163px);
+  max-width: calc(100vw - 175px);
 }
 
 .header .item:before {

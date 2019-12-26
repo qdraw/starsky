@@ -137,8 +137,9 @@ body {
 textarea,
 input{
     /* disables box-shadow */
-    -webkit-appearance: none;
+    appearance: none;
     border-radius: 0;
+    outline: none;
 }
 
 a {
