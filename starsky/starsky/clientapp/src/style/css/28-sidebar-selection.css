@@ -17,6 +17,12 @@
   background-color: #ECEFF1;
 }
 
+@media (prefers-color-scheme: dark) {
+  .sidebar-selection li:nth-child(2n) {
+    background-color: #263238;
+  }
+}
+
 .sidebar-selection li .close {
   display: inline-block;
   width: 26px;

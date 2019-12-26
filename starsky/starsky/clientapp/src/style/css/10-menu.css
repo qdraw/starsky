@@ -317,7 +317,6 @@
   }
 }
 
-
 .header.header--sidebar {
   width: 320px;
   position: fixed;
@@ -326,6 +325,12 @@
   background-color: #90A4AE;
   line-height: 50px;
   z-index: 7;
+}
+
+@media (prefers-color-scheme: dark) {
+  .header.header--sidebar {
+    background-color: #37474F;
+  }
 }
 
 .header.header--sidebar.header--border-left {
@@ -339,9 +344,23 @@
   margin-left: 5px;
 }
 
+@media (prefers-color-scheme: dark) {
+  .header--sidebar .item.item.item--continue,
+  .header--sidebar .item.item--close {
+      color: #fff;
+  }
+}
+
 .header--sidebar .item:before {
     background-color: black;
 }
+
+@media (prefers-color-scheme: dark) {
+  .header--sidebar .item:before {
+    background-color: #fff;
+  }
+}
+
 
 @media screen and (max-width: 700px) {
     .header.header--edit .wrapper{
