@@ -112,6 +112,13 @@ body {
     height: 100%;
 }
 
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #546E7A;
+  }
+}
+
+
 @media screen and (max-width: 600px) {
     body.lock-screen {
         position: fixed;
@@ -130,8 +137,9 @@ body {
 textarea,
 input{
     /* disables box-shadow */
-    -webkit-appearance: none;
+    appearance: none;
     border-radius: 0;
+    outline: none;
 }
 
 a {

@@ -4,6 +4,7 @@ import { IUrl } from '../interfaces/IUrl';
 export class URLPath {
 
   public FileNameBreadcrumb(filePath: string) {
+    if (!filePath) return "/";
     return filePath.split("/")[filePath.split("/").length - 1]
   }
 
@@ -218,6 +219,14 @@ export class URLPath {
     var url = new URLPath().StringToIUrl(historyLocationHash);
     url.f = toUpdateFilePath;
     return "/" + new URLPath().IUrlToString(url);
+  }
+
+  /**
+   * Search path based on Location Hash
+   */
+  public Search(historyLocationHash: string): string {
+    var url = new URLPath().StringToIUrl(historyLocationHash);
+    return "/search" + new URLPath().IUrlToString(url);
   }
 
   /**

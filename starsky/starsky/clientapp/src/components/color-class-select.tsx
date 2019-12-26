@@ -17,7 +17,7 @@ export interface IColorClassSelectProps {
  */
 const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((props) => {
   var colorContent: Array<string> = [
-    "Geen",
+    "Kleurloos",
     "Paars",
     "Rood",
     "Oranje",

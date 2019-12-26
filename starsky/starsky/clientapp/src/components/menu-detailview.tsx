@@ -4,8 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { DetailViewContext } from '../contexts/detailview-context';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
+import { IDetailView, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { Orientation } from '../interfaces/IFileIndexItem';
+import { INavigateState } from '../interfaces/INavigateState';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
@@ -22,11 +24,17 @@ const MenuDetailView: React.FunctionComponent = () => {
   var history = useLocation();
 
   let { state, dispatch } = React.useContext(DetailViewContext);
-  var detailView = state;
 
-  var parentDirectory = "/";
-  if (detailView && detailView.fileIndexItem && detailView.fileIndexItem.parentDirectory) {
-    parentDirectory = detailView.fileIndexItem.parentDirectory;
+  // fallback state
+  if (!state) {
+    state = {
+      pageType: PageType.Loading,
+      fileIndexItem: {
+        parentDirectory: "/",
+        fileName: '',
+        filePath: "/"
+      }
+    } as IDetailView;
   }
 
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
@@ -34,6 +42,17 @@ const MenuDetailView: React.FunctionComponent = () => {
     var details = new URLPath().StringToIUrl(history.location.search).details;
     setDetails(details);
   }, [history.location.search]);
+
+  // know if you searching ?t= in url
+  const [isSearchQuery, setIsSearchQuery] = React.useState(!!new URLPath().StringToIUrl(history.location.search).t);
+  useEffect(() => {
+    setIsSearchQuery(!!new URLPath().StringToIUrl(history.location.search).t);
+  }, [history.location.search]);
+
+  /* only update when the state is changed */
+  useEffect(() => {
+    setMarkedAsDeleted(getIsMarkedAsDeletedFromProps())
+  }, [state.fileIndexItem.status]);
 
   function toggleLabels() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
@@ -44,23 +63,26 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   // Get the status from the props (null == loading)
   function getIsMarkedAsDeletedFromProps(): boolean {
-    if (!detailView) return false;
-    return detailView.fileIndexItem.status === IExifStatus.Deleted;
+    if (!state) return false;
+    return state.fileIndexItem.status === IExifStatus.Deleted;
   }
   const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(getIsMarkedAsDeletedFromProps());
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * Create body params to do url queries
+   */
   function newBodyParams(): URLSearchParams {
     var bodyParams = new URLSearchParams();
-    bodyParams.set("f", detailView.subPath);
+    bodyParams.set("f", state.subPath);
     return bodyParams;
   }
 
   // Trash and Undo Trash
   async function TrashFile() {
-    if (!detailView) return;
+    if (!state) return;
 
     setIsLoading(true);
     var bodyParams = newBodyParams();
@@ -77,7 +99,6 @@ const MenuDetailView: React.FunctionComponent = () => {
       }
       dispatch({ 'type': 'append', tags: "!delete!" });
       dispatch({ 'type': 'update', status: IExifStatus.Deleted });
-      setMarkedAsDeleted(true);
       setIsLoading(false);
     }
     // Undo trash
@@ -92,7 +113,6 @@ const MenuDetailView: React.FunctionComponent = () => {
       }
       dispatch({ 'type': 'remove', tags: "!delete!" });
       dispatch({ 'type': 'update', status: IExifStatus.Ok });
-      setMarkedAsDeleted(false);
       setIsLoading(false);
     }
   }
@@ -152,25 +172,32 @@ const MenuDetailView: React.FunctionComponent = () => {
     TrashFile();
   });
 
-  var headerName = isDetails ? "header header--main header--edit" : "header header--main";
-  if (isMarkedAsDeleted) headerName += " header--deleted"; // add space before
-  // if (isLoading) headerName += " header--loading"; // add space before
-
   const [isModalExportOpen, setModalExportOpen] = React.useState(false);
   const [isModalRenameFileOpen, setModalRenameFileOpen] = React.useState(false);
 
   return (<>
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
-    {isModalExportOpen && detailView ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)} select={[detailView.subPath]} isOpen={isModalExportOpen} /> : null}
-    {isModalRenameFileOpen ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)} isOpen={isModalRenameFileOpen} /> : null}
+    {isModalExportOpen && state ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)} select={[state.subPath]} isOpen={isModalExportOpen} /> : null}
+    {isModalRenameFileOpen && state ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)} isOpen={isModalRenameFileOpen} /> : null}
 
-    <header className={headerName}>
+    <header className={isDetails ? isMarkedAsDeleted ? "header header--main header--edit header--deleted" : "header header--main header--edit" :
+      isMarkedAsDeleted ? "header header--main header--deleted" : "header header--main"}>
       <div className="wrapper">
-        <Link className="item item--first item--close" to={new URLPath().updateFilePath(history.location.search, parentDirectory)}>Sluiten</Link>
+
+        {/* in directory state */}
+        {!isSearchQuery ? <Link className="item item--first item--close"
+          state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
+          to={new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory)}>Sluiten</Link> : null}
+
+        {/* to search */}
+        {isSearchQuery ? <Link className="item item--first item--search"
+          state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
+          to={new URLPath().Search(history.location.search)}>{new URLPath().StringToIUrl(history.location.search).t}</Link> : null}
+
         <div className="item item--labels" onClick={() => { toggleLabels() }}>Labels</div>
         <MoreMenu>
-          <li className="menu-option" data-test="export" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
+          <li className="menu-option" data-test="export" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
           {!isDetails ? <li className="menu-option" data-test="labels" onClick={toggleLabels}>Labels</li> : null}
           <li className="menu-option disabled" data-test="move" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
           <li className="menu-option" data-test="rename" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>

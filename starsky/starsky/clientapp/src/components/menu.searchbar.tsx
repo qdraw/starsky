@@ -47,7 +47,6 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
     e.preventDefault();
     navigate(query);
   }
-  // const [isLoading, setLoading] = React.useState(false);
 
   function navigate(defQuery: string) {
     // setLoading(true);
@@ -86,10 +85,10 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
         <li className="menu-item menu-item--half-extra">
           <form className="form-inline form-nav icon-addon" onSubmit={onFormSubmit}>
 
-            <label htmlFor="search" className={inputFocus ? "icon-addon--search" : "icon-addon--search-focus"}/>
+            <label htmlFor="search" className={inputFocus ? "icon-addon--search" : "icon-addon--search-focus"} />
             <input className={"form-control icon-addon--input"}
               onBlur={() => { setInputFocus(!inputFocus) }} onFocus={() => { setInputFocus(!inputFocus) }}
-              autoComplete="off" value={query} onChange={e => setQuery(e.target.value)} />
+              autoComplete="off" value={query} onChange={e => { setQuery(e.target.value); }} />
           </form>
         </li>
         {data.hits && data.hits.length === 0 ?

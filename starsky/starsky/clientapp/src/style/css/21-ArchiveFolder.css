@@ -11,12 +11,6 @@
   padding: 10px;
 }
 
-@media screen and (max-width: 450px) {
-  .folder > .box {
-    padding-left: 0px;
-  }
-}
-
 .folder > .box > .box-content {
   display: block;
   background-color: #ECEFF1;
@@ -26,6 +20,43 @@
   color: #263238;
   width: 280px;
   transition: background ease-in-out .5s
+}
+
+@media (prefers-color-scheme: dark) {
+  .folder > .box > .box-content {
+    background-color: #78909C;
+  }
+}
+
+@media screen and (min-width: 400px) and (max-width: 660px) {
+
+  .folder > .box {
+    padding-left: 0px;
+    margin-right:10px;
+  }
+
+  .folder > .box:nth-child(2n) {
+    margin-right:0px;
+  }
+
+  .folder > .box,
+  .folder > .box > .box-content {
+    width: calc(50vw - 40px);
+  }
+}
+
+@media  screen and (min-width: 400px) and (max-width: 450px) {
+  .folder > .box,
+  .folder > .box > .box-content {
+    width: calc(50vw - 25px);
+  }
+}
+
+@media  screen and (max-width: 400px) {
+  .folder > .box {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 /* select */
@@ -53,6 +84,7 @@
   mask-image: url("../images/baseline-check_circle-24px.svg");
   mask-size: cover;
   z-index: 5;
+  border: 5px solid #283593;
 }
 
 
@@ -80,7 +112,7 @@
   border-top: #90A4AE solid 12px;
 }
 
-/* geen */
+/* geen/kleurloos */
 .folder > .box > .box-content.colorclass--0 .caption{
   border-top: #90A4AE solid 12px;
   /* background-color: #CFD8DC; */

@@ -5,6 +5,12 @@
   font-weight: 300;
 }
 
+@media (prefers-color-scheme: dark) {
+  .relativelink {
+    background-color: #455A64;
+  }
+}
+
 .relativelink .nextprev a {
   color: #263238;
   white-space: nowrap;
@@ -19,16 +25,34 @@
   border-radius: 5px;
   width: 120px;
   line-height: 32px;
-    
+}
+
+@media (prefers-color-scheme: dark) {
+  .relativelink .nextprev a {
+      border: #fff 1px solid;
+      color: #fff;
+  }
 }
 
 .relativelink .nextprev .next {
-  display: inline-block;
-  float: right;
   text-align: right;
+  float: right;
   padding-right: 20px;
 }
 
 .relativelink .nextprev .prev {
     float: left;
+}
+
+
+@media screen and (max-width: 600px) {
+    .collapsed .relativelink{
+        display: none;
+    }
+}
+@media screen and (max-width: 400px) {
+    .collapsed .relativelink .nextprev .next,
+    .collapsed .relativelink .nextprev .prev {
+        display: none;
+    }
 }

@@ -27,8 +27,10 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
 
   var intersected = useIntersection(target, {
     rootMargin: '250px',
-    once: true
+    once: true,
+    threshold: 0.3
   });
+  // threshold = indicate at what percentage of the target's visibility the callback is executed. (default = 0)
 
   // to stop loading images after a url change
   var history = useLocation();
@@ -40,10 +42,11 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       // data:images are blocked by a strict CSP 
       setSrc('./images/empty-image.gif') // 26 bytes
     }
+    // need to refresh
   }, [history.location.search]);
 
   if (!props.src || props.src.toLowerCase().endsWith('null.jpg?issingleitem=true')) {
-    return (<div ref={target} className="img-box--error"/>);
+    return (<div ref={target} className="img-box--error" />);
   }
 
   return (
@@ -53,7 +56,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
           setError(false);
           setIsLoading(false)
         }}
-        onError={() => setError(true)} /> : <div className="img-box--loading"/>}
+        onError={() => setError(true)} /> : <div className="img-box--loading" />}
     </div>
   );
 

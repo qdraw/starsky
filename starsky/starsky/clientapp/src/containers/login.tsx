@@ -34,11 +34,9 @@ const Login: React.FC<ILoginProps> = () => {
   const MessageLogout: string = "Uitloggen";
 
   // We don't want to login twich 
-  // var defaultLoginStatus = props.defaultLoginStatus ? props.defaultLoginStatus : true;
   const [isLogin, setLogin] = React.useState(true);
   useEffect(() => {
     FetchGet(new UrlQuery().UrlAccountStatus()).then((status) => {
-      console.log(status.statusCode === 401);
       setLogin(status.statusCode === 401);
     });
   }, [history.location.search]);
@@ -58,6 +56,11 @@ const Login: React.FC<ILoginProps> = () => {
         // redirect
         var returnUrl = new URLPath().GetReturnUrl(history.location.search);
         history.navigate(returnUrl, { replace: true });
+
+        // for chrome navigate isn't enough
+        setTimeout(() => {
+          document.location.reload();
+        }, 100);
       }
     } catch (err) {
       setLoading(false);

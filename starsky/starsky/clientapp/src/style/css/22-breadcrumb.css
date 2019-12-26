@@ -4,24 +4,43 @@
   background-color: #CFD8DC;
   font-size: 16px;
   line-height: 1.6;
-  padding-top:12px;
-  /* line-height: 50px; */
+  padding-top: 12px;
   font-weight: 300;
 }
+
 .breadcrumb a {
   text-decoration: underline;
   color: #263238;
 }
 
+@media (prefers-color-scheme: dark) {
+  .breadcrumb {
+    background-color: #37474F;
+    color: #fff;
+  }
+  .breadcrumb a {
+    color: #fff;
+  }
+}
+
 @media (max-width: 400px) {
-  
   .breadcrumb {
     height: 60px;
     padding-top:16px;
   }
-
   .breadcrumb.breadcrumb--long {
       padding-top:5px;
   }
 }
 
+@media screen and (max-width: 600px) {
+    .collapsed .breadcrumb span{
+        display: none;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .collapsed .breadcrumb{
+        display: none;
+    }
+}

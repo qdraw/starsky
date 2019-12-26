@@ -3,6 +3,12 @@
   width: calc(100% - 300px);
 }
 
+@media screen and (max-width: 600px) {
+  .archive.collapsed .content{
+    opacity: 0.2;
+  }
+}
+
 .archive .sidebar {
   top: 50px;
   border-left: 1px solid #607D8B;
@@ -13,6 +19,14 @@
   position: fixed;
   background-color: #fff;
   z-index: 7;
+  color: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+  .archive .sidebar {
+    background-color: #37474F;
+    color: #fff;
+  }
 }
 
 .archive .sidebar .warning-box {

@@ -35,13 +35,6 @@ namespace starskytest.Controllers
             _search = new SearchService(context);
         }
 
-//        [TestMethod]
-//        public void SearchControllerTest_IndexPost()
-//        {
-//            var controller = new SearchController(_search);
-//            var redirectToActionResult = controller.IndexPost("98765456789987") as RedirectToActionResult;
-//            Assert.AreEqual("Index",redirectToActionResult.ActionName);
-//        }
         
         [TestMethod]
         public void SearchControllerTest_ZeroItems_Index()
@@ -85,6 +78,63 @@ namespace starskytest.Controllers
             var jsonResult = controller.Trash(0) as JsonResult;
             var searchViewResult = jsonResult.Value as SearchViewModel;
             Assert.AreEqual(0,searchViewResult.FileIndexItems.Count());
+        }
+        
+        [TestMethod]
+        public void SearchControllerTest_RelativeApi_Prev()
+        {
+	        var item0 = _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "test.jpg",
+		        ParentDirectory = "/",
+		        Tags = "test",
+		        FileHash = "FileHash1"
+	        });
+	        var item1 = _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "test1.jpg",
+		        ParentDirectory = "/",
+		        Tags = "test"
+	        });
+	        var controller = new SearchController(_search);
+	        var jsonResult = controller.SearchRelative("/test1.jpg","test", 0) as JsonResult;
+	        var relativeObjects = jsonResult.Value as RelativeObjects;
+		    
+	        // some values
+	        Assert.AreEqual("/test.jpg",relativeObjects.PrevFilePath);
+	        Assert.AreEqual("FileHash1",relativeObjects.PrevHash);
+
+	        _query.RemoveItem(item0);
+	        _query.RemoveItem(item1);
+        }
+        
+        [TestMethod]
+        public void SearchControllerTest_RelativeApi_Next()
+        {
+	        var item0 = _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "test.jpg",
+		        ParentDirectory = "/",
+		        Tags = "test",
+		        FileHash = "FileHash1"
+	        });
+	        var item1 = _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "test1.jpg",
+		        ParentDirectory = "/",
+		        Tags = "test",
+		        FileHash = "FileHash2"
+	        });
+	        var controller = new SearchController(_search);
+	        var jsonResult = controller.SearchRelative("/test.jpg","test", 0) as JsonResult;
+	        var relativeObjects = jsonResult.Value as RelativeObjects;
+		    
+	        // some values
+	        Assert.AreEqual("/test1.jpg",relativeObjects.NextFilePath);
+	        Assert.AreEqual("FileHash2",relativeObjects.NextHash);
+
+	        _query.RemoveItem(item0);
+	        _query.RemoveItem(item1);
         }
         
     }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starskycore.Interfaces;
@@ -30,7 +32,62 @@ namespace starsky.Controllers
             var model = _search.Search(t, p);
             return Json(model);
         }
+        
+        /// <summary>
+        /// Get relative paths in a search query
+        /// Does not cover multiple pages (so it ends within the page)
+        /// </summary>
+        /// <param name="f">subpath</param>
+        /// <param name="t">search query</param>
+        /// <param name="p">pagenumer (search query)</param>
+        /// <returns>Relative object (only this)</returns>
+        [HttpGet("/api/search/relativeObjects")]
+        [ProducesResponseType(typeof(SearchViewModel),200)] // ok
+        public IActionResult SearchRelative(string f, string t, int p = 0)
+        {
+	        // Json api && View()            
+	        var searchViewModel = _search.Search(t, p);
 
+	        var photoIndexOfQuery = GetIndexFilePathFromSearch(searchViewModel,f);
+	        if ( photoIndexOfQuery == -1 ) return NotFound("image not found in search result");
+	        
+	        var args = new Dictionary<string, string>
+	        {
+		        { "p", p.ToString() },
+		        { "t", t }
+	        };
+	        
+	        var relativeObject = new RelativeObjects{Args = args};
+
+	        if (photoIndexOfQuery != searchViewModel.FileIndexItems.Count - 1 )
+	        {
+		        relativeObject.NextFilePath = searchViewModel.FileIndexItems[photoIndexOfQuery + 1]?.FilePath;
+		        relativeObject.NextHash = searchViewModel.FileIndexItems[photoIndexOfQuery + 1]?.FileHash;
+	        }
+
+	        if (photoIndexOfQuery >= 1)
+	        {
+		        relativeObject.PrevFilePath = searchViewModel.FileIndexItems[photoIndexOfQuery - 1]?.FilePath;
+		        relativeObject.PrevHash = searchViewModel.FileIndexItems[photoIndexOfQuery - 1]?.FileHash;
+	        }
+	        
+	        return Json(relativeObject);
+        }
+
+        /// <summary>
+        /// Get the index number (fallback == -1)
+        /// </summary>
+        /// <param name="searchViewModel">search results model</param>
+        /// <param name="f">subpath to search for</param>
+        /// <returns>int as index, fallback == -1</returns>
+        private int GetIndexFilePathFromSearch(SearchViewModel searchViewModel, string f)
+        {
+	        var result = searchViewModel.FileIndexItems.FirstOrDefault(p => p.FilePath == f);
+	        var photoIndexOfQuery = searchViewModel.FileIndexItems.IndexOf(result);
+	        if ( result == null ) return -1;
+	        return photoIndexOfQuery;
+        }
+        
 	    /// <summary>
 	    /// List of files with the tag: !delete!
 	    /// Caching is disabled on this api call

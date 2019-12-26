@@ -100,7 +100,7 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = (props) => {
       props.handleExit()
     }}>
 
-    <div className="modal content--subheader">Exporteer selectie</div>
+    <div className="modal content--subheader">Download selectie</div>
     <div className="modal content--text">
       {isProcessing === ProcessingState.default && props.select && props.select.length === 1 ? <>
         <a href={new UrlQuery().UrlDownloadPhotoApi(props.select[0], false)} download={new URLPath().FileNameBreadcrumb(props.select[0])}

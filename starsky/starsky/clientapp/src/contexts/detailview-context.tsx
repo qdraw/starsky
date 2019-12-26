@@ -1,5 +1,5 @@
 import React from 'react';
-import { IDetailView, IRelativeObjects } from '../interfaces/IDetailView';
+import { IDetailView, IRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { newIFileIndexItem, Orientation } from '../interfaces/IFileIndexItem';
 
@@ -13,7 +13,7 @@ const initialState: State = {
   fileIndexItem: newIFileIndexItem(),
   relativeObjects: {} as IRelativeObjects,
   subPath: "/",
-  pageType: 'DetailView',
+  pageType: PageType.DetailView,
   colorClassFilterList: [],
 }
 

@@ -15,10 +15,21 @@
 - []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
 ## High priority features planned
-- []   (feature) Creating thumbnails from Web Interface (including status)
-
-# version 0.1.11 - tba
+- []  (feature) Creating thumbnails from Web Interface (including status)
+- []  (bugfix) When import a non supported image Ok is shown 
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
+
+# version 0.1.11 - 2019-12-??
+- [x]   (bugfix) _Front-end_ _Detailview_ when press Delete and switch image, the next image should be marked as not deleted (Fixed)
+- [x]   (bugfix) _Front-end_ _Archive_ when press 'Select' the images are not reloaded (Fixed)
+- [x]   (bugfix) _Front-end_ _Archive_ _iOS_ After press 'Select' and return the scrollstate keeps on the same position (fixed)
+- [x]   (bugfix) _Front-end_ When going from Archive to Detailview and back the scrollstate is still the same (fixed)
+- [x]   (feature) _Front-end_ Dark theme style added
+- [x]   (bugfix) _Front-end_ _Chrom{e,ium}_ the location after loging in now updated (fixed)
+- [x]   (bugfix) _CORS_ Add AllowCredentials policy for production
+- [x]   (feature) _Front-end_ Next/Prev back in Detailview is now also support when searching
+- [x]   (feature) _API_ Add new endpoint `/api/search/relativeObjects`
+- [x]   (bugfix) _Front-end_ change default outline for Chrome/Safari
 
 # version 0.1.10 - 2019-12-15
 - [x] (bugfix) Archive => After pressing 'Apply' the updates are not shown

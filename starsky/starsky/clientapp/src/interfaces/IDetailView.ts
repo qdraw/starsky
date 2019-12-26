@@ -32,7 +32,7 @@ export function newIRelativeObjects(): IRelativeObjects {
 
 export interface IDetailView {
     breadcrumb: [];
-    pageType: string; // casting enums fails
+    pageType: PageType;
     fileIndexItem: IFileIndexItem;
     relativeObjects: IRelativeObjects;
     subPath: string;

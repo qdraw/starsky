@@ -1,9 +1,9 @@
 import { globalHistory } from '@reach/router';
-import { act } from '@testing-library/react';
-import { mount, ReactWrapper, shallow } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
-import { IDetailView } from '../interfaces/IDetailView';
+import { IDetailView, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import * as FetchGet from '../shared/fetch-get';
 import * as FetchPost from '../shared/fetch-post';
@@ -22,7 +22,6 @@ describe("MenuDetailView", () => {
   describe("with Context", () => {
 
     let contextValues: any;
-    let Component: ReactWrapper<any, Readonly<{}>>;
 
     beforeEach(() => {
       var state = {
@@ -38,13 +37,22 @@ describe("MenuDetailView", () => {
 
       jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
-
-      act(() => {
-        Component = mount(<MenuDetailView />)
-      })
     });
 
-    it("export click", () => {
+    it("as search Result button exist", () => {
+      // add search query to url
+      globalHistory.navigate("/?t=test&p=0");
+
+      var component = mount(<MenuDetailView />);
+
+      expect(component.exists('.item--search')).toBeTruthy();
+
+      // reset afterwards
+      component.unmount();
+      globalHistory.navigate("/");
+    });
+
+    it("export click [menu]", () => {
       // one extra spy
       jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
@@ -52,18 +60,37 @@ describe("MenuDetailView", () => {
       var exportModal = jest.spyOn(ModalExport, 'default')
         .mockImplementationOnce(() => { return <></> });
 
-      var item = Component.find('[data-test="export"]');
-      item.simulate('click');
+      var component = mount(<MenuDetailView />);
 
+      var item = component.find('[data-test="export"]');
+      act(() => {
+        item.simulate('click');
+      });
       expect(exportModal).toBeCalled();
+
+      // to avoid polling afterwards
+      component.unmount();
+
     });
 
-    it("labels click .item--labels", () => {
-      var item = mount(<MenuDetailView />).find('.item.item--labels');
-      item.simulate('click');
+    it("labels click .item--labels [menu]", () => {
 
+      // one extra spy
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+
+      var component = mount(<MenuDetailView />);
+
+      var find = component.find('.item.item--labels');
+      act(() => {
+        find.simulate('click');
+      });
       var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
+
       expect(urlObject.details).toBeTruthy();
+
+      // dont keep any menus open
+      component.unmount();
 
       // reset afterwards
       globalHistory.navigate("/");
@@ -71,7 +98,10 @@ describe("MenuDetailView", () => {
 
     it("labels click (in MoreMenu)", () => {
       var item = mount(<MenuDetailView />).find('[data-test="labels"]');
-      item.simulate('click');
+
+      act(() => {
+        item.simulate('click');
+      });
 
       var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
       expect(urlObject.details).toBeTruthy();
@@ -94,8 +124,14 @@ describe("MenuDetailView", () => {
       var renameModal = jest.spyOn(ModalDetailviewRenameFile, 'default')
         .mockImplementationOnce(() => { return <></> });
 
-      var item = Component.find('[data-test="rename"]');
-      item.simulate('click');
+      // one extra spy
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+
+      var item = mount(<MenuDetailView />).find('[data-test="rename"]');
+      act(() => {
+        item.simulate('click');
+      });
 
       expect(renameModal).toBeCalled();
     });
@@ -106,8 +142,10 @@ describe("MenuDetailView", () => {
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-      var item = Component.find('[data-test="trash"]');
-      item.simulate('click');
+      var item = mount(<MenuDetailView />).find('[data-test="trash"]');
+      act(() => {
+        item.simulate('click');
+      });
 
       expect(spy).toBeCalled();
       expect(spy).toBeCalledTimes(1);
@@ -125,13 +163,13 @@ describe("MenuDetailView", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200, data: {
           subPath: "/test/image.jpg",
-          pageType: 'DetailView',
+          pageType: PageType.DetailView,
           fileIndexItem: { fileHash: 'needed', status: IExifStatus.Ok, filePath: "/test/image.jpg", fileName: "image.jpg" }
         } as IDetailView
       } as IConnectionDefault);
       var spyGet = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      var item = Component.find('[data-test="rotate"]');
+      var item = mount(<MenuDetailView />).find('[data-test="rotate"]');
 
       // need to await here
       await item.simulate('click');
@@ -165,6 +203,7 @@ describe("MenuDetailView", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+
       var spy = jest.spyOn(FetchPost, 'default')
         .mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -179,6 +218,7 @@ describe("MenuDetailView", () => {
     });
 
 
+    //  file is marked as deleted › press 'Delete' on keyboard to trash
     it("press 'Delete' on keyboard to trash", () => {
       jest.clearAllMocks();
 
@@ -189,6 +229,7 @@ describe("MenuDetailView", () => {
       var contextValues = { state, dispatch: jest.fn() }
 
       jest.spyOn(React, 'useContext').mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
 
       mount(<MenuDetailView />)
 
@@ -209,6 +250,33 @@ describe("MenuDetailView", () => {
       expect(spy).toBeCalled();
       expect(spy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftest%2Fimage.jpg&Tags=%21delete%21&append=true");
       // in the test the 'keyboard event fired' three times, but in the real world once
+    });
+
+    it("navigate to next item and reset some states", () => {
+
+      var state = {
+        subPath: "/trashed/test1.jpg",
+        fileIndexItem: { status: IExifStatus.Deleted, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
+      } as IDetailView;
+      var contextValues = { state, dispatch: jest.fn() }
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+
+      var exportModal = jest.spyOn(ModalExport, 'default')
+        .mockImplementationOnce(() => { return <></> });
+
+      const component = mount(<MenuDetailView />)
+
+      globalHistory.navigate("/?f=/test2.jpg");
+
+
+      expect(component.find('header').getDOMNode().className).toBe("header header--main")
+
+      // globalHistory.navigate("/");
+
     });
 
   });
