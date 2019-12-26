@@ -136,7 +136,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           {select ? <MoreMenu>
             {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>Undo selectie</li> : null}
             {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>Alles selecteren</li> : null}
-            <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Exporteer</li>
+            <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
             <li className="menu-option" onClick={() => TrashSelection()}>Verplaats naar prullenmand</li>
 
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
