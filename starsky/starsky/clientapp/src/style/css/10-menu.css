@@ -221,7 +221,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 18px;
   max-width: calc(100vw - 163px);
 }
 
@@ -230,10 +229,15 @@
   background-color: white;
   mask-repeat: no-repeat;
   mask-position: center;
+  mask-size: 100%;
+  margin-right: 5px;
+
+  padding-right: 4px;
   padding-left: 20px;
-  padding-top: 3px;
+  padding-top: 4px;
   padding-bottom: 4px;
-  margin-right: 10px;
+
+  line-height: 50px;
 }
 
 @media screen and (max-width: 450px) {
@@ -295,8 +299,7 @@
 
 .header > .wrapper > .item.item--more {
   position: absolute;
-  right: 30px;
-  top: 18px;
+  right: 20px;
 }
 
 @media screen and (max-width: 450px) {
@@ -319,9 +322,9 @@
 .header > .wrapper > .item.item--labels,
 .header > .wrapper >  .item.item--select {
   position: absolute;
-  right: 120px;
-  top: 18px;
+  right: 105px;
 }
+
 @media screen and (max-width: 450px) {
   .header > .wrapper > .item.item--labels,
   .header > .wrapper >  .item.item--select {
