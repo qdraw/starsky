@@ -58,6 +58,8 @@ const DetailView: React.FC<IDetailView> = () => {
         // thumbnail is alreay rotated (but need to be called due change of image)
         setTranslateRotation(Orientation.Horizontal);
       }
+    }).catch((e) => {
+      console.log(e);
     });
   }, [state.fileIndexItem.fileHash]);
 
@@ -69,10 +71,12 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // update relative next prev buttons for search queries
   useEffect(() => {
-    if (state.subPath === "/") return;
+    if (state.subPath === "/" || !isSearchQuery) return;
     FetchGet(new UrlQuery().UrlSearchRelativeApi(state.subPath, new URLPath().StringToIUrl(history.location.search).t, new URLPath().StringToIUrl(history.location.search).p)).then((result) => {
       if (result.statusCode !== 200) return;
       setRelativeObjects(result.data);
+    }).catch((err) => {
+      console.log(err);
     });
   }, [isSearchQuery, state.subPath]);
 

@@ -3,8 +3,9 @@ import { mount, ReactWrapper, shallow } from "enzyme";
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as ContextDetailview from '../contexts/detailview-context';
+import * as useFetch from '../hooks/use-fetch';
 import * as useLocation from '../hooks/use-location';
-import { IConnectionDefault } from '../interfaces/IConnectionDefault';
+import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IDetailView, IRelativeObjects, newDetailView, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem, Orientation } from '../interfaces/IFileIndexItem';
@@ -14,7 +15,7 @@ import DetailView from './detailview';
 
 describe("DetailView", () => {
   it("renders", () => {
-    shallow(<DetailView {...newDetailView()} />)
+    shallow(<DetailView {...newDetailView()} />);
   });
 
   var defaultState = {
@@ -36,13 +37,14 @@ describe("DetailView", () => {
       orientation: Orientation.Horizontal,
       fileName: 'test.jpg',
       filePath: '/parentDirectory/test.jpg',
-      parentDirectory: '/parentDirectory'
+      parentDirectory: '/parentDirectory',
+      status: IExifStatus.Ok
     } as IFileIndexItem,
     relativeObjects: { nextFilePath: 'next', prevFilePath: 'prev' } as IRelativeObjects,
     status: IExifStatus.Default,
     pageType: PageType.DetailView,
     colorClassFilterList: [],
-    subPath: '/parentDirectory/test.jpg',
+    subPath: "/___test___",
   } as IDetailView;
 
   describe("With context and test if image is loaded", () => {
@@ -57,18 +59,20 @@ describe("DetailView", () => {
         state: defaultState
       };
 
-      act(() => {
-        TestComponent = () => (
-          <ContextDetailview.DetailViewContext.Provider value={contextProvider}>
-            <DetailView {...newDetailView()} />
-          </ContextDetailview.DetailViewContext.Provider>
-        );
-      });
+      TestComponent = () => (
+        <ContextDetailview.DetailViewContext.Provider value={contextProvider}>
+          <DetailView {...newDetailView()} />
+        </ContextDetailview.DetailViewContext.Provider>
+      );
 
       // Show extra information
       globalHistory.navigate("/?details=true");
 
       Component = mount(<TestComponent />);
+    });
+
+    afterEach(() => {
+      Component.unmount();
     });
 
     afterAll(() => {
@@ -103,7 +107,9 @@ describe("DetailView", () => {
     let TestComponent: () => JSX.Element;
 
     beforeAll(() => {
-      globalHistory.navigate("/?details=true");
+      act(() => {
+        globalHistory.navigate("/?details=true");
+      });
     });
 
     // // Setup mock
@@ -120,6 +126,10 @@ describe("DetailView", () => {
         </ContextDetailview.DetailViewContext.Provider>
       );
 
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      })
+
     });
 
     it("Rotation API is called return 202", () => {
@@ -127,16 +137,18 @@ describe("DetailView", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 202, data: {
           subPath: "/test/image.jpg",
-          pageType: 'DetailView',
+          pageType: PageType.DetailView,
           fileIndexItem: { orientation: Orientation.Rotate270Cw, fileHash: 'needed', status: IExifStatus.Ok, filePath: "/test/image.jpg", fileName: "image.jpg" }
         } as IDetailView
       } as IConnectionDefault);
       var spyGet = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      mount(<TestComponent />);
+      var detailview = mount(<TestComponent />);
 
       expect(spyGet).toBeCalled();
       expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi('hash'));
+
+      detailview.unmount();
     });
 
     it("Rotation API is called return 200", () => {
@@ -144,10 +156,11 @@ describe("DetailView", () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       var spyGet = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      mount(<TestComponent />);
+      var detailview = mount(<TestComponent />);
 
       expect(spyGet).toBeCalled();
       expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi('hash'));
+      detailview.unmount();
     });
 
     it("Next Click", () => {
@@ -166,6 +179,7 @@ describe("DetailView", () => {
 
       expect(navigateSpy).toBeCalled();
       expect(navigateSpy).toBeCalledWith("/?details=true&f=next", { "replace": true });
+      detailview.unmount();
     });
 
     it("Prev Click", () => {
@@ -184,6 +198,7 @@ describe("DetailView", () => {
 
       expect(navigateSpy).toBeCalled();
       expect(navigateSpy).toBeCalledWith("/?details=true&f=prev", { "replace": true });
+      detailview.unmount();
     });
 
     it("Prev Keyboard", () => {
@@ -203,12 +218,16 @@ describe("DetailView", () => {
         key: "ArrowLeft",
         shiftKey: true,
       });
-      window.dispatchEvent(event);
+
+      act(() => {
+        window.dispatchEvent(event);
+      });
 
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();
       expect(navigateSpy).toBeCalledWith("/?details=true&f=prev", { "replace": true });
+      // no need to unmount;
     });
 
     it("Next Keyboard", () => {
@@ -220,7 +239,7 @@ describe("DetailView", () => {
         }
       });
 
-      mount(<TestComponent />);
+      var compontent = mount(<TestComponent />);
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,
@@ -228,13 +247,64 @@ describe("DetailView", () => {
         key: "ArrowRight",
         shiftKey: true,
       });
-      window.dispatchEvent(event);
+
+      act(() => {
+        window.dispatchEvent(event);
+      });
 
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();
       expect(navigateSpy).toBeCalledWith("/?details=true&f=next", { "replace": true });
+      compontent.unmount();
     });
+
+    it("[SearchResult] Next", async () => {
+
+      console.log('[SearchResult] Next');
+
+      // add search query to url
+      act(() => {
+        globalHistory.navigate("/?t=test&p=0");
+      })
+
+      var navigateSpy = jest.fn();
+      var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
+        return {
+          location: globalHistory.location,
+          navigate: navigateSpy,
+        }
+      });
+
+      // Now fake the search/realtive api
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200, data: {
+          nextFilePath: '/search.jpg'
+        } as IRelativeObjects
+      } as IConnectionDefault);
+
+      var spyGet = jest.spyOn(FetchGet, 'default')
+        .mockImplementationOnce(() => mockGetIConnectionDefault)
+        .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+      var detailview = mount(<TestComponent />);
+      var item = detailview.find(".nextprev--prev");
+      act(() => {
+        item.simulate('click');
+      })
+
+      expect(locationSpy).toBeCalled();
+      expect(navigateSpy).toBeCalled();
+
+      // could not check values :(
+      expect(spyGet).toBeCalled();
+
+      // reset afterwards
+      act(() => {
+        detailview.unmount();
+      })
+    });
+
 
     it("Escape key Keyboard", () => {
       var navigateSpy = jest.fn();
@@ -245,7 +315,7 @@ describe("DetailView", () => {
         }
       });
 
-      mount(<TestComponent />);
+      var component = mount(<TestComponent />);
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,
@@ -259,6 +329,8 @@ describe("DetailView", () => {
 
       expect(navigateSpy).toBeCalled();
       expect(navigateSpy).toHaveBeenNthCalledWith(1, "/?f=/parentDirectory", { "state": { "filePath": "/parentDirectory/test.jpg" } });
+
+      component.unmount();
     });
 
   });
