@@ -111,6 +111,27 @@
   cursor: pointer;
 }
 
+.detailview .main--gpx .nextprev.nextprev--next,
+.detailview .main--gpx .nextprev.nextprev--prev {
+  z-index: 2;
+  background-color: rgba(0,0,0,0.1);
+}
+
+.detailview .main--gpx .leaflet-control-zoom {
+  display: none;
+}
+
+
+
+.detailview .main--gpx .leaflet-top, 
+.detailview .main--gpx .leaflet-bottom,
+.detailview .main--gpx .leaflet-pane,
+.detailview .main--gpx .leaflet-tile-loaded,
+.detailview .main--gpx .leaflet-map-pane svg,
+.detailview .main--gpx .leaflet-tile-pane {
+  z-index: 1;
+}
+
 /* dont overlap the sidebar */
 @media screen and (max-width: 450px) {
   .detailview.detailview--edit .main .nextprev {

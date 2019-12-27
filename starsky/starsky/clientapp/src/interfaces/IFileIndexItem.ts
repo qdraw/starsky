@@ -30,7 +30,7 @@ export interface IFileIndexItem {
     longitude?: number;
     colorClass?: number;
     orientation?: Orientation;
-    imageFormat?: string;
+    imageFormat?: ImageFormat;
     make?: string;
     model?: string;
     aperture?: number;
@@ -43,14 +43,24 @@ export interface IFileIndexItem {
     imageHeight: number;
 }
 
+export enum ImageFormat {
+    notfound = "notfound" as any,
+    unknown = "unknown" as any,
+    jpg = "jpg" as any,
+    tiff = "tiff" as any,
+    bmp = "bmp" as any,
+    gif = "gif" as any,
+    png = "png" as any,
+    xmp = "xmp" as any,
+    gpx = "gpx" as any,
+}
+
 export enum Orientation {
     Horizontal = "Horizontal" as any,
     Rotate90Cw = "Rotate90Cw" as any,
     Rotate180 = "Rotate180" as any,
     Rotate270Cw = "Rotate270Cw" as any
 }
-
-
 
 // Warning: Input elements should not switch from uncontrolled to controlled https://fb.me/react-controlled-components
 export function newIFileIndexItem(): IFileIndexItem {

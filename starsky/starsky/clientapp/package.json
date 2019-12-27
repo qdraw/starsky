@@ -13,6 +13,7 @@
     "@types/react-dom": "^16.9.4",
     "abortcontroller-polyfill": "^1.4.0",
     "intersection-observer": "^0.7.0",
+    "leaflet": "^1.6.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.0",
@@ -21,6 +22,7 @@
   "proxy": "http://localhost:5000",
   "devDependencies": {
     "@types/enzyme": "^3.10.4",
+    "@types/leaflet": "^1.5.7",
     "@types/reach__router": "^1.2.6",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1"

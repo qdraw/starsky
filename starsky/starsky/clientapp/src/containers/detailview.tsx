@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import DetailViewSidebar from '../components/detail-view-sidebar';
+import DetailViewGpx from '../components/detailview-gpx';
 import MenuDetailView from '../components/menu-detailview';
 import Preloader from '../components/preloader';
 import { DetailViewContext } from '../contexts/detailview-context';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IDetailView, newDetailView, newIRelativeObjects } from '../interfaces/IDetailView';
-import { Orientation } from '../interfaces/IFileIndexItem';
+import { ImageFormat, Orientation } from '../interfaces/IFileIndexItem';
 import { INavigateState } from '../interfaces/INavigateState';
 import BrowserDetect from '../shared/browser-detect';
 import DocumentTitle from '../shared/document-title';
@@ -27,6 +28,11 @@ const DetailView: React.FC<IDetailView> = () => {
   }
 
   const [relativeObjects, setRelativeObjects] = React.useState(state.relativeObjects);
+
+  // to update 
+  useEffect(() => {
+    setRelativeObjects(state.relativeObjects);
+  }, [state.relativeObjects]);
 
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
   useEffect(() => {
@@ -165,7 +171,9 @@ const DetailView: React.FC<IDetailView> = () => {
 
       {isDetails ? <DetailViewSidebar status={state.fileIndexItem.status} filePath={state.fileIndexItem.filePath} /> : null}
 
-      <div className={isError ? "main main--error" : "main main--" + state.fileIndexItem.imageFormat}>
+      {state.fileIndexItem.imageFormat === ImageFormat.gpx ? <DetailViewGpx /> : null}
+
+      <div className={isError ? "main main--error main--" + state.fileIndexItem.imageFormat : "main main--" + state.fileIndexItem.imageFormat}>
 
         {!isError && state.fileIndexItem.fileHash ? <img alt={state.fileIndexItem.tags}
           className={"image--default " + translateRotation}
