@@ -1,7 +1,8 @@
 import * as React from "react";
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import useFetch from '../hooks/use-fetch';
 import useLocation from '../hooks/use-location';
+import { URLPath } from '../shared/url-path';
 
 interface IMenuSearchBarProps {
   defaultText?: string;
@@ -18,38 +19,41 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
   var history = useLocation();
 
   // the results
-  const [data, setData] = React.useState({
-    hits: new Array<string>()
-  });
+  const [suggest, setSuggest] = React.useState(new Array<string>());
 
   // to store the search query
   const [query, setQuery] = React.useState(props.defaultText ? props.defaultText : "");
+
+  // When pressing enter within the same page
+  const inputFormControlReference = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    if (props.defaultText === query) return;
-    setQuery(props.defaultText ? props.defaultText : "");
-  }, [props]);
+    // query is not always updated when pressing suggestions
+    var searchQuery = new URLPath().StringToIUrl(history.location.search).t;
+    if (!searchQuery) return;
+    (inputFormControlReference.current as HTMLInputElement).value = searchQuery;
+  }, [history.location.search]);
 
   // used for color of icon
   const [inputFocus, setInputFocus] = React.useState(true);
 
   // can't set this inside effect or if ==> performance issue, runs to often
   const responseObject = useFetch("/suggest/?t=" + query, 'get');
-
   useEffect(() => {
     if (!responseObject.data) return;
-    var result: Array<string> = responseObject.data;
-    setData({
-      hits: result,
-    })
+    var result: Array<string> = [...responseObject.data];
+    setSuggest(result)
   }, [responseObject]);
 
+  /** Submit the form */
   function onFormSubmit(e: React.FormEvent) {
     e.preventDefault();
     navigate(query);
   }
 
+  /** Go to different searchpage */
   function navigate(defQuery: string) {
-    // setLoading(true);
+    setQuery(defQuery);
+
     // To do change to search page
     history.navigate("/search?t=" + defQuery);
     setFormFocus(false);
@@ -58,8 +62,14 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
     props.callback(defQuery);
   }
 
+  /** 
+   * is form active
+   */
   const [formFocus, setFormFocus] = React.useState(false);
 
+  /**
+   * Add listener to checks if you dont point outside the form
+   */
   useEffect(() => {
     // Bind the event listener
     document.addEventListener("mousedown", handleClickOutside);
@@ -69,7 +79,10 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
     };
   });
 
-
+  /**
+   * If check to know if you clicked inside the form and suggestions
+   * @param event mouse event from document
+   */
   function handleClickOutside(event: MouseEvent) {
     var target = event.target as HTMLElement;
     if (target.className.indexOf("menu-item") === -1 && target.className.indexOf("icon-addon") === -1 && target.className.indexOf("search-icon") === -1) {
@@ -79,27 +92,31 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
 
   return (
     <>
-      {/* {isLoading ? <Preloader isOverlay={false} isDetailMenu={false}></Preloader> : null} */}
-
       <div className={!formFocus ? "blur" : ""} onFocus={() => setFormFocus(true)}>
         <li className="menu-item menu-item--half-extra">
           <form className="form-inline form-nav icon-addon" onSubmit={onFormSubmit}>
-
             <label htmlFor="search" className={inputFocus ? "icon-addon--search" : "icon-addon--search-focus"} />
-            <input className={"form-control icon-addon--input"}
-              onBlur={() => { setInputFocus(!inputFocus) }} onFocus={() => { setInputFocus(!inputFocus) }}
-              autoComplete="off" value={query} onChange={e => { setQuery(e.target.value); }} />
+            <input
+              className={"form-control icon-addon--input"}
+              onBlur={() => { setInputFocus(!inputFocus) }}
+              onFocus={() => { setInputFocus(!inputFocus) }}
+              autoComplete="off"
+              defaultValue={query}
+              ref={inputFormControlReference}
+              onKeyDown={_ => { setInputFocus(false) }}
+              onChange={e => { setQuery(e.target.value); }}
+            />
           </form>
         </li>
-        {data.hits && data.hits.length === 0 ?
+        {suggest && suggest.length === 0 ?
           defaultMenu.map((value, index) => {
             return <li className="menu-item menu-item--default" key={index}><a href={value.url}>{value.name}</a> </li>;
           }) : null
         }
-        {data.hits && data.hits.map(item => (
-          <li key={item} className="menu-item menu-item--results">
+        {suggest && suggest.map((item, index) => (
+          index <= 8 ? <li key={item} className="menu-item menu-item--results">
             <button onClick={() => navigate(item)} className="search-icon">{item}</button>
-          </li>
+          </li> : null
         ))}
       </div>
     </>

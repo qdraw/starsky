@@ -30,6 +30,8 @@
 - [x]   (feature) _Front-end_ Next/Prev back in Detailview is now also support when searching
 - [x]   (feature) _API_ Add new endpoint `/api/search/relativeObjects`
 - [x]   (bugfix) _Front-end_ change default outline for Chrome/Safari
+- [x]   (bugfix) _Front-end_ fix document.title undefined error 
+- [x]   (bugfix) _Front-end_ fix issue where on empty searchquery a sidebar is shown
 
 # version 0.1.10 - 2019-12-15
 - [x] (bugfix) Archive => After pressing 'Apply' the updates are not shown
