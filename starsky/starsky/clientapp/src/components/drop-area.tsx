@@ -97,6 +97,9 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
         if ((dataItem as any).status === "IgnoredAlreadyImported") {
           status = IExifStatus.IgnoredAlreadyImported;
         }
+        else if ((dataItem as any).status === "FileError") {
+          status = IExifStatus.FileError;
+        }
         var uploadFileObject = CastFileIndexItem(dataItem, status);
         uploadFilesList.push(uploadFileObject);
 
@@ -188,9 +191,9 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   }, [dragActive]);
 
   return (<>
-    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true}/> : ""}
+    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
-    {props.enableInputField ? <input type="file" onChange={onChange}/> : null}
+    {props.enableInputField ? <input type="file" onChange={onChange} /> : null}
 
     <Modal
       id="detailview-drop-modal"
@@ -198,7 +201,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       handleExit={() => {
         setOpen(false)
       }}>
-      <ItemTextListView lastUploaded={lastUploaded} fileIndexItems={uploadFilesList}/>
+      <ItemTextListView lastUploaded={lastUploaded} fileIndexItems={uploadFilesList} />
     </Modal>
   </>);
 };

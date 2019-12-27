@@ -2,7 +2,6 @@ import * as React from "react";
 import { memo, useEffect, useRef } from 'react';
 import useFetch from '../hooks/use-fetch';
 import useLocation from '../hooks/use-location';
-import { URLPath } from '../shared/url-path';
 
 interface IMenuSearchBarProps {
   defaultText?: string;
@@ -26,12 +25,6 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
 
   // When pressing enter within the same page
   const inputFormControlReference = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    // query is not always updated when pressing suggestions
-    var searchQuery = new URLPath().StringToIUrl(history.location.search).t;
-    if (!searchQuery) return;
-    (inputFormControlReference.current as HTMLInputElement).value = searchQuery;
-  }, [history.location.search]);
 
   // used for color of icon
   const [inputFocus, setInputFocus] = React.useState(true);
@@ -52,11 +45,13 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
 
   /** Go to different searchpage */
   function navigate(defQuery: string) {
-    setQuery(defQuery);
 
     // To do change to search page
     history.navigate("/search?t=" + defQuery);
     setFormFocus(false);
+
+    // force update input field after navigate to page (only the input item)
+    (inputFormControlReference.current as HTMLInputElement).value = defQuery;
 
     if (!props.callback) return;
     props.callback(defQuery);
