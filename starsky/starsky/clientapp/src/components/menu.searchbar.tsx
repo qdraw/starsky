@@ -25,6 +25,7 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
   // to store the search query
   const [query, setQuery] = React.useState(props.defaultText ? props.defaultText : "");
   useEffect(() => {
+    if (props.defaultText === query) return;
     setQuery(props.defaultText ? props.defaultText : "");
   }, [props]);
 
