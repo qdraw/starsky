@@ -12,6 +12,8 @@ const DetailViewGpx: React.FC = () => {
   const [gpxClassName, setGpxClassName] = useState("main main--error");
 
   function updateMap(response: IConnectionDefault) {
+    console.log(response.data);
+
     if (!response.data) return;
 
     var tracks: any[] = [];
@@ -30,6 +32,9 @@ const DetailViewGpx: React.FC = () => {
         }),
       ]
     });
+
+    console.log('-----');
+
 
     map.dragging.disable();
     map.touchZoom.disable();
