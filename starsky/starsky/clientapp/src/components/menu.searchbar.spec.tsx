@@ -1,8 +1,6 @@
-import { globalHistory } from '@reach/router';
 import { mount, shallow } from 'enzyme';
 import React from 'react';
 import * as useFetch from '../hooks/use-fetch';
-import * as useLocation from '../hooks/use-location';
 import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
 import MenuSearchBar from './menu.searchbar';
 
@@ -13,7 +11,7 @@ describe("Menu.SearchBar", () => {
   });
 
   describe("with Context", () => {
-    xit("focus", () => {
+    it("focus", () => {
 
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
@@ -24,33 +22,38 @@ describe("Menu.SearchBar", () => {
 
       var menuBar = mount(<MenuSearchBar />);
 
+      // default
       expect(menuBar.find('label').hasClass('icon-addon--search'))
+
       menuBar.find('input').simulate('focus');
       expect(menuBar.find('label').hasClass('icon-addon--search-focus'))
 
       menuBar.unmount();
     });
+    it("blur", () => {
 
-    xit("ttt", () => {
-      jest.spyOn(React, 'useState').mockImplementationOnce(() => {
-        return [jest.fn(), jest.fn()]
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
+        return newIConnectionDefault();
       }).mockImplementationOnce(() => {
-        return [jest.fn(), jest.fn()]
+        return newIConnectionDefault();
+      }).mockImplementationOnce(() => {
+        return newIConnectionDefault();
       })
 
-      var navigateSpy = jest.fn();
-      var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
-        return {
-          location: globalHistory.location,
-          navigate: navigateSpy,
-        }
-      }).mockImplementationOnce(() => {
-        return {
-          location: globalHistory.location,
-          navigate: navigateSpy,
-        }
-      });
-    })
+      var menuBar = mount(<MenuSearchBar />);
+
+      // go to focus
+      menuBar.find('input').simulate('focus');
+      expect(menuBar.find('label').hasClass('icon-addon--search-focus'))
+
+      // go to blur
+      menuBar.find('input').simulate('blur');
+      expect(menuBar.find('label').hasClass('icon-addon--search'))
+
+      menuBar.unmount();
+    });
+
 
     it("suggestions", () => {
 
@@ -65,7 +68,9 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => {
           return newIConnectionDefault()
         })
-      var menuBar = mount(<MenuSearchBar defaultText={"te"} />);
+
+      var callback = jest.fn();
+      var menuBar = mount(<MenuSearchBar defaultText={"tes"} callback={callback} />);
 
       (menuBar.find('input').getDOMNode() as HTMLInputElement).value = "test"
       menuBar.find('input').simulate('change');
@@ -73,8 +78,44 @@ describe("Menu.SearchBar", () => {
       var results = menuBar.find('.menu-item--results > button')
       expect(results.first().text()).toBe("suggest1");
       expect(results.last().text()).toBe("suggest2");
+      expect(callback).toBeCalledTimes(0);
+    });
+
+    it("suggestions and click button", () => {
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default')
+        .mockImplementationOnce(() => {
+          return newIConnectionDefault()
+        })
+        .mockImplementationOnce(() => {
+          return { statusCode: 200, data: ["suggest1", "suggest2"] } as IConnectionDefault;
+        })
+        .mockImplementationOnce(() => {
+          return newIConnectionDefault()
+        })
+        .mockImplementationOnce(() => {
+          return newIConnectionDefault()
+        })
+        .mockImplementationOnce(() => {
+          return newIConnectionDefault()
+        })
+
+      var callback = jest.fn();
+      var menuBar = mount(<MenuSearchBar defaultText={"tes"} callback={callback} />);
+
+      (menuBar.find('input').getDOMNode() as HTMLInputElement).value = "test"
+      menuBar.find('input').simulate('change');
+
+      var results = menuBar.find('.menu-item--results > button');
+      results.first().simulate("click");
+
+      expect(callback).toBeCalled();
+
 
     });
+
+
   });
 
 });
