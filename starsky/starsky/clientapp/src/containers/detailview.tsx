@@ -27,19 +27,23 @@ const DetailView: React.FC<IDetailView> = () => {
     state = { relativeObjects: newIRelativeObjects(), fileIndexItem: { fileHash: '' }, ...newDetailView() };
   }
 
+  // next + prev state
   const [relativeObjects, setRelativeObjects] = React.useState(state.relativeObjects);
 
-  // to update 
+  // when in some cases the relative urls are not updated by a state change
   useEffect(() => {
+    if (isSearchQuery) return;
     setRelativeObjects(state.relativeObjects);
   }, [state.relativeObjects]);
 
+  // boolean to get the details-side menu on or off
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
   useEffect(() => {
     var details = new URLPath().StringToIUrl(history.location.search).details;
     setDetails(details);
   }, [history.location.search]);
 
+  // update the browser title
   useEffect(() => {
     if (!state) return;
     new DocumentTitle().SetDocumentTitle(state);
@@ -54,6 +58,7 @@ const DetailView: React.FC<IDetailView> = () => {
     if (new BrowserDetect().IsIOS()) {
       return;
     }
+    // know if the thumbnail is ready, if not rotate the image clientside
     FetchGet(new UrlQuery().UrlThumbnailJsonApi(state.fileIndexItem.fileHash)).then((result) => {
       if (!state.fileIndexItem.orientation) return;
       if (result.statusCode === 202) {
@@ -78,7 +83,10 @@ const DetailView: React.FC<IDetailView> = () => {
   // update relative next prev buttons for search queries
   useEffect(() => {
     if (state.subPath === "/" || !isSearchQuery) return;
-    FetchGet(new UrlQuery().UrlSearchRelativeApi(state.subPath, new URLPath().StringToIUrl(history.location.search).t, new URLPath().StringToIUrl(history.location.search).p)).then((result) => {
+    FetchGet(new UrlQuery().UrlSearchRelativeApi(state.subPath,
+      new URLPath().StringToIUrl(history.location.search).t,
+      new URLPath().StringToIUrl(history.location.search).p)
+    ).then((result) => {
       if (result.statusCode !== 200) return;
       setRelativeObjects(result.data);
     }).catch((err) => {
@@ -86,6 +94,7 @@ const DetailView: React.FC<IDetailView> = () => {
     });
   }, [isSearchQuery, state.subPath]);
 
+  // previous item
   useKeyboardEvent(/ArrowLeft/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     if (!relativeObjects) return;
@@ -93,6 +102,7 @@ const DetailView: React.FC<IDetailView> = () => {
     prev();
   }, [relativeObjects]);
 
+  // next item
   useKeyboardEvent(/ArrowRight/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     if (!relativeObjects) return;
@@ -100,6 +110,7 @@ const DetailView: React.FC<IDetailView> = () => {
     next();
   }, [relativeObjects]);
 
+  // parent item or to search page
   useKeyboardEvent(/Escape/, (event: KeyboardEvent) => {
     if (!history.location) return;
     if (new Keyboard().isInForm(event)) return;
@@ -112,6 +123,7 @@ const DetailView: React.FC<IDetailView> = () => {
     });
   }, [state.fileIndexItem]);
 
+  // toggle details side menu
   function toggleLabels() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
     urlObject.details = !isDetails;
@@ -119,6 +131,7 @@ const DetailView: React.FC<IDetailView> = () => {
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
   }
 
+  // short key to toggle sidemenu
   useKeyboardEvent(/^(d)$/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     toggleLabels();
@@ -150,6 +163,7 @@ const DetailView: React.FC<IDetailView> = () => {
     return "/" + new URLPath().IUrlToString(url);
   }
 
+  // navigation function to go to previous photo
   function prev() {
     if (!relativeObjects) return;
     var prevPath = updateUrl(relativeObjects.prevFilePath);
