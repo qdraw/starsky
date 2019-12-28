@@ -33,9 +33,6 @@ const DetailViewGpx: React.FC = () => {
       ]
     });
 
-    console.log('-----');
-
-
     map.dragging.disable();
     map.touchZoom.disable();
     map.doubleClickZoom.disable();
@@ -47,8 +44,6 @@ const DetailViewGpx: React.FC = () => {
     map.fitBounds(tracks);
 
     L.polygon(tracks, { color: 'red', fill: false }).addTo(map);
-
-    setGpxClassName("main main--error main--gpx");
   }
 
   useEffect(() => {
@@ -59,7 +54,7 @@ const DetailViewGpx: React.FC = () => {
   }, []);
 
   return (
-    <div className={gpxClassName} id="map" />
+    <div className={"main main--error main--gpx"} id="map" />
   );
 };
 
