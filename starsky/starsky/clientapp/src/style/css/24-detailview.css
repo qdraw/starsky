@@ -111,26 +111,6 @@
   cursor: pointer;
 }
 
-.detailview .main--gpx .nextprev.nextprev--next,
-.detailview .main--gpx .nextprev.nextprev--prev {
-  z-index: 2;
-  background-color: rgba(0,0,0,0.1);
-}
-
-.detailview .main--gpx .leaflet-control-zoom {
-  display: none;
-}
-
-
-
-.detailview .main--gpx .leaflet-top, 
-.detailview .main--gpx .leaflet-bottom,
-.detailview .main--gpx .leaflet-pane,
-.detailview .main--gpx .leaflet-tile-loaded,
-.detailview .main--gpx .leaflet-map-pane svg,
-.detailview .main--gpx .leaflet-tile-pane {
-  z-index: 1;
-}
 
 /* dont overlap the sidebar */
 @media screen and (max-width: 450px) {
@@ -172,3 +152,28 @@
   background-position: 60% center;
 }
 
+/* GPX */
+.detailview .main.main--gpx .nextprev.nextprev--next,
+.detailview .main.main--gpx .nextprev.nextprev--prev {
+  z-index: 2;
+}
+
+.detailview .main.main--gpx .nextprev.nextprev--prev {
+  background-image: linear-gradient(-90deg, transparent, rgba(54,56,57,0.4), rgba(54,56,57,0.4), rgba(54,56,57,0.4));
+}
+.detailview .main.main--gpx .nextprev.nextprev--next {
+  background-image: linear-gradient(90deg, transparent,  rgba(54,56,57,0.4), rgba(54,56,57,0.4), rgba(54,56,57,0.4) );
+}
+
+.detailview .main--gpx .leaflet-control-zoom {
+  display: none;
+}
+
+.detailview .main.main--gpx .leaflet-top, 
+.detailview .main.main--gpx .leaflet-bottom,
+.detailview .main.main--gpx .leaflet-pane,
+.detailview .main.main--gpx .leaflet-tile-loaded,
+.detailview .main.main--gpx .leaflet-map-pane svg,
+.detailview .main.main--gpx .leaflet-tile-pane {
+  z-index: 1;
+}

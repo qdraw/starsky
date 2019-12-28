@@ -46,7 +46,7 @@ const DetailViewGpx: React.FC = () => {
 
     map.fitBounds(tracks);
 
-    L.polygon(tracks, { color: 'red', fill: false }).addTo(map);
+    L.polygon(tracks, { color: '#455A64', fill: false }).addTo(map);
   }
 
   // when having to gpx files next and you browse though it
