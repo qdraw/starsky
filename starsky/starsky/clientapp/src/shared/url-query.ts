@@ -14,7 +14,7 @@ export class UrlQuery {
   }
 
   public UrlSearchRelativeApi = (f: string, t: string | undefined, pageNumber = 0): string => {
-    return "/api/search/relativeObjects?f=" + f + "&t=" +
+    return "/api/search/relativeObjects?f=" + new URLPath().encodeURI(f) + "&t=" +
       t +
       "&p=" + pageNumber;
   }

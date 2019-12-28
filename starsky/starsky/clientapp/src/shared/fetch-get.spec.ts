@@ -28,6 +28,22 @@ describe("fetch-get", () => {
     });
   });
 
+  it("corrupt object response", async () => {
+    var response = new Response("{test: }");
+    const mockFetchAsXml: Promise<Response> = Promise.resolve(response);
+    var spy = jest.spyOn(window, 'fetch').mockImplementationOnce(() => mockFetchAsXml);
+
+    console.error("the response has a wrong input ==>")
+    var result = await FetchGet("/test")
+
+    expect(spy).toBeCalledWith("/test", { "credentials": "include", "headers": { "Accept": "application/json" }, "method": "GET" })
+    expect(result).toStrictEqual({
+      "data": null,
+      "statusCode": 200
+    });
+  });
+
+
   it("error string response", async () => {
     var response = new Response(JSON.stringify("response"), {
       statusText: "error",

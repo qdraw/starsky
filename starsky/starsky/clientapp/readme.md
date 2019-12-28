@@ -62,6 +62,8 @@ npm install @types/reach__router --save-dev
 npm install --save-dev enzyme
 npm install --save-dev @types/enzyme
 npm install --save-dev enzyme-adapter-react-16
+npm install --save leaflet
+npm install --save-dev @types/leaflet
 ```
 
 #### Proxy tag for backend services:

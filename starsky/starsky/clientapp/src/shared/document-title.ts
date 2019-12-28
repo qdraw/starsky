@@ -19,6 +19,7 @@ export class DocumentTitle {
   }
 
   public GetDocumentTitle = (prefix: string): string => {
+    if (!prefix) return "Starsky App";
     return prefix + " - Starsky App";
   }
 }

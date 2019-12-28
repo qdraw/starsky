@@ -25,7 +25,8 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
       try {
 
         if (!location) {
-          setPageType(PageType.NotFound);
+          setArchive({ pageType: PageType.Search, ...newIArchive(), fileIndexItems: [], colorClassUsage: [] });
+          setPageType(PageType.Search);
           return;
         }
 
