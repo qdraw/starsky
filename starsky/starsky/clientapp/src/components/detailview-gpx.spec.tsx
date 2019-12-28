@@ -46,9 +46,9 @@ describe("DetailViewGpx", () => {
       var gpx = mount(<DetailViewGpx></DetailViewGpx>, { attachTo: (window as any).domNode });
 
       // need to await before the maps are added
-      await gpx.find("#map").simulate("click");
+      await gpx.find(".main--gpx").simulate("click");
 
-      expect(gpx.exists("#map")).toBeTruthy();
+      expect(gpx.exists(".main--gpx")).toBeTruthy();
 
       expect(spyGet).toBeCalled();
       expect(spyMap).toBeCalled();

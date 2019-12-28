@@ -32,6 +32,7 @@
 - [x]   (bugfix) _Front-end_ fix document.title undefined error 
 - [x]   (bugfix) _Front-end_ fix issue where on empty searchquery a sidebar is shown
 - [x]   (bugfix) _Front-end_ When import a non supported image Ok is shown 
+- [x]   (feature) _Front-end_ Show GPX Files with a map (powered by leaflet/openstreet maps)
 
 # version 0.1.10 - 2019-12-15
 - [x] (bugfix) Archive => After pressing 'Apply' the updates are not shown
