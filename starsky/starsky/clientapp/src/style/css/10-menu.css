@@ -299,6 +299,7 @@
 .header > .wrapper > .item.item--more {
   position: absolute;
   right: 20px;
+  top: 0px;  /* for old firefox */
 }
 
 @media screen and (max-width: 450px) {
@@ -324,6 +325,7 @@
 .header > .wrapper >  .item.item--select {
   position: absolute;
   right: 105px;
+   top: 0px; /* for old firefox */
 }
 
 @media screen and (max-width: 450px) {
