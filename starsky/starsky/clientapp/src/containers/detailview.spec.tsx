@@ -126,6 +126,7 @@ describe("DetailView", () => {
         </ContextDetailview.DetailViewContext.Provider>
       );
 
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
         return newIConnectionDefault();
       })
