@@ -27,6 +27,7 @@
 - [x]   (bugfix) _Front-end_ _Chrom{e,ium}_ the location after loging in now updated (fixed)
 - [x]   (bugfix) _CORS_ Add AllowCredentials policy for production
 - [x]   (feature) _Front-end_ Next/Prev back in Detailview is now also support when searching
+- [x]   (change) _Front-end_ Remove V1 from main menu
 - [x]   (feature) _API_ Add new endpoint `/api/search/relativeObjects`
 - [x]   (bugfix) _Front-end_ change default outline for Chrome/Safari
 - [x]   (bugfix) _Front-end_ fix document.title undefined error 
