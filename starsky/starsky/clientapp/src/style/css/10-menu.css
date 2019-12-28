@@ -345,7 +345,7 @@
 
 @media (prefers-color-scheme: dark) {
   .header.header--sidebar {
-    background-color: #37474F;
+    background-color: #000;
   }
 }
 
