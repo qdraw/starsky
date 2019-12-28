@@ -9,9 +9,9 @@ const DetailViewGpx: React.FC = () => {
   var history = useLocation();
 
   useEffect(() => {
-    var filePath = new URLPath().getFilePath(history.location.search);
+    var filePathEncoded = new URLPath().encodeURI(new URLPath().getFilePath(history.location.search));
 
-    FetchXml(new UrlQuery().UrlDownloadPhotoApi(filePath, false)).then((response) => {
+    FetchXml(new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false)).then((response) => {
       if (!response.data) return;
 
       var tracks: any[] = [];
