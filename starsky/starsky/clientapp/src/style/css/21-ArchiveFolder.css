@@ -77,7 +77,6 @@
 /* select */
 .folder > .box--select > .isDirectory-true.box-content--selected:before,
 .folder > .box--select > .isDirectory-false.box-content--selected:before {
-  border: #fff solid 0px;
   background-color: #283593;
   width: 45px;
   height: 45px;
