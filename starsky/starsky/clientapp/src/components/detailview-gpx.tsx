@@ -44,6 +44,7 @@ const DetailViewGpx: React.FC = () => {
     map.fitBounds(tracks);
 
     L.polygon(tracks, { color: 'red', fill: false }).addTo(map);
+    console.log('map added');
   }
 
   useEffect(() => {
