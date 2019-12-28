@@ -111,7 +111,6 @@
   cursor: pointer;
 }
 
-
 /* dont overlap the sidebar */
 @media screen and (max-width: 450px) {
   .detailview.detailview--edit .main .nextprev {
