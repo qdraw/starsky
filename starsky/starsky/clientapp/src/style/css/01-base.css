@@ -114,10 +114,9 @@ body {
 
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: #546E7A;
+    background-color: #37474F;
   }
 }
-
 
 @media screen and (max-width: 600px) {
     body.lock-screen {
