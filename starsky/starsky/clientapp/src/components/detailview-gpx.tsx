@@ -1,19 +1,24 @@
 import L from 'leaflet';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import useLocation from '../hooks/use-location';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 import FetchXml from '../shared/fetch-xml';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
+import Preloader from './preloader';
 
 const DetailViewGpx: React.FC = () => {
   var history = useLocation();
+
+  // preloading icon
+  const [isLoading, setIsLoading] = useState(false);
 
   function updateMap(response: IConnectionDefault) {
     if (!response.data) return;
     if (!mapReference.current) return;
 
     // reset leaflet first
+    mapReference.current.innerHTML = "";
     var container = L.DomUtil.get(mapReference.current);
     if (container != null) {
       (container as any)._leaflet_id = null;
@@ -54,14 +59,19 @@ const DetailViewGpx: React.FC = () => {
 
   /** update only on intial load */
   useEffect(() => {
+    setIsLoading(true);
     var filePathEncoded = new URLPath().encodeURI(new URLPath().getFilePath(history.location.search));
     FetchXml(new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false)).then((response) => {
-      updateMap(response)
+      updateMap(response);
+      setIsLoading(false);
     })
   }, [new URLPath().getFilePath(history.location.search)]);
 
   return (
-    <div className={"main main--error main--gpx"} ref={mapReference} />
+    <>
+      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
+      <div className={"main main--error main--gpx"} ref={mapReference} />
+    </>
   );
 };
 
