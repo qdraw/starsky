@@ -39,7 +39,7 @@ const DetailViewGpx: React.FC = () => {
     });
 
     // to avoid short inputs
-    // if (!tracks || tracks.length <= 2) return;
+    if (!tracks || tracks.length <= 2) return;
 
     // create map
     var map = L.map(mapReference.current, {
