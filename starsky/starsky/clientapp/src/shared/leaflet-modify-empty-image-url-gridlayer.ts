@@ -60,6 +60,8 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
     var key = this._tileCoordsToKey(coords);
 
     tile = this._tiles[key];
+    console.log(tile);
+
     if (!tile) { return; }
 
     tile.loaded = +new Date();
