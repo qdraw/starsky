@@ -50,5 +50,5 @@ while [ $COUNTER -lt $MAXCOUNTER ]; do
 done
 
 # To make Search Suggestions at start faster
-CURLSUGGESTOUTPUT=`curl -X GET -LI "$URL"/suggest/inflate -o /dev/null -w '%{http_code}\n' -s`
+CURLSUGGESTOUTPUT=`curl -X GET -LI "$URL"/api/suggest/inflate -o /dev/null -w '%{http_code}\n' -s`
 echo "!> done ~ -sug:$CURLSUGGESTOUTPUT"

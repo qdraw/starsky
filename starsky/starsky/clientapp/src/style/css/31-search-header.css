@@ -69,6 +69,17 @@
   background-color:#283593;
 }
 
+/* odd */
+.search-header  .menu-item:nth-child(2n-1) {
+    background-color: #455A64;
+}
+
+/* even */
 .search-header  .menu-item:nth-child(2n) {
     background-color: #607D8B;
+}
+
+/* this is the search bar, and in dark mode the color is different */
+.search-header  .menu-item:first-child {
+    background-color: transparent;
 }

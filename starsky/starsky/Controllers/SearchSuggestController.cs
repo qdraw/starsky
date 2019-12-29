@@ -20,7 +20,7 @@ namespace starsky.Controllers
 		/// <param name="t">search query</param>
 		/// <returns>the search results</returns>
 		/// <response code="200">the search results (enable json to get json results)</response>
-		[HttpGet("/suggest")]
+		[HttpGet("/api/suggest")]
 		[ProducesResponseType(typeof(SearchViewModel),200)] // ok
 		[Authorize] 
 		// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
@@ -34,7 +34,7 @@ namespace starsky.Controllers
 		/// Show all items in the search suggest cache
 		/// </summary>
 		/// <returns>a keylist with search suggestions</returns>
-		[HttpGet("/suggest/all")]
+		[HttpGet("/api/suggest/all")]
 		[ProducesResponseType(typeof(SearchViewModel),200)] // ok
 		[Authorize] 
 		// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
@@ -47,7 +47,7 @@ namespace starsky.Controllers
 		/// To fill the cache with the data (only if cache is not already filled)
 		/// </summary>
 		/// <returns></returns>
-		[HttpGet("/suggest/inflate")]
+		[HttpGet("/api/suggest/inflate")]
 		public IActionResult Inflate()
 		{
 			_suggest.Inflate();

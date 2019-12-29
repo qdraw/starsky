@@ -34,6 +34,7 @@
     <Content Include="pm2-warmup.sh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Remove="clientapp\coverage\**" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="appsettings.json">
@@ -56,15 +57,21 @@
  </ItemGroup>
   <ItemGroup>
     <Compile Remove="clientapp\node_modules\**" />
+    <Compile Remove="clientapp\coverage\**" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove="clientapp\node_modules\**" />
+    <EmbeddedResource Remove="clientapp\coverage\**" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="clientapp\node_modules\**" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="clientapp\node_modules\**" />
+    <None Remove="clientapp\coverage\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="clientapp\coverage\coverage-final.json" />
   </ItemGroup>
 <PropertyGroup>
     <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>

@@ -30,7 +30,7 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
   const [inputFocus, setInputFocus] = React.useState(true);
 
   // can't set this inside effect or if ==> performance issue, runs to often
-  const responseObject = useFetch("/suggest/?t=" + query, 'get');
+  const responseObject = useFetch("/api/suggest/?t=" + query, 'get');
   useEffect(() => {
     if (!responseObject.data) return;
     var result: Array<string> = [...responseObject.data];

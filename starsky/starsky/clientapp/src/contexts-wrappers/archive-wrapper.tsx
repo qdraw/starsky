@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import Archive from '../containers/archive';
+import Login from '../containers/login';
 import Search from '../containers/search';
 import Trash from '../containers/trash';
 import { ArchiveContext, ArchiveContextProvider } from '../contexts/archive-context';
@@ -39,21 +40,27 @@ function ArchiveWrapper(archive: IArchiveProps) {
   if (!state.fileIndexItems) return (<></>);
   if (!state.pageType) return (<></>);
 
-  if (state.pageType === PageType.Trash) {
-    return (
-      <Trash {...archiveList} />
-    )
+  switch (state.pageType) {
+    case PageType.Trash:
+      return (
+        <Trash {...archiveList} />
+      );
+    case PageType.Search:
+      return (
+        <Search {...archiveList} />
+      );
+    case PageType.Unauthorized:
+      console.log('not login');
+
+      return (
+        <Login />
+      );
+    default:
+      return (
+        <Archive {...archiveList} />
+      );
   }
 
-  if (state.pageType === PageType.Search) {
-    return (
-      <Search {...archiveList} />
-    )
-  }
-
-  return (
-    <Archive {...archiveList} />
-  )
 }
 
 export default ArchiveContextWrapper;
