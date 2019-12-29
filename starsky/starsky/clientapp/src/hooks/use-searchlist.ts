@@ -40,6 +40,11 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
           setPageType(PageType.NotFound);
           return;
         }
+        else if (res.status === 401) {
+          setArchive({ pageType: PageType.Unauthorized, ...newIArchive(), fileIndexItems: [], colorClassUsage: [] });
+          setPageType(PageType.Unauthorized);
+          return;
+        }
         else if (res.status >= 400 && res.status <= 550) {
           setPageType(PageType.ApplicationException);
           return;
