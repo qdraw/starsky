@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import useLocation from '../hooks/use-location';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 import FetchXml from '../shared/fetch-xml';
+import { LeafletEmptyImageUrlGridLayer } from '../shared/leaflet-modify-empty-image-url-gridlayer';
+import { LeafletEmptyImageUrlTileLayer } from '../shared/leaflet-modify-empty-image-url-tilelayer';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import Preloader from './preloader';
@@ -41,18 +43,24 @@ const DetailViewGpx: React.FC = () => {
       ]
     });
 
-    map.dragging.disable();
-    map.touchZoom.disable();
-    map.doubleClickZoom.disable();
-    map.scrollWheelZoom.disable();
-    map.boxZoom.disable();
-    map.keyboard.disable();
-    if (map.tap) map.tap.disable();
+    // map.dragging.disable();
+    // map.touchZoom.disable();
+    // map.doubleClickZoom.disable();
+    // map.scrollWheelZoom.disable();
+    // map.boxZoom.disable();
+    // map.keyboard.disable();
+    // if (map.tap) map.tap.disable();
 
     map.fitBounds(tracks);
 
-    L.polygon(tracks, { color: '#455A64', fill: false }).addTo(map);
+    L.polyline(tracks, { color: '#455A64', fill: false }).addTo(map);
   }
+
+  // Due a strict CSP policy the following line is not allowed ==> 
+  // https://github.com/Leaflet/Leaflet/blob/e4b49000843687046cb127811d395394eb93e931/src/core/Util.js#L198
+  L.GridLayer.include(new LeafletEmptyImageUrlGridLayer()._removeTile);
+  L.GridLayer.include(new LeafletEmptyImageUrlGridLayer()._tileReady);
+  L.TileLayer.include(new LeafletEmptyImageUrlTileLayer("")._abortLoading);
 
   // when having to gpx files next and you browse though it
   const mapReference = useRef<HTMLDivElement>(null);

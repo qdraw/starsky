@@ -37,7 +37,7 @@ describe("DetailViewGpx", () => {
         };
       });
 
-      var polygonSpy = jest.spyOn(L, "polygon").mockImplementationOnce(() => {
+      var polygonSpy = jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
           addTo: jest.fn()
         } as any;

@@ -10,6 +10,9 @@ import RouterApp from './routes/router';
 import * as serviceWorker from "./service-worker";
 import './style/css/00-index.css';
 
+/* used for image policy */
+/// <reference path='./index.d.ts'/>
+
 ReactDOM.render(
   <RouterApp />,
   document.getElementById('root'),
