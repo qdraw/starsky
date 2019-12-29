@@ -65,6 +65,7 @@ describe("DetailViewGpx", () => {
           scrollWheelZoom: { disable: jest.fn() },
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
+          tap: { disable: jest.fn() },
         };
       });
 
