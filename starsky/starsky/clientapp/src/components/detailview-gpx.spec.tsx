@@ -12,8 +12,39 @@ describe("DetailViewGpx", () => {
   });
 
   describe("with Context", () => {
-    it("renders with example GPX", async () => {
+    it("renders with example GPX (very short one)", async () => {
       var responseString = '<?xml version="1.0" encoding="UTF - 8" ?><gpx version="1.1"><trkpt lat="52" lon="13"></trkpt></gpx>';
+      const xmlParser = new DOMParser();
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200, data: xmlParser.parseFromString(responseString, 'text/xml')
+      } as IConnectionDefault);
+      var spyGet = jest.spyOn(FetchXml, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
+
+      var polylineSpy = jest.spyOn(L, "polyline").mockImplementationOnce(() => {
+        return {
+          addTo: jest.fn()
+        } as any;
+      })
+
+      // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
+      const div = document.createElement('div');
+      (window as any).domNode = div;
+      document.body.appendChild(div);
+      var gpx = mount(<DetailViewGpx></DetailViewGpx>, { attachTo: (window as any).domNode });
+
+      expect(polylineSpy).toBeCalledTimes(0);
+
+    });
+
+    it("renders with example GPX", async () => {
+
+      var responseString = `<?xml version="1.0" encoding="UTF - 8" ?>
+      <gpx version="1.1">
+        <trkpt lat="52" lon="13"></trkpt>
+        <trkpt lat="52" lon="13"></trkpt>
+        <trkpt lat="55" lon="13"></trkpt>
+      </gpx>`;
+
       const xmlParser = new DOMParser();
       const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200, data: xmlParser.parseFromString(responseString, 'text/xml')
@@ -34,10 +65,11 @@ describe("DetailViewGpx", () => {
           scrollWheelZoom: { disable: jest.fn() },
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
+          tap: { disable: jest.fn() },
         };
       });
 
-      var polygonSpy = jest.spyOn(L, "polygon").mockImplementationOnce(() => {
+      var polylineSpy = jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
           addTo: jest.fn()
         } as any;
@@ -52,7 +84,7 @@ describe("DetailViewGpx", () => {
 
       expect(spyGet).toBeCalled();
       expect(spyMap).toBeCalled();
-      expect(polygonSpy).toBeCalled();
+      expect(polylineSpy).toBeCalled();
 
     });
   });

@@ -3,9 +3,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import useLocation from '../hooks/use-location';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 import FetchXml from '../shared/fetch-xml';
+import { Geo } from '../shared/geo';
+import { LeafletEmptyImageUrlGridLayer } from '../shared/leaflet-modify-empty-image-url-gridlayer';
+import { LeafletEmptyImageUrlTileLayer } from '../shared/leaflet-modify-empty-image-url-tilelayer';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
+import MarkerBlueSvg from '../style/images/fa-map-marker-blue.svg';
+import MarkerShadowPng from '../style/images/marker-shadow.png';
 import Preloader from './preloader';
+
+
 
 const DetailViewGpx: React.FC = () => {
   var history = useLocation();
@@ -31,6 +38,9 @@ const DetailViewGpx: React.FC = () => {
       tracks.push([element.getAttribute('lat'), element.getAttribute('lon')]);
     });
 
+    // to avoid short inputs
+    if (!tracks || tracks.length <= 2) return;
+
     // create map
     var map = L.map(mapReference.current, {
       layers: [
@@ -51,8 +61,32 @@ const DetailViewGpx: React.FC = () => {
 
     map.fitBounds(tracks);
 
-    L.polygon(tracks, { color: '#455A64', fill: false }).addTo(map);
+    var blueIcon = L.icon({
+      iconUrl: MarkerBlueSvg,
+      shadowUrl: MarkerShadowPng,
+      iconSize: [50, 50], // size of the icon
+      shadowSize: [50, 50], // size of the shadow
+      iconAnchor: [25, 50], // point of the icon which will correspond to marker's location
+      shadowAnchor: [15, 55],  // the same for the shadow
+      popupAnchor: [0, -50] // point from which the popup should open relative to the iconAnchor
+    });
+
+    var firstTrack = tracks[0];
+    var lastTrack = tracks[tracks.length - 1];
+
+    L.marker(tracks[0], { icon: blueIcon }).addTo(map);
+
+    if (new Geo().Distance(firstTrack, lastTrack) >= 500) {
+      L.marker(lastTrack, { icon: blueIcon }).addTo(map);
+    }
+
+    L.polyline(tracks, { color: '#455A64', fill: false }).addTo(map);
   }
+
+  // Due a strict CSP policy the following line is not allowed ==> 
+  // https://github.com/Leaflet/Leaflet/blob/e4b49000843687046cb127811d395394eb93e931/src/core/Util.js#L198
+  new LeafletEmptyImageUrlGridLayer()
+  new LeafletEmptyImageUrlTileLayer("51:12:1");
 
   // when having to gpx files next and you browse though it
   const mapReference = useRef<HTMLDivElement>(null);
