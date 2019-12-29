@@ -23,8 +23,6 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
     // unless we're on Android's stock browser,
     // see https://github.com/Leaflet/Leaflet/issues/137
     if (!L.Browser.androidStock) {
-      console.log(EmptyImage);
-
       tile.el.setAttribute('src', EmptyImage); // Replace emptyImageUrl
     }
     L.DomUtil.remove(tile.el);
@@ -39,6 +37,13 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
     });
   }
 
+  /**
+   * When Tile is ready, this is fired by leaflet
+   * Source: https://github.com/Leaflet/Leaflet/issues/6113#issuecomment-377672239
+   * @param coords Cordinates
+   * @param err Error
+   * @param tile Tile object?
+   */
   public _tileReady(coords: Coords, err: any, tile: any) {
     if (!this._map || tile.getAttribute('src') === EmptyImage) { return; } // Replace emptyImageUrl
 
