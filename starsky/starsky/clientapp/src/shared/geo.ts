@@ -1,10 +1,11 @@
 
 export class Geo {
 
-  private rad(x: number) {
-    return x * Math.PI / 180;
-  }
-
+  /**
+   * Get the distance of two cordinates (over the air)
+   * @param point1 example: [52.636206, 4.657292]
+   * @param point2 so lat log in a array
+   */
   public Distance(point1: number[], point2: number[]) {
 
     if (!point1 || point1.length !== 2) throw Error("point 1 has wrong input");

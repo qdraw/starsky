@@ -37,7 +37,14 @@ describe("DetailViewGpx", () => {
     });
 
     it("renders with example GPX", async () => {
-      var responseString = '<?xml version="1.0" encoding="UTF - 8" ?><gpx version="1.1"><trkpt lat="52" lon="13"></trkpt></gpx>';
+
+      var responseString = `<?xml version="1.0" encoding="UTF - 8" ?>
+      <gpx version="1.1">
+        <trkpt lat="52" lon="13"></trkpt>
+        <trkpt lat="52" lon="13"></trkpt>
+        <trkpt lat="55" lon="13"></trkpt>
+      </gpx>`;
+
       const xmlParser = new DOMParser();
       const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200, data: xmlParser.parseFromString(responseString, 'text/xml')
