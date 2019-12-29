@@ -44,7 +44,15 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
    * @param err Error
    * @param tile Tile object?
    */
-  public _tileReady(coords: Coords, err: any, tile: any) {
+  public _tileReady(coords: Coords, err: any, tile: {
+    active?: boolean,
+    coords: Coords,
+    current: boolean,
+    el: HTMLElement,
+    loaded?: Date | number,
+    retain?: boolean,
+    getAttribute?: any,
+  }) {
     if (!this._map || tile.getAttribute('src') === EmptyImage) { return; } // Replace emptyImageUrl
 
     if (err) {
@@ -60,11 +68,9 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
     var key = this._tileCoordsToKey(coords);
 
     tile = this._tiles[key];
-    console.log(tile);
-
     if (!tile) { return; }
+    tile.loaded = + new Date();
 
-    tile.loaded = +new Date();
     if ((this._map as any)._fadeAnimated) {
       L.DomUtil.setOpacity(tile.el, 0);
       L.Util.cancelAnimFrame((this as any)._fadeFrame);
