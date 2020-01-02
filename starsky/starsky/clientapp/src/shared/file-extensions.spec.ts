@@ -28,19 +28,19 @@ describe("keyboard", () => {
     });
   });
 
-  describe("ValidFileName", () => {
+  describe("IsValidFileName", () => {
     it("valid filename", () => {
-      var result = fileExt.ValidFileName("222.jpg");
+      var result = fileExt.IsValidFileName("222.jpg");
       expect(result).toBeTruthy();
     });
 
     it("only extension filename (non valid)", () => {
-      var result = fileExt.ValidFileName(".jpg");
+      var result = fileExt.IsValidFileName(".jpg");
       expect(result).toBeFalsy();
     });
 
     it("start with underscore _.com", () => {
-      var result = fileExt.ValidFileName("_.com");
+      var result = fileExt.IsValidFileName("_.com");
       expect(result).toBeTruthy();
     });
   });

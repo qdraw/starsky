@@ -346,6 +346,28 @@ namespace starskytest.Helpers
 		{
 			// todo: add this
 		}
+		
+		
+		[TestMethod]
+		public void RenameFsTest_ValidFileName()
+		{
+			var result = new RenameFs(null, null, null).IsValidFileName("test.jpg");
+			Assert.AreEqual(true, result);
+		}
+				
+		[TestMethod]
+		public void RenameFsTest_ValidFileName_StartWithUnderscore()
+		{
+			var result = new RenameFs(null, null, null).IsValidFileName("_.com");
+			Assert.AreEqual(true, result);
+		}
+		
+		[TestMethod]
+		public void RenameFsTest_NonValidFileName()
+		{
+			var result = new RenameFs(null, null, null).IsValidFileName(".jpg");
+			Assert.AreEqual(false, result);
+		}
 
 	}
 }

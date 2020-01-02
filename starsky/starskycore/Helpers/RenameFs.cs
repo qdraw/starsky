@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
@@ -214,5 +215,15 @@ namespace starskycore.Helpers
 
 	        return fileIndexResultsList;
         }
+		
+		public bool IsValidFileName(string filename)
+		{
+			// use the same as in the front-end
+			var extensionRegex =
+				new Regex("^[a-zA-Z0-9_](?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\\.[a-zA-Z0-9_-]+$",
+					RegexOptions.CultureInvariant);
+
+			return extensionRegex.IsMatch(filename);
+		}
     }
 }
