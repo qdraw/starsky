@@ -111,11 +111,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     new Keyboard().SetFocusOnEndField(current);
   }, [props]);
 
-  function subString(input: string): string {
-    if (input.length <= 30) return input;
-    return input.substring(0, 30) + "..."
-  }
-
   // noinspection HtmlUnknownAttribute
   return (<div className="sidebar">
     {fileIndexItem.status === IExifStatus.Deleted || fileIndexItem.status === IExifStatus.ReadOnly
@@ -226,9 +221,9 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         </a> : ""}
 
       {collections.map((item, index) => (
-        <div key={index} className="box" data-test="collections">
-          <div className="icon icon--photo" />
-          <b><Link to={new URLPath().updateFilePath(history.location.search, item)}>{subString(new URLPath().getChild(item))}</Link></b>
+        <div key={index} className={index !== 1 ? "box" : "box box--child"} data-test="collections">
+          {index !== 1 ? <div className="icon icon--photo" /> : null}
+          <b><Link to={new URLPath().updateFilePath(history.location.search, item)}>{new URLPath().getChild(item)}</Link></b>
           <p>
             In een collectie: {index + 1} van {collections.length}.
             {item === fileIndexItem.filePath && fileIndexItem.imageWidth !== 0 && fileIndexItem.imageHeight !== 0 ? <span>&nbsp;&nbsp;{fileIndexItem.imageWidth}&times;{fileIndexItem.imageHeight} pixels</span> : null}

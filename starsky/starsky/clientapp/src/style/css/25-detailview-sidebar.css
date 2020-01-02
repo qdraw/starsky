@@ -27,6 +27,11 @@
   margin-top:0px;
 }
 
+.detailview .box.box--child {
+  margin-left: 30px;
+  margin-top: 10px;
+}
+
 .detailview .box p,
 .detailview .box b{
   line-height: 1.3;
@@ -35,6 +40,11 @@
 
 .detailview .box b {
   font-weight: 300;
+    display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* ... */
+  max-width: calc(100% - 35px);
 }
 
 .detailview .box .icon {
