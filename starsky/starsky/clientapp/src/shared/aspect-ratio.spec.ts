@@ -53,5 +53,34 @@ describe("AspectRatio", () => {
     expect(ratio).toBe("3:2");
   });
 
+  it("4000 × 4000", () => {
+    var width = 4000;
+    var height = 4000;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height);
+
+    expect(gcd).toBe(4000);
+    expect(ratio).toBe("1:1");
+  });
+
+  it("0 × 10", () => {
+    var width = 0;
+    var height = 10;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height);
+
+    expect(gcd).toBe(10);
+    expect(ratio).toBe("0:1");
+  });
+
+  it("10 × 0", () => {
+    var width = 10;
+    var height = 0;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height);
+
+    expect(gcd).toBe(10);
+    expect(ratio).toBe("1:0");
+  });
 });
 
