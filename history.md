@@ -20,7 +20,7 @@
 - []   (feature) _Front-end_ Move file in menu
 - []   (feature) _Front-end_ Upload to directory (+ backend)
 
-# version 0.1.11 - 2019-12-??
+# version 0.1.11 - 2020-01-02
 - [x]   (bugfix) _Front-end_ _Detailview_ when press Delete and switch image, the next image should be marked as not deleted (Fixed)
 - [x]   (bugfix) _Front-end_ _Archive_ when press 'Select' the images are not reloaded (Fixed)
 - [x]   (bugfix) _Front-end_ _Archive_ _iOS_ After press 'Select' and return the scrollstate keeps on the same position (fixed)
@@ -37,6 +37,8 @@
 - [x]   (bugfix) _Front-end_ When import a non supported image Ok is shown 
 - [x]   (feature) _Front-end_ Show GPX Files with a map (powered by leaflet/openstreet maps)
 - [x]   __Breaking change__ _Backend_ Rename suggest API from `/suggest` to `/api/suggest`
+- [x]   (bugfix) _Front-end_ Rotation in Detailview on iPad OS 13+ is working (fixed)
+- [x]   (feature) _API_ Add is Valid Filename check on rename API (`/api/rename`)
 
 # version 0.1.10 - 2019-12-15
 - [x] (bugfix) Archive => After pressing 'Apply' the updates are not shown
