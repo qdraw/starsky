@@ -8,6 +8,7 @@ class AspectRatio {
    * For example, the gcd of 8 and 12 is 4.
    * @param u first input value
    * @param v second input value
+   * @see https://stackoverflow.com/a/50260127
    */
   public gcd(u: number, v: number): number {
     if (u === v) return u;
