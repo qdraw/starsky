@@ -6,6 +6,7 @@ import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import AspectRatio from '../shared/aspect-ratio';
 import { CastToInterface } from '../shared/cast-to-interface';
 import { isValidDate, parseDate, parseRelativeDate, parseTime } from '../shared/date';
 import FetchPost from '../shared/fetch-post';
@@ -225,8 +226,11 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           {index !== 1 ? <div className="icon icon--photo" /> : null}
           <b><Link to={new URLPath().updateFilePath(history.location.search, item)}>{new URLPath().getChild(item)}</Link></b>
           <p>
-            In een collectie: {index + 1} van {collections.length}.
-            {item === fileIndexItem.filePath && fileIndexItem.imageWidth !== 0 && fileIndexItem.imageHeight !== 0 ? <span>&nbsp;&nbsp;{fileIndexItem.imageWidth}&times;{fileIndexItem.imageHeight} pixels</span> : null}
+            {index === 1 ? <>In een collectie:</> : null} {index + 1} van {collections.length}.
+            {item === fileIndexItem.filePath && fileIndexItem.imageWidth !== 0 && fileIndexItem.imageHeight !== 0 ?
+              <span>&nbsp;&nbsp;{fileIndexItem.imageWidth}&times;{fileIndexItem.imageHeight} pixels&nbsp;&nbsp;
+              ratio: {new AspectRatio().ratio(fileIndexItem.imageWidth, fileIndexItem.imageHeight)}</span>
+              : null}
           </p>
         </div>
       ))}
