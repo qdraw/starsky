@@ -229,6 +229,29 @@ namespace starskytest.Helpers
 
 			RemoveFoldersAndFilesInDatabase();
 		}
+		
+		
+		[TestMethod]
+		public void RenameFsTest_FakeIStorage_RenameOneFile_ToWrongNewFileName()
+		{
+
+			CreateFoldersAndFilesInDatabase();
+
+			var iStorage = new FakeIStorage(new List<string>
+			{
+				_folderExist.FilePath
+			},new List<string>
+			{
+				_fileInExist.FilePath
+			});
+			
+			var renameFs = new RenameFs(_query,_sync,iStorage).Rename( _fileInExist.FilePath, _folderExist.FilePath + "/test2___");
+			// so this operation is not supported
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,renameFs.FirstOrDefault().Status );
+			
+			RemoveFoldersAndFilesInDatabase();
+		}
 
 		[TestMethod]
 		public void RenameFsTest_FakeIStorage_ToNonExistFolder_Items()
@@ -348,26 +371,7 @@ namespace starskytest.Helpers
 		}
 		
 		
-		[TestMethod]
-		public void RenameFsTest_ValidFileName()
-		{
-			var result = new RenameFs(null, null, null).IsValidFileName("test.jpg");
-			Assert.AreEqual(true, result);
-		}
-				
-		[TestMethod]
-		public void RenameFsTest_ValidFileName_StartWithUnderscore()
-		{
-			var result = new RenameFs(null, null, null).IsValidFileName("_.com");
-			Assert.AreEqual(true, result);
-		}
-		
-		[TestMethod]
-		public void RenameFsTest_NonValidFileName()
-		{
-			var result = new RenameFs(null, null, null).IsValidFileName(".jpg");
-			Assert.AreEqual(false, result);
-		}
+
 
 	}
 }

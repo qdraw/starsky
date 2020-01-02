@@ -103,7 +103,8 @@ namespace starskycore.Helpers
 				var toFileFolderStatus = _iStorage.IsFolderOrFile(toFileSubPath);
 
 				// we dont overwrite files
-				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFolderStatus != FolderOrFileModel.FolderOrFileTypeList.Deleted)
+				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFolderStatus 
+				     != FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
 					fileIndexResultsList.Add(new FileIndexItem
 					{
@@ -187,6 +188,17 @@ namespace starskycore.Helpers
 					
 					var parentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
 
+					// when trying to rename something wrongs
+					var fileName = new FilenamesHelper().GetFileName(toFileSubPath);
+					if ( !new FilenamesHelper().IsValidFileName(fileName) )
+					{
+						fileIndexResultsList.Add(new FileIndexItem
+						{
+							Status = FileIndexItem.ExifStatus.OperationNotSupported
+						});
+						continue; //next
+					}
+					
 					// clear cache
 					_query.RemoveCacheParentItem(parentSubFolder);
 					
@@ -215,15 +227,6 @@ namespace starskycore.Helpers
 
 	        return fileIndexResultsList;
         }
-		
-		public bool IsValidFileName(string filename)
-		{
-			// use the same as in the front-end
-			var extensionRegex =
-				new Regex("^[a-zA-Z0-9_](?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\\.[a-zA-Z0-9_-]+$",
-					RegexOptions.CultureInvariant);
 
-			return extensionRegex.IsMatch(filename);
-		}
     }
 }
