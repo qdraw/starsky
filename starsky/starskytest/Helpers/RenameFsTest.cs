@@ -229,6 +229,29 @@ namespace starskytest.Helpers
 
 			RemoveFoldersAndFilesInDatabase();
 		}
+		
+		
+		[TestMethod]
+		public void RenameFsTest_FakeIStorage_RenameOneFile_ToWrongNewFileName()
+		{
+
+			CreateFoldersAndFilesInDatabase();
+
+			var iStorage = new FakeIStorage(new List<string>
+			{
+				_folderExist.FilePath
+			},new List<string>
+			{
+				_fileInExist.FilePath
+			});
+			
+			var renameFs = new RenameFs(_query,_sync,iStorage).Rename( _fileInExist.FilePath, _folderExist.FilePath + "/test2___");
+			// so this operation is not supported
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,renameFs.FirstOrDefault().Status );
+			
+			RemoveFoldersAndFilesInDatabase();
+		}
 
 		[TestMethod]
 		public void RenameFsTest_FakeIStorage_ToNonExistFolder_Items()
@@ -346,6 +369,5 @@ namespace starskytest.Helpers
 		{
 			// todo: add this
 		}
-
 	}
 }

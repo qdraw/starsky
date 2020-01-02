@@ -21,11 +21,15 @@ export class FileExtensions {
    * Checks if the filename is valid
    * @param filename 
    */
-  public ValidFileName(filename: string): (boolean) {
+  public IsValidFileName(filename: string): (boolean) {
     var extensionRegex = /^[a-zA-Z0-9_](?:[a-zA-Z0-9 ._-]*[a-zA-Z0-9])?\.[a-zA-Z0-9_-]+$/
     var fromExtMatchArray = filename.match(extensionRegex);
     return !!fromExtMatchArray;
   }
+
+  // public GetFileName() {
+  //   // [^\/]+(?=\.[\w]+\.$)|[^\/]+$
+  // }
 
 }
 

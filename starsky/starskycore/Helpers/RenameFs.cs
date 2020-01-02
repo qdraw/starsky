@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
@@ -102,7 +103,8 @@ namespace starskycore.Helpers
 				var toFileFolderStatus = _iStorage.IsFolderOrFile(toFileSubPath);
 
 				// we dont overwrite files
-				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFolderStatus != FolderOrFileModel.FolderOrFileTypeList.Deleted)
+				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFolderStatus 
+				     != FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
 					fileIndexResultsList.Add(new FileIndexItem
 					{
@@ -186,6 +188,17 @@ namespace starskycore.Helpers
 					
 					var parentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
 
+					// when trying to rename something wrongs
+					var fileName = new FilenamesHelper().GetFileName(toFileSubPath);
+					if ( !new FilenamesHelper().IsValidFileName(fileName) )
+					{
+						fileIndexResultsList.Add(new FileIndexItem
+						{
+							Status = FileIndexItem.ExifStatus.OperationNotSupported
+						});
+						continue; //next
+					}
+					
 					// clear cache
 					_query.RemoveCacheParentItem(parentSubFolder);
 					
@@ -214,5 +227,6 @@ namespace starskycore.Helpers
 
 	        return fileIndexResultsList;
         }
+
     }
 }
