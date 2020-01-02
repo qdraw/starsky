@@ -1,8 +1,10 @@
 
 export class BrowserDetect {
   IsIOS() {
-    return 'WebkitAppearance' in document.documentElement.style && navigator.userAgent.indexOf("Safari") !== -1 &&
-      (navigator.userAgent.indexOf("iPad") !== -1 || navigator.userAgent.indexOf("iPhone") !== -1)
+    const isWebKit = 'WebkitAppearance' in document.documentElement.style && navigator.userAgent.indexOf("Safari") !== -1;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.platform)
+    const isIPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+    return isWebKit && (isIOS || isIPadOS);
   }
   public IsLegacy = () => {
     return '-ms-scroll-limit' in document.documentElement.style
