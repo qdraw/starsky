@@ -27,5 +27,9 @@ export class FileExtensions {
     return !!fromExtMatchArray;
   }
 
+  // public GetFileName() {
+  //   // [^\/]+(?=\.[\w]+\.$)|[^\/]+$
+  // }
+
 }
 
