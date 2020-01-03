@@ -29,6 +29,7 @@
   }
 }
 
+.archive .sidebar .notify-box,
 .archive .sidebar .warning-box {
   background-color: #283593;
   color: white;

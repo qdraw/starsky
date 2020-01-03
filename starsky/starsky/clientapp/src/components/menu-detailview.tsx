@@ -9,6 +9,7 @@ import { IExifStatus } from '../interfaces/IExifStatus';
 import { Orientation } from '../interfaces/IFileIndexItem';
 import { INavigateState } from '../interfaces/INavigateState';
 import { CastToInterface } from '../shared/cast-to-interface';
+import { IsEditedNow } from '../shared/date';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
 import { Keyboard } from '../shared/keyboard';
@@ -32,7 +33,8 @@ const MenuDetailView: React.FunctionComponent = () => {
       fileIndexItem: {
         parentDirectory: "/",
         fileName: '',
-        filePath: "/"
+        filePath: "/",
+        lastEdited: new Date(1970, 0, 1).toISOString()
       }
     } as IDetailView;
   }
@@ -52,12 +54,29 @@ const MenuDetailView: React.FunctionComponent = () => {
   /* only update when the state is changed */
   useEffect(() => {
     setMarkedAsDeleted(getIsMarkedAsDeletedFromProps())
+    console.log('status, ', state.fileIndexItem.status);
+
   }, [state.fileIndexItem.status]);
+
+  /* show marker with 'Saved' */
+  const [isRecentEdited, setRecentEdited] = React.useState(IsEditedNow(state.fileIndexItem.lastEdited));
+  useEffect(() => {
+    if (!state.fileIndexItem.lastEdited) return;
+    var isEditedNow = IsEditedNow(state.fileIndexItem.lastEdited);
+    console.log('isEditedNow', isEditedNow);
+
+    if (!isEditedNow) {
+      setRecentEdited(false);
+      return;
+    };
+    setRecentEdited(isEditedNow);
+  }, [state.fileIndexItem.lastEdited]);
 
   function toggleLabels() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
     urlObject.details = !isDetails;
     setDetails(urlObject.details);
+    setRecentEdited(false); // disable to avoid animation
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
@@ -98,7 +117,7 @@ const MenuDetailView: React.FunctionComponent = () => {
         return;
       }
       dispatch({ 'type': 'append', tags: "!delete!" });
-      dispatch({ 'type': 'update', status: IExifStatus.Deleted });
+      dispatch({ 'type': 'update', status: IExifStatus.Deleted, lastEdited: new Date().toISOString() });
       setIsLoading(false);
     }
     // Undo trash
@@ -112,7 +131,7 @@ const MenuDetailView: React.FunctionComponent = () => {
         return;
       }
       dispatch({ 'type': 'remove', tags: "!delete!" });
-      dispatch({ 'type': 'update', status: IExifStatus.Ok });
+      dispatch({ 'type': 'update', status: IExifStatus.Ok, lastEdited: new Date().toISOString() });
       setIsLoading(false);
     }
   }
@@ -133,9 +152,7 @@ const MenuDetailView: React.FunctionComponent = () => {
     // the hash changes if you rotate an image
     if (media.fileIndexItem.fileHash === state.fileIndexItem.fileHash) return false;
 
-    dispatch({ 'type': 'update', orientation });
-    // triggered on this one
-    dispatch({ 'type': 'update', fileHash: media.fileIndexItem.fileHash });
+    dispatch({ 'type': 'update', orientation, fileHash: media.fileIndexItem.fileHash });
     setIsLoading(false);
     return true;
   }
@@ -208,7 +225,10 @@ const MenuDetailView: React.FunctionComponent = () => {
     </header>
 
     {isDetails ? <div className="header header--sidebar">
-      <div className="item item--close" onClick={() => { toggleLabels(); }}>Sluit detailscherm</div>
+      <div className="item item--close" onClick={() => { toggleLabels(); }}>
+        Sluit detailscherm
+        {isRecentEdited ? <div className="autosave">Opgeslagen</div> : null}
+      </div>
     </div> : ""}
 
   </>);

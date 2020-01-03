@@ -2,6 +2,7 @@ import { globalHistory } from '@reach/router';
 import { mount, shallow } from 'enzyme';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
+import { DetailViewContext, DetailViewContextProvider } from '../contexts/detailview-context';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IDetailView, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
@@ -30,7 +31,8 @@ describe("MenuDetailView", () => {
           status: IExifStatus.Ok,
           fileHash: '000',
           filePath: "/test/image.jpg",
-          fileName: "image.jpg"
+          fileName: "image.jpg",
+          lastEdited: new Date(1970, 1, 0).toISOString()
         }
       } as IDetailView;
       contextValues = { state, dispatch: jest.fn() }
@@ -51,6 +53,82 @@ describe("MenuDetailView", () => {
       component.unmount();
       globalHistory.navigate("/");
     });
+
+    it("last Edited change", async () => {
+
+      console.log('last Edited change');
+      console.log('----');
+
+      jest.clearAllMocks();
+      globalHistory.navigate("/?details=true");
+
+      type ReactNodeProps = { children: React.ReactNode }
+
+      const TestComponent1 = (props: ReactNodeProps) => {
+
+        var detailview = contextValues.state as IDetailView;
+        // detailview.fileIndexItem.lastEdited = new Date().toISOString();
+        console.log(detailview);
+
+        let { state, dispatch } = React.useContext(DetailViewContext);
+        dispatch({ 'type': 'reset', payload: detailview });
+
+        function save() {
+          dispatch({ 'type': 'update', lastEdited: new Date().toISOString() });
+
+          console.log(state.fileIndexItem);
+        }
+
+        return (<>
+          <button id="save" onClick={save}></button>
+          {props.children}
+        </>);
+      };
+
+      const TestComponent = () => {
+        return (
+          <DetailViewContextProvider>
+            <TestComponent1>
+              <MenuDetailView />
+            </TestComponent1>
+          </DetailViewContextProvider>
+        );
+      }
+
+
+
+
+
+
+      // // // spy on fetch
+      // // // use this import => import * as FetchPost from '../shared/fetch-post';
+      // // const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      // // var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+
+      // one extra spy
+      // jest.spyOn(React, 'useContext')
+      //   .mockImplementationOnce(() => { return { ...contextValues, fileIndexItem: { lastEdited: new Date().toISOString() } } as IDetailView })
+
+      var component = mount(<TestComponent />);
+
+      await component.find("#save").simulate("click");
+
+
+      console.log('Opgeslagen');
+
+      console.log(component.html());
+
+
+
+      console.log('reset');
+
+      // reset afterwards
+      component.unmount();
+      globalHistory.navigate("/");
+
+    });
+
 
     it("export click [menu]", () => {
       // one extra spy

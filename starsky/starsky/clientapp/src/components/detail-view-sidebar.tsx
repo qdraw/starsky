@@ -99,7 +99,11 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
     FetchPost(updateApiUrl, bodyParams.toString()).then(item => {
       if (item.statusCode !== 200) return;
-      setFileIndexItem(item.data[0]);
+
+      var currentItem = item.data[0] as IFileIndexItem;
+      currentItem.lastEdited = new Date().toISOString();
+      setFileIndexItem(currentItem);
+      dispatch({ 'type': 'update', ...currentItem })
     });
   }
 
@@ -123,10 +127,9 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           {fileIndexItem.status === IExifStatus.ReadOnly ? <><div className="warning-box">Alleen lezen bestand</div> </> : null}
           {fileIndexItem.status === IExifStatus.ServerError ? <><div className="warning-box">Er is iets mis met de input</div> </> : null}
         </div></> : null}
-
     <div className="content--header">
       Tags
-      </div>
+    </div>
     <div className="content--text">
       <div onBlur={handleChange}
         data-name="tags"
@@ -140,7 +143,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
     <div className="content--header">
       Info &amp; Titel
-      </div>
+    </div>
     <div className="content--text">
       <h4>Info</h4>
       <div onBlur={handleChange}

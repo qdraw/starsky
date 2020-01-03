@@ -22,11 +22,20 @@ const differenceInDate = (date: number): number => {
   return difference;
 }
 
+const IsEditedNow = (inputDateTime: undefined | string): boolean | null => {
+  if (!inputDateTime) return null;
+  let input = new Date(inputDateTime).valueOf();
+  if (!input) return null;
+  let difference = differenceInDate(input);
+  return difference <= 0.3;
+}
+
 const parseRelativeDate = (inputDateTime: string | undefined): string => {
   let date = "";
 
   if (!inputDateTime) return date;
   let input = new Date(inputDateTime).valueOf();
+  console.log(input);
 
   if (!input) return date;
 
@@ -42,7 +51,6 @@ const parseRelativeDate = (inputDateTime: string | undefined): string => {
     default:
       return parseDate(inputDateTime);
   }
-
 }
 
 const parseDate = (dateTime: string | undefined): string => {
@@ -71,5 +79,5 @@ const parseTime = (dateTime: string | undefined): string => {
   return date;
 }
 
-export { isValidDate, parseRelativeDate, parseDate, parseTime, leftPad, };
+export { IsEditedNow, isValidDate, parseRelativeDate, parseDate, parseTime, leftPad, };
 
