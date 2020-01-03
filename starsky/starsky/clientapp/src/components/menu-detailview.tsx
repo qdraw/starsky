@@ -34,7 +34,7 @@ const MenuDetailView: React.FunctionComponent = () => {
         parentDirectory: "/",
         fileName: '',
         filePath: "/",
-        lastEdited: new Date(1970, 0, 1).toISOString()
+        lastEdited: new Date(1970, 1, 1).toISOString()
       }
     } as IDetailView;
   }
@@ -63,8 +63,6 @@ const MenuDetailView: React.FunctionComponent = () => {
   useEffect(() => {
     if (!state.fileIndexItem.lastEdited) return;
     var isEditedNow = IsEditedNow(state.fileIndexItem.lastEdited);
-    console.log('isEditedNow', isEditedNow);
-
     if (!isEditedNow) {
       setRecentEdited(false);
       return;
