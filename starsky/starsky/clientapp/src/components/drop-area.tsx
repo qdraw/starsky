@@ -201,7 +201,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       handleExit={() => {
         setOpen(false)
       }}>
-      <ItemTextListView lastUploaded={lastUploaded} fileIndexItems={uploadFilesList} />
+      <ItemTextListView fileIndexItems={uploadFilesList} callback={() => { }} />
     </Modal>
   </>);
 };

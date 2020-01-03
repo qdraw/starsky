@@ -27,6 +27,19 @@ export class FileExtensions {
     return !!fromExtMatchArray;
   }
 
+  /**
+   * Get the parent path from your string 
+   * @param filePath filepath
+   * @see https://stackoverflow.com/a/1130024
+   */
+  public GetParentPath(filePath: string) {
+    if (!filePath) return "/"
+    var parentRegex = /[^/].+(?=\/[^/]+$)/
+    var parentMatchArray = filePath.match(parentRegex);
+    if (!parentMatchArray) return "/";
+    return parentMatchArray[0]
+  }
+
   // public GetFileName() {
   //   // [^\/]+(?=\.[\w]+\.$)|[^\/]+$
   // }

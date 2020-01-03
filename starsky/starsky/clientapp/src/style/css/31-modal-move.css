@@ -1,0 +1,33 @@
+
+.modal-move {
+  max-height: calc(100vh - 100px);
+  overflow-y: scroll;
+}
+
+.modal-move .box {
+
+  line-height: 24px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.modal-move .box:nth-child(odd) {
+  background-color: red;
+}
+
+.modal-move .box:before {
+  display: inline-block;
+  content: "";
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  margin-left: 2px;
+  vertical-align: middle;
+}
+
+.modal-move .box.isDirectory-true:before {
+  background-image: url('../images/baseline-folder-24px.svg');
+}
+.modal-move .box.isDirectory-false:before {
+  background-image: url('../images/baseline-file-24px.svg');
+}

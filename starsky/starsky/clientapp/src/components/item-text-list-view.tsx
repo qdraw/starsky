@@ -2,8 +2,8 @@ import React, { memo } from 'react';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 
 interface ItemListProps {
-  fileIndexItems: IFileIndexItem[],
-  lastUploaded: Date
+  fileIndexItems: IFileIndexItem[];
+  callback(path: string): void;
 }
 /**
  * A list with links to the items
@@ -17,8 +17,9 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = memo((props) =>
     <ul>
       {
         props.fileIndexItems.map((item, index) => (
-          <li key={item.filePath + item.lastEdited}>
-            {item.fileName} - {item.status.toString()}
+          <li className={item.isDirectory ? "box isDirectory-true" : "box isDirectory-false"} key={item.filePath + item.lastEdited}>
+            {item.isDirectory ? <button onClick={() => { props.callback(item.filePath) }}></button> : null}
+            {!item.isDirectory ? item.fileName : null}
           </li>
         ))
       }

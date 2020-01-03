@@ -44,4 +44,11 @@ describe("keyboard", () => {
       expect(result).toBeTruthy();
     });
   });
+
+  describe("GetParentPath", () => {
+    it("get parent path", () => {
+      var result = fileExt.GetParentPath("/__starsky/test");
+      expect(result).toBe("/__starsky")
+    });
+  });
 });
