@@ -1,18 +1,26 @@
 
 .modal-move {
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 150px);
   overflow-y: scroll;
 }
 
 .modal-move .box {
-
   line-height: 24px;
   padding-top: 8px;
   padding-bottom: 8px;
 }
 
+
 .modal-move .box:nth-child(odd) {
-  background-color: red;
+  background-color: #ECEFF1;
+}
+
+.modal-move .box:nth-child(even) {
+  background-color: #CFD8DC;
+}
+
+.modal-move .box.parent {
+  background-color: #CFD8DC;
 }
 
 .modal-move .box:before {
@@ -25,9 +33,18 @@
   vertical-align: middle;
 }
 
+.modal-move .box.parent:before {
+  background-image: url('../images/baseline-arrow_upward-24px.svg');
+}
+
 .modal-move .box.isDirectory-true:before {
   background-image: url('../images/baseline-folder-24px.svg');
 }
 .modal-move .box.isDirectory-false:before {
   background-image: url('../images/baseline-file-24px.svg');
+}
+
+
+.modal-move-button {
+  height: 50px;
 }

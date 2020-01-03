@@ -20,7 +20,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 
   console.log(state ? "?f=" + state.fileIndexItem.parentDirectory : "/");
 
-  var usesFileList = useFileList(state ? "?f=" + state.fileIndexItem.parentDirectory : "?f=/");
+  var usesFileList = useFileList("?f=" + currentFolderPath);
 
   const archive: IArchive | undefined = usesFileList ? usesFileList.archive : undefined;
 
@@ -36,10 +36,17 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     <div className="content">
       <div className="modal content--subheader"><b>{currentFolderPath}</b></div>
       <div className="modal modal-move content--text">
-        <ul>
-          <li>{currentFolderPath} {new FileExtensions().GetParentPath(currentFolderPath)}</li>
-        </ul>
+
+        {currentFolderPath !== "/" ?
+          <ul>
+            <li className={"box parent"}><button onClick={() => { setCurrentFolderPath(new FileExtensions().GetParentPath(currentFolderPath)) }}> {new FileExtensions().GetParentPath(currentFolderPath)}</button></li>
+          </ul>
+          : null}
+
         <ItemTextListView fileIndexItems={archive.fileIndexItems} callback={(path) => { setCurrentFolderPath(path) }} />
+      </div>
+      <div className="modal modal-move-button">
+        <button> Verplaats</button>
       </div>
     </div>
   </Modal>)

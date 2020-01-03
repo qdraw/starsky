@@ -18,7 +18,7 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = memo((props) =>
       {
         props.fileIndexItems.map((item, index) => (
           <li className={item.isDirectory ? "box isDirectory-true" : "box isDirectory-false"} key={item.filePath + item.lastEdited}>
-            {item.isDirectory ? <button onClick={() => { props.callback(item.filePath) }}></button> : null}
+            {item.isDirectory ? <button onClick={() => { props.callback(item.filePath) }}>{item.filePath}</button> : null}
             {!item.isDirectory ? item.fileName : null}
           </li>
         ))
