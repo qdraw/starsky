@@ -27,7 +27,7 @@ const IsEditedNow = (inputDateTime: undefined | string): boolean | null => {
   let input = new Date(inputDateTime).valueOf();
   if (!input) return null;
   let difference = differenceInDate(input);
-  return difference <= 0.3;
+  return difference <= 0.2;
 }
 
 const parseRelativeDate = (inputDateTime: string | undefined): string => {
