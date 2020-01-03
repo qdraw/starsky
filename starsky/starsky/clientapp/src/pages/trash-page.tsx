@@ -8,10 +8,7 @@ import useTrashList from '../hooks/use-trashlist';
 import { PageType } from '../interfaces/IDetailView';
 import { URLPath } from '../shared/url-path';
 
-
-
-interface ITrashPageProps {
-}
+interface ITrashPageProps { }
 
 const TrashPage: FunctionComponent<RouteComponentProps<ITrashPageProps>> = (props) => {
   var history = useLocation();
@@ -29,6 +26,5 @@ const TrashPage: FunctionComponent<RouteComponentProps<ITrashPageProps>> = (prop
     <ArchiveContextWrapper {...searchList.archive} />
   </div>)
 }
-
 
 export default TrashPage;

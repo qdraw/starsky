@@ -12,6 +12,10 @@ export interface IFileList {
   parent: string,
 }
 
+/**
+ * Hook to get index API
+ * @param locationSearch with query parameter "?f=/"
+ */
 const useFileList = (locationSearch: string): IFileList | null => {
 
   const [archive, setArchive] = useState(newIArchive());
