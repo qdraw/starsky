@@ -305,11 +305,7 @@ describe("MenuDetailView", () => {
 
       globalHistory.navigate("/?f=/test2.jpg");
 
-
       expect(component.find('header').getDOMNode().className).toBe("header header--main")
-
-      // globalHistory.navigate("/");
-
     });
 
   });

@@ -7,8 +7,7 @@ import useSearchList from '../hooks/use-searchlist';
 import { PageType } from '../interfaces/IDetailView';
 import { URLPath } from '../shared/url-path';
 
-interface ISearchPageProps {
-}
+interface ISearchPageProps { }
 
 const SearchPage: FunctionComponent<RouteComponentProps<ISearchPageProps>> = (props) => {
   var history = useLocation();
