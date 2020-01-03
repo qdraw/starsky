@@ -91,13 +91,13 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       }
       console.log('/import >= data', response.data);
 
-      Array.from(response.data).forEach(dataItem => {
+      Array.from(response.data).forEach((dataItem: any) => {
         if (!dataItem) return;
         var status = IExifStatus.Ok;
-        if ((dataItem as any).status === "IgnoredAlreadyImported") {
+        if (dataItem.status === "IgnoredAlreadyImported") {
           status = IExifStatus.IgnoredAlreadyImported;
         }
-        else if ((dataItem as any).status === "FileError") {
+        else if (dataItem.status === "FileError") {
           status = IExifStatus.FileError;
         }
         var uploadFileObject = CastFileIndexItem(dataItem, status);
@@ -115,6 +115,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     var uploadFileObject = newIFileIndexItem();
     uploadFileObject.fileHash = element.fileHash;
     uploadFileObject.filePath = element.filePath;
+    uploadFileObject.isDirectory = false;
     uploadFileObject.fileName = new URLPath().getChild(uploadFileObject.filePath);
     uploadFileObject.lastEdited = new Date().toISOString();
     uploadFileObject.status = status;
@@ -201,7 +202,10 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       handleExit={() => {
         setOpen(false)
       }}>
-      <ItemTextListView fileIndexItems={uploadFilesList} callback={() => { }} />
+      <div className="modal content--subheader">Deze bestanden zijn ge&iuml;mporteerd </div>
+      <div className="modal modal-move content--text">
+        <ItemTextListView fileIndexItems={uploadFilesList} callback={() => { }} />
+      </div>
     </Modal>
   </>);
 };

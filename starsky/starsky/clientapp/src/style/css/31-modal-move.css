@@ -4,12 +4,21 @@
   overflow-y: scroll;
 }
 
+
 .modal-move .box {
   line-height: 24px;
   padding-top: 8px;
   padding-bottom: 8px;
+  word-break: break-all;
 }
 
+.modal-move .box button {
+  line-height: 24px;
+  height: 100%;
+  width: calc(100% - 34px);
+  cursor: pointer;
+  background-color: transparent;
+}
 
 .modal-move .box:nth-child(odd) {
   background-color: #ECEFF1;
@@ -21,6 +30,8 @@
 
 .modal-move .box.parent {
   background-color: #CFD8DC;
+  border-bottom: 3px solid #37474F;
+  padding-bottom: 5px;
 }
 
 .modal-move .box:before {
@@ -42,6 +53,24 @@
 }
 .modal-move .box.isDirectory-false:before {
   background-image: url('../images/baseline-file-24px.svg');
+}
+
+.modal-move .box.error:nth-child(even) {
+  background-color: #E57373; 
+  /* red 300 */
+}
+
+.modal-move .box.error:nth-child(odd) {
+    background-color: #E53935;
+    /* red 600 */
+}
+
+.modal-move .box.error:before {
+  background-image: url('../images/baseline-error-24px.svg');
+}
+
+.modal-move .warning-box {
+  margin-top: 10px;
 }
 
 

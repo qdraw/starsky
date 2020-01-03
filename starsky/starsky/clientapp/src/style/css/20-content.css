@@ -22,6 +22,11 @@
   background-color: #CFD8DC;  
 }
 
+.content--header b,
+.content--subheader b {
+  font-weight: 300;
+}
+
 .content--subheader {
   background-color: #ECEFF1;  
 }

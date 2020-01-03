@@ -34,7 +34,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       props.handleExit()
     }}>
     <div className="content">
-      <div className="modal content--subheader"><b>{currentFolderPath}</b></div>
+      <div className="modal content--subheader">Verplaats naar: <b>{currentFolderPath}</b></div>
       <div className="modal modal-move content--text">
 
         {currentFolderPath !== "/" ?
