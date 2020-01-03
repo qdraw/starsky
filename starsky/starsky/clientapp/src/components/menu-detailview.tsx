@@ -54,8 +54,6 @@ const MenuDetailView: React.FunctionComponent = () => {
   /* only update when the state is changed */
   useEffect(() => {
     setMarkedAsDeleted(getIsMarkedAsDeletedFromProps())
-    console.log('status, ', state.fileIndexItem.status);
-
   }, [state.fileIndexItem.status]);
 
   /* show marker with 'Saved' */
