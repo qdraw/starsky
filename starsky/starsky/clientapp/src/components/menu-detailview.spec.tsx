@@ -30,7 +30,8 @@ describe("MenuDetailView", () => {
           status: IExifStatus.Ok,
           fileHash: '000',
           filePath: "/test/image.jpg",
-          fileName: "image.jpg"
+          fileName: "image.jpg",
+          lastEdited: new Date(1970, 1, 1).toISOString()
         }
       } as IDetailView;
       contextValues = { state, dispatch: jest.fn() }
@@ -46,6 +47,38 @@ describe("MenuDetailView", () => {
       var component = mount(<MenuDetailView />);
 
       expect(component.exists('.item--search')).toBeTruthy();
+
+      // reset afterwards
+      component.unmount();
+      globalHistory.navigate("/");
+    });
+
+    it("last Edited change [true]", () => {
+      globalHistory.navigate("/?details=true");
+
+      //  With updated LastEdited
+      var updateContextValues = contextValues;
+      updateContextValues.state.fileIndexItem.lastEdited = new Date().toISOString();
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return updateContextValues })
+
+      var component = mount(<MenuDetailView />);
+
+      expect(component.exists(".autosave")).toBeTruthy();
+
+      // reset afterwards
+      contextValues.state.fileIndexItem.lastEdited = new Date(1970, 0, 0).toISOString();
+      component.unmount();
+      globalHistory.navigate("/");
+    });
+
+    it("last Edited change [false]", () => {
+
+      globalHistory.navigate("/?details=true");
+
+      var component = mount(<MenuDetailView />);
+
+      expect(component.exists(".autosave")).toBeFalsy();
 
       // reset afterwards
       component.unmount();
@@ -272,11 +305,7 @@ describe("MenuDetailView", () => {
 
       globalHistory.navigate("/?f=/test2.jpg");
 
-
       expect(component.find('header').getDOMNode().className).toBe("header header--main")
-
-      // globalHistory.navigate("/");
-
     });
 
   });

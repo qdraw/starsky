@@ -33,7 +33,8 @@ type Action = {
   title?: string,
   fileHash?: string,
   orientation?: Orientation,
-  status?: IExifStatus
+  status?: IExifStatus,
+  lastEdited?: string,
 } |
 {
   type: 'reset',
@@ -59,7 +60,7 @@ export function detailviewReducer(state: State, action: Action): State {
       // Need to update otherwise other events are not triggerd
       return { ...state, lastUpdated: new Date() };
     case "update":
-      var { tags, description, title, status, colorclass, fileHash, orientation } = action;
+      var { tags, description, title, status, colorclass, fileHash, orientation, lastEdited } = action;
 
       if (tags) state.fileIndexItem.tags = tags;
       if (description) state.fileIndexItem.description = description;
@@ -68,6 +69,7 @@ export function detailviewReducer(state: State, action: Action): State {
       if (status) state.fileIndexItem.status = status;
       if (fileHash) state.fileIndexItem.fileHash = fileHash;
       if (orientation) state.fileIndexItem.orientation = orientation;
+      if (lastEdited) state.fileIndexItem.lastEdited = lastEdited;
 
       // Need to update otherwise other events are not triggerd
       return { ...state, lastUpdated: new Date() };
