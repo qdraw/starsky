@@ -71,9 +71,6 @@ export function detailviewReducer(state: State, action: Action): State {
       if (orientation) state.fileIndexItem.orientation = orientation;
       if (lastEdited) state.fileIndexItem.lastEdited = lastEdited;
 
-      console.log('state');
-      console.log(state);
-
       // Need to update otherwise other events are not triggerd
       return { ...state, lastUpdated: new Date() };
     case "reset":

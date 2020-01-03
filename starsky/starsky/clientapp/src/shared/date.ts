@@ -35,7 +35,6 @@ const parseRelativeDate = (inputDateTime: string | undefined): string => {
 
   if (!inputDateTime) return date;
   let input = new Date(inputDateTime).valueOf();
-  console.log(input);
 
   if (!input) return date;
 
