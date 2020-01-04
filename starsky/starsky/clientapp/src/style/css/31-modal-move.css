@@ -2,12 +2,12 @@
 .modal-move {
   min-height: 65px;
   /* extra space for iOS */
-  max-height: calc(100vh - 250px);
+  max-height: calc(100vh - 255px);
   overflow-y: scroll;
 }
 
 .modal-move.modal-move--error-space {
-  max-height: calc(100vh - 320px);
+  max-height: calc(100vh - 325px);
 }
 
 .modal-move .box {
@@ -24,6 +24,12 @@
   background-color: transparent;
 }
 
+@media (prefers-color-scheme: dark) {
+  .modal-move .box button {
+    color: #fff;
+  }
+}
+
 .modal-move .box:nth-child(odd) {
   background-color: #ECEFF1;
 }
@@ -32,10 +38,25 @@
   background-color: #CFD8DC;
 }
 
+@media (prefers-color-scheme: dark) {
+  .modal-move .box:nth-child(odd) {
+    background-color: #607D8B;
+  }
+  .modal-move .box:nth-child(even) {
+    background-color: #78909C;
+  }
+}
+
 .modal-move .box.parent {
   background-color: #CFD8DC;
   border-bottom: 3px solid #37474F;
   padding-bottom: 5px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal-move .box.parent {
+    background-color: #546E7A;
+  }
 }
 
 .modal-move .box:before {
@@ -57,6 +78,15 @@
 }
 .modal-move .box.isDirectory-false:before {
   background-image: url('../images/baseline-file-24px.svg');
+}
+
+/* invert on dark mode */
+@media (prefers-color-scheme: dark) {
+  .modal-move .box.parent:before ,
+  .modal-move .box.isDirectory-true:before,
+  .modal-move .box.isDirectory-false:before {
+    filter: invert(100%);
+  }
 }
 
 .modal-move .box.error:nth-child(even) {
@@ -83,4 +113,10 @@
   min-height: 50px;
   padding-top: 8px;
   padding-bottom: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal-move-button {
+    background-color: #455A64;
+  }
 }

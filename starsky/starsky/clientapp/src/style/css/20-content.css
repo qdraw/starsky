@@ -22,6 +22,13 @@
   background-color: #CFD8DC;  
 }
 
+@media screen and (max-height: 330px) {
+.content--header,
+.content--subheader {
+  font-size: 15px;
+  }
+}
+
 .content--header b,
 .content--subheader b {
   font-weight: 300;
