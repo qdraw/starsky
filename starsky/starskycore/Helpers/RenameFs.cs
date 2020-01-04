@@ -180,9 +180,10 @@ namespace starskycore.Helpers
 						Status = FileIndexItem.ExifStatus.OperationNotSupported
 					});
 				}
-				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File) 
+				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
+				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted) 
 				{
-					// and if toStatus == Deleted or Folder
+					// toFileSubPath should contain the full subpath
 					
 					var parentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
 
@@ -211,6 +212,33 @@ namespace starskycore.Helpers
 					
 					_iStorage.FileMove(inputFileSubPath,toFileSubPath);
 				}
+				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
+				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder )
+				{
+					// toFileSubPath must be the to copy directory, the filename is kept the same
+
+					// update to support UpdateItem
+					toFileSubPath = toFileSubPath + "/" + new FilenamesHelper().GetFileName(inputFileSubPath);
+					
+					// you can't move the file to the same location
+					if ( inputFileSubPath == toFileSubPath )
+					{
+						fileIndexResultsList.Add(new FileIndexItem
+						{
+							Status = FileIndexItem.ExifStatus.OperationNotSupported
+						});
+						continue; //next
+					}
+					
+					// clear cache // parentSubFolder
+					var parentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
+					_query.RemoveCacheParentItem(parentSubFolder); 
+					
+					// Check if the parent folder exist in the database // parentSubFolder
+					_sync.AddSubPathFolder(toFileSubPath);
+					
+					_iStorage.FileMove(inputFileSubPath, toFileSubPath);
+				} 
 				
 				// Rename parent item >eg the folder or file
 				detailView.FileIndexItem.SetFilePath(toFileSubPath);

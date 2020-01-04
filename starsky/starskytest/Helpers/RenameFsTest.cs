@@ -277,23 +277,39 @@ namespace starskytest.Helpers
 		}
 		
 		[TestMethod]
-		public void RenameFsTest_FakeIStorage_File_To_ExistFolder()
+		public void RenameFsTest_FakeIStorage_File_To_ExistFolder_MoveToTheSamePath()
 		{
 			CreateFoldersAndFilesInDatabase();
 
 			var initFolderList =  new List<string> { "/", "/exist" };
 			var initFileList = new List<string> { _fileInExist.FilePath };
 			var istorage = new FakeIStorage(initFolderList,initFileList);
-			var renameFs = new RenameFs(_query, _sync, istorage).Rename(initFileList.FirstOrDefault(), "/exist/test5.jpg", true);
-			
-			var all2 = _query.GetAllRecursive();
-			var selectFile3 = all2.FirstOrDefault(p => p.FileName == "test5.jpg");
-			Assert.AreEqual("test5.jpg",selectFile3.FileName);
-			Assert.AreEqual("/exist",selectFile3.ParentDirectory);
+			var renameFs = new RenameFs(_query, _sync, istorage).Rename(initFileList.FirstOrDefault(), "/exist/", true);
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, renameFs.FirstOrDefault().Status );
 
-			// check if files are moved
-			var values = istorage.GetAllFilesInDirectory("/exist").ToList();
-			Assert.AreEqual("/exist/test5.jpg", values.FirstOrDefault(p => p == "/exist/test5.jpg"));
+			RemoveFoldersAndFilesInDatabase();
+		}
+		
+		
+		[TestMethod]
+		public void RenameFsTest_FakeIStorage_File_To_ExistFolder()
+		{
+			CreateFoldersAndFilesInDatabase();
+
+			var initFolderList =  new List<string> { "/", "/test" };
+			var initFileList = new List<string> { _fileInExist.FilePath };
+			var istorage = new FakeIStorage(initFolderList,initFileList);
+			var renameFs = new RenameFs(_query, _sync, istorage).Rename(initFileList.FirstOrDefault(), "/test/", true);
+			
+			// to file: (in database)
+			var all2 = _query.GetAllRecursive();
+			var selectFile3 = all2.FirstOrDefault(p => p.FileName == "file.jpg");
+			Assert.AreEqual("file.jpg",selectFile3.FileName);
+			Assert.AreEqual("/test",selectFile3.ParentDirectory);
+
+			// check if files are moved (on fake Filesystem)
+			var values = istorage.GetAllFilesInDirectory("/test").ToList();
+			Assert.AreEqual("/test/file.jpg", values.FirstOrDefault(p => p == "/test/file.jpg"));
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
 
 			RemoveFoldersAndFilesInDatabase();
