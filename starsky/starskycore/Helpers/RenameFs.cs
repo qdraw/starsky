@@ -185,8 +185,6 @@ namespace starskycore.Helpers
 				{
 					// toFileSubPath should contain the full subpath
 					
-					var parentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
-
 					// when trying to rename something wrongs
 					var fileName = new FilenamesHelper().GetFileName(toFileSubPath);
 					if ( !new FilenamesHelper().IsValidFileName(fileName) )
@@ -198,17 +196,22 @@ namespace starskycore.Helpers
 						continue; //next
 					}
 					
-					// clear cache
-					_query.RemoveCacheParentItem(parentSubFolder);
-					
+					// from/input cache should be cleared
+					var inputParentSubFolder = Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
+					_query.RemoveCacheParentItem(inputParentSubFolder);
+
+					var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
+					// clear cache (to FileSubPath parents)
+					_query.RemoveCacheParentItem(toParentSubFolder);
+
 					// add folder to file system
-					if ( !_iStorage.ExistFolder(parentSubFolder) )
+					if ( !_iStorage.ExistFolder(toParentSubFolder) )
 					{
-						_iStorage.CreateDirectory(parentSubFolder);
+						_iStorage.CreateDirectory(toParentSubFolder);
 					}
 					
 					// Check if the parent folder exist in the database
-					_sync.AddSubPathFolder(parentSubFolder);
+					_sync.AddSubPathFolder(toParentSubFolder);
 					
 					_iStorage.FileMove(inputFileSubPath,toFileSubPath);
 				}
@@ -230,12 +233,16 @@ namespace starskycore.Helpers
 						continue; //next
 					}
 					
-					// clear cache // parentSubFolder
-					var parentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
-					_query.RemoveCacheParentItem(parentSubFolder); 
+					// from/input cache should be cleared
+					var inputParentSubFolder = Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
+					_query.RemoveCacheParentItem(inputParentSubFolder);
+					
+					// clear cache // parentSubFolder (to FileSubPath parents)
+					var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
+					_query.RemoveCacheParentItem(toParentSubFolder); 
 					
 					// Check if the parent folder exist in the database // parentSubFolder
-					_sync.AddSubPathFolder(toFileSubPath);
+					_sync.AddSubPathFolder(toParentSubFolder);
 					
 					_iStorage.FileMove(inputFileSubPath, toFileSubPath);
 				} 
