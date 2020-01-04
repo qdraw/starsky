@@ -102,18 +102,6 @@ namespace starskycore.Helpers
 				var inputFileFolderStatus = _iStorage.IsFolderOrFile(inputFileSubPath);
 				var toFileFolderStatus = _iStorage.IsFolderOrFile(toFileSubPath);
 
-				// we dont overwrite files
-				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFolderStatus 
-				     != FolderOrFileModel.FolderOrFileTypeList.Deleted)
-				{
-					fileIndexResultsList.Add(new FileIndexItem
-					{
-						Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
-					});
-					continue; //next
-				} 
-
-				
 				var fileIndexItems = new List<FileIndexItem>();
 				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 				     && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
@@ -183,8 +171,18 @@ namespace starskycore.Helpers
 					//_query.RemoveItem(_query.SingleItem(inputFileSubPath).FileIndexItem);
 
 				}
+				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File 
+				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File)
+				{
+					// overwrite a file
+					fileIndexResultsList.Add(new FileIndexItem
+					{
+						Status = FileIndexItem.ExifStatus.OperationNotSupported
+					});
+				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File) 
 				{
+					// and if toStatus == Deleted or Folder
 					
 					var parentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
 

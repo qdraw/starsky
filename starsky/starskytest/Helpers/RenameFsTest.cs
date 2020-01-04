@@ -74,7 +74,7 @@ namespace starskytest.Helpers
 			if(!File.Exists(fileAlreadyExist)) new PlainTextFileHelper().WriteFile(fileAlreadyExist,"test");
 			var renameFs = new RenameFs( _query,_sync,_iStorageSubPath).Rename(_newImage.DbPath, "/already.txt");
 			Assert.AreEqual(new PlainTextFileHelper().ReadFile(fileAlreadyExist).Contains("test"), true);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, renameFs.FirstOrDefault().Status );
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, renameFs.FirstOrDefault().Status );
 
 			// test with newline at the end
 			FilesHelper.DeleteFile(fileAlreadyExist);
@@ -254,7 +254,7 @@ namespace starskytest.Helpers
 		}
 
 		[TestMethod]
-		public void RenameFsTest_FakeIStorage_ToNonExistFolder_Items()
+		public void RenameFsTest_FakeIStorage_FileToNonExistFolder_Items()
 		{
 			CreateFoldersAndFilesInDatabase();
 
@@ -271,6 +271,29 @@ namespace starskytest.Helpers
 			// check if files are moved
 			var values = istorage.GetAllFilesInDirectory("/nonExist").ToList();
 			Assert.AreEqual("/nonExist/test5.jpg", values.FirstOrDefault(p => p == "/nonExist/test5.jpg"));
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
+
+			RemoveFoldersAndFilesInDatabase();
+		}
+		
+		[TestMethod]
+		public void RenameFsTest_FakeIStorage_File_To_ExistFolder()
+		{
+			CreateFoldersAndFilesInDatabase();
+
+			var initFolderList =  new List<string> { "/", "/exist" };
+			var initFileList = new List<string> { _fileInExist.FilePath };
+			var istorage = new FakeIStorage(initFolderList,initFileList);
+			var renameFs = new RenameFs(_query, _sync, istorage).Rename(initFileList.FirstOrDefault(), "/exist/test5.jpg", true);
+			
+			var all2 = _query.GetAllRecursive();
+			var selectFile3 = all2.FirstOrDefault(p => p.FileName == "test5.jpg");
+			Assert.AreEqual("test5.jpg",selectFile3.FileName);
+			Assert.AreEqual("/exist",selectFile3.ParentDirectory);
+
+			// check if files are moved
+			var values = istorage.GetAllFilesInDirectory("/exist").ToList();
+			Assert.AreEqual("/exist/test5.jpg", values.FirstOrDefault(p => p == "/exist/test5.jpg"));
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
 
 			RemoveFoldersAndFilesInDatabase();
@@ -342,7 +365,6 @@ namespace starskytest.Helpers
 			var renameFs = new RenameFs(_query, _sync, istorage).Rename("/same", "/same");
 			Assert.AreEqual(1,renameFs.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, renameFs.FirstOrDefault().Status);
-
 		}
 
 		[TestMethod]

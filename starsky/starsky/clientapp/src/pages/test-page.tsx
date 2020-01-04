@@ -31,7 +31,7 @@ const TestPage: FunctionComponent<RouteComponentProps<ITestPageProps>> = (props)
     return (
       <>
         <MenuDetailView />
-        <ModalMoveFile isOpen={true} handleExit={() => { }} />
+        <ModalMoveFile parentDirectory="/__starsky/01-dif/" selectedSubPath="/__starsky/01-dif/20180721_153248.jpg" isOpen={true} handleExit={() => { }} />
       </>
     )
   }
