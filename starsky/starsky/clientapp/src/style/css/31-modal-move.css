@@ -1,5 +1,6 @@
 
 .modal-move {
+  min-height: 65px;
   max-height: calc(100vh - 170px);
   overflow-y: scroll;
 }
