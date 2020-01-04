@@ -1,9 +1,12 @@
 
 .modal-move {
-  max-height: calc(100vh - 150px);
+  max-height: calc(100vh - 170px);
   overflow-y: scroll;
 }
 
+.modal-move.modal-move--error-space {
+  max-height: calc(100vh - 240px);
+}
 
 .modal-move .box {
   line-height: 24px;
@@ -75,5 +78,8 @@
 
 
 .modal-move-button {
-  height: 50px;
+  background-color: #fff;
+  min-height: 50px;
+  padding-top: 8px;
+  padding-bottom: 14px;
 }
