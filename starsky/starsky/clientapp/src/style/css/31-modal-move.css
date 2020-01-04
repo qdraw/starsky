@@ -1,12 +1,13 @@
 
 .modal-move {
   min-height: 65px;
-  max-height: calc(100vh - 170px);
+  /* extra space for iOS */
+  max-height: calc(100vh - 250px);
   overflow-y: scroll;
 }
 
 .modal-move.modal-move--error-space {
-  max-height: calc(100vh - 240px);
+  max-height: calc(100vh - 320px);
 }
 
 .modal-move .box {
@@ -18,7 +19,6 @@
 
 .modal-move .box button {
   line-height: 24px;
-  height: 100%;
   width: calc(100% - 34px);
   cursor: pointer;
   background-color: transparent;

@@ -97,4 +97,5 @@ div.modal-content button.modal-exit-button.exit-button--showing {
 div.modal-content.modal-content--show {
   transform: translate(-50%, -50%);
   opacity: 1;
+  max-height: 95%;
 }
