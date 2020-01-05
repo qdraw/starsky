@@ -5,7 +5,6 @@ import ImportPage from '../pages/import-page';
 import LoginPage from '../pages/login-page';
 import NotFoundPage from '../pages/not-found-page';
 import SearchPage from '../pages/search-page';
-import TestPage from '../pages/test-page';
 import TrashPage from '../pages/trash-page';
 
 const RouterApp = () => (
@@ -19,7 +18,6 @@ const RouterApp = () => (
     <ImportPage path="starsky/import" />
     <ImportPage path="import" />
     <LoginPage path="account/login" />
-    <TestPage path="test" />
     <NotFoundPage default />
   </Router>
 );
