@@ -52,6 +52,7 @@ describe("Login", () => {
     const mockPost: Promise<any> = Promise.resolve({ statusCode: 200, data: 'ok' });
     var postSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockPost);
 
+    // use as ==> import * as useLocation from '../hooks/use-location';
     var useLocationSpy = jest.spyOn(useLocation, 'default');
 
     var login = mount(<Login />);
