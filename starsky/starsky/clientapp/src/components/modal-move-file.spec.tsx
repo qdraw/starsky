@@ -77,6 +77,25 @@ describe("ModalMoveFile", () => {
     modal.unmount();
   });
 
+  xit("go to parent folder", () => {
+
+    // detailview get archive parent item
+    // use this import => import * as useFileList from '../hooks/use-filelist';
+    jest.spyOn(useFileList, 'default').mockImplementationOnce(() => {
+      return startArchive;
+    }).mockImplementationOnce(() => {
+      return inTestFolderArchive;
+    });
+
+    var modal = mount(<ModalMoveFile parentDirectory="/test" selectedSubPath="/test/test.jpg" isOpen={true} handleExit={() => { }}></ModalMoveFile>)
+
+    modal.find('[data-test="parent"]').simulate('click');
+
+
+    jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
+    modal.unmount();
+  });
+
   it("click to folder -> move", () => {
 
     // use this import => import * as useFileList from '../hooks/use-filelist';
@@ -96,13 +115,6 @@ describe("ModalMoveFile", () => {
     } as IConnectionDefault);
     var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-    // // use ==> import * as Modal from './modal';
-    // jest.spyOn(Modal, 'default').mockImplementationOnce((props) => {
-    //   return (<div className="fake-modal">{props.children}</div>)
-    // }).mockImplementationOnce((props) => {
-    //   return (<div className="fake-modal">{props.children}</div>)
-    // });
-
     var locationMockData = {
       location: jest.fn(),
       navigate: jest.fn()
@@ -119,10 +131,7 @@ describe("ModalMoveFile", () => {
 
     var modal = mount(<ModalMoveFile parentDirectory="/" selectedSubPath="/test.jpg" isOpen={true} handleExit={() => { }}></ModalMoveFile>)
 
-    console.log(modal.html());
-
     modal.find('[data-test="btn-test"]').simulate('click');
-
 
     // button isn't disabled anymore
     var submitButtonBefore = (modal.find('.btn--default').getDOMNode() as HTMLButtonElement).disabled
