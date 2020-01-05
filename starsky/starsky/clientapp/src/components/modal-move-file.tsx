@@ -43,16 +43,15 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 
     var resultDo = await FetchPost(new UrlQuery().UrlSyncRename(), bodyParams.toString())
 
-    var fileIndexItems = resultDo.data as IFileIndexItem[];
-
-    if (resultDo.statusCode !== 200) {
-      console.error(resultDo);
-      setError(fileIndexItems[0].status.toString())
+    if (!resultDo.data || resultDo.data.length === 0) {
+      setError("Server error")
       return;
     }
 
-    if (!fileIndexItems || fileIndexItems.length === 0) {
-      setError("Server error")
+    var fileIndexItems = resultDo.data as IFileIndexItem[];
+    if (resultDo.statusCode !== 200) {
+      console.error(resultDo);
+      setError(fileIndexItems[0].status.toString())
       return;
     }
 
