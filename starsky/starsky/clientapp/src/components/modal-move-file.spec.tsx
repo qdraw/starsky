@@ -3,6 +3,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as useFileList from '../hooks/use-filelist';
 import { IFileList } from '../hooks/use-filelist';
+import * as useLocation from '../hooks/use-location';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import * as FetchPost from '../shared/fetch-post';
@@ -95,11 +96,33 @@ describe("ModalMoveFile", () => {
     } as IConnectionDefault);
     var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
+    // // use ==> import * as Modal from './modal';
+    // jest.spyOn(Modal, 'default').mockImplementationOnce((props) => {
+    //   return (<div className="fake-modal">{props.children}</div>)
+    // }).mockImplementationOnce((props) => {
+    //   return (<div className="fake-modal">{props.children}</div>)
+    // });
+
+    var locationMockData = {
+      location: jest.fn(),
+      navigate: jest.fn()
+    } as any;
+
+    // use as ==> import * as useLocation from '../hooks/use-location';
+    jest.spyOn(useLocation, 'default')
+      .mockImplementationOnce(() => {
+        return locationMockData
+      }).mockImplementationOnce(() => {
+        return locationMockData
+      });
+
+
     var modal = mount(<ModalMoveFile parentDirectory="/" selectedSubPath="/test.jpg" isOpen={true} handleExit={() => { }}></ModalMoveFile>)
 
-    act(() => {
-      modal.find('[data-test="btn-test"]').simulate('click');
-    });
+    console.log(modal.html());
+
+    modal.find('[data-test="btn-test"]').simulate('click');
+
 
     // button isn't disabled anymore
     var submitButtonBefore = (modal.find('.btn--default').getDOMNode() as HTMLButtonElement).disabled
@@ -120,7 +143,10 @@ describe("ModalMoveFile", () => {
 
     expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSyncRename(), bodyParams.toString());
 
+
+
     jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
+
     modal.unmount();
   });
 
