@@ -23,7 +23,7 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = memo((props) =>
               "box isDirectory-false" :
               "box isDirectory-false error"}
             key={item.filePath + item.lastEdited}>
-            {item.isDirectory ? <button data-test={"btn" + item.fileName} onClick={() => { props.callback(item.filePath) }}>{item.fileName}</button> : null}
+            {item.isDirectory ? <button data-test={"btn-" + item.fileName} onClick={() => { props.callback(item.filePath) }}>{item.fileName}</button> : null}
             {!item.isDirectory ? item.fileName : null}
             {item.status !== IExifStatus.Ok && item.status !== IExifStatus.Default ?
               <em className="error-status">{item.status}</em> : null}
