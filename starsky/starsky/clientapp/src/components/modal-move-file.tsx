@@ -51,6 +51,11 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       return;
     }
 
+    if (!fileIndexItems || fileIndexItems.length === 0) {
+      setError("Server error")
+      return;
+    }
+
     // now go to the new location
     var toNavigateUrl = new URLPath().updateFilePath(history.location.search, fileIndexItems[0].filePath)
     history.navigate(toNavigateUrl, { replace: true });
