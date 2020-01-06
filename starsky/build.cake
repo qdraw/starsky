@@ -418,6 +418,35 @@ Task("DocsGenerate")
       DeleteDirectory("../starsky-tools/docs/node_modules", new DeleteDirectorySettings {
           Recursive = true
       });
+
+      // copy to build directory
+      foreach(var runtime in runtimes)
+      {
+          if(!DirectoryExists($"./{runtime}")) {
+            continue;
+          }
+
+          Information("copy to: " + $"./{runtime}/docs");
+
+          CopyDirectory("../starsky-tools/docs/", $"./{runtime}/docs");
+
+          var toDeleteFiles = new string[]{
+            $"./{runtime}/docs/docs.js",
+            $"./{runtime}/docs/menu.js",
+            $"./{runtime}/docs/readme.md",
+            $"./{runtime}/docs/package.json",
+            $"./{runtime}/docs/package-lock.json",
+          };
+
+          foreach(var toDeleteFile in toDeleteFiles)
+          {
+              if (FileExists(toDeleteFile))
+              {
+                  DeleteFile(toDeleteFile);
+              }
+          }
+      }
+
   });
 
 // React app build steps
@@ -435,7 +464,6 @@ Task("BuildNetCore")
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
 Task("Default")
-    .IsDependentOn("DocsGenerate")
     .IsDependentOn("Client")
     .IsDependentOn("SonarBegin")
     .IsDependentOn("BuildNetCore")
@@ -445,6 +473,7 @@ Task("Default")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("MergeCoverageFiles")
     .IsDependentOn("CoverageReport")
+    .IsDependentOn("DocsGenerate")
     .IsDependentOn("Zip");
 
 // To get fast all (net core) assemblies
