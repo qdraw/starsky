@@ -118,8 +118,6 @@ function getTitle(contentsHtml) {
 		if(restOfStringMatch) {
 			restOfString = restOfString.substr(0,restOfStringMatch.index) 
 			title = restOfString.replace(regexStartTag,"")
-			console.log(title);
-			
 		}
 	}
 	else {
