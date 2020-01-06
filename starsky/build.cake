@@ -399,6 +399,27 @@ Task("SonarEnd")
     });
   });
 
+Task("DocsGenerate")
+  .Does(() => {
+      if (!DirectoryExists($"../starsky-tools/docs"))
+      {
+        Information($"Docs generation disabled (folder does not exist)");
+        return;
+      }
+
+      // Running `npm ci` instead of `npm install`
+      Information("npm ci restore and build for ../starsky-tools/docs");
+
+      // and build folder
+      NpmRunScript("build", s => s.FromPath("../starsky-tools/docs"));
+
+      Information("remove node node_modules for ../starsky-tools/docs/node_modules");
+
+      DeleteDirectory("../starsky-tools/docs/node_modules", new DeleteDirectorySettings {
+          Recursive = true
+      });
+  });
+
 // React app build steps
 Task("Client")
   .IsDependentOn("ClientRestore")
@@ -414,6 +435,7 @@ Task("BuildNetCore")
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
 Task("Default")
+    .IsDependentOn("DocsGenerate")
     .IsDependentOn("Client")
     .IsDependentOn("SonarBegin")
     .IsDependentOn("BuildNetCore")

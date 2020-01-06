@@ -7,21 +7,6 @@ showdown.setFlavor('github');
 var converter = new showdown.Converter();
 converter.setOption('completeHTMLDocument', true);
 
-// var exec = require('child_process').exec;
-// function execute(command, callback){
-//     exec(command, function(error, stdout, stderr){ callback(stdout); });
-// }
-//
-// execute("which dotnet", function(name){
-// 	if (name.indexOf("dotnet") >= 0) {
-// 		execute("dotnet test ../../starsky/starskyTests --filter ClassName=starskytests.Helpers.SwaggerHelperTest", function(name){
-// 			console.log(name);
-//
-// 		});
-// 	}
-// });
-
-
 var prefixPath = "../../";
 
 var filePathList = [
@@ -100,10 +85,45 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
 		relativeCssPath += "../";
 	}
 
-	var menuHtml = '<div class="head"><div id="menu"> <ul> <li><a href="' + relativeCssPath + 'readme.html">Home</a></li> <li><a href="https://qdraw.nl/contact.html">Contact</a></li> </ul> </div> <a href="#hamburger" id="hamburger" class="hamburger">Menu</a> <a href="' + relativeCssPath + 'readme.html" class="logo">Qdraw.nl</a></div>';
-	var outputHtml = contentsHtml.replace(/<\/head>\n<body>/ig, "<link rel=\"stylesheet\" href=\"" + relativeCssPath + "style.css\"><\/head>\n<body>\n" + menuHtml + "\n<div class=\"container\"><div class=\"entry-content\">");
+	var menuHtml = `<div class="head">
+		<div id="menu"> 
+			<ul> 
+				<li>
+					<a href="` + relativeCssPath + `readme.html">Home</a>
+				</li> 
+			</ul> 
+		</div> 
+		<a href="#hamburger" id="hamburger" class="hamburger">Menu</a> 
+		<a href="` + relativeCssPath + `readme.html" class="logo">
+		Docs
+		</a>
+	</div>`;
+
+	var outputHtml = contentsHtml.replace(/<\/head>\n<body>/ig, "<title>" + getTitle(contentsHtml) + "</title><link rel=\"stylesheet\" href=\"" + relativeCssPath + "style.css\"><\/head>\n<body>\n" + menuHtml + "\n<div class=\"container\"><div class=\"entry-content\">");
 
 	contentsHtml = outputHtml.replace(/<\/body>\n/ig, "</div>\n</div>\n <script defer src=\"" + relativeCssPath + "menu.js\"></script></body>\n");
 	console.log(htmlPath);
 	fs.writeFileSync(htmlPath, contentsHtml);
+}
+
+function getTitle(contentsHtml) {
+	var regexStartTag = /<h1( [a-z-="]+)?>/ig
+	var regexEndTag = /<\/h1>/ig
+	var title = "-- Starsky Docs (unknown page)"
+
+	var match = regexStartTag.exec(contentsHtml);
+	if (match) {
+		var restOfString = contentsHtml.substring(match.index);
+		var restOfStringMatch = regexEndTag.exec(restOfString);
+		if(restOfStringMatch) {
+			restOfString = restOfString.substr(0,restOfStringMatch.index) 
+			title = restOfString.replace(regexStartTag,"")
+			console.log(title);
+			
+		}
+	}
+	else {
+		console.log(">> " + htmlPath + " has no title");
+	}
+	return title;
 }

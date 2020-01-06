@@ -1,6 +1,6 @@
 [< starsky/starsky-tools docs](../readme.md)
 
-## Dropbox Import
+# Dropbox Import
 
 Imports from Dropbox to a local Starsky installation
 

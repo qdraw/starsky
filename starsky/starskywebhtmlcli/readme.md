@@ -1,4 +1,4 @@
-# Starsky
+# Starsky Web Html CLI
 ## List of [Starsky](../../readme.md) Projects
  * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_

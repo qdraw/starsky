@@ -1,4 +1,4 @@
-# Starsky
+# Starsky Tools
 ## List of [Starsky](../readme.md) Projects
  * [inotify-settings](../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../starsky/readme.md) _database photo index & import index project)_
@@ -16,7 +16,7 @@
  * __[starsky-tools](../starsky-tools/readme.md) nodejs tools to add-on tasks__
  * [starskyapp](../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
-## Starsky node client docs
+## Starsky Tools docs
 
 ### Introduction
 'Starsky Tools' are tools that you could use on the side and are helpers to use in combination with the starsky (mvc) application

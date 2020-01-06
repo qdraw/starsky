@@ -1,6 +1,6 @@
 [< starsky/starsky-tools docs](../readme.md)
 
-## localtunnel
+# localtunnel
 
 Proxy the Create React App on: `localhost:3000` and for the .NET Core application `localhost:5000` to debug on mobile and remote devices.
 Cookies with a secure-label will be rewritten to support a non-secure context

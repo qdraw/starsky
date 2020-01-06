@@ -1,7 +1,9 @@
 [< readme](readme.md)
 
-# Todo:
-## Features planned (in random order) and lower priority
+# History
+
+## Todo:
+### Features planned (in random order) and lower priority
 - []   Realtime Files API
 - []   mp4/h.264 video support
 - []   time zone shifting
@@ -14,7 +16,7 @@
 - []   Upload to direct folder API + front-end
 - []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
-## High priority features planned
+### High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
 - []   (feature) _Front-end_ Move file in menu
@@ -32,9 +34,9 @@
 - [x]   (change) _Front-end_ Remove V1 from main menu
 - [x]   (feature) _API_ Add new endpoint `/api/search/relativeObjects`
 - [x]   (bugfix) _Front-end_ change default outline for Chrome/Safari
-- [x]   (bugfix) _Front-end_ fix document.title undefined error 
+- [x]   (bugfix) _Front-end_ fix document.title undefined error
 - [x]   (bugfix) _Front-end_ fix issue where on empty searchquery a sidebar is shown
-- [x]   (bugfix) _Front-end_ When import a non supported image Ok is shown 
+- [x]   (bugfix) _Front-end_ When import a non supported image Ok is shown
 - [x]   (feature) _Front-end_ Show GPX Files with a map (powered by leaflet/openstreet maps)
 - [x]   __Breaking change__ _Backend_ Rename suggest API from `/suggest` to `/api/suggest`
 - [x]   (bugfix) _Front-end_ Rotation in Detailview on iPad OS 13+ is working (fixed)
