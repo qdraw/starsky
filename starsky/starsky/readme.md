@@ -104,7 +104,12 @@ http://localhost:5000/swagger
 
 #### Rest API Table of contents
 
-__This list is outdated please check Swagger for latest version__
+
+
+__This list is outdated please check Swagger for the latest version__
+
+
+
 
 - [Get PageType	"Archive" ](readme_api.md#get-pagetype-archive)
 - [Get PageType	"DetailView"](readme_api.md#get-pagetype-detailview)

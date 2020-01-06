@@ -4,7 +4,11 @@
 
 The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 
-__This list is outdated please check Swagger for latest version__
+
+
+__This list is outdated please check Swagger for the latest version__
+
+
 
 ## Rest API Table of contents
 
