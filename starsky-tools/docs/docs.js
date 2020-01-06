@@ -109,7 +109,7 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
 function getTitle(contentsHtml) {
 	var regexStartTag = /<h1( [a-z-="]+)?>/ig
 	var regexEndTag = /<\/h1>/ig
-	var title = "-- Starsky Docs (unknown page)"
+	var title = "Starsky Docs (unknown page)"
 
 	var match = regexStartTag.exec(contentsHtml);
 	if (match) {
