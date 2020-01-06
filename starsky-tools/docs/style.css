@@ -172,7 +172,7 @@ a {
     }
 
     .head #menu li {
-        height: 30px;
+        height: 40px;
         display: table;
     }
     .head #menu li:nth-child(2n) {
@@ -184,7 +184,7 @@ a {
         vertical-align: middle;
         display: table-cell;
         padding-left: 3vw;
-        font-size: 24px;
+        font-size: 18px;
     }
 
     #menu li:last-child {
