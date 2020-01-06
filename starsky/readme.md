@@ -171,11 +171,9 @@ To avoid the error: `System.IO.FileLoadException` `Microsoft.Extensions.Options,
 
 > Tip: When using MariaDB or MySQL as database, make sure you use `utf8mb4` and as collate `utf8mb4_unicode_ci` to avoid encoding errors.
 
-### Bash build and configuation scripts
 
-Those scripts are optional and used for configuation.
 
-### cannot open shared object file: Permission denied
+#### Cannot open shared object file: Permission denied
 
 ```
 ./starsky
@@ -188,23 +186,27 @@ The library libhostfxr.so was found, but loading it from <yourpath>/libhostfxr.s
 Check your file rights in the folders, they should be 644 for files and 755 for folders.
 except for the executable  files
 
-### pm2 `pm2-new-instance.sh`
+### Bash build and configuation scripts
+
+Those scripts are optional and used for configuation.
+
+#### pm2 `pm2-new-instance.sh`
 The script [`pm2-new-instance.sh`](starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
 ```sh
  export ASPNETCORE_URLS="http://localhost:4823/"
  export ASPNETCORE_ENVIRONMENT="Production"
 ```
 
-## pm2 `pm2-deploy-on-env.sh`
+#### pm2 `pm2-deploy-on-env.sh`
 
 To remove the content of the parent folder of this script. The following content are not deleted: app settings, temp, zip files and database files. The starsky files will get executed and need to have those rights. The pm2 instance will be restarted.
 
-## pm2 `pm2-warmup.sh`
+#### pm2 `pm2-warmup.sh`
 
 To warmup the installation after a restart this bash script is provided
 
 
-## Publish-scripts for 'self containing' binaries
+#### Publish-scripts for 'self containing' binaries
 
 The scripts that are used to create a full build. (Linux has `libunwind8` and `gettext` as dependency)
 
