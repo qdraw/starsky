@@ -432,7 +432,6 @@ Task("DocsGenerate")
 
           var toDeleteFiles = new string[]{
             $"./{runtime}/docs/docs.js",
-            $"./{runtime}/docs/menu.js",
             $"./{runtime}/docs/readme.md",
             $"./{runtime}/docs/package.json",
             $"./{runtime}/docs/package-lock.json",
