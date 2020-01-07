@@ -5,6 +5,7 @@ import { IArchive } from '../interfaces/IArchive';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { FileExtensions } from '../shared/file-extensions';
+import { StringOptions } from '../shared/string-options';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import ItemTextListView from './item-text-list-view';
@@ -73,7 +74,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       props.handleExit()
     }}>
     <div className="content">
-      <div className="modal content--subheader">Verplaats {new FileExtensions().GetFileName(props.selectedSubPath)} naar: <b>{currentFolderPath}</b></div>
+      <div className="modal content--subheader">Verplaats {new StringOptions().LimitLength(new FileExtensions().GetFileName(props.selectedSubPath), 30)} naar: <b>{new StringOptions().LimitLength(currentFolderPath, 44)}</b></div>
       <div className={error ? "modal modal-move content--text modal-move--error-space" : "modal modal-move content--text"}>
         {currentFolderPath !== "/" ?
           <ul>

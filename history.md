@@ -19,8 +19,12 @@
 ### High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
-- []   (feature) _Front-end_ Move file in menu
 - []   (feature) _Front-end_ Upload to directory (+ backend)
+
+# version 0.1.12 - 2020-01-??
+- []   (bugfix) _Front-end_ Add Loading in Move dialog __TODO__
+- [x]   (feature) _Front-end_ Move file in menu
+- [x]   (bugfix) _API_ fix various issues in `/api/rename`
 
 # version 0.1.11 - 2020-01-02
 - [x]   (bugfix) _Front-end_ _Detailview_ when press Delete and switch image, the next image should be marked as not deleted (Fixed)
