@@ -22,9 +22,11 @@
 - []   (feature) _Front-end_ Upload to directory (+ backend)
 
 # version 0.1.12 - 2020-01-??
-- []   (bugfix) _Front-end_ Add Loading in Move dialog __TODO__
+- [x]   (bugfix) _Front-end_ Add Loading in Move dialog
 - [x]   (feature) _Front-end_ Move file in menu
 - [x]   (bugfix) _API_ fix various issues in `/api/rename`
+- [x]   (remove) starskyApp content 
+- [x]   (docs) add html generation to build process
 
 # version 0.1.11 - 2020-01-02
 - [x]   (bugfix) _Front-end_ _Detailview_ when press Delete and switch image, the next image should be marked as not deleted (Fixed)
