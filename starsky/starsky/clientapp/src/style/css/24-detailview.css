@@ -176,3 +176,11 @@
 .detailview .main.main--gpx .leaflet-tile-pane {
   z-index: 1;
 }
+
+/* align in center of component */
+@media screen and (min-width: 450px) {
+  .detailview--edit .preloader.preloader--icon {
+    left: calc( 50% - 210px ); 
+    /* // (320/2)+ (100/2) */
+  }
+}
