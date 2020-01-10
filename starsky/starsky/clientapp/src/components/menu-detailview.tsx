@@ -148,6 +148,8 @@ const MenuDetailView: React.FunctionComponent = () => {
     var media = new CastToInterface().MediaDetailView(resultGet.data).data;
     var orientation = media.fileIndexItem && media.fileIndexItem.orientation ? media.fileIndexItem.orientation : Orientation.Horizontal;
 
+    console.log('requestNewFileHash fileHash', media.fileIndexItem.fileHash === state.fileIndexItem.fileHash);
+
     // the hash changes if you rotate an image
     if (media.fileIndexItem.fileHash === state.fileIndexItem.fileHash) return false;
 
@@ -170,9 +172,12 @@ const MenuDetailView: React.FunctionComponent = () => {
       console.error(resultPost);
       return;
     }
+    console.log('0000', resultPost.statusCode);
 
     // there is an async backend event triggered, sometimes there is an que
     setTimeout(async () => {
+      console.log('11111111');
+
       var result = await requestNewFileHash();
       if (result === false) {
         setTimeout(async () => {
