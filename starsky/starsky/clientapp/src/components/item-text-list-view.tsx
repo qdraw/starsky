@@ -14,8 +14,6 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = memo((props) =>
 
   if (!props.fileIndexItems) return (<div className="warning-box">Er zijn geen foto's</div>);
 
-  // console.log(props.isLoading);
-
   return (<>
     {props.fileIndexItems.length === 0 ? <div className="warning-box">Er zijn geen foto's</div> : ""}
     <ul>

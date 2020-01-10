@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import useFileList from '../hooks/use-filelist';
 import useLocation from '../hooks/use-location';
-import { IArchive } from '../interfaces/IArchive';
+import { IArchive, newIArchive } from '../interfaces/IArchive';
+import { PageType } from '../interfaces/IDetailView';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { FileExtensions } from '../shared/file-extensions';
@@ -24,7 +25,16 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 
   var usesFileList = useFileList("?f=" + currentFolderPath);
 
-  const archive: IArchive | undefined = usesFileList ? usesFileList.archive : undefined;
+  let archive: IArchive | undefined = usesFileList ? usesFileList.archive : undefined;
+  const [pageType, setPageType] = useState(usesFileList ? usesFileList.pageType : PageType.Loading);
+
+  if (!archive) {
+    archive = newIArchive();
+  }
+
+  useEffect(() => {
+    setPageType(usesFileList ? usesFileList.pageType : PageType.Loading)
+  }, [archive])
 
   // only for navigation in this file
   var history = useLocation();
@@ -65,8 +75,6 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     props.handleExit();
   }
 
-  if (!archive) return <>Input Not found</>
-
   return (<Modal
     id="move-file-modal"
     isOpen={props.isOpen}
@@ -74,20 +82,28 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       props.handleExit()
     }}>
     <div className="content">
-      <div className="modal content--subheader">Verplaats {new StringOptions().LimitLength(new FileExtensions().GetFileName(props.selectedSubPath), 30)} naar: <b>{new StringOptions().LimitLength(currentFolderPath, 44)}</b></div>
+      <div className="modal content--subheader">
+        Verplaats {new StringOptions().LimitLength(new FileExtensions().GetFileName(props.selectedSubPath), 30)} naar:
+        <b>{new StringOptions().LimitLength(currentFolderPath, 44)}</b>
+      </div>
       <div className={error ? "modal modal-move content--text modal-move--error-space" : "modal modal-move content--text"}>
         {currentFolderPath !== "/" ?
           <ul>
             <li className={"box parent"}>
               <button data-test="parent" onClick={() => {
-                setCurrentFolderPath(new FileExtensions().GetParentPath(currentFolderPath))
+                setCurrentFolderPath(new FileExtensions().GetParentPath(currentFolderPath));
+                setPageType(PageType.Loading);
               }}>
                 {new FileExtensions().GetParentPath(currentFolderPath)}
               </button>
             </li>
           </ul>
           : null}
-        <ItemTextListView fileIndexItems={archive.fileIndexItems} callback={(path) => { setCurrentFolderPath(path) }} />
+        {pageType !== PageType.Loading ? <ItemTextListView fileIndexItems={archive.fileIndexItems} callback={(path) => {
+          setCurrentFolderPath(path);
+          setPageType(PageType.Loading);
+        }} /> : null}
+
       </div>
       <div className="modal modal-move-button">
         {error && <div className="warning-box">{error}</div>}
