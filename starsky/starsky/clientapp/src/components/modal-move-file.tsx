@@ -109,7 +109,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       <div className="modal modal-move-button">
         {error && <div className="warning-box">{error}</div>}
         <button
-          disabled={currentFolderPath === props.parentDirectory && pageType !== PageType.Loading}
+          disabled={currentFolderPath === props.parentDirectory || pageType === PageType.Loading}
           className="btn btn--default"
           onClick={move}>
           Verplaats
