@@ -48,9 +48,11 @@ describe("MenuDetailView", () => {
 
       expect(component.exists('.item--search')).toBeTruthy();
 
-      // reset afterwards
-      component.unmount();
-      globalHistory.navigate("/");
+      act(() => {
+        // reset afterwards
+        component.unmount();
+        globalHistory.navigate("/");
+      });
     });
 
     it("last Edited change [true]", () => {
@@ -66,23 +68,28 @@ describe("MenuDetailView", () => {
 
       expect(component.exists(".autosave")).toBeTruthy();
 
-      // reset afterwards
-      contextValues.state.fileIndexItem.lastEdited = new Date(1970, 0, 0).toISOString();
-      component.unmount();
-      globalHistory.navigate("/");
+      act(() => {
+        // reset afterwards
+        contextValues.state.fileIndexItem.lastEdited = new Date(1970, 0, 0).toISOString();
+        component.unmount();
+        globalHistory.navigate("/");
+      });
     });
 
     it("last Edited change [false]", () => {
-
-      globalHistory.navigate("/?details=true");
+      act(() => {
+        globalHistory.navigate("/?details=true");
+      });
 
       var component = mount(<MenuDetailView />);
 
       expect(component.exists(".autosave")).toBeFalsy();
 
-      // reset afterwards
-      component.unmount();
-      globalHistory.navigate("/");
+      act(() => {
+        // reset afterwards
+        component.unmount();
+        globalHistory.navigate("/");
+      });
     });
 
     it("export click [menu]", () => {
@@ -102,7 +109,9 @@ describe("MenuDetailView", () => {
       expect(exportModal).toBeCalled();
 
       // to avoid polling afterwards
-      component.unmount();
+      act(() => {
+        component.unmount();
+      });
 
     });
 
@@ -123,14 +132,17 @@ describe("MenuDetailView", () => {
       expect(urlObject.details).toBeTruthy();
 
       // dont keep any menus open
-      component.unmount();
+      act(() => {
+        component.unmount();
+        // reset afterwards
+        globalHistory.navigate("/");
+      });
 
-      // reset afterwards
-      globalHistory.navigate("/");
     });
 
     it("labels click (in MoreMenu)", () => {
-      var item = mount(<MenuDetailView />).find('[data-test="labels"]');
+      var component = mount(<MenuDetailView />)
+      var item = component.find('[data-test="labels"]');
 
       act(() => {
         item.simulate('click');
@@ -140,7 +152,10 @@ describe("MenuDetailView", () => {
       expect(urlObject.details).toBeTruthy();
 
       // reset afterwards
-      globalHistory.navigate("/");
+      act(() => {
+        globalHistory.navigate("/");
+        component.unmount();
+      });
     });
 
     it("move click [Not implemented]", () => {
@@ -160,13 +175,20 @@ describe("MenuDetailView", () => {
       // one extra spy
       jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
 
-      var item = mount(<MenuDetailView />).find('[data-test="rename"]');
+      var component = mount(<MenuDetailView />)
+      var item = component.find('[data-test="rename"]');
+
       act(() => {
         item.simulate('click');
       });
 
       expect(renameModal).toBeCalled();
+
+      act(() => {
+        component.unmount();
+      });
     });
 
     it("trash click to trash", () => {
@@ -175,20 +197,25 @@ describe("MenuDetailView", () => {
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-      var item = mount(<MenuDetailView />).find('[data-test="trash"]');
+      var component = mount(<MenuDetailView />)
+      var item = component.find('[data-test="trash"]');
       act(() => {
         item.simulate('click');
       });
 
       expect(spy).toBeCalled();
       expect(spy).toBeCalledTimes(1);
-      expect(spy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftest%2Fimage.jpg&Tags=%21delete%21&append=true")
+      expect(spy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftest%2Fimage.jpg&Tags=%21delete%21&append=true");
+
+      act(() => {
+        component.unmount();
+      });
+
     });
 
     it("rotate click", async () => {
-
       jest.useFakeTimers();
-      jest.spyOn(global, 'setTimeout');
+      var setTimeoutSpy = jest.spyOn(global, 'setTimeout');
 
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       var spyPost = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
@@ -202,20 +229,29 @@ describe("MenuDetailView", () => {
       } as IConnectionDefault);
       var spyGet = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      var item = mount(<MenuDetailView />).find('[data-test="rotate"]');
+      var component = mount(<MenuDetailView />)
+      var item = component.find('[data-test="rotate"]');
 
-      // need to await here
-      await item.simulate('click');
-
-      jest.advanceTimersByTime(5000);
+      // need to await this click 2 times
+      await act(async () => {
+        await item.simulate('click');
+      });
 
       expect(spyPost).toBeCalled();
       expect(spyPost).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftest%2Fimage.jpg&rotateClock=1");
 
+      jest.advanceTimersByTime(3000);
+
+      expect(setTimeoutSpy).toBeCalled();
       expect(spyGet).toBeCalled();
       expect(spyGet).toBeCalledWith(new UrlQuery().UrlIndexServerApi({ f: "/test/image.jpg" }));
 
+      // cleanup afterwards
+      act(() => {
+        component.unmount();
+      });
       jest.useRealTimers();
+
     });
 
   });
@@ -242,18 +278,23 @@ describe("MenuDetailView", () => {
 
       var item = component.find('[data-test="trash"]');
 
-      item.simulate('click');
+      act(() => {
+        item.simulate('click');
+      });
 
       expect(spy).toBeCalledWith(new UrlQuery().UrlReplaceApi(),
         "f=%2Ftrashed%2Ftest1.jpg&fieldName=tags&search=%21delete%21");
 
       // for some reason the spy is called 2 times here?
+      act(() => {
+        component.unmount();
+      });
     });
 
 
     //  file is marked as deleted › press 'Delete' on keyboard to trash
     it("press 'Delete' on keyboard to trash", () => {
-      jest.clearAllMocks();
+      jest.spyOn(React, 'useContext').mockReset();
 
       var state = {
         subPath: "/trashed/test1.jpg",
@@ -261,10 +302,10 @@ describe("MenuDetailView", () => {
       } as IDetailView;
       var contextValues = { state, dispatch: jest.fn() }
 
-      jest.spyOn(React, 'useContext').mockImplementationOnce(() => { return contextValues })
+      jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
 
-      mount(<MenuDetailView />)
+      const component = mount(<MenuDetailView />)
 
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
@@ -278,11 +319,18 @@ describe("MenuDetailView", () => {
         shiftKey: false,
         repeat: false,
       });
-      window.dispatchEvent(event);
+
+      act(() => {
+        window.dispatchEvent(event);
+      })
 
       expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftest%2Fimage.jpg&Tags=%21delete%21&append=true");
+      expect(spy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftrashed%2Ftest1.jpg&fieldName=tags&search=%21delete%21");
       // in the test the 'keyboard event fired' three times, but in the real world once
+
+      act(() => {
+        component.unmount()
+      })
     });
 
     it("navigate to next item and reset some states", () => {
@@ -301,11 +349,14 @@ describe("MenuDetailView", () => {
       var exportModal = jest.spyOn(ModalExport, 'default')
         .mockImplementationOnce(() => { return <></> });
 
-      const component = mount(<MenuDetailView />)
+      const component = mount(<MenuDetailView />);
 
-      globalHistory.navigate("/?f=/test2.jpg");
+      act(() => {
+        globalHistory.navigate("/?f=/test2.jpg");
+      });
 
-      expect(component.find('header').getDOMNode().className).toBe("header header--main")
+      expect(component.find('header').getDOMNode().className).toBe("header header--main");
+
     });
 
   });
