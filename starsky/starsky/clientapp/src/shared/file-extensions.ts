@@ -27,9 +27,36 @@ export class FileExtensions {
     return !!fromExtMatchArray;
   }
 
-  // public GetFileName() {
-  //   // [^\/]+(?=\.[\w]+\.$)|[^\/]+$
-  // }
+  /**
+   * Get the parent path from your string 
+   * @param filePath filepath
+   * @see https://stackoverflow.com/a/1130024
+   */
+  public GetParentPath(filePath: string) {
+    if (!filePath) return "/"
+    var parentRegex = /.+(?=\/[^/]+$)/
+
+    // remove slash from end
+    if (filePath.length >= 2 && filePath[filePath.length - 1] === "/") {
+      filePath = filePath.substr(0, filePath.length - 1)
+    }
+
+    var parentMatchArray = filePath.match(parentRegex);
+    if (!parentMatchArray) return "/";
+    return parentMatchArray[0]
+  }
+
+  /**
+   * extract fileName from string
+   * @param filePath the filepath
+   */
+  public GetFileName(filePath: string) {
+    // [^\/]+(?=\.[\w]+\.$)|[^\/]+$
+    var filenameRegex = /[^\/]+(?=\.[\w]+\.$)|[^\/]+$/
+    var fileNameMatchArray = filePath.match(filenameRegex);
+    if (!fileNameMatchArray) return "/";
+    return fileNameMatchArray[0]
+  }
 
 }
 

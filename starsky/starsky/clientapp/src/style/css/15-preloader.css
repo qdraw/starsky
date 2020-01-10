@@ -27,6 +27,14 @@
   background-size: contain;
 }
 
+.preloader.preloader--inside {
+  display: block;
+  width: 100px;
+  height: 100px;
+  background-image:url('../images/preloader-fancy.svg');
+  background-size: contain;
+}
+
 .preloader.preloader--overlay .preloader--icon {
   background-image:unset;
   background-color: white;

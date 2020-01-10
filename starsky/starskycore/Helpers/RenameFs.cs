@@ -102,18 +102,6 @@ namespace starskycore.Helpers
 				var inputFileFolderStatus = _iStorage.IsFolderOrFile(inputFileSubPath);
 				var toFileFolderStatus = _iStorage.IsFolderOrFile(toFileSubPath);
 
-				// we dont overwrite files
-				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File && toFileFolderStatus 
-				     != FolderOrFileModel.FolderOrFileTypeList.Deleted)
-				{
-					fileIndexResultsList.Add(new FileIndexItem
-					{
-						Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
-					});
-					continue; //next
-				} 
-
-				
 				var fileIndexItems = new List<FileIndexItem>();
 				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 				     && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
@@ -183,11 +171,20 @@ namespace starskycore.Helpers
 					//_query.RemoveItem(_query.SingleItem(inputFileSubPath).FileIndexItem);
 
 				}
-				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File) 
+				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File 
+				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File)
 				{
+					// overwrite a file
+					fileIndexResultsList.Add(new FileIndexItem
+					{
+						Status = FileIndexItem.ExifStatus.OperationNotSupported
+					});
+				}
+				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
+				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted) 
+				{
+					// toFileSubPath should contain the full subpath
 					
-					var parentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
-
 					// when trying to rename something wrongs
 					var fileName = new FilenamesHelper().GetFileName(toFileSubPath);
 					if ( !new FilenamesHelper().IsValidFileName(fileName) )
@@ -199,20 +196,56 @@ namespace starskycore.Helpers
 						continue; //next
 					}
 					
-					// clear cache
-					_query.RemoveCacheParentItem(parentSubFolder);
-					
+					// from/input cache should be cleared
+					var inputParentSubFolder = Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
+					_query.RemoveCacheParentItem(inputParentSubFolder);
+
+					var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
+					// clear cache (to FileSubPath parents)
+					_query.RemoveCacheParentItem(toParentSubFolder);
+
 					// add folder to file system
-					if ( !_iStorage.ExistFolder(parentSubFolder) )
+					if ( !_iStorage.ExistFolder(toParentSubFolder) )
 					{
-						_iStorage.CreateDirectory(parentSubFolder);
+						_iStorage.CreateDirectory(toParentSubFolder);
 					}
 					
 					// Check if the parent folder exist in the database
-					_sync.AddSubPathFolder(parentSubFolder);
+					_sync.AddSubPathFolder(toParentSubFolder);
 					
 					_iStorage.FileMove(inputFileSubPath,toFileSubPath);
 				}
+				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
+				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder )
+				{
+					// toFileSubPath must be the to copy directory, the filename is kept the same
+
+					// update to support UpdateItem
+					toFileSubPath = toFileSubPath + "/" + new FilenamesHelper().GetFileName(inputFileSubPath);
+					
+					// you can't move the file to the same location
+					if ( inputFileSubPath == toFileSubPath )
+					{
+						fileIndexResultsList.Add(new FileIndexItem
+						{
+							Status = FileIndexItem.ExifStatus.OperationNotSupported
+						});
+						continue; //next
+					}
+					
+					// from/input cache should be cleared
+					var inputParentSubFolder = Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
+					_query.RemoveCacheParentItem(inputParentSubFolder);
+					
+					// clear cache // parentSubFolder (to FileSubPath parents)
+					var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
+					_query.RemoveCacheParentItem(toParentSubFolder); 
+					
+					// Check if the parent folder exist in the database // parentSubFolder
+					_sync.AddSubPathFolder(toParentSubFolder);
+					
+					_iStorage.FileMove(inputFileSubPath, toFileSubPath);
+				} 
 				
 				// Rename parent item >eg the folder or file
 				detailView.FileIndexItem.SetFilePath(toFileSubPath);

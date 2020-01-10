@@ -4,6 +4,12 @@
 
 The autorisation using the rest api is done though Basic Auth or Cookie Auth.
 
+
+
+__This list is outdated please check Swagger for the latest version__
+
+
+
 ## Rest API Table of contents
 
 - [Get PageType	Archive](#get-pagetype-archive)

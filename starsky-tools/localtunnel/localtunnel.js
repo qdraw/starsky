@@ -39,7 +39,7 @@ function CreateReactAppRoute(req, res, next) {
       xfwd: true
     }
   );
-  res.setHeader("Content-Security-Policy", "default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' https://az416426.vo.msecnd.net 'nonce-53b3ebf63787426db506e8e49d4400c4'; connect-src 'self' https://dc.services.visualstudio.com; style-src 'unsafe-inline'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'");
+  // res.setHeader("Content-Security-Policy", "default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' https://az416426.vo.msecnd.net 'nonce-53b3ebf63787426db506e8e49d4400c4'; connect-src 'self' https://dc.services.visualstudio.com; style-src 'unsafe-inline'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'");
 }
 
 // To proxy the backend server

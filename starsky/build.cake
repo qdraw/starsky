@@ -399,6 +399,55 @@ Task("SonarEnd")
     });
   });
 
+Task("DocsGenerate")
+  .Does(() => {
+      if (!DirectoryExists($"../starsky-tools/docs"))
+      {
+        Information($"Docs generation disabled (folder does not exist)");
+        return;
+      }
+
+      // Running `npm ci` instead of `npm install`
+      Information("npm ci restore and build for ../starsky-tools/docs");
+
+      // and build folder
+      NpmRunScript("build", s => s.FromPath("../starsky-tools/docs"));
+
+      Information("remove node node_modules for ../starsky-tools/docs/node_modules");
+
+      DeleteDirectory("../starsky-tools/docs/node_modules", new DeleteDirectorySettings {
+          Recursive = true
+      });
+
+      // copy to build directory
+      foreach(var runtime in runtimes)
+      {
+          if(!DirectoryExists($"./{runtime}")) {
+            continue;
+          }
+
+          Information("copy to: " + $"./{runtime}/docs");
+
+          CopyDirectory("../starsky-tools/docs/", $"./{runtime}/docs");
+
+          var toDeleteFiles = new string[]{
+            $"./{runtime}/docs/docs.js",
+            $"./{runtime}/docs/readme.md",
+            $"./{runtime}/docs/package.json",
+            $"./{runtime}/docs/package-lock.json",
+          };
+
+          foreach(var toDeleteFile in toDeleteFiles)
+          {
+              if (FileExists(toDeleteFile))
+              {
+                  DeleteFile(toDeleteFile);
+              }
+          }
+      }
+
+  });
+
 // React app build steps
 Task("Client")
   .IsDependentOn("ClientRestore")
@@ -423,6 +472,7 @@ Task("Default")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("MergeCoverageFiles")
     .IsDependentOn("CoverageReport")
+    .IsDependentOn("DocsGenerate")
     .IsDependentOn("Zip");
 
 // To get fast all (net core) assemblies

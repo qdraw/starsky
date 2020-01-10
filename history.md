@@ -1,7 +1,9 @@
 [< readme](readme.md)
 
-# Todo:
-## Features planned (in random order) and lower priority
+# History
+
+## Todo:
+### Features planned (in random order) and lower priority
 - []   Realtime Files API
 - []   mp4/h.264 video support
 - []   time zone shifting
@@ -14,11 +16,17 @@
 - []   Upload to direct folder API + front-end
 - []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
-## High priority features planned
+### High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
-- []   (feature) _Front-end_ Move file in menu
 - []   (feature) _Front-end_ Upload to directory (+ backend)
+
+# version 0.1.12 - 2020-01-??
+- [x]   (bugfix) _Front-end_ Add Loading in Move dialog
+- [x]   (feature) _Front-end_ Move file in menu
+- [x]   (bugfix) _API_ fix various issues in `/api/rename`
+- [x]   (remove) starskyApp content 
+- [x]   (docs) add html generation to build process
 
 # version 0.1.11 - 2020-01-02
 - [x]   (bugfix) _Front-end_ _Detailview_ when press Delete and switch image, the next image should be marked as not deleted (Fixed)
@@ -32,9 +40,9 @@
 - [x]   (change) _Front-end_ Remove V1 from main menu
 - [x]   (feature) _API_ Add new endpoint `/api/search/relativeObjects`
 - [x]   (bugfix) _Front-end_ change default outline for Chrome/Safari
-- [x]   (bugfix) _Front-end_ fix document.title undefined error 
+- [x]   (bugfix) _Front-end_ fix document.title undefined error
 - [x]   (bugfix) _Front-end_ fix issue where on empty searchquery a sidebar is shown
-- [x]   (bugfix) _Front-end_ When import a non supported image Ok is shown 
+- [x]   (bugfix) _Front-end_ When import a non supported image Ok is shown
 - [x]   (feature) _Front-end_ Show GPX Files with a map (powered by leaflet/openstreet maps)
 - [x]   __Breaking change__ _Backend_ Rename suggest API from `/suggest` to `/api/suggest`
 - [x]   (bugfix) _Front-end_ Rotation in Detailview on iPad OS 13+ is working (fixed)
@@ -268,3 +276,6 @@ _Version number does not match SemVer_
 
 # version 0.1.0 - 2019-01-22
 - initial release
+
+# version 0.0.1 - 2018-03-08
+- Initial commit

@@ -46,11 +46,21 @@
 }
 
 .menu-context .menu-options .menu-option:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: #B0BEC5;
 }
 
 .menu-context .menu-options .menu-option.disabled {
   cursor: not-allowed; 
-  color:#90A4AE;
+  color:#607D8B;
   text-decoration: line-through;
+}
+
+.menu-context .menu-options .menu-option:first-child {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.menu-context .menu-options .menu-option:last-child {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }

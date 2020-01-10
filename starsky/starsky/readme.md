@@ -1,4 +1,4 @@
-# Starsky
+# Starsky Web API application
 ## List of [Starsky](../../readme.md) Projects
  * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
@@ -103,6 +103,14 @@ http://localhost:5000/swagger
 ```
 
 #### Rest API Table of contents
+
+
+
+__This list is outdated please check Swagger for the latest version__
+
+
+
+
 - [Get PageType	"Archive" ](readme_api.md#get-pagetype-archive)
 - [Get PageType	"DetailView"](readme_api.md#get-pagetype-detailview)
 - [Exif Info](readme_api.md#exif-info)

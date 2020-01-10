@@ -166,6 +166,8 @@ describe("DetailView", () => {
 
     it("Next Click", () => {
       var navigateSpy = jest.fn();
+
+      // use as ==> import * as useLocation from '../hooks/use-location';
       var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
         return {
           location: globalHistory.location,

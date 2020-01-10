@@ -69,10 +69,17 @@ namespace starsky.Controllers
             });
             
             // When all items are already imported
-            if (importSettings.IndexMode && fileIndexResultsList.All(p => p.Status != ImportStatus.Ok)) Response.StatusCode = 206;
+            if ( importSettings.IndexMode &&
+                 fileIndexResultsList.All(p => p.Status != ImportStatus.Ok) )
+            {
+	            Response.StatusCode = 206;
+            }
             
             // Wrong input (extension is not allowed)
-            if (fileIndexResultsList.All(p => p.Status == ImportStatus.FileError)) Response.StatusCode = 415;
+            if ( fileIndexResultsList.All(p => p.Status == ImportStatus.FileError) )
+            {
+	            Response.StatusCode = 415;
+            }
 
             return Json(fileIndexResultsList);
         }

@@ -1,4 +1,4 @@
-# Starsky
+# General Starsky (sln) docs
 ## List of [Starsky](../readme.md) Projects
  * [inotify-settings](../inotify-settings/readme.md) _to setup auto indexing on linux_
  * __[starsky (sln)](../starsky/readme.md) database photo index & import index project__
@@ -16,10 +16,7 @@
  * [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
-## General Starsky (sln) docs
-
-
-### Build instructions
+## Build instructions
 
 1.  Clone the repo
 
@@ -83,12 +80,12 @@ dotnet run --project starsky/starsky
 http://localhost:64556/account/register
 ```
 
-### Dev-dependencies:
+## Dev-dependencies:
 1.  Editorconfig (http://editorconfig.org/)
 2.  Use [DB Browser for SQLite](https://sqlitebrowser.org/) to view a local SQLite database _(optional)_
 
 
-### Build for Raspberry Pi (Raspbian/Linux ARM)
+## Build for Raspberry Pi (Raspbian/Linux ARM)
 From .NET Core 2.1 or newer there is a SDK available for Raspberry Pi (only ARMv7 or newer, so no ARMv6). We use NET Core 3.0.1
 But in this guide we build it first on your laptop and copy to your Raspberry Pi. Use the following steps to setup:
 
@@ -150,7 +147,7 @@ sudo apt-get install libimage-exiftool-perl
 http://localhost:5000/account/register
 ```
 
-#### Optional steps  
+### Optional steps  
 10.  The script [`pm2-new-instance.sh`](starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
 
 ```sh
@@ -174,11 +171,9 @@ To avoid the error: `System.IO.FileLoadException` `Microsoft.Extensions.Options,
 
 > Tip: When using MariaDB or MySQL as database, make sure you use `utf8mb4` and as collate `utf8mb4_unicode_ci` to avoid encoding errors.
 
-### Bash build and configuation scripts
 
-Those scripts are optional and used for configuation.
 
-### cannot open shared object file: Permission denied
+#### Cannot open shared object file: Permission denied
 
 ```
 ./starsky
@@ -191,29 +186,33 @@ The library libhostfxr.so was found, but loading it from <yourpath>/libhostfxr.s
 Check your file rights in the folders, they should be 644 for files and 755 for folders.
 except for the executable  files
 
-### pm2 `pm2-new-instance.sh`
+### Bash build and configuation scripts
+
+Those scripts are optional and used for configuation.
+
+#### pm2 `pm2-new-instance.sh`
 The script [`pm2-new-instance.sh`](starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
 ```sh
  export ASPNETCORE_URLS="http://localhost:4823/"
  export ASPNETCORE_ENVIRONMENT="Production"
 ```
 
-### pm2 `pm2-deploy-on-env.sh`
+#### pm2 `pm2-deploy-on-env.sh`
 
 To remove the content of the parent folder of this script. The following content are not deleted: app settings, temp, zip files and database files. The starsky files will get executed and need to have those rights. The pm2 instance will be restarted.
 
-### pm2 `pm2-warmup.sh`
+#### pm2 `pm2-warmup.sh`
 
 To warmup the installation after a restart this bash script is provided
 
 
-### Publish-scripts for 'self containing' binaries
+#### Publish-scripts for 'self containing' binaries
 
 The scripts that are used to create a full build. (Linux has `libunwind8` and `gettext` as dependency)
 
 The Cake script provide options to build for specific runtimes.
 
-#### To build for Mac OS
+### To build for Mac OS
 
 _Using bash_
 ```sh
@@ -224,7 +223,7 @@ _Using powershell_
 ```powershell
 powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
 ```
-#### To build for 32 bits Windows
+### To build for 32 bits Windows
 
 _Using bash_
 ```sh

@@ -17,6 +17,7 @@ import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import ModalDetailviewRenameFile from './modal-detailview-rename-file';
 import ModalExport from './modal-export';
+import ModalMoveFile from './modal-move-file';
 import MoreMenu from './more-menu';
 import Preloader from './preloader';
 
@@ -54,8 +55,6 @@ const MenuDetailView: React.FunctionComponent = () => {
   /* only update when the state is changed */
   useEffect(() => {
     setMarkedAsDeleted(getIsMarkedAsDeletedFromProps())
-    console.log('status, ', state.fileIndexItem.status);
-
   }, [state.fileIndexItem.status]);
 
   /* show marker with 'Saved' */
@@ -189,12 +188,14 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   const [isModalExportOpen, setModalExportOpen] = React.useState(false);
   const [isModalRenameFileOpen, setModalRenameFileOpen] = React.useState(false);
+  const [isModalMoveFile, setModalMoveFile] = React.useState(false);
 
   return (<>
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
     {isModalExportOpen && state ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)} select={[state.subPath]} isOpen={isModalExportOpen} /> : null}
     {isModalRenameFileOpen && state ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)} isOpen={isModalRenameFileOpen} /> : null}
+    {isModalMoveFile && state ? <ModalMoveFile selectedSubPath={state.fileIndexItem.filePath} parentDirectory={state.fileIndexItem.parentDirectory} handleExit={() => setModalMoveFile(!isModalMoveFile)} isOpen={isModalMoveFile} /> : null}
 
     <header className={isDetails ? isMarkedAsDeleted ? "header header--main header--edit header--deleted" : "header header--main header--edit" :
       isMarkedAsDeleted ? "header header--main header--deleted" : "header header--main"}>
@@ -203,6 +204,7 @@ const MenuDetailView: React.FunctionComponent = () => {
         {/* in directory state */}
         {!isSearchQuery ? <Link className="item item--first item--close"
           state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
+          onClick={() => { setIsLoading(true) }}
           to={new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory)}>Sluiten</Link> : null}
 
         {/* to search */}
@@ -214,7 +216,7 @@ const MenuDetailView: React.FunctionComponent = () => {
         <MoreMenu>
           <li className="menu-option" data-test="export" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
           {!isDetails ? <li className="menu-option" data-test="labels" onClick={toggleLabels}>Labels</li> : null}
-          <li className="menu-option disabled" data-test="move" onClick={() => { alert("werkt nog niet"); }}>Verplaats</li>
+          <li className="menu-option" data-test="move" onClick={() => setModalMoveFile(!isModalMoveFile)}>Verplaats</li>
           <li className="menu-option" data-test="rename" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>
           <li className="menu-option" data-test="trash" onClick={TrashFile}>{!isMarkedAsDeleted ? "Verplaats naar prullenmand" : "Zet terug uit prullenmand"}</li>
           <li className="menu-option" data-test="rotate" onClick={rotateImage90}>Roteer naar rechts</li>

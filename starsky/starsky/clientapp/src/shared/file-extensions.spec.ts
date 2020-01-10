@@ -44,4 +44,23 @@ describe("keyboard", () => {
       expect(result).toBeTruthy();
     });
   });
+
+  describe("GetParentPath", () => {
+    it("get parent path #1", () => {
+      var result = fileExt.GetParentPath("/__starsky/test/");
+      expect(result).toBe("/__starsky")
+    });
+    it("get parent path #2", () => {
+      var result = fileExt.GetParentPath("/__starsky/test");
+      expect(result).toBe("/__starsky")
+    });
+    it("get parent path #3", () => {
+      var result = fileExt.GetParentPath("/__starsky");
+      expect(result).toBe("/")
+    });
+    it("get parent path #4", () => {
+      var result = fileExt.GetParentPath("/");
+      expect(result).toBe("/")
+    });
+  });
 });

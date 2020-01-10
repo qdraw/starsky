@@ -16,7 +16,8 @@
 @import './28-sidebar-selection.css';
 @import './29-switch-button.css';
 @import './30-modal.css';
-@import './31-search-header.css';
-@import './32-drop-area.css';
+@import './31-modal-move.css';
+@import './32-search-header.css';
+@import './33-drop-area.css';
 
 @import './50-leaflet.css';

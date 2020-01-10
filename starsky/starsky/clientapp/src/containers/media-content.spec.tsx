@@ -8,6 +8,7 @@ describe("MediaContent", () => {
     shallow(<MediaContent />)
   });
   it("application failed", () => {
+    // use this import => import * as useFileList from '../hooks/use-filelist';
     jest.spyOn(useFileList, 'default').mockImplementationOnce(() => {
       return null;
     })

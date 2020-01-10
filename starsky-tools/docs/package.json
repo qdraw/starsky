@@ -5,7 +5,7 @@
   "main": "docs.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node docs.js",
+    "build": "npm ci && node docs.js",
     "start": "node docs.js"
   },
   "author": "",
