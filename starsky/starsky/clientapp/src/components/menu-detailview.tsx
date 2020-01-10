@@ -215,7 +215,7 @@ const MenuDetailView: React.FunctionComponent = () => {
         <MoreMenu>
           <li className="menu-option" data-test="export" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
           {!isDetails ? <li className="menu-option" data-test="labels" onClick={toggleLabels}>Labels</li> : null}
-          <li className="menu-option disabled" data-test="move" onClick={() => setModalMoveFile(!isModalMoveFile)}>Verplaats</li>
+          <li className="menu-option" data-test="move" onClick={() => setModalMoveFile(!isModalMoveFile)}>Verplaats</li>
           <li className="menu-option" data-test="rename" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>
           <li className="menu-option" data-test="trash" onClick={TrashFile}>{!isMarkedAsDeleted ? "Verplaats naar prullenmand" : "Zet terug uit prullenmand"}</li>
           <li className="menu-option" data-test="rotate" onClick={rotateImage90}>Roteer naar rechts</li>

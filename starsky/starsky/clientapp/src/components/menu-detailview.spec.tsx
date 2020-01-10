@@ -12,6 +12,7 @@ import { UrlQuery } from '../shared/url-query';
 import MenuDetailView from './menu-detailview';
 import * as ModalDetailviewRenameFile from './modal-detailview-rename-file';
 import * as ModalExport from './modal-export';
+import * as ModalMoveFile from './modal-move-file';
 
 describe("MenuDetailView", () => {
 
@@ -162,14 +163,25 @@ describe("MenuDetailView", () => {
       });
     });
 
-    it("move click [Not implemented]", () => {
-      // var moveModal = jest.spyOn(ModalExport, 'default')
-      //   .mockImplementationOnce(() => { return <></> });
+    it("move click", () => {
+      var moveModal = jest.spyOn(ModalMoveFile, 'default')
+        .mockImplementationOnce(() => { return <></> });
 
-      // var item = Component.find('[data-test="move"]');
-      // item.simulate('click');
+      var component = mount(<MenuDetailView />);
 
-      // expect(moveModal).toBeCalled();
+      var item = component.find('[data-test="move"]');
+
+      act(() => {
+        item.simulate('click');
+      });
+
+      expect(moveModal).toBeCalled();
+
+      // reset afterwards
+      act(() => {
+        globalHistory.navigate("/");
+        component.unmount();
+      });
     });
 
     it("rename click", () => {
