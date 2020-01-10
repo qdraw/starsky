@@ -276,3 +276,6 @@ _Version number does not match SemVer_
 
 # version 0.1.0 - 2019-01-22
 - initial release
+
+# version 0.0.1 - 2018-03-08
+- Initial commit
