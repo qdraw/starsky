@@ -103,9 +103,11 @@ describe("MenuDetailView", () => {
       var component = mount(<MenuDetailView />);
 
       var item = component.find('[data-test="export"]');
+
       act(() => {
         item.simulate('click');
       });
+
       expect(exportModal).toBeCalled();
 
       // to avoid polling afterwards
@@ -124,9 +126,11 @@ describe("MenuDetailView", () => {
       var component = mount(<MenuDetailView />);
 
       var find = component.find('.item.item--labels');
+
       act(() => {
         find.simulate('click');
       });
+
       var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
 
       expect(urlObject.details).toBeTruthy();
@@ -199,6 +203,7 @@ describe("MenuDetailView", () => {
 
       var component = mount(<MenuDetailView />)
       var item = component.find('[data-test="trash"]');
+
       act(() => {
         item.simulate('click');
       });
@@ -240,7 +245,9 @@ describe("MenuDetailView", () => {
       expect(spyPost).toBeCalled();
       expect(spyPost).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftest%2Fimage.jpg&rotateClock=1");
 
-      jest.advanceTimersByTime(3000);
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
 
       expect(setTimeoutSpy).toBeCalled();
       expect(spyGet).toBeCalled();
@@ -249,8 +256,8 @@ describe("MenuDetailView", () => {
       // cleanup afterwards
       act(() => {
         component.unmount();
+        jest.useRealTimers();
       });
-      jest.useRealTimers();
 
     });
 
@@ -294,7 +301,9 @@ describe("MenuDetailView", () => {
 
     //  file is marked as deleted › press 'Delete' on keyboard to trash
     it("press 'Delete' on keyboard to trash", () => {
+
       jest.spyOn(React, 'useContext').mockReset();
+      jest.spyOn(FetchPost, 'default').mockReset();
 
       var state = {
         subPath: "/trashed/test1.jpg",
@@ -304,13 +313,14 @@ describe("MenuDetailView", () => {
 
       jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
 
       const component = mount(<MenuDetailView />)
 
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
-      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+      var spyFetchPost = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
       var event = new KeyboardEvent("keydown", {
         bubbles: false,
@@ -324,12 +334,12 @@ describe("MenuDetailView", () => {
         window.dispatchEvent(event);
       })
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), "f=%2Ftrashed%2Ftest1.jpg&fieldName=tags&search=%21delete%21");
-      // in the test the 'keyboard event fired' three times, but in the real world once
+      expect(spyFetchPost).toBeCalled();
+      expect(spyFetchPost).toBeCalledTimes(1);
+      expect(spyFetchPost).toBeCalledWith(new UrlQuery().UrlReplaceApi(), "f=%2Ftrashed%2Ftest1.jpg&fieldName=tags&search=%21delete%21");
 
       act(() => {
-        component.unmount()
+        component.unmount();
       })
     });
 
@@ -339,15 +349,19 @@ describe("MenuDetailView", () => {
         subPath: "/trashed/test1.jpg",
         fileIndexItem: { status: IExifStatus.Deleted, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
       } as IDetailView;
-      var contextValues = { state, dispatch: jest.fn() }
+      var contextValues = { state, dispatch: jest.fn() };
+
+      var contextNonDeleted = {
+        state: {
+          subPath: "/test2.jpg",
+          fileIndexItem: { status: IExifStatus.Ok, filePath: "/test2.jpg", fileName: "test2.jpg" }
+        } as IDetailView, dispatch: jest.fn()
+      };
 
       jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
-        .mockImplementationOnce(() => { return contextValues })
-
-
-      var exportModal = jest.spyOn(ModalExport, 'default')
-        .mockImplementationOnce(() => { return <></> });
+        .mockImplementationOnce(() => { return contextNonDeleted })
+        .mockImplementationOnce(() => { return contextNonDeleted })
 
       const component = mount(<MenuDetailView />);
 
@@ -357,6 +371,9 @@ describe("MenuDetailView", () => {
 
       expect(component.find('header').getDOMNode().className).toBe("header header--main");
 
+      act(() => {
+        component.unmount();
+      })
     });
 
   });
