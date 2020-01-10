@@ -204,6 +204,7 @@ const MenuDetailView: React.FunctionComponent = () => {
         {/* in directory state */}
         {!isSearchQuery ? <Link className="item item--first item--close"
           state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
+          onClick={() => { setIsLoading(true) }}
           to={new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory)}>Sluiten</Link> : null}
 
         {/* to search */}
