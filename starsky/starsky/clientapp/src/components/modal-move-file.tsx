@@ -99,6 +99,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
             </li>
           </ul>
           : null}
+        {pageType !== PageType.Loading ? <div className="preloader preloader--inline"></div> : null}
         {pageType !== PageType.Loading ? <ItemTextListView fileIndexItems={archive.fileIndexItems} callback={(path) => {
           setCurrentFolderPath(path);
           setPageType(PageType.Loading);
