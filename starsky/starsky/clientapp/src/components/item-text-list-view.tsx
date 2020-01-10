@@ -4,6 +4,7 @@ import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 
 interface ItemListProps {
   fileIndexItems: IFileIndexItem[];
+  isLoading?: boolean;
   callback(path: string): void;
 }
 /**
@@ -12,6 +13,8 @@ interface ItemListProps {
 const ItemTextListView: React.FunctionComponent<ItemListProps> = memo((props) => {
 
   if (!props.fileIndexItems) return (<div className="warning-box">Er zijn geen foto's</div>);
+
+  // console.log(props.isLoading);
 
   return (<>
     {props.fileIndexItems.length === 0 ? <div className="warning-box">Er zijn geen foto's</div> : ""}
