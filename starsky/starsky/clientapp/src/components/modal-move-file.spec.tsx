@@ -102,7 +102,8 @@ describe("ModalMoveFile", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
       statusCode: 200,
       data: [{
-        filePath: '/'
+        filePath: '/',
+        status: IExifStatus.Ok
       }]
     } as IConnectionDefault);
     var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
@@ -149,7 +150,8 @@ describe("ModalMoveFile", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
       statusCode: 200,
       data: [{
-        filePath: 'test'
+        filePath: 'test',
+        status: IExifStatus.Ok
       }]
     } as IConnectionDefault);
     var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);

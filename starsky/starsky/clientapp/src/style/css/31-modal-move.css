@@ -10,6 +10,13 @@
   max-height: calc(100vh - 325px);
 }
 
+.modal-move .preloader.preloader--inside {
+  height: 50px;
+  width: 50px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .modal-move .box {
   line-height: 24px;
   padding-top: 8px;

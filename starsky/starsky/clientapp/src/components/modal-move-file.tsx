@@ -83,7 +83,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     }}>
     <div className="content">
       <div className="modal content--subheader">
-        Verplaats {new StringOptions().LimitLength(new FileExtensions().GetFileName(props.selectedSubPath), 30)} naar:
+        Verplaats {new StringOptions().LimitLength(new FileExtensions().GetFileName(props.selectedSubPath), 30)} naar:&nbsp;
         <b>{new StringOptions().LimitLength(currentFolderPath, 44)}</b>
       </div>
       <div className={error ? "modal modal-move content--text modal-move--error-space" : "modal modal-move content--text"}>
@@ -99,7 +99,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
             </li>
           </ul>
           : null}
-        {pageType === PageType.Loading ? <div className="preloader preloader--inline"></div> : null}
+        {pageType === PageType.Loading ? <div className="preloader preloader--inside"></div> : null}
         {pageType !== PageType.Loading ? <ItemTextListView fileIndexItems={archive.fileIndexItems} callback={(path) => {
           setCurrentFolderPath(path);
           setPageType(PageType.Loading);
@@ -108,7 +108,12 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       </div>
       <div className="modal modal-move-button">
         {error && <div className="warning-box">{error}</div>}
-        <button disabled={currentFolderPath === props.parentDirectory} className="btn btn--default" onClick={move}>Verplaats</button>
+        <button
+          disabled={currentFolderPath === props.parentDirectory && pageType !== PageType.Loading}
+          className="btn btn--default"
+          onClick={move}>
+          Verplaats
+        </button>
       </div>
     </div>
   </Modal>)
