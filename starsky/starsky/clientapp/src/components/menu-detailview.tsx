@@ -116,6 +116,7 @@ const MenuDetailView: React.FunctionComponent = () => {
       dispatch({ 'type': 'append', tags: "!delete!" });
       dispatch({ 'type': 'update', status: IExifStatus.Deleted, lastEdited: new Date().toISOString() });
       setIsLoading(false);
+      console.log('file is trashed');
     }
     // Undo trash
     else {
@@ -130,6 +131,7 @@ const MenuDetailView: React.FunctionComponent = () => {
       dispatch({ 'type': 'remove', tags: "!delete!" });
       dispatch({ 'type': 'update', status: IExifStatus.Ok, lastEdited: new Date().toISOString() });
       setIsLoading(false);
+      console.log('file is untrashed');
     }
   }
 
