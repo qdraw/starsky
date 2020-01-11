@@ -103,7 +103,9 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       var currentItem = item.data[0] as IFileIndexItem;
       currentItem.lastEdited = new Date().toISOString();
       setFileIndexItem(currentItem);
-      dispatch({ 'type': 'update', ...currentItem })
+      dispatch({ 'type': 'update', ...currentItem });
+
+      // clear search cache new URLPath().StringToIUrl(history.location.search).t
     });
   }
 
