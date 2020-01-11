@@ -158,11 +158,10 @@ namespace starsky.Controllers
 
             // Clone an new item in the list to display
             var returnNewResultList = new List<FileIndexItem>();
-            foreach (var item in fileIndexResultsList)
+            foreach ( var cloneItem in fileIndexResultsList.Select(item => item.Clone()) )
             {
-                var citem = item.Clone();
-                citem.FileHash = null;
-                returnNewResultList.Add(citem);
+	            cloneItem.FileHash = null;
+	            returnNewResultList.Add(cloneItem);
             }
                         
             return Json(returnNewResultList);
