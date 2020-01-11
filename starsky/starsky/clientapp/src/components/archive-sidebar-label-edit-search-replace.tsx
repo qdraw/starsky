@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
+import { IExifStatus } from '../interfaces/IExifStatus';
 import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchPost from '../shared/fetch-post';
@@ -80,7 +81,8 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         FetchPost("/api/replace", bodyParams.toString()).then((anyData) => {
           var result = new CastToInterface().InfoFileIndexArray(anyData.data);
           result.forEach(element => {
-            dispatch({ type: 'update', ...element, select });
+            if (element.status !== IExifStatus.Ok) return;
+            dispatch({ type: 'update', ...element, select: [element.fileName] });
           });
 
           // loading + update button
@@ -99,7 +101,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   // noinspection HtmlUnknownAttribute
   return (
     <>
-      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false}/> : ""}
+      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
 
       <h4>Tags:</h4>
       <div data-name="tags"
@@ -109,6 +111,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
       </div>
+      <span className="arrow-to"></span>
       <div data-name="replace-tags"
         onInput={handleUpdateChange}
         suppressContentEditableWarning={true}
@@ -125,6 +128,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
       </div>
+      <span className="arrow-to"></span>
       <div
         onInput={handleUpdateChange}
         data-name="replace-description"
@@ -141,6 +145,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
       </div>
+      <span className="arrow-to"></span>
       <div data-name="replace-title"
         onInput={handleUpdateChange}
         suppressContentEditableWarning={true}
@@ -148,8 +153,6 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
       </div>
-
-      <div className="warning-box">Test functionaliteit is aangezet</div>
 
       {isInputEnabled && select.length !== 0 ?
         <button className="btn btn--default" onClick={() => pushSearchAndReplace()}>Vervangen</button> :

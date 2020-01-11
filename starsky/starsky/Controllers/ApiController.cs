@@ -158,11 +158,10 @@ namespace starsky.Controllers
 
             // Clone an new item in the list to display
             var returnNewResultList = new List<FileIndexItem>();
-            foreach (var item in fileIndexResultsList)
+            foreach ( var cloneItem in fileIndexResultsList.Select(item => item.Clone()) )
             {
-                var citem = item.Clone();
-                citem.FileHash = null;
-                returnNewResultList.Add(citem);
+	            cloneItem.FileHash = null;
+	            returnNewResultList.Add(cloneItem);
             }
                         
             return Json(returnNewResultList);
@@ -389,7 +388,6 @@ namespace starsky.Controllers
         /// <param name="f">one single file</param>
         /// <param name="isSingleitem">true = load orginal</param>
         /// <param name="json">text as output</param>
-        /// <param name="retryThumbnail">true = remove thumbnail if corrupt</param>
         /// <returns>thumbnail or status</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
         /// <response code="404">item not found on disk</response>
@@ -403,12 +401,11 @@ namespace starsky.Controllers
         [ProducesResponseType(209)] // "Thumbnail is not ready yet"
         [IgnoreAntiforgeryToken]
         [AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
-        [ResponseCache(Duration = 86400)] 
+        [ResponseCache(Duration = 29030400)] // 4 weeks
         public IActionResult Thumbnail(
             string f, 
             bool isSingleitem = false, 
-            bool json = false,
-            bool retryThumbnail = false)
+            bool json = false)
         {
             // f is Hash
             // isSingleItem => detailView
@@ -425,29 +422,21 @@ namespace starsky.Controllers
 
             if (FilesHelper.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
             {
-                // When a file is corrupt show error + Delete
+                // When a file is corrupt show error
                 var imageFormat = ExtensionRolesHelper.GetImageFormat(thumbPath);
-                if (imageFormat == ExtensionRolesHelper.ImageFormat.unknown)
+                if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
                 {
-                    if (!retryThumbnail)
-                    {
-                        Console.WriteLine("image is corrupt");
-                        SetExpiresResponseHeadersToZero();
-                        return NoContent(); // 204
-                    }
-                    System.IO.File.Delete(thumbPath);
+	                SetExpiresResponseHeadersToZero();
+	                return NoContent(); // 204
                 }
-                
+
                 // When using the api to check using javascript
                 // use the cached version of imageFormat, otherwise you have to check if it deleted
-                if (imageFormat != ExtensionRolesHelper.ImageFormat.unknown)
-                {
-                    if (json) return Json("OK");
+                if (json) return Json("OK");
 
-                    // thumbs are always in jpeg
-                    FileStream fs = System.IO.File.OpenRead(thumbPath);
-                    return File(fs, "image/jpeg");
-                }
+                // thumbs are always in jpeg
+                FileStream fs = System.IO.File.OpenRead(thumbPath);
+                return File(fs, "image/jpeg");
             }
             
             // Cached view of item
