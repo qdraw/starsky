@@ -63,4 +63,5 @@
     cursor: not-allowed;
     background-color: #ECEFF1;
     color: #263238;
+    border: 1px transparent solid;
 }

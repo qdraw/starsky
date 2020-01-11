@@ -72,7 +72,6 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
         dispatch({ type: 'update', ...element, select: [element.fileName] });
       });
 
-
       // loading + update button
       setIsLoading(false);
       setInputEnabled(true);
