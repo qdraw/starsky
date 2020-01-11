@@ -27,6 +27,7 @@
 - [x]   (bugfix) _API_ fix various issues in `/api/rename`
 - [x]   (remove) starskyApp content 
 - [x]   (docs) add html generation to build process
+- [x]   (remove) only the retryThumbnail is removed `api/thumbnail?retryThumbnail=true`  (remove thumbnail if corrupt) due public facing
 
 # version 0.1.11 - 2020-01-02
 - [x]   (bugfix) _Front-end_ _Detailview_ when press Delete and switch image, the next image should be marked as not deleted (Fixed)

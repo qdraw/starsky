@@ -389,7 +389,6 @@ namespace starsky.Controllers
         /// <param name="f">one single file</param>
         /// <param name="isSingleitem">true = load orginal</param>
         /// <param name="json">text as output</param>
-        /// <param name="retryThumbnail">true = remove thumbnail if corrupt</param>
         /// <returns>thumbnail or status</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
         /// <response code="404">item not found on disk</response>
@@ -407,8 +406,7 @@ namespace starsky.Controllers
         public IActionResult Thumbnail(
             string f, 
             bool isSingleitem = false, 
-            bool json = false,
-            bool retryThumbnail = false)
+            bool json = false)
         {
             // f is Hash
             // isSingleItem => detailView
@@ -425,29 +423,21 @@ namespace starsky.Controllers
 
             if (FilesHelper.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
             {
-                // When a file is corrupt show error + Delete
+                // When a file is corrupt show error
                 var imageFormat = ExtensionRolesHelper.GetImageFormat(thumbPath);
-                if (imageFormat == ExtensionRolesHelper.ImageFormat.unknown)
+                if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
                 {
-                    if (!retryThumbnail)
-                    {
-                        Console.WriteLine("image is corrupt");
-                        SetExpiresResponseHeadersToZero();
-                        return NoContent(); // 204
-                    }
-                    System.IO.File.Delete(thumbPath);
+	                SetExpiresResponseHeadersToZero();
+	                return NoContent(); // 204
                 }
-                
+
                 // When using the api to check using javascript
                 // use the cached version of imageFormat, otherwise you have to check if it deleted
-                if (imageFormat != ExtensionRolesHelper.ImageFormat.unknown)
-                {
-                    if (json) return Json("OK");
+                if (json) return Json("OK");
 
-                    // thumbs are always in jpeg
-                    FileStream fs = System.IO.File.OpenRead(thumbPath);
-                    return File(fs, "image/jpeg");
-                }
+                // thumbs are always in jpeg
+                FileStream fs = System.IO.File.OpenRead(thumbPath);
+                return File(fs, "image/jpeg");
             }
             
             // Cached view of item

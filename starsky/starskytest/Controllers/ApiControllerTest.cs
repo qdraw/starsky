@@ -391,43 +391,6 @@ namespace starskytest.Controllers
             }
 
         }
-        
-        [TestMethod]
-        public void ApiController_Thumbnail_CorruptImage_retryThumbnail_Test()
-        {
-            var thumbHash = "ApiController_Thumbnail_CorruptImage_Test";
-            var path = _createAnImage.BasePath + Path.DirectorySeparatorChar + thumbHash + ".jpg";
-            if (!File.Exists(path))
-            {
-                using (StreamWriter sw = File.CreateText(path)) 
-                {
-                    sw.WriteLine("CorruptImage");
-                } 
-            }
-            
-            _query.AddItem(new FileIndexItem
-            {
-                FileName = "ApiController_Thumbnail_CorruptImage_Test.jpg",
-                ParentDirectory = "/",
-                FileHash = thumbHash
-            });
-            
-            // Act
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,_readmeta,new StorageSubPathFilesystem(_appSettings));
-            controller.ControllerContext.HttpContext = new DefaultHttpContext();
-
-            // The only difference between ApiController_Thumbnail_CorruptImage_NoContentResult_Test
-            var actionResult = controller.Thumbnail(thumbHash, false, true, true) as NotFoundObjectResult;
-            Assert.AreEqual(404,actionResult.StatusCode);
-               
-            // remove files + database item
-            _query.RemoveItem(_query.GetObjectByFilePath("/" + thumbHash + ".jpg"));
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
-
-        }
 
         [TestMethod]
         public void ApiController_DownloadPhoto_isThumbnailTrue_CreateThumb_ReturnFileStream_Test()
