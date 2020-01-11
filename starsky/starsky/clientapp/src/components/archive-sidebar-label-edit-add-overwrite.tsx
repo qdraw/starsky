@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
+import { IExifStatus } from '../interfaces/IExifStatus';
 import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchPost from '../shared/fetch-post';
@@ -67,8 +68,10 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     FetchPost("/api/update", bodyParams.toString()).then((anyData) => {
       var result = new CastToInterface().InfoFileIndexArray(anyData.data);
       result.forEach(element => {
-        dispatch({ type: 'update', ...element, select });
+        if (element.status !== IExifStatus.Ok) return;
+        dispatch({ type: 'update', ...element, select: [element.fileName] });
       });
+
 
       // loading + update button
       setIsLoading(false);
