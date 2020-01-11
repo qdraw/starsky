@@ -403,7 +403,7 @@ namespace starsky.Controllers
         [ProducesResponseType(209)] // "Thumbnail is not ready yet"
         [IgnoreAntiforgeryToken]
         [AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
-        [ResponseCache(Duration = 86400)] 
+        [ResponseCache(Duration = 29030400)] // 4 weeks
         public IActionResult Thumbnail(
             string f, 
             bool isSingleitem = false, 
