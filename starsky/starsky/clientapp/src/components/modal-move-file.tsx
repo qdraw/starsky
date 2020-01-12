@@ -23,7 +23,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 
   const [currentFolderPath, setCurrentFolderPath] = React.useState(props.parentDirectory);
 
-  var usesFileList = useFileList("?f=" + currentFolderPath);
+  var usesFileList = useFileList("?f=" + currentFolderPath, true);
 
   // only for navigation in this file
   var history = useLocation();

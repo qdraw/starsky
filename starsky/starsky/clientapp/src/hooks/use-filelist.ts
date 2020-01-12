@@ -15,8 +15,9 @@ export interface IFileList {
 /**
  * Hook to get index API
  * @param locationSearch with query parameter "?f=/"
+ * @param resetPageTypeBeforeLoading start direct with loading state = true is enable, use false to have smooth page transistions
  */
-const useFileList = (locationSearch: string): IFileList | null => {
+const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean): IFileList | null => {
 
   const [archive, setArchive] = useState(newIArchive());
   const [detailView, setDetailView] = useState(newDetailView());
@@ -30,8 +31,9 @@ const useFileList = (locationSearch: string): IFileList | null => {
 
     (async () => {
       try {
-        // add loading sign
-        setPageType(PageType.Loading);
+
+        // force start with a loading icon 
+        if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
 
         const res: Response = await fetch(location, {
           signal: abortController.signal,
