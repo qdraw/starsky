@@ -14,7 +14,10 @@ describe("MenuArchive", () => {
   });
 
   describe("with Context", () => {
-    it("default", () => {
+    it("default menu", () => {
+
+      globalHistory.navigate("/");
+
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
         return newIConnectionDefault();
@@ -55,11 +58,61 @@ describe("MenuArchive", () => {
 
       expect(component.exists('[data-test="selected-0"]')).toBeTruthy();
 
-      console.log(component.html());
-
-
+      component.unmount();
     });
 
+    it("two selected", () => {
+
+      globalHistory.navigate("?select=test1,test2");
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      }).mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      });
+
+      var state = {
+        subPath: "/",
+        fileIndexItems: [{ status: IExifStatus.Ok, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() }
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+      var component = mount(<MenuArchive />);
+
+      expect(component.exists('[data-test="selected-2"]')).toBeTruthy();
+    });
+
+
+    xit("menu ", () => {
+
+      globalHistory.navigate("/");
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      }).mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      });
+
+      var state = {
+        subPath: "/",
+        fileIndexItems: [{ status: IExifStatus.Ok, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() }
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+      var component = mount(<MenuArchive />);
+
+      expect(component.exists('[data-test="selected-2"]')).toBeTruthy();
+    });
   });
 
 });

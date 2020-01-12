@@ -129,6 +129,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           {select ? <div className="item item--labels" onClick={() => toggleLabels()}>Labels</div> : null}
 
+          {/* default more menu */}
           {!select ? <MoreMenu>
             <li className="menu-option disabled" onClick={() => { alert("Map maken werkt nog niet"); }}>Map maken</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
