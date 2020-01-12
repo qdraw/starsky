@@ -102,7 +102,8 @@ Task("ClientRestore")
 Task("ClientBuild")
     .Does(() =>
     {
-        Environment.SetEnvironmentVariable("CI","false");
+        /* with CI=true eslint errors will break the build */
+        /* Environment.SetEnvironmentVariable("CI","false"); */
         NpmRunScript("build", s => s.FromPath("./starsky/clientapp/"));
   });
 
