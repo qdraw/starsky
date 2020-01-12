@@ -119,36 +119,34 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     props.handleExit();
   }
 
-  return (<>
-    return (<Modal
-      id="rename-file-modal"
-      isOpen={props.isOpen}
-      handleExit={() => {
-        props.handleExit()
-      }}>
-      <div className="content">
-        <div className="modal content--subheader">Naam wijzigen</div>
-        <div className="modal content--text">
+  return <Modal
+    id="rename-file-modal"
+    isOpen={props.isOpen}
+    handleExit={() => {
+      props.handleExit()
+    }}>
+    <div className="content">
+      <div className="modal content--subheader">Naam wijzigen</div>
+      <div className="modal content--text">
 
-          <div data-name="filename"
-            onInput={handleUpdateChange}
-            suppressContentEditableWarning={true}
-            contentEditable={isFormEnabled}
-            className={isFormEnabled ? "form-control" : "form-control disabled"}>
-            {state.fileIndexItem.fileName}
-          </div>
-
-          {error && <div className="warning-box--under-form warning-box">{error}</div>}
-
-          <button disabled={state.fileIndexItem.fileName === fileName || !isFormEnabled ||
-            loading || !buttonState}
-            className="btn btn--default" onClick={pushRenameChange}>
-            {loading ? 'Loading...' : 'Opslaan'}
-          </button>
+        <div data-name="filename"
+          onInput={handleUpdateChange}
+          suppressContentEditableWarning={true}
+          contentEditable={isFormEnabled}
+          className={isFormEnabled ? "form-control" : "form-control disabled"}>
+          {state.fileIndexItem.fileName}
         </div>
+
+        {error && <div className="warning-box--under-form warning-box">{error}</div>}
+
+        <button disabled={state.fileIndexItem.fileName === fileName || !isFormEnabled ||
+          loading || !buttonState}
+          className="btn btn--default" onClick={pushRenameChange}>
+          {loading ? 'Loading...' : 'Opslaan'}
+        </button>
       </div>
-    </Modal>
-  </>)
+    </div>
+  </Modal>
 };
 
 export default ModalDetailviewRenameFile
