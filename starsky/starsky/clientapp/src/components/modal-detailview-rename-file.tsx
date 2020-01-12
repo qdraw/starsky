@@ -75,6 +75,8 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     var extensionsState = new FileExtensions().MatchExtension(state.fileIndexItem.fileName, fieldValue);
     var isValidFileName = new FileExtensions().IsValidFileName(fieldValue);
 
+    console.log(isValidFileName);
+
     if (!isValidFileName) {
       setError(NonValidExtension);
       setButtonState(false);
