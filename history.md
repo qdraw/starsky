@@ -32,6 +32,8 @@
 - [x]   (bugfix) _Front-end_ archive updating multiple values didn't provide the right results
 - [x]   (bugfix) _Front-end_ when pressing multiple colorclass items with the value 0 (colorless/no-color) these are updated
 - [x]   (bugfix) _Front-end_ fix issue where force sync and clear cache didn't update the view
+- [x]   (bugfix) _Front-end_ fix issue Collections toggle where not correct shown
+- [x]   (feature) _API_ Add `/sync/mkdir` to create directories and sync to the db
 
 - []   (feature)  _Front-end_ clear search cache after updating values in detailview
 

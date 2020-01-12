@@ -26,7 +26,50 @@ namespace starsky.Controllers
             _query = query;
 	        _iStorage = iStorage;
         }
-        
+
+        /// <summary>
+        /// Make a directory (-p)
+        /// </summary>
+        /// <param name="f">subPaths split by dot comma</param>
+        /// <returns>list of changed files</returns>
+        [HttpPost("/sync/mkdir")]
+        public IActionResult Mkdir(string f)
+        {
+	        var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
+	        var syncResultsList = new List<SyncViewModel>();
+
+	        foreach ( var subPath in inputFilePaths.Select(subPath => PathHelper.RemoveLatestSlash(subPath)) )
+	        {
+
+		        var toAddStatus = new SyncViewModel
+		        {
+			        FilePath = subPath, 
+			        Status = FileIndexItem.ExifStatus.Ok
+		        };
+			        
+		        if ( _iStorage.ExistFolder(subPath) )
+		        {
+			        toAddStatus.Status = FileIndexItem.ExifStatus.OperationNotSupported;
+			        syncResultsList.Add(toAddStatus);
+			        continue;
+		        }
+		        
+		        // add to fs
+		        _iStorage.CreateDirectory(subPath);
+		        
+		        // add to db
+		        _sync.AddSubPathFolder(subPath);
+		        
+		        syncResultsList.Add(toAddStatus);
+	        }
+	        
+	        // When all items are not found
+	        if (syncResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+		        Response.StatusCode = 409; // A conflict, Directory already exist
+	        
+	        return Json(syncResultsList);
+        }
+
         /// <summary>
         /// Do a file sync in a background process
         /// </summary>

@@ -232,5 +232,53 @@ namespace starskytest.Controllers
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list.FirstOrDefault().Status);
 
 		}
+
+		[TestMethod]
+		public void SyncControllerTest_Mkdir_Good()
+		{
+			InsertSearchData();
+			var context = new ControllerContext
+			{
+				HttpContext = new DefaultHttpContext()
+			};
+			
+			var iStorage =  new FakeIStorage(new List<string> { "/" }, 
+				new List<string> { _createAnImage.DbPath });
+			
+			var controller =
+				new SyncController(_isync, _bgTaskQueue, _query, iStorage)
+				{
+					ControllerContext = context
+				};
+			
+			var result = controller.Mkdir("/test_dir") as JsonResult;
+			var list = result.Value as List<SyncViewModel>;
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list.FirstOrDefault().Status);
+
+		}
+		
+		[TestMethod]
+		public void SyncControllerTest_Mkdir_Exist()
+		{
+			InsertSearchData();
+			var context = new ControllerContext
+			{
+				HttpContext = new DefaultHttpContext()
+			};
+			
+			var iStorage =  new FakeIStorage(new List<string> { "/" ,"/test_dir" }, 
+				new List<string> { _createAnImage.DbPath });
+			
+			var controller =
+				new SyncController(_isync, _bgTaskQueue, _query, iStorage)
+				{
+					ControllerContext = context
+				};
+			
+			var result = controller.Mkdir("/test_dir") as JsonResult;
+			var list = result.Value as List<SyncViewModel>;
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,list.FirstOrDefault().Status);
+
+		}
 	}
 }
