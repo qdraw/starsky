@@ -32,7 +32,13 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="f">subPaths split by dot comma</param>
         /// <returns>list of changed files</returns>
+        /// <response code="200">create the item on disk and in db</response>
+        /// <response code="409">A conflict, Directory already exist</response>
+        /// <response code="401">User unauthorized</response>
         [HttpPost("/sync/mkdir")]
+        [ProducesResponseType(typeof(List<SyncViewModel>),200)]
+        [ProducesResponseType(typeof(List<SyncViewModel>),409)]
+        [ProducesResponseType(typeof(string),401)]
         public IActionResult Mkdir(string f)
         {
 	        var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
@@ -75,7 +81,9 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="f">subPaths split by dot comma</param>
         /// <returns>list of changed files</returns>
+        /// <response code="200">started sync as background job</response>
         [ActionName("Index")]
+        [ProducesResponseType(typeof(List<SyncViewModel>),200)]
         public IActionResult SyncIndex(string f)
         {
             var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
