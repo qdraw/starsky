@@ -71,6 +71,8 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     } as IFileList;
   }
 
+  console.log(usesFileList.archive);
+
   return (<Modal
     id="move-file-modal"
     isOpen={props.isOpen}
