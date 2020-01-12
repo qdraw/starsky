@@ -108,7 +108,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
       <header className={sidebar ? "header header--main header--select header--edit" : select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
-          {!select ? <button className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
+          {!select ? <button data-test="hamburger" className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
             <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
               <i />
               <i />
