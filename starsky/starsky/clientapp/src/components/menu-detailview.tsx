@@ -175,6 +175,8 @@ const MenuDetailView: React.FunctionComponent = () => {
       if (result === false) {
         setTimeout(async () => {
           await requestNewFileHash();
+          // when it didn't change after two tries
+          setIsLoading(false);
         }, 7000);
       }
     }, 3000);
