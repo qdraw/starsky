@@ -25,7 +25,7 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
       try {
 
         if (!location) {
-          setArchive({ pageType: PageType.Search, ...newIArchive(), fileIndexItems: [], colorClassUsage: [] });
+          setArchive({ pageType: PageType.Search, ...newIArchive(), fileIndexItems: [], colorClassUsage: [], searchQuery: '' });
           setPageType(PageType.Search);
           return;
         }

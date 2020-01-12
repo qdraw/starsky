@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
@@ -85,6 +86,7 @@ namespace starsky.Controllers
 				_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 				{
 					_sync.SyncFiles(subPath,false);
+					Console.WriteLine(">>> running clear cache "+ subPath);
 					_query.RemoveCacheParentItem(subPath);
 				});
 	            

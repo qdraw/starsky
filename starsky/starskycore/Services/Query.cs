@@ -275,6 +275,10 @@ namespace starskycore.Services
             _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
         }
 
+        /// <summary>
+        /// Clear the directory name from the cache
+        /// </summary>
+        /// <param name="directoryName">the path of the directory (there is no parent generation)</param>
         public void RemoveCacheParentItem(string directoryName)
         {
             // Add protection for disabled caching

@@ -43,6 +43,11 @@ namespace starskycore.Interfaces
         FileIndexItem GetObjectByFilePath(string filePath);
 
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
+        
+        /// <summary>
+        /// Clear the directory name from the cache
+        /// </summary>
+        /// <param name="directoryName">the path of the directory (there is no parent generation)</param>
         void RemoveCacheParentItem(string directoryName);
 
         string GetSubPathByHash(string fileHash);
