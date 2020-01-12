@@ -28,6 +28,16 @@ export class FileExtensions {
   }
 
   /**
+   * Checks if the directory name is valid
+   * @param directoryName only the name, not the full path
+   */
+  public IsValidDirectoryName(directoryName: string): (boolean) {
+    var extensionRegex = /^[$a-zA-Z0-9_\s-]+$/
+    var fromDirMatchArray = directoryName.match(extensionRegex);
+    return !!fromDirMatchArray;
+  }
+
+  /**
    * Get the parent path from your string 
    * @param filePath filepath
    * @see https://stackoverflow.com/a/1130024

@@ -119,4 +119,11 @@ export class UrlQuery {
     return "/sync/rename";
   }
 
+  /**
+   * Create an directory on disk and database
+   */
+  public UrlSyncMkdir(): string {
+    return "/sync/mkdir";
+  }
+
 }

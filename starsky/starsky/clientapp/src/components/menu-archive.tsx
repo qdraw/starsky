@@ -6,6 +6,7 @@ import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import MenuSearchBar from './menu.searchbar';
+import ModalArchiveMkdir from './modal-archive-mkdir';
 import ModalDisplayOptions from './modal-display-options';
 import ModalExport from './modal-export';
 import MoreMenu from './more-menu';
@@ -99,6 +100,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
 
   const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
+  const [isModalMkdirOpen, setModalMkdirOpen] = React.useState(false);
 
   return (
     <>
@@ -108,6 +110,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
       {isDisplayOptionsOpen ? <ModalDisplayOptions parentFolder={new URLPath().StringToIUrl(history.location.search).f} handleExit={() =>
         setDisplayOptionsOpen(!isDisplayOptionsOpen)} isOpen={isDisplayOptionsOpen} /> : null}
+
+      {isModalMkdirOpen ? <ModalArchiveMkdir handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)} isOpen={isModalMkdirOpen} /> : null}
 
       <header className={sidebar ? "header header--main header--select header--edit" : select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
@@ -131,7 +135,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           {/* default more menu */}
           {!select ? <MoreMenu>
-            <li className="menu-option disabled" onClick={() => { alert("Map maken werkt nog niet"); }}>Map maken</li>
+            <li className="menu-option disabled" onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}>Map maken</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
             <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>Weergave opties</li>
           </MoreMenu> : null}
