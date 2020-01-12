@@ -64,14 +64,15 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     props.handleExit();
   }
 
+  /**
+   * Fallback if there is no result or when mounting with no context
+   */
   if (!usesFileList || !usesFileList.archive) {
     usesFileList = {
       archive: newIArchive(),
       pageType: PageType.Loading,
     } as IFileList;
   }
-
-  console.log(usesFileList.archive);
 
   return (<Modal
     id="move-file-modal"

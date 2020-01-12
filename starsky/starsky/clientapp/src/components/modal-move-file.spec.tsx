@@ -38,6 +38,7 @@ describe("ModalMoveFile", () => {
           filePath: "/test/",
           fileName: "test",
           isDirectory: true,
+          status: IExifStatus.Ok
         },
         {
           filePath: "/image.jpg",
@@ -93,8 +94,6 @@ describe("ModalMoveFile", () => {
       return startArchive;
     }).mockImplementationOnce(() => {
       return inTestFolderArchive;
-    }).mockImplementationOnce(() => {
-      return inTestFolderArchive;
     });
 
     // spy on fetch
@@ -110,7 +109,9 @@ describe("ModalMoveFile", () => {
 
     var modal = mount(<ModalMoveFile parentDirectory="/test" selectedSubPath="/test/test.jpg" isOpen={true} handleExit={() => { }}></ModalMoveFile>)
 
-    modal.find('[data-test="parent"]').simulate('click');
+    act(() => {
+      modal.find('[data-test="parent"]').simulate('click');
+    });
 
     act(() => {
       // now move
@@ -139,8 +140,6 @@ describe("ModalMoveFile", () => {
       return startArchive;
     }).mockImplementationOnce(() => {
       return inTestFolderArchive;
-    }).mockImplementationOnce(() => {
-      return inTestFolderArchive;
     });
 
     // spy on fetch
@@ -151,7 +150,8 @@ describe("ModalMoveFile", () => {
       statusCode: 200,
       data: [{
         filePath: 'test',
-        status: IExifStatus.Ok
+        status: IExifStatus.Ok,
+        pageType: PageType.Archive,
       }]
     } as IConnectionDefault);
     var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
@@ -173,9 +173,9 @@ describe("ModalMoveFile", () => {
 
     var modal = mount(<ModalMoveFile parentDirectory="/" selectedSubPath="/test.jpg" isOpen={true} handleExit={() => { }}></ModalMoveFile>)
 
-    console.log(modal.html());
-
-    modal.find('[data-test="btn-test"]').simulate('click');
+    act(() => {
+      modal.find('[data-test="btn-test"]').simulate('click');
+    });
 
     // button isn't disabled anymore
     var submitButtonBefore = (modal.find('.btn--default').getDOMNode() as HTMLButtonElement).disabled
@@ -247,7 +247,9 @@ describe("ModalMoveFile", () => {
 
       var modal = mount(<ModalMoveFile parentDirectory="/" selectedSubPath="/test.jpg" isOpen={true} handleExit={() => { }}></ModalMoveFile>)
 
-      modal.find('[data-test="btn-test"]').simulate('click');
+      act(() => {
+        modal.find('[data-test="btn-test"]').simulate('click');
+      });
 
       // button isn't disabled anymore
       var submitButtonBefore = (modal.find('.btn--default').getDOMNode() as HTMLButtonElement).disabled
