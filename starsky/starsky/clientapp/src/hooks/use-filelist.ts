@@ -10,6 +10,7 @@ export interface IFileList {
   detailView?: IDetailView,
   pageType: PageType,
   parent: string,
+  forceUpdateLocation: (locationSearch: string) => void;
 }
 
 /**
@@ -28,6 +29,10 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
   const [parent, setParent] = useState('/');
 
   var location = new UrlQuery().UrlQueryServerApi(locationSearch);
+
+  const forceUpdateLocation = (locationSearch: string) => {
+    location = new UrlQuery().UrlQueryServerApi(locationSearch);
+  }
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -96,7 +101,8 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
     archive,
     detailView,
     pageType,
-    parent
+    parent,
+    forceUpdateLocation
   };
 };
 
