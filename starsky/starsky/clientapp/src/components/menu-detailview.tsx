@@ -55,7 +55,7 @@ const MenuDetailView: React.FunctionComponent = () => {
   /* only update when the state is changed */
   useEffect(() => {
     setMarkedAsDeleted(getIsMarkedAsDeletedFromProps())
-  }, [state.fileIndexItem.status]);
+  }, [getIsMarkedAsDeletedFromProps()]);
 
   /* show marker with 'Saved' */
   const [isRecentEdited, setRecentEdited] = React.useState(IsEditedNow(state.fileIndexItem.lastEdited));

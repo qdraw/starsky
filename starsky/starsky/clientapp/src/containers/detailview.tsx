@@ -71,7 +71,7 @@ const DetailView: React.FC<IDetailView> = () => {
     }).catch((e) => {
       console.log(e);
     });
-  }, [state.fileIndexItem.orientation, state.fileIndexItem.fileHash]);
+  }, [state, state.fileIndexItem.fileHash]);
 
   // know if you searching ?t= in url
   const [isSearchQuery, setIsSearchQuery] = React.useState(!!new URLPath().StringToIUrl(history.location.search).t);

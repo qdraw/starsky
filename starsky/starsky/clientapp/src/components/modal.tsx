@@ -40,6 +40,7 @@ export default function Modal({
         document.body.removeChild(modal.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const initialRender = React.useRef(false);
@@ -86,7 +87,7 @@ export default function Modal({
         unfreeze();
       }
     };
-  }, [isOpen]);
+  }, [isOpen, focusAfterExit, id, root]);
 
   if (modal.current) {
     return ReactDOM.createPortal(
