@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import Preloader from '../components/preloader';
 import Archive from '../containers/archive';
 import Login from '../containers/login';
 import Search from '../containers/search';
@@ -24,7 +25,6 @@ function ArchiveWrapper(archive: IArchiveProps) {
   // running on load
   useEffect(() => {
     if (archive.fileIndexItems) {
-      console.log('running dispatch');
       dispatch({ type: 'reset-url-change', payload: archive })
     }
   }, [archive]);
@@ -49,9 +49,11 @@ function ArchiveWrapper(archive: IArchiveProps) {
       return (
         <Search {...archiveList} />
       );
+    case PageType.Loading:
+      return (
+        <Preloader isOverlay={true} />
+      );
     case PageType.Unauthorized:
-      console.log('not login');
-
       return (
         <Login />
       );

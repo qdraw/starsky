@@ -92,17 +92,18 @@ export function archiveReducer(state: State, action: Action): State {
     case "reset-url-change":
 
       // for search / trash pages
-      if (action.payload.pageType !== PageType.Archive &&
+      if ((action.payload.pageType === PageType.Search || action.payload.pageType === PageType.Trash) &&
         CombineSearchQueryAndPageNumber(action.payload.searchQuery, action.payload.pageNumber) !==
         CombineSearchQueryAndPageNumber(state.searchQuery, state.pageNumber)
       ) {
-        console.log('running dispatch');
+        console.log('running dispatch (search/trash)');
         return action.payload;
       }
 
       // for archive pages
       if (action.payload.pageType === PageType.Archive && (action.payload.subPath !== state.subPath || action.payload.subPath === "/")) {
-        console.log('running dispatch');
+        console.log(action.payload.subPath);
+        console.log('running dispatch (a)');
         return action.payload;
       }
       return state;

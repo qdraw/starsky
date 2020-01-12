@@ -51,8 +51,8 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     FetchGet("/api/RemoveCache?json=true&f=" + new URLPath().encodeURI(parentFolder)).then((_) => {
       setTimeout(() => {
-        FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
-          var removeCacheResult = new CastToInterface().MediaArchive(anyData);
+        FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((connectionResult) => {
+          var removeCacheResult = new CastToInterface().MediaArchive(connectionResult.data);
           var payload = removeCacheResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
             dispatch({ type: 'force-reset', payload });
@@ -102,8 +102,8 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     setIsLoading(true);
     FetchGet("/sync/?f=" + new URLPath().encodeURI(parentFolder)).then((_) => {
       setTimeout(() => {
-        FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
-          var forceSyncResult = new CastToInterface().MediaArchive(anyData);
+        FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((connectionResult) => {
+          var forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
           var payload = forceSyncResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
             dispatch({ type: 'force-reset', payload });
