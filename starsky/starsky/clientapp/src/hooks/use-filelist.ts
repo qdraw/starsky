@@ -32,10 +32,12 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
 
   const forceUpdateLocation = (locationSearch: string): void => {
     location = new UrlQuery().UrlQueryServerApi(locationSearch);
+    console.log('location', location);
   }
 
   useEffect(() => {
     const abortController = new AbortController();
+    console.log('hi>>>>>>');
 
     (async () => {
       try {
