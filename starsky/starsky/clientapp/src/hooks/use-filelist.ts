@@ -82,6 +82,9 @@ const useFileList = (locationSearch: string): IFileList | null => {
     return () => {
       abortController.abort();
     };
+
+    // dependency: 'locationSearch'. is not added to avoid a lot of queries
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
   return {
