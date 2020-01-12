@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
+import useInterval from '../hooks/use-interval';
 import useLocation from '../hooks/use-location';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { CastToInterface } from '../shared/cast-to-interface';
@@ -78,7 +79,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     });
   }
 
-  function geoSyncStatus() {
+  function fetchGeoSyncStatus() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     FetchGet("/api/geo/status/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
 
@@ -95,12 +96,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     });
   }
 
-  useEffect(() => {
-    geoSyncStatus();
-
-    let id = setInterval(geoSyncStatus, 3720);
-    return () => clearInterval(id);
-  }, [geoSyncStatus, history.location.search]);
+  useInterval(() => fetchGeoSyncStatus(), 3333);
 
   function forceSync() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";

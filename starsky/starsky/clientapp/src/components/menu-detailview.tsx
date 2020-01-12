@@ -72,17 +72,11 @@ const MenuDetailView: React.FunctionComponent = () => {
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
-  // Get the status from the props (null == loading)
-  function getIsMarkedAsDeletedFromProps(): boolean {
-    if (!state) return false;
-    return state.fileIndexItem.status === IExifStatus.Deleted;
-  }
-  const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(getIsMarkedAsDeletedFromProps());
+  const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(state.fileIndexItem.status === IExifStatus.Deleted);
 
   /* only update when the state is changed */
   useEffect(() => {
-    var value = getIsMarkedAsDeletedFromProps();
-    setMarkedAsDeleted(value);
+    setMarkedAsDeleted(state.fileIndexItem.status === IExifStatus.Deleted);
   }, [state.fileIndexItem.status]);
 
   // preloading icon
