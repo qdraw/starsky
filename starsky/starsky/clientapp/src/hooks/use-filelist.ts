@@ -11,6 +11,7 @@ export interface IFileList {
   pageType: PageType,
   parent: string,
   forceUpdateLocation: (locationSearch: string) => void;
+  location: string
 }
 
 /**
@@ -102,7 +103,8 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
     detailView,
     pageType,
     parent,
-    forceUpdateLocation
+    forceUpdateLocation,
+    location
   };
 };
 
