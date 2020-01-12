@@ -32,7 +32,6 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // when in some cases the relative urls are not updated by a state change
   useEffect(() => {
-    if (isSearchQuery) return;
     setRelativeObjects(state.relativeObjects);
   }, [state.relativeObjects]);
 

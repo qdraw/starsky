@@ -173,6 +173,8 @@ describe("ModalMoveFile", () => {
 
     var modal = mount(<ModalMoveFile parentDirectory="/" selectedSubPath="/test.jpg" isOpen={true} handleExit={() => { }}></ModalMoveFile>)
 
+    console.log(modal.html());
+
     modal.find('[data-test="btn-test"]').simulate('click');
 
     // button isn't disabled anymore

@@ -30,6 +30,9 @@ const useFileList = (locationSearch: string): IFileList | null => {
 
     (async () => {
       try {
+        // add loading sign
+        setPageType(PageType.Loading);
+
         const res: Response = await fetch(location, {
           signal: abortController.signal,
           credentials: "include",
