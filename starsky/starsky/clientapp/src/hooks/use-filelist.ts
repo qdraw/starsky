@@ -30,7 +30,7 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
 
   var location = new UrlQuery().UrlQueryServerApi(locationSearch);
 
-  const forceUpdateLocation = (locationSearch: string) => {
+  const forceUpdateLocation = (locationSearch: string): void => {
     location = new UrlQuery().UrlQueryServerApi(locationSearch);
   }
 
