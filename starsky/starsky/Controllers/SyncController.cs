@@ -82,8 +82,10 @@ namespace starsky.Controllers
         /// <param name="f">subPaths split by dot comma</param>
         /// <returns>list of changed files</returns>
         /// <response code="200">started sync as background job</response>
+        /// <response code="401">User unauthorized</response>
         [ActionName("Index")]
         [ProducesResponseType(typeof(List<SyncViewModel>),200)]
+        [ProducesResponseType(typeof(string),401)]
         public IActionResult SyncIndex(string f)
         {
             var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
