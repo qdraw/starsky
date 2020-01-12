@@ -25,8 +25,12 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   let { dispatch } = React.useContext(ArchiveContext);
 
   // the default is true
-  const defaultCollections = new URLPath().StringToIUrl(history.location.search).collections;
-  const [collections, setCollections] = React.useState(defaultCollections ? defaultCollections : true);
+  const [collections, setCollections] = React.useState(new URLPath().StringToIUrl(history.location.search).collections !== false);
+
+  /** update when changing values and search */
+  useEffect(() => {
+    setCollections(new URLPath().StringToIUrl(history.location.search).collections !== false);
+  }, [collections, history.location.search])
 
   function toggleCollections() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
@@ -78,8 +82,9 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     FetchGet("/api/geo/status/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
 
-      if (anyData.statusCode !== 200) {
+      if (anyData.statusCode !== 200 || !anyData.data) {
         setGeoSyncPercentage(-1);
+        return;
       }
 
       if (anyData.data.current === 0 && anyData.data.total === 0) {
@@ -124,7 +129,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
 
     <div className="modal content--subheader">Weergave opties</div>
     <div className="content--text">
-      <SwitchButton isOn={!collections} isEnabled={true} leftLabel="Collecties aan" onToggle={() => toggleCollections()} rightLabel="Per bestand" />
+      <SwitchButton isOn={!collections} isEnabled={true} leftLabel="Collecties aan" onToggle={() => toggleCollections()} rightLabel="Per bestand (uit)" />
     </div>
     <div className="modal content--subheader">
       <SwitchButton isOn={isSingleItem} isEnabled={true} leftLabel="Alles inladen" rightLabel="Klein inladen" onToggle={() => toggleSlowFiles()} />
