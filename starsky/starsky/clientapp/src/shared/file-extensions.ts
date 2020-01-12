@@ -52,7 +52,7 @@ export class FileExtensions {
    */
   public GetFileName(filePath: string) {
     // [^\/]+(?=\.[\w]+\.$)|[^\/]+$
-    var filenameRegex = /[^\/]+(?=\.[\w]+\.$)|[^\/]+$/
+    var filenameRegex = /[^/]+(?=\.[\w]+\.$)|[^/]+$/
     var fileNameMatchArray = filePath.match(filenameRegex);
     if (!fileNameMatchArray) return "/";
     return fileNameMatchArray[0]

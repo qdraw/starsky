@@ -23,24 +23,25 @@ function Trash(archive: IArchiveProps) {
   let { state } = React.useContext(ArchiveContext);
   const [collectionsCount, setCollectionsCount] = React.useState(state.collectionsCount);
   useEffect(() => {
-    setCollectionsCount(state.collectionsCount)
-  }, [history.location.search]);
+    setCollectionsCount(state.collectionsCount);
+    console.log('state.collectionsCount,', state.collectionsCount);
+  }, [state.collectionsCount]);
 
   if (!archive) return (<>(Search) => no archive</>);
   if (!archive.colorClassUsage) return (<>(Search) => no colorClassUsage</>);
 
   return (
     <>
-      <MenuTrash/>
+      <MenuTrash />
       <div className={!sidebar ? "archive" : "archive collapsed"}>
-        {sidebar ? <ArchiveSidebar {...archive}/> : ""}
+        {sidebar ? <ArchiveSidebar {...archive} /> : ""}
 
         <div className="content">
           <div className="content--header">{collectionsCount !== 0 ? <>{collectionsCount} resultaten</> : "Geen resultaat"}</div>
-          <SearchPagination {...archive}/>
+          <SearchPagination {...archive} />
           {collectionsCount >= 1 ? <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListView> : null}
           {collectionsCount === 0 ? <div className="folder"><div className="warning-box"> Er staat niets in de prullenmand</div></div> : null}
-          {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive}/> : null}
+          {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive} /> : null}
         </div>
       </div>
     </>

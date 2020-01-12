@@ -14,6 +14,7 @@ export interface IArchiveProps {
   pageNumber?: number;
   lastPageNumber?: number;
   isReadOnly: boolean;
+  searchQuery?: string;
   // searchIn?: Array<string>;
   // searchFor?: Array<string>;
   // searchForOptions?: Array<string>

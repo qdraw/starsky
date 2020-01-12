@@ -83,12 +83,15 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
     bodyParams.append("f", selectPaths);
 
     // to replace
-    // dispatch({ 'type': 'replace', 'fieldName': 'tags', files: toUpdatePaths, 'from': '!delete!', 'to': "" });
     FetchPost("/api/replace", bodyParams.toString());
 
+
+    dispatch({ type: 'remove', filesList: toUndoTrashList });
+
+    console.log('update url');
+
     undoSelection();
-    // is removed from the trash list but shown in the directory
-    dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
+
   }
 
   const [isModalDeleteOpen, setModalDeleteOpen] = React.useState(false);
@@ -105,7 +108,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
           <div className="modal content--text">
             Weet je zeker dat je dit bestand wilt verwijderen van alle devices?
              <br />
-            <a onClick={() => setModalDeleteOpen(false)} className="btn btn--info">Annuleren</a>
+            <button onClick={() => setModalDeleteOpen(false)} className="btn btn--info">Annuleren</button>
             <button onClick={() => {
               forceDelete();
               setModalDeleteOpen(false);
@@ -118,16 +121,16 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
 
           {!select ? <button className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
             <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
-              <i/>
-              <i/>
-              <i/>
+              <i />
+              <i />
+              <i />
             </div>
           </button> : null}
 
-          {select && select.length === 0 ? <a onClick={() => { selectToggle() }}
-            className="item item--first item--close">Niets geselecteerd</a> : null}
-          {select && select.length >= 1 ? <a onClick={() => { selectToggle() }}
-            className="item item--first item--close">{select.length} geselecteerd</a> : null}
+          {select && select.length === 0 ? <button onClick={() => { selectToggle() }}
+            className="item item--first item--close">Niets geselecteerd</button> : null}
+          {select && select.length >= 1 ? <button onClick={() => { selectToggle() }}
+            className="item item--first item--close">{select.length} geselecteerd</button> : null}
 
           {!select && state.fileIndexItems.length >= 1 ? <div className="item item--select" onClick={() => { selectToggle() }}>
             Selecteer
@@ -139,7 +142,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
             </div> : null}
 
           {/* When in normal state */}
-          {!select ? <MoreMenu/> : null}
+          {!select ? <MoreMenu /> : null}
 
           {/* In the select context there are more options */}
           {select && select.length === 0 ?
@@ -158,7 +161,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
             <div className="nav__container">
               <ul className="menu">
-                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)}/>
+                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
               </ul>
             </div>
           </nav>

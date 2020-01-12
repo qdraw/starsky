@@ -12,8 +12,6 @@ import MarkerBlueSvg from '../style/images/fa-map-marker-blue.svg';
 import MarkerShadowPng from '../style/images/marker-shadow.png';
 import Preloader from './preloader';
 
-
-
 const DetailViewGpx: React.FC = () => {
   var history = useLocation();
 
@@ -91,15 +89,20 @@ const DetailViewGpx: React.FC = () => {
   // when having to gpx files next and you browse though it
   const mapReference = useRef<HTMLDivElement>(null);
 
+  /** update to make useEffect simpler te read */
+  const [filePathEncoded, setFilePathEncoded] = useState(new URLPath().encodeURI(new URLPath().getFilePath(history.location.search)));
+  useEffect(() => {
+    setFilePathEncoded(new URLPath().encodeURI(new URLPath().getFilePath(history.location.search)))
+  }, [history.location.search]);
+
   /** update only on intial load */
   useEffect(() => {
     setIsLoading(true);
-    var filePathEncoded = new URLPath().encodeURI(new URLPath().getFilePath(history.location.search));
     FetchXml(new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false)).then((response) => {
       updateMap(response);
       setIsLoading(false);
     })
-  }, [new URLPath().getFilePath(history.location.search)]);
+  }, [filePathEncoded]);
 
   return (
     <>

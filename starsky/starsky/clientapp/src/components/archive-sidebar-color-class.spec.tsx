@@ -69,7 +69,7 @@ describe("ArchiveSidebarColorClass", () => {
       // Make sure that the element exist in the first place
       expect(element.find('a.colorclass--1')).toBeTruthy();
 
-      element.find('a.colorclass--1').simulate("click");
+      element.find('button.colorclass--1').simulate("click");
 
       expect(spy).toHaveBeenCalledTimes(1);
 

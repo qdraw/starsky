@@ -221,6 +221,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis; /* ... */
+  background-color: transparent;
 }
 
 .header .item:before {

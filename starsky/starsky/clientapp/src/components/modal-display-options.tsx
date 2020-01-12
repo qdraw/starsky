@@ -55,7 +55,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
           var removeCacheResult = new CastToInterface().MediaArchive(anyData);
           var payload = removeCacheResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
-            dispatch({ type: 'reset', payload });
+            dispatch({ type: 'force-reset', payload });
           }
           props.handleExit();
         });
@@ -106,7 +106,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
           var forceSyncResult = new CastToInterface().MediaArchive(anyData);
           var payload = forceSyncResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
-            dispatch({ type: 'reset', payload });
+            dispatch({ type: 'force-reset', payload });
           }
           props.handleExit();
         });
@@ -120,14 +120,14 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     handleExit={() => {
       props.handleExit()
     }}>
-    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true}/> : ""}
+    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
     <div className="modal content--subheader">Weergave opties</div>
     <div className="content--text">
-      <SwitchButton isOn={!collections} isEnabled={true} leftLabel="Collecties aan" onToggle={() => toggleCollections()} rightLabel="Per bestand"/>
+      <SwitchButton isOn={!collections} isEnabled={true} leftLabel="Collecties aan" onToggle={() => toggleCollections()} rightLabel="Per bestand" />
     </div>
     <div className="modal content--subheader">
-      <SwitchButton isOn={isSingleItem} isEnabled={true} leftLabel="Alles inladen" rightLabel="Klein inladen" onToggle={() => toggleSlowFiles()}/>
+      <SwitchButton isOn={isSingleItem} isEnabled={true} leftLabel="Alles inladen" rightLabel="Klein inladen" onToggle={() => toggleSlowFiles()} />
     </div>
     <div className="modal content--text">
     </div>

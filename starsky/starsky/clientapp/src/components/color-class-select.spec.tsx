@@ -8,7 +8,7 @@ describe("ColorClassSelect", () => {
 
   it("renders", () => {
     shallow(<ColorClassSelect isEnabled={true} filePath={"/test"} onToggle={() => {
-}}/>)
+    }} />)
   });
 
   it("onClick value", () => {
@@ -18,9 +18,9 @@ describe("ColorClassSelect", () => {
     var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
     var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => {
-}}/>)
+    }} />)
 
-    wrapper.find('a.colorclass--2').simulate('click');
+    wrapper.find('button.colorclass--2').simulate('click');
 
     // expect
     expect(spy).toHaveBeenCalledTimes(1);
@@ -35,9 +35,9 @@ describe("ColorClassSelect", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
     var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={false} filePath={"/test1"} onToggle={(value) => {}}/>);
+    var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={false} filePath={"/test1"} onToggle={(value) => { }} />);
 
-    wrapper.find('a.colorclass--2').simulate('click');
+    wrapper.find('button.colorclass--2').simulate('click');
 
     // expect [disabled]
     expect(spy).toHaveBeenCalledTimes(0);

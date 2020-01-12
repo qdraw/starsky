@@ -25,9 +25,13 @@ type Action = {
   select: string[]
 } |
 {
-  type: 'reset',
+  type: 'reset-url-change',
   payload: IArchiveProps
-};
+} |
+{
+  type: 'force-reset',
+  payload: IArchiveProps
+}
 
 type State = IArchiveProps
 
@@ -56,12 +60,11 @@ export function archiveReducer(state: State, action: Action): State {
         deletedFilesCount++
       });
 
-      console.log(deletedFilesCount);
-
       // to update the total results
       var collectionsCount = state.collectionsCount - deletedFilesCount;
+      console.log('collectionsCount', collectionsCount);
 
-      return { ...state, collectionsCount: collectionsCount, lastUpdated: new Date() };
+      return { ...state, collectionsCount, lastUpdated: new Date() };
     case "update":
 
       var { select, tags, description, title, append, colorclass } = action;
@@ -86,9 +89,31 @@ export function archiveReducer(state: State, action: Action): State {
 
       // Need to update otherwise other events are not triggerd
       return { ...state, lastUpdated: new Date() };
-    case "reset":
+    case "reset-url-change":
+
+      // for search / trash pages
+      if (action.payload.pageType !== PageType.Archive &&
+        CombineSearchQueryAndPageNumber(action.payload.searchQuery, action.payload.pageNumber) !==
+        CombineSearchQueryAndPageNumber(state.searchQuery, state.pageNumber)
+      ) {
+        console.log('running dispatch');
+        return action.payload;
+      }
+
+      // for archive pages
+      if (action.payload.pageType === PageType.Archive && (action.payload.subPath !== state.subPath || action.payload.subPath === "/")) {
+        console.log('running dispatch');
+        return action.payload;
+      }
+      return state;
+
+    case "force-reset":
       return action.payload;
   }
+}
+
+function CombineSearchQueryAndPageNumber(searchQuery: string | undefined, pageNumber: number | undefined) {
+  return `${searchQuery} + ${pageNumber}`;
 }
 
 function ArchiveContextProvider({ children }: ReactNodeProps) {

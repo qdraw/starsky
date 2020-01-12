@@ -40,15 +40,15 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
   // noinspection HtmlUnknownAttribute
   return (<div className="sidebar-selection">
     <div className="content--header content--subheader">
-      {!select || select.length !== props.fileIndexItems.length ? <a data-test="allSelection" className="btn btn--default" onClick={() => allSelection()}>Alles</a> : ""}
-      {!select || select.length !== 0 ? <a className="btn btn--default" onClick={() => undoSelection()}>Undo</a> : ""}
+      {!select || select.length !== props.fileIndexItems.length ? <button data-test="allSelection" className="btn btn--default" onClick={() => allSelection()}>Alles</button> : ""}
+      {!select || select.length !== 0 ? <button className="btn btn--default" onClick={() => undoSelection()}>Undo</button> : ""}
     </div>
     <ul>
       {!select || select.length === 0 ? <li className="warning-box">Niets geselecteerd</li> : ""}
 
       {
         select ? select.map((item, index) => (
-          <li key={index} ><span onClick={() => toggleSelection(item)} className="close"/>{item}</li>
+          <li key={index} ><span onClick={() => toggleSelection(item)} className="close" />{item}</li>
         )) : ""
       }
     </ul>
