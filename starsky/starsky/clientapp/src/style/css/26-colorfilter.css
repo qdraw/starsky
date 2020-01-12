@@ -12,8 +12,7 @@
 }
 
 .colorclass > div.colorclass,
-.colorclass > a.colorclass,
-.colorclass > button.colorclass {
+.colorclass > .btn.colorclass {
   text-decoration: none;
   color: #263238;
   margin-right: 10px;
@@ -23,8 +22,7 @@
 }
 
 .colorclass > div.colorclass label,
-.colorclass > a.colorclass label,
-.colorclass > button.colorclass label {
+.colorclass > .btn.colorclass label {
     height: 20px;
     width: 20px;
     border-radius: 3px;
@@ -36,8 +34,7 @@
 }
 
 .colorclass > div.colorclass.active label:before,
-.colorclass > a.colorclass.active label:before,
-.colorclass > button.colorclass.active label:before {
+.colorclass > .btn.colorclass.active label:before {
     content: "";
     display: inline-block;
     height: 6px;
@@ -48,18 +45,16 @@
 }
 
 /* disabled state **/
-.colorclass.colorclass--disabled > button.colorclass {
+.colorclass.colorclass--disabled > .btn.colorclass {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-.colorclass.colorclass--disabled > a.colorclass label,
-.colorclass.colorclass--disabled > button.colorclass label {
+.colorclass.colorclass--disabled > .btn.colorclass label {
   cursor: not-allowed;
 }
 
-.colorclass--select > a.colorclass.active label:before,
-.colorclass--select > button.colorclass.active label:before {
+.colorclass--select > .btn.colorclass.active label:before {
     content: '';
     border:0px;
     background: #263238;
@@ -70,92 +65,92 @@
 }
 
 
-.colorclass > .colorclass--reset {
+.colorclass > .btn.colorclass--reset {
     background-color: #90A4AE;
 }
 
 /* geen/kleurloos */
-.colorclass > .colorclass--0.active {
+.colorclass > .btn.colorclass--0.active {
   background-color: #90A4AE;
 }
-.colorclass > .colorclass--0 {
+.colorclass > .btn.colorclass--0 {
     background-color: #CFD8DC;
 }
 
 /* pink */
-.colorclass > .colorclass--1.active  {
+.colorclass > .btn.colorclass--1.active  {
   background-color: #F06292;
 }
-.colorclass > .colorclass--1 {
+.colorclass > .btn.colorclass--1 {
     background-color: #F48FB1;
 }
 
 
 
 /* red */
-.colorclass > .colorclass--2.active  {
+.colorclass > .btn.colorclass--2.active  {
   background-color: #EF5350;
 }
 
-.colorclass > .colorclass--2  {
+.colorclass > .btn.colorclass--2  {
   background-color: #EF9A9A;
 }
 
 
 /* Orange */
-.colorclass > .colorclass--3.active  {
+.colorclass > .btn.colorclass--3.active  {
   background-color: #FFB74D;
   /* background-color: #FFE0B2; */
 }
 
-.colorclass > .colorclass--3  {
+.colorclass > .btn.colorclass--3  {
   background-color: #FFE0B2;
 }
 
 
 
 /* yellow */
-.colorclass > .colorclass--4.active  {
+.colorclass > .btn.colorclass--4.active  {
   background-color: #FFEB3B;
   /* background-color: #FFF59D; */
 }
 
-.colorclass > .colorclass--4  {
+.colorclass > .btn.colorclass--4  {
   background-color: #FFF59D;
 }
 
 
 /* green */
-.colorclass > .colorclass--5.active  {
+.colorclass > .btn.colorclass--5.active  {
   background-color: #66BB6A;
 }
 
-.colorclass > .colorclass--5  {
+.colorclass > .btn.colorclass--5  {
   background-color: #C8E6C9;
 }
 
 /* azure */
-.colorclass > .colorclass--6.active  {
+.colorclass > .btn.colorclass--6.active  {
     background-color: #26C6DA;
 }
-.colorclass > .colorclass--6  {
+.colorclass > .btn.colorclass--6  {
   background-color: #B2EBF2;
 }
 
 /* blue */
-.colorclass > .colorclass--7.active {
+.colorclass > .btn.colorclass--7.active {
   background-color: #5C6BC0;
 }
-.colorclass > .colorclass--7 {
+.colorclass > .btn.colorclass--7 {
   background-color: #BBDEFB;
 }
 
 
 /* grey = 8*/
-.colorclass > .colorclass--8.active {
+.colorclass > .btn.colorclass--8.active {
   /* background-color: #455A64; */
   background-color: #546E7A;
 }
-.colorclass > .colorclass--8 {
+.colorclass > .btn.colorclass--8 {
   background-color: #78909C;
 }

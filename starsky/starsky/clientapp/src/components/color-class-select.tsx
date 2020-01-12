@@ -58,7 +58,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
 
     setTimeout(function () {
       setCurrentColorClass(undefined);
-    }, 500);
+    }, 1000);
   };
 
   useKeyboardEvent(/[0-8]/, (event: KeyboardEvent) => {

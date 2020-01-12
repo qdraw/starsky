@@ -82,7 +82,8 @@ export function archiveReducer(state: State, action: Action): State {
             if (description) state.fileIndexItems[index].description = description;
             if (title) state.fileIndexItems[index].title = title;
           }
-          if (colorclass) state.fileIndexItems[index].colorClass = colorclass;
+          // colorclass = 0 ==> colorless/no-color
+          if (colorclass !== undefined && colorclass !== -1) state.fileIndexItems[index].colorClass = colorclass;
           state.fileIndexItems[index].lastEdited = new Date().toISOString();
         }
       });
