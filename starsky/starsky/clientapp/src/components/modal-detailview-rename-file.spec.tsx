@@ -1,3 +1,4 @@
+import { act } from '@testing-library/react';
 import { mount, shallow } from 'enzyme';
 import React from 'react';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
@@ -36,8 +37,13 @@ describe("ModalDetailviewRenameFile", () => {
       var submitButtonBefore = (modal.find('.btn--default').getDOMNode() as HTMLButtonElement).disabled
       expect(submitButtonBefore).toBeTruthy();
 
-      modal.find('[data-name="filename"]').getDOMNode().textContent = "file-with-different-extension.tiff";
-      modal.find('[data-name="filename"]').simulate('input');
+      act(() => {
+        modal.find('[data-name="filename"]').getDOMNode().textContent = "file-with-different-extension.tiff";
+      })
+      act(() => {
+        modal.find('[data-name="filename"]').simulate('input');
+      })
+      console.log(modal.html());
 
       expect(modal.exists('.warning-box')).toBeTruthy();
 

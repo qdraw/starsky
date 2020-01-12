@@ -98,9 +98,9 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   useEffect(() => {
     geoSyncStatus();
 
-    let id = setInterval(geoSyncStatus, 2720);
+    let id = setInterval(geoSyncStatus, 3720);
     return () => clearInterval(id);
-  }, [history.location.search]);
+  }, [geoSyncStatus, history.location.search]);
 
   function forceSync() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";

@@ -46,7 +46,7 @@ const DetailView: React.FC<IDetailView> = () => {
   useEffect(() => {
     if (!state) return;
     new DocumentTitle().SetDocumentTitle(state);
-  }, [history.location.search]);
+  }, [state]);
 
   // To Get the rotation update
   const [translateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);

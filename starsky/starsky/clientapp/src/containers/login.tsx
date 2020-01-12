@@ -75,7 +75,7 @@ const Login: React.FC<ILoginProps> = () => {
     if (history.location.hostname && history.location.hostname.match(/\.local$/ig) && new BrowserDetect().IsIOS()) {
       setError("Probeer in te loggen via een ip-adres of een echt domein, local adressen werken niet in Safari op iOS");
     }
-  }, [history.location.search]);
+  }, [history.location.hostname]);
 
   return (
     <>
