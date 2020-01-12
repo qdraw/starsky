@@ -27,12 +27,10 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
   const [detailView, setDetailView] = useState(newDetailView());
   const [pageType, setPageType] = useState(PageType.Loading);
   const [parent, setParent] = useState('/');
-
-  var location = new UrlQuery().UrlQueryServerApi(locationSearch);
+  const [location, setLocation] = useState(new UrlQuery().UrlQueryServerApi(locationSearch));
 
   const forceUpdateLocation = (locationSearch: string): void => {
-    location = new UrlQuery().UrlQueryServerApi(locationSearch);
-    console.log('location', location);
+    setLocation(new UrlQuery().UrlQueryServerApi(locationSearch));
   }
 
   useEffect(() => {
