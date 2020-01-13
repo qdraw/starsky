@@ -1,11 +1,13 @@
 import { globalHistory } from '@reach/router';
 import { mount, shallow } from 'enzyme';
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import * as useFetch from '../hooks/use-fetch';
 import { IArchive } from '../interfaces/IArchive';
 import { newIConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import MenuArchive from './menu-archive';
+import * as ModalArchiveMkdir from './modal-archive-mkdir';
 
 describe("MenuArchive", () => {
 
@@ -14,14 +16,19 @@ describe("MenuArchive", () => {
   });
 
   describe("with Context", () => {
-    it("default menu", () => {
 
-      globalHistory.navigate("/");
-
+    beforeEach(() => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
         return newIConnectionDefault();
+      }).mockImplementationOnce(() => {
+        return newIConnectionDefault();
       });
+    });
+
+    it("default menu", () => {
+
+      globalHistory.navigate("/");
 
       var component = mount(<MenuArchive />);
 
@@ -36,13 +43,6 @@ describe("MenuArchive", () => {
     it("none selected", () => {
 
       globalHistory.navigate("?select=");
-
-      // usage ==> import * as useFetch from '../hooks/use-fetch';
-      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
-        return newIConnectionDefault();
-      }).mockImplementationOnce(() => {
-        return newIConnectionDefault();
-      });
 
       var state = {
         subPath: "/",
@@ -65,13 +65,6 @@ describe("MenuArchive", () => {
 
       globalHistory.navigate("?select=test1,test2");
 
-      // usage ==> import * as useFetch from '../hooks/use-fetch';
-      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
-        return newIConnectionDefault();
-      }).mockImplementationOnce(() => {
-        return newIConnectionDefault();
-      });
-
       var state = {
         subPath: "/",
         fileIndexItems: [{ status: IExifStatus.Ok, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
@@ -85,19 +78,14 @@ describe("MenuArchive", () => {
       var component = mount(<MenuArchive />);
 
       expect(component.exists('[data-test="selected-2"]')).toBeTruthy();
+
+      component.unmount();
     });
 
 
-    xit("menu ", () => {
+    it("menu click mkdir", () => {
 
       globalHistory.navigate("/");
-
-      // usage ==> import * as useFetch from '../hooks/use-fetch';
-      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
-        return newIConnectionDefault();
-      }).mockImplementationOnce(() => {
-        return newIConnectionDefault();
-      });
 
       var state = {
         subPath: "/",
@@ -105,13 +93,26 @@ describe("MenuArchive", () => {
       } as IArchive;
       var contextValues = { state, dispatch: jest.fn() }
 
+      var mkdirModalSpy = jest.spyOn(ModalArchiveMkdir, 'default').mockImplementationOnce(() => {
+        return <></>
+      })
+
       jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
         .mockImplementationOnce(() => { return contextValues })
 
       var component = mount(<MenuArchive />);
 
-      expect(component.exists('[data-test="selected-2"]')).toBeTruthy();
+      var item = component.find('[data-test="mkdir"]');
+
+      act(() => {
+        item.simulate('click');
+      });
+
+      expect(mkdirModalSpy).toBeCalled();
+
+      component.unmount();
+
     });
   });
 
