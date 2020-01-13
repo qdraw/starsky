@@ -34,9 +34,9 @@
 - [x]   (bugfix) _Front-end_ fix issue where force sync and clear cache didn't update the view
 - [x]   (bugfix) _Front-end_ fix issue Collections toggle where not correct shown
 - [x]   (feature) _API_ Add `/sync/mkdir` to create directories and sync to the db
-- []    (feature) _Front-end_ Add Modal for Make Directory to the Archive Menu
+- [x]   (feature) _Front-end_ Add Modal for Make Directory to the Archive Menu
+- [x]   (build) _CI_ With `CI=true` eslint errors will break the build
 - []   (feature)  _Front-end_ clear search cache after updating values in detailview
-
 
 # version 0.1.11 - 2020-01-02
 - [x]   (bugfix) _Front-end_ _Detailview_ when press Delete and switch image, the next image should be marked as not deleted (Fixed)
