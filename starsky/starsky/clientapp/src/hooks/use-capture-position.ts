@@ -9,8 +9,7 @@ const capturePosition = () => {
   let cachedPosition = window.pageYOffset;
   return {
     freeze: () => {
-      // @ts-ignore
-      document.body.style =
+      (document.body as any).style =
         `position: fixed; top: ${cachedPosition * -1}px; width: 100%;`;
     },
     unfreeze: () => {
