@@ -1,5 +1,8 @@
 import React from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
+import { IArchiveProps } from '../interfaces/IArchiveProps';
+import { CastToInterface } from '../shared/cast-to-interface';
+import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
 import { FileExtensions } from '../shared/file-extensions';
 import { UrlQuery } from '../shared/url-query';
@@ -14,9 +17,10 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props
 
   const FeatureName: string = "Nieuwe Map aanmaken ~ Feature incompleet"
   const NonValidDirectoryName: string = "Controlleer de naam, deze map kan niet zo worden aangemaakt";
-  const GeneralError: string = "Er is iets misgegaan met de aanvraag, probeer het later opnieuw";
+  const GeneralError: string = "Er is misgegaan met het aanmaken van deze map";
+  const DirectoryExistError: string = "De map bestaat al, probeer een andere naam";
 
-  let { state, } = React.useContext(ArchiveContext);
+  let { state, dispatch } = React.useContext(ArchiveContext);
 
   // to show errors
   const useErrorHandler = (initialState: string | null) => { return initialState };
@@ -34,14 +38,17 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props
   const [isFormEnabled, setFormEnabled] = React.useState(true);
 
   function handleUpdateChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
-    if (!event.currentTarget.textContent) return null;
-    let fieldValue = event.currentTarget.textContent.trim();
-    setDirectoryName(fieldValue);
+
+    let fieldValue = "";
+    if (event.currentTarget.textContent) {
+      fieldValue = event.currentTarget.textContent.trim();
+    }
 
     setDirectoryName(fieldValue);
     setButtonState(true)
 
     var isValidFileName = new FileExtensions().IsValidDirectoryName(fieldValue);
+    console.log(fieldValue);
 
     if (!isValidFileName) {
       setError(NonValidDirectoryName);
@@ -66,12 +73,21 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props
     var result = await FetchPost(new UrlQuery().UrlSyncMkdir(), bodyParams.toString())
 
     if (result.statusCode !== 200) {
-      setError(GeneralError);
+
+      setError(result.statusCode !== 409 ? GeneralError : DirectoryExistError);
       // and renable
       setIsLoading(false);
       setFormEnabled(true);
       return;
     };
+
+    // Force update 
+    var connectionResult = await FetchGet(new UrlQuery().UrlIndexServerApi({ f: state.subPath }))
+    var forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
+    var payload = forceSyncResult.data as IArchiveProps;
+    if (payload.fileIndexItems) {
+      dispatch({ type: 'force-reset', payload });
+    }
 
     // Close window
     props.handleExit();
@@ -92,6 +108,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props
           suppressContentEditableWarning={true}
           contentEditable={isFormEnabled}
           className={isFormEnabled ? "form-control" : "form-control disabled"}>
+          &nbsp;
         </div>
 
         {error && <div className="warning-box--under-form warning-box">{error}</div>}

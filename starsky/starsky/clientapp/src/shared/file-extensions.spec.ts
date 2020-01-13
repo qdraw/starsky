@@ -51,6 +51,16 @@ describe("keyboard", () => {
       expect(result).toBeTruthy();
     });
 
+    it("non valid directory name to short", () => {
+      var result = fileExt.IsValidDirectoryName("d");
+      expect(result).toBeFalsy();
+    });
+
+    it("non valid directory name string.emthy", () => {
+      var result = fileExt.IsValidDirectoryName("");
+      expect(result).toBeFalsy();
+    });
+
     it("non valid directory name", () => {
       var result = fileExt.IsValidDirectoryName(".èjpg");
       expect(result).toBeFalsy();
