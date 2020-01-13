@@ -6,6 +6,7 @@ import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import MenuSearchBar from './menu.searchbar';
+import ModalArchiveMkdir from './modal-archive-mkdir';
 import ModalDisplayOptions from './modal-display-options';
 import ModalExport from './modal-export';
 import MoreMenu from './more-menu';
@@ -96,6 +97,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
 
   const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
+  const [isModalMkdirOpen, setModalMkdirOpen] = React.useState(false);
 
   return (
     <>
@@ -106,9 +108,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       {isDisplayOptionsOpen ? <ModalDisplayOptions parentFolder={new URLPath().StringToIUrl(history.location.search).f} handleExit={() =>
         setDisplayOptionsOpen(!isDisplayOptionsOpen)} isOpen={isDisplayOptionsOpen} /> : null}
 
+      {isModalMkdirOpen ? <ModalArchiveMkdir handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)} isOpen={isModalMkdirOpen} /> : null}
+
       <header className={sidebar ? "header header--main header--select header--edit" : select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
-          {!select ? <button className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
+          {!select ? <button data-test="hamburger" className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
             <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
               <i />
               <i />
@@ -116,18 +120,19 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             </div>
           </button> : null}
 
-          {select && select.length === 0 ? <a onClick={() => { selectToggle() }}
-            className="item item--first item--close">Niets geselecteerd</a> : null}
-          {select && select.length >= 1 ? <a onClick={() => { selectToggle() }}
-            className="item item--first item--close">{select.length} geselecteerd</a> : null}
+          {select && select.length === 0 ? <button data-test="selected-0" onClick={() => { selectToggle() }}
+            className="item item--first item--close">Niets geselecteerd</button> : null}
+          {select && select.length >= 1 ? <button data-test={`selected-${select.length}`} onClick={() => { selectToggle() }}
+            className="item item--first item--close">{select.length} geselecteerd</button> : null}
           {!select ? <div className="item item--select" onClick={() => { selectToggle() }}>
             Selecteer
             </div> : null}
 
           {select ? <div className="item item--labels" onClick={() => toggleLabels()}>Labels</div> : null}
 
+          {/* default more menu */}
           {!select ? <MoreMenu>
-            <li className="menu-option disabled" onClick={() => { alert("Map maken werkt nog niet"); }}>Map maken</li>
+            <li className="menu-option" data-test="mkdir" onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}>Map maken</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
             <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>Weergave opties</li>
           </MoreMenu> : null}

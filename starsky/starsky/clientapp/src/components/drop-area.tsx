@@ -19,7 +19,6 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [isOpen, setOpen] = useState(false);
-  const [lastUploaded, setLastUploaded] = useState(new Date());
 
   // used to force react to update the array
   const [uploadFilesList] = useState(newIFileIndexItemArray());
@@ -107,7 +106,6 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
 
       setOpen(true);
       setIsLoading(false);
-      setLastUploaded(new Date());
     });
   };
 

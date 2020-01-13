@@ -45,6 +45,33 @@ describe("keyboard", () => {
     });
   });
 
+  describe("IsValidDirectoryName", () => {
+    it("valid DirectoryName", () => {
+      var result = fileExt.IsValidDirectoryName("222");
+      expect(result).toBeTruthy();
+    });
+
+    it("non valid directory name to short", () => {
+      var result = fileExt.IsValidDirectoryName("d");
+      expect(result).toBeFalsy();
+    });
+
+    it("non valid directory name string.emthy", () => {
+      var result = fileExt.IsValidDirectoryName("");
+      expect(result).toBeFalsy();
+    });
+
+    it("non valid directory name", () => {
+      var result = fileExt.IsValidDirectoryName(".èjpg");
+      expect(result).toBeFalsy();
+    });
+
+    it("start with underscore _test", () => {
+      var result = fileExt.IsValidDirectoryName("_test");
+      expect(result).toBeTruthy();
+    });
+  });
+
   describe("GetParentPath", () => {
     it("get parent path #1", () => {
       var result = fileExt.GetParentPath("/__starsky/test/");

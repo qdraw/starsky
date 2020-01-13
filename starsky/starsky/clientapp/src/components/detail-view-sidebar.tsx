@@ -39,11 +39,14 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     if (!responseObject.data) return;
     var infoFileIndexItem = new CastToInterface().InfoFileIndexArray(responseObject.data);
     updateCollections(infoFileIndexItem);
+    dispatch({ 'type': 'update', ...infoFileIndexItem[0], lastEdited: '' })
+  }, [dispatch, responseObject]);
 
+  // use time from state and not the update api
+  useEffect(() => {
     // there is a bug in the api
-    infoFileIndexItem[0].lastEdited = fileIndexItem.lastEdited;
-    dispatch({ 'type': 'update', ...infoFileIndexItem[0] })
-  }, [responseObject]);
+    dispatch({ 'type': 'update', lastEdited: fileIndexItem.lastEdited })
+  }, [dispatch, fileIndexItem.lastEdited]);
 
   function updateCollections(infoFileIndexItem: IFileIndexItem[]) {
     var collectionsList: string[] = [];

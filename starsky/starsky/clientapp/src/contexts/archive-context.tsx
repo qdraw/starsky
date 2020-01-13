@@ -25,9 +25,13 @@ type Action = {
   select: string[]
 } |
 {
-  type: 'reset',
+  type: 'reset-url-change',
   payload: IArchiveProps
-};
+} |
+{
+  type: 'force-reset',
+  payload: IArchiveProps
+}
 
 type State = IArchiveProps
 
@@ -56,12 +60,10 @@ export function archiveReducer(state: State, action: Action): State {
         deletedFilesCount++
       });
 
-      console.log(deletedFilesCount);
-
       // to update the total results
       var collectionsCount = state.collectionsCount - deletedFilesCount;
 
-      return { ...state, collectionsCount: collectionsCount, lastUpdated: new Date() };
+      return { ...state, collectionsCount, lastUpdated: new Date() };
     case "update":
 
       var { select, tags, description, title, append, colorclass } = action;
@@ -79,16 +81,39 @@ export function archiveReducer(state: State, action: Action): State {
             if (description) state.fileIndexItems[index].description = description;
             if (title) state.fileIndexItems[index].title = title;
           }
-          if (colorclass) state.fileIndexItems[index].colorClass = colorclass;
+          // colorclass = 0 ==> colorless/no-color
+          if (colorclass !== undefined && colorclass !== -1) state.fileIndexItems[index].colorClass = colorclass;
           state.fileIndexItems[index].lastEdited = new Date().toISOString();
         }
       });
 
       // Need to update otherwise other events are not triggerd
       return { ...state, lastUpdated: new Date() };
-    case "reset":
+    case "reset-url-change":
+
+      // for search / trash pages
+      if ((action.payload.pageType === PageType.Search || action.payload.pageType === PageType.Trash) &&
+        CombineSearchQueryAndPageNumber(action.payload) !== CombineSearchQueryAndPageNumber(state)
+      ) {
+        console.log('running dispatch (search/trash)');
+        return action.payload;
+      }
+
+      // for archive pages
+      if (action.payload.pageType === PageType.Archive && (action.payload.subPath !== state.subPath || action.payload.subPath === "/")) {
+        console.log(action.payload.subPath);
+        console.log('running dispatch (a)');
+        return action.payload;
+      }
+      return state;
+
+    case "force-reset":
       return action.payload;
   }
+}
+
+function CombineSearchQueryAndPageNumber(payload: IArchiveProps) {
+  return `${payload.searchQuery} + ${payload.pageNumber}`;
 }
 
 function ArchiveContextProvider({ children }: ReactNodeProps) {

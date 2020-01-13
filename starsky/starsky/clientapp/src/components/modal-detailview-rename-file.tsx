@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { DetailViewContext } from '../contexts/detailview-context';
 import useLocation from '../hooks/use-location';
+import { newDetailView } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { newIFileIndexItem } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
@@ -22,9 +23,12 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
 
   let { state, } = React.useContext(DetailViewContext);
 
-  var fileIndexItem = newIFileIndexItem();
-  if (state) {
-    fileIndexItem = state.fileIndexItem;
+  // Fallback for no context
+  if (!state) {
+    state = newDetailView();
+  }
+  if (!state.fileIndexItem) {
+    state.fileIndexItem = newIFileIndexItem();
   }
 
   // to know where you are
@@ -45,7 +49,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
         setFormEnabled(true);
         break;
     }
-  }, [fileIndexItem.status]);
+  }, [state.fileIndexItem.status]);
 
   // to show errors
   const useErrorHandler = (initialState: string | null) => { return initialState };
@@ -55,7 +59,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
   const [loading, setIsLoading] = React.useState(false);
 
   // The Updated that is send to the api
-  const [fileName, setFileName] = React.useState(fileIndexItem.fileName);
+  const [fileName, setFileName] = React.useState(state.fileIndexItem.fileName);
 
   // allow summit
   const [buttonState, setButtonState] = React.useState(false);
@@ -113,36 +117,34 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     props.handleExit();
   }
 
-  return (<>
-    return (<Modal
-      id="rename-file-modal"
-      isOpen={props.isOpen}
-      handleExit={() => {
-        props.handleExit()
-      }}>
-      <div className="content">
-        <div className="modal content--subheader">Naam wijzigen</div>
-        <div className="modal content--text">
+  return <Modal
+    id="rename-file-modal"
+    isOpen={props.isOpen}
+    handleExit={() => {
+      props.handleExit()
+    }}>
+    <div className="content">
+      <div className="modal content--subheader">Naam wijzigen</div>
+      <div className="modal content--text">
 
-          <div data-name="filename"
-            onInput={handleUpdateChange}
-            suppressContentEditableWarning={true}
-            contentEditable={isFormEnabled}
-            className={isFormEnabled ? "form-control" : "form-control disabled"}>
-            {fileIndexItem.fileName}
-          </div>
-
-          {error && <div className="warning-box--under-form warning-box">{error}</div>}
-
-          <button disabled={fileIndexItem.fileName === fileName || !isFormEnabled ||
-            loading || !buttonState}
-            className="btn btn--default" onClick={pushRenameChange}>
-            {loading ? 'Loading...' : 'Opslaan'}
-          </button>
+        <div data-name="filename"
+          onInput={handleUpdateChange}
+          suppressContentEditableWarning={true}
+          contentEditable={isFormEnabled}
+          className={isFormEnabled ? "form-control" : "form-control disabled"}>
+          {state.fileIndexItem.fileName}
         </div>
+
+        {error && <div className="warning-box--under-form warning-box">{error}</div>}
+
+        <button disabled={state.fileIndexItem.fileName === fileName || !isFormEnabled ||
+          loading || !buttonState}
+          className="btn btn--default" onClick={pushRenameChange}>
+          {loading ? 'Loading...' : 'Opslaan'}
+        </button>
       </div>
-    </Modal>
-  </>)
+    </div>
+  </Modal>
 };
 
 export default ModalDetailviewRenameFile

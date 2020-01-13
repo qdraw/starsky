@@ -44,7 +44,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       setSrc(EmptyImage) // 26 bytes
     }
     // need to refresh
-  }, [history.location.search]);
+  }, [history.location.search, historyLocation, isLoading]);
 
   if (!props.src || props.src.toLowerCase().endsWith('null.jpg?issingleitem=true')) {
     return (<div ref={target} className="img-box--error" />);

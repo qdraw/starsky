@@ -50,16 +50,16 @@ export function detailviewReducer(state: State, action: Action): State {
     case "remove":
       var { tags } = action;
       if (tags && state.fileIndexItem.tags !== undefined) state.fileIndexItem.tags = state.fileIndexItem.tags.replace(tags, "");
-      console.log(state.fileIndexItem.tags);
-
       // Need to update otherwise other events are not triggerd
       return { ...state, lastUpdated: new Date() };
     case "append":
+      /* eslint-disable-next-line no-redeclare */
       var { tags } = action;
       if (tags) state.fileIndexItem.tags += "," + tags;
       // Need to update otherwise other events are not triggerd
       return { ...state, lastUpdated: new Date() };
     case "update":
+      /* eslint-disable-next-line no-redeclare */
       var { tags, description, title, status, colorclass, fileHash, orientation, lastEdited } = action;
 
       if (tags) state.fileIndexItem.tags = tags;

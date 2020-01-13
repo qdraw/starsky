@@ -57,13 +57,9 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
     };
   });
 
-  /** to avoid wrong props passed */
-  if (archive.pageType === PageType.Loading) {
-    return (<div className="sidebar" />)
-  }
-
-  if (!isSidebar) {
-    return <></>
+  // /** to avoid wrong props passed */
+  if (archive.pageType === PageType.Loading || !isSidebar) {
+    return (<></>)
   }
 
   return (<div className="sidebar">

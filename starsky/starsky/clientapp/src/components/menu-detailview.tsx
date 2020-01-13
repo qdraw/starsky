@@ -52,11 +52,6 @@ const MenuDetailView: React.FunctionComponent = () => {
     setIsSearchQuery(!!new URLPath().StringToIUrl(history.location.search).t);
   }, [history.location.search]);
 
-  /* only update when the state is changed */
-  useEffect(() => {
-    setMarkedAsDeleted(getIsMarkedAsDeletedFromProps())
-  }, [state.fileIndexItem.status]);
-
   /* show marker with 'Saved' */
   const [isRecentEdited, setRecentEdited] = React.useState(IsEditedNow(state.fileIndexItem.lastEdited));
   useEffect(() => {
@@ -77,12 +72,12 @@ const MenuDetailView: React.FunctionComponent = () => {
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
-  // Get the status from the props (null == loading)
-  function getIsMarkedAsDeletedFromProps(): boolean {
-    if (!state) return false;
-    return state.fileIndexItem.status === IExifStatus.Deleted;
-  }
-  const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(getIsMarkedAsDeletedFromProps());
+  const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(state.fileIndexItem.status === IExifStatus.Deleted);
+
+  /* only update when the state is changed */
+  useEffect(() => {
+    setMarkedAsDeleted(state.fileIndexItem.status === IExifStatus.Deleted);
+  }, [state.fileIndexItem.status]);
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
@@ -175,6 +170,8 @@ const MenuDetailView: React.FunctionComponent = () => {
       if (result === false) {
         setTimeout(async () => {
           await requestNewFileHash();
+          // when it didn't change after two tries
+          setIsLoading(false);
         }, 7000);
       }
     }, 3000);

@@ -69,9 +69,11 @@ export const useIntersection = (
 
     return () => {
       if (!once && ref.current != null) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         observer.unobserve(ref.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [optsRef.current]);
 
   return intersecting;

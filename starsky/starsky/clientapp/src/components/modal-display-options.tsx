@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
+import useInterval from '../hooks/use-interval';
 import useLocation from '../hooks/use-location';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { CastToInterface } from '../shared/cast-to-interface';
@@ -25,8 +26,12 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   let { dispatch } = React.useContext(ArchiveContext);
 
   // the default is true
-  const defaultCollections = new URLPath().StringToIUrl(history.location.search).collections;
-  const [collections, setCollections] = React.useState(defaultCollections ? defaultCollections : true);
+  const [collections, setCollections] = React.useState(new URLPath().StringToIUrl(history.location.search).collections !== false);
+
+  /** update when changing values and search */
+  useEffect(() => {
+    setCollections(new URLPath().StringToIUrl(history.location.search).collections !== false);
+  }, [collections, history.location.search])
 
   function toggleCollections() {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
@@ -51,11 +56,11 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     FetchGet("/api/RemoveCache?json=true&f=" + new URLPath().encodeURI(parentFolder)).then((_) => {
       setTimeout(() => {
-        FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
-          var removeCacheResult = new CastToInterface().MediaArchive(anyData);
+        FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((connectionResult) => {
+          var removeCacheResult = new CastToInterface().MediaArchive(connectionResult.data);
           var payload = removeCacheResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
-            dispatch({ type: 'reset', payload });
+            dispatch({ type: 'force-reset', payload });
           }
           props.handleExit();
         });
@@ -74,12 +79,13 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     });
   }
 
-  function geoSyncStatus() {
+  function fetchGeoSyncStatus() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     FetchGet("/api/geo/status/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
 
-      if (anyData.statusCode !== 200) {
+      if (anyData.statusCode !== 200 || !anyData.data) {
         setGeoSyncPercentage(-1);
+        return;
       }
 
       if (anyData.data.current === 0 && anyData.data.total === 0) {
@@ -90,23 +96,18 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     });
   }
 
-  useEffect(() => {
-    geoSyncStatus();
-
-    let id = setInterval(geoSyncStatus, 2720);
-    return () => clearInterval(id);
-  }, [history.location.search]);
+  useInterval(() => fetchGeoSyncStatus(), 3333);
 
   function forceSync() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     setIsLoading(true);
     FetchGet("/sync/?f=" + new URLPath().encodeURI(parentFolder)).then((_) => {
       setTimeout(() => {
-        FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
-          var forceSyncResult = new CastToInterface().MediaArchive(anyData);
+        FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((connectionResult) => {
+          var forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
           var payload = forceSyncResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
-            dispatch({ type: 'reset', payload });
+            dispatch({ type: 'force-reset', payload });
           }
           props.handleExit();
         });
@@ -120,14 +121,14 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     handleExit={() => {
       props.handleExit()
     }}>
-    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true}/> : ""}
+    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
     <div className="modal content--subheader">Weergave opties</div>
     <div className="content--text">
-      <SwitchButton isOn={!collections} isEnabled={true} leftLabel="Collecties aan" onToggle={() => toggleCollections()} rightLabel="Per bestand"/>
+      <SwitchButton isOn={!collections} isEnabled={true} leftLabel="Collecties aan" onToggle={() => toggleCollections()} rightLabel="Per bestand (uit)" />
     </div>
     <div className="modal content--subheader">
-      <SwitchButton isOn={isSingleItem} isEnabled={true} leftLabel="Alles inladen" rightLabel="Klein inladen" onToggle={() => toggleSlowFiles()}/>
+      <SwitchButton isOn={isSingleItem} isEnabled={true} leftLabel="Alles inladen" rightLabel="Klein inladen" onToggle={() => toggleSlowFiles()} />
     </div>
     <div className="modal content--text">
     </div>

@@ -25,13 +25,18 @@
 - [x]   (bugfix) _Front-end_ Add Loading in Move dialog
 - [x]   (feature) _Front-end_ Move file in menu
 - [x]   (bugfix) _API_ fix various issues in `/api/rename`
-- [x]   (remove) starskyApp content
-- [x]   (docs) add html generation to build process
-- [x]   (remove) only the retryThumbnail is removed `api/thumbnail?retryThumbnail=true`  (remove thumbnail if corrupt) due public facing
-- [x]   (remove) search replace is no longer a beta feature, so no feature toggle
-- [x]   (bugfix) archive updating multiple values didn't provide the right results
-- []   (feature) clear search cache after updating values in detailview
-
+- [x]   (remove) _General_ starskyApp content
+- [x]   (docs) _General_ add html generation to build process
+- [x]   (remove) _API_ only the retryThumbnail is removed `api/thumbnail?retryThumbnail=true`  (remove thumbnail if corrupt) due public facing
+- [x]   (remove) _Front-end_ search replace is no longer a beta feature, so no feature toggle
+- [x]   (bugfix) _Front-end_ archive updating multiple values didn't provide the right results
+- [x]   (bugfix) _Front-end_ when pressing multiple colorclass items with the value 0 (colorless/no-color) these are updated
+- [x]   (bugfix) _Front-end_ fix issue where force sync and clear cache didn't update the view
+- [x]   (bugfix) _Front-end_ fix issue Collections toggle where not correct shown
+- [x]   (feature) _API_ Add `/sync/mkdir` to create directories and sync to the db
+- [x]   (feature) _Front-end_ Add Modal for Make Directory to the Archive Menu
+- [x]   (build) _CI_ With `CI=true` eslint errors will break the build
+- []   (feature)  _Front-end_ clear search cache after updating values in detailview
 
 # version 0.1.11 - 2020-01-02
 - [x]   (bugfix) _Front-end_ _Detailview_ when press Delete and switch image, the next image should be marked as not deleted (Fixed)

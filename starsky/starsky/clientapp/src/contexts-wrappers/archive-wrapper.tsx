@@ -21,15 +21,15 @@ function ArchiveContextWrapper(archive: IArchiveProps) {
 function ArchiveWrapper(archive: IArchiveProps) {
   let { state, dispatch } = React.useContext(ArchiveContext);
 
-  // running on load
+  /**
+   * Running on changing searchQuery or subpath
+   * dispatch > reset-url-change has if statements to check this every render
+   */
   useEffect(() => {
     if (archive.fileIndexItems) {
-      console.log('running dispatch');
-      dispatch({ type: 'reset', payload: archive })
+      dispatch({ type: 'reset-url-change', payload: archive })
     }
-  }, [archive]);
-
-  var archiveList = state;
+  }, [archive, dispatch]);
 
   useEffect(() => {
     if (!state) return;
@@ -43,21 +43,19 @@ function ArchiveWrapper(archive: IArchiveProps) {
   switch (state.pageType) {
     case PageType.Trash:
       return (
-        <Trash {...archiveList} />
+        <Trash {...state} />
       );
     case PageType.Search:
       return (
-        <Search {...archiveList} />
+        <Search {...state} />
       );
     case PageType.Unauthorized:
-      console.log('not login');
-
       return (
         <Login />
       );
     default:
       return (
-        <Archive {...archiveList} />
+        <Archive {...state} />
       );
   }
 

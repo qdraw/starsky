@@ -28,13 +28,13 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
     var subPaths = new URLPath().MergeSelectFileIndexItem(select, props.fileIndexItems);
     var selectParamsLocal = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "")
     setSelectParams(selectParamsLocal);
-  }, [select]);
+  }, [select, props.fileIndexItems]);
 
   let { dispatch } = React.useContext(ArchiveContext);
 
   return (<ColorClassSelect onToggle={(colorclass) => {
-      dispatch({type: 'update', colorclass, select});
-    }} 
+    dispatch({ type: 'update', colorclass, select });
+  }}
     filePath={selectParams} isEnabled={!props.isReadOnly && select.length !== 0} clearAfter={true} />)
 });
 export default ArchiveSidebarColorClass

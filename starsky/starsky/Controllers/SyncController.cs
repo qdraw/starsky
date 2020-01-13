@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
@@ -25,13 +26,66 @@ namespace starsky.Controllers
             _query = query;
 	        _iStorage = iStorage;
         }
-        
+
+        /// <summary>
+        /// Make a directory (-p)
+        /// </summary>
+        /// <param name="f">subPaths split by dot comma</param>
+        /// <returns>list of changed files</returns>
+        /// <response code="200">create the item on disk and in db</response>
+        /// <response code="409">A conflict, Directory already exist</response>
+        /// <response code="401">User unauthorized</response>
+        [HttpPost("/sync/mkdir")]
+        [ProducesResponseType(typeof(List<SyncViewModel>),200)]
+        [ProducesResponseType(typeof(List<SyncViewModel>),409)]
+        [ProducesResponseType(typeof(string),401)]
+        public IActionResult Mkdir(string f)
+        {
+	        var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
+	        var syncResultsList = new List<SyncViewModel>();
+
+	        foreach ( var subPath in inputFilePaths.Select(subPath => PathHelper.RemoveLatestSlash(subPath)) )
+	        {
+
+		        var toAddStatus = new SyncViewModel
+		        {
+			        FilePath = subPath, 
+			        Status = FileIndexItem.ExifStatus.Ok
+		        };
+			        
+		        if ( _iStorage.ExistFolder(subPath) )
+		        {
+			        toAddStatus.Status = FileIndexItem.ExifStatus.OperationNotSupported;
+			        syncResultsList.Add(toAddStatus);
+			        continue;
+		        }
+		        
+		        // add to fs
+		        _iStorage.CreateDirectory(subPath);
+		        
+		        // add to db
+		        _sync.AddSubPathFolder(subPath);
+		        
+		        syncResultsList.Add(toAddStatus);
+	        }
+	        
+	        // When all items are not found
+	        if (syncResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+		        Response.StatusCode = 409; // A conflict, Directory already exist
+	        
+	        return Json(syncResultsList);
+        }
+
         /// <summary>
         /// Do a file sync in a background process
         /// </summary>
         /// <param name="f">subPaths split by dot comma</param>
         /// <returns>list of changed files</returns>
+        /// <response code="200">started sync as background job</response>
+        /// <response code="401">User unauthorized</response>
         [ActionName("Index")]
+        [ProducesResponseType(typeof(List<SyncViewModel>),200)]
+        [ProducesResponseType(typeof(string),401)]
         public IActionResult SyncIndex(string f)
         {
             var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
@@ -85,6 +139,7 @@ namespace starsky.Controllers
 				_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 				{
 					_sync.SyncFiles(subPath,false);
+					Console.WriteLine(">>> running clear cache "+ subPath);
 					_query.RemoveCacheParentItem(subPath);
 				});
 	            

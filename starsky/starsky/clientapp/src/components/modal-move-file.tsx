@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import useFileList from '../hooks/use-filelist';
+import React from 'react';
+import useFileList, { IFileList } from '../hooks/use-filelist';
 import useLocation from '../hooks/use-location';
-import { IArchive, newIArchive } from '../interfaces/IArchive';
+import { newIArchive } from '../interfaces/IArchive';
 import { PageType } from '../interfaces/IDetailView';
-import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { FileExtensions } from '../shared/file-extensions';
 import { StringOptions } from '../shared/string-options';
@@ -23,18 +23,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 
   const [currentFolderPath, setCurrentFolderPath] = React.useState(props.parentDirectory);
 
-  var usesFileList = useFileList("?f=" + currentFolderPath);
-
-  let archive: IArchive | undefined = usesFileList ? usesFileList.archive : undefined;
-  const [pageType, setPageType] = useState(usesFileList ? usesFileList.pageType : PageType.Loading);
-
-  if (!archive) {
-    archive = newIArchive();
-  }
-
-  useEffect(() => {
-    setPageType(usesFileList ? usesFileList.pageType : PageType.Loading)
-  }, [archive])
+  var usesFileList = useFileList("?f=" + currentFolderPath, true);
 
   // only for navigation in this file
   var history = useLocation();
@@ -75,6 +64,16 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     props.handleExit();
   }
 
+  /**
+   * Fallback if there is no result or when mounting with no context
+   */
+  if (!usesFileList || !usesFileList.archive) {
+    usesFileList = {
+      archive: newIArchive(),
+      pageType: PageType.Loading,
+    } as IFileList;
+  }
+
   return (<Modal
     id="move-file-modal"
     isOpen={props.isOpen}
@@ -92,24 +91,25 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
             <li className={"box parent"}>
               <button data-test="parent" onClick={() => {
                 setCurrentFolderPath(new FileExtensions().GetParentPath(currentFolderPath));
-                setPageType(PageType.Loading);
               }}>
                 {new FileExtensions().GetParentPath(currentFolderPath)}
               </button>
             </li>
           </ul>
           : null}
-        {pageType === PageType.Loading ? <div className="preloader preloader--inside"></div> : null}
-        {pageType !== PageType.Loading ? <ItemTextListView fileIndexItems={archive.fileIndexItems} callback={(path) => {
-          setCurrentFolderPath(path);
-          setPageType(PageType.Loading);
-        }} /> : null}
+
+        {usesFileList.pageType === PageType.Loading ? <div className="preloader preloader--inside"></div> : null}
+        {usesFileList.pageType !== PageType.Loading ? <ItemTextListView fileIndexItems={usesFileList.archive ?
+          usesFileList.archive.fileIndexItems :
+          newIFileIndexItemArray()} callback={(path) => {
+            setCurrentFolderPath(path);
+          }} /> : null}
 
       </div>
       <div className="modal modal-move-button">
         {error && <div className="warning-box">{error}</div>}
         <button
-          disabled={currentFolderPath === props.parentDirectory || pageType === PageType.Loading}
+          disabled={currentFolderPath === props.parentDirectory || usesFileList.pageType === PageType.Loading}
           className="btn btn--default"
           onClick={move}>
           Verplaats

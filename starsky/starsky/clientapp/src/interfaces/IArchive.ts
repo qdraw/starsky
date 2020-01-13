@@ -11,6 +11,7 @@ export interface IArchive {
     colorClassUsage: Array<number>;
     collectionsCount: number;
     isReadOnly: boolean;
+    searchQuery?: string;
 }
 
 export function newIArchive(): IArchive {

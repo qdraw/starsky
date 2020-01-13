@@ -12,7 +12,7 @@ import ArchiveContextWrapper from './archive-wrapper';
 describe("ArchiveContextWrapper", () => {
 
   it("renders", () => {
-    shallow(<ArchiveContextWrapper {...newIArchive()}/>)
+    shallow(<ArchiveContextWrapper {...newIArchive()} />)
   });
 
 
@@ -23,12 +23,12 @@ describe("ArchiveContextWrapper", () => {
       var archive = jest.spyOn(Archive, 'default').mockImplementationOnce(() => { return <></> })
 
       args.fileIndexItems.push({} as IFileIndexItem);
-      mount(<ArchiveContextWrapper {...args}/>);
+      mount(<ArchiveContextWrapper {...args} />);
       expect(archive).toBeCalled();
     });
 
     it("check if search is mounted", () => {
-      var args = { ...newIArchive(), fileIndexItems: [], pageType: PageType.Search } as IArchiveProps;
+      var args = { ...newIArchive(), fileIndexItems: [], pageType: PageType.Search, searchQuery: '' } as IArchiveProps;
       var search = jest.spyOn(Search, 'default').mockImplementationOnce(() => { return <></> });
 
       // for loading

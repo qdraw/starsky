@@ -32,7 +32,6 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // when in some cases the relative urls are not updated by a state change
   useEffect(() => {
-    if (isSearchQuery) return;
     setRelativeObjects(state.relativeObjects);
   }, [state.relativeObjects]);
 
@@ -47,7 +46,7 @@ const DetailView: React.FC<IDetailView> = () => {
   useEffect(() => {
     if (!state) return;
     new DocumentTitle().SetDocumentTitle(state);
-  }, [history.location.search]);
+  }, [state]);
 
   // To Get the rotation update
   const [translateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);
@@ -72,7 +71,7 @@ const DetailView: React.FC<IDetailView> = () => {
     }).catch((e) => {
       console.log(e);
     });
-  }, [state.fileIndexItem.fileHash]);
+  }, [state, state.fileIndexItem.fileHash]);
 
   // know if you searching ?t= in url
   const [isSearchQuery, setIsSearchQuery] = React.useState(!!new URLPath().StringToIUrl(history.location.search).t);
@@ -92,7 +91,7 @@ const DetailView: React.FC<IDetailView> = () => {
     }).catch((err) => {
       console.log(err);
     });
-  }, [isSearchQuery, state.subPath]);
+  }, [history.location.search, isSearchQuery, state.subPath]);
 
   // previous item
   useKeyboardEvent(/ArrowLeft/, (event: KeyboardEvent) => {

@@ -37,7 +37,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
       history.navigate(history.location.href, { replace: true });
     }, 100);
 
-  }, [history.location.state]);
+  }, [history, history.location.state]);
 
   let items = props.fileIndexItems;
   if (!items) return (<div className="folder">no content</div>);
