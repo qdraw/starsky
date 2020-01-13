@@ -24,6 +24,7 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
   const [detailView, setDetailView] = useState(newDetailView());
   const [pageType, setPageType] = useState(PageType.Loading);
   const [parent, setParent] = useState('/');
+  var location = new UrlQuery().UrlQueryServerApi(locationSearch);
 
   const fetchContent = async (location: string, abortController: AbortController): Promise<void> => {
     try {
@@ -79,7 +80,7 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
 
   useEffect(() => {
     const abortController = new AbortController();
-    fetchContent(new UrlQuery().UrlQueryServerApi(locationSearch), abortController);
+    fetchContent(location, abortController);
 
     return () => {
       abortController.abort();

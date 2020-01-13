@@ -1,7 +1,7 @@
 import { act } from 'react-dom/test-utils';
 import { newIArchive } from '../interfaces/IArchive';
 import { PageType } from '../interfaces/IDetailView';
-import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import useFileList, { IFileList } from './use-filelist';
 import { mountReactHook } from './___tests___/test-hook';
 
@@ -14,8 +14,8 @@ describe("UseFileList", () => {
 
     let fetchSpy: jest.SpyInstance<any>;
 
-    function setFetchSpy(statusCode: number) {
-      const mockSuccessResponse = { ...newIArchive(), pageType: PageType.Archive, fileIndexItems: newIFileIndexItemArray() };
+    function setFetchSpy(statusCode: number, pageType: PageType) {
+      const mockSuccessResponse = { ...newIArchive(), pageType: pageType, fileIndexItem: newIFileIndexItem(), fileIndexItems: newIFileIndexItemArray() };
       const mockJsonPromise = Promise.resolve(mockSuccessResponse); // 2
       const mockResult = Promise.resolve(
         {
@@ -41,7 +41,7 @@ describe("UseFileList", () => {
 
       var controller = new AbortController();
 
-      setFetchSpy(200);
+      setFetchSpy(200, PageType.Archive);
 
       await act(async () => { // perform changes within our component
         await hook.fetchContent('test', controller);
@@ -55,12 +55,31 @@ describe("UseFileList", () => {
       expect(hook.archive.fileIndexItems).toStrictEqual([])
     });
 
+    it("with detailview content 200", async () => {
+      expect(hook.pageType).toBe(PageType.Loading)
+
+      var controller = new AbortController();
+
+      setFetchSpy(200, PageType.DetailView);
+
+      await act(async () => { // perform changes within our component
+        await hook.fetchContent('test', controller);
+      });
+
+      if (!hook.detailView) throw Error('missing detailView');
+
+      expect(fetchSpy).toBeCalled();
+      expect(fetchSpy).toBeCalledWith('test', { "credentials": "include", "method": "get", "signal": controller.signal });
+
+      expect(hook.detailView.fileIndexItem).toStrictEqual(newIFileIndexItem())
+    });
+
     it("with archive content 404", async () => {
       expect(hook.pageType).toBe(PageType.Loading)
 
       var controller = new AbortController();
 
-      setFetchSpy(404);
+      setFetchSpy(404, PageType.Archive);
 
       await act(async () => { // perform changes within our component
         await hook.fetchContent('test', controller);
@@ -75,7 +94,7 @@ describe("UseFileList", () => {
 
       var controller = new AbortController();
 
-      setFetchSpy(401);
+      setFetchSpy(401, PageType.Archive);
 
       await act(async () => { // perform changes within our component
         await hook.fetchContent('test', controller);
@@ -90,7 +109,7 @@ describe("UseFileList", () => {
 
       var controller = new AbortController();
 
-      setFetchSpy(500);
+      setFetchSpy(500, PageType.Archive);
 
       await act(async () => { // perform changes within our component
         await hook.fetchContent('test', controller);
