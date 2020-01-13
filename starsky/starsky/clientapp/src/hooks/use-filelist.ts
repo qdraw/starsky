@@ -10,8 +10,7 @@ export interface IFileList {
   detailView?: IDetailView,
   pageType: PageType,
   parent: string,
-  forceUpdateLocation: (locationSearch: string) => void;
-  location: string
+  fetchContent: (location: string, abortController: AbortController) => void;
 }
 
 /**
@@ -28,67 +27,64 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
   const [detailView, setDetailView] = useState(newDetailView());
   const [pageType, setPageType] = useState(PageType.Loading);
   const [parent, setParent] = useState('/');
-  const [location, setLocation] = useState(new UrlQuery().UrlQueryServerApi(locationSearch));
 
-  const forceUpdateLocation = (locationSearch: string): void => {
-    setLocation(new UrlQuery().UrlQueryServerApi(locationSearch));
+  const fetchContent = async (location: string, abortController: AbortController): Promise<void> => {
+    try {
+
+      // force start with a loading icon 
+      if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
+
+      const res: Response = await fetch(location, {
+        signal: abortController.signal,
+        credentials: "include",
+        method: 'get'
+      });
+
+      if (res.status === 404) {
+        setPageType(PageType.NotFound);
+        return;
+      }
+      else if (res.status === 401) {
+        setPageType(PageType.Unauthorized);
+        return;
+      }
+      else if (res.status >= 400 && res.status <= 550) {
+        setPageType(PageType.ApplicationException);
+        return;
+      }
+
+      const responseObject = await res.json();
+
+      setParent(new URLPath().getParent(locationSearch));
+
+      if (!responseObject || !responseObject.pageType
+        || responseObject.pageType === PageType.NotFound
+        || responseObject.pageType === PageType.ApplicationException) return;
+
+      setPageType(responseObject.pageType);
+      switch (responseObject.pageType) {
+        case PageType.Archive:
+          var archiveMedia = new CastToInterface().MediaArchive(responseObject);
+          setArchive(archiveMedia.data);
+          break;
+        case PageType.DetailView:
+          var detailViewMedia = new CastToInterface().MediaDetailView(responseObject);
+          setDetailView(detailViewMedia.data);
+          break;
+        default:
+          break;
+      }
+
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   useEffect(() => {
     const abortController = new AbortController();
     console.log('hi>>>>>>');
 
-    (async () => {
-      try {
-
-        // force start with a loading icon 
-        if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
-
-        const res: Response = await fetch(location, {
-          signal: abortController.signal,
-          credentials: "include",
-          method: 'get'
-        });
-
-        if (res.status === 404) {
-          setPageType(PageType.NotFound);
-          return;
-        }
-        else if (res.status === 401) {
-          setPageType(PageType.Unauthorized);
-          return;
-        }
-        else if (res.status >= 400 && res.status <= 550) {
-          setPageType(PageType.ApplicationException);
-          return;
-        }
-
-        const responseObject = await res.json();
-
-        setParent(new URLPath().getParent(locationSearch));
-
-        if (!responseObject || !responseObject.pageType
-          || responseObject.pageType === PageType.NotFound
-          || responseObject.pageType === PageType.ApplicationException) return;
-
-        setPageType(responseObject.pageType);
-        switch (responseObject.pageType) {
-          case PageType.Archive:
-            var archiveMedia = new CastToInterface().MediaArchive(responseObject);
-            setArchive(archiveMedia.data);
-            break;
-          case PageType.DetailView:
-            var detailViewMedia = new CastToInterface().MediaDetailView(responseObject);
-            setDetailView(detailViewMedia.data);
-            break;
-          default:
-            break;
-        }
-
-      } catch (e) {
-        console.error(e);
-      }
-    })();
+    fetchContent(new UrlQuery().UrlQueryServerApi(locationSearch), abortController);
 
     return () => {
       abortController.abort();
@@ -103,8 +99,7 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
     detailView,
     pageType,
     parent,
-    forceUpdateLocation,
-    location
+    fetchContent,
   };
 };
 
