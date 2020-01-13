@@ -15,7 +15,7 @@ interface IModalRenameFileProps {
 
 const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props) => {
 
-  const FeatureName: string = "Nieuwe Map aanmaken ~ Feature incompleet"
+  const FeatureName: string = "Nieuwe map aanmaken"
   const NonValidDirectoryName: string = "Controlleer de naam, deze map kan niet zo worden aangemaakt";
   const GeneralError: string = "Er is misgegaan met het aanmaken van deze map";
   const DirectoryExistError: string = "De map bestaat al, probeer een andere naam";
@@ -72,7 +72,6 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props
     var result = await FetchPost(new UrlQuery().UrlSyncMkdir(), bodyParams.toString())
 
     if (result.statusCode !== 200) {
-
       setError(result.statusCode !== 409 ? GeneralError : DirectoryExistError);
       // and renable
       setIsLoading(false);
