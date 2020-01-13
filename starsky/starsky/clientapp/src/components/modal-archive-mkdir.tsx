@@ -48,7 +48,6 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props
     setButtonState(true)
 
     var isValidFileName = new FileExtensions().IsValidDirectoryName(fieldValue);
-    console.log(fieldValue);
 
     if (!isValidFileName) {
       setError(NonValidDirectoryName);
