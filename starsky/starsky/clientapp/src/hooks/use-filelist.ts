@@ -79,8 +79,6 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
 
   useEffect(() => {
     const abortController = new AbortController();
-    console.log('hi>>>>>>');
-
     fetchContent(new UrlQuery().UrlQueryServerApi(locationSearch), abortController);
 
     return () => {
