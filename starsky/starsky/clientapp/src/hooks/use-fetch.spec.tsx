@@ -48,35 +48,9 @@ describe("UseFetch", () => {
     expect(fetchSpy).toBeCalled()
     expect(fetchSpy).toBeCalledWith('test', { "credentials": "include", "method": "get", "signal": controller.signal });
 
-    // setDAta
+    // setData
     expect(setDataSpy).toBeCalled()
     expect(setDataSpy).toBeCalledWith({ "data": { "fileIndexItems": [], "pageType": "Archive" }, "statusCode": 200 })
   })
 
-
-  // const testHook = (callback: any) => {
-  //   return mount(<TestHook callback={callback} />);
-  // };
-
-  // it("call api", () => {
-  //   const setState = jest.fn();
-  //   const useStateSpy = jest.spyOn(React, 'useState').mockImplementationOnce(() => {
-  //     return [setState, setState]
-  //   });
-
-  //   var fetch = jest.spyOn(window, 'fetch').mockImplementationOnce(() => {
-  //     return Promise.resolve(
-  //       {
-  //         json: () => { },
-  //         status: 200
-  //       } as Response,
-  //     )
-  //   });
-
-  //   testHook(useFetch);
-
-  //   expect(fetch).toHaveBeenCalled()
-  //   expect(useStateSpy).toHaveBeenCalled()
-
-  // });
 });

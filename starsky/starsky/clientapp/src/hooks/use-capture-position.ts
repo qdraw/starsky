@@ -1,5 +1,10 @@
 // capturePosition
 
+export interface ICaptionPosition {
+  freeze: () => void;
+  unfreeze: () => void;
+}
+
 const capturePosition = () => {
   let cachedPosition = window.pageYOffset;
   return {
@@ -14,6 +19,6 @@ const capturePosition = () => {
         top: cachedPosition
       });
     }
-  };
+  } as ICaptionPosition;
 };
 export default capturePosition;
