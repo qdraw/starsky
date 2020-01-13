@@ -20,9 +20,6 @@ export interface IFileList {
  */
 const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean): IFileList | null => {
 
-  console.log('--->');
-  console.log(locationSearch, resetPageTypeBeforeLoading);
-
   const [archive, setArchive] = useState(newIArchive());
   const [detailView, setDetailView] = useState(newDetailView());
   const [pageType, setPageType] = useState(PageType.Loading);
