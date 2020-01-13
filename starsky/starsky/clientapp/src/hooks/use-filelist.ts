@@ -10,7 +10,7 @@ export interface IFileList {
   detailView?: IDetailView,
   pageType: PageType,
   parent: string,
-  fetchContent: (location: string, abortController: AbortController) => void;
+  fetchContent: (location: string, abortController: AbortController) => Promise<void>;
 }
 
 /**
