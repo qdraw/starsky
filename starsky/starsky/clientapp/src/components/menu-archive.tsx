@@ -75,9 +75,6 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   async function TrashSelection() {
     if (!select) return;
 
-    console.log('run trash');
-
-
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!toUndoTrashList) return;
     var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "");

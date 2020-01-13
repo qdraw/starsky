@@ -88,10 +88,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
 
     dispatch({ type: 'remove', filesList: toUndoTrashList });
 
-    console.log('update url');
-
     undoSelection();
-
   }
 
   const [isModalDeleteOpen, setModalDeleteOpen] = React.useState(false);

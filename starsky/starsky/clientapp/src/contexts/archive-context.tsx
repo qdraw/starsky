@@ -62,7 +62,6 @@ export function archiveReducer(state: State, action: Action): State {
 
       // to update the total results
       var collectionsCount = state.collectionsCount - deletedFilesCount;
-      console.log('collectionsCount', collectionsCount);
 
       return { ...state, collectionsCount, lastUpdated: new Date() };
     case "update":
