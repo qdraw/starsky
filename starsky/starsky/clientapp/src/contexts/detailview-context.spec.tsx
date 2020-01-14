@@ -1,4 +1,4 @@
-import { IDetailView, IRelativeObjects } from '../interfaces/IDetailView';
+import { IDetailView, IRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { newIFileIndexItem } from '../interfaces/IFileIndexItem';
 import { detailviewReducer } from './detailview-context';
@@ -10,7 +10,7 @@ describe("DetailViewContext", () => {
       fileIndexItem: newIFileIndexItem(),
       relativeObjects: {} as IRelativeObjects,
       subPath: "/",
-      pageType: 'DetailView',
+      pageType: PageType.DetailView,
       colorClassFilterList: [],
     } as IDetailView;
     var action = { type: 'update', tags: 'tags', colorclass: 1, description: 'description', title: 'title', status: IExifStatus.Ok } as any;
@@ -29,7 +29,7 @@ describe("DetailViewContext", () => {
       fileIndexItem: newIFileIndexItem(),
       relativeObjects: {} as IRelativeObjects,
       subPath: "/",
-      pageType: 'DetailView',
+      pageType: PageType.DetailView,
       colorClassFilterList: [],
     } as IDetailView;
     var action = { type: 'append', tags: 'tags' } as any
@@ -44,7 +44,7 @@ describe("DetailViewContext", () => {
       fileIndexItem: newIFileIndexItem(),
       relativeObjects: {} as IRelativeObjects,
       subPath: "/",
-      pageType: 'DetailView',
+      pageType: PageType.DetailView,
       colorClassFilterList: [],
     } as IDetailView;
     state.fileIndexItem.tags = "!delete!"
