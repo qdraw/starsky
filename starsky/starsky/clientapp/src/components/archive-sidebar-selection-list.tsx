@@ -1,6 +1,8 @@
 import React, { memo, useEffect } from 'react';
+import useGlobalSettings from '../hooks/use-globalSettings';
 import useLocation from '../hooks/use-location';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 
 interface IDetailViewSidebarSelectionListProps {
@@ -8,6 +10,12 @@ interface IDetailViewSidebarSelectionListProps {
 }
 
 const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSelectionListProps> = memo((props) => {
+
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageNoneSelected = language.text("Niets geselecteerd", "Nothing selected");
+  const MessageAllName = language.text("Alles", "All");
 
   var history = useLocation();
   const [select, setSelect] = React.useState(new URLPath().StringToIUrl(history.location.search).select);
@@ -40,12 +48,12 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
   // noinspection HtmlUnknownAttribute
   return (<div className="sidebar-selection">
     <div className="content--header content--subheader">
-      {!select || select.length !== props.fileIndexItems.length ? <button data-test="allSelection" className="btn btn--default" onClick={() => allSelection()}>Alles</button> : ""}
+      {!select || select.length !== props.fileIndexItems.length ? <button data-test="allSelection" className="btn btn--default"
+        onClick={() => allSelection()}>{MessageAllName}</button> : ""}
       {!select || select.length !== 0 ? <button className="btn btn--default" onClick={() => undoSelection()}>Undo</button> : ""}
     </div>
     <ul>
-      {!select || select.length === 0 ? <li className="warning-box">Niets geselecteerd</li> : ""}
-
+      {!select || select.length === 0 ? <li className="warning-box">{MessageNoneSelected}</li> : ""}
       {
         select ? select.map((item, index) => (
           <li key={index} ><span onClick={() => toggleSelection(item)} className="close" />{item}</li>

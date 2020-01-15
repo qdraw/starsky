@@ -15,8 +15,9 @@ import Preloader from './preloader';
 const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
   const settings = useGlobalSettings();
-  const MessageSearchAndReplaceName = new Language(settings.language).text("Zoeken en vervangen", "Search and replace");
-  const MessageTitleName = new Language(settings.language).text("Titel", "Title");
+  const language = new Language(settings.language);
+  const MessageSearchAndReplaceName = language.text("Zoeken en vervangen", "Search and replace");
+  const MessageTitleName = language.text("Titel", "Title");
 
   var history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
