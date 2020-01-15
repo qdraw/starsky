@@ -1,7 +1,9 @@
 import * as React from "react";
 import { memo, useEffect, useRef } from 'react';
 import useFetch from '../hooks/use-fetch';
+import useGlobalSettings from '../hooks/use-globalSettings';
 import useLocation from '../hooks/use-location';
+import { Language } from '../shared/language';
 
 interface IMenuSearchBarProps {
   defaultText?: string;
@@ -9,11 +11,15 @@ interface IMenuSearchBarProps {
 }
 
 const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props) => {
+
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+
   var defaultMenu = [
     { "name": "Home", "url": "/" },
-    { "name": "Foto's van deze week", "url": "/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22" },
-    { "name": "Prullenmand", url: "/trash" },
-    { "name": "Importeren", url: "/import" }
+    { "name": language.text("Foto's van deze week", "Photos of this week"), "url": "/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22" },
+    { "name": language.text("Prullenmand", "Trash"), url: "/trash" },
+    { "name": language.text("Importeren", "Import"), url: "/import" }
   ];
   var history = useLocation();
 

@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
+import useGlobalSettings from '../hooks/use-globalSettings';
 import useLocation from '../hooks/use-location';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchPost from '../shared/fetch-post';
+import { Language } from '../shared/language';
 import { SidebarUpdate } from '../shared/sidebar-update';
 import { URLPath } from '../shared/url-path';
 import Preloader from './preloader';
 
 
 const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
+
+  const settings = useGlobalSettings();
+  const MessageSearchAndReplaceName = new Language(settings.language).text("Zoeken en vervangen", "Search and replace");
+  const MessageTitleName = new Language(settings.language).text("Titel", "Title");
 
   var history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
@@ -119,7 +125,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
       </div>
-      <h4>Info</h4>
+      <h4>Info:</h4>
       <div
         onInput={handleUpdateChange}
         data-name="description"
@@ -137,7 +143,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
         &nbsp;
       </div>
-      <h4>Titel</h4>
+      <h4>{MessageTitleName}:</h4>
       <div data-name="title"
         onInput={handleUpdateChange}
         suppressContentEditableWarning={true}
@@ -155,8 +161,8 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       </div>
 
       {isInputEnabled && select.length !== 0 ?
-        <button className="btn btn--default" onClick={() => pushSearchAndReplace()}>Vervangen</button> :
-        <button disabled className="btn btn--default disabled" >Vervangen</button>}
+        <button className="btn btn--default" onClick={() => pushSearchAndReplace()}>{MessageSearchAndReplaceName}</button> :
+        <button disabled className="btn btn--default disabled">{MessageSearchAndReplaceName}</button>}
     </>
   );
 };
