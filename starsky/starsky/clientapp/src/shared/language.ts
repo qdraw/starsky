@@ -29,19 +29,15 @@ export class Language {
 
   /**
    * Replace token content
-   * @param input string with a token
+   * @param text string with a token
    * @param token what is the toke {test}
    * @param dynamicValue the value that is used
    */
-  public token(input: string, token: string[], dynamicValue: string[]): string {
-    var output = "";
+  public token(text: string, token: string[], dynamicValue: string[]): string {
     for (let index = 0; index < token.length; index++) {
-      console.log(token[index]);
-      console.log(dynamicValue[index]);
-
-      output = input.replace(token[index], dynamicValue[index])
+      text = text.replace(new RegExp(token[index]), dynamicValue[index])
     }
-    return output;
+    return text;
   }
 
 }
