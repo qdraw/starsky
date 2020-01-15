@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { DetailViewContext } from '../contexts/detailview-context';
+import useGlobalSettings from '../hooks/use-globalSettings';
 import useLocation from '../hooks/use-location';
 import { newDetailView } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { newIFileIndexItem } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { FileExtensions } from '../shared/file-extensions';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import Modal from './modal';
@@ -17,9 +19,13 @@ interface IModalRenameFileProps {
 
 const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> = (props) => {
 
-  const NonValidExtension: string = "Dit bestand kan zo niet worden weggeschreven";
-  const ChangeToDifferentExtension: string = "Let op! Je veranderd de extensie van het bestand, deze kan hierdoor onleesbaar worden";
-  const GeneralError: string = "Er is iets misgegaan met de aanvraag, probeer het later opnieuw";
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageNonValidExtension: string = "Dit bestand kan zo niet worden weggeschreven";
+  const MessageChangeToDifferentExtension: string = "Let op! Je veranderd de extensie van het bestand, deze kan hierdoor onleesbaar worden";
+  const MessageGeneralError: string = "Er is iets misgegaan met de aanvraag, probeer het later opnieuw";
+  const MessageRenameFileName = language.text("Bestandsnaam wijzigen", "Rename file name");
 
   let { state, } = React.useContext(DetailViewContext);
 
@@ -76,11 +82,11 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     var isValidFileName = new FileExtensions().IsValidFileName(fieldValue);
 
     if (!isValidFileName) {
-      setError(NonValidExtension);
+      setError(MessageNonValidExtension);
       setButtonState(false);
     }
     else if (!extensionsState) {
-      setError(ChangeToDifferentExtension);
+      setError(MessageChangeToDifferentExtension);
     }
     else {
       setError(null);
@@ -102,7 +108,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     var result = await FetchPost(new UrlQuery().UrlSyncRename(), bodyParams.toString())
 
     if (result.statusCode !== 200) {
-      setError(GeneralError);
+      setError(MessageGeneralError);
       // and renable
       setIsLoading(false);
       setFormEnabled(true);
@@ -124,7 +130,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
       props.handleExit()
     }}>
     <div className="content">
-      <div className="modal content--subheader">Naam wijzigen</div>
+      <div className="modal content--subheader">{MessageRenameFileName}</div>
       <div className="modal content--text">
 
         <div data-name="filename"
@@ -140,7 +146,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
         <button disabled={state.fileIndexItem.fileName === fileName || !isFormEnabled ||
           loading || !buttonState}
           className="btn btn--default" onClick={pushRenameChange}>
-          {loading ? 'Loading...' : 'Opslaan'}
+          {loading ? 'Loading...' : MessageRenameFileName}
         </button>
       </div>
     </div>

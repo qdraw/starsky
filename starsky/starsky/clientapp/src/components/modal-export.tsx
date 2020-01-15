@@ -116,9 +116,9 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = (props) => {
     <div className="modal content--text">
       {isProcessing === ProcessingState.default && props.select && props.select.length === 1 ? <>
         <a href={new UrlQuery().UrlDownloadPhotoApi(props.select[0], false)} download={new URLPath().FileNameBreadcrumb(props.select[0])}
-          target="_blank" rel="noopener noreferrer" className="btn btn--info">Orgineel</a>
+          target="_blank" rel="noopener noreferrer" className="btn btn--info">{MessageOrginalFile}</a>
         {singleFileThumbnailStatus ? <a href={new UrlQuery().UrlDownloadPhotoApi(props.select[0], true)} download={new URLPath().FileNameBreadcrumb(props.select[0])}
-          target="_blank" rel="noopener noreferrer" className={"btn btn--default"}>Thumbnail</a> : null}
+          target="_blank" rel="noopener noreferrer" className={"btn btn--default"}>{MessageThumbnailFile}</a> : null}
       </> : null}
 
       {isProcessing === ProcessingState.default && props.select && props.select.length >= 2 ? <>

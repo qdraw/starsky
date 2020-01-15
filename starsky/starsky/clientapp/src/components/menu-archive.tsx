@@ -30,7 +30,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
   const MessageSelectFurther = language.text("Verder selecteren", "Select further");
   const MessageSelectAll = language.text("Alles selecteren", "Select all");
-  const MessageMoveToTrashSelection = language.text("Verplaats naar prullenmand", "Move to Trash");
+  const MessageMoveToTrash = language.text("Verplaats naar prullenmand", "Move to Trash");
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   let { state, dispatch } = React.useContext(ArchiveContext);
@@ -160,7 +160,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>{MessageUndoSelection}</li> : null}
             {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => selectAll()}>{MessageSelectAll}</li> : null}
             <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
-            <li className="menu-option" onClick={() => moveToTrashSelection()}>{MessageMoveToTrashSelection}</li>
+            <li className="menu-option" onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
           </MoreMenu> : null}
 
