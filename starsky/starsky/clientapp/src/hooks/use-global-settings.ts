@@ -10,27 +10,17 @@ const useGlobalSettings = (): IGlobalSettings => {
    * Parse Language
    */
   const parseLanguage = (): SupportedLanguages => {
-
-    var language: SupportedLanguages;
-
     switch (navigator.language) {
       case "nl-BE":
-        language = SupportedLanguages.nl
-        break;
-      case "NL-nl":
-        language = SupportedLanguages.nl
-        break;
+        return SupportedLanguages.nl
+      case "nl-NL":
+        return SupportedLanguages.nl
       case "nl":
-        language = SupportedLanguages.nl
-        break;
+        return SupportedLanguages.nl
       default:
-        language = SupportedLanguages.en;
-        break;
+        return SupportedLanguages.en;
     }
-
-    return language;
   }
-
 
   return { language: parseLanguage() };
 };

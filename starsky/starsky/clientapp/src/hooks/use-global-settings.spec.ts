@@ -31,10 +31,10 @@ describe("useGlobalSettings", () => {
     });
 
 
-    it("get dutch language NL-nl", () => {
+    it("get dutch language nl-NL", () => {
 
       var languageGetter = jest.spyOn(window.navigator, 'language', 'get')
-      languageGetter.mockReturnValue('NL-nl');
+      languageGetter.mockReturnValue('nl-NL');
 
       runHook();
 
