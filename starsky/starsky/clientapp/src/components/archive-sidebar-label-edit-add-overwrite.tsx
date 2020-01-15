@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
+import useGlobalSettings from '../hooks/use-globalSettings';
 import useLocation from '../hooks/use-location';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchPost from '../shared/fetch-post';
+import { Language } from '../shared/language';
 import { SidebarUpdate } from '../shared/sidebar-update';
 import { URLPath } from '../shared/url-path';
 import Preloader from './preloader';
 
-
 const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
+
+  var settings = useGlobalSettings();
+  var MessageReplace = new Language(settings.language).text("Vervangen", "Replace");
+  var MessageOverwrite = new Language(settings.language).text("Overschrijven", "Overwrite");
 
   var history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
@@ -114,10 +119,10 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       {isInputEnabled && select.length !== 0 ? <button
         className="btn btn--info" data-test="overwrite"
         onClick={() => pushUpdate(false)}>Overschrijven</button> :
-        <button disabled className="btn btn--info disabled" >Overschrijven</button>}
+        <button disabled className="btn btn--info disabled" >{MessageOverwrite}</button>}
       {isInputEnabled && select.length !== 0 ?
-        <button data-test="add" className="btn btn--default" onClick={() => pushUpdate(true)}>Toevoegen</button> :
-        <button disabled className="btn btn--default disabled" >Toevoegen</button>}
+        <button data-test="add" className="btn btn--default" onClick={() => pushUpdate(true)}>{MessageReplace}</button> :
+        <button disabled className="btn btn--default disabled" >{MessageReplace}</button>}
     </>
   );
 };

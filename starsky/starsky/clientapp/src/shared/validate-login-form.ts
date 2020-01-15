@@ -1,23 +1,23 @@
-/** Handle form validation for the login form
+
+/**
+ * Handle form validation for the login form
+ * false is no email or password
+ * null is non valid email adres
+ * true is continue
  * @param email - user's auth email
  * @param password - user's auth password
- * @param setError - function that handles updating error state value
  */
 export const validateLoginForm = (
   email: string,
   password: string,
-  setError: (error: string | null) => void
-): boolean => {
+): boolean | null => {
   // Check for undefined or empty input fields
   if (!email || !password) {
-    setError("Voer een emailadres en een wachtwoord in");
     return false;
   }
 
-  // Validate email
   if (!validateEmail(email)) {
-    setError("Controleer je email adres");
-    return false;
+    return null;
   }
   return true;
 };

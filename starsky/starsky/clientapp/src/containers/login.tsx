@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
 import Button from '../components/Button';
+import useGlobalSettings from '../hooks/use-globalSettings';
 import useLocation from '../hooks/use-location';
 import BrowserDetect from '../shared/browser-detect';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import { validateLoginForm } from '../shared/validate-login-form';
@@ -22,16 +24,23 @@ const Login: React.FC<ILoginProps> = () => {
   const useErrorHandler = (initialState: string | null) => { return initialState };
   const [error, setError] = React.useState(useErrorHandler(null));
 
-  const MessageApplicationName: string = "Starsky";
-  const MessageWrongUsernamePassword: string = "Je gebruikersnaam of wachtwoord is niet juist. Probeer het opnieuw";
-  const MessageUsername: string = "E-mailadres of telefoonnummer";
-  const MessageConnection: string = "Er is geen verbinding mogelijk, probeer het later opnieuw";
-  const LogoutWarning: string = "Wil je uitloggen?";
-  const MessagePassword: string = "Geef je wachtwoord op";
-  const MessageExamplePassword: string = "superveilig";
-  const MessageExampleUsername: string = "dont@mail.me";
-  const MessageLogin: string = "Inloggen";
-  const MessageLogout: string = "Uitloggen";
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+
+  const MessageApplicationName = "Starsky";
+  const MessageWrongUsernamePassword =
+    language.text("Je gebruikersnaam of wachtwoord is niet juist. Probeer het opnieuw", "Your username or password is incorrect. Try again");
+  const MessageNoUsernamePassword = language.text("Voer een emailadres en een wachtwoord in", "Enter an email address and password");
+  const MessageWrongFormatEmailAddress = language.text("Controleer je email adres", "Check your email address");
+  const MessageUsername = language.text("E-mailadres", "E-mail address");
+  const MessageConnection = language.text("Er is geen verbinding mogelijk, probeer het later opnieuw", "No connection is possible, please try again later");
+  const LogoutWarning = language.text("Wil je uitloggen?", "Do you want to log out?");
+  const MessagePassword = language.text("Geef je wachtwoord op", "Enter your password");
+  const MessageExamplePassword = language.text("superveilig", "supersafe");
+  const MessageExampleUsername = "dont@mail.me";
+  const MessageLogin = language.text("Inloggen", "Login");
+  const MessageLogout = language.text("Uitloggen", "Logout");
+
 
   // We don't want to login twich 
   const [isLogin, setLogin] = React.useState(true);
@@ -93,9 +102,12 @@ const Login: React.FC<ILoginProps> = () => {
               onSubmit={e => {
                 e.preventDefault();
                 setError(null);
-                if (validateLoginForm(userEmail, userPassword, setError)) {
-                  authHandler();
+                var loginValidation = validateLoginForm(userEmail, userPassword);
+                if (!loginValidation) {
+                  setError(loginValidation === null ? MessageWrongFormatEmailAddress : MessageNoUsernamePassword)
+                  return;
                 }
+                authHandler();
               }}
             >
               <label htmlFor="username">
