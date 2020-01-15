@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
+import useGlobalSettings from '../hooks/use-globalSettings';
 import useInterval from '../hooks/use-interval';
 import useLocation from '../hooks/use-location';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import Modal from './modal';
 import Preloader from './preloader';
@@ -18,6 +20,17 @@ interface IModalDisplayOptionsProps {
 }
 
 const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = (props) => {
+
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageDisplayOptions = language.text("Weergave opties", "Display options");
+  const MessageSwitchButtonCollectionsOn = language.text("Collecties aan", "Collections on");
+  const MessageSwitchButtonCollectionsOff = language.text("Per bestand (uit)", "Per file (off)");
+  const MessageSwitchButtonIsSingleItemOn = language.text("Alles inladen", "Load everything");
+  const MessageSwitchButtonIsSingleItemOff = language.text("Klein inladen", "Small loading");
+  const MessageForceSync = language.text("Forceer sync", "Force Sync");
+  const MessageRemoveCache = language.text("Vernieuw", "Refresh");
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
@@ -123,20 +136,25 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     }}>
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
-    <div className="modal content--subheader">Weergave opties</div>
+    <div className="modal content--subheader">{MessageDisplayOptions}</div>
     <div className="content--text">
-      <SwitchButton isOn={!collections} isEnabled={true} leftLabel="Collecties aan" onToggle={() => toggleCollections()} rightLabel="Per bestand (uit)" />
+      <SwitchButton isOn={!collections} isEnabled={true}
+        leftLabel={MessageSwitchButtonCollectionsOn}
+        onToggle={() => toggleCollections()}
+        rightLabel={MessageSwitchButtonCollectionsOff} />
     </div>
     <div className="modal content--subheader">
-      <SwitchButton isOn={isSingleItem} isEnabled={true} leftLabel="Alles inladen" rightLabel="Klein inladen" onToggle={() => toggleSlowFiles()} />
+      <SwitchButton isOn={isSingleItem} isEnabled={true}
+        leftLabel={MessageSwitchButtonIsSingleItemOn}
+        rightLabel={MessageSwitchButtonIsSingleItemOff}
+        onToggle={() => toggleSlowFiles()} />
     </div>
     <div className="modal content--text">
     </div>
     <div className="modal content--header">
-      <button className="btn btn--info" onClick={() => forceSync()}>Forceer sync</button>
-      <button className="btn btn--info" onClick={() => removeCache()}>Vernieuw</button>
+      <button className="btn btn--info" onClick={() => forceSync()}>{MessageForceSync}</button>
+      <button className="btn btn--info" onClick={() => removeCache()}>{MessageRemoveCache}</button>
       <button className="btn btn--info btn--percentage" onClick={() => geoSync()}>Geo sync {geoSyncPercentage}%</button>
-
     </div>
   </Modal>)
 }
