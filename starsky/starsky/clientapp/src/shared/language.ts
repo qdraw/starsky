@@ -36,6 +36,8 @@ export class Language {
   public token(input: string, token: string[], dynamicValue: string[]): string {
     var output = "";
     for (let index = 0; index < token.length; index++) {
+      console.log(token[index]);
+
       output = input.replace(token[index], dynamicValue[index])
     }
     return output;
