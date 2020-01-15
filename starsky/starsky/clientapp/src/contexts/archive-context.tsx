@@ -93,9 +93,9 @@ export function archiveReducer(state: State, action: Action): State {
 
       // for search / trash pages
       if ((action.payload.pageType === PageType.Search || action.payload.pageType === PageType.Trash) &&
-        CombineSearchQueryAndPageNumber(action.payload) !== CombineSearchQueryAndPageNumber(state)
+        CombineSearchQueryAndPageNumber(state) !== CombineSearchQueryAndPageNumber(action.payload)
       ) {
-        console.log('running dispatch (search/trash)');
+        console.log('running dispatch (search/trash)', CombineSearchQueryAndPageNumber(state), CombineSearchQueryAndPageNumber(action.payload));
         return action.payload;
       }
 
@@ -112,8 +112,8 @@ export function archiveReducer(state: State, action: Action): State {
   }
 }
 
-function CombineSearchQueryAndPageNumber(payload: IArchiveProps) {
-  return `${payload.searchQuery} + ${payload.pageNumber}`;
+function CombineSearchQueryAndPageNumber(payload: IArchiveProps): string {
+  return `${payload.searchQuery}${payload.pageNumber}`;
 }
 
 function ArchiveContextProvider({ children }: ReactNodeProps) {

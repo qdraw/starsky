@@ -9,12 +9,10 @@ export interface ISearchList {
   pageType: PageType,
 }
 
-const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList | null => {
+const useSearchList = (query: string | undefined, pageNumber = 0, resetPageTypeBeforeLoading: boolean): ISearchList | null => {
 
   const [archive, setArchive] = useState(newIArchive());
-  // const [detailView, setDetailView] = useState(newDetailView());
   const [pageType, setPageType] = useState(PageType.Loading);
-  // const [parent, setParent] = useState('/');
 
   var location = query ? new UrlQuery().UrlQuerySearchApi(query, pageNumber) : undefined;
 
@@ -29,6 +27,9 @@ const useSearchList = (query: string | undefined, pageNumber = 0): ISearchList |
           setPageType(PageType.Search);
           return;
         }
+
+        // force start with a loading icon 
+        if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
 
         const res: Response = await fetch(location, {
           signal: abortController.signal,
