@@ -1,5 +1,5 @@
 import React, { memo, useEffect } from 'react';
-import useGlobalSettings from '../hooks/use-globalSettings';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import FetchPost from '../shared/fetch-post';
 import { Keyboard } from '../shared/keyboard';

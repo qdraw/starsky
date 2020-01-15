@@ -1,5 +1,5 @@
 import React from 'react';
-import useGlobalSettings from '../hooks/use-globalSettings';
+import useGlobalSettings from '../hooks/use-global-settings';
 import { Language } from '../shared/language';
 
 const MoreMenu: React.FunctionComponent = ({ children }) => {

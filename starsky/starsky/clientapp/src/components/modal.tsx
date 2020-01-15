@@ -2,7 +2,7 @@ import 'core-js/features/dom-collections/for-each';
 import React from "react";
 import ReactDOM from "react-dom";
 import capturePosition from '../hooks/use-capture-position';
-import useGlobalSettings from '../hooks/use-globalSettings';
+import useGlobalSettings from '../hooks/use-global-settings';
 import { Language } from '../shared/language';
 
 type ModalPropTypes = {

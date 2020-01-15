@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
-import useGlobalSettings from '../hooks/use-globalSettings';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useInterval from '../hooks/use-interval';
 import useLocation from '../hooks/use-location';
 import { IArchiveProps } from '../interfaces/IArchiveProps';

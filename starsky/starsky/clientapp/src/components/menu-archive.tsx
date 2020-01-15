@@ -1,7 +1,7 @@
 
 import React, { memo, useEffect } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
-import useGlobalSettings from '../hooks/use-globalSettings';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';

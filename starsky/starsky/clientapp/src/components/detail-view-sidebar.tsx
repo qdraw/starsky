@@ -2,7 +2,7 @@ import { Link } from '@reach/router';
 import React, { memo, useEffect, useRef } from "react";
 import { useDetailViewContext } from '../contexts/detailview-context';
 import useFetch from '../hooks/use-fetch';
-import useGlobalSettings from '../hooks/use-globalSettings';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IExifStatus } from '../interfaces/IExifStatus';

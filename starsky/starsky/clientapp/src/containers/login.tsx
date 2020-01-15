@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Button from '../components/Button';
-import useGlobalSettings from '../hooks/use-globalSettings';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import BrowserDetect from '../shared/browser-detect';
 import FetchGet from '../shared/fetch-get';

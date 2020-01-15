@@ -1,7 +1,7 @@
 import * as React from "react";
 import { memo, useEffect, useRef } from 'react';
 import useFetch from '../hooks/use-fetch';
-import useGlobalSettings from '../hooks/use-globalSettings';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import { Language } from '../shared/language';
 import { UrlQuery } from '../shared/url-query';

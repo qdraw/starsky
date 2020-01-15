@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import useGlobalSettings from '../hooks/use-globalSettings';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useInterval from '../hooks/use-interval';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';

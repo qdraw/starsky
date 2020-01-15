@@ -2,7 +2,7 @@
 import { Link } from '@reach/router';
 import React, { useEffect, useState } from 'react';
 import { DetailViewContext } from '../contexts/detailview-context';
-import useGlobalSettings from '../hooks/use-globalSettings';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IDetailView, PageType } from '../interfaces/IDetailView';

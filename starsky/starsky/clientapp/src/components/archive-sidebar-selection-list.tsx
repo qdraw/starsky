@@ -1,5 +1,5 @@
 import React, { memo, useEffect } from 'react';
-import useGlobalSettings from '../hooks/use-globalSettings';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { Language } from '../shared/language';
