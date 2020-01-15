@@ -26,11 +26,13 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageInfoAndTitle = language.text("Info & Titel", "Info & Title");
+  const MessageTitleName = language.text("Titel", "Title");
+  const MessageInfoName = "Info";
   const MessageColorClassification = language.text("Kleur-Classificatie", "Color Classification")
   const MessageDateTimeAgoEdited = language.text("geleden bewerkt", "ago edited");
   const MessageDateLessThan1Minute = language.text("minder dan één minuut", "less than one minute");
-
+  const MessageDateMinutes = language.text("minuten", "minutes");
+  const MessageDateHour = language.text("uur", "less than one minute");
   const MessageNounUnknown = language.text("Onbekende", "Unknown");
   const MessageLocation = language.text("locatie", "location");
   const MessageReadOnlyFile = language.text("Alleen lezen bestand", "Read only file");
@@ -38,9 +40,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   const MessageServerError = language.text("Er is iets mis met de input", "Something is wrong with the input");
   const MessageDeleted = language.text("Staat in de prullenmand", "Is in the trash");
   const MessageDeletedRestoreInstruction = language.text("'Zet terug uit prullenmand' om het item te bewerken", "'Restore from Trash' to edit the item");
-
-
-
 
   let { state, dispatch } = useDetailViewContext();
   var history = useLocation();
@@ -145,15 +144,18 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   // noinspection HtmlUnknownAttribute
   return (<div className="sidebar">
     {fileIndexItem.status === IExifStatus.Deleted || fileIndexItem.status === IExifStatus.ReadOnly
-      || fileIndexItem.status === IExifStatus.NotFoundSourceMissing || fileIndexItem.status === IExifStatus.ServerError ? <><div className="content--header">
-        Status
-    </div> <div className="content content--text">
+      || fileIndexItem.status === IExifStatus.NotFoundSourceMissing || fileIndexItem.status === IExifStatus.ServerError ? <>
+        <div className="content--header">
+          Status
+        </div>
+        <div className="content content--text">
           {fileIndexItem.status === IExifStatus.Deleted ? <><div className="warning-box">{MessageDeleted}</div>
             {MessageDeletedRestoreInstruction}</> : null}
           {fileIndexItem.status === IExifStatus.NotFoundSourceMissing ? <><div className="warning-box">{MessageNotFoundSourceMissing}</div> </> : null}
           {fileIndexItem.status === IExifStatus.ReadOnly ? <><div className="warning-box">{MessageReadOnlyFile}</div> </> : null}
           {fileIndexItem.status === IExifStatus.ServerError ? <><div className="warning-box">{MessageServerError}</div> </> : null}
-        </div></> : null}
+        </div>
+      </> : null}
     <div className="content--header">
       Tags
     </div>
@@ -169,10 +171,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     </div>
 
     <div className="content--header">
-      {MessageInfoAndTitle}
+      {MessageInfoName} &amp; {MessageTitleName}
     </div>
     <div className="content--text">
-      <h4>Info</h4>
+      <h4>{MessageInfoName}</h4>
       <div onBlur={handleChange}
         data-name="description"
         suppressContentEditableWarning={true}
@@ -180,7 +182,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         className={isFormEnabled ? "form-control" : "form-control disabled"}>
         {fileIndexItem.description}
       </div>
-      <h4>Titel</h4>
+      <h4>{MessageTitleName}</h4>
       <div onBlur={handleChange}
         data-name="title"
         suppressContentEditableWarning={true}
@@ -219,7 +221,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
             language.token(parseRelativeDate(
               fileIndexItem.lastEdited),
               ["{lessThan1Minute}", "{minutes}", "{hour}"],
-              [MessageDateLessThan1Minute, "minutes", "hour"])
+              [MessageDateLessThan1Minute, MessageDateMinutes, MessageDateHour])
           }</b>
           <p>{MessageDateTimeAgoEdited}</p>
         </div> : ""}
