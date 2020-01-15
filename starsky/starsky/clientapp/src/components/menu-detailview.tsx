@@ -2,6 +2,7 @@
 import { Link } from '@reach/router';
 import React, { useEffect, useState } from 'react';
 import { DetailViewContext } from '../contexts/detailview-context';
+import useGlobalSettings from '../hooks/use-globalSettings';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IDetailView, PageType } from '../interfaces/IDetailView';
@@ -13,6 +14,7 @@ import { IsEditedNow } from '../shared/date';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
 import { Keyboard } from '../shared/keyboard';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import ModalDetailviewRenameFile from './modal-detailview-rename-file';
@@ -22,6 +24,13 @@ import MoreMenu from './more-menu';
 import Preloader from './preloader';
 
 const MenuDetailView: React.FunctionComponent = () => {
+
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageCloseDialog = language.text("Sluiten", "Close");
+  const MessageCloseDetailScreenDialog = language.text("Sluit detailscherm", "Close detail screen");
+  const MessageSaved = language.text("Opgeslagen", "Saved");
 
   var history = useLocation();
 
@@ -202,7 +211,7 @@ const MenuDetailView: React.FunctionComponent = () => {
         {!isSearchQuery ? <Link className="item item--first item--close"
           state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
           onClick={() => { setIsLoading(true) }}
-          to={new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory)}>Sluiten</Link> : null}
+          to={new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory)}>{MessageCloseDialog}</Link> : null}
 
         {/* to search */}
         {isSearchQuery ? <Link className="item item--first item--search"
@@ -223,8 +232,8 @@ const MenuDetailView: React.FunctionComponent = () => {
 
     {isDetails ? <div className="header header--sidebar">
       <div className="item item--close" onClick={() => { toggleLabels(); }}>
-        Sluit detailscherm
-        {isRecentEdited ? <div className="autosave">Opgeslagen</div> : null}
+        {MessageCloseDetailScreenDialog}
+        {isRecentEdited ? <div className="autosave">{MessageSaved}</div> : null}
       </div>
     </div> : ""}
 

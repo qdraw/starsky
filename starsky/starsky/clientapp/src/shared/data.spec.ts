@@ -42,7 +42,7 @@ describe("date", () => {
       var yesterday = `${yesterdayDate.getFullYear()}-${yesterdayDate.getMonth() + 1}-${yesterdayDate.getDate()} ${leftPad(yesterdayDate.getHours())}:${leftPad(yesterdayDate.getMinutes())}:${leftPad(yesterdayDate.getSeconds())}`;
 
       var result = parseRelativeDate(yesterday);
-      expect(result).toBe("24 uur");
+      expect(result).toBe("24 {hour}");
     });
 
     it("less than a hour", () => {
@@ -50,7 +50,7 @@ describe("date", () => {
       var tenMinutes = `${tenMinutesStamp.getFullYear()}-${tenMinutesStamp.getMonth() + 1}-${tenMinutesStamp.getDate()} ${leftPad(tenMinutesStamp.getHours())}:${leftPad(tenMinutesStamp.getMinutes())}:${leftPad(tenMinutesStamp.getSeconds())}`
 
       var result = parseRelativeDate(tenMinutes);
-      expect(result).toBe("36 minuten");
+      expect(result).toBe("36 {minutes}");
     });
 
     it("day before yesterday", () => {

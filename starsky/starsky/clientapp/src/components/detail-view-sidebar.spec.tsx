@@ -93,7 +93,7 @@ describe("DetailViewSidebar", () => {
 
     it("test if lastEdited from the context is displayed", () => {
       var lastEdited = Component.find('[data-test="lastEdited"]');
-      expect(lastEdited.text()).toBe("minder dan 1 minuutgeleden bewerkt")
+      expect(lastEdited.text()).toBe("less than one minuteago edited")
     });
 
     it("test if make from the context is displayed", () => {

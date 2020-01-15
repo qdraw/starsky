@@ -34,7 +34,11 @@ export class Language {
    * @param dynamicValue the value that is used
    */
   public token(input: string, token: string[], dynamicValue: string[]): string {
-    return input.replace(token[0], dynamicValue[0])
+    var output = "";
+    for (let index = 0; index < token.length; index++) {
+      output = input.replace(token[index], dynamicValue[index])
+    }
+    return output;
   }
 
 }

@@ -21,10 +21,11 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
 
   // Content
   const settings = useGlobalSettings();
-  const MessageSelectionName = new Language(settings.language).text("Selectie", "Selection");
-  const MessageReadOnlyFolder = new Language(settings.language).text("Alleen lezen map", "Read only folder");
-  const MessageUpdateLabels = new Language(settings.language).text("Labels wijzigingen", "Update labels");
-  const MessageColorClassification = new Language(settings.language).text("Kleur-Classificatie", "Color Classification")
+  const language = new Language(settings.language);
+  const MessageSelectionName = language.text("Selectie", "Selection");
+  const MessageReadOnlyFolder = language.text("Alleen lezen map", "Read only folder");
+  const MessageUpdateLabels = language.text("Labels wijzigingen", "Update labels");
+  const MessageColorClassification = language.text("Kleur-Classificatie", "Color Classification")
 
   // Update view based on url parameters
   var history = useLocation();

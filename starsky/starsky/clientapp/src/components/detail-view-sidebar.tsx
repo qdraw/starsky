@@ -2,6 +2,7 @@ import { Link } from '@reach/router';
 import React, { memo, useEffect, useRef } from "react";
 import { useDetailViewContext } from '../contexts/detailview-context';
 import useFetch from '../hooks/use-fetch';
+import useGlobalSettings from '../hooks/use-globalSettings';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IExifStatus } from '../interfaces/IExifStatus';
@@ -11,6 +12,7 @@ import { CastToInterface } from '../shared/cast-to-interface';
 import { isValidDate, parseDate, parseRelativeDate, parseTime } from '../shared/date';
 import FetchPost from '../shared/fetch-post';
 import { Keyboard } from '../shared/keyboard';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import ColorClassSelect from './color-class-select';
@@ -20,6 +22,25 @@ interface IDetailViewSidebarProps {
 }
 
 const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo((props) => {
+
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageInfoAndTitle = language.text("Info & Titel", "Info & Title");
+  const MessageColorClassification = language.text("Kleur-Classificatie", "Color Classification")
+  const MessageDateTimeAgoEdited = language.text("geleden bewerkt", "ago edited");
+  const MessageDateLessThan1Minute = language.text("minder dan één minuut", "less than one minute");
+
+  const MessageNounUnknown = language.text("Onbekende", "Unknown");
+  const MessageLocation = language.text("locatie", "location");
+  const MessageReadOnlyFile = language.text("Alleen lezen bestand", "Read only file");
+  const MessageNotFoundSourceMissing = language.text("Mist in de index", "Misses in the index");
+  const MessageServerError = language.text("Er is iets mis met de input", "Something is wrong with the input");
+  const MessageDeleted = language.text("Staat in de prullenmand", "Is in the trash");
+  const MessageDeletedRestoreInstruction = language.text("'Zet terug uit prullenmand' om het item te bewerken", "'Restore from Trash' to edit the item");
+
+
+
 
   let { state, dispatch } = useDetailViewContext();
   var history = useLocation();
@@ -127,10 +148,11 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       || fileIndexItem.status === IExifStatus.NotFoundSourceMissing || fileIndexItem.status === IExifStatus.ServerError ? <><div className="content--header">
         Status
     </div> <div className="content content--text">
-          {fileIndexItem.status === IExifStatus.Deleted ? <><div className="warning-box">Staat in de prullenmand </div> 'Zet terug uit prullenmand' om het item te bewerken</> : null}
-          {fileIndexItem.status === IExifStatus.NotFoundSourceMissing ? <><div className="warning-box">Mist in de index </div> </> : null}
-          {fileIndexItem.status === IExifStatus.ReadOnly ? <><div className="warning-box">Alleen lezen bestand</div> </> : null}
-          {fileIndexItem.status === IExifStatus.ServerError ? <><div className="warning-box">Er is iets mis met de input</div> </> : null}
+          {fileIndexItem.status === IExifStatus.Deleted ? <><div className="warning-box">{MessageDeleted}</div>
+            {MessageDeletedRestoreInstruction}</> : null}
+          {fileIndexItem.status === IExifStatus.NotFoundSourceMissing ? <><div className="warning-box">{MessageNotFoundSourceMissing}</div> </> : null}
+          {fileIndexItem.status === IExifStatus.ReadOnly ? <><div className="warning-box">{MessageReadOnlyFile}</div> </> : null}
+          {fileIndexItem.status === IExifStatus.ServerError ? <><div className="warning-box">{MessageServerError}</div> </> : null}
         </div></> : null}
     <div className="content--header">
       Tags
@@ -147,7 +169,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     </div>
 
     <div className="content--header">
-      Info &amp; Titel
+      {MessageInfoAndTitle}
     </div>
     <div className="content--text">
       <h4>Info</h4>
@@ -169,8 +191,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     </div>
 
     <div className="content--header">
-      Kleur-Classificatie
-      </div>
+      {MessageColorClassification}
+    </div>
     <div className="content--text">
       <ColorClassSelect onToggle={() => { }} filePath={fileIndexItem.filePath}
         currentColorClass={fileIndexItem.colorClass} isEnabled={isFormEnabled} />
@@ -193,8 +215,13 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       {isValidDate(fileIndexItem.lastEdited) ?
         <div className="box" data-test="lastEdited">
           <div className="icon icon--last-edited"></div>
-          <b>{parseRelativeDate(fileIndexItem.lastEdited)}</b>
-          <p>geleden bewerkt</p>
+          <b>{
+            language.token(parseRelativeDate(
+              fileIndexItem.lastEdited),
+              ["{lessThan1Minute}", "{minutes}", "{hour}"],
+              [MessageDateLessThan1Minute, "minutes", "hour"])
+          }</b>
+          <p>{MessageDateTimeAgoEdited}</p>
         </div> : ""}
 
       {fileIndexItem.make && fileIndexItem.model && fileIndexItem.aperture && fileIndexItem.focalLength ?
@@ -223,8 +250,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
               <b>{fileIndexItem.locationCity}</b>
               <p>{fileIndexItem.locationCountry}</p>
             </> : <>
-              <b>Onbekende </b>
-              <p>locatie</p>
+              <b>{MessageNounUnknown}</b>
+              <p>{MessageLocation}</p>
             </>}
 
         </a> : ""}
