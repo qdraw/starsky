@@ -10,10 +10,13 @@ describe("useGlobalSettings", () => {
     let setupComponent;
     let hook: IGlobalSettings;
 
-    it("get default language", () => {
+    function runHook() {
       setupComponent = mountReactHook(useGlobalSettings, []);
       hook = setupComponent.componentHook as IGlobalSettings;
+    }
 
+    it("get default language", () => {
+      runHook();
       expect(hook.language).toBe(SupportedLanguages.en)
     });
 
@@ -22,8 +25,7 @@ describe("useGlobalSettings", () => {
       var languageGetter = jest.spyOn(window.navigator, 'language', 'get')
       languageGetter.mockReturnValue('nl');
 
-      setupComponent = mountReactHook(useGlobalSettings, []);
-      hook = setupComponent.componentHook as IGlobalSettings;
+      runHook();
 
       expect(hook.language).toBe(SupportedLanguages.nl)
     });
@@ -34,8 +36,7 @@ describe("useGlobalSettings", () => {
       var languageGetter = jest.spyOn(window.navigator, 'language', 'get')
       languageGetter.mockReturnValue('NL-nl');
 
-      setupComponent = mountReactHook(useGlobalSettings, []);
-      hook = setupComponent.componentHook as IGlobalSettings;
+      runHook();
 
       expect(hook.language).toBe(SupportedLanguages.nl)
     });
@@ -45,8 +46,7 @@ describe("useGlobalSettings", () => {
       var languageGetter = jest.spyOn(window.navigator, 'language', 'get')
       languageGetter.mockReturnValue('nl-BE');
 
-      setupComponent = mountReactHook(useGlobalSettings, []);
-      hook = setupComponent.componentHook as IGlobalSettings;
+      runHook();
 
       expect(hook.language).toBe(SupportedLanguages.nl)
     });
