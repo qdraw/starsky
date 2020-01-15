@@ -4,6 +4,7 @@
     width: 1px;
     border: 0;
     overflow: hidden;
+    opacity: 0;
 }
 
 .switch-field label {
