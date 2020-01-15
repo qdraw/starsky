@@ -1,9 +1,12 @@
 import { Link } from '@reach/router';
 import React, { memo } from 'react';
+import useGlobalSettings from '../hooks/use-globalSettings';
 import useLocation from '../hooks/use-location';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 
-//         <ColorClassFilter itemsCount={this.props.collectionsCount} subPath={this.props.subPath} colorClassFilterList={this.props.colorClassFilterList} colorClassUsage={this.props.colorClassUsage}></ColorClassFilter>
+//  <ColorClassFilter itemsCount={this.props.collectionsCount} subPath={this.props.subPath} 
+// colorClassFilterList={this.props.colorClassFilterList} colorClassUsage={this.props.colorClassUsage}></ColorClassFilter>
 export interface IColorClassProp {
   subPath: string;
   colorClassFilterList: Array<number>;
@@ -12,21 +15,26 @@ export interface IColorClassProp {
 }
 
 const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) => {
+
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+
+  const colorContent: Array<string> = [
+    language.text("Kleurloos", "Colorless"),
+    language.text("Paars", "Purple"),
+    language.text("Rood", "Red"),
+    language.text("Oranje", "Orange"),
+    language.text("Geel", "Yellow"),
+    language.text("Groen", "Green"),
+    language.text("Azuur", "Azure"),
+    language.text("Blauw", "Blue"),
+    language.text("Grijs", "Grey"),
+    language.text("Herstel filter", "Reset filter"),
+  ];
+
   // used for reading current location
   var history = useLocation();
-
-  var colorContent: string[] = [
-    "Kleurloos",
-    "Paars",
-    "Rood",
-    "Oranje",
-    "Geel",
-    "Groen",
-    "Azuur",
-    "Blauw",
-    "Grijs",
-    "Herstel Filter"
-  ];
 
   function cleanColorClass(): string {
     if (!props.subPath) return "/";
@@ -55,7 +63,9 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
   let resetButtonDisabled = <div className="btn colorclass colorclass--reset disabled">{colorContent[9]}</div>;
 
   // there is no content ?
-  if (props.colorClassUsage.length === 1 && props.colorClassFilterList.length >= 1) return (<div className="colorclass colorclass--filter"> {resetButton}</div>);
+  if (props.colorClassUsage.length === 1 && props.colorClassFilterList.length >= 1) return (
+    <div className="colorclass colorclass--filter"> {resetButton}</div>
+  );
 
   if (props.itemsCount === 0 || props.colorClassUsage.length === 1) return (<></>);
   return (<div className="colorclass colorclass--filter">

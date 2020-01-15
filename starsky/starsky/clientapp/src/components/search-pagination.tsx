@@ -1,6 +1,8 @@
 import { Link } from '@reach/router';
 import React, { memo, useEffect } from "react";
+import useGlobalSettings from '../hooks/use-globalSettings';
 import useLocation from '../hooks/use-location';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 
 export interface IRelativeLink {
@@ -8,6 +10,12 @@ export interface IRelativeLink {
 }
 
 const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) => {
+
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessagePrevious = language.text("Vorige", "Previous");
+  const MessageNext = language.text("Volgende", "Next");
 
   // used for reading current location
   var history = useLocation();
@@ -17,7 +25,7 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
 
   useEffect(() => {
     setLastPageNumber(props.lastPageNumber ? props.lastPageNumber : -1);
-    setUrlObject(new URLPath().StringToIUrl(history.location.search))
+    setUrlObject(new URLPath().StringToIUrl(history.location.search));
   }, [props, history.location.search]);
 
   function prev(): JSX.Element {
@@ -26,7 +34,7 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
     var prevObject = { ...urlObject };
     prevObject.p = prevObject.p ? prevObject.p - 1 : 1;
     if (!urlObject.p || urlObject.p < 0 || lastPageNumber < urlObject.p) return <></>;
-    return <Link className="prev" to={new URLPath().IUrlToString(prevObject)}> Vorige</ Link>;
+    return <Link className="prev" to={new URLPath().IUrlToString(prevObject)}> {MessagePrevious}</ Link>;
   }
 
   function next(): JSX.Element {
@@ -36,13 +44,17 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
     nextObject.p = nextObject.p ? nextObject.p + 1 : 1;
     // if(urlObject.p) also means 0
     if (urlObject.p === undefined || urlObject.p < 0 || lastPageNumber <= urlObject.p) return <></>; // undefined=0
-    return <Link className="next" to={new URLPath().IUrlToString(nextObject)}> Volgende</ Link>;
+    return <Link className="next" to={new URLPath().IUrlToString(nextObject)}> {MessageNext}</ Link>;
   }
 
-  return (<div className="relativelink"><h4 className="nextprev">
-    {prev()}
-    {next()}
-  </h4></div>);
+  return (<>
+    <div className="relativelink">
+      <h4 className="nextprev">
+        {prev()}
+        {next()}
+      </h4>
+    </div>
+  </>);
 
 
 });
