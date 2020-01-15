@@ -4,6 +4,7 @@ import useFetch from '../hooks/use-fetch';
 import useGlobalSettings from '../hooks/use-globalSettings';
 import useLocation from '../hooks/use-location';
 import { Language } from '../shared/language';
+import { UrlQuery } from '../shared/url-query';
 
 interface IMenuSearchBarProps {
   defaultText?: string;
@@ -36,9 +37,11 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
   const [inputFocus, setInputFocus] = React.useState(true);
 
   // can't set this inside effect or if ==> performance issue, runs to often
-  const responseObject = useFetch("/api/suggest/?t=" + query, 'get');
+  const responseObject = useFetch(new UrlQuery().UrlSearchSuggestApi(query), 'get');
   useEffect(() => {
     if (!responseObject.data) return;
+    if (!responseObject.data.length) return;
+
     var result: Array<string> = [...responseObject.data];
     setSuggest(result)
   }, [responseObject]);
@@ -53,7 +56,7 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
   function navigate(defQuery: string) {
 
     // To do change to search page
-    history.navigate("/search?t=" + defQuery);
+    history.navigate(new UrlQuery().UrlSearch(defQuery));
     setFormFocus(false);
 
     // force update input field after navigate to page (only the input item)
