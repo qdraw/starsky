@@ -82,5 +82,15 @@ describe("AspectRatio", () => {
     expect(gcd).toBe(10);
     expect(ratio).toBe("1:0");
   });
+
+  it("3758 × 2505", () => {
+    var width = 3758;
+    var height = 2505;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height);
+
+    expect(gcd).toBe(1);
+    expect(ratio).toBe(null);
+  });
 });
 
