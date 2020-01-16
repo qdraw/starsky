@@ -168,6 +168,26 @@ describe("DetailViewSidebar", () => {
 
     });
 
+    it("ReadOnly status (from FileIndexItem)", () => {
+
+      contextProvider.state.fileIndexItem.status = IExifStatus.ReadOnly;
+
+      var DeletedTestComponent = () => (
+        <DetailViewContext.Provider value={contextProvider}>
+          <DetailViewSidebar status={IExifStatus.Ok} filePath={"/t"}>></DetailViewSidebar>
+        </DetailViewContext.Provider>
+      );
+      var component = mount(<DeletedTestComponent />);
+
+      expect(component.exists('.warning-box')).toBeTruthy();
+
+      // Tags and other input fields are disabled
+      expect(component.find('[data-name="tags"]').hasClass('disabled')).toBeTruthy();
+      expect(component.find('[data-name="description"]').hasClass('disabled')).toBeTruthy();
+      expect(component.find('[data-name="title"]').hasClass('disabled')).toBeTruthy();
+
+    });
+
     it("search cache clear AND when a tag is updated ", async () => {
 
       act(() => {
