@@ -366,6 +366,7 @@ Task("SonarBegin")
         var gitBranch = GitBranchCurrent(parent);
         var branchName = gitBranch.FriendlyName;
         if(branchName == "(no branch)") branchName = "master";
+        Information($">> Branch: {branchName}");
 
         /* branchName = "master"; */
 
