@@ -95,7 +95,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
 
   function handleChange(event: React.ChangeEvent<HTMLDivElement>) {
-    let value = event.currentTarget.innerText;
+    let value = event.currentTarget.textContent;
     let name = event.currentTarget.dataset["name"];
 
     if (!name) return;
@@ -103,19 +103,14 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
     // compare
     var fileIndexObject: any = fileIndexItem;
+
     if (!fileIndexObject[name] === undefined) return; //to update emthy start to first fill
 
     var currentString: string = fileIndexObject[name];
     if (value === currentString) return;
 
-    // Empty strings are NOT supported
-    if (event.currentTarget.innerText.length === 1) {
-      fileIndexObject[name] = ".";
-      console.log('not supported');
-    }
-
     var updateObject: any = { f: fileIndexItem.filePath };
-    updateObject[name] = value;
+    updateObject[name] = value.trim();
 
     var bodyParams = new URLPath().ObjectToSearchParams(updateObject);
 
