@@ -19,7 +19,9 @@
 ### High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
-- []   (feature) _Front-end_ Upload to directory (+ backend)
+
+# version 0.1.12 - 2020-??-??
+- []   (feature) _Front-end_ Upload to directory (+ backend) __not implemented__
 
 # version 0.1.12 - 2020-01-15
 - [x]   (bugfix) _Front-end_ Add Loading in Move dialog
@@ -96,7 +98,6 @@ _Upgrade to .NET Core 3.0 & EF Core 3.1-preview3_
 - [x]   (bug) Force sync and renew for directories that contain a + sign are passing the wrong values (fixed)
 - [x]   Add unit tests for importing raw's with .xmp files
 - [x]   (starsky-tools) add Dropbox import helper tool
-
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_
