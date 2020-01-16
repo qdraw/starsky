@@ -1,7 +1,10 @@
 import * as React from "react";
 import { memo, useEffect, useRef } from 'react';
 import useFetch from '../hooks/use-fetch';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
+import { Language } from '../shared/language';
+import { UrlQuery } from '../shared/url-query';
 
 interface IMenuSearchBarProps {
   defaultText?: string;
@@ -9,11 +12,15 @@ interface IMenuSearchBarProps {
 }
 
 const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props) => {
+
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+
   var defaultMenu = [
     { "name": "Home", "url": "/" },
-    { "name": "Foto's van deze week", "url": "/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22" },
-    { "name": "Prullenmand", url: "/trash" },
-    { "name": "Importeren", url: "/import" }
+    { "name": language.text("Foto's van deze week", "Photos of this week"), "url": "/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22" },
+    { "name": language.text("Prullenmand", "Trash"), url: "/trash" },
+    { "name": language.text("Importeren", "Import"), url: "/import" }
   ];
   var history = useLocation();
 
@@ -30,9 +37,11 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
   const [inputFocus, setInputFocus] = React.useState(true);
 
   // can't set this inside effect or if ==> performance issue, runs to often
-  const responseObject = useFetch("/api/suggest/?t=" + query, 'get');
+  const responseObject = useFetch(new UrlQuery().UrlSearchSuggestApi(query), 'get');
   useEffect(() => {
     if (!responseObject.data) return;
+    if (!responseObject.data.length) return;
+
     var result: Array<string> = [...responseObject.data];
     setSuggest(result)
   }, [responseObject]);
@@ -47,7 +56,7 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
   function navigate(defQuery: string) {
 
     // To do change to search page
-    history.navigate("/search?t=" + defQuery);
+    history.navigate(new UrlQuery().UrlSearch(defQuery));
     setFormFocus(false);
 
     // force update input field after navigate to page (only the input item)

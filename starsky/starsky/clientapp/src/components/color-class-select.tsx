@@ -1,7 +1,9 @@
 import React, { memo, useEffect } from 'react';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import FetchPost from '../shared/fetch-post';
 import { Keyboard } from '../shared/keyboard';
+import { Language } from '../shared/language';
 import { UrlQuery } from '../shared/url-query';
 
 export interface IColorClassSelectProps {
@@ -16,16 +18,21 @@ export interface IColorClassSelectProps {
  * Used to update colorclasses
  */
 const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((props) => {
-  var colorContent: Array<string> = [
-    "Kleurloos",
-    "Paars",
-    "Rood",
-    "Oranje",
-    "Geel",
-    "Groen",
-    "Azuur",
-    "Blauw",
-    "Grijs",
+
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+
+  const colorContent: Array<string> = [
+    language.text("Kleurloos", "Colorless"),
+    language.text("Paars", "Purple"),
+    language.text("Rood", "Red"),
+    language.text("Oranje", "Orange"),
+    language.text("Geel", "Yellow"),
+    language.text("Groen", "Green"),
+    language.text("Azuur", "Azure"),
+    language.text("Blauw", "Blue"),
+    language.text("Grijs", "Grey"),
   ];
 
   const [currentColorClass, setCurrentColorClass] = React.useState(props.currentColorClass);

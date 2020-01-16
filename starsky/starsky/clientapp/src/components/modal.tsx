@@ -2,6 +2,8 @@ import 'core-js/features/dom-collections/for-each';
 import React from "react";
 import ReactDOM from "react-dom";
 import capturePosition from '../hooks/use-capture-position';
+import useGlobalSettings from '../hooks/use-global-settings';
+import { Language } from '../shared/language';
 
 type ModalPropTypes = {
   children: React.ReactNode;
@@ -20,6 +22,11 @@ export default function Modal({
   handleExit,
   focusAfterExit
 }: ModalPropTypes): any {
+
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageCloseDialog = language.text("Sluiten", "Close");
+
   const [hasUpdated, forceUpdate] = React.useState(false);
 
   const exitButton = React.useRef<HTMLButtonElement>(null);
@@ -111,7 +118,7 @@ export default function Modal({
                   handleExit()
                 }}
               >
-                Sluiten
+                {MessageCloseDialog}
               </button>
             </div>
             {children}

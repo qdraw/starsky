@@ -23,7 +23,7 @@ namespace starsky.Controllers
 	    /// <param name="t">search query</param>
 	    /// <param name="p">page number</param>
 	    /// <returns>the search results</returns>
-	    /// <response code="200">the search results (enable json to get json results)</response>
+	    /// <response code="200">the search results</response>
 	    [HttpGet("/api/search")]
 	    [ProducesResponseType(typeof(SearchViewModel),200)] // ok
         public IActionResult Index(string t, int p = 0)
@@ -41,6 +41,7 @@ namespace starsky.Controllers
         /// <param name="t">search query</param>
         /// <param name="p">pagenumer (search query)</param>
         /// <returns>Relative object (only this)</returns>
+        /// <response code="200">the search results</response>
         [HttpGet("/api/search/relativeObjects")]
         [ProducesResponseType(typeof(SearchViewModel),200)] // ok
         public IActionResult SearchRelative(string f, string t, int p = 0)
@@ -94,7 +95,7 @@ namespace starsky.Controllers
 	    /// </summary>
 	    /// <param name="p">page number</param>
 	    /// <returns>the delete files results</returns>
-	    /// <response code="200">the search results (enable json to get json results)</response>
+	    /// <response code="200">the search results</response>
 	    [HttpGet("/api/search/trash")]
 	    [ProducesResponseType(typeof(SearchViewModel),200)] // ok
         public IActionResult Trash(int p = 0)
@@ -108,7 +109,13 @@ namespace starsky.Controllers
 		/// </summary>
 		/// <param name="t">search query</param>
 		/// <returns>status</returns>
+		/// <response code="200">cache is clear for this search query</response>
+		/// <response code="412">Cache is disabled in config</response>
+		/// <response code="401">User unauthorized</response>
 		[HttpPost("/api/search/removeCache")]
+		[Produces("application/json")]	    
+		[ProducesResponseType(typeof(string),200)]
+		[ProducesResponseType(typeof(string),412)]
 	    public IActionResult RemoveCache(string t = "")
 	    {
 		    var cache = _search.RemoveCache(t);

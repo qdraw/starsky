@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchPost from '../shared/fetch-post';
+import { Language } from '../shared/language';
 import { SidebarUpdate } from '../shared/sidebar-update';
 import { URLPath } from '../shared/url-path';
 import Preloader from './preloader';
 
-
 const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
+
+  const settings = useGlobalSettings();
+  const MessageAddName = new Language(settings.language).text("Toevoegen", "Add to");
+  const MessageOverwriteName = new Language(settings.language).text("Overschrijven", "Overwrite");
+  const MessageTitleName = new Language(settings.language).text("Titel", "Title");
 
   var history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
@@ -95,7 +101,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
         contentEditable={!state.isReadOnly && select.length !== 0}
         className={!state.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
       </div>
-      <h4>Info</h4>
+      <h4>Info:</h4>
       <div
         onInput={handleUpdateChange}
         data-name="description"
@@ -103,7 +109,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
         contentEditable={!state.isReadOnly && select.length !== 0}
         className={!state.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
       </div>
-      <h4>Titel</h4>
+      <h4>{MessageTitleName}:</h4>
       <div data-name="title"
         onInput={handleUpdateChange}
         suppressContentEditableWarning={true}
@@ -114,10 +120,10 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       {isInputEnabled && select.length !== 0 ? <button
         className="btn btn--info" data-test="overwrite"
         onClick={() => pushUpdate(false)}>Overschrijven</button> :
-        <button disabled className="btn btn--info disabled" >Overschrijven</button>}
+        <button disabled className="btn btn--info disabled" >{MessageOverwriteName}</button>}
       {isInputEnabled && select.length !== 0 ?
-        <button data-test="add" className="btn btn--default" onClick={() => pushUpdate(true)}>Toevoegen</button> :
-        <button disabled className="btn btn--default disabled" >Toevoegen</button>}
+        <button data-test="add" className="btn btn--default" onClick={() => pushUpdate(true)}>{MessageAddName}</button> :
+        <button disabled className="btn btn--default disabled" >{MessageAddName}</button>}
     </>
   );
 };

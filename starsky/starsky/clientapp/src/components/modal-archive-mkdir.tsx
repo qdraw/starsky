@@ -1,10 +1,12 @@
 import React from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
+import useGlobalSettings from '../hooks/use-global-settings';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { CastToInterface } from '../shared/cast-to-interface';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
 import { FileExtensions } from '../shared/file-extensions';
+import { Language } from '../shared/language';
 import { UrlQuery } from '../shared/url-query';
 import Modal from './modal';
 
@@ -15,11 +17,18 @@ interface IModalRenameFileProps {
 
 const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props) => {
 
-  const FeatureName: string = "Nieuwe map aanmaken"
-  const NonValidDirectoryName: string = "Controlleer de naam, deze map kan niet zo worden aangemaakt";
-  const GeneralError: string = "Er is misgegaan met het aanmaken van deze map";
-  const DirectoryExistError: string = "De map bestaat al, probeer een andere naam";
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageFeatureName = language.text("Nieuwe map aanmaken", "Create new folder");
+  const MessageNonValidDirectoryName = language.text("Controleer de naam, deze map kan niet zo worden aangemaakt",
+    "Check the name, this folder cannot be created in this way");
+  const MessageGeneralMkdirCreateError = language.text("Er is misgegaan met het aanmaken van deze map",
+    "An error occurred while creating this folder");
+  const MessageDirectoryExistError = language.text("De map bestaat al, probeer een andere naam",
+    "The folder already exists, try a different name");
 
+  // Context of Archive
   let { state, dispatch } = React.useContext(ArchiveContext);
 
   // to show errors
@@ -50,7 +59,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props
     var isValidFileName = new FileExtensions().IsValidDirectoryName(fieldValue);
 
     if (!isValidFileName) {
-      setError(NonValidDirectoryName);
+      setError(MessageNonValidDirectoryName);
       setButtonState(false);
     }
     else {
@@ -72,7 +81,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props
     var result = await FetchPost(new UrlQuery().UrlSyncMkdir(), bodyParams.toString())
 
     if (result.statusCode !== 200) {
-      setError(result.statusCode !== 409 ? GeneralError : DirectoryExistError);
+      setError(result.statusCode !== 409 ? MessageGeneralMkdirCreateError : MessageDirectoryExistError);
       // and renable
       setIsLoading(false);
       setFormEnabled(true);
@@ -98,7 +107,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props
       props.handleExit()
     }}>
     <div className="content">
-      <div className="modal content--subheader">{FeatureName}</div>
+      <div className="modal content--subheader">{MessageFeatureName}</div>
       <div className="modal content--text">
 
         <div data-name="directoryname"
@@ -113,7 +122,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props
 
         <button disabled={!isFormEnabled || loading || !buttonState}
           className="btn btn--default" onClick={pushRenameChange}>
-          {loading ? 'Loading...' : 'Opslaan'}
+          {loading ? 'Loading...' : MessageFeatureName}
         </button>
       </div>
     </div>

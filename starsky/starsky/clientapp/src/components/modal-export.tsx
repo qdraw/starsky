@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useInterval from '../hooks/use-interval';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import Modal from './modal';
@@ -21,6 +23,16 @@ enum ProcessingState {
 }
 
 const ModalExport: React.FunctionComponent<IModalTrashProps> = (props) => {
+
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageDownloadSelection = language.text("Download selectie", "Download selection");
+  const MessageOrginalFile = language.text("Origineel bestand", "Original file");
+  const MessageThumbnailFile = "Thumbnail";
+  const MessageGenericExportFail = language.text("Er is iets misgegaan met exporteren", "Something went wrong with exporting");
+  const MessageExportReady = language.text("Het bestand {createZipKey} is klaar met exporteren.", "The file {createZipKey} has finished exporting.");
+  const MessageDownloadAsZipArchive = language.text("Download als zip-archief", "Download as a zip archive");
 
   const [isProcessing, setProcessing] = React.useState(ProcessingState.default);
   const [createZipKey, setCreateZipKey] = React.useState("");
@@ -100,23 +112,23 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = (props) => {
       props.handleExit()
     }}>
 
-    <div className="modal content--subheader">Download selectie</div>
+    <div className="modal content--subheader">{MessageDownloadSelection}</div>
     <div className="modal content--text">
       {isProcessing === ProcessingState.default && props.select && props.select.length === 1 ? <>
         <a href={new UrlQuery().UrlDownloadPhotoApi(props.select[0], false)} download={new URLPath().FileNameBreadcrumb(props.select[0])}
-          target="_blank" rel="noopener noreferrer" className="btn btn--info">Orgineel</a>
+          target="_blank" rel="noopener noreferrer" className="btn btn--info">{MessageOrginalFile}</a>
         {singleFileThumbnailStatus ? <a href={new UrlQuery().UrlDownloadPhotoApi(props.select[0], true)} download={new URLPath().FileNameBreadcrumb(props.select[0])}
-          target="_blank" rel="noopener noreferrer" className={"btn btn--default"}>Thumbnail</a> : null}
+          target="_blank" rel="noopener noreferrer" className={"btn btn--default"}>{MessageThumbnailFile}</a> : null}
       </> : null}
 
       {isProcessing === ProcessingState.default && props.select && props.select.length >= 2 ? <>
         <button onClick={() => {
           postZip(false)
-        }} className="btn btn--info">Orginelen</button>
+        }} className="btn btn--info">{MessageOrginalFile}</button>
 
         <button onClick={() => {
           postZip(true)
-        }} className="btn btn--default">Thumbnails</button>
+        }} className="btn btn--default">{MessageThumbnailFile}</button>
       </> : null}
 
       {isProcessing === ProcessingState.server ? <>
@@ -124,13 +136,12 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = (props) => {
         Op de achtergrond worden de afbeeldingen klaar gezet
       </> : null}
 
-      {isProcessing === ProcessingState.fail ? <>Er is iets mis gegaan met exporteren
-      </> : null}
+      {isProcessing === ProcessingState.fail ? MessageGenericExportFail : null}
 
       {isProcessing === ProcessingState.ready ? <>
-        Het bestand ‘{createZipKey}` is klaar met exporteren.
+        {language.token(MessageExportReady, ["{createZipKey}"], [createZipKey])}
         <a className="btn btn--default" href={new UrlQuery().UrlExportZipApi(createZipKey, false)} download rel="noopener noreferrer" target="_blank">
-          Download als zip-achief
+          {MessageDownloadAsZipArchive}
         </a>
       </> : null}
     </div>

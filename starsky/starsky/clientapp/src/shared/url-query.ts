@@ -23,6 +23,18 @@ export class UrlQuery {
     return "/api/search?json=true&t=" + query + "&p=" + pageNumber;
   }
 
+  public UrlSearch(query: string): string {
+    return "/search?t=" + query
+  }
+
+  public UrlSearchSuggestApi(query: string): string {
+    return "/api/suggest/?t=" + query;
+  }
+
+  public UrlSearchRemoveCacheApi(): string {
+    return "/api/search/removeCache";
+  }
+
   public UrlSearchTrashApi = (pageNumber = 0): string => {
     return "/api/search/trash?p=" + pageNumber;
   }

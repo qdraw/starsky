@@ -1,8 +1,10 @@
 
 import React, { memo, useEffect } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import FetchPost from '../shared/fetch-post';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import MenuSearchBar from './menu.searchbar';
@@ -15,6 +17,20 @@ interface IMenuArchiveProps {
 }
 
 const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
+
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+
+  // Content
+  const MessageSelectAction = language.text("Selecteer", "Select");
+  const MessageSelectPresentPerfect = language.text("geselecteerd", "selected");
+  const MessageNoneSelected = language.text("Niets geselecteerd", "Nothing selected");
+  const MessageMkdir = language.text("Map maken", "Create folder");
+  const MessageDisplayOptions = language.text("Weergave opties", "Display options");
+  const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
+  const MessageSelectFurther = language.text("Verder selecteren", "Select further");
+  const MessageSelectAll = language.text("Alles selecteren", "Select all");
+  const MessageMoveToTrash = language.text("Verplaats naar prullenmand", "Move to Trash");
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   let { state, dispatch } = React.useContext(ArchiveContext);
@@ -43,7 +59,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   }, [history.location.search]);
 
   // Select All items
-  function allSelection() {
+  function selectAll() {
     if (!select) return;
     var updatedSelect = new URLPath().GetAllSelection(select, state.fileIndexItems);
 
@@ -72,7 +88,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
-  async function TrashSelection() {
+  async function moveToTrashSelection() {
     if (!select) return;
 
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
@@ -101,6 +117,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   return (
     <>
+      {/* Modals  */}
       {isModalExportOpen ? <ModalExport handleExit={() =>
         setModalExportOpen(!isModalExportOpen)} select={new URLPath().MergeSelectParent(select, new URLPath().StringToIUrl(history.location.search).f)}
         isOpen={isModalExportOpen} /> : null}
@@ -110,6 +127,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
       {isModalMkdirOpen ? <ModalArchiveMkdir handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)} isOpen={isModalMkdirOpen} /> : null}
 
+      {/* Menu */}
       <header className={sidebar ? "header header--main header--select header--edit" : select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
           {!select ? <button data-test="hamburger" className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
@@ -121,29 +139,28 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           </button> : null}
 
           {select && select.length === 0 ? <button data-test="selected-0" onClick={() => { selectToggle() }}
-            className="item item--first item--close">Niets geselecteerd</button> : null}
+            className="item item--first item--close">{MessageNoneSelected}</button> : null}
           {select && select.length >= 1 ? <button data-test={`selected-${select.length}`} onClick={() => { selectToggle() }}
-            className="item item--first item--close">{select.length} geselecteerd</button> : null}
+            className="item item--first item--close">{select.length} {MessageSelectPresentPerfect}</button> : null}
           {!select ? <div className="item item--select" onClick={() => { selectToggle() }}>
-            Selecteer
-            </div> : null}
+            {MessageSelectAction}
+          </div> : null}
 
           {select ? <div className="item item--labels" onClick={() => toggleLabels()}>Labels</div> : null}
 
           {/* default more menu */}
           {!select ? <MoreMenu>
-            <li className="menu-option" data-test="mkdir" onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}>Map maken</li>
+            <li className="menu-option" data-test="mkdir" onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}>{MessageMkdir}</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
-            <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>Weergave opties</li>
+            <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
           </MoreMenu> : null}
 
           {/* In the select context there are more options */}
           {select ? <MoreMenu>
-            {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>Undo selectie</li> : null}
-            {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>Alles selecteren</li> : null}
+            {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>{MessageUndoSelection}</li> : null}
+            {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => selectAll()}>{MessageSelectAll}</li> : null}
             <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
-            <li className="menu-option" onClick={() => TrashSelection()}>Verplaats naar prullenmand</li>
-
+            <li className="menu-option" onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li>
             <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
           </MoreMenu> : null}
 
@@ -158,7 +175,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       </header>
 
       {select ? <div className="header header--sidebar header--border-left">
-        <div className="item item--continue" onClick={() => { toggleLabels(); }}>Verder selecteren</div>
+        <div className="item item--continue" onClick={() => { toggleLabels(); }}>{MessageSelectFurther}</div>
       </div> : ""}
 
     </>);

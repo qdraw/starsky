@@ -1,7 +1,9 @@
 import React, { memo, useEffect, useLayoutEffect } from "react";
+import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import { PageType } from '../interfaces/IDetailView';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import ArchiveSidebarColorClass from './archive-sidebar-color-class';
 import ArchiveSidebarLabelEdit from './archive-sidebar-label-edit';
@@ -16,6 +18,14 @@ interface IArchiveSidebarProps {
 }
 
 const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((archive) => {
+
+  // Content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageSelectionName = language.text("Selectie", "Selection");
+  const MessageReadOnlyFolder = language.text("Alleen lezen map", "Read only folder");
+  const MessageUpdateLabels = language.text("Labels wijzigingen", "Update labels");
+  const MessageColorClassification = language.text("Kleur-Classificatie", "Color Classification")
 
   // Update view based on url parameters
   var history = useLocation();
@@ -66,22 +76,22 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
     {archive.isReadOnly ? <>
       <div className="content--header">Status</div>
       <div className="content content--text">
-        <div className="warning-box">Alleen lezen map</div>
+        <div className="warning-box">{MessageReadOnlyFolder}</div>
       </div> </> : null}
 
     <div className="content--header">
-      Selectie
+      {MessageSelectionName}
     </div>
     <ArchiveSidebarSelectionList {...archive} />
 
     <div className="content--header">
-      Labels wijzigingen
+      {MessageUpdateLabels}
     </div>
     <ArchiveSidebarLabelEdit {...archive} />
 
     <div className="content--header">
-      Kleur-Classificatie
-      </div>
+      {MessageColorClassification}
+    </div>
     <div className="content--text">
       <ArchiveSidebarColorClass {...archive} />
     </div>

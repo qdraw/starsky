@@ -2,6 +2,7 @@
 import { Link } from '@reach/router';
 import React, { useEffect, useState } from 'react';
 import { DetailViewContext } from '../contexts/detailview-context';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IDetailView, PageType } from '../interfaces/IDetailView';
@@ -13,6 +14,7 @@ import { IsEditedNow } from '../shared/date';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
 import { Keyboard } from '../shared/keyboard';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import ModalDetailviewRenameFile from './modal-detailview-rename-file';
@@ -22,6 +24,18 @@ import MoreMenu from './more-menu';
 import Preloader from './preloader';
 
 const MenuDetailView: React.FunctionComponent = () => {
+
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageCloseDialog = language.text("Sluiten", "Close");
+  const MessageCloseDetailScreenDialog = language.text("Sluit detailscherm", "Close detail screen");
+  const MessageSaved = language.text("Opgeslagen", "Saved");
+  const MessageMoveToTrash = language.text("Verplaats naar prullenmand", "Move to Trash");
+  const MessageRestoreFromTrash = language.text("Zet terug uit prullenmand", "Restore from Trash");
+  const MessageMove = language.text("Verplaats", "Move");
+  const MessageRenameFileName = language.text("Bestandsnaam wijzigen", "Rename file name");
+  const MessageRotateToRight = language.text("Rotatie naar rechts", "Rotation to the right");
 
   var history = useLocation();
 
@@ -190,9 +204,12 @@ const MenuDetailView: React.FunctionComponent = () => {
   return (<>
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
-    {isModalExportOpen && state ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)} select={[state.subPath]} isOpen={isModalExportOpen} /> : null}
-    {isModalRenameFileOpen && state ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)} isOpen={isModalRenameFileOpen} /> : null}
-    {isModalMoveFile && state ? <ModalMoveFile selectedSubPath={state.fileIndexItem.filePath} parentDirectory={state.fileIndexItem.parentDirectory} handleExit={() => setModalMoveFile(!isModalMoveFile)} isOpen={isModalMoveFile} /> : null}
+    {isModalExportOpen && state ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)}
+      select={[state.subPath]} isOpen={isModalExportOpen} /> : null}
+    {isModalRenameFileOpen && state ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)}
+      isOpen={isModalRenameFileOpen} /> : null}
+    {isModalMoveFile && state ? <ModalMoveFile selectedSubPath={state.fileIndexItem.filePath} parentDirectory={state.fileIndexItem.parentDirectory}
+      handleExit={() => setModalMoveFile(!isModalMoveFile)} isOpen={isModalMoveFile} /> : null}
 
     <header className={isDetails ? isMarkedAsDeleted ? "header header--main header--edit header--deleted" : "header header--main header--edit" :
       isMarkedAsDeleted ? "header header--main header--deleted" : "header header--main"}>
@@ -202,7 +219,7 @@ const MenuDetailView: React.FunctionComponent = () => {
         {!isSearchQuery ? <Link className="item item--first item--close"
           state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
           onClick={() => { setIsLoading(true) }}
-          to={new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory)}>Sluiten</Link> : null}
+          to={new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory)}>{MessageCloseDialog}</Link> : null}
 
         {/* to search */}
         {isSearchQuery ? <Link className="item item--first item--search"
@@ -213,18 +230,18 @@ const MenuDetailView: React.FunctionComponent = () => {
         <MoreMenu>
           <li className="menu-option" data-test="export" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
           {!isDetails ? <li className="menu-option" data-test="labels" onClick={toggleLabels}>Labels</li> : null}
-          <li className="menu-option" data-test="move" onClick={() => setModalMoveFile(!isModalMoveFile)}>Verplaats</li>
-          <li className="menu-option" data-test="rename" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>Naam wijzigen</li>
-          <li className="menu-option" data-test="trash" onClick={TrashFile}>{!isMarkedAsDeleted ? "Verplaats naar prullenmand" : "Zet terug uit prullenmand"}</li>
-          <li className="menu-option" data-test="rotate" onClick={rotateImage90}>Roteer naar rechts</li>
+          <li className="menu-option" data-test="move" onClick={() => setModalMoveFile(!isModalMoveFile)}>{MessageMove}</li>
+          <li className="menu-option" data-test="rename" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>{MessageRenameFileName}</li>
+          <li className="menu-option" data-test="trash" onClick={TrashFile}>{!isMarkedAsDeleted ? MessageMoveToTrash : MessageRestoreFromTrash}</li>
+          <li className="menu-option" data-test="rotate" onClick={rotateImage90}>{MessageRotateToRight}</li>
         </MoreMenu>
       </div>
     </header>
 
     {isDetails ? <div className="header header--sidebar">
       <div className="item item--close" onClick={() => { toggleLabels(); }}>
-        Sluit detailscherm
-        {isRecentEdited ? <div className="autosave">Opgeslagen</div> : null}
+        {MessageCloseDetailScreenDialog}
+        {isRecentEdited ? <div className="autosave">{MessageSaved}</div> : null}
       </div>
     </div> : ""}
 

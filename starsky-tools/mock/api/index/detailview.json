@@ -1,0 +1,64 @@
+{
+   "fileIndexItem":{
+      "filePath":"/__starsky/01-dif+gpx/20170615_114813__DSC00095-under-sealevel.jpg",
+      "fileName":"20170615_114813__DSC00095-under-sealevel.jpg",
+      "fileHash":"ILIED7HG2GZJYIULXMLC6KA4NQ",
+      "fileCollectionName":"20170615_114813__DSC00095-under-sealevel",
+      "parentDirectory":"/__starsky/01-dif+gpx",
+      "isDirectory":false,
+      "keywords":[
+         "Castricum",
+         "duinen",
+         "vliegtuig",
+         "test"
+      ],
+      "tags":"Castricum, duinen, vliegtuig, test",
+      "status":"Default",
+      "description":"SONY DSC",
+      "title":"",
+      "dateTime":"2017-06-15T11:48:13",
+      "addToDatabase":"2019-08-19T16:01:05.5917974",
+      "lastEdited":"2019-08-19T16:01:05.5917982",
+      "latitude":52.6362166666,
+      "longitude":4.6572,
+      "locationAltitude":-2.0,
+      "locationCity":"Castricum",
+      "locationState":"Noord-Holland",
+      "locationCountry":"Nederland",
+      "colorClass":0,
+      "orientation":"Horizontal",
+      "imageWidth":3872,
+      "imageHeight":2592,
+      "imageFormat":"jpg",
+      "collectionPaths":[
+         "/__starsky/01-dif+gpx/20170615_114813__DSC00095-under-sealevel.jpg"
+      ],
+      "aperture":8.0,
+      "shutterSpeed":"1/2500",
+      "isoSpeed":400,
+      "software":null,
+      "makeModel":"Sony |DSLR-A330|",
+      "make":"Sony ",
+      "model":"DSLR-A330",
+      "focalLength":26.0
+   },
+   "breadcrumb":[
+      "/",
+      "/__starsky",
+      "/__starsky/01-dif+gpx"
+   ],
+   "colorClassFilterList":[
+
+   ],
+   "pageType":"DetailView",
+   "isDirectory":false,
+   "subPath":"/__starsky/01-dif+gpx/20170615_114813__DSC00095-under-sealevel.jpg",
+   "collections":true,
+   "relativeObjects":{
+      "nextFilePath":"/__starsky/01-dif+gpx/20180721_153248-nogeo.jpg",
+      "prevFilePath":"/__starsky/01-dif+gpx/20120804110510 großclockner.gpx",
+      "args":{
+
+      }
+   }
+}

@@ -21,7 +21,7 @@
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
 - []   (feature) _Front-end_ Upload to directory (+ backend)
 
-# version 0.1.12 - 2020-01-??
+# version 0.1.12 - 2020-01-15
 - [x]   (bugfix) _Front-end_ Add Loading in Move dialog
 - [x]   (feature) _Front-end_ Move file in menu
 - [x]   (bugfix) _API_ fix various issues in `/api/rename`
@@ -36,7 +36,9 @@
 - [x]   (feature) _API_ Add `/sync/mkdir` to create directories and sync to the db
 - [x]   (feature) _Front-end_ Add Modal for Make Directory to the Archive Menu
 - [x]   (build) _CI_ With `CI=true` eslint errors will break the build
-- []   (feature)  _Front-end_ clear search cache after updating values in detailview
+- [x]   (feature) _Front-end_ Add English language to most of the menu items (switched by browser language)
+- [x]   (bugfix) _Front-end_ When changing search page there is a preloader icon shown
+- [x]   (feature)  _Front-end_ clear search cache after updating values in detailview
 
 # version 0.1.11 - 2020-01-02
 - [x]   (bugfix) _Front-end_ _Detailview_ when press Delete and switch image, the next image should be marked as not deleted (Fixed)

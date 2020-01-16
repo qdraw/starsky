@@ -42,11 +42,11 @@ const parseRelativeDate = (inputDateTime: string | undefined): string => {
 
   switch (true) {
     case (difference <= 1):
-      return "minder dan 1 minuut";
+      return "{lessThan1Minute}";
     case (difference < 60):
-      return difference.toFixed(0) + " minuten";
+      return difference.toFixed(0) + " {minutes}";
     case (difference < 1441):
-      return Math.round(difference / 60) + " uur";
+      return Math.round(difference / 60) + " {hour}";
     default:
       return parseDate(inputDateTime);
   }

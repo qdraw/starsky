@@ -62,7 +62,7 @@ describe("ArchiveSidebarColorClass", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
-      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
       const element = mount(<ArchiveSidebarColorClass isReadOnly={false} fileIndexItems={newIFileIndexItemArray()} />);
 
@@ -71,7 +71,7 @@ describe("ArchiveSidebarColorClass", () => {
 
       element.find('button.colorclass--1').simulate("click");
 
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
 
       useContextSpy.mockClear()
 

@@ -15,9 +15,9 @@ describe("Menu.SearchBar", () => {
 
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
-        return newIConnectionDefault();
+        return { ...newIConnectionDefault(), statusCode: 200, };
       }).mockImplementationOnce(() => {
-        return newIConnectionDefault();
+        return { ...newIConnectionDefault(), statusCode: 200, };
       })
 
       var menuBar = mount(<MenuSearchBar />);
