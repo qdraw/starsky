@@ -126,7 +126,6 @@ describe("DetailViewSidebar", () => {
     });
 
     it("On change a tag there is an API called", () => {
-
       // spy on fetch
       // use this => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ ...newIConnectionDefault(), statusCode: 200 });
@@ -147,6 +146,26 @@ describe("DetailViewSidebar", () => {
       expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), expectedBodyParams.toString());
 
       fetchPostSpy.mockClear();
+    });
+
+    it("Deleted status (from FileIndexItem)", () => {
+
+      contextProvider.state.fileIndexItem.status = IExifStatus.Deleted;
+
+      var DeletedTestComponent = () => (
+        <DetailViewContext.Provider value={contextProvider}>
+          <DetailViewSidebar status={IExifStatus.Ok} filePath={"/t"}>></DetailViewSidebar>
+        </DetailViewContext.Provider>
+      );
+      var component = mount(<DeletedTestComponent />);
+
+      expect(component.exists('.warning-box')).toBeTruthy();
+
+      // Tags and other input fields are disabled
+      expect(component.find('[data-name="tags"]').hasClass('disabled')).toBeTruthy();
+      expect(component.find('[data-name="description"]').hasClass('disabled')).toBeTruthy();
+      expect(component.find('[data-name="title"]').hasClass('disabled')).toBeTruthy();
+
     });
 
     it("search cache clear AND when a tag is updated ", async () => {
@@ -179,7 +198,6 @@ describe("DetailViewSidebar", () => {
 
       expect(fetchPostSpy).toBeCalledTimes(2);
       expect(fetchPostSpy).toHaveBeenNthCalledWith(2, '/api/search/removeCache', 't=test')
-
     });
 
   });
