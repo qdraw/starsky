@@ -117,10 +117,9 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     var updateObject: any = { f: fileIndexItem.filePath };
     updateObject[name] = value;
 
-    var updateApiUrl = new UrlQuery().UrlUpdateApi();
     var bodyParams = new URLPath().ObjectToSearchParams(updateObject);
 
-    FetchPost(updateApiUrl, bodyParams.toString()).then(item => {
+    FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString()).then(item => {
       if (item.statusCode !== 200) return;
 
       var currentItem = item.data[0] as IFileIndexItem;
@@ -128,7 +127,11 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       setFileIndexItem(currentItem);
       dispatch({ 'type': 'update', ...currentItem });
 
-      // clear search cache new URLPath().StringToIUrl(history.location.search).t
+      // clear search cache
+      var searchTag = new URLPath().StringToIUrl(history.location.search).t;
+      if (!searchTag) return;
+
+      FetchPost(new UrlQuery().UrlSearchRemoveCacheApi(), `t=${searchTag}`);
     });
   }
 

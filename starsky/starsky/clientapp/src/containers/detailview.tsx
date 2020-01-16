@@ -71,7 +71,10 @@ const DetailView: React.FC<IDetailView> = () => {
     }).catch((e) => {
       console.log(e);
     });
-  }, [state, state.fileIndexItem.fileHash]);
+
+    // disable to prevent duplicate api calls
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.fileIndexItem.fileHash]);
 
   // know if you searching ?t= in url
   const [isSearchQuery, setIsSearchQuery] = React.useState(!!new URLPath().StringToIUrl(history.location.search).t);

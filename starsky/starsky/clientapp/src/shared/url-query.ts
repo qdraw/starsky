@@ -31,6 +31,10 @@ export class UrlQuery {
     return "/api/suggest/?t=" + query;
   }
 
+  public UrlSearchRemoveCacheApi(): string {
+    return "/api/search/removeCache";
+  }
+
   public UrlSearchTrashApi = (pageNumber = 0): string => {
     return "/api/search/trash?p=" + pageNumber;
   }

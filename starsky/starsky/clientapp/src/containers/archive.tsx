@@ -35,7 +35,7 @@ function Archive(archive: IArchiveProps) {
           <ColorClassFilter itemsCount={archive.collectionsCount} subPath={archive.subPath}
             colorClassFilterList={archive.colorClassFilterList}
             colorClassUsage={archive.colorClassUsage} />
-          <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListView>
+          <ItemListView {...archive}> </ItemListView>
         </div>
       </div>
     </>
