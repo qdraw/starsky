@@ -1,9 +1,14 @@
+import { globalHistory } from '@reach/router';
 import { mount, ReactWrapper, shallow } from 'enzyme';
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { DetailViewContext } from '../contexts/detailview-context';
+import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
-import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import { IFileIndexItem, newIFileIndexItem } from '../interfaces/IFileIndexItem';
+import * as FetchPost from '../shared/fetch-post';
+import { UrlQuery } from '../shared/url-query';
 import DetailViewSidebar from './detail-view-sidebar';
 
 describe("DetailViewSidebar", () => {
@@ -120,7 +125,62 @@ describe("DetailViewSidebar", () => {
       expect(Component.exists('.icon--location')).toBeTruthy()
     });
 
+    it("On change a tag there is an API called", () => {
 
+      // spy on fetch
+      // use this => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ ...newIConnectionDefault(), statusCode: 200 });
+      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+      var tagsField = Component.find('[data-name="tags"]');
+
+      act(() => {
+        tagsField.getDOMNode().textContent = "a";
+        tagsField.simulate('blur');
+      })
+
+      expect(fetchPostSpy).toBeCalled();
+
+      var expectedBodyParams = new URLSearchParams();
+      expectedBodyParams.append("tags", "a");
+
+      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), expectedBodyParams.toString());
+
+      fetchPostSpy.mockClear();
+    });
+
+    it("search cache clear AND when a tag is updated ", async () => {
+
+      act(() => {
+        globalHistory.navigate("/?t=test");
+      })
+
+      // spy on fetch
+      // use this => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(),
+        statusCode: 200,
+        data: [
+          newIFileIndexItem()
+        ]
+      });
+      var fetchPostSpy = jest.spyOn(FetchPost, 'default')
+        .mockImplementationOnce(() => mockIConnectionDefault)
+        .mockImplementationOnce(() => mockIConnectionDefault)
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      var tagsField = Component.find('[data-name="tags"]');
+
+      // need to await here
+      await act(async () => {
+        tagsField.getDOMNode().textContent = "a";
+        await tagsField.simulate('blur');
+      })
+
+      expect(fetchPostSpy).toBeCalledTimes(2);
+      expect(fetchPostSpy).toHaveBeenNthCalledWith(2, '/api/search/removeCache', 't=test')
+
+    });
 
   });
 });

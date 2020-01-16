@@ -117,7 +117,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString()).then(item => {
       if (item.statusCode !== 200 || !item.data) return;
 
-
       var currentItem = item.data[0] as IFileIndexItem;
       currentItem.lastEdited = new Date().toISOString();
       setFileIndexItem(currentItem);
@@ -127,12 +126,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       var searchTag = new URLPath().StringToIUrl(history.location.search).t;
 
       if (!searchTag) return;
-      console.log(new UrlQuery().UrlSearchRemoveCacheApi());
-
-      FetchPost(new UrlQuery().UrlSearchRemoveCacheApi(), `t=${searchTag}`).then(_ => {
-        console.log('search cache cleared');
-      });
-
+      FetchPost(new UrlQuery().UrlSearchRemoveCacheApi(), `t=${searchTag}`);
     });
   }
 
