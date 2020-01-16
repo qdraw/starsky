@@ -38,7 +38,7 @@
 - [x]   (build) _CI_ With `CI=true` eslint errors will break the build
 - [x]   (feature) _Front-end_ Add English language to most of the menu items (switched by browser language)
 - [x]   (bugfix) _Front-end_ When changing search page there is a preloader icon shown
-- []   (feature)  _Front-end_ clear search cache after updating values in detailview
+- [x]   (feature)  _Front-end_ clear search cache after updating values in detailview
 
 # version 0.1.11 - 2020-01-02
 - [x]   (bugfix) _Front-end_ _Detailview_ when press Delete and switch image, the next image should be marked as not deleted (Fixed)
