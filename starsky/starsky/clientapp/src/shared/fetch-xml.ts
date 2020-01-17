@@ -2,7 +2,7 @@ import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 
 function isParseError(parsedDocument: any) {
   // parser and parsererrorNS could be cached on startup for efficiency
-  var parser = new DOMParser(),
+  const parser = new DOMParser(),
     errorneousParse = parser.parseFromString('<', 'text/xml'),
     parsererrorNS = errorneousParse.getElementsByTagName("parsererror")[0].namespaceURI;
 
@@ -12,7 +12,7 @@ function isParseError(parsedDocument: any) {
   }
 
   return parsedDocument.getElementsByTagNameNS(parsererrorNS, 'parsererror').length > 0;
-};
+}
 
 const FetchXml = async (url: string): Promise<IConnectionDefault> => {
   const settings = {
@@ -21,12 +21,12 @@ const FetchXml = async (url: string): Promise<IConnectionDefault> => {
     headers: {
       'Accept': 'text/xml',
     }
-  }
+  };
   const res = await fetch(url, settings);
   try {
     const response = await res.text();
     const xmlParser = new DOMParser();
-    var data = xmlParser.parseFromString(response, 'text/xml');
+    const data = xmlParser.parseFromString(response, 'text/xml');
 
     if (isParseError(data)) {
       return {
