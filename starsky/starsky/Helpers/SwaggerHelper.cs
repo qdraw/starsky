@@ -41,7 +41,6 @@ namespace starsky.Helpers
 				});
 
 				c.IncludeXmlComments(GetXmlCommentsPath());
-				c.DescribeAllEnumsAsStrings();
 			});
 
 		}

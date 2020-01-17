@@ -70,16 +70,16 @@ const MenuDetailView: React.FunctionComponent = () => {
   const [isRecentEdited, setRecentEdited] = React.useState(IsEditedNow(state.fileIndexItem.lastEdited));
   useEffect(() => {
     if (!state.fileIndexItem.lastEdited) return;
-    var isEditedNow = IsEditedNow(state.fileIndexItem.lastEdited);
+    const isEditedNow = IsEditedNow(state.fileIndexItem.lastEdited);
     if (!isEditedNow) {
       setRecentEdited(false);
       return;
-    };
+    }
     setRecentEdited(isEditedNow);
   }, [state.fileIndexItem.lastEdited]);
 
   function toggleLabels() {
-    var urlObject = new URLPath().StringToIUrl(history.location.search);
+    const urlObject = new URLPath().StringToIUrl(history.location.search);
     urlObject.details = !isDetails;
     setDetails(urlObject.details);
     setRecentEdited(false); // disable to avoid animation
