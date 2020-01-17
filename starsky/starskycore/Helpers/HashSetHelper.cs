@@ -86,9 +86,9 @@ namespace starskycore.Helpers
 		}
 
 		/// <summary>
-		/// Lists to string with comma seperated values
+		/// Lists to string with comma separated values
 		/// </summary>
-		/// <param name="listKeywords">The list keywords.</param>
+		/// <param name="listKeywords">The list keywords</param>
 		/// <returns></returns>
 		public static string ListToString(List<string> listKeywords)
 		{
@@ -99,21 +99,14 @@ namespace starskycore.Helpers
 			}
 
 			var toBeAddedKeywordsStringBuilder = new StringBuilder();
-			foreach ( var keyword in listKeywords )
+			foreach ( var keyword in listKeywords.Where(keyword => !string.IsNullOrWhiteSpace(keyword)) )
 			{
-				if (string.IsNullOrWhiteSpace(keyword) ) continue;
-
-				if ( !String.IsNullOrWhiteSpace(keyword) &&
-				     keyword != listKeywords.LastOrDefault() )
+				if ( keyword != listKeywords.LastOrDefault() )
 				{
 					toBeAddedKeywordsStringBuilder.Append(keyword + ", ");
+					continue;
 				}
-
-				if ( !String.IsNullOrWhiteSpace(keyword) &&
-				     keyword == listKeywords.LastOrDefault() )
-				{
-					toBeAddedKeywordsStringBuilder.Append(keyword);
-				}
+				toBeAddedKeywordsStringBuilder.Append(keyword);
 			}
 
 			var toBeAddedKeywords = toBeAddedKeywordsStringBuilder.ToString();
