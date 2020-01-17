@@ -33,6 +33,9 @@ namespace starskytest.Attributes
 
 			//Run
 			filter.OnResourceExecuting(context);
+			
+			// Run other class
+			filter.OnResourceExecuted(new ResourceExecutedContext(actionContext, filters));
 
 			// It is not removed in this case, because it didn't exist on forehand
 		}
