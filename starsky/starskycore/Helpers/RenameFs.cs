@@ -186,8 +186,8 @@ namespace starskycore.Helpers
 					// toFileSubPath should contain the full subpath
 					
 					// when trying to rename something wrongs
-					var fileName = new FilenamesHelper().GetFileName(toFileSubPath);
-					if ( !new FilenamesHelper().IsValidFileName(fileName) )
+					var fileName = FilenamesHelper.GetFileName(toFileSubPath);
+					if ( !FilenamesHelper.IsValidFileName(fileName) )
 					{
 						fileIndexResultsList.Add(new FileIndexItem
 						{
@@ -221,7 +221,7 @@ namespace starskycore.Helpers
 					// toFileSubPath must be the to copy directory, the filename is kept the same
 
 					// update to support UpdateItem
-					toFileSubPath = toFileSubPath + "/" + new FilenamesHelper().GetFileName(inputFileSubPath);
+					toFileSubPath = toFileSubPath + "/" + FilenamesHelper.GetFileName(inputFileSubPath);
 					
 					// you can't move the file to the same location
 					if ( inputFileSubPath == toFileSubPath )

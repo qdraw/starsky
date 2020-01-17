@@ -2,10 +2,10 @@ using System.Text.RegularExpressions;
 
 namespace starskycore.Helpers
 {
-	public class FilenamesHelper
+	public static class FilenamesHelper
 	{
 				
-		public bool IsValidFileName(string filename)
+		public static bool IsValidFileName(string filename)
 		{
 			// use the same as in the front-end
 			var extensionRegex =
@@ -19,16 +19,33 @@ namespace starskycore.Helpers
 		/// Get the filename from a filepath
 		/// https://stackoverflow.com/a/40635378
 		/// </summary>
-		/// <param name="filepath"></param>
+		/// <param name="filePath">unix style subPath</param>
 		/// <returns></returns>
-		public string GetFileName(string filepath)
+		public static string GetFileName(string filePath)
 		{
 			// unescaped regex:
 			// [^\/]+(?=\.[\w]+\.$)|[^\/]+$
 			var extensionRegex =
 				new Regex("[^\\/]+(?=\\.[\\w]+\\.$)|[^\\/]+$",
 					RegexOptions.CultureInvariant);
-			return extensionRegex.Match(filepath).Value;
+			return extensionRegex.Match(filePath).Value;
+		}
+		
+		
+		/// <summary>
+		/// Return UNIX style parent paths back
+		/// </summary>
+		/// <param name="filePath">unix style subPath</param>
+		/// <returns>parent folder path</returns>
+		public static string GetParentPath(string filePath)
+		{
+			if ( string.IsNullOrEmpty(filePath) ) return "/";
+	        
+			// unescaped regex: /.+(?=\/[^/]+$)/;
+			var parentRegex =
+				new Regex(".+(?=\\/[^/]+$)",
+					RegexOptions.CultureInvariant);
+			return parentRegex.Match(filePath).Value;
 		}
 	}
 }

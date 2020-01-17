@@ -118,7 +118,7 @@ namespace starskycore.Services
 			if ( ! ExtensionRolesHelper.ExtensionSyncSupportedList.Contains($"{imageFormat}") )
 			{
 				return new ImportIndexItem {
-					FilePath = "/" + new FilenamesHelper().GetFileName(inputFileFullPath),
+					FilePath = "/" + FilenamesHelper.GetFileName(inputFileFullPath),
 					FileHash = fileHashCode, 
 					Status = ImportStatus.FileError
 				};

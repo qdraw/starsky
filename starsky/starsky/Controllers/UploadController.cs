@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
 using starsky.Helpers;
+using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
@@ -56,8 +57,7 @@ namespace starsky.Controllers
 			
 			if (  !_iStorage.ExistFile(f) && !_iStorage.ExistFolder(f) ) return NotFound(new ImportIndexItem());
 
-			// todo fix
-			var subPath = f;
+			var inputSubPath = _iStorage.ExistFolder(f) ? PathHelper.AddSlash(f) :  PathHelper.RemoveLatestSlash(f);
 			
 			var tempImportPaths = await Request.StreamFile(_appSettings);
 			
@@ -68,30 +68,42 @@ namespace starsky.Controllers
 				if(fileIndexResultsList[i].Status != ImportStatus.Ok) continue;
 
 				await using var tempFile = _iHostStorage.ReadStream(tempImportPaths[i]);
-				var fileName = Path.GetFileName(tempImportPaths[i]);
-				
-				var copyToSubPath = subPath + fileName;
-				_iStorage.WriteStream(tempFile, copyToSubPath);
+
+				// Get the right path in the right situation
+				var parentDirectory = "";
+				var fileName = "";
+				if ( _iStorage.ExistFile(inputSubPath) )
+				{
+					parentDirectory = FilenamesHelper.GetParentPath(f);
+					fileName = Path.GetFileName(tempImportPaths[i]);
+				}
+				else
+				{
+					parentDirectory = "";
+					fileName = "";
+				}
+
+				_iStorage.WriteStream(tempFile, parentDirectory + fileName);
 
 				 // to show the correct output
-				 fileIndexResultsList[i].FilePath = copyToSubPath;
-				 fileIndexResultsList[i].FileIndexItem.ParentDirectory = subPath;
+				 fileIndexResultsList[i].FilePath = parentDirectory + fileName;
+				 fileIndexResultsList[i].FileIndexItem.ParentDirectory = parentDirectory;
 				 fileIndexResultsList[i].FileIndexItem.FileName = fileName;
 				 fileIndexResultsList[i].FileIndexItem.SetAddToDatabase();
 
 				 // Add or run sync file
-				 var queryItem = _query.SingleItem(copyToSubPath);
+				 var queryItem = _query.SingleItem(parentDirectory + fileName);
 				 if (queryItem  == null )
 				 {
 					 _query.AddItem(fileIndexResultsList[i].FileIndexItem);
 				 }
 				 else
 				 {
-					 _iSync.SyncFiles(copyToSubPath,false);
+					 _iSync.SyncFiles(parentDirectory + fileName,false);
 				 }
 				 
 				 // clear directory cache
-				 _query.RemoveCacheParentItem(subPath);
+				 _query.RemoveCacheParentItem(parentDirectory + fileName);
 
 				_iHostStorage.FileDelete(tempImportPaths[i]);
 			}
