@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
@@ -168,7 +167,6 @@ namespace starskycore.Helpers
 					// todo: remove folder from disk + remove duplicate database item 
 					// remove duplicate item from list
 					_query.GetObjectByFilePath(inputFileSubPath);
-					//_query.RemoveItem(_query.SingleItem(inputFileSubPath).FileIndexItem);
 
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File 

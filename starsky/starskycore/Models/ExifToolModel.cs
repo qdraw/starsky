@@ -103,7 +103,7 @@ namespace starskycore.Models
                     _keywords = value;
                 }
             }
-            get => null;
+            get => new HashSet<string>();
         }
 
         public string ObjectName { get; set; } = string.Empty;

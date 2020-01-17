@@ -34,7 +34,7 @@ namespace starskytest.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IReadMeta _readmeta;
         private readonly IServiceScopeFactory _scopeFactory;
-	    private IStorage _iStorage;
+	    private readonly IStorage _iStorage;
 
 	    public ApiControllerTest()
         {

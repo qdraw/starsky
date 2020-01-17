@@ -10,7 +10,7 @@ namespace starskytest.Models
     public class FakeExifTool : IExifTool
     {
 	    private AppSettings _appSettings;
-	    private IStorage _iStorage;
+	    private readonly IStorage _iStorage;
 
 	    public FakeExifTool(IStorage iStorage, AppSettings appSettings)
 	    {

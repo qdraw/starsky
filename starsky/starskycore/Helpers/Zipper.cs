@@ -16,7 +16,7 @@ namespace starskycore.Helpers
 		/// <returns></returns>
 		public void ExtractZip( string zipInputFullPath, string storeZipFolderFullPath)
 		{
-			// todo: todo: implement this comma separated list  >> string matchExtensions = "*" 
+			// todo: implement this comma separated list  >> string matchExtensions = "*" 
 			// Ensures that the last character on the extraction path
 			// is the directory separator char. 
 			// Without this, a malicious zip file could try to traverse outside of the expected

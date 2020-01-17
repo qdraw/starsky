@@ -32,7 +32,7 @@ namespace starskytest.Services
         private readonly ReadMeta _readmeta;
 	    private readonly string _fileHashCreateAnImage;
 	    private readonly ApplicationDbContext _context;
-	    private IStorage _iStorage;
+	    private readonly IStorage _iStorage;
 
 	    public ImportServiceTest()
         {
