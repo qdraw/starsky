@@ -96,7 +96,8 @@ const Login: React.FC<ILoginProps> = () => {
               </div>
             </div>
           </header>
-          <div className="content"><div className="content--header">{MessageLogin}</div>
+          <div className="content">
+            <div className="content--header">{MessageLogin}</div>
             <form
               className="content--login-form form-inline form-nav"
               onSubmit={e => {

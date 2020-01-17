@@ -105,14 +105,12 @@ namespace starsky.Controllers
         /// Login the current HttpContext in
         /// </summary>
         /// <param name="model">Email, password and remember me bool</param>
-        /// <param name="returnUrl">null or localurl</param>
-        /// <returns></returns>
-        /// <response code="200">successful login (with json flag)</response>
-        /// <response code="302">successful login</response>
+        /// <returns>Login status</returns>
+        /// <response code="200">successful login</response>
         /// <response code="401">login failed</response>
         [HttpPost("/account/login")]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             ValidateResult validateResult = _userManager.Validate("Email", model.Email, model.Password);
 
@@ -127,6 +125,8 @@ namespace starsky.Controllers
             {
 	            return Json("Login Success");
             }
+
+            Response.StatusCode = 500;
             return Json("Login failed");
         }
 
@@ -154,7 +154,7 @@ namespace starsky.Controllers
         [ProducesResponseType(200)]
         public IActionResult Register(string returnUrl = null)
         {
-            return View();
+	        return PhysicalFile(_clientApp, "text/html");
         }
 
         /// <summary>
