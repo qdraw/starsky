@@ -12,8 +12,18 @@ namespace starskytest.FakeMocks
 		}
 
 		public List<ImportIndexItem> Preflight(List<string> inputFileFullPaths, ImportSettingsModel importSettings)
+		
 		{
-			throw new System.NotImplementedException();
+			var results = new List<ImportIndexItem>();
+			foreach ( var inputFileFullPath in inputFileFullPaths )
+			{
+				results.Add(new ImportIndexItem
+				{
+					SourceFullFilePath = inputFileFullPath,
+					Status = ImportStatus.Ok
+				});
+			}
+			return results;
 		}
 
 		public List<ImportIndexItem> History()

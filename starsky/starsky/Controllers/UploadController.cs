@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
 using starsky.Helpers;
-using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
@@ -57,8 +54,10 @@ namespace starsky.Controllers
 			var f = Request.Headers["to"].ToString();
 			if ( string.IsNullOrWhiteSpace(f) ) return BadRequest("missing 'to' header");
 			
-			var subPath = PathHelper.AddSlash(f);
-			if (  !_iStorage.ExistFolder(subPath) ) return NotFound(new ImportIndexItem());
+			if (  !_iStorage.ExistFile(f) && !_iStorage.ExistFolder(f) ) return NotFound(new ImportIndexItem());
+
+			// todo fix
+			var subPath = f;
 			
 			var tempImportPaths = await Request.StreamFile(_appSettings);
 			
