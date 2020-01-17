@@ -61,11 +61,16 @@ namespace starsky.Controllers
             _bgTaskQueue.QueueBackgroundWorkItem(async token =>
             {    
                 var importedFiles = _import.Import(tempImportPaths, importSettings);
-                FilesHelper.DeleteFile(tempImportPaths);
-                foreach (var file in importedFiles)
+                
+                if ( _appSettings.Verbose )
                 {
-                    Console.WriteLine(file);
+	                foreach (var file in importedFiles)
+	                {
+		                Console.WriteLine($">> import => {file}");
+	                }
                 }
+                
+                FilesHelper.DeleteFile(tempImportPaths);
             });
             
             // When all items are already imported

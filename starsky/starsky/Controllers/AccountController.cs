@@ -59,6 +59,7 @@ namespace starsky.Controllers
 		public IActionResult Index(bool json = false)
 		{
 			Console.WriteLine($"json {json} User.Identity.IsAuthenticated {User.Identity.IsAuthenticated}");
+			
 			if ( json && !User.Identity.IsAuthenticated ) return Unauthorized();
 			if ( !User.Identity.IsAuthenticated ) return RedirectToLocal(null);
 
@@ -84,8 +85,7 @@ namespace starsky.Controllers
 				Id = _userManager.GetCurrentUser(HttpContext).Id,
 				Created = _userManager.GetCurrentUser(HttpContext).Created,
 			};
-			if ( json ) return Json(model);
-			return View(model);
+			return Json(model);
 		}
 
 
