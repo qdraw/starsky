@@ -89,7 +89,7 @@ namespace starskytest.Models
             var list = new List<string> {"Schiphol", "Schiphol"};
             var exifToolModel = new ExifToolModel{Subject = list.ToHashSet()};
             Assert.AreEqual(exifToolModel.Keywords.Count,1);
-            Assert.AreEqual(null, exifToolModel.Subject);
+            Assert.AreEqual(0, exifToolModel.Subject.Count);
         }
 
         [TestMethod]
