@@ -35,6 +35,7 @@ const Login: React.FC<ILoginProps> = () => {
   const MessageUsername = language.text("E-mailadres", "E-mail address");
   const MessageConnection = language.text("Er is geen verbinding mogelijk, probeer het later opnieuw", "No connection is possible, please try again later");
   const LogoutWarning = language.text("Wil je uitloggen?", "Do you want to log out?");
+  const MessageStayLoggedIn = language.text("Blijf ingelogd", "Stay logged in");
   const MessagePassword = language.text("Geef je wachtwoord op", "Enter your password");
   const MessageExamplePassword = language.text("superveilig", "supersafe");
   const MessageExampleUsername = "dont@mail.me";
@@ -111,7 +112,7 @@ const Login: React.FC<ILoginProps> = () => {
                 authHandler();
               }}
             >
-              <label htmlFor="username">
+              <label htmlFor="email">
                 {MessageUsername}
               </label>
               <input
@@ -157,6 +158,7 @@ const Login: React.FC<ILoginProps> = () => {
             <form className="content--login-form">
               <div className="content--error-true">{LogoutWarning}</div>
               <a className="btn btn--default" href="/account/logout">{MessageLogout}</a>
+              <a className="btn btn--info" href="/">{MessageStayLoggedIn}</a>
             </form>
           </div>
         </>

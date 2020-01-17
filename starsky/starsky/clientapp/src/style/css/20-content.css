@@ -123,3 +123,6 @@
   margin-bottom: 15px;
 }
 
+.content > .content--login-form > .btn {
+  margin-right : 10px;
+}

@@ -20,7 +20,8 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
     { "name": "Home", "url": "/" },
     { "name": language.text("Foto's van deze week", "Photos of this week"), "url": "/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22" },
     { "name": language.text("Prullenmand", "Trash"), url: "/trash" },
-    { "name": language.text("Importeren", "Import"), url: "/import" }
+    { "name": language.text("Importeren", "Import"), url: "/import" },
+    { "name": language.text("Uitloggen", "Logout"), url: "/account/login" }
   ];
   var history = useLocation();
 
