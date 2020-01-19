@@ -8,7 +8,7 @@ describe("fetch-post", () => {
     var spy = jest.spyOn(window, 'fetch').mockImplementationOnce(() => mockFetchAsXml);
     var result = await FetchPost("/test", "")
 
-    expect(spy).toBeCalledWith("/test", { "body": "", "credentials": "include", "headers": { "Accept": "application/json", "Content-type": "application/x-www-form-urlencoded" }, "method": "post" })
+    expect(spy).toBeCalledWith("/test", { "body": "", "credentials": "include", "headers": { "Accept": "application/json", "Content-type": "application/x-www-form-urlencoded", "X-XSRF-TOKEN": "X-XSRF-TOKEN", }, "method": "post" })
     expect(result.data).toStrictEqual("response");
   });
 
@@ -18,7 +18,7 @@ describe("fetch-post", () => {
     var spy = jest.spyOn(window, 'fetch').mockImplementationOnce(() => mockFetchAsXml);
     var result = await FetchPost("/test", "")
 
-    expect(spy).toBeCalledWith("/test", { "body": "", "credentials": "include", "headers": { "Accept": "application/json", "Content-type": "application/x-www-form-urlencoded" }, "method": "post" })
+    expect(spy).toBeCalledWith("/test", { "body": "", "credentials": "include", "headers": { "Accept": "application/json", "Content-type": "application/x-www-form-urlencoded", "X-XSRF-TOKEN": "X-XSRF-TOKEN", }, "method": "post" })
     expect(result.data).toStrictEqual({
       "test": true,
     });
@@ -33,7 +33,7 @@ describe("fetch-post", () => {
     var spy = jest.spyOn(window, 'fetch').mockImplementationOnce(() => mockFetchAsXml);
     var result = await FetchPost("/test", "")
 
-    expect(spy).toBeCalledWith("/test", { "body": "", "credentials": "include", "headers": { "Accept": "application/json", "Content-type": "application/x-www-form-urlencoded" }, "method": "post" })
+    expect(spy).toBeCalledWith("/test", { "body": "", "credentials": "include", "headers": { "Accept": "application/json", "Content-type": "application/x-www-form-urlencoded", "X-XSRF-TOKEN": "X-XSRF-TOKEN", }, "method": "post" })
     expect(result.data).toBe("response")
   });
 

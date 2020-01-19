@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starskytest.FakeMocks;
 
 namespace starskytest.Controllers
 {
@@ -11,7 +12,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void HomeController_ReturnFixedCaseSensitiveUrl()
 		{
-			var controller = new HomeController
+			var controller = new HomeController(new FakeAntiforgery())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -24,7 +25,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void HomeController_ReturnNotFixedUrl()
 		{
-			var controller = new HomeController
+			var controller = new HomeController(new FakeAntiforgery())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};

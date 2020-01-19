@@ -10,7 +10,7 @@ export class UrlQuery {
   }
 
   public UrlLogin(): string {
-    return "/account/login?json=true";
+    return "/account/login";
   }
 
   public UrlAccountRegister(): string {

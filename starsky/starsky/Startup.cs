@@ -87,7 +87,7 @@ namespace starsky
                         options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
                     }
                 );
-
+            
             services.AddScoped<IQuery, Query>();
             services.AddScoped<ISync, SyncService>();
             services.AddScoped<ISearch, SearchService>();
@@ -103,11 +103,15 @@ namespace starsky
             services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             
+            // There is a base-cookie and in index controller there is an method to generate a token that is used to send with the header: X-XSRF-TOKEN
             services.AddAntiforgery(
                 options =>
                 {
                     options.Cookie.Name = "_af";
-                    options.Cookie.HttpOnly = true;
+                    options.Cookie.HttpOnly = true; // only used by .NET, there is a separate method to generate a X-XSRF-TOKEN cookie
+                    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                    options.Cookie.IsEssential = true;
                     options.HeaderName = "X-XSRF-TOKEN";
                 }
             );

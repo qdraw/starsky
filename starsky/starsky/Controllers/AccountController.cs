@@ -4,8 +4,10 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.Helpers;
 using starsky.ViewModels.Account;
 using starskycore.Interfaces;
 using starskycore.Models.Account;
@@ -17,9 +19,11 @@ namespace starsky.Controllers
     {
         private readonly IUserManager _userManager;
         private readonly string  _clientApp;
+        private readonly IAntiforgery _antiForgery;
 
-        public AccountController(IUserManager userManager)
+        public AccountController(IUserManager userManager, IAntiforgery antiForgery)
         {
+	        _antiForgery = antiForgery;
             _userManager = userManager;
             _clientApp = Path.Combine(Directory.GetCurrentDirectory(),
 	            "clientapp", "build", "index.html");
@@ -154,6 +158,7 @@ namespace starsky.Controllers
         [ProducesResponseType(200)]
         public IActionResult Register(string returnUrl = null)
         {
+	        new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 	        return PhysicalFile(_clientApp, "text/html");
         }
 

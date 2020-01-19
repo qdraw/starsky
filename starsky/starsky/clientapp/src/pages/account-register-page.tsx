@@ -26,6 +26,8 @@ const AccountRegisterPage: FunctionComponent<RouteComponentProps> = (props) => {
   const MessagePasswordToShort = language.text("Gebruik minimaal 8 tekens voor je wachtwoord", "Use at least 8 characters for your password");
   const MessagePasswordNoMatch = language.text("Deze wachtwoorden komen niet overeen. Probeer het opnieuw", "These passwords do not match. Please try again");
   const MessageConnection = language.text("Er is geen verbinding mogelijk, probeer het later opnieuw", "No connection is possible, please try again later");
+  const MessageRejectedBadRequest = language.text("Dit verzoek is afgewezen aangezien er niet voldaan is aan de beveiligingseisen (Error 400)", "This request was rejected because the security requirements were not met  (Error 400)");
+
   const MessageLegalCreateAccountHtml = language.text(`Door het creëren van een account gaat u akkoord met de
    <a href="/legal/toc.nl.html">Algemene Voorwaarden</a> van Starsky. Raadpleeg en bekijk hier onze 
    <a href="/legal/privacy-policy.nl.html">Privacykennisgeving</a> en onze <a href="/legal/privacy-policy.nl.html#cookie">Cookieverklaring</a>.`,
@@ -46,20 +48,21 @@ const AccountRegisterPage: FunctionComponent<RouteComponentProps> = (props) => {
   const setUpAccountHandler = async () => {
     setLoading(true);
 
-    var bodyParams = new URLSearchParams();
-    bodyParams.append("Email", userEmail);
-    bodyParams.append("Password", userPassword);
-    bodyParams.append("ConfirmPassword", userConfirmPassword);
+    const response = await FetchPost(new UrlQuery().UrlAccountRegister(),
+      `Email=${userEmail}&Password=${userPassword}&ConfirmPassword=${userConfirmPassword}`);
+    if (response.statusCode === 400) {
+      setError(MessageRejectedBadRequest);
+      setLoading(false);
+      return;
+    }
 
-    const response = await FetchPost(new UrlQuery().UrlAccountRegister(), bodyParams.toString());
     if (!response || !response.data) {
       setError(MessageConnection);
       setLoading(false);
       return;
     }
 
-    history.navigate("/", { replace: true });
-
+    history.navigate(new UrlQuery().UrlLogin(), { replace: true });
   };
 
   return (<>

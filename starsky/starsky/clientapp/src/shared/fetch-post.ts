@@ -1,11 +1,19 @@
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 
 const FetchPost = async (url: string, body: string | FormData, method: 'post' | 'delete' = 'post'): Promise<IConnectionDefault> => {
+
+  function getCookie(name: string): string {
+    var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    if (match) return match[2];
+    return "X-XSRF-TOKEN";
+  }
+
   const settings: RequestInit = {
     method: method,
     body,
     credentials: "include" as RequestCredentials,
     headers: {
+      'X-XSRF-TOKEN': getCookie("X-XSRF-TOKEN"),
       'Accept': 'application/json',
     },
   }

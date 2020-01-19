@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -33,8 +34,9 @@ namespace starskytest.Controllers
         private readonly IServiceProvider _serviceProvider;
 
 	    private ApplicationDbContext _dbContext;
+	    private IAntiforgery _antiForgery;
 
-        public AccountControllerTest2()
+	    public AccountControllerTest2()
         {
             var efServiceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase().BuildServiceProvider();
 
@@ -83,7 +85,9 @@ namespace starskytest.Controllers
             var options = builder.Options;
             _dbContext = new ApplicationDbContext(options);
             _userManager = new UserManager(_dbContext);
-            
+
+            _antiForgery = new FakeAntiforgery();
+
         }
         
         [TestMethod]
@@ -101,7 +105,7 @@ namespace starskytest.Controllers
  
             var schemeProvider = _serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();
 
-			AccountController controller = new AccountController(_userManager);
+			AccountController controller = new AccountController(_userManager,_antiForgery);
 			controller.ControllerContext.HttpContext = httpContext;
 
 			// Get context for url (netcore3)
@@ -155,7 +159,7 @@ namespace starskytest.Controllers
         [TestMethod]
         public void AccountController_Model_is_not_correct()
         {
-            var controller = new AccountController(_userManager);
+            var controller = new AccountController(_userManager,_antiForgery);
             var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             controller.ControllerContext.HttpContext = httpContext;
 
@@ -168,14 +172,20 @@ namespace starskytest.Controllers
         [TestMethod]
         public void AccountController_LogInGet()
         {
-            var controller = new AccountController(_userManager);
+            var controller = new AccountController(_userManager,_antiForgery);
             controller.Login();
         }
         
         [TestMethod]
         public void AccountController_RegisterGet()
         {
-            var controller = new AccountController(_userManager);
+            var controller = new AccountController(_userManager,_antiForgery)
+            {
+	            ControllerContext =
+	            {
+		            HttpContext = new DefaultHttpContext()
+	            }
+            };
             controller.Register();
         }
      
@@ -187,7 +197,7 @@ namespace starskytest.Controllers
 		    _dbContext.Users.Add(user);
 		    
 		    var userManager = new UserManager(_dbContext);
-		    var controller = new AccountController(userManager);
+		    var controller = new AccountController(userManager,_antiForgery);
 
 		    
 		    var claims = new List<Claim>()
@@ -217,7 +227,7 @@ namespace starskytest.Controllers
 	    public void AccountController_IndexGetLoginFail()
 	    {
 		    // Used by the warmup script
-		    var controller = new AccountController(_userManager);
+		    var controller = new AccountController(_userManager,_antiForgery);
 
 		    var identity = new ClaimsIdentity();
 		    var claimsPrincipal = new ClaimsPrincipal(identity);
