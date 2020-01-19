@@ -58,7 +58,6 @@ namespace starskytest.Controllers
                 .AddDbContext<ApplicationDbContext>(b =>
                     b.UseInMemoryDatabase("test123").UseInternalServiceProvider(efServiceProvider));
 
-            // todo: breaking in net core 3.0 (AddEntityFrameworkStores)
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -115,7 +114,7 @@ namespace starskytest.Controllers
 
 			var actionContext = new ActionContext(httpContext, routeData, actionDescriptor);
 			controller.Url = new UrlHelper(actionContext);
-
+			// end url context
 
 			var login = new LoginViewModel
             {
@@ -247,7 +246,78 @@ namespace starskytest.Controllers
 		    Assert.AreEqual(401,index.StatusCode);
 		    
 	    }
-        
+
+	     [TestMethod]
+        public async Task AccountController_newAccount_TryToOverwrite_ButItKeepsTheSamePassword()
+        {
+            // Arrange
+            var userId = "TestUserA";
+            var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
+
+            _serviceProvider.GetRequiredService<IUserManager>();
+
+			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+            httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+            httpContext.RequestServices = _serviceProvider;
+ 
+			AccountController controller = new AccountController(_userManager,_antiForgery);
+			controller.ControllerContext.HttpContext = httpContext;
+			
+			// Get context for url (netcore3)
+			var routeData = new RouteData();
+			routeData.Values.Add("key1", "value1");
+			var actionDescriptor = new ActionDescriptor();
+
+			var actionContext = new ActionContext(httpContext, routeData, actionDescriptor);
+			controller.Url = new UrlHelper(actionContext);
+			// end url context
+			
+			var login = new LoginViewModel
+            {
+                Email = "shared@dion.local",
+                Password = "test"
+            };
+            
+            // Make new account; 
+            var newAccount = new RegisterViewModel
+            {
+                Password = "test",
+                ConfirmPassword = "test",
+                Email = "shared@dion.local"
+            };
+
+            // Arange > new account
+            controller.Register(newAccount,true,string.Empty);
+            
+            // login > it must be succesfull
+            await controller.Login(login);
+            // Test login
+            Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
+            
+            // The logout is mocked so this will not actual log it out;
+            // controller.Logout() not crashing is good enough;
+            controller.Logout();
+            
+            
+            var newAccountDuplicate = new RegisterViewModel
+            {
+	            Password = "test11234567890", // DIFFERENT
+	            ConfirmPassword = "test11234567890",
+	            Email = "shared@dion.local"
+            };
+            
+            // For security reasons there is no feedback when a account already exist
+            controller.Register(newAccountDuplicate,true,string.Empty);
+
+            // Try login again > now it must be succesfull
+            await controller.Login(login);
+            // Test login
+            Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
+            
+            // The logout is mocked so this will not actual log it out;
+            // controller.Logout() not crashing is good enough;
+            controller.Logout();
+        }
     }
 
 }
