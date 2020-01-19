@@ -3,6 +3,7 @@ import { RouteComponentProps } from '@reach/router';
 import React, { FunctionComponent } from 'react';
 import Button from '../components/Button';
 import useGlobalSettings from '../hooks/use-global-settings';
+import useLocation from '../hooks/use-location';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { UrlQuery } from '../shared/url-query';
@@ -23,7 +24,15 @@ const AccountRegisterPage: FunctionComponent<RouteComponentProps> = (props) => {
   const MessageNoUsernamePassword = language.text("Voer een emailadres en een wachtwoord in", "Enter an email address and password");
   const MessageWrongFormatEmailAddress = language.text("Controleer je email adres", "Check your email address");
   const MessagePasswordToShort = language.text("Gebruik minimaal 8 tekens voor je wachtwoord", "Use at least 8 characters for your password");
-  const MessagePasswordNoMatch = language.text("Deze wachtwoorden komen niet overeen. Probeer het opnieuw", "These passwords do not match. Please try again")
+  const MessagePasswordNoMatch = language.text("Deze wachtwoorden komen niet overeen. Probeer het opnieuw", "These passwords do not match. Please try again");
+  const MessageConnection = language.text("Er is geen verbinding mogelijk, probeer het later opnieuw", "No connection is possible, please try again later");
+  const MessageLegalCreateAccountHtml = language.text(`Door het creëren van een account gaat u akkoord met de
+   <a href="/legal/toc.nl.html">Algemene Voorwaarden</a> van Starsky. Raadpleeg en bekijk hier onze 
+   <a href="/legal/privacy-policy.nl.html">Privacykennisgeving</a> en onze <a href="/legal/privacy-policy.nl.html#cookie">Cookieverklaring</a>.`,
+    `By creating an account you agree to <a href="/legal/toc.en.html">Starsky's Conditions of Use</a>. 
+   Please see our  <a href="/legal/privacy-policy.en.html">Privacy</a> Notice and our <a href="/legal/privacy-policy.en.html#cookie">Cookies Notice </a>   `)
+
+  var history = useLocation();
 
   const [userEmail, setUserEmail] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");
@@ -35,30 +44,22 @@ const AccountRegisterPage: FunctionComponent<RouteComponentProps> = (props) => {
   const [loading, setLoading] = React.useState(false);
 
   const setUpAccountHandler = async () => {
-    try {
-      setLoading(true);
-      const response = await FetchPost(new UrlQuery().UrlLogin(), 'Email=' + userEmail + '&Password=' + userPassword);
-      if (!response || !response.data) {
-        setError('MessageConnection');
-      }
-      // else if (response.statusCode === 401 || response.statusCode === 302) {
-      //   setLoading(false);
-      //   setError(MessageWrongUsernamePassword);
-      // }
-      // else {
-      //   // redirect
-      //   var returnUrl = new URLPath().GetReturnUrl(history.location.search);
-      //   history.navigate(returnUrl, { replace: true });
+    setLoading(true);
 
-      //   // for chrome navigate isn't enough
-      //   setTimeout(() => {
-      //     document.location.reload();
-      //   }, 100);
-      // }
-    } catch (err) {
+    var bodyParams = new URLSearchParams();
+    bodyParams.append("Email", userEmail);
+    bodyParams.append("Password", userPassword);
+    bodyParams.append("ConfirmPassword", userConfirmPassword);
+
+    const response = await FetchPost(new UrlQuery().UrlAccountRegister(), bodyParams.toString());
+    if (!response || !response.data) {
+      setError(MessageConnection);
       setLoading(false);
-      setError(err.message);
+      return;
     }
+
+    history.navigate("/", { replace: true });
+
   };
 
   return (<>
@@ -131,6 +132,8 @@ const AccountRegisterPage: FunctionComponent<RouteComponentProps> = (props) => {
           value={userConfirmPassword}
           onChange={e => setUserConfirmPassword(e.target.value)}
         />
+        <div className="legal-text-row" dangerouslySetInnerHTML={{ __html: MessageLegalCreateAccountHtml }}></div>
+
         {error && <div className="content--error-true">{error}</div>}
 
         <Button className="btn btn--default" type="submit" disabled={loading} onClick={e => { }}>
