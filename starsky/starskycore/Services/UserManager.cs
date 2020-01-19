@@ -19,13 +19,13 @@ namespace starskycore.Services
 {
 public class UserManager : IUserManager
     {
-        private readonly ApplicationDbContext _storage;
+        private readonly ApplicationDbContext _dbContext;
 	    private readonly IMemoryCache _cache;
 
-	    public UserManager(ApplicationDbContext storage,
+	    public UserManager(ApplicationDbContext dbContext,
 	        IMemoryCache memoryCache = null )
         {
-            _storage = storage;
+            _dbContext = dbContext;
 	        _cache = memoryCache;
         }
 	    
@@ -53,7 +53,7 @@ public class UserManager : IUserManager
 		    var roles = new List<Role>();
 		    foreach ( var roleName in existingRoleNames )
 		    {
-			    Role role = _storage.Roles.FirstOrDefault(p => p.Code.ToLower().Equals(roleName.ToLower()));
+			    Role role = _dbContext.Roles.FirstOrDefault(p => p.Code.ToLower().Equals(roleName.ToLower()));
 
 			    if ( role == null )
 			    {
@@ -62,12 +62,12 @@ public class UserManager : IUserManager
 					    Code = roleName,
 					    Name = roleName,
 				    };
-				    _storage.Roles.Add(role);
+				    _dbContext.Roles.Add(role);
 			    }
-			    _storage.SaveChanges();
+			    _dbContext.SaveChanges();
 
 			    // Get the Int Ids from the database
-			    role = _storage.Roles.FirstOrDefault(p => p.Code.ToLower().Equals(roleName.ToLower()));
+			    role = _dbContext.Roles.FirstOrDefault(p => p.Code.ToLower().Equals(roleName.ToLower()));
 			    
 			    roles.Add(role);
 		    }
@@ -82,7 +82,7 @@ public class UserManager : IUserManager
 	    /// <returns></returns>
 	    public CredentialType AddDefaultCredentialType(string credentialTypeCode)
 	    {
-		     CredentialType credentialType = _storage
+		     CredentialType credentialType = _dbContext
 			     .CredentialTypes.FirstOrDefault(p => p.Code.ToLower()
 				     .Equals(credentialTypeCode.ToLower()));
 
@@ -96,13 +96,46 @@ public class UserManager : IUserManager
 				    Position = 1,
 				    Id = 1
 			    };
-			    _storage.CredentialTypes.Add(credentialType);
+			    _dbContext.CredentialTypes.Add(credentialType);
 		    }
 
 		    return credentialType;
 	    }
 
-        /// <summary>
+	    /// <summary>
+	    /// Return the number of users in the database
+	    /// </summary>
+	    /// <returns></returns>
+	    public List<User> AllUsers()
+	    {
+		    List<User> allUsers; 
+		    
+		    if (IsCacheEnabled() && _cache.TryGetValue("UserManager_AllUsers", out var objectAllUsersResult))
+		    {
+			    allUsers = ( List<User> ) objectAllUsersResult;
+		    }
+		    else
+		    {
+			    allUsers = _dbContext.Users.ToList();
+			    if(IsCacheEnabled())
+				    _cache.Set("UserManager_AllUsers", allUsers, new TimeSpan(99,0,0));
+		    }
+
+		    return allUsers;
+	    }
+
+	    /// <summary>
+	    /// Add one user to cached value
+	    /// </summary>
+	    private void AddUserToCache(User user)
+	    {
+		    if ( !IsCacheEnabled() ) return;
+		    var allUsers = AllUsers();
+		    allUsers.Add(user);
+		    _cache.Set("UserManager_AllUsers", allUsers, new TimeSpan(99,0,0));
+	    }
+
+	    /// <summary>
         /// Add a new user, including Roles and UserRoles
         /// </summary>
         /// <param name="name">Nice Name, default string.Emthy</param>
@@ -122,24 +155,27 @@ public class UserManager : IUserManager
 	        
 	        // The email is stored in the Credentials database
 	        User user = null;
-	        var credential = _storage.Credentials.FirstOrDefault(p => p.Identifier == identifier);
+	        var credential = _dbContext.Credentials.FirstOrDefault(p => p.Identifier == identifier);
 	        if ( credential != null )
 	        {
-		        user = _storage.Users.FirstOrDefault(p => p.Id == credential.UserId);		        
+		        user = _dbContext.Users.FirstOrDefault(p => p.Id == credential.UserId);		        
 	        }
 	        if ( user == null )
 	        {
 		        // Check if user not already exist
+		        var createdDate = DateTime.Now;
 		        user = new User
 		        {
 			        Name = name,
-			        Created = DateTime.Now
+			        Created = createdDate
 		        };
-		        _storage.Users.Add(user);
-		        _storage.SaveChanges();
 		        
+		        _dbContext.Users.Add(user);
+		        _dbContext.SaveChanges();
+		        AddUserToCache(user);
+
 		        // to get the Id
-		        user = _storage.Users.FirstOrDefault(p => p.Name == name);
+		        user = _dbContext.Users.FirstOrDefault(p => p.Created == createdDate);
 	        }
 
 			// Add a user role based on a user id
@@ -165,8 +201,8 @@ public class UserManager : IUserManager
                 
 		        credential.Secret = hash;
 		        credential.Extra = Convert.ToBase64String(salt);
-		        _storage.Credentials.Add(credential);
-		        _storage.SaveChanges();
+		        _dbContext.Credentials.Add(credential);
+		        _dbContext.SaveChanges();
 	        }
 
             return new SignUpResult(user: user, success: true);
@@ -175,7 +211,7 @@ public class UserManager : IUserManager
         
         public void AddToRole(User user, string roleCode)
         {
-            Role role = _storage.Roles.FirstOrDefault(r => 
+            Role role = _dbContext.Roles.FirstOrDefault(r => 
                 string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
 
             if (role == null)
@@ -193,7 +229,7 @@ public class UserManager : IUserManager
 	    /// <param name="role">Role object</param>
         public void AddToRole(User user, Role role)
         {
-			UserRole userRole = _storage.UserRoles.Find(user.Id, role.Id);
+			UserRole userRole = _dbContext.UserRoles.Find(user.Id, role.Id);
 			
 			if (userRole != null)
 			{
@@ -206,14 +242,14 @@ public class UserManager : IUserManager
 				UserId = user.Id,
 				RoleId = role.Id
 			};
-			_storage.UserRoles.Add(userRole);
-			_storage.SaveChanges();
+			_dbContext.UserRoles.Add(userRole);
+			_dbContext.SaveChanges();
         }
         
 	    //  // Features are temp off // keep in code 
 //        public void RemoveFromRole(User user, string roleCode)
 //        {
-//            Role role = _storage.Roles.FirstOrDefault(
+//            Role role = _dbContext.Roles.FirstOrDefault(
 //                r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
 //            
 //            if (role == null)
@@ -226,20 +262,20 @@ public class UserManager : IUserManager
 //        
 //        public void RemoveFromRole(User user, Role role)
 //        {
-//            UserRole userRole = _storage.UserRoles.Find(user.Id, role.Id);
+//            UserRole userRole = _dbContext.UserRoles.Find(user.Id, role.Id);
 //            
 //            if (userRole == null)
 //            {
 //                return;
 //            }
 //            
-//            _storage.UserRoles.Remove(userRole);
-//            _storage.SaveChanges();
+//            _dbContext.UserRoles.Remove(userRole);
+//            _dbContext.SaveChanges();
 //        }
         
         public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
         {
-            CredentialType credentialType = _storage.CredentialTypes.FirstOrDefault(
+            CredentialType credentialType = _dbContext.CredentialTypes.FirstOrDefault(
                 ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
             
             if (credentialType == null)
@@ -247,7 +283,7 @@ public class UserManager : IUserManager
                 return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialTypeNotFound);
             }
             
-            Credential credential = _storage.Credentials.FirstOrDefault(
+            Credential credential = _dbContext.Credentials.FirstOrDefault(
                 c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
             
             if (credential == null)
@@ -260,8 +296,8 @@ public class UserManager : IUserManager
             
             credential.Secret = hash;
             credential.Extra = Convert.ToBase64String(salt);
-            _storage.Credentials.Update(credential);
-            _storage.SaveChanges();
+            _dbContext.Credentials.Update(credential);
+            _dbContext.SaveChanges();
             return new ChangeSecretResult(success: true);
         }
         
@@ -277,7 +313,7 @@ public class UserManager : IUserManager
 	        }
 	        else
 	        {
-		        credentialType = _storage.CredentialTypes.FirstOrDefault(
+		        credentialType = _dbContext.CredentialTypes.FirstOrDefault(
 			        ct => ct.Code.ToLower().Equals(credentialTypeCode.ToLower()));
 		        if(IsCacheEnabled() && credentialType != null ) 
 			        _cache.Set("credentialTypeCode_" + credentialTypeCode, credentialType, 
@@ -289,7 +325,7 @@ public class UserManager : IUserManager
                 return new ValidateResult(success: false, error: ValidateResultError.CredentialTypeNotFound);
             }
             
-            Credential credential = _storage.Credentials.FirstOrDefault(
+            Credential credential = _dbContext.Credentials.FirstOrDefault(
                 c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 
             if (credential == null)
@@ -318,7 +354,7 @@ public class UserManager : IUserManager
 	        }
 	        else
 	        {
-		        validateResult = new ValidateResult(user: this._storage.Users.Find(credential.UserId), success: true);
+		        validateResult = new ValidateResult(user: this._dbContext.Users.Find(credential.UserId), success: true);
 		        if(IsCacheEnabled())
 			        _cache.Set("ValidateResult_" + credential.Secret + credential.UserId, 
 				        validateResult, new TimeSpan(99,0,0));
@@ -379,7 +415,7 @@ public class UserManager : IUserManager
                 return null;
             }
             
-            return this._storage.Users.Find(currentUserId);
+            return this._dbContext.Users.Find(currentUserId);
         }
             
         private IEnumerable<Claim> GetUserClaims(User user)
@@ -395,14 +431,14 @@ public class UserManager : IUserManager
         private IEnumerable<Claim> GetUserRoleClaims(User user)
         {
             List<Claim> claims = new List<Claim>();
-            IEnumerable<int> roleIds = this._storage.UserRoles.Where(
+            IEnumerable<int> roleIds = this._dbContext.UserRoles.Where(
                 ur => ur.UserId == user.Id).Select(ur => ur.RoleId).ToList();
             
             if (roleIds != null)
             {
                 foreach (int roleId in roleIds)
                 {
-                    Role role = this._storage.Roles.Find(roleId);
+                    Role role = this._dbContext.Roles.Find(roleId);
                     
                     claims.Add(new Claim(ClaimTypes.Role, role.Code));
                     claims.AddRange(this.GetUserPermissionClaims(role));
@@ -414,14 +450,14 @@ public class UserManager : IUserManager
         private IEnumerable<Claim> GetUserPermissionClaims(Role role)
         {
             List<Claim> claims = new List<Claim>();
-            IEnumerable<int> permissionIds = this._storage.RolePermissions.Where(
+            IEnumerable<int> permissionIds = this._dbContext.RolePermissions.Where(
                 rp => rp.RoleId == role.Id).Select(rp => rp.PermissionId).ToList();
             
             if (permissionIds != null)
             {
                 foreach (int permissionId in permissionIds)
                 {
-                    Permission permission = _storage.Permissions.Find(permissionId);
+                    Permission permission = _dbContext.Permissions.Find(permissionId);
                     
                     claims.Add(new Claim("Permission", permission.Code));
                 }

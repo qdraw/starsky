@@ -304,6 +304,12 @@ namespace starskycore.Models
 	    }
 
 	    public List<AppSettingsPublishProfiles> PublishProfiles { get; set; } = new List<AppSettingsPublishProfiles>();
+	    
+	    /// <summary>
+	    /// Set this value to `true` to keep `/account/register` open for everyone. (Security Issue)
+	    /// This setting is by default false. The only build-in exception is when there are no accounts
+	    /// </summary>
+	    public bool IsAccountRegisterOpen { get; set; } = false;
 
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------

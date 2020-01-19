@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Antiforgery;
@@ -35,6 +36,7 @@ namespace starskytest.Controllers
 
 	    private ApplicationDbContext _dbContext;
 	    private IAntiforgery _antiForgery;
+	    private readonly AppSettings _appSettings;
 
 	    public AccountControllerTest()
         {
@@ -85,9 +87,28 @@ namespace starskytest.Controllers
             _dbContext = new ApplicationDbContext(options);
             _userManager = new UserManager(_dbContext);
 
-            _antiForgery = new FakeAntiforgery();
+            _appSettings = new AppSettings();
 
         }
+
+	    private ControllerContext SetTestClaimsSet(string name, string id)
+	    {
+		    var claims = new List<Claim>()
+		    {
+			    new Claim(ClaimTypes.Name, name),
+			    new Claim(ClaimTypes.NameIdentifier, id),
+		    };
+		    var identity = new ClaimsIdentity(claims, "Test");
+		    var claimsPrincipal = new ClaimsPrincipal(identity);
+		    
+			return new ControllerContext
+		    {
+			    HttpContext = new DefaultHttpContext
+			    {
+				    User = claimsPrincipal
+			    }
+		    };
+	    }
         
         [TestMethod]
         public async Task AccountController_NoLogin_Login_And_newAccount_Test()
@@ -104,7 +125,7 @@ namespace starskytest.Controllers
  
             var schemeProvider = _serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();
 
-			AccountController controller = new AccountController(_userManager,_antiForgery);
+			AccountController controller = new AccountController(_userManager,_appSettings);
 			controller.ControllerContext.HttpContext = httpContext;
 
 			// Get context for url (netcore3)
@@ -138,11 +159,12 @@ namespace starskytest.Controllers
             {
                 Password = "test",
                 ConfirmPassword = "test",
-                Email = "shared@dion.local"
+                Email = "shared@dion.local",
+                Name = "shared@dion.local",
             };
 
             // Arange > new account
-            controller.Register(newAccount,true,string.Empty);
+            controller.Register(newAccount);
             
             // Try login again > now it must be succesfull
             await controller.Login(login);
@@ -153,80 +175,112 @@ namespace starskytest.Controllers
             // controller.Logout() not crashing is good enough;
             controller.Logout();
             
+            // And clean afterwards
+            var itemWithId = _dbContext.Users.FirstOrDefault(p => p.Name == newAccount.Name);
+            _dbContext.Users.Remove(itemWithId);
+            _dbContext.SaveChanges();
         }
 
         [TestMethod]
-        public void AccountController_Model_is_not_correct()
+        public void AccountController_Model_is_not_correct_NoUsersActive()
         {
-            var controller = new AccountController(_userManager,_antiForgery);
+            var controller = new AccountController(new UserManager(_dbContext), _appSettings);
             var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             controller.ControllerContext.HttpContext = httpContext;
 
-            var reg = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2"};
-            var actionResult = controller.Register(reg,true) as JsonResult;
+            var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "test"};
+            
+            var actionResult = controller.Register(registerViewModel) as JsonResult;
             
             Assert.AreEqual("Model is not correct", actionResult.Value as string);
         }
 
         [TestMethod]
-        public void AccountController_LogInGet()
+        public void AccountController_Model_WithUsersActive_GetRegisterPage_Forbid()
         {
-            var controller = new AccountController(_userManager,_antiForgery);
-            controller.Login();
+	        var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings);
+	        var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+	        controller.ControllerContext.HttpContext = httpContext;
+
+	        var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "test"};
+            
+	        var actionResult = controller.Register(registerViewModel) as ForbidResult;
+
+	        Assert.IsNotNull(actionResult);
+	        Assert.AreEqual("Account Register page is closed",actionResult.AuthenticationSchemes.FirstOrDefault());
         }
         
         [TestMethod]
-        public void AccountController_RegisterGet()
+        public void AccountController_Model_WithUsersActive_GetRegisterPage_BlockedByDefault()
         {
-            var controller = new AccountController(_userManager,_antiForgery)
-            {
-	            ControllerContext =
-	            {
-		            HttpContext = new DefaultHttpContext()
-	            }
-            };
-            controller.Register();
+	        var controller = new AccountController(new FakeUserManagerActiveUsers(), new AppSettings{IsAccountRegisterOpen = false});
+	        var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+	        controller.ControllerContext.HttpContext = httpContext;
+
+	        var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "test"};
+            
+	        var actionResult = controller.Register(registerViewModel) as ForbidResult;
+
+	        Assert.IsNotNull(actionResult);
+	        Assert.AreEqual("Account Register page is closed",actionResult.AuthenticationSchemes.FirstOrDefault());
         }
-     
+
+        [TestMethod]
+        public void AccountController_LoginContext_GetRegisterPage_AccountCreated()
+        {
+	        var user = new User() { Name = "JohnDoe1"};
+		    
+	        _dbContext.Users.Add(user);
+	        _dbContext.SaveChanges();
+
+	        var controller = new AccountController(new UserManager(_dbContext), _appSettings)
+	        {
+		        ControllerContext = SetTestClaimsSet(user.Name, user.Id.ToString())
+	        };
+
+	        var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "test123456789", Password = "test123456789", Name = "test"};
+            
+	        var actionResult = controller.Register(registerViewModel) as JsonResult;
+
+	        Assert.IsNotNull(actionResult);
+	        Assert.AreEqual("Account Created",actionResult.Value);
+
+	        // And clean afterwards
+	        controller.Logout();
+	        
+	        var getUser = _dbContext.Users.FirstOrDefault(p => p.Name == user.Name);
+	        _dbContext.Users.Remove(getUser);
+	        _dbContext.SaveChanges();
+        }
+        
+        
 	    [TestMethod]
-	    public void AccountController_IndexGetLoginSuccesfull()
+	    public void AccountController_IndexGetLoginSuccessful()
 	    {
-		    var user = new User() { Name = "JohnDoe", Id = 99 };
+		    var user = new User() { Name = "JohnDoe"};
 		    
 		    _dbContext.Users.Add(user);
-		    
-		    var userManager = new UserManager(_dbContext);
-		    var controller = new AccountController(userManager,_antiForgery);
+		    _dbContext.SaveChanges();
 
-		    
-		    var claims = new List<Claim>()
+		    var controller = new AccountController(new UserManager(_dbContext), _appSettings)
 		    {
-			    new Claim(ClaimTypes.Name, user.Name),
-			    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-		    };
-		    var identity = new ClaimsIdentity(claims, "Test");
-		    var claimsPrincipal = new ClaimsPrincipal(identity);
-		    
-		    var context = new ControllerContext
-		    {
-			    HttpContext = new DefaultHttpContext
-			    {
-				    User = claimsPrincipal
-			    }
+			    ControllerContext = SetTestClaimsSet(user.Name, user.Id.ToString())
 		    };
 
-		    controller.ControllerContext = context;
-		    
-		    controller.Index(true);
+		    controller.Status();
 		    Assert.AreEqual(200,controller.Response.StatusCode);
 		    
+		    // And clean afterwards
+		    var getUser = _dbContext.Users.FirstOrDefault(p => p.Name == "JohnDoe");
+		    _dbContext.Users.Remove(getUser);
+		    _dbContext.SaveChanges();
 	    }
 	    
 	    [TestMethod]
-	    public void AccountController_IndexGetLoginFail()
+	    public void AccountController_WithActiveUsers_IndexGetLoginFail()
 	    {
-		    // Used by the warmup script
-		    var controller = new AccountController(_userManager,_antiForgery);
+		    // There are users active
+		    var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings);
 
 		    var identity = new ClaimsIdentity();
 		    var claimsPrincipal = new ClaimsPrincipal(identity);
@@ -242,7 +296,7 @@ namespace starskytest.Controllers
 		    controller.ControllerContext = context;
 		    
 		    // keep 401, is used by the warmup script
-		    var index = controller.Index(true) as UnauthorizedResult;
+		    var index = controller.Status() as UnauthorizedObjectResult;
 		    Assert.AreEqual(401,index.StatusCode);
 		    
 	    }
@@ -260,7 +314,7 @@ namespace starskytest.Controllers
             httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
             httpContext.RequestServices = _serviceProvider;
  
-			AccountController controller = new AccountController(_userManager,_antiForgery);
+			AccountController controller = new AccountController(_userManager,_appSettings);
 			controller.ControllerContext.HttpContext = httpContext;
 			
 			// Get context for url (netcore3)
@@ -274,7 +328,7 @@ namespace starskytest.Controllers
 			
 			var login = new LoginViewModel
             {
-                Email = "shared@dion.local",
+                Email = "try_overwrite@dion.local",
                 Password = "test"
             };
             
@@ -283,11 +337,12 @@ namespace starskytest.Controllers
             {
                 Password = "test",
                 ConfirmPassword = "test",
-                Email = "shared@dion.local"
+                Email = "try_overwrite@dion.local",
+                Name = "try_overwrite@dion.local"
             };
 
             // Arange > new account
-            controller.Register(newAccount,true,string.Empty);
+            controller.Register(newAccount);
             
             // login > it must be succesfull
             await controller.Login(login);
@@ -298,16 +353,18 @@ namespace starskytest.Controllers
             // controller.Logout() not crashing is good enough;
             controller.Logout();
             
-            
+            var users1111 = _userManager.AllUsers();
+
             var newAccountDuplicate = new RegisterViewModel
             {
 	            Password = "test11234567890", // DIFFERENT
 	            ConfirmPassword = "test11234567890",
-	            Email = "shared@dion.local"
+	            Email = "try_overwrite@dion.local",
+	            Name = "should not be updated"
             };
             
             // For security reasons there is no feedback when a account already exist
-            controller.Register(newAccountDuplicate,true,string.Empty);
+            controller.Register(newAccountDuplicate);
 
             // Try login again > now it must be succesfull
             await controller.Login(login);
@@ -317,6 +374,11 @@ namespace starskytest.Controllers
             // The logout is mocked so this will not actual log it out;
             // controller.Logout() not crashing is good enough;
             controller.Logout();
+
+			// Clean afterwards            
+            var user = _dbContext.Users.FirstOrDefault(p => p.Name == "try_overwrite@dion.local");
+            _dbContext.Users.Remove(user);
+            _dbContext.SaveChanges();
         }
     }
 

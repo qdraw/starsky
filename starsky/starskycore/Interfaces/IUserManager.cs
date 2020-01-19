@@ -1,6 +1,7 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using starskycore.Models.Account;
@@ -68,7 +69,11 @@ namespace starskycore.Interfaces
 
     public interface IUserManager
     {
+	    List<User> AllUsers();
+	    
+	    
         SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret);
+        
 //        void AddToRole(User user, string roleCode);
 //        void AddToRole(User user, Role role);
 //        void RemoveFromRole(User user, string roleCode);

@@ -42,12 +42,16 @@ const Login: React.FC<ILoginProps> = () => {
   const MessageLogin = language.text("Inloggen", "Login");
   const MessageLogout = language.text("Uitloggen", "Logout");
 
-
   // We don't want to login twich 
   const [isLogin, setLogin] = React.useState(true);
+
   useEffect(() => {
     FetchGet(new UrlQuery().UrlAccountStatus()).then((status) => {
       setLogin(status.statusCode === 401);
+      // to help new users find the register screen
+      if (status.statusCode === 406) {
+        history.navigate(new UrlQuery().UrlAccountRegister(), { replace: true });
+      }
     });
   }, [history.location.search]);
 

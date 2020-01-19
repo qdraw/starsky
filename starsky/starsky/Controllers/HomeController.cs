@@ -62,6 +62,34 @@ namespace starsky.Controllers
 		{
 			return PhysicalFile(_clientApp, "text/html");
 		}
+		
+		/// <summary>
+		/// View the Register form
+		/// </summary>
+		/// <param name="returnUrl">when successful continue</param>
+		/// <returns></returns>
+		/// <response code="200">successful Register-page</response>
+		[HttpGet("/account/register")]
+		[AllowAnonymous]
+		[ProducesResponseType(200)]
+		public IActionResult Register(string returnUrl = null)
+		{
+			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
+			return PhysicalFile(_clientApp, "text/html");
+		}
+
+				
+		/// <summary>
+		/// Login form page
+		/// </summary>
+		/// <returns></returns>
+		/// <response code="200">Login form page</response>
+		[HttpGet("/account/login")]
+		[ProducesResponseType(200)]
+		public IActionResult Login()
+		{
+			return PhysicalFile(_clientApp, "text/html");
+		}
 
 		internal string CaseSensitiveRedirect(HttpRequest request)
 		{
