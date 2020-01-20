@@ -48,7 +48,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 1.  `Structure` - The structure that will be used when you import files, has a default fallback.
 2.  `ReadOnlyFolders` - Accepts a list of folders that never may be edited, defaults a empty list
 3.  `AddMemoryCache` - Enable caching _(default true)_
-4.  `AddHttp2Optimizations`  - Enable HTTP2 Optimizations _(default true)_
+4.  `IsAccountRegisterOpen`  - Keep registrations always open. The only 2 build-in exceptions are when there are no accounts or you already logged in _(default false)_
 5.  `AddSwagger` - To show a user interface to show al REST-services _(default false)_
 6.  `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(default false)_
 7.  `AddSwaggerExport` - _Temporary disabled due known issue_ To Export Swagger defentions on startup _(default false)_

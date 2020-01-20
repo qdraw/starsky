@@ -273,10 +273,6 @@ namespace starskycore.Models
 	    /// </summary>	    
 	    public bool AddSwaggerExport { get; set; } = false;
 
-	    
-        // For using <Link> in headers
-        public bool AddHttp2Optimizations  { get; set; } = true;
-
 	    public bool AddLegacyOverwrite { get; set; } = Type.GetType("Mono.Runtime") != null;
 	    
 	    private string _webftp; 
@@ -307,7 +303,7 @@ namespace starskycore.Models
 	    
 	    /// <summary>
 	    /// Set this value to `true` to keep `/account/register` open for everyone. (Security Issue)
-	    /// This setting is by default false. The only build-in exception is when there are no accounts
+	    /// This setting is by default false. The only 2 build-in exceptions are when there are no accounts or you already logged in
 	    /// </summary>
 	    public bool IsAccountRegisterOpen { get; set; } = false;
 
