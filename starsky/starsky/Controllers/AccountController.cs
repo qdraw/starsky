@@ -38,7 +38,6 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(string), 406)]
 		public IActionResult Status()
 		{
-			var allUsers = _userManager.AllUsers();
 			if ( !_userManager.AllUsers().Any() )
 			{
 				Response.StatusCode = 406;
