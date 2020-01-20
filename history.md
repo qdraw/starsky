@@ -25,6 +25,7 @@
 - []   (feature) _Front-end_ Upload to directory (+ backend) __not implemented__
 - []   (feature) Add new account in React  __not implemented__
 - []    (bugfix) ignore backslashes in structure: \\\\d  __not implemented__
+- []    (bugfix) colorclass filter are selecting
 
 # version 0.1.12 - 2020-01-15
 - [x]   (bugfix) _Front-end_ Add Loading in Move dialog
