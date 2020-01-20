@@ -31,11 +31,10 @@ namespace starskytest.Controllers
     [TestClass]
     public class AccountControllerTest
     {
-        private IUserManager _userManager;
+        private readonly IUserManager _userManager;
         private readonly IServiceProvider _serviceProvider;
 
-	    private ApplicationDbContext _dbContext;
-	    private IAntiforgery _antiForgery;
+	    private readonly ApplicationDbContext _dbContext;
 	    private readonly AppSettings _appSettings;
 
 	    public AccountControllerTest()
@@ -65,6 +64,7 @@ namespace starskytest.Controllers
 
             services.AddMvc();
             services.AddSingleton<IAuthenticationService, NoOpAuth>();
+            
             services.AddSingleton<IUserManager, UserManager>();
 
             services.AddLogging();
@@ -88,10 +88,10 @@ namespace starskytest.Controllers
             _userManager = new UserManager(_dbContext);
 
             _appSettings = new AppSettings();
-
+            
         }
 
-	    private ControllerContext SetTestClaimsSet(string name, string id)
+	    private ClaimsPrincipal SetTestClaimsSet(string name, string id)
 	    {
 		    var claims = new List<Claim>()
 		    {
@@ -100,14 +100,8 @@ namespace starskytest.Controllers
 		    };
 		    var identity = new ClaimsIdentity(claims, "Test");
 		    var claimsPrincipal = new ClaimsPrincipal(identity);
-		    
-			return new ControllerContext
-		    {
-			    HttpContext = new DefaultHttpContext
-			    {
-				    User = claimsPrincipal
-			    }
-		    };
+
+		    return claimsPrincipal;
 	    }
         
         [TestMethod]
@@ -117,7 +111,7 @@ namespace starskytest.Controllers
             var userId = "TestUserA";
             var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
 
-            _serviceProvider.GetRequiredService<IUserManager>();
+//            _serviceProvider.GetRequiredService<IUserManager>();
 
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
@@ -188,7 +182,7 @@ namespace starskytest.Controllers
             var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             controller.ControllerContext.HttpContext = httpContext;
 
-            var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "test"};
+            var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "NoUsersActive"};
             
             var actionResult = controller.Register(registerViewModel) as JsonResult;
             
@@ -202,12 +196,12 @@ namespace starskytest.Controllers
 	        var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
 	        controller.ControllerContext.HttpContext = httpContext;
 
-	        var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "test"};
+	        var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "Forbid"};
             
-	        var actionResult = controller.Register(registerViewModel) as ForbidResult;
+	        var actionResult = controller.Register(registerViewModel) as JsonResult;
 
 	        Assert.IsNotNull(actionResult);
-	        Assert.AreEqual("Account Register page is closed",actionResult.AuthenticationSchemes.FirstOrDefault());
+	        Assert.AreEqual("Account Register page is closed",actionResult.Value);
         }
         
         [TestMethod]
@@ -217,36 +211,33 @@ namespace starskytest.Controllers
 	        var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
 	        controller.ControllerContext.HttpContext = httpContext;
 
-	        var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "test"};
+	        var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "blockedByDefault"};
             
-	        var actionResult = controller.Register(registerViewModel) as ForbidResult;
+	        var actionResult = controller.Register(registerViewModel) as JsonResult;
 
 	        Assert.IsNotNull(actionResult);
-	        Assert.AreEqual("Account Register page is closed",actionResult.AuthenticationSchemes.FirstOrDefault());
+	        Assert.AreEqual("Account Register page is closed",actionResult.Value);
         }
 
         [TestMethod]
         public void AccountController_LoginContext_GetRegisterPage_AccountCreated()
         {
-	        var user = new User() { Name = "JohnDoe1"};
-		    
-	        _dbContext.Users.Add(user);
-	        _dbContext.SaveChanges();
-
-	        var controller = new AccountController(new UserManager(_dbContext), _appSettings)
+	        var user = new User() { Name = "JohnDoe2"};
+   
+	        var controller = new AccountController(_userManager, _appSettings)
 	        {
-		        ControllerContext = SetTestClaimsSet(user.Name, user.Id.ToString())
+		        ControllerContext = {HttpContext = new DefaultHttpContext
+		        {
+			        User = SetTestClaimsSet(user.Name, user.Id.ToString())
+		        }}
 	        };
 
-	        var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "test123456789", Password = "test123456789", Name = "test"};
+	        var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "test123456789", Password = "test123456789", Name = user.Name};
             
 	        var actionResult = controller.Register(registerViewModel) as JsonResult;
 
 	        Assert.IsNotNull(actionResult);
 	        Assert.AreEqual("Account Created",actionResult.Value);
-
-	        // And clean afterwards
-	        controller.Logout();
 	        
 	        var getUser = _dbContext.Users.FirstOrDefault(p => p.Name == user.Name);
 	        _dbContext.Users.Remove(getUser);
@@ -257,21 +248,25 @@ namespace starskytest.Controllers
 	    [TestMethod]
 	    public void AccountController_IndexGetLoginSuccessful()
 	    {
-		    var user = new User() { Name = "JohnDoe"};
+		    var user = new User() { Name = "JohnDoe1"};
 		    
 		    _dbContext.Users.Add(user);
 		    _dbContext.SaveChanges();
 
-		    var controller = new AccountController(new UserManager(_dbContext), _appSettings)
+		    var controller = new AccountController(_userManager, _appSettings)
 		    {
-			    ControllerContext = SetTestClaimsSet(user.Name, user.Id.ToString())
+			    ControllerContext = {HttpContext = new DefaultHttpContext
+			    {
+				    User = SetTestClaimsSet(user.Name, user.Id.ToString())
+			    }}
 		    };
+
 
 		    controller.Status();
 		    Assert.AreEqual(200,controller.Response.StatusCode);
 		    
 		    // And clean afterwards
-		    var getUser = _dbContext.Users.FirstOrDefault(p => p.Name == "JohnDoe");
+		    var getUser = _dbContext.Users.FirstOrDefault(p => p.Name == user.Name);
 		    _dbContext.Users.Remove(getUser);
 		    _dbContext.SaveChanges();
 	    }
@@ -300,12 +295,20 @@ namespace starskytest.Controllers
 		    Assert.AreEqual(401,index.StatusCode);
 		    
 	    }
+	    
+	    [TestMethod]
+	    public void AccountController_LogInGet()
+	    {
+		    var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings);
+		    controller.Login();
+	    }
+
 
 	     [TestMethod]
         public async Task AccountController_newAccount_TryToOverwrite_ButItKeepsTheSamePassword()
         {
             // Arrange
-            var userId = "TestUserA";
+            var userId = "try_overwrite@dion.local";
             var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
 
             _serviceProvider.GetRequiredService<IUserManager>();
@@ -313,22 +316,27 @@ namespace starskytest.Controllers
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
             httpContext.RequestServices = _serviceProvider;
- 
-			AccountController controller = new AccountController(_userManager,_appSettings);
-			controller.ControllerContext.HttpContext = httpContext;
-			
-			// Get context for url (netcore3)
+            
+            // needed to have httpContext.User.Identity.IsAuthenticated
+            _serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();
+
+            var controller =
+	            new AccountController(_userManager, _appSettings)
+	            {
+		            ControllerContext = {HttpContext = httpContext}
+	            };
+
+            // Get context for url (netcore3)
 			var routeData = new RouteData();
 			routeData.Values.Add("key1", "value1");
 			var actionDescriptor = new ActionDescriptor();
-
 			var actionContext = new ActionContext(httpContext, routeData, actionDescriptor);
 			controller.Url = new UrlHelper(actionContext);
 			// end url context
 			
 			var login = new LoginViewModel
             {
-                Email = "try_overwrite@dion.local",
+                Email = userId,
                 Password = "test"
             };
             
@@ -337,13 +345,15 @@ namespace starskytest.Controllers
             {
                 Password = "test",
                 ConfirmPassword = "test",
-                Email = "try_overwrite@dion.local",
-                Name = "try_overwrite@dion.local"
+                Email = userId,
+                Name = userId
             };
 
             // Arange > new account
             controller.Register(newAccount);
             
+            var users1111 = _userManager.AllUsers();
+
             // login > it must be succesfull
             await controller.Login(login);
             // Test login
@@ -353,13 +363,12 @@ namespace starskytest.Controllers
             // controller.Logout() not crashing is good enough;
             controller.Logout();
             
-            var users1111 = _userManager.AllUsers();
 
             var newAccountDuplicate = new RegisterViewModel
             {
 	            Password = "test11234567890", // DIFFERENT
 	            ConfirmPassword = "test11234567890",
-	            Email = "try_overwrite@dion.local",
+	            Email = userId,
 	            Name = "should not be updated"
             };
             
@@ -376,10 +385,11 @@ namespace starskytest.Controllers
             controller.Logout();
 
 			// Clean afterwards            
-            var user = _dbContext.Users.FirstOrDefault(p => p.Name == "try_overwrite@dion.local");
+            var user = _dbContext.Users.FirstOrDefault(p => p.Name == userId);
             _dbContext.Users.Remove(user);
             _dbContext.SaveChanges();
         }
+
     }
 
 }

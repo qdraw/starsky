@@ -41,14 +41,7 @@ namespace starskytest.Controllers
 			var caseSensitive =  controller.CaseSensitiveRedirect(controller.ControllerContext.HttpContext.Request);
 			Assert.AreEqual(string.Empty,caseSensitive);
 		}
-		
-		[TestMethod]
-		public void AccountController_LogInGet()
-		{
-			var controller = new HomeController(_antiForgery);
-			controller.Login();
-		}
-        
+
 		[TestMethod]
 		public void AccountController_RegisterGet()
 		{
