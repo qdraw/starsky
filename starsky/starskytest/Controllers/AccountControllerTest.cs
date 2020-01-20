@@ -352,8 +352,6 @@ namespace starskytest.Controllers
             // Arange > new account
             controller.Register(newAccount);
             
-            var users1111 = _userManager.AllUsers();
-
             // login > it must be succesfull
             await controller.Login(login);
             // Test login
@@ -390,6 +388,47 @@ namespace starskytest.Controllers
             _dbContext.SaveChanges();
         }
 
+        [TestMethod]
+        public void AccountController_RegisterStatus_NoAccounts()
+        {
+	        var controller =
+		        new AccountController(_userManager, _appSettings)
+		        {
+			        ControllerContext = {HttpContext = new DefaultHttpContext()}
+		        };
+
+	        var actionResult = controller.RegisterStatus() as JsonResult;
+            
+	        Assert.AreEqual("RegisterStatus open", actionResult.Value as string);
+        }
+        
+        [TestMethod]
+        public void AccountController_RegisterStatus_ActiveUsers()
+        {
+	        var controller =
+		        new AccountController(new FakeUserManagerActiveUsers(), _appSettings)
+		        {
+			        ControllerContext = {HttpContext = new DefaultHttpContext()}
+		        };
+
+	        var actionResult = controller.RegisterStatus() as JsonResult;
+            
+	        Assert.AreEqual("Account Register page is closed", actionResult.Value as string);
+        }
+        
+        [TestMethod]
+        public void AccountController_LoginStatus_NoAccounts()
+        {
+	        var controller =
+		        new AccountController(_userManager, _appSettings)
+		        {
+			        ControllerContext = {HttpContext = new DefaultHttpContext()}
+		        };
+
+	        var actionResult = controller.Status() as JsonResult;
+            
+	        Assert.AreEqual("There are no accounts, you must create an account first", actionResult.Value as string);
+        }
     }
 
 }
