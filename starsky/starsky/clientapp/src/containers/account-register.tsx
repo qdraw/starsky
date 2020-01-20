@@ -53,6 +53,22 @@ const AccountRegister: FunctionComponent = () => {
   const [loading, setLoading] = React.useState(false);
 
   const setUpAccountHandler = async () => {
+
+    var loginValidation = validateLoginForm(userEmail, userPassword);
+
+    if (!loginValidation) {
+      setError(loginValidation === null ? MessageWrongFormatEmailAddress : MessageNoUsernamePassword)
+      return;
+    }
+    if (userPassword.length <= 7) {
+      setError(MessagePasswordToShort);
+      return;
+    }
+    if (userPassword !== userConfirmPassword) {
+      setError(MessagePasswordNoMatch);
+      return;
+    }
+
     setLoading(true);
 
     const response = await FetchPost(new UrlQuery().UrlAccountRegister(),
@@ -98,20 +114,6 @@ const AccountRegister: FunctionComponent = () => {
         onSubmit={e => {
           e.preventDefault();
           setError(null);
-          var loginValidation = validateLoginForm(userEmail, userPassword);
-
-          if (!loginValidation) {
-            setError(loginValidation === null ? MessageWrongFormatEmailAddress : MessageNoUsernamePassword)
-            return;
-          }
-          if (userPassword.length <= 7) {
-            setError(MessagePasswordToShort);
-            return;
-          }
-          if (userPassword !== userConfirmPassword) {
-            setError(MessagePasswordNoMatch);
-            return;
-          }
           setUpAccountHandler();
         }}>
 
@@ -151,7 +153,7 @@ const AccountRegister: FunctionComponent = () => {
           disabled={!isFormEnabled}
           autoComplete="off"
           type="password"
-          name="password"
+          name="confirm-password"
           value={userConfirmPassword}
           onChange={e => setUserConfirmPassword(e.target.value)}
         />

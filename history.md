@@ -22,10 +22,11 @@
 
 # version 0.1.12 - 2020-??-??
 - [x]   (remove) _V1_ Removal of Old Layout (V1)
+- [x]   (feature) _Front-end_ _API_ Add new account in React
+- [x]   (feature) _Front-end_ _API_ Redirect to new account creation on new setup
 - []   (feature) _Front-end_ Upload to directory (+ backend) __not implemented__
-- []   (feature) Add new account in React  __not implemented__
 - []    (bugfix) ignore backslashes in structure: \\\\d  __not implemented__
-- []    (bugfix) colorclass filter are selecting
+- []    (bugfix) colorclass filter are selecting __not implemented__
 
 # version 0.1.12 - 2020-01-15
 - [x]   (bugfix) _Front-end_ Add Loading in Move dialog
