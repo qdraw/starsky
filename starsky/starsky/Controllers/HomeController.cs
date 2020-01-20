@@ -79,17 +79,7 @@ namespace starsky.Controllers
 		}
 
 				
-		/// <summary>
-		/// Login form page
-		/// </summary>
-		/// <returns></returns>
-		/// <response code="200">Login form page</response>
-		[HttpGet("/account/login")]
-		[ProducesResponseType(200)]
-		public IActionResult Login()
-		{
-			return PhysicalFile(_clientApp, "text/html");
-		}
+
 
 		internal string CaseSensitiveRedirect(HttpRequest request)
 		{

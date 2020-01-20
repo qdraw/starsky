@@ -1,14 +1,11 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starsky.Helpers;
 using starsky.ViewModels.Account;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -61,6 +58,19 @@ namespace starsky.Controllers
 			return Json(model);
 		}
 
+		
+		/// <summary>
+		/// Login form page
+		/// </summary>
+		/// <returns></returns>
+		/// <response code="200">Login form page</response>
+		[HttpGet("/account/login")]
+		[ProducesResponseType(200)]
+		public IActionResult Login(string returnUrl = null)
+		{
+			return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "clientapp", "build", "index.html"), "text/html");
+		}
+		
         /// <summary>
         /// Login the current HttpContext in
         /// </summary>
@@ -120,8 +130,11 @@ namespace starsky.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Register(RegisterViewModel model)
         {
-	        if (IsAccountRegisterClosed(User.Identity.IsAuthenticated))
-		        return Forbid("Account Register page is closed");
+	        if ( IsAccountRegisterClosed(User.Identity.IsAuthenticated) )
+	        {
+		        Response.StatusCode = 403;
+		        return Json("Account Register page is closed");
+	        }
 	        
             if (ModelState.IsValid && model.ConfirmPassword == model.Password)
             {
@@ -157,9 +170,9 @@ namespace starsky.Controllers
 
         public IActionResult RegisterStatus()
         {
-	        if (IsAccountRegisterClosed(User.Identity.IsAuthenticated))
-		        return Forbid("Account Register page is closed");
-	        return Json("open");
+	        if ( !IsAccountRegisterClosed(User.Identity.IsAuthenticated) ) return Json("RegisterStatus open");
+	        Response.StatusCode = 403;
+	        return Json("Account Register page is closed");
         }
        
 

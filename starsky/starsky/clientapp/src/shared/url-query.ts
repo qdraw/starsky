@@ -47,6 +47,10 @@ export class UrlQuery {
     return "/account/status";
   }
 
+  public UrlAccountRegisterStatus = (): string => {
+    return "/account/register/status";
+  }
+
   /**
    * Used with localisation hash
    */

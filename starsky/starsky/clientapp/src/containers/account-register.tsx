@@ -1,8 +1,9 @@
 
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import Button from '../components/Button';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
+import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { UrlQuery } from '../shared/url-query';
@@ -29,6 +30,8 @@ const AccountRegister: FunctionComponent = () => {
     "No connection is possible, please try again later");
   const MessageRejectedBadRequest = language.text("Dit verzoek is afgewezen aangezien er niet voldaan is aan de beveiligingseisen (Error 400)",
     "This request was rejected because the security requirements were not met  (Error 400)");
+  const MessageRegistrationTurnedOff = language.text("Registratie is uitgezet",
+    "Registration is turned off");
 
   const MessageLegalCreateAccountHtml = language.text(`Door het creëren van een account gaat u akkoord met de
    <a href="/legal/toc.nl.html">Algemene Voorwaarden</a> van Starsky. Raadpleeg en bekijk hier onze 
@@ -55,7 +58,7 @@ const AccountRegister: FunctionComponent = () => {
     const response = await FetchPost(new UrlQuery().UrlAccountRegister(),
       `Email=${userEmail}&Password=${userPassword}&ConfirmPassword=${userConfirmPassword}`);
 
-    if (response.statusCode === 400) {
+    if (response.statusCode === 400 || response.statusCode === 403) {
       setError(MessageRejectedBadRequest);
       setLoading(false);
       return;
@@ -69,6 +72,15 @@ const AccountRegister: FunctionComponent = () => {
 
     history.navigate(new UrlQuery().UrlLogin(), { replace: true });
   };
+
+  // readonly mode
+  const [isFormEnabled, setFormEnabled] = React.useState(true);
+  useEffect(() => {
+    FetchGet(new UrlQuery().UrlAccountRegisterStatus()).then((response) => {
+      setFormEnabled(response.statusCode !== 403);
+      if (response.statusCode === 403) setError(MessageRegistrationTurnedOff);
+    });
+  }, [MessageRegistrationTurnedOff, history.location.search]);
 
   return (<>
     <header className="header header--main header--bluegray700">
@@ -108,6 +120,7 @@ const AccountRegister: FunctionComponent = () => {
         </label>
         <input
           className="form-control"
+          disabled={!isFormEnabled}
           autoComplete="off"
           type="email"
           name="email"
@@ -121,6 +134,7 @@ const AccountRegister: FunctionComponent = () => {
         </label>
         <input
           className="form-control"
+          disabled={!isFormEnabled}
           autoComplete="off"
           type="password"
           name="password"
@@ -134,6 +148,7 @@ const AccountRegister: FunctionComponent = () => {
         </label>
         <input
           className="form-control"
+          disabled={!isFormEnabled}
           autoComplete="off"
           type="password"
           name="password"
@@ -144,7 +159,7 @@ const AccountRegister: FunctionComponent = () => {
 
         {error && <div className="content--error-true">{error}</div>}
 
-        <Button className="btn btn--default" type="submit" disabled={loading} onClick={e => { }}>
+        <Button className="btn btn--default" type="submit" disabled={loading || !isFormEnabled} onClick={e => { }}>
           {loading ? "Loading..." : MessageCreateNewAccount}
         </Button>
       </form>
