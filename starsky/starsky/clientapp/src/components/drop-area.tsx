@@ -15,6 +15,7 @@ export interface IDropAreaProps {
   enableInputButton?: boolean;
   enableDragAndDrop?: boolean;
   className?: string;
+  callback?: Function;
 }
 
 const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
@@ -114,6 +115,10 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
 
       setOpen(true);
       setIsLoading(false);
+
+      if (props.callback) {
+        props.callback();
+      }
     });
   };
 

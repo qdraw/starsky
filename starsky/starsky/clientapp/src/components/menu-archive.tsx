@@ -153,9 +153,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           {!select ? <MoreMenu>
             <li className="menu-option" data-test="mkdir" onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}>{MessageMkdir}</li>
             <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
-            <li className="menu-option menu-option--input">
-              <DropArea endpoint={new UrlQuery().UrlUploadApi()} folderPath={""} enableInputButton={true} enableDragAndDrop={true}></DropArea>
-            </li>
+            {state ? <li className="menu-option menu-option--input">
+              <DropArea callback={() => alert('refresh the page')}
+                endpoint={new UrlQuery().UrlUploadApi()} folderPath={state.subPath} enableInputButton={true} enableDragAndDrop={true}></DropArea>
+            </li> : null}
           </MoreMenu> : null}
 
           {/* In the select context there are more options */}
@@ -164,10 +165,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => selectAll()}>{MessageSelectAll}</li> : null}
             <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
             <li className="menu-option" onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li>
-            <li className="menu-option menu-option--input">
-              <DropArea endpoint={new UrlQuery().UrlUploadApi()} folderPath={""} enableInputButton={true} enableDragAndDrop={true}></DropArea>
-            </li>
-
+            {state ? <li className="menu-option menu-option--input">
+              <DropArea callback={() => alert('refresh the page')}
+                endpoint={new UrlQuery().UrlUploadApi()} folderPath={state.subPath} enableInputButton={true} enableDragAndDrop={true}></DropArea>
+            </li> : null}
           </MoreMenu> : null}
 
 
