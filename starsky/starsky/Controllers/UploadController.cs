@@ -58,9 +58,9 @@ namespace starsky.Controllers
 			
 			var parentDirectory = _iStorage.ExistFolder(to) ? PathHelper.AddSlash(to) :  PathHelper.RemoveLatestSlash(to);
 
-			var t2 = FilenamesHelper.GetParentPath(to);
 			// only used for direct import
-			if ( _iStorage.ExistFolder(FilenamesHelper.GetParentPath(to)) )
+			if ( _iStorage.ExistFolder(FilenamesHelper.GetParentPath(to)) && 
+			     FilenamesHelper.IsValidFileName(FilenamesHelper.GetFileName(to)) )
 			{
 				Request.Headers["filename"] = FilenamesHelper.GetFileName(to);
 				parentDirectory = FilenamesHelper.GetParentPath(to);

@@ -145,7 +145,21 @@ namespace starskytest.Controllers
 
 			var queryResult = _query.SingleItem(toPlaceSubPath);
 			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
+		}
+		
+		[TestMethod]
+		public async Task UploadToFolder_NotFound()
+		{
+			var controller =
+				new UploadController(_import, _appSettings, _isync, _iStorage, _query)
+				{
+					ControllerContext = RequestWithFile(),
+				};
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = "/not-found"; //Set header
 
+			var actionResult = await controller.UploadToFolder()as NotFoundObjectResult;
+			
+			Assert.AreEqual(404,actionResult.StatusCode);
 		}
 		
 		[TestMethod]
