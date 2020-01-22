@@ -12,7 +12,7 @@ namespace starskycore.Models
             RecursiveDirectory = false;
 	        IndexMode = true;
 	        // ColorClass defaults in prop
-	        // Structure defaults in appsettings
+	        // Structure defaults in appSettings
         }
 
 	    /// <summary>

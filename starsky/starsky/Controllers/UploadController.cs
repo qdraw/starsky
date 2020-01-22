@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace starsky.Controllers
 			_iStorage = iStorage; 
 			_iHostStorage = new StorageHostFullPathFilesystem();
 		}
-
+		
 		
 		/// <summary>
 		/// Upload to specific folder (does not check if already has been imported)
@@ -52,14 +53,25 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(List<ImportIndexItem>),415)]  // Wrong input (e.g. wrong extenstion type)
         public async Task<IActionResult> UploadToFolder()
 		{
-			var f = Request.Headers["to"].ToString();
-			if ( string.IsNullOrWhiteSpace(f) ) return BadRequest("missing 'to' header");
+			var to = Request.Headers["to"].ToString();
+			if ( string.IsNullOrWhiteSpace(to) ) return BadRequest("missing 'to' header");
 			
-			if (  !_iStorage.ExistFile(f) && !_iStorage.ExistFolder(f) ) return NotFound(new ImportIndexItem());
+			var parentDirectory = _iStorage.ExistFolder(to) ? PathHelper.AddSlash(to) :  PathHelper.RemoveLatestSlash(to);
 
-			var inputSubPath = _iStorage.ExistFolder(f) ? PathHelper.AddSlash(f) :  PathHelper.RemoveLatestSlash(f);
-			
 			var tempImportPaths = await Request.StreamFile(_appSettings);
+				
+			// when using 'to' for as direct path to upload
+			string fileNameOverwrite = null;
+			if ( tempImportPaths.Count == 1 && !_iStorage.ExistFolder(to) && !_iStorage.ExistFolder( FilenamesHelper.GetParentPath(to) ) )
+			{
+				parentDirectory = FilenamesHelper.GetParentPath(to);
+				fileNameOverwrite = FilenamesHelper.GetFileName(to);
+			}
+			else if(!_iStorage.ExistFolder(to))
+			{
+				FilesHelper.DeleteFile(tempImportPaths);
+				return NotFound(new ImportIndexItem());
+			}
 			
 			var fileIndexResultsList = _import.Preflight(tempImportPaths, new ImportSettingsModel{IndexMode = false});
 
@@ -68,42 +80,17 @@ namespace starsky.Controllers
 				if(fileIndexResultsList[i].Status != ImportStatus.Ok) continue;
 
 				await using var tempFile = _iHostStorage.ReadStream(tempImportPaths[i]);
-
-				// Get the right path in the right situation
-				var parentDirectory = "";
-				var fileName = "";
-				if ( _iStorage.ExistFile(inputSubPath) )
-				{
-					parentDirectory = FilenamesHelper.GetParentPath(f);
-					fileName = Path.GetFileName(tempImportPaths[i]);
-				}
-				else
-				{
-					parentDirectory = "";
-					fileName = "";
-				}
+				
+				var fileName = Path.GetFileName(tempImportPaths[i]);
+				// overwrite when using a direct path
+				if ( !string.IsNullOrEmpty(fileNameOverwrite) ) fileName = fileNameOverwrite;
 
 				_iStorage.WriteStream(tempFile, parentDirectory + fileName);
-
-				 // to show the correct output
-				 fileIndexResultsList[i].FilePath = parentDirectory + fileName;
-				 fileIndexResultsList[i].FileIndexItem.ParentDirectory = parentDirectory;
-				 fileIndexResultsList[i].FileIndexItem.FileName = fileName;
-				 fileIndexResultsList[i].FileIndexItem.SetAddToDatabase();
-
-				 // Add or run sync file
-				 var queryItem = _query.SingleItem(parentDirectory + fileName);
-				 if (queryItem  == null )
-				 {
-					 _query.AddItem(fileIndexResultsList[i].FileIndexItem);
-				 }
-				 else
-				 {
-					 _iSync.SyncFiles(parentDirectory + fileName,false);
-				 }
-				 
+				
+				_iSync.SyncFiles(parentDirectory + fileName,false);
+				
 				 // clear directory cache
-				 _query.RemoveCacheParentItem(parentDirectory + fileName);
+				 _query.RemoveCacheParentItem(parentDirectory);
 
 				_iHostStorage.FileDelete(tempImportPaths[i]);
 			}
