@@ -209,7 +209,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
         setOpen(false)
       }}>
       <div className="modal content--subheader">Deze bestanden zijn ge&iuml;mporteerd </div>
-      <div className="modal modal-move content--text">
+      <div className="modal modal-move content content--text">
         <ItemTextListView fileIndexItems={uploadFilesList} callback={() => { }} />
       </div>
     </Modal>
