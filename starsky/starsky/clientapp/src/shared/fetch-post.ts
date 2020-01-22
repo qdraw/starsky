@@ -1,6 +1,6 @@
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 
-const FetchPost = async (url: string, body: string | FormData, method: 'post' | 'delete' = 'post'): Promise<IConnectionDefault> => {
+const FetchPost = async (url: string, body: string | FormData, method: 'post' | 'delete' = 'post', headers: object = {}): Promise<IConnectionDefault> => {
 
   function getCookie(name: string): string {
     var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
@@ -15,6 +15,7 @@ const FetchPost = async (url: string, body: string | FormData, method: 'post' | 
     headers: {
       'X-XSRF-TOKEN': getCookie("X-XSRF-TOKEN"),
       'Accept': 'application/json',
+      ...headers
     },
   }
 

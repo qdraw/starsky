@@ -8,8 +8,11 @@ import Modal from './modal';
 import Preloader from './preloader';
 
 export interface IDropAreaProps {
-  enableInputField?: boolean;
+  endpoint: string;
+  folderPath?: string;
+  enableInputButton?: boolean;
   enableDragAndDrop?: boolean;
+  className?: string;
 }
 
 const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
@@ -82,7 +85,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       formData.append("files", file);
     });
 
-    FetchPost('/import', formData).then((response) => {
+    FetchPost(props.endpoint, formData, 'post', { 'to': props.folderPath }).then((response) => {
       if (!response.data) {
         setOpen(true);
         setIsLoading(false);
@@ -189,10 +192,15 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     document.body.classList.remove('drag');
   }, [dragActive]);
 
+  const dropareaId = `droparea-file-r${Math.floor(Math.random() * 30) + 1}`
+
   return (<>
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
-    {props.enableInputField ? <input type="file" onChange={onChange} /> : null}
+    {props.enableInputButton ? <>
+      <input id={dropareaId} className="droparea-file-input" type="file" onChange={onChange} />
+      <label className={props.className} htmlFor={dropareaId} >Upload</label>
+    </> : null}
 
     <Modal
       id="detailview-drop-modal"

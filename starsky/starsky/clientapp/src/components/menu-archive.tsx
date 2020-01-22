@@ -7,6 +7,7 @@ import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
+import DropArea from './drop-area';
 import MenuSearchBar from './menu.searchbar';
 import ModalArchiveMkdir from './modal-archive-mkdir';
 import ModalDisplayOptions from './modal-display-options';
@@ -151,8 +152,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           {/* default more menu */}
           {!select ? <MoreMenu>
             <li className="menu-option" data-test="mkdir" onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}>{MessageMkdir}</li>
-            <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
             <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
+            <li className="menu-option menu-option--input">
+              <DropArea endpoint={new UrlQuery().UrlUploadApi()} folderPath={""} enableInputButton={true} enableDragAndDrop={true}></DropArea>
+            </li>
           </MoreMenu> : null}
 
           {/* In the select context there are more options */}
@@ -161,8 +164,12 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => selectAll()}>{MessageSelectAll}</li> : null}
             <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
             <li className="menu-option" onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li>
-            <li className="menu-option disabled" onClick={() => { alert("Uploaden werkt nog niet, ga naar importeren in het hoofdmenu"); }}>Uploaden</li>
+            <li className="menu-option menu-option--input">
+              <DropArea endpoint={new UrlQuery().UrlUploadApi()} folderPath={""} enableInputButton={true} enableDragAndDrop={true}></DropArea>
+            </li>
+
           </MoreMenu> : null}
+
 
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
             <div className="nav__container">

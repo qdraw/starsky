@@ -146,4 +146,12 @@ export class UrlQuery {
     return "/sync/mkdir";
   }
 
+  public UrlImportApi(): string {
+    return "/import";
+  }
+
+  public UrlUploadApi(): string {
+    return "/api/upload";
+  }
+
 }

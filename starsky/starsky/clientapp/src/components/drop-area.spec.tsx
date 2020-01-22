@@ -8,7 +8,7 @@ import DropArea from './drop-area';
 describe("DropArea", () => {
 
   it("renders", () => {
-    shallow(<DropArea/>)
+    shallow(<DropArea endpoint="/import" />)
   });
 
   describe("with events", () => {
@@ -41,7 +41,7 @@ describe("DropArea", () => {
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        mount(<DropArea enableDragAndDrop={true}/>);
+        mount(<DropArea endpoint="/import" enableDragAndDrop={true} />);
       });
 
       act(() => {
@@ -53,14 +53,14 @@ describe("DropArea", () => {
 
       expect(spy).toBeCalled();
       expect(spy).toBeCalledTimes(1);
-      expect(spy).toBeCalledWith("/import", compareFormData);
+      expect(spy).toBeCalledWith("/import", compareFormData, "post", { "to": undefined });
 
     });
 
     it("Test dragenter", () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        mount(<DropArea enableDragAndDrop={true}/>);
+        mount(<DropArea endpoint="/import" enableDragAndDrop={true} />);
       });
 
       act(() => {
@@ -73,7 +73,7 @@ describe("DropArea", () => {
     it("Test dragenter and then dragleave", () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        shallow(<DropArea enableDragAndDrop={true}/>);
+        shallow(<DropArea endpoint="/import" enableDragAndDrop={true} />);
       });
 
       act(() => {
@@ -92,7 +92,7 @@ describe("DropArea", () => {
     it("Test dragover", () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        shallow(<DropArea enableDragAndDrop={true}/>);
+        shallow(<DropArea endpoint="/import" enableDragAndDrop={true} />);
       });
 
       act(() => {
