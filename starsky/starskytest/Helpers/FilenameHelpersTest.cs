@@ -34,6 +34,22 @@ namespace starskytest.Helpers
 			Assert.AreEqual("test.jpg", result);
 		}
 				
+		
+		[TestMethod]
+		public void FilenamesHelper_GetParentPath()
+		{
+			var result = FilenamesHelper.GetParentPath("/yes.jpg");
+			Assert.AreEqual("/", result);
+		}
+		
+		[TestMethod]
+		public void FilenamesHelper_GetParentPathSubDir()
+		{
+			var result = FilenamesHelper.GetParentPath("/sub/yes.jpg");
+			Assert.AreEqual("/sub/", result);
+		}
+
+
 
 	}
 	

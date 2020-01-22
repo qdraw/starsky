@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -58,7 +62,8 @@ namespace starskytest.Controllers
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			_createAnImage = new CreateAnImage();
-			
+			_appSettings = new AppSettings();
+
 			_iStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_createAnImage.DbPath}, 
 				new List<byte[]>{CreateAnImage.Bytes}, 
@@ -70,20 +75,13 @@ namespace starskytest.Controllers
                         
 			_import = new ImportService(context,_isync,new FakeExifTool(_iStorage,_appSettings), _appSettings,null,_iStorage);
 
-			var dict = new Dictionary<string, string>
-			{
-				{"App:StorageFolder", _createAnImage.BasePath},
-				{"App:ThumbnailTempFolder", _createAnImage.BasePath},
-				{"App:Verbose", "true"}
-			};
+
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();
 			// Add random config to dependency injection
-			builder.AddInMemoryCollection(dict);
 			// build config
 			var configuration = builder.Build();
 			// inject config as object to a service
-			services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
 
 			// Add Background services
 			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
@@ -92,14 +90,27 @@ namespace starskytest.Controllers
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
 			// get the service
-			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
 			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 		
+		/// <summary>
+		///  Add the file in the underlying request object.
+		/// </summary>
+		/// <returns>Controller Context with file</returns>
+		private ControllerContext RequestWithFile()
+		{
+			var httpContext = new DefaultHttpContext();
+			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
+			httpContext.Request.Body = new MemoryStream(CreateAnImage.Bytes);
+	        
+			var actionContext = new ActionContext(httpContext, new RouteData(), new ControllerActionDescriptor());
+			return new ControllerContext(actionContext);
+		}
+
 		[TestMethod]
-		public async Task UploadToFolder_BadRequest()
+		public async Task UploadToFolder_NoToHeader_BadRequest()
 		{
 			var controller =
 				new UploadController(_import, _appSettings, _isync, _iStorage, _query)
@@ -111,9 +122,50 @@ namespace starskytest.Controllers
 			
 			Assert.AreEqual(400,actionResult.StatusCode);
 		}
+	
+		[TestMethod]
+		public async Task UploadToFolder_DefaultFlow()
+		{
+			var controller = new UploadController(_import, _appSettings, _isync, _iStorage, _query)
+			{
+				ControllerContext = RequestWithFile(),
+			};
+			
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = "/yes.jpg"; //Set header
+
+			var actionResult = await controller.UploadToFolder()  as JsonResult;
+			var list = actionResult.Value as List<ImportIndexItem>;
+
+			Assert.AreEqual( ImportStatus.Ok, list.FirstOrDefault().Status);
+
+			var fileSystemResult = _iStorage.GetAllFilesInDirectory("/");
+			Assert.AreEqual("/0000000000aaaaa__exifreadingtest00.jpg",fileSystemResult.FirstOrDefault());
+
+			var queryResult = _query.GetAllRecursive("/");
+			Assert.AreEqual("Sony",queryResult.FirstOrDefault().Make);
+
+		}
+		
+		[TestMethod]
+		public async Task UploadToFolder_UnknownFailFlow()
+		{
+			var controller = new UploadController(_import, _appSettings, _isync, _iStorage, _query)
+			{
+				ControllerContext = RequestWithFile(),
+			};
+			
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = "/"; //Set header
+
+			var actionResult = await controller.UploadToFolder()  as JsonResult;
+			var list = actionResult.Value as List<ImportIndexItem>;
+
+			Assert.AreEqual( ImportStatus.FileError, list.FirstOrDefault().Status);
+		}
+
+		
 		
 //		[TestMethod]
-		public async Task UploadToFolder_BadReque1111st()
+		public async Task UploadToFolder_StreamFileHasFailed_BadRequest()
 		{
 			var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
 			httpContext.Request.Headers["to"] = "/"; //Set header
@@ -127,9 +179,9 @@ namespace starskytest.Controllers
 					}
 				};
 			
-			var actionResult = await controller.UploadToFolder();
+			var actionResult = await controller.UploadToFolder() as BadRequestObjectResult;
 			
-//			Assert.AreEqual(400,actionResult.StatusCode);
+			Assert.AreEqual(400,actionResult.StatusCode);
 		}
 
 	}

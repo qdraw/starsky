@@ -45,7 +45,8 @@ namespace starskycore.Helpers
 			var parentRegex =
 				new Regex(".+(?=\\/[^/]+$)",
 					RegexOptions.CultureInvariant);
-			return parentRegex.Match(filePath).Value;
+			var result = parentRegex.Match(filePath).Value;
+			return  string.IsNullOrEmpty(result) ? "/": PathHelper.AddSlash(result);
 		}
 	}
 }

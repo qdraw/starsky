@@ -136,8 +136,11 @@ namespace starskytest.Controllers
 	        
 	        return new ControllerContext(actionContext);
         }
-        
-        // Add the file in the underlying request object.
+
+        /// <summary>
+        ///  Add the file in the underlying request object.
+        /// </summary>
+        /// <returns>Controller Context with file</returns>
         private ControllerContext RequestWithFile()
         {
 	        var httpContext = new DefaultHttpContext();

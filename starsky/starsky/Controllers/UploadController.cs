@@ -58,20 +58,19 @@ namespace starsky.Controllers
 			
 			var parentDirectory = _iStorage.ExistFolder(to) ? PathHelper.AddSlash(to) :  PathHelper.RemoveLatestSlash(to);
 
-			var tempImportPaths = await Request.StreamFile(_appSettings);
-				
-			// when using 'to' for as direct path to upload
-			string fileNameOverwrite = null;
-			if ( tempImportPaths.Count == 1 && !_iStorage.ExistFolder(to) && !_iStorage.ExistFolder( FilenamesHelper.GetParentPath(to) ) )
+			var t2 = FilenamesHelper.GetParentPath(to);
+			// only used for direct import
+			if ( _iStorage.ExistFolder(FilenamesHelper.GetParentPath(to)) )
 			{
-				parentDirectory = FilenamesHelper.GetParentPath(to);
-				fileNameOverwrite = FilenamesHelper.GetFileName(to);
+				Request.Headers["filename"] = FilenamesHelper.GetFileName(to);
 			}
-			else if(!_iStorage.ExistFolder(to))
+			else if (!_iStorage.ExistFolder(to))
 			{
-				FilesHelper.DeleteFile(tempImportPaths);
 				return NotFound(new ImportIndexItem());
 			}
+			
+			var tempImportPaths = await Request.StreamFile(_appSettings);
+			
 			
 			var fileIndexResultsList = _import.Preflight(tempImportPaths, new ImportSettingsModel{IndexMode = false});
 
@@ -79,13 +78,12 @@ namespace starsky.Controllers
 			{
 				if(fileIndexResultsList[i].Status != ImportStatus.Ok) continue;
 
-				await using var tempFile = _iHostStorage.ReadStream(tempImportPaths[i]);
+				await using var tempFileStream = _iHostStorage.ReadStream(tempImportPaths[i]);
 				
 				var fileName = Path.GetFileName(tempImportPaths[i]);
-				// overwrite when using a direct path
-				if ( !string.IsNullOrEmpty(fileNameOverwrite) ) fileName = fileNameOverwrite;
 
-				_iStorage.WriteStream(tempFile, parentDirectory + fileName);
+				_iStorage.WriteStream(tempFileStream, parentDirectory + fileName);
+				tempFileStream.Dispose();
 				
 				_iSync.SyncFiles(parentDirectory + fileName,false);
 				

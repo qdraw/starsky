@@ -110,18 +110,24 @@ namespace starskycore.Services
 				alreadyImportedResult.Status = ImportStatus.IgnoredAlreadyImported;
 				return alreadyImportedResult;
 			}
+			
+			// if the item fails
+			var importIndexFileError = new ImportIndexItem {
+				FilePath = "/" + FilenamesHelper.GetFileName(inputFileFullPath),
+				FileHash = fileHashCode, 
+				Status = ImportStatus.FileError
+			};
+			
+			// Check if extension is correct
+			if (!ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath)) return importIndexFileError;
 
 			// Check if the file is correct
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(
-				new StorageHostFullPathFilesystem().ReadStream(inputFileFullPath, 512));
+				new StorageHostFullPathFilesystem().ReadStream(inputFileFullPath, 160));
 
 			if ( ! ExtensionRolesHelper.ExtensionSyncSupportedList.Contains($"{imageFormat}") )
 			{
-				return new ImportIndexItem {
-					FilePath = "/" + FilenamesHelper.GetFileName(inputFileFullPath),
-					FileHash = fileHashCode, 
-					Status = ImportStatus.FileError
-				};
+				return importIndexFileError;
 			}
 			
 			// Only accept files with correct meta data
