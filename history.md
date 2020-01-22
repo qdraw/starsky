@@ -24,7 +24,7 @@
 - [x]   (remove) _V1_ Removal of Old Layout (V1)
 - [x]   (feature) _Front-end_ _API_ Add new account in React
 - [x]   (feature) _Front-end_ _API_ Redirect to new account creation on new setup
-- [x]   (feature) _Front-end_ Upload to directory (+ backend)
+- [x]   (feature) _Front-end_ Upload to directory (+ backend) __partly implemented__
 - []    (bugfix) ignore backslashes in structure: \\\\d  __not implemented__
 - []    (bugfix) colorclass filter are selecting __not implemented__
 - []	(bugfix) export poll after 201 __not implemented__
