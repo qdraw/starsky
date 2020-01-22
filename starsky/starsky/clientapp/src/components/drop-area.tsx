@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import useGlobalSettings from '../hooks/use-global-settings';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import ItemTextListView from './item-text-list-view';
 import Modal from './modal';
@@ -16,6 +18,9 @@ export interface IDropAreaProps {
 }
 
 const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
+
+  const settings = useGlobalSettings();
+  const MessageFilesAdded = new Language(settings.language).text("Deze bestanden zijn toegevoegd", "These files have been added");
 
   const [dragActive, setDrag] = useState(false);
   const [dragTarget, setDragTarget] = useState(document.createElement("span") as Element);
@@ -208,7 +213,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       handleExit={() => {
         setOpen(false)
       }}>
-      <div className="modal content--subheader">Deze bestanden zijn ge&iuml;mporteerd </div>
+      <div className="modal content--subheader">{MessageFilesAdded}</div>
       <div className="modal modal-move content content--text">
         <ItemTextListView fileIndexItems={uploadFilesList} callback={() => { }} />
       </div>
