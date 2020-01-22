@@ -63,6 +63,7 @@ namespace starsky.Controllers
 			if ( _iStorage.ExistFolder(FilenamesHelper.GetParentPath(to)) )
 			{
 				Request.Headers["filename"] = FilenamesHelper.GetFileName(to);
+				parentDirectory = FilenamesHelper.GetParentPath(to);
 			}
 			else if (!_iStorage.ExistFolder(to))
 			{

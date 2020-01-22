@@ -152,7 +152,7 @@ namespace starskytest.Controllers
 	    }
 
         [TestMethod]
-        public async Task ImportController_DefaultFlow()
+        public async Task ImportController_WrongInputFlow()
         {
 	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
 		        _bgTaskQueue, null, new FakeIStorage())
@@ -163,7 +163,7 @@ namespace starskytest.Controllers
 	        var actionResult = await importController.IndexPost()  as JsonResult;
 	        var list = actionResult.Value as List<ImportIndexItem>;
 
-	        Assert.AreEqual( ImportStatus.Ok, list.FirstOrDefault().Status);
+	        Assert.AreEqual( ImportStatus.FileError, list.FirstOrDefault().Status);
         }
 
 

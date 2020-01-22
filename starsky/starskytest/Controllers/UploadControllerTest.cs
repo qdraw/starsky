@@ -130,19 +130,21 @@ namespace starskytest.Controllers
 			{
 				ControllerContext = RequestWithFile(),
 			};
+
+			var toPlaceSubPath = "/yes01.jpg";
 			
-			controller.ControllerContext.HttpContext.Request.Headers["to"] = "/yes.jpg"; //Set header
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
 
 			var actionResult = await controller.UploadToFolder()  as JsonResult;
 			var list = actionResult.Value as List<ImportIndexItem>;
 
 			Assert.AreEqual( ImportStatus.Ok, list.FirstOrDefault().Status);
 
-			var fileSystemResult = _iStorage.GetAllFilesInDirectory("/");
-			Assert.AreEqual("/0000000000aaaaa__exifreadingtest00.jpg",fileSystemResult.FirstOrDefault());
+			var fileSystemResult = _iStorage.ExistFile(toPlaceSubPath);
+			Assert.IsTrue(fileSystemResult);
 
-			var queryResult = _query.GetAllRecursive("/");
-			Assert.AreEqual("Sony",queryResult.FirstOrDefault().Make);
+			var queryResult = _query.SingleItem(toPlaceSubPath);
+			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
 
 		}
 		
