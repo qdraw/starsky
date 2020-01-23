@@ -154,7 +154,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             <li className="menu-option" data-test="mkdir" onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}>{MessageMkdir}</li>
             <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
             {state ? <li className="menu-option menu-option--input">
-              <DropArea callback={() => alert('refresh the page')}
+              <DropArea callback={(add) => dispatch({ 'type': 'add', add })}
                 endpoint={new UrlQuery().UrlUploadApi()} folderPath={state.subPath} enableInputButton={true} enableDragAndDrop={true}></DropArea>
             </li> : null}
           </MoreMenu> : null}
@@ -166,7 +166,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
             <li className="menu-option" onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li>
             {state ? <li className="menu-option menu-option--input">
-              <DropArea callback={() => alert('refresh the page')}
+              <DropArea callback={(add) => dispatch({ 'type': 'add', add })}
                 endpoint={new UrlQuery().UrlUploadApi()} folderPath={state.subPath} enableInputButton={true} enableDragAndDrop={true}></DropArea>
             </li> : null}
           </MoreMenu> : null}

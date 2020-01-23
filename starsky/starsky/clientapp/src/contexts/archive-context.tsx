@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { newIRelativeObjects, PageType } from '../interfaces/IDetailView';
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 
 const ArchiveContext = React.createContext<IArchiveContext>({} as IArchiveContext)
 
@@ -31,6 +32,10 @@ type Action = {
 {
   type: 'force-reset',
   payload: IArchiveProps
+} |
+{
+  type: 'add',
+  add: Array<IFileIndexItem>
 }
 
 type State = IArchiveProps
@@ -109,6 +114,11 @@ export function archiveReducer(state: State, action: Action): State {
 
     case "force-reset":
       return action.payload;
+
+    case "add":
+      var concattedFileIndexItems = state.fileIndexItems.concat(action.add);
+      var fileIndexItems = concattedFileIndexItems.sort((a, b) => (a.filePath > b.filePath) ? 1 : -1)
+      return { ...state, fileIndexItems, lastUpdated: new Date() };
   }
 }
 
