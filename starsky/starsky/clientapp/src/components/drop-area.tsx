@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useGlobalSettings from '../hooks/use-global-settings';
 import { IExifStatus } from '../interfaces/IExifStatus';
-import { newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { IFileIndexItem, newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
@@ -15,7 +15,7 @@ export interface IDropAreaProps {
   enableInputButton?: boolean;
   enableDragAndDrop?: boolean;
   className?: string;
-  callback?: Function;
+  callback?(result: Array<IFileIndexItem>): void;
 }
 
 const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
@@ -97,28 +97,26 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
         setIsLoading(false);
         return;
       }
-      console.log('/import >= data', response.data);
 
       Array.from(response.data).forEach((dataItem: any) => {
         if (!dataItem) return;
-        var status = IExifStatus.Ok;
-        if (dataItem.status === "IgnoredAlreadyImported") {
-          status = IExifStatus.IgnoredAlreadyImported;
-        }
-        else if (dataItem.status === "FileError") {
-          status = IExifStatus.FileError;
-        }
+        var status = dataItem.status as IExifStatus;
         var uploadFileObject = CastFileIndexItem(dataItem, status);
         uploadFilesList.push(uploadFileObject);
-
       });
 
       setOpen(true);
       setIsLoading(false);
 
-      if (props.callback) {
-        props.callback();
-      }
+      // return only the succesfull results
+      if (!props.callback) return;
+
+      var filterCondition = (value: IFileIndexItem) => {
+        return (value.status === IExifStatus.Ok);
+      };
+      props.callback(uploadFilesList.filter(filterCondition));
+      console.log('-----');
+
     });
   };
 

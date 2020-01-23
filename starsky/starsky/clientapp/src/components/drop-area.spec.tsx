@@ -2,6 +2,7 @@ import { mount, shallow } from 'enzyme';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
+import { IExifStatus } from '../interfaces/IExifStatus';
 import * as FetchPost from '../shared/fetch-post';
 import DropArea from './drop-area';
 
@@ -36,12 +37,17 @@ describe("DropArea", () => {
     it("Test Drop a file", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
-      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(), data: [{
+          status: IExifStatus.Ok
+        }]
+      });
+      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
+      var callbackSpy = jest.fn();
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        mount(<DropArea endpoint="/import" enableDragAndDrop={true} />);
+        mount(<DropArea callback={callbackSpy} endpoint="/import" enableDragAndDrop={true} />);
       });
 
       act(() => {
@@ -51,9 +57,15 @@ describe("DropArea", () => {
       var compareFormData = new FormData();
       compareFormData.append("files", exampleFile);
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
-      expect(spy).toBeCalledWith("/import", compareFormData, "post", { "to": undefined });
+      expect(fetchPostSpy).toBeCalled();
+      expect(fetchPostSpy).toBeCalledTimes(1);
+      expect(fetchPostSpy).toBeCalledWith("/import", compareFormData, "post", { "to": undefined });
+
+      console.log('sdfknlsd');
+
+      // callback
+      expect(callbackSpy).toBeCalled();
+      expect(callbackSpy).toBeCalledWith("/import", compareFormData, "post", { "to": undefined });
 
     });
 
