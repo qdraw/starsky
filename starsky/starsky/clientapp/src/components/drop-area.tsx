@@ -115,8 +115,6 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
         return (value.status === IExifStatus.Ok);
       };
       props.callback(uploadFilesList.filter(filterCondition));
-      console.log('-----');
-
     });
   };
 

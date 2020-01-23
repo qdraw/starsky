@@ -34,7 +34,7 @@ describe("DropArea", () => {
       scrollToSpy.mockClear()
     });
 
-    it("Test Drop a file", () => {
+    it("Test Drop a file", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
@@ -50,8 +50,9 @@ describe("DropArea", () => {
         mount(<DropArea callback={callbackSpy} endpoint="/import" enableDragAndDrop={true} />);
       });
 
-      act(() => {
-        document.dispatchEvent(createDnDEvent('drop'));
+      // need to await here
+      await act(async () => {
+        await document.dispatchEvent(createDnDEvent('drop'));
       });
 
       var compareFormData = new FormData();
@@ -61,11 +62,14 @@ describe("DropArea", () => {
       expect(fetchPostSpy).toBeCalledTimes(1);
       expect(fetchPostSpy).toBeCalledWith("/import", compareFormData, "post", { "to": undefined });
 
-      console.log('sdfknlsd');
-
       // callback
       expect(callbackSpy).toBeCalled();
-      expect(callbackSpy).toBeCalledWith("/import", compareFormData, "post", { "to": undefined });
+      expect(callbackSpy).toBeCalledWith([{
+        "description": "",
+        "fileHash": undefined, "fileName": "", "filePath": undefined,
+        "isDirectory": false, "lastEdited": expect.any(String),
+        "status": "Ok", "tags": "", "title": ""
+      }]);
 
     });
 
