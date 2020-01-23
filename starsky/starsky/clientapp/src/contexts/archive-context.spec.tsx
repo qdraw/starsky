@@ -64,4 +64,53 @@ describe("ArchiveContext", () => {
     expect(result.fileIndexItems[0].title).toBe('title1title');
   });
 
+  it("add -- and check if is orderd", () => {
+    // current state
+    var state = {
+      fileIndexItems: [{
+        fileName: 'test0.jpg',
+        filePath: '/test0.jpg',
+      },
+      {
+        fileName: 'test2.jpg',
+        filePath: '/test2.jpg',
+      },
+      ]
+    } as IArchiveProps;
+
+    // to add this
+    var add = [{
+      fileName: 'test1.jpg',
+      filePath: '/test1.jpg',
+    },
+    {
+      fileName: 'test3.jpg',
+      filePath: '/test3.jpg',
+    },
+    ];
+    var action = { type: 'add', add } as any
+    var result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(4);
+    expect(result.fileIndexItems).toStrictEqual([
+      {
+        "fileName": "test0.jpg",
+        "filePath": "/test0.jpg",
+      },
+      {
+        "fileName": "test1.jpg",
+        "filePath": "/test1.jpg",
+      },
+      {
+        "fileName": "test2.jpg",
+        "filePath": "/test2.jpg",
+      },
+      {
+        "fileName": "test3.jpg",
+        "filePath": "/test3.jpg",
+      }]);
+
+
+  });
+
 });
