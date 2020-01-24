@@ -116,7 +116,10 @@ export function archiveReducer(state: State, action: Action): State {
 
     case "add":
       var concattedFileIndexItems = state.fileIndexItems.concat(action.add);
-      var fileIndexItems = concattedFileIndexItems.sort((a, b) => (a.filePath > b.filePath) ? 1 : -1)
+      var fileIndexItems = concattedFileIndexItems
+        .sort((a, b) => (a.filePath > b.filePath) ? 1 : -1) // sort on filePath
+        .filter((v, i, a) => a.findIndex(t => (t.filePath === v.filePath)) === i) // duplicate check
+
       return { ...state, fileIndexItems, lastUpdated: new Date() };
   }
 }

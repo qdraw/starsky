@@ -109,7 +109,23 @@ describe("ArchiveContext", () => {
         "fileName": "test3.jpg",
         "filePath": "/test3.jpg",
       }]);
+  });
 
+  it("add -- duplicate", () => {
+
+    // current state
+    var state = {
+      fileIndexItems: [{
+        fileName: 'test0.jpg',
+        filePath: '/test0.jpg',
+      }
+      ]
+    } as IArchiveProps;
+
+    var action = { type: 'add', add: state.fileIndexItems[0] } as any
+    var result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(1);
 
   });
 
