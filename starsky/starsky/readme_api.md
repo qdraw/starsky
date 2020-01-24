@@ -159,7 +159,7 @@ Endpoint: `/starsky/?f=/image.jpg`
         "/2018",
         "/2018/t"
     ],
-    "colorClassFilterList": [],
+    "colorClassActiveList": [],
     "pageType": "DetailView",
     "isDirectory": false
 }

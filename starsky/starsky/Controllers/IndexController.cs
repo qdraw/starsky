@@ -51,11 +51,11 @@ namespace starsky.Controllers
             f = f.Replace("$20", " ");
             
             // Used in Detail and Index View => does not hide this single item
-            var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
+            var colorClassActiveList = new FileIndexItem().GetColorClassList(colorClass);
             var subpath = _query.SubPathSlashRemove(f);
 
             // First check if it is a single Item
-            var singleItem = _query.SingleItem(subpath, colorClassFilterList,collections);
+            var singleItem = _query.SingleItem(subpath, colorClassActiveList,collections);
             // returns no object when it a directory
             
             if (singleItem?.IsDirectory == false)
@@ -66,8 +66,8 @@ namespace starsky.Controllers
             // (singleItem.IsDirectory) or not found
             var directoryModel = new ArchiveViewModel
             {
-                FileIndexItems = _query.DisplayFileFolders(subpath,colorClassFilterList,collections,hidedelete),
-                ColorClassFilterList = 	colorClassFilterList,
+                FileIndexItems = _query.DisplayFileFolders(subpath,colorClassActiveList,collections,hidedelete),
+                ColorClassActiveList = 	colorClassActiveList,
                 RelativeObjects = _query.GetNextPrevInFolder(subpath), // Args are not shown in this view
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath),
                 SearchQuery = subpath.Split("/").LastOrDefault(),

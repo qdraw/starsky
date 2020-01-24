@@ -21,11 +21,13 @@
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
 
 # version 0.1.12 - 2020-??-??
-- [x]   (remove) _V1_ Removal of Old Layout (V1)
+- [x]   (remove) _V1_ __Removal of Old Layout (V1) and All Razor Views__
 - [x]   (feature) _Front-end_ _API_ Add new account in React
 - [x]   (feature) _Front-end_ _API_ Redirect to new account creation on new setup
-- [x]   (feature) _Front-end_ Upload to directory (+ backend) __partly implemented__
-- []    (bugfix) ignore backslashes in structure: \\\\d  __not implemented__
+- [x]   (feature) _Front-end_ Upload to directory (+ backend)
+- [x]   (bugfix) add filter for backslashes in structure: `\\\\d`
+- [x]   (breaking change) removal of GetColor in razor views
+- [x]   (breaking change) rename of field  colorClassFilterList={[]} ==>  colorClassActiveList={[]}
 - []    (bugfix) colorclass filter are selecting __not implemented__
 - []	(bugfix) export poll after 201 __not implemented__
 

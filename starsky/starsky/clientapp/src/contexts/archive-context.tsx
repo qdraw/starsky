@@ -46,7 +46,7 @@ const initialState: State = {
   relativeObjects: newIRelativeObjects(),
   breadcrumb: [],
   collectionsCount: 0,
-  colorClassFilterList: [],
+  colorClassActiveList: [],
   colorClassUsage: [],
   isReadOnly: false,
   pageType: PageType.Loading

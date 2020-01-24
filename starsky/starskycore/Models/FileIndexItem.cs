@@ -693,32 +693,6 @@ namespace starskycore.Models
         }
 
 		/// <summary>
-		/// The enum Color in Dutch
-		/// </summary>
-		public enum ColorUserInterface
-        {
-            Paars = 1, // Paars - purple
-            Rood = 2, // rood - Red -
-            Oranje = 3, // Oranje - orange
-            Geel = 4, //Geel - yellow
-            Groen = 5, // Groen - groen
-            Turquoise = 6, // Turquoise
-            Blauw = 7, // Blauw - blue
-            Grijs = 8, // grijs - Grey
-            Geen = 0, // donkergrijs Dark Grey
-            DoNotChange = -1
-        }
-
-		/// <summary>
-		/// Gets all color user interface. In Dutch: Paars, Rood, etc.
-		/// </summary>
-		/// <returns></returns>
-		public static IEnumerable<ColorUserInterface> GetAllColorUserInterface()
-        {
-            return Enum.GetValues(typeof(ColorUserInterface)).Cast<ColorUserInterface>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
-        }
-
-		/// <summary>
 		/// Gets or sets the image format. (eg: jpg, tiff)
 		/// There are types for: notfound = -1, and	unknown = 0,
 		/// </summary>
