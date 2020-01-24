@@ -39,7 +39,10 @@ describe("DropArea", () => {
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         ...newIConnectionDefault(), data: [{
-          status: IExifStatus.Ok
+          status: IExifStatus.Ok,
+          fileIndexItem: {
+
+          }
         }]
       });
       var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
