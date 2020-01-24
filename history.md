@@ -13,7 +13,6 @@
 - []   Health view, to make more clear when the server time is not correct
 - []   Health view (feature) when a disk is full, show a warning
 - []   (front-end) Search details show exact query behind modal
-- []   Upload to direct folder API + front-end
 - []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
 ### High priority features planned

@@ -105,7 +105,10 @@ export function archiveReducer(state: State, action: Action): State {
       }
 
       // for archive pages
-      if (action.payload.pageType === PageType.Archive && CombineArchive(state) !== CombineArchive(action.payload)) {
+      if (action.payload.pageType === PageType.Archive && (
+        CombineArchive(state) !== CombineArchive(action.payload) ||
+        action.payload.subPath === "/") // for home
+      ) {
         console.log('running dispatch (a)', CombineArchive(state), CombineArchive(action.payload));
         return action.payload;
       }
