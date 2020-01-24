@@ -9,16 +9,13 @@ describe("ColorClassFilter", () => {
   });
 
   it("onClick value", () => {
-
     var component = shallow(<ColorClassFilter itemsCount={1} subPath={"/test"} colorClassActiveList={[1]} colorClassUsage={[1, 2]}></ColorClassFilter>)
-
+    expect(component.exists('.colorclass--2')).toBeTruthy();
     component.find('.colorclass--2').last().simulate('click');
   });
 
-
-  it("onClick disabled", () => {
-    var component = shallow(<ColorClassFilter itemsCount={0} subPath={"/test"} colorClassActiveList={[1]} colorClassUsage={[1, 2]}></ColorClassFilter>)
-
-
+  it("outside current scope display reset", () => {
+    var component = shallow(<ColorClassFilter itemsCount={1} subPath={"/test"} colorClassActiveList={[1]} colorClassUsage={[3]}></ColorClassFilter>);
+    expect(component.exists('.colorclass--reset')).toBeTruthy();
   });
 });

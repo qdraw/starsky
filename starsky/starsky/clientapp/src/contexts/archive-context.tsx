@@ -105,8 +105,8 @@ export function archiveReducer(state: State, action: Action): State {
       }
 
       // for archive pages
-      if (action.payload.pageType === PageType.Archive && (action.payload.subPath !== state.subPath || action.payload.subPath === "/")) {
-        console.log('running dispatch (a)', state.subPath, action.payload.subPath);
+      if (action.payload.pageType === PageType.Archive && CombineArchive(state) !== CombineArchive(action.payload)) {
+        console.log('running dispatch (a)', CombineArchive(state), CombineArchive(action.payload));
         return action.payload;
       }
       return state;
@@ -122,6 +122,10 @@ export function archiveReducer(state: State, action: Action): State {
 
       return { ...state, fileIndexItems, lastUpdated: new Date() };
   }
+}
+
+function CombineArchive(payload: IArchiveProps): string {
+  return `${payload.subPath}${payload.colorClassActiveList ? payload.colorClassActiveList.toString() : null}`;
 }
 
 function CombineSearchQueryAndPageNumber(payload: IArchiveProps): string {
