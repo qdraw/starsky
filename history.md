@@ -20,7 +20,7 @@
 - []  (feature) Creating thumbnails from Web Interface (including status)
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
 
-# version 0.1.12 - 2020-??-??
+# version 0.1.12 - 2020-01-??
 - [x]   (remove) _V1_ __Removal of Old Layout (V1) and All Razor Views__
 - [x]   (feature) _Front-end_ _API_ Add new account in React
 - [x]   (feature) _Front-end_ _API_ Redirect to new account creation on new setup
@@ -28,8 +28,8 @@
 - [x]   (bugfix) add filter for backslashes in structure: `\\\\d`
 - [x]   (breaking change) removal of GetColor in razor views
 - [x]   (breaking change) rename of field  colorClassFilterList={[]} ==>  colorClassActiveList={[]}
-- []    (bugfix) colorclass filter are selecting __not implemented__
-- []	(bugfix) export poll after 201 __not implemented__
+- [x]   (bugfix) colorclass filter are selecting
+- [x]	  (bugfix) export poll after 206 'not ready'
 
 # version 0.1.12 - 2020-01-15
 - [x]   (bugfix) _Front-end_ Add Loading in Move dialog
