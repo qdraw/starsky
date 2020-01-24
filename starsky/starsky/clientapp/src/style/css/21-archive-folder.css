@@ -57,6 +57,7 @@
   }
 }
 
+/* between 2 and 3 items */
 @media  screen and (min-width: 800px) and (max-width: 970px) {
   .folder > .box,
   .folder > .box > .box-content {
@@ -64,6 +65,18 @@
     margin-right: 15px;
   }
   .folder > .box:nth-child(3n) {
+    margin-right: 0px;
+  }
+}
+
+/* between 3 and 4 items */
+@media  screen and (min-width: 971px) and (max-width: 1280px) {
+  .folder > .box,
+  .folder > .box > .box-content {
+    width: calc(25vw - 40px);
+    margin-right: 20px;
+  }
+  .folder > .box:nth-child(4n) {
     margin-right: 0px;
   }
 }
