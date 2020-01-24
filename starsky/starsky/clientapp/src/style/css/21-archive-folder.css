@@ -4,7 +4,6 @@
   flex-flow: row wrap;
 }
 
-
 .folder > .box {
   width: 300px;
   height: 300px;
@@ -29,14 +28,13 @@
 }
 
 @media screen and (min-width: 400px) and (max-width: 660px) {
-
   .folder > .box {
     padding-left: 0px;
     margin-right:10px;
   }
 
   .folder > .box:nth-child(2n) {
-    margin-right:0px;
+    margin-right: 0px;
   }
 
   .folder > .box,
@@ -56,6 +54,17 @@
   .folder > .box {
     margin-left: auto;
     margin-right: auto;
+  }
+}
+
+@media  screen and (min-width: 820px) and (max-width: 970px) {
+  .folder > .box,
+  .folder > .box > .box-content {
+    width: calc(33vw - 35px);
+    margin-right: 15px;
+  }
+  .folder > .box:nth-child(3n) {
+    margin-right: 0px;
   }
 }
 
@@ -85,7 +94,6 @@
   z-index: 5;
   border: 5px solid #283593;
 }
-
 
 .folder > .box > .box-content > .caption {
   display: block;

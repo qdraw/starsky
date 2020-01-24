@@ -69,9 +69,6 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   const uploadFiles = (files: FileList) => {
     setIsLoading(true);
 
-    // only needed for the more menu
-    window.dispatchEvent(new CustomEvent(MoreMenuEventCloseConst, { bubbles: false }));
-
     var filesList = Array.from(files);
 
     console.log("Files: ", files);
@@ -117,14 +114,6 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
 
       setOpen(true);
       setIsLoading(false);
-
-      // return only the succesfull results
-      if (!props.callback) return;
-
-      var filterCondition = (value: IFileIndexItem) => {
-        return (value.status === IExifStatus.Ok);
-      };
-      props.callback(uploadFilesList.filter(filterCondition));
     });
   };
 
@@ -215,7 +204,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
     {props.enableInputButton ? <>
-      <input id={dropareaId} className="droparea-file-input" type="file" onChange={onChange} />
+      <input id={dropareaId} className="droparea-file-input" type="file" multiple={true} onChange={onChange} />
       <label className={props.className} htmlFor={dropareaId} >Upload</label>
     </> : null}
 
@@ -223,7 +212,21 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       id="detailview-drop-modal"
       isOpen={isOpen}
       handleExit={() => {
-        setOpen(false)
+        setOpen(false);
+        // return only if you close the dialog
+        if (!props.callback) return;
+        console.log('run');
+
+
+        var filterCondition = (value: IFileIndexItem) => {
+          return (value.status === IExifStatus.Ok);
+        };
+        props.callback(uploadFilesList.filter(filterCondition));
+
+        // only needed for the more menu
+        window.dispatchEvent(new CustomEvent(MoreMenuEventCloseConst, { bubbles: false }));
+
+
       }}>
       <div className="modal content--subheader">{MessageFilesAdded}</div>
       <div className="modal modal-move content content--text">
