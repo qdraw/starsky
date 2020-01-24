@@ -91,6 +91,11 @@ namespace starsky.Controllers
 				 // clear directory cache
 				 _query.RemoveCacheParentItem(parentDirectory);
 
+				 // to get the output in the result right
+				 fileIndexResultsList[i].FileIndexItem.FileName = fileName;
+				 fileIndexResultsList[i].FileIndexItem.ParentDirectory = parentDirectory;
+				 fileIndexResultsList[i].FilePath = parentDirectory + fileName;
+				 
 				_iHostStorage.FileDelete(tempImportPaths[i]);
 			}
 			

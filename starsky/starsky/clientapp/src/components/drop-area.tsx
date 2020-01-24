@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import useGlobalSettings from '../hooks/use-global-settings';
 import { IExifStatus } from '../interfaces/IExifStatus';
-import { IFileIndexItem, newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
-import { URLPath } from '../shared/url-path';
 import ItemTextListView from './item-text-list-view';
 import Modal from './modal';
-import { MoreMenuEventCloseConst } from './more-menu';
 import Preloader from './preloader';
 
 export interface IDropAreaProps {
@@ -70,7 +68,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     setIsLoading(true);
 
     // only needed for the more menu
-    window.dispatchEvent(new CustomEvent(MoreMenuEventCloseConst));
+    // window.dispatchEvent(new CustomEvent(MoreMenuEventCloseConst, { bubbles: false }));
 
     var filesList = Array.from(files);
 
@@ -88,7 +86,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       const { size, name } = file;
 
       if (size / 1024 / 1024 > 250) {
-        uploadFilesList.push(CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError));
+        uploadFilesList.push({ filePath: name, status: IExifStatus.ServerError } as IFileIndexItem);
         return;
       }
 
@@ -104,8 +102,9 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
 
       Array.from(response.data).forEach((dataItem: any) => {
         if (!dataItem) return;
-        var status = dataItem.status as IExifStatus;
-        var uploadFileObject = CastFileIndexItem(dataItem, status);
+        // merge item status:Ok and fileIndexItem
+        var uploadFileObject: IFileIndexItem = dataItem.fileIndexItem;
+        uploadFileObject.status = dataItem.status as IExifStatus;
         uploadFilesList.push(uploadFileObject);
       });
 
@@ -120,17 +119,6 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       };
       props.callback(uploadFilesList.filter(filterCondition));
     });
-  };
-
-  const CastFileIndexItem = (element: any, status: IExifStatus) => {
-    var uploadFileObject = newIFileIndexItem();
-    uploadFileObject.fileHash = element.fileHash;
-    uploadFileObject.filePath = element.filePath;
-    uploadFileObject.isDirectory = false;
-    uploadFileObject.fileName = new URLPath().getChild(uploadFileObject.filePath);
-    uploadFileObject.lastEdited = new Date().toISOString();
-    uploadFileObject.status = status;
-    return uploadFileObject;
   };
 
   /**

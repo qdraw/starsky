@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import useGlobalSettings from '../hooks/use-global-settings';
 import { Language } from '../shared/language';
 
@@ -21,15 +21,15 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({ children }) => {
     setEnabledMenu(!enabledMenu);
   }
 
-  useEffect(() => {
-    // Bind the event listener
-    window.addEventListener(MoreMenuEventCloseConst, () => setEnabledMenu(false));
+  // useEffect(() => {
+  //   // Bind the event listener
+  //   window.addEventListener(MoreMenuEventCloseConst, () => setEnabledMenu(false));
 
-    return () => {
-      // Unbind the event listener on clean up
-      window.removeEventListener(MoreMenuEventCloseConst, () => setEnabledMenu(false));
-    };
-  });
+  //   return () => {
+  //     // Unbind the event listener on clean up
+  //     window.removeEventListener(MoreMenuEventCloseConst, () => setEnabledMenu(false));
+  //   };
+  // });
 
   return (
     <div className={!children ? "item item--more disabled" : "item item--more"} onClick={toggleMoreMenu}>
