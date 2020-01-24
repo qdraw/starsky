@@ -103,8 +103,7 @@ export default function Modal({
           const target = event.target as HTMLElement;
           if (target.className.indexOf("modal-bg--open") === -1) return;
           handleExit()
-        }
-        } className={`modal-bg ${isOpen ? " modal-bg--open" : ""}`}>
+        }} className={`modal-bg ${isOpen ? " modal-bg--open" : ""}`}>
           <div
             className={`modal-content ${
               isOpen ? " modal-content--show" : ""

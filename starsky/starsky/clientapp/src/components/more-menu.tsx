@@ -21,20 +21,22 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({ children }) => {
     setEnabledMenu(!enabledMenu);
   }
 
+  var offMoreMenu = () => setEnabledMenu(false);
+
   useEffect(() => {
     // Bind the event listener
-    window.addEventListener(MoreMenuEventCloseConst, () => setEnabledMenu(false));
+    window.addEventListener(MoreMenuEventCloseConst, offMoreMenu);
 
     return () => {
       // Unbind the event listener on clean up
-      window.removeEventListener(MoreMenuEventCloseConst, () => setEnabledMenu(false));
+      window.removeEventListener(MoreMenuEventCloseConst, offMoreMenu);
     };
   });
 
   return (
     <div className={!children ? "item item--more disabled" : "item item--more"} onClick={toggleMoreMenu}>
       <span>{MessageMore}</span>
-      <div onClick={toggleMoreMenu} className={enabledMenu ? "menu-context" : "menu-context menu-context--hide"}>
+      <div onChange={offMoreMenu} onClick={toggleMoreMenu} className={enabledMenu ? "menu-context" : "menu-context menu-context--hide"}>
         <ul className="menu-options">
           {children}
         </ul>
