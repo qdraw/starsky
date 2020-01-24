@@ -61,6 +61,21 @@ namespace starskytest.Models
             var fileName = importItem.ParseFileName();
             Assert.AreEqual("00010101_000000.jpg", fileName);
         }
+        
+        
+        [TestMethod]
+        public void ImportIndexItemParseFileNameTest_LotsOfEscapeChars()
+        {
+	        var createAnImage = new CreateAnImage();
+
+	        _appSettings.Structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_\\\\\\h\\\\\\m.ext";
+
+	        var importItem = new ImportIndexItem(_appSettings);
+	        importItem.SourceFullFilePath = createAnImage.FullFilePath;
+
+	        var fileName = importItem.ParseFileName();
+	        Assert.AreEqual("00010101_000000_hm.jpg", fileName);
+        }
 
         [TestMethod]
         public void ImportIndexItemParseFileNameTest_StructureIsNull()

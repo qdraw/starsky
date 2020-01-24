@@ -96,7 +96,7 @@ namespace starskycore.Models
         
         // Depends on App Settings for storing values
         // Depends on BasePathConfig for setting default values
-        // Imput required:
+        // Input required:
         // SourceFullFilePath= createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime
         public string ParseFileName(bool checkIfExist = true)
         {
@@ -139,6 +139,9 @@ namespace starskycore.Models
             {
                 fileName = fileName.Replace("_!q_", Path.GetFileNameWithoutExtension(SourceFullFilePath));
             }
+
+            // replace duplicate escape characters from the output result
+            fileName = fileName.Replace("\\", string.Empty);
             
             // Caching to have it after you use the afterDelete flag
             FileName = fileName;
