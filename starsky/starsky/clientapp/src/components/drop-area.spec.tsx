@@ -40,8 +40,11 @@ describe("DropArea", () => {
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         ...newIConnectionDefault(), data: [{
           status: IExifStatus.Ok,
+          fileName: "rootfilename.jpg",
           fileIndexItem: {
-
+            "description": "",
+            "fileHash": undefined, "fileName": "", "filePath": "/test.jpg",
+            "isDirectory": false, "status": "Ok", "tags": "", "title": ""
           }
         }]
       });
@@ -67,9 +70,10 @@ describe("DropArea", () => {
 
       // callback
       expect(callbackSpy).toBeCalled();
+
       expect(callbackSpy).toBeCalledWith([{
         "description": "",
-        "fileHash": undefined, "fileName": "", "filePath": undefined,
+        "fileHash": undefined, "fileName": "", "filePath": "/test.jpg",
         "isDirectory": false, "lastEdited": expect.any(String),
         "status": "Ok", "tags": "", "title": ""
       }]);

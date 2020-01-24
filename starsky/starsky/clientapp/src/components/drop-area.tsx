@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import useGlobalSettings from '../hooks/use-global-settings';
 import { IExifStatus } from '../interfaces/IExifStatus';
-import { IFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { IFileIndexItem, newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
+import { URLPath } from '../shared/url-path';
 import ItemTextListView from './item-text-list-view';
 import Modal from './modal';
 import Preloader from './preloader';
@@ -101,10 +102,15 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       }
 
       Array.from(response.data).forEach((dataItem: any) => {
-        if (!dataItem || !dataItem.fileIndexItem) return;
+        if (!dataItem) return;
+        if (dataItem.status as IExifStatus !== IExifStatus.Ok) {
+          uploadFilesList.push(CastFileIndexItem(dataItem, dataItem.status as IExifStatus));
+          return;
+        };
         // merge item status:Ok and fileIndexItem
         var uploadFileObject: IFileIndexItem = dataItem.fileIndexItem;
         uploadFileObject.status = dataItem.status as IExifStatus;
+        uploadFileObject.lastEdited = new Date().toISOString();
         uploadFilesList.push(uploadFileObject);
       });
 
@@ -120,6 +126,18 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       props.callback(uploadFilesList.filter(filterCondition));
     });
   };
+
+  const CastFileIndexItem = (element: any, status: IExifStatus): IFileIndexItem => {
+    var uploadFileObject = newIFileIndexItem();
+    uploadFileObject.fileHash = element.fileHash;
+    uploadFileObject.filePath = element.filePath;
+    uploadFileObject.isDirectory = false;
+    uploadFileObject.fileName = new URLPath().getChild(uploadFileObject.filePath);
+    uploadFileObject.lastEdited = new Date().toISOString();
+    uploadFileObject.status = status;
+    return uploadFileObject;
+  };
+
 
   /**
    * Show different style for drag
