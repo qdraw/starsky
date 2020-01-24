@@ -112,9 +112,17 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
   }
 
-
   const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
   const [isModalMkdirOpen, setModalMkdirOpen] = React.useState(false);
+
+  const UploadMenuItem = () => {
+    return <li className="menu-option menu-option--input">
+      <DropArea callback={(add) => dispatch({ 'type': 'add', add })}
+        endpoint={new UrlQuery().UrlUploadApi()}
+        folderPath={state.subPath} enableInputButton={true}
+        enableDragAndDrop={true}></DropArea>
+    </li>
+  }
 
   return (
     <>
@@ -153,10 +161,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           {!select ? <MoreMenu>
             <li className="menu-option" data-test="mkdir" onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}>{MessageMkdir}</li>
             <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
-            {state ? <li className="menu-option menu-option--input">
-              <DropArea callback={(add) => dispatch({ 'type': 'add', add })}
-                endpoint={new UrlQuery().UrlUploadApi()} folderPath={state.subPath} enableInputButton={true} enableDragAndDrop={true}></DropArea>
-            </li> : null}
+            {state ? <UploadMenuItem /> : null}
           </MoreMenu> : null}
 
           {/* In the select context there are more options */}
@@ -165,12 +170,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => selectAll()}>{MessageSelectAll}</li> : null}
             <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
             <li className="menu-option" onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li>
-            {state ? <li className="menu-option menu-option--input">
-              <DropArea callback={(add) => dispatch({ 'type': 'add', add })}
-                endpoint={new UrlQuery().UrlUploadApi()} folderPath={state.subPath} enableInputButton={true} enableDragAndDrop={true}></DropArea>
-            </li> : null}
+            {state ? <UploadMenuItem /> : null}
           </MoreMenu> : null}
-
 
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
             <div className="nav__container">

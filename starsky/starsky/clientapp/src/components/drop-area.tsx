@@ -7,6 +7,7 @@ import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import ItemTextListView from './item-text-list-view';
 import Modal from './modal';
+import { MoreMenuEventCloseConst } from './more-menu';
 import Preloader from './preloader';
 
 export interface IDropAreaProps {
@@ -67,6 +68,9 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
    */
   const uploadFiles = (files: FileList) => {
     setIsLoading(true);
+
+    // only needed for the more menu
+    window.dispatchEvent(new CustomEvent(MoreMenuEventCloseConst));
 
     var filesList = Array.from(files);
 
