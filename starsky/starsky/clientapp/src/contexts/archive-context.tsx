@@ -106,8 +106,7 @@ export function archiveReducer(state: State, action: Action): State {
 
       // for archive pages
       if (action.payload.pageType === PageType.Archive && (action.payload.subPath !== state.subPath || action.payload.subPath === "/")) {
-        console.log(action.payload.subPath);
-        console.log('running dispatch (a)');
+        console.log('running dispatch (a)', state.subPath, action.payload.subPath);
         return action.payload;
       }
       return state;

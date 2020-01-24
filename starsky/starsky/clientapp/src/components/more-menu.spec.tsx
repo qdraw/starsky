@@ -37,7 +37,7 @@ describe("More Menu", () => {
     expect(element.find(".menu-context").props().className).toBe('menu-context menu-context--hide')
   });
 
-  xit("turn off using event", (done) => {
+  it("turn off using event", (done) => {
     var element = mount(<MoreMenu>
       test
     </MoreMenu>);
