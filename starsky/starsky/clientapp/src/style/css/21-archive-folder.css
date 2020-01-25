@@ -17,7 +17,7 @@
   border-radius: 5px;
   text-decoration: none;
   color: #263238;
-  width: 280px;
+  width: 100%;
   transition: background ease-in-out .5s
 }
 
@@ -27,57 +27,50 @@
   }
 }
 
-@media screen and (min-width: 400px) and (max-width: 660px) {
-  .folder > .box {
-    padding-left: 0px;
-    margin-right:10px;
-  }
-
-  .folder > .box:nth-child(2n) {
-    margin-right: 0px;
-  }
-
-  .folder > .box,
-  .folder > .box > .box-content {
-    width: calc(50vw - 40px);
-  }
-}
-
-@media  screen and (min-width: 400px) and (max-width: 450px) {
-  .folder > .box,
-  .folder > .box > .box-content {
-    width: calc(50vw - 25px);
-  }
-}
-
-@media  screen and (max-width: 400px) {
+/* center for phones */
+@media  screen and (max-width: 500px) {
   .folder > .box {
     margin-left: auto;
     margin-right: auto;
+    width: 100%;
+  }
+}
+
+/* 
+large phones and disabled in collapsed mode 
+between 1 and 2 items
+*/
+@media screen and (min-width: 500px) and (max-width: 799px) {
+  .folder > .box {
+    width: 50%;
   }
 }
 
 /* between 2 and 3 items */
 @media  screen and (min-width: 800px) and (max-width: 970px) {
-  .folder > .box,
-  .folder > .box > .box-content {
-    width: calc(33vw - 35px);
-    margin-right: 15px;
-  }
-  .folder > .box:nth-child(3n) {
-    margin-right: 0px;
+  .folder > .box {
+    width: 33%;
   }
 }
 
 /* between 3 and 4 items */
-@media  screen and (min-width: 971px) and (max-width: 1280px) {
-  .folder > .box,
-  .folder > .box > .box-content {
-    width: calc(25vw - 40px);
-    margin-right: 20px;
+@media  screen and (min-width: 971px) and (max-width: 1279px) {
+  .folder > .box {
+    width: 25%;
   }
-  .folder > .box:nth-child(4n) {
-    margin-right: 0px;
+}
+
+/* between 5 and 6 items */
+@media  screen and (min-width: 1280px) and (max-width: 1559px) {
+  .folder > .box {
+    width: 20%;
+  }
+}
+
+/* between 6 and 7 items */
+@media  screen and (min-width: 1560px) and (max-width: 1870px) {
+  .folder > .box {
+    width: 16.6%;
   }
 }
 
