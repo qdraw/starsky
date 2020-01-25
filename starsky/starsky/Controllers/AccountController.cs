@@ -1,13 +1,14 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.ViewModels.Account;
 using starskycore.Interfaces;
+using starskycore.Models;
 using starskycore.Models.Account;
 using starskycore.ViewModels.Account;
 
@@ -16,27 +17,36 @@ namespace starsky.Controllers
     public class AccountController : Controller
     {
         private readonly IUserManager _userManager;
-        private readonly string  _clientApp;
+        private readonly AppSettings _appSettings;
 
-        public AccountController(IUserManager userManager)
+        public AccountController(IUserManager userManager, AppSettings appSettings)
         {
             _userManager = userManager;
-            _clientApp = Path.Combine(Directory.GetCurrentDirectory(),
-	            "clientapp", "build", "index.html");
+            _appSettings = appSettings;
         }
         
 		/// <summary>
-		/// Check the account status of the login (Json)
+		/// Check the account status of the login
 		/// </summary>
 		/// <response code="200">logged in</response>
 		/// <response code="401">when not logged in</response>
+		/// <response code="406">There are no accounts, you must create an account first</response>
 		/// <returns>account name, id, and create date</returns>
 		[HttpGet("/account/status")]
+		[ProducesResponseType(typeof(User), 200)]
+		[ProducesResponseType(typeof(string), 401)]
+		[ProducesResponseType(typeof(string), 406)]
 		public IActionResult Status()
 		{
+			if ( !_userManager.AllUsers().Any() )
+			{
+				Response.StatusCode = 406;
+				return Json("There are no accounts, you must create an account first");
+			}
+			
 			if ( !User.Identity.IsAuthenticated ) return Unauthorized("false");
 
-			// use model to avoid circulair references
+			// use model to avoid circular references
 			var model = new User
 			{
 				Name = _userManager.GetCurrentUser(HttpContext)?.Name,
@@ -47,95 +57,46 @@ namespace starsky.Controllers
 			return Json(model);
 		}
 
-		/// <summary>
-		/// View Account settings
-		/// </summary>
-		/// <param name="json">true => 200 == success, 401 is not logged</param>
-		/// <returns>account page or status</returns>
-		/// <response code="200">User exist</response>
-		/// <response code="401">when using json=true, not logged in</response>
-		[ProducesResponseType(typeof(User), 200)]
-		[ProducesResponseType(401)]
-		public IActionResult Index(bool json = false)
-		{
-			Console.WriteLine($"json {json} User.Identity.IsAuthenticated {User.Identity.IsAuthenticated}");
-			if ( json && !User.Identity.IsAuthenticated ) return Unauthorized();
-			if ( !User.Identity.IsAuthenticated ) return RedirectToLocal(null);
-
-			// 			// Keep here: only using claims data
-			//		    var claimsIdentity = (ClaimsIdentity)HttpContext.User.Identity;
-			//		    var model = new User();
-			//		    var userIdClaim = claimsIdentity.Claims.SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-			//		    if (userIdClaim != null)
-			//		    {
-			//			    model.Id = !string.IsNullOrEmpty(userIdClaim.Value) ? int.Parse(userIdClaim.Value) : -1;
-			//		    }
-			//		    
-			//		    var nameClaim = claimsIdentity.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name);
-			//		    if (nameClaim != null)
-			//		    {
-			//			    model.Name = nameClaim.Value;
-			//		    }
-
-			// use model to avoid circulair references
-			var model = new User
-			{
-				Name = _userManager.GetCurrentUser(HttpContext)?.Name,
-				Id = _userManager.GetCurrentUser(HttpContext).Id,
-				Created = _userManager.GetCurrentUser(HttpContext).Created,
-			};
-			if ( json ) return Json(model);
-			return View(model);
-		}
-
-
+		
 		/// <summary>
 		/// Login form page
 		/// </summary>
 		/// <returns></returns>
 		/// <response code="200">Login form page</response>
 		[HttpGet("/account/login")]
-        [ProducesResponseType(200)]
-        public IActionResult Login()
-        {
-	        return PhysicalFile(_clientApp, "text/html");
-        }
-
+		[ProducesResponseType(200)]
+		public IActionResult Login(string returnUrl = null)
+		{
+			return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "clientapp", "build", "index.html"), "text/html");
+		}
+		
         /// <summary>
         /// Login the current HttpContext in
         /// </summary>
         /// <param name="model">Email, password and remember me bool</param>
-        /// <param name="json">return json instead of 302 redirect</param>
-        /// <param name="returnUrl">null or localurl</param>
-        /// <returns></returns>
-        /// <response code="200">successful login (with json flag)</response>
-        /// <response code="302">successful login</response>
+        /// <returns>Login status</returns>
+        /// <response code="200">successful login</response>
         /// <response code="401">login failed</response>
         [HttpPost("/account/login")]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> Login(LoginViewModel model, bool json = false, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             ValidateResult validateResult = _userManager.Validate("Email", model.Email, model.Password);
-            ViewData["ReturnUrl"] = returnUrl;
 
             if (!validateResult.Success)
             {
                 Response.StatusCode = 401;
-                if ( json )
-                {
-	                return Json("Login failed");
-                }
-                
-                ModelState.AddModelError("All", "Login Failed");
-                return View(model);
+                return Json("Login failed");
             } 
             
             await _userManager.SignIn(HttpContext, validateResult.User,model.RememberMe);
-            if ( User.Identity.IsAuthenticated && json )
+            if ( User.Identity.IsAuthenticated)
             {
 	            return Json("Login Success");
             }
-            return User.Identity.IsAuthenticated ? RedirectToLocal(returnUrl) : View(model);
+
+            Response.StatusCode = 500;
+            return Json("Login failed");
         }
 
         /// <summary>
@@ -151,60 +112,68 @@ namespace starsky.Controllers
             return RedirectToAction("Login");
         }
         
-        /// <summary>
-        /// View the Register form
-        /// </summary>
-        /// <param name="returnUrl">when successful continue</param>
-        /// <returns></returns>
-        /// <response code="200">successful Register-page</response>
-        [HttpGet("/account/register")]
-        [AllowAnonymous]
-        [ProducesResponseType(200)]
-        public IActionResult Register(string returnUrl = null)
-        {
-            return View();
-        }
 
         /// <summary>
         /// Create a new user
         /// </summary>
         /// <param name="model">with the userdata</param>
-        /// <param name="json">get a json response</param>
-        /// <param name="returnUrl">to redirect if json=false</param>
         /// <returns>redirect or json</returns>
         /// <response code="200">successful register</response>
+        /// <response code="400">Wrong model or Wrong AntiForgeryToken</response>
+        /// <response code="403">Account Register page is closed</response>
         [HttpPost("/account/register")]
+        [ProducesResponseType(typeof(string),200)]
+        [ProducesResponseType(typeof(string),400)]
+        [ProducesResponseType(typeof(string),403)]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(RegisterViewModel model, bool json = false, string returnUrl = null)
+        public IActionResult Register(RegisterViewModel model)
         {
-            ViewData["ReturnUrl"] = returnUrl;
+	        if ( IsAccountRegisterClosed(User.Identity.IsAuthenticated) )
+	        {
+		        Response.StatusCode = 403;
+		        return Json("Account Register page is closed");
+	        }
+	        
             if (ModelState.IsValid && model.ConfirmPassword == model.Password)
             {
-                var result = _userManager.SignUp("", "email", model.Email, model.Password);
-                if (json && result.Success) return Json("Account Created");
-                if(result.Success) return RedirectToLocal(returnUrl);
+                _userManager.SignUp(model.Name, "email", model.Email, model.Password );
+                return Json("Account Created");
             }
 
             // If we got this far, something failed, redisplay form
             Response.StatusCode = 400;
-            if (json) return Json("Model is not correct");
-            return View(model);
+            return Json("Model is not correct");
+        }
+
+        /// <summary>
+        /// True == not allowed
+        /// </summary>
+        /// <param name="userIdentityIsAuthenticated"></param>
+        /// <returns></returns>
+        private bool IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
+        {
+	        if ( userIdentityIsAuthenticated ) return false;
+	        return !_appSettings.IsAccountRegisterOpen && _userManager.AllUsers().Any();
         }
         
         /// <summary>
-        /// When this url is local 302 redirect,
+        /// Is the register form open
         /// </summary>
-        /// <param name="returnUrl">the url to redirect, when null redirect to home</param>
-        /// <returns>302 redirect</returns>
-        private IActionResult RedirectToLocal(string returnUrl)
+        /// <returns></returns>
+        /// <response code="200">Account Register page is open</response>
+        /// <response code="403">Account Register page is closed</response>
+        [HttpGet("/account/register/status")]
+        [ProducesResponseType(typeof(string),200)]
+        [ProducesResponseType(typeof(string),403)]
+
+        public IActionResult RegisterStatus()
         {
-            if ( !string.IsNullOrEmpty(returnUrl) && !returnUrl.StartsWith("http") && Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+	        if ( !IsAccountRegisterClosed(User.Identity.IsAuthenticated) ) return Json("RegisterStatus open");
+	        Response.StatusCode = 403;
+	        return Json("Account Register page is closed");
         }
-        
+       
+
     }
 }

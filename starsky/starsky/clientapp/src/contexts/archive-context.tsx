@@ -2,6 +2,8 @@
 import * as React from 'react';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { newIRelativeObjects, PageType } from '../interfaces/IDetailView';
+import { IExifStatus } from '../interfaces/IExifStatus';
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 
 const ArchiveContext = React.createContext<IArchiveContext>({} as IArchiveContext)
 
@@ -31,6 +33,10 @@ type Action = {
 {
   type: 'force-reset',
   payload: IArchiveProps
+} |
+{
+  type: 'add',
+  add: Array<IFileIndexItem>
 }
 
 type State = IArchiveProps
@@ -41,7 +47,7 @@ const initialState: State = {
   relativeObjects: newIRelativeObjects(),
   breadcrumb: [],
   collectionsCount: 0,
-  colorClassFilterList: [],
+  colorClassActiveList: [],
   colorClassUsage: [],
   isReadOnly: false,
   pageType: PageType.Loading
@@ -100,16 +106,32 @@ export function archiveReducer(state: State, action: Action): State {
       }
 
       // for archive pages
-      if (action.payload.pageType === PageType.Archive && (action.payload.subPath !== state.subPath || action.payload.subPath === "/")) {
-        console.log(action.payload.subPath);
-        console.log('running dispatch (a)');
+      if (action.payload.pageType === PageType.Archive && (
+        CombineArchive(state) !== CombineArchive(action.payload) ||
+        action.payload.subPath === "/") // for home
+      ) {
+        console.log('running dispatch (a)', CombineArchive(state), CombineArchive(action.payload));
         return action.payload;
       }
       return state;
 
     case "force-reset":
       return action.payload;
+
+    case "add":
+      var filterOkCondition = (value: IFileIndexItem) => {
+        return (value.status === IExifStatus.Ok || value.status === IExifStatus.Default);
+      };
+      var concattedFileIndexItems = state.fileIndexItems.concat(action.add);
+      var fileIndexItems = concattedFileIndexItems.sort((a, b) => (a.filePath > b.filePath) ? 1 : -1); // sort on filePath
+      fileIndexItems = fileIndexItems.filter((v, i, a) => a.findIndex(t => (t.filePath === v.filePath)) === i); // duplicate check
+      fileIndexItems = fileIndexItems.filter(filterOkCondition);
+      return { ...state, fileIndexItems, lastUpdated: new Date() };
   }
+}
+
+function CombineArchive(payload: IArchiveProps): string {
+  return `${payload.subPath}${payload.colorClassActiveList ? payload.colorClassActiveList.toString() : null}`;
 }
 
 function CombineSearchQueryAndPageNumber(payload: IArchiveProps): string {

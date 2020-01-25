@@ -98,26 +98,26 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     setFormEnabled(false);
     setIsLoading(true);
 
-    var filePathAfterChange = state.fileIndexItem.filePath.replace(state.fileIndexItem.fileName, fileName);
+    const filePathAfterChange = state.fileIndexItem.filePath.replace(state.fileIndexItem.fileName, fileName);
 
     // API call
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.append("f", state.fileIndexItem.filePath);
     bodyParams.append("to", filePathAfterChange);
 
-    var result = await FetchPost(new UrlQuery().UrlSyncRename(), bodyParams.toString())
+    const result = await FetchPost(new UrlQuery().UrlSyncRename(), bodyParams.toString());
 
     if (result.statusCode !== 200) {
       setError(MessageGeneralError);
       // and renable
       setIsLoading(false);
       setFormEnabled(true);
-      return;
-    };
+      return
+    }
 
     // redirect to new path (so if you press refresh the image is shown)
-    var replacePath = new URLPath().updateFilePath(history.location.search, filePathAfterChange);
-    history.navigate(replacePath, { replace: true });
+    const replacePath = new URLPath().updateFilePath(history.location.search, filePathAfterChange);
+    await history.navigate(replacePath, {replace: true});
 
     // Close window
     props.handleExit();

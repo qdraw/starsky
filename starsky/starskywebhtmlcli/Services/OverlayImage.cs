@@ -13,7 +13,7 @@ namespace starskywebhtmlcli.Services
     {
         private readonly AppSettings _appSettings;
         private readonly IExifTool _exifTool;
-	    private IStorage _iStorage;
+	    private readonly IStorage _iStorage;
 
 	    public OverlayImage(IStorage iStorage, AppSettings appSettings, IExifTool exifTool)
         {

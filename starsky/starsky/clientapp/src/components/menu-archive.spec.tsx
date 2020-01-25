@@ -24,6 +24,10 @@ describe("MenuArchive", () => {
       }).mockImplementationOnce(() => {
         return newIConnectionDefault();
       });
+
+      jest.spyOn(window, 'scrollTo')
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
     });
 
     it("default menu", () => {

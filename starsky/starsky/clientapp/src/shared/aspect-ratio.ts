@@ -32,9 +32,12 @@ class AspectRatio {
    * @param width in pixels
    * @param height and the height
    */
-  public ratio(width: number, height: number): string {
+  public ratio(width: number, height: number): string | null {
     var r = this.gcd(width, height);
-    return width / r + ":" + height / r
+    var widthRatio = width / r;
+    var heightRatio = height / r;
+    if (width === widthRatio && height === heightRatio) return null;
+    return widthRatio + ":" + heightRatio;
   }
 
 }

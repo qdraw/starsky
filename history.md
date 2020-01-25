@@ -13,13 +13,22 @@
 - []   Health view, to make more clear when the server time is not correct
 - []   Health view (feature) when a disk is full, show a warning
 - []   (front-end) Search details show exact query behind modal
-- []   Upload to direct folder API + front-end
 - []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
 ### High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
-- []   (feature) _Front-end_ Upload to directory (+ backend)
+
+# version 0.1.12 - 2020-01-??
+- [x]   (remove) _V1_ __Removal of Old Layout (V1) and All Razor Views__
+- [x]   (feature) _Front-end_ _API_ Add new account in React
+- [x]   (feature) _Front-end_ _API_ Redirect to new account creation on new setup
+- [x]   (feature) _Front-end_ Upload to directory (+ backend)
+- [x]   (bugfix) add filter for backslashes in structure: `\\\\d`
+- [x]   (breaking change) removal of GetColor in razor views
+- [x]   (breaking change) rename of field  colorClassFilterList={[]} ==>  colorClassActiveList={[]}
+- [x]   (bugfix) colorclass filter are selecting
+- [x]	  (bugfix) export poll after 206 'not ready'
 
 # version 0.1.12 - 2020-01-15
 - [x]   (bugfix) _Front-end_ Add Loading in Move dialog
@@ -96,7 +105,6 @@ _Upgrade to .NET Core 3.0 & EF Core 3.1-preview3_
 - [x]   (bug) Force sync and renew for directories that contain a + sign are passing the wrong values (fixed)
 - [x]   Add unit tests for importing raw's with .xmp files
 - [x]   (starsky-tools) add Dropbox import helper tool
-
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_

@@ -9,7 +9,7 @@ import { URLPath } from '../shared/url-path';
 // colorClassFilterList={this.props.colorClassFilterList} colorClassUsage={this.props.colorClassUsage}></ColorClassFilter>
 export interface IColorClassProp {
   subPath: string;
-  colorClassFilterList: Array<number>;
+  colorClassActiveList: Array<number>;
   colorClassUsage: Array<number>;
   itemsCount?: number;
 }
@@ -63,19 +63,19 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
   let resetButtonDisabled = <div className="btn colorclass colorclass--reset disabled">{colorContent[9]}</div>;
 
   // there is no content ?
-  if (props.colorClassUsage.length === 1 && props.colorClassFilterList.length >= 1) return (
+  if (props.colorClassUsage.length === 1 && props.colorClassActiveList.length >= 1) return (
     <div className="colorclass colorclass--filter"> {resetButton}</div>
   );
 
   if (props.itemsCount === 0 || props.colorClassUsage.length === 1) return (<></>);
   return (<div className="colorclass colorclass--filter">
     {
-      props.colorClassFilterList.length !== 0 ? resetButton : resetButtonDisabled
+      props.colorClassActiveList.length !== 0 ? resetButton : resetButtonDisabled
     }
     {
       props.colorClassUsage.map((item, index) => (
         item >= 0 && item <= 8 ? <Link key={item} to={updateColorClass(item)}
-          className={props.colorClassFilterList.indexOf(item) >= 0 ?
+          className={props.colorClassActiveList.indexOf(item) >= 0 ?
             "btn btn--default colorclass colorclass--" + item + " active" : "btn colorclass colorclass--" + item}>
           <label /><span>{colorContent[item]}</span> </Link>
           : <span key={item} />

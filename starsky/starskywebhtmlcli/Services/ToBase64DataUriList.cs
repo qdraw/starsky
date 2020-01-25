@@ -8,7 +8,7 @@ namespace starskywebhtmlcli.Services
 {
 	public class ToBase64DataUriList
 	{
-		private IStorage _iStorage;
+		private readonly IStorage _iStorage;
 
 		public ToBase64DataUriList(IStorage iStorage)
 		{

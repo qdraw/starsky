@@ -28,8 +28,10 @@ describe("TrashPage", () => {
       } as IUseTrashList
     });
 
-    mount(<TrashPage></TrashPage>);
+    var trashPage = mount(<TrashPage></TrashPage>);
 
     expect(contextSpy).toBeCalled();
+
+    trashPage.unmount();
   });
 });

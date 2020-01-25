@@ -1,24 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { IExifStatus } from '../interfaces/IExifStatus';
-import { newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { IFileIndexItem, newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
-import ItemTextListView from './item-text-list-view';
-import Modal from './modal';
+import { MoreMenuEventCloseConst } from './more-menu';
 import Preloader from './preloader';
 
 export interface IDropAreaProps {
-  enableInputField?: boolean;
+  endpoint: string;
+  folderPath?: string;
+  enableInputButton?: boolean;
   enableDragAndDrop?: boolean;
+  className?: string;
+  callback?(result: Array<IFileIndexItem>): void;
 }
 
+/**
+ * Drop Area / Upload field, callback is list of uploaded files
+ * @param props Endpoints, settings to enable drag 'n drop, add extra classes
+ */
 const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
 
   const [dragActive, setDrag] = useState(false);
   const [dragTarget, setDragTarget] = useState(document.createElement("span") as Element);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [isOpen, setOpen] = useState(false);
 
   // used to force react to update the array
   const [uploadFilesList] = useState(newIFileIndexItemArray());
@@ -61,6 +66,9 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
 
     var filesList = Array.from(files);
 
+    // only needed for the more menu
+    window.dispatchEvent(new CustomEvent(MoreMenuEventCloseConst, { bubbles: false }));
+
     console.log("Files: ", files);
 
     const { length } = filesList;
@@ -75,41 +83,40 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       const { size, name } = file;
 
       if (size / 1024 / 1024 > 250) {
-        uploadFilesList.push(CastFileIndexItem({ filePath: name } as any, IExifStatus.ServerError));
+        uploadFilesList.push({ filePath: name, status: IExifStatus.ServerError } as IFileIndexItem);
         return;
       }
 
       formData.append("files", file);
     });
 
-    FetchPost('/import', formData).then((response) => {
+    FetchPost(props.endpoint, formData, 'post', { 'to': props.folderPath }).then((response) => {
       if (!response.data) {
-        setOpen(true);
         setIsLoading(false);
         return;
       }
-      console.log('/import >= data', response.data);
 
       Array.from(response.data).forEach((dataItem: any) => {
         if (!dataItem) return;
-        var status = IExifStatus.Ok;
-        if (dataItem.status === "IgnoredAlreadyImported") {
-          status = IExifStatus.IgnoredAlreadyImported;
-        }
-        else if (dataItem.status === "FileError") {
-          status = IExifStatus.FileError;
-        }
-        var uploadFileObject = CastFileIndexItem(dataItem, status);
+        if (dataItem.status as IExifStatus !== IExifStatus.Ok) {
+          uploadFilesList.push(CastFileIndexItem(dataItem, dataItem.status as IExifStatus));
+          return;
+        };
+        // merge item status:Ok and fileIndexItem
+        var uploadFileObject: IFileIndexItem = dataItem.fileIndexItem;
+        uploadFileObject.status = dataItem.status as IExifStatus;
+        uploadFileObject.lastEdited = new Date().toISOString();
         uploadFilesList.push(uploadFileObject);
-
       });
 
-      setOpen(true);
       setIsLoading(false);
+
+      if (!props.callback) return;
+      props.callback(uploadFilesList);
     });
   };
 
-  const CastFileIndexItem = (element: any, status: IExifStatus) => {
+  const CastFileIndexItem = (element: any, status: IExifStatus): IFileIndexItem => {
     var uploadFileObject = newIFileIndexItem();
     uploadFileObject.fileHash = element.fileHash;
     uploadFileObject.filePath = element.filePath;
@@ -119,6 +126,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     uploadFileObject.status = status;
     return uploadFileObject;
   };
+
 
   /**
    * Show different style for drag
@@ -189,22 +197,14 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     document.body.classList.remove('drag');
   }, [dragActive]);
 
+  const dropareaId = `droparea-file-r${Math.floor(Math.random() * 30) + 1}`
+
   return (<>
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
-
-    {props.enableInputField ? <input type="file" onChange={onChange} /> : null}
-
-    <Modal
-      id="detailview-drop-modal"
-      isOpen={isOpen}
-      handleExit={() => {
-        setOpen(false)
-      }}>
-      <div className="modal content--subheader">Deze bestanden zijn ge&iuml;mporteerd </div>
-      <div className="modal modal-move content--text">
-        <ItemTextListView fileIndexItems={uploadFilesList} callback={() => { }} />
-      </div>
-    </Modal>
+    {props.enableInputButton ? <>
+      <input id={dropareaId} className="droparea-file-input" type="file" multiple={true} onChange={onChange} />
+      <label className={props.className} htmlFor={dropareaId} >Upload</label>
+    </> : null}
   </>);
 };
 export default DropArea;

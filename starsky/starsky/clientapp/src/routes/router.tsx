@@ -1,5 +1,6 @@
 import { Router } from "@reach/router";
 import React from "react";
+import AccountRegisterPage from '../pages/account-register-page';
 import ContentPage from '../pages/content-page';
 import ImportPage from '../pages/import-page';
 import LoginPage from '../pages/login-page';
@@ -18,6 +19,7 @@ const RouterApp = () => (
     <ImportPage path="starsky/import" />
     <ImportPage path="import" />
     <LoginPage path="account/login" />
+    <AccountRegisterPage path="account/register" />
     <NotFoundPage default />
   </Router>
 );

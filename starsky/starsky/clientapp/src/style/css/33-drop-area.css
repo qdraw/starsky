@@ -8,3 +8,23 @@
   left: 0px;
   border: 10px dashed #1565C0;
 }
+
+
+.droparea-file-input {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+.droparea-file-input + label {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.droparea-file-input:focus + label,
+.droparea-file-input + label:hover {
+  background-color: #455A64;
+}

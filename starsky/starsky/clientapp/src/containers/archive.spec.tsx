@@ -19,7 +19,7 @@ describe("Archive", () => {
       .mockImplementationOnce(() => { });
 
     const container = mount(<Archive {...newIArchive()}
-      colorClassFilterList={[]}
+      colorClassActiveList={[]}
       colorClassUsage={[]}
       fileIndexItems={[]} />);
     expect(container.exists('.warning-box')).toBeTruthy()

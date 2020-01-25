@@ -273,10 +273,6 @@ namespace starskycore.Models
 	    /// </summary>	    
 	    public bool AddSwaggerExport { get; set; } = false;
 
-	    
-        // For using <Link> in headers
-        public bool AddHttp2Optimizations  { get; set; } = true;
-
 	    public bool AddLegacyOverwrite { get; set; } = Type.GetType("Mono.Runtime") != null;
 	    
 	    private string _webftp; 
@@ -304,6 +300,12 @@ namespace starskycore.Models
 	    }
 
 	    public List<AppSettingsPublishProfiles> PublishProfiles { get; set; } = new List<AppSettingsPublishProfiles>();
+	    
+	    /// <summary>
+	    /// Set this value to `true` to keep `/account/register` open for everyone. (Security Issue)
+	    /// This setting is by default false. The only 2 build-in exceptions are when there are no accounts or you already logged in
+	    /// </summary>
+	    public bool IsAccountRegisterOpen { get; set; } = false;
 
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------
@@ -378,17 +380,12 @@ namespace starskycore.Models
             return subPath;
         }
 
-//        public List<string> DatabasePathToFilePath(List<string> databaseFilePathList, bool checkIfExist = true)
-//        {
-//            var fullFilePathLists = new List<string>();
-//            foreach (var databaseFilePath in databaseFilePathList)
-//            {
-//                fullFilePathLists.Add(DatabasePathToFilePath(databaseFilePath, checkIfExist));
-//            }
-//            return fullFilePathLists;
-//        }
-
-        // from relative database path => file location path 
+        /// <summary>
+        /// from relative database path => file location path 
+        /// </summary>
+        /// <param name="databaseFilePath">databaseFilePath</param>
+        /// <param name="checkIfExist">checkIfExist</param>
+        /// <returns></returns>
         public string DatabasePathToFilePath(string databaseFilePath, bool checkIfExist = true)
         {
             var filepath = StorageFolder + databaseFilePath;

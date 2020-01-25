@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using starskycore.Interfaces;
 using starskycore.Models;
 
@@ -9,7 +8,7 @@ namespace starskycore.Services
 {
 	public class StorageHostFullPathFilesystem : IStorage
 	{
-		public void CreateDirectory(string subPath)
+		public void CreateDirectory(string path)
 		{
 			throw new System.NotImplementedException();
 		}

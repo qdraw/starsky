@@ -108,22 +108,5 @@ namespace starskytest.Controllers
             Assert.AreEqual("not found", actionResult.Value);
         }
 
-        [TestMethod]
-        public void HomeController_AddHttp2SingleFile()
-        {
-	        var appSettings = new AppSettings();
-	        appSettings.AddHttp2Optimizations = true;
-            var controller = new IndexController(_query,appSettings) {ControllerContext = {HttpContext = new DefaultHttpContext()}};
-
-	        var singleItem = new DetailView {FileIndexItem = new FileIndexItem()};
-	        singleItem.FileIndexItem.FileHash = "test";
-		        
-            controller.AddHttp2SingleFile("test","/api/info?test");
-	        
-	        var linkValue = controller.Response.Headers["Link"].ToString();
-	        Assert.AreEqual(linkValue.Contains("rel=preload;"),true);
-	        
-        }
-
     }
 }

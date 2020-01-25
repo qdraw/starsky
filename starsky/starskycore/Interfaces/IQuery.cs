@@ -14,7 +14,7 @@ namespace starskycore.Interfaces
         // to do the query and return object
         IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
-            List<FileIndexItem.Color> colorClassFilterList = null,
+            List<FileIndexItem.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true);
 
@@ -28,7 +28,7 @@ namespace starskycore.Interfaces
         // to do the query and return object
         DetailView SingleItem(
             string singleItemDbPath, 
-            List<FileIndexItem.Color> colorClassFilterList = null,
+            List<FileIndexItem.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true);
 
@@ -36,7 +36,7 @@ namespace starskycore.Interfaces
         DetailView SingleItem(
             List<FileIndexItem> fileIndexItemsList, 
             string singleItemDbPath, 
-            List<FileIndexItem.Color> colorClassFilterList = null,
+            List<FileIndexItem.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true);
         

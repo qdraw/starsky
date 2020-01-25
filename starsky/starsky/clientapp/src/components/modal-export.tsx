@@ -83,6 +83,9 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = (props) => {
       setProcessing(ProcessingState.ready);
       return;
     }
+    else if (result.statusCode === 206) {
+      return; // not ready jet
+    }
     setProcessing(ProcessingState.fail);
   }, 1500);
 

@@ -10,7 +10,11 @@ export class UrlQuery {
   }
 
   public UrlLogin(): string {
-    return "/account/login?json=true";
+    return "/account/login";
+  }
+
+  public UrlAccountRegister(): string {
+    return "/account/register?json=true";
   }
 
   public UrlSearchRelativeApi = (f: string, t: string | undefined, pageNumber = 0): string => {
@@ -41,6 +45,10 @@ export class UrlQuery {
 
   public UrlAccountStatus = (): string => {
     return "/account/status";
+  }
+
+  public UrlAccountRegisterStatus = (): string => {
+    return "/account/register/status";
   }
 
   /**
@@ -136,6 +144,14 @@ export class UrlQuery {
    */
   public UrlSyncMkdir(): string {
     return "/sync/mkdir";
+  }
+
+  public UrlImportApi(): string {
+    return "/import";
+  }
+
+  public UrlUploadApi(): string {
+    return "/api/upload";
   }
 
 }

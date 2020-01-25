@@ -263,8 +263,12 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           <p>
             {index === 1 ? <>In een collectie:</> : null} {index + 1} van {collections.length}.
             {item === fileIndexItem.filePath && fileIndexItem.imageWidth !== 0 && fileIndexItem.imageHeight !== 0 ?
-              <span>&nbsp;&nbsp;{fileIndexItem.imageWidth}&times;{fileIndexItem.imageHeight} pixels&nbsp;&nbsp;
-              ratio: {new AspectRatio().ratio(fileIndexItem.imageWidth, fileIndexItem.imageHeight)}</span>
+              <span>&nbsp;&nbsp;{fileIndexItem.imageWidth}&times;{fileIndexItem.imageHeight} pixels&nbsp;&nbsp;{
+                new AspectRatio().ratio(fileIndexItem.imageWidth, fileIndexItem.imageHeight) ? <>
+                  ratio: {new AspectRatio().ratio(fileIndexItem.imageWidth, fileIndexItem.imageHeight)}
+                </> : null
+              }
+              </span>
               : null}
           </p>
         </div>

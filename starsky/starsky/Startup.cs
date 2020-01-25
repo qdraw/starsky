@@ -87,7 +87,7 @@ namespace starsky
                         options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
                     }
                 );
-
+            
             services.AddScoped<IQuery, Query>();
             services.AddScoped<ISync, SyncService>();
             services.AddScoped<ISearch, SearchService>();
@@ -103,11 +103,15 @@ namespace starsky
             services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             
+            // There is a base-cookie and in index controller there is an method to generate a token that is used to send with the header: X-XSRF-TOKEN
             services.AddAntiforgery(
                 options =>
                 {
                     options.Cookie.Name = "_af";
-                    options.Cookie.HttpOnly = true;
+                    options.Cookie.HttpOnly = true; // only used by .NET, there is a separate method to generate a X-XSRF-TOKEN cookie
+                    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                    options.Cookie.IsEssential = true;
                     options.HeaderName = "X-XSRF-TOKEN";
                 }
             );
@@ -262,18 +266,15 @@ namespace starsky
 			app.UseAuthentication();
             app.UseBasicAuthentication();
 
-			/// For some reason the pipe is not ending after its closed. This is new in NET CORE 3.0 and this is a work around to give the right status code back
+			// For some reason the pipe is not ending after its closed. This is new in NET CORE 3.0 and this is a work around to give the right status code back
             app.Use(async (HttpContext context, Func<Task> next) =>
             {
 	            await next.Invoke(); //execute the request pipeline
 
 	            var statusStringValues = context.Response.Headers["X-Status"];
-	            if ( !string.IsNullOrEmpty(statusStringValues) )
+	            if ( !string.IsNullOrEmpty(statusStringValues) && int.TryParse(statusStringValues, out var status) )
 	            {
-		            if ( int.TryParse(statusStringValues, out var status) )
-		            {
-			            context.Response.StatusCode = status;
-		            }
+			        context.Response.StatusCode = status;
 	            }
             });
 

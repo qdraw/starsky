@@ -16,7 +16,7 @@ namespace starsky.Attributes
 
         public void OnResourceExecuted(ResourceExecutedContext context)
         {
-            // Do nothing because this is used only by coverlet
+            // Do nothing because this is used by .NET
         }
     }
 }

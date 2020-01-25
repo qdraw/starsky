@@ -34,7 +34,7 @@ namespace starskytest.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IReadMeta _readmeta;
         private readonly IServiceScopeFactory _scopeFactory;
-	    private IStorage _iStorage;
+	    private readonly IStorage _iStorage;
 
 	    public ApiControllerTest()
         {
@@ -588,7 +588,7 @@ namespace starskytest.Controllers
             Assert.AreEqual(1, beforeQuery.Count());
 
             // Act, remove content from cache
-            var actionResult = controller.RemoveCache("/cacheDeleteTest",true) as JsonResult;
+            var actionResult = controller.RemoveCache("/cacheDeleteTest") as JsonResult;
             Assert.AreEqual("cache successful cleared", actionResult.Value);
             
             // Check if there are now two items in the cache
@@ -603,7 +603,7 @@ namespace starskytest.Controllers
             var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,_readmeta,new StorageSubPathFilesystem(_appSettings));
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             
-            var actionResult = controller.RemoveCache("/404page",true) as BadRequestObjectResult;
+            var actionResult = controller.RemoveCache("/404page") as BadRequestObjectResult;
             Assert.AreEqual(400,actionResult.StatusCode);
         }
 
@@ -616,7 +616,7 @@ namespace starskytest.Controllers
                 {
                     ControllerContext = {HttpContext = new DefaultHttpContext()}
                 };
-            var actionResult = controller.RemoveCache("/404page", true) as JsonResult;
+            var actionResult = controller.RemoveCache("/404page") as JsonResult;
             Assert.AreEqual("cache disabled in config",actionResult.Value);
         }
     }

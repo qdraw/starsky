@@ -580,7 +580,6 @@ namespace starsky.Controllers
         /// Delete Database Cache (only the cache)
         /// </summary>
         /// <param name="f">subpath</param>
-        /// <param name="json">return status</param>
         /// <returns>redirect or if json enabled a status</returns>
         /// <response code="200">when json is true, "cache successful cleared"</response>
         /// <response code="412">"cache disabled in config"</response>
@@ -593,13 +592,12 @@ namespace starsky.Controllers
         [ProducesResponseType(412)] // "cache disabled in config"
         [ProducesResponseType(400)] // "ignored, please check if the 'f' path exist or use a folder string to clear the cache"
         [ProducesResponseType(302)] // redirect back to the url
-        public IActionResult RemoveCache(string f = "/", bool json = true)
+        public IActionResult RemoveCache(string f = "/")
         {
             //For folder paths only
             if (!_appSettings.AddMemoryCache)
             {
 				Response.StatusCode = 412;
-				if(!json) return RedirectToAction("Index", "v1", new { f });
 				return Json("cache disabled in config");
             }
 
@@ -607,11 +605,9 @@ namespace starsky.Controllers
             if (singleItem != null && singleItem.IsDirectory)
             {
                 _query.RemoveCacheParentItem(f);
-                if(!json) return RedirectToAction("Index", "v1", new { f });
                 return Json("cache successful cleared");
             }
 
-            if(!json) return RedirectToAction("Index", "v1", new { f });
             return BadRequest("ignored, please check if the 'f' path exist or use a folder string to clear the cache");
         }
 

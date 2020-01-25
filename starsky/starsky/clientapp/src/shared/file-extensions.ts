@@ -44,14 +44,14 @@ export class FileExtensions {
    */
   public GetParentPath(filePath: string) {
     if (!filePath) return "/"
-    var parentRegex = /.+(?=\/[^/]+$)/
+    const parentRegex = /.+(?=\/[^/]+$)/;
 
     // remove slash from end
     if (filePath.length >= 2 && filePath[filePath.length - 1] === "/") {
       filePath = filePath.substr(0, filePath.length - 1)
     }
 
-    var parentMatchArray = filePath.match(parentRegex);
+    const parentMatchArray = filePath.match(parentRegex);
     if (!parentMatchArray) return "/";
     return parentMatchArray[0]
   }

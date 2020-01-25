@@ -2,7 +2,9 @@ using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
+using starsky.Helpers;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.Controllers
@@ -11,15 +13,20 @@ namespace starsky.Controllers
 	public class HomeController : Controller
 	{
 		private readonly string  _clientApp;
+		private readonly IAntiforgery _antiForgery;
 
-		public HomeController()
+
+		public HomeController(IAntiforgery antiForgery)
 		{
+			_antiForgery = antiForgery;
 			_clientApp = Path.Combine(Directory.GetCurrentDirectory(),
 				"clientapp", "build", "index.html");
 		}
-		
+
+	
 		public IActionResult Index(string f = "")
 		{
+			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			return PhysicalFile(_clientApp, "text/html");
 		}
 
@@ -32,6 +39,7 @@ namespace starsky.Controllers
 		[HttpGet("/search")]
 		public IActionResult Search(string t= "")
 		{
+			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			if ( !string.IsNullOrEmpty(CaseSensitiveRedirect(Request)) )
 			{
 				return Redirect(CaseSensitiveRedirect(Request));
@@ -54,6 +62,24 @@ namespace starsky.Controllers
 		{
 			return PhysicalFile(_clientApp, "text/html");
 		}
+		
+		/// <summary>
+		/// View the Register form
+		/// </summary>
+		/// <param name="returnUrl">when successful continue</param>
+		/// <returns></returns>
+		/// <response code="200">successful Register-page</response>
+		[HttpGet("/account/register")]
+		[AllowAnonymous]
+		[ProducesResponseType(200)]
+		public IActionResult Register(string returnUrl = null)
+		{
+			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
+			return PhysicalFile(_clientApp, "text/html");
+		}
+
+				
+
 
 		internal string CaseSensitiveRedirect(HttpRequest request)
 		{

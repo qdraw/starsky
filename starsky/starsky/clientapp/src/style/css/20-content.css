@@ -123,3 +123,13 @@
   margin-bottom: 15px;
 }
 
+.content > .content--login-form > .btn {
+  margin-right : 10px;
+}
+
+.content .legal-text-row {
+  margin-bottom: 15px;
+}
+.content .legal-text-row a{
+  text-decoration: underline;
+}

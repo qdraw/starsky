@@ -27,10 +27,6 @@ namespace starskycore.ViewModels
         
         public string SubPath { get; set; }
 
-        // Used by Razor view
-        [JsonIgnore]
-        public IEnumerable<FileIndexItem.ColorUserInterface> GetAllColor { get; set; }
-
 	    /// <summary>
 	    /// Is collections enabled?
 	    /// </summary>

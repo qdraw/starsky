@@ -35,20 +35,25 @@ const Login: React.FC<ILoginProps> = () => {
   const MessageUsername = language.text("E-mailadres", "E-mail address");
   const MessageConnection = language.text("Er is geen verbinding mogelijk, probeer het later opnieuw", "No connection is possible, please try again later");
   const LogoutWarning = language.text("Wil je uitloggen?", "Do you want to log out?");
+  const MessageStayLoggedIn = language.text("Blijf ingelogd", "Stay logged in");
   const MessagePassword = language.text("Geef je wachtwoord op", "Enter your password");
   const MessageExamplePassword = language.text("superveilig", "supersafe");
   const MessageExampleUsername = "dont@mail.me";
   const MessageLogin = language.text("Inloggen", "Login");
   const MessageLogout = language.text("Uitloggen", "Logout");
 
-
   // We don't want to login twich 
   const [isLogin, setLogin] = React.useState(true);
+
   useEffect(() => {
     FetchGet(new UrlQuery().UrlAccountStatus()).then((status) => {
       setLogin(status.statusCode === 401);
+      // to help new users find the register screen
+      // if (status.statusCode === 406 && history.location.search.indexOf(new UrlQuery().UrlAccountRegister()) === -1) {
+      //   history.navigate(new UrlQuery().UrlAccountRegister(), { replace: true });
+      // }
     });
-  }, [history.location.search]);
+  }, [history, history.location.search]);
 
   const authHandler = async () => {
     try {
@@ -65,11 +70,6 @@ const Login: React.FC<ILoginProps> = () => {
         // redirect
         var returnUrl = new URLPath().GetReturnUrl(history.location.search);
         history.navigate(returnUrl, { replace: true });
-
-        // for chrome navigate isn't enough
-        setTimeout(() => {
-          document.location.reload();
-        }, 100);
       }
     } catch (err) {
       setLoading(false);
@@ -96,7 +96,8 @@ const Login: React.FC<ILoginProps> = () => {
               </div>
             </div>
           </header>
-          <div className="content"><div className="content--header">{MessageLogin}</div>
+          <div className="content">
+            <div className="content--header">{MessageLogin}</div>
             <form
               className="content--login-form form-inline form-nav"
               onSubmit={e => {
@@ -110,7 +111,7 @@ const Login: React.FC<ILoginProps> = () => {
                 authHandler();
               }}
             >
-              <label htmlFor="username">
+              <label htmlFor="email">
                 {MessageUsername}
               </label>
               <input
@@ -156,6 +157,7 @@ const Login: React.FC<ILoginProps> = () => {
             <form className="content--login-form">
               <div className="content--error-true">{LogoutWarning}</div>
               <a className="btn btn--default" href="/account/logout">{MessageLogout}</a>
+              <a className="btn btn--info" href="/">{MessageStayLoggedIn}</a>
             </form>
           </div>
         </>

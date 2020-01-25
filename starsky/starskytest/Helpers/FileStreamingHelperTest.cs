@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -96,6 +97,25 @@ namespace starskytest.Helpers
             File.Delete(formValueProvider.FirstOrDefault());
             
         }
+        
+//        [TestMethod]
+//        public async Task FileStreamingHelperTest_222222()
+//        {
+//	        // FAIL
+//	        var text = "--9051914041544843365972754266\r\n" +
+//	                   "Content-Disposition: form-data; name=\"text\"\r\n" +
+//	                   "\r\n" +
+//	                   "text default\r\n" +
+//	                   "--9051914041544843365972754266--\r\n";
+//
+//	        var stream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+//	        stream.Seek(0, SeekOrigin.Begin);
+//	        
+//	        var formValueProvider = await FileStreamingHelper.StreamFile(
+//		        "multipart/form-data; boundary=\"--9051914041544843365972754266\"",stream, _appSettings);
+//
+//        }
+
 
 //        [TestMethod]
 //        public void FileStreamingHelper_GetTempFilePath_NullOption()

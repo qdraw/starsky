@@ -9,31 +9,47 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public void FilenamesHelper_ValidFileName()
 		{
-			var result = new FilenamesHelper().IsValidFileName("test.jpg");
+			var result = FilenamesHelper.IsValidFileName("test.jpg");
 			Assert.AreEqual(true, result);
 		}
 				
 		[TestMethod]
 		public void FilenamesHelper_ValidFileName_StartWithUnderscore()
 		{
-			var result = new FilenamesHelper().IsValidFileName("_.com");
+			var result = FilenamesHelper.IsValidFileName("_.com");
 			Assert.AreEqual(true, result);
 		}
 		
 		[TestMethod]
 		public void FilenamesHelper_NonValidFileName()
 		{
-			var result = new FilenamesHelper().IsValidFileName(".jpg");
+			var result = FilenamesHelper.IsValidFileName(".jpg");
 			Assert.AreEqual(false, result);
 		}
 		
 		[TestMethod]
 		public void FilenamesHelper_GetFilePath()
 		{
-			var result = new FilenamesHelper().GetFileName("sdfsdf/test.jpg");
+			var result = FilenamesHelper.GetFileName("sdfsdf/test.jpg");
 			Assert.AreEqual("test.jpg", result);
 		}
 				
+		
+		[TestMethod]
+		public void FilenamesHelper_GetParentPath()
+		{
+			var result = FilenamesHelper.GetParentPath("/yes.jpg");
+			Assert.AreEqual("/", result);
+		}
+		
+		[TestMethod]
+		public void FilenamesHelper_GetParentPathSubDir()
+		{
+			var result = FilenamesHelper.GetParentPath("/sub/yes.jpg");
+			Assert.AreEqual("/sub/", result);
+		}
+
+
 
 	}
 	

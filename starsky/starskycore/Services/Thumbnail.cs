@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using SixLabors.ImageSharp;

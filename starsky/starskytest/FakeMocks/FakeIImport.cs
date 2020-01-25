@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskycore.Services;
 
 namespace starskytest.FakeMocks
 {
@@ -12,8 +14,41 @@ namespace starskytest.FakeMocks
 		}
 
 		public List<ImportIndexItem> Preflight(List<string> inputFileFullPaths, ImportSettingsModel importSettings)
+		
 		{
-			throw new System.NotImplementedException();
+			var results = new List<ImportIndexItem>();
+			foreach ( var inputFileFullPath in inputFileFullPaths )
+			{
+				// if the item fails
+				var importIndexFileError = new ImportIndexItem {
+					FilePath = "/" + FilenamesHelper.GetFileName(inputFileFullPath),
+					FileHash = "FAKE", 
+					Status = ImportStatus.FileError
+				};
+			
+				// Check if extension is correct
+				if (!ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath)) 
+				{
+					results.Add(importIndexFileError);
+				}
+
+				// Check if the file is correct
+				var imageFormat = ExtensionRolesHelper.GetImageFormat(
+					new StorageHostFullPathFilesystem().ReadStream(inputFileFullPath, 160));
+
+				if ( ! ExtensionRolesHelper.ExtensionSyncSupportedList.Contains($"{imageFormat}") )
+				{
+					results.Add(importIndexFileError);
+				}
+				
+				results.Add(new ImportIndexItem
+				{
+					SourceFullFilePath = inputFileFullPath,
+					Status = ImportStatus.Ok,
+					FileHash = "FAKE"
+				});
+			}
+			return results;
 		}
 
 		public List<ImportIndexItem> History()

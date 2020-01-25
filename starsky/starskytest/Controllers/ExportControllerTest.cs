@@ -90,8 +90,6 @@ namespace starskytest.Controllers
 
 			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-
-	
 		}
 
 		private FileIndexItem InsertSearchData(bool delete = false)

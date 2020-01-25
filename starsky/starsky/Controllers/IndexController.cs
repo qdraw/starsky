@@ -41,7 +41,6 @@ namespace starsky.Controllers
         public IActionResult Index(
             string f = "/", 
             string colorClass = null,
-            bool json = true,
             bool collections = true,
             bool hidedelete = true
             )
@@ -52,33 +51,23 @@ namespace starsky.Controllers
             f = f.Replace("$20", " ");
             
             // Used in Detail and Index View => does not hide this single item
-            var colorClassFilterList = new FileIndexItem().GetColorClassList(colorClass);
+            var colorClassActiveList = new FileIndexItem().GetColorClassList(colorClass);
             var subpath = _query.SubPathSlashRemove(f);
 
             // First check if it is a single Item
-            var singleItem = _query.SingleItem(subpath, colorClassFilterList,collections);
+            var singleItem = _query.SingleItem(subpath, colorClassActiveList,collections);
             // returns no object when it a directory
             
             if (singleItem?.IsDirectory == false)
             {
-	            var fileHashWithExt = singleItem.FileIndexItem.FileHash;
-	            if ( singleItem.FileIndexItem.ImageFormat == ExtensionRolesHelper.ImageFormat.jpg )
-		            fileHashWithExt += ".jpg";
-	            var fileHashThumbnailHttpUrl = SingleItemThumbnailHttpUrl(fileHashWithExt);
-
-	            var infoHttpUrl = SingleItemInfoHttpUrl(singleItem.FileIndexItem.FilePath,collections);
-
-                AddHttp2SingleFile(fileHashThumbnailHttpUrl,infoHttpUrl);
-                
-                if (json) return Json(singleItem);
-                return View("~/Views/V1/Detailview.cshtml", singleItem);
+                return Json(singleItem);
             }
             
             // (singleItem.IsDirectory) or not found
             var directoryModel = new ArchiveViewModel
             {
-                FileIndexItems = _query.DisplayFileFolders(subpath,colorClassFilterList,collections,hidedelete),
-                ColorClassFilterList = 	colorClassFilterList,
+                FileIndexItems = _query.DisplayFileFolders(subpath,colorClassActiveList,collections,hidedelete),
+                ColorClassActiveList = 	colorClassActiveList,
                 RelativeObjects = _query.GetNextPrevInFolder(subpath), // Args are not shown in this view
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath),
                 SearchQuery = subpath.Split("/").LastOrDefault(),
@@ -96,63 +85,20 @@ namespace starsky.Controllers
                 var queryIfFolder = _query.GetObjectByFilePath(subpath);
 
                 // For showing a new database
-                switch (f)
-                {
-                    case "/" when !json && queryIfFolder == null:
-                        return View("~/Views/V1/index.cshtml",directoryModel);
-                    case "/" when queryIfFolder == null:
-                        return Json(directoryModel);
-                }
+                if ( f == "/" && queryIfFolder == null ) return Json(directoryModel);
 
                 if (queryIfFolder == null) // used to have: singleItem?.FileIndexItem.FilePath == null &&
                 {
                     Response.StatusCode = 404;
-                    if (json) return Json("not found");
-                    return View("~/Views/V1/Error.cshtml");
+                    return Json("not found");
                 }
             }
             
             // now update
             if (_appsettings != null) directoryModel.IsReadOnly = _appsettings.IsReadOnly(subpath);
 
-            if (json) return Json(directoryModel);
-            return View("~/Views/V1/index.cshtml",directoryModel);
+            return Json(directoryModel);
         }
-
-        // For returning the Url of the webpage, this has a dependency
-        public string SingleItemThumbnailHttpUrl(string fileHash)
-        {
-            // when using a unit test appSettings will be null
-            if (_appsettings == null || !_appsettings.AddHttp2Optimizations) return string.Empty;
-            return Url.Action("Thumbnail", "Api", new {f = fileHash});
-        }
-	    
-	    // For returning the Url of the webpage, this has a dependency
-	    public string SingleItemInfoHttpUrl(string infoSubPath, bool collections)
-	    {
-		    // when using a unit test appSettings will be null
-		    if (_appsettings == null || !_appsettings.AddHttp2Optimizations) return string.Empty;
-		    
-		    var infoApiBase = Url.Action("Info", "Api", new {f = infoSubPath, collections});
-		    infoApiBase = infoApiBase.Replace("+", "%2B");
-		    return infoApiBase; 
-	    }
-
-        // Feature to Add Http2 push to the response headers
-        public void AddHttp2SingleFile(string fileHashThumbnailHttpUrl, string infoHttpUrl)
-        {
-            if (_appsettings == null || !_appsettings.AddHttp2Optimizations) return;
-
-	        // HTTP2 push
-            Response.Headers["Link"] =
-                "<" + fileHashThumbnailHttpUrl  +
-                "?issingleitem=True>; rel=preload; as=image"; 
-            Response.Headers["Link"] += ",";
-            Response.Headers["Link"] += "<"
-                                        + infoHttpUrl +
-                                        ">; rel=preload; crossorigin=\"use-credentials\"; as=fetch";
-        }
-
 
     }
 }

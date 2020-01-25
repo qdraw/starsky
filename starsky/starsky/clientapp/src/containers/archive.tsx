@@ -20,7 +20,7 @@ function Archive(archive: IArchiveProps) {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar)
   }, [history.location.search]);
 
-  if (archive && (!archive.colorClassUsage || !archive.colorClassFilterList)) return (<>(Archive) => no colorClassLists</>)
+  if (archive && (!archive.colorClassUsage || !archive.colorClassActiveList)) return (<>(Archive) => no colorClassLists</>)
 
   return (
     <>
@@ -33,7 +33,7 @@ function Archive(archive: IArchiveProps) {
           <RelativeLink relativeObjects={archive.relativeObjects} />
 
           <ColorClassFilter itemsCount={archive.collectionsCount} subPath={archive.subPath}
-            colorClassFilterList={archive.colorClassFilterList}
+            colorClassActiveList={archive.colorClassActiveList}
             colorClassUsage={archive.colorClassUsage} />
           <ItemListView {...archive}> </ItemListView>
         </div>

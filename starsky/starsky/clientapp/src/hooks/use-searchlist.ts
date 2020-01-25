@@ -58,7 +58,7 @@ const useSearchList = (query: string | undefined, pageNumber = 0, resetPageTypeB
 
       // We don't know those values in the search context
       archiveMedia.data.colorClassUsage = [];
-      archiveMedia.data.colorClassFilterList = [];
+      archiveMedia.data.colorClassActiveList = [];
       setArchive(archiveMedia.data);
 
     } catch (e) {

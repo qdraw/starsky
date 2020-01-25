@@ -7,7 +7,7 @@ export interface IArchive {
     fileIndexItems: Array<IFileIndexItem>;
     relativeObjects: IRelativeObjects;
     subPath: string;
-    colorClassFilterList: Array<number>;
+    colorClassActiveList: Array<number>;
     colorClassUsage: Array<number>;
     collectionsCount: number;
     isReadOnly: boolean;

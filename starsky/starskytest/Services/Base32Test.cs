@@ -39,7 +39,7 @@ namespace starskytest.Services
 		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void Base32Encode_OutRange()
 		{
-			var t = ( 1 << 28 ); // the lenght
+			 // the length (1 << 28 )
 			Base32.Encode(new byte[268435456]);
 		}
 

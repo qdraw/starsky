@@ -92,10 +92,13 @@ namespace starskytest.Middleware
             httpContext.RequestServices = _serviceProvider;
  
             var schemeProvider = _serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();
-  
-            var controller = new AccountController(_userManager);
-            controller.ControllerContext.HttpContext = httpContext;
-            
+
+            var controller =
+	            new AccountController(_userManager, new AppSettings())
+	            {
+		            ControllerContext = {HttpContext = httpContext}
+	            };
+
             // Make new account; 
             var newAccount = new RegisterViewModel
             {

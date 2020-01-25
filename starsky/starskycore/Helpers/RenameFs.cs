@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
@@ -168,7 +167,6 @@ namespace starskycore.Helpers
 					// todo: remove folder from disk + remove duplicate database item 
 					// remove duplicate item from list
 					_query.GetObjectByFilePath(inputFileSubPath);
-					//_query.RemoveItem(_query.SingleItem(inputFileSubPath).FileIndexItem);
 
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File 
@@ -186,8 +184,8 @@ namespace starskycore.Helpers
 					// toFileSubPath should contain the full subpath
 					
 					// when trying to rename something wrongs
-					var fileName = new FilenamesHelper().GetFileName(toFileSubPath);
-					if ( !new FilenamesHelper().IsValidFileName(fileName) )
+					var fileName = FilenamesHelper.GetFileName(toFileSubPath);
+					if ( !FilenamesHelper.IsValidFileName(fileName) )
 					{
 						fileIndexResultsList.Add(new FileIndexItem
 						{
@@ -221,7 +219,7 @@ namespace starskycore.Helpers
 					// toFileSubPath must be the to copy directory, the filename is kept the same
 
 					// update to support UpdateItem
-					toFileSubPath = toFileSubPath + "/" + new FilenamesHelper().GetFileName(inputFileSubPath);
+					toFileSubPath = toFileSubPath + "/" + FilenamesHelper.GetFileName(inputFileSubPath);
 					
 					// you can't move the file to the same location
 					if ( inputFileSubPath == toFileSubPath )

@@ -69,7 +69,6 @@ describe("ModalArchiveMkdir", () => {
       var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
       // use ==> import * as FetchGet from '../shared/fetch-get';
-
       const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 202, data: {
           ...newIArchive(), fileIndexItems: [],
