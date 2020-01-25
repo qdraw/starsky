@@ -68,15 +68,15 @@ describe("DropArea", () => {
       expect(fetchPostSpy).toBeCalledTimes(1);
       expect(fetchPostSpy).toBeCalledWith("/import", compareFormData, "post", { "to": undefined });
 
-      // // callback
-      // expect(callbackSpy).toBeCalled();
+      // callback
+      expect(callbackSpy).toBeCalled();
 
-      // expect(callbackSpy).toBeCalledWith([{
-      //   "description": "",
-      //   "fileHash": undefined, "fileName": "", "filePath": "/test.jpg",
-      //   "isDirectory": false, "lastEdited": expect.any(String),
-      //   "status": "Ok", "tags": "", "title": ""
-      // }]);
+      expect(callbackSpy).toBeCalledWith([{
+        "description": "",
+        "fileHash": undefined, "fileName": "", "filePath": "/test.jpg",
+        "isDirectory": false, "lastEdited": expect.any(String),
+        "status": "Ok", "tags": "", "title": ""
+      }]);
 
     });
 

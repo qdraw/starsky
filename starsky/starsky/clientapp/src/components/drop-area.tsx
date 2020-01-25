@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
-import useGlobalSettings from '../hooks/use-global-settings';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem, newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
-import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
-import ItemTextListView from './item-text-list-view';
-import Modal from './modal';
 import { MoreMenuEventCloseConst } from './more-menu';
 import Preloader from './preloader';
 
@@ -19,16 +15,15 @@ export interface IDropAreaProps {
   callback?(result: Array<IFileIndexItem>): void;
 }
 
+/**
+ * Drop Area / Upload field, callback is list of uploaded files
+ * @param props Endpoints, settings to enable drag 'n drop, add extra classes
+ */
 const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
-
-  const settings = useGlobalSettings();
-  const MessageFilesAdded = new Language(settings.language).text("Deze bestanden zijn toegevoegd", "These files have been added");
 
   const [dragActive, setDrag] = useState(false);
   const [dragTarget, setDragTarget] = useState(document.createElement("span") as Element);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [isOpen, setOpen] = useState(false);
 
   // used to force react to update the array
   const [uploadFilesList] = useState(newIFileIndexItemArray());
@@ -71,6 +66,9 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
 
     var filesList = Array.from(files);
 
+    // only needed for the more menu
+    window.dispatchEvent(new CustomEvent(MoreMenuEventCloseConst, { bubbles: false }));
+
     console.log("Files: ", files);
 
     const { length } = filesList;
@@ -94,7 +92,6 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
 
     FetchPost(props.endpoint, formData, 'post', { 'to': props.folderPath }).then((response) => {
       if (!response.data) {
-        setOpen(true);
         setIsLoading(false);
         return;
       }
@@ -112,8 +109,10 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
         uploadFilesList.push(uploadFileObject);
       });
 
-      setOpen(true);
       setIsLoading(false);
+
+      if (!props.callback) return;
+      props.callback(uploadFilesList);
     });
   };
 
@@ -202,37 +201,10 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
 
   return (<>
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
-
     {props.enableInputButton ? <>
       <input id={dropareaId} className="droparea-file-input" type="file" multiple={true} onChange={onChange} />
       <label className={props.className} htmlFor={dropareaId} >Upload</label>
     </> : null}
-
-    <Modal
-      id="detailview-drop-modal"
-      isOpen={isOpen}
-      handleExit={() => {
-        setOpen(false);
-        // return only if you close the dialog
-        if (!props.callback) return;
-        console.log('run');
-
-
-        var filterCondition = (value: IFileIndexItem) => {
-          return (value.status === IExifStatus.Ok);
-        };
-        props.callback(uploadFilesList.filter(filterCondition));
-
-        // only needed for the more menu
-        window.dispatchEvent(new CustomEvent(MoreMenuEventCloseConst, { bubbles: false }));
-
-
-      }}>
-      <div className="modal content--subheader">{MessageFilesAdded}</div>
-      <div className="modal modal-move content content--text">
-        <ItemTextListView fileIndexItems={uploadFilesList} callback={() => { }} />
-      </div>
-    </Modal>
   </>);
 };
 export default DropArea;

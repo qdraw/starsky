@@ -27,7 +27,7 @@ function ArchiveWrapper(archive: IArchiveProps) {
    */
   useEffect(() => {
     if (archive.fileIndexItems) {
-      dispatch({ type: 'reset-url-change', payload: archive })
+      dispatch({ type: 'force-reset', payload: archive })
     }
   }, [archive, dispatch]);
 

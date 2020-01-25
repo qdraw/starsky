@@ -1,4 +1,5 @@
 import { IArchiveProps } from '../interfaces/IArchiveProps';
+import { IExifStatus } from '../interfaces/IExifStatus';
 import { archiveReducer } from './archive-context';
 
 describe("ArchiveContext", () => {
@@ -70,10 +71,12 @@ describe("ArchiveContext", () => {
       fileIndexItems: [{
         fileName: 'test0.jpg',
         filePath: '/test0.jpg',
+        status: IExifStatus.Ok
       },
       {
         fileName: 'test2.jpg',
         filePath: '/test2.jpg',
+        status: IExifStatus.Ok
       },
       ]
     } as IArchiveProps;
@@ -82,10 +85,12 @@ describe("ArchiveContext", () => {
     var add = [{
       fileName: 'test1.jpg',
       filePath: '/test1.jpg',
+      status: IExifStatus.Ok
     },
     {
       fileName: 'test3.jpg',
       filePath: '/test3.jpg',
+      status: IExifStatus.Ok
     },
     ];
     var action = { type: 'add', add } as any
@@ -96,18 +101,22 @@ describe("ArchiveContext", () => {
       {
         "fileName": "test0.jpg",
         "filePath": "/test0.jpg",
+        status: IExifStatus.Ok
       },
       {
         "fileName": "test1.jpg",
         "filePath": "/test1.jpg",
+        status: IExifStatus.Ok
       },
       {
         "fileName": "test2.jpg",
         "filePath": "/test2.jpg",
+        status: IExifStatus.Ok
       },
       {
         "fileName": "test3.jpg",
         "filePath": "/test3.jpg",
+        status: IExifStatus.Ok
       }]);
   });
 
@@ -118,6 +127,7 @@ describe("ArchiveContext", () => {
       fileIndexItems: [{
         fileName: 'test0.jpg',
         filePath: '/test0.jpg',
+        status: IExifStatus.Ok
       }
       ]
     } as IArchiveProps;

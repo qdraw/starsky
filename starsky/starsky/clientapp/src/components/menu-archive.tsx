@@ -3,6 +3,7 @@ import React, { memo, useEffect } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
+import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
@@ -11,6 +12,7 @@ import DropArea from './drop-area';
 import MenuSearchBar from './menu.searchbar';
 import ModalArchiveMkdir from './modal-archive-mkdir';
 import ModalDisplayOptions from './modal-display-options';
+import ModalDropAreaFilesAdded from './modal-drop-area-files-added';
 import ModalExport from './modal-export';
 import MoreMenu from './more-menu';
 
@@ -114,10 +116,14 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
   const [isModalMkdirOpen, setModalMkdirOpen] = React.useState(false);
+  const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(newIFileIndexItemArray());
 
   const UploadMenuItem = () => {
     return <li className="menu-option menu-option--input">
-      <DropArea callback={(add) => dispatch({ 'type': 'add', add })}
+      <DropArea callback={(add) => {
+        setDropAreaUploadFilesList(add);
+        dispatch({ 'type': 'add', add });
+      }}
         endpoint={new UrlQuery().UrlUploadApi()}
         folderPath={state.subPath} enableInputButton={true}
         enableDragAndDrop={true}></DropArea>
@@ -135,6 +141,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
         setDisplayOptionsOpen(!isDisplayOptionsOpen)} isOpen={isDisplayOptionsOpen} /> : null}
 
       {isModalMkdirOpen ? <ModalArchiveMkdir handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)} isOpen={isModalMkdirOpen} /> : null}
+
+      {dropAreaUploadFilesList.length !== 0 ? <ModalDropAreaFilesAdded
+        handleExit={() => setDropAreaUploadFilesList(newIFileIndexItemArray())}
+        uploadFilesList={dropAreaUploadFilesList}
+        isOpen={dropAreaUploadFilesList.length !== 0} /> : null}
 
       {/* Menu */}
       <header className={sidebar ? "header header--main header--select header--edit" : select ? "header header--main header--select" : "header header--main "}>
