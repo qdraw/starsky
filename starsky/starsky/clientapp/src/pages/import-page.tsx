@@ -5,9 +5,12 @@ import DropArea from '../components/drop-area';
 import MenuSearch from '../components/menu-search';
 import ModalDropAreaFilesAdded from '../components/modal-drop-area-files-added';
 import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import DocumentTitle from '../shared/document-title';
 import { UrlQuery } from '../shared/url-query';
 
 const ImportPage: FunctionComponent<RouteComponentProps> = (props) => {
+
+  document.title = new DocumentTitle().GetDocumentTitle("Import");
 
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(newIFileIndexItemArray());
 
