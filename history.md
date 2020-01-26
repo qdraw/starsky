@@ -22,7 +22,7 @@
 # version 0.1.14 - 2020-0?-??
 - [x]   (bugfix) _back-end_)_ Security fixes in controllers
 - [x]   (bugfix) _back-end + front-end_ name: colorClassActiveList replace everywhere
-- [x]   (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2. Run `./build.sh` before you start
+- [x]   (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2. Run `./build.sh` before you start developing
 
 # version 0.1.13 - 2020-01-25
 - [x]   (remove) _V1_ __Removal of Old Layout (V1) and All Razor Views__
@@ -77,7 +77,7 @@
 
 # version 0.1.10 - 2019-12-15
 - [x] (bugfix) Archive => After pressing 'Apply' the updates are not shown
-- [x] Upgrade ClientApp from React 16.9.0 to 16.9.15
+- [x] Upgrade ClientApp from React 16.9.0 to 16.9.15 _(Create React App 3.3.0, 5 Dec 2019)_
 - [x] Front-end for Rename files (in detailview)
 - [x] (front-end) 'Rotate to Right'
 - [x] Improve Unit test coverage (at least 80% on coverage-report _561 mstest and 271 jest tests_)
