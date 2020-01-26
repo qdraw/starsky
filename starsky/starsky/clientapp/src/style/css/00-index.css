@@ -20,4 +20,4 @@
 @import './32-search-header.css';
 @import './33-drop-area.css';
 
-@import './50-leaflet.css';
+@import './vendor/50-leaflet.css';

@@ -98,7 +98,7 @@ namespace starskytest.Services
             }
 	        
 	        // To Mock!
-	        // _fileHashCreateAnImage = new FileHash(_iStorage).GetHashCode(new CreateAnImage().DbPath);
+	        _fileHashCreateAnImage = new FileHash(_iStorage).GetHashCode(new CreateAnImage().DbPath);
 
         }
 

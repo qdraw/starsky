@@ -71,8 +71,46 @@ npm install --save-dev @types/leaflet
 "proxy": "http://localhost:5000",
 ```
 
+#### `npm run test:ci` is used by the build-script to run all tests and ESlint
+This is added to the `package.json`
 
+```json
+"lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
+"test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
+```
+
+### collectCoverageFrom and coverageReporters
 With jest `collectCoverageFrom` and `coverageReporters` are used to get the right output
+
+```json
+"jest": {
+  "collectCoverageFrom": [
+    "**/*.{ts,tsx}",
+    "!coverage/**",
+    "!node_modules/**",
+    "!src/index.*ts*",
+    "!src/service-worker.ts",
+    "!src/react-app-env.d.ts",
+    "!src/setupTests.js",
+    "!public/**",
+    "!build/**"
+  ],
+  "coverageReporters": [
+    "text",
+    "lcov",
+    "json",
+    "cobertura"
+  ],
+  "coverageThreshold": {
+    "global": {
+      "branches": 65,
+      "functions": 70,
+      "lines": 78,
+      "statements": 75
+    }
+  }
+}
+```
 
 ## Learn More
 

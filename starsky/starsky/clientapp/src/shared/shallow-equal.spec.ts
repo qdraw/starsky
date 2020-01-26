@@ -2,9 +2,6 @@ import shallowEqual from './shallow-equal';
 
 describe("shallowEqual", function () {
 
-  // eslint-disable-next-line no-sparse-arrays
-  const falsey = [, "", 0, false, NaN, null, undefined];
-
   beforeEach(() => {
     // isolated instances of shallowEqual for each test.
     jest.resetModules();

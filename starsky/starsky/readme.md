@@ -84,7 +84,31 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 ### Warmup script
 The default behavior of .NET is to load everything first. To be sure that the application is warm before someone arrives, please check `tools/starsky-warmup.sh`.
 
+### Search Docs
+    _todo: update and translate_
 
+Zoekopties (bevat woord): <br/>
+(default: ) Zoek term => Tags<br/>
+-tags="zoek term" <br/>
+-filepath="/path" <br/>
+-filename=2018 <br/>
+-parentdirectory=2018 <br/>
+-description="zoek term" <br/>
+-title=zoekterm <br/>
+-ImageFormat=gpx<br/>
+-datetime>2018-01-01T01:01:01 <br/>
+-datetime=1 <em>(zoek naar foto's van gisteren)</em> <br/>
+-Datetime&gt;12 -Datetime&lt;2 <em>Tussen 2 en 12 dagen geleden</em><br/>
+-addtodatabase&lt;2018-01-01T01:01:01 <br/>
+-filehash:3DB75N7JJ6FDOPZY4YHGX4TLKHOQ <br/>
+-isdirectory:true <em>or</em> -isdirectory:false<br/>
+InUrl: Gebruik '-inurl:naam', '-inurl=naam' of '-inurl:"naam met spatie"' zoek woorden om verder te specificeren<br/>
+Tags: Normale Sleutelwoorden worden gelezen als deze combinatie is aanwezig in het Tags-veld<br/>
+&vert;&vert;, tussen twee zoekwoorden om beide mee te nemen e.g. -Tags:Test || -Tags:Car<br/>
+&amp;&amp; , tussen twee zoekwoorden, zodat deze zoekwoorden aanwezig zijn in beide items (default instelling)<br/>
+- Overslaan van steekwoorden - '-Tags-"fiets"' of '-fiets' om het woord over te slaan
+        
+        
 ### Rest API documentation
 Starsky has a Json and Razorview restful API. Please read the documentation
 
@@ -104,11 +128,7 @@ http://localhost:5000/swagger
 
 #### Rest API Table of contents
 
-
-
 __This list is outdated please check Swagger for the latest version__
-
-
 
 
 - [Get PageType	"Archive" ](readme_api.md#get-pagetype-archive)

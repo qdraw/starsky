@@ -23,7 +23,6 @@ function ArchiveWrapper(archive: IArchiveProps) {
 
   /**
    * Running on changing searchQuery or subpath
-   * dispatch > reset-url-change has if statements to check this every render
    */
   useEffect(() => {
     if (archive.fileIndexItems) {

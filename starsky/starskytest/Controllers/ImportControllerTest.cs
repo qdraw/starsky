@@ -35,7 +35,6 @@ namespace starskytest.Controllers
     public class ImportControllerTest
     {
         private readonly IImport _import;
-        private readonly ImportController _importController;
         private IBackgroundTaskQueue _bgTaskQueue;
         private IServiceScopeFactory _scopeFactory;
         private AppSettings _appSettings;

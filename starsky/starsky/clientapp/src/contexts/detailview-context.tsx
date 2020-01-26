@@ -14,7 +14,7 @@ const initialState: State = {
   relativeObjects: {} as IRelativeObjects,
   subPath: "/",
   pageType: PageType.DetailView,
-  colorClassFilterList: [],
+  colorClassActiveList: [],
 }
 
 type Action = {

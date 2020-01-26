@@ -32,9 +32,7 @@ namespace starskytest.Controllers
 		private readonly IStorage _iStorage;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IReadMeta _readmeta;
-		private readonly IServiceScopeFactory _scopeFactory;
 		private ImportService _import;
 		private SyncService _isync;
 
@@ -92,7 +90,7 @@ namespace starskytest.Controllers
 			// get the service
 
 			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
-			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 		
 		/// <summary>

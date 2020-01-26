@@ -383,7 +383,7 @@ Task("SonarBegin")
             ArgumentCustomization = args => args
                 .Append($"/o:" + organisation)
                 .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starskycore/Migrations/*,**/*spec.ts,**/*spec.tsx,**/src/index.tsx\"")
-                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starskycore/Migrations/*,**/*spec.tsx,**/*spec.ts,**/src/index.tsx\"")
+                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starskycore/Migrations/*,**/*spec.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
         });
   });
 

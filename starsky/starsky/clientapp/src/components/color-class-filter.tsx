@@ -6,7 +6,7 @@ import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 
 //  <ColorClassFilter itemsCount={this.props.collectionsCount} subPath={this.props.subPath} 
-// colorClassFilterList={this.props.colorClassFilterList} colorClassUsage={this.props.colorClassUsage}></ColorClassFilter>
+// colorClassActiveList={this.props.colorClassActiveList} colorClassUsage={this.props.colorClassUsage}></ColorClassFilter>
 export interface IColorClassProp {
   subPath: string;
   colorClassActiveList: Array<number>;

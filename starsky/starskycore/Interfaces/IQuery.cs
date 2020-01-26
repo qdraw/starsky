@@ -21,7 +21,7 @@ namespace starskycore.Interfaces
         // To make an object without any query
         IEnumerable<FileIndexItem> DisplayFileFolders(
             List<FileIndexItem> fileIndexItems,
-            List<FileIndexItem.Color> colorClassFilterList = null,
+            List<FileIndexItem.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true);
 

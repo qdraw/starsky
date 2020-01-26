@@ -17,13 +17,13 @@ namespace starskycore.Services
         /// SingleItemPath do the query for singleitem + return detailview object
         /// </summary>
         /// <param name="singleItemDbPath"></param>
-        /// <param name="colorClassFilterList">list of colorclasses to show, default show all</param>
+        /// <param name="colorClassActiveList">list of colorclasses to show, default show all</param>
         /// <param name="enableCollections">enable collections feature > default true</param>
         /// <param name="hideDeleted">do not show deleted files > default true</param>
         /// <returns>view object to show on the page</returns>
         public DetailView SingleItem(
             string singleItemDbPath,
-            List<FileIndexItem.Color> colorClassFilterList = null,
+            List<FileIndexItem.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true)
         {
@@ -35,7 +35,7 @@ namespace starskycore.Services
             return SingleItem(
                 fileIndexItemsList,
                 singleItemDbPath,
-                colorClassFilterList,
+                colorClassActiveList,
                 enableCollections,
                 hideDeleted);
         }
@@ -45,14 +45,14 @@ namespace starskycore.Services
         /// </summary>
         /// <param name="fileIndexItemsList">list of fileindexitems</param>
         /// <param name="singleItemDbPath">database style path</param>
-        /// <param name="colorClassFilterList">list of colorclasses to show, default show all</param>
+        /// <param name="colorClassActiveList">list of colorclasses to show, default show all</param>
         /// <param name="enableCollections">enable collections feature > default true</param>
         /// <param name="hideDeleted">do not show deleted files > default true</param>
         /// <returns>view object to show on the page</returns>
         public DetailView SingleItem(
             List<FileIndexItem> fileIndexItemsList, 
             string singleItemDbPath,
-            List<FileIndexItem.Color> colorClassFilterList = null,
+            List<FileIndexItem.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true)
         {
@@ -74,7 +74,7 @@ namespace starskycore.Services
 		            FileIndexItem = GetObjectByFilePath("/"),
 		            RelativeObjects = new RelativeObjects(),
 		            Breadcrumb = new List<string>{"/"},
-		            ColorClassFilterList = colorClassFilterList,
+		            ColorClassActiveList = colorClassActiveList,
 		            IsDirectory = true,
 		            SubPath = "/",
 		            Collections = enableCollections
@@ -102,14 +102,14 @@ namespace starskycore.Services
             if (currentFileIndexItem.Tags.Contains("!delete!")) hideDeleted = false;
             
             var fileIndexItemsForPrevNextList = DisplayFileFolders(
-                parentFolder,colorClassFilterList,enableCollections,hideDeleted).ToList();
+                parentFolder,colorClassActiveList,enableCollections,hideDeleted).ToList();
 
             var itemResult = new DetailView
             {
                 FileIndexItem = currentFileIndexItem,
                 RelativeObjects = GetNextPrevInSubFolder(currentFileIndexItem,fileIndexItemsForPrevNextList),
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(singleItemDbPath),
-                ColorClassFilterList = colorClassFilterList,
+                ColorClassActiveList = colorClassActiveList,
                 IsDirectory = false,
                 SubPath = singleItemDbPath,
 	            Collections = enableCollections
