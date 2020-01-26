@@ -52,7 +52,7 @@ describe("DetailViewSidebar", () => {
           subPath: "/",
           status: IExifStatus.Default,
           pageType: PageType.DetailView,
-          colorClassFilterList: [],
+          colorClassActiveList: [],
         } as any
       };
 

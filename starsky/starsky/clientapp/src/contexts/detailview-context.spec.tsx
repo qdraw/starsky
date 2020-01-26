@@ -5,13 +5,13 @@ import { detailviewReducer } from './detailview-context';
 
 describe("DetailViewContext", () => {
   it("update - check if item is update (append false)", () => {
-    var state = {
+    const state = {
       breadcrumb: [],
       fileIndexItem: newIFileIndexItem(),
       relativeObjects: {} as IRelativeObjects,
       subPath: "/",
       pageType: PageType.DetailView,
-      colorClassFilterList: [],
+      colorClassActiveList: [],
     } as IDetailView;
     var action = { type: 'update', tags: 'tags', colorclass: 1, description: 'description', title: 'title', status: IExifStatus.Ok } as any;
 
@@ -24,13 +24,13 @@ describe("DetailViewContext", () => {
   });
 
   it("append - check if item is update", () => {
-    var state = {
+    const state = {
       breadcrumb: [],
       fileIndexItem: newIFileIndexItem(),
       relativeObjects: {} as IRelativeObjects,
       subPath: "/",
       pageType: PageType.DetailView,
-      colorClassFilterList: [],
+      colorClassActiveList: [],
     } as IDetailView;
     var action = { type: 'append', tags: 'tags' } as any
 
@@ -39,17 +39,17 @@ describe("DetailViewContext", () => {
   });
 
   it("remove - check if item is update", () => {
-    var state = {
+    const state = {
       breadcrumb: [],
       fileIndexItem: newIFileIndexItem(),
       relativeObjects: {} as IRelativeObjects,
       subPath: "/",
       pageType: PageType.DetailView,
-      colorClassFilterList: [],
+      colorClassActiveList: [],
     } as IDetailView;
     state.fileIndexItem.tags = "!delete!"
 
-    var action = { type: 'remove', tags: '!delete!' } as any;
+    const action = {type: 'remove', tags: '!delete!'} as any;
 
     var result = detailviewReducer(state, action);
     expect(result.fileIndexItem.tags).toBe('');

@@ -201,8 +201,8 @@ namespace starskytest.Services
         {
             InsertSearchData();
             // Next Winner
-            var colorClassFilterList = new FileIndexItem().GetColorClassList("1");
-            var next = _query.SingleItem("/basic/hi.jpg", colorClassFilterList);
+            var colorClassActiveList = new FileIndexItem().GetColorClassList("1");
+            var next = _query.SingleItem("/basic/hi.jpg", colorClassActiveList);
             Assert.AreEqual("/basic/hi4.jpg", next.RelativeObjects.NextFilePath);
         }
 
@@ -211,8 +211,8 @@ namespace starskytest.Services
         {       
             InsertSearchData();
             // Prev Winner
-            var colorClassFilterList = new FileIndexItem().GetColorClassList("1");
-            var prev = _query.SingleItem("/basic/hi4.jpg", colorClassFilterList).RelativeObjects.PrevFilePath;
+            var colorClassActiveList = new FileIndexItem().GetColorClassList("1");
+            var prev = _query.SingleItem("/basic/hi4.jpg", colorClassActiveList).RelativeObjects.PrevFilePath;
             Assert.AreEqual("/basic/hi.jpg", prev);
         }
         
@@ -264,9 +264,9 @@ namespace starskytest.Services
          
             // Compare filter
             var getDisplayExpectedResultSuperior = new List<FileIndexItem> {hiJpgInput};
-            var colorClassFilterList = new FileIndexItem().GetColorClassList("1");
+            var colorClassActiveList = new FileIndexItem().GetColorClassList("1");
                 
-            var getDisplaySuperior = _query.DisplayFileFolders("/display",colorClassFilterList).ToList();
+            var getDisplaySuperior = _query.DisplayFileFolders("/display",colorClassActiveList).ToList();
            
             CollectionAssert.AreEqual(getDisplayExpectedResultSuperior,getDisplaySuperior);
 

@@ -25,7 +25,7 @@ namespace starskycore.Services
         // This is the query part
         public IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
-            List<FileIndexItem.Color> colorClassFilterList = null,
+            List<FileIndexItem.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true)
         {
@@ -33,7 +33,7 @@ namespace starskycore.Services
             var fileIndexItems = CacheQueryDisplayFileFolders(subPath);
             
             return DisplayFileFolders(fileIndexItems, 
-                colorClassFilterList,
+	            colorClassActiveList,
                 enableCollections,
                 hideDeleted);
         }
@@ -42,15 +42,15 @@ namespace starskycore.Services
         // without any query in this method
         public IEnumerable<FileIndexItem> DisplayFileFolders(
             List<FileIndexItem> fileIndexItems,
-            List<FileIndexItem.Color> colorClassFilterList = null,
+            List<FileIndexItem.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true)
         {
             
-            if (colorClassFilterList == null) colorClassFilterList = new List<FileIndexItem.Color>();
-            if (colorClassFilterList.Any())
+            if (colorClassActiveList == null) colorClassActiveList = new List<FileIndexItem.Color>();
+            if (colorClassActiveList.Any())
             {
-                fileIndexItems = fileIndexItems.Where(p => colorClassFilterList.Contains(p.ColorClass)).ToList();
+                fileIndexItems = fileIndexItems.Where(p => colorClassActiveList.Contains(p.ColorClass)).ToList();
             }
 
             if (!fileIndexItems.Any())

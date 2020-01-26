@@ -42,21 +42,21 @@ namespace starskycore.ViewModels
 	    /// Set Args based on Collections and ColorClass Settings
 	    /// </summary>
 	    /// <param name="collections"></param>
-	    /// <param name="colorClassFilterList"></param>
-	    public RelativeObjects(bool collections, List<FileIndexItem.Color> colorClassFilterList)
+	    /// <param name="colorClassActiveList"></param>
+	    public RelativeObjects(bool collections, List<FileIndexItem.Color> colorClassActiveList)
 	    {
 		    	if ( !collections )
 			    {
 				    Args.Add(nameof(collections).ToLowerInvariant(),"false");
 			    }
 			    
-			    if (colorClassFilterList != null && colorClassFilterList.Count >= 1 )
+			    if (colorClassActiveList != null && colorClassActiveList.Count >= 1 )
 			    {
 				    var colorClassArg = new StringBuilder();
-				    for ( int i = 0; i < colorClassFilterList.Count; i++ )
+				    for ( int i = 0; i < colorClassActiveList.Count; i++ )
 				    {
-					    var colorClass = colorClassFilterList[i];
-					    if (i ==  colorClassFilterList.Count-1)
+					    var colorClass = colorClassActiveList[i];
+					    if (i ==  colorClassActiveList.Count-1)
 					    {
 						    colorClassArg.Append(colorClass.GetHashCode());
 					    }

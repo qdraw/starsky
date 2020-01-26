@@ -36,7 +36,7 @@ export interface IDetailView {
     fileIndexItem: IFileIndexItem;
     relativeObjects: IRelativeObjects;
     subPath: string;
-    colorClassFilterList: Array<number>;
+    colorClassActiveList: Array<number>;
     lastUpdated?: Date;
 }
 

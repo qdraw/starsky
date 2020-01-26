@@ -43,7 +43,7 @@ describe("DetailView", () => {
     relativeObjects: { nextFilePath: 'next', prevFilePath: 'prev' } as IRelativeObjects,
     status: IExifStatus.Default,
     pageType: PageType.DetailView,
-    colorClassFilterList: [],
+    colorClassActiveList: [],
     subPath: "/___test___",
   } as IDetailView;
 

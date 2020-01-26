@@ -17,7 +17,7 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// List of selected Color Class's
 	    /// </summary>
-	    public List<FileIndexItem.Color> ColorClassFilterList { get; set; } = new List<FileIndexItem.Color>();
+	    public List<FileIndexItem.Color> ColorClassActiveList { get; set; } = new List<FileIndexItem.Color>();
         
 	    // Used by react client
         public string PageType => PageViewType.PageType.DetailView.ToString();
@@ -58,10 +58,10 @@ namespace starskycore.ViewModels
 		    get => _relativeObjects;
 		    set
 		    {
-			    _relativeObjects = new RelativeObjects(Collections,ColorClassFilterList);
+			    _relativeObjects = new RelativeObjects(Collections, ColorClassActiveList);
 			    _relativeObjects = value;
 		    }
 	    }
-	    
+
     }
 }
