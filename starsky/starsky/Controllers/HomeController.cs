@@ -41,7 +41,7 @@ namespace starsky.Controllers
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			if ( IsCaseSensitiveRedirect("/search", Request.Path.Value) )
 			{
-				return Redirect($"/search?p={p}&t={t}");
+				return Redirect($"/search?t={t}&p={p}");
 			}
 			return PhysicalFile(_clientApp, "text/html");
 		}

@@ -21,6 +21,17 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
+		public void HomeController_Index()
+		{
+			var controller = new HomeController(_antiForgery)
+			{
+				ControllerContext = {HttpContext = _httpContext}
+			};
+			var actionResult = controller.Index() as PhysicalFileResult;
+			Assert.AreEqual("text/html", actionResult.ContentType);
+		}
+		
+		[TestMethod]
 		public void HomeController_IsCaseSensitiveRedirect_true()
 		{
 			var controller = new HomeController(_antiForgery);
@@ -48,6 +59,20 @@ namespace starskytest.Controllers
 			var actionResult = controller.SearchPost("1") as RedirectResult;
 			Assert.AreEqual("/search?t=1&p=0", actionResult.Url);
 		}
+		
+		[TestMethod]
+		public void HomeController_SearchGet_Controller_CaseSensitive_Redirect()
+		{
+			var controller = new HomeController(_antiForgery)
+			{
+				ControllerContext = {HttpContext = _httpContext}
+			};
+			controller.ControllerContext.HttpContext.Request.Path = new PathString("/Search");
+			controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("?T=1");
+			var actionResult = controller.Search("1") as RedirectResult;
+			Assert.AreEqual("/search?t=1&p=0", actionResult.Url);
+		}
+
 		
 		[TestMethod]
 		public void HomeController_Trash_Controller_CaseSensitive_Redirect()
