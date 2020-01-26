@@ -31,7 +31,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "test:ci": "react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
+    "lint": "./node_modules/eslint/bin/eslint.js \"src/**\"",
+    "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
     "upgrade": "echo 'check readme.md 20191207'"
   },
   "eslintConfig": {

@@ -34,6 +34,9 @@ describe("DetailViewGpx", () => {
 
       expect(polylineSpy).toBeCalledTimes(0);
 
+      expect(spyGet).toBeCalled();
+
+      gpx.unmount();
     });
 
     it("renders with example GPX", async () => {
@@ -97,7 +100,6 @@ describe("DetailViewGpx", () => {
       Object.assign(this, L.Evented.prototype)
 
       options = { ...L.Map.prototype.options, ...options }
-      var _container = id
 
       if (options.bounds) {
         this.fitBounds(options.bounds, options.boundsOptions)
