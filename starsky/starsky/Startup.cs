@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -51,20 +52,26 @@ namespace starsky
 
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
-                        
+                 
+            // Enable .NET CORE health checks
+            services.AddHealthChecks();
+            
             switch (_appSettings.DatabaseType)
             {
                 case (AppSettings.DatabaseTypeList.Mysql):
                     services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection, b => b.MigrationsAssembly(nameof(starskycore))));
+                    services.AddHealthChecks().AddMySql(_appSettings.DatabaseConnection);
                     break;
                 case AppSettings.DatabaseTypeList.InMemoryDatabase:
                     services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
                     break;
                 case AppSettings.DatabaseTypeList.Sqlite:
                     services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, b => b.MigrationsAssembly(nameof(starskycore))));
+                    services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, "SELECT * FROM `FileIndex` WHERE `IsDirectory` = \"/\"", "sqlite");
                     break;
                 default:
                     services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, b => b.MigrationsAssembly(nameof(starskycore))));
+                    services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection);
                     break;
             }
             
@@ -286,6 +293,7 @@ namespace starsky
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+				endpoints.MapHealthChecks("/api/healthz", new HealthCheckOptions());
 			});
 #else
 	        app.UseMvc(routes =>
