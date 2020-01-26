@@ -19,6 +19,10 @@
 - []  (feature) Creating thumbnails from Web Interface (including status)
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
 
+# version 0.1.14 - 2020-0?-??
+- [x]   (bugfix) _back-end_)_ Security fixes in controllers
+- [x]   (bugfix) _back-end + front-end_ name: colorClassActiveList replace everywhere
+
 # version 0.1.13 - 2020-01-25
 - [x]   (remove) _V1_ __Removal of Old Layout (V1) and All Razor Views__
 - [x]   (feature) _Front-end_ _API_ Add new account in React
