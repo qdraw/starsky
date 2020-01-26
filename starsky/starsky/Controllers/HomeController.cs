@@ -33,7 +33,7 @@ namespace starsky.Controllers
 		[HttpPost("/search")]
 		public IActionResult SearchPost(string t = "")
 		{
-			return Redirect(Request.Path.Value.ToLowerInvariant() + Request.QueryString);
+			return Redirect($"/search{Request.QueryString}");
 		}
 
 		[HttpGet("/search")]
