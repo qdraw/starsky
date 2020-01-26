@@ -176,7 +176,15 @@ namespace starskytest.Controllers
                               Path.DirectorySeparatorChar + createAnImage.FileHash + ".jpg";
             File.Delete(thumbnewImg);
         }
-        
+
+        [TestMethod]
+        public void ApiController_Thumbnail_InputBadRequest()
+        {
+	        var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,_readmeta,new StorageSubPathFilesystem(_appSettings));
+	        var actionResult = controller.Thumbnail("../") as BadRequestResult;
+			Assert.AreEqual(400,actionResult.StatusCode);
+        }
+
         [TestMethod]
         public void ApiController_Thumbnail_HappyFlowFileStreamResult_API_Test()
         {

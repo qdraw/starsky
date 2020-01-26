@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starskycore.Helpers;
@@ -410,12 +411,19 @@ namespace starsky.Controllers
             // f is Hash
             // isSingleItem => detailView
             // Retry thumbnail => is when you press reset thumbnail
-            // json, => to don't waste the users bandwith.
+            // json, => to don't waste the users bandwidth.
 
 	        // For serving jpeg files
 	        if ( Path.HasExtension(f) && Path.GetExtension(f) == ".jpg" )
 	        {
 		        f = f.Remove(f.Length - 4);
+	        }
+	        
+	        // Restrict the fileHash to letters and digits only
+	        // I/O function calls should not be vulnerable to path injection attacks
+	        if (!Regex.IsMatch(f, "^[a-zA-Z0-9_]+$") )
+	        {
+		        return BadRequest();
 	        }
 	        
             var thumbPath = _appSettings.ThumbnailTempFolder + f + ".jpg";
