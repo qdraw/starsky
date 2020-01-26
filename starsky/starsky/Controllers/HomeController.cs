@@ -33,25 +33,28 @@ namespace starsky.Controllers
 		[HttpPost("/search")]
 		public IActionResult SearchPost(string t = "", int p = 0)
 		{
+			// unescaped: ^[a-zA-Z0-9_\-+"'/=:>< ]+$
+			if (!Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$") )
+			{
+				return BadRequest("`t` is not allowed");
+			}
 			return Redirect($"/search?t={t}&p={p}");
 		}
 
 		[HttpGet("/search")]
 		public IActionResult Search(string t= "", int p = 0)
 		{
-			// unescaped: [a-zA-Z0-9_+"']+$
-			if (!Regex.IsMatch(t, "^[a-zA-Z0-9_+\"']+$") )
-			{
-				return BadRequest();
-			}
-			
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
+
+			if ( !IsCaseSensitiveRedirect("/search", Request.Path.Value) )
+				return PhysicalFile(_clientApp, "text/html");
 			
-			if ( IsCaseSensitiveRedirect("/search", Request.Path.Value) )
+			// unescaped: ^[a-zA-Z0-9_\-+"'/=:>< ]+$
+			if (!Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$") )
 			{
-				return Redirect($"/search?t={t}&p={p}");
+				return BadRequest("`t` is not allowed");
 			}
-			return PhysicalFile(_clientApp, "text/html");
+			return Redirect($"/search?t={t}&p={p}");
 		}
 		
 		[HttpGet("/trash")]
