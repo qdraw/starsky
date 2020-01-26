@@ -34,7 +34,7 @@ namespace starsky.Controllers
 		public IActionResult SearchPost(string t = "", int p = 0)
 		{
 			// unescaped: ^[a-zA-Z0-9_\-+"'/=:>< ]+$
-			if ( !string.IsNullOrEmpty(t) && !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$") )
+			if ( !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$") )
 			{
 				return BadRequest("`t` is not allowed");
 			}
