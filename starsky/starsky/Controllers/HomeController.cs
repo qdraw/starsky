@@ -33,6 +33,11 @@ namespace starsky.Controllers
 		[HttpPost("/search")]
 		public IActionResult SearchPost(string t = "", int p = 0)
 		{
+			if (string.IsNullOrEmpty(t))
+			{
+				return Redirect($"/search");
+			}
+			
 			// unescaped: ^[a-zA-Z0-9_\-+"'/=:>< ]+$
 			if ( !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$") )
 			{
@@ -49,8 +54,14 @@ namespace starsky.Controllers
 			if ( !IsCaseSensitiveRedirect("/search", Request.Path.Value) )
 				return PhysicalFile(_clientApp, "text/html");
 			
+			// if not case sensitive is already served
+			if (string.IsNullOrEmpty(t))
+			{
+				return Redirect($"/search");
+			}
+
 			// unescaped: ^[a-zA-Z0-9_\-+"'/=:>< ]+$
-			if ( !string.IsNullOrEmpty(t) && !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$") )
+			if (!Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$") )
 			{
 				return BadRequest("`t` is not allowed");
 			}
