@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <!-- SonarQube needs this -->
     <ProjectGuid>{a030c158-2f79-4317-a9f9-bdd46d66d1d8}</ProjectGuid>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">3.0.1</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">3.0.2</RuntimeFrameworkVersion>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">2.2.7</RuntimeFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
