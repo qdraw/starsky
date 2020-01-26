@@ -4,7 +4,7 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.0</TargetFramework>
         <ProjectGuid>{eb1d57d1-29d8-4bfb-950e-447ef8522a10}</ProjectGuid>
-        <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">3.0.1</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">3.0.2</RuntimeFrameworkVersion>
         <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">2.2.7</RuntimeFrameworkVersion>
     </PropertyGroup>
     <ItemGroup>
