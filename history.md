@@ -22,6 +22,7 @@
 # version 0.1.14 - 2020-0?-??
 - [x]   (bugfix) _back-end_)_ Security fixes in controllers
 - [x]   (bugfix) _back-end + front-end_ name: colorClassActiveList replace everywhere
+- [x]   (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2. Run `./build.sh` before you start
 
 # version 0.1.13 - 2020-01-25
 - [x]   (remove) _V1_ __Removal of Old Layout (V1) and All Razor Views__

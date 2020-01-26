@@ -24,7 +24,7 @@
 git clone "https://bitbucket.org/qdraw/starsky.git"
 ```
 
-2.  Get the `dotnet` 3.0.1 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
+2.  Get the `dotnet` 3.1.1 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
 
 3.  Download and install [ExifTool by Phil Harvey](https://www.sno.phy.queensu.ca/~phil/exiftool/)
 
@@ -86,7 +86,7 @@ http://localhost:64556/account/register
 
 
 ## Build for Raspberry Pi (Raspbian/Linux ARM)
-From .NET Core 2.1 or newer there is a SDK available for Raspberry Pi (only ARMv7 or newer, so no ARMv6). We use NET Core 3.0.1
+From .NET Core 2.1 or newer there is a SDK available for Raspberry Pi (only ARMv7 or newer, so no ARMv6). We use NET Core 3.1.1
 But in this guide we build it first on your laptop and copy to your Raspberry Pi. Use the following steps to setup:
 
 1.  Clone the repo on your x86/x64 machine
