@@ -14,10 +14,10 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
       <FrameworkReference Include="Microsoft.AspNetCore.App" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc5" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.2" />
     <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
   </ItemGroup>
   <PropertyGroup>
