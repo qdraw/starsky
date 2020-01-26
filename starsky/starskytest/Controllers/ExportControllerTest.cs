@@ -30,12 +30,10 @@ namespace starskytest.Controllers
 	public class ExportControllerTest
 	{
 		private readonly IQuery _query;
-		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IReadMeta _readmeta;
-		private readonly IServiceScopeFactory _scopeFactory;
 
 		public ExportControllerTest()
 		{
@@ -86,10 +84,10 @@ namespace starskytest.Controllers
 			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
 			// inject fake exiftool
-			_exifTool = new FakeExifTool(new FakeIStorage(),_appSettings );
+			new FakeExifTool(new FakeIStorage(),_appSettings );
 
 			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
-			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 
 		private FileIndexItem InsertSearchData(bool delete = false)

@@ -86,7 +86,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props
       setIsLoading(false);
       setFormEnabled(true);
       return;
-    };
+    }
 
     // Force update 
     var connectionResult = await FetchGet(new UrlQuery().UrlIndexServerApi({ f: state.subPath }))

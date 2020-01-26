@@ -101,7 +101,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
         if (dataItem.status as IExifStatus !== IExifStatus.Ok) {
           uploadFilesList.push(CastFileIndexItem(dataItem, dataItem.status as IExifStatus));
           return;
-        };
+        }
         // merge item status:Ok and fileIndexItem
         var uploadFileObject: IFileIndexItem = dataItem.fileIndexItem;
         uploadFileObject.status = dataItem.status as IExifStatus;

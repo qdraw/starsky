@@ -41,7 +41,7 @@ namespace starskycore.Helpers
 		{
 			if ( string.IsNullOrEmpty(filePath) ) return "/";
 	        
-			// unescaped regex: /.+(?=\/[^/]+$)/;
+			// unescaped regex: /.+(?=\/[^/]+$)/
 			var parentRegex =
 				new Regex(".+(?=\\/[^/]+$)",
 					RegexOptions.CultureInvariant);

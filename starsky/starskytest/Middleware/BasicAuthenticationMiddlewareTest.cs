@@ -26,7 +26,6 @@ namespace starskytest.Middleware
     {
         private IUserManager _userManager;
         private readonly IServiceProvider _serviceProvider;
-        private DefaultHttpContext _context;
         private readonly Task _onNextResult = Task.FromResult(0);
         private readonly RequestDelegate _onNext;
         private int _requestId;
