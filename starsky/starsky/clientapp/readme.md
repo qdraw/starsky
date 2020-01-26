@@ -75,7 +75,7 @@ npm install --save-dev @types/leaflet
 This is added to the `package.json`
 
 ```json
-"lint": "node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
+"lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
 "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
 ```
 
