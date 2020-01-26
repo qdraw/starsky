@@ -157,6 +157,10 @@ http://localhost:5000/account/register
 
 11. SonarQube scanner
 
+For SonarScanner you need to additionally install:
+- .NET Core 2.0 runtimes: https://dotnet.microsoft.com/download/dotnet-core/2.0
+- Java
+
 To enable SonarScanner you need to set the following environment variables:
 - `STARSKY_SONAR_KEY` - the public name of the project
 - `STARSKY_SONAR_LOGIN` - the token to login
