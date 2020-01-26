@@ -2,6 +2,7 @@ using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Antiforgery;
 using starsky.Helpers;
 
@@ -38,7 +39,14 @@ namespace starsky.Controllers
 		[HttpGet("/search")]
 		public IActionResult Search(string t= "", int p = 0)
 		{
+			// unescaped: [a-zA-Z0-9_+"']+$
+			if (!Regex.IsMatch(t, "^[a-zA-Z0-9_+\"']+$") )
+			{
+				return BadRequest();
+			}
+			
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
+			
 			if ( IsCaseSensitiveRedirect("/search", Request.Path.Value) )
 			{
 				return Redirect($"/search?t={t}&p={p}");
