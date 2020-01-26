@@ -1,6 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starskytest.FakeMocks;
@@ -10,38 +11,68 @@ namespace starskytest.Controllers
 	[TestClass]
 	public class HomeControllerTest
 	{
-		private IAntiforgery _antiForgery;
+		private readonly IAntiforgery _antiForgery;
+		private HttpContext _httpContext;
 
 		public HomeControllerTest()
 		{
 			_antiForgery = new FakeAntiforgery();
-		}
-		[TestMethod]
-		public void HomeController_ReturnFixedCaseSensitiveUrl()
-		{
-			var controller = new HomeController(_antiForgery)
-			{
-				ControllerContext = {HttpContext = new DefaultHttpContext()}
-			};
-			controller.ControllerContext.HttpContext.Request.Path = new PathString("/Search");
-			controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("?T=1");
-			var caseSensitive =  controller.CaseSensitiveRedirect(controller.ControllerContext.HttpContext.Request);
-			Assert.AreEqual("/search?T=1",caseSensitive);
+			_httpContext = new DefaultHttpContext();
 		}
 		
 		[TestMethod]
-		public void HomeController_ReturnNotFixedUrl()
+		public void HomeController_IsCaseSensitiveRedirect_true()
+		{
+			var controller = new HomeController(_antiForgery);
+			var caseSensitive =  controller.IsCaseSensitiveRedirect("/Search","/search");
+			Assert.IsTrue(caseSensitive);
+		}
+		
+		[TestMethod]
+		public void HomeController_IsCaseSensitiveRedirect_false()
+		{
+			var controller = new HomeController(_antiForgery);
+			var caseSensitive =  controller.IsCaseSensitiveRedirect("/search","/search");
+			Assert.IsFalse(caseSensitive);
+		}
+		
+		[TestMethod]
+		public void HomeController_SearchPost_Controller_CaseSensitive_Redirect()
 		{
 			var controller = new HomeController(_antiForgery)
 			{
-				ControllerContext = {HttpContext = new DefaultHttpContext()}
+				ControllerContext = {HttpContext = _httpContext}
 			};
-			controller.ControllerContext.HttpContext.Request.Path = new PathString("/search");
+			controller.ControllerContext.HttpContext.Request.Path = new PathString("/Search");
 			controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("?T=1");
-			var caseSensitive =  controller.CaseSensitiveRedirect(controller.ControllerContext.HttpContext.Request);
-			Assert.AreEqual(string.Empty,caseSensitive);
+			var actionResult = controller.SearchPost("1") as RedirectResult;
+			Assert.AreEqual("/search?t=1&p=0", actionResult.Url);
 		}
-
+		
+		[TestMethod]
+		public void HomeController_Trash_Controller_CaseSensitive_Redirect()
+		{
+			var controller = new HomeController(_antiForgery)
+			{
+				ControllerContext = {HttpContext = _httpContext}
+			};
+			controller.ControllerContext.HttpContext.Request.Path = new PathString("/Trash");
+			var actionResult = controller.Trash() as RedirectResult;
+			Assert.AreEqual("/trash?p=0", actionResult.Url);
+		}
+		
+		[TestMethod]
+		public void HomeController_Import_Controller_CaseSensitive_Redirect()
+		{
+			var controller = new HomeController(_antiForgery)
+			{
+				ControllerContext = {HttpContext = _httpContext}
+			};
+			controller.ControllerContext.HttpContext.Request.Path = new PathString("/Import");
+			var actionResult = controller.Import() as RedirectResult;
+			Assert.AreEqual("/import", actionResult.Url);
+		}
+		
 		[TestMethod]
 		public void AccountController_RegisterGet()
 		{

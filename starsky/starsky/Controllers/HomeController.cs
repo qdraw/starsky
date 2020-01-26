@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.AspNetCore.Http;
 using starsky.Helpers;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -31,28 +30,28 @@ namespace starsky.Controllers
 		}
 
 		[HttpPost("/search")]
-		public IActionResult SearchPost(string t = "")
+		public IActionResult SearchPost(string t = "", int p = 0)
 		{
-			return Redirect($"/search{Request.QueryString}");
+			return Redirect($"/search?t={t}&p={p}");
 		}
 
 		[HttpGet("/search")]
-		public IActionResult Search(string t= "")
+		public IActionResult Search(string t= "", int p = 0)
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
-			if ( !string.IsNullOrEmpty(CaseSensitiveRedirect(Request)) )
+			if ( IsCaseSensitiveRedirect("/search", Request.Path.Value) )
 			{
-				return Redirect(CaseSensitiveRedirect(Request));
+				return Redirect($"/search?p={p}&t={t}");
 			}
 			return PhysicalFile(_clientApp, "text/html");
 		}
 		
 		[HttpGet("/trash")]
-		public IActionResult Trash()
+		public IActionResult Trash( int p = 0)
 		{
-			if ( !string.IsNullOrEmpty(CaseSensitiveRedirect(Request)) )
+			if ( IsCaseSensitiveRedirect("/trash", Request.Path.Value) )
 			{
-				return Redirect(CaseSensitiveRedirect(Request));
+				return Redirect($"/trash?p={p}");
 			}
 			return PhysicalFile(_clientApp, "text/html");
 		}
@@ -60,6 +59,10 @@ namespace starsky.Controllers
 		[HttpGet("/import")]
 		public IActionResult Import()
 		{
+			if ( IsCaseSensitiveRedirect("/import", Request.Path.Value) )
+			{
+				return Redirect($"/import");
+			}
 			return PhysicalFile(_clientApp, "text/html");
 		}
 		
@@ -78,16 +81,9 @@ namespace starsky.Controllers
 			return PhysicalFile(_clientApp, "text/html");
 		}
 
-				
-
-
-		internal string CaseSensitiveRedirect(HttpRequest request)
+		internal bool IsCaseSensitiveRedirect(string expectedRequestPath, string requestPathValue)
 		{
-			if ( request.Path.Value != request.Path.Value.ToLowerInvariant() )
-			{
-				return request.Path.Value.ToLowerInvariant() + request.QueryString;
-			}
-			return string.Empty;
+			return expectedRequestPath != requestPathValue;
 		}
 		
 		// Error pages should be always visible
