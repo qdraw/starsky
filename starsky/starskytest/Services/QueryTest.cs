@@ -534,7 +534,7 @@ namespace starskytest.Services
             var item1 = new FileIndexItem {Id = 400, Tags = "hi", FileName = "cache"};
             _query.CacheUpdateItem(new List<FileIndexItem>{item1});
 
-           if (!_memoryCache.TryGetValue("List`1_", out var objectFileFolders));
+            _memoryCache.TryGetValue("List`1_", out var objectFileFolders);
             var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
 
             Assert.AreEqual("hi",displayFileFolders.FirstOrDefault(p => p.FileName == "cache").Tags);
