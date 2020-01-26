@@ -106,14 +106,6 @@ export function archiveReducer(state: State, action: Action): State {
   }
 }
 
-function CombineArchive(payload: IArchiveProps): string {
-  return `${payload.subPath}${payload.colorClassActiveList ? payload.colorClassActiveList.toString() : null}`;
-}
-
-function CombineSearchQueryAndPageNumber(payload: IArchiveProps): string {
-  return `${payload.searchQuery}${payload.pageNumber}`;
-}
-
 function ArchiveContextProvider({ children }: ReactNodeProps) {
   // [A]
   let [state, dispatch] = React.useReducer(archiveReducer, initialState);
