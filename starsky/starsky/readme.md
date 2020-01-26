@@ -89,7 +89,7 @@ The default behavior of .NET is to load everything first. To be sure that the ap
 
 Zoekopties (bevat woord): <br/>
 (default: ) Zoek term => Tags<br/>
--tags:"zoek term" <br/>
+-tags="zoek term" <br/>
 -filepath="/path" <br/>
 -filename=2018 <br/>
 -parentdirectory=2018 <br/>
