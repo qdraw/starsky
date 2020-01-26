@@ -27,10 +27,6 @@ type Action = {
   select: string[]
 } |
 {
-  type: 'reset-url-change',
-  payload: IArchiveProps
-} |
-{
   type: 'force-reset',
   payload: IArchiveProps
 } |
@@ -95,26 +91,6 @@ export function archiveReducer(state: State, action: Action): State {
 
       // Need to update otherwise other events are not triggerd
       return { ...state, lastUpdated: new Date() };
-    case "reset-url-change":
-
-      // for search / trash pages
-      if ((action.payload.pageType === PageType.Search || action.payload.pageType === PageType.Trash) &&
-        CombineSearchQueryAndPageNumber(state) !== CombineSearchQueryAndPageNumber(action.payload)
-      ) {
-        console.log('running dispatch (search/trash)', CombineSearchQueryAndPageNumber(state), CombineSearchQueryAndPageNumber(action.payload));
-        return action.payload;
-      }
-
-      // for archive pages
-      if (action.payload.pageType === PageType.Archive && (
-        CombineArchive(state) !== CombineArchive(action.payload) ||
-        action.payload.subPath === "/") // for home
-      ) {
-        console.log('running dispatch (a)', CombineArchive(state), CombineArchive(action.payload));
-        return action.payload;
-      }
-      return state;
-
     case "force-reset":
       return action.payload;
 
@@ -123,7 +99,7 @@ export function archiveReducer(state: State, action: Action): State {
         return (value.status === IExifStatus.Ok || value.status === IExifStatus.Default);
       };
       var concattedFileIndexItems = state.fileIndexItems.concat(action.add);
-      var fileIndexItems = concattedFileIndexItems.sort((a, b) => (a.filePath > b.filePath) ? 1 : -1); // sort on filePath
+      var fileIndexItems = [...concattedFileIndexItems].sort((a, b) => (a.filePath > b.filePath) ? 1 : -1); // sort on filePath
       fileIndexItems = fileIndexItems.filter((v, i, a) => a.findIndex(t => (t.filePath === v.filePath)) === i); // duplicate check
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
       return { ...state, fileIndexItems, lastUpdated: new Date() };
