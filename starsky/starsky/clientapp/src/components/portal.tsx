@@ -9,7 +9,7 @@ const Portal: React.FunctionComponent<PortalPropTypes> = ({ children }) => {
   const [modalContainer] = useState(document.createElement('div'));
   useEffect(() => {
     // Find the root element in your DOM
-    let modalRoot = document.getElementById('portal-root');
+    let modalRoot = document.getElementById('portal-root') as HTMLElement;
     // If there is no root then create one
     if (!modalRoot) {
       const tempEl = document.createElement('div');
@@ -21,7 +21,6 @@ const Portal: React.FunctionComponent<PortalPropTypes> = ({ children }) => {
     modalRoot.appendChild(modalContainer);
     return function cleanup() {
       // On cleanup remove the modal container
-      if (!modalRoot) return;
       modalRoot.remove();
     };
   }, [modalContainer]);

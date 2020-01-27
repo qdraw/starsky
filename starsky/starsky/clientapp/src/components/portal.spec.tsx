@@ -20,4 +20,16 @@ describe("Portal", () => {
     component.unmount();
     expect(document.querySelectorAll("#portal-root").length).toBe(0);
   });
+
+  it("null cleanup after render", () => {
+    var component = mount(<Portal />);
+    expect(document.querySelectorAll("#portal-root").length).toBe(1);
+
+    var tempItem = document.querySelector("#portal-root");
+    if (!tempItem) throw Error("missing item");
+    tempItem.remove();
+
+    component.unmount();
+    expect(document.querySelectorAll("#portal-root").length).toBe(0);
+  });
 });
