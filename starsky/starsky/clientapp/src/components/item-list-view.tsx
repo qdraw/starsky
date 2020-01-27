@@ -1,8 +1,10 @@
 import React, { memo, useEffect } from 'react';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import { PageType } from '../interfaces/IDetailView';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { INavigateState } from '../interfaces/INavigateState';
+import { Language } from '../shared/language';
 import ListImageBox from './list-image-box';
 
 interface ItemListProps {
@@ -18,6 +20,14 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   // feature that saves the scroll height
   var history = useLocation();
   const folderRef = React.useRef<HTMLDivElement>(null);
+
+  // Content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageNoPhotosInFolder = language.text("Er zijn geen foto's in deze map",
+    "There are no photos in this folder");
+  const MessageItemsOutsideFilter = language.text("Er zijn meer items, maar deze vallen buiten je filters",
+    "There are more items, but these are outside of your filters");
 
   useEffect(() => {
     var navigationState = history.location.state as INavigateState;
@@ -49,9 +59,9 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
       {props.pageType !== PageType.Loading ?
         items.length === 0 ? props.colorClassUsage.length >= 1 ?
           <div className="warning-box warning-box--left">
-            Er zijn meer items, maar deze vallen buiten je filters
-        </div> : <div className="warning-box">
-            Er zijn geen foto's in deze map
+            {MessageItemsOutsideFilter}
+          </div> : <div className="warning-box">
+            {MessageNoPhotosInFolder}
           </div> : null : null
       }
       {
