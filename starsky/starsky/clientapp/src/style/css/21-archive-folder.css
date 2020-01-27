@@ -18,8 +18,13 @@
   text-decoration: none;
   color: #263238;
   width: 100%;
-  transition: background ease-in-out .5s
+  transition: background ease-in-out .5s;
 }
+
+.folder > .box.box--select > .box-content {
+  cursor: grabbing;
+}
+
 
 @media (prefers-color-scheme: dark) {
   .folder > .box > .box-content {
@@ -103,7 +108,7 @@ between 1 and 2 items
 
 .folder > .box > .box-content > .caption {
   display: block;
-  height: 29%;
+  height: 31%;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   border-left-width: 0px;
@@ -191,8 +196,8 @@ between 1 and 2 items
 .folder > .box > .box-content > .caption > div {
   padding-left: 10px;
   padding-right: 10px;
-  padding-top: 6px;
-  line-height: 1.2; /* not 1.3 */
+  padding-top: 5px;
+  line-height: 1.15; /* not 1.3 */
   overflow: hidden;
   text-overflow: ellipsis; /* ... */
 }
@@ -204,12 +209,12 @@ between 1 and 2 items
 }
 
 .folder > .box > .box-content > .caption > .tags {
-  padding-top: 2px;
-  font-size: 14px;
+  padding-top: 5px;
+  font-size: 16px;
   display: block; /* Fallback for non-webkit */
   display: -webkit-box;
   max-width: 100%;
-  height: 37px; /* $font-size*$line-height*$lines-to-show Fallback for non-webkit */
+  height: 40px; /* $font-size*$line-height*$lines-to-show Fallback for non-webkit */
   margin: 0 auto;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -228,7 +233,7 @@ between 1 and 2 items
 
 
 .folder > .box > .box-content > .img-box {
-  height: 73%;
+  height: 69%;
   width: 100%;
 }
 
@@ -245,7 +250,7 @@ between 1 and 2 items
 
 .folder > .box > .box-content.isDirectory-true > .img-box > img{
   width: 60%;
-  height: 60%;
+  height: 49%;
   margin-left:20%;
   margin-top:15%;
   opacity: 0.5;
@@ -264,7 +269,7 @@ between 1 and 2 items
 .folder > .box .box-content .img-box--loading,
 .folder > .box > .box-content.isDirectory-true > .img-box,
 .folder > .box > .box-content > .img-box--error {
-  height: 73%;
+  height: 70%;
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 60px 60px;
