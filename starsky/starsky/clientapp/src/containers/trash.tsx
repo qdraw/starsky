@@ -6,6 +6,7 @@ import SearchPagination from '../components/search-pagination';
 import { ArchiveContext } from '../contexts/archive-context';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
+import { newIArchive } from '../interfaces/IArchive';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
@@ -30,10 +31,15 @@ function Trash(archive: IArchiveProps) {
 
   // to dynamic update the number of trashed items
   let { state } = React.useContext(ArchiveContext);
+  // fallback
+  if (!state) state = {
+    ...newIArchive(),
+    collectionsCount: 0
+  };
+
   const [collectionsCount, setCollectionsCount] = React.useState(state.collectionsCount);
   useEffect(() => {
     setCollectionsCount(state.collectionsCount);
-    console.log('state.collectionsCount,', state.collectionsCount);
   }, [state.collectionsCount]);
 
   if (!archive) return (<>(Search) => no archive</>);

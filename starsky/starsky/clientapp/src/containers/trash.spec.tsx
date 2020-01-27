@@ -1,10 +1,10 @@
 import { shallow } from "enzyme";
 import React from 'react';
 import { newIArchive } from '../interfaces/IArchive';
-import Search from './search';
+import Trash from './trash';
 
-describe("Search", () => {
+describe("Trash", () => {
   it("renders", () => {
-    shallow(<Search {...newIArchive()} />)
+    shallow(<Trash {...newIArchive()} />)
   });
 });
