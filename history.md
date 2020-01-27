@@ -27,6 +27,7 @@
 - [x]   (bugfix) _Front-end_ translations in item-list-view, item-text-list-view, 
 - [x]   (bugfix)  _Front-end_ translations in containers/search, containers/trash, search, trash and trash-page
 - []   (bugfix)  _Front-end_ translations in menu-trash and modal-export (isProcessing === ProcessingState.server) __not implemented__
+- [x]   (feature) _Front-end_ tags on folder change to two line
 
 # version 0.1.13 - 2020-01-25
 - [x]   (remove) _V1_ __Removal of Old Layout (V1) and All Razor Views__
