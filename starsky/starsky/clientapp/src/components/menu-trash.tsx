@@ -1,6 +1,7 @@
 import React, { memo, useEffect } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
+import { newIArchive } from '../interfaces/IArchive';
 import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
 import MenuSearchBar from './menu.searchbar';
@@ -52,6 +53,12 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
   }
 
   let { state, dispatch } = React.useContext(ArchiveContext);
+  // fallback
+  if (!state) state = {
+    ...newIArchive(),
+    collectionsCount: 0,
+    fileIndexItems: []
+  };
 
   function forceDelete() {
     if (!select) return;
