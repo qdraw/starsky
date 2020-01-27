@@ -7,5 +7,4 @@ describe("Search", () => {
   it("renders", () => {
     shallow(<Search {...newIArchive()} />)
   });
-
 });

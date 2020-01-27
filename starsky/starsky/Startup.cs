@@ -192,7 +192,7 @@ namespace starsky
         /// </summary>
         /// <param name="app">ApplicationBuilder</param>
         /// <param name="env">Hosting Env</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 			// Enable X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
 			app.UseForwardedHeaders();

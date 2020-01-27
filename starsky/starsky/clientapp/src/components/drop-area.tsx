@@ -4,6 +4,7 @@ import { IFileIndexItem, newIFileIndexItem, newIFileIndexItemArray } from '../in
 import FetchPost from '../shared/fetch-post';
 import { URLPath } from '../shared/url-path';
 import { MoreMenuEventCloseConst } from './more-menu';
+import Portal from './portal';
 import Preloader from './preloader';
 
 export interface IDropAreaProps {
@@ -62,23 +63,21 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
    * @param files FileList
    */
   const uploadFiles = (files: FileList) => {
-    setIsLoading(true);
-
-    var filesList = Array.from(files);
 
     // only needed for the more menu
     window.dispatchEvent(new CustomEvent(MoreMenuEventCloseConst, { bubbles: false }));
 
+    var filesList = Array.from(files);
     console.log("Files: ", files);
 
     const { length } = filesList;
-
     if (length === 0) {
       return false;
     }
 
-    var formData = new FormData();
+    setIsLoading(true);
 
+    var formData = new FormData();
     filesList.forEach(file => {
       const { size, name } = file;
 
@@ -91,6 +90,8 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     });
 
     FetchPost(props.endpoint, formData, 'post', { 'to': props.folderPath }).then((response) => {
+
+
       if (!response.data) {
         setIsLoading(false);
         return;
@@ -200,7 +201,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   const dropareaId = `droparea-file-r${Math.floor(Math.random() * 30) + 1}`
 
   return (<>
-    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
+    {isLoading ? <Portal><Preloader isDetailMenu={false} isOverlay={true} /></Portal> : null}
     {props.enableInputButton ? <>
       <input id={dropareaId} className="droparea-file-input" type="file" multiple={true} onChange={onChange} />
       <label className={props.className} htmlFor={dropareaId} >Upload</label>
