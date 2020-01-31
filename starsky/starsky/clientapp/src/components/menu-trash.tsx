@@ -25,7 +25,6 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
   const MessageDeleteImmediately = language.text("Verwijder onmiddellijk", "Delete immediately");
   const MessageDeleteIntroText = language.text("Weet je zeker dat je dit bestand wilt verwijderen van alle devices?",
     "Are you sure you want to delete this file from all devices?");
-
   const MessageCancel = language.text("Annuleren", "Cancel");
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
