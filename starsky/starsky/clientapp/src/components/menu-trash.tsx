@@ -23,6 +23,9 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
   const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
   const MessageRestoreFromTrash = language.text("Zet terug uit prullenmand", "Restore from Trash");
   const MessageDeleteImmediately = language.text("Verwijder onmiddellijk", "Delete immediately");
+  const MessageDeleteIntroText = language.text("Weet je zeker dat je dit bestand wilt verwijderen van alle devices?",
+    "Are you sure you want to delete this file from all devices?");
+
   const MessageCancel = language.text("Annuleren", "Cancel");
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
@@ -125,8 +128,8 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
         }}><>
           <div className="modal content--subheader">{MessageDeleteImmediately}</div>
           <div className="modal content--text">
-            Weet je zeker dat je dit bestand wilt verwijderen van alle devices?
-             <br />
+            {MessageDeleteIntroText}
+            <br />
             <button onClick={() => setModalDeleteOpen(false)} className="btn btn--info">{MessageCancel}</button>
             <button onClick={() => {
               forceDelete();
@@ -171,8 +174,10 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
 
           {select && select.length >= 1 ?
             <MoreMenu>
-              {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>{MessageUndoSelection}</li> : null}
-              {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>{MessageSelectAll}</li> : null}
+              {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>
+                {MessageUndoSelection}</li> : null}
+              {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>
+                {MessageSelectAll}</li> : null}
               <li className="menu-option" onClick={() => undoTrash()}>{MessageRestoreFromTrash}</li>
               <li className="menu-option" onClick={() => setModalDeleteOpen(true)}>{MessageDeleteImmediately}</li>
             </MoreMenu> : null}

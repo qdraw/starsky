@@ -5,9 +5,7 @@ import MenuTrash from './menu-trash';
 
 describe("MenuTrash", () => {
 
-  // todo: fix test
-
-  xit("renders", () => {
+  it("renders", () => {
     shallow(<MenuTrash defaultText="" callback={() => { }} />)
   });
 
