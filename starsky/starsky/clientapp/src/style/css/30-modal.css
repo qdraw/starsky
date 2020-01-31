@@ -38,7 +38,6 @@ div.modal-content {
   cursor: default;
   max-height: 100%;
 }
-
 @media (prefers-color-scheme: dark) {
   div.modal-content {
     background-color: #37474F;
@@ -51,9 +50,6 @@ div.modal-content {
     max-width: 320px;
   }
 }
-
-
-
 div.modal-content > .modal-close-bar {
   height: 50px;
   background-color: #CFD8DC;
@@ -98,4 +94,11 @@ div.modal-content.modal-content--show {
   transform: translate(-50%, -50%);
   opacity: 1;
   max-height: 95%;
+}
+
+div.modal-content.modal-content--show .preloader.preloader--inside {
+  height: 50px;
+  width: 50px;
+  margin-left: auto;
+  margin-right: auto;
 }
