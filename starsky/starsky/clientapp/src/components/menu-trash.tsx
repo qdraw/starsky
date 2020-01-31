@@ -177,8 +177,8 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
                 {MessageUndoSelection}</li> : null}
               {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>
                 {MessageSelectAll}</li> : null}
-              <li className="menu-option" onClick={() => undoTrash()}>{MessageRestoreFromTrash}</li>
-              <li className="menu-option" onClick={() => setModalDeleteOpen(true)}>{MessageDeleteImmediately}</li>
+              <li className="menu-option" data-test="restore-from-trash" onClick={() => undoTrash()}>{MessageRestoreFromTrash}</li>
+              <li className="menu-option" data-test="delete" onClick={() => setModalDeleteOpen(true)}>{MessageDeleteImmediately}</li>
             </MoreMenu> : null}
 
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
