@@ -41,10 +41,10 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
             "box-content box-content--selected colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
           <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '.jpg?issingleitem=' + (localStorage.getItem("issingleitem") !== "false").toString()} />
           <div className="caption">
-            <div className="name">
+            <div className="name" title={item.fileName}>
               {item.fileName}
             </div>
-            <div className="tags">
+            <div className="tags" title={item.tags}>
               {item.tags}
             </div>
           </div>
@@ -64,10 +64,10 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
         className={"box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
         <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '.jpg?issingleitem=' + (localStorage.getItem("issingleitem") !== "false").toString()} />
         <div className="caption">
-          <div className="name">
+          <div className="name" title={item.fileName}>
             {item.fileName}
           </div>
-          <div className="tags">
+          <div className="tags" title={item.tags}>
             {item.tags}
           </div>
         </div>

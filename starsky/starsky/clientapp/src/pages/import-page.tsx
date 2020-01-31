@@ -4,8 +4,10 @@ import React, { FunctionComponent } from 'react';
 import DropArea from '../components/drop-area';
 import MenuSearch from '../components/menu-search';
 import ModalDropAreaFilesAdded from '../components/modal-drop-area-files-added';
+import useGlobalSettings from '../hooks/use-global-settings';
 import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import DocumentTitle from '../shared/document-title';
+import { Language } from '../shared/language';
 import { UrlQuery } from '../shared/url-query';
 
 const ImportPage: FunctionComponent<RouteComponentProps> = (props) => {
@@ -13,6 +15,11 @@ const ImportPage: FunctionComponent<RouteComponentProps> = (props) => {
   document.title = new DocumentTitle().GetDocumentTitle("Import");
 
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(newIFileIndexItemArray());
+
+  // Content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageImportName = language.text("Importeren", "Import");
 
   return (<div>
     {/* DropArea output modal */}
@@ -23,7 +30,7 @@ const ImportPage: FunctionComponent<RouteComponentProps> = (props) => {
 
     <MenuSearch></MenuSearch>
     <div className="content">
-      <div className="content--header">Importeren</div>
+      <div className="content--header">{MessageImportName}</div>
       <div className="content--subheader">
         <DropArea callback={(add) => {
           setDropAreaUploadFilesList(add);

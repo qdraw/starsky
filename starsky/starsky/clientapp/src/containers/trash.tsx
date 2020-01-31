@@ -4,11 +4,21 @@ import ItemListView from '../components/item-list-view';
 import MenuTrash from '../components/menu-trash';
 import SearchPagination from '../components/search-pagination';
 import { ArchiveContext } from '../contexts/archive-context';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
+import { newIArchive } from '../interfaces/IArchive';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 
 function Trash(archive: IArchiveProps) {
+
+  // Content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageEmptyTrash = language.text("Er staat niets in de prullenmand", "There is nothing in the trash");
+  const MessageNumberOfResults = language.text("resultaten", "results");
+  const MessageNoResult = language.text("Geen resultaat", "No result");
 
   var history = useLocation();
 
@@ -21,10 +31,15 @@ function Trash(archive: IArchiveProps) {
 
   // to dynamic update the number of trashed items
   let { state } = React.useContext(ArchiveContext);
+  // fallback
+  if (!state) state = {
+    ...newIArchive(),
+    collectionsCount: 0
+  };
+
   const [collectionsCount, setCollectionsCount] = React.useState(state.collectionsCount);
   useEffect(() => {
     setCollectionsCount(state.collectionsCount);
-    console.log('state.collectionsCount,', state.collectionsCount);
   }, [state.collectionsCount]);
 
   if (!archive) return (<>(Search) => no archive</>);
@@ -37,10 +52,15 @@ function Trash(archive: IArchiveProps) {
         {sidebar ? <ArchiveSidebar {...archive} /> : ""}
 
         <div className="content">
-          <div className="content--header">{collectionsCount !== 0 ? <>{collectionsCount} resultaten</> : "Geen resultaat"}</div>
+          <div className="content--header">{collectionsCount !== 0 ?
+            <>{collectionsCount} {MessageNumberOfResults}</>
+            : MessageNoResult}
+          </div>
           <SearchPagination {...archive} />
           {collectionsCount >= 1 ? <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListView> : null}
-          {collectionsCount === 0 ? <div className="folder"><div className="warning-box"> Er staat niets in de prullenmand</div></div> : null}
+          {collectionsCount === 0 ? <div className="folder">
+            <div className="warning-box"> {MessageEmptyTrash}</div>
+          </div> : null}
           {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive} /> : null}
         </div>
       </div>

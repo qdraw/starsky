@@ -4,11 +4,20 @@ import ItemListView from '../components/item-list-view';
 import MenuSearch from '../components/menu-search';
 import MenuSearchBar from '../components/menu.searchbar';
 import SearchPagination from '../components/search-pagination';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
+import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 
 function Search(archive: IArchiveProps) {
+
+  // Content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageNumberOfResults = language.text("resultaten", "results");
+  const MessageNoResult = language.text("Geen resultaat", "No result");
+  const MessageTryOtherQuery = language.text("Probeer een andere zoekopdracht", "Try another search query");
 
   var history = useLocation();
 
@@ -35,10 +44,19 @@ function Search(archive: IArchiveProps) {
         <div className="search-header">
           <MenuSearchBar defaultText={query} />
         </div>
-        <div className="content--header">{archive.collectionsCount ? <>{archive.collectionsCount} resultaten</> : "Geen resultaat"}</div>
+        <div className="content--header">
+          {archive.collectionsCount ? <>
+            {archive.collectionsCount} {MessageNumberOfResults}
+          </> : MessageNoResult}
+        </div>
         <SearchPagination {...archive} />
-        {archive.collectionsCount >= 1 ? <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListView> : null}
-        {archive.collectionsCount === 0 ? <div className="folder"><div className="warning-box"> Probeer een andere zoekopdracht</div></div> : null}
+        {archive.collectionsCount >= 1 ? <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}>
+        </ItemListView> : null}
+        {archive.collectionsCount === 0 ? <div className="folder">
+          <div className="warning-box">
+            {MessageTryOtherQuery}
+          </div>
+        </div> : null}
         {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive} /> : null}
       </div>
     </div>
