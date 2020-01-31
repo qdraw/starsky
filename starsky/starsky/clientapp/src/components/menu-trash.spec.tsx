@@ -69,6 +69,33 @@ describe("MenuTrash", () => {
       component.unmount();
     });
 
+    it("select toggle", () => {
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      })
+
+      act(() => {
+        globalHistory.navigate("/");
+      });
+
+      var component = mount(<MenuTrash />)
+
+      var select = component.find('.item--select');
+
+      act(() => {
+        select.simulate('click');
+      });
+
+      expect(globalHistory.location.search).toBe("?select=")
+      component.unmount();
+
+    });
+
     it("more select all", () => {
 
       jest.spyOn(React, 'useContext')
