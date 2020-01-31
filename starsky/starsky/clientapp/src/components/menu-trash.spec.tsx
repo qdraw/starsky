@@ -1,9 +1,13 @@
+import { globalHistory } from '@reach/router';
 import { mount, shallow } from 'enzyme';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
+import * as useFetch from '../hooks/use-fetch';
 import { IArchive } from '../interfaces/IArchive';
+import { newIConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import MenuTrash from './menu-trash';
+import * as Modal from './modal';
 
 describe("MenuTrash", () => {
 
@@ -16,7 +20,6 @@ describe("MenuTrash", () => {
     let contextValues: any;
 
     beforeEach(() => {
-
       var state = {
         subPath: "/",
         fileIndexItems: [{ status: IExifStatus.Deleted, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
@@ -26,8 +29,15 @@ describe("MenuTrash", () => {
 
       jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
-    });
+        .mockImplementationOnce(() => { return contextValues })
 
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      }).mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      })
+    });
 
     it("open hamburger menu", () => {
       var component = mount(<MenuTrash />)
@@ -48,25 +58,158 @@ describe("MenuTrash", () => {
       component.unmount();
     });
 
-    it("open hamburger menu", () => {
-
-
+    it("select is not disabled", () => {
       var component = mount(<MenuTrash />)
-      var hamburger = component.find('.hamburger');
 
-      expect(component.exists('.form-nav')).toBeTruthy();
-      expect(component.exists('.hamburger.open')).toBeFalsy();
-      expect(component.exists('.nav.open')).toBeFalsy();
-
-      act(() => {
-        hamburger.simulate('click');
-      });
-
-      expect(component.html()).toContain('hamburger open')
-      expect(component.html()).toContain('nav open')
-      expect(component.exists('.form-nav')).toBeTruthy();
+      expect(component.exists('.item--select')).toBeTruthy();
+      expect(component.exists('.item--more')).toBeTruthy();
 
       component.unmount();
+    });
+
+    it("more select all", () => {
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      })
+
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/?select=");
+      });
+
+      var component = mount(<MenuTrash />)
+
+      var more = component.find('.item--more');
+      expect(more.exists('.disabled')).toBeFalsy()
+
+      act(() => {
+        more.find('.menu-option').simulate('click');
+      });
+
+      expect(globalHistory.location.search).toBe("?select=test1.jpg")
+
+      // cleanup
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("more undoSelection", () => {
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      }).mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      })
+
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/?select=test1.jpg");
+      });
+
+      var component = mount(<MenuTrash />)
+
+      var more = component.find('.item--more');
+      act(() => {
+        more.find('.menu-option').first().simulate('click');
+      });
+
+      expect(globalHistory.location.search).toBe("?select=")
+
+      // cleanup
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("more force delete", () => {
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      })
+
+      jest.spyOn(window, 'scrollTo')
+        .mockImplementationOnce(() => { })
+
+
+      var modalSpy = jest.spyOn(Modal, 'default')
+        .mockImplementationOnce(({ children }) => { return <>{children}</> });
+
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/?select=test1.jpg");
+      });
+
+      var component = mount(<MenuTrash />)
+
+      var item = component.find('[data-test="delete"]');
+
+      act(() => {
+        item.simulate('click');
+      });
+
+      expect(modalSpy).toBeCalled();
+
+      expect(globalHistory.location.search).toBe("?select=test1.jpg")
+
+      // cleanup
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("more restore-from-trash", async () => {
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      })
+
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/?select=test1.jpg");
+      });
+
+      var component = mount(<MenuTrash />)
+
+      var item = component.find('[data-test="restore-from-trash"]');
+
+      // need to
+      await act(async () => {
+        await item.simulate('click');
+      });
+
+      expect(globalHistory.location.search).toBe("?select=test1.jpg")
+
+      // cleanup
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/");
+        component.unmount();
+      });
     });
 
 

@@ -96,6 +96,8 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
   }
 
   async function undoTrash() {
+    console.log('undoTrash');
+
     if (!select) return;
 
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
