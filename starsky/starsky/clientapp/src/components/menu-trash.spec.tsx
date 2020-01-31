@@ -4,8 +4,10 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as useFetch from '../hooks/use-fetch';
 import { IArchive } from '../interfaces/IArchive';
-import { newIConnectionDefault } from '../interfaces/IConnectionDefault';
+import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IExifStatus } from '../interfaces/IExifStatus';
+import * as FetchPost from '../shared/fetch-post';
+import { UrlQuery } from '../shared/url-query';
 import MenuTrash from './menu-trash';
 import * as Modal from './modal';
 
@@ -182,11 +184,24 @@ describe("MenuTrash", () => {
 
       jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
 
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
         return newIConnectionDefault();
+      }).mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      }).mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      }).mockImplementationOnce(() => {
+        return newIConnectionDefault();
       })
+
+      // spy on fetch
+      // use this import => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
+      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
@@ -197,12 +212,14 @@ describe("MenuTrash", () => {
 
       var item = component.find('[data-test="restore-from-trash"]');
 
-      // need to
+      // need to await here
       await act(async () => {
         await item.simulate('click');
       });
 
-      expect(globalHistory.location.search).toBe("?select=test1.jpg")
+      expect(globalHistory.location.search).toBe("?select=")
+      expect(fetchPostSpy).toBeCalled();
+      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlReplaceApi(), "fieldName=tags&search=%21delete%21&f=%2Fundefined%2Ftest1.jpg");
 
       // cleanup
       act(() => {
