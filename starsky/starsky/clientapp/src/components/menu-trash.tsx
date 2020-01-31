@@ -168,7 +168,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
           {/* In the select context there are more options */}
           {select && select.length === 0 ?
             <MoreMenu>
-              <li className="menu-option" onClick={() => allSelection()}>Alles selecteren</li>
+              <li className="menu-option" onClick={() => allSelection()}>{MessageSelectAll}</li>
             </MoreMenu> : null}
 
           {select && select.length >= 1 ?
