@@ -20,7 +20,7 @@
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
 
 # version 0.1.14 - 2020-0?-??
-- [x]   (bugfix) _back-end_)_ Security fixes in controllers
+- [x]   (bugfix) _back-end_ Security fixes in controllers
 - [x]   (bugfix) _back-end + front-end_ name: colorClassActiveList replace everywhere
 - [x]   (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2. Run `./build.sh` before you start developing
 - [x]   (bugfix) _Front-end_ preloader when uploading

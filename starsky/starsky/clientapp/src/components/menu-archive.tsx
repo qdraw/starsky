@@ -30,9 +30,9 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const MessageNoneSelected = language.text("Niets geselecteerd", "Nothing selected");
   const MessageMkdir = language.text("Map maken", "Create folder");
   const MessageDisplayOptions = language.text("Weergave opties", "Display options");
-  const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
   const MessageSelectFurther = language.text("Verder selecteren", "Select further");
   const MessageSelectAll = language.text("Alles selecteren", "Select all");
+  const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
   const MessageMoveToTrash = language.text("Verplaats naar prullenmand", "Move to Trash");
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
