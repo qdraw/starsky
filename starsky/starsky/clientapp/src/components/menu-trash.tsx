@@ -6,6 +6,7 @@ import { newIArchive } from '../interfaces/IArchive';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 import MenuSearchBar from './menu.searchbar';
 import Modal from './modal';
 import MoreMenu from './more-menu';
@@ -88,7 +89,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
 
     var bodyParams = new URLSearchParams();
     bodyParams.append("f", selectParams);
-    await FetchPost("/api/delete", bodyParams.toString(), 'delete');
+    await FetchPost(new UrlQuery().UrlDeleteApi(), bodyParams.toString(), 'delete');
 
     undoSelection();
     dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
@@ -108,7 +109,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
     bodyParams.append("f", selectPaths);
 
     // to replace
-    await FetchPost("/api/replace", bodyParams.toString());
+    await FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString());
 
     dispatch({ type: 'remove', filesList: toUndoTrashList });
 

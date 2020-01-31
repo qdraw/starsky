@@ -105,6 +105,13 @@ export class UrlQuery {
     return "/api/replace";
   }
 
+  /**
+  * DELETE to endpoint to remove file from database and disk
+  */
+  public UrlDeleteApi = (): string => {
+    return "/api/delete";
+  }
+
   public UrlThumbnailImage = (fileHash: string): string => {
     return "/api/thumbnail/" + fileHash + ".jpg?issingleitem=true";
   }
