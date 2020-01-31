@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using HealthChecks.System;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
@@ -54,24 +56,39 @@ namespace starsky
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
                  
             // Enable .NET CORE health checks
-            services.AddHealthChecks();
+            services.AddHealthChecks()
+	            .AddDbContextCheck<ApplicationDbContext>()
+	            .AddDiskStorageHealthCheck(
+		            setup: diskOptions => { new HealthDiskOptionsSetup().Setup(_appSettings.StorageFolder,diskOptions); },
+		            name: "StorageFolder")
+	            .AddDiskStorageHealthCheck(
+		            setup: diskOptions => { new HealthDiskOptionsSetup().Setup(_appSettings.ThumbnailTempFolder,diskOptions); },
+		            name: "ThumbnailTempFolder")
+	            .AddDiskStorageHealthCheck(
+		            setup: diskOptions => { new HealthDiskOptionsSetup().Setup(_appSettings.TempFolder,diskOptions); },
+		            name: "TempFolder");
             
+            var healthSqlQuery = "SELECT * FROM `__EFMigrationsHistory` WHERE ProductVersion > 9";
+
             switch (_appSettings.DatabaseType)
             {
                 case (AppSettings.DatabaseTypeList.Mysql):
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection, b => b.MigrationsAssembly(nameof(starskycore))));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection, 
+	                    b => b.MigrationsAssembly(nameof(starskycore))));
                     services.AddHealthChecks().AddMySql(_appSettings.DatabaseConnection);
                     break;
                 case AppSettings.DatabaseTypeList.InMemoryDatabase:
                     services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
                     break;
                 case AppSettings.DatabaseTypeList.Sqlite:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, b => b.MigrationsAssembly(nameof(starskycore))));
-                    services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, "SELECT * FROM `FileIndex` WHERE `IsDirectory` = \"/\"", "sqlite");
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, 
+	                    b => b.MigrationsAssembly(nameof(starskycore))));
+                    services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
                     break;
                 default:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, b => b.MigrationsAssembly(nameof(starskycore))));
-                    services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection);
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, 
+	                    b => b.MigrationsAssembly(nameof(starskycore))));
+                    services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
                     break;
             }
             
@@ -293,7 +310,10 @@ namespace starsky
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-				endpoints.MapHealthChecks("/api/healthz", new HealthCheckOptions());
+				endpoints.MapHealthChecks("/api/healthz", new HealthCheckOptions()
+				{
+					ResponseWriter = HealthResponseWriter.WriteResponse
+				});
 			});
 #else
 	        app.UseMvc(routes =>
