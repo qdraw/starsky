@@ -217,7 +217,8 @@ describe("MenuTrash", () => {
         await item.simulate('click');
       });
 
-      expect(globalHistory.location.search).toBe("?select=")
+      expect(globalHistory.location.search).toBe("?select=");
+
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlReplaceApi(), "fieldName=tags&search=%21delete%21&f=%2Fundefined%2Ftest1.jpg");
 
