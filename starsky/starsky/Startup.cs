@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using HealthChecks.System;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -13,11 +12,11 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
+using starsky.Health;
 using starsky.Helpers;
 using starskycore.Data;
 using starskycore.Helpers;
@@ -25,7 +24,6 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
@@ -294,7 +292,7 @@ namespace starsky
             app.Use(async (HttpContext context, Func<Task> next) =>
             {
 	            await next.Invoke(); //execute the request pipeline
-
+           
 	            var statusStringValues = context.Response.Headers["X-Status"];
 	            if ( !string.IsNullOrEmpty(statusStringValues) && int.TryParse(statusStringValues, out var status) )
 	            {
@@ -310,10 +308,8 @@ namespace starsky
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-				endpoints.MapHealthChecks("/api/healthz", new HealthCheckOptions()
-				{
-					ResponseWriter = HealthResponseWriter.WriteResponse
-				});
+				endpoints.MapHealthChecks("/api/healthz",
+					new HealthCheckOptions() {ResponseWriter = HealthResponseWriter.WriteResponse});
 			});
 #else
 	        app.UseMvc(routes =>
@@ -325,18 +321,15 @@ namespace starsky
 #endif
 
 			// Run the latest migration on the database. 
-			// To startover with a sqlite database please remove it and
+			// To start over with a SQLite database please remove it and
 			// it will add a new one
 			try
-            {
-                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
-                    .CreateScope())
-                {
-                    var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
-                    dbContext.Database.Migrate();
-
-                }
-            }
+			{
+				using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
+					.CreateScope();
+				var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+				dbContext.Database.Migrate();
+			}
             catch (MySql.Data.MySqlClient.MySqlException e)
             {
                 Console.WriteLine(e);

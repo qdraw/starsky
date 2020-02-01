@@ -1,8 +1,7 @@
 using System;
 using System.IO;
-using HealthChecks.System;
 
-namespace starsky.Helpers
+namespace starsky.Health
 {
 	public class HealthDiskOptionsSetup
 	{

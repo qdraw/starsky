@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace starsky.Helpers
+namespace starsky.Health
 {
 	/// <summary>
 	/// Using a different output for Health API
