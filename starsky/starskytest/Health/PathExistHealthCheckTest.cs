@@ -30,5 +30,14 @@ namespace starskytest.Health
 			var result = await new PathExistHealthCheck(pathExistOptions).CheckHealthAsync(healthCheck);
 			Assert.AreEqual(HealthStatus.Unhealthy,result.Status);
 		}
+		
+		[TestMethod]
+		public async Task RunFail_No_Input()
+		{
+			var pathExistOptions = new PathExistOptions();
+			var healthCheck = new HealthCheckContext {Registration = new HealthCheckRegistration("te",new PathExistHealthCheck(pathExistOptions), null,null )};
+			var result = await new PathExistHealthCheck(pathExistOptions).CheckHealthAsync(healthCheck);
+			Assert.AreEqual(HealthStatus.Unhealthy,result.Status);
+		}
 	}
 }

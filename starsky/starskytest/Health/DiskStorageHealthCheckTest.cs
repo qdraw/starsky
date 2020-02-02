@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -45,6 +46,18 @@ namespace starskytest.Health
 			var result = await new DiskStorageHealthCheck(diskOptions).CheckHealthAsync(healthCheck);
 			Assert.AreEqual(HealthStatus.Unhealthy,result.Status);
 			Assert.IsTrue(result.Description.Contains("is not present on system"));
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(NullReferenceException))]
+		public async Task RunFail_NullReferenceException()
+		{
+			var appSettings = new AppSettings();
+			var diskOptions = new DiskStorageOptions();
+			new DiskOptionsPercentageSetup().Setup(appSettings.TempFolder,diskOptions,99.9f);
+
+			var healthCheck = new HealthCheckContext();
+			await new DiskStorageHealthCheck(diskOptions).CheckHealthAsync(healthCheck);
 		}
 	}
 }
