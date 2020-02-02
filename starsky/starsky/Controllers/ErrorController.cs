@@ -21,7 +21,7 @@ namespace starsky.Controllers
 				// here is the trick
 				HttpContext.Response.StatusCode = statusCode.Value;
 			}
-		
+
 			// or "~/error/${statusCode}.html"
 			return PhysicalFile(_clientApp, "text/html");
 		}

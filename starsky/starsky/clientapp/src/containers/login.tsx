@@ -49,9 +49,9 @@ const Login: React.FC<ILoginProps> = () => {
     FetchGet(new UrlQuery().UrlAccountStatus()).then((status) => {
       setLogin(status.statusCode === 401);
       // to help new users find the register screen
-      // if (status.statusCode === 406 && history.location.search.indexOf(new UrlQuery().UrlAccountRegister()) === -1) {
-      //   history.navigate(new UrlQuery().UrlAccountRegister(), { replace: true });
-      // }
+      if (status.statusCode === 406 && history.location.search.indexOf(new UrlQuery().UrlAccountRegister()) === -1) {
+        history.navigate(new UrlQuery().UrlAccountRegister(), { replace: true });
+      }
     });
   }, [history, history.location.search]);
 

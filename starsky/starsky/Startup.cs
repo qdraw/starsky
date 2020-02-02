@@ -313,18 +313,6 @@ namespace starsky
 			app.UseAuthentication();
             app.UseBasicAuthentication();
 
-			// For some reason the pipe is not ending after its closed. This is new in NET CORE 3.0 and this is a work around to give the right status code back
-            app.Use(async (HttpContext context, Func<Task> next) =>
-            {
-	            await next.Invoke(); //execute the request pipeline
-           
-	            var statusStringValues = context.Response.Headers["X-Status"];
-	            if ( !string.IsNullOrEmpty(statusStringValues) && int.TryParse(statusStringValues, out var status) )
-	            {
-			        context.Response.StatusCode = status;
-	            }
-            });
-
 #if NETCOREAPP3_0
 			app.UseAuthorization();
 #endif
@@ -333,8 +321,8 @@ namespace starsky
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-				endpoints.MapHealthChecks("/api/healthz",
-					new HealthCheckOptions() {ResponseWriter = HealthResponseWriter.WriteResponse});
+				endpoints.MapHealthChecks("/health",
+					new HealthCheckOptions());
 			});
 #else
 	        app.UseMvc(routes =>
