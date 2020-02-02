@@ -16,6 +16,8 @@ namespace starsky.Health
 		public static Task WriteResponse(HttpContext context, HealthReport result)
 		{
 			context.Response.ContentType = "application/json; charset=utf-8";
+			
+			
 
 			var options = new JsonWriterOptions
 			{
@@ -27,6 +29,7 @@ namespace starsky.Health
 			{
 				writer.WriteStartObject();
 				writer.WriteString("status", result.Status.ToString());
+				writer.WriteString("totalDuration", result.TotalDuration.ToString());
 				writer.WriteStartObject("results");
 				foreach (var entry in result.Entries)
 				{

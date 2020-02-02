@@ -57,14 +57,39 @@ namespace starsky
             services.AddHealthChecks()
 	            .AddDbContextCheck<ApplicationDbContext>()
 	            .AddDiskStorageHealthCheck(
-		            setup: diskOptions => { new HealthDiskOptionsSetup().Setup(_appSettings.StorageFolder,diskOptions); },
-		            name: "StorageFolder")
+		            setup: diskOptions =>
+		            {
+			            new DiskOptionsPercentageSetup().Setup(_appSettings.StorageFolder,
+				            diskOptions);
+		            },
+		            name: "Storage_StorageFolder")
 	            .AddDiskStorageHealthCheck(
-		            setup: diskOptions => { new HealthDiskOptionsSetup().Setup(_appSettings.ThumbnailTempFolder,diskOptions); },
-		            name: "ThumbnailTempFolder")
+		            setup: diskOptions =>
+		            {
+			            new DiskOptionsPercentageSetup().Setup(_appSettings.ThumbnailTempFolder,
+				            diskOptions);
+		            },
+		            name: "Storage_ThumbnailTempFolder")
 	            .AddDiskStorageHealthCheck(
-		            setup: diskOptions => { new HealthDiskOptionsSetup().Setup(_appSettings.TempFolder,diskOptions); },
-		            name: "TempFolder");
+		            setup: diskOptions =>
+		            {
+			            new DiskOptionsPercentageSetup().Setup(_appSettings.TempFolder,
+				            diskOptions);
+		            },
+		            name: "Storage_TempFolder")
+	            .AddPathExistHealthCheck(
+		            setup: pathOptions => pathOptions.AddPath(_appSettings.StorageFolder),
+		            name: "Exist_StorageFolder")
+	            .AddPathExistHealthCheck(
+		            setup: pathOptions => pathOptions.AddPath(_appSettings.TempFolder),
+		            name: "Exist_TempFolder")
+	            .AddPathExistHealthCheck(
+		            setup: pathOptions => pathOptions.AddPath(_appSettings.ExifToolPath),
+		            name: "Exist_ExifToolPath")
+	            .AddPathExistHealthCheck(
+		            setup: pathOptions => pathOptions.AddPath(_appSettings.ThumbnailTempFolder),
+		            name: "Exist_ThumbnailTempFolder")
+	            .AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck");
             
             var healthSqlQuery = "SELECT * FROM `__EFMigrationsHistory` WHERE ProductVersion > 9";
 
@@ -216,6 +241,20 @@ namespace starsky
         /// <param name="env">Hosting Env</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+	        			
+	        if ( env.IsDevelopment())
+	        {
+		        app.UseDeveloperExceptionPage();
+
+		        // Allow in dev to use localhost services
+		        app.UseCors("CorsDevelopment");
+	        }
+	        else
+	        {
+		        app.UseCors("CorsProduction");   
+		        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
+	        }
+	        
 			// Enable X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
 			app.UseForwardedHeaders();
 	        
@@ -225,20 +264,6 @@ namespace starsky
 #if NETCOREAPP3_0
 			app.UseRouting();
 #endif
-
-			if ( env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseStatusCodePages();
-                
-                // Allow in dev to use localhost services
-                app.UseCors("CorsDevelopment");
-            }
-            else
-            {
-	            app.UseCors("CorsProduction");   
-                app.UseStatusCodePagesWithReExecute("/Home/Error");
-            }
 
 			// No CSP for swagger
 			new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);

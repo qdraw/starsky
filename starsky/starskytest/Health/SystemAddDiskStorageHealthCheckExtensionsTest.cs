@@ -17,7 +17,7 @@ namespace starskytest.Health
 			var services = new ServiceCollection();
 			services
 				.AddHealthChecks()
-				.AddDiskStorageHealthCheck(diskOptions => { new HealthDiskOptionsSetup().Setup(new CreateAnImage().BasePath,diskOptions); },
+				.AddDiskStorageHealthCheck(diskOptions => { new DiskOptionsPercentageSetup().Setup(new CreateAnImage().BasePath,diskOptions); },
 				name: "ThumbnailTempFolder");
 	
 			if ( services.All(x => x.ServiceType != typeof(HealthCheckService)) )

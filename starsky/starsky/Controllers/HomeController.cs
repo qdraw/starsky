@@ -109,13 +109,5 @@ namespace starsky.Controllers
 		{
 			return expectedRequestPath != requestPathValue;
 		}
-		
-		// Error pages should be always visible
-		// curl: (47) Maximum (50) redirects followed
-		[AllowAnonymous]
-		public IActionResult Error()
-		{
-			return PhysicalFile(_clientApp, "text/html");
-		}
 	}
 }

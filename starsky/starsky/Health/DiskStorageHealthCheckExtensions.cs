@@ -5,7 +5,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace starsky.Health
 {
-	public static class SystemAddDiskStorageHealthCheckExtensions
+	public static class DiskStorageHealthCheckExtensions
 	{
 		public static IHealthChecksBuilder AddDiskStorageHealthCheck(
 			this IHealthChecksBuilder builder,

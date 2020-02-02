@@ -7,7 +7,7 @@ using starskycore.Models;
 namespace starskytest.Health
 {
 	[TestClass]
-	public class HealthDiskOptionsSetupTest
+	public class DiskOptionsPercentageSetupTest
 	{
 		
 		[TestMethod]
@@ -15,7 +15,7 @@ namespace starskytest.Health
 		{
 			var appSettings = new AppSettings();
 			var diskOptions = new DiskStorageOptions();
-			new HealthDiskOptionsSetup().Setup(appSettings.TempFolder,diskOptions);
+			new DiskOptionsPercentageSetup().Setup(appSettings.TempFolder,diskOptions);
 
 			var value = diskOptions.GetType().GetRuntimeFields().FirstOrDefault();
 			Assert.IsNotNull(value);

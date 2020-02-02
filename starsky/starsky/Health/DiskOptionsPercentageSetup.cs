@@ -3,7 +3,7 @@ using System.IO;
 
 namespace starsky.Health
 {
-	public class HealthDiskOptionsSetup
+	public class DiskOptionsPercentageSetup
 	{
 		/// <summary>
 		/// Setup percentage based on a full filePath

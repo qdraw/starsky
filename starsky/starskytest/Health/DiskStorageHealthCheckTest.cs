@@ -14,7 +14,7 @@ namespace starskytest.Health
 		{
 			var appSettings = new AppSettings();
 			var diskOptions = new DiskStorageOptions();
-			new HealthDiskOptionsSetup().Setup(appSettings.TempFolder,diskOptions,0.000001f);
+			new DiskOptionsPercentageSetup().Setup(appSettings.TempFolder,diskOptions,0.000001f);
 
 			var healthCheck = new HealthCheckContext();
 			var result = await new DiskStorageHealthCheck(diskOptions).CheckHealthAsync(healthCheck);
@@ -27,7 +27,7 @@ namespace starskytest.Health
 			var appSettings = new AppSettings();
 			var diskOptions = new DiskStorageOptions();
 			
-			new HealthDiskOptionsSetup().Setup(appSettings.TempFolder,diskOptions,0.99f);
+			new DiskOptionsPercentageSetup().Setup(appSettings.TempFolder,diskOptions,0.99f);
 
 			var healthCheck = new HealthCheckContext {Registration = new HealthCheckRegistration("te",new DiskStorageHealthCheck(diskOptions),null,null )};
 			var result = await new DiskStorageHealthCheck(diskOptions).CheckHealthAsync(healthCheck);
