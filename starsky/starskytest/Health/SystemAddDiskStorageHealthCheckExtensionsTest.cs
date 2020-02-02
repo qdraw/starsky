@@ -19,10 +19,8 @@ namespace starskytest.Health
 				.AddHealthChecks()
 				.AddDiskStorageHealthCheck(diskOptions => { new HealthDiskOptionsSetup().Setup(new CreateAnImage().BasePath,diskOptions); },
 				name: "ThumbnailTempFolder");
-
-			var c = services;
-			
-			if (!services.Any(x => x.ServiceType == typeof(HealthCheckService)))
+	
+			if ( services.All(x => x.ServiceType != typeof(HealthCheckService)) )
 			{
 				// Service doesn't exist, do something
 				throw new ArgumentException("missing service");
