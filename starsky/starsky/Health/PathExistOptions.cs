@@ -12,6 +12,5 @@ namespace starsky.Health
 		{
 			ConfiguredPaths.Add(fullFilePath);
 		}
-
 	}
 }

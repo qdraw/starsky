@@ -10,7 +10,7 @@ namespace starskytest.Health
 	public class DiskStorageHealthCheckTest
 	{
 		[TestMethod]
-		public async Task RunSuccesfull()
+		public async Task RunSuccessful()
 		{
 			var appSettings = new AppSettings();
 			var diskOptions = new DiskStorageOptions();

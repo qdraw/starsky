@@ -4,12 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Health;
-using starskytest.FakeCreateAn;
 
 namespace starskytest.Health
 {
 	[TestClass]
-	public class SystemAddDiskStorageHealthCheckExtensionsTest
+	public class PathExistHealthCheckExtensionsTest
 	{
 		[TestMethod]
 		public void CheckIfServiceExist()
@@ -17,8 +16,9 @@ namespace starskytest.Health
 			var services = new ServiceCollection();
 			services
 				.AddHealthChecks()
-				.AddDiskStorageHealthCheck(diskOptions => { new DiskOptionsPercentageSetup().Setup(new CreateAnImage().BasePath,diskOptions); },
-				name: "ThumbnailTempFolder");
+				.AddPathExistHealthCheck(
+					setup: pathOptions => pathOptions.AddPath("non---exist"),
+					name: "Exist_ExifToolPath");
 	
 			if ( services.All(x => x.ServiceType != typeof(HealthCheckService)) )
 			{
@@ -28,4 +28,4 @@ namespace starskytest.Health
 		}
 	} 
 }
-		
+
