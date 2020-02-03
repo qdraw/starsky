@@ -8,7 +8,6 @@ import { PageType } from '../interfaces/IDetailView';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import ArchiveContextWrapper from './archive-wrapper';
 
-
 describe("ArchiveContextWrapper", () => {
 
   it("renders", () => {
@@ -17,7 +16,6 @@ describe("ArchiveContextWrapper", () => {
 
 
   describe("with mount", () => {
-
     it("check if archive is mounted", () => {
       var args = { ...newIArchive(), fileIndexItems: [], pageType: PageType.Archive } as IArchiveProps;
       var archive = jest.spyOn(Archive, 'default').mockImplementationOnce(() => { return <></> })

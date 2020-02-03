@@ -30,25 +30,28 @@ export const fetchContent = async (url: string,
   abortController: AbortController,
   setData: React.Dispatch<React.SetStateAction<IConnectionDefault>>
 ): Promise<void> => {
+  const res: Response = await fetch(url, {
+    signal: abortController.signal,
+    credentials: "include",
+    method: method
+  });
+
+  let data;
   try {
-    const res: Response = await fetch(url, {
-      signal: abortController.signal,
-      credentials: "include",
-      method: method
-    });
-    const data = await res.json();
-
-    var response = {
-      statusCode: res.status,
-      data
-    } as IConnectionDefault;
-
-    if (mounted) {
-      setData(response);
-    }
+    data = await res.json();
   } catch (event) {
     console.error("use-fetch", event);
   }
+
+  var response = {
+    statusCode: res.status,
+    data
+  } as IConnectionDefault;
+
+  if (mounted) {
+    setData(response);
+  }
+
 }
 
 export default useFetch;

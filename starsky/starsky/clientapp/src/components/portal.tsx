@@ -5,15 +5,17 @@ type PortalPropTypes = {
   children?: React.ReactNode;
 }
 
+export const PortalId = 'portal-root'
+
 const Portal: React.FunctionComponent<PortalPropTypes> = ({ children }) => {
   const [modalContainer] = useState(document.createElement('div'));
   useEffect(() => {
     // Find the root element in your DOM
-    let modalRoot = document.getElementById('portal-root') as HTMLElement;
+    let modalRoot = document.getElementById(PortalId) as HTMLElement;
     // If there is no root then create one
     if (!modalRoot) {
       const tempEl = document.createElement('div');
-      tempEl.id = 'portal-root';
+      tempEl.id = PortalId;
       document.body.append(tempEl);
       modalRoot = tempEl;
     }

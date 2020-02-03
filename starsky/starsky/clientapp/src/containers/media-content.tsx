@@ -1,4 +1,5 @@
 import React from 'react';
+import HealthStatusError from '../components/health-status-error';
 import MenuDefault from '../components/menu-default';
 import Preloader from '../components/preloader';
 import ArchiveContextWrapper from '../contexts-wrappers/archive-wrapper';
@@ -27,6 +28,7 @@ const MediaContent: React.FC = () => {
 
   return (
     <div>
+      <HealthStatusError />
       {pageType === PageType.Loading ? <Preloader isOverlay={true} isDetailMenu={false} /> : null}
       {pageType === PageType.NotFound ? <NotFoundPage>not found</NotFoundPage> : null}
       {pageType === PageType.Unauthorized ? <Login /> : null}

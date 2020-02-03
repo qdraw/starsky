@@ -1,42 +1,59 @@
-using System.Reflection;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky;
 using starsky.Controllers;
+using starskycore.Helpers;
+using starskycore.ViewModels;
+using starskytest.FakeMocks;
 
 namespace starskytest.Controllers
 {
 	[TestClass]
 	public class HealthControllerTest
 	{
-		[TestMethod]
-		public void HealthControllerRenderCheck()
-		{
-			new HealthController().Health();
-		}
 		
+		[TestMethod]
+		public async Task HealthControllerTest_Details()
+		{
+			var fakeHealthCheckService = new FakeHealthCheckService(true);
+			var controller = new HealthController(fakeHealthCheckService)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
 
-		[TestMethod]
-		public void HealthControllerTest_GetBuildDate()
-		{
-			// this gets the one from the test assembly
-			var date = HealthController.GetBuildDate(Assembly.GetExecutingAssembly());
-			Assert.IsTrue(date.Year == 1 );
-		}
-		
-		[TestMethod]
-		public void GetBuildDate_Starsky()
-		{
-			var date = HealthController.GetBuildDate(typeof(starsky.Startup).Assembly);
-			Assert.IsTrue(date.Year >= 2019 );
+			var actionResult = await controller.Details() as JsonResult;
+			var castedResult = actionResult.Value as HealthView;
+
+			Assert.IsTrue(castedResult.IsHealthy);
+			Assert.IsTrue(castedResult.Entries.FirstOrDefault().IsHealthy);
 		}
 		
 		[TestMethod]
-		public void GetBuildDate_NonExist()
+		public async Task HealthControllerTest_Index()
 		{
-			var date = HealthController.GetBuildDate(typeof(short).Assembly);
-			Assert.IsTrue(date.Year == 1 );
+			var fakeHealthCheckService = new FakeHealthCheckService(true);
+			var controller = new HealthController(fakeHealthCheckService)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+
+			var actionResult = await controller.Index() as ContentResult;
+			
+			Assert.AreEqual("Healthy",actionResult.Content);
 		}
+		
+		[TestMethod]
+		public void HealthControllerTest_ApplicationInsights()
+		{
+			var controller = new HealthController(null, new ApplicationInsightsJsHelper(null,null))
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
 
-
+			var actionResult = controller.ApplicationInsights() as ContentResult;
+			Assert.AreEqual("/* ApplicationInsights JavaScriptSnippet disabled */",actionResult.Content);
+		}
 	}
 }

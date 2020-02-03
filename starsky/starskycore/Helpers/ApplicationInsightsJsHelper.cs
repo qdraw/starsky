@@ -23,7 +23,7 @@ namespace starskycore.Helpers
 		/// Get the App Insights front-end script with your app insights token visible
 		/// Need a csp-nonce in the context
 		/// </summary>
-		public string Script
+		public string ScriptTag
 		{
 			get
 			{
@@ -35,6 +35,28 @@ namespace starskycore.Helpers
 				var scriptTagStartWithNonce = "<script type=\"text/javascript\" " +
 				                              $"nonce=\"{_httpContext.HttpContext.Items["csp-nonce"]}\">";
 				var script = js.Replace(scriptTagStart, scriptTagStartWithNonce);
+				return script;
+			}
+		}
+		
+		/// <summary>
+		/// Get the App Insights front-end script with your app insights token visible
+		/// Need a csp-nonce in the context
+		/// </summary>
+		public string ScriptPlain
+		{
+			get
+			{
+				if ( _aiJavaScriptSnippet == null ) return "/* ApplicationInsights JavaScriptSnippet disabled */";
+				var js = _aiJavaScriptSnippet.FullScript;
+				
+				// Replace the default script with a nonce version, to avoid XSS attacks
+				const string scriptTagStart = @"<script type=""text/javascript"">";
+				const string scriptEndStart = @"</script>";
+
+				var script = js.Replace(scriptTagStart, string.Empty);
+				script = script.Replace(scriptEndStart, string.Empty);
+
 				return script;
 			}
 		}

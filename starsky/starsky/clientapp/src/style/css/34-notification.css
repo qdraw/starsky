@@ -1,0 +1,49 @@
+.notification {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  background-color: #455A64;
+  color: #fff;
+  border-radius: 10px;
+  min-height: 50px;
+  min-width: 280px;
+  max-height: 100px;
+  overflow-y: auto;
+  line-height: 24px;
+  padding-right: 10px;
+  margin-right: 10px;
+  padding-bottom: 10px;
+  display: flex;
+}
+
+.notification.notification--danger {
+  background-color: #E53935;
+}
+
+.notification .icon {
+  mask-position: center center;
+  background-color: #fff;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  flex-direction: row;
+}
+
+.notification .icon.icon--error {
+  mask-image: url('../images/baseline-error-24px.svg');
+}
+
+.notification .icon.icon--close {
+  mask-image: url('../images/s-cross.svg');
+  margin-right: 0px;
+  cursor: pointer;
+}
+
+.notification .content {
+  flex-direction: row;
+  margin-left: 5px;
+  margin-top:10px;
+}

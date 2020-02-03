@@ -87,16 +87,25 @@ namespace starskytest.Helpers
 		}
 		
 		[TestMethod]
-		public void ApplicationInsightsJsHelper_NullCheck()
+		public void ApplicationInsightsJsHelper_NullCheck_ScriptTag()
 		{
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
 
-			var script = new ApplicationInsightsJsHelper(httpContext, null).Script;
+			var script = new ApplicationInsightsJsHelper(httpContext, null).ScriptTag;
+			Assert.AreEqual(true, script.Contains("disabled"));
+		}
+		
+		[TestMethod]
+		public void ApplicationInsightsJsHelper_NullCheck_ScriptPlain()
+		{
+			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
+
+			var script = new ApplicationInsightsJsHelper(httpContext, null).ScriptPlain;
 			Assert.AreEqual(true, script.Contains("disabled"));
 		}
 
 		[TestMethod]
-		public void ApplicationInsightsJsHelper_CheckIfContainsNonce()
+		public void ApplicationInsightsJsHelper_CheckIfContainsNonce_ScriptTag()
 		{
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
 			
@@ -108,11 +117,25 @@ namespace starskytest.Helpers
 			var fakeJs = new MockJavaScriptSnippet(_telemetryConfiguration, someOptions, httpContext,
 				new JavaScriptTestEncoder());
 			
-			var script = new ApplicationInsightsJsHelper(httpContext, fakeJs).Script;
+			var script = new ApplicationInsightsJsHelper(httpContext, fakeJs).ScriptTag;
 			
 			Assert.AreEqual(true, script.Contains(toCheckNonce));
 			Assert.AreEqual(true, script.Contains("window[sdkInstance]"));
-
+		}
+		
+		[TestMethod]
+		public void ApplicationInsightsJsHelper_CheckIfContainsNonce_ScriptPlain()
+		{
+			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
+			
+			IOptions<ApplicationInsightsServiceOptions> someOptions = Options.Create<ApplicationInsightsServiceOptions>(new ApplicationInsightsServiceOptions());
+			
+			var fakeJs = new MockJavaScriptSnippet(_telemetryConfiguration, someOptions, httpContext,
+				new JavaScriptTestEncoder());
+			
+			var script = new ApplicationInsightsJsHelper(httpContext, fakeJs).ScriptPlain;
+			
+			Assert.AreEqual(true, script.Contains("window[sdkInstance]"));
 		}
 	}
 }

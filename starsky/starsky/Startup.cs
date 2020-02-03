@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
+using starsky.Health;
 using starsky.Helpers;
 using starskycore.Data;
 using starskycore.Helpers;
@@ -22,7 +24,6 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
@@ -51,20 +52,66 @@ namespace starsky
 
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
-                        
+                 
+            // Enable .NET CORE health checks
+            services.AddHealthChecks()
+	            .AddDbContextCheck<ApplicationDbContext>()
+	            .AddDiskStorageHealthCheck(
+		            setup: diskOptions =>
+		            {
+			            new DiskOptionsPercentageSetup().Setup(_appSettings.StorageFolder,
+				            diskOptions);
+		            },
+		            name: "Storage_StorageFolder")
+	            .AddDiskStorageHealthCheck(
+		            setup: diskOptions =>
+		            {
+			            new DiskOptionsPercentageSetup().Setup(_appSettings.ThumbnailTempFolder,
+				            diskOptions);
+		            },
+		            name: "Storage_ThumbnailTempFolder")
+	            .AddDiskStorageHealthCheck(
+		            setup: diskOptions =>
+		            {
+			            new DiskOptionsPercentageSetup().Setup(_appSettings.TempFolder,
+				            diskOptions);
+		            },
+		            name: "Storage_TempFolder")
+	            .AddPathExistHealthCheck(
+		            setup: pathOptions => pathOptions.AddPath(_appSettings.StorageFolder),
+		            name: "Exist_StorageFolder")
+	            .AddPathExistHealthCheck(
+		            setup: pathOptions => pathOptions.AddPath(_appSettings.TempFolder),
+		            name: "Exist_TempFolder")
+	            .AddPathExistHealthCheck(
+		            setup: pathOptions => pathOptions.AddPath(_appSettings.ExifToolPath),
+		            name: "Exist_ExifToolPath")
+	            .AddPathExistHealthCheck(
+		            setup: pathOptions => pathOptions.AddPath(_appSettings.ThumbnailTempFolder),
+		            name: "Exist_ThumbnailTempFolder")
+	            .AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck");
+            
+            var healthSqlQuery = "SELECT * FROM `__EFMigrationsHistory` WHERE ProductVersion > 9";
+
             switch (_appSettings.DatabaseType)
             {
                 case (AppSettings.DatabaseTypeList.Mysql):
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection, b => b.MigrationsAssembly(nameof(starskycore))));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection, 
+	                    b => b.MigrationsAssembly(nameof(starskycore))));
+                    services.AddHealthChecks().AddMySql(_appSettings.DatabaseConnection);
                     break;
                 case AppSettings.DatabaseTypeList.InMemoryDatabase:
                     services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
                     break;
                 case AppSettings.DatabaseTypeList.Sqlite:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, b => b.MigrationsAssembly(nameof(starskycore))));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, 
+	                    b => b.MigrationsAssembly(nameof(starskycore))));
+                    services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
                     break;
                 default:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, b => b.MigrationsAssembly(nameof(starskycore))));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, 
+	                    b => b.MigrationsAssembly(nameof(starskycore))));
+                    services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
                     break;
             }
             
@@ -194,6 +241,20 @@ namespace starsky
         /// <param name="env">Hosting Env</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+	        			
+	        if ( env.IsDevelopment())
+	        {
+		        app.UseDeveloperExceptionPage();
+
+		        // Allow in dev to use localhost services
+		        app.UseCors("CorsDevelopment");
+	        }
+	        else
+	        {
+		        app.UseCors("CorsProduction");   
+		        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
+	        }
+	        
 			// Enable X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
 			app.UseForwardedHeaders();
 	        
@@ -203,20 +264,6 @@ namespace starsky
 #if NETCOREAPP3_0
 			app.UseRouting();
 #endif
-
-			if ( env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseStatusCodePages();
-                
-                // Allow in dev to use localhost services
-                app.UseCors("CorsDevelopment");
-            }
-            else
-            {
-	            app.UseCors("CorsProduction");   
-                app.UseStatusCodePagesWithReExecute("/Home/Error");
-            }
 
 			// No CSP for swagger
 			new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
@@ -266,18 +313,6 @@ namespace starsky
 			app.UseAuthentication();
             app.UseBasicAuthentication();
 
-			// For some reason the pipe is not ending after its closed. This is new in NET CORE 3.0 and this is a work around to give the right status code back
-            app.Use(async (HttpContext context, Func<Task> next) =>
-            {
-	            await next.Invoke(); //execute the request pipeline
-
-	            var statusStringValues = context.Response.Headers["X-Status"];
-	            if ( !string.IsNullOrEmpty(statusStringValues) && int.TryParse(statusStringValues, out var status) )
-	            {
-			        context.Response.StatusCode = status;
-	            }
-            });
-
 #if NETCOREAPP3_0
 			app.UseAuthorization();
 #endif
@@ -297,18 +332,15 @@ namespace starsky
 #endif
 
 			// Run the latest migration on the database. 
-			// To startover with a sqlite database please remove it and
+			// To start over with a SQLite database please remove it and
 			// it will add a new one
 			try
-            {
-                using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
-                    .CreateScope())
-                {
-                    var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
-                    dbContext.Database.Migrate();
-
-                }
-            }
+			{
+				using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
+					.CreateScope();
+				var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+				dbContext.Database.Migrate();
+			}
             catch (MySql.Data.MySqlClient.MySqlException e)
             {
                 Console.WriteLine(e);
