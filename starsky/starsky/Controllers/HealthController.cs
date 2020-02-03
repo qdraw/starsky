@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -13,22 +14,40 @@ namespace starsky.Controllers
 		{
 			_service = service;
 		}
-		
+
 		/// <summary>
-		/// Check if the service has any known errors
-		/// Use `/health for anonymous calls 
+		/// Check if the service has any known errors and return only a string
+		/// Public API
 		/// </summary>
 		/// <returns></returns>
 		/// <response code="200">Ok</response>
 		/// <response code="503">503 Service Unavailable</response>
 		[HttpGet("/api/health")]
+		[Produces("application/json")]
+		[ProducesResponseType(typeof(string), 200)]
+		[ProducesResponseType(typeof(string), 503)]
+		public async Task<IActionResult> Index()
+		{
+			var result = await _service.CheckHealthAsync();
+			if ( result.Status != HealthStatus.Healthy ) Response.StatusCode = 503;
+			return Content(result.Status.ToString());
+		}
+
+		/// <summary>
+		/// Check if the service has any known errors
+		/// For Authorized Users only
+		/// </summary>
+		/// <returns></returns>
+		/// <response code="200">Ok</response>
+		/// <response code="503">503 Service Unavailable</response>
+		[HttpGet("/api/health/details")]
 		[Authorize]
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(HealthView),200)]
 		[ProducesResponseType(typeof(HealthView),503)]
-		public IActionResult Index()
+		public async Task<IActionResult> Details()
 		{
-			var result =  _service.CheckHealthAsync().Result;
+			var result = await _service.CheckHealthAsync();
 
 			var health = new HealthView
 			{

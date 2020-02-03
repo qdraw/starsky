@@ -1,5 +1,5 @@
 import React from 'react';
-import Portal from './portal';
+import Portal, { PortalId } from './portal';
 
 type NotificationPropTypes = {
   children?: React.ReactNode;
@@ -10,10 +10,11 @@ const Notification: React.FunctionComponent<NotificationPropTypes> = ({ children
   return (
     <Portal>
       <div className={"notification " + className}>
-        <div className="icon"></div>
+        <div className="icon icon--error"></div>
         <div className="content">
           {children}
         </div>
+        <button className="icon icon--close" onClick={() => { document.getElementById(PortalId)?.remove() }}></button>
       </div>
     </Portal>
   );

@@ -321,8 +321,6 @@ namespace starsky
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-				endpoints.MapHealthChecks("/health",
-					new HealthCheckOptions());
 			});
 #else
 	        app.UseMvc(routes =>

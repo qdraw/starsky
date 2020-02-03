@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,19 +14,33 @@ namespace starskytest.Controllers
 	{
 		
 		[TestMethod]
-		public void HealthControllerTest_1()
+		public async Task HealthControllerTest_Details()
 		{
-			var fakeHealthCheckService = new FakeHealthCheckService();
+			var fakeHealthCheckService = new FakeHealthCheckService(true);
 			var controller = new HealthController(fakeHealthCheckService)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 
-			var actionResult = controller.Index() as JsonResult;
+			var actionResult = await controller.Details() as JsonResult;
 			var castedResult = actionResult.Value as HealthView;
 
 			Assert.IsTrue(castedResult.IsHealthy);
 			Assert.IsTrue(castedResult.Entries.FirstOrDefault().IsHealthy);
+		}
+		
+		[TestMethod]
+		public async Task HealthControllerTest_Index()
+		{
+			var fakeHealthCheckService = new FakeHealthCheckService(true);
+			var controller = new HealthController(fakeHealthCheckService)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+
+			var actionResult = await controller.Index() as ContentResult;
+			
+			Assert.AreEqual("Healthy",actionResult.Content);
 		}
 	}
 }
