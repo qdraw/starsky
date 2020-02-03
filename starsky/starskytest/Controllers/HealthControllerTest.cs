@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starskycore.Helpers;
 using starskycore.ViewModels;
 using starskytest.FakeMocks;
 
@@ -41,6 +42,18 @@ namespace starskytest.Controllers
 			var actionResult = await controller.Index() as ContentResult;
 			
 			Assert.AreEqual("Healthy",actionResult.Content);
+		}
+		
+		[TestMethod]
+		public void HealthControllerTest_ApplicationInsights()
+		{
+			var controller = new HealthController(null, new ApplicationInsightsJsHelper(null,null))
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+
+			var actionResult = controller.ApplicationInsights() as ContentResult;
+			Assert.AreEqual("/* ApplicationInsights JavaScriptSnippet disabled */",actionResult.Content);
 		}
 	}
 }

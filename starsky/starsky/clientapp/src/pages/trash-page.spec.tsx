@@ -8,7 +8,6 @@ import { PageType } from '../interfaces/IDetailView';
 import TrashPage from './trash-page';
 
 describe("TrashPage", () => {
-
   it("default error case", () => {
     jest.spyOn(useTrashList, 'default').mockImplementationOnce(() => {
       return {} as IUseTrashList

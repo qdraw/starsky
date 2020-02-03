@@ -10,7 +10,7 @@ import ListImageBox from './list-image-box';
 interface ItemListProps {
   fileIndexItems: Array<IFileIndexItem>,
   colorClassUsage: Array<number>,
-  pageType: PageType;
+  pageType?: PageType;
 }
 /**
  * A list with links to the items

@@ -5,6 +5,7 @@ import SearchPage from './search-page';
 
 describe("SearchPage", () => {
   it("default check if MenuSearch + context is called", () => {
+
     jest.spyOn(window, 'scrollTo')
       .mockImplementationOnce(() => { })
       .mockImplementationOnce(() => { })

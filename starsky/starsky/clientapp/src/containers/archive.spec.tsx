@@ -14,7 +14,6 @@ describe("Archive", () => {
   });
 
   it("check if warning exist with no items in the list", () => {
-
     jest.spyOn(window, 'scrollTo')
       .mockImplementationOnce(() => { });
 
