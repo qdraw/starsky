@@ -3,7 +3,7 @@ import useFetch from '../hooks/use-fetch';
 import useGlobalSettings from '../hooks/use-global-settings';
 import { IHealthEntry } from '../interfaces/IHealthEntry';
 import { Language } from '../shared/language';
-import Notification from './notification';
+import Notification, { NotificationType } from './notification';
 
 const HealthStatusError: React.FunctionComponent = () => {
 
@@ -28,7 +28,7 @@ const HealthStatusError: React.FunctionComponent = () => {
   }
 
   return (
-    <Notification className="notification--danger">{content}</Notification>
+    <Notification type={NotificationType.danger}>{content}</Notification>
   );
 };
 
