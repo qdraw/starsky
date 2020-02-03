@@ -9,11 +9,14 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.Helpers
 {
-	/// <summary>
-	/// Use as: .AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck")
-	/// </summary>
 	public class DateAssemblyHealthCheck : IHealthCheck
 	{
+		/// <summary>
+		/// Use as: .AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck")
+		/// </summary>
+		/// <param name="context">HealthCheckContext</param>
+		/// <param name="cancellationToken">to cancel item</param>
+		/// <returns></returns>
 		public Task<HealthCheckResult> CheckHealthAsync(
 			HealthCheckContext context,
 			CancellationToken cancellationToken = default(CancellationToken))

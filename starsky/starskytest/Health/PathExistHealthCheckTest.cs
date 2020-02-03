@@ -15,7 +15,7 @@ namespace starskytest.Health
 			var pathExistOptions = new PathExistOptions();
 			pathExistOptions.AddPath(new CreateAnImage().BasePath);
 
-			var healthCheck = new HealthCheckContext();
+			var healthCheck = new HealthCheckContext {Registration = new HealthCheckRegistration("te",new PathExistHealthCheck(pathExistOptions), null,null )};
 			var result = await new PathExistHealthCheck(pathExistOptions).CheckHealthAsync(healthCheck);
 			Assert.AreEqual(HealthStatus.Healthy,result.Status);
 		}

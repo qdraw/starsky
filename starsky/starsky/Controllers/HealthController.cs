@@ -10,7 +10,7 @@ namespace starsky.Controllers
 	public class HealthController: Controller
 	{
 		private readonly HealthCheckService _service;
-		private ApplicationInsightsJsHelper _applicationInsightsJsHelper;
+		private readonly ApplicationInsightsJsHelper _applicationInsightsJsHelper;
 
 		public HealthController(HealthCheckService service, ApplicationInsightsJsHelper applicationInsightsJsHelper = null)
 		{
