@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using starskycore.Helpers;
 using starskycore.ViewModels;
 
 namespace starsky.Controllers
@@ -9,10 +10,12 @@ namespace starsky.Controllers
 	public class HealthController: Controller
 	{
 		private readonly HealthCheckService _service;
+		private ApplicationInsightsJsHelper _applicationInsightsJsHelper;
 
-		public HealthController(HealthCheckService service)
+		public HealthController(HealthCheckService service, ApplicationInsightsJsHelper applicationInsightsJsHelper = null)
 		{
 			_service = service;
+			_applicationInsightsJsHelper = applicationInsightsJsHelper;
 		}
 
 		/// <summary>
@@ -63,5 +66,19 @@ namespace starsky.Controllers
 			
 			return Json(health);
 		}	
+		
+				
+		/// <summary>
+		/// Add Application Insights script to user context
+		/// </summary>
+		/// <returns>AI script</returns>
+		/// <response code="200">Ok</response>
+		[HttpGet("/api/health/application-insights")]
+		[ResponseCache(Duration = 29030400)] // 4 weeks
+		[Produces("application/javascript")]
+		public IActionResult ApplicationInsights()
+		{
+			return Content(_applicationInsightsJsHelper.ScriptPlain, "application/javascript");
+		}
 	}
 }

@@ -13,8 +13,6 @@ const HealthStatusError: React.FunctionComponent = () => {
   const MessageCriticalErrors = new Language(settings.language).text("Er zijn kritieke fouten in de volgende onderdelen:",
     "There are critical errors in the following components:");
 
-  console.log(healthCheck.statusCode);
-
   if (healthCheck.statusCode === 200 || healthCheck.statusCode === 999) return (<></>)
 
   var content: JSX.Element[] = [<span key="warning">{MessageCriticalErrors}</span>];
