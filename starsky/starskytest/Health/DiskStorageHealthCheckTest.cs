@@ -28,7 +28,7 @@ namespace starskytest.Health
 			var appSettings = new AppSettings();
 			var diskOptions = new DiskStorageOptions();
 			
-			new DiskOptionsPercentageSetup().Setup(appSettings.TempFolder,diskOptions,0.99f);
+			new DiskOptionsPercentageSetup().Setup(appSettings.TempFolder,diskOptions,1f);
 
 			var healthCheck = new HealthCheckContext {Registration = new HealthCheckRegistration("te",new DiskStorageHealthCheck(diskOptions),null,null )};
 			var result = await new DiskStorageHealthCheck(diskOptions).CheckHealthAsync(healthCheck);
