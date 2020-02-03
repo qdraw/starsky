@@ -9,9 +9,6 @@
 - []   time zone shifting
 - []   Search: support for complex and/or operators `(this || or) && that`
 - []   Docker support, including backend abstractions to get the data (partly working)
-- []   Health view, to make more clear when paths are configured right
-- []   Health view, to make more clear when the server time is not correct
-- []   Health view (feature) when a disk is full, show a warning
 - []   (front-end) Search details show exact query behind modal
 - []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
@@ -19,7 +16,7 @@
 - []  (feature) Creating thumbnails from Web Interface (including status)
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
 
-# version 0.1.14 - 2020-0?-??
+# version 0.1.14 - 2020-02-03
 - [x]   (bugfix) _back-end_ Security fixes in controllers
 - [x]   (bugfix) _back-end + front-end_ name: colorClassActiveList replace everywhere
 - [x]   (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2. Run `./build.sh` before you start developing
@@ -28,6 +25,9 @@
 - [x]   (bugfix)  _Front-end_ translations in containers/search, containers/trash, search, trash and trash-page
 - [x]   (bugfix)  _Front-end_ translations in menu-trash and modal-export (isProcessing === ProcessingState.server)
 - [x]   (feature) _Front-end_ tags on folder change to two line
+- [x]   (feature) Health view, to make more clear when paths are configured right
+- [x]   (feature) Health view, to make more clear when the server time is not correct
+- [x]   (feature) Health view (feature) when a disk is full, show a warning
 
 # version 0.1.13 - 2020-01-25
 - [x]   (remove) _V1_ __Removal of Old Layout (V1) and All Razor Views__
