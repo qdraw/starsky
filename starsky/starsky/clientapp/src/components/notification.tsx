@@ -12,14 +12,21 @@ export enum NotificationType {
 }
 
 const Notification: React.FunctionComponent<NotificationPropTypes> = ({ children, type }) => {
+
+  const close = () => {
+    const portal = document.getElementById(PortalId);
+    if (!portal) return;
+    portal.remove();
+  };
+
   return (
     <Portal>
       <div className={"notification notification--" + type}>
-        <div className="icon icon--error"></div>
+        <div className="icon icon--error" />
         <div className="content">
           {children}
         </div>
-        <button className="icon icon--close" onClick={() => { document.getElementById(PortalId)?.remove() }}></button>
+        <button className="icon icon--close" onClick={close} />
       </div>
     </Portal>
   );
