@@ -23,7 +23,6 @@ const useFetch = (url: string, method: 'get' | 'post'): IConnectionDefault => {
   return data;
 };
 
-
 export const fetchContent = async (url: string,
   method: 'get' | 'post',
   mounted: boolean,
@@ -31,7 +30,7 @@ export const fetchContent = async (url: string,
   setData: React.Dispatch<React.SetStateAction<IConnectionDefault>>
 ): Promise<void> => {
 
-  var statusCode = 999;
+  let statusCode = 999;
   let data = null;
 
   try {
