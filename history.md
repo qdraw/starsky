@@ -16,18 +16,18 @@
 - []  (feature) Creating thumbnails from Web Interface (including status)
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
 
-# version 0.1.14 - 2020-02-03
+# version 0.1.14 - 2020-02-04
 - [x]   (bugfix) _back-end_ Security fixes in controllers
 - [x]   (bugfix) _back-end + front-end_ name: colorClassActiveList replace everywhere
 - [x]   (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2. Run `./build.sh` before you start developing
 - [x]   (bugfix) _Front-end_ preloader when uploading
-- [x]   (bugfix) _Front-end_ translations in item-list-view, item-text-list-view, 
+- [x]   (bugfix) _Front-end_ translations in item-list-view, item-text-list-view,
 - [x]   (bugfix)  _Front-end_ translations in containers/search, containers/trash, search, trash and trash-page
 - [x]   (bugfix)  _Front-end_ translations in menu-trash and modal-export (isProcessing === ProcessingState.server)
 - [x]   (feature) _Front-end_ tags on folder change to two line
-- [x]   (feature) Health view, to make more clear when paths are configured right
-- [x]   (feature) Health view, to make more clear when the server time is not correct
-- [x]   (feature) Health view (feature) when a disk is full, show a warning
+- [x]   (feature) _Front-end_ _Back-end_ Health view, to make more clear when paths are configured right
+- [x]   (feature) _Front-end_ _Back-end_ Health view, to make more clear when the server time is not correct
+- [x]   (feature) _Front-end_ _Back-end_ Health view (feature) when a disk is full, show a warning
 
 # version 0.1.13 - 2020-01-25
 - [x]   (remove) _V1_ __Removal of Old Layout (V1) and All Razor Views__
@@ -39,7 +39,7 @@
 - [x]   (breaking change) rename of field  colorClassFilterList={[]} ==>  colorClassActiveList={[]}
 - [x]   (bugfix) colorclass filter are selecting
 - [x]	  (bugfix) export poll after 206 'not ready'
-- [x]   (feature) _Front-end_ make folder layout smooth responsive 
+- [x]   (feature) _Front-end_ make folder layout smooth responsive
 
 # version 0.1.12 - 2020-01-15
 - [x]   (bugfix) _Front-end_ Add Loading in Move dialog
