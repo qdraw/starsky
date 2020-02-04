@@ -91,8 +91,10 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
     bodyParams.append("f", selectParams);
     await FetchPost(new UrlQuery().UrlDeleteApi(), bodyParams.toString(), 'delete');
 
+    console.log(toUndoTrashList);
+
     undoSelection();
-    dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
+    dispatch({ 'type': 'remove', toRemoveFileList: toUndoTrashList })
   }
 
   async function undoTrash() {
@@ -111,7 +113,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
     // to replace
     await FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString());
 
-    dispatch({ type: 'remove', filesList: toUndoTrashList });
+    dispatch({ type: 'remove', toRemoveFileList: toUndoTrashList });
 
     undoSelection();
   }

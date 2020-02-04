@@ -111,7 +111,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       return;
     }
     undoSelection();
-    dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
+    dispatch({ 'type': 'remove', toRemoveFileList: toUndoTrashList })
   }
 
   const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
