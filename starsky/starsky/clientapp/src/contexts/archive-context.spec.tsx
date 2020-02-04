@@ -16,7 +16,7 @@ describe("ArchiveContext", () => {
     } as IArchiveProps;
 
     // fullpath input
-    var action = { type: 'remove', filesList: ['/test.jpg'] } as any
+    var action = { type: 'remove', toRemoveFileList: ['/test.jpg'] } as any
 
     var result = archiveReducer(state, action);
 

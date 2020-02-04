@@ -1,4 +1,5 @@
 
+.preloader.preloader--overlay-no-transition,
 .preloader.preloader--overlay {
   position: fixed;
   height: 100%;
@@ -6,8 +7,11 @@
   top:0px;
   left:0px;
   background-color: rgba(96, 125, 139, 0.7);
-  transition: background-color 500ms ease-in-out;
   z-index: 410;
+}
+
+.preloader.preloader--overlay {
+  transition: background-color 500ms ease-in-out;
   animation: preloader--overlay-fadein 4s;
 }
 
@@ -35,6 +39,7 @@
   background-size: contain;
 }
 
+.preloader.preloader--overlay-no-transition .preloader--icon,
 .preloader.preloader--overlay .preloader--icon {
   background-image:unset;
   background-color: white;

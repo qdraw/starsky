@@ -48,7 +48,9 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
-  // Undo Selection
+  /**
+   * Undo Selection
+   */
   function undoSelection() {
     var urlObject = new URLPath().updateSelection(history.location.search, []);
     setSelect(urlObject.select);
@@ -79,7 +81,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
     fileIndexItems: []
   };
 
-  async function forceDelete() {
+  function forceDelete() {
     if (!select) return;
 
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
@@ -89,13 +91,15 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
 
     var bodyParams = new URLSearchParams();
     bodyParams.append("f", selectParams);
-    await FetchPost(new UrlQuery().UrlDeleteApi(), bodyParams.toString(), 'delete');
 
     undoSelection();
-    dispatch({ 'type': 'remove', 'filesList': toUndoTrashList })
+
+    FetchPost(new UrlQuery().UrlDeleteApi(), bodyParams.toString(), 'delete').then(() => {
+      dispatch({ type: 'remove', toRemoveFileList: toUndoTrashList });
+    });
   }
 
-  async function undoTrash() {
+  function undoTrash() {
     if (!select) return;
 
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
@@ -108,12 +112,12 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
     bodyParams.set("search", "!delete!");
     bodyParams.append("f", selectPaths);
 
-    // to replace
-    await FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString());
-
-    dispatch({ type: 'remove', filesList: toUndoTrashList });
-
     undoSelection();
+
+    // to replace
+    FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString()).then(() => {
+      dispatch({ type: 'remove', toRemoveFileList: toUndoTrashList });
+    });
   }
 
   const [isModalDeleteOpen, setModalDeleteOpen] = React.useState(false);

@@ -23,35 +23,37 @@ const useFetch = (url: string, method: 'get' | 'post'): IConnectionDefault => {
   return data;
 };
 
-
 export const fetchContent = async (url: string,
   method: 'get' | 'post',
   mounted: boolean,
   abortController: AbortController,
   setData: React.Dispatch<React.SetStateAction<IConnectionDefault>>
 ): Promise<void> => {
-  const res: Response = await fetch(url, {
-    signal: abortController.signal,
-    credentials: "include",
-    method: method
-  });
 
-  let data;
+  let statusCode = 999;
+  let data = null;
+
   try {
+    const res: Response = await fetch(url, {
+      signal: abortController.signal,
+      credentials: "include",
+      method: method
+    });
     data = await res.json();
+    statusCode = res.status;
   } catch (event) {
+    // DOMException: "The operation was aborted"
     console.error("use-fetch", event);
   }
 
   var response = {
-    statusCode: res.status,
+    statusCode,
     data
   } as IConnectionDefault;
 
   if (mounted) {
     setData(response);
   }
-
 }
 
 export default useFetch;

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import Preloader from '../components/preloader';
 import Archive from '../containers/archive';
 import Login from '../containers/login';
 import Search from '../containers/search';
@@ -52,9 +53,13 @@ function ArchiveWrapper(archive: IArchiveProps) {
       return (
         <Login />
       );
-    default:
+    case PageType.Archive:
       return (
         <Archive {...state} />
+      );
+    default:
+      return (
+        <Preloader isOverlay={true} isTransition={false} />
       );
   }
 

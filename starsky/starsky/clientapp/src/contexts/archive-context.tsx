@@ -15,7 +15,7 @@ export type IArchiveContext = {
 type ReactNodeProps = { children: React.ReactNode }
 type Action = {
   type: 'remove',
-  filesList: string[]
+  toRemoveFileList: string[]
 } |
 {
   type: 'update',
@@ -53,19 +53,24 @@ export function archiveReducer(state: State, action: Action): State {
   switch (action.type) {
     case "remove":
       // files == subpath style not only the name (/dir/file.jpg)
-      var { filesList } = action;
+      var { toRemoveFileList } = action;
 
       var deletedFilesCount = 0;
-      state.fileIndexItems.forEach((item, index) => {
-        if (filesList.indexOf(item.filePath) === -1) return;
-        state.fileIndexItems.splice(index, 1);
-        deletedFilesCount++
+      let afterFileIndexItems: IFileIndexItem[] = [];
+
+      state.fileIndexItems.forEach(item => {
+        if (toRemoveFileList.indexOf(item.filePath) === -1) {
+          afterFileIndexItems.push(item);
+        }
+        else {
+          deletedFilesCount++;
+        }
       });
 
       // to update the total results
       var collectionsCount = state.collectionsCount - deletedFilesCount;
 
-      return { ...state, collectionsCount, lastUpdated: new Date() };
+      return { ...state, fileIndexItems: afterFileIndexItems, collectionsCount, lastUpdated: new Date() };
     case "update":
 
       var { select, tags, description, title, append, colorclass } = action;
