@@ -18,7 +18,7 @@ const TrashPage: FunctionComponent<RouteComponentProps<ITrashPageProps>> = (prop
 
   if (!searchList) return (<>Something went wrong</>)
   if (!searchList.archive) return (<>Something went wrong</>)
-  if (searchList.pageType === PageType.Loading) return (<Preloader isOverlay={true} isDetailMenu={false}></Preloader>)
+  if (searchList.pageType === PageType.Loading) return (<Preloader isTransition={false} isOverlay={true} isDetailMenu={false}></Preloader>)
 
   return (<ArchiveContextWrapper {...searchList.archive} />)
 }

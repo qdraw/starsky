@@ -59,7 +59,7 @@ function ArchiveWrapper(archive: IArchiveProps) {
       );
     default:
       return (
-        <Preloader isOverlay={true} />
+        <Preloader isOverlay={true} isTransition={false} />
       );
   }
 

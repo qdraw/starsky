@@ -11,7 +11,7 @@ const Preloader: React.FunctionComponent<IPreloaderProps> = memo((props) => {
   return (
     <>
       {
-        props.isOverlay ? <div className={props.isTransition ? "preloader preloader--overlay" : "preloader preloader--overlay-no-transition"}>
+        props.isOverlay ? <div className={props.isTransition === false ? "preloader preloader--overlay-no-transition" : "preloader preloader--overlay"}>
           <div className="preloader preloader--icon">
           </div>
         </div> : <div className="preloader preloader--icon">
