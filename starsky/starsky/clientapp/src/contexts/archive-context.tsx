@@ -56,22 +56,19 @@ export function archiveReducer(state: State, action: Action): State {
       var { toRemoveFileList } = action;
 
       var deletedFilesCount = 0;
-      let afterFileIndexItems = state.fileIndexItems;
+      let afterFileIndexItems: IFileIndexItem[] = [];
 
-      for (let index = 0; index < state.fileIndexItems.length; index++) {
-        const item = state.fileIndexItems[index];
-
-        console.log(toRemoveFileList.indexOf(item.filePath));
-
-        if (toRemoveFileList.indexOf(item.filePath) === -1) continue;
-        afterFileIndexItems.splice(index, 1);
-        deletedFilesCount++
-      }
+      state.fileIndexItems.forEach(item => {
+        if (toRemoveFileList.indexOf(item.filePath) === -1) {
+          afterFileIndexItems.push(item);
+        }
+        else {
+          deletedFilesCount++;
+        }
+      });
 
       // to update the total results
       var collectionsCount = state.collectionsCount - deletedFilesCount;
-
-      console.log(afterFileIndexItems);
 
       return { ...state, fileIndexItems: afterFileIndexItems, collectionsCount, lastUpdated: new Date() };
     case "update":
