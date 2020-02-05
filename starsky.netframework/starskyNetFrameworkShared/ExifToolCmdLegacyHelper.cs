@@ -7,7 +7,7 @@ namespace starskyNetFrameworkShared
 {
 	public class ExifToolCmdLegacyHelper
 	{
-		private AppSettings _appSettings;
+		private readonly AppSettings _appSettings;
 
 		public ExifToolCmdLegacyHelper(AppSettings appSettings)
 		{
