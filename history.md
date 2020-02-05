@@ -16,6 +16,9 @@
 - []  (feature) Creating thumbnails from Web Interface (including status)
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
 
+# version 0.1.15 - 2020-??
+- [x]  (bugfix) _Front-end_ Drag'n drop is now only with files
+
 # version 0.1.14 - 2020-02-04
 - [x]   (bugfix) _back-end_ Security fixes in controllers
 - [x]   (bugfix) _back-end + front-end_ name: colorClassActiveList replace everywhere
