@@ -19,7 +19,7 @@ describe("DropArea", () => {
       // Create a non-null file
       var event: CustomEvent & { dataTransfer?: DataTransfer } = new CustomEvent("CustomEvent");
       event.initCustomEvent(eventType, true, true, null);
-      event.dataTransfer = { files: [exampleFile] } as unknown as DataTransfer;
+      event.dataTransfer = { files: [exampleFile], types: ["", "Files"] } as unknown as DataTransfer;
       return event;
     }
 
