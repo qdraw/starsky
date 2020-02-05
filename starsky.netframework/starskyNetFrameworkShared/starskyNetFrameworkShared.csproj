@@ -39,12 +39,13 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MedallionShell, Version=1.5.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\MedallionShell.1.5.1\lib\net45\MedallionShell.dll</HintPath>
+    <Reference Include="MedallionShell, Version=1.6.1.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\MedallionShell.1.6.1\lib\net46\MedallionShell.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MetadataExtractor, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MetadataExtractor.2.0.0\lib\net45\MetadataExtractor.dll</HintPath>
+    <Reference Include="MetadataExtractor, Version=2.3.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\MetadataExtractor.2.3.0\lib\net45\MetadataExtractor.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SixLabors.ImageSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SixLabors.ImageSharp.1.0.0-beta0005\lib\netstandard2.0\SixLabors.ImageSharp.dll</HintPath>
