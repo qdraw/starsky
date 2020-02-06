@@ -792,7 +792,7 @@ namespace starskycore.Models
 		/// <summary>
 		/// Edited with this program
 		/// </summary>
-		[NotMapped]
+		[MaxLength(40)]
 		public string Software { get; set; }
 	    
 	    

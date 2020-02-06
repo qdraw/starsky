@@ -325,6 +325,9 @@ namespace starskycore.Services
 				var focalLength = GetContentNameSpace(property, "exif:FocalLength");
 				if ( focalLength != null ) item.FocalLength = fraction(focalLength);
 	            
+				// Path=xmp:CreatorTool Namespace=http://ns.adobe.com/xap/1.0/ Value=SLT-A58 v1.00
+				var software = GetContentNameSpace(property, "xmp:CreatorTool");
+				if ( software != null ) item.Software = software;
             }
 	        
             return item;

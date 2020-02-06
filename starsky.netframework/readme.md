@@ -1,4 +1,4 @@
-# Starsky .NET Framework 
+# Starsky .NET Framework
 ## List of [Starsky](../readme.md) Projects
  * [inotify-settings](../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../starsky/readme.md) _database photo index & import index project)_
@@ -38,33 +38,42 @@ brew install mono
 
 - or go to the [install page of the Mono project](https://www.mono-project.com/docs/getting-started/install/mac/)  
 
-### Install `Nuget`
-
-To get all the packages please install NuGet before running a build script
-
-```sh
-brew install nuget
-```
-
-
 ### Build
 
-Run the release script in the `starsky.netframework` folder to get a executable  
+Run the build script in the `starsky.netframework` folder to get a executable  
 
 ```sh
-./release-msbuild.sh
+./build.sh
 ```
-
 
 ### Run the Sync application
 To run the application can execute the following script
 ```sh
-mono bin/Release/starskySyncFramework.exe -h -v
+mono netframework-msbuild/starskySyncNetFrameworkCli.exe -h -v
 ```
+
+...or within the build directory
+```sh
+mono starskySyncNetFrameworkCli/bin/Release/starskySyncNetFrameworkCli.exe -h -v
+```
+
 
 ### Run the Importer application
 
 To run the application can execute the following script
 ```sh
-mono bin/Release/starskyimportercliNetFramework.exe -h -v
+mono netframework-msbuild/starskyImporterNetFrameworkCli.exe -h -v
+```
+
+...or within the build directory
+```sh
+mono starskyImporterNetFrameworkCli/bin/Release/starskyImporterNetFrameworkCli.exe -h -v
+```
+
+### When running in develop mode:
+
+Make sure that the  `appsettings.json`  and `data.db` are included in the following folder:
+
+```
+./starsky/bin/Debug
 ```

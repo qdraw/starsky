@@ -174,6 +174,12 @@ namespace starskycore.Services
 	            {
 		            item.FocalLength = focalLength;
 	            }
+
+	            var software = GetSoftware(exifItem);
+	            if (software != string.Empty) // string.Empty = is not the right tag or empty tag
+	            {
+		            item.Software = software;
+	            }
 	            
             }
             
@@ -222,6 +228,19 @@ namespace starskycore.Services
             }
         }
 
+		private string GetSoftware(Directory exifItem)
+		{
+			// [Exif IFD0] Software = 10.3.2
+	    
+			var tCounts =
+				exifItem.Tags.Count(p => p.DirectoryName == "Exif IFD0" && p.Name == "Software");
+			if ( tCounts < 1 ) return string.Empty;
+
+			var software = exifItem.Tags.FirstOrDefault(
+				p => p.DirectoryName == "Exif IFD0"
+				     && p.Name == "Software")?.Description;
+			return software;
+		}
 
 
 	    private string GetMakeModel(MetadataExtractor.Directory exifItem, bool isMake)
@@ -245,9 +264,9 @@ namespace starskycore.Services
 
 	    private static void DisplayAllExif(IEnumerable<MetadataExtractor.Directory> allExifItems)
         {
-//            foreach (var exifItem in allExifItems) {
-//                foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
-//            }
+            // foreach (var exifItem in allExifItems) {
+            //     foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
+            // }
         }
 
         public string GetObjectName (MetadataExtractor.Directory exifItem)

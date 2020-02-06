@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskySyncNetFramework", "starskySyncNetFramework\starskySyncNetFramework.csproj", "{6E4084C5-5B24-45E5-8D99-4159AF11E3AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskySyncNetFrameworkCli", "starskySyncNetFrameworkCli\starskySyncNetFrameworkCli.csproj", "{6E4084C5-5B24-45E5-8D99-4159AF11E3AE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskycore", "..\starsky\starskycore\starskycore.csproj", "{11E98077-F12D-4F4A-A6A2-29A1B72D2757}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyNetFrameworkShared", "starskyNetFrameworkShared\starskyNetFrameworkShared.csproj", "{F2F01AC7-08EF-4689-976E-17A3DE2773F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyimportercliNetFramework", "starskyimportercliNetFramework\starskyimportercliNetFramework.csproj", "{4931AE69-2B61-43AD-B7C7-8B322ABC0C6B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyImporterNetFrameworkCli", "starskyImporterNetFrameworkCli\starskyImporterNetFrameworkCli.csproj", "{4931AE69-2B61-43AD-B7C7-8B322ABC0C6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

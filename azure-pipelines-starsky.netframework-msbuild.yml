@@ -1,0 +1,55 @@
+pool:
+  name: Hosted macOS
+
+# for legacy OS X builds
+
+trigger:
+  branches:
+    include:
+    - master
+    - release/*
+    exclude:
+    - feature/*
+  paths:
+      include:
+      - starsky.netframework/*
+      exclude:
+      - starskyapp/*
+      - starsky-tools/*
+      - starsky/*
+
+# specific path build
+pr:
+  branches:
+    exclude:
+    - master
+  paths:
+    include:
+    - starsky.netframework/*
+    exclude:
+    - starskyapp/*
+    - starsky-tools/*
+    - starsky/*
+
+steps:
+
+- task: NuGetToolInstaller@0
+  displayName: 'Use NuGet 4.3.0'
+
+- bash: |
+   ls
+   pwd
+  displayName: 'Bash Script -- just for debugging'
+
+- task: Bash@3
+  displayName: 'Bash Script CAKE For Legacy Project'
+  inputs:
+    targetType: filePath
+    filePath: 'starsky.netframework/build.sh'
+    workingDirectory: 'starsky.netframework/'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: starsky-netframework-msbuild (bash style slashes)'
+  inputs:
+    PathtoPublish: 'starsky.netframework/starsky-netframework-msbuild.zip'
+    ArtifactName: 'starsky-netframework-msbuild'

@@ -128,6 +128,20 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     return uploadFileObject;
   };
 
+  /**
+   * Has the user a file or is dragging elements on the page
+   * @param event DragEvent which should contain files
+   */
+  const containsFiles = (event: DragEvent) => {
+    if (event.dataTransfer && event.dataTransfer.types) {
+      for (var i = 0; i < event.dataTransfer.types.length; i++) {
+        if (event.dataTransfer.types[i] === "Files") {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
   /**
    * Show different style for drag
@@ -136,7 +150,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   const onDragEnter = (event: DragEvent) => {
     event.preventDefault();
     if (!event.target) return;
-
+    if (!containsFiles(event)) return;
     setDrag(true);
     setDragTarget(event.target as Element);
     setDropEffect(event);
@@ -149,6 +163,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   */
   const onDragLeave = (event: DragEvent) => {
     event.preventDefault();
+    if (!containsFiles(event)) return;
     if (event.target as Element === dragTarget) {
       setDrag(false);
     }
@@ -160,6 +175,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   */
   const onDragOver = (event: DragEvent) => {
     event.preventDefault();
+    if (!containsFiles(event)) return;
     setDrag(true);
     setDropEffect(event);
   };

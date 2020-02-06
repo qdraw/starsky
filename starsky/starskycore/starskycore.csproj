@@ -1,17 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <Description>An attempt to create a database driven photo library</Description>
-        <Version>0.1.14</Version>
+        <Version>0.1.15</Version>
         <IsPackable>true</IsPackable>
         <!-- SonarQube needs this -->
         <ProjectGuid>{e6d8f456-859f-479d-bffa-3e78f1b27315}</ProjectGuid>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MedallionShell" Version="1.6.0" />
+        <PackageReference Include="MedallionShell" Version="1.6.1" />
         <PackageReference Include="MetadataExtractor" Version="2.3.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.1" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.1.1" />
         <!-- version beta0006 gives errors on raspi -->
         <!-- <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-dev002459" />
         <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-dev002459" /> -->
@@ -25,30 +27,18 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.1" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.1" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.1" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.2.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.6" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.6" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.1" />
         <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="2.2.0" />
-        <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
-    </ItemGroup>
-
-    <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' ">
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.0.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.1" />
         <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.0.0" />
         <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
     </ItemGroup>
