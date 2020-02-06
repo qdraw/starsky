@@ -18,6 +18,7 @@
 
 # version 0.1.15 - 2020-??
 - [x]  (bugfix) _Front-end_ Drag'n drop is now only with files
+- [x]  _Legacy starsky.netframework_ 0.1.15 release included
 
 # version 0.1.14 - 2020-02-04
 - [x]   (bugfix) _back-end_ Security fixes in controllers
@@ -93,6 +94,7 @@
 
 # version 0.1.9 - 2019-12-01
 _Upgrade to .NET Core 3.0 & EF Core 3.1-preview3_
+- [x] _Legacy starsky.netframework_ 0.1.9 release included
 - [x] use for example '3 hours' instead of yesterday in detailview
 - [x] (bugfix) EventTarget issue (Safari) when using /import
 - [x] (azure-pipeline) add yaml file to replace classic build pipeline
@@ -119,6 +121,7 @@ _Upgrade to .NET Core 3.0 & EF Core 3.1-preview3_
 - [x]   (bug) Force sync and renew for directories that contain a + sign are passing the wrong values (fixed)
 - [x]   Add unit tests for importing raw's with .xmp files
 - [x]   (starsky-tools) add Dropbox import helper tool
+- [x] _Legacy starsky.netframework_ 0.1.8 release included
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_
@@ -142,6 +145,7 @@ _Works with  .NET Core SDK 3.0.100_
 - (dotnet) version from 2.2.6 to 2.2.7
 - (dotnet) Microsoft.AspNetCore.App 2.2.7 is added as dependency to avoid mixed version errors
 - (bugfix) menu-archive press TrashSelection gives no 404 error anymore
+-  _Legacy starsky.netframework_ 0.1.7 release included
 
 # version 0.1.6 - 2019-09-12
 __For this version you need to downgrade the .NET Core SDK to SDK 2.2.401__
@@ -172,11 +176,13 @@ __For this version you need to downgrade the .NET Core SDK to SDK 2.2.401__
 - __Breaking API change__ from `/search/` to `/api/search`
 - __Breaking API change__ from `/search/trash` to `/api/search/trash`
 - __API change__ change number of search results per page from 20 to 120
+- _Legacy starsky.netframework_ 0.1.6 release included
 
 # version 0.1.5.9 - 2019-08-19
 _Version number does not match SemVer_
 - Entity Framework add database indexes
 - __Breaking Change__  Entity Framework add database Field for FocalLength
+- _Legacy starsky.netframework_ 0.1.5.9 release included
 
 # version 0.1.5.8 - 2019-08-14
 _Version number does not match SemVer_
@@ -188,6 +194,7 @@ _Version number does not match SemVer_
 - __Breaking API change__ from `/api/` to `/api/index`
 - Add support for command line -x or don't add xmp sidecar file
 - [x]   XMP disable option when importing using a flag (used for copying photos)
+- _Legacy starsky.netframework_ 0.1.5.8 release included
 
 # version 0.1.5.7 - 2019-08-09
 _Version number does not match SemVer_
@@ -199,6 +206,7 @@ _Version number does not match SemVer_
 - __Known issue__ Swagger support is disabled
 - Add support for command line -x or don't add xmp sidecar file
 - [x]   XMP disable option when importing using a flag (used for copying photos)
+- _Legacy starsky.netframework_ 0.1.5.7 release included
 
 # version 0.1.5.6 - 2019-08-07
 - change '/api/info' to support readonly meta display
@@ -224,12 +232,14 @@ _Version number does not match SemVer_
 - add: `/import/history` API for viewing recent uploads (today only) _subject to change_
 - __CHANGE__ Database Structure: Field added in ImportDatabas
   Update all your clients at once to avoid issues between -3 and -4
+- _Legacy starsky.netframework_ 0.1.5.4 release included
 
 # version 0.1.5.3 - 2019-03-31
 - refactoring connection to ExifTool to use iStorage
 - refactoring thumbnail service
 - changed Basic Auth middleware to use scoped
 - bugFix: sync from webUI with '+' in name
+- _Legacy starsky.netframework_ 0.1.5.3 release included
 ## Features that are affected:
 - [x]   check UpdateWriteDiskDatabase / check update service
 - [x]   check rotation
@@ -255,10 +265,12 @@ _Version number does not match SemVer_
 - ExifToolImportXmpCreate in appsettings
 - Bugfix / bug fix for: issue where import with spaces creates multiple items in the database
 - Already exist: config scheme overwrite feature for command line e.g. --scheme:/yyyy
+- _Legacy starsky.netframework_ 0.1.5.2 release included
 
 # version 0.1.5.1 - 2019-03-17
 - Breaking Change: added `LastEdited` field
 - Add `LastEdited` to search as field
+- _Legacy starsky.netframework_ 0.1.5.1 release included
 
 # version 0.1.5 - 2019-03-17
 - add partial support for || (or) queries using search
@@ -292,6 +304,7 @@ _Version number does not match SemVer_
 - add: replace `{AssemblyDirectory}` in `AppSettingsPublishProfiles.Path`
 - change settings to enable swagger: use now `app__AddSwagger` to enable
 - Create build scripts using Cake
+- _Legacy starsky.netframework_ 0.1.3 release included
 
 # version 0.1.2 - 2019-02-01
 - starskywebftpcli
@@ -299,6 +312,7 @@ _Version number does not match SemVer_
 - bugfix: migrations
 - change to runtime: 2.1.7
 - add 'import/FromUrl' api
+- _Legacy starsky.netframework_ 0.1.2 release included
 ## Known issues in this release: _(all fixed in 0.1.3)_
 - [x]   Export: When export a gpx file this is ignored
 - [x]   Export: When export a thumbnail of a Raw file, the zip has no files
@@ -307,6 +321,7 @@ _Version number does not match SemVer_
 
 # version 0.1.1 - 2019-01-25
 - add ignore index feature to importer
+- _Legacy starsky.netframework_ 0.1.1 release included
 
 # version 0.1.0 - 2019-01-22
 - initial release
