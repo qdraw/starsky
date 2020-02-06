@@ -45,11 +45,11 @@ steps:
   displayName: 'Bash Script CAKE For Legacy Project'
   inputs:
     targetType: filePath
-    filePath: './$(Build.SourcesDirectory)/starsky.netframework/build.sh'
-    workingDirectory: '$(Build.SourcesDirectory)/starsky.netframework/'
+    filePath: 'starsky.netframework/build.sh'
+    workingDirectory: 'starsky.netframework/'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: starsky-netframework-msbuild (bash style slashes)'
   inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/starsky.netframework/starsky-netframework-msbuild.zip'
+    PathtoPublish: 'starsky.netframework/starsky-netframework-msbuild.zip'
     ArtifactName: 'starsky-netframework-msbuild'
