@@ -19,6 +19,9 @@
 # version 0.1.15 - 2020-??
 - [x]  (bugfix) _Front-end_ Drag'n drop is now only with files
 - [x]  _Legacy starsky.netframework_ 0.1.15 release included
+- [x]  _dependecies_ Microsoft.EntityFrameworkCore, Microsoft.Extensions.Configuration to 3.1.1
+- [x]  _dependecies_ starskycore.dll from [netstandard2.0;netstandard2.1] to netstandard2.0
+- [x]  _rename_ starskySyncNetFrameworkCli and starskyImporterNetFrameworkCli
 
 # version 0.1.14 - 2020-02-04
 - [x]   (bugfix) _back-end_ Security fixes in controllers
