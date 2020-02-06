@@ -22,6 +22,7 @@
 - [x]  _dependecies_ Microsoft.EntityFrameworkCore, Microsoft.Extensions.Configuration to 3.1.1
 - [x]  _dependecies_ starskycore.dll from [netstandard2.0;netstandard2.1] to netstandard2.0
 - [x]  _rename_ starskySyncNetFrameworkCli and starskyImporterNetFrameworkCli
+- [x] __breaking change__ add Software as field in database (run migrations)
 
 # version 0.1.14 - 2020-02-04
 - [x]   (bugfix) _back-end_ Security fixes in controllers
