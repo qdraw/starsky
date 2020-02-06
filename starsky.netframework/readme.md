@@ -46,20 +46,29 @@ Run the build script in the `starsky.netframework` folder to get a executable
 ./build.sh
 ```
 
-
 ### Run the Sync application
 To run the application can execute the following script
 ```sh
-mono bin/Release/starskySyncNetFrameworkCli.exe -h -v
+mono netframework-msbuild/starskySyncNetFrameworkCli.exe -h -v
 ```
+
+...or within the build directory
+```sh
+mono starskySyncNetFrameworkCli/bin/Release/starskySyncNetFrameworkCli.exe -h -v
+```
+
 
 ### Run the Importer application
 
 To run the application can execute the following script
 ```sh
-mono bin/Release/starskyImporterNetFrameworkCli.exe -h -v
+mono netframework-msbuild/starskyImporterNetFrameworkCli.exe -h -v
 ```
 
+...or within the build directory
+```sh
+mono starskyImporterNetFrameworkCli/bin/Release/starskyImporterNetFrameworkCli.exe -h -v
+```
 
 ### When running in develop mode:
 

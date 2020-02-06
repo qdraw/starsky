@@ -15,9 +15,9 @@ var runtime = "netframework-msbuild";
 var distDirectory = Directory($"./{runtime}");
 
 var projectNames = new List<string>{
-    "starskyImporterNetFrameworkCli",
+    "starskyimportercliNetFramework",
     "starskyNetFrameworkShared",
-    "starskySyncNetFrameworkCli"
+    "starskySyncNetFramework"
 };
 
 var solutionName = "./starsky.netFramework.sln";
@@ -35,6 +35,7 @@ Task("Clean")
         foreach (var projectName in projectNames)
         {
             var binReleaseDir = MakeAbsolute(Directory($"./{projectName}/bin/{configuration}"));
+
             System.Console.WriteLine($"{binReleaseDir}");
             CleanDirectory(binReleaseDir);
         }
@@ -84,11 +85,25 @@ Task("PublishWeb")
             var binReleaseDir = MakeAbsolute(Directory($"./{projectName}/bin/{configuration}/*")).ToString();
             var distDirectoryAbsolute = MakeAbsolute(Directory($"./{distDirectory}")).ToString();
 
-            System.Console.WriteLine($"{binReleaseDir}");
-            System.Console.WriteLine($"{distDirectory}");
+            // no child items
+            CopyFiles(binReleaseDir, distDirectoryAbsolute,true);
 
-            // Child directories are ignored
-            CopyFiles(binReleaseDir, distDirectoryAbsolute, true); //<= true = fake news
+            System.Console.WriteLine($"{binReleaseDir}");
+            System.Console.WriteLine($"{distDirectoryAbsolute}");
+
+            var fromRuntimeBinReleaseDir = MakeAbsolute(Directory($"./{projectName}/bin/{configuration}/runtimes/osx-x64/native")).ToString();
+            var toRunTimeDistFolder = MakeAbsolute(Directory($"./{distDirectory}/runtimes/osx-x64/native")).ToString();
+
+
+            if (DirectoryExists(fromRuntimeBinReleaseDir)) {
+
+              System.Console.WriteLine($"{toRunTimeDistFolder}");
+              System.Console.WriteLine($"{fromRuntimeBinReleaseDir}");
+
+              // no child items
+              CopyDirectory(fromRuntimeBinReleaseDir, toRunTimeDistFolder); //<= true = fake news
+            }
+
         }
     });
 

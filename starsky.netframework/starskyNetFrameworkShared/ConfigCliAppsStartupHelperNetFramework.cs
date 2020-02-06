@@ -76,29 +76,28 @@ namespace starskyNetFrameworkShared
 			// Used to import Environment variables
 			new ArgsHelper(_appSettings).SetEnvironmentToAppSettings();
 
+			Console.WriteLine(_appSettings.DatabaseConnection);
+
 #if DEBUG
 		    if ( _appSettings.DatabaseType ==
 		         starskycore.Models.AppSettings.DatabaseTypeList.Sqlite )
 		    {
-			    SQLitePCL.raw.SetProvider(new SQLite3Provider_e_sqlite3());
+			    raw.SetProvider(new SQLite3Provider_e_sqlite3());
 		    }
 #else
-			// for running sqlite
+			// for running SQLite
 		    if ( _appSettings.DatabaseType == starskycore.Models.AppSettings.DatabaseTypeList.Sqlite )
 		    {
-			    SQLitePCL.Batteries.Init();
+				Console.WriteLine("> SQLitePCL.Batteries.Init()");
+			    Batteries_V2.Init();
 		    }
 #endif
+		    		    
+		    if( _appSettings.Verbose) Console.WriteLine(_appSettings.DatabaseConnection);
 
-		    
-
-
-
-
-            // Build Datbase Context
+            // Build Database Context
             var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
             
-            if( _appSettings.Verbose) Console.WriteLine(_appSettings.DatabaseConnection);
 
             // Select database type
             switch ( _appSettings.DatabaseType)
