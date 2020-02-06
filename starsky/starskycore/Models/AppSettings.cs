@@ -33,6 +33,8 @@ namespace starskycore.Models
 
 	    public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
 		    .Replace("starskysynccli", "starsky")
+		    .Replace("starskyImporterNetFrameworkCli", "starsky")
+		    .Replace("starskySyncNetFrameworkCli", "starsky")
 		    .Replace("starskyimportercli", "starsky")
 		    .Replace("starskywebftpcli", "starsky")
 		    .Replace("starskywebhtmlcli", "starsky")

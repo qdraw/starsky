@@ -15,9 +15,9 @@ var runtime = "netframework-msbuild";
 var distDirectory = Directory($"./{runtime}");
 
 var projectNames = new List<string>{
-    "starskyimportercliNetFramework",
+    "starskyImporterNetFrameworkCli",
     "starskyNetFrameworkShared",
-    "starskySyncNetFramework"
+    "starskySyncNetFrameworkCli"
 };
 
 var solutionName = "./starsky.netFramework.sln";
@@ -29,7 +29,7 @@ Task("Clean")
 
         if (FileExists($"starsky.netframework-msbuild.zip"))
         {
-            DeleteFile($"sstarsky.netframework-msbuild.zip");
+            DeleteFile($"starsky.netframework-msbuild.zip");
         }
 
         foreach (var projectName in projectNames)
