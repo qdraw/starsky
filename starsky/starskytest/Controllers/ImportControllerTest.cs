@@ -22,6 +22,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starsky.Controllers;
 using starskycore.Data;
+using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
@@ -35,9 +36,9 @@ namespace starskytest.Controllers
     public class ImportControllerTest
     {
         private readonly IImport _import;
-        private IBackgroundTaskQueue _bgTaskQueue;
-        private IServiceScopeFactory _scopeFactory;
-        private AppSettings _appSettings;
+        private readonly IBackgroundTaskQueue _bgTaskQueue;
+        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly AppSettings _appSettings;
 
         public ImportControllerTest()
         {
@@ -165,7 +166,56 @@ namespace starskytest.Controllers
 	        Assert.AreEqual( ImportStatus.FileError, list.FirstOrDefault().Status);
         }
 
+        [TestMethod]
+        public async Task FromUrl_PathInjection()
+        {
+	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
+		        _bgTaskQueue, null, new FakeIStorage())
+	        {
+		        ControllerContext = RequestWithFile(),
+	        };
+	        var actionResult = await importController.FromUrl("","../../path-injection.dll",null)  as BadRequestResult;
+	        Assert.AreEqual(400, actionResult.StatusCode);
+        }
 
+        [TestMethod]
+        public async Task FromUrl_RequestFromWhiteListedDomain_NotFound()
+        {
+	        var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+	        var httpClient = new HttpClient(fakeHttpMessageHandler);
+	        var httpProvider = new HttpProvider(httpClient);
 
+	        var httpClientHelper = new HttpClientHelper(httpProvider);
+	        
+	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
+		        _bgTaskQueue, httpClientHelper, new FakeIStorage())
+	        {
+		        ControllerContext = RequestWithFile(),
+	        };
+	        // download.geonames is in the FakeHttpmessageHandler always a 404
+	        var actionResult = await importController.FromUrl("https://download.geonames.org","example.tiff",null)  as NotFoundObjectResult;
+	        Assert.AreEqual(404, actionResult.StatusCode);
+        }
+        
+        [TestMethod]
+        public async Task FromUrl_RequestFromWhiteListedDomain_Ok()
+        {
+	        var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+	        var httpClient = new HttpClient(fakeHttpMessageHandler);
+	        var httpProvider = new HttpProvider(httpClient);
+
+	        var httpClientHelper = new HttpClientHelper(httpProvider);
+	        
+	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
+		        _bgTaskQueue, httpClientHelper, new FakeIStorage())
+	        {
+		        ControllerContext = RequestWithFile(),
+	        };
+
+	        var actionResult = await importController.FromUrl("https://qdraw.nl","example.tiff",null) as JsonResult;
+	        var list = actionResult.Value as List<string>;
+
+	        Assert.AreEqual("/example.tiff", list.FirstOrDefault());
+        }
     }
 }

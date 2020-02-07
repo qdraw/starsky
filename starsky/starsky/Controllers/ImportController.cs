@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -161,10 +162,16 @@ namespace starsky.Controllers
         public async Task<IActionResult> FromUrl(string fileUrl, string filename, string structure)
         {
 	        if (filename == null) filename = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
+	        
+	        // I/O function calls should not be vulnerable to path injection attacks
+	        if (!FilenamesHelper.IsValidFileName(filename))
+	        {
+		        return BadRequest();
+	        }
+	        
 	        var tempImportFullPath = Path.Combine(_appSettings.TempFolder, filename);
-	        var importSettings = new ImportSettingsModel(Request);
-            importSettings.Structure = structure;
-            var isDownloaded = await _httpClientHelper.Download(fileUrl,tempImportFullPath);
+	        var importSettings = new ImportSettingsModel(Request) {Structure = structure};
+	        var isDownloaded = await _httpClientHelper.Download(fileUrl,tempImportFullPath);
             if (!isDownloaded) return NotFound("'file url' not found or domain not allowed " + fileUrl);
 
 	        var importedFiles = _import.Import(new List<string>{tempImportFullPath}, importSettings);
