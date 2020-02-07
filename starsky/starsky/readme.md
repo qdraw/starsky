@@ -54,6 +54,8 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 7.  `AddSwaggerExport` - _Temporary disabled due known issue_ To Export Swagger defentions on startup _(default false)_
 8.  `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
 9.  `Verbose` - show more console logging  _(default false)_
+10. `WebFtp` - used by starskyWebFtpCli
+11. `PublishProfiles` - used by starskyWebHtmlCli
 
 ### Appsettings.json example
 ```json
@@ -85,34 +87,45 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 The default behavior of .NET is to load everything first. To be sure that the application is warm before someone arrives, please check `tools/starsky-warmup.sh`.
 
 ### Search Docs
-    _todo: update and translate_
+Advanced queries are supported by the basic search engine.
 
-Zoekopties (bevat woord): <br/>
-(default: ) Zoek term => Tags<br/>
--tags="zoek term" <br/>
--filepath="/path" <br/>
--filename=2018 <br/>
--parentdirectory=2018 <br/>
--description="zoek term" <br/>
--title=zoekterm <br/>
--ImageFormat=gpx<br/>
--datetime>2018-01-01T01:01:01 <br/>
--datetime=1 <em>(zoek naar foto's van gisteren)</em> <br/>
--Datetime&gt;12 -Datetime&lt;2 <em>Tussen 2 en 12 dagen geleden</em><br/>
--addtodatabase&lt;2018-01-01T01:01:01 <br/>
--filehash:3DB75N7JJ6FDOPZY4YHGX4TLKHOQ <br/>
--isdirectory:true <em>or</em> -isdirectory:false<br/>
-InUrl: Gebruik '-inurl:naam', '-inurl=naam' of '-inurl:"naam met spatie"' zoek woorden om verder te specificeren<br/>
-Tags: Normale Sleutelwoorden worden gelezen als deze combinatie is aanwezig in het Tags-veld<br/>
-&vert;&vert;, tussen twee zoekwoorden om beide mee te nemen e.g. -Tags:Test || -Tags:Car<br/>
-&amp;&amp; , tussen twee zoekwoorden, zodat deze zoekwoorden aanwezig zijn in beide items (default instelling)<br/>
-- Overslaan van steekwoorden - '-Tags-"fiets"' of '-fiets' om het woord over te slaan
-        
+| Search options   | example                            |                               |
+|------------------|------------------------------------|-------------------------------|
+| -tags            | test                               |                               |
+|                  | -tags="testtag"                    |                               |
+|                  | -test apple                        | Ignore the keyword test       |
+|                  | -Tags-"test"                       | Ignore the keyword test       |
+|                  | apple banana                       | search for apple or banana    |
+| -filepath        | -filepath="/path"                  | -inurl is the same            |
+| -filename        | -filename="file.jpg"               |                               |
+| -filehash        | -filehash=3DB75N7JJ6FDOPZY4YHGX4TL |                               |
+| -parentdirectory | -parentdirectory="/2019"           |                               |
+| -description     | -description="search"              |                               |
+| -imageformat     | -ImageFormat="jpg"                 |                               |
+|                  | -ImageFormat="tiff"                |                               |
+|                  | -ImageFormat="bmp"                 |                               |
+|                  | -ImageFormat="gif"                 |                               |
+|                  | -ImageFormat="png"                 |                               |
+|                  | -ImageFormat="xmp"                 |                               |
+|                  | -ImageFormat="gpx"                 |                               |
+| -datetime        | -datetime=1                        | search for yesterday          |
+|                  | -datetime>12 -datetime<2           | between 2 and 12 days ago     |
+|                  | -datetime=2020-01-01               | between 00:00:00 and 23:59:59 |
+|                  | -datetime=2020-01-01T14:35:29      |                               | 
+| -addtodatabase   | -addtodatabase=1                   | search for yesterday          |
+|                  | -addtodatabase>12 -addtodatabase<2 | between 2 and 12 days ago     |
+|                  | -addtodatabase=2020-01-01          | between 00:00:00 and 23:59:59 |
+|                  | -addtodatabase=2020-01-01T14:35:29 |                               | 
+| -isdirectory     | -isdirectory=true                  |                               | 
+|                  | -isdirectory=false                 |                               | 
+
         
 ### Rest API documentation
-Starsky has a Json and Razorview restful API. Please read the documentation
+Starsky has a Json restful API. Please read the documentation
 
-### Swagger
+> Tip: Breaking changes are documentated in `./history.md`
+
+### Swagger / OpenAPI
 Swagger is an open-source software framework backed by a large ecosystem of tools that helps developers design, build, document, and consume RESTful Web services. There is an swagger definition. You could enable this by setting the following values:
 
 By default this feature is disabled, please use the `AddSwagger` definition in the AppSettings or use the following environment variable:
@@ -126,23 +139,4 @@ This is the default location of the swagger documentation
 http://localhost:5000/swagger
 ```
 
-#### Rest API Table of contents
 
-__This list is outdated please check Swagger for the latest version__
-
-
-- [Get PageType	"Archive" ](readme_api.md#get-pagetype-archive)
-- [Get PageType	"DetailView"](readme_api.md#get-pagetype-detailview)
-- [Exif Info](readme_api.md#exif-info)
-- [Exif Update](readme_api.md#exif-update)
-- [Rename](readme_api.md#rename)
-- [File Delete](readme_api.md#file-delete)
-- [Thumbnail](readme_api.md#thumbnail)
-- [Thumbnail Json](readme_api.md#thumbnail-json)
-- [Download Photo](readme_api.md#download-photo)
-- [Direct import](readme_api.md#direct-import)
-- [Form import](readme_api.md#form-import)
-- [Import Exif Overwrites (shared feature)](readme_api.md#import-exif-overwrites-shared-feature)
-- [Search](readme_api.md#search)
-- [Remove cache](readme_api.md#remove-cache)
-- [Environment info](readme_api.md#environment-info)

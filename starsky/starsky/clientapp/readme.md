@@ -32,12 +32,16 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
 
-Make sure you run the Starsky API on http://localhost:5000 or us a localtunnel proxy (which you can find in `starsky-tools`)
+Make sure you run the Starsky API on http://localhost:5000 or us a localtunnel proxy (which you can find in `./starsky-tools`)
 
 ### `npm test`
 
 Launches the test runner in the interactive watch mode.<br>
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm test:ci`
+
+Run all unittests and check if there are any errors
 
 ### `npm run build`
 
@@ -49,7 +53,7 @@ Your app is ready to be deployed!
 
 In this application we use the `build.sh` or `build.ps1` to combine the frontend application with the .NET Core backend.
 
-### Upgrade `Create React App`
+### Upgrade `Create React App` to a newer version
 
 The default Create React App package is used to keep future upgrades less painfull.
 

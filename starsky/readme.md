@@ -139,9 +139,9 @@ sudo apt-get install libimage-exiftool-perl
 ./starsky
 ```
 
-9.  Create a account in the Starsky application. Those credentials are only required by the web application
+9.  Create a account in the Starsky Web application. Those credentials are only required by the web application
 
-> Security issue: Please be aware that this endpoint is always open to everyone
+> This endpoint is open to anyone when there are no accounts or for a logged in user or when you update appsettings.json
 
 ```
 http://localhost:5000/account/register
@@ -158,7 +158,7 @@ http://localhost:5000/account/register
 11. SonarQube scanner
 
 For SonarScanner you need to additionally install:
-- .NET Core 2.0 runtimes: https://dotnet.microsoft.com/download/dotnet-core/2.0
+- .NET Core 2.0 runtime: https://dotnet.microsoft.com/download/dotnet-core/2.0
 - Java
 
 To enable SonarScanner you need to set the following environment variables:
@@ -174,8 +174,6 @@ When using SQLite as databasetype without `SQLitePCLRaw.lib.e_sqlite3.linux` the
 To avoid the error: `System.IO.FileLoadException` `Microsoft.Extensions.Options, Version=2.0.2.0` the package `Microsoft.EntityFrameworkCore is installed
 
 > Tip: When using MariaDB or MySQL as database, make sure you use `utf8mb4` and as collate `utf8mb4_unicode_ci` to avoid encoding errors.
-
-
 
 #### Cannot open shared object file: Permission denied
 
