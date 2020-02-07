@@ -222,9 +222,11 @@ Task("TestNetCore")
                                              .Append("/p:CoverletOutputFormat=opencover")
                                              .Append("/p:ThresholdType=line")
                                              .Append("/p:hideMigrations=\"true\"")
-                                             .Append("/p:Exclude=\"[MySqlConnector]*%2c[starsky.Views]*\"")
+                                             .Append("/p:Exclude=\"[MySqlConnector]*%2c[starsky.Views]*%2c[*]starskycore.Migrations.*\"")
                                              .Append("/p:ExcludeByFile=\"*C:\\projects\\mysqlconnector\\src\\MySqlConnector*%2c../starskycore/Migrations/*\"") // (, comma seperated)
                                              .Append("/p:CoverletOutput=\"netcore-coverage.opencover.xml\"")
+                                             .Append("/p:Threshold=0")
+
                 });
 
             // Check if there is any output
@@ -272,7 +274,30 @@ Task("MergeCoverageFiles")
     MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
   });
 
+Task("MergeOnlyNetCoreCoverageFiles")
+  .Does(() => {
+    var outputCoverageFile = $"./starskytest/coverage-merge-cobertura.xml";
+
+    if (FileExists(outputCoverageFile)) {
+      DeleteFile(outputCoverageFile);
+    }
+
+    // Client Side coverage does not exist
+    if (FileExists($"./starskytest/jest-coverage.cobertura.xml")) {
+       DeleteFile($"./starskytest/jest-coverage.cobertura.xml");
+    }
+
+    // Merge all coverage files
+    ReportGenerator($"./starskytest/*coverage.*.xml", $"./starskytest/", new ReportGeneratorSettings{
+        ReportTypes = new[] { ReportGeneratorReportType.Cobertura }
+    });
+
+    // And rename it
+    MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
+});
+
 // Create a nice report and zip it
+// coverage-merge-cobertura.xml
 Task("CoverageReport")
     .Does(() =>
     {
@@ -476,6 +501,15 @@ Task("Default")
     .IsDependentOn("CoverageReport")
     .IsDependentOn("DocsGenerate")
     .IsDependentOn("Zip");
+
+// ./build.sh --Target=BuildTestNetCore
+Task("BuildTestNetCore")
+    .IsDependentOn("BuildNetCore")
+    .IsDependentOn("TestNetCore")
+    .IsDependentOn("BuildNetCoreGeneric")
+    .IsDependentOn("MergeOnlyNetCoreCoverageFiles")
+    .IsDependentOn("CoverageReport");
+
 
 // To get fast all (net core) assemblies
 // ./build.sh --Runtime=osx.10.12-x64 --Target=BuildPublishWithoutTest
