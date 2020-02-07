@@ -164,7 +164,7 @@ namespace starsky.Controllers
 	        if (filename == null) filename = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
 	        
 	        // I/O function calls should not be vulnerable to path injection attacks
-	        if (!FilenamesHelper.IsValidFileName(filename))
+	        if (!Regex.IsMatch(filename, "^[a-zA-Z0-9_\\s\\.]+$") || !FilenamesHelper.IsValidFileName(filename))
 	        {
 		        return BadRequest();
 	        }
