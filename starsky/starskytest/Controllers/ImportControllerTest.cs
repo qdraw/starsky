@@ -212,10 +212,10 @@ namespace starskytest.Controllers
 		        ControllerContext = RequestWithFile(),
 	        };
 
-	        var actionResult = await importController.FromUrl("https://qdraw.nl","example.tiff",null) as JsonResult;
+	        var actionResult = await importController.FromUrl("https://qdraw.nl","example_image.tiff",null) as JsonResult;
 	        var list = actionResult.Value as List<string>;
 
-	        Assert.AreEqual("/example.tiff", list.FirstOrDefault());
+	        Assert.IsTrue(list.FirstOrDefault().Contains("example_image.tiff"));
         }
     }
 }
