@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import useGlobalSettings from '../hooks/use-global-settings';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
@@ -12,7 +12,7 @@ interface ItemListProps {
 /**
  * A list with links to the items
  */
-const ItemTextListView: React.FunctionComponent<ItemListProps> = memo((props) => {
+const ItemTextListView: React.FunctionComponent<ItemListProps> = ((props) => {
 
   // Content
   const settings = useGlobalSettings();
