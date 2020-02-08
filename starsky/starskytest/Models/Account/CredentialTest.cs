@@ -34,6 +34,9 @@ namespace starskytest.Models.Account
             Assert.AreEqual(0, creds.Id);
             Assert.AreEqual(0, creds.UserId);
             Assert.AreEqual(0, creds.CredentialTypeId);
+            Assert.AreEqual(string.Empty, creds.Identifier);
+            Assert.AreEqual( new User(), creds.User);
+            Assert.AreEqual( new CredentialType(), creds.CredentialType);
 
         }
     }

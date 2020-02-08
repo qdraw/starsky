@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
@@ -187,6 +188,20 @@ namespace starskytest.Helpers
 			new StatusCodesHelper().ReadonlyAllowed(statusModel, statusResults,
 				fileIndexResultsList);
 			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly,fileIndexResultsList.FirstOrDefault().Status);
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(DllNotFoundException))]
+		public void StatusCodesHelperTest_WrongInput()
+		{
+			new StatusCodesHelper(null,null).FileCollectionsCheck(null);
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(DllNotFoundException))]
+		public void StatusCodesHelperTest_WrongInput2()
+		{
+			new StatusCodesHelper(new AppSettings(), null).FileCollectionsCheck(null);
 		}
 
 	}
