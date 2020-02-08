@@ -84,7 +84,6 @@ namespace starsky.Controllers
 				var fileName = Path.GetFileName(tempImportPaths[i]);
 
 				_iStorage.WriteStream(tempFileStream, parentDirectory + fileName);
-				tempFileStream.Dispose();
 				
 				_iSync.SyncFiles(parentDirectory + fileName,false);
 				
