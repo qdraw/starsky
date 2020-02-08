@@ -32,6 +32,13 @@ namespace starskytest.Interfaces
 		}
 		
 		[TestMethod]
+		public void UserManagerTestSignUpResultFalse()
+		{
+			var result = new SignUpResult(new User{Name = "test"},false, new SignUpResultError());
+			Assert.IsFalse(result.Success);
+		}
+		
+		[TestMethod]
 		public void UserManagerTestSignUpResultError()
 		{
 			var result = new SignUpResult(null,false, new SignUpResultError());
