@@ -1,6 +1,6 @@
 {
-  "name": "electron-quick-start",
-  "version": "1.0.0",
+  "name": "starsky-desktop-app",
+  "version": "0.1.16",
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
