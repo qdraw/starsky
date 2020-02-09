@@ -79,11 +79,13 @@ namespace starsky.Controllers
 			{
 				if(fileIndexResultsList[i].Status != ImportStatus.Ok) continue;
 
-				await using var tempFileStream = _iHostStorage.ReadStream(tempImportPaths[i]);
+				var tempFileStream = _iHostStorage.ReadStream(tempImportPaths[i]);
 				
 				var fileName = Path.GetFileName(tempImportPaths[i]);
 
 				_iStorage.WriteStream(tempFileStream, parentDirectory + fileName);
+				
+				tempFileStream.Dispose();
 				
 				_iSync.SyncFiles(parentDirectory + fileName,false);
 				
