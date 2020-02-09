@@ -17,7 +17,7 @@
 
 # version 0.1.16 - 2020-02-??
 - [x]  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix
-- [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
+- [x]  (change) _Back-end_)_ Change from `Newtonsoft.Json` to `System.Text.Json`
 
 # version 0.1.15 - 2020-02-06
 - [x]  (bugfix) _Front-end_ Drag'n drop is now only with files
