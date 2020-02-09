@@ -1,6 +1,11 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿#define SYSTEM_TEXT_ENABLED
 using starskycore.Models;
+#if SYSTEM_TEXT_ENABLED
+using System.Text.Json.Serialization;
+#else
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+#endif
 
 namespace starskycore.ViewModels
 {
@@ -8,7 +13,11 @@ namespace starskycore.ViewModels
 	{
 		public string FilePath { get; set; }
 
+#if SYSTEM_TEXT_ENABLED
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+#else
 		[JsonConverter(typeof(StringEnumConverter))]
+#endif
 		public FileIndexItem.ExifStatus Status { get; set; }
 	}
 }

@@ -1,12 +1,17 @@
-﻿using System;
+﻿#define SYSTEM_TEXT_ENABLED
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json.Converters;
 using starskycore.Helpers;
 using TimeZoneConverter;
+#if SYSTEM_TEXT_ENABLED
+using System.Text.Json.Serialization;
+#else
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+#endif
 
 namespace starskycore.Models
 {
@@ -42,7 +47,11 @@ namespace starskycore.Models
 		    .Replace("starskygeocli", "starsky")
 		    .Replace("starskytest", "starsky");
 
+#if SYSTEM_TEXT_ENABLED
+	    [JsonConverter(typeof(JsonStringEnumConverter))]
+#else
 	    [JsonConverter(typeof(StringEnumConverter))]
+#endif
 	    public StarskyAppType ApplicationType { get; set; }
 
 		public enum StarskyAppType
@@ -116,7 +125,11 @@ namespace starskycore.Models
         /// <summary>
         /// Type of the database, sqlite, mysql or inmemory
         /// </summary>
+#if SYSTEM_TEXT_ENABLED
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+#else
         [JsonConverter(typeof(StringEnumConverter))]
+#endif
         public DatabaseTypeList DatabaseType { get; set; } = DatabaseTypeList.Sqlite;
 
 
