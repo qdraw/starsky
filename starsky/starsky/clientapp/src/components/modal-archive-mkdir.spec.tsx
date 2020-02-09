@@ -9,6 +9,7 @@ import { IExifStatus } from '../interfaces/IExifStatus';
 import * as FetchGet from '../shared/fetch-get';
 import * as FetchPost from '../shared/fetch-post';
 import { UrlQuery } from '../shared/url-query';
+import * as Modal from './modal';
 import ModalArchiveMkdir from './modal-archive-mkdir';
 
 describe("ModalArchiveMkdir", () => {
@@ -117,6 +118,24 @@ describe("ModalArchiveMkdir", () => {
       // cleanup
       jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
       modal.unmount();
+    });
+
+    it("test if handleExit is called", () => {
+      // simulate if a user press on close
+      // use as ==> import * as Modal from './modal';
+      jest.spyOn(Modal, 'default').mockImplementationOnce((props) => {
+        props.handleExit();
+        return <>{props.children}</>
+      });
+
+      var handleExitSpy = jest.fn();
+
+      var component = mount(<ModalArchiveMkdir isOpen={true} handleExit={handleExitSpy} />);
+
+      expect(handleExitSpy).toBeCalled();
+
+      // and clean afterwards
+      component.unmount();
     });
 
   });
