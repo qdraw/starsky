@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -10,7 +11,9 @@ namespace starskytest.FakeMocks
 	{
 		public List<string> Import(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
 		{
-			throw new System.NotImplementedException();
+			return Preflight(inputFullPathList.ToList(), importSettings)
+				.Where(p => p.FilePath != null)
+				.Select(p=> p.FilePath ).ToList();
 		}
 
 		public List<ImportIndexItem> Preflight(List<string> inputFileFullPaths, ImportSettingsModel importSettings)

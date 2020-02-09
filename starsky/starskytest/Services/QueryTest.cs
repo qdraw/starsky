@@ -85,17 +85,23 @@ namespace starskytest.Services
         [TestMethod]
         public void QueryForHomeDoesNotExist_Null()
         {
-	        InsertSearchData();
-	        var home = _query.SingleItem("/");
+	        // remove if item exist
+	        var homeItem = _query.SingleItem("/");
+	        if ( homeItem != null )
+	        {
+		        _query.RemoveItem(homeItem.FileIndexItem);
+		        
+		        // Query again if needed
+		        homeItem = _query.SingleItem("/");
+	        }
 	        
-	        Assert.AreEqual(null,home);
+	        Assert.AreEqual(null,homeItem);
         }
 
         
         [TestMethod]
         public void QueryForHome()
         {
-	        InsertSearchData();
 	        var item = _query.AddItem(new FileIndexItem("/"));
 	        var home = _query.SingleItem("/").FileIndexItem;
 	        Assert.AreEqual("/",home.FilePath);
@@ -103,7 +109,7 @@ namespace starskytest.Services
         }
         
         [TestMethod]
-        public void QueryAddSingleItemhiJpgOutputTest()
+        public void QueryAddSingleItemHiJpgOutputTest()
         {
             InsertSearchData();
             var hiJpgOutput = _query.SingleItem(_insertSearchDatahiJpgInput.FilePath).FileIndexItem;

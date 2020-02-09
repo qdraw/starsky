@@ -108,10 +108,7 @@ namespace starsky
                     services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
                     break;
                 default:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, 
-	                    b => b.MigrationsAssembly(nameof(starskycore))));
-                    services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
-                    break;
+	                throw new ArgumentOutOfRangeException();
             }
             
             // Enable Dual Authentication 

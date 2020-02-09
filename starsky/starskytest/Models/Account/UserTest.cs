@@ -20,6 +20,7 @@ namespace starskytest.Models.Account
             };
             Assert.AreEqual(0, role.Id);
             Assert.AreEqual(string.Empty, role.Name);
+            Assert.AreEqual(0, role.Credentials.Count);
         }
     }
 }

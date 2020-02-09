@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import useGlobalSettings from '../hooks/use-global-settings';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
@@ -7,12 +7,12 @@ import { Language } from '../shared/language';
 interface ItemListProps {
   fileIndexItems: IFileIndexItem[];
   isLoading?: boolean;
-  callback(path: string): void;
+  callback?(path: string): void;
 }
 /**
  * A list with links to the items
  */
-const ItemTextListView: React.FunctionComponent<ItemListProps> = memo((props) => {
+const ItemTextListView: React.FunctionComponent<ItemListProps> = ((props) => {
 
   // Content
   const settings = useGlobalSettings();
@@ -32,6 +32,7 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = memo((props) =>
               "box isDirectory-false error"}
             key={item.filePath + item.lastEdited}>
             {item.isDirectory ? <button data-test={"btn-" + item.fileName} onClick={() => {
+              if (!props.callback) return;
               props.callback(item.filePath)
             }}>{item.fileName}</button> : null}
             {!item.isDirectory ? item.fileName : null}

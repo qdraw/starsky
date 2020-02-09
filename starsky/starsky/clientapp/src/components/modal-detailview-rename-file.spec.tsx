@@ -6,6 +6,7 @@ import { IDetailView } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import * as FetchPost from '../shared/fetch-post';
 import { UrlQuery } from '../shared/url-query';
+import * as Modal from './modal';
 import ModalDetailviewRenameFile from './modal-detailview-rename-file';
 
 describe("ModalDetailviewRenameFile", () => {
@@ -138,6 +139,24 @@ describe("ModalDetailviewRenameFile", () => {
       // cleanup
       jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
       modal.unmount();
+    });
+
+    it("test if handleExit is called", () => {
+      // simulate if a user press on close
+      // use as ==> import * as Modal from './modal';
+      jest.spyOn(Modal, 'default').mockImplementationOnce((props) => {
+        props.handleExit();
+        return <>{props.children}</>
+      });
+
+      var handleExitSpy = jest.fn();
+
+      var component = mount(<ModalDetailviewRenameFile isOpen={true} handleExit={handleExitSpy} />);
+
+      expect(handleExitSpy).toBeCalled();
+
+      // and clean afterwards
+      component.unmount();
     });
 
   });

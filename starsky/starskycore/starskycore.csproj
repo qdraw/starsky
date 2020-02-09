@@ -87,5 +87,7 @@
         <Compile Remove="Migrations\20190111162308_MakeModel.Designer.cs" />
         <Compile Remove="Migrations\20190819153950_FocalLengthAndIndexes.cs" />
         <Compile Remove="Migrations\20190819153950_FocalLengthAndIndexes.Designer.cs" />
+        <Compile Remove="Migrations\20200206192905_addSoftwareField.cs" />
+        <Compile Remove="Migrations\20200206192905_addSoftwareField.Designer.cs" />
     </ItemGroup>
 </Project>

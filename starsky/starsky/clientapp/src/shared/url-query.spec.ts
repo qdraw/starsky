@@ -71,4 +71,22 @@ describe("url-query", () => {
     var result = urlQuery.UrlExportZipApi("123");
     expect(result).toContain("123")
   });
+
+  it("UrlDeleteApi", () => {
+    var result = urlQuery.UrlDeleteApi();
+    expect(result).toContain("delete")
+  });
+
+  it("UrlSearchTrashApi", () => {
+    var result = urlQuery.UrlSearchTrashApi();
+    expect(result).toContain("trash")
+  });
+  it("UrlQuerySearchApi", () => {
+    var result = urlQuery.UrlQuerySearchApi("test");
+    expect(result).toContain("test")
+  });
+
+
+
+
 });

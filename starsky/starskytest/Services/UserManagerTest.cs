@@ -1,12 +1,14 @@
-using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Data;
+using starskycore.Models.Account;
 using starskycore.Services;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starskytest.Services
 {
 	[TestClass]
@@ -69,6 +71,17 @@ namespace starskytest.Services
 			var result = userManager.Validate("email", "dont@mail.us", null);
 			Assert.AreEqual(false, result.Success);
 			
+		}
+		
+		
+		[TestMethod]
+		public void UserManager_AllUsers_testCache()
+		{
+			var userManager = new UserManager(_dbContext, _memoryCache);
+			userManager.AddUserToCache(new User{Name = "cachedUser"});
+
+			var user = userManager.AllUsers().FirstOrDefault(p => p.Name == "cachedUser");
+			Assert.IsNotNull(user);
 		}
 
 	}

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -15,6 +16,7 @@ using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models.Account;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starskycore.Services
 {
 public class UserManager : IUserManager
@@ -76,7 +78,7 @@ public class UserManager : IUserManager
 	    }
 
 	    /// <summary>
-	    /// The default username is an email-adres, this is added as default value to an empty database (and checks this list)
+	    /// The default username is an email-address, this is added as default value to an empty database (and checks this list)
 	    /// </summary>
 	    /// <param name="credentialTypeCode">the type, for example email</param>
 	    /// <returns></returns>
@@ -127,7 +129,7 @@ public class UserManager : IUserManager
 	    /// <summary>
 	    /// Add one user to cached value
 	    /// </summary>
-	    private void AddUserToCache(User user)
+	    internal void AddUserToCache(User user)
 	    {
 		    if ( !IsCacheEnabled() ) return;
 		    var allUsers = AllUsers();

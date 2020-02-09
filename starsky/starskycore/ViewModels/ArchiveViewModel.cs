@@ -13,12 +13,12 @@ namespace starskycore.ViewModels
         // Used PageType by react client
         public string PageType => PageViewType.PageType.Archive.ToString();
         public string SubPath { get; set; } = string.Empty;
-        public bool IsDirectory { get; set; } = true;
         
         /// <summary>
         /// Count the number of files (collection setting is ignored for this value)
         /// </summary>
         public int CollectionsCount { get; set; }
+
         public bool IsReadOnly { get; set; }
         
         /// <summary>

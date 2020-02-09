@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +29,10 @@ namespace starskytest.Controllers
 
 			Assert.IsTrue(castedResult.IsHealthy);
 			Assert.IsTrue(castedResult.Entries.FirstOrDefault().IsHealthy);
+			Assert.AreEqual("test", castedResult.Entries.FirstOrDefault().Name );
+			Assert.IsTrue(castedResult.Entries.FirstOrDefault().Duration == TimeSpan.Zero);
+			Assert.IsTrue(castedResult.Entries.Any());
+			Assert.IsTrue(castedResult.TotalDuration == TimeSpan.Zero);
 		}
 		
 		[TestMethod]

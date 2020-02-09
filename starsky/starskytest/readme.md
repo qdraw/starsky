@@ -20,7 +20,7 @@
 
 To know that the application is working like expected, there are test create.  Starksy has unit tests for the C# application.
 Those unit test does not require any configuration or external dependencies like a webservice.
-The main application has Exiftool as external dependency, but you don't need this for the starskyTests.
+The main application has Exiftool as external dependency, but you don't need this for the starskyTest.
 
 ### With Cake
 
@@ -29,22 +29,14 @@ When running the build script, inside `starskytest\coverage.report`
 When using powershell running only the 'Starsky Mvc application' and tests
 
 ```powershell
-powershell -File build.ps1 -ScriptArgs '-Target="CI"'
+powershell -File build.ps1 -ScriptArgs '-Target="BuildTestNetCore"'
 ```
 
 or using bash. You need to have `mono` installed
 
 ```sh
-./build.sh -Target="CI"
+./build.sh -Target="BuildTestNetCore"
 ```
-
-### Without Cake as build tool
-Run the tests inside the `starsky/starskyTests` folder:
-```sh
-dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-```
-or use the `starsky/starskyTest.sh` `starsky/starskyTest.bat` files to generate coverage files
-
 
 >  NOTE: The unit tests are creating a few files inside the MSTest build directory. Those files will be removed afterwards.
 
@@ -56,12 +48,12 @@ During the unit test there are temporary files created to test the functionality
 
 #### Windows
 ```
-C:\Users\VssAdministrator\.nuget\packages\microsoft.testplatform.testhost\15.9.0\lib\netstandard1.5\
+C:\Users\VssAdministrator\.nuget\packages\microsoft.testplatform.testhost\16.2.0\lib\netstandard1.5\
 ```
 
 #### OS X
 ```
-~/.nuget/packages/microsoft.testplatform.testhost/15.9.0/lib/netstandard1.5/
+~/.nuget/packages/microsoft.testplatform.testhost/16.2.0/lib/netstandard1.5/
 ```
 
 ### Coverlet.MSBuild
@@ -72,20 +64,26 @@ To measure how much code is tested by this automatically script we have included
 +-------------------+--------+--------+--------+
 | Module            | Line   | Branch | Method |
 +-------------------+--------+--------+--------+
-| starsky           | 64,5%  | 61,5%  | 68,7%  |
+| starskygeocore    | 90,6%  | 80,23% | 100%   |
 +-------------------+--------+--------+--------+
-| starsky.Views     | 0%     | 0%     | 0%     |
+| starskysynccli    | 59,45% | 50%    | 100%   |
 +-------------------+--------+--------+--------+
-| starskycore       | 92,8%  | 85,6%  | 96,1%  |
+| starsky           | 65,43% | 65,33% | 88,88% |
 +-------------------+--------+--------+--------+
-| starskygeocli     | 71,6%  | 59,7%  | 90,9%  |
+| starskywebftpcli  | 27,27% | 28,88% | 37,5%  |
 +-------------------+--------+--------+--------+
-| starskysynccli    | 49,1%  | 50%    | 100%   |
+| starskygeocli     | 0%     | 0%     | 0%     |
 +-------------------+--------+--------+--------+
-| starskywebhtmlcli | 73,6%  | 74,1%  | 100%   |
+| starskywebhtmlcli | 70%    | 70,96% | 79,16% |
++-------------------+--------+--------+--------+
+| starskycore       | 90,72% | 87,27% | 90,75% |
 +-------------------+--------+--------+--------+
 
-Total Line: 81,9%
-Total Branch: 60,5%
-Total Method: 89,1%
++---------+--------+--------+--------+
+|         | Line   | Branch | Method |
++---------+--------+--------+--------+
+| Total   | 83,58% | 82,02% | 89,8%  |
++---------+--------+--------+--------+
+| Average | 57,63% | 54,66% | 70,89% |
++---------+--------+--------+--------+
 ```

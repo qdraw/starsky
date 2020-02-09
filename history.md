@@ -16,7 +16,10 @@
 - []  (feature) Creating thumbnails from Web Interface (including status)
 - [] Change from `Newtonsoft.Json` to `System.Text.Json` __not implemented__
 
-# version 0.1.15 - 2020-??
+# version 0.1.16 - 2020-02-??
+- []  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix
+
+# version 0.1.15 - 2020-02-06
 - [x]  (bugfix) _Front-end_ Drag'n drop is now only with files
 - [x]  _Legacy starsky.netframework_ 0.1.15 release included
 - [x]  _dependecies_ Microsoft.EntityFrameworkCore, Microsoft.Extensions.Configuration to 3.1.1
@@ -98,7 +101,6 @@
 
 # version 0.1.9 - 2019-12-01
 _Upgrade to .NET Core 3.0 & EF Core 3.1-preview3_
-- [x] _Legacy starsky.netframework_ 0.1.9 release included
 - [x] use for example '3 hours' instead of yesterday in detailview
 - [x] (bugfix) EventTarget issue (Safari) when using /import
 - [x] (azure-pipeline) add yaml file to replace classic build pipeline
@@ -125,7 +127,6 @@ _Upgrade to .NET Core 3.0 & EF Core 3.1-preview3_
 - [x]   (bug) Force sync and renew for directories that contain a + sign are passing the wrong values (fixed)
 - [x]   Add unit tests for importing raw's with .xmp files
 - [x]   (starsky-tools) add Dropbox import helper tool
-- [x] _Legacy starsky.netframework_ 0.1.8 release included
 
 # version 0.1.7 - 2019-09-27
 _Works with  .NET Core SDK 3.0.100_
@@ -149,7 +150,6 @@ _Works with  .NET Core SDK 3.0.100_
 - (dotnet) version from 2.2.6 to 2.2.7
 - (dotnet) Microsoft.AspNetCore.App 2.2.7 is added as dependency to avoid mixed version errors
 - (bugfix) menu-archive press TrashSelection gives no 404 error anymore
--  _Legacy starsky.netframework_ 0.1.7 release included
 
 # version 0.1.6 - 2019-09-12
 __For this version you need to downgrade the .NET Core SDK to SDK 2.2.401__
