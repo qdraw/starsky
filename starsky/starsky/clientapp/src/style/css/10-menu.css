@@ -9,6 +9,8 @@
   background: #263238; 
   color: #fff;
   transition: background 400ms ease-in-out;
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
 }
 
 .header.header--edit {
