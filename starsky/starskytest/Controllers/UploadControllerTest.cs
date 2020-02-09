@@ -60,7 +60,9 @@ namespace starskytest.Controllers
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
 			_createAnImage = new CreateAnImage();
-			_appSettings = new AppSettings();
+			_appSettings = new AppSettings { 
+				TempFolder = _createAnImage.BasePath
+			};
 
 			_iStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_createAnImage.DbPath}, 
