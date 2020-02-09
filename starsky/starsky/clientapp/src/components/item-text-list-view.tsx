@@ -7,7 +7,7 @@ import { Language } from '../shared/language';
 interface ItemListProps {
   fileIndexItems: IFileIndexItem[];
   isLoading?: boolean;
-  callback(path: string): void;
+  callback?(path: string): void;
 }
 /**
  * A list with links to the items
@@ -32,6 +32,7 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = ((props) => {
               "box isDirectory-false error"}
             key={item.filePath + item.lastEdited}>
             {item.isDirectory ? <button data-test={"btn-" + item.fileName} onClick={() => {
+              if (!props.callback) return;
               props.callback(item.filePath)
             }}>{item.fileName}</button> : null}
             {!item.isDirectory ? item.fileName : null}

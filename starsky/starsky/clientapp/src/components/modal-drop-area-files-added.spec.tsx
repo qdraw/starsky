@@ -18,11 +18,14 @@ describe("ModalDropAreaFilesAdded", () => {
       var exampleList = [{
         fileName: 'test'
       } as IFileIndexItem];
-      var callback = jest.fn();
-      var component = mount(<ModalDropAreaFilesAdded isOpen={true} uploadFilesList={exampleList} handleExit={callback()} />);
+      var handleExitSpy = jest.fn();
+      var component = mount(<ModalDropAreaFilesAdded isOpen={true} uploadFilesList={exampleList} handleExit={handleExitSpy} />);
 
       //   expect.any(Function)
-      expect(itemTextListViewSpy).toBeCalledWith({ "callback": callback, fileIndexItems: exampleList });
+      expect(itemTextListViewSpy).toBeCalledWith({ fileIndexItems: exampleList });
+
+      component.unmount();
+
     });
 
   });
