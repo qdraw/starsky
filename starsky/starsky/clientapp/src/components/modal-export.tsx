@@ -120,10 +120,10 @@ const ModalExport: React.FunctionComponent<IModalExportProps> = (props) => {
     <div className="modal content--subheader">{isProcessing !== ProcessingState.server ? MessageDownloadSelection : MessageOneMomentPlease}</div>
     <div className="modal content--text">
       {isProcessing === ProcessingState.default && props.select && props.select.length === 1 ? <>
-        <a href={new UrlQuery().UrlDownloadPhotoApi(props.select[0], false)} download={new URLPath().FileNameBreadcrumb(props.select[0])}
+        <a href={new UrlQuery().UrlDownloadPhotoApi(props.select[0], false)} data-test="orginal" download={new URLPath().FileNameBreadcrumb(props.select[0])}
           target="_blank" rel="noopener noreferrer" className="btn btn--info">{MessageOrginalFile}</a>
         {singleFileThumbnailStatus ? <a href={new UrlQuery().UrlDownloadPhotoApi(props.select[0], true)}
-          download={new URLPath().FileNameBreadcrumb(props.select[0])}
+          download={new URLPath().FileNameBreadcrumb(props.select[0])} data-test="thumbnail"
           target="_blank" rel="noopener noreferrer" className={"btn btn--default"}>{MessageThumbnailFile}</a> : null}
       </> : null}
 
