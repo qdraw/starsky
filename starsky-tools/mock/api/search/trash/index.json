@@ -56,10 +56,9 @@
         "uno2",
         "testung",
         "kaars",
-        "heeeee eeeeee eellllllllaannnnnggwoord",
         "!delete!"
       ],
-      "tags": "uno, Test, eneco, Edge, test, uno2, testung, kaars, heeeee eeeeee eellllllllaannnnnggwoord, !delete!",
+      "tags": "uno, Test, eneco, Edge, test, uno2, testung, kaars, !delete!",
       "status": "Default",
       "description": "d",
       "title": "",

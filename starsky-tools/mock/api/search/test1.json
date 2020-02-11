@@ -1,0 +1,67 @@
+{
+  "offset": 1,
+  "fileIndexItems": [
+    {
+      "filePath": "/__starsky/01-dif/20180911_132245__DSC04646.arw",
+      "fileName": "20180911_132245__DSC04646.arw",
+      "fileHash": "ARIZV3F7UWOP5AAGWO44GJ2YDU",
+      "fileCollectionName": "20180911_132245__DSC04646",
+      "parentDirectory": "/__starsky/01-dif",
+      "isDirectory": false,
+      "keywords": [
+        "0123",
+        "test1"
+      ],
+      "tags": "0123, test1",
+      "status": "Default",
+      "description": "",
+      "title": "",
+      "dateTime": "2018-09-11T12:22:45",
+      "addToDatabase": "2019-08-19T16:00:53.5764243",
+      "lastEdited": "2020-01-16T09:33:51.5722191",
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "locationAltitude": 0.0,
+      "locationCity": "Oldeberkoop",
+      "locationState": "Friesland",
+      "locationCountry": "Nederland",
+      "colorClass": 3,
+      "orientation": "Horizontal",
+      "imageWidth": 5504,
+      "imageHeight": 3656,
+      "imageFormat": "tiff",
+      "collectionPaths": [],
+      "aperture": 9.0,
+      "shutterSpeed": "1/500",
+      "isoSpeed": 1600,
+      "software": null,
+      "makeModel": "Sony|SLT-A58|",
+      "make": "Sony",
+      "model": "SLT-A58",
+      "focalLength": 18.0
+    }
+  ],
+  "breadcrumb": [
+    "/",
+    "test1"
+  ],
+  "searchQuery": "test1",
+  "pageNumber": 1,
+  "lastPageNumber": 1,
+  "searchCount": 3,
+  "collectionsCount": 3,
+  "searchIn": [
+    "Tags"
+  ],
+  "searchFor": [
+    "test1"
+  ],
+  "searchForOptions": [
+    2
+  ],
+  "pageType": "Search",
+  "elapsedSeconds": 0.023,
+  "searchOperatorOptions": [
+    true
+  ]
+}

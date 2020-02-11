@@ -35,7 +35,8 @@ const MediaContent: React.FC = () => {
       {pageType === PageType.ApplicationException ? <><MenuDefault isEnabled={false} />
         <div className="content--header">We hebben op dit moment een verstoring op de applicatie</div>
         <div className="content--subheader">Probeer de pagina te herladen</div></> : null}
-      {pageType === PageType.Archive && archive ? <ArchiveContextWrapper {...archive} /> : null}
+      {pageType === PageType.Archive && archive && archive.fileIndexItems !== undefined ?
+        <ArchiveContextWrapper {...archive} /> : null}
       {pageType === PageType.DetailView && detailView ? <DetailViewContextWrapper {...detailView} /> : null}
     </div>
   );
