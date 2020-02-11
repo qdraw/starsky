@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import useFetch from '../hooks/use-fetch';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useInterval from '../hooks/use-interval';
 import FetchGet from '../shared/fetch-get';
@@ -94,21 +95,16 @@ const ModalExport: React.FunctionComponent<IModalExportProps> = (props) => {
 
   const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] = React.useState(true);
 
-  // useEffect(() => {
-  //   /* some filetypes don't allow to be thumnailed by the backend server */
-  //   async function getThumbnailSingleFileStatus() {
-  //     if (!props.select || props.select.length !== 1) return;
+  function getFirstSelectResult(): string {
+    if (!props.select || props.select.length !== 1) return "";
+    return props.select[0];
+  }
 
-  //     var result = await FetchGet(new UrlQuery().UrlAllowedTypesThumb(props.select[0]));
+  var singleFileThumbResult = useFetch(new UrlQuery().UrlAllowedTypesThumb(getFirstSelectResult()), "get");
+  useEffect(() => {
+    setSingleFileThumbnailStatus(singleFileThumbResult.data !== false);
+  }, [singleFileThumbResult.data])
 
-  //     if (result && result.statusCode && result.statusCode === 415) {
-  //       setSingleFileThumbnailStatus(false);
-  //       return;
-  //     }
-  //     setSingleFileThumbnailStatus(true);
-  //   }
-  //   getThumbnailSingleFileStatus();
-  // }, [props]);
 
   return (<Modal
     id="detailview-export-modal"
