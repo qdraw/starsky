@@ -90,18 +90,6 @@ namespace starsky.Controllers
             return Json(fileIndexResultsList);
         }
 		
-		/// <summary>
-		/// A (string) list of allowed ExtensionSyncSupportedList MimeTypes for the import API
-		/// </summary>
-		/// <returns>Json list</returns>
-		[HttpGet("/api/import/allowed")]
-		public IActionResult AllowedImport()
-		{
-			var mimeTypes = ExtensionRolesHelper.ExtensionSyncSupportedList.Select(MimeHelper.GetMimeType).ToHashSet();
-			return Json(mimeTypes);
-		} 
-
-	    
 	    /// <summary>
 	    /// Upload thumbnail to ThumbnailTempFolder
 	    /// Make sure that the filename is correct, a base32 hash of length 26;

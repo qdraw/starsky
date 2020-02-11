@@ -8,7 +8,7 @@ import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import Modal from './modal';
 
-interface IModalTrashProps {
+interface IModalExportProps {
   isOpen: boolean;
   select: Array<string> | undefined;
   handleExit: Function;
@@ -23,7 +23,7 @@ enum ProcessingState {
   fail
 }
 
-const ModalExport: React.FunctionComponent<IModalTrashProps> = (props) => {
+const ModalExport: React.FunctionComponent<IModalExportProps> = (props) => {
 
   // content
   const settings = useGlobalSettings();
@@ -99,9 +99,9 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = (props) => {
     async function getThumbnailSingleFileStatus() {
       if (!props.select || props.select.length !== 1) return;
 
-      var result = await FetchGet(new UrlQuery().UrlDownloadPhotoApi(props.select[0], true));
+      var result = await FetchGet(new UrlQuery().UrlAllowedTypesThumb(props.select[0]));
 
-      if (result && result.statusCode && result.statusCode === 500) {
+      if (result && result.statusCode && result.statusCode === 415) {
         setSingleFileThumbnailStatus(false);
         return;
       }

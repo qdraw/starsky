@@ -24,7 +24,8 @@
 		"tslint.enable": true,
 		"jest.disabledWorkspaceFolders": [
 			"node_modules",
-			"mock"
+			"mock",
+			"history.md"
 		],
 		"typescript.preferences.quoteStyle": "single",
 		"typescript.updateImportsOnFileMove.enabled": "always",

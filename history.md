@@ -17,8 +17,9 @@
 
 # version 0.1.16 - 2020-02-??
 - [x]  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix
-- [x]  (change) _Back-end_)_ Change from `Newtonsoft.Json` to `System.Text.Json`
-- bug - trash display content after deleted
+- [x]  (change) _Back-end_ Change from `Newtonsoft.Json` to `System.Text.Json`
+- [x]  (bugfix) _Frond-end_ Trash display content after deleted (changes in wrapper)
+- [x]  (rename) _Back-end_ `/api/import/allowed` to `/api/allowed-types/mimetype/sync`
 
 # version 0.1.15 - 2020-02-06
 - [x]  (bugfix) _Front-end_ Drag'n drop is now only with files
