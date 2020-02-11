@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../../../starsky-tools/mock"
 		}
 	],
 	"settings": {
@@ -19,6 +22,10 @@
 		"javascript.updateImportsOnFileMove.enabled": "always",
 		"tslint.autoFixOnSave": true,
 		"tslint.enable": true,
+		"jest.disabledWorkspaceFolders": [
+			"node_modules",
+			"mock"
+		],
 		"typescript.preferences.quoteStyle": "single",
 		"typescript.updateImportsOnFileMove.enabled": "always",
 	}
