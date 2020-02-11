@@ -3,6 +3,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as useFetch from '../hooks/use-fetch';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
+import * as Modal from './modal';
 import ModalExport from './modal-export';
 
 describe("ModalExport", () => {
@@ -59,6 +60,24 @@ describe("ModalExport", () => {
       jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
       modal.unmount();
     });
+  });
+
+  it("test if handleExit is called", () => {
+    // simulate if a user press on close
+    // use as ==> import * as Modal from './modal';
+    jest.spyOn(Modal, 'default').mockImplementationOnce((props) => {
+      props.handleExit();
+      return <>{props.children}</>
+    });
+
+    var handleExitSpy = jest.fn();
+
+    var component = mount(<ModalExport select={["/"]} isOpen={true} handleExit={handleExitSpy} />);
+
+    expect(handleExitSpy).toBeCalled();
+
+    // and clean afterwards
+    component.unmount();
   });
 
 
