@@ -33,6 +33,10 @@ The general application is Starsky (sln). You need to [install the solution](sta
 _See `./azure-pipelines-starsky.yml` for details_
 
 
+## Changelog and history of this project
+
+There is a version log and backlog available on the [history and changelog page](history.md)
+
 ### Sonarqube
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=coverage)](https://sonarcloud.io/dashboard?id=starsky)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=bugs)](https://sonarcloud.io/dashboard?id=starsky)
@@ -40,6 +44,4 @@ _See `./azure-pipelines-starsky.yml` for details_
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=starsky)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=starsky)
 
-## Changelog and history of this project
 
-There is a version log and backlog available on the [history page](history.md)

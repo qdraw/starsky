@@ -126,11 +126,11 @@ const ModalExport: React.FunctionComponent<IModalExportProps> = (props) => {
       {isProcessing === ProcessingState.default && props.select && props.select.length >= 2 ? <>
         <button onClick={() => {
           postZip(false)
-        }} className="btn btn--info">{MessageOrginalFile}</button>
+        }} className="btn btn--info" data-test="orginal">{MessageOrginalFile}</button>
 
         <button onClick={() => {
           postZip(true)
-        }} className="btn btn--default">{MessageThumbnailFile}</button>
+        }} className="btn btn--default" data-test="thumbnail">{MessageThumbnailFile}</button>
       </> : null}
 
       {isProcessing === ProcessingState.server ? <>

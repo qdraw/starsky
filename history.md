@@ -20,6 +20,7 @@
 - [x]  (change) _Back-end_ Change from `Newtonsoft.Json` to `System.Text.Json`
 - [x]  (bugfix) _Frond-end_ Trash display content after deleted (changes in wrapper)
 - [x]  (rename) _Back-end_ `/api/import/allowed` to `/api/allowed-types/mimetype/sync`
+- [x]  (upgrade) _Frond-end_  Upgrade ClientApp CRA _(Create React App 3.3.1, 2020-01-31)_
 - [] Add limit length for search queries __not implemented__
 - [] Add limit length for tags __not implemented__
 
