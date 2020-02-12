@@ -20,6 +20,8 @@
 - [x]  (change) _Back-end_ Change from `Newtonsoft.Json` to `System.Text.Json`
 - [x]  (bugfix) _Frond-end_ Trash display content after deleted (changes in wrapper)
 - [x]  (rename) _Back-end_ `/api/import/allowed` to `/api/allowed-types/mimetype/sync`
+- [] Add limit length for search queries __not implemented__
+- [] Add limit length for tags __not implemented__
 
 # version 0.1.15 - 2020-02-06
 - [x]  (bugfix) _Front-end_ Drag'n drop is now only with files
