@@ -71,6 +71,8 @@ const ModalExport: React.FunctionComponent<IModalExportProps> = (props) => {
 
     var zipKeyResult = await FetchPost(new UrlQuery().UrlExportPostZipApi(), bodyParams.toString());
 
+    console.log(zipKeyResult);
+
     if (zipKeyResult.statusCode !== 200 || !zipKeyResult.data) {
       setProcessing(ProcessingState.fail);
       return;
