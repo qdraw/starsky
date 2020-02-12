@@ -43,7 +43,7 @@ export const fetchContent = async (url: string,
     statusCode = res.status;
   } catch (event) {
     // DOMException: "The operation was aborted"
-    console.error("use-fetch", event);
+    console.error("use-fetch", event, url);
   }
 
   var response = {
