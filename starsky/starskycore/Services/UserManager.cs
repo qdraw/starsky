@@ -133,7 +133,19 @@ public class UserManager : IUserManager
 	    {
 		    if ( !IsCacheEnabled() ) return;
 		    var allUsers = AllUsers();
+		    if(allUsers.Contains(user)) return;
 		    allUsers.Add(user);
+		    _cache.Set("UserManager_AllUsers", allUsers, new TimeSpan(99,0,0));
+	    }
+	    
+	    /// <summary>
+	    /// Remove one user from cache
+	    /// </summary>
+	    internal void RemoveUserFromCache(User user)
+	    {
+		    if ( !IsCacheEnabled() ) return;
+		    var allUsers = AllUsers();
+		    allUsers.Remove(user);
 		    _cache.Set("UserManager_AllUsers", allUsers, new TimeSpan(99,0,0));
 	    }
 
@@ -302,9 +314,13 @@ public class UserManager : IUserManager
             _dbContext.SaveChanges();
             return new ChangeSecretResult(success: true);
         }
-        
-       
-        public ValidateResult Validate(string credentialTypeCode, string identifier, string secret)
+
+        /// <summary>
+        /// Get the CredentialType by the credentialTypeCode
+        /// </summary>
+        /// <param name="credentialTypeCode">code to get the CredentialType</param>
+        /// <returns>CredentialType</returns>
+        private CredentialType CachedCredentialType(string credentialTypeCode)
         {
 	        // Add caching for credentialType
 	        CredentialType credentialType;
@@ -321,6 +337,21 @@ public class UserManager : IUserManager
 			        _cache.Set("credentialTypeCode_" + credentialTypeCode, credentialType, 
 				        new TimeSpan(99,0,0));
 	        }
+
+	        return credentialType;
+        }
+        
+       
+        /// <summary>
+        /// Is the username and password combination correct
+        /// </summary>
+        /// <param name="credentialTypeCode">default: email</param>
+        /// <param name="identifier">email</param>
+        /// <param name="secret">password</param>
+        /// <returns>status</returns>
+        public ValidateResult Validate(string credentialTypeCode, string identifier, string secret)
+        {
+	        var credentialType = CachedCredentialType(credentialTypeCode);
 
 	        if (credentialType == null)
             {
@@ -377,6 +408,33 @@ public class UserManager : IUserManager
             );
             // Required in the direct context;  when using a REST like call
             httpContext.User = principal;
+        }
+
+        /// <summary>
+        /// Remove user from database
+        /// </summary>
+        /// <param name="credentialTypeCode">default: email</param>
+        /// <param name="identifier">email address</param>
+        /// <returns>status</returns>
+        public ValidateResult RemoveUser(string credentialTypeCode, string identifier)
+        {
+	        var credentialType = CachedCredentialType(credentialTypeCode);
+	        Credential credential = _dbContext.Credentials.FirstOrDefault(
+		        c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+	        var user = _dbContext.Users.FirstOrDefault(p => p.Id == credential.UserId);
+
+	        var userRole = _dbContext.UserRoles.FirstOrDefault(p => p.UserId == credential.UserId);
+	        
+	        if(userRole == null || user == null || credential == null) return new ValidateResult{Success = false, Error = ValidateResultError.CredentialNotFound};
+
+	        _dbContext.Credentials.Remove(credential);
+	        _dbContext.Users.Remove(user);
+	        _dbContext.UserRoles.Remove(userRole);
+	        _dbContext.SaveChanges();
+	        
+	        RemoveUserFromCache(user);
+	        
+	        return new ValidateResult{Success = true};
         }
         
         public async void SignOut(HttpContext httpContext)
