@@ -18,7 +18,7 @@ namespace starskytest.Controllers
 			appSettings.Structure = "/yyyyMMdd/{filenamebase}.ext";
 			var controller = new RedirectController(appSettings);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			var result = controller.SubpathRelative(0, true) as JsonResult;
+			var result = controller.SubPathRelative(0, true) as JsonResult;
 
 			var today = "/" + DateTime.Now.ToString("yyyyMMdd") + "/";
 			Assert.AreEqual(today,result.Value);
@@ -31,7 +31,7 @@ namespace starskytest.Controllers
 			appSettings.Structure = "/yyyyMMdd/{filenamebase}.ext";
 			var controller = new RedirectController(appSettings);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			var result = controller.SubpathRelative(1, true) as JsonResult;
+			var result = controller.SubPathRelative(1, true) as JsonResult;
 
 			var today = "/" + DateTime.Now.AddDays(-1).ToString("yyyyMMdd") + "/";
 			Assert.AreEqual(today, result.Value);
@@ -44,7 +44,7 @@ namespace starskytest.Controllers
 			appSettings.Structure = "/yyyyMMdd/{filenamebase}.ext";
 			var controller = new RedirectController(appSettings);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			var result = controller.SubpathRelative(201801020, true) as JsonResult;
+			var result = controller.SubPathRelative(201801020, true) as JsonResult;
 			// 201801020= not a date but a large number ==> fallback to today
 			var today = "/" + DateTime.Now.ToString("yyyyMMdd") + "/";
 			Assert.AreEqual(today, result.Value);
@@ -57,7 +57,7 @@ namespace starskytest.Controllers
 			appSettings.Structure = "/yyyyMMdd/{filenamebase}.ext";
 			var controller = new RedirectController(appSettings);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			var result = controller.SubpathRelative(0, false) as RedirectToActionResult;
+			var result = controller.SubPathRelative(0, false) as RedirectToActionResult;
 
 			var today = "/" + DateTime.Now.ToString("yyyyMMdd") + "/";
 

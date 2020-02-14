@@ -26,7 +26,8 @@ namespace starsky.Controllers
 		[HttpGet("/redirect/SubpathRelative")]
 		[ProducesResponseType(200)] // value
 		[ProducesResponseType(301)] // redirect
-		public IActionResult SubpathRelative(int value, bool json = true)
+		[Produces("application/json")]
+		public IActionResult SubPathRelative(int value, bool json = true)
 		{
 			if(value >= 1) value = value * -1; // always in the past
 			// Fallback for dates older than 24-11-1854 to avoid a exception.

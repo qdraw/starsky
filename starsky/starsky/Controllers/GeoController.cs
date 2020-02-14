@@ -8,6 +8,7 @@ using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
+using starskygeocore.Models;
 using starskygeocore.Services;
 
 namespace starsky.Controllers
@@ -40,12 +41,16 @@ namespace starsky.Controllers
 		/// <summary>
 		/// Get Geo sync status (WIP)
 		/// </summary>
-		/// <param name="f"></param>
-		/// <returns></returns>
+		/// <param name="f">sub path folders</param>
+		/// <returns>status of geo sync</returns>
+		/// <response code="200">the current status</response>
+		/// <response code="404">cache service is missing</response>
 		[HttpGet("/api/geo/status")]
+		[ProducesResponseType(typeof(GeoCacheStatus),200)] // "cache service is missing"
+		[ProducesResponseType(typeof(string),404)] // "Not found"
+		[Produces("application/json")]
 		public IActionResult Status(
-			string f = "/" 
-		)
+			string f = "/")
 		{
 			if ( _cache == null ) return NotFound("cache service is missing");
 			return Json(new GeoCacheStatusService(_cache).Status(f));
@@ -60,11 +65,12 @@ namespace starsky.Controllers
 		/// <param name="overwriteLocationNames"> -a in cli</param>
 		/// <returns></returns>
 		/// <response code="200">event is fired</response>
-		/// <response code="404">subpath not found in the database</response>
+		/// <response code="404">sub path not found in the database</response>
 		/// <response code="401">User unauthorized</response>
 		[HttpPost("/api/geo/sync")]
 		[Produces("application/json")]
-		[ProducesResponseType(404)]
+		[ProducesResponseType(typeof(string),404)] // event is fired
+		[ProducesResponseType(typeof(string),200)] // "Not found"
 		public IActionResult SyncFolder(
 			string f = "/",
 			bool index = true,

@@ -46,6 +46,7 @@ namespace starsky.Controllers
 		/// <response code="415">Wrong input (e.g. wrong extenstion type)</response>
 		[HttpPost("/import")]
         [DisableFormValueModelBinding]
+		[Produces("application/json")]
 		[RequestFormLimits(MultipartBodyLengthLimit = 320_000_000)]
 		[RequestSizeLimit(320_000_000)] // in bytes, 305MB
 		[ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
@@ -97,6 +98,7 @@ namespace starsky.Controllers
 	    /// <returns>json of thumbnail urls</returns>
 	    [HttpPost("/import/thumbnail")]
 	    [DisableFormValueModelBinding]
+	    [Produces("application/json")]
 	    [RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
 	    [RequestSizeLimit(100_000_000)] // in bytes, 100MB
 	    public async Task<IActionResult> Thumbnail()
@@ -147,6 +149,7 @@ namespace starsky.Controllers
 	    [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
 	    [ProducesResponseType(typeof(List<ImportIndexItem>),206)] // file already imported
 	    [ProducesResponseType(404)] // url 404
+	    [Produces("application/json")]
         public async Task<IActionResult> FromUrl(string fileUrl, string filename, string structure)
         {
 	        if (filename == null) filename = Base32.Encode(FileHash.GenerateRandomBytes(8)) + ".unknown";
@@ -168,7 +171,14 @@ namespace starsky.Controllers
             return Json(importedFiles);
         }
 
+	    /// <summary>
+	    /// Today's imported files
+	    /// </summary>
+	    /// <returns>list of files</returns>
+	    /// <response code="200">done</response>
 	    [HttpGet("/import/history")]
+	    [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
+	    [Produces("application/json")]
 	    public IActionResult History()
 	    {
 		    return Json(_import.History());

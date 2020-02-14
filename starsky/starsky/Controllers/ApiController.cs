@@ -118,7 +118,7 @@ namespace starsky.Controllers
 					var collectionsDetailView = _query.SingleItem(collectionSubPath, null, collections, false);
 					
 					// Check if extension is supported for ExtensionExifToolSupportedList
-					// Not all files are able to write with exiftool
+					// Not all files are able to write with exifTool
 					if(!ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
 					{
 						collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
@@ -170,7 +170,7 @@ namespace starsky.Controllers
 
 	    
 	    /// <summary>
-	    /// Work in progress: Search and Replace text
+	    /// Search and Replace text in meta information 
 	    /// </summary>
 	    /// <param name="f">subPath filepath to file, split by dot comma (;)</param>
 	    /// <param name="fieldName">name of fileIndexItem field e.g. Tags</param>
@@ -178,8 +178,12 @@ namespace starsky.Controllers
 	    /// <param name="replace">replace [search] with this text</param>
 	    /// <param name="collections">enable collections</param>
 	    /// <returns>list of changed files</returns>
+	    /// <response code="200">Initialized replace job</response>
+	    /// <response code="404">item(s) not found</response>
 	    /// <response code="401">User unauthorized</response>
 	    [HttpPost("/api/replace")]
+	    [ProducesResponseType(typeof(List<FileIndexItem>),200)]
+	    [ProducesResponseType(typeof(List<FileIndexItem>),404)]
 	    [Produces("application/json")]
 	    public IActionResult Replace(string f, string fieldName, string search, string replace, bool collections = true)
 	    {

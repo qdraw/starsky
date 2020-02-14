@@ -23,13 +23,33 @@ namespace starsky.Controllers
 				"clientapp", "build", "index.html");
 		}
 
-	
+		/// <summary>
+		/// Home page
+		/// </summary>
+		/// <param name="f">subPath</param>
+		/// <returns>client app html</returns>
+		/// <response code="200">client app html</response>
+		/// <response code="401">Login first</response>
+		[Produces("text/html")]
+		[ProducesResponseType(200)]
+		[ProducesResponseType(401)]
 		public IActionResult Index(string f = "")
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			return PhysicalFile(_clientApp, "text/html");
 		}
 
+		/// <summary>
+		/// Redirect to search GET page
+		/// </summary>
+		/// <param name="t">search query</param>
+		/// <param name="p">page number</param>
+		/// <returns>client app html</returns>
+		/// <response code="301">redirect to get page</response>
+		/// <response code="401">Login first</response>
+		[Produces("text/html")]
+		[ProducesResponseType(301)]
+		[ProducesResponseType(401)]
 		[HttpPost("/search")]
 		public IActionResult SearchPost(string t = "", int p = 0)
 		{
@@ -47,6 +67,21 @@ namespace starsky.Controllers
 			return Redirect($"/search?t={t}&p={p}");
 		}
 
+		/// <summary>
+		/// Search GET page
+		/// </summary>
+		/// <param name="t">search query</param>
+		/// <param name="p">page number</param>
+		/// <returns>client app html</returns>
+		/// <response code="200">client app html</response>
+		/// <response code="301">Is Case Sensitive Redirect</response>
+		/// <response code="400">input not allowed</response>
+		/// <response code="401">Login first</response>
+		[Produces("text/html")]
+		[ProducesResponseType(200)]
+		[ProducesResponseType(301)]
+		[ProducesResponseType(400)]
+		[ProducesResponseType(401)]
 		[HttpGet("/search")]
 		public IActionResult Search(string t= "", int p = 0)
 		{
@@ -70,6 +105,18 @@ namespace starsky.Controllers
 			return Redirect($"/search?t={t}&p={p}");
 		}
 		
+		/// <summary>
+		/// Trash page
+		/// </summary>
+		/// <param name="p">page number</param>
+		/// <returns>client app html</returns>
+		/// <response code="200">client app html</response>
+		/// <response code="301">Is Case Sensitive Redirect</response>
+		/// <response code="401">Login first</response>
+		[Produces("text/html")]
+		[ProducesResponseType(200)]
+		[ProducesResponseType(301)]
+		[ProducesResponseType(401)]
 		[HttpGet("/trash")]
 		public IActionResult Trash( int p = 0)
 		{
@@ -80,6 +127,15 @@ namespace starsky.Controllers
 			return PhysicalFile(_clientApp, "text/html");
 		}
 
+		/// <summary>
+		/// Import page
+		/// </summary>
+		/// <returns>client app html</returns>
+		/// <response code="200">client app html</response>
+		/// <response code="301">Is Case Sensitive Redirect</response>
+		[Produces("text/html")]
+		[ProducesResponseType(200)]
+		[ProducesResponseType(301)]
 		[HttpGet("/import")]
 		public IActionResult Import()
 		{
@@ -94,10 +150,12 @@ namespace starsky.Controllers
 		/// View the Register form
 		/// </summary>
 		/// <param name="returnUrl">when successful continue</param>
-		/// <returns></returns>
+		/// <returns>client app html</returns>
 		/// <response code="200">successful Register-page</response>
 		[HttpGet("/account/register")]
 		[AllowAnonymous]
+		[ProducesResponseType(200)]
+		[Produces("text/html")]
 		[ProducesResponseType(200)]
 		public IActionResult Register(string returnUrl = null)
 		{

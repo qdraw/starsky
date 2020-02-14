@@ -38,7 +38,8 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(ArchiveViewModel),200)]
 		[ProducesResponseType(404)]
-        public IActionResult Index(
+	    [ProducesResponseType(401)]
+	    public IActionResult Index(
             string f = "/", 
             string colorClass = null,
             bool collections = true,

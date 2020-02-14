@@ -43,11 +43,13 @@ namespace starsky.Controllers
 		/// <returns></returns>
 		/// <response code="200">Ok</response>
 		/// <response code="503">503 Service Unavailable</response>
+		/// <response code="401">Login first</response>
 		[HttpGet("/api/health/details")]
 		[Authorize]
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(HealthView),200)]
 		[ProducesResponseType(typeof(HealthView),503)]
+		[ProducesResponseType(401)]
 		public async Task<IActionResult> Details()
 		{
 			var result = await _service.CheckHealthAsync();

@@ -39,6 +39,7 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(List<SyncViewModel>),200)]
         [ProducesResponseType(typeof(List<SyncViewModel>),409)]
         [ProducesResponseType(typeof(string),401)]
+        [Produces("application/json")]	    
         public IActionResult Mkdir(string f)
         {
 	        var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
@@ -86,6 +87,7 @@ namespace starsky.Controllers
         [ActionName("Index")]
         [ProducesResponseType(typeof(List<SyncViewModel>),200)]
         [ProducesResponseType(typeof(string),401)]
+        [Produces("application/json")]	    
         public IActionResult SyncIndex(string f)
         {
             var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
@@ -161,6 +163,7 @@ namespace starsky.Controllers
 	    [ProducesResponseType(typeof(List<FileIndexItem>),200)]
 	    [ProducesResponseType(typeof(List<FileIndexItem>),404)]
 		[HttpPost("/sync/rename")]
+	    [Produces("application/json")]	    
 		public IActionResult Rename(string f, string to, bool collections = true)
 	    {
 		    var rename = new RenameFs(_query, _sync, _iStorage).Rename(f, to, collections);

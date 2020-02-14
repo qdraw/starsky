@@ -43,8 +43,9 @@ namespace starsky.Controllers
 		/// <response code="200">the name of the to generated zip file</response>
 		/// <response code="404">files not found</response>
 		[HttpPost("/export/createZip")]
-		[ProducesResponseType(200)] // "zipHash"
-		[ProducesResponseType(404)] // "Not found"
+		[ProducesResponseType(typeof(string),200)] // "zipHash"
+		[ProducesResponseType(typeof(List<FileIndexItem>),404)] // "Not found"
+		[Produces("application/json")]
 		public IActionResult CreateZip(string f, bool collections = true, bool thumbnail = false)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
