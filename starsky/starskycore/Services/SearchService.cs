@@ -39,9 +39,9 @@ namespace starskycore.Services
 	    /// <returns></returns>
         public SearchViewModel Search(string query = "", int pageNumber = 0, bool enableCache = true)
 	    {
-		    if ( !string.IsNullOrEmpty(query) && query.Length >= 255 )
+		    if ( !string.IsNullOrEmpty(query) && query.Length >= 400 )
 		    {
-			    throw new ArgumentException("Search Input Query is longer then 255 chars");
+			    throw new ArgumentException("Search Input Query is longer then 400 chars");
 		    }
 
             if(!enableCache || 
