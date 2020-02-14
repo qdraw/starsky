@@ -10,7 +10,7 @@ describe("FormControl", () => {
   });
 
   describe("with events", () => {
-    it("keydown max limit/preventDefault", () => {
+    it("limitLengthKey - keydown max limit/preventDefault", () => {
 
       var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">123456789</FormControl>);
 
@@ -26,7 +26,7 @@ describe("FormControl", () => {
       component.unmount();
     });
 
-    it("copy -> paste limit/preventDefault", () => {
+    it("limitLengthPaste - copy -> paste limit/preventDefault", () => {
 
       var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">123456789</FormControl>);
 
@@ -47,7 +47,7 @@ describe("FormControl", () => {
       component.unmount();
     });
 
-    it("copy -> paste ok", () => {
+    it("limitLengthPaste - copy -> paste ok", () => {
 
       var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">12345</FormControl>);
 
@@ -68,21 +68,21 @@ describe("FormControl", () => {
       component.unmount();
     });
 
-    it("onBlur limit/preventDefault", () => {
-
-      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">1234567890___</FormControl>);
+    it("limitLengthBlur - onBlur limit/preventDefault", () => {
+      var onBlurSpy = jest.fn();
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy} name="test">1234567890___</FormControl>);
 
       act(() => {
         component.simulate('blur')
       });
 
+      expect(onBlurSpy).toBeCalledTimes(0);
       expect(component.exists('.warning-box')).toBeTruthy();
 
       component.unmount();
     });
 
-    it("onBlur pushed/ok", () => {
-
+    it("limitLengthBlur - onBlur pushed/ok", () => {
       var onBlurSpy = jest.fn();
       var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy} name="test">123456789</FormControl>);
 
@@ -96,7 +96,7 @@ describe("FormControl", () => {
       component.unmount();
     });
 
-    it("onBlur limit", () => {
+    it("limitLengthBlur - onBlur limit", () => {
 
       var onBlurSpy = jest.fn();
       var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy} name="test">1234567890123</FormControl>);
