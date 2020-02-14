@@ -397,10 +397,8 @@ public class UserManager : IUserManager
             {
                 return -1;
             }
-            
-            int currentUserId;
-            
-            if (!int.TryParse(claim.Value, out currentUserId))
+
+            if (!int.TryParse(claim.Value, out var currentUserId))
             {
                 return -1;
             }
@@ -410,41 +408,34 @@ public class UserManager : IUserManager
         
         public User GetCurrentUser(HttpContext httpContext)
         {
-            int currentUserId = this.GetCurrentUserId(httpContext);
-            
-            if (currentUserId == -1)
-            {
-                return null;
-            }
-            
-            return this._dbContext.Users.Find(currentUserId);
+            var currentUserId = GetCurrentUserId(httpContext);
+            return currentUserId == -1 ? null : _dbContext.Users.Find(currentUserId);
         }
             
         private IEnumerable<Claim> GetUserClaims(User user)
         {
-            List<Claim> claims = new List<Claim>();
-            
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-            claims.Add(new Claim(ClaimTypes.Name, user.Name));
-            claims.AddRange(GetUserRoleClaims(user));
+	        var claims = new List<Claim>
+	        {
+		        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+		        new Claim(ClaimTypes.Name, user.Name)
+	        };
+
+	        claims.AddRange(GetUserRoleClaims(user));
             return claims;
         }
         
         private IEnumerable<Claim> GetUserRoleClaims(User user)
         {
-            List<Claim> claims = new List<Claim>();
+            var claims = new List<Claim>();
             IEnumerable<int> roleIds = this._dbContext.UserRoles.Where(
                 ur => ur.UserId == user.Id).Select(ur => ur.RoleId).ToList();
-            
-            if (roleIds != null)
+
+            foreach (var roleId in roleIds)
             {
-                foreach (int roleId in roleIds)
-                {
-                    Role role = this._dbContext.Roles.Find(roleId);
+	            Role role = _dbContext.Roles.Find(roleId);
                     
-                    claims.Add(new Claim(ClaimTypes.Role, role.Code));
-                    claims.AddRange(this.GetUserPermissionClaims(role));
-                }
+	            claims.Add(new Claim(ClaimTypes.Role, role.Code));
+	            claims.AddRange(GetUserPermissionClaims(role));
             }
             return claims;
         }

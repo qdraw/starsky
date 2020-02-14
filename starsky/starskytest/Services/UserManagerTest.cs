@@ -14,8 +14,8 @@ namespace starskytest.Services
 	[TestClass]
 	public class UserManagerTest
 	{
-		private IMemoryCache _memoryCache;
-		private ApplicationDbContext _dbContext;
+		private readonly IMemoryCache _memoryCache;
+		private readonly ApplicationDbContext _dbContext;
 
 		public UserManagerTest()
 		{

@@ -116,6 +116,30 @@ namespace starsky.Controllers
             return RedirectToAction("Login");
         }
         
+        /// <summary>
+        /// Update password for current user
+        /// </summary>
+        /// <param name="model">Email, password and remember me bool</param>
+        /// <returns>Login status</returns>
+        /// <response code="200">successful login</response>
+        /// <response code="401">login failed</response>
+        [HttpPost("/account/change-secret")]
+        [ProducesResponseType(typeof(string),200)]
+        [ProducesResponseType(typeof(string),401)]
+        [Produces("application/json")]
+        public async Task<IActionResult> ChangeSecret(RegisterViewModel model)
+        {
+	        if ( !User.Identity.IsAuthenticated ) return Unauthorized("false");
+
+	        if ( model.ConfirmPassword == model.Password )
+	        {
+		        var currentUserAddress =
+			        _userManager.GetCurrentUser(HttpContext).Credentials.;
+		        
+		        _userManager.ChangeSecret("Email", ,model.Password)
+	        }
+
+        }
 
         /// <summary>
         /// Create a new user
