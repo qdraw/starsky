@@ -4,9 +4,11 @@ import { Language } from '../shared/language';
 
 export interface IFormControlProps {
   contentEditable: boolean;
-  onBlur(event: React.ChangeEvent<HTMLDivElement>): void;
+  onBlur?(event: React.ChangeEvent<HTMLDivElement>): void;
+  onInput?(event: React.ChangeEvent<HTMLDivElement>): void;
   reference?: React.RefObject<HTMLDivElement>;
   name: string;
+  className?: string;
   maxlength?: number;
   children: React.ReactNode;
 }
@@ -31,8 +33,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
     var elementLength = element.currentTarget.innerHTML.length
     setChildLength(elementLength);
 
-    if (elementLength < maxlength || (element.key === "x" && element.ctrlKey) || (element.key === "x" && element.metaKey)
-      || element.key === "Delete" || element.key === "Backspace" || element.key === "Cut") return;
+    if (elementLength < maxlength || (element.key === "x" && element.ctrlKey) || (element.key === "x" && element.metaKey) || !element.key.match(/^.{0,1}$/)) return;
 
     element.preventDefault();
   }
@@ -44,8 +45,6 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
   var limitLengthPaste = function (element: React.ClipboardEvent<HTMLDivElement>) {
     if (childLength + element.clipboardData.getData('Text').length < maxlength) return;
     element.preventDefault();
-    console.log('prevent1');
-
     setChildLength(childLength + element.clipboardData.getData('Text').length);
   }
 
@@ -58,6 +57,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
       setChildLength(element.currentTarget.innerHTML.length);
       return;
     }
+    if (!props.onBlur) return;
     props.onBlur(element)
   }
 
@@ -66,11 +66,13 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
     <div onBlur={limitLengthBlur}
       data-name={props.name}
       onKeyDown={limitLengthKey}
+      onInput={props.onInput}
       onPaste={limitLengthPaste}
       ref={props.reference}
       suppressContentEditableWarning={true}
       contentEditable={props.contentEditable}
-      className={props.contentEditable ? "form-control" : "form-control disabled"}>
+      className={props.contentEditable ? `form-control ${props.className ? props.className : ""}` :
+        `form-control disabled ${props.className ? props.className : ""}`}>
       {props.children}
     </div></>
 };

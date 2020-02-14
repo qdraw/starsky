@@ -119,6 +119,7 @@ const Login: React.FC<ILoginProps> = () => {
                 autoComplete="off"
                 type="email"
                 name="email"
+                maxLength={80}
                 value={userEmail}
                 placeholder={MessageExampleUsername}
                 onChange={e => setUserEmail(e.target.value)}
@@ -130,6 +131,7 @@ const Login: React.FC<ILoginProps> = () => {
                 className="form-control"
                 type="password"
                 name="password"
+                maxLength={80}
                 value={userPassword}
                 placeholder={MessageExamplePassword}
                 onChange={e => setUserPassword(e.target.value)}

@@ -126,6 +126,7 @@ const AccountRegister: FunctionComponent = () => {
           autoComplete="off"
           type="email"
           name="email"
+          maxLength={80}
           value={userEmail}
           placeholder={MessageExampleUsername}
           onChange={e => setUserEmail(e.target.value)}
@@ -140,6 +141,7 @@ const AccountRegister: FunctionComponent = () => {
           autoComplete="off"
           type="password"
           name="password"
+          maxLength={80}
           placeholder={MessageExamplePassword}
           value={userPassword}
           onChange={e => setUserPassword(e.target.value)}
@@ -153,6 +155,7 @@ const AccountRegister: FunctionComponent = () => {
           disabled={!isFormEnabled}
           autoComplete="off"
           type="password"
+          maxLength={100}
           name="confirm-password"
           value={userConfirmPassword}
           onChange={e => setUserConfirmPassword(e.target.value)}
