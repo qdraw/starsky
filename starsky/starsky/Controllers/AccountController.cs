@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starsky.ViewModels.Account;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Models.Account;
@@ -119,26 +118,42 @@ namespace starsky.Controllers
         /// <summary>
         /// Update password for current user
         /// </summary>
-        /// <param name="model">Email, password and remember me bool</param>
+        /// <param name="model">Password, ChangedPassword and ChangedConfirmPassword</param>
         /// <returns>Login status</returns>
         /// <response code="200">successful login</response>
-        /// <response code="401">login failed</response>
+        /// <response code="400">old password is not correct or Model is not correct</response>
+        /// <response code="401"> please login first</response>
         [HttpPost("/account/change-secret")]
         [ProducesResponseType(typeof(string),200)]
+        [ProducesResponseType(typeof(string),400)]
         [ProducesResponseType(typeof(string),401)]
         [Produces("application/json")]
-        public async Task<IActionResult> ChangeSecret(RegisterViewModel model)
+        [Authorize]
+        public async Task<IActionResult> ChangeSecret(ChangePasswordViewModel model)
         {
-	        if ( !User.Identity.IsAuthenticated ) return Unauthorized("false");
+	        if ( !User.Identity.IsAuthenticated ) return Unauthorized("please login first");
 
-	        if ( model.ConfirmPassword == model.Password )
+	        if ( !ModelState.IsValid || model.ChangedPassword != model.ChangedConfirmPassword )
+		        return BadRequest("Model is not correct");
+	        
+	        var currentUserId =
+		        _userManager.GetCurrentUser(HttpContext).Id;
+
+	        var credential = _userManager.GetCredentialsByUserId(currentUserId);
+
+	        // Re-check password
+	        var validateResult =
+		        _userManager.Validate("Email", credential.Identifier, model.Password);
+	        if ( !validateResult.Success )
 	        {
-		        var currentUserAddress =
-			        _userManager.GetCurrentUser(HttpContext).Credentials.;
-		        
-		        _userManager.ChangeSecret("Email", ,model.Password)
+		        return BadRequest("Password is not correct");
 	        }
 
+	        var changeSecretResult =
+		        _userManager.ChangeSecret("Email", credential.Identifier,
+			        model.ChangedPassword);
+
+	        return Json(changeSecretResult);
         }
 
         /// <summary>

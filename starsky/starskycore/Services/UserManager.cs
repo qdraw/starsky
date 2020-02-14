@@ -277,9 +277,9 @@ public class UserManager : IUserManager
         
         public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
         {
-            CredentialType credentialType = _dbContext.CredentialTypes.FirstOrDefault(
-                ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
-            
+	        var credentialType = _dbContext.CredentialTypes.FirstOrDefault(
+		        ct => ct.Code.ToLower().Equals(credentialTypeCode.ToLower()));
+	        
             if (credentialType == null)
             {
                 return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialTypeNotFound);
@@ -408,10 +408,23 @@ public class UserManager : IUserManager
         
         public User GetCurrentUser(HttpContext httpContext)
         {
-            var currentUserId = GetCurrentUserId(httpContext);
-            return currentUserId == -1 ? null : _dbContext.Users.Find(currentUserId);
-        }
+	        int currentUserId = GetCurrentUserId(httpContext);
             
+	        if (currentUserId == -1)
+	        {
+		        return null;
+	        }
+
+	        var user = _dbContext.Users.Find(currentUserId);
+
+	        return this._dbContext.Users.Find(currentUserId);
+        }
+
+        public Credential GetCredentialsByUserId(int userId)
+        {
+	        return _dbContext.Credentials.FirstOrDefault(p => p.UserId == userId);
+		}
+
         private IEnumerable<Claim> GetUserClaims(User user)
         {
 	        var claims = new List<Claim>

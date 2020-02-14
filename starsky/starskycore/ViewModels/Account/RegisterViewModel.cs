@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace starsky.ViewModels.Account
+namespace starskycore.ViewModels.Account
 {
     public class RegisterViewModel
     {

@@ -61,6 +61,18 @@ namespace starskytest.Services
 			var result = userManager.Validate("email", "dont@mail.us", "pass");
 			Assert.AreEqual(true, result.Success);
 		}
+		
+		[TestMethod]
+		public void UserManager_ChangePassword_ChangeSecret()
+		{
+			var userManager = new UserManager(_dbContext, _memoryCache);
+
+			userManager.SignUp("user01", "email", "dont@mail.us", "pass123456789");
+
+			var result = userManager.ChangeSecret("email", "dont@mail.us", "pass123456789");
+			
+			Assert.AreEqual(true, result.Success);
+		}
 
 		[TestMethod]
 		public void UserManager_NoPassword_ExistingAccount()
