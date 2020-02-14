@@ -39,8 +39,8 @@ namespace starsky.Controllers
 			}
 			
 			// Added filter to prevent redirects based on tainted, user-controlled data
-			// unescaped: ^[a-zA-Z0-9_\-+"'/=:>< ]+$
-			if ( !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:>< ]+$") )
+			// unescaped: ^[a-zA-Z0-9_\-+"'/=:,\.>< ]+$
+			if ( !Regex.IsMatch(t, "^[a-zA-Z0-9_\\-+\"'/=:,\\.>< ]+$") )
 			{
 				return BadRequest("`t` is not allowed");
 			}
