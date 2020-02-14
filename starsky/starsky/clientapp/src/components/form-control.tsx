@@ -20,7 +20,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const fieldMaxLength = language.token(language.text("Het onderstaande veld mag maximaal {maxlength} tekens hebben",
+  const MessageFieldMaxLength = language.token(language.text("Het onderstaande veld mag maximaal {maxlength} tekens hebben",
     "The field below can have a maximum of {maxlength} characters"), ["{maxlength}"], [maxlength.toString()]);
 
   /**
@@ -68,7 +68,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
   }
 
   return <>
-    {childLength >= maxlength ? <div className="warning-box">{fieldMaxLength}</div> : childLength}
+    {childLength >= maxlength ? <div className="warning-box">{MessageFieldMaxLength}</div> : null}
     <div onBlur={limitLengthBlur}
       data-name={props.name}
       onKeyDown={limitLengthKey}
