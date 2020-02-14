@@ -30,11 +30,12 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
   var limitLengthKey = function (element: React.KeyboardEvent<HTMLDivElement>) {
     if (!maxlength) return;
 
-    setChildLength(element.currentTarget.innerHTML.length);
+    var elementLength = element.currentTarget.innerHTML.length
+    setChildLength(elementLength);
 
-    console.log('limitLengthKey', element.currentTarget.innerHTML.length, childLength <= maxlength);
+    console.log('limitLengthKey', elementLength, elementLength <= maxlength);
 
-    if (element.currentTarget.innerHTML.length <= maxlength || (element.key === "x" && element.ctrlKey) || (element.key === "x" && element.metaKey)
+    if (elementLength <= maxlength || (element.key === "x" && element.ctrlKey) || (element.key === "x" && element.metaKey)
       || element.key === "Delete" || element.key === "Backspace" || element.key === "Cut") return;
 
     console.log('prevent');
