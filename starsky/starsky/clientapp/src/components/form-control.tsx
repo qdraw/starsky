@@ -68,7 +68,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
   }
 
   return <>
-    {childLength >= maxlength ? <div className="warning-box">{fieldMaxLength}</div> : null}
+    {childLength >= maxlength ? <div className="warning-box">{fieldMaxLength}</div> : childLength}
     <div onBlur={limitLengthBlur}
       data-name={props.name}
       onKeyDown={limitLengthKey}
