@@ -44,11 +44,11 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
    * @param element ClipboardEvent
    */
   var limitLengthPaste = function (element: React.ClipboardEvent<HTMLDivElement>) {
-    console.log('limitLengthPaste', element.clipboardData.getData('Text').length, childLength < maxlength);
+    console.log('limitLengthPaste', childLength, element.clipboardData.getData('Text').length, childLength < maxlength);
 
-    if (element.clipboardData.getData('Text').length <= maxlength) return;
+    if (childLength + element.clipboardData.getData('Text').length <= maxlength) return;
     element.preventDefault();
-    setChildLength(element.clipboardData.getData('Text').length);
+    setChildLength(childLength + element.clipboardData.getData('Text').length);
   }
 
   /**
