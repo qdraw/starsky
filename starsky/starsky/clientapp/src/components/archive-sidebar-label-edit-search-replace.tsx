@@ -9,6 +9,7 @@ import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { SidebarUpdate } from '../shared/sidebar-update';
 import { URLPath } from '../shared/url-path';
+import FormControl from './form-control';
 import Preloader from './preloader';
 
 
@@ -111,55 +112,37 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
 
       <h4>Tags:</h4>
-      <div data-name="tags"
-        onInput={handleUpdateChange}
-        suppressContentEditableWarning={true}
-        contentEditable={!state.isReadOnly && select.length !== 0}
-        className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+      <FormControl onInput={handleUpdateChange} name="tags" className="form-control--half inline-block"
+        contentEditable={!state.isReadOnly && select.length !== 0}>
         &nbsp;
-      </div>
+      </FormControl>
       <span className="arrow-to"></span>
-      <div data-name="replace-tags"
-        onInput={handleUpdateChange}
-        suppressContentEditableWarning={true}
-        contentEditable={!state.isReadOnly && select.length !== 0}
-        className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+      <FormControl onInput={handleUpdateChange} name="replace-tags" className="form-control--half inline-block"
+        contentEditable={!state.isReadOnly && select.length !== 0}>
         &nbsp;
-      </div>
+      </FormControl>
+
       <h4>Info:</h4>
-      <div
-        onInput={handleUpdateChange}
-        data-name="description"
-        suppressContentEditableWarning={true}
-        contentEditable={!state.isReadOnly && select.length !== 0}
-        className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+      <FormControl onInput={handleUpdateChange} name="description" className="form-control--half inline-block"
+        contentEditable={!state.isReadOnly && select.length !== 0}>
         &nbsp;
-      </div>
+      </FormControl>
       <span className="arrow-to"></span>
-      <div
-        onInput={handleUpdateChange}
-        data-name="replace-description"
-        suppressContentEditableWarning={true}
-        contentEditable={!state.isReadOnly && select.length !== 0}
-        className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+      <FormControl onInput={handleUpdateChange} name="replace-description" className="form-control--half inline-block"
+        contentEditable={!state.isReadOnly && select.length !== 0}>
         &nbsp;
-      </div>
+      </FormControl>
+
       <h4>{MessageTitleName}:</h4>
-      <div data-name="title"
-        onInput={handleUpdateChange}
-        suppressContentEditableWarning={true}
-        contentEditable={!state.isReadOnly && select.length !== 0}
-        className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+      <FormControl onInput={handleUpdateChange} name="title" className="form-control--half inline-block"
+        contentEditable={!state.isReadOnly && select.length !== 0}>
         &nbsp;
-      </div>
+      </FormControl>
       <span className="arrow-to"></span>
-      <div data-name="replace-title"
-        onInput={handleUpdateChange}
-        suppressContentEditableWarning={true}
-        contentEditable={!state.isReadOnly && select.length !== 0}
-        className={!state.isReadOnly && select.length !== 0 ? "form-control form-control--half inline-block" : "form-control form-control--half inline-block disabled"}>
+      <FormControl onInput={handleUpdateChange} name="replace-title" className="form-control--half inline-block"
+        contentEditable={!state.isReadOnly && select.length !== 0}>
         &nbsp;
-      </div>
+      </FormControl>
 
       {isInputEnabled && select.length !== 0 ?
         <button className="btn btn--default" onClick={() => pushSearchAndReplace()}>{MessageSearchAndReplaceName}</button> :

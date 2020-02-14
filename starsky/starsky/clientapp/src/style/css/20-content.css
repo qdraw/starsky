@@ -79,6 +79,7 @@
   }
 }
 
+.content--text .warning-box,
 .content .warning-box,
 .content > form > .content--error-true {
   background-color: #283593;
@@ -93,7 +94,7 @@
   margin-top:25px;
 }
 
-
+.content--text .warning-box:before,
 .content .warning-box:before,
 .content > form > .content--error-true:before {
     content: "";

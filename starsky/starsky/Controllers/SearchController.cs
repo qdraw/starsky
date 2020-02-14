@@ -26,6 +26,7 @@ namespace starsky.Controllers
 	    /// <response code="200">the search results</response>
 	    [HttpGet("/api/search")]
 	    [ProducesResponseType(typeof(SearchViewModel),200)] // ok
+	    [Produces("application/json")]
         public IActionResult Index(string t, int p = 0)
         {
             // Json api && View()            
@@ -44,6 +45,7 @@ namespace starsky.Controllers
         /// <response code="200">the search results</response>
         [HttpGet("/api/search/relativeObjects")]
         [ProducesResponseType(typeof(SearchViewModel),200)] // ok
+        [Produces("application/json")]
         public IActionResult SearchRelative(string f, string t, int p = 0)
         {
 	        // Json api && View()            
@@ -98,6 +100,7 @@ namespace starsky.Controllers
 	    /// <response code="200">the search results</response>
 	    [HttpGet("/api/search/trash")]
 	    [ProducesResponseType(typeof(SearchViewModel),200)] // ok
+	    [Produces("application/json")]
         public IActionResult Trash(int p = 0)
         {
             var model = _search.Search("!delete!", p, false);
@@ -116,6 +119,7 @@ namespace starsky.Controllers
 		[Produces("application/json")]	    
 		[ProducesResponseType(typeof(string),200)]
 		[ProducesResponseType(typeof(string),412)]
+		[ProducesResponseType(401)]
 	    public IActionResult RemoveCache(string t = "")
 	    {
 		    var cache = _search.RemoveCache(t);

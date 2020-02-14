@@ -38,7 +38,12 @@ namespace starskycore.Services
 	    /// <param name="enableCache">enable searchcache (in trash this is disabled) </param>
 	    /// <returns></returns>
         public SearchViewModel Search(string query = "", int pageNumber = 0, bool enableCache = true)
-        {
+	    {
+		    if ( !string.IsNullOrEmpty(query) && query.Length >= 500 )
+		    {
+			    throw new ArgumentException("Search Input Query is longer then 500 chars");
+		    }
+
             if(!enableCache || 
                _cache == null || _appSettings?.AddMemoryCache == false) 
                 return SkipSearchItems(SearchDirect(query),pageNumber);

@@ -1,64 +1,58 @@
 {
-   "fileIndexItems":[
+   "fileIndexItems": [
       {
-         "filePath":"/__starsky",
-         "fileName":"__starsky",
-         "fileHash":null,
-         "fileCollectionName":"__starsky",
-         "parentDirectory":"/",
-         "isDirectory":true,
-         "keywords":[
-         ],
-         "tags":"",
-         "status":"Default",
-         "description":"",
-         "title":"",
-         "dateTime":"0001-01-01T00:00:00",
-         "addToDatabase":"2019-08-19T15:59:25.3862634",
-         "lastEdited":"2019-08-19T15:59:25.3862568",
-         "latitude":0.0,
-         "longitude":0.0,
-         "locationAltitude":0.0,
-         "locationCity":"",
-         "locationState":"",
-         "locationCountry":"",
-         "colorClass":0,
-         "orientation":"DoNotChange",
-         "imageWidth":0,
-         "imageHeight":0,
-         "imageFormat":"unknown",
-         "collectionPaths":[
-         ],
-         "aperture":0.0,
-         "shutterSpeed":"",
-         "isoSpeed":0,
-         "software":null,
-         "makeModel":"",
-         "make":"",
-         "model":"",
-         "focalLength":0.0
+         "filePath": "/__starsky",
+         "fileName": "__starsky",
+         "fileHash": null,
+         "fileCollectionName": "__starsky",
+         "parentDirectory": "/",
+         "isDirectory": true,
+         "keywords": [],
+         "tags": "",
+         "status": "Default",
+         "description": "",
+         "title": "",
+         "dateTime": "0001-01-01T00:00:00",
+         "addToDatabase": "2019-08-19T15:59:25.3862634",
+         "lastEdited": "2019-08-19T15:59:25.3862568",
+         "latitude": 0.0,
+         "longitude": 0.0,
+         "locationAltitude": 0.0,
+         "locationCity": "",
+         "locationState": "",
+         "locationCountry": "",
+         "colorClass": 0,
+         "orientation": "DoNotChange",
+         "imageWidth": 0,
+         "imageHeight": 0,
+         "imageFormat": "unknown",
+         "collectionPaths": [],
+         "aperture": 0.0,
+         "shutterSpeed": "",
+         "isoSpeed": 0,
+         "software": null,
+         "makeModel": "",
+         "make": "",
+         "model": "",
+         "focalLength": 0.0
       }
    ],
-   "breadcrumb":[
+   "breadcrumb": [
       "/"
    ],
-   "relativeObjects":{
-      "nextFilePath":null,
-      "prevFilePath":null,
-      "args":{
-
-      }
+   "relativeObjects": {
+      "nextFilePath": null,
+      "prevFilePath": null,
+      "args": {}
    },
-   "searchQuery":"",
-   "pageType":"Archive",
-   "subPath":"/",
-   "isDirectory":true,
-   "collectionsCount":0,
-   "isReadOnly":false,
-   "colorClassFilterList":[
-
-   ],
-   "colorClassUsage":[
+   "searchQuery": "",
+   "pageType": "Archive",
+   "subPath": "/",
+   "isDirectory": true,
+   "collectionsCount": 0,
+   "isReadOnly": false,
+   "colorClassActiveList": [],
+   "colorClassUsage": [
       0
    ]
 }

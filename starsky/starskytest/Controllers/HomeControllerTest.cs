@@ -12,7 +12,7 @@ namespace starskytest.Controllers
 	public class HomeControllerTest
 	{
 		private readonly IAntiforgery _antiForgery;
-		private HttpContext _httpContext;
+		private readonly HttpContext _httpContext;
 
 		public HomeControllerTest()
 		{

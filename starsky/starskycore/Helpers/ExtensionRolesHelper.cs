@@ -142,7 +142,7 @@ namespace starskycore.Helpers
 		/// <value>
 		/// The extension thumb supported list.
 		/// </value>
-		private static List<string> ExtensionThumbSupportedList
+		public static List<string> ExtensionThumbSupportedList
 		{
 			get
 			{

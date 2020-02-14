@@ -51,6 +51,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(string),400)]
 		[ProducesResponseType(typeof(List<ImportIndexItem>),404)]
 		[ProducesResponseType(typeof(List<ImportIndexItem>),415)]  // Wrong input (e.g. wrong extenstion type)
+		[Produces("application/json")]	    
         public async Task<IActionResult> UploadToFolder()
 		{
 			var to = Request.Headers["to"].ToString();

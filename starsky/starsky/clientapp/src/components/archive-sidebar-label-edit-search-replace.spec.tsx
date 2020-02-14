@@ -8,6 +8,7 @@ import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import * as FetchPost from '../shared/fetch-post';
 import ArchiveSidebarLabelEditSearchReplace from './archive-sidebar-label-edit-search-replace';
+import FormControl from './form-control';
 
 
 describe("ArchiveSidebarLabelEditSearchReplace", () => {
@@ -18,12 +19,11 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
   it("isReadOnly: true", () => {
     const mainElement = shallow(<ArchiveSidebarLabelEditSearchReplace />);
 
-    var formControl = mainElement.find('.form-control');
+    var formControl = mainElement.find(FormControl);
 
     // there are 3 classes [title,info,description]
     formControl.forEach(element => {
-      var disabled = element.hasClass('disabled');
-      expect(disabled).toBeTruthy();
+      expect(element.props()["contentEditable"]).toBeFalsy();
     });
 
   });
@@ -64,7 +64,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
 
       const mainElement = shallow(<ArchiveSidebarLabelEditSearchReplace />);
 
-      var formControl = mainElement.find('.form-control');
+      var formControl = mainElement.find(FormControl);
 
       // there are 3 classes [title,info,description] 
       // but those exist 2 times!

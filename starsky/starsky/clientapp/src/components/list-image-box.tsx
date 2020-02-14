@@ -15,7 +15,7 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
 
   var history = useLocation();
 
-  // Check if select exist or lenght 0 or more
+  // Check if select exist or Length 0 or more
   const [select, setSelect] = React.useState(new URLPath().StringToIUrl(history.location.search).select);
   useEffect(() => {
     var inSelect = new URLPath().StringToIUrl(history.location.search).select;

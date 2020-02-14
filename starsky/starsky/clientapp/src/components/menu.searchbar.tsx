@@ -102,6 +102,7 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
           <form className="form-inline form-nav icon-addon" onSubmit={onFormSubmit}>
             <label htmlFor="search" className={inputFocus ? "icon-addon--search" : "icon-addon--search-focus"} />
             <input
+              maxLength={80}
               className={"form-control icon-addon--input"}
               onBlur={() => { setInputFocus(!inputFocus) }}
               onFocus={() => { setInputFocus(!inputFocus) }}

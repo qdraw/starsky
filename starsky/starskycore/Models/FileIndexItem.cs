@@ -1,3 +1,4 @@
+#define SYSTEM_TEXT_ENABLED
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -6,10 +7,14 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
 using starskycore.Helpers;
 using starskycore.Services;
+#if SYSTEM_TEXT_ENABLED
+using System.Text.Json.Serialization;
+#else
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+#endif
 
 namespace starskycore.Models
 {
@@ -242,7 +247,12 @@ namespace starskycore.Models
 		/// <value>
 		/// The display file status. (eg. NotFoundNotInIndex, Ok).
 		/// </value>
+		
+#if SYSTEM_TEXT_ENABLED
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+#else
 		[JsonConverter(typeof(StringEnumConverter))]
+#endif
 		[NotMapped]
         public ExifStatus Status { get; set; } = ExifStatus.Default;
         
@@ -517,7 +527,11 @@ namespace starskycore.Models
 		/// <value>
 		/// The orientation as enum item
 		/// </value>
+#if SYSTEM_TEXT_ENABLED
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+#else
 		[JsonConverter(typeof(StringEnumConverter))]
+#endif
 		public Rotation Orientation { get; set; } = Rotation.DoNotChange;
 
 		/// <summary>
@@ -699,7 +713,11 @@ namespace starskycore.Models
 		/// <value>
 		/// The image format as enum item
 		/// </value>
+#if SYSTEM_TEXT_ENABLED
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+#else
 		[JsonConverter(typeof(StringEnumConverter))]
+#endif
 		public ExtensionRolesHelper.ImageFormat ImageFormat { get; set; }
 
 		/// <summary>

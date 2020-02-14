@@ -1,0 +1,66 @@
+{
+  "fileIndexItem": {
+    "filePath": "/__starsky/01-dif/2018.01.01.17.00.01.jpg",
+    "fileName": "2018.01.01.17.00.01.jpg",
+    "fileHash": "XLMDPBLIR3NLZ7SHSPDAAKI5OA",
+    "fileCollectionName": "2018.01.01.17.00.01",
+    "parentDirectory": "/__starsky/01-dif",
+    "isDirectory": false,
+    "keywords": [
+      "uno",
+      "Test",
+      "Edge",
+      "test",
+      "uno2",
+      "testung",
+      "kaars",
+      "veryyyyyyyyyy looooooooooooonnggggggggg wooooooooorrrrrrddddddd"
+    ],
+    "tags": "uno, Test, Edge, test, uno2, testung, kaars, veryyyyyyyyyy looooooooooooonnggggggggg wooooooooorrrrrrddddddd",
+    "status": "Default",
+    "description": "d",
+    "title": "",
+    "dateTime": "0001-01-01T00:00:00",
+    "addToDatabase": "2019-08-19T16:01:01.084211",
+    "lastEdited": "2020-01-27T19:31:34.7807877",
+    "latitude": 0.0,
+    "longitude": 0.0,
+    "locationAltitude": 0.0,
+    "locationCity": "",
+    "locationState": "",
+    "locationCountry": "",
+    "colorClass": 8,
+    "orientation": "Horizontal",
+    "imageWidth": 1200,
+    "imageHeight": 1599,
+    "imageFormat": "jpg",
+    "collectionPaths": [
+      "/__starsky/01-dif/2018.01.01.17.00.01.jpg"
+    ],
+    "aperture": 0.0,
+    "shutterSpeed": "",
+    "isoSpeed": 0,
+    "software": null,
+    "makeModel": "",
+    "make": "",
+    "model": "",
+    "focalLength": 0.0
+  },
+  "breadcrumb": [
+    "/",
+    "/__starsky",
+    "/__starsky/01-dif"
+  ],
+  "colorClassActiveList": [],
+  "pageType": "DetailView",
+  "isDirectory": false,
+  "subPath": "/__starsky/01-dif/2018.01.01.17.00.01.jpg",
+  "collections": true,
+  "relativeObjects": {
+    "nextFilePath": "/__starsky/01-dif/2018.01.01.17.00.01.jpg",
+    "prevFilePath": "/__starsky/01-dif/20170713_124839.jpg",
+    "nextHash": "XLMDPBLIR3NLZ7SHSPDAAKI5OA",
+    "prevHash": "XLMDPBLIR3NLZ7SHSPDAAKI5OA",
+    "args": {}
+  }
+}

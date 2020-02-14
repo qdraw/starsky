@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import useFetch from '../hooks/use-fetch';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useInterval from '../hooks/use-interval';
 import FetchGet from '../shared/fetch-get';
@@ -8,7 +9,7 @@ import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import Modal from './modal';
 
-interface IModalTrashProps {
+interface IModalExportProps {
   isOpen: boolean;
   select: Array<string> | undefined;
   handleExit: Function;
@@ -23,7 +24,7 @@ enum ProcessingState {
   fail
 }
 
-const ModalExport: React.FunctionComponent<IModalTrashProps> = (props) => {
+const ModalExport: React.FunctionComponent<IModalExportProps> = (props) => {
 
   // content
   const settings = useGlobalSettings();
@@ -94,21 +95,16 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = (props) => {
 
   const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] = React.useState(true);
 
+  function getFirstSelectResult(): string {
+    if (!props.select || props.select.length !== 1) return "";
+    return props.select[0];
+  }
+
+  var singleFileThumbResult = useFetch(new UrlQuery().UrlAllowedTypesThumb(getFirstSelectResult()), "get");
   useEffect(() => {
-    /* some filetypes don't allow to be thumnailed by the backend server */
-    async function getThumbnailSingleFileStatus() {
-      if (!props.select || props.select.length !== 1) return;
+    setSingleFileThumbnailStatus(singleFileThumbResult.data !== false);
+  }, [singleFileThumbResult.data])
 
-      var result = await FetchGet(new UrlQuery().UrlDownloadPhotoApi(props.select[0], true));
-
-      if (result && result.statusCode && result.statusCode === 500) {
-        setSingleFileThumbnailStatus(false);
-        return;
-      }
-      setSingleFileThumbnailStatus(true);
-    }
-    getThumbnailSingleFileStatus();
-  }, [props]);
 
   return (<Modal
     id="detailview-export-modal"
@@ -120,21 +116,21 @@ const ModalExport: React.FunctionComponent<IModalTrashProps> = (props) => {
     <div className="modal content--subheader">{isProcessing !== ProcessingState.server ? MessageDownloadSelection : MessageOneMomentPlease}</div>
     <div className="modal content--text">
       {isProcessing === ProcessingState.default && props.select && props.select.length === 1 ? <>
-        <a href={new UrlQuery().UrlDownloadPhotoApi(props.select[0], false)} download={new URLPath().FileNameBreadcrumb(props.select[0])}
+        <a href={new UrlQuery().UrlDownloadPhotoApi(props.select[0], false)} data-test="orginal" download={new URLPath().FileNameBreadcrumb(props.select[0])}
           target="_blank" rel="noopener noreferrer" className="btn btn--info">{MessageOrginalFile}</a>
         {singleFileThumbnailStatus ? <a href={new UrlQuery().UrlDownloadPhotoApi(props.select[0], true)}
-          download={new URLPath().FileNameBreadcrumb(props.select[0])}
+          download={new URLPath().FileNameBreadcrumb(props.select[0])} data-test="thumbnail"
           target="_blank" rel="noopener noreferrer" className={"btn btn--default"}>{MessageThumbnailFile}</a> : null}
       </> : null}
 
       {isProcessing === ProcessingState.default && props.select && props.select.length >= 2 ? <>
         <button onClick={() => {
           postZip(false)
-        }} className="btn btn--info">{MessageOrginalFile}</button>
+        }} className="btn btn--info" data-test="orginal">{MessageOrginalFile}</button>
 
         <button onClick={() => {
           postZip(true)
-        }} className="btn btn--default">{MessageThumbnailFile}</button>
+        }} className="btn btn--default" data-test="thumbnail">{MessageThumbnailFile}</button>
       </> : null}
 
       {isProcessing === ProcessingState.server ? <>

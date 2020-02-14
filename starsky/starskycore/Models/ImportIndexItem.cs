@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define SYSTEM_TEXT_ENABLED
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,10 +9,12 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using starskycore.Helpers;
-
+#if SYSTEM_TEXT_ENABLED
+using System.Text.Json.Serialization;
+#else
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-
+#endif
 
 namespace starskycore.Models
 {
@@ -74,7 +77,11 @@ namespace starskycore.Models
         public DateTime DateTime{ get; set; }
 	    
 	    [NotMapped]
+#if SYSTEM_TEXT_ENABLED
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+#else
 	    [JsonConverter(typeof(StringEnumConverter))]
+#endif
 	    public ImportStatus Status { get; set; }
 	    
 	    [NotMapped]

@@ -1,9 +1,9 @@
-﻿using System;
+﻿#define SYSTEM_TEXT_ENABLED
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using starskycore.Helpers;
-#if NETSTANDARD2_1
-using System.Text.Json;
+#if SYSTEM_TEXT_ENABLED
 using System.Text.Json.Serialization;
 #else
 using Newtonsoft.Json;
@@ -23,7 +23,7 @@ namespace starskycore.Models
         private string _captionabstract;
 
 
-#if NETSTANDARD2_1
+#if SYSTEM_TEXT_ENABLED
 		[JsonPropertyName("Caption-Abstract")]
 #else
 		[JsonProperty(PropertyName="Caption-Abstract")]

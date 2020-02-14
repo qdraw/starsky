@@ -1,0 +1,56 @@
+{
+  "isHealthy": true,
+  "entries": [
+    {
+      "name": "ApplicationDbContext",
+      "duration": "00:00:00.0711597",
+      "isHealthy": false
+    },
+    {
+      "name": "Storage_StorageFolder",
+      "duration": "00:00:00.0009601",
+      "isHealthy": false
+    },
+    {
+      "name": "Storage_ThumbnailTempFolder",
+      "duration": "00:00:00.0008464",
+      "isHealthy": false
+    },
+    {
+      "name": "Storage_TempFolder",
+      "duration": "00:00:00.0007224",
+      "isHealthy": false
+    },
+    {
+      "name": "Exist_StorageFolder",
+      "duration": "00:00:00.0001329",
+      "isHealthy": false
+    },
+    {
+      "name": "Exist_TempFolder",
+      "duration": "00:00:00.0000326",
+      "isHealthy": true
+    },
+    {
+      "name": "Exist_ExifToolPath",
+      "duration": "00:00:00.0000288",
+      "isHealthy": true
+    },
+    {
+      "name": "Exist_ThumbnailTempFolder",
+      "duration": "00:00:00.0000256",
+      "isHealthy": true
+    },
+    {
+      "name": "DateAssemblyHealthCheck",
+      "duration": "00:00:00.0003427",
+      "isHealthy": true
+    },
+    {
+      "name": "mysql",
+      "duration": "00:00:00.2627540",
+      "isHealthy": true
+    }
+  ],
+  "totalDuration": "00:00:00.2649177"
+}

@@ -9,6 +9,7 @@ import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import * as FetchPost from '../shared/fetch-post';
 import ArchiveSidebarLabelEditAddOverwrite from './archive-sidebar-label-edit-add-overwrite';
+import FormControl from './form-control';
 
 describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   it("renders", () => {
@@ -80,7 +81,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       const component = shallow(<ArchiveSidebarLabelEditAddOverwrite />);
 
-      var formControl = component.find('.form-control');
+      var formControl = component.find(FormControl);
 
       // there are 3 classes [title,info,description]
       formControl.forEach(element => {

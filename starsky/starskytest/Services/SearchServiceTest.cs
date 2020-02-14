@@ -864,6 +864,52 @@ namespace starskytest.Services
 	    }
 
 
+	    [TestMethod]
+	    [ExpectedException(typeof(ArgumentException))]
+	    public void SearchService_Search_ToLong_ArgumentException()
+	    {
+		    var longTestText =
+			    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor" +
+			    " incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur" +
+			    "adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum " +
+			    "dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut lab" +
+			    "ore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, se" +
+			    "d do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit " +
+			    "amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolor" +
+			    "e magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod" +
+			    " tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consecte" +
+			    "tur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lor" +
+			    "em ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt " +
+			    "ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing eli" +
+			    "t, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor " +
+			    "sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolo" +
+			    "re magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod t" +
+			    "empor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur" +
+			    " adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem" +
+			    " ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut l" +
+			    "abore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed" +
+			    " do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet" +
+			    ", consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna " +
+			    "aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incid" +
+			    "idunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing e" +
+			    "lit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor si" +
+			    "t amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore m" +
+			    "agna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i" +
+			    "ncididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscin" +
+			    "g elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor" +
+			    " sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore" +
+			    " magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor" +
+			    " incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipisc" +
+			    "ing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolo" +
+			    "r sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore" +
+			    " magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor " +
+			    "incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing" +
+			    " elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit" +
+			    " amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna ";
+
+		    _search.Search(longTestText);
+		    // Expect ArgumentException
+	    }
 
     }
 }

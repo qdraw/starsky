@@ -13,7 +13,13 @@ namespace starsky.Controllers
 				"clientapp", "build", "index.html");
 		}
 		
+		/// <summary>
+		/// Return Error page
+		/// </summary>
+		/// <param name="statusCode">to add the status code to the response</param>
+		/// <returns>Any Error html page</returns>
 		[HttpGet("/error")]
+		[Produces("text/html")]
 		public IActionResult Error(int? statusCode = null)
 		{
 			if (statusCode.HasValue)

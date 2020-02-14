@@ -10,6 +10,7 @@ import { FileExtensions } from '../shared/file-extensions';
 import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
+import FormControl from './form-control';
 import Modal from './modal';
 
 interface IModalRenameFileProps {
@@ -117,7 +118,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
 
     // redirect to new path (so if you press refresh the image is shown)
     const replacePath = new URLPath().updateFilePath(history.location.search, filePathAfterChange);
-    await history.navigate(replacePath, {replace: true});
+    await history.navigate(replacePath, { replace: true });
 
     // Close window
     props.handleExit();
@@ -133,13 +134,9 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
       <div className="modal content--subheader">{MessageRenameFileName}</div>
       <div className="modal content--text">
 
-        <div data-name="filename"
-          onInput={handleUpdateChange}
-          suppressContentEditableWarning={true}
-          contentEditable={isFormEnabled}
-          className={isFormEnabled ? "form-control" : "form-control disabled"}>
+        <FormControl onInput={handleUpdateChange} name="filename" contentEditable={isFormEnabled}>
           {state.fileIndexItem.fileName}
-        </div>
+        </FormControl>
 
         {error && <div className="warning-box--under-form warning-box">{error}</div>}
 

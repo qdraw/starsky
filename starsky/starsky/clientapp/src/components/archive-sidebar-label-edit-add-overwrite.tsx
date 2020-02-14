@@ -9,6 +9,7 @@ import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { SidebarUpdate } from '../shared/sidebar-update';
 import { URLPath } from '../shared/url-path';
+import FormControl from './form-control';
 import Preloader from './preloader';
 
 const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
@@ -95,27 +96,16 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
 
       <h4>Tags:</h4>
-      <div data-name="tags"
-        onInput={handleUpdateChange}
-        suppressContentEditableWarning={true}
-        contentEditable={!state.isReadOnly && select.length !== 0}
-        className={!state.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
-      </div>
+      <FormControl onInput={handleUpdateChange} name="tags" contentEditable={!state.isReadOnly && select.length !== 0}>
+      </FormControl>
+
       <h4>Info:</h4>
-      <div
-        onInput={handleUpdateChange}
-        data-name="description"
-        suppressContentEditableWarning={true}
-        contentEditable={!state.isReadOnly && select.length !== 0}
-        className={!state.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
-      </div>
+      <FormControl onInput={handleUpdateChange} name="description" contentEditable={!state.isReadOnly && select.length !== 0}>
+      </FormControl>
+
       <h4>{MessageTitleName}:</h4>
-      <div data-name="title"
-        onInput={handleUpdateChange}
-        suppressContentEditableWarning={true}
-        contentEditable={!state.isReadOnly && select.length !== 0}
-        className={!state.isReadOnly && select.length !== 0 ? "form-control" : "form-control disabled"}>
-      </div>
+      <FormControl onInput={handleUpdateChange} name="title" contentEditable={!state.isReadOnly && select.length !== 0}>
+      </FormControl>
 
       {isInputEnabled && select.length !== 0 ? <button
         className="btn btn--info" data-test="overwrite"

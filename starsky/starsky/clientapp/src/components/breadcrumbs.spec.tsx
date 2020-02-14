@@ -13,7 +13,7 @@ describe("Breadcrumb", () => {
     expect(wrapper.find('span')).toHaveLength(0);
   });
 
-  it("check lenght for breadcrumbs", () => {
+  it("check Length for breadcrumbs", () => {
     var breadcrumbs = ["/", "/test"];
     var wrapper = shallow(<Breadcrumb subPath="/test" breadcrumb={breadcrumbs} />);
     expect(wrapper.find('span')).toHaveLength(3);

@@ -16,6 +16,7 @@ import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import ColorClassSelect from './color-class-select';
+import FormControl from './form-control';
 interface IDetailViewSidebarProps {
   filePath: string,
   status: IExifStatus
@@ -158,14 +159,13 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       Tags
     </div>
     <div className="content--text">
-      <div onBlur={handleChange}
-        data-name="tags"
-        ref={tagsReference}
-        suppressContentEditableWarning={true}
-        contentEditable={isFormEnabled}
-        className={isFormEnabled ? "form-control" : "form-control disabled"}>
+      <FormControl onBlur={handleChange}
+        name="tags"
+        maxlength={1024}
+        reference={tagsReference}
+        contentEditable={isFormEnabled}>
         {fileIndexItem.tags}
-      </div>
+      </FormControl>
     </div>
 
     <div className="content--header">
@@ -173,21 +173,19 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     </div>
     <div className="content--text">
       <h4>{MessageInfoName}</h4>
-      <div onBlur={handleChange}
-        data-name="description"
-        suppressContentEditableWarning={true}
-        contentEditable={isFormEnabled}
-        className={isFormEnabled ? "form-control" : "form-control disabled"}>
+      <FormControl onBlur={handleChange}
+        maxlength={1024}
+        name="description"
+        contentEditable={isFormEnabled}>
         {fileIndexItem.description}
-      </div>
+      </FormControl>
       <h4>{MessageTitleName}</h4>
-      <div onBlur={handleChange}
-        data-name="title"
-        suppressContentEditableWarning={true}
-        contentEditable={isFormEnabled}
-        className={isFormEnabled ? "form-control" : "form-control disabled"}>
+      <FormControl onBlur={handleChange}
+        name="title"
+        maxlength={1024}
+        contentEditable={isFormEnabled}>
         {fileIndexItem.title}
-      </div>
+      </FormControl>
     </div>
 
     <div className="content--header">

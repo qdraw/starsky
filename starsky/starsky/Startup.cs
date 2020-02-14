@@ -182,12 +182,7 @@ namespace starsky
 			services.AddResponseCaching();
 
 			// NET Core 3 -> removed newtonsoft from core
-#if NETCOREAPP3_0
-			services.AddMvc().
-				AddNewtonsoftJson();
-#else
-	        services.AddMvc();
-#endif
+			services.AddMvc();
 
 			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
 			services.Configure<ForwardedHeadersOptions>(options =>

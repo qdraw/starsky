@@ -36,6 +36,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(User), 200)]
 		[ProducesResponseType(typeof(string), 401)]
 		[ProducesResponseType(typeof(string), 406)]
+		[Produces("application/json")]
 		public IActionResult Status()
 		{
 			if ( !_userManager.AllUsers().Any() )
@@ -65,6 +66,7 @@ namespace starsky.Controllers
 		/// <response code="200">Login form page</response>
 		[HttpGet("/account/login")]
 		[ProducesResponseType(200)]
+		[Produces("text/html")]
 		public IActionResult Login(string returnUrl = null)
 		{
 			return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "clientapp", "build", "index.html"), "text/html");
@@ -78,7 +80,9 @@ namespace starsky.Controllers
         /// <response code="200">successful login</response>
         /// <response code="401">login failed</response>
         [HttpPost("/account/login")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(string),200)]
+        [ProducesResponseType(typeof(string),401)]
+        [Produces("application/json")]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             ValidateResult validateResult = _userManager.Validate("Email", model.Email, model.Password);
@@ -125,6 +129,7 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),400)]
         [ProducesResponseType(typeof(string),403)]
+        [Produces("application/json")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public IActionResult Register(RegisterViewModel model)
@@ -166,7 +171,7 @@ namespace starsky.Controllers
         [HttpGet("/account/register/status")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),403)]
-
+        [Produces("application/json")]
         public IActionResult RegisterStatus()
         {
 	        if ( !IsAccountRegisterClosed(User.Identity.IsAuthenticated) ) return Json("RegisterStatus open");

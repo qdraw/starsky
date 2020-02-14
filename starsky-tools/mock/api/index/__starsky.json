@@ -1,0 +1,59 @@
+{
+  "fileIndexItems": [
+    {
+      "filePath": "/__starsky/01-dif",
+      "fileName": "01-dif",
+      "fileHash": "VNX5NZMPZDJMG5YCU262BHXRRA",
+      "fileCollectionName": "01-dif",
+      "parentDirectory": "/__starsky",
+      "isDirectory": true,
+      "keywords": [],
+      "tags": "",
+      "status": "Default",
+      "description": "",
+      "title": "",
+      "dateTime": "0001-01-01T00:00:00",
+      "addToDatabase": "2019-08-19T15:59:26.5857218",
+      "lastEdited": "2019-08-19T15:59:27.9617809",
+      "latitude": 0.0,
+      "longitude": 0.0,
+      "locationAltitude": 0.0,
+      "locationCity": "",
+      "locationState": "",
+      "locationCountry": "",
+      "colorClass": 0,
+      "orientation": "DoNotChange",
+      "imageWidth": 0,
+      "imageHeight": 0,
+      "imageFormat": "unknown",
+      "collectionPaths": [],
+      "aperture": 0.0,
+      "shutterSpeed": "",
+      "isoSpeed": 0,
+      "software": null,
+      "makeModel": "",
+      "make": "",
+      "model": "",
+      "focalLength": 0.0
+    }
+  ],
+  "breadcrumb": [
+    "/"
+  ],
+  "relativeObjects": {
+    "nextFilePath": "/demo",
+    "prevFilePath": "/2019",
+    "nextHash": "OVD4XOK5J6KA6R22MZKHBLXCOU",
+    "prevHash": null,
+    "args": {}
+  },
+  "searchQuery": "__starsky",
+  "pageType": "Archive",
+  "subPath": "/__starsky",
+  "collectionsCount": 0,
+  "isReadOnly": false,
+  "colorClassActiveList": [],
+  "colorClassUsage": [
+    0
+  ]
+}

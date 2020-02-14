@@ -161,4 +161,8 @@ export class UrlQuery {
     return "/api/upload";
   }
 
+  public UrlAllowedTypesThumb(filename: string): string {
+    return "/api/allowed-types/thumb?f=" + filename;
+  }
+
 }

@@ -17,7 +17,6 @@ describe("AccountRegister", () => {
     const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
       statusCode: 403, data: null
     } as IConnectionDefault);
-
     var fetchGetSpy = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
