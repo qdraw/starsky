@@ -28,8 +28,6 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
    * @param element KeydownEvent
    */
   var limitLengthKey = function (element: React.KeyboardEvent<HTMLDivElement>) {
-    if (!maxlength) return;
-
     var elementLength = element.currentTarget.innerHTML.length
     setChildLength(elementLength);
 
