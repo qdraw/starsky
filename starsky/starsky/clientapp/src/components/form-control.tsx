@@ -36,6 +36,9 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
 
     if (childLength <= maxlength || (element.key === "x" && element.ctrlKey) || (element.key === "x" && element.metaKey)
       || element.key === "Delete" || element.key === "Backspace" || element.key === "Cut") return;
+
+    console.log('prevent');
+
     element.preventDefault();
   }
 
