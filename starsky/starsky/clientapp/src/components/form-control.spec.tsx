@@ -70,7 +70,9 @@ describe("FormControl", () => {
 
     it("limitLengthBlur - onBlur limit/preventDefault", () => {
       var onBlurSpy = jest.fn();
-      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy} name="test">1234567890___</FormControl>);
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy} name="test">98765432123456789</FormControl>);
+
+      console.log('limit');
 
       act(() => {
         component.simulate('blur')
@@ -84,7 +86,7 @@ describe("FormControl", () => {
 
     it("limitLengthBlur - onBlur pushed/ok", () => {
       var onBlurSpy = jest.fn();
-      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy} name="test">123456789</FormControl>);
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy} name="test">abcdefghi</FormControl>);
 
       act(() => {
         component.simulate('blur')
