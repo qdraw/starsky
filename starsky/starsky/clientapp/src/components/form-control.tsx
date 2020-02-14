@@ -54,9 +54,14 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
    * @param element Focus event
    */
   var limitLengthBlur = function (element: React.FocusEvent<HTMLDivElement>) {
-    console.log('limitLengthBlur', element.currentTarget.innerHTML, element.currentTarget.innerHTML.length, element.currentTarget.innerHTML.length > maxlength);
+    console.log('limitLengthBlur',
+      element.currentTarget.innerHTML,
+      element.currentTarget.innerHTML.length,
+      element.currentTarget.innerHTML.length > maxlength);
 
     if (element.currentTarget.innerHTML.length > maxlength) {
+      console.log('00000');
+
       setChildLength(element.currentTarget.innerHTML.length);
       return;
     }
