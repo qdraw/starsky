@@ -33,12 +33,8 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
     var elementLength = element.currentTarget.innerHTML.length
     setChildLength(elementLength);
 
-    console.log('limitLengthKey', elementLength, elementLength <= maxlength);
-
     if (elementLength <= maxlength || (element.key === "x" && element.ctrlKey) || (element.key === "x" && element.metaKey)
       || element.key === "Delete" || element.key === "Backspace" || element.key === "Cut") return;
-
-    console.log('prevent');
 
     element.preventDefault();
   }
@@ -52,7 +48,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
 
     if (childLength + element.clipboardData.getData('Text').length <= maxlength) return;
     element.preventDefault();
-    console.log('prevent');
+    console.log('prevent1');
 
     setChildLength(childLength + element.clipboardData.getData('Text').length);
   }
