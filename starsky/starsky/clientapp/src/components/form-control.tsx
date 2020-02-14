@@ -1,22 +1,76 @@
-import React from "react";
+import React, { useState } from "react";
+import useGlobalSettings from '../hooks/use-global-settings';
+import { Language } from '../shared/language';
 
 export interface IFormControlProps {
-  isFormEnabled: boolean;
-  handleChange(event: React.ChangeEvent<HTMLDivElement>): void;
-  ref?: React.RefObject<HTMLDivElement>;
-  text: string;
+  contentEditable: boolean;
+  onBlur(event: React.ChangeEvent<HTMLDivElement>): void;
+  reference?: React.RefObject<HTMLDivElement>;
+  name: string;
+  maxlength?: number;
+  children: React.ReactNode;
 }
 
 const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
 
-  return <div onBlur={props.handleChange}
-    data-name="tags"
-    ref={props.ref}
-    suppressContentEditableWarning={true}
-    contentEditable={props.isFormEnabled}
-    className={props.isFormEnabled ? "form-control" : "form-control disabled"}>
-    {props.text}
-  </div>
+  var maxlength = props.maxlength ? props.maxlength : 255;
+
+  const [childLength, setChildLength] = useState(props.children?.toString().length ? props.children?.toString().length : 0);
+
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const fieldMaxLength = language.token(language.text("Het onderstaande veld mag maximaal {maxlength} tekens hebben",
+    "The field below can have a maximum of {maxlength} characters"), ["{maxlength}"], [maxlength.toString()]);
+
+  /**
+   * Limit on keydown
+   * @param element KeydownEvent
+   */
+  var limitLengthKey = function (element: React.KeyboardEvent<HTMLDivElement>) {
+    if (!maxlength) return;
+
+    setChildLength(element.currentTarget.innerHTML.length);
+
+    if (childLength < maxlength || (element.key === "x" && element.ctrlKey) || (element.key === "x" && element.metaKey)
+      || element.key === "Delete" || element.key === "Backspace" || element.key === "Cut") return;
+    element.preventDefault();
+  }
+
+  /**
+   * Limit length on paste event
+   * @param element ClipboardEvent
+   */
+  var limitLengthPaste = function (element: React.ClipboardEvent<HTMLDivElement>) {
+    if (element.clipboardData.getData('Text').length < maxlength) return;
+    element.preventDefault();
+    setChildLength(element.clipboardData.getData('Text').length);
+  }
+
+  /**
+   * Limit length before sending to onBlurEvent
+   * @param element Focus event
+   */
+  var limitLengthBlur = function (element: React.FocusEvent<HTMLDivElement>) {
+    if (element.currentTarget.innerHTML.length > maxlength) {
+      setChildLength(element.currentTarget.innerHTML.length);
+      return;
+    }
+    props.onBlur(element)
+  }
+
+  return <>
+    {childLength >= maxlength ? <div className="warning-box">{fieldMaxLength}</div> : null}
+    <div onBlur={limitLengthBlur}
+      data-name={props.name}
+      onKeyDown={limitLengthKey}
+      onPaste={limitLengthPaste}
+      ref={props.reference}
+      suppressContentEditableWarning={true}
+      contentEditable={props.contentEditable}
+      className={props.contentEditable ? "form-control" : "form-control disabled"}>
+      {props.children}
+    </div></>
 };
 
 export default FormControl;
