@@ -24,6 +24,8 @@
 - [x]  (bugfix) _Frond-end/Back-end_ Add length limit length for search queries
 - [x]  (bugfix) _Frond-end_ Add length limit length for tags
 - [x]  (feature) _Back-end_ Change Password for current user (API only)
+- [x] (bug) _Back-end_  System.IO.EndOfStreamException: Expected to read 372 payload bytes but only received 21. on `/api/search?t=-Datetime>1+-Datetime<0+-ImageFormat:jpg`
+
 
 # version 0.1.15 - 2020-02-06
 - [x]  (bugfix) _Front-end_ Drag'n drop is now only with files
