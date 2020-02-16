@@ -207,9 +207,12 @@ namespace starskycore.Services
 					    Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
 						    model.SearchFor[i].ToLowerInvariant(), out var castImageFormat);
 				    
-					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.ImageFormat != ExtensionRolesHelper.ImageFormat.unknown && p.ImageFormat == castImageFormat
-					    ));
+					    // todo fix issue:
+					    model.FileIndexItems.Add(sourceList.FirstOrDefault(p => p.ImageFormat == castImageFormat));
+					    
+					    // model.FileIndexItems.AddRange(sourceList.Where(
+						   //  p => p.ImageFormat != ExtensionRolesHelper.ImageFormat.unknown && p.ImageFormat == castImageFormat
+					    // ));
 
 					    // if you add a new type for
 					    // example an enum > please check: FileIndexItem.FileIndexPropList()

@@ -40,14 +40,7 @@ namespace starskycore.Data
 			// Add Index to speed performance (on MySQL max key length is 3072 bytes)
 			modelBuilder.Entity<FileIndexItem>()
 				.HasIndex(x => new { x.FileName, x.ParentDirectory });
-
-			modelBuilder
-				.Entity<FileIndexItem>()
-				.Property(item => item.ImageFormat)
-				.HasConversion(
-					v => (int) v,
-					v => (ExtensionRolesHelper.ImageFormat) v);
-			
+	
 			modelBuilder.Entity<User>(etb =>
 				{
 					etb.HasKey(e => e.Id);
