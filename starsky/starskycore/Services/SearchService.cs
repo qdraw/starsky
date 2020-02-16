@@ -211,7 +211,7 @@ namespace starskycore.Services
 					    model.FileIndexItems.Add(sourceList.FirstOrDefault(p => p.ImageFormat == castImageFormat));
 					    
 					    // model.FileIndexItems.AddRange(sourceList.Where(
-						   //  p => p.ImageFormat != ExtensionRolesHelper.ImageFormat.unknown && p.ImageFormat == castImageFormat
+					    // p => p.ImageFormat == castImageFormat
 					    // ));
 
 					    // if you add a new type for
