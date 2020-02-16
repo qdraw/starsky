@@ -181,9 +181,13 @@ namespace starsky
 			// Cache the response at the browser
 			services.AddResponseCaching();
 
+#if SYSTEM_TEXT_ENABLED
 			// NET Core 3 -> removed newtonsoft from core
-			services.AddMvc();
-
+			services.AddControllers();
+#else
+	        services.AddControllers().AddNewtonsoftJson();
+#endif
+	        
 			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
 			services.Configure<ForwardedHeadersOptions>(options =>
 			{
@@ -252,7 +256,7 @@ namespace starsky
             // Use the name of the application to use behind a reverse proxy
             app.UsePathBase( PathHelper.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETCOREAPP3_1
 			app.UseRouting();
 #endif
 
@@ -304,11 +308,11 @@ namespace starsky
 			app.UseAuthentication();
             app.UseBasicAuthentication();
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETCOREAPP3_1
 			app.UseAuthorization();
 #endif
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETCOREAPP3_1
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");

@@ -1,5 +1,4 @@
-﻿#define SYSTEM_TEXT_ENABLED
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using starskycore.Helpers;

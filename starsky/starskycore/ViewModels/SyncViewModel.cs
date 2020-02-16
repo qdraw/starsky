@@ -1,5 +1,4 @@
-﻿#define SYSTEM_TEXT_ENABLED
-using starskycore.Models;
+﻿using starskycore.Models;
 #if SYSTEM_TEXT_ENABLED
 using System.Text.Json.Serialization;
 #else
