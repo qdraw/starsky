@@ -96,6 +96,7 @@ Advanced queries are supported by the basic search engine.
 |                  | -test apple                        | Ignore the keyword test       |
 |                  | -Tags-"test"                       | Ignore the keyword test       |
 |                  | apple banana                       | search for apple or banana    |
+| -title           | -title="example"                   |                               |
 | -filepath        | -filepath="/path"                  | -inurl is the same            |
 | -filename        | -filename="file.jpg"               |                               |
 | -filehash        | -filehash=3DB75N7JJ6FDOPZY4YHGX4TL |                               |
@@ -116,6 +117,10 @@ Advanced queries are supported by the basic search engine.
 |                  | -addtodatabase>12 -addtodatabase<2 | between 2 and 12 days ago     |
 |                  | -addtodatabase=2020-01-01          | between 00:00:00 and 23:59:59 |
 |                  | -addtodatabase=2020-01-01T14:35:29 |                               | 
+| -lastedited      | -lastedited=1                      | search for yesterday          |
+|                  | -lastedited>12 -lastedited<2       | between 2 and 12 days ago     |
+|                  | -lastedited=2020-01-01             | between 00:00:00 and 23:59:59 |
+|                  | -lastedited=2020-01-01T14:35:29    |                               | 
 | -isdirectory     | -isdirectory=true                  |                               | 
 |                  | -isdirectory=false                 |                               | 
 
