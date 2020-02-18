@@ -20,7 +20,7 @@
 
 
 ## Starsky   
-An attempt to create a database driven photo library
+Accelerator to find and organize images driven by meta information. Browse and search images in your own cloud.
 
 ### Install instructions
 The general application is Starsky (sln). You need to [install the solution](starsky/readme.md) first. The subapplications [starskysynccli](starsky/starskysynccli/readme.md)  and [starskyimportercli](starsky/starskyimportercli/readme.md) uses the same configuation files. These projects are separately compiled using the build script.
@@ -31,7 +31,6 @@ The general application is Starsky (sln). You need to [install the solution](sta
 [![Build Status](https://qdraw.visualstudio.com/starsky/_apis/build/status/azure-pipelines-starsky.yml?branchName=master)](https://qdraw.visualstudio.com/starsky/_build/latest?definitionId=15&branchName=master)
 
 _See `./azure-pipelines-starsky.yml` for details_
-
 
 ## Changelog and history of this project
 
