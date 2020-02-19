@@ -10,6 +10,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using starskycore.Helpers;
 using starskycore.Models;
+#if SYSTEM_TEXT_ENABLED
+using System.Text.Json.Serialization;
+#else
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+#endif
 
 namespace starskycore.ViewModels
 {
@@ -149,12 +155,17 @@ namespace starskycore.ViewModels
 	    /// The search for types
 	    /// </summary>
 	    [DataContract]
+#if SYSTEM_TEXT_ENABLED
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+#else
+	    [JsonConverter(typeof(StringEnumConverter))]
+#endif
 	    public enum SearchForOptionType
 	    {
 		    /// <summary>
 		    ///  &gt;
 		    /// </summary>
-		    [Display(Name = ">")]
+		    [Display(Name = ">")] // in json it is GreaterThen
 			GreaterThen,
 		    
 		    /// <summary>
@@ -457,7 +468,7 @@ namespace starskycore.ViewModels
 	    
 		/// <summary>
 	    /// Filter for WideSearch
-	    /// Always after widesearch 
+	    /// Always after wideSearch 
 	    /// </summary>
 	    /// <param name="model"></param>
 	    /// <returns></returns>
