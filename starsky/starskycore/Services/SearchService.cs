@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -149,35 +150,49 @@ namespace starskycore.Services
             model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
             return model;
         }
+        
 
-	    /// <summary>
-	    /// Do a query with multiple tags, then add it to the model
-	    /// </summary>
-	    /// <param name="sourceList">where to query in</param>
-	    /// <param name="model">where to add</param>
-	    /// <returns>model of type SearchViewModel</returns>
-	    private SearchViewModel WideSearchTagsFast(IQueryable<FileIndexItem> sourceList,
-		    SearchViewModel model)
-	    {
-		    var tagsKeywords = new List<string>();
-		    for ( int i = 0; i < model.SearchIn.Count; i++ )
-		    {
-			    if ( model.SearchIn[i].ToLowerInvariant() == nameof(SearchViewModel.SearchInTypes.tags) )
-			    {
-				    tagsKeywords.Add(model.SearchFor[i].ToLowerInvariant());
-			    }
-		    }
-		    
-		    var predicate = PredicateBuilder.False<FileIndexItem>();
 
-		    foreach (string keyword in tagsKeywords)
-		    {
-			    // Not ToLowerInvariant() due the fact that this is not supported in EF SQL
-			    predicate = predicate.Or (p => p.Tags.ToLower().Contains (keyword));
-		    }
-		    model.FileIndexItems.AddRange(sourceList.Where(predicate));
-		    return model;
-	    }
+	    // /// <summary>
+	    // /// 
+	    // /// </summary>
+	    // /// <param name="paramNames"></param>
+	    // /// <param name="values"></param>
+	    // /// <returns></returns>
+	    // public Func<FileIndexItem, bool> AndOnlyParams(string[] paramNames, object[] values)
+	    // {
+		   //  List<ParameterExpression> paramList = new List<ParameterExpression>();
+		   //  foreach (string param in paramNames)
+		   //  {
+			  //   paramList.Add(Expression.Parameter(typeof(FileIndexItem), param));
+		   //  }
+	    //
+		   //  List<LambdaExpression> lexList = new List<LambdaExpression>();
+		   //  for (int i = 0; i < paramNames.Length; i++)
+		   //  {
+			  //   if (i == 0)
+			  //   {
+				 //    Expression bodyInner = Expression.Equal(
+					//     Expression.Property(
+					// 	    paramList[i], paramNames[i]),
+					//     Expression.Constant(values[i]));
+				 //    
+				 //    lexList.Add(Expression.Lambda(bodyInner, paramList[i]));
+			  //   }
+			  //   else
+			  //   {
+				 //    Expression bodyOuter = Expression.AndAlso(
+					//     Expression.Equal(
+					// 	    Expression.Property(
+					// 		    paramList[i], paramNames[i]),
+					// 	    Expression.Constant(values[i])),
+					//     Expression.Invoke(lexList[i - 1], paramList[i]));
+				 //    lexList.Add(Expression.Lambda(bodyOuter, paramList[i]));
+			  //   }
+		   //  }
+	    //
+		   //  return ((Expression<Func<FileIndexItem, bool>>)lexList[lexList.Count - 1]).Compile();
+	    // }
 
 	    /// <summary>
 	    /// Main method to query the database, in other function there is sorting needed
@@ -188,155 +203,124 @@ namespace starskycore.Services
 	    private SearchViewModel WideSearch(IQueryable<FileIndexItem> sourceList,
 		    SearchViewModel model)
 	    {
+		    var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  
 
-		    // Search for tags in 1 query
-		    model = WideSearchTagsFast(sourceList, model);
-		    
 		    // .AsNoTracking() => never change data to update
 		    for ( var i = 0; i < model.SearchIn.Count; i++ )
 		    {
 			    var searchInType = ( SearchViewModel.SearchInTypes )
 				    Enum.Parse(typeof(SearchViewModel.SearchInTypes), model.SearchIn[i].ToLowerInvariant());
-
-			    model.SearchFor[i] = model.SearchFor[i].ToLowerInvariant();
 			    
 			    switch ( searchInType )
 			    {
 				    case SearchViewModel.SearchInTypes.imageformat:
-
 					    Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
 						    model.SearchFor[i].ToLowerInvariant(), out var castImageFormat);
-				    
-					    // todo fix issue:
-					    model.FileIndexItems.Add(sourceList.FirstOrDefault(p => p.ImageFormat == castImageFormat));
-					    
-					    // model.FileIndexItems.AddRange(sourceList.Where(
-					    // p => p.ImageFormat == castImageFormat
-					    // ));
-
-					    // if you add a new type for
-					    // example an enum > please check: FileIndexItem.FileIndexPropList()
+					    predicates.Add(x => x.ImageFormat == castImageFormat);
 					    break;
 				    case SearchViewModel.SearchInTypes.description:
-					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.Description.ToLowerInvariant().Contains(model.SearchFor[i])
-					    ));
+						// need to have description out of the Func<>
+						// ToLowerInvariant.Contains(__description_1))' could not be translated. 
+					    var description = model.SearchFor[i];
+					    predicates.Add(x => x.Description.ToLower().Contains(description));
 					    break;
 				    case SearchViewModel.SearchInTypes.filename:
-					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.FileName.ToLowerInvariant().Contains(model.SearchFor[i])
-					    ));
+					    var filename = model.SearchFor[i];
+					    predicates.Add(x => x.FileName.ToLower().Contains(filename));
 					    break;
 				    case SearchViewModel.SearchInTypes.filepath:
-					    // The LINQ expression 'where [p].FilePath.ToLowerInvariant().Contains(__get_Item_0)'
-					    // could not be translated and will be evaluated locally.
-					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.FilePath.ToLower().Contains(model.SearchFor[i])
-					    ));
+					    var filePath = model.SearchFor[i];
+					    predicates.Add(x => x.FilePath.ToLower().Contains(filePath));
 					    break;
 				    case SearchViewModel.SearchInTypes.parentdirectory:
-					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.ParentDirectory.ToLowerInvariant().Contains(model.SearchFor[i])
-					    ));
+					    var parentDirectory = model.SearchFor[i];
+					    predicates.Add(x => x.ParentDirectory.ToLower().Contains(parentDirectory));
 					    break;
 				    case SearchViewModel.SearchInTypes.title:
-					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.Title.ToLowerInvariant().Contains(model.SearchFor[i])
-					    ));
+					    var title = model.SearchFor[i];
+					    predicates.Add(x => x.Title.ToLower().Contains(title));
 					    break;
 				    case SearchViewModel.SearchInTypes.filehash:
-					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p =>  p.FileHash != null && p.FileHash.ToLowerInvariant() == model.SearchFor[i]
-					    ));
+					    var fileHash = model.SearchFor[i];
+					    predicates.Add(x => x.FileHash != null && x.FileHash.ToLower().Contains(fileHash) );
 					    break;
 				    case SearchViewModel.SearchInTypes.isdirectory:
 					    bool.TryParse(model.SearchFor[i].ToLowerInvariant(),
 						    out var boolIsDirectory);
-					    model.FileIndexItems.AddRange(sourceList.Where(
-						    p => p.IsDirectory == boolIsDirectory
-					    ));
+					    predicates.Add(x => x.IsDirectory == boolIsDirectory);
 					    model.SearchFor[i] = boolIsDirectory.ToString();
 					    break;
-				    
 				    case SearchViewModel.SearchInTypes.lastedited:
-
-					    var lastEdited = model.ParseDateTime(model.SearchFor[i]);
-					    model.SearchFor[i] = lastEdited.ToString("dd-MM-yyyy HH:mm:ss",
-						    CultureInfo.InvariantCulture);
-
-					    switch ( model.SearchForOptions[i] )
-					    {
-						    case SearchViewModel.SearchForOptionType.LessThen:
-							    model.FileIndexItems.AddRange(sourceList.Where(
-								    p => p.LastEdited <= lastEdited
-							    ));
-							    break;
-						    case SearchViewModel.SearchForOptionType.GreaterThen:
-							    model.FileIndexItems.AddRange(sourceList.Where(
-								    p => p.LastEdited >= lastEdited
-							    ));
-							    break;
-						    default:
-							    model.FileIndexItems.AddRange(sourceList.Where(
-								    p => p.LastEdited == lastEdited
-							    ));
-							    break;
-					    }
-
+					    predicates.Add(WideSearchDateTimeGet(model,i,WideSearchDateTimeGetType.LastEdited));
 					    break;
 				    
 				    case SearchViewModel.SearchInTypes.addtodatabase:
-
-					    var addtodatabase = model.ParseDateTime(model.SearchFor[i]);
-					    model.SearchFor[i] = addtodatabase.ToString("dd-MM-yyyy HH:mm:ss",
-						    CultureInfo.InvariantCulture);
-
-					    switch ( model.SearchForOptions[i] )
-					    {
-						    case SearchViewModel.SearchForOptionType.LessThen:
-							    model.FileIndexItems.AddRange(sourceList.Where(
-								    p => p.AddToDatabase <= addtodatabase
-							    ));
-							    break;
-						    case SearchViewModel.SearchForOptionType.GreaterThen:
-							    model.FileIndexItems.AddRange(sourceList.Where(
-								    p => p.AddToDatabase >= addtodatabase
-							    ));
-							    break;
-						    default:
-							    model.FileIndexItems.AddRange(sourceList.Where(
-								    p => p.AddToDatabase == addtodatabase
-							    ));
-							    break;
-					    }
-
+					    predicates.Add(WideSearchDateTimeGet(model,i,WideSearchDateTimeGetType.AddToDatabase));
 					    break;
-
 				    case SearchViewModel.SearchInTypes.datetime:
-					    WideSearchDateTimeGet(sourceList,model,i);
+					    predicates.Add(WideSearchDateTimeGet(model,i,WideSearchDateTimeGetType.DateTime));
 					    break;
 				    case SearchViewModel.SearchInTypes.tags:
-						// don't do anything with tags here:  WideSearchTagsFast
+					    var tags = model.SearchFor[i];
+					    predicates.Add(x => x.Tags.ToLower().Contains(tags));
 					    break;
+				    default:
+					    throw new ArgumentOutOfRangeException();
+			    }
+		    }
+		    
+		    Console.WriteLine($"search --> {model.SearchQuery}");
+
+		    var predicate = PredicateBuilder.False<FileIndexItem>();
+		    for ( int i = 0; i < predicates.Count; i++ )
+		    {
+			    if ( i == 0 )
+			    {
+		    
+				    predicate = predicates[i];
+			    }
+			    else
+			    {
+				    var item = predicates[i - 1];
+				    var item2 = predicates[i];
+				    
+				    // Search for OR
+				    if ( !model.SearchOperatorContinue(i, model.SearchIn.Count) )
+				    {
+					    predicate =  item.Or(item2);
+					    continue;
+				    }
+
+				    predicate =  item.AndAlso(item2);
 			    }
 		    }
 
+		    model.FileIndexItems = sourceList.Where(predicate).ToList();
+		    
+		    Console.WriteLine("search <--");
+
 		    return model;
 	    }
-	    
+
+	    public enum WideSearchDateTimeGetType
+	    {
+		    DateTime,
+		    LastEdited,
+		    AddToDatabase
+	    }
+
 	    /// <summary>
 	    /// Query for DateTime: in between values, entire days, from, type of queries
 	    /// </summary>
 	    /// <param name="sourceList">Query Source</param>
 	    /// <param name="model">output</param>
 	    /// <param name="indexer">number of search query (i)</param>
-	    private void WideSearchDateTimeGet(IQueryable<FileIndexItem> sourceList,
-		    SearchViewModel model, int indexer)
+	    /// <param name="type"></param>
+	    private Expression<Func<FileIndexItem,bool>> WideSearchDateTimeGet(SearchViewModel model, int indexer,  WideSearchDateTimeGetType type)
 	    {
 			var dateTime = model.ParseDateTime(model.SearchFor[indexer]);
 			model.SearchFor[indexer] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",
 				CultureInfo.InvariantCulture);
-
 
 			// Searching for entire day
 			if ( model.SearchForOptions[indexer] == SearchViewModel.SearchForOptionType.Equal
@@ -370,14 +354,20 @@ namespace starskycore.Services
 				var afterDateTime =
 					model.ParseDateTime(model.SearchFor[afterIndexSearchForOptions]);
 
-				model.FileIndexItems.AddRange(sourceList.Where(
-					p => p.DateTime >= beforeDateTime && p.DateTime <= afterDateTime
-				));
-
 				// We have now an extra query, and this is always AND  
 				model.SetAndOrOperator('&', -2);
-
-				return;
+				
+				switch ( type )
+				{
+					case WideSearchDateTimeGetType.DateTime:
+						return (p => p.DateTime >= beforeDateTime && p.DateTime <= afterDateTime);
+					case WideSearchDateTimeGetType.LastEdited:
+						return (p => p.LastEdited >= beforeDateTime && p.LastEdited <= afterDateTime);
+					case WideSearchDateTimeGetType.AddToDatabase:
+						return (p => p.AddToDatabase >= beforeDateTime && p.AddToDatabase <= afterDateTime);
+					default:
+						throw new ArgumentNullException("enum incomplete");
+				}
 			}
 
 			// Normal search
@@ -385,24 +375,46 @@ namespace starskycore.Services
 			{
 				case SearchViewModel.SearchForOptionType.LessThen:
 					// "<":
-					model.FileIndexItems.AddRange(sourceList.Where(
-						p => p.DateTime <= dateTime
-					));
-					break;
+					switch ( type )
+					{
+						case WideSearchDateTimeGetType.DateTime:
+							return (p => p.DateTime <= dateTime);
+						case WideSearchDateTimeGetType.LastEdited:
+							return (p => p.LastEdited <= dateTime);
+						case WideSearchDateTimeGetType.AddToDatabase:
+							return (p => p.AddToDatabase <= dateTime);
+						default:
+							throw new ArgumentNullException("enum incomplete");
+					}
 				case SearchViewModel.SearchForOptionType.GreaterThen:
-					model.FileIndexItems.AddRange(sourceList.Where(
-						p => p.DateTime >= dateTime
-					));
-					break;
+					switch ( type )
+					{
+						case WideSearchDateTimeGetType.DateTime:
+							return (p => p.DateTime >= dateTime);
+						case WideSearchDateTimeGetType.LastEdited:
+							return (p => p.LastEdited >= dateTime);
+						case WideSearchDateTimeGetType.AddToDatabase:
+							return (p => p.AddToDatabase >= dateTime);
+						default:
+							throw new ArgumentNullException("enum incomplete");
+					}
 				default:
-					model.FileIndexItems.AddRange(sourceList.Where(
-						p => p.DateTime == dateTime
-					));
-					break;
+					switch ( type )
+					{
+						case WideSearchDateTimeGetType.DateTime:
+							return (p => p.DateTime == dateTime);
+						case WideSearchDateTimeGetType.LastEdited:
+							return (p => p.LastEdited == dateTime);
+						case WideSearchDateTimeGetType.AddToDatabase:
+							return (p => p.AddToDatabase == dateTime);
+						default:
+							throw new ArgumentNullException("enum incomplete");
+					}
 			}
 	    }
 
-		/// <summary>
+
+	    /// <summary>
 		/// Store the query during search
 		/// </summary>
         private string _defaultQuery = string.Empty;

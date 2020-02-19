@@ -18,10 +18,10 @@ namespace starskytest.Services
     [TestClass]
     public class SearchServiceTest
     {
-        private SearchService _search;
-        private Query _query;
-	    private ApplicationDbContext _dbContext;
-	    private IMemoryCache _memoryCache;
+        private readonly SearchService _search;
+        private readonly Query _query;
+	    private readonly ApplicationDbContext _dbContext;
+	    private readonly IMemoryCache _memoryCache;
 
 	    public SearchServiceTest()
         {
@@ -79,6 +79,8 @@ namespace starskytest.Services
                     ParentDirectory = "/stations2",
                     FileHash = "lelystadcentrum2",
                     Tags = "lelystadcentrum2",
+                    Description = "lelystadcentrum2",
+                    ImageFormat = ExtensionRolesHelper.ImageFormat.tiff,
                     DateTime = new DateTime(2016,1,1,1,1,1),
                     AddToDatabase = new DateTime(2016,1,1,1,1,1)
                 });
@@ -115,7 +117,6 @@ namespace starskytest.Services
                     _query.AddItem(new FileIndexItem
                     {
                         FileName = "cityloop" + i + ".jpg",
-                        // FilePath = "/cities/cityloop" + i + ".jpg",
                         ParentDirectory = "/cities",
                         FileHash = "cityloop" + i,
                         Tags = "cityloop",
@@ -123,9 +124,7 @@ namespace starskytest.Services
                         DateTime = new DateTime(2018,1,1,1,1,1)
                     });
                 }
-                
             }
-
         }
 
 	    [TestMethod]
@@ -144,7 +143,6 @@ namespace starskytest.Services
 		    result = search.Search("test");
 		    // and get the cached value
 		    Assert.AreEqual("cache",result.SearchQuery);
-
 	    }
 
 	    [TestMethod]
@@ -381,7 +379,7 @@ namespace starskytest.Services
         }
 
         [TestMethod]
-        public void SearchService_SearchDateTime()
+        public void SearchService_SearchForDateTimeBetween()
         {
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("-DateTime>2015-01-01T01:01:01 -DateTime<2017-01-01T01:01:01").SearchCount);
@@ -472,23 +470,8 @@ namespace starskytest.Services
 		    });
 		    Assert.AreEqual(string.Empty,model.SearchQuery);
 	    }
-        
-//        [TestMethod]
-//        public void SearchElapsedSecondsIsNotZeroSecondsTest()
-//        {
-//            InsertSearchData();
-//            var model = _search.Search("cityloop");
-//            // Search is fast so one item is in the unit test 0 seconds;
-//            Console.WriteLine(model.ElapsedSeconds);
-//            // Sometimes it fails randomly that is 0 seconds
-//            if (model.ElapsedSeconds == 0f)
-//            {
-//                model = _search.Search("cityloop");
-//            }
-////            Assert.AreNotEqual(0f,model.ElapsedSeconds);
-//        }
 
-        [TestMethod]
+	    [TestMethod]
         public void SearchService_MatchSearchFileNameAndDefaultOptionTest()
         {
             // Single keyword
@@ -552,7 +535,6 @@ namespace starskytest.Services
 			var searchService = new SearchService(_dbContext,new FakeMemoryCache(),new AppSettings());
 			var result = searchService.Search("t"); // <= t is only to detect in fakeCache
 			Assert.AreEqual(1,result.FileIndexItems.Count);
-			
 		}
 	    
 
@@ -563,27 +545,23 @@ namespace starskytest.Services
 		    var result = _search.Search("-FileHash=stationdeletedfile || -FileHash=lelystadcentrum2",0,false);
 		    Assert.AreEqual(2,result.FileIndexItems.Count);
 	    }
+	    
+	    [TestMethod]
+	    public void SearchService_DescriptionImageFormat()
+	    {
+		    InsertSearchData();
+		    var result = _search.Search("-Description=lelystadcentrum2 -ImageFormat=tiff",0,false);
+		    Assert.AreEqual(1,result.FileIndexItems.Count);
+	    }
+	    
+	    [TestMethod]
+	    public void SearchService_DescriptionOne()
+	    {
+		    InsertSearchData();
+		    var result = _search.Search("-Description=lelystadcentrum2",0,false);
+		    Assert.AreEqual(1,result.FileIndexItems.Count);
+	    }
 
-	    
-//	    [TestMethod]
-//	    public void SearchService_thisORThis2()
-//	    {
-//		    InsertSearchData();
-//		    var result = _search.Search("-DateTime=2016-01-01 || -FileHash=lelystadcentrum",0,false);
-//		    Assert.AreEqual(2,result.FileIndexItems.Count);
-//	    }
-//
-//	    
-//	    [TestMethod]
-//	    public void SearchService_thisORThisDate()
-//	    {
-//		    InsertSearchData();
-//		    //todo": test FAILING!!
-//		    var result = _search.Search("-DateTime=2016-01-01 || -FileHash=lelystadcentrum",0,false);
-//		    Assert.AreEqual(2,result.FileIndexItems.Count);
-//
-//	    }
-	    
 	    [TestMethod]
 	    public void SearchService_thisORAndCombination()
 	    {
@@ -595,7 +573,6 @@ namespace starskytest.Services
 		    // lelystadcentrum && lelystadcentrum2 are items
 		    // station = duplicate in this example but triggers other results when using || instead of &&
 		    Assert.AreEqual(2,result.FileIndexItems.Count);
-
 	    }
 
 	    [TestMethod]
@@ -609,11 +586,9 @@ namespace starskytest.Services
 	    [TestMethod]
 	    public void SearchViewModel_ParseDefaultOption()
 	    {
-
 		    var modelSearchQuery = "station || lelystad";
 		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
 		    Assert.AreEqual("-Tags:\"station\" -Tags:\"lelystad\" ",result);
-
 	    }
 
 	    [TestMethod]
@@ -627,11 +602,9 @@ namespace starskytest.Services
 	    [TestMethod]
 	    public void SearchViewModel_Quoted_OR_ParseDefaultOption()
 	    {
-
 		    var modelSearchQuery = " \"station test\" || lelystad || key2";
 		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
 		    Assert.AreEqual("-Tags:\"station test\" -Tags:\"lelystad\" -Tags:\"key2\" ",result);
-
 	    }
 
 	    [TestMethod]
@@ -642,7 +615,6 @@ namespace starskytest.Services
 		    model.ParseDefaultOption(modelSearchQuery);
 		    Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions[0]);
 	    }
-
 	    
 	    [TestMethod]
 	    public void SearchViewModel_NotSearch_ParseDefaultOption()
@@ -651,19 +623,14 @@ namespace starskytest.Services
 		    var model = new SearchViewModel();
 		    model.ParseDefaultOption(modelSearchQuery);
 		    Assert.AreEqual(SearchViewModel.SearchForOptionType.Not,model.SearchForOptions[0]);
-		    
 	    }
-
-	    
 	    
 	    [TestMethod]
 	    public void SearchViewModel_Quoted_DefaultSplit_ParseDefaultOption()
 	    {
-
 		    var modelSearchQuery = " \"station test\" key2";
 		    var result = new SearchViewModel().ParseDefaultOption(modelSearchQuery);
 		    Assert.AreEqual("-Tags:\"station test\" -Tags:\"key2\" ",result);
-			
 	    }
 	    
 	    [TestMethod]

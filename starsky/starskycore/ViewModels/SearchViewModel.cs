@@ -37,12 +37,6 @@ namespace starskycore.ViewModels
 	    private readonly DateTime _dateTime;
 	    
 	    /// <summary>
-	    /// Used to know how old the search query is
-	    /// Used to know if a page is cached
-	    /// </summary>
-	    public double Offset =>   Math.Round(Math.Abs((DateTime.Now - _dateTime).TotalSeconds),2);
-
-	    /// <summary>
 	    /// Items on the page
 	    /// </summary>
 	    public List<FileIndexItem> FileIndexItems { get; set; }
@@ -138,7 +132,10 @@ namespace starskycore.ViewModels
         public List<string> SearchFor
         {  
             // don't change it to 'SearchFor => _searchFor'
-            get { return _searchFor; }
+            get
+            {
+	            return _searchFor;
+            }
         }
 
 	    /// <summary>
@@ -148,7 +145,7 @@ namespace starskycore.ViewModels
         public void SetAddSearchFor(string value)
         {
             if (_searchFor == null) _searchFor = new List<string>();
-            _searchFor.Add(value.Trim());
+            _searchFor.Add(value.Trim().ToLowerInvariant());
         }
         
 	    /// <summary>
@@ -261,15 +258,13 @@ namespace starskycore.ViewModels
                 _elapsedSeconds = value - value % 0.001;
             }
         }
-
+	    
 	    /// <summary>
-	    /// Copy the current object in memory
+	    /// Used to know how old the search query is
+	    /// Used to know if a page is cached
 	    /// </summary>
-	    /// <returns></returns>
-	    public SearchViewModel Clone()
-        {
-            return (SearchViewModel) MemberwiseClone();
-        }
+	    public double Offset =>   Math.Round(Math.Abs((DateTime.Now - _dateTime).TotalSeconds),2);
+
 
 		/// <summary>
 		/// Private field: Search Operator, and or OR
@@ -362,6 +357,14 @@ namespace starskycore.ViewModels
 		    return '&';
 	    }
 	    
+	    /// <summary>
+	    /// Copy the current object in memory
+	    /// </summary>
+	    /// <returns></returns>
+	    public SearchViewModel Clone()
+	    {
+		    return (SearchViewModel) MemberwiseClone();
+	    }
 	    
 	    /// <summary>
 	    /// For reparsing keywords to -Tags:"keyword"
