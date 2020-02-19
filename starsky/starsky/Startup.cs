@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -201,7 +203,11 @@ namespace starsky
 	        var appInsightsKey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
 	        if ( !string.IsNullOrWhiteSpace(appInsightsKey) )
 	        {
-		        services.AddApplicationInsightsTelemetry();
+		        services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
+		        {
+			        ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+			        EnableDependencyTrackingTelemetryModule = true
+		        });
 	        }
 	        services.AddScoped<ApplicationInsightsJsHelper>();
 
