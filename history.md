@@ -24,11 +24,14 @@
 - [x]  (bugfix) _Frond-end/Back-end_ Add length limit length for search queries
 - [x]  (bugfix) _Frond-end_ Add length limit length for tags
 - [x]  (feature) _Back-end_ Change Password for current user (API only)
-- [x]  (bugfix) _Back-end_  System.IO.EndOfStreamException: Expected to read 372 payload bytes but only received 21. 
+- [x]  (bugfix) _Back-end_  System.IO.EndOfStreamException: Expected to read 372 payload bytes but only received 21.
         on `/api/search?t=-Datetime>1+-Datetime<0+-ImageFormat:jpg`
 - [x]  (bugfix)  Unit tests for NOT queries `/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22`
-- [x]  (performance) refactoring of `/api/search`
-- [x]  (performance) refactoring of `SearchSuggestionsService`
+- [x]  (performance) _Back-end_  refactoring of `/api/search`
+- [x]  (performance) _Back-end_  refactoring of `SearchSuggestionsService`
+- [x]  (bugfix) _Back-end_  add version to application insights
+- [x]  (version) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.1 (using SDK 3.1.101)
+- [x]  (version) _Back-end_ Upgrade RazorLight to 2.0.0-beta4
 
 # version 0.1.15 - 2020-02-06
 - [x]  (bugfix) _Front-end_ Drag'n drop is now only with files
@@ -41,7 +44,7 @@
 # version 0.1.14 - 2020-02-04
 - [x]   (bugfix) _back-end_ Security fixes in controllers
 - [x]   (bugfix) _back-end + front-end_ name: colorClassActiveList replace everywhere
-- [x]   (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2. Run `./build.sh` before you start developing
+- [x]   (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2 (TargetFramework). Run `./build.sh` before you start developing
 - [x]   (bugfix) _Front-end_ preloader when uploading
 - [x]   (bugfix) _Front-end_ translations in item-list-view, item-text-list-view,
 - [x]   (bugfix)  _Front-end_ translations in containers/search, containers/trash, search, trash and trash-page
@@ -111,7 +114,7 @@
 - [] (bug) `/starsky` paths are not supported __not fixed__
 
 # version 0.1.9 - 2019-12-01
-_Upgrade to .NET Core 3.0 & EF Core 3.1-preview3_
+_Upgrade to .NET Core 3.0 (TargetFramework) & EF Core 3.1-preview3_
 - [x] use for example '3 hours' instead of yesterday in detailview
 - [x] (bugfix) EventTarget issue (Safari) when using /import
 - [x] (azure-pipeline) add yaml file to replace classic build pipeline
@@ -201,7 +204,7 @@ _Version number does not match SemVer_
 
 # version 0.1.5.8 - 2019-08-14
 _Version number does not match SemVer_
-- Change Dot NET version to the `.Net Core 2.2` release (C# 7)
+- Change Dot NET version to the `.Net Core 2.2` (TargetFramework) release (C# 7)
 - Rollback version due Entity Framework performance issues with MySQL
 - Swagger is enabled
 ## The following changes from 0.1.5.7 are included in this release
@@ -213,7 +216,7 @@ _Version number does not match SemVer_
 
 # version 0.1.5.7 - 2019-08-09
 _Version number does not match SemVer_
-- Update Dot NET version to the `.Net Core 3 Preview 7` release
+- Update Dot NET version to the `.Net Core 3 Preview 7` (TargetFramework) release
 - Update to C# version 8
 - Keep the core .netstandard2.0 for NetFramework reference
 - __Breaking API change__ from `/account?json=true` to `/account/status` `api`
@@ -293,7 +296,7 @@ _Version number does not match SemVer_
 - bugfix to large int relative to today
 - add support for not queries `-file` to ignore the word file
 - performance improvements to importer
-- .NET Core to 2.1.8 (update to dotnet-sdk-2.2.104)
+- .NET Core to 2.1.8  (TargetFramework) (update to dotnet-sdk-2.2.104)
 - input args changed: --recursive (typo)
 - frontend readonly bug fix
 - frontend temp disabled alt+next loop due set-interval overflow
