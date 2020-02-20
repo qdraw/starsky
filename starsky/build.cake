@@ -391,6 +391,7 @@ Task("SonarBegin")
         var gitBranch = GitBranchCurrent(parent);
         var branchName = gitBranch.FriendlyName;
         if(branchName == "(no branch)") {
+          // Azure devops: https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
           branchName = Environment.GetEnvironmentVariable("Build.SourceBranch");
         };
         if(string.IsNullOrEmpty(branchName)) {
