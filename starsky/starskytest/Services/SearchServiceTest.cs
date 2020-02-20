@@ -248,6 +248,13 @@ namespace starskytest.Services
             Assert.AreEqual(1, _search.Search("-title:Schiphol").SearchCount);
         }
            
+        
+        [TestMethod]
+        public void SearchService_NotQueryCityloop240()
+        {
+	        InsertSearchData();
+	        Assert.AreEqual(NumberOfFakeResults-1, _search.Search("-filehash:cityloop -filehash-cityloop240").SearchCount);
+        }
 	    
 	    [TestMethod]
 	    public void SearchService_SearchSchipholFileHashTest()
