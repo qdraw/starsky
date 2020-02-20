@@ -67,7 +67,7 @@ namespace starskycore.Services
 						case WideSearchDateTimeGetType.AddToDatabase:
 							return (p => p.AddToDatabase <= dateTime);
 						default:
-							throw new ArgumentOutOfRangeException("type is not added");
+							throw new ArgumentNullException(nameof(type));
 					}
 				case SearchViewModel.SearchForOptionType.GreaterThen:
 					switch ( type )
@@ -79,7 +79,7 @@ namespace starskycore.Services
 						case WideSearchDateTimeGetType.AddToDatabase:
 							return (p => p.AddToDatabase >= dateTime);
 						default:
-							throw new ArgumentOutOfRangeException("type is not added");
+							throw new ArgumentNullException(nameof(type));
 					}
 				default:
 					switch ( type )
@@ -91,7 +91,7 @@ namespace starskycore.Services
 						case WideSearchDateTimeGetType.AddToDatabase:
 							return (p => p.AddToDatabase == dateTime);
 						default:
-							throw new ArgumentOutOfRangeException("type is not added");
+							throw new ArgumentNullException(nameof(type));
 					}
 			}
 	    }

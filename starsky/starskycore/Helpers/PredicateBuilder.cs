@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -11,9 +10,27 @@ namespace starskycore.Helpers
 	/// </summary>
 	public static class PredicateBuilder
 	{
+		/// <summary>
+		/// Query setup positive 
+		/// </summary>
+		/// <typeparam name="T">type</typeparam>
+		/// <returns>Expression</returns>
 		public static Expression<Func<T, bool>> True<T> ()  { return f => true;  }
+		
+		/// <summary>
+		/// Query setup negative 
+		/// </summary>
+		/// <typeparam name="T">type</typeparam>
+		/// <returns>Expression</returns>
 		public static Expression<Func<T, bool>> False<T> () { return f => false; }
  
+		/// <summary>
+		/// Or Expression
+		/// </summary>
+		/// <param name="expr1">first</param>
+		/// <param name="expr2">second</param>
+		/// <typeparam name="T">object type</typeparam>
+		/// <returns>Expression</returns>
 		public static Expression<Func<T, bool>> Or<T> (this Expression<Func<T, bool>> expr1,
 			Expression<Func<T, bool>> expr2)
 		{
@@ -22,6 +39,13 @@ namespace starskycore.Helpers
 				(Expression.OrElse (expr1.Body, invokedExpr), expr1.Parameters);
 		}
 		
+		/// <summary>
+		/// And Expression
+		/// </summary>
+		/// <param name="expr1">first</param>
+		/// <param name="expr2">second</param>
+		/// <typeparam name="T">object type</typeparam>
+		/// <returns>Expression</returns>
 		public static Expression<Func<T, bool>> And<T> (this Expression<Func<T, bool>> expr1,
 			Expression<Func<T, bool>> expr2)
 		{
@@ -31,12 +55,13 @@ namespace starskycore.Helpers
 		}
 		
 		/// <summary>
+		/// Combine two queries
 		/// @see https://stackoverflow.com/a/457328
 		/// </summary>
-		/// <param name="expr1"></param>
-		/// <param name="expr2"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
+		/// <param name="expr1">first</param>
+		/// <param name="expr2">second</param>
+		/// <typeparam name="T">object type</typeparam>
+		/// <returns>Expression</returns>
 		public static Expression<Func<T, bool>> AndAlso<T>(
 			this Expression<Func<T, bool>> expr1,
 			Expression<Func<T, bool>> expr2)
@@ -72,29 +97,6 @@ namespace starskycore.Helpers
 				return base.Visit(node);
 			}
 		}
- 
-		public static Expression<Func<TIn, TOut>> Chain<TIn, TInterstitial, TOut>(
-			this Expression<Func<TIn, TInterstitial>> inner,
-			Expression<Func<TInterstitial, TOut>> outer)
-		{
-			var visitor = new SwapVisitor(outer.Parameters[0], inner.Body);
-			return Expression.Lambda<Func<TIn, TOut>>(visitor.Visit(outer.Body), inner.Parameters);
-		}
-		
-		internal class SwapVisitor : ExpressionVisitor
-		{
-			private readonly Expression _source, _replacement;
 
-			public SwapVisitor(Expression source, Expression replacement)
-			{
-				_source = source;
-				_replacement = replacement;
-			}
-
-			public override Expression Visit(Expression node)
-			{
-				return node == _source ? _replacement : base.Visit(node);
-			}
-		}
 	}
 }
