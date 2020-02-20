@@ -40,30 +40,33 @@ namespace starskycore.Services
 
 			var allFilesList = _context.FileIndex.GroupBy(i => i.Tags)
 				.Where(x => x.Count() >= 1) // .ANY is not supported by EF Core
-				.Select(val => val.Key ).ToList();
+				.Select(val => new KeyValuePair<string, int>(val.Key, val.Count())).ToList();
 			
 			var suggestions = new Dictionary<string,int>(StringComparer.InvariantCultureIgnoreCase);
 
 			foreach ( var tag in allFilesList )
 			{
-				if ( string.IsNullOrEmpty(tag) ) continue;
+				if ( string.IsNullOrEmpty(tag.Key) ) continue;
 				
-				var keywordsHashSet = HashSetHelper.StringToHashSet(tag.Trim());
+				var keywordsHashSet = HashSetHelper.StringToHashSet(tag.Key.Trim());
 
 				foreach ( var keyword in keywordsHashSet )
 				{
 					if ( suggestions.ContainsKey(keyword) )
 					{
-						suggestions[keyword]++;
+						suggestions[keyword] += tag.Value;
 					}
 					else
 					{
-						suggestions.Add(keyword,1);
+						suggestions.Add(keyword,tag.Value);
 					}
 				}
 			}
 			
-			var suggestionsFiltered = suggestions.Where(p => p.Value >= 8).ToList();
+			var suggestionsFiltered = suggestions
+				.Where(p => p.Value >= 10)
+				.OrderByDescending(p => p.Value)
+				.ToList();
 
 			_cache.Set(nameof(SearchSuggestionsService), suggestionsFiltered, 
 				new TimeSpan(100,0,0));

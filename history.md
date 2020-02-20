@@ -17,15 +17,18 @@
 
 # version 0.1.16 - 2020-02-??
 - [x]  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix
-- [x]  (change) _Back-end_ Change from `Newtonsoft.Json` to `System.Text.Json`
+- [x]  (feature) _Back-end_ Feature toggle to change from `Newtonsoft.Json` to `System.Text.Json`
 - [x]  (bugfix) _Frond-end_ Trash display content after deleted (changes in wrapper)
 - [x]  (rename) _Back-end_ `/api/import/allowed` to `/api/allowed-types/mimetype/sync`
 - [x]  (upgrade) _Frond-end_  Upgrade ClientApp CRA _(Create React App 3.3.1, 2020-01-31)_
 - [x]  (bugfix) _Frond-end/Back-end_ Add length limit length for search queries
 - [x]  (bugfix) _Frond-end_ Add length limit length for tags
 - [x]  (feature) _Back-end_ Change Password for current user (API only)
-- [x] (bug) _Back-end_  System.IO.EndOfStreamException: Expected to read 372 payload bytes but only received 21. on `/api/search?t=-Datetime>1+-Datetime<0+-ImageFormat:jpg`
-- []  (bug)  Unit tests for NOT queries `/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22`
+- [x]  (bugfix) _Back-end_  System.IO.EndOfStreamException: Expected to read 372 payload bytes but only received 21. 
+        on `/api/search?t=-Datetime>1+-Datetime<0+-ImageFormat:jpg`
+- [x]  (bugfix)  Unit tests for NOT queries `/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22`
+- [x]  (performance) refactoring of `/api/search`
+- [x]  (performance) refactoring of `SearchSuggestionsService`
 
 # version 0.1.15 - 2020-02-06
 - [x]  (bugfix) _Front-end_ Drag'n drop is now only with files
