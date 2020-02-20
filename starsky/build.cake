@@ -390,8 +390,14 @@ Task("SonarBegin")
         string parent = System.IO.Directory.GetParent(".").FullName;
         var gitBranch = GitBranchCurrent(parent);
         var branchName = gitBranch.FriendlyName;
+        if(branchName == "(no branch)") {
+          branchName = Environment.GetEnvironmentVariable("Build.SourceBranch");
+        };
+        if(string.IsNullOrEmpty(branchName)) {
+          branchName = "master";
+        }
+
         Information($">> Branch: {branchName}");
-        if(branchName == "(no branch)") branchName = "master";
 
         /* branchName = "master"; */
 
