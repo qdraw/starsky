@@ -396,8 +396,6 @@ Task("SonarBegin")
 
         Information($">> Branch: {branchName}");
 
-        /* branchName = "master"; */
-
         SonarBegin(new SonarBeginSettings{
             Name = "Starsky",
             Key = key,
