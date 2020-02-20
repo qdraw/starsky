@@ -167,6 +167,11 @@ namespace starskycore.Services
 		    {
 			    var searchInType = ( SearchViewModel.SearchInTypes )
 				    Enum.Parse(typeof(SearchViewModel.SearchInTypes), model.SearchIn[i].ToLowerInvariant());
+
+			    if ( model.SearchForOptions[i] == SearchViewModel.SearchForOptionType.Not )
+			    {
+				    continue;
+			    }
 			    
 			    switch ( searchInType )
 			    {
@@ -208,21 +213,20 @@ namespace starskycore.Services
 					    model.SearchFor[i] = boolIsDirectory.ToString();
 					    break;
 				    case SearchViewModel.SearchInTypes.lastedited:
-					    predicates.Add(WideSearchDateTimeGet(model,i,WideSearchDateTimeGetType.LastEdited));
+					    predicates.Add(new SearchWideDateTime().WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited));
 					    break;
-				    
 				    case SearchViewModel.SearchInTypes.addtodatabase:
-					    predicates.Add(WideSearchDateTimeGet(model,i,WideSearchDateTimeGetType.AddToDatabase));
+					    predicates.Add(new SearchWideDateTime().WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase));
 					    break;
 				    case SearchViewModel.SearchInTypes.datetime:
-					    predicates.Add(WideSearchDateTimeGet(model,i,WideSearchDateTimeGetType.DateTime));
+					    predicates.Add(new SearchWideDateTime().WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.DateTime));
 					    break;
 				    case SearchViewModel.SearchInTypes.tags:
 					    var tags = model.SearchFor[i];
 					    predicates.Add(x => x.Tags.ToLower().Contains(tags));
 					    break;
 				    default:
-					    throw new ArgumentOutOfRangeException();
+					    throw new ArgumentOutOfRangeException(nameof(searchInType));
 			    }
 		    }
 		    
@@ -259,116 +263,6 @@ namespace starskycore.Services
 		    return model;
 	    }
 
-	    public enum WideSearchDateTimeGetType
-	    {
-		    DateTime,
-		    LastEdited,
-		    AddToDatabase
-	    }
-
-	    /// <summary>
-	    /// Query for DateTime: in between values, entire days, from, type of queries
-	    /// </summary>
-	    /// <param name="sourceList">Query Source</param>
-	    /// <param name="model">output</param>
-	    /// <param name="indexer">number of search query (i)</param>
-	    /// <param name="type"></param>
-	    private Expression<Func<FileIndexItem,bool>> WideSearchDateTimeGet(SearchViewModel model, int indexer,  WideSearchDateTimeGetType type)
-	    {
-			var dateTime = model.ParseDateTime(model.SearchFor[indexer]);
-			model.SearchFor[indexer] = dateTime.ToString("dd-MM-yyyy HH:mm:ss",
-				CultureInfo.InvariantCulture);
-
-			// Searching for entire day
-			if ( model.SearchForOptions[indexer] == SearchViewModel.SearchForOptionType.Equal
-				 && dateTime.Hour == 0 &&
-				 dateTime.Minute == 0 && dateTime.Second == 0 &&
-				 dateTime.Millisecond == 0 )
-			{
-
-				model.SearchForOptions[indexer] = SearchViewModel.SearchForOptionType.GreaterThen;
-				model.SearchForOptions.Add(SearchViewModel.SearchForOptionType.LessThen);
-
-				var add24Hours = dateTime.AddHours(23)
-					.AddMinutes(59).AddSeconds(59)
-					.ToString(CultureInfo.InvariantCulture);
-				model.SearchFor.Add(add24Hours);
-				model.SearchIn.Add("DateTime");
-			}
-
-			// faster search for searching within
-			// how ever this is still triggered multiple times
-			var beforeIndexSearchForOptions =
-				model.SearchForOptions.IndexOf(SearchViewModel.SearchForOptionType.GreaterThen);
-			var afterIndexSearchForOptions =
-				model.SearchForOptions.IndexOf(SearchViewModel.SearchForOptionType.LessThen);
-			if ( beforeIndexSearchForOptions >= 0 &&
-				 afterIndexSearchForOptions >= 0 )
-			{
-				var beforeDateTime =
-					model.ParseDateTime(model.SearchFor[beforeIndexSearchForOptions]);
-				
-				var afterDateTime =
-					model.ParseDateTime(model.SearchFor[afterIndexSearchForOptions]);
-
-				// We have now an extra query, and this is always AND  
-				model.SetAndOrOperator('&', -2);
-				
-				switch ( type )
-				{
-					case WideSearchDateTimeGetType.DateTime:
-						return (p => p.DateTime >= beforeDateTime && p.DateTime <= afterDateTime);
-					case WideSearchDateTimeGetType.LastEdited:
-						return (p => p.LastEdited >= beforeDateTime && p.LastEdited <= afterDateTime);
-					case WideSearchDateTimeGetType.AddToDatabase:
-						return (p => p.AddToDatabase >= beforeDateTime && p.AddToDatabase <= afterDateTime);
-					default:
-						throw new ArgumentNullException("enum incomplete");
-				}
-			}
-
-			// Normal search
-			switch ( model.SearchForOptions[indexer] )
-			{
-				case SearchViewModel.SearchForOptionType.LessThen:
-					// "<":
-					switch ( type )
-					{
-						case WideSearchDateTimeGetType.DateTime:
-							return (p => p.DateTime <= dateTime);
-						case WideSearchDateTimeGetType.LastEdited:
-							return (p => p.LastEdited <= dateTime);
-						case WideSearchDateTimeGetType.AddToDatabase:
-							return (p => p.AddToDatabase <= dateTime);
-						default:
-							throw new ArgumentNullException("enum incomplete");
-					}
-				case SearchViewModel.SearchForOptionType.GreaterThen:
-					switch ( type )
-					{
-						case WideSearchDateTimeGetType.DateTime:
-							return (p => p.DateTime >= dateTime);
-						case WideSearchDateTimeGetType.LastEdited:
-							return (p => p.LastEdited >= dateTime);
-						case WideSearchDateTimeGetType.AddToDatabase:
-							return (p => p.AddToDatabase >= dateTime);
-						default:
-							throw new ArgumentNullException("enum incomplete");
-					}
-				default:
-					switch ( type )
-					{
-						case WideSearchDateTimeGetType.DateTime:
-							return (p => p.DateTime == dateTime);
-						case WideSearchDateTimeGetType.LastEdited:
-							return (p => p.LastEdited == dateTime);
-						case WideSearchDateTimeGetType.AddToDatabase:
-							return (p => p.AddToDatabase == dateTime);
-						default:
-							throw new ArgumentNullException("enum incomplete");
-					}
-			}
-	    }
 
 
 	    /// <summary>
