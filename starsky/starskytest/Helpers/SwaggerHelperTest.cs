@@ -66,15 +66,7 @@ namespace starskytest.Helpers
 				.UseUrls("http://localhost:5051")
 				.ConfigureServices(services =>
 				{
-
-#if NETCOREAPP3_0
-					services.AddMvcCore().AddApiExplorer()
-						.AddNewtonsoftJson();
-#else
-	services.AddMvcCore().AddApiExplorer(); // use core and AddApiExplorer to make it faster
-		// https://offering.solutions/blog/articles/2017/02/07/difference-between-addmvc-addmvcore/
-#endif
-
+					services.AddMvcCore().AddApiExplorer();
 					services.AddSwaggerGen();
 					new SwaggerHelper(_appSettings).Add01SwaggerGenHelper(services);
 
@@ -82,20 +74,12 @@ namespace starskytest.Helpers
 				.Configure(app =>
 				{
 
-#if NETCOREAPP3_0
 					app.UseRouting();
 					app.UseEndpoints(endpoints =>
 					{
 						endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 					});
-#else
-	        app.UseMvc(routes =>
-					 {
-						 routes.MapRoute(
-							 name: "default",
-							 template: "{controller=Home}/{action=Index}/{id?}");
-					 });
-#endif
+
 					new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 					new SwaggerHelper(_appSettings).Add03AppExport(app);
 				}).Build();

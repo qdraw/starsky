@@ -10,6 +10,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using starskycore.Helpers;
 using starskycore.Models;
+#if SYSTEM_TEXT_ENABLED
+using System.Text.Json.Serialization;
+#else
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+#endif
 
 namespace starskycore.ViewModels
 {
@@ -30,12 +36,6 @@ namespace starskycore.ViewModels
 	    /// </summary>
 	    private readonly DateTime _dateTime;
 	    
-	    /// <summary>
-	    /// Used to know how old the search query is
-	    /// Used to know if a page is cached
-	    /// </summary>
-	    public double Offset =>   Math.Round(Math.Abs((DateTime.Now - _dateTime).TotalSeconds),2);
-
 	    /// <summary>
 	    /// Items on the page
 	    /// </summary>
@@ -132,7 +132,10 @@ namespace starskycore.ViewModels
         public List<string> SearchFor
         {  
             // don't change it to 'SearchFor => _searchFor'
-            get { return _searchFor; }
+            get
+            {
+	            return _searchFor;
+            }
         }
 
 	    /// <summary>
@@ -142,19 +145,24 @@ namespace starskycore.ViewModels
         public void SetAddSearchFor(string value)
         {
             if (_searchFor == null) _searchFor = new List<string>();
-            _searchFor.Add(value.Trim());
+            _searchFor.Add(value.Trim().ToLowerInvariant());
         }
         
 	    /// <summary>
 	    /// The search for types
 	    /// </summary>
 	    [DataContract]
+#if SYSTEM_TEXT_ENABLED
+		[JsonConverter(typeof(JsonStringEnumConverter))]
+#else
+	    [JsonConverter(typeof(StringEnumConverter))]
+#endif
 	    public enum SearchForOptionType
 	    {
 		    /// <summary>
 		    ///  &gt;
 		    /// </summary>
-		    [Display(Name = ">")]
+		    [Display(Name = ">")] // in json it is GreaterThen
 			GreaterThen,
 		    
 		    /// <summary>
@@ -244,21 +252,19 @@ namespace starskycore.ViewModels
 	    /// </summary>
         public double ElapsedSeconds
         {
-            get { return _elapsedSeconds; }
+		    get { return Math.Round(_elapsedSeconds, 4); }
             set
             {
                 _elapsedSeconds = value - value % 0.001;
             }
         }
-
+	    
 	    /// <summary>
-	    /// Copy the current object in memory
+	    /// Used to know how old the search query is
+	    /// Used to know if a page is cached
 	    /// </summary>
-	    /// <returns></returns>
-	    public SearchViewModel Clone()
-        {
-            return (SearchViewModel) MemberwiseClone();
-        }
+	    public double Offset =>   Math.Round(Math.Abs((DateTime.Now - _dateTime).TotalSeconds),2);
+
 
 		/// <summary>
 		/// Private field: Search Operator, and or OR
@@ -351,6 +357,14 @@ namespace starskycore.ViewModels
 		    return '&';
 	    }
 	    
+	    /// <summary>
+	    /// Copy the current object in memory
+	    /// </summary>
+	    /// <returns></returns>
+	    public SearchViewModel Clone()
+	    {
+		    return (SearchViewModel) MemberwiseClone();
+	    }
 	    
 	    /// <summary>
 	    /// For reparsing keywords to -Tags:"keyword"
@@ -457,7 +471,7 @@ namespace starskycore.ViewModels
 	    
 		/// <summary>
 	    /// Filter for WideSearch
-	    /// Always after widesearch 
+	    /// Always after wideSearch 
 	    /// </summary>
 	    /// <param name="model"></param>
 	    /// <returns></returns>

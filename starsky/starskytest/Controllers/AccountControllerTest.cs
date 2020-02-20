@@ -17,7 +17,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.ViewModels.Account;
 using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -111,8 +110,6 @@ namespace starskytest.Controllers
             var userId = "TestUserA";
             var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
 
-//            _serviceProvider.GetRequiredService<IUserManager>();
-
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
             httpContext.RequestServices = _serviceProvider;
@@ -203,7 +200,78 @@ namespace starskytest.Controllers
 	        Assert.IsNotNull(actionResult);
 	        Assert.AreEqual("Account Register page is closed",actionResult.Value);
         }
+
+        [TestMethod]
+        public async Task AccountController_ChangeSecret_NotLoggedIn()
+        {
+	        var controller = new AccountController(_userManager, _appSettings);
+	        var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+	        controller.ControllerContext.HttpContext = httpContext;
+
+	        var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", ChangedPassword = "newPassword", ChangedConfirmPassword = "newPassword"};
+	        var actionResult = await controller.ChangeSecret(changePasswordViewModel) as UnauthorizedObjectResult;
+			Assert.AreEqual(401,actionResult.StatusCode);
+        }
         
+        [TestMethod]
+        public async Task AccountController_ChangeSecret_WrongInput()
+        {
+	        
+	        var controller = new AccountController(_userManager, _appSettings)
+	        {
+		        ControllerContext = {HttpContext = new DefaultHttpContext
+		        {
+			        User = SetTestClaimsSet("test", "1")
+		        }}
+	        };
+	        
+	        var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", ChangedPassword = "newPassword1111", ChangedConfirmPassword = "newPassword"};
+            
+	        var actionResult = await controller.ChangeSecret(changePasswordViewModel) as BadRequestObjectResult;
+	        
+	        Assert.AreEqual(400,actionResult.StatusCode);
+        }
+
+ 
+        [TestMethod]
+        public async Task AccountController_ChangeSecret_PasswordChange_Success_Injected()
+        {
+	        var controller = new AccountController(new FakeUserManagerActiveUsers("test"), _appSettings)
+	        {
+		        ControllerContext = {HttpContext = new DefaultHttpContext
+		        {
+			        User = SetTestClaimsSet("test", "99")
+		        }}
+	        };
+
+	        var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", ChangedPassword = "newPassword", ChangedConfirmPassword = "newPassword"};
+            
+	        var actionResult = await controller.ChangeSecret(changePasswordViewModel) as JsonResult;
+	        var actualResult = actionResult.Value as ChangeSecretResult;
+	        
+	        Assert.IsTrue(actualResult.Success);
+        }
+
+        [TestMethod]
+        public async Task AccountController_ChangeSecret_PasswordChange_Rejected_Injected()
+        {
+	        var userManager = new FakeUserManagerActiveUsers("reject");
+
+	        var controller = new AccountController(userManager, _appSettings)
+	        {
+		        ControllerContext = {HttpContext = new DefaultHttpContext
+		        {
+			        User = SetTestClaimsSet("reject", "99")
+		        }}
+	        };
+
+	        var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", ChangedPassword = "newPassword", ChangedConfirmPassword = "newPassword"};
+            
+	        var actionResult = await controller.ChangeSecret(changePasswordViewModel) as BadRequestObjectResult;
+	        Assert.AreEqual(400,actionResult.StatusCode);
+        }
+        
+
         [TestMethod]
         public void AccountController_Model_WithUsersActive_GetRegisterPage_BlockedByDefault()
         {
@@ -349,7 +417,7 @@ namespace starskytest.Controllers
                 Name = userId
             };
 
-            // Arange > new account
+            // Arrange > new account
             controller.Register(newAccount);
             
             // login > it must be succesfull
@@ -430,5 +498,4 @@ namespace starskytest.Controllers
 	        Assert.AreEqual("There are no accounts, you must create an account first", actionResult.Value as string);
         }
     }
-
 }

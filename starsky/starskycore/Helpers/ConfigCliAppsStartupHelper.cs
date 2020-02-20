@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Pomelo.EntityFrameworkCore.MySql.Storage;
 using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Middleware;
@@ -69,7 +71,12 @@ namespace starskycore.Helpers
             switch (appSettings.DatabaseType)
             {
                 case Models.AppSettings.DatabaseTypeList.Mysql:
-                    builderDb.UseMySql(appSettings.DatabaseConnection);
+                    builderDb.UseMySql(appSettings.DatabaseConnection, mySqlOptions =>
+                    {
+	                    mySqlOptions.CharSet(CharSet.Utf8Mb4);
+	                    mySqlOptions.CharSetBehavior(CharSetBehavior.AppendToAllColumns);
+	                    mySqlOptions.EnableRetryOnFailure(2);
+                    });
                     break;
                 case Models.AppSettings.DatabaseTypeList.InMemoryDatabase:
                     builderDb.UseInMemoryDatabase("Starsky");

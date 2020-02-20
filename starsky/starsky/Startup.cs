@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -107,8 +109,6 @@ namespace starsky
 	                    b => b.MigrationsAssembly(nameof(starskycore))));
                     services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
                     break;
-                default:
-	                throw new ArgumentOutOfRangeException();
             }
             
             // Enable Dual Authentication 
@@ -181,9 +181,13 @@ namespace starsky
 			// Cache the response at the browser
 			services.AddResponseCaching();
 
+#if SYSTEM_TEXT_ENABLED
 			// NET Core 3 -> removed newtonsoft from core
-			services.AddMvc();
-
+			services.AddControllers();
+#else
+	        services.AddControllers().AddNewtonsoftJson();
+#endif
+	        
 			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
 			services.Configure<ForwardedHeadersOptions>(options =>
 			{
@@ -197,7 +201,11 @@ namespace starsky
 	        var appInsightsKey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
 	        if ( !string.IsNullOrWhiteSpace(appInsightsKey) )
 	        {
-		        services.AddApplicationInsightsTelemetry();
+		        services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
+		        {
+			        ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+			        EnableDependencyTrackingTelemetryModule = true
+		        });
 	        }
 	        services.AddScoped<ApplicationInsightsJsHelper>();
 
@@ -252,7 +260,7 @@ namespace starsky
             // Use the name of the application to use behind a reverse proxy
             app.UsePathBase( PathHelper.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETCOREAPP3_1
 			app.UseRouting();
 #endif
 
@@ -304,11 +312,11 @@ namespace starsky
 			app.UseAuthentication();
             app.UseBasicAuthentication();
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETCOREAPP3_1
 			app.UseAuthorization();
 #endif
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETCOREAPP3_1
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");

@@ -1,7 +1,4 @@
-﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using starskycore.Models.Account;
@@ -58,6 +55,7 @@ namespace starskycore.Interfaces
     public class ChangeSecretResult
     {
         public bool Success { get; set; }
+
         public ChangeSecretResultError? Error { get; set; }
         
         public ChangeSecretResult(bool success = false, ChangeSecretResultError? error = null)
@@ -71,7 +69,6 @@ namespace starskycore.Interfaces
     {
 	    List<User> AllUsers();
 	    
-	    
         SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret);
         
 //        void AddToRole(User user, string roleCode);
@@ -84,5 +81,6 @@ namespace starskycore.Interfaces
         void SignOut(HttpContext httpContext);
         int GetCurrentUserId(HttpContext httpContext);
         User GetCurrentUser(HttpContext httpContext);
+        Credential GetCredentialsByUserId(int userId);
     }
 }

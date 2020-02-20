@@ -1,6 +1,3 @@
-// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using starskycore.Models;
@@ -39,8 +36,9 @@ namespace starskycore.Data
 			base.OnModelCreating(modelBuilder);
 
 			// Add Index to speed performance (on MySQL max key length is 3072 bytes)
-			modelBuilder.Entity<FileIndexItem>().HasIndex(x => new { x.FileName, x.ParentDirectory });
-			
+			modelBuilder.Entity<FileIndexItem>()
+				.HasIndex(x => new { x.FileName, x.ParentDirectory });
+	
 			modelBuilder.Entity<User>(etb =>
 				{
 					etb.HasKey(e => e.Id);

@@ -14,8 +14,8 @@ namespace starskytest.Services
 	[TestClass]
 	public class UserManagerTest
 	{
-		private IMemoryCache _memoryCache;
-		private ApplicationDbContext _dbContext;
+		private readonly IMemoryCache _memoryCache;
+		private readonly ApplicationDbContext _dbContext;
 
 		public UserManagerTest()
 		{
@@ -61,6 +61,18 @@ namespace starskytest.Services
 			var result = userManager.Validate("email", "dont@mail.us", "pass");
 			Assert.AreEqual(true, result.Success);
 		}
+		
+		[TestMethod]
+		public void UserManager_ChangePassword_ChangeSecret()
+		{
+			var userManager = new UserManager(_dbContext, _memoryCache);
+
+			userManager.SignUp("user01", "email", "dont@mail.us", "pass123456789");
+
+			var result = userManager.ChangeSecret("email", "dont@mail.us", "pass123456789");
+			
+			Assert.AreEqual(true, result.Success);
+		}
 
 		[TestMethod]
 		public void UserManager_NoPassword_ExistingAccount()
@@ -70,9 +82,7 @@ namespace starskytest.Services
 			
 			var result = userManager.Validate("email", "dont@mail.us", null);
 			Assert.AreEqual(false, result.Success);
-			
 		}
-		
 		
 		[TestMethod]
 		public void UserManager_AllUsers_testCache()
@@ -83,6 +93,22 @@ namespace starskytest.Services
 			var user = userManager.AllUsers().FirstOrDefault(p => p.Name == "cachedUser");
 			Assert.IsNotNull(user);
 		}
+		
+		[TestMethod]
+		public void UserManager_RemoveUser()
+		{
+			var userManager = new UserManager(_dbContext, _memoryCache);
+
+			userManager.SignUp("to_remove", "email", "to_remove@mail.us", "pass123456789");
+
+			var result = userManager.RemoveUser("email", "to_remove@mail.us");
+			
+			Assert.AreEqual(true, result.Success);
+			
+			var user = userManager.AllUsers().FirstOrDefault(p => p.Name == "to_remove");
+			Assert.IsNull(user);
+		}
+		
 
 	}
 }

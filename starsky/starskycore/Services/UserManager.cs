@@ -133,7 +133,19 @@ public class UserManager : IUserManager
 	    {
 		    if ( !IsCacheEnabled() ) return;
 		    var allUsers = AllUsers();
+		    if(allUsers.Contains(user)) return;
 		    allUsers.Add(user);
+		    _cache.Set("UserManager_AllUsers", allUsers, new TimeSpan(99,0,0));
+	    }
+	    
+	    /// <summary>
+	    /// Remove one user from cache
+	    /// </summary>
+	    internal void RemoveUserFromCache(User user)
+	    {
+		    if ( !IsCacheEnabled() ) return;
+		    var allUsers = AllUsers();
+		    allUsers.Remove(user);
 		    _cache.Set("UserManager_AllUsers", allUsers, new TimeSpan(99,0,0));
 	    }
 
@@ -277,9 +289,9 @@ public class UserManager : IUserManager
         
         public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
         {
-            CredentialType credentialType = _dbContext.CredentialTypes.FirstOrDefault(
-                ct => string.Equals(ct.Code, credentialTypeCode, StringComparison.OrdinalIgnoreCase));
-            
+	        var credentialType = _dbContext.CredentialTypes.FirstOrDefault(
+		        ct => ct.Code.ToLower().Equals(credentialTypeCode.ToLower()));
+	        
             if (credentialType == null)
             {
                 return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialTypeNotFound);
@@ -302,9 +314,13 @@ public class UserManager : IUserManager
             _dbContext.SaveChanges();
             return new ChangeSecretResult(success: true);
         }
-        
-       
-        public ValidateResult Validate(string credentialTypeCode, string identifier, string secret)
+
+        /// <summary>
+        /// Get the CredentialType by the credentialTypeCode
+        /// </summary>
+        /// <param name="credentialTypeCode">code to get the CredentialType</param>
+        /// <returns>CredentialType</returns>
+        private CredentialType CachedCredentialType(string credentialTypeCode)
         {
 	        // Add caching for credentialType
 	        CredentialType credentialType;
@@ -321,6 +337,21 @@ public class UserManager : IUserManager
 			        _cache.Set("credentialTypeCode_" + credentialTypeCode, credentialType, 
 				        new TimeSpan(99,0,0));
 	        }
+
+	        return credentialType;
+        }
+        
+       
+        /// <summary>
+        /// Is the username and password combination correct
+        /// </summary>
+        /// <param name="credentialTypeCode">default: email</param>
+        /// <param name="identifier">email</param>
+        /// <param name="secret">password</param>
+        /// <returns>status</returns>
+        public ValidateResult Validate(string credentialTypeCode, string identifier, string secret)
+        {
+	        var credentialType = CachedCredentialType(credentialTypeCode);
 
 	        if (credentialType == null)
             {
@@ -378,6 +409,33 @@ public class UserManager : IUserManager
             // Required in the direct context;  when using a REST like call
             httpContext.User = principal;
         }
+
+        /// <summary>
+        /// Remove user from database
+        /// </summary>
+        /// <param name="credentialTypeCode">default: email</param>
+        /// <param name="identifier">email address</param>
+        /// <returns>status</returns>
+        public ValidateResult RemoveUser(string credentialTypeCode, string identifier)
+        {
+	        var credentialType = CachedCredentialType(credentialTypeCode);
+	        Credential credential = _dbContext.Credentials.FirstOrDefault(
+		        c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+	        var user = _dbContext.Users.FirstOrDefault(p => p.Id == credential.UserId);
+
+	        var userRole = _dbContext.UserRoles.FirstOrDefault(p => p.UserId == credential.UserId);
+	        
+	        if(userRole == null || user == null || credential == null) return new ValidateResult{Success = false, Error = ValidateResultError.CredentialNotFound};
+
+	        _dbContext.Credentials.Remove(credential);
+	        _dbContext.Users.Remove(user);
+	        _dbContext.UserRoles.Remove(userRole);
+	        _dbContext.SaveChanges();
+	        
+	        RemoveUserFromCache(user);
+	        
+	        return new ValidateResult{Success = true};
+        }
         
         public async void SignOut(HttpContext httpContext)
         {
@@ -397,10 +455,8 @@ public class UserManager : IUserManager
             {
                 return -1;
             }
-            
-            int currentUserId;
-            
-            if (!int.TryParse(claim.Value, out currentUserId))
+
+            if (!int.TryParse(claim.Value, out var currentUserId))
             {
                 return -1;
             }
@@ -410,41 +466,44 @@ public class UserManager : IUserManager
         
         public User GetCurrentUser(HttpContext httpContext)
         {
-            int currentUserId = this.GetCurrentUserId(httpContext);
+	        int currentUserId = GetCurrentUserId(httpContext);
             
-            if (currentUserId == -1)
-            {
-                return null;
-            }
-            
-            return this._dbContext.Users.Find(currentUserId);
+	        if (currentUserId == -1)
+	        {
+		        return null;
+	        }
+	        return _dbContext.Users.Find(currentUserId);
         }
-            
+
+        public Credential GetCredentialsByUserId(int userId)
+        {
+	        return _dbContext.Credentials.FirstOrDefault(p => p.UserId == userId);
+		}
+
         private IEnumerable<Claim> GetUserClaims(User user)
         {
-            List<Claim> claims = new List<Claim>();
-            
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-            claims.Add(new Claim(ClaimTypes.Name, user.Name));
-            claims.AddRange(GetUserRoleClaims(user));
+	        var claims = new List<Claim>
+	        {
+		        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+		        new Claim(ClaimTypes.Name, user.Name)
+	        };
+
+	        claims.AddRange(GetUserRoleClaims(user));
             return claims;
         }
         
         private IEnumerable<Claim> GetUserRoleClaims(User user)
         {
-            List<Claim> claims = new List<Claim>();
+            var claims = new List<Claim>();
             IEnumerable<int> roleIds = this._dbContext.UserRoles.Where(
                 ur => ur.UserId == user.Id).Select(ur => ur.RoleId).ToList();
-            
-            if (roleIds != null)
+
+            foreach (var roleId in roleIds)
             {
-                foreach (int roleId in roleIds)
-                {
-                    Role role = this._dbContext.Roles.Find(roleId);
+	            Role role = _dbContext.Roles.Find(roleId);
                     
-                    claims.Add(new Claim(ClaimTypes.Role, role.Code));
-                    claims.AddRange(this.GetUserPermissionClaims(role));
-                }
+	            claims.Add(new Claim(ClaimTypes.Role, role.Code));
+	            claims.AddRange(GetUserPermissionClaims(role));
             }
             return claims;
         }

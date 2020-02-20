@@ -20,7 +20,7 @@ namespace starskywebhtmlcli.Services
 				.UseEmbeddedResourcesProject(typeof(FileIndexItem))
                 .UseEmbeddedResourcesProject(typeof(System.Linq.Enumerable))
                 .UseEmbeddedResourcesProject(typeof(AppSettingsPublishProfiles))
-                .UseFilesystemProject(AppDomain.CurrentDomain.BaseDirectory )
+                .UseFileSystemProject(AppDomain.CurrentDomain.BaseDirectory )
                         // > starskywebhtmlcli/bin folder
                 .UseMemoryCachingProvider()
                 .Build();

@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <ProjectGuid>{76d7bf62-9f1d-48f1-9035-dceb01de55c3}</ProjectGuid>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">3.0.2</RuntimeFrameworkVersion>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">2.2.7</RuntimeFrameworkVersion>
-    <LangVersion>7.1</LangVersion>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.1</RuntimeFrameworkVersion>
+    <LangVersion>8.0</LangVersion>
     <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
@@ -14,11 +14,8 @@
     <None Update="EmbeddedViews\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="RazorLight" Version="2.0.0-beta1" />
+    <PackageReference Include="RazorLight" Version="2.0.0-beta4" />
   </ItemGroup>
-<!--  <ItemGroup>-->
-<!--    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.7" />-->
-<!--  </ItemGroup>-->
   <ItemGroup>
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
   </ItemGroup>
