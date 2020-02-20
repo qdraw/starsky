@@ -1,9 +1,4 @@
 ﻿using System.Collections.Generic;
-#if NETSTANDARD2_1
-using System.Text.Json.Serialization;
-#else
-using Newtonsoft.Json;
-#endif
 using starskycore.Models;
 
 namespace starskycore.ViewModels
@@ -19,12 +14,19 @@ namespace starskycore.ViewModels
 	    /// </summary>
 	    public List<FileIndexItem.Color> ColorClassActiveList { get; set; } = new List<FileIndexItem.Color>();
         
-	    // Used by react client
+	    /// <summary>
+	    /// Used by react client
+	    /// </summary>
         public string PageType => PageViewType.PageType.DetailView.ToString();
-        
-        // To return error codes// in the json it is always false
+
+        /// <summary>
+        /// To return error codes in the json it is always false
+        /// </summary>
         public bool IsDirectory { get; set; }
         
+        /// <summary>
+        /// Location of the path
+        /// </summary>
         public string SubPath { get; set; }
 
 	    /// <summary>

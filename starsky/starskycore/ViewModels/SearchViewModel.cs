@@ -252,7 +252,7 @@ namespace starskycore.ViewModels
 	    /// </summary>
         public double ElapsedSeconds
         {
-            get { return _elapsedSeconds; }
+		    get { return Math.Round(_elapsedSeconds, 4); }
             set
             {
                 _elapsedSeconds = value - value % 0.001;

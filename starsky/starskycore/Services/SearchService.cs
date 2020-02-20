@@ -150,49 +150,6 @@ namespace starskycore.Services
             model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
             return model;
         }
-        
-
-
-	    // /// <summary>
-	    // /// 
-	    // /// </summary>
-	    // /// <param name="paramNames"></param>
-	    // /// <param name="values"></param>
-	    // /// <returns></returns>
-	    // public Func<FileIndexItem, bool> AndOnlyParams(string[] paramNames, object[] values)
-	    // {
-		   //  List<ParameterExpression> paramList = new List<ParameterExpression>();
-		   //  foreach (string param in paramNames)
-		   //  {
-			  //   paramList.Add(Expression.Parameter(typeof(FileIndexItem), param));
-		   //  }
-	    //
-		   //  List<LambdaExpression> lexList = new List<LambdaExpression>();
-		   //  for (int i = 0; i < paramNames.Length; i++)
-		   //  {
-			  //   if (i == 0)
-			  //   {
-				 //    Expression bodyInner = Expression.Equal(
-					//     Expression.Property(
-					// 	    paramList[i], paramNames[i]),
-					//     Expression.Constant(values[i]));
-				 //    
-				 //    lexList.Add(Expression.Lambda(bodyInner, paramList[i]));
-			  //   }
-			  //   else
-			  //   {
-				 //    Expression bodyOuter = Expression.AndAlso(
-					//     Expression.Equal(
-					// 	    Expression.Property(
-					// 		    paramList[i], paramNames[i]),
-					// 	    Expression.Constant(values[i])),
-					//     Expression.Invoke(lexList[i - 1], paramList[i]));
-				 //    lexList.Add(Expression.Lambda(bodyOuter, paramList[i]));
-			  //   }
-		   //  }
-	    //
-		   //  return ((Expression<Func<FileIndexItem, bool>>)lexList[lexList.Count - 1]).Compile();
-	    // }
 
 	    /// <summary>
 	    /// Main method to query the database, in other function there is sorting needed

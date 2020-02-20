@@ -110,7 +110,7 @@ namespace starsky
                     services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
                     break;
                 default:
-	                throw new ArgumentOutOfRangeException();
+	                throw new ArgumentOutOfRangeException("DatabaseType is not supported");
             }
             
             // Enable Dual Authentication 

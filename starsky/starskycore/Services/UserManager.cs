@@ -472,10 +472,7 @@ public class UserManager : IUserManager
 	        {
 		        return null;
 	        }
-
-	        var user = _dbContext.Users.Find(currentUserId);
-
-	        return this._dbContext.Users.Find(currentUserId);
+	        return _dbContext.Users.Find(currentUserId);
         }
 
         public Credential GetCredentialsByUserId(int userId)

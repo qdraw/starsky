@@ -12,11 +12,13 @@ namespace starsky.Helpers
 	public class DateAssemblyHealthCheck : IHealthCheck
 	{
 		/// <summary>
-		/// Use as: .AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck")
+		/// Check the date assembly health status
 		/// </summary>
 		/// <param name="context">HealthCheckContext</param>
 		/// <param name="cancellationToken">to cancel item</param>
 		/// <returns></returns>
+		// Example:
+		// .AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck")
 		public Task<HealthCheckResult> CheckHealthAsync(
 			HealthCheckContext context,
 			CancellationToken cancellationToken = default(CancellationToken))
@@ -26,7 +28,11 @@ namespace starsky.Helpers
 			return Task.FromResult(assemblyDate > DateTime.UtcNow ? HealthCheckResult.Unhealthy("Current Date is earlier then the Assembly is build") : 
 				HealthCheckResult.Healthy("Current Date is after the Assembly is build :)"));
 		}
-		
+		/// <summary>
+		/// Known when the build is done, uses UTC time
+		/// </summary>
+		/// <param name="assembly">the runtime assembly</param>
+		/// <returns>Datetime or 0001:01:01</returns>
 		internal static DateTime GetBuildDate(Assembly assembly)
 		{
 			const string buildVersionMetadataPrefix = "+build";
