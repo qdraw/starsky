@@ -67,7 +67,7 @@ namespace starskycore.Services
 						case WideSearchDateTimeGetType.AddToDatabase:
 							return (p => p.AddToDatabase <= dateTime);
 						default:
-							throw new ArgumentNullException("enum incomplete");
+							throw new ArgumentOutOfRangeException("type is not added");
 					}
 				case SearchViewModel.SearchForOptionType.GreaterThen:
 					switch ( type )
@@ -79,7 +79,7 @@ namespace starskycore.Services
 						case WideSearchDateTimeGetType.AddToDatabase:
 							return (p => p.AddToDatabase >= dateTime);
 						default:
-							throw new ArgumentNullException("enum incomplete");
+							throw new ArgumentOutOfRangeException("type is not added");
 					}
 				default:
 					switch ( type )
@@ -91,7 +91,7 @@ namespace starskycore.Services
 						case WideSearchDateTimeGetType.AddToDatabase:
 							return (p => p.AddToDatabase == dateTime);
 						default:
-							throw new ArgumentNullException("enum incomplete");
+							throw new ArgumentOutOfRangeException("type is not added");
 					}
 			}
 	    }
@@ -109,21 +109,18 @@ namespace starskycore.Services
 				CultureInfo.InvariantCulture);
 			
 			// Searching for entire day
-			if ( model.SearchForOptions[indexer] == SearchViewModel.SearchForOptionType.Equal
-			     && dateTime.Hour == 0 &&
-			     dateTime.Minute == 0 && dateTime.Second == 0 &&
-			     dateTime.Millisecond == 0 )
-			{
+			if ( model.SearchForOptions[indexer] != SearchViewModel.SearchForOptionType.Equal ||
+			     dateTime.Hour != 0 || dateTime.Minute != 0 || dateTime.Second != 0 ||
+			     dateTime.Millisecond != 0 ) return;
+			
+			model.SearchForOptions[indexer] = SearchViewModel.SearchForOptionType.GreaterThen;
+			model.SearchForOptions.Add(SearchViewModel.SearchForOptionType.LessThen);
 
-				model.SearchForOptions[indexer] = SearchViewModel.SearchForOptionType.GreaterThen;
-				model.SearchForOptions.Add(SearchViewModel.SearchForOptionType.LessThen);
-
-				var add24Hours = dateTime.AddHours(23)
-					.AddMinutes(59).AddSeconds(59)
-					.ToString(CultureInfo.InvariantCulture);
-				model.SearchFor.Add(add24Hours);
-				model.SearchIn.Add("DateTime");
-			}
+			var add24Hours = dateTime.AddHours(23)
+				.AddMinutes(59).AddSeconds(59)
+				.ToString(CultureInfo.InvariantCulture);
+			model.SearchFor.Add(add24Hours);
+			model.SearchIn.Add("DateTime");
 		}
 		
 		/// <summary>

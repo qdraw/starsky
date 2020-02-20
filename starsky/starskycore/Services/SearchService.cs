@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
@@ -226,7 +225,7 @@ namespace starskycore.Services
 					    predicates.Add(x => x.Tags.ToLower().Contains(tags));
 					    break;
 				    default:
-					    throw new ArgumentOutOfRangeException(nameof(searchInType));
+					    throw new ArgumentOutOfRangeException("searchInType is not added");
 			    }
 		    }
 		    

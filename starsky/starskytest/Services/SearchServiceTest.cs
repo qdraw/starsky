@@ -137,7 +137,8 @@ namespace starskytest.Services
 		    Assert.AreEqual("test",result.SearchQuery);
 
 		    // now update only the name direct in the cache
-		    _memoryCache.Set("search-test", new SearchViewModel{SearchQuery = "cache"}, new TimeSpan(0,10,0));
+		    _memoryCache.Set("search-test", new SearchViewModel{SearchQuery = "cache"}, 
+			    new TimeSpan(0,10,0));
 		    
 		    // now query again
 		    result = search.Search("test");
@@ -566,7 +567,8 @@ namespace starskytest.Services
 	    public void SearchService_thisORAndCombination()
 	    {
 		    InsertSearchData();
-		    var result = _search.Search("-FileName=lelystadcentrum.jpg || -FileHash=lelystadcentrum && lelystad",0,false);
+		    var result = _search.Search("-FileName=lelystadcentrum.jpg || -FileHash=lelystadcentrum && lelystad",
+			    0,false);
 			//  -FileHash=lelystadcentrum2 && station >= 1 item
 		    // -DateTime=lelystadcentrum2.jpg >= 1 item
 		    // the and applies to all previous items
