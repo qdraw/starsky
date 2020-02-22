@@ -129,7 +129,7 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(string),401)]
         [Produces("application/json")]
         [Authorize]
-        public async Task<IActionResult> ChangeSecret(ChangePasswordViewModel model)
+        public IActionResult ChangeSecret(ChangePasswordViewModel model)
         {
 	        if ( !User.Identity.IsAuthenticated ) return Unauthorized("please login first");
 
