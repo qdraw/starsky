@@ -25,13 +25,15 @@
 - [x]  (bugfix) _Frond-end_ Add length limit length for tags
 - [x]  (feature) _Back-end_ Change Password for current user (API only)
 - [x]  (bugfix) _Back-end_  System.IO.EndOfStreamException: Expected to read 372 payload bytes but only received 21.
-        on `/api/search?t=-Datetime>1+-Datetime<0+-ImageFormat:jpg`
+        on `/api/search?t=-Datetime>1+-Datetime<0+-ImageFormat:jpg` (Timeout issue)
 - [x]  (bugfix)  Unit tests for NOT queries `/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22`
 - [x]  (performance) _Back-end_  refactoring of `/api/search`
 - [x]  (performance) _Back-end_  refactoring of `SearchSuggestionsService`
 - [x]  (bugfix) _Back-end_  add version to application insights
 - [x]  (version) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.1 (using SDK 3.1.101)
 - [x]  (version) _Back-end_ Upgrade RazorLight to 2.0.0-beta4
+- [x]  (feature) _CLI_ StarskyAdminCli is added (but not documented or included by default)
+- [x]  (feature) _Front-end_ Show warning when there are connection issues
 
 # version 0.1.15 - 2020-02-06
 - [x]  (bugfix) _Front-end_ Drag'n drop is now only with files

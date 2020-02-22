@@ -138,6 +138,11 @@ const Login: React.FC<ILoginProps> = () => {
               />
               {error && <div className="content--error-true">{error}</div>}
 
+              {new BrowserDetect().IsLegacy() ?
+                <div className="content--error-true">
+                  Internet Explorer is not supported, please try Firefox or Chrome
+                </div> : null}
+
               <Button className="btn btn--default" type="submit" disabled={loading} onClick={e => { }}>
                 {loading ? "Loading..." : MessageLogin}
               </Button>

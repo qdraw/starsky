@@ -38,11 +38,22 @@ div.modal-content {
   cursor: default;
   max-height: 100%;
 }
+
+div.modal-content h4 {
+	font-weight: 300;
+}
+
 @media (prefers-color-scheme: dark) {
   div.modal-content {
     background-color: #37474F;
     color: #fff;
   }
+}
+
+@media (prefers-color-scheme: dark) {
+	div.modal-content a{
+		color: #fff;
+	}
 }
 
 @media screen and (max-width: 450px) {

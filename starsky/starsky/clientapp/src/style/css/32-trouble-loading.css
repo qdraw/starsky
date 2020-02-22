@@ -1,0 +1,18 @@
+.modal-bg.modal-bg--open.trouble-loading{
+	z-index: 0;
+	background: #fff;
+	/* transition overwrite does not work*/
+	cursor: default;
+}
+
+@media (prefers-color-scheme: dark) {
+	.modal-bg.modal-bg--open.trouble-loading{
+		background-color: #263238;
+	}
+}
+
+.modal-bg.modal-bg--open.trouble-loading li {
+	list-style-type: circle;
+	margin-left: 15px;
+	line-height: 1.3;
+}

@@ -18,6 +18,12 @@ ReactDOM.render(
   document.getElementById('root'),
 );
 
+// when React is loaded 'trouble loading' is not needed
+const troubleLoading = document.querySelector(".trouble-loading");
+if (troubleLoading && troubleLoading.parentElement) {
+  troubleLoading.parentElement.removeChild(troubleLoading);
+}
+
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

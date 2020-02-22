@@ -17,8 +17,9 @@
 @import './29-switch-button.css';
 @import './30-modal.css';
 @import './31-modal-move.css';
-@import './32-search-header.css';
-@import './33-drop-area.css';
-@import './34-notification.css';
+@import "./32-trouble-loading.css";
+@import './34-search-header.css';
+@import './35-drop-area.css';
+@import './36-notification.css';
 
 @import './vendor/50-leaflet.css';
