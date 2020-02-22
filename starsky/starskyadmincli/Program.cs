@@ -7,7 +7,7 @@ using starskycore.Services;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starskyAdminCli
 {
-	internal class Program
+	internal static class Program
 	{
 		internal static void Main(string[] args)
 		{
@@ -27,6 +27,5 @@ namespace starskyAdminCli
 			}
 			new ConsoleAdmin(appSettings, startupHelper.UserManager(), new ConsoleWrapper()).Tool();
 		}
-		
 	}
 }
