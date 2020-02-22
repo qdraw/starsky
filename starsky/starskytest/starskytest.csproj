@@ -29,8 +29,10 @@
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\starskyadmincli\starskyadmincli.csproj" />
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
     <ProjectReference Include="..\starskygeocli\starskygeocli.csproj" />
+    <ProjectReference Include="..\starskyimportercli\starskyimportercli.csproj" />
     <ProjectReference Include="..\starskysynccli\starskysynccli.csproj" />
     <ProjectReference Include="..\starskywebftpcli\starskywebftpcli.csproj" />
     <ProjectReference Include="..\starskywebhtmlcli\starskywebhtmlcli.csproj" />

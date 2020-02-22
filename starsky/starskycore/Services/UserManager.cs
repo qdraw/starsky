@@ -150,6 +150,20 @@ public class UserManager : IUserManager
 	    }
 
 	    /// <summary>
+	    /// Check if the user exist by username
+	    /// </summary>
+	    /// <param name="identifier">email</param>
+	    /// <returns>null or user</returns>
+	    public User Exist(string identifier)
+	    {
+		    var credential = _dbContext.Credentials.FirstOrDefault(p => p.Identifier == identifier);
+		    if ( credential == null ) return null;
+
+		    var user = _dbContext.Users.FirstOrDefault(p => p.Id == credential.UserId);
+		    return user;
+	    }
+
+	    /// <summary>
         /// Add a new user, including Roles and UserRoles
         /// </summary>
         /// <param name="name">Nice Name, default string.Emthy</param>
@@ -168,12 +182,7 @@ public class UserManager : IUserManager
 	        }
 	        
 	        // The email is stored in the Credentials database
-	        User user = null;
-	        var credential = _dbContext.Credentials.FirstOrDefault(p => p.Identifier == identifier);
-	        if ( credential != null )
-	        {
-		        user = _dbContext.Users.FirstOrDefault(p => p.Id == credential.UserId);		        
-	        }
+	        var user = Exist(identifier);
 	        if ( user == null )
 	        {
 		        // Check if user not already exist
@@ -200,24 +209,23 @@ public class UserManager : IUserManager
                 return new SignUpResult(success: false, error: SignUpResultError.CredentialTypeNotFound);
             }
 
-
-	        if ( credential == null && !string.IsNullOrEmpty(secret))
-	        {
-		        // Check if credential not already exist
-		        credential = new Credential
-		        {
-			        UserId = user.Id,
-			        CredentialTypeId = credentialType.Id,
-			        Identifier = identifier
-		        };
-		        byte[] salt = Pbkdf2Hasher.GenerateRandomSalt();
-		        string hash = Pbkdf2Hasher.ComputeHash(secret, salt);
+            var credential = _dbContext.Credentials.FirstOrDefault(p => p.Identifier == identifier);
+            if ( credential != null ) return new SignUpResult(user: user, success: true);
+            
+            // Check if credential not already exist
+            credential = new Credential
+            {
+	            UserId = user.Id,
+	            CredentialTypeId = credentialType.Id,
+	            Identifier = identifier
+            };
+            byte[] salt = Pbkdf2Hasher.GenerateRandomSalt();
+            string hash = Pbkdf2Hasher.ComputeHash(secret, salt);
                 
-		        credential.Secret = hash;
-		        credential.Extra = Convert.ToBase64String(salt);
-		        _dbContext.Credentials.Add(credential);
-		        _dbContext.SaveChanges();
-	        }
+            credential.Secret = hash;
+            credential.Extra = Convert.ToBase64String(salt);
+            _dbContext.Credentials.Add(credential);
+            _dbContext.SaveChanges();
 
             return new SignUpResult(user: user, success: true);
         }

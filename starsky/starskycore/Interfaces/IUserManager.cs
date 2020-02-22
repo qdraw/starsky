@@ -82,5 +82,7 @@ namespace starskycore.Interfaces
         int GetCurrentUserId(HttpContext httpContext);
         User GetCurrentUser(HttpContext httpContext);
         Credential GetCredentialsByUserId(int userId);
+        ValidateResult RemoveUser(string credentialTypeCode, string identifier);
+        User Exist(string identifier);
     }
 }
