@@ -66,9 +66,6 @@ namespace starskytest.Helpers
             var filesInFolder = FilesHelper.GetFilesInDirectory(newImage.BasePath);
             Assert.AreEqual(filesInFolder.Any(),true);
         }
-
-
-
         
     }
 }

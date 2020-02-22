@@ -16,11 +16,11 @@ namespace starskycore.Helpers
 		}
 
 		/// <summary>
-		/// Get the filename from a filepath
+		/// Get the filename (with extension) from a filepath
 		/// https://stackoverflow.com/a/40635378
 		/// </summary>
 		/// <param name="filePath">unix style subPath</param>
-		/// <returns></returns>
+		/// <returns>filename with extension and without its parent path</returns>
 		public static string GetFileName(string filePath)
 		{
 			// unescaped regex:
@@ -30,7 +30,22 @@ namespace starskycore.Helpers
 					RegexOptions.CultureInvariant);
 			return extensionRegex.Match(filePath).Value;
 		}
-		
+
+		/// <summary>
+		/// Get the filename without extension from a unix path
+		/// File must have an extension
+		/// @see: https://stackoverflow.com/a/15229838
+		/// </summary>
+		/// <param name="filePath">subPath unix style </param>
+		/// <returns>filename without extension</returns>
+		public static string GetFileNameWithoutExtension(string filePath)
+		{
+			// unescaped regex: [^/]*(?=\.[^.]+($|\?))
+			var extensionRegex =
+				new Regex("[^/]*(?=\\.[^.]+($|\\?))",
+					RegexOptions.CultureInvariant);
+			return extensionRegex.Match(filePath).Value;
+		}
 		
 		/// <summary>
 		/// Return UNIX style parent paths back
