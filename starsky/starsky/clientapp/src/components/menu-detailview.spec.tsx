@@ -32,7 +32,8 @@ describe("MenuDetailView", () => {
           fileHash: '000',
           filePath: "/test/image.jpg",
           fileName: "image.jpg",
-          lastEdited: new Date(1970, 1, 1).toISOString()
+          lastEdited: new Date(1970, 1, 1).toISOString(),
+          parentDirectory: '/test'
         }
       } as IDetailView;
       contextValues = { state, dispatch: jest.fn() }
@@ -160,6 +161,30 @@ describe("MenuDetailView", () => {
       act(() => {
         globalHistory.navigate("/");
         component.unmount();
+      });
+    });
+
+    it("navigate to parent folder click", () => {
+
+      globalHistory.navigate("/?t=test");
+
+      // one extra spy
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+      var component = mount(<MenuDetailView />)
+      var item = component.find('[data-test="go-to-parent-folder"]');
+
+      act(() => {
+        item.simulate('click');
+      });
+
+      expect(globalHistory.location.search).toBe("?f=/test");
+
+      act(() => {
+        component.unmount();
+        globalHistory.navigate("/");
       });
     });
 

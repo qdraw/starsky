@@ -215,9 +215,14 @@ export class URLPath {
   /**
    * Keep colorClass in URL
    */
-  public updateFilePath(historyLocationHash: string, toUpdateFilePath: string): string {
+  public updateFilePath(historyLocationHash: string, toUpdateFilePath: string, clearTSearchQuery?: boolean): string {
     var url = new URLPath().StringToIUrl(historyLocationHash);
     url.f = toUpdateFilePath;
+    // when browsing to a parent folder from a detailview item
+    if (clearTSearchQuery) {
+      delete url.t;
+      delete url.p;
+    }
     return "/" + new URLPath().IUrlToString(url);
   }
 
