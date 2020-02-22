@@ -25,7 +25,13 @@ namespace starskytest.Helpers
 			Assert.AreEqual(true,name.Contains(nameof(ReadMeta)));
 			
 			name = cliHelper.ImportService().ToString();
-			Assert.AreEqual(true,name.Contains(nameof(ImportService)));		
+			Assert.AreEqual(true,name.Contains(nameof(ImportService)));
+
+			name = cliHelper.UserManager().ToString();
+			Assert.AreEqual(true,name.Contains(nameof(UserManager)));		
+			
+			name = cliHelper.ThumbnailCleaner().ToString();
+			Assert.AreEqual(true,name.Contains(nameof(ThumbnailCleaner)));		
 		}
 
 		[TestMethod]
