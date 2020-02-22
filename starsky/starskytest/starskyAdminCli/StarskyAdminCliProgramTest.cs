@@ -11,7 +11,8 @@ namespace starskytest.starskyAdminCli
 		public void StarskyAdminCliProgramTest_Help()
 		{
 			var args = new List<string> {
-				"-h","-v"
+				"-h","-v",
+				"-d", "InMemoryDatabase",
 			}.ToArray();
 			Program.Main(args);
 		}

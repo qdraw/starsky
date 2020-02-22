@@ -61,7 +61,8 @@ namespace starskycore.Models
             Sync = 2,
             WebHtml = 3,
             Geo = 4,
-	        WebFtp = 5
+	        WebFtp = 5,
+	        Admin = 6,
         }
 
         // Can be used in the cli session to select files out of the file database system

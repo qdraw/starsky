@@ -79,12 +79,16 @@ namespace starskytest.FakeMocks
 
 		public ValidateResult RemoveUser(string credentialTypeCode, string identifier)
 		{
-			throw new System.NotImplementedException();
+			return new ValidateResult();
 		}
 
 		public User Exist(string identifier)
 		{
-			throw new System.NotImplementedException();
+			if ( Credentials.Identifier == identifier )
+			{
+				return CurrentUser;
+			}
+			return null;
 		}
 	}
 }

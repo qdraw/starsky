@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using starskyAdminCli.Models;
+﻿using System.Runtime.CompilerServices;
 using starskyAdminCli.Services;
 using starskycore.Helpers;
 using starskycore.Models;
@@ -17,11 +15,17 @@ namespace starskyAdminCli
 
 			var startupHelper = new ConfigCliAppsStartupHelper();
 			var appSettings = startupHelper.AppSettings();
-
+			
 			// Use args in application
 			appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
-
-			new ConsoleAdmin(appSettings, startupHelper.UserManager(), new ConsoleWrapper());
+			
+			if (new ArgsHelper().NeedHelp(args))
+			{
+				appSettings.ApplicationType = AppSettings.StarskyAppType.Admin;
+				new ArgsHelper(appSettings).NeedHelpShowDialog();
+				return;
+			}
+			new ConsoleAdmin(appSettings, startupHelper.UserManager(), new ConsoleWrapper()).Tool();
 		}
 		
 	}
