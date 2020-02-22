@@ -76,5 +76,19 @@ namespace starskytest.FakeMocks
 		{
 			return Credentials;
 		}
+
+		public ValidateResult RemoveUser(string credentialTypeCode, string identifier)
+		{
+			return new ValidateResult();
+		}
+
+		public User Exist(string identifier)
+		{
+			if ( Credentials.Identifier == identifier )
+			{
+				return CurrentUser;
+			}
+			return null;
+		}
 	}
 }

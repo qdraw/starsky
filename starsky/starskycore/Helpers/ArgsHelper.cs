@@ -202,6 +202,9 @@ namespace starskycore.Helpers
 			
 			switch (_appSettings.ApplicationType)
 			{
+				case AppSettings.StarskyAppType.Admin:
+					Console.WriteLine("--name or -n == string ; username / email");
+					break;
 				case AppSettings.StarskyAppType.Geo:
 					// When this change please update ./readme.md
 					Console.WriteLine("--path or -p == parameter: (string) ; without addition is current directory, full path (all locations are supported) ");
@@ -213,7 +216,6 @@ namespace starskycore.Helpers
 						"(default: false / ignore already taged files) ");
 					Console.WriteLine("--index or -i == parameter: (bool) ; gpx feature to index geo location, default true");
 				break;
-				
 				case AppSettings.StarskyAppType.WebHtml:
 					// When this change please update ./readme.md
 					Console.WriteLine("--path or -p == parameter: (string) ; fullpath (select a folder), use '-p' for current directory");

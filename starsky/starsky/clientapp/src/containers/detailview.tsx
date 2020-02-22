@@ -116,9 +116,11 @@ const DetailView: React.FC<IDetailView> = () => {
   useKeyboardEvent(/Escape/, (event: KeyboardEvent) => {
     if (!history.location) return;
     if (new Keyboard().isInForm(event)) return;
-    var parentDirectory = new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory);
 
-    history.navigate(parentDirectory, {
+    var url = isSearchQuery ? new URLPath().Search(history.location.search) :
+      new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory);
+
+    history.navigate(url, {
       state: {
         filePath: state.fileIndexItem.filePath
       } as INavigateState

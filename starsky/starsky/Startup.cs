@@ -183,9 +183,9 @@ namespace starsky
 
 #if SYSTEM_TEXT_ENABLED
 			// NET Core 3 -> removed newtonsoft from core
-			services.AddControllers();
+			services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
 #else
-	        services.AddControllers().AddNewtonsoftJson();
+	        services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews().AddNewtonsoftJson();
 #endif
 	        
 			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy

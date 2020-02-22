@@ -36,6 +36,7 @@ const MenuDetailView: React.FunctionComponent = () => {
   const MessageMove = language.text("Verplaats", "Move");
   const MessageRenameFileName = language.text("Bestandsnaam wijzigen", "Rename file name");
   const MessageRotateToRight = language.text("Rotatie naar rechts", "Rotation to the right");
+  const MessageGoToParentFolder = language.text("Ga naar bovenliggende map", "Go to parent folder");
 
   var history = useLocation();
 
@@ -201,6 +202,15 @@ const MenuDetailView: React.FunctionComponent = () => {
   const [isModalRenameFileOpen, setModalRenameFileOpen] = React.useState(false);
   const [isModalMoveFile, setModalMoveFile] = React.useState(false);
 
+  const goToParentFolderJSX: JSX.Element | null = isSearchQuery ? <li className="menu-option" data-test="go-to-parent-folder" onClick={() =>
+    history.navigate(new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory, true), {
+      state: {
+        filePath: state.fileIndexItem.filePath
+      } as INavigateState
+    })}>
+    {MessageGoToParentFolder}
+  </li > : null
+
   return (<>
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
@@ -208,14 +218,15 @@ const MenuDetailView: React.FunctionComponent = () => {
       select={[state.subPath]} isOpen={isModalExportOpen} /> : null}
     {isModalRenameFileOpen && state ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)}
       isOpen={isModalRenameFileOpen} /> : null}
-    {isModalMoveFile && state ? <ModalMoveFile selectedSubPath={state.fileIndexItem.filePath} parentDirectory={state.fileIndexItem.parentDirectory}
-      handleExit={() => setModalMoveFile(!isModalMoveFile)} isOpen={isModalMoveFile} /> : null}
+    {isModalMoveFile && state ? <ModalMoveFile selectedSubPath={state.fileIndexItem.filePath}
+      parentDirectory={state.fileIndexItem.parentDirectory} handleExit={() => setModalMoveFile(!isModalMoveFile)}
+      isOpen={isModalMoveFile} /> : null}
 
     <header className={isDetails ? isMarkedAsDeleted ? "header header--main header--edit header--deleted" : "header header--main header--edit" :
       isMarkedAsDeleted ? "header header--main header--deleted" : "header header--main"}>
       <div className="wrapper">
 
-        {/* in directory state */}
+        {/* in directory state aka no search */}
         {!isSearchQuery ? <Link className="item item--first item--close"
           state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
           onClick={() => { setIsLoading(true) }}
@@ -228,11 +239,14 @@ const MenuDetailView: React.FunctionComponent = () => {
 
         <div className="item item--labels" onClick={() => { toggleLabels() }}>Labels</div>
         <MoreMenu>
+          {goToParentFolderJSX}
           <li className="menu-option" data-test="export" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
           {!isDetails ? <li className="menu-option" data-test="labels" onClick={toggleLabels}>Labels</li> : null}
           <li className="menu-option" data-test="move" onClick={() => setModalMoveFile(!isModalMoveFile)}>{MessageMove}</li>
-          <li className="menu-option" data-test="rename" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>{MessageRenameFileName}</li>
-          <li className="menu-option" data-test="trash" onClick={TrashFile}>{!isMarkedAsDeleted ? MessageMoveToTrash : MessageRestoreFromTrash}</li>
+          <li className="menu-option" data-test="rename" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>
+            {MessageRenameFileName}</li>
+          <li className="menu-option" data-test="trash" onClick={TrashFile}>
+            {!isMarkedAsDeleted ? MessageMoveToTrash : MessageRestoreFromTrash}</li>
           <li className="menu-option" data-test="rotate" onClick={rotateImage90}>{MessageRotateToRight}</li>
         </MoreMenu>
       </div>

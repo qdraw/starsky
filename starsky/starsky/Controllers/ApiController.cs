@@ -88,7 +88,7 @@ namespace starsky.Controllers
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
 			
-			// Per file stored key = string{fileHash} item = List<string> FileIndexItem.name (e.g. Tags) that are changed}
+			// Per file stored key = string[fileHash] item => List <string> FileIndexItem.name (e.g. Tags) that are changed
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
 			
 			foreach (var subPath in inputFilePaths)
@@ -418,10 +418,7 @@ namespace starsky.Controllers
             // json, => to don't waste the users bandwidth.
 
 	        // For serving jpeg files
-	        if ( Path.HasExtension(f) && Path.GetExtension(f) == ".jpg" )
-	        {
-		        f = f.Remove(f.Length - 4);
-	        }
+	        f = FilenamesHelper.GetFileNameWithoutExtension(f);
 	        
 	        // Restrict the fileHash to letters and digits only
 	        // I/O function calls should not be vulnerable to path injection attacks

@@ -49,8 +49,34 @@ namespace starskytest.Helpers
 			Assert.AreEqual("/sub/", result);
 		}
 
+		[TestMethod]
+		public void FilenamesHelper_GetFileNameWithoutExtension()
+		{
+			var result = FilenamesHelper.GetFileNameWithoutExtension("/te_st/test.com");
+			Assert.AreEqual("test", result);
+		}
+		
+		[TestMethod]
+		public void FilenamesHelper_GetFileNameWithoutExtension_example2()
+		{
+			var result = FilenamesHelper.GetFileNameWithoutExtension("http://path/Lists/Test/Attachments/1/Document Test.docx");
+			Assert.AreEqual("Document Test", result);
+		}
 
-
+		[TestMethod]
+		public void FilenamesHelper_GetFileNameWithoutExtension_example3()
+		{
+			var result = FilenamesHelper.GetFileNameWithoutExtension("/0000000000aaaaa__exifreadingtest00.jpg");
+			Assert.AreEqual("0000000000aaaaa__exifreadingtest00", result);
+		}
+		
+		[TestMethod]
+		public void FilenamesHelper_GetFileNameWithoutExtension_example4()
+		{
+			var result = FilenamesHelper.GetFileNameWithoutExtension("/0000000000aaaaa__exifreadingtest00");
+			Assert.AreEqual("0000000000aaaaa__exifreadingtest00", result);
+		}
+		
 	}
 	
 }

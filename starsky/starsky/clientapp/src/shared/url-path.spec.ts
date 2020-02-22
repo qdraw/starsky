@@ -106,6 +106,29 @@ describe("url-path", () => {
       expect(test).toStrictEqual("/test/test")
     });
   });
+
+  describe("updateFilePath", () => {
+    it("default", () => {
+      var test = urlPath.updateFilePath("?f=test", "test1");
+      expect(test).toStrictEqual("/?f=test1")
+    });
+
+    it("contains colorclass", () => {
+      var test = urlPath.updateFilePath("?f=test&colorclass=1", "test1");
+      expect(test).toStrictEqual("/?f=test1&colorClass=1")
+    });
+
+    it("remove search query", () => {
+      var test = urlPath.updateFilePath("?f=test&colorclass=1&t=1", "test1", true);
+      expect(test).toStrictEqual("/?f=test1&colorClass=1")
+    });
+
+    it("keep search query", () => {
+      var test = urlPath.updateFilePath("?f=test&colorclass=1&t=1", "test1");
+      expect(test).toStrictEqual("/?f=test1&colorClass=1&t=1")
+    });
+  });
+
   describe("getFilePath", () => {
     it("default", () => {
       var test = urlPath.getFilePath("");

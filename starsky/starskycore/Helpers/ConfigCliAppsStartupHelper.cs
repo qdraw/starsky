@@ -25,6 +25,7 @@ namespace starskycore.Helpers
         private readonly IExifTool _exifTool;
 	    private readonly ThumbnailCleaner _thumbnailCleaner;
 	    private readonly IStorage _iStorage;
+	    private readonly UserManager _userManager;
 
 	    /// <summary>
         /// Inject all services for the CLI applications
@@ -33,7 +34,7 @@ namespace starskycore.Helpers
         {
             // Only for CLI apps
 
-            // Inject Fake Exiftool; dependency injection
+            // dependency injection
             var services = new ServiceCollection();
 
             // Inject Config helper
@@ -52,7 +53,6 @@ namespace starskycore.Helpers
 
 	        // Inject ExifTool
 	        services.AddSingleton<IExifTool, ExifTool>();
-	        
 	        
             // build the service
             _serviceProvider = services.BuildServiceProvider();
@@ -96,6 +96,8 @@ namespace starskycore.Helpers
 	        _iStorage = new StorageSubPathFilesystem(appSettings);
             
             _readmeta = new ReadMeta(_iStorage,appSettings);
+            
+            _userManager = new UserManager(context);
             
             _isync = new SyncService(query, appSettings,_readmeta, _iStorage);
             
@@ -199,6 +201,16 @@ namespace starskycore.Helpers
 	    {
 		    return _iStorage;
 	    }
+	    
+	    /// <summary>
+	    /// Returns an filled UserManager Interface
+	    /// </summary>
+	    /// <returns>UserManager</returns>
+	    public IUserManager UserManager()
+	    {
+		    return _userManager;
+	    }
+
 	    
     }
 }
