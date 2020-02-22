@@ -20,9 +20,26 @@
 </head>
 
 <body>
-      <noscript>You need to enable JavaScript to run this app.</noscript>
       <div id="root"></div>
-
+      <div class="modal-bg modal-bg--open trouble-loading">
+          <div class="modal-content modal-content--show trouble-loading">
+              <div class="modal-close-bar"></div>
+              <div class="modal content--subheader">For some reason, Starsky couldn't load</div>
+              <div class="modal content--text">
+                  <p>We're quite sorry about this</p>
+                  <h4>Troubleshooting</h4>
+                  <p>Here are a few things to try:</p>
+                  <noscript>
+                      <ul>
+                        <li>You need to enable JavaScript to run this app.</li>
+                      </ul>
+                  </noscript>
+                  <ul>
+                      <li><a href="/?force_cold_boot=1">Reload starsky</a> or even restart your browser</li>
+                  </ul>
+              </div>
+          </div>
+      </div>
       <script defer
               async
               type="text/javascript"

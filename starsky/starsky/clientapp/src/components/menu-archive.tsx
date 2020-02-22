@@ -126,9 +126,9 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       }}
         endpoint={new UrlQuery().UrlUploadApi()}
         folderPath={state.subPath} enableInputButton={true}
-        enableDragAndDrop={true}></DropArea>
+        enableDragAndDrop={true} />
     </li>
-  }
+  };
 
   return (
     <>
@@ -179,8 +179,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           {select ? <MoreMenu>
             {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>{MessageUndoSelection}</li> : null}
             {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => selectAll()}>{MessageSelectAll}</li> : null}
-            <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
-            <li className="menu-option" onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li>
+            {select.length >= 1 ? <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li> : null}
+            {select.length >= 1 ? <li className="menu-option" onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li> : null}
             {state ? <UploadMenuItem /> : null}
           </MoreMenu> : null}
 
