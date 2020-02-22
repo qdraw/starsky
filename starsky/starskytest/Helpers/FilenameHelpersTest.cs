@@ -63,6 +63,20 @@ namespace starskytest.Helpers
 			Assert.AreEqual("Document Test", result);
 		}
 
+		[TestMethod]
+		public void FilenamesHelper_GetFileNameWithoutExtension_example3()
+		{
+			var result = FilenamesHelper.GetFileNameWithoutExtension("/0000000000aaaaa__exifreadingtest00.jpg");
+			Assert.AreEqual("0000000000aaaaa__exifreadingtest00", result);
+		}
+		
+		[TestMethod]
+		public void FilenamesHelper_GetFileNameWithoutExtension_example4()
+		{
+			var result = FilenamesHelper.GetFileNameWithoutExtension("/0000000000aaaaa__exifreadingtest00");
+			Assert.AreEqual("0000000000aaaaa__exifreadingtest00", result);
+		}
+		
 	}
 	
 }

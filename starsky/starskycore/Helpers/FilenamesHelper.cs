@@ -33,18 +33,14 @@ namespace starskycore.Helpers
 
 		/// <summary>
 		/// Get the filename without extension from a unix path
-		/// File must have an extension
-		/// @see: https://stackoverflow.com/a/15229838
+		/// File dont need to have an extension
 		/// </summary>
 		/// <param name="filePath">subPath unix style </param>
 		/// <returns>filename without extension</returns>
 		public static string GetFileNameWithoutExtension(string filePath)
 		{
-			// unescaped regex: [^/]*(?=\.[^.]+($|\?))
-			var extensionRegex =
-				new Regex("[^/]*(?=\\.[^.]+($|\\?))",
-					RegexOptions.CultureInvariant);
-			return extensionRegex.Match(filePath).Value;
+			var fileName = GetFileName(filePath);
+			return  Regex.Replace(fileName, "\\.[a-z]{0,4}$", string.Empty );
 		}
 		
 		/// <summary>
