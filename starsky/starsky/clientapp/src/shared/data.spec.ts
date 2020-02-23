@@ -65,11 +65,12 @@ describe("date", () => {
       dayBeforeYesterdayDate.setDate(dayBeforeYesterdayDate.getDate() - 2);
 
       var dayBeforeYesterday = `${dayBeforeYesterdayDate.getFullYear()}-
-      ${leftPad(dayBeforeYesterdayDate.getMonth() + 1)}-${leftPad(dayBeforeYesterdayDate.getDate())}T
-      ${leftPad(dayBeforeYesterdayDate.getHours())}:${leftPad(dayBeforeYesterdayDate.getMinutes())}:
-      ${leftPad(dayBeforeYesterdayDate.getSeconds())}`;
-      dayBeforeYesterday = dayBeforeYesterday.replace(/\w|\n|\r\n/ig, "");
-      console.log(dayBeforeYesterday);
+        ${leftPad(dayBeforeYesterdayDate.getMonth() + 1)}-${leftPad(dayBeforeYesterdayDate.getDate())}T
+        ${leftPad(dayBeforeYesterdayDate.getHours())}:${leftPad(dayBeforeYesterdayDate.getMinutes())}:
+        ${leftPad(dayBeforeYesterdayDate.getSeconds())}`;
+
+      // remove space and newlines from prev variable
+      dayBeforeYesterday = dayBeforeYesterday.replace(/\s|\n|\r\n/ig, "");
 
       var result = parseRelativeDate(dayBeforeYesterday, SupportedLanguages.en);
 
