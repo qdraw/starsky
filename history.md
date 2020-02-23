@@ -10,7 +10,7 @@
 - []   (front-end) Search details show exact query behind modal
 - []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
-### High priority features  planned
+### High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
 
 # version 0.1.17 - 2020-02-??
