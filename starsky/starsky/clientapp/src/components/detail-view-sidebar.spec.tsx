@@ -93,7 +93,7 @@ describe("DetailViewSidebar", () => {
 
     it("test if dateTime from the context is displayed", () => {
       var dateTime = Component.find('[data-test="dateTime"]');
-      expect(dateTime.text()).toBe("Sunday, September 15, 201917:29:59")
+      expect(dateTime.text()).toBe("Sunday, 15 September 201917:29:59")
     });
 
     it("test if lastEdited from the context is displayed", () => {

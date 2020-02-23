@@ -74,7 +74,7 @@ describe("date", () => {
 
       var result = parseRelativeDate(dayBeforeYesterday, SupportedLanguages.en);
 
-      expect(result).toBe(dayBeforeYesterdayDate.toLocaleDateString("en", {
+      expect(result).toBe(dayBeforeYesterdayDate.toLocaleDateString("en-GB", {
         weekday: 'long',
         year: 'numeric', month: 'long', day: 'numeric'
       }));

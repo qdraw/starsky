@@ -56,7 +56,9 @@ const parseRelativeDate = (inputDateTime: string | undefined, locate: SupportedL
 const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): string => {
   if (!dateTime) return "";
   var dateTimeObject = new Date(dateTime);
-  return dateTimeObject.toLocaleDateString(locate.toString(), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  // We prefer British English, uses day-month-year order
+  var locateString = locate === SupportedLanguages.en ? "en-GB" : locate.toString()
+  return dateTimeObject.toLocaleDateString(locateString, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 const parseTime = (dateTime: string | undefined): string => {
