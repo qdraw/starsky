@@ -17,7 +17,7 @@ import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import ColorClassSelect from './color-class-select';
 import FormControl from './form-control';
-import ModalDatetime from './modal-datetime';
+// import ModalDatetime from './modal-datetime';
 
 interface IDetailViewSidebarProps {
   filePath: string,
@@ -204,7 +204,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         Details
       </div> : null}
 
-    <ModalDatetime handleExit={() => { }} isOpen={true}></ModalDatetime>
+    {/* <ModalDatetime handleExit={() => { }} isOpen={true}></ModalDatetime> */}
 
     <div className="content--text">
       {isValidDate(fileIndexItem.dateTime) ?
