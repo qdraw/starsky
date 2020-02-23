@@ -142,6 +142,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     new Keyboard().SetFocusOnEndField(current);
   }, [props]);
 
+  const [isModalDatetimeOpen, setModalDatetimeOpen] = React.useState(false);
+
   // noinspection HtmlUnknownAttribute
   return (<div className="sidebar">
     {fileIndexItem.status === IExifStatus.Deleted || fileIndexItem.status === IExifStatus.ReadOnly
@@ -194,7 +196,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       {MessageColorClassification}
     </div>
     <div className="content--text">
-      <ColorClassSelect onToggle={() => { }} filePath={fileIndexItem.filePath}
+      <ColorClassSelect onToggle={() => {
+        setFileIndexItem({ ...fileIndexItem, lastEdited: new Date().toString() });
+        dispatch({ 'type': 'update', lastEdited: '' })
+      }} filePath={fileIndexItem.filePath}
         currentColorClass={fileIndexItem.colorClass} isEnabled={isFormEnabled} />
     </div>
 
@@ -204,16 +209,25 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         Details
       </div> : null}
 
-    {true ? <ModalDatetime handleExit={() => { }} isOpen={true}></ModalDatetime> : null}
+    {/* when the image is created */}
+    {isModalDatetimeOpen ? <ModalDatetime
+      subPath={fileIndexItem.filePath}
+      dateTime={fileIndexItem.dateTime}
+      handleExit={(result) => {
+        setModalDatetimeOpen(false);
+        if (!result || !result[0]) return;
+        setFileIndexItem(result[0]);
+        dispatch({ 'type': 'update', ...result[0], lastEdited: '' })
+      }} isOpen={true} /> : null}
 
     <div className="content--text">
       {isValidDate(fileIndexItem.dateTime) ?
-        <div className="box" data-test="dateTime" onClick={() => { }}>
+        <button className="box" data-test="dateTime" onClick={() => setModalDatetimeOpen(true)}>
           <div className="icon icon--right icon--edit" />
           <div className="icon icon--date" />
           <b>{parseDate(fileIndexItem.dateTime, settings.language)}</b>
           <p>{parseTime(fileIndexItem.dateTime)}</p>
-        </div> : ""}
+        </button> : ""}
 
       {isValidDate(fileIndexItem.lastEdited) ?
         <div className="box" data-test="lastEdited">

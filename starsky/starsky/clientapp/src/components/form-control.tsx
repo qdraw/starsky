@@ -38,9 +38,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
 
     var elementLength = element.currentTarget.textContent.trim().length
 
-    console.log(window.getSelection());
-
-    if (elementLength < maxlength || (element.key === "x" && element.ctrlKey) ||
+    if (elementLength < maxlength || window.getSelection()?.type === 'Range' || (element.key === "x" && element.ctrlKey) ||
       (element.key === "x" && element.metaKey) || !element.key.match(/^.{0,1}$/)) return;
 
     setChildLength(elementLength);
@@ -78,7 +76,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
   }
 
   return <>
-    {props.warning && childLength >= maxlength ?
+    {props.warning !== false && childLength >= maxlength ?
       <div className="warning-box">{MessageFieldMaxLength}</div> : null}
 
     <div onBlur={limitLengthBlur}

@@ -10,6 +10,15 @@ describe("FormControl", () => {
   });
 
   describe("with events", () => {
+
+    beforeAll(() => {
+      (window as any).getSelection = () => {
+        return {
+          removeAllRanges: () => { }
+        };
+      };
+    });
+
     it("limitLengthKey - keydown max limit/preventDefault", () => {
 
       var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">123456789</FormControl>);
@@ -103,7 +112,8 @@ describe("FormControl", () => {
 
     it("limitLengthBlur - onBlur limit/preventDefault", () => {
       var onBlurSpy = jest.fn();
-      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy} name="test123">012345678919000000</FormControl>);
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy}
+        name="test123">012345678919000000</FormControl>);
 
       // need to dispatch on child element
       component.find(".form-control").simulate('blur');
@@ -117,7 +127,8 @@ describe("FormControl", () => {
     it("limitLengthBlur - onBlur limit", () => {
 
       var onBlurSpy = jest.fn();
-      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy} name="test">1234567890123</FormControl>);
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy}
+        name="test">1234567890123</FormControl>);
 
       act(() => {
         component.simulate('blur')

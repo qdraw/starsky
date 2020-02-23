@@ -3,7 +3,7 @@ import { SupportedLanguages } from './language';
 const isValidDate = (inputDateTime: string | undefined): boolean => {
   if (inputDateTime) {
     let input = new Date(inputDateTime).valueOf();
-    return input > 0;
+    return input > 0 && input < 7258118400 * 1000; // 01/01/2200
   }
   return false;
 }

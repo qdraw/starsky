@@ -6,7 +6,7 @@
 ### Features planned (in random order) and lower priority
 - []   Realtime Files API
 - []   mp4/h.264 video support
-- []   time zone shifting
+
 - []   Search: support for complex and/or operators `(this || or) && that`
 - []   Docker support, including backend abstractions to get the data (partly working)
 - []   (front-end) Search details show exact query behind modal
@@ -14,6 +14,9 @@
 
 ### High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
+
+# version 0.1.17 - 2020-02-??
+- []   time zone shifting/ datetime adjustment __not implemented__
 
 # version 0.1.16 - 2020-02-23
 - [x]  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix

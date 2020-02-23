@@ -76,13 +76,21 @@
 }
 
 .form-control[data-name="year"] {
-  width: 70px;
+  width: 60px;
 }
 
-.form-control[data-name="minute"],
-.form-control[data-name="hour"],
 .form-control[data-name="day"],
 .form-control[data-name="month"] {
   width: 50px;
+}
+
+.form-control[data-name="hour"] {
+  margin-left:8px;
+}
+
+.form-control[data-name="sec"],
+.form-control[data-name="minute"],
+.form-control[data-name="hour"] {
+    width: 38px;
 }
 

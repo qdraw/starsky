@@ -35,6 +35,7 @@ type Action = {
   orientation?: Orientation,
   status?: IExifStatus,
   lastEdited?: string,
+  dateTime?: string,
 } |
 {
   type: 'reset',
@@ -60,7 +61,7 @@ export function detailviewReducer(state: State, action: Action): State {
       return { ...state, lastUpdated: new Date() };
     case "update":
       /* eslint-disable-next-line no-redeclare */
-      var { tags, description, title, status, colorclass, fileHash, orientation, lastEdited } = action;
+      var { tags, description, title, status, colorclass, fileHash, orientation, lastEdited, dateTime } = action;
 
       if (tags) state.fileIndexItem.tags = tags;
       if (description) state.fileIndexItem.description = description;
@@ -70,6 +71,7 @@ export function detailviewReducer(state: State, action: Action): State {
       if (fileHash) state.fileIndexItem.fileHash = fileHash;
       if (orientation) state.fileIndexItem.orientation = orientation;
       if (lastEdited) state.fileIndexItem.lastEdited = lastEdited;
+      if (dateTime) state.fileIndexItem.dateTime = dateTime;
 
       // Need to update otherwise other events are not triggerd
       return { ...state, lastUpdated: new Date() };

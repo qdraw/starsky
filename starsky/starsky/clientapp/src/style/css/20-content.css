@@ -48,19 +48,42 @@
     color: #fff;
   }
 }
+.content--text > button {
+  background-color: transparent;
+}
 
-.content--text a.box:hover {
+@media (prefers-color-scheme: dark) {
+  .content--text > button {
+  color: #fff;
+  }
+}
+
+.content--text > button.box:hover,
+.content--text > a.box:hover {
   background-color: #ECEFF1;
   border-radius: 3px;
+  cursor: pointer;
 }
+
 @media (prefers-color-scheme: dark) {
-.content--text a.box:hover {
+  .content--text > button.box:hover,
+  .content--text > a.box:hover {
     background-color: #263238;
   }
 }
 
 .content--text {
   padding: 10px;
+}
+.content--text .date {
+  display: inline-block;
+  margin-right: 10px;
+  text-align: center;
+  margin-bottom:10px;
+}
+
+.content--text .date p{
+  margin-bottom: 4px;
 }
 
 .content--text .btn,
