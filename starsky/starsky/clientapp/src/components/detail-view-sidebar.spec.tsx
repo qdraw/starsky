@@ -7,7 +7,9 @@ import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnec
 import { IRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem, newIFileIndexItem } from '../interfaces/IFileIndexItem';
+import { parseDate, parseTime } from '../shared/date';
 import * as FetchPost from '../shared/fetch-post';
+import { SupportedLanguages } from '../shared/language';
 import { UrlQuery } from '../shared/url-query';
 import DetailViewSidebar from './detail-view-sidebar';
 import * as ModalDatetime from './modal-datetime';
@@ -94,7 +96,9 @@ describe("DetailViewSidebar", () => {
 
     it("test if dateTime from the context is displayed", () => {
       var dateTime = Component.find('[data-test="dateTime"]');
-      expect(dateTime.text()).toBe("Sunday, 15 September 201917:29:59")
+
+      expect(dateTime.text()).toBe(parseDate('2019-09-15T17:29:59',
+        SupportedLanguages.en) + parseTime('2019-09-15T17:29:59'))
     });
 
     it("click on datetime modal", () => {
@@ -128,8 +132,9 @@ describe("DetailViewSidebar", () => {
       expect(modalDatetimeSpy).toBeCalled();
 
       var updatedDatetime = Component.find('[data-test="dateTime"]');
-      expect(updatedDatetime.text()).toBe("Saturday, 1 February 202013:15:20")
 
+      expect(updatedDatetime.text()).toBe(parseDate("2020-02-01T13:15:20",
+        SupportedLanguages.en) + parseTime("2020-02-01T13:15:20"))
     });
 
     it("click on ColorClassSelect and return value", () => {
