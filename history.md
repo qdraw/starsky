@@ -15,7 +15,7 @@
 ### High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
 
-# version 0.1.16 - 2020-02-??
+# version 0.1.16 - 2020-02-23
 - [x]  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix
 - [x]  (feature) _Back-end_ Feature toggle to change from `Newtonsoft.Json` to `System.Text.Json`
 - [x]  (bugfix) _Frond-end_ Trash display content after deleted (changes in wrapper)
