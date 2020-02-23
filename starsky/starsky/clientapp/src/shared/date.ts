@@ -1,8 +1,9 @@
+import { SupportedLanguages } from './language';
 
 const isValidDate = (inputDateTime: string | undefined): boolean => {
   if (inputDateTime) {
     let input = new Date(inputDateTime).valueOf();
-    return input > 0;
+    return input > 0 && input < 7258118400 * 1000; // 01/01/2200
   }
   return false;
 }
@@ -30,7 +31,7 @@ const IsEditedNow = (inputDateTime: undefined | string): boolean | null => {
   return difference <= 0.2;
 }
 
-const parseRelativeDate = (inputDateTime: string | undefined): string => {
+const parseRelativeDate = (inputDateTime: string | undefined, locate: SupportedLanguages): string => {
   let date = "";
 
   if (!inputDateTime) return date;
@@ -48,32 +49,30 @@ const parseRelativeDate = (inputDateTime: string | undefined): string => {
     case (difference < 1441):
       return Math.round(difference / 60) + " {hour}";
     default:
-      return parseDate(inputDateTime);
+      return parseDate(inputDateTime, locate);
   }
 }
 
-const parseDate = (dateTime: string | undefined): string => {
-
-  let date = "";
-  if (dateTime) {
-    date += new Date(dateTime).getDate();
-    date += "-";
-    date += new Date(dateTime).getMonth() + 1;
-    date += "-";
-    date += new Date(dateTime).getFullYear();
-  }
-  return date;
+const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): string => {
+  if (!dateTime) return "";
+  var dateTimeObject = new Date(dateTime);
+  // We prefer British English, uses day-month-year order
+  var locateString = locate === SupportedLanguages.en ? "en-GB" : locate.toString()
+  return dateTimeObject.toLocaleDateString(locateString, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 const parseTime = (dateTime: string | undefined): string => {
 
   let date = "";
   if (dateTime) {
-    date += leftPad(new Date(dateTime).getHours());
+    var hour = new Date(dateTime).getHours();
+    if (!isNaN(hour)) date += leftPad(hour);
     date += ":";
-    date += leftPad(new Date(dateTime).getMinutes());
+    var minutes = new Date(dateTime).getMinutes();
+    if (!isNaN(minutes)) date += leftPad(minutes);
     date += ":";
-    date += leftPad(new Date(dateTime).getSeconds());
+    var seconds = new Date(dateTime).getSeconds();
+    if (!isNaN(seconds)) date += leftPad(seconds);
   }
   return date;
 }

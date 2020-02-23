@@ -17,6 +17,8 @@ import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import ColorClassSelect from './color-class-select';
 import FormControl from './form-control';
+import ModalDatetime from './modal-datetime';
+
 interface IDetailViewSidebarProps {
   filePath: string,
   status: IExifStatus
@@ -140,6 +142,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     new Keyboard().SetFocusOnEndField(current);
   }, [props]);
 
+  const [isModalDatetimeOpen, setModalDatetimeOpen] = React.useState(false);
+
   // noinspection HtmlUnknownAttribute
   return (<div className="sidebar">
     {fileIndexItem.status === IExifStatus.Deleted || fileIndexItem.status === IExifStatus.ReadOnly
@@ -192,7 +196,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       {MessageColorClassification}
     </div>
     <div className="content--text">
-      <ColorClassSelect onToggle={() => { }} filePath={fileIndexItem.filePath}
+      <ColorClassSelect onToggle={() => {
+        setFileIndexItem({ ...fileIndexItem, lastEdited: new Date().toString() });
+        dispatch({ 'type': 'update', lastEdited: '' })
+      }} filePath={fileIndexItem.filePath}
         currentColorClass={fileIndexItem.colorClass} isEnabled={isFormEnabled} />
     </div>
 
@@ -202,20 +209,32 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         Details
       </div> : null}
 
+    {/* when the image is created */}
+    {isModalDatetimeOpen ? <ModalDatetime
+      subPath={fileIndexItem.filePath}
+      dateTime={fileIndexItem.dateTime}
+      handleExit={(result) => {
+        setModalDatetimeOpen(false);
+        if (!result || !result[0]) return;
+        setFileIndexItem(result[0]);
+        dispatch({ 'type': 'update', ...result[0], lastEdited: '' })
+      }} isOpen={true} /> : null}
+
     <div className="content--text">
       {isValidDate(fileIndexItem.dateTime) ?
-        <div className="box" data-test="dateTime">
+        <button className="box" data-test="dateTime" onClick={() => setModalDatetimeOpen(true)}>
+          <div className="icon icon--right icon--edit" />
           <div className="icon icon--date" />
-          <b>{parseDate(fileIndexItem.dateTime)}</b>
+          <b>{parseDate(fileIndexItem.dateTime, settings.language)}</b>
           <p>{parseTime(fileIndexItem.dateTime)}</p>
-        </div> : ""}
+        </button> : ""}
 
       {isValidDate(fileIndexItem.lastEdited) ?
         <div className="box" data-test="lastEdited">
           <div className="icon icon--last-edited"></div>
           <b>{
             language.token(parseRelativeDate(
-              fileIndexItem.lastEdited),
+              fileIndexItem.lastEdited, settings.language),
               ["{lessThan1Minute}", "{minutes}", "{hour}"],
               [MessageDateLessThan1Minute, MessageDateMinutes, MessageDateHour])
           }</b>
@@ -241,7 +260,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         <a className="box" target="_blank" rel="noopener noreferrer" href={"https://www.openstreetmap.org/?mlat=" +
           fileIndexItem.latitude + "&mlon=" + fileIndexItem.longitude + "#map=16/" +
           fileIndexItem.latitude + "/" + fileIndexItem.longitude}>
-          <div className="icon icon--right icon--edit" />
+          {/* <div className="icon icon--right icon--edit" /> */}
           <div className="icon icon--location" />
           {fileIndexItem.locationCity && fileIndexItem.locationCountry ?
             <>
@@ -255,9 +274,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         </a> : ""}
 
       {collections.map((item, index) => (
-        <div key={index} className={index !== 1 ? "box" : "box box--child"} data-test="collections">
+        <Link to={new URLPath().updateFilePath(history.location.search, item)}
+          key={index} className={index !== 1 ? "box" : "box box--child"} data-test="collections">
           {index !== 1 ? <div className="icon icon--photo" /> : null}
-          <b><Link to={new URLPath().updateFilePath(history.location.search, item)}>{new URLPath().getChild(item)}</Link></b>
+          <b>{new URLPath().getChild(item)}</b>
           <p>
             {index === 1 ? <>In een collectie:</> : null} {index + 1} van {collections.length}.
             {item === fileIndexItem.filePath && fileIndexItem.imageWidth !== 0 && fileIndexItem.imageHeight !== 0 ?
@@ -269,7 +289,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
               </span>
               : null}
           </p>
-        </div>
+        </Link>
       ))}
 
     </div>

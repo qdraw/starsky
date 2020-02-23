@@ -6,14 +6,17 @@
 ### Features planned (in random order) and lower priority
 - []   Realtime Files API
 - []   mp4/h.264 video support
-- []   time zone shifting
-- []   Search: support for complex and/or operators `(this || or) && that`
 - []   Docker support, including backend abstractions to get the data (partly working)
 - []   (front-end) Search details show exact query behind modal
 - []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
 
 ### High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
+
+# version 0.1.17 - 2020-02-??
+- [x]  (feature) _Front-end_  Datetime editing in detailView
+- [x]  (feature) _Front-end_ change datetime layout
+- []   (bug) _Front-end_ Readonly mode and modals __not implemented__
 
 # version 0.1.16 - 2020-02-23
 - [x]  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix
@@ -34,6 +37,7 @@
 - [x]  (version) _Back-end_ Upgrade RazorLight to 2.0.0-beta4
 - [x]  (feature) _CLI_ StarskyAdminCli is added (but not documented or included by default)
 - [x]  (feature) _Front-end_ Show warning when there are connection issues
+- [x]  (feature) _Back-end_ Search: support for complex and/or operators `(this || or) && that`
 
 # version 0.1.15 - 2020-02-06
 - [x]  (bugfix) _Front-end_ Drag'n drop is now only with files

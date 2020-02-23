@@ -10,6 +10,31 @@ describe("FormControl", () => {
   });
 
   describe("with events", () => {
+
+    beforeAll(() => {
+      (window as any).getSelection = () => {
+        return {
+          removeAllRanges: () => { }
+        };
+      };
+    });
+
+    it("limitLengthKey - null/nothing", () => {
+
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">&nbsp;</FormControl>);
+
+      var preventDefaultSpy = jest.fn();
+
+      act(() => {
+        component.getDOMNode().innerHTML = "";
+        component.simulate('keydown', { key: 'x', preventDefault: preventDefaultSpy })
+      });
+
+      expect(preventDefaultSpy).toBeCalledTimes(0);
+
+      component.unmount();
+    });
+
     it("limitLengthKey - keydown max limit/preventDefault", () => {
 
       var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">123456789</FormControl>);
@@ -34,6 +59,7 @@ describe("FormControl", () => {
 
       act(() => {
         component.getDOMNode().innerHTML = "1234567";
+
         component.simulate('keydown', { key: 'x', preventDefault: preventDefaultSpy })
       });
 
@@ -43,14 +69,14 @@ describe("FormControl", () => {
     });
 
     it("limitLengthPaste - copy -> paste limit/preventDefault", () => {
-
-      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">123456789</FormControl>);
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }}
+        name="test">987654321</FormControl>);
 
       var preventDefaultSpy = jest.fn();
 
       var mockDataTransfer = {
         getData: () => {
-          return "t"
+          return "01"
         }
       };
 
@@ -58,6 +84,7 @@ describe("FormControl", () => {
         component.simulate('paste', { clipboardData: mockDataTransfer, preventDefault: preventDefaultSpy })
       });
 
+      // limit!
       expect(preventDefaultSpy).toBeCalled()
 
       component.unmount();
@@ -71,7 +98,7 @@ describe("FormControl", () => {
 
       var mockDataTransfer = {
         getData: () => {
-          return "t"
+          return "?"
         }
       };
 
@@ -79,7 +106,23 @@ describe("FormControl", () => {
         component.simulate('paste', { clipboardData: mockDataTransfer, preventDefault: preventDefaultSpy })
       });
 
-      expect(preventDefaultSpy).toBeCalledTimes(0)
+      expect(preventDefaultSpy).toBeCalledTimes(0);
+
+      component.unmount();
+    });
+
+    it("limitLengthBlur - null/nothing", () => {
+
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">&nbsp;</FormControl>);
+
+      var preventDefaultSpy = jest.fn();
+
+      act(() => {
+        component.getDOMNode().innerHTML = "";
+        component.simulate('blur')
+      });
+
+      expect(preventDefaultSpy).toBeCalledTimes(0);
 
       component.unmount();
     });
@@ -101,7 +144,8 @@ describe("FormControl", () => {
 
     it("limitLengthBlur - onBlur limit/preventDefault", () => {
       var onBlurSpy = jest.fn();
-      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy} name="test123">012345678919000000</FormControl>);
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy}
+        name="test123">012345678919000000</FormControl>);
 
       // need to dispatch on child element
       component.find(".form-control").simulate('blur');
@@ -115,7 +159,8 @@ describe("FormControl", () => {
     it("limitLengthBlur - onBlur limit", () => {
 
       var onBlurSpy = jest.fn();
-      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy} name="test">1234567890123</FormControl>);
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={onBlurSpy}
+        name="test">1234567890123</FormControl>);
 
       act(() => {
         component.simulate('blur')
