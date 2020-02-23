@@ -94,7 +94,7 @@ const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
 
         <div className="date">
           <p>{MessageDate}</p>
-          <FormControl name="day"
+          <FormControl name="date"
             maxlength={2}
             onBlur={e => { setDate(Number(e.target.textContent)) }}
             className="inline-block"
