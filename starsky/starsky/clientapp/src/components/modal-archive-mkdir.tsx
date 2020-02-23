@@ -8,6 +8,7 @@ import FetchPost from '../shared/fetch-post';
 import { FileExtensions } from '../shared/file-extensions';
 import { Language } from '../shared/language';
 import { UrlQuery } from '../shared/url-query';
+import FormControl from './form-control';
 import Modal from './modal';
 
 interface IModalRenameFileProps {
@@ -110,13 +111,11 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props
       <div className="modal content--subheader">{MessageFeatureName}</div>
       <div className="modal content--text">
 
-        <div data-name="directoryname"
+        <FormControl name="directoryname"
           onInput={handleUpdateChange}
-          suppressContentEditableWarning={true}
-          contentEditable={isFormEnabled}
-          className={isFormEnabled ? "form-control" : "form-control disabled"}>
+          contentEditable={isFormEnabled}>
           &nbsp;
-        </div>
+        </FormControl>
 
         {error && <div className="warning-box--under-form warning-box">{error}</div>}
 

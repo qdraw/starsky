@@ -202,9 +202,12 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         Details
       </div> : null}
 
+    {/* <ModalDatetime handleExit={() => { }} isOpen={true}></ModalDatetime> */}
+
     <div className="content--text">
       {isValidDate(fileIndexItem.dateTime) ?
-        <div className="box" data-test="dateTime">
+        <div className="box" data-test="dateTime" onClick={() => { }}>
+          <div className="icon icon--right icon--edit" />
           <div className="icon icon--date" />
           <b>{parseDate(fileIndexItem.dateTime)}</b>
           <p>{parseTime(fileIndexItem.dateTime)}</p>
