@@ -35,9 +35,49 @@ const ModalDatetime: React.FunctionComponent<IModalRenameFileProps> = (props) =>
         <FormControl name="year"
           maxlength={4}
           onInput={handleUpdateChange}
-          className="form-control--half inline-block"
+          className="inline-block"
           contentEditable={isFormEnabled}>
-          &nbsp;
+          &nbsp;2020
+        </FormControl>
+
+        <FormControl name="month"
+          maxlength={2}
+          onInput={handleUpdateChange}
+          className="inline-block"
+          contentEditable={isFormEnabled}
+          warning={false}
+        >
+          &nbsp;01
+        </FormControl>
+
+        <FormControl name="day"
+          maxlength={2}
+          onInput={handleUpdateChange}
+          className="inline-block"
+          contentEditable={isFormEnabled}
+          warning={false}
+        >
+          &nbsp;01
+        </FormControl>
+
+        <FormControl name="hour"
+          maxlength={2}
+          onInput={handleUpdateChange}
+          className="inline-block"
+          contentEditable={isFormEnabled}
+          warning={false}
+        >
+          &nbsp;01
+        </FormControl>
+
+        <FormControl name="minute"
+          maxlength={2}
+          onInput={handleUpdateChange}
+          className="inline-block"
+          contentEditable={isFormEnabled}
+          warning={false}
+        >
+          &nbsp;01
         </FormControl>
 
       </div>

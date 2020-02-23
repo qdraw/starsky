@@ -74,3 +74,15 @@
 .form-control.inline-block {
   display: inline-block;
 }
+
+.form-control[data-name="year"] {
+  width: 70px;
+}
+
+.form-control[data-name="minute"],
+.form-control[data-name="hour"],
+.form-control[data-name="day"],
+.form-control[data-name="month"] {
+  width: 50px;
+}
+

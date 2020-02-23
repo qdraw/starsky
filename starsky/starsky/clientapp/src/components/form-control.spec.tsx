@@ -34,6 +34,7 @@ describe("FormControl", () => {
 
       act(() => {
         component.getDOMNode().innerHTML = "1234567";
+
         component.simulate('keydown', { key: 'x', preventDefault: preventDefaultSpy })
       });
 
@@ -43,14 +44,14 @@ describe("FormControl", () => {
     });
 
     it("limitLengthPaste - copy -> paste limit/preventDefault", () => {
-
-      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">123456789</FormControl>);
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }}
+        name="test">987654321</FormControl>);
 
       var preventDefaultSpy = jest.fn();
 
       var mockDataTransfer = {
         getData: () => {
-          return "t"
+          return "01"
         }
       };
 
@@ -58,6 +59,7 @@ describe("FormControl", () => {
         component.simulate('paste', { clipboardData: mockDataTransfer, preventDefault: preventDefaultSpy })
       });
 
+      // limit!
       expect(preventDefaultSpy).toBeCalled()
 
       component.unmount();
@@ -71,7 +73,7 @@ describe("FormControl", () => {
 
       var mockDataTransfer = {
         getData: () => {
-          return "t"
+          return "?"
         }
       };
 
@@ -79,7 +81,7 @@ describe("FormControl", () => {
         component.simulate('paste', { clipboardData: mockDataTransfer, preventDefault: preventDefaultSpy })
       });
 
-      expect(preventDefaultSpy).toBeCalledTimes(0)
+      expect(preventDefaultSpy).toBeCalledTimes(0);
 
       component.unmount();
     });

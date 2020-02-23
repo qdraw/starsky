@@ -11,6 +11,7 @@ export interface IFormControlProps {
   className?: string;
   maxlength?: number;
   children: React.ReactNode;
+  warning?: boolean;
 }
 
 const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
@@ -36,10 +37,13 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
     }
 
     var elementLength = element.currentTarget.textContent.trim().length
-    setChildLength(elementLength);
+
+    console.log(window.getSelection());
 
     if (elementLength < maxlength || (element.key === "x" && element.ctrlKey) ||
       (element.key === "x" && element.metaKey) || !element.key.match(/^.{0,1}$/)) return;
+
+    setChildLength(elementLength);
 
     element.preventDefault();
   }
@@ -49,10 +53,6 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
    * @param element ClipboardEvent
    */
   var limitLengthPaste = function (element: React.ClipboardEvent<HTMLDivElement>) {
-
-    // DEBUG
-    console.log(childLength + element.clipboardData.getData('Text').length <= childLength,
-      childLength, element.clipboardData.getData('Text').length, maxlength, element.clipboardData.getData('Text'));
 
     if (childLength + element.clipboardData.getData('Text').length <= maxlength) return;
     element.preventDefault();
@@ -64,8 +64,13 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
    * @param element Focus event
    */
   var limitLengthBlur = function (element: React.FocusEvent<HTMLDivElement>) {
-    if (element.currentTarget.innerHTML.length > maxlength) {
-      setChildLength(element.currentTarget.innerHTML.length);
+    if (!element.currentTarget.textContent) {
+      setChildLength(0);
+      return;
+    }
+
+    if (element.currentTarget.textContent.length - 1 >= maxlength + 1) {
+      setChildLength(element.currentTarget.textContent.length - 1);
       return;
     }
     if (!props.onBlur) return;
@@ -73,7 +78,9 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
   }
 
   return <>
-    {childLength >= maxlength ? <div className="warning-box">{MessageFieldMaxLength}</div> : null}
+    {props.warning && childLength >= maxlength ?
+      <div className="warning-box">{MessageFieldMaxLength}</div> : null}
+
     <div onBlur={limitLengthBlur}
       data-name={props.name}
       onKeyDown={limitLengthKey}
