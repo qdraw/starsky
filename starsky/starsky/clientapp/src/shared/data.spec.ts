@@ -3,7 +3,6 @@ import { SupportedLanguages } from './language';
 
 describe("date", () => {
 
-
   describe("parseDate", () => {
     it("undefined", () => {
       var result = parseDate("", SupportedLanguages.nl);
@@ -39,8 +38,6 @@ describe("date", () => {
     });
 
   });
-
-
 
   describe("isValidDate", () => {
     it("undefined", () => {
