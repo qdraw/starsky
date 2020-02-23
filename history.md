@@ -15,6 +15,7 @@
 
 # version 0.1.17 - 2020-02-??
 - [x]  (feature) _Front-end_  Datetime editing in detailView
+- [x]  (feature) _Front-end_ change datetime layout
 - []   (bug) _Front-end_ Readonly mode and modals __not implemented__
 
 # version 0.1.16 - 2020-02-23
