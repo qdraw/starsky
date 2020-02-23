@@ -6,7 +6,6 @@
 ### Features planned (in random order) and lower priority
 - []   Realtime Files API
 - []   mp4/h.264 video support
-
 - []   Search: support for complex and/or operators `(this || or) && that`
 - []   Docker support, including backend abstractions to get the data (partly working)
 - []   (front-end) Search details show exact query behind modal
