@@ -32,8 +32,10 @@ const ModalDatetime: React.FunctionComponent<IModalRenameFileProps> = (props) =>
       <div className="modal content--subheader">{MessageModalDatetime}</div>
       <div className="modal content--text">
 
-        <FormControl name="directoryname"
+        <FormControl name="year"
+          maxlength={5}
           onInput={handleUpdateChange}
+          className="form-control--half inline-block"
           contentEditable={isFormEnabled}>
           &nbsp;
         </FormControl>
