@@ -10,6 +10,7 @@ import { IFileIndexItem, newIFileIndexItem } from '../interfaces/IFileIndexItem'
 import * as FetchPost from '../shared/fetch-post';
 import { UrlQuery } from '../shared/url-query';
 import DetailViewSidebar from './detail-view-sidebar';
+import * as ModalDatetime from './modal-datetime';
 
 describe("DetailViewSidebar", () => {
 
@@ -94,6 +95,52 @@ describe("DetailViewSidebar", () => {
     it("test if dateTime from the context is displayed", () => {
       var dateTime = Component.find('[data-test="dateTime"]');
       expect(dateTime.text()).toBe("Sunday, 15 September 201917:29:59")
+    });
+
+    it("click on datetime modal", () => {
+      var dateTime = Component.find('[data-test="dateTime"]');
+
+      // import * as ModalDatetime from './modal-datetime';
+      var modalDatetimeSpy = jest.spyOn(ModalDatetime, 'default').mockImplementationOnce((props) => {
+        return <></>
+      })
+
+      act(() => {
+        dateTime.simulate('click');
+      });
+
+      expect(modalDatetimeSpy).toBeCalled();
+    });
+
+    it("click on datetime modal and return value", () => {
+      var dateTime = Component.find('[data-test="dateTime"]');
+
+      // import * as ModalDatetime from './modal-datetime';
+      var modalDatetimeSpy = jest.spyOn(ModalDatetime, 'default').mockImplementationOnce((props) => {
+        props.handleExit([{ dateTime: "2020-02-01T13:15:20" }] as IFileIndexItem[]);
+        return <></>
+      })
+
+      act(() => {
+        dateTime.simulate('click');
+      });
+
+      expect(modalDatetimeSpy).toBeCalled();
+
+      var updatedDatetime = Component.find('[data-test="dateTime"]');
+      expect(updatedDatetime.text()).toBe("Saturday, 1 February 202013:15:20")
+
+    });
+
+    it("click on ColorClassSelect and return value", () => {
+      var colorClassSelectItem = Component.find(".colorclass--5");
+
+      act(() => {
+        colorClassSelectItem.simulate('click');
+      });
+
+      var lastEdited = Component.find('[data-test="lastEdited"]');
+      expect(lastEdited.text()).toBe("less than one minuteago edited")
     });
 
     it("test if lastEdited from the context is displayed", () => {

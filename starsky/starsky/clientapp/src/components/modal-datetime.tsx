@@ -20,7 +20,12 @@ const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageModalDatetime = language.text("Datum en tijd bewerken", "Update Datetime");
+  const MessageModalDatetime = language.text("Datum en tijd bewerken", "Edit date and time");
+  const MessageYear = language.text("Jaar", "Year");
+  const MessageMonth = language.text("Maand", "Month");
+  const MessageDate = language.text("Dag", "Day");
+  const MessageTime = language.text("Tijd", "Time");
+  const MessageErrorDatetime = language.text("De datum en tijd zijn incorrect ingegeven", "The date and time were entered incorrectly");
 
   const [isFormEnabled] = React.useState(true);
 
@@ -63,10 +68,8 @@ const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
           <br />{parseDate(getDates(), settings.language)} {parseTime(getDates())} </> : null}</div>
       <div className="modal content--text">
 
-        {!isValidDate(getDates()) ? <div className="warning-box">Datum is niet valide</div> : null}
-
         <div className="date">
-          <p>Jaar</p>
+          <p>{MessageYear}</p>
           <FormControl name="year"
             maxlength={4}
             onBlur={e => { setFullYear(Number(e.target.textContent)) }}
@@ -78,7 +81,7 @@ const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
         </div>
 
         <div className="date">
-          <p>Maand</p>
+          <p>{MessageMonth}</p>
           <FormControl name="month"
             maxlength={2}
             onBlur={e => { setMonth(Number(e.target.textContent)) }}
@@ -90,7 +93,7 @@ const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
         </div>
 
         <div className="date">
-          <p>Dag</p>
+          <p>{MessageDate}</p>
           <FormControl name="day"
             maxlength={2}
             onBlur={e => { setDate(Number(e.target.textContent)) }}
@@ -101,8 +104,11 @@ const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
           </FormControl>
         </div>
 
+        <div className="date-spacer">
+        </div>
+
         <div className="date">
-          <p>Tijd</p>
+          <p>{MessageTime}</p>
           <FormControl name="hour"
             maxlength={2}
             onBlur={e => { setHour(Number(e.target.textContent)) }}
@@ -130,6 +136,8 @@ const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
             {seconds}
           </FormControl>
         </div>
+
+        {!isValidDate(getDates()) ? <div className="warning-box">{MessageErrorDatetime}</div> : null}
 
         <button
           disabled={!isValidDate(getDates())}

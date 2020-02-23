@@ -82,6 +82,11 @@
   margin-bottom:10px;
 }
 
+.content--text .date-spacer {
+  margin-right: 27px;
+  display: inline-block;
+}
+
 .content--text .date p{
   margin-bottom: 4px;
 }
