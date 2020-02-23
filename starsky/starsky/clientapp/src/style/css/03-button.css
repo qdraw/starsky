@@ -26,8 +26,21 @@
     background-color: #263238;
 }
 
+@media (prefers-color-scheme: dark) {
+	.btn.btn--default {
+        background-color: #78909C;
+        border: 1px solid #263238;
+    }
+}
+
 .btn.btn--default:hover:enabled {
     background-color: #455A64;
+}
+
+@media (prefers-color-scheme: dark) {
+	.btn.btn--default:hover:enabled {
+        background-color: #607D8B;
+    }
 }
 
 .btn--info {
@@ -35,6 +48,17 @@
     background-color: #fff;
     border: 1px solid #263238;
 }
+
+@media (prefers-color-scheme: dark) {
+	.btn--info {
+        color: #fff;
+		background-color: #455A64;
+	}
+	.btn.btn--info:hover:enabled {
+        background-color: #455A64;
+    }
+}
+
 
 /* .btn-danger {
     color: #fff;

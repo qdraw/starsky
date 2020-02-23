@@ -66,6 +66,13 @@ div.modal-content > .modal-close-bar {
   background-color: #CFD8DC;
 }
 
+@media (prefers-color-scheme: dark) {
+	div.modal-content > .modal-close-bar {
+      background-color: #263238;
+
+  }
+}
+
 div.modal-content button.modal-exit-button {
   border: none;
   background: none;
@@ -77,19 +84,28 @@ div.modal-content button.modal-exit-button {
   padding: 17px;
 }
 
+@media (prefers-color-scheme: dark) {
+	div.modal-content button.modal-exit-button {
+      color: #fff;
+  }
+}
+
 div.modal-content button.modal-exit-button::before {
   content:"";
   margin-right:10px;
   padding-right: 10px;
   padding-left: 10px;
-  /* padding-right: 20px; */
-
   background-color: #263238;
   mask-repeat: no-repeat;
   mask-position: left center;
   mask-image: url("../images/s-cross.svg");
 }
 
+@media (prefers-color-scheme: dark) {
+	div.modal-content button.modal-exit-button::before {
+      background-color: #fff;
+  }
+}
 
 div.modal-content button.modal-exit-button:active svg {
   opacity: 0.5;
