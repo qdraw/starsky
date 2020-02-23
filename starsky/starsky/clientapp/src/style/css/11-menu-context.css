@@ -11,6 +11,13 @@
   cursor: pointer;
 }
 
+@media (prefers-color-scheme: dark) {
+	.menu-context  {
+    background: rgba(69, 90, 100, 0.6); 
+    /* #455A64 */
+  }
+}
+
 .menu-context.menu-context--hide {
   display: none;
 }
@@ -26,6 +33,13 @@
   z-index: 450;
   background-color: white;
   border-radius: 5px;
+}
+
+@media (prefers-color-scheme: dark) {
+	.menu-context .menu-options {
+    background-color: #37474F;
+    color: #fff;
+  }
 }
 
 .header--edit > .wrapper > .item.item--more > .menu-context .menu-options{
@@ -45,8 +59,20 @@
   background-color: #ECEFF1;
 }
 
+@media (prefers-color-scheme: dark) {
+	.menu-context .menu-options .menu-option:nth-child(even) {
+    background-color: #263238;
+  }
+}
+
 .menu-context .menu-options .menu-option:hover {
   background: #B0BEC5;
+}
+
+@media (prefers-color-scheme: dark) {
+	.menu-context .menu-options .menu-option:hover  {
+    background-color: #546E7A;
+  }
 }
 
 .menu-context .menu-options .menu-option.disabled {
@@ -71,6 +97,13 @@
 .menu-context .menu-options .menu-option .droparea-file-input:focus + label,
 .menu-context .menu-options .menu-option .droparea-file-input + label:hover {
   background: #B0BEC5;
+}
+
+@media (prefers-color-scheme: dark) {
+	.menu-context .menu-options .menu-option .droparea-file-input:focus + label,
+  .menu-context .menu-options .menu-option .droparea-file-input + label:hover {
+    background-color: #546E7A;
+  }
 }
 
 .menu-context .menu-options .menu-option:first-child {
