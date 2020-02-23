@@ -1,4 +1,5 @@
 import { isValidDate, leftPad, parseRelativeDate } from './date';
+import { SupportedLanguages } from './language';
 
 describe("date", () => {
   describe("isValidDate", () => {
@@ -20,17 +21,17 @@ describe("date", () => {
 
   describe("parseRelativeDate", () => {
     it("undefined", () => {
-      var result = parseRelativeDate(undefined);
+      var result = parseRelativeDate(undefined, SupportedLanguages.en);
       expect(result).toBe("");
     });
 
     it("random", () => {
-      var result = parseRelativeDate("dd");
+      var result = parseRelativeDate("dd", SupportedLanguages.en);
       expect(result).toBe("");
     });
 
     it("non valid date", () => {
-      var result = parseRelativeDate("2019-02-40T01:00:00+00:00");
+      var result = parseRelativeDate("2019-02-40T01:00:00+00:00", SupportedLanguages.en);
       expect(result).toBe("");
     });
 
@@ -39,17 +40,21 @@ describe("date", () => {
       // to get 24 hours ago
       yesterdayDate.setDate(yesterdayDate.getDate() - 1);
 
-      var yesterday = `${yesterdayDate.getFullYear()}-${yesterdayDate.getMonth() + 1}-${yesterdayDate.getDate()} ${leftPad(yesterdayDate.getHours())}:${leftPad(yesterdayDate.getMinutes())}:${leftPad(yesterdayDate.getSeconds())}`;
+      var yesterday = `${yesterdayDate.getFullYear()}-${yesterdayDate.getMonth() + 1}-
+      ${yesterdayDate.getDate()} ${leftPad(yesterdayDate.getHours())}:${leftPad(yesterdayDate.getMinutes())}:
+      ${leftPad(yesterdayDate.getSeconds())}`;
 
-      var result = parseRelativeDate(yesterday);
+      var result = parseRelativeDate(yesterday, SupportedLanguages.en);
       expect(result).toBe("24 {hour}");
     });
 
     it("less than a hour", () => {
       var tenMinutesStamp = new Date(new Date().getTime() - (36 * 60000));
-      var tenMinutes = `${tenMinutesStamp.getFullYear()}-${tenMinutesStamp.getMonth() + 1}-${tenMinutesStamp.getDate()} ${leftPad(tenMinutesStamp.getHours())}:${leftPad(tenMinutesStamp.getMinutes())}:${leftPad(tenMinutesStamp.getSeconds())}`
+      var tenMinutes = `${tenMinutesStamp.getFullYear()}-${tenMinutesStamp.getMonth() + 1}-
+      ${tenMinutesStamp.getDate()} ${leftPad(tenMinutesStamp.getHours())}:
+      ${leftPad(tenMinutesStamp.getMinutes())}:${leftPad(tenMinutesStamp.getSeconds())}`
 
-      var result = parseRelativeDate(tenMinutes);
+      var result = parseRelativeDate(tenMinutes, SupportedLanguages.en);
       expect(result).toBe("36 {minutes}");
     });
 
@@ -59,10 +64,19 @@ describe("date", () => {
       // to get 48 hours ago
       dayBeforeYesterdayDate.setDate(dayBeforeYesterdayDate.getDate() - 2);
 
-      var dayBeforeYesterday = `${dayBeforeYesterdayDate.getFullYear()}-${leftPad(dayBeforeYesterdayDate.getMonth() + 1)}-${leftPad(dayBeforeYesterdayDate.getDate())}T${leftPad(dayBeforeYesterdayDate.getHours())}:${leftPad(dayBeforeYesterdayDate.getMinutes())}:${leftPad(dayBeforeYesterdayDate.getSeconds())}`;
+      var dayBeforeYesterday = `${dayBeforeYesterdayDate.getFullYear()}-
+      ${leftPad(dayBeforeYesterdayDate.getMonth() + 1)}-${leftPad(dayBeforeYesterdayDate.getDate())}T
+      ${leftPad(dayBeforeYesterdayDate.getHours())}:${leftPad(dayBeforeYesterdayDate.getMinutes())}:
+      ${leftPad(dayBeforeYesterdayDate.getSeconds())}`;
+      dayBeforeYesterday = dayBeforeYesterday.replace(/\w|\n|\r\n/ig, "");
+      console.log(dayBeforeYesterday);
 
-      var result = parseRelativeDate(dayBeforeYesterday);
-      expect(result).toBe(`${dayBeforeYesterdayDate.getDate()}-${dayBeforeYesterdayDate.getMonth() + 1}-${dayBeforeYesterdayDate.getFullYear()}`);
+      var result = parseRelativeDate(dayBeforeYesterday, SupportedLanguages.en);
+
+      expect(result).toBe(dayBeforeYesterdayDate.toLocaleDateString("en", {
+        weekday: 'long',
+        year: 'numeric', month: 'long', day: 'numeric'
+      }));
     });
   });
 });

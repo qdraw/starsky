@@ -49,6 +49,16 @@
   }
 }
 
+.content--text a.box:hover {
+  background-color: #ECEFF1;
+  border-radius: 3px;
+}
+@media (prefers-color-scheme: dark) {
+.content--text a.box:hover {
+    background-color: #263238;
+  }
+}
+
 .content--text {
   padding: 10px;
 }

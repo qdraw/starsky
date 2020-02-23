@@ -209,7 +209,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         <div className="box" data-test="dateTime" onClick={() => { }}>
           <div className="icon icon--right icon--edit" />
           <div className="icon icon--date" />
-          <b>{parseDate(fileIndexItem.dateTime)}</b>
+          <b>{parseDate(fileIndexItem.dateTime, settings.language)}</b>
           <p>{parseTime(fileIndexItem.dateTime)}</p>
         </div> : ""}
 
@@ -218,7 +218,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           <div className="icon icon--last-edited"></div>
           <b>{
             language.token(parseRelativeDate(
-              fileIndexItem.lastEdited),
+              fileIndexItem.lastEdited, settings.language),
               ["{lessThan1Minute}", "{minutes}", "{hour}"],
               [MessageDateLessThan1Minute, MessageDateMinutes, MessageDateHour])
           }</b>
@@ -244,7 +244,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         <a className="box" target="_blank" rel="noopener noreferrer" href={"https://www.openstreetmap.org/?mlat=" +
           fileIndexItem.latitude + "&mlon=" + fileIndexItem.longitude + "#map=16/" +
           fileIndexItem.latitude + "/" + fileIndexItem.longitude}>
-          <div className="icon icon--right icon--edit" />
+          {/* <div className="icon icon--right icon--edit" /> */}
           <div className="icon icon--location" />
           {fileIndexItem.locationCity && fileIndexItem.locationCountry ?
             <>
@@ -258,9 +258,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         </a> : ""}
 
       {collections.map((item, index) => (
-        <div key={index} className={index !== 1 ? "box" : "box box--child"} data-test="collections">
+        <Link to={new URLPath().updateFilePath(history.location.search, item)}
+          key={index} className={index !== 1 ? "box" : "box box--child"} data-test="collections">
           {index !== 1 ? <div className="icon icon--photo" /> : null}
-          <b><Link to={new URLPath().updateFilePath(history.location.search, item)}>{new URLPath().getChild(item)}</Link></b>
+          <b>{new URLPath().getChild(item)}</b>
           <p>
             {index === 1 ? <>In een collectie:</> : null} {index + 1} van {collections.length}.
             {item === fileIndexItem.filePath && fileIndexItem.imageWidth !== 0 && fileIndexItem.imageHeight !== 0 ?
@@ -272,7 +273,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
               </span>
               : null}
           </p>
-        </div>
+        </Link>
       ))}
 
     </div>

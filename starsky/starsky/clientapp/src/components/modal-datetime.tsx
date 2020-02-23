@@ -19,7 +19,7 @@ const ModalDatetime: React.FunctionComponent<IModalRenameFileProps> = (props) =>
   const [isFormEnabled, setFormEnabled] = React.useState(true);
 
   function handleUpdateChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
-
+    setFormEnabled(true);
   }
 
   return <Modal

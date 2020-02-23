@@ -1,3 +1,4 @@
+import { SupportedLanguages } from './language';
 
 const isValidDate = (inputDateTime: string | undefined): boolean => {
   if (inputDateTime) {
@@ -30,7 +31,7 @@ const IsEditedNow = (inputDateTime: undefined | string): boolean | null => {
   return difference <= 0.2;
 }
 
-const parseRelativeDate = (inputDateTime: string | undefined): string => {
+const parseRelativeDate = (inputDateTime: string | undefined, locate: SupportedLanguages): string => {
   let date = "";
 
   if (!inputDateTime) return date;
@@ -48,21 +49,14 @@ const parseRelativeDate = (inputDateTime: string | undefined): string => {
     case (difference < 1441):
       return Math.round(difference / 60) + " {hour}";
     default:
-      return parseDate(inputDateTime);
+      return parseDate(inputDateTime, locate);
   }
 }
 
-const parseDate = (dateTime: string | undefined): string => {
-
-  let date = "";
-  if (dateTime) {
-    date += new Date(dateTime).getDate();
-    date += "-";
-    date += new Date(dateTime).getMonth() + 1;
-    date += "-";
-    date += new Date(dateTime).getFullYear();
-  }
-  return date;
+const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): string => {
+  if (!dateTime) return "";
+  var dateTimeObject = new Date(dateTime);
+  return dateTimeObject.toLocaleDateString(locate.toString(), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 const parseTime = (dateTime: string | undefined): string => {
