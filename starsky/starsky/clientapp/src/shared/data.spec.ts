@@ -1,7 +1,47 @@
-import { isValidDate, leftPad, parseRelativeDate } from './date';
+import { isValidDate, leftPad, parseDate, parseRelativeDate, parseTime } from './date';
 import { SupportedLanguages } from './language';
 
 describe("date", () => {
+
+
+  describe("parseDate", () => {
+    it("undefined", () => {
+      var result = parseDate("", SupportedLanguages.nl);
+      expect(result).toBeFalsy()
+    });
+
+    it("wrong format", () => {
+      var result = parseDate("2020-30", SupportedLanguages.nl);
+      expect(result).toBe("Invalid Date");
+    });
+
+    it("right formated (nl)", () => {
+      var result = parseDate("2020-01-01T01:01:01", SupportedLanguages.nl);
+      expect(result).toBe("woensdag 1 januari 2020");
+    });
+
+  });
+
+  describe("parseTime", () => {
+    it("undefined", () => {
+      var result = parseTime("");
+      expect(result).toBeFalsy()
+    });
+
+    it("wrong format", () => {
+      var result = parseTime("2020-30");
+      expect(result).toBe("::");
+    });
+
+    it("right formated (nl)", () => {
+      var result = parseTime("2020-01-01T01:01:01");
+      expect(result).toBe("01:01:01");
+    });
+
+  });
+
+
+
   describe("isValidDate", () => {
     it("undefined", () => {
       var result = isValidDate(undefined);

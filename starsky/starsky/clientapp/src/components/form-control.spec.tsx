@@ -19,6 +19,22 @@ describe("FormControl", () => {
       };
     });
 
+    it("limitLengthKey - null/nothing", () => {
+
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">&nbsp;</FormControl>);
+
+      var preventDefaultSpy = jest.fn();
+
+      act(() => {
+        component.getDOMNode().innerHTML = "";
+        component.simulate('keydown', { key: 'x', preventDefault: preventDefaultSpy })
+      });
+
+      expect(preventDefaultSpy).toBeCalledTimes(0);
+
+      component.unmount();
+    });
+
     it("limitLengthKey - keydown max limit/preventDefault", () => {
 
       var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">123456789</FormControl>);
@@ -88,6 +104,22 @@ describe("FormControl", () => {
 
       act(() => {
         component.simulate('paste', { clipboardData: mockDataTransfer, preventDefault: preventDefaultSpy })
+      });
+
+      expect(preventDefaultSpy).toBeCalledTimes(0);
+
+      component.unmount();
+    });
+
+    it("limitLengthBlur - null/nothing", () => {
+
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">&nbsp;</FormControl>);
+
+      var preventDefaultSpy = jest.fn();
+
+      act(() => {
+        component.getDOMNode().innerHTML = "";
+        component.simulate('blur')
       });
 
       expect(preventDefaultSpy).toBeCalledTimes(0);

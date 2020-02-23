@@ -65,11 +65,14 @@ const parseTime = (dateTime: string | undefined): string => {
 
   let date = "";
   if (dateTime) {
-    date += leftPad(new Date(dateTime).getHours());
+    var hour = new Date(dateTime).getHours();
+    if (!isNaN(hour)) date += leftPad(hour);
     date += ":";
-    date += leftPad(new Date(dateTime).getMinutes());
+    var minutes = new Date(dateTime).getMinutes();
+    if (!isNaN(minutes)) date += leftPad(minutes);
     date += ":";
-    date += leftPad(new Date(dateTime).getSeconds());
+    var seconds = new Date(dateTime).getSeconds();
+    if (!isNaN(seconds)) date += leftPad(seconds);
   }
   return date;
 }
