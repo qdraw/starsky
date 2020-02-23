@@ -52,7 +52,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
 
     // DEBUG
     console.log(childLength + element.clipboardData.getData('Text').length <= childLength,
-      childLength, element.clipboardData.getData('Text').length, maxlength);
+      childLength, element.clipboardData.getData('Text').length, maxlength, element.clipboardData.getData('Text'));
 
     if (childLength + element.clipboardData.getData('Text').length <= maxlength) return;
     element.preventDefault();
