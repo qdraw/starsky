@@ -4,11 +4,12 @@
 
 ## Todo:
 ### Features planned (in random order) and lower priority
-- []   Realtime Files API
-- []   mp4/h.264 video support
-- []   Docker support, including backend abstractions to get the data (partly working)
-- []   (front-end) Search details show exact query behind modal
-- []   (front-end) Info Messages to show actions (e.g. pressed copy all fields shortcut )
+- []   (feature) _Back-end_ Realtime Files API
+- []   (feature) _Back-end_ mp4/h.264 video support
+- []   (feature) _Back-end_ Docker support, including backend abstractions to get the data (partly working)
+- []   (feature) _Frond-end_  Search details show exact query behind modal
+- []   (feature) _Frond-end_  Info Messages to show actions (e.g. pressed copy all fields shortcut )
+- []   (feature) _Front-end_ Zoom in picture
 
 ### High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
@@ -41,11 +42,11 @@
 
 # version 0.1.15 - 2020-02-06
 - [x]  (bugfix) _Front-end_ Drag'n drop is now only with files
-- [x]  _Legacy starsky.netframework_ 0.1.15 release included
-- [x]  _dependecies_ Microsoft.EntityFrameworkCore, Microsoft.Extensions.Configuration to 3.1.1
-- [x]  _dependecies_ starskycore.dll from [netstandard2.0;netstandard2.1] to netstandard2.0
-- [x]  _rename_ starskySyncNetFrameworkCli and starskyImporterNetFrameworkCli
-- [x] __breaking change__ add Software as field in database (run migrations)
+- [x]  (version) _Back-end_ _Legacy starsky.netframework_ 0.1.15 release included
+- [x]  (version) _Back-end_ _dependecies_ Microsoft.EntityFrameworkCore, Microsoft.Extensions.Configuration to 3.1.1
+- [x]  (version) _Back-end_ _dependecies_ starskycore.dll from [netstandard2.0;netstandard2.1] to netstandard2.0
+- [x]  (version) _Back-end_ _rename_ starskySyncNetFrameworkCli and starskyImporterNetFrameworkCli
+- [x]  (version) _Back-end_  __breaking change__ add Software as field in database (run migrations)
 
 # version 0.1.14 - 2020-02-04
 - [x]   (bugfix) _back-end_ Security fixes in controllers
@@ -107,17 +108,17 @@
 - [x]   (bugfix) _Front-end_ fix issue where on empty searchquery a sidebar is shown
 - [x]   (bugfix) _Front-end_ When import a non supported image Ok is shown
 - [x]   (feature) _Front-end_ Show GPX Files with a map (powered by leaflet/openstreet maps)
-- [x]   __Breaking change__ _Backend_ Rename suggest API from `/suggest` to `/api/suggest`
+- [x]   (change) _Back-end_ __Breaking change__ Rename suggest API from `/suggest` to `/api/suggest`
 - [x]   (bugfix) _Front-end_ Rotation in Detailview on iPad OS 13+ is working (fixed)
 - [x]   (feature) _API_ Add is Valid Filename check on rename API (`/api/rename`)
 
 # version 0.1.10 - 2019-12-15
-- [x] (bugfix) Archive => After pressing 'Apply' the updates are not shown
-- [x] Upgrade ClientApp from React 16.9.0 to 16.9.15 _(Create React App 3.3.0, 5 Dec 2019)_
-- [x] Front-end for Rename files (in detailview)
-- [x] (front-end) 'Rotate to Right'
-- [x] Improve Unit test coverage (at least 80% on coverage-report _561 mstest and 271 jest tests_)
-- [] (bug) `/starsky` paths are not supported __not fixed__
+- [x]   (bugfix) Archive => After pressing 'Apply' the updates are not shown
+- [x]   (version) _Front-end_  Upgrade ClientApp from React 16.9.0 to 16.9.15 _(Create React App 3.3.0, 5 Dec 2019)_
+- [x]   (bugfix) _Front-end_  Front-end for Rename files (in detailview)
+- [x]   (feature) _Front-end_  (front-end) 'Rotate to Right'
+- [x]   (bugfix) _Front-end_  Improve Unit test coverage (at least 80% on coverage-report _561 mstest and 271 jest tests_)
+- []    (bug) _Front-end_ `/starsky` paths are not supported __not fixed__
 
 # version 0.1.9 - 2019-12-01
 _Upgrade to .NET Core 3.0 (TargetFramework) & EF Core 3.1-preview3_
