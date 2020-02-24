@@ -13,6 +13,10 @@
   }
 }
 
+.content b {
+  font-weight: 300;
+}
+
 .content--header,
 .content--subheader {
   padding:15px;
