@@ -99,7 +99,8 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
 		</a>
 	</div>`;
 
-	var outputHtml = contentsHtml.replace(/<\/head>\n<body>/ig, "<title>" + getTitle(contentsHtml) + "</title><link rel=\"stylesheet\" href=\"" + relativeCssPath + "style.css\"><\/head>\n<body>\n" + menuHtml + "\n<div class=\"container\"><div class=\"entry-content\">");
+	var outputHtml = contentsHtml.replace(/<\/head>\n<body>/ig, "<title>" + getTitle(contentsHtml) + "</title><link rel=\"stylesheet\" href=\"" + relativeCssPath 
+	+ "style.css\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><\/head>\n<body>\n" + menuHtml + "\n<div class=\"container\"><div class=\"entry-content\">");
 
 	contentsHtml = outputHtml.replace(/<\/body>\n/ig, "</div>\n</div>\n <script defer src=\"" + relativeCssPath + "menu.js\"></script></body>\n");
 	console.log(htmlPath);

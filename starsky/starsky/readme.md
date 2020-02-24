@@ -27,10 +27,10 @@ The command line arguments are shortcuts to set an in-app environment variable.
 ### The order of reading settings
 You could use machine specific configuration files: appsettings.{machinename}.json _(and replace {machinename} with your computer name in lowercase)_
 1.  You can use `appsettings.json` inside the application folder to set base settings. The order of this files is used to get the values from the appsettings
-    -    `/bin/Debug/netcoreapp2.1/appsettings.patch.json`
-    -    `/bin/Debug/netcoreapp2.1/appsettings.computername.patch.json`
-    -    `/bin/Debug/netcoreapp2.1/appsettings.json`
-    -    `/bin/Debug/netcoreapp2.1/appsettings.computername.json`
+    -    `/bin/Debug/netcoreapp3.1/appsettings.patch.json`
+    -    `/bin/Debug/netcoreapp3.1/appsettings.computername.patch.json`
+    -    `/bin/Debug/netcoreapp3.1/appsettings.json`
+    -    `/bin/Debug/netcoreapp3.1/appsettings.computername.json`
 
 2.  Use Environment variables to overwrite those base settings
    For `ThumbnailTempFolder` use `app__ThumbnailTempFolder` ([source](https://github.com/aspnet/Configuration/commit/cafd2e53eb71a6d0cecc60a9e38ea1df2dafb916))  
@@ -39,10 +39,10 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 ### Required settings to start
 1.  `ExifToolPath` - A path to Exiftool.exe
 ### Recommend settings
-2.  `ThumbnailTempFolder` - For storing thumbnails (default: `./bin/Debug/netcoreapp2.0/thumbnailTempFolder`)
-3.  `StorageFolder` - For the main photo directory (default: `./bin/Debug/netcoreapp2.0/storageFolder`)
+2.  `ThumbnailTempFolder` - For storing thumbnails (default: `./bin/Debug/netcoreapp3.1/thumbnailTempFolder`)
+3.  `StorageFolder` - For the main photo directory (default: `./bin/Debug/netcoreapp3.1/storageFolder`)
 4.  `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported (default: `sqlite`)
-5.  `DatabaseConnection` - The connection-string to the database (default: `./bin/Debug/netcoreapp2.0/data.db`)
+5.  `DatabaseConnection` - The connection-string to the database (default: `./bin/Debug/netcoreapp3.1/data.db`)
 6.  `CameraTimeZone` - The timezone of the Camera, for example `Europe/Amsterdam` (defaults to your local timezone)
 ### Optional settings
 1.  `Structure` - The structure that will be used when you import files, has a default fallback.
@@ -89,42 +89,45 @@ The default behavior of .NET is to load everything first. To be sure that the ap
 ### Search Docs
 Advanced queries are supported by the basic search engine.
 
-| Search options   | example                            |                               |
-|------------------|------------------------------------|-------------------------------|
-| -tags            | test                               |                               |
-|                  | -tags="testtag"                    |                               |
-|                  | -test apple                        | Ignore the keyword test       |
-|                  | -Tags-"test"                       | Ignore the keyword test       |
-|                  | apple banana                       | search for apple or banana    |
-| -title           | -title="example"                   |                               |
-| -filepath        | -filepath="/path"                  | -inurl is the same            |
-| -filename        | -filename="file.jpg"               |                               |
-| -filehash        | -filehash=3DB75N7JJ6FDOPZY4YHGX4TL |                               |
-| -parentdirectory | -parentdirectory="/2019"           |                               |
-| -description     | -description="search"              |                               |
-| -imageformat     | -ImageFormat="jpg"                 |                               |
-|                  | -ImageFormat="tiff"                |                               |
-|                  | -ImageFormat="bmp"                 |                               |
-|                  | -ImageFormat="gif"                 |                               |
-|                  | -ImageFormat="png"                 |                               |
-|                  | -ImageFormat="xmp"                 |                               |
-|                  | -ImageFormat="gpx"                 |                               |
-| -datetime        | -datetime=1                        | search for yesterday          |
-|                  | -datetime>12 -datetime<2           | between 2 and 12 days ago     |
-|                  | -datetime=2020-01-01               | between 00:00:00 and 23:59:59 |
-|                  | -datetime=2020-01-01T14:35:29      |                               | 
-| -addtodatabase   | -addtodatabase=1                   | search for yesterday          |
-|                  | -addtodatabase>12 -addtodatabase<2 | between 2 and 12 days ago     |
-|                  | -addtodatabase=2020-01-01          | between 00:00:00 and 23:59:59 |
-|                  | -addtodatabase=2020-01-01T14:35:29 |                               | 
-| -lastedited      | -lastedited=1                      | search for yesterday          |
-|                  | -lastedited>12 -lastedited<2       | between 2 and 12 days ago     |
-|                  | -lastedited=2020-01-01             | between 00:00:00 and 23:59:59 |
-|                  | -lastedited=2020-01-01T14:35:29    |                               | 
-| -isdirectory     | -isdirectory=true                  |                               | 
-|                  | -isdirectory=false                 |                               | 
+__All text (not number or date) driven search queries use a contain search__
 
-        
+
+| Search options       | example                            | description                   |
+|----------------------|------------------------------------|-------------------------------|
+| __-tags__            | test                               | default option                |
+| -tags                | -tags="testtag"                    |                               |
+| -tags                | -test apple                        | Ignore the keyword test       |
+| -tags                | -Tags-"test"                       | Ignore the keyword test       |
+| -tags                | apple banana                       | search for apple or banana    |
+| __-title__           | -title="example"                   |                               |
+| __-filepath__        | -filepath="/path"                  | -inurl is the same            |
+| __-filename__        | -filename="file.jpg"               |                               |
+| __-filehash__        | -filehash=3DB75N7JJ6FDOPZY4YHGX4TL |                               |
+| __-parentdirectory__ | -parentdirectory="/2019"           |                               |
+| __-description__     | -description="search"              |                               |
+| __-imageformat__     | -ImageFormat="jpg"                 | include `jpeg`                |
+| -imageformat         | -ImageFormat="tiff"                | including `dng`               |
+| -imageformat         | -ImageFormat="bmp"                 |                               |
+| -imageformat         | -ImageFormat="gif"                 |                               |
+| -imageformat         | -ImageFormat="png"                 |                               |
+| -imageformat         | -ImageFormat="xmp"                 |                               |
+| -imageformat         | -ImageFormat="gpx"                 |                               |
+| __-datetime__        | -datetime=1                        | search for yesterday          |
+| -datetime            | -datetime>12 -datetime<2           | between 2 and 12 days ago     |
+| -datetime            | -datetime=2020-01-01               | between 00:00:00 and 23:59:59 |
+| -datetime            | -datetime=2020-01-01T14:35:29      | on this exact time            |
+| __-addtodatabase__   | -addtodatabase=1                   | search for yesterday          |
+| -addtodatabase       | -addtodatabase>12 -addtodatabase<2 | between 2 and 12 days ago     |
+| -addtodatabase       | -addtodatabase=2020-01-01          | between 00:00:00 and 23:59:59 |
+| -addtodatabase       | -addtodatabase=2020-01-01T14:35:29 | on this exact time            |
+| __-lastedited__      | -lastedited=1                      | search for yesterday          |
+| -lastedited          | -lastedited>12 -lastedited<2       | between 2 and 12 days ago     |
+| -lastedited          | -lastedited=2020-01-01             | between 00:00:00 and 23:59:59 |
+| -lastedited          | -lastedited=2020-01-01T14:35:29    | on this exact time            |
+| __-isdirectory__     | -isdirectory=true                  | search for folders            |
+| -isdirectory         | -isdirectory=false                 | search for items              |
+
+
 ### Rest API documentation
 Starsky has a Json restful API. Please read the documentation
 
@@ -143,5 +146,3 @@ This is the default location of the swagger documentation
 ```
 http://localhost:5000/swagger
 ```
-
-
