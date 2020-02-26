@@ -217,8 +217,8 @@ namespace starskycore.Helpers
         {
             if (comparedNames.Contains( nameof(FileIndexItem.Tags) ))
             {
-                command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags 
-                                                              + "\" -Keywords=\"" + updateModel.Tags + "\" ";
+	            command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags
+	                                                          + $" \" -Keywords=\"{updateModel.Tags}\""; // space before
             }
             return command;
         }
@@ -259,9 +259,8 @@ namespace starskycore.Helpers
             if (comparedNames.Contains( nameof(FileIndexItem.Description)    ))
             {
                 command += " -Caption-Abstract=\"" + updateModel.Description 
-                                                   + "\" -Description=\"" + updateModel.Description + "\" "
-                                                   + " \"-xmp:Description=\"" + updateModel.Description + "\"\"";
-
+                                                   + "\" -Description=\"" + updateModel.Description + "\""
+                                                   + $" \"-xmp-dc:description={updateModel.Description}\"";
             }
             return command;
         }
@@ -282,8 +281,9 @@ namespace starskycore.Helpers
 		    if (comparedNames.Contains(nameof(FileIndexItem.Title)))
 		    {
 			    command += " -ObjectName=\"" + updateModel.Title + "\"" 
-			               + " \"-title\"=" + "\"" + updateModel.Title  + "\" "
-			               + "\" -xmp:Title=\"" + updateModel.Title + "\"";
+			               + " \"-title\"=" + "\"" + updateModel.Title  + "\""
+						   + $" \"-xmp-dc:title={updateModel.Title}\"";
+
 		    }
 		    return command;
 	    }
