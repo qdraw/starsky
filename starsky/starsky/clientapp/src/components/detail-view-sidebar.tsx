@@ -43,6 +43,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   const MessageServerError = language.text("Er is iets mis met de input", "Something is wrong with the input");
   const MessageDeleted = language.text("Staat in de prullenmand", "Is in the trash");
   const MessageDeletedRestoreInstruction = language.text("'Zet terug uit prullenmand' om het item te bewerken", "'Restore from Trash' to edit the item");
+  const MessageCreationDate = language.text("Aanmaakdatum", "Creation date");
+  const MessageCreationDateUnknownTime = language.text("is op een onbekend moment", "is at an unknown time");
 
   let { state, dispatch } = useDetailViewContext();
   var history = useLocation();
@@ -221,13 +223,18 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       }} isOpen={true} /> : null}
 
     <div className="content--text">
-      {isValidDate(fileIndexItem.dateTime) ?
-        <button className="box" data-test="dateTime" onClick={() => setModalDatetimeOpen(true)}>
-          <div className="icon icon--right icon--edit" />
-          <div className="icon icon--date" />
+
+      <button className="box" disabled={!isFormEnabled} data-test="dateTime" onClick={() => setModalDatetimeOpen(true)}>
+        {isFormEnabled ? <div className="icon icon--right icon--edit" /> : null}
+        <div className="icon icon--date" />
+        {isValidDate(fileIndexItem.dateTime) ? <>
           <b>{parseDate(fileIndexItem.dateTime, settings.language)}</b>
-          <p>{parseTime(fileIndexItem.dateTime)}</p>
-        </button> : ""}
+          <p>{parseTime(fileIndexItem.dateTime)}</p></> : null}
+        {!isValidDate(fileIndexItem.dateTime) ? <>
+          <b>{MessageCreationDate}</b>
+          <p>{MessageCreationDateUnknownTime}</p>
+        </> : null}
+      </button>
 
       {isValidDate(fileIndexItem.lastEdited) ?
         <div className="box" data-test="lastEdited">

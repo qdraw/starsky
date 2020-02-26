@@ -53,6 +53,7 @@
   }
 }
 .content--text > button {
+  color: #000;
   background-color: transparent;
 }
 
@@ -74,6 +75,11 @@
   .content--text > a.box:hover {
     background-color: #263238;
   }
+}
+
+.content--text > button.box:disabled:hover {
+  background-color: transparent;
+  cursor: not-allowed;
 }
 
 .content--text {

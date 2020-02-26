@@ -40,7 +40,12 @@ namespace starskycore.Helpers
             return x * Math.PI / 180;
         }
 	    
-	    
+	    /// <summary>
+	    /// Convert 17.21.18S / DD°MM’SS.s” usage to double
+	    /// </summary>
+	    /// <param name="point"></param>
+	    /// <param name="refGps"></param>
+	    /// <returns></returns>
 	    public static double ConvertDegreeMinutesSecondsToDouble(string point, string refGps)
 	    {
 		    //Example: 17.21.18S
@@ -67,6 +72,12 @@ namespace starskycore.Helpers
 		    return (degrees + minutes + seconds) * multiplier;
 	    }
 
+	    /// <summary>
+	    /// Convert "5,55.840,E" to double
+	    /// </summary>
+	    /// <param name="point"></param>
+	    /// <param name="refGps"></param>
+	    /// <returns></returns>
 	    public static double ConvertDegreeMinutesToDouble(string point, string refGps)
 	    {
 		    // "5,55.840E"

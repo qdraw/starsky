@@ -367,8 +367,6 @@ namespace starskycore.Services
                 
         }
 
-
-
 	    /// <summary>
 	    /// Trim value (remove spaces)
 	    /// </summary>

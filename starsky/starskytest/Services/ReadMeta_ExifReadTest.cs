@@ -141,6 +141,31 @@ namespace starskytest.Services
              Assert.AreEqual(100, item.FocalLength);
          }
          
+         [TestMethod]
+         public void ExifRead_ReadExifFromPngFileTest()
+         {
+	         var newImage = CreateAnPng.Bytes;
+	         var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.png"},new List<byte[]>{newImage});
+	         
+	         // var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.png");
+	         var item = new ReadMetaExif(new StorageHostFullPathFilesystem()).ReadExifFromFile("/data/scripts/__starsky/01-dif/FF4D00-0.8.png");
+
+	         Assert.AreEqual(FileIndexItem.Color.None, item.ColorClass);
+	         Assert.AreEqual("description-orange", item.Description );
+	         Assert.AreEqual(false,item.IsDirectory );
+	         Assert.AreEqual("test, sion", item.Tags);
+	         Assert.AreEqual("title", item.Title);
+	         Assert.AreEqual(52.308205555500003, item.Latitude, 0.000001);
+	         Assert.AreEqual(6.1935555554999997, item.Longitude,  0.000001);
+	         Assert.AreEqual(2, item.ImageHeight);
+	         Assert.AreEqual(3,item.ImageWidth);
+	         Assert.AreEqual("Diepenveen", item.LocationCity);
+	         Assert.AreEqual( "Overijssel", item.LocationState);
+	         Assert.AreEqual( "Nederland",item.LocationCountry);
+	         Assert.AreEqual( 6,item.LocationAltitude);
+	         Assert.AreEqual(100, item.FocalLength);
+         }
+         
          
 
 

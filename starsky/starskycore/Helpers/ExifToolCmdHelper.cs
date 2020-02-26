@@ -259,7 +259,9 @@ namespace starskycore.Helpers
             if (comparedNames.Contains( nameof(FileIndexItem.Description)    ))
             {
                 command += " -Caption-Abstract=\"" + updateModel.Description 
-                                                   + "\" -Description=\"" + updateModel.Description + "\"";
+                                                   + "\" -Description=\"" + updateModel.Description + "\" "
+                                                   + " \"-xmp:Description=\"" + updateModel.Description + "\"\"";
+
             }
             return command;
         }
@@ -280,7 +282,8 @@ namespace starskycore.Helpers
 		    if (comparedNames.Contains(nameof(FileIndexItem.Title)))
 		    {
 			    command += " -ObjectName=\"" + updateModel.Title + "\"" 
-			               + " \"-title\"=" + "\"" + updateModel.Title  + "\"" ;
+			               + " \"-title\"=" + "\"" + updateModel.Title  + "\" "
+			               + "\" -xmp:Title=\"" + updateModel.Title + "\"";
 		    }
 		    return command;
 	    }
