@@ -181,7 +181,8 @@ namespace starskycore.Helpers
                     gpsAltitudeRef = "1";
                     gpsAltitude = "-" + (updateModel.LocationAltitude * -1).ToString(CultureInfo.InvariantCulture);
                 } 
-                command += " -GPSAltitude=\"" + gpsAltitude + "\" -gpsaltituderef#=\"" + gpsAltitudeRef + "\" ";
+                command += $" -GPSAltitude=\"{gpsAltitude}\" -gpsaltituderef#=\"{gpsAltitudeRef}\" " +
+                           $"-xmp-exif:GPSAltitude=\"{gpsAltitude}\" -xmp-exif:gpsaltituderef#=\"{gpsAltitudeRef}\" ";
             }
             return command;
         }
@@ -195,9 +196,11 @@ namespace starskycore.Helpers
 	        // CultureInfo.InvariantCulture is used for systems where comma is the default seperator
             if (comparedNames.Contains( nameof(FileIndexItem.Latitude) ))
             {
-                command += " -GPSLatitude=\"" + updateModel.Latitude.ToString(CultureInfo.InvariantCulture) 
-                                                              + "\" -GPSLatitudeRef=\"" 
-                                              + updateModel.Latitude.ToString(CultureInfo.InvariantCulture) + "\" ";
+	            var latitudeString = updateModel.Latitude.ToString(CultureInfo.InvariantCulture);
+	            command +=
+		            $" -GPSLatitude=\"{latitudeString}\" -GPSLatitudeRef=\"{latitudeString}\" "
+		            + $" -xmp-exif:GPSLatitude={latitudeString} "
+		            + $" -xmp-exif:GPSLatitudeRef={latitudeString} ";
             }
             return command;
         }
@@ -206,9 +209,11 @@ namespace starskycore.Helpers
         {
             if (comparedNames.Contains( nameof(FileIndexItem.Longitude)))
             {
-                command += " -GPSLongitude=\"" + updateModel.Longitude.ToString(CultureInfo.InvariantCulture) 
-                                              + "\" -GPSLongitudeRef=\"" 
-                                               + updateModel.Longitude.ToString(CultureInfo.InvariantCulture) + "\" ";
+	            var longitudeString = updateModel.Longitude.ToString(CultureInfo.InvariantCulture);
+	            command +=
+		            $" -GPSLongitude=\"{longitudeString}\" -GPSLongitudeRef=\"{longitudeString}\" "
+		            + $" -xmp-exif:GPSLongitude={longitudeString} "
+		            + $" -xmp-exif:GPSLongitudeRef={longitudeString} ";
             }
             return command;
         }
@@ -322,9 +327,10 @@ namespace starskycore.Helpers
 		    if ( comparedNames.Contains(nameof(FileIndexItem.DateTime)) &&
 		         updateModel.DateTime.Year > 2 )
 		    {
-			    var exifToolString = updateModel.DateTime.ToString("yyyy:MM:dd HH:mm:ss",
+			    var exifToolDatetimeString = updateModel.DateTime.ToString(
+				    "yyyy:MM:dd HH:mm:ss",
 				    CultureInfo.InvariantCulture);
-			    command += " -AllDates=\"" + exifToolString + "\" ";
+			    command += $" -AllDates=\"{exifToolDatetimeString}\" \"-xmp:datecreated={exifToolDatetimeString}\"";
 		    }
 		    
 		    return command;

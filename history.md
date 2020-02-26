@@ -17,7 +17,30 @@
 # version 0.1.17 - 2020-02-??
 - [x]  (feature) _Front-end_  Datetime editing in detailView
 - [x]  (feature) _Front-end_ change datetime layout
+- [x]  (feature) _Back-end_ tags XMP in file read/write support
+- [x]  (feature) _Back-end_ description XMP in file read/write support
+- [x]  (feature) _Back-end_ title XMP in file read/write support
+- [x]  (feature) _Back-end_ dateTime XMP in file read/write support
+- [x]  (feature) _Back-end_ latitude XMP in file read/write support
+- [x]  (feature) _Back-end_ longitude XMP in file read/write support
+
+# TODO ADD:
+# XMP read/write in file support for:
+locationAltitude	0
+locationCity	""
+locationState	""
+locationCountry	""
+aperture	0
+shutterSpeed	""
+isoSpeed	0
+software	null
+makeModel	""
+make	""
+model	""
+focalLength	0
+
 - []   (bug) _Front-end_ Readonly mode and modals __not implemented__
+
 
 # version 0.1.16 - 2020-02-23
 - [x]  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix

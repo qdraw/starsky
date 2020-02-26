@@ -77,7 +77,7 @@ namespace starskycore.Services
             {
                 //  exifItem.Tags
                 var tags = GetExifKeywords(exifItem);
-                if(tags != null) // null = is not the right tag or empty tag
+                if(!string.IsNullOrEmpty(tags)) // null = is not the right tag or empty tag
                 {
                     item.Tags = tags;
                 }
@@ -90,14 +90,14 @@ namespace starskycore.Services
                 
                 // [IPTC] Caption/Abstract
                 var caption = GetCaptionAbstract(exifItem);
-                if(caption != null) // null = is not the right tag or empty tag
+                if(!string.IsNullOrEmpty(caption)) // null = is not the right tag or empty tag
                 {
                     item.Description = caption;
                 }    
                 
                 // [IPTC] Object Name = Title
                 var title = GetObjectName(exifItem);
-                if(title != null) // null = is not the right tag or empty tag
+                if(!string.IsNullOrEmpty(title)) // null = is not the right tag or empty tag
                 {
                      item.Title = title;
                 }
@@ -287,6 +287,28 @@ namespace starskycore.Services
 
             }
         }
+	    
+
+	    /// <summary>
+	    /// Read "dc:subject" values from XMP
+	    /// </summary>
+	    /// <param name="exifItem">item</param>
+	    /// <returns></returns>
+	    public string GetXmpDataSubject(Directory exifItem) // 
+	    {
+		    if ( !( exifItem is XmpDirectory xmpDirectory ) || xmpDirectory.XmpMeta == null )
+			    return string.Empty;
+		    
+		    var tagsList = new HashSet<string>();
+		    foreach (var property in xmpDirectory.XmpMeta.Properties.Where(p => !string.IsNullOrEmpty(p.Value)))
+		    {
+			    if ( property.Path.StartsWith("dc:subject[") )
+			    {
+				    tagsList.Add(property.Value);
+			    }
+		    }
+		    return HashSetHelper.HashSetToString(tagsList);
+	    }
 
 	    public string GetXmpData(Directory exifItem, string propertyPath)
 	    {
@@ -301,10 +323,12 @@ namespace starskycore.Services
 		    return string.Empty;
 	    }
 
-        public string GetObjectName (MetadataExtractor.Directory exifItem)
+        public string GetObjectName (Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Object Name");
-            if (tCounts < 1) return null;
+            
+            // Xmp readings
+            if ( tCounts == 0 ) return GetXmpData(exifItem, "dc:title[1]");
             
             var caption = exifItem.Tags.FirstOrDefault(
                 p => p.DirectoryName == "IPTC" 
@@ -313,33 +337,35 @@ namespace starskycore.Services
         }
 
         
-        public string GetCaptionAbstract(MetadataExtractor.Directory exifItem)
+        public string GetCaptionAbstract(Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Caption/Abstract");
-            if (tCounts < 1) return null;
-            
+
+            // Xmp readings
+            if ( tCounts == 0 ) return GetXmpData(exifItem, "dc:description[1]");
+
             var caption = exifItem.Tags.FirstOrDefault(
-                p => p.DirectoryName == "IPTC" 
-                     && p.Name == "Caption/Abstract")?.Description;
+	            p => p.DirectoryName == "IPTC" 
+	                 && p.Name == "Caption/Abstract")?.Description;
             return caption;
         }
         
         public string GetExifKeywords(MetadataExtractor.Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Keywords");
-            if (tCounts >= 1)
-            {
-                var tags = exifItem.Tags.FirstOrDefault(
-                    p => p.DirectoryName == "IPTC" 
-                         && p.Name == "Keywords")?.Description;
-                if (!string.IsNullOrWhiteSpace(tags))
-                {
-                    tags = tags.Replace(";", ", ");
-                }
+            
+            if ( tCounts == 0 ) return GetXmpDataSubject(exifItem);
 
-                return tags;
+            var tags = exifItem.Tags.FirstOrDefault(
+                p => p.DirectoryName == "IPTC" 
+                     && p.Name == "Keywords")?.Description;
+            if (!string.IsNullOrWhiteSpace(tags))
+            {
+                tags = tags.Replace(";", ", ");
             }
-            return null;
+
+            return tags;
+
         }
 
         private string GetColorClassString(MetadataExtractor.Directory exifItem)
@@ -398,7 +424,11 @@ namespace starskycore.Services
             if (itemDateTime.Year != 1 || itemDateTime.Month != 1) return itemDateTime;
 
             var photoShopDateCreated = GetXmpData(exifItem, "photoshop:DateCreated");
-            DateTime.TryParseExact(photoShopDateCreated, "yyyy-MM-ddTHH:mm:sszzz", provider, DateTimeStyles.AdjustToUniversal, out itemDateTime);
+
+            if ( string.IsNullOrEmpty(photoShopDateCreated) ) return DateTime.MinValue;
+
+            // 1970-01-01T02:00:03 formated
+            DateTime.TryParseExact(photoShopDateCreated, "yyyy-MM-ddTHH:mm:ss", provider, DateTimeStyles.AdjustToUniversal, out itemDateTime);
 
             return itemDateTime;
         }
@@ -471,6 +501,15 @@ namespace starskycore.Services
             //    [GPS] GPS Altitude Ref = Below sea level
             //    [GPS] GPS Altitude = 2 metres
 
+            // +1
+            // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitude,1/1
+            // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitudeRef,0
+
+            // -10
+            // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitude,10/1
+            // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitudeRef,1
+
+            
             var altitudeString = string.Empty;
             var altitudeRef = string.Empty;
             
