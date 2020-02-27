@@ -36,7 +36,7 @@ namespace starskytest.Services
          public void ExifRead_GetObjectNameNull()
          {
              var t = new ReadMetaExif(null).GetObjectName(new MockDirectory());
-             Assert.AreEqual(t, null);
+             Assert.AreEqual( string.Empty,t);
          }
 
          [TestMethod]

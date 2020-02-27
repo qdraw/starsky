@@ -320,7 +320,7 @@ namespace starskycore.Services
 		    {
 			    if ( property.Path == propertyPath ) return property.Value;
 		    }
-		    return string.Empty;
+		    return null;
 	    }
 
         public string GetObjectName (Directory exifItem)
@@ -526,30 +526,30 @@ namespace starskycore.Services
                     continue;
                 }
                 
-                if ( !( exifItem is XmpDirectory xmpDirectory ) || xmpDirectory.XmpMeta == null )
-	                continue;
-                
-                // example:
-                // +1
-                // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitude,1/1
-                // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitudeRef,0
-
-                // -10
-                // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitude,10/1
-                // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitudeRef,1
-                
-                foreach (var property in xmpDirectory.XmpMeta.Properties.Where(p => !string.IsNullOrEmpty(p.Value)))
-                {
-	                switch ( property.Path )
-	                {
-		                case "exif:GPSAltitude":
-			                altitudeString = new MathFraction().Fraction( property.Value).ToString(CultureInfo.CurrentCulture);
-			                break;
-		                case "exif:GPSAltitudeRef":
-			                altitudeRef = property.Value == "1" ? "Below sea level" : string.Empty;
-			                break;
-	                }
-                }
+                // if ( !( exifItem is XmpDirectory xmpDirectory ) || xmpDirectory.XmpMeta == null )
+	               //  continue;
+                //
+                // // example:
+                // // +1
+                // // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitude,1/1
+                // // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitudeRef,0
+                //
+                // // -10
+                // // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitude,10/1
+                // // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitudeRef,1
+                //
+                // foreach (var property in xmpDirectory.XmpMeta.Properties.Where(p => !string.IsNullOrEmpty(p.Value)))
+                // {
+	               //  switch ( property.Path )
+	               //  {
+		              //   case "exif:GPSAltitude":
+			             //    altitudeString = new MathFraction().Fraction( property.Value).ToString(CultureInfo.CurrentCulture);
+			             //    break;
+		              //   case "exif:GPSAltitudeRef":
+			             //    altitudeRef = property.Value == "1" ? "Below sea level" : string.Empty;
+			             //    break;
+	               //  }
+                // }
             }
 
             if (string.IsNullOrWhiteSpace(altitudeString) ||
