@@ -267,7 +267,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         <a className="box" target="_blank" rel="noopener noreferrer" href={"https://www.openstreetmap.org/?mlat=" +
           fileIndexItem.latitude + "&mlon=" + fileIndexItem.longitude + "#map=16/" +
           fileIndexItem.latitude + "/" + fileIndexItem.longitude}>
-          {/* <div className="icon icon--right icon--edit" /> */}
           <div className="icon icon--location" />
           {fileIndexItem.locationCity && fileIndexItem.locationCountry ?
             <>
@@ -277,7 +276,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
               <b>{MessageNounUnknown}</b>
               <p>{MessageLocation}</p>
             </>}
-
         </a> : ""}
 
       {collections.map((item, index) => (

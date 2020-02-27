@@ -427,7 +427,7 @@ namespace starskycore.Services
 
             if ( string.IsNullOrEmpty(photoShopDateCreated) ) return DateTime.MinValue;
 
-            // 1970-01-01T02:00:03 formated
+            // 1970-01-01T02:00:03 formatted
             DateTime.TryParseExact(photoShopDateCreated, "yyyy-MM-ddTHH:mm:ss", provider, DateTimeStyles.AdjustToUniversal, out itemDateTime);
 
             return itemDateTime;
@@ -496,20 +496,11 @@ namespace starskycore.Services
 	        return Math.Floor(latitudeDegreeMinutes * 10000000000) / 10000000000; 
         }
         
-        private double GetGeoLocationAltitude(List<MetadataExtractor.Directory> allExifItems)
+        private double GetGeoLocationAltitude(List<Directory> allExifItems)
         {
             //    [GPS] GPS Altitude Ref = Below sea level
             //    [GPS] GPS Altitude = 2 metres
 
-            // +1
-            // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitude,1/1
-            // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitudeRef,0
-
-            // -10
-            // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitude,10/1
-            // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitudeRef,1
-
-            
             var altitudeString = string.Empty;
             var altitudeRef = string.Empty;
             
@@ -530,19 +521,45 @@ namespace starskycore.Services
 
                 if (altitudeLocal != null)
                 {
+	                // space metres
                     altitudeString = altitudeLocal.Replace(" metres",string.Empty);
-                    // space metres
+                    continue;
+                }
+                
+                if ( !( exifItem is XmpDirectory xmpDirectory ) || xmpDirectory.XmpMeta == null )
+	                continue;
+                
+                // example:
+                // +1
+                // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitude,1/1
+                // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitudeRef,0
+
+                // -10
+                // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitude,10/1
+                // XMP,http://ns.adobe.com/exif/1.0/,exif:GPSAltitudeRef,1
+                
+                foreach (var property in xmpDirectory.XmpMeta.Properties.Where(p => !string.IsNullOrEmpty(p.Value)))
+                {
+	                switch ( property.Path )
+	                {
+		                case "exif:GPSAltitude":
+			                altitudeString = new MathFraction().Fraction( property.Value).ToString(CultureInfo.CurrentCulture);
+			                break;
+		                case "exif:GPSAltitudeRef":
+			                altitudeRef = property.Value == "1" ? "Below sea level" : string.Empty;
+			                break;
+	                }
                 }
             }
 
             if (string.IsNullOrWhiteSpace(altitudeString) ||
                 (altitudeRef != "Below sea level" && altitudeRef != "Sea level")) return 0;
 
-            // this value is always an int
+            // this value is always an int but current culture formated
             double.TryParse(altitudeString, NumberStyles.Number, CultureInfo.CurrentCulture, out var altitude);
             
             if (altitudeRef == "Below sea level") altitude = altitude * -1;
-                
+
             return (int) altitude;
         }
         
@@ -582,8 +599,6 @@ namespace starskycore.Services
             
             return GetXmpGeoData(allExifItems, "exif:GPSLongitude");
         }
-
-        
 
         private int GetImageWidthHeightMaxCount(string dirName, List<MetadataExtractor.Directory> allExifItems)
         {
