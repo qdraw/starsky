@@ -14,6 +14,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void SearchWideDateTimeTest_non_exist()
 		{
+			//search?t=-MakeModel=iphone
 			new SearchService().SearchDirect("-non0exist=test");
 		}
 
