@@ -139,31 +139,33 @@ namespace starskytest.Services
              Assert.AreEqual( "Nederland",item.LocationCountry);
              Assert.AreEqual( 6,item.LocationAltitude);
              Assert.AreEqual(100, item.FocalLength);
+             Assert.AreEqual(new DateTime(2018,04,22,16,14,54), item.DateTime);
+
          }
          
          [TestMethod]
-         public void ExifRead_ReadExifFromPngFileTest()
+         public void ExifRead_ReadExif_FromPngInFileXMP_FileTest()
          {
 	         var newImage = CreateAnPng.Bytes;
 	         var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.png"},new List<byte[]>{newImage});
 	         
 	         var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.png");
-	         // var item = new ReadMetaExif(new StorageHostFullPathFilesystem()).ReadExifFromFile("/data/scripts/__starsky/01-dif/FF4D00-0.8.png");
 
-	         Assert.AreEqual(FileIndexItem.Color.None, item.ColorClass);
-	         Assert.AreEqual("description-orange3", item.Description );
+	         Assert.AreEqual(FileIndexItem.Color.SuperiorAlt, item.ColorClass);
+	         Assert.AreEqual("Description", item.Description );
 	         Assert.AreEqual(false,item.IsDirectory );
-	         Assert.AreEqual("keyword1, keyword2", item.Tags);
-	         Assert.AreEqual("object name1 ,t1", item.Title);
-	         Assert.AreEqual(45.56025, item.Latitude, 0.000001);
-	         Assert.AreEqual(-122.6610833334, item.Longitude,  0.000001);
+	         Assert.AreEqual("tags", item.Tags);
+	         Assert.AreEqual("title", item.Title);
+	         Assert.AreEqual(35.0379999999, item.Latitude, 0.000001);
+	         Assert.AreEqual(-81.0520000001, item.Longitude,  0.000001);
 	         Assert.AreEqual(1, item.ImageHeight);
 	         Assert.AreEqual(1,item.ImageWidth);
 	         Assert.AreEqual("City", item.LocationCity);
 	         Assert.AreEqual( "State", item.LocationState);
 	         Assert.AreEqual( "Country",item.LocationCountry);
-	         Assert.AreEqual( 0,item.LocationAltitude);
-	         Assert.AreEqual(0, item.FocalLength);
+	         Assert.AreEqual( 10,item.LocationAltitude);
+	         Assert.AreEqual(80, item.FocalLength);
+	         Assert.AreEqual(new DateTime(2022,06,12,10,45,31), item.DateTime);
          }
          
          

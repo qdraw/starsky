@@ -496,27 +496,57 @@ namespace starskycore.Models
 
 		/// <summary>
 		/// ColorClass enum, used to filter images
+		/// Display name: used in -xmp:Label
 		/// </summary>
 		public enum Color
         {
-            // Display name: used in -xmp:Label
-            [Display(Name = "Winner")]
+            /// <summary>
+            /// Purple
+            /// </summary>
+            [Display(Name = "Winner")] // <= Display, used in xmp label
             Winner = 1, // Paars - purple
+            /// <summary>
+            /// Red
+            /// </summary>
             [Display(Name = "Winner Alt")]
             WinnerAlt = 2, // rood - Red -
+            /// <summary>
+            /// Orange
+            /// </summary>
             [Display(Name = "Superior")]
             Superior = 3, // Oranje - orange
+            /// <summary>
+            /// Yellow
+            /// </summary>
             [Display(Name = "Superior Alt")]
             SuperiorAlt = 4, //Geel - yellow
+            /// <summary>
+            /// Green
+            /// </summary>
             [Display(Name = "Typical")]
             Typical = 5, // Groen - groen
+            /// <summary>
+            /// Turquoise
+            /// </summary>
             [Display(Name = "Typical Alt")]
             TypicalAlt = 6, // Turquoise
+            /// <summary>
+            /// Blue
+            /// </summary>
             [Display(Name = "Extras")]
             Extras = 7, // Blauw - blue
+            /// <summary>
+            /// Grey
+            /// </summary>
             [Display(Name = "")]
             Trash = 8, // grijs - Grey
+            /// <summary>
+            /// No color
+            /// </summary>
             None = 0, // donkergrijs Dark Grey
+            /// <summary>
+            /// Option not selected
+            /// </summary>
             DoNotChange = -1
         }
 
