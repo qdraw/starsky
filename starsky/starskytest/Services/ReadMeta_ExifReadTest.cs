@@ -141,7 +141,7 @@ namespace starskytest.Services
              Assert.AreEqual(100, item.FocalLength);
          }
          
-         // [TestMethod]
+         [TestMethod]
          public void ExifRead_ReadExifFromPngFileTest()
          {
 	         var newImage = CreateAnPng.Bytes;

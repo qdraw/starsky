@@ -27,18 +27,10 @@
 - [x]  (feature) _Back-end_ locationCity XMP in file read/write support
 - [x]  (feature) _Back-end_ locationState XMP in file read/write support
 - [x]  (feature) _Back-end_ locationCountry XMP in file read/write support
-
-# TODO ADD:
-# XMP read/write in file support for:
-aperture	0
-shutterSpeed	""
-isoSpeed	0
-software	null
-makeModel	""
-make	""
-model	""
-focalLength	0
-
+- [x]  (feature) _Back-end_ aperture XMP in file read/write support
+- [x]  (feature) _Back-end_ shutterSpeed XMP in file read/write support
+- [x]  (feature) _Back-end_ isoSpeed XMP in file read/write support
+- [x]  (feature) _Back-end_ focalLength XMP in file read/write support
 - []   (bug) _Front-end_ Readonly mode and modals __not implemented__
 
 

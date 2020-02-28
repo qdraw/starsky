@@ -312,12 +312,9 @@ namespace starskycore.Services
 		    // for xmp notes
 		    if ( !( exifItem is XmpDirectory xmpDirectory ) || xmpDirectory.XmpMeta == null )
 			    return string.Empty;
-		    
-		    foreach (var property in xmpDirectory.XmpMeta.Properties.Where(p => !string.IsNullOrEmpty(p.Value)))
-		    {
-			    if ( property.Path == propertyPath ) return property.Value;
-		    }
-		    return null;
+
+		    return ( from property in xmpDirectory.XmpMeta.Properties.Where(p => !string.IsNullOrEmpty(p.Value)) 
+			    where property.Path == propertyPath select property.Value ).FirstOrDefault();
 	    }
 
         public string GetObjectName (Directory exifItem)
@@ -686,25 +683,29 @@ namespace starskycore.Services
         /// <returns></returns>
         public double GetFocalLength(Directory exifItem)
         {
-	        var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Focal Length");
-	        if (tCounts < 1) return 0d;
-            
 	        var focalLengthString = exifItem.Tags.FirstOrDefault(
 		        p => p.DirectoryName == "Exif SubIFD" 
 		             && p.Name == "Focal Length")?.Description;
-
+	        
+	        // XMP,http://ns.adobe.com/exif/1.0/,exif:FocalLength,11/1
+	        var focalLengthXmp = GetXmpData(exifItem, "exif:FocalLength");
+	        if (!string.IsNullOrEmpty(focalLengthXmp))
+	        {
+		        return new MathFraction().Fraction(focalLengthXmp);
+	        }
+	        
 	        if ( string.IsNullOrWhiteSpace(focalLengthString) ) return 0d;
 
 	        focalLengthString = focalLengthString.Replace(" mm", string.Empty);
 	        
-	        // Note: apertureString: (Dutch) 2,2 or (English) 2.2 based CultureInfo.CurrentCulture
+	        // Note: focalLengthString: (Dutch) 2,2 or (English) 2.2 based CultureInfo.CurrentCulture
 	        float.TryParse(focalLengthString, NumberStyles.Number, CultureInfo.CurrentCulture, out var focalLength);
 	        
 	        return focalLength;
         }
 
         
-	    public double GetAperture(MetadataExtractor.Directory exifItem)
+	    public double GetAperture(Directory exifItem)
 	    {
 		    var apertureString = string.Empty;
 
@@ -720,10 +721,19 @@ namespace starskycore.Services
 			    apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "F-Number")?.Description;
 		    }
 		    
+		    // XMP,http://ns.adobe.com/exif/1.0/,exif:FNumber,9/1
+		    var fNumberXmp = GetXmpData(exifItem, "exif:FNumber");
+		    if (!string.IsNullOrEmpty(fNumberXmp))
+		    {
+			    return new MathFraction().Fraction(fNumberXmp);
+		    }
+		    
 		    if(apertureString == null) return 0d; 
+		    
 		    apertureString = apertureString.Replace("f/", string.Empty);
 		    // Note: apertureString: (Dutch) 2,2 or (English) 2.2 based CultureInfo.CurrentCulture
 		    float.TryParse(apertureString, NumberStyles.Number, CultureInfo.CurrentCulture, out var aperture);
+		    
 		    return aperture;
 		    
 	    }
@@ -744,6 +754,13 @@ namespace starskycore.Services
 			    shutterSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Exposure Time")?.Description;
 		    }
 		    
+		    // XMP,http://ns.adobe.com/exif/1.0/,exif:ExposureTime,1/20
+		    var exposureTimeXmp = GetXmpData(exifItem, "exif:ExposureTime");
+		    if (!string.IsNullOrEmpty(exposureTimeXmp) && exposureTimeXmp.Length <= 20)
+		    {
+			    return exposureTimeXmp;
+		    }
+		    
 		    if(shutterSpeedString == null) return string.Empty; 
 		    // the database has a 20 char limit
 		    if(shutterSpeedString.Length >= 20) return string.Empty;
@@ -761,6 +778,15 @@ namespace starskycore.Services
 		    if (dtCounts >= 1)
 		    {
 			    isoSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "ISO Speed Ratings")?.Description;
+		    }
+		    
+		    // XMP,http://ns.adobe.com/exif/1.0/,exif:ISOSpeedRatings,
+		    // XMP,,exif:ISOSpeedRatings[1],101
+		    // XMP,,exif:ISOSpeedRatings[2],101
+		    var isoSpeedXmp = GetXmpData(exifItem, "exif:ISOSpeedRatings[1]");
+		    if (!string.IsNullOrEmpty(isoSpeedXmp))
+		    {
+			    isoSpeedString = isoSpeedXmp;
 		    }
 		    
 		    if(isoSpeedString == null) return 0; 

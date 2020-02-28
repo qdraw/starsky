@@ -112,7 +112,10 @@ namespace starskycore.Helpers
 		    command = UpdateIsoSpeedCommand(command, comparedNames, updateModel);
 		    command = UpdateApertureCommand(command, comparedNames, updateModel);
 		    command = UpdateShutterSpeedCommand(command, comparedNames, updateModel);
-			command = UpdateMakeModelCommand(command, comparedNames, updateModel);
+			
+		    command = UpdateFocalLengthCommand(command, comparedNames, updateModel);
+
+		    command = UpdateMakeModelCommand(command, comparedNames, updateModel);
 		    
 		    if ( command == initCommand ) return string.Empty;
 		    
@@ -341,7 +344,7 @@ namespace starskycore.Helpers
 	    {
 		    if ( comparedNames.Contains(nameof(FileIndexItem.IsoSpeed)) )
 		    {
-			    command += " -ISO=\"" + updateModel.IsoSpeed + "\"";
+			    command += $" -ISO=\"{updateModel.IsoSpeed}\" \"-xmp:ISO={updateModel.IsoSpeed}\" ";
 		    }
 
 		    return command;
@@ -355,7 +358,7 @@ namespace starskycore.Helpers
 		    if ( !comparedNames.Contains(nameof(FileIndexItem.Aperture)) ) return command;
 		    
 		    var aperture = updateModel.Aperture.ToString(CultureInfo.InvariantCulture);
-		    command += $" -FNumber=\"{aperture}\" \"-xmp:FNumber={aperture}\"";
+		    command += $" -FNumber=\"{aperture}\" \"-xmp:FNumber={aperture}\" ";
 		    return command;
 	    }
 
@@ -365,10 +368,9 @@ namespace starskycore.Helpers
 	    {
 		    // // -ExposureTime=1/31
 		    // Warning: Sorry, ShutterSpeed is not writable => ExposureTime is writable
-		    if ( comparedNames.Contains(nameof(FileIndexItem.ShutterSpeed)) )
-		    {
-			    command += " -ExposureTime=\"" + updateModel.ShutterSpeed + "\"";
-		    }
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.ShutterSpeed)) ) return command;
+		    
+		    command += $" -ExposureTime=\"{updateModel.ShutterSpeed}\" \"-xmp:ExposureTime={updateModel.ShutterSpeed}\" ";
 
 		    return command;
 	    }
@@ -388,6 +390,15 @@ namespace starskycore.Helpers
 	    }
 
 
+	    private string UpdateFocalLengthCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+	    {
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.FocalLength)) ) return command;
+
+		    var focalLength = $"{updateModel.FocalLength} mm";
+		    command += $" -FocalLength=\"{focalLength}\" \"-xmp:FocalLength={focalLength}\" ";
+
+		    return command;
+	    }
 
     }
 }
