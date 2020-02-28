@@ -12,6 +12,12 @@ namespace starskytest.Services
 	public class SearchWideDateTimeTest
 	{
 		[TestMethod]
+		public void SearchWideDateTimeTest_non_exist()
+		{
+			new SearchService().SearchDirect("-non0exist=test");
+		}
+
+		[TestMethod]
 		public void SearchWideDateTimeTest_LastEdited_Equal()
 		{
 			var inputModel = new SearchViewModel();
