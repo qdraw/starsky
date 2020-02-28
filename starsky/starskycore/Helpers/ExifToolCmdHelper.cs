@@ -351,10 +351,11 @@ namespace starskycore.Helpers
 		    FileIndexItem updateModel)
 	    {
 		    // Warning: Sorry, Aperture is not writable => FNumber is writable
-		    if ( comparedNames.Contains(nameof(FileIndexItem.Aperture)) )
-		    {
-			    command += " -FNumber=\"" + updateModel.Aperture.ToString(CultureInfo.InvariantCulture) + "\"";
-		    }
+		    // XMP,http://ns.adobe.com/exif/1.0/,exif:FNumber,9/1
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.Aperture)) ) return command;
+		    
+		    var aperture = updateModel.Aperture.ToString(CultureInfo.InvariantCulture);
+		    command += $" -FNumber=\"{aperture}\" \"-xmp:FNumber={aperture}\"";
 		    return command;
 	    }
 
@@ -377,12 +378,11 @@ namespace starskycore.Helpers
 		    FileIndexItem updateModel)
 	    {
 		    // Make and Model are not writable so those never exist in this list
-		    if ( comparedNames.Contains(nameof(FileIndexItem.MakeModel)) )
-		    {
-			    var make = updateModel.Make;
-			    var model = updateModel.Model;
-			    command += " -make=\"" + make + "\"" + " -model=\"" + model + "\"";
-		    }
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.MakeModel)) ) return command;
+		    
+		    var make = updateModel.Make;
+		    var model = updateModel.Model;
+		    command += " -make=\"" + make + "\"" + " -model=\"" + model + "\"";
 
 		    return command;
 	    }

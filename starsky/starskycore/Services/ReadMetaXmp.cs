@@ -303,7 +303,6 @@ namespace starskycore.Services
 	            var aperture = GetContentNameSpace(property, "exif:FNumber");
 	            if (aperture != null) item.Aperture =  new MathFraction().Fraction(aperture);
 	            
-	            
 	            // Path=tiff:Make Namespace=http://ns.adobe.com/tiff/1.0/ Value=SONY
 	            var make = GetContentNameSpace(property, "tiff:Make");
 	            if (make != null) item.SetMakeModel(make,0);
