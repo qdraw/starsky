@@ -112,7 +112,10 @@ namespace starskycore.Helpers
 		    command = UpdateIsoSpeedCommand(command, comparedNames, updateModel);
 		    command = UpdateApertureCommand(command, comparedNames, updateModel);
 		    command = UpdateShutterSpeedCommand(command, comparedNames, updateModel);
-			command = UpdateMakeModelCommand(command, comparedNames, updateModel);
+			
+		    command = UpdateFocalLengthCommand(command, comparedNames, updateModel);
+
+		    command = UpdateMakeModelCommand(command, comparedNames, updateModel);
 		    
 		    if ( command == initCommand ) return string.Empty;
 		    
@@ -181,7 +184,8 @@ namespace starskycore.Helpers
                     gpsAltitudeRef = "1";
                     gpsAltitude = "-" + (updateModel.LocationAltitude * -1).ToString(CultureInfo.InvariantCulture);
                 } 
-                command += " -GPSAltitude=\"" + gpsAltitude + "\" -gpsaltituderef#=\"" + gpsAltitudeRef + "\" ";
+                command += $" -GPSAltitude=\"{gpsAltitude}\" -gpsaltituderef#=\"{gpsAltitudeRef}\" " +
+                           $"-xmp-exif:GPSAltitude=\"{gpsAltitude}\" -xmp-exif:gpsaltituderef#=\"{gpsAltitudeRef}\" ";
             }
             return command;
         }
@@ -195,9 +199,11 @@ namespace starskycore.Helpers
 	        // CultureInfo.InvariantCulture is used for systems where comma is the default seperator
             if (comparedNames.Contains( nameof(FileIndexItem.Latitude) ))
             {
-                command += " -GPSLatitude=\"" + updateModel.Latitude.ToString(CultureInfo.InvariantCulture) 
-                                                              + "\" -GPSLatitudeRef=\"" 
-                                              + updateModel.Latitude.ToString(CultureInfo.InvariantCulture) + "\" ";
+	            var latitudeString = updateModel.Latitude.ToString(CultureInfo.InvariantCulture);
+	            command +=
+		            $" -GPSLatitude=\"{latitudeString}\" -GPSLatitudeRef=\"{latitudeString}\" "
+		            + $" -xmp-exif:GPSLatitude={latitudeString} "
+		            + $" -xmp-exif:GPSLatitudeRef={latitudeString} ";
             }
             return command;
         }
@@ -206,9 +212,11 @@ namespace starskycore.Helpers
         {
             if (comparedNames.Contains( nameof(FileIndexItem.Longitude)))
             {
-                command += " -GPSLongitude=\"" + updateModel.Longitude.ToString(CultureInfo.InvariantCulture) 
-                                              + "\" -GPSLongitudeRef=\"" 
-                                               + updateModel.Longitude.ToString(CultureInfo.InvariantCulture) + "\" ";
+	            var longitudeString = updateModel.Longitude.ToString(CultureInfo.InvariantCulture);
+	            command +=
+		            $" -GPSLongitude=\"{longitudeString}\" -GPSLongitudeRef=\"{longitudeString}\" "
+		            + $" -xmp-exif:GPSLongitude={longitudeString} "
+		            + $" -xmp-exif:GPSLongitudeRef={longitudeString} ";
             }
             return command;
         }
@@ -217,8 +225,8 @@ namespace starskycore.Helpers
         {
             if (comparedNames.Contains( nameof(FileIndexItem.Tags) ))
             {
-                command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags 
-                                                              + "\" -Keywords=\"" + updateModel.Tags + "\" ";
+	            command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags
+	                                                          + $" \" -Keywords=\"{updateModel.Tags}\""; // space before
             }
             return command;
         }
@@ -259,7 +267,8 @@ namespace starskycore.Helpers
             if (comparedNames.Contains( nameof(FileIndexItem.Description)    ))
             {
                 command += " -Caption-Abstract=\"" + updateModel.Description 
-                                                   + "\" -Description=\"" + updateModel.Description + "\"";
+                                                   + "\" -Description=\"" + updateModel.Description + "\""
+                                                   + $" \"-xmp-dc:description={updateModel.Description}\"";
             }
             return command;
         }
@@ -280,7 +289,9 @@ namespace starskycore.Helpers
 		    if (comparedNames.Contains(nameof(FileIndexItem.Title)))
 		    {
 			    command += " -ObjectName=\"" + updateModel.Title + "\"" 
-			               + " \"-title\"=" + "\"" + updateModel.Title  + "\"" ;
+			               + " \"-title\"=" + "\"" + updateModel.Title  + "\""
+						   + $" \"-xmp-dc:title={updateModel.Title}\"";
+
 		    }
 		    return command;
 	    }
@@ -319,9 +330,10 @@ namespace starskycore.Helpers
 		    if ( comparedNames.Contains(nameof(FileIndexItem.DateTime)) &&
 		         updateModel.DateTime.Year > 2 )
 		    {
-			    var exifToolString = updateModel.DateTime.ToString("yyyy:MM:dd HH:mm:ss",
+			    var exifToolDatetimeString = updateModel.DateTime.ToString(
+				    "yyyy:MM:dd HH:mm:ss",
 				    CultureInfo.InvariantCulture);
-			    command += " -AllDates=\"" + exifToolString + "\" ";
+			    command += $" -AllDates=\"{exifToolDatetimeString}\" \"-xmp:datecreated={exifToolDatetimeString}\"";
 		    }
 		    
 		    return command;
@@ -332,7 +344,7 @@ namespace starskycore.Helpers
 	    {
 		    if ( comparedNames.Contains(nameof(FileIndexItem.IsoSpeed)) )
 		    {
-			    command += " -ISO=\"" + updateModel.IsoSpeed + "\"";
+			    command += $" -ISO=\"{updateModel.IsoSpeed}\" \"-xmp:ISO={updateModel.IsoSpeed}\" ";
 		    }
 
 		    return command;
@@ -342,10 +354,11 @@ namespace starskycore.Helpers
 		    FileIndexItem updateModel)
 	    {
 		    // Warning: Sorry, Aperture is not writable => FNumber is writable
-		    if ( comparedNames.Contains(nameof(FileIndexItem.Aperture)) )
-		    {
-			    command += " -FNumber=\"" + updateModel.Aperture.ToString(CultureInfo.InvariantCulture) + "\"";
-		    }
+		    // XMP,http://ns.adobe.com/exif/1.0/,exif:FNumber,9/1
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.Aperture)) ) return command;
+		    
+		    var aperture = updateModel.Aperture.ToString(CultureInfo.InvariantCulture);
+		    command += $" -FNumber=\"{aperture}\" \"-xmp:FNumber={aperture}\" ";
 		    return command;
 	    }
 
@@ -355,10 +368,9 @@ namespace starskycore.Helpers
 	    {
 		    // // -ExposureTime=1/31
 		    // Warning: Sorry, ShutterSpeed is not writable => ExposureTime is writable
-		    if ( comparedNames.Contains(nameof(FileIndexItem.ShutterSpeed)) )
-		    {
-			    command += " -ExposureTime=\"" + updateModel.ShutterSpeed + "\"";
-		    }
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.ShutterSpeed)) ) return command;
+		    
+		    command += $" -ExposureTime=\"{updateModel.ShutterSpeed}\" \"-xmp:ExposureTime={updateModel.ShutterSpeed}\" ";
 
 		    return command;
 	    }
@@ -368,17 +380,25 @@ namespace starskycore.Helpers
 		    FileIndexItem updateModel)
 	    {
 		    // Make and Model are not writable so those never exist in this list
-		    if ( comparedNames.Contains(nameof(FileIndexItem.MakeModel)) )
-		    {
-			    var make = updateModel.Make;
-			    var model = updateModel.Model;
-			    command += " -make=\"" + make + "\"" + " -model=\"" + model + "\"";
-		    }
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.MakeModel)) ) return command;
+		    
+		    var make = updateModel.Make;
+		    var model = updateModel.Model;
+		    command += " -make=\"" + make + "\"" + " -model=\"" + model + "\"";
 
 		    return command;
 	    }
 
 
+	    private string UpdateFocalLengthCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+	    {
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.FocalLength)) ) return command;
+
+		    var focalLength = $"{updateModel.FocalLength} mm";
+		    command += $" -FocalLength=\"{focalLength}\" \"-xmp:FocalLength={focalLength}\" ";
+
+		    return command;
+	    }
 
     }
 }

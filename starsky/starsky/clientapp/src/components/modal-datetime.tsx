@@ -117,7 +117,7 @@ const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
             warning={false}>
             {hour}
           </FormControl>
-          &nbsp;:&nbsp;
+          <b>&nbsp;:&nbsp;</b>
           <FormControl name="minute"
             maxlength={2}
             onBlur={e => { setMinute(Number(e.target.textContent)) }}
@@ -126,7 +126,7 @@ const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
             warning={false}>
             {minute}
           </FormControl>
-          &nbsp;:&nbsp;
+          <b>&nbsp;:&nbsp;</b>
           <FormControl name="sec"
             maxlength={2}
             onBlur={e => { setSeconds(Number(e.target.textContent)) }}

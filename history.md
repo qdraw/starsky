@@ -15,9 +15,24 @@
 - []  (feature) Creating thumbnails from Web Interface (including status)
 
 # version 0.1.17 - 2020-02-??
-- [x]  (feature) _Front-end_  Datetime editing in detailView
-- [x]  (feature) _Front-end_ change datetime layout
+- [x]  (feature) _Front-end_ DateTime editing in detailView
+- [x]  (feature) _Front-end_ change DateTime layout
+- [x]  (feature) _Back-end_ tags XMP in file read/write support
+- [x]  (feature) _Back-end_ description XMP in file read/write support
+- [x]  (feature) _Back-end_ title XMP in file read/write support
+- [x]  (feature) _Back-end_ dateTime XMP in file read/write support
+- [x]  (feature) _Back-end_ latitude XMP in file read/write support
+- [x]  (feature) _Back-end_ longitude XMP in file read/write support
+- [x]  (feature) _Back-end_ locationAltitude XMP in file read/write support
+- [x]  (feature) _Back-end_ locationCity XMP in file read/write support
+- [x]  (feature) _Back-end_ locationState XMP in file read/write support
+- [x]  (feature) _Back-end_ locationCountry XMP in file read/write support
+- [x]  (feature) _Back-end_ aperture XMP in file read/write support
+- [x]  (feature) _Back-end_ shutterSpeed XMP in file read/write support
+- [x]  (feature) _Back-end_ isoSpeed XMP in file read/write support
+- [x]  (feature) _Back-end_ focalLength XMP in file read/write support
 - []   (bug) _Front-end_ Readonly mode and modals __not implemented__
+
 
 # version 0.1.16 - 2020-02-23
 - [x]  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix

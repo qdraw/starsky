@@ -18,7 +18,6 @@ namespace starskycore.Services
 			_iStorage = iStorage;
 		}
 		
-		
         public FileIndexItem XmpGetSidecarFile(FileIndexItem databaseItem)
         {
 	        if(databaseItem == null) databaseItem = new FileIndexItem();
@@ -179,7 +178,7 @@ namespace starskycore.Services
             if(gpsAltitude == null || gpsAltitudeRef == null) return;
             if(!gpsAltitude.Contains("/")) return;
 
-			var locationAltitude = fraction(gpsAltitude);
+			var locationAltitude = new MathFraction().Fraction(gpsAltitude);
 	        if(Math.Abs(locationAltitude) < 0) return;
 	        item.LocationAltitude = locationAltitude;
 	        
@@ -187,14 +186,7 @@ namespace starskycore.Services
             if (gpsAltitudeRef == "1") item.LocationAltitude = item.LocationAltitude * -1;
         }
 
-	    private double fraction(string gpsAltitude)
-	    {
-		    var gpsAltitudeValues = gpsAltitude.Split("/".ToCharArray());
-		    if(gpsAltitudeValues.Length != 2) return 0f;
-		    var numerator = double.Parse(gpsAltitudeValues[0], CultureInfo.InvariantCulture);
-		    var denominator = double.Parse(gpsAltitudeValues[1], CultureInfo.InvariantCulture);
-		    return numerator / denominator;
-	    }
+
 
 
 	    /// <summary>
@@ -309,8 +301,7 @@ namespace starskycore.Services
 	            
 	            // exif:FNumber http://ns.adobe.com/exif/1.0/
 	            var aperture = GetContentNameSpace(property, "exif:FNumber");
-	            if (aperture != null) item.Aperture = fraction(aperture);
-	            
+	            if (aperture != null) item.Aperture =  new MathFraction().Fraction(aperture);
 	            
 	            // Path=tiff:Make Namespace=http://ns.adobe.com/tiff/1.0/ Value=SONY
 	            var make = GetContentNameSpace(property, "tiff:Make");
@@ -323,7 +314,7 @@ namespace starskycore.Services
 				// Path=exif:FocalLength Namespace=http://ns.adobe.com/exif/1.0/ Value=200/1
 				// Path=exif:FocalLength Namespace=http://ns.adobe.com/exif/1.0/ Value=18/1
 				var focalLength = GetContentNameSpace(property, "exif:FocalLength");
-				if ( focalLength != null ) item.FocalLength = fraction(focalLength);
+				if ( focalLength != null ) item.FocalLength =  new MathFraction().Fraction(focalLength);
 	            
 				// Path=xmp:CreatorTool Namespace=http://ns.adobe.com/xap/1.0/ Value=SLT-A58 v1.00
 				var software = GetContentNameSpace(property, "xmp:CreatorTool");
