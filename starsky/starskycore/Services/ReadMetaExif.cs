@@ -264,8 +264,11 @@ namespace starskycore.Services
 	    }
 
 
-	    private static void DisplayAllExif(IEnumerable<MetadataExtractor.Directory> allExifItems)
+	    private static void DisplayAllExif(IEnumerable<Directory> allExifItems)
         {
+	        if(allExifItems.Any()) return;
+	        // dont display the following code
+	        
             foreach (var exifItem in allExifItems) {
                 foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
                 // for xmp notes
@@ -274,12 +277,6 @@ namespace starskycore.Services
 	                foreach (var property in xmpDirectory.XmpMeta.Properties.Where(p => !string.IsNullOrEmpty(p.Path)))
 	                {
 		                Console.WriteLine($"{exifItem.Name},{property.Namespace},{property.Path},{property.Value}");
-		                // XMPhttp://ns.adobe.com/exif/1.0/,exif:GPSLatitude,45,33.615N
-		                // XMPhttp://ns.adobe.com/exif/1.0/,exif:GPSLongitude,122,39.665W
-		                // XMPhttp://ns.camerabits.com/photomechanic/1.0/,photomechanic:ColorClass,0
-		                // XMPhttp://ns.camerabits.com/photomechanic/1.0/,photomechanic:PMVersion,PM5
-		                // XMPhttp://ns.camerabits.com/photomechanic/1.0/,photomechanic:Prefs,0:0:0:-00001
-		                // XMPhttp://ns.camerabits.com/photomechanic/1.0/,photomechanic:Tagged,False
 	                }
                 }
             }
@@ -789,7 +786,6 @@ namespace starskycore.Services
 			    isoSpeedString = isoSpeedXmp;
 		    }
 		    
-		    if(isoSpeedString == null) return 0; 
 		    int.TryParse(isoSpeedString, NumberStyles.Number, CultureInfo.InvariantCulture, out var isoSpeed);
 		    return isoSpeed;
 	    }
