@@ -56,6 +56,7 @@ namespace starskytest.Services
                     Title = "Schiphol",
 					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
 	                DateTime = new DateTime(2014,1,1,1,1,1),
+	                MakeModel = "Apple|iPhone SE|"
                 });
             }
 
@@ -247,7 +248,30 @@ namespace starskytest.Services
             InsertSearchData();
             Assert.AreEqual(1, _search.Search("-title:Schiphol").SearchCount);
         }
-           
+        
+        [TestMethod]
+        public void SearchService_Make_Search()
+        {
+	        InsertSearchData();
+	        Assert.AreEqual(1, _search.Search("-Make:Apple").SearchCount);
+	        // schipholairplane.jpg
+        }
+
+        [TestMethod]
+        public void SearchService_Make_SearchNonExist()
+        {
+	        InsertSearchData();
+	        Assert.AreEqual(0, _search.Search("-Make:SE").SearchCount);
+	        // NOT schipholairplane.jpg
+        }
+        
+        [TestMethod]
+        public void SearchService_Model_Search()
+        {
+	        InsertSearchData();
+	        Assert.AreEqual(1, _search.Search("-Model:SE").SearchCount);
+	        // schipholairplane.jpg
+        }
         
         [TestMethod]
         public void SearchService_NotQueryCityloop240()

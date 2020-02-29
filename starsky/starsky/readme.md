@@ -126,7 +126,8 @@ __All text (not number or date) driven search queries use a contain search__
 | -lastedited          | -lastedited=2020-01-01T14:35:29    | on this exact time            |
 | __-isdirectory__     | -isdirectory=true                  | search for folders            |
 | -isdirectory         | -isdirectory=false                 | search for items              |
-
+| __-make__            | -make=Apple                        | brand name of the camera      |
+| __-model__           | -model="iPhone SE"                 | search for camera model       |
 
 ### Rest API documentation
 Starsky has a Json restful API. Please read the documentation

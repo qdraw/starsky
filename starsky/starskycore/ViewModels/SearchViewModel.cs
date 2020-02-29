@@ -77,12 +77,10 @@ namespace starskycore.ViewModels
 	    /// </summary>
         public enum SearchInTypes
         {
-            [Description("value 3")]
-            // https://www.codementor.io/cerkit/giving-an-enum-a-string-value-using-the-description-attribute-6b4fwdle0
-            filepath = 0,
-            filename = 1,
-            parentdirectory = 2,
-            tags = 3,
+	        tags = 0,
+	        filepath = 1,
+            filename = 2,
+            parentdirectory = 3,
             description = 4,
             title = 5,
             datetime = 6,
@@ -90,7 +88,9 @@ namespace starskycore.ViewModels
 	        filehash = 8,
 	        isdirectory = 9,
 	        imageformat = 10,
-	        lastedited = 11
+	        lastedited = 11,
+	        make,
+	        model
         }
 
         

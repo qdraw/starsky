@@ -31,6 +31,7 @@
 - [x]  (feature) _Back-end_ shutterSpeed XMP in file read/write support
 - [x]  (feature) _Back-end_ isoSpeed XMP in file read/write support
 - [x]  (feature) _Back-end_ focalLength XMP in file read/write support
+- [x]  (bugfix) _Back-end_ search fix bug where Make/Model is giving a Exception (fixed)
 - []   (bug) _Front-end_ Readonly mode and modals __not implemented__
 
 

@@ -164,8 +164,7 @@ namespace starskycore.Services
 		    // .AsNoTracking() => never change data to update
 		    for ( var i = 0; i < model.SearchIn.Count; i++ )
 		    {
-			    var searchInType = ( SearchViewModel.SearchInTypes )
-				    Enum.Parse(typeof(SearchViewModel.SearchInTypes), model.SearchIn[i].ToLowerInvariant());
+				Enum.TryParse<SearchViewModel.SearchInTypes>(model.SearchIn[i].ToLowerInvariant(), true, out var searchInType);				    
 
 			    if ( model.SearchForOptions[i] == SearchViewModel.SearchForOptionType.Not )
 			    {
@@ -201,6 +200,16 @@ namespace starskycore.Services
 					    var title = model.SearchFor[i];
 					    predicates.Add(x => x.Title.ToLower().Contains(title));
 					    break;
+				    case SearchViewModel.SearchInTypes.make:
+					    // is in the database one field => will be filtered in narrowSearch
+					    var make = model.SearchFor[i];
+					    predicates.Add(x => x.MakeModel.ToLower().Contains(make));
+					    break;
+				    case SearchViewModel.SearchInTypes.model:
+					    // is in the database one field => will be filtered in narrowSearch
+					    var modelMake = model.SearchFor[i];
+					    predicates.Add(x => x.MakeModel.ToLower().Contains(modelMake));
+					    break;
 				    case SearchViewModel.SearchInTypes.filehash:
 					    var fileHash = model.SearchFor[i];
 					    predicates.Add(x => x.FileHash != null && x.FileHash.ToLower().Contains(fileHash) );
@@ -221,11 +230,10 @@ namespace starskycore.Services
 					    predicates.Add(new SearchWideDateTime().WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.DateTime));
 					    break;
 				    case SearchViewModel.SearchInTypes.tags:
+				    default:
 					    var tags = model.SearchFor[i];
 					    predicates.Add(x => x.Tags.ToLower().Contains(tags));
 					    break;
-				    default:
-					    throw new ArgumentOutOfRangeException("searchInType is not added");
 			    }
 		    }
 		    
