@@ -8,7 +8,6 @@ using MetadataExtractor.Formats.Xmp;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
-using Directory = MetadataExtractor.Directory;
 
 namespace starskycore.Services
 {
@@ -264,9 +263,9 @@ namespace starskycore.Services
 	    }
 
 
-	    private static void DisplayAllExif(IEnumerable<Directory> allExifItems)
+	    private static void DisplayAllExif(List<Directory> allExifItems)
         {
-	        // if(allExifItems.Any()) return;
+	        if(allExifItems.Any()) return;
 	        // dont display the following code
 	        
             foreach (var exifItem in allExifItems) {
@@ -341,7 +340,7 @@ namespace starskycore.Services
             return caption;
         }
         
-        public string GetExifKeywords(MetadataExtractor.Directory exifItem)
+        public string GetExifKeywords(Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name == "Keywords");
             
@@ -356,7 +355,6 @@ namespace starskycore.Services
             }
 
             return tags;
-
         }
 
         private string GetColorClassString(MetadataExtractor.Directory exifItem)
@@ -520,7 +518,7 @@ namespace starskycore.Services
             // this value is always an int but current culture formated
             var parsedAltitudeString = double.TryParse(altitudeString, NumberStyles.Number, CultureInfo.CurrentCulture, out var altitude);
             
-            if (altitudeRef == "Below sea level") altitude = altitude * -1;
+            if (altitudeRef == "Below sea level" && Math.Abs(altitude) > 0.00001) altitude *= -1;
 
             // Read xmp if altitudeString is string.Empty
             if (!parsedAltitudeString)
