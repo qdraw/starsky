@@ -266,7 +266,7 @@ namespace starskycore.Services
 
 	    private static void DisplayAllExif(IEnumerable<Directory> allExifItems)
         {
-	        if(allExifItems.Any()) return;
+	        // if(allExifItems.Any()) return;
 	        // dont display the following code
 	        
             foreach (var exifItem in allExifItems) {
@@ -686,7 +686,7 @@ namespace starskycore.Services
 	        
 	        // XMP,http://ns.adobe.com/exif/1.0/,exif:FocalLength,11/1
 	        var focalLengthXmp = GetXmpData(exifItem, "exif:FocalLength");
-	        if (!string.IsNullOrEmpty(focalLengthXmp))
+	        if (string.IsNullOrEmpty(focalLengthString) && !string.IsNullOrEmpty(focalLengthXmp))
 	        {
 		        return new MathFraction().Fraction(focalLengthXmp);
 	        }
@@ -704,23 +704,16 @@ namespace starskycore.Services
         
 	    public double GetAperture(Directory exifItem)
 	    {
-		    var apertureString = string.Empty;
+		    var apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;;
 
-		    var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value");
-		    if (dtCounts >= 1)
-		    {
-			    apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;
-		    }
-
-		    dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "F-Number");
-		    if (dtCounts >= 1)
+		    if (!string.IsNullOrEmpty(apertureString))
 		    {
 			    apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "F-Number")?.Description;
 		    }
 		    
 		    // XMP,http://ns.adobe.com/exif/1.0/,exif:FNumber,9/1
 		    var fNumberXmp = GetXmpData(exifItem, "exif:FNumber");
-		    if (!string.IsNullOrEmpty(fNumberXmp))
+		    if (string.IsNullOrEmpty(apertureString) && !string.IsNullOrEmpty(fNumberXmp))
 		    {
 			    return new MathFraction().Fraction(fNumberXmp);
 		    }
@@ -732,28 +725,21 @@ namespace starskycore.Services
 		    float.TryParse(apertureString, NumberStyles.Number, CultureInfo.CurrentCulture, out var aperture);
 		    
 		    return aperture;
-		    
 	    }
 	    
 	    // [Exif SubIFD] Shutter Speed Value = 1/2403 sec
 	    public string GetShutterSpeedValue(Directory exifItem)
 	    {
-		    string shutterSpeedString = string.Empty;
-		    var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value");
-		    if (dtCounts >= 1)
-		    {
-			    shutterSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value")?.Description;
-		    }
-		    
-		    dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Exposure Time");
-		    if (dtCounts >= 1)
+		    var shutterSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value")?.Description;;
+
+		    if (string.IsNullOrEmpty(shutterSpeedString))
 		    {
 			    shutterSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Exposure Time")?.Description;
 		    }
 		    
 		    // XMP,http://ns.adobe.com/exif/1.0/,exif:ExposureTime,1/20
 		    var exposureTimeXmp = GetXmpData(exifItem, "exif:ExposureTime");
-		    if (!string.IsNullOrEmpty(exposureTimeXmp) && exposureTimeXmp.Length <= 20)
+		    if (string.IsNullOrEmpty(shutterSpeedString) && !string.IsNullOrEmpty(exposureTimeXmp) && exposureTimeXmp.Length <= 20)
 		    {
 			    return exposureTimeXmp;
 		    }
@@ -769,19 +755,21 @@ namespace starskycore.Services
 
 	    public int GetIsoSpeedValue(Directory exifItem)
 	    {
-		    var isoSpeedString = string.Empty;
+		    var isoSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "ISO Speed Ratings")?.Description;
 
-		    var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "ISO Speed Ratings");
-		    if (dtCounts >= 1)
+		    if ( string.IsNullOrEmpty(isoSpeedString) )
 		    {
-			    isoSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "ISO Speed Ratings")?.Description;
+			    // todo check if output is correct
+			    isoSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Canon Makernote" && p.Name == "Auto ISO")?.Description;
 		    }
+		    
+		    // BaseISO * AutoISO / 100.
 		    
 		    // XMP,http://ns.adobe.com/exif/1.0/,exif:ISOSpeedRatings,
 		    // XMP,,exif:ISOSpeedRatings[1],101
 		    // XMP,,exif:ISOSpeedRatings[2],101
 		    var isoSpeedXmp = GetXmpData(exifItem, "exif:ISOSpeedRatings[1]");
-		    if (!string.IsNullOrEmpty(isoSpeedXmp))
+		    if (string.IsNullOrEmpty(isoSpeedString) && !string.IsNullOrEmpty(isoSpeedXmp))
 		    {
 			    isoSpeedString = isoSpeedXmp;
 		    }

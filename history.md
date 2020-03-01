@@ -34,7 +34,6 @@
 - [x]  (bugfix) _Back-end_ search fix bug where Make/Model is giving a Exception (fixed)
 - []   (bug) _Front-end_ Readonly mode and modals __not implemented__
 
-
 # version 0.1.16 - 2020-02-23
 - [x]  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix
 - [x]  (feature) _Back-end_ Feature toggle to change from `Newtonsoft.Json` to `System.Text.Json`
