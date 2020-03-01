@@ -1,11 +1,14 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import useIntersection from '../hooks/use-intersection-observer';
 import useLocation from '../hooks/use-location';
+import { ImageFormat } from '../interfaces/IFileIndexItem';
 import { URLPath } from '../shared/url-path';
 import EmptyImage from '../style/images/empty-image.gif';
 
 interface IListImageProps {
-  src: string;
+  fileHash: string;
+  filePath: string;
+  imageFormat?: ImageFormat;
   alt?: string;
 }
 
@@ -14,17 +17,18 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   const target = useRef<HTMLDivElement>(null);
   var alt = props.alt ? props.alt : 'afbeelding';
 
-  const [src, setSrc] = useState(props.src);
+  const [fileHash, setFileHash] = useState(props.fileHash);
 
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
+  // {/* src={'/api/thumbnail/' + item.fileHash + '.jpg?issingleitem=' + (localStorage.getItem("issingleitem") !== "false").toString()} */ }
 
   // to update the url, and trigger loading if the url is changed
   useEffect(() => {
     setError(false);
     setIsLoading(true);
-  }, [props.src]);
+  }, [props.fileHash]);
 
   var intersected = useIntersection(target, {
     rootMargin: '250px',
@@ -46,8 +50,9 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     // need to refresh
   }, [history.location.search, historyLocation, isLoading]);
 
-  if (!props.src || props.src.toLowerCase().endsWith('null.jpg?issingleitem=true')) {
-    return (<div ref={target} className="img-box--error" />);
+  if (props.imageFormat !== ImageFormat.bmp && props.imageFormat !== ImageFormat.gif &&
+    props.imageFormat !== ImageFormat.jpg && props.imageFormat !== ImageFormat.png) {
+    return (<div ref={target} className="img-box--error img-box-unsuppored" />);
   }
 
   return (
