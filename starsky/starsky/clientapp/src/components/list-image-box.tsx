@@ -39,7 +39,7 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
           className={select.indexOf(item.fileName) === -1 ?
             "box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory :
             "box-content box-content--selected colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
-          <ListImage imageFormat={item.imageFormat} alt={item.tags} fileHash={item.fileHash} filePath={item.filePath} />
+          <ListImage imageFormat={item.imageFormat} alt={item.tags} fileHash={item.fileHash} />
           <div className="caption">
             <div className="name" title={item.fileName}>
               {item.fileName}
@@ -62,7 +62,7 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
       {isPreloaderState ? preloader : null}
       <Link onClick={() => setPreloaderState(true)} title={item.fileName} to={new URLPath().updateFilePath(history.location.search, item.filePath)}
         className={"box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
-        <ListImage alt={item.tags} src={'/api/thumbnail/' + item.fileHash + '.jpg?issingleitem=' + (localStorage.getItem("issingleitem") !== "false").toString()} />
+        <ListImage imageFormat={item.imageFormat} alt={item.tags} fileHash={item.fileHash} />
         <div className="caption">
           <div className="name" title={item.fileName}>
             {item.fileName}

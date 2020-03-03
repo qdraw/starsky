@@ -7,7 +7,6 @@ import EmptyImage from '../style/images/empty-image.gif';
 
 interface IListImageProps {
   fileHash: string;
-  filePath: string;
   imageFormat?: ImageFormat;
   alt?: string;
 }
@@ -17,12 +16,11 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   const target = useRef<HTMLDivElement>(null);
   var alt = props.alt ? props.alt : 'afbeelding';
 
-  const [fileHash, setFileHash] = useState(props.fileHash);
+  const [src, setSrc] = useState(props.fileHash);
 
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
-  // {/* src={'/api/thumbnail/' + item.fileHash + '.jpg?issingleitem=' + (localStorage.getItem("issingleitem") !== "false").toString()} */ }
 
   // to update the url, and trigger loading if the url is changed
   useEffect(() => {
@@ -42,17 +40,24 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   const [historyLocation] = useState(history.location.search);
   useEffect(() => {
     // use ?f only to support details
+    // need to refresh
     if (new URLPath().getFilePath(historyLocation) !== new URLPath().getFilePath(history.location.search)
       && isLoading) {
       // data:images are blocked by a strict CSP 
       setSrc(EmptyImage) // 26 bytes
+      return;
     }
-    // need to refresh
-  }, [history.location.search, historyLocation, isLoading]);
+    setSrc(`/api/thumbnail/${props.fileHash}.jpg?issingleitem=${(localStorage.getItem("issingleitem") !== "false").toString()}`)
+  }, [props.fileHash, history.location.search, historyLocation, isLoading]);
+
+
+  if (props.fileHash === 'null' || props.fileHash === null || !props.fileHash || !props.imageFormat) {
+    return (<div ref={target} className="img-box--error" />);
+  }
 
   if (props.imageFormat !== ImageFormat.bmp && props.imageFormat !== ImageFormat.gif &&
     props.imageFormat !== ImageFormat.jpg && props.imageFormat !== ImageFormat.png) {
-    return (<div ref={target} className="img-box--error img-box-unsuppored" />);
+    return (<div ref={target} className={`img-box--error img-box--unsupported img-box--${props.imageFormat}`} />);
   }
 
   return (

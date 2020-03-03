@@ -213,6 +213,7 @@ namespace starsky
 	        services.AddSingleton<IHttpProvider,HttpProvider>();
 	        services.AddSingleton<HttpClientHelper>();
 	        services.AddSingleton<System.Net.Http.HttpClient>();
+	        services.AddHostedService<SearchSuggestionsInflateHostedService>();
         }
         
         /// <summary>
