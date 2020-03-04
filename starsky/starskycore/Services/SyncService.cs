@@ -4,27 +4,29 @@ using System.Linq;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskyioc;
 
 namespace starskycore.Services
 {
+	[Service(typeof(ISync), IoCLifetime = IoCLifetime.Scoped)]
     public partial class SyncService : ISync
     {
         private readonly IQuery _query;
         private readonly AppSettings _appSettings;
         private readonly IReadMeta _readMeta;
-	    private readonly IStorage _iStorage;
+	    private readonly IStorage _subPathStorage;
 
 	    /// <summary>Do a sync of files uning a subpath</summary>
 	    /// <param name="query">Starsky IQuery interface to do calls on the database</param>
 	    /// <param name="appSettings">Settings of the application</param>
 	    /// <param name="readMeta">To read exif and xmp</param>
-	    /// <param name="iStorage">Filesystem or other abstraction</param>
-	    public SyncService(IQuery query, AppSettings appSettings, IReadMeta readMeta, IStorage iStorage)
+	    /// <param name="selectorStorage">Filesystem abstraction</param>
+	    public SyncService(IQuery query, AppSettings appSettings, IReadMeta readMeta, ISelectorStorage selectorStorage)
         {
             _query = query;
             _appSettings = appSettings;
             _readMeta = readMeta;
-	        _iStorage = iStorage;
+            _subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
         }
         
         /* Base feature to sync files and folders
@@ -58,7 +60,7 @@ namespace starskycore.Services
 
             // Handle folder Get a list of all local folders and rename it to database style.
             // Db Style is a relative path
-	        var localSubFolderDbStyle = _iStorage.GetDirectoryRecursive(subPath).ToList();
+	        var localSubFolderDbStyle = _subPathStorage.GetDirectoryRecursive(subPath).ToList();
 
             // Query the database to get a list of the folder items
             var databaseSubFolderList = _query.GetAllFolders();
@@ -86,7 +88,7 @@ namespace starskycore.Services
 				Console.Write(singleFolder + "  ");
 				
 				var databaseFileList = _query.GetAllFiles(singleFolder);
-				var localFarrayFilesDbStyle = _iStorage.GetAllFilesInDirectory(singleFolder)
+				var localFarrayFilesDbStyle = _subPathStorage.GetAllFilesInDirectory(singleFolder)
 					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 				
 				databaseFileList = RemoveDuplicate(databaseFileList);

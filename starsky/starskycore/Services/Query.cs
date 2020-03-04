@@ -9,10 +9,13 @@ using MySql.Data.MySqlClient;
 using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskyioc;
 
 namespace starskycore.Services
 {
-    public partial class Query : IQuery
+	
+	[Service(typeof(IQuery), IoCLifetime = IoCLifetime.Scoped)]
+	public partial class Query : IQuery
     {
         private ApplicationDbContext _context;
         private readonly IServiceScopeFactory _scopeFactory;

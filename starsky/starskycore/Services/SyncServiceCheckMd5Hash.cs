@@ -26,7 +26,7 @@ namespace starskycore.Services
                 if (dbItem != null)
                 {
                     // Check if Hash is changed
-	                var localHash = new FileHash(_iStorage).GetHashCode(itemLocal);
+	                var localHash = new FileHash(_subPathStorage).GetHashCode(itemLocal);
 
                     if(_appSettings.Verbose) Console.WriteLine("localHash: " + localHash);
 
@@ -36,7 +36,7 @@ namespace starskycore.Services
 
                         // Read data from file
 	                    var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(itemLocal);
-	                    updatedDatabaseItem.ImageFormat = ExtensionRolesHelper.GetImageFormat(_iStorage.ReadStream(itemLocal,160));
+	                    updatedDatabaseItem.ImageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(itemLocal,160));
 	                    updatedDatabaseItem.FileHash = localHash;
                         updatedDatabaseItem.SetAddToDatabase();
 	                    updatedDatabaseItem.SetLastEdited();

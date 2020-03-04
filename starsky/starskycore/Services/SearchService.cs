@@ -11,10 +11,12 @@ using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.ViewModels;
+using starskyioc;
 
 namespace starskycore.Services
 {
-    public class SearchService : ISearch
+	[Service(typeof(ISearch), IoCLifetime = IoCLifetime.Scoped)]
+	public class SearchService : ISearch
     {
         private readonly ApplicationDbContext _context;
         private readonly IMemoryCache _cache;

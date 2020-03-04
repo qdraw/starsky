@@ -62,8 +62,12 @@ namespace starskytest.Helpers
 			var readMeta = new ReadMeta(iStorage,_appSettings,memoryCache);
 			
 			_iStorageSubPath = new StorageSubPathFilesystem(_appSettings);
+			
+			var services = new ServiceCollection();
+			var serviceProvider = services.BuildServiceProvider();
+			var selectorStorage = new SelectorStorage(serviceProvider);
 
-			_sync = new SyncService(_query,_appSettings,readMeta,_iStorageSubPath);
+			_sync = new SyncService(_query,_appSettings,readMeta,selectorStorage);
 		}
 
 		[TestMethod]

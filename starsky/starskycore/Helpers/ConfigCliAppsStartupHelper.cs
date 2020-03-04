@@ -99,7 +99,8 @@ namespace starskycore.Helpers
             
             _userManager = new UserManager(context);
             
-            _isync = new SyncService(query, appSettings,_readmeta, _iStorage);
+            var selectorStorage = new SelectorStorage(_serviceProvider);
+            _isync = new SyncService(query, appSettings,_readmeta, selectorStorage);
             
             // TOC:
             //   _context = context

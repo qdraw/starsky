@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using starskycore.Models;
 using starskycore.Services;
+using starskycore.Storage;
 
 namespace starsky.Health
 {

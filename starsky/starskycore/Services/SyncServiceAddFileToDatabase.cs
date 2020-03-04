@@ -33,14 +33,14 @@ namespace starskycore.Services
 
 
                     // Check the headers of a file to match a type
-                    var imageFormat = ExtensionRolesHelper.GetImageFormat(_iStorage.ReadStream(singleFolderDbStyle,160));
+                    var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(singleFolderDbStyle,160));
                     
                     // Read data from file
 	                var databaseItem = _readMeta.ReadExifAndXmpFromFile(singleFolderDbStyle);
 	                databaseItem.ImageFormat = imageFormat;
 	                databaseItem.SetAddToDatabase();
 	                databaseItem.SetLastEdited();
-                    databaseItem.FileHash = new FileHash(_iStorage).GetHashCode(singleFolderDbStyle);
+                    databaseItem.FileHash = new FileHash(_subPathStorage).GetHashCode(singleFolderDbStyle);
                     databaseItem.FileName = PathHelper.GetFileName(singleFolderDbStyle);
                     databaseItem.IsDirectory = false;
                     databaseItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault();

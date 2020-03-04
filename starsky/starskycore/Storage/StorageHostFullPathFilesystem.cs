@@ -4,7 +4,7 @@ using System.IO;
 using starskycore.Interfaces;
 using starskycore.Models;
 
-namespace starskycore.Services
+namespace starskycore.Storage
 {
 	public class StorageHostFullPathFilesystem : IStorage
 	{
@@ -13,6 +13,7 @@ namespace starskycore.Services
 			throw new System.NotImplementedException();
 		}
 
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public IEnumerable<string> GetAllFilesInDirectory(string fullFilePath)
 		{
 			var allFiles = new string[]{};
@@ -48,6 +49,7 @@ namespace starskycore.Services
 			return imageFilesList;
 		}
 
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public IEnumerable<string> GetDirectoryRecursive(string fullFilePath)
 		{
 			var folders = new Queue<string>();
@@ -76,6 +78,7 @@ namespace starskycore.Services
 			return folderList;
 		}
 
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
@@ -99,12 +102,14 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="path">full file path</param>
 		/// <returns>bool true = exist</returns>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool ExistFile(string path)
 		{
 			var isFolderOrFile = IsFolderOrFile(path);
 			return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File;
 		}
 
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool ExistFolder(string path)
 		{
 			var isFolderOrFile = IsFolderOrFile(path);
@@ -116,6 +121,7 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="fullFilePath">fullFilePath</param>
 		/// <returns>is file, folder or deleted</returns>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string fullFilePath)
 		{
 			if (!Directory.Exists(fullFilePath) && File.Exists(fullFilePath))
@@ -132,30 +138,35 @@ namespace starskycore.Services
 
 			return FolderOrFileModel.FolderOrFileTypeList.Deleted;
 		}
-
+		
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public void FolderMove(string inputFileFullPath, string toFileFullPath)
 		{
 			Directory.Move(inputFileFullPath,toFileFullPath);
 		}
 
+		[Obsolete("do not include direct, only using ISelectorStorage")]
+		
 		public void FileMove(string inputFileFullPath, string toFileFullPath)
 		{
 			File.Move(inputFileFullPath,toFileFullPath);
 		}
 		
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public void FileCopy(string fromPath, string toPath)
 		{
 			File.Copy(fromPath,toPath);
 		}
 
-		
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool FileDelete(string path)
 		{
 			if ( !File.Exists(path) ) return false;
 			File.Delete(path);
 			return true;
 		}
-		
+
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool WriteStream(Stream stream, string path)
 		{
 			if ( !stream.CanRead ) return false;
@@ -201,6 +212,7 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="fullFilePath">The full file path.</param>
 		/// <returns></returns>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string fullFilePath)
         {
             List<string> findlist = new List<string>();

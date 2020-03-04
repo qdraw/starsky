@@ -8,9 +8,12 @@ using starskycore.Extensions;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskycore.Storage;
+using starskyioc;
 
 namespace starskycore.Services
 {
+	[Service(typeof(IImport), IoCLifetime = IoCLifetime.Scoped)]
 	public class ImportService : IImport
 	{
 		private readonly IStorage _filesystemHelper;

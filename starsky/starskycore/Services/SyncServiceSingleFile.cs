@@ -25,13 +25,13 @@ namespace starskycore.Services
         
         public SingleFileSuccess SingleFile(string subPath = "")
         {
-	        if ( !_iStorage.ExistFile(subPath) ) return SingleFileSuccess.Ignore;
+	        if ( !_subPathStorage.ExistFile(subPath) ) return SingleFileSuccess.Ignore;
 	        
 	        //	 The same check as in the sync 
 	        if (!ExtensionRolesHelper.IsExtensionSyncSupported(subPath)) return SingleFileSuccess.Fail;
 
 	        // File check if jpg #not corrupt
-	        var imageFormat = ExtensionRolesHelper.GetImageFormat(_iStorage.ReadStream(subPath,160));
+	        var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(subPath,160));
 	        if ( !ExtensionRolesHelper.ExtensionSyncSupportedList.Contains($"{imageFormat}") )
 	        {
 		        return SingleFileSuccess.Fail;

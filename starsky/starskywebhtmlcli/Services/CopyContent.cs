@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using starskycore.Interfaces;
 using starskycore.Services;
+using starskycore.Storage;
 
 namespace starskywebhtmlcli.Services
 {

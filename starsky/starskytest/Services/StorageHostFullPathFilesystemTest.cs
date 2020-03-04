@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Services;
+using starskycore.Storage;
 
 namespace starskytest.Services
 {

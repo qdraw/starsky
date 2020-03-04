@@ -6,9 +6,12 @@ using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskyioc;
 
 namespace starskycore.Services
 {
+	
+	[Service(typeof(ISearchSuggest), IoCLifetime = IoCLifetime.Scoped)]
 	public class SearchSuggestionsService : ISearchSuggest
 	{
 		private readonly ApplicationDbContext _context;

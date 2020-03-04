@@ -90,4 +90,14 @@
         <Compile Remove="Migrations\20200206192905_addSoftwareField.cs" />
         <Compile Remove="Migrations\20200206192905_addSoftwareField.Designer.cs" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\starskyioc\starskyIOC.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="starskyIOC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\starsky\bin\Debug\netcoreapp3.1\starskyIOC.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 </Project>

@@ -17,6 +17,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
+using starsky.foundation.ioc;
 using starsky.Health;
 using starsky.Helpers;
 using starskycore.Data;
@@ -25,8 +26,6 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using Query = starskycore.Services.Query;
-using SyncService = starskycore.Services.SyncService;
 
 namespace starsky
 {
@@ -130,18 +129,24 @@ namespace starsky
                         options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
                     }
                 );
-            
-            services.AddScoped<IQuery, Query>();
-            services.AddScoped<ISync, SyncService>();
-            services.AddScoped<ISearch, SearchService>();
-            services.AddScoped<ISearchSuggest, SearchSuggestionsService>();
+
+            new RegisterDependencies().Configure(services);
+
+            // services.AddScoped<IQuery, Query>();
+            // services.AddScoped<ISync, SyncService>();
+            // services.AddScoped<ISearch, SearchService>();
+            // services.AddScoped<ISearchSuggest, SearchSuggestionsService>();
 
             services.AddScoped<IImport, ImportService>();
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IExifTool, ExifTool>();
             services.AddScoped<IReadMeta, ReadMeta>();
+
+            services.AddScoped<IStorage, StorageThumbnailFilesystem>();
+            services.AddScoped<IStorage, StorageTempFilesystem>();
 	        services.AddScoped<IStorage, StorageSubPathFilesystem>();
-	        
+	        services.AddScoped<ISelectorStorage, SelectorStorage>();
+
             // AddHostedService in .NET Core 2.1 / background service
             services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();

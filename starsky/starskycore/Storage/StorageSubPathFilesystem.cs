@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using starskycore.Interfaces;
 using starskycore.Models;
+using starskycore.Storage;
 
 namespace starskycore.Services
 {
@@ -21,12 +22,14 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="subPath">full file path</param>
 		/// <returns>bool true = exist</returns>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool ExistFile(string subPath)
 		{
 			var isFolderOrFile = IsFolderOrFile(subPath);
 			return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File;
 		}
 
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool ExistFolder(string subPath)
 		{
 			var isFolderOrFile = IsFolderOrFile(subPath);
@@ -38,12 +41,14 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="subPath">path of the database</param>
 		/// <returns>is file, folder or deleted</returns>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath,false);
 			return new StorageHostFullPathFilesystem().IsFolderOrFile(fullFilePath);
 		}
 
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public void FolderMove(string inputSubPath, string toSubPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
@@ -51,6 +56,7 @@ namespace starskycore.Services
 			new StorageHostFullPathFilesystem().FolderMove(inputFileFullPath,toFileFullPath);
 		}
 
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public void FileMove(string inputSubPath, string toSubPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
@@ -58,6 +64,7 @@ namespace starskycore.Services
 			new StorageHostFullPathFilesystem().FileMove(inputFileFullPath,toFileFullPath);
 		}
 		
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public void FileCopy(string inputSubPath, string toSubPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
@@ -70,6 +77,7 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="path">subPath</param>
 		/// <returns>bool</returns>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool FileDelete(string path)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(path, false);
@@ -80,6 +88,7 @@ namespace starskycore.Services
 		/// Create an Directory 
 		/// </summary>
 		/// <param name="subPath">location</param>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public void CreateDirectory(string subPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(subPath, false);
@@ -94,6 +103,7 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="subPath">path relative to the database</param>
 		/// <returns></returns>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
@@ -118,6 +128,7 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="subPath">path relative to the database</param>
 		/// <returns></returns>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string subPath)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
@@ -140,6 +151,7 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="subPath">subpath in directory</param>
 		/// <returns></returns>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public IEnumerable<string> GetDirectoryRecursive(string subPath)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
@@ -159,6 +171,7 @@ namespace starskycore.Services
 		/// <param name="maxRead">number of bytes to read (default -1 = all)</param>
 		/// <returns>FileStream</returns>
 		/// <exception cref="FileNotFoundException">is file not exist, please check that first</exception>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
@@ -189,6 +202,7 @@ namespace starskycore.Services
 		/// <param name="path">location</param>
 		/// <returns></returns>
 		/// <exception cref="FileNotFoundException"></exception>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool WriteStream(Stream stream, string path)
 		{
 			// should be able to write files that are not exist yet			
@@ -203,12 +217,14 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="fileHash">bash32 filehash</param>
 		/// <returns></returns>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool ThumbnailExist(string fileHash)
 		{
 			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg");
 			return new StorageHostFullPathFilesystem().ExistFile(filePath);
 		}
 
+		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public Stream ThumbnailRead(string fileHash)
 		{
 			if ( !ThumbnailExist(fileHash) ) throw new FileNotFoundException(fileHash); 
