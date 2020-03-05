@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.ioc;
 using starskycore.Data;
 using starskycore.Extensions;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Storage;
-using starskyioc;
 
 namespace starskycore.Services
 {
-	[Service(typeof(IImport), IoCLifetime = IoCLifetime.Scoped)]
+	[Service(typeof(IImport), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ImportService : IImport
 	{
 		private readonly IStorage _filesystemHelper;

@@ -45,7 +45,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\starsky.foundation.ioc\starsky.foundation.ioc.csproj" />
+    <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
     <ProjectReference Include="..\starskygeocore\starskygeocore.csproj" />
   </ItemGroup>

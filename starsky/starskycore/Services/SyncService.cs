@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using starsky.foundation.ioc;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
-using starskyioc;
 
 namespace starskycore.Services
 {
-	[Service(typeof(ISync), IoCLifetime = IoCLifetime.Scoped)]
-    public partial class SyncService : ISync
+	[Service(typeof(ISync), InjectionLifetime = InjectionLifetime.Scoped)]
+	public partial class SyncService : ISync
     {
         private readonly IQuery _query;
         private readonly AppSettings _appSettings;

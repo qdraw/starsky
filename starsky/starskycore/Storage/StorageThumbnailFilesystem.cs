@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using System.IO;
+using starsky.foundation.ioc;
 using starskycore.Interfaces;
 using starskycore.Models;
 
+
 namespace starskycore.Services
 {
+	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class StorageThumbnailFilesystem : IStorage
 	{
 		public bool ExistFile(string path)

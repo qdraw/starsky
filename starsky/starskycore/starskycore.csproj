@@ -92,12 +92,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\starskyioc\starskyIOC.csproj" />
+      <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="starskyIOC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\starsky\bin\Debug\netcoreapp3.1\starskyIOC.dll</HintPath>
-      </Reference>
-    </ItemGroup>
+    
 </Project>

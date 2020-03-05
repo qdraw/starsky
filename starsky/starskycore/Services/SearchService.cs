@@ -6,16 +6,16 @@ using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using starsky.foundation.ioc;
 using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.ViewModels;
-using starskyioc;
 
 namespace starskycore.Services
 {
-	[Service(typeof(ISearch), IoCLifetime = IoCLifetime.Scoped)]
+	[Service(typeof(ISearch), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class SearchService : ISearch
     {
         private readonly ApplicationDbContext _context;

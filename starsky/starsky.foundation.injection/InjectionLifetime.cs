@@ -1,6 +1,6 @@
 ﻿namespace starsky.foundation.ioc
 {
-	public enum IoCLifetime
+	public enum InjectionLifetime
 	{
 		/// <summary>
 		/// objects are always different.

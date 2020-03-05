@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskygeocore", "starskyge
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyadmincli", "starskyadmincli\starskyadmincli.csproj", "{F797EB32-21C9-4835-BB67-EFF8F197A219}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.ioc", "starsky.foundation.ioc\starsky.foundation.ioc.csproj", "{0F0C0B27-8F29-4CC5-BB91-910B9DE22FC1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.injection", "starsky.foundation.injection\starsky.foundation.injection.csproj", "{0F0C0B27-8F29-4CC5-BB91-910B9DE22FC1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Foundation", "Foundation", "{1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}"
 EndProject

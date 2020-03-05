@@ -6,15 +6,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
+using starsky.foundation.ioc;
 using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Models;
-using starskyioc;
 
 namespace starskycore.Services
 {
 	
-	[Service(typeof(IQuery), IoCLifetime = IoCLifetime.Scoped)]
+	[Service(typeof(IQuery), InjectionLifetime = InjectionLifetime.Scoped)]
 	public partial class Query : IQuery
     {
         private ApplicationDbContext _context;

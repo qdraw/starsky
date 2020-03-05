@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
-using starskyioc;
 
 namespace starsky.foundation.ioc
 {
@@ -18,13 +17,19 @@ namespace starsky.foundation.ioc
             serviceCollection.AddClassesWithServiceAttribute(assemblies);
         }
 
+	    /// <summary>
+	    /// 
+	    /// </summary>
+	    /// <param name="serviceCollection"></param>
+	    /// <param name="assemblies"></param>
         public static void AddClassesWithServiceAttribute(this IServiceCollection serviceCollection, params Assembly[] assemblies)
         {
             var typesWithAttributes = assemblies
                 .Where(assembly => !assembly.IsDynamic)
                 .SelectMany(GetExportedTypes)
                 .Where(type => !type.IsAbstract && !type.IsGenericTypeDefinition)
-                .Select(type => new { Lifetime = type.GetCustomAttribute<ServiceAttribute>()?.IoCLifetime, ServiceType = type, ImplementationType = type.GetCustomAttribute<ServiceAttribute>()?.ServiceType })
+                .Select(type => new { Lifetime = type.GetCustomAttribute<ServiceAttribute>()?.InjectionLifetime, ServiceType = type, 
+	                ImplementationType = type.GetCustomAttribute<ServiceAttribute>()?.ServiceType })
                 .Where(t => t.Lifetime != null);
 
             foreach (var type in typesWithAttributes)
@@ -37,7 +42,7 @@ namespace starsky.foundation.ioc
         }
         
 
-        public static void Add(this IServiceCollection serviceCollection, IoCLifetime ioCLifetime, params Type[] types)
+        public static void Add(this IServiceCollection serviceCollection, InjectionLifetime ioCLifetime, params Type[] types)
         {
 	        if(types == null) throw new ArgumentNullException(types + nameof(types));
 
@@ -47,22 +52,22 @@ namespace starsky.foundation.ioc
             }
         }
 
-        public static void Add<T>(this IServiceCollection serviceCollection, IoCLifetime ioCLifetime)
+        public static void Add<T>(this IServiceCollection serviceCollection, InjectionLifetime ioCLifetime)
         {
             serviceCollection.Add(typeof(T), ioCLifetime);
         }
 
-        public static void Add(this IServiceCollection serviceCollection, Type type, IoCLifetime ioCLifetime)
+        public static void Add(this IServiceCollection serviceCollection, Type type, InjectionLifetime ioCLifetime)
         {
             switch (ioCLifetime)
             {
-                case IoCLifetime.Singleton:
+                case InjectionLifetime.Singleton:
                     serviceCollection.AddSingleton(type);
                     break;
-                case IoCLifetime.Transient:
+                case InjectionLifetime.Transient:
                     serviceCollection.AddTransient(type);
                     break;
-                case IoCLifetime.Scoped:
+                case InjectionLifetime.Scoped:
                     serviceCollection.AddScoped(type);
                     break;
                 default:
@@ -70,17 +75,17 @@ namespace starsky.foundation.ioc
             }
         }
 
-        public static void Add(this IServiceCollection serviceCollection, Type serviceType, Type implementationType, IoCLifetime ioCLifetime)
+        public static void Add(this IServiceCollection serviceCollection, Type serviceType, Type implementationType, InjectionLifetime ioCLifetime)
         {
             switch (ioCLifetime)
             {
-                case IoCLifetime.Singleton:
+                case InjectionLifetime.Singleton:
                     serviceCollection.AddSingleton(serviceType, implementationType);
                     break;
-                case IoCLifetime.Transient:
+                case InjectionLifetime.Transient:
                     serviceCollection.AddTransient(serviceType, implementationType);
                     break;
-                case IoCLifetime.Scoped:
+                case InjectionLifetime.Scoped:
                     serviceCollection.AddScoped(serviceType, implementationType);
                     break;
                 default:
@@ -88,41 +93,15 @@ namespace starsky.foundation.ioc
             }
         }
         
-        public static void AddTypesImplementing<T>(this IServiceCollection servicecollection, IoCLifetime ioCLifetime, params string[] assemblies)
+        public static void AddTypesImplementing<T>(this IServiceCollection servicecollection, InjectionLifetime ioCLifetime, params string[] assemblies)
         {
             servicecollection.AddTypesImplementing<T>(ioCLifetime, GetAssemblies(assemblies));
         }
 
-        public static void AddTypesImplementing<T>(this IServiceCollection serviceCollection, IoCLifetime ioCLifetime, params Assembly[] assemblies)
+        public static void AddTypesImplementing<T>(this IServiceCollection serviceCollection, InjectionLifetime ioCLifetime, params Assembly[] assemblies)
         {
             var types = GetTypesImplementing(typeof(T), assemblies);
             serviceCollection.Add(ioCLifetime, types.ToArray());
-        }
-
-        /// <summary>
-        /// Addes types that implement the generic interface
-        /// </summary>
-        /// <param name="serviceCollection"></param>
-        /// <param name="ioCLifetime"></param>
-        /// <param name="abstractType">The generic type</param>
-        /// <param name="assemblies">The assemblies with the types.</param>
-        public static void AddTypesImplementingGenericInterface(this IServiceCollection serviceCollection, IoCLifetime ioCLifetime, Type abstractType, params Assembly[] assemblies)
-        {
-            var registrations =
-                GetTypesImplementingGenericInterface(abstractType, assemblies)
-                .Select(type => new
-                {
-                    Interfaces = type.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == abstractType).ToList(),
-                    Implementation = type
-                });
-            // register the types
-            foreach (var reg in registrations)
-            {
-                foreach (var abstraction in reg.Interfaces)
-                {
-                    serviceCollection.Add(abstraction, reg.Implementation, IoCLifetime.Transient);
-                }
-            }
         }
 
         private static Assembly[] GetAssemblies(IEnumerable<string> assemblyFilters)
@@ -130,20 +109,12 @@ namespace starsky.foundation.ioc
             var assemblies = new List<Assembly>();
             foreach (var assemblyFilter in assemblyFilters)
             {
-                assemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies().Where(assembly => IsWildcardMatch(assembly.GetName().Name, assemblyFilter)).ToArray());
+                assemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies().Where(assembly => 
+	                IsWildcardMatch(assembly.GetName().Name, assemblyFilter)).ToArray());
             }
             return assemblies.ToArray();
         }
 
-        private static IEnumerable<Type> GetTypesImplementing(Type implementsType, IEnumerable<Assembly> assemblies, params string[] classFilter)
-        {
-            var types = GetTypesImplementing(implementsType, assemblies.ToArray());
-            if (classFilter != null && classFilter.Any())
-            {
-                types = types.Where(type => classFilter.Any(filter => IsWildcardMatch(type.FullName, filter)));
-            }
-            return types;
-        }
 
         public static Type[] GetTypesImplementing<T>(params Assembly[] assemblies)
 		{
@@ -187,7 +158,8 @@ namespace starsky.foundation.ioc
             return assemblies
                 .Where(assembly => !assembly.IsDynamic)
                 .SelectMany(GetExportedTypes)
-                .Where(x => !x.IsInterface && !x.IsAbstract && x.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == implementsType))
+                .Where(x => !x.IsInterface && !x.IsAbstract && x.GetInterfaces().Any(i => i.IsGenericType
+                                                                                          && i.GetGenericTypeDefinition() == implementsType))
                 .ToArray();
         }
 
@@ -218,7 +190,8 @@ namespace starsky.foundation.ioc
             catch (Exception ex)
             {
                 // Throw a more descriptive message containing the name of the assembly.
-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to load types from assembly {0}. {1}", assembly.FullName, ex.Message), ex);
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, 
+	                "Unable to load types from assembly {0}. {1}", assembly.FullName, ex.Message), ex);
             }
         }
 
@@ -227,7 +200,9 @@ namespace starsky.foundation.ioc
         /// </summary>
         private static bool IsWildcardMatch(string input, string wildcard)
         {
-            return input == wildcard || Regex.IsMatch(input, "^" + Regex.Escape(wildcard).Replace("\\*", ".*").Replace("\\?", ".") + "$", RegexOptions.IgnoreCase);
+            return input == wildcard || Regex.IsMatch(input, "^" + 
+                                                             Regex.Escape(wildcard).Replace("\\*", ".*")
+	                                                             .Replace("\\?", ".") + "$", RegexOptions.IgnoreCase);
         }
 
     }

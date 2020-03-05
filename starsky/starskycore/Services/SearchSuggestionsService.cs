@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
+using starsky.foundation.ioc;
 using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
-using starskyioc;
 
 namespace starskycore.Services
 {
 	
-	[Service(typeof(ISearchSuggest), IoCLifetime = IoCLifetime.Scoped)]
+	[Service(typeof(ISearchSuggest), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class SearchSuggestionsService : ISearchSuggest
 	{
 		private readonly ApplicationDbContext _context;
