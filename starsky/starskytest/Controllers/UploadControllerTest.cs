@@ -91,7 +91,7 @@ namespace starskytest.Controllers
 			var serviceProvider = services.BuildServiceProvider();
 			// get the service
 			
-			var selectorStorage = new SelectorStorage(serviceProvider);
+			var selectorStorage = new FakeSelectorStorage(_iStorage);
 			_isync = new SyncService(_query,_appSettings,_readmeta, selectorStorage);
 
 			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();

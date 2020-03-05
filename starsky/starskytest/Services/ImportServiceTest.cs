@@ -14,6 +14,7 @@ using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 using starskytest.Models;
 using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
@@ -80,7 +81,9 @@ namespace starskytest.Services
 	        _iStorage = new StorageSubPathFilesystem(_appSettings);
 	        _readmeta = new ReadMeta(_iStorage,_appSettings);
 
-            _isync = new SyncService(_query,_appSettings,_readmeta,_iStorage);
+	        var fakeSelectorStorage = new FakeSelectorStorage(_iStorage);
+
+            _isync = new SyncService(_query,_appSettings,_readmeta,fakeSelectorStorage);
             
             //   _context = context
             //   _isync = isync
