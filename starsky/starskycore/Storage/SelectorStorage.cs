@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using starskycore.Interfaces;
+using starskycore.Storage;
 
 namespace starskycore.Services
 {
@@ -18,7 +19,11 @@ namespace starskycore.Services
 		{
 			SubPath,
 			Temp,
-			Thumbnail
+			Thumbnail,
+			/// <summary>
+			/// Use only to import from
+			/// </summary>
+			HostFilesystem 
 		}
 		
 		public IStorage Get(StorageServices storageServices)
@@ -32,6 +37,9 @@ namespace starskycore.Services
 					return services.First(o => o.GetType() == typeof(StorageTempFilesystem));
 				case StorageServices.Thumbnail:
 					return services.First(o => o.GetType() == typeof(StorageThumbnailFilesystem));
+				case StorageServices.HostFilesystem:
+					return services.First(o => o.GetType() == typeof(StorageHostFullPathFilesystem));
+
 				default:
 					throw new ArgumentOutOfRangeException(nameof(storageServices), storageServices, null);
 			}

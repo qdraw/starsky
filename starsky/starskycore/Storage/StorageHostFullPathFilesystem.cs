@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using starsky.foundation.ioc;
 using starskycore.Interfaces;
 using starskycore.Models;
 
 namespace starskycore.Storage
 {
+	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class StorageHostFullPathFilesystem : IStorage
 	{
 		public void CreateDirectory(string path)

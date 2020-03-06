@@ -14,10 +14,12 @@ namespace starskycore.Services
 	public class ReadMetaExif
 	{
 		private readonly IStorage _iStorage;
+		private readonly AppSettings _appSettings;
 
-		public ReadMetaExif(IStorage iStorage)
+		public ReadMetaExif(IStorage iStorage, AppSettings appSettings = null)
 		{
 			_iStorage = iStorage;
+			_appSettings = appSettings;
 		}
 		public FileIndexItem ReadExifFromFile(string subPath, FileIndexItem existingFileIndexItem = null) // use null to create an object
         {
@@ -263,10 +265,9 @@ namespace starskycore.Services
 	    }
 
 
-	    private static void DisplayAllExif(List<Directory> allExifItems)
+	    private void DisplayAllExif(List<Directory> allExifItems)
         {
-	        if(allExifItems.Any()) return;
-	        // dont display the following code
+	        if(_appSettings == null || !_appSettings.Verbose) return;
 	        
             foreach (var exifItem in allExifItems) {
                 foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");
@@ -757,11 +758,19 @@ namespace starskycore.Services
 
 		    if ( string.IsNullOrEmpty(isoSpeedString) )
 		    {
-			    // todo check if output is correct
-			    isoSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Canon Makernote" && p.Name == "Auto ISO")?.Description;
+			    isoSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Canon Makernote" && p.Name == "Iso")?.Description;
+			    if ( isoSpeedString == "Auto" )
+			    {
+				    var autoIso = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Canon Makernote" && p.Name == "Auto ISO")?.Description;
+				    var baseIso = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Canon Makernote" && p.Name == "Base ISO")?.Description;
+				    if ( !string.IsNullOrEmpty(autoIso) && !string.IsNullOrEmpty(baseIso) )
+				    {
+					    int.TryParse(autoIso, NumberStyles.Number, CultureInfo.InvariantCulture, out var autoIsoSpeed);
+					    int.TryParse(baseIso, NumberStyles.Number, CultureInfo.InvariantCulture, out var baseIsoSpeed);
+					    return baseIsoSpeed * autoIsoSpeed / 100;
+				    }
+			    }
 		    }
-		    
-		    // BaseISO * AutoISO / 100.
 		    
 		    // XMP,http://ns.adobe.com/exif/1.0/,exif:ISOSpeedRatings,
 		    // XMP,,exif:ISOSpeedRatings[1],101

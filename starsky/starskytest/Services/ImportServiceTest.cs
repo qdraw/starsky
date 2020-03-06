@@ -85,13 +85,8 @@ namespace starskytest.Services
 
             _isync = new SyncService(_query,_appSettings,_readmeta,fakeSelectorStorage);
             
-            //   _context = context
-            //   _isync = isync
-            //   _exiftool = exiftool
-            //   _appSettings = appSettings
-
-	        
-            _import = new ImportService(_context,_isync,_exifTool,_appSettings,null,_iStorage);
+            var fakeStorage = new FakeSelectorStorage(_iStorage);
+            _import = new ImportService(_context,_isync,new FakeExifTool(_iStorage,_appSettings), _appSettings,null,fakeStorage);
             
             // Delete gpx files before importing
             // to avoid 1000 files in this folder

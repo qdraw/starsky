@@ -48,8 +48,6 @@ namespace starskytest.Controllers
 			var options = builderDb.Options;
 			var context = new ApplicationDbContext(options);
 			_query = new Query(context, memoryCache);
-			
-
 
 			var services = new ServiceCollection();
 
@@ -70,11 +68,9 @@ namespace starskytest.Controllers
 				new List<string>{null});
 			
 	        _readmeta = new ReadMeta(_iStorage,_appSettings);
-
-
                         
-			_import = new ImportService(context,_isync,new FakeExifTool(_iStorage,_appSettings), _appSettings,null,_iStorage);
-
+	        var fakeStorage = new FakeSelectorStorage(_iStorage);
+			_import = new ImportService(context,_isync,new FakeExifTool(_iStorage,_appSettings), _appSettings,null,fakeStorage);
 
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();

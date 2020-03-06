@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
+using starsky.foundation.ioc;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 
 namespace starskycore.Services
 {
+	[Service(typeof(IReadMeta), InjectionLifetime = InjectionLifetime.Scoped)]
     public class ReadMeta : IReadMeta
     {
         private readonly AppSettings _appSettings;
@@ -18,15 +20,20 @@ namespace starskycore.Services
 	    private readonly ReadMetaXmp _readXmp;
 	    private readonly ReadMetaGpx _readGpx;
 
+	    /// <summary>
+	    /// Used to get from all locations
+	    /// </summary>
+	    /// <param name="iStorage"></param>
+	    /// <param name="appSettings"></param>
+	    /// <param name="memoryCache"></param>
 	    public ReadMeta(IStorage iStorage, AppSettings appSettings = null, IMemoryCache memoryCache = null)
         {
             _appSettings = appSettings;
             _cache = memoryCache;
-	        _iStorage = iStorage;
-	        _readExif = new ReadMetaExif(iStorage);
-	        _readXmp = new ReadMetaXmp(iStorage,memoryCache);
+            _iStorage = iStorage;
+	        _readExif = new ReadMetaExif(_iStorage, appSettings);
+	        _readXmp = new ReadMetaXmp(_iStorage, memoryCache);
 	        _readGpx = new ReadMetaGpx();
-
         }
 
         private FileIndexItem ReadExifAndXmpFromFileDirect(string subPath)
@@ -66,9 +73,8 @@ namespace starskycore.Services
 	        {
 		        var subPath = subPathList[i];
 		        
-		        // todo: fix dependency on filesystem
 		        var returnItem = ReadExifAndXmpFromFile(subPath);
-		        var imageFormat = ExtensionRolesHelper.GetImageFormat(subPath); 
+		        var imageFormat = ExtensionRolesHelper.GetImageFormat(_iStorage.ReadStream(subPath, 512)); 
 
 		        returnItem.ImageFormat = imageFormat;
 		        returnItem.FileName = Path.GetFileName(subPath);

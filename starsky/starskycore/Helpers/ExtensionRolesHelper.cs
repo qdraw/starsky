@@ -296,6 +296,7 @@ namespace starskycore.Helpers
 
 		/// <summary>
 		/// Get the format of the image by looking the first bytes
+		/// Scroll down (tip)
 		/// </summary>
 		/// <param name="filePath">the full path on the system</param>
 		/// <returns>ImageFormat enum</returns>

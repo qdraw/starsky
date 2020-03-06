@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
+using starsky.foundation.ioc;
 using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Middleware;
@@ -48,11 +49,7 @@ namespace starskycore.Helpers
             // inject config as object to a service
             services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
 	        
-	        // Inject Filesystem backend
-	        services.AddSingleton<IStorage, StorageSubPathFilesystem>();
-
-	        // Inject ExifTool
-	        services.AddSingleton<IExifTool, ExifTool>();
+	        new RegisterDependencies().Configure(services);
 	        
             // build the service
             _serviceProvider = services.BuildServiceProvider();
@@ -94,21 +91,15 @@ namespace starskycore.Helpers
             var query = new Query(context);
 
 	        _iStorage = new StorageSubPathFilesystem(appSettings);
+	        var selectorStorage = new SelectorStorage(_serviceProvider);
             
             _readmeta = new ReadMeta(_iStorage,appSettings);
             
             _userManager = new UserManager(context);
             
-            var selectorStorage = new SelectorStorage(_serviceProvider);
             _isync = new SyncService(query, appSettings,_readmeta, selectorStorage);
             
-            // TOC:
-            //   _context = context
-            //   _isync = isync
-            //   _exiftool = exiftool
-            //   _appSettings = appSettings
-            //   _readmeta = readmeta
-            _import = new ImportService(context, _isync, _exifTool, appSettings, null, _iStorage, true);
+            _import = new ImportService(context, _isync, _exifTool, appSettings, null, selectorStorage);
 
 	        _thumbnailCleaner = new ThumbnailCleaner(query, appSettings);
 	        
