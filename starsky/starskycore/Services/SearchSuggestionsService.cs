@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
-using starsky.foundation.ioc;
+using starsky.foundation.injection;
 using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;

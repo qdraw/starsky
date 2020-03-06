@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using starsky.foundation.injection;
 
 namespace starskycore.Services
 {
@@ -14,6 +16,7 @@ namespace starskycore.Services
             CancellationToken cancellationToken);
     }
 
+    [Service(typeof(IBackgroundTaskQueue), InjectionLifetime = InjectionLifetime.Singleton)]
     public class BackgroundTaskQueue : IBackgroundTaskQueue
     {
         private readonly ConcurrentQueue<Func<CancellationToken, Task>> _workItems = 

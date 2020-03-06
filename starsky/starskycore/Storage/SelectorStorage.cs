@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.injection;
 using starskycore.Interfaces;
 using starskycore.Storage;
 
 namespace starskycore.Services
 {
+	[Service(typeof(ISelectorStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class SelectorStorage : ISelectorStorage
 	{
 		private IServiceProvider _serviceProvider;

@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace starsky.foundation.ioc
+namespace starsky.foundation.injection
 {
     public static class ServiceCollectionExtensions
     {

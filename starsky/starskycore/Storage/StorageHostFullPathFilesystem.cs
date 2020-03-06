@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using starsky.foundation.ioc;
+using starsky.foundation.injection;
 using starskycore.Interfaces;
 using starskycore.Models;
 

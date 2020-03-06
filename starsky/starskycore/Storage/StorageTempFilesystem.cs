@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
+using starsky.foundation.injection;
 using starskycore.Interfaces;
 using starskycore.Models;
 
 namespace starskycore.Services
 {
+	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class StorageTempFilesystem : IStorage
 	{
 		public bool ExistFile(string path)

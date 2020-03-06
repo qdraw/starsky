@@ -17,7 +17,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
-using starsky.foundation.ioc;
+using starsky.foundation.injection;
 using starsky.Health;
 using starsky.Helpers;
 using starskycore.Data;
@@ -132,24 +132,9 @@ namespace starsky
 
             new RegisterDependencies().Configure(services);
 
-            // services.AddScoped<IQuery, Query>();
-            // services.AddScoped<ISync, SyncService>();
-            // services.AddScoped<ISearch, SearchService>();
-            // services.AddScoped<ISearchSuggest, SearchSuggestionsService>();
-
-            services.AddScoped<IImport, ImportService>();
-            services.AddScoped<IUserManager, UserManager>();
-            services.AddScoped<IExifTool, ExifTool>();
-            services.AddScoped<IReadMeta, ReadMeta>();
-
-            services.AddScoped<IStorage, StorageThumbnailFilesystem>();
-            services.AddScoped<IStorage, StorageTempFilesystem>();
-	        services.AddScoped<IStorage, StorageSubPathFilesystem>();
-	        services.AddScoped<ISelectorStorage, SelectorStorage>();
-
             // AddHostedService in .NET Core 2.1 / background service
-            services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            // services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
+            // services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             
             // There is a base-cookie and in index controller there is an method to generate a token that is used to send with the header: X-XSRF-TOKEN
             services.AddAntiforgery(

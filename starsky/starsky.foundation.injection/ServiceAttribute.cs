@@ -1,6 +1,6 @@
 using System;
 
-namespace starsky.foundation.ioc
+namespace starsky.foundation.injection
 {
 	[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 	public sealed class ServiceAttribute : Attribute

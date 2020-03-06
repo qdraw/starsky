@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
+using starsky.foundation.injection;
 using starskycore.Interfaces;
 using starskycore.Models;
 using static Medallion.Shell.Shell;
@@ -12,6 +13,7 @@ namespace starskycore.Services
 	/// Only for writing commands 
 	/// Check for mapping objects to exifTool commandline args -> 'ExifToolCmdHelper'
 	/// </summary>
+	[Service(typeof(IExifTool), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ExifTool : IExifTool
 	{
 		private readonly AppSettings _appSettings;

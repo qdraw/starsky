@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
-using starsky.foundation.ioc;
+using starsky.foundation.injection;
 using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Middleware;
@@ -49,10 +49,12 @@ namespace starskycore.Helpers
             // inject config as object to a service
             services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
 	        
-	        new RegisterDependencies().Configure(services);
-	        
+            new RegisterDependencies().Configure(services);
+
             // build the service
             _serviceProvider = services.BuildServiceProvider();
+            
+
             // get the service
             var appSettings = _serviceProvider.GetRequiredService<AppSettings>();
 

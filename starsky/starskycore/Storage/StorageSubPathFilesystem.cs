@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using starsky.foundation.injection;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Storage;
 
 namespace starskycore.Services
 {
+	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class StorageSubPathFilesystem : IStorage
 	{
 		private readonly AppSettings _appSettings;
