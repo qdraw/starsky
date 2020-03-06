@@ -19,7 +19,7 @@ namespace starskytest.Helpers
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
 			var httpProvider = new HttpProvider(httpClient);
 
-			var httpClientHelper = new HttpClientHelper(httpProvider);
+			var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(new FakeIStorage()));
 
 			// use only whitelisted domains
 			var path = Path.Combine(new AppSettings().TempFolder, "pathToNOTdownload.txt");
@@ -34,7 +34,7 @@ namespace starskytest.Helpers
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
 			var httpProvider = new HttpProvider(httpClient);
 
-			var httpClientHelper = new HttpClientHelper(httpProvider);
+			var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(new FakeIStorage()));
 
 			// there is an file written
 			var path = Path.Combine(new CreateAnImage().BasePath, "file.txt");
@@ -49,7 +49,7 @@ namespace starskytest.Helpers
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
 			var httpProvider = new HttpProvider(httpClient);
 
-			var httpClientHelper = new HttpClientHelper(httpProvider);
+			var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(new FakeIStorage()));
 
 			// http is not used anymore
 			var path = Path.Combine(new AppSettings().TempFolder, "pathToNOTdownload.txt");
@@ -64,7 +64,8 @@ namespace starskytest.Helpers
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
 			var httpProvider = new HttpProvider(httpClient);
 
-			var httpClientHelper = new HttpClientHelper(httpProvider);
+			var storageProvider = new FakeIStorage();
+			var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(storageProvider));
 
 			// there is an file written
 			var path = Path.Combine(new CreateAnImage().BasePath, "file.txt");
@@ -72,8 +73,8 @@ namespace starskytest.Helpers
 			
 			Assert.AreEqual(true,output);
 			
-			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,FilesHelper.IsFolderOrFile(path));
-			FilesHelper.DeleteFile(path);
+			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,storageProvider.IsFolderOrFile(path));
+			storageProvider.FileDelete(path);
 		}
 
 

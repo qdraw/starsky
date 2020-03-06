@@ -34,11 +34,6 @@ namespace starsky.Controllers
             _bgTaskQueue = queue;
 	        _httpClientHelper = httpClientHelper;
 	        _selectorStorage = selectorStorage; 
-	        
-	        
-	        // todo: implement full abstractions
-	        
-	        
         }
 	    
         
@@ -61,6 +56,7 @@ namespace starsky.Controllers
         {
             var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
             var importSettings = new ImportSettingsModel(Request);
+            var item = _selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
 	        var fileIndexResultsList = _import.Preflight(tempImportPaths, importSettings);
 

@@ -5,25 +5,29 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using starskycore.Interfaces;
+using starskycore.Services;
 
 namespace starskycore.Helpers
 {
     public class HttpClientHelper
     {
+	    private readonly IStorage _storage;
+
 	    /// <summary>
 	    /// Set Http Provider
 	    /// </summary>
 	    /// <param name="httpProvider">IHttpProvider</param>
-	    public HttpClientHelper(IHttpProvider httpProvider)
+	    /// <param name="storage">Storage provider</param>
+	    public HttpClientHelper(IHttpProvider httpProvider, ISelectorStorage storage)
 	    {
 		    _httpProvider = httpProvider;
+		    _storage = storage.Get(SelectorStorage.StorageServices.HostFilesystem);
 	    }
 
 	    /// <summary>
 	    /// Http Provider
 	    /// </summary>
 	    private readonly IHttpProvider _httpProvider;
-
 
 		/// <summary>
 		/// This domains are only allowed domains to download from (and https only)
@@ -36,8 +40,7 @@ namespace starskycore.Helpers
 			"download.geonames.org"
 		};
 
-
-	    /// <summary>
+		/// <summary>
 		/// Downloads the specified source HTTPS URL.
 		/// </summary>
 		/// <param name="sourceHttpUrl">The source HTTPS URL.</param>
@@ -56,12 +59,9 @@ namespace starskycore.Helpers
             using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
             {
                 if (response.StatusCode != HttpStatusCode.OK) return false;
-                
-                using (Stream streamToWriteTo = File.Open(fullLocalPath, FileMode.Create))
-                {
-                    await streamToReadFrom.CopyToAsync(streamToWriteTo);
-                    return true;
-                }
+
+                await _storage.WriteStreamAsync(streamToReadFrom, fullLocalPath);
+                return true;
             }
         }
     }
