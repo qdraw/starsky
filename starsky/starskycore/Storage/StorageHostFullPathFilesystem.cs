@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -178,6 +179,23 @@ namespace starskycore.Storage
 			using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
 			{
 				stream.CopyTo(fileStream);
+			}
+			stream.Dispose();
+			return true;
+		}
+		
+		/// <summary>
+		/// Write async
+		/// </summary>
+		/// <param name="stream">fileStream</param>
+		/// <param name="path">filePath</param>
+		/// <returns>success or fail</returns>
+		public async Task<bool> WriteStreamAsync(Stream stream, string path)
+		{
+			if ( !stream.CanRead ) return false;
+			using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+			{
+				await stream.CopyToAsync(fileStream); // changed
 			}
 			stream.Dispose();
 			return true;

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -110,7 +111,9 @@ namespace starskytest.FakeMocks
 
 		public bool FileDelete(string path)
 		{
-			throw new NotImplementedException();
+			var index = _outputSubPathFiles.IndexOf(path);
+			_outputSubPathFiles[index] = null;
+			return true;
 		}
 
 		public void CreateDirectory(string subPath)
@@ -191,6 +194,11 @@ namespace starskytest.FakeMocks
 			}
 
 			return true;
+		}
+
+		public Task<bool> WriteStreamAsync(Stream stream, string path)
+		{
+			return Task.FromResult(WriteStream(stream, path));
 		}
 
 		/// <summary>

@@ -155,7 +155,7 @@ namespace starskytest.Controllers
         public async Task ImportController_WrongInputFlow()
         {
 	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
-		        _bgTaskQueue, null, new FakeIStorage())
+		        _bgTaskQueue, null, new FakeSelectorStorage(new FakeIStorage()))
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };
@@ -170,7 +170,7 @@ namespace starskytest.Controllers
         public async Task FromUrl_PathInjection()
         {
 	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
-		        _bgTaskQueue, null, new FakeIStorage())
+		        _bgTaskQueue, null, new FakeSelectorStorage(new FakeIStorage()))
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };
@@ -188,7 +188,7 @@ namespace starskytest.Controllers
 	        var httpClientHelper = new HttpClientHelper(httpProvider);
 	        
 	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
-		        _bgTaskQueue, httpClientHelper, new FakeIStorage())
+		        _bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()))
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };
@@ -207,7 +207,7 @@ namespace starskytest.Controllers
 	        var httpClientHelper = new HttpClientHelper(httpProvider);
 	        
 	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
-		        _bgTaskQueue, httpClientHelper, new FakeIStorage())
+		        _bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()))
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };

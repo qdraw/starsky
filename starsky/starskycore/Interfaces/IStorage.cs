@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using starskycore.Models;
 
 namespace starskycore.Interfaces
@@ -38,6 +39,7 @@ namespace starskycore.Interfaces
 		Stream ReadStream(string path, int maxRead = -1);
 		
 		bool WriteStream(Stream stream, string path);
+		Task<bool> WriteStreamAsync(Stream stream, string path);
 		
 		/// <summary>
 		/// Check if thumbnail exist

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -71,6 +72,11 @@ namespace starskycore.Services
 		}
 
 		public bool WriteStream(Stream stream, string path)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
 			throw new System.NotImplementedException();
 		}

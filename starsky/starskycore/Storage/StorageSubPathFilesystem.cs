@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -211,6 +212,12 @@ namespace starskycore.Services
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
 
 			return new StorageHostFullPathFilesystem().WriteStream(stream, fullFilePath);
+		}
+
+		public Task<bool> WriteStreamAsync(Stream stream, string path)
+		{
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
+			return new StorageHostFullPathFilesystem().WriteStreamAsync(stream, fullFilePath);
 		}
 
 

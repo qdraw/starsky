@@ -26,15 +26,14 @@ namespace starsky.Controllers
         public ApiController(
             IQuery query, IExifTool exifTool, 
             AppSettings appSettings, IBackgroundTaskQueue queue,
-            IReadMeta readMeta,
-			IStorage iStorage)
+			ISelectorStorage selectorStorage)
         {
             _appSettings = appSettings;
             _query = query;
             _exifTool = exifTool;
             _bgTaskQueue = queue;
-            _readMeta = readMeta;
-	        _iStorage = iStorage;
+            _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+            _readMeta = new ReadMeta(_iStorage);
         }
 
 

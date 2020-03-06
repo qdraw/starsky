@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.injection;
 using starskycore.Data;
 using starskycore.Helpers;
 using starskycore.Interfaces;
@@ -50,7 +51,8 @@ namespace starskytest.Services
             
             // Inject Fake Exiftool; dependency injection
             var services = new ServiceCollection();
-//            services.AddSingleton<IExifTool, FakeExifTool>();    
+            
+            new RegisterDependencies().Configure(services);
             
             // Inject Config helper
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
@@ -81,12 +83,10 @@ namespace starskytest.Services
 	        _iStorage = new StorageSubPathFilesystem(_appSettings);
 	        _readmeta = new ReadMeta(_iStorage,_appSettings);
 
-	        var fakeSelectorStorage = new FakeSelectorStorage(_iStorage);
-
-            _isync = new SyncService(_query,_appSettings,_readmeta,fakeSelectorStorage);
+	        var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
+            _isync = new SyncService(_query,_appSettings,_readmeta, selectorStorage);
             
-            var fakeStorage = new FakeSelectorStorage(_iStorage);
-            _import = new ImportService(_context,_isync,new FakeExifTool(_iStorage,_appSettings), _appSettings,null,fakeStorage);
+            _import = new ImportService(_context,_isync,new FakeExifTool(_iStorage,_appSettings), _appSettings,null,selectorStorage);
             
             // Delete gpx files before importing
             // to avoid 1000 files in this folder

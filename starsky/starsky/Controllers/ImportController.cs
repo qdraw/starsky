@@ -23,17 +23,22 @@ namespace starsky.Controllers
         private readonly AppSettings _appSettings;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
 	    private readonly HttpClientHelper _httpClientHelper;
-	    private readonly IStorage _iStorage; //<= not yet implemented
+	    private readonly ISelectorStorage _selectorStorage;
 
 	    public ImportController(IImport import, AppSettings appSettings, 
             IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue, 
-            HttpClientHelper httpClientHelper, IStorage iStorage)
+            HttpClientHelper httpClientHelper, ISelectorStorage selectorStorage)
         {
             _appSettings = appSettings;
             _import = import;
             _bgTaskQueue = queue;
 	        _httpClientHelper = httpClientHelper;
-	        _iStorage = iStorage; //<= not yet implemented
+	        _selectorStorage = selectorStorage; 
+	        
+	        
+	        // todo: implement full abstractions
+	        
+	        
         }
 	    
         
@@ -54,7 +59,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(List<ImportIndexItem>),415)]  // Wrong input (e.g. wrong extenstion type)
         public async Task<IActionResult> IndexPost()
         {
-            var tempImportPaths = await Request.StreamFile(_appSettings);
+            var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
             var importSettings = new ImportSettingsModel(Request);
 
 	        var fileIndexResultsList = _import.Preflight(tempImportPaths, importSettings);
@@ -103,7 +108,7 @@ namespace starsky.Controllers
 	    [RequestSizeLimit(100_000_000)] // in bytes, 100MB
 	    public async Task<IActionResult> Thumbnail()
 	    {
-		    var tempImportPaths = await Request.StreamFile(_appSettings);
+		    var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
 
 		    var thumbnailPaths = new List<string>();
 		    for ( int i = 0; i < tempImportPaths.Count; i++ )

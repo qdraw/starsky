@@ -112,7 +112,7 @@ namespace starskytest.Controllers
 		public async Task UploadToFolder_NoToHeader_BadRequest()
 		{
 			var controller =
-				new UploadController(_import, _appSettings, _isync, _iStorage, _query)
+				new UploadController(_import, _appSettings, _isync, new FakeSelectorStorage(new FakeIStorage()), _query)
 				{
 					ControllerContext = {HttpContext = new DefaultHttpContext()}
 				};
@@ -125,7 +125,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UploadToFolder_DefaultFlow()
 		{
-			var controller = new UploadController(_import, _appSettings, _isync, _iStorage, _query)
+			var controller = new UploadController(_import, _appSettings, _isync, new FakeSelectorStorage(_iStorage), _query)
 			{
 				ControllerContext = RequestWithFile(),
 			};
@@ -150,7 +150,7 @@ namespace starskytest.Controllers
 		public async Task UploadToFolder_NotFound()
 		{
 			var controller =
-				new UploadController(_import, _appSettings, _isync, _iStorage, _query)
+				new UploadController(_import, _appSettings, _isync, new FakeSelectorStorage(_iStorage), _query)
 				{
 					ControllerContext = RequestWithFile(),
 				};
@@ -164,7 +164,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UploadToFolder_UnknownFailFlow()
 		{
-			var controller = new UploadController(_import, _appSettings, _isync, _iStorage, _query)
+			var controller = new UploadController(_import, _appSettings, _isync, new FakeSelectorStorage(_iStorage), _query)
 			{
 				ControllerContext = RequestWithFile(),
 			};
@@ -186,7 +186,7 @@ namespace starskytest.Controllers
 			httpContext.Request.Headers["to"] = "/"; //Set header
 			
 			var controller =
-				new UploadController(_import, _appSettings, _isync, _iStorage, _query)
+				new UploadController(_import, _appSettings, _isync, new FakeSelectorStorage(_iStorage), _query)
 				{
 					ControllerContext =
 					{

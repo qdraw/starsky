@@ -17,21 +17,23 @@ namespace starsky.Controllers
 	public class UploadController : Controller
 	{
 		private readonly AppSettings _appSettings;
-		private readonly IStorage _iStorage; 
 		private readonly IImport _import;
-		private readonly StorageHostFullPathFilesystem _iHostStorage;
+		private readonly IStorage _iStorage; 
+		private readonly IStorage _iHostStorage;
 		private readonly ISync _iSync;
 		private readonly IQuery _query;
+		private readonly ISelectorStorage _selectorStorage;
 
 		public UploadController(IImport import, AppSettings appSettings, 
-			ISync sync, IStorage iStorage, IQuery query)
+			ISync sync, ISelectorStorage selectorStorage, IQuery query)
 		{
 			_appSettings = appSettings;
 			_import = import;
 			_iSync = sync;
 			_query = query;
-			_iStorage = iStorage; 
-			_iHostStorage = new StorageHostFullPathFilesystem();
+			_selectorStorage = selectorStorage;
+			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			_iHostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		}
 		
 		
@@ -72,7 +74,7 @@ namespace starsky.Controllers
 				return NotFound(new ImportIndexItem());
 			}
 			
-			var tempImportPaths = await Request.StreamFile(_appSettings);
+			var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
 			
 			
 			var fileIndexResultsList = _import.Preflight(tempImportPaths, new ImportSettingsModel{IndexMode = false});

@@ -19,10 +19,10 @@ namespace starskycore.Services
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
 
-		public ExifTool(IStorage iStorage, AppSettings appSettings)
+		public ExifTool(ISelectorStorage selectorStorage, AppSettings appSettings)
 		{
 			_appSettings = appSettings;
-			_iStorage = iStorage;
+			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		}
 		
 		/// <summary>

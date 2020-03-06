@@ -761,6 +761,7 @@ namespace starskycore.Services
 			    isoSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Canon Makernote" && p.Name == "Iso")?.Description;
 			    if ( isoSpeedString == "Auto" )
 			    {
+				    // src: https://github.com/exiftool/exiftool/blob/6b994069d52302062b9d7a462dc27082c4196d95/lib/Image/ExifTool/Canon.pm#L8882
 				    var autoIso = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Canon Makernote" && p.Name == "Auto ISO")?.Description;
 				    var baseIso = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Canon Makernote" && p.Name == "Base ISO")?.Description;
 				    if ( !string.IsNullOrEmpty(autoIso) && !string.IsNullOrEmpty(baseIso) )

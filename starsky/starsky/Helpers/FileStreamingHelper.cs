@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using starskycore.Helpers;
+using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
 
@@ -34,13 +35,14 @@ namespace starsky.Helpers
 	        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders)) + Path.GetExtension(requestHeaders);
         }
         
-        public static async Task<List<string>> StreamFile(this HttpRequest request, AppSettings appSettings)
+        public static async Task<List<string>> StreamFile(this HttpRequest request, AppSettings appSettings, ISelectorStorage selectorStorage)
         {
             // The Header 'filename' is for uploading on file without a form.
-            return await StreamFile(request.ContentType, request.Body, appSettings, HeaderFileName(request,appSettings));            
+            return await StreamFile(request.ContentType, request.Body, appSettings, selectorStorage, HeaderFileName(request,appSettings));            
         }
 
-        public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, AppSettings appSettings, string headerFileName = null)
+        public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, AppSettings appSettings, 
+	        ISelectorStorage selectorStorage, string headerFileName = null)
         {
             // headerFileName is for uploading on a single file without a multi part form.
 
@@ -55,9 +57,9 @@ namespace starsky.Helpers
                     throw new FileLoadException($"Expected a multipart request, but got {contentType}");
 
                 var fullFilePath = Path.Combine(appSettings.TempFolder, headerFileName);
-                
                 // Write to disk
-                await Store(fullFilePath, requestBody);
+                await selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem)
+	                .WriteStreamAsync(requestBody, fullFilePath);
 
                 tempPaths.Add(fullFilePath);
 
@@ -88,7 +90,8 @@ namespace starsky.Helpers
                     var fullFilePath = Path.Combine(appSettings.TempFolder, tempHash + inputExtension);
                     tempPaths.Add(fullFilePath);
 
-                    await Store(fullFilePath, section.Body);
+                    await selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem)
+	                    .WriteStreamAsync(requestBody, fullFilePath);
                 }
 
                 // Drains any remaining section body that has not been consumed and
@@ -99,12 +102,6 @@ namespace starsky.Helpers
             return tempPaths;
         }
 
-        private static async Task Store(string path, Stream stream)
-        {
-            var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write);
-            await stream.CopyToAsync(fileStream); // changed
-            fileStream.Dispose();
-        }
         
 //        // For reading plain text form fields
 //                    else if (MultipartRequestHelper.HasFormDataContentDisposition(contentDisposition))

@@ -20,7 +20,6 @@ namespace starskycore.Services
 		public enum StorageServices
 		{
 			SubPath,
-			Temp,
 			Thumbnail,
 			/// <summary>
 			/// Use only to import from
@@ -35,8 +34,6 @@ namespace starskycore.Services
 			{
 				case StorageServices.SubPath:
 					return services.First(o => o.GetType() == typeof(StorageSubPathFilesystem));
-				case StorageServices.Temp:
-					return services.First(o => o.GetType() == typeof(StorageTempFilesystem));
 				case StorageServices.Thumbnail:
 					return services.First(o => o.GetType() == typeof(StorageThumbnailFilesystem));
 				case StorageServices.HostFilesystem:

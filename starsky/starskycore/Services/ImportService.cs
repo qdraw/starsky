@@ -22,15 +22,16 @@ namespace starskycore.Services
 		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		
-		private readonly IReadMeta _readmetaSubPath;
-		private readonly IReadMeta _readmetaHost;
+		private readonly IReadMeta _readMetaSubPath;
+		private readonly IReadMeta _readMetaHost;
 		
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly bool _isConnection;
-		private readonly ISync _isync;
+		private readonly ISync _iSync;
+		private readonly ISelectorStorage _selectorStorage;
 
 		public ImportService(ApplicationDbContext context, // <= for table import-index
-			ISync isync,
+			ISync iSync,
 			IExifTool exifTool,
 			AppSettings appSettings,
 			IServiceScopeFactory scopeFactory,
@@ -39,17 +40,18 @@ namespace starskycore.Services
 			_context = context;
 			_isConnection = _context.TestConnection();
 
-			_isync = isync;
+			_iSync = iSync;
 			_exifTool = exifTool;
 			_appSettings = appSettings;
 
+			_selectorStorage = selectorStorage;
 			_filesystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			
 			// This is used to handle files on the host system
-			_readmetaHost = new ReadMeta(_filesystemStorage);
+			_readMetaHost = new ReadMeta(_filesystemStorage);
 			// and in the database itself
-			_readmetaSubPath = new ReadMeta(_subPathStorage);
+			_readMetaSubPath = new ReadMeta(_subPathStorage);
 
 			_scopeFactory = scopeFactory;
 		}
@@ -237,7 +239,7 @@ namespace starskycore.Services
 		    // Creation of a sidecar xmp file --> NET CORE <--
 		    if ( _appSettings.ExifToolImportXmpCreate && !_appSettings.AddLegacyOverwrite )
 		    {
-			    var exifCopy = new ExifCopy(_subPathStorage, new ExifTool(_subPathStorage,_appSettings), new ReadMeta(_subPathStorage));
+			    var exifCopy = new ExifCopy(_subPathStorage, new ExifTool(_selectorStorage,_appSettings), new ReadMeta(_subPathStorage));
 			    exifCopy.XmpSync(fileIndexItem.FilePath);
 		    }
 
@@ -253,7 +255,7 @@ namespace starskycore.Services
                     nameof(FileIndexItem.Description),
                 };
 
-                new ExifToolCmdHelper(_exifTool,_subPathStorage,_readmetaSubPath).Update(fileIndexItem, comparedNamesList);
+                new ExifToolCmdHelper(_exifTool,_subPathStorage,_readMetaSubPath).Update(fileIndexItem, comparedNamesList);
             }
 
 	        // Ignore the sync part if the connection is missing
@@ -261,7 +263,7 @@ namespace starskycore.Services
 	        if ( importIndexItem.Status == ImportStatus.Ok && importSettings.IndexMode && _isConnection )
 	        {
 		        // The files that are imported need to be synced
-		        var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
+		        var syncFiles = _iSync.SyncFiles(fileIndexItem.FilePath).ToList();
 
 		        // import has failed it has a list with one item with a empty string
 		        if ( syncFiles.FirstOrDefault() == string.Empty) return new ImportIndexItem{Status = ImportStatus.FileError};
@@ -353,7 +355,7 @@ namespace starskycore.Services
 
 		public FileIndexItem ReadExifAndXmpFromFile(string inputFileFullPath)
 		{
-			return _readmetaHost.ReadExifAndXmpFromFile(inputFileFullPath);
+			return _readMetaHost.ReadExifAndXmpFromFile(inputFileFullPath);
 		}
 
 		public bool IsAgeFileFilter(ImportSettingsModel importSettings, DateTime exifDateTime)
