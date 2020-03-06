@@ -6,13 +6,12 @@ using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using NGeoNames;
 using NGeoNames.Entities;
+using starsky.foundation.geo.Models;
 using starskycore.Helpers;
 using starskycore.Models;
-using starskycore.Services;
 using starskycore.Storage;
-using starskygeocore.Models;
 
-namespace starskygeocore.Services
+namespace starsky.foundation.geo.Services
 {
     public class GeoReverseLookup
     {

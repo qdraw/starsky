@@ -7,7 +7,7 @@ namespace starsky.foundation.injection
 	{
 		public ServiceAttribute()
 		{
-
+			// nothing here
 		}
 
 		public ServiceAttribute(Type serviceType)

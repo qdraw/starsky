@@ -4,7 +4,7 @@ using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
-using starskygeocore.Services;
+using starsky.foundation.geo.Services;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starskyGeoCore.Services

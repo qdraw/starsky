@@ -5,7 +5,7 @@ using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
 
-namespace starskygeocore.Services
+namespace starsky.foundation.geo.Services
 {
     public class GeoLocationWrite
     {

@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
-using starskygeocore.Services;
+using starsky.foundation.geo.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 

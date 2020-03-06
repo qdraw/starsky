@@ -1,4 +1,4 @@
-namespace starskygeocore.Models
+namespace starsky.foundation.geo.Models
 {
 	public enum StatusType
 	{

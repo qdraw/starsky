@@ -8,8 +8,8 @@ using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
-using starskygeocore.Models;
-using starskygeocore.Services;
+using starsky.foundation.geo.Models;
+using starsky.foundation.geo.Services;
 
 namespace starsky.Controllers
 {

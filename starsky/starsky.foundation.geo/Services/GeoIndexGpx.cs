@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
+using starsky.foundation.geo.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
-using starskygeocore.Models;
 
-namespace starskygeocore.Services
+namespace starsky.foundation.geo.Services
 {
     public class GeoIndexGpx
     {

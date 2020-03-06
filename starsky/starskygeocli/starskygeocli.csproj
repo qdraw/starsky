@@ -8,7 +8,7 @@
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.1</RuntimeFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\starsky.foundation.geo\starsky.foundation.geo.csproj" />
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
-    <ProjectReference Include="..\starskygeocore\starskygeocore.csproj" />
   </ItemGroup>
 </Project>
