@@ -137,7 +137,7 @@ namespace starskytest.Services
                 DateTime = fileIndexItem.DateTime
             };
             File.Delete(_appSettings.DatabasePathToFilePath(
-                importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
+                importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
         }
         
@@ -172,7 +172,7 @@ namespace starskytest.Services
             Console.WriteLine();
 
             var path = _appSettings.DatabasePathToFilePath(
-                importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()
+                importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)
             );
 
             File.Delete(path);
@@ -218,7 +218,7 @@ namespace starskytest.Services
                 SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime
             };
             File.Delete(_appSettings.DatabasePathToFilePath(
-                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)
             ));
             
             FilesHelper.DeleteDirectory(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
@@ -260,7 +260,7 @@ namespace starskytest.Services
                 SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime
             };
             File.Delete(_appSettings.DatabasePathToFilePath(
-                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)
             ));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
 	        // clean item
@@ -299,7 +299,7 @@ namespace starskytest.Services
             
             // Clean afterwards
             var importIndexItem = _import.GetItemByHash(fileHashCode);
-            var outputFileName = importIndexItem.ParseFileName();
+            var outputFileName = importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
             var outputSubfolders = importIndexItem.ParseSubfolders();
 
             _import.RemoveItem(importIndexItem);
@@ -364,7 +364,7 @@ namespace starskytest.Services
             // Clean afterwards
             importIndexItem = _import.GetItemByHash(fileHashCode);
 
-            var outputFileName = importIndexItem.ParseFileName();
+            var outputFileName = importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
             var outputSubfolders = importIndexItem.ParseSubfolders();
 
             _import.RemoveItem(importIndexItem);
@@ -444,12 +444,12 @@ namespace starskytest.Services
             Assert.AreEqual(File.Exists(fullFilePath), false);
 
             var importIndexItem = _import.GetItemByHash(fileHashCode);
-            var outputFileName = importIndexItem.ParseFileName();
+            var outputFileName = importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
             var outputSubfolders = importIndexItem.ParseSubfolders();
 
             _import.RemoveItem(importIndexItem);
             File.Delete(_appSettings.DatabasePathToFilePath(
-                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)
             ));
             // delete exist dir
             FilesHelper.DeleteDirectory(existDirectoryFullPath);
@@ -467,7 +467,7 @@ namespace starskytest.Services
                 SourceFullFilePath = "123456789876",  
                 DateTime = DateTime.Now
             };
-            importIndexItem.ParseFileName();
+            importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.notfound);
         }
 
         [TestMethod]
@@ -500,7 +500,7 @@ namespace starskytest.Services
 
 	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
             var importIndexItem = _import.GetItemByHash(fileHashCode);
-            var outputFileName = importIndexItem.ParseFileName();
+            var outputFileName = importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
             var outputSubfolders = importIndexItem.ParseSubfolders();
 
             _import.RemoveItem(importIndexItem);
@@ -554,7 +554,7 @@ namespace starskytest.Services
                 SourceFullFilePath = createAnImage.FullFilePath,  
                 DateTime = fileIndexItem.DateTime
             };
-            File.Delete(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
+            File.Delete(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
 
 	        // remove from query database    

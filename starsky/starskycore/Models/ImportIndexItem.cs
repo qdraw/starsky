@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using starskycore.Helpers;
+using starskycore.Interfaces;
 #if SYSTEM_TEXT_ENABLED
 using System.Text.Json.Serialization;
 #else
@@ -33,8 +34,10 @@ namespace starskycore.Models
     {
         private readonly AppSettings _appSettings;
 
-        //  In order to create an instance of 'ImportIndexItem'
-        // EF requires that a parameter-less constructor be declared.
+        /// <summary>
+        /// In order to create an instance of 'ImportIndexItem'
+        /// EF requires that a parameter-less constructor be declared.
+        /// </summary>
         public ImportIndexItem()
         {
         }
@@ -100,15 +103,20 @@ namespace starskycore.Models
         public string Structure { get; set; }
 
         
-        // Depends on App Settings for storing values
-        // Depends on BasePathConfig for setting default values
-        // Input required:
-        // SourceFullFilePath= createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime
-        public string ParseFileName(bool checkIfExist = true)
+		/// <summary>
+		/// Depends on App Settings for storing values
+		/// Depends on BasePathConfig for setting default values
+		/// Input required:
+		/// SourceFullFilePath= createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime
+		/// </summary>
+		/// <param name="imageFormatExtenstion">file extension by the first bytesr</param>
+		/// <param name="checkIfExist"></param>
+		/// <returns></returns>
+		/// <exception cref="FileNotFoundException"></exception>
+        public string ParseFileName(ExtensionRolesHelper.ImageFormat imageFormatExtenstion, bool checkIfExist = true)
         {
             if (string.IsNullOrWhiteSpace(SourceFullFilePath)) return string.Empty;
-            var imageFormatExtenstion = ExtensionRolesHelper.GetImageFormat(SourceFullFilePath);
-            
+          
             var fileExtension = Path.GetExtension(SourceFullFilePath).Replace(".",string.Empty).ToLower();
 
             if (imageFormatExtenstion == ExtensionRolesHelper.ImageFormat.notfound)
@@ -140,8 +148,8 @@ namespace starskycore.Models
             
             fileName += "." + fileExtension;
             
-            // Escape feature to Restore (filenamebase)
-            if (fileName.Contains("_!q_")) // filenamebase
+            // Escape feature to Restore (fileNameBase)
+            if (fileName.Contains("_!q_")) // fileNameBase
             {
                 fileName = fileName.Replace("_!q_", Path.GetFileNameWithoutExtension(SourceFullFilePath));
             }

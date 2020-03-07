@@ -150,7 +150,9 @@ namespace starskycore.Services
 			{
 				fileIndexItem.DateTime = importIndexItem.ParseDateTimeFromFileName();
 				// > for the exif based items it is done in: ObjectCreateIndexItem()
-				fileIndexItem.FileName = importIndexItem.ParseFileName();
+				
+				var imageFormatExtenstion = ExtensionRolesHelper.GetImageFormat(_filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath));
+				fileIndexItem.FileName = importIndexItem.ParseFileName(imageFormatExtenstion);
 
 				fileIndexItem.Description = "Date and Time based on filename";
 				importSettings.NeedExiftoolSync = true;
@@ -303,8 +305,10 @@ namespace starskycore.Services
 			{
 				importIndexItem.Structure = overwriteStructure;
 			}
-
-			fileIndexItem.FileName = importIndexItem.ParseFileName();
+			
+			var imageFormatExtenstion = ExtensionRolesHelper.GetImageFormat(_filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath,160));
+			fileIndexItem.FileName = importIndexItem.ParseFileName(imageFormatExtenstion);
+			
 			return importIndexItem;
 		}
 

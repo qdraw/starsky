@@ -218,10 +218,11 @@ namespace starskycore.Models
         {
             get
             {
-                var import = new ImportIndexItem(this);
-                import.DateTime = DateTime.Now;
-                import.SourceFullFilePath = "example.jpg";
-                return import.ParseSubfolders(false) + import.ParseFileName(false);
+	            var import = new ImportIndexItem(this)
+	            {
+		            DateTime = DateTime.Now, SourceFullFilePath = "example.jpg"
+	            };
+	            return import.ParseSubfolders(false) + import.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg, false);
             }
         }
 
