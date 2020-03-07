@@ -305,8 +305,13 @@ namespace starskycore.Services
 			{
 				importIndexItem.Structure = overwriteStructure;
 			}
+
+			var imageFormatExtenstion =
+				_filesystemStorage.ExistFile(importIndexItem.SourceFullFilePath)
+					? ExtensionRolesHelper.GetImageFormat(
+						_filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath, 160))
+					: ExtensionRolesHelper.ImageFormat.unknown;
 			
-			var imageFormatExtenstion = ExtensionRolesHelper.GetImageFormat(_filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath,160));
 			fileIndexItem.FileName = importIndexItem.ParseFileName(imageFormatExtenstion);
 			
 			return importIndexItem;

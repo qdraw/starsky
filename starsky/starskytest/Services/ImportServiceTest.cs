@@ -14,6 +14,7 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
+using starskycore.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
@@ -52,8 +53,11 @@ namespace starskytest.Services
             // Inject Fake Exiftool; dependency injection
             var services = new ServiceCollection();
             
-            new RegisterDependencies().Configure(services);
-            
+            // register manual to avoid exiftool to be registered
+            services.AddScoped<ISelectorStorage,SelectorStorage>();
+            services.AddScoped<IStorage,StorageSubPathFilesystem>();
+            services.AddScoped<IStorage,StorageHostFullPathFilesystem>();
+
             // Inject Config helper
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             // random config

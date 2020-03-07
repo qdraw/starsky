@@ -18,7 +18,8 @@ var filePathList = [
 	"starsky/starsky/readme.md",
 	"starsky/starsky/clientapp/readme.md",
 	"starsky/starskycore/readme.md",
-	"starsky/starskygeocore/readme.md",
+	"starsky/starsky.foundation.geo/readme.md",
+	"starsky/starsky.foundation.injection/readme.md",
 	"starsky/starskygeocli/readme.md",
 	"starsky/starskyimportercli/readme.md",
 	"starsky/starskysynccli/readme.md",
@@ -99,8 +100,8 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
 		</a>
 	</div>`;
 
-	var outputHtml = contentsHtml.replace(/<\/head>\n<body>/ig, "<title>" + getTitle(contentsHtml) + "</title><link rel=\"stylesheet\" href=\"" + relativeCssPath 
-	+ "style.css\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><\/head>\n<body>\n" + menuHtml + "\n<div class=\"container\"><div class=\"entry-content\">");
+	var outputHtml = contentsHtml.replace(/<\/head>\n<body>/ig, "<title>" + getTitle(contentsHtml) + "</title><link rel=\"stylesheet\" href=\"" + relativeCssPath
+		+ "style.css\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><\/head>\n<body>\n" + menuHtml + "\n<div class=\"container\"><div class=\"entry-content\">");
 
 	contentsHtml = outputHtml.replace(/<\/body>\n/ig, "</div>\n</div>\n <script defer src=\"" + relativeCssPath + "menu.js\"></script></body>\n");
 	console.log(htmlPath);
@@ -116,9 +117,9 @@ function getTitle(contentsHtml) {
 	if (match) {
 		var restOfString = contentsHtml.substring(match.index);
 		var restOfStringMatch = regexEndTag.exec(restOfString);
-		if(restOfStringMatch) {
-			restOfString = restOfString.substr(0,restOfStringMatch.index) 
-			title = restOfString.replace(regexStartTag,"")
+		if (restOfStringMatch) {
+			restOfString = restOfString.substr(0, restOfStringMatch.index)
+			title = restOfString.replace(regexStartTag, "")
 		}
 	}
 	else {
