@@ -6,15 +6,24 @@
 ### Features planned (in random order) and lower priority
 - []   (feature) _Back-end_ Realtime Files API
 - []   (feature) _Back-end_ mp4/h.264 video support
-- []   (feature) _Back-end_ Docker support, including backend abstractions to get the data (partly working)
+- []   (feature) _Back-end_ Docker support, 
 - []   (feature) _Frond-end_  Search details show exact query behind modal
 - []   (feature) _Frond-end_  Info Messages to show actions (e.g. pressed copy all fields shortcut )
 - []   (feature) _Front-end_ Zoom in picture
 
 ### High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
+- []   (bug) _Front-end_ Readonly mode and modals __not implemented__
+- []   (bug) _Back-end_ XMP Rotation __not implemented__
 
-# version 0.1.17 - 2020-02-??
+# version 0.2.0 - 2020-03-??
+- [x] 	(feature) _Front-end_ icons for xmp and raw (tiff-based) in archive mode
+- [x] 	(feature) _Back-end_ support for Canon's way of reading ISO-Speed
+- [ ]		(feature) _Back-end_ abstractions to get the filesystem data
+- [ ]		(feature) _Back-end_ Injection framework implemented
+- [ ] 	(rename) _Back-end_ Feature renaming and docs updates
+
+# version 0.1.17 - 2020-03-07
 - [x]  (feature) _Front-end_ DateTime editing in detailView
 - [x]  (feature) _Front-end_ change DateTime layout
 - [x]  (feature) _Back-end_ tags XMP in file read/write support
@@ -32,11 +41,10 @@
 - [x]  (feature) _Back-end_ isoSpeed XMP in file read/write support
 - [x]  (feature) _Back-end_ focalLength XMP in file read/write support
 - [x]  (bugfix) _Back-end_ search fix bug where Make/Model is giving a Exception (fixed)
-- []   (bug) _Front-end_ Readonly mode and modals __not implemented__
 
 # version 0.1.16 - 2020-02-23
 - [x]  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix
-- [x]  (feature) _Back-end_ Feature toggle to change from `Newtonsoft.Json` to `System.Text.Json`
+- [x]  (feature) _Back-end_ Feature toggle to change from `Newtonsoft.Json` to `System.Text.Json` _using Newtonsoft for this version_
 - [x]  (bugfix) _Frond-end_ Trash display content after deleted (changes in wrapper)
 - [x]  (rename) _Back-end_ `/api/import/allowed` to `/api/allowed-types/mimetype/sync`
 - [x]  (upgrade) _Frond-end_  Upgrade ClientApp CRA _(Create React App 3.3.1, 2020-01-31)_

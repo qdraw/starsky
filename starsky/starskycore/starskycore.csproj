@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <Description>An attempt to create a database driven photo library</Description>
-        <Version>0.1.17</Version>
+        <Version>0.2.0</Version>
         <IsPackable>true</IsPackable>
         <!-- SonarQube needs this -->
         <ProjectGuid>{e6d8f456-859f-479d-bffa-3e78f1b27315}</ProjectGuid>
@@ -94,5 +94,5 @@
     <ItemGroup>
       <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
     </ItemGroup>
-    
+
 </Project>
