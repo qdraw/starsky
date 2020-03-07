@@ -22,6 +22,8 @@
 - [ ]		(feature) _Back-end_ abstractions to get the filesystem data
 - [ ]		(feature) _Back-end_ Injection framework implemented
 - [ ] 	(rename) _Back-end_ Feature renaming and docs updates
+- [ ] 	(feature) _Back-end support for RAW that is not Sony for example Nikon .NEF
+
 
 # version 0.1.17 - 2020-03-07
 - [x]  (feature) _Front-end_ DateTime editing in detailView
