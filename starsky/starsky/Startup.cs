@@ -146,7 +146,7 @@ namespace starsky
             );
 	        
 			// to add support for swagger
-			new SwaggerHelper(_appSettings).Add01SwaggerGenHelper(services);
+			new SwaggerHelper(_appSettings,null).Add01SwaggerGenHelper(services);
 
 			// Now only for dev
 			services.AddCors(options =>
