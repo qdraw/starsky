@@ -57,8 +57,9 @@ const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): st
   if (!dateTime) return "";
   var dateTimeObject = new Date(dateTime);
   // We prefer British English, uses day-month-year order
-  var locateString = locate === SupportedLanguages.en ? "en-GB" : locate.toString()
-  return dateTimeObject.toLocaleDateString(locateString, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  var locateString = locate === SupportedLanguages.en ? "en-GB" : locate.toString();
+  // toLocaleDateString assumes that the input is UTC, which is usaly not the case
+  return dateTimeObject.toLocaleDateString(locateString, { timeZone: 'UTC', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 const parseTime = (dateTime: string | undefined): string => {
