@@ -39,6 +39,7 @@
 - [x]  (feature) _Back-end_ isoSpeed XMP in file read/write support
 - [x]  (feature) _Back-end_ focalLength XMP in file read/write support
 - [x]  (bugfix) _Back-end_ search fix bug where Make/Model is giving a Exception (fixed)
+- [x]  (bugfix) _Front-end_ clientside bug dateTime is not displayed correct
 
 # version 0.1.16 - 2020-02-23
 - [x]  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix
