@@ -131,10 +131,6 @@ namespace starsky
                 );
 
             new RegisterDependencies().Configure(services);
-
-            // AddHostedService in .NET Core 2.1 / background service
-            // services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-            // services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             
             // There is a base-cookie and in index controller there is an method to generate a token that is used to send with the header: X-XSRF-TOKEN
             services.AddAntiforgery(
@@ -178,7 +174,7 @@ namespace starsky
 	        services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews().AddNewtonsoftJson();
 #endif
 	        
-			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
+			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an Nginx reverse proxy
 			services.Configure<ForwardedHeadersOptions>(options =>
 			{
 				options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
@@ -255,9 +251,10 @@ namespace starsky
 			app.UseRouting();
 #endif
 
-			// No CSP for swagger
-			new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
-			new SwaggerHelper(_appSettings).Add03AppExport(app);
+	        // No CSP for swagger
+		    var selectorStorage = app.ApplicationServices.GetRequiredService<ISelectorStorage>();
+			new SwaggerHelper(_appSettings,selectorStorage).Add02AppUseSwaggerAndUi(app);
+			new SwaggerHelper(_appSettings,selectorStorage).Add03AppExport(app);
 			
 			app.UseContentSecurityPolicy();
 	        

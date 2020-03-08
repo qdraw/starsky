@@ -9,16 +9,20 @@ using starskycore.Helpers;
 using starskycore.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using starskycore.Interfaces;
+using starskycore.Services;
 
 namespace starsky.Helpers
 {
 	public class SwaggerHelper
 	{
 		private readonly AppSettings _appSettings;
+		private readonly ISelectorStorage _selectorStorage;
 
-		public SwaggerHelper(AppSettings appSettings)
+		public SwaggerHelper(AppSettings appSettings, ISelectorStorage selectorStorage)
 		{
 			_appSettings = appSettings;
+			_selectorStorage = selectorStorage;
 		}
 
 		public void Add01SwaggerGenHelper(IServiceCollection services)
@@ -69,11 +73,19 @@ namespace starsky.Helpers
 				var swaggerJsonText = GenerateSwagger(serviceScope, _appSettings.Name);
 				if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ArgumentNullException(app + " => swaggerJsonText = null");
 
-				var starskyJsonPath =
+				var swaggerJsonFullPath =
 					Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
-				FilesHelper.DeleteFile(starskyJsonPath);
-				new PlainTextFileHelper().WriteFile(starskyJsonPath, swaggerJsonText);
-				Console.WriteLine(starskyJsonPath);
+
+				var storage = _selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+				storage.FileDelete(swaggerJsonFullPath);
+				storage.WriteStream(new PlainTextFileHelper().StringToStream(swaggerJsonText),
+					swaggerJsonFullPath);
+
+				if ( _appSettings.Verbose )
+				{
+					Console.WriteLine($"Add03AppExport {swaggerJsonFullPath}");
+				}
+
 			}
 		}
 
