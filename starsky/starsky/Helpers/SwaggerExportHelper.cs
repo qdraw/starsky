@@ -1,9 +1,7 @@
 using System;
 using System.IO;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
 using starskycore.Helpers;
 using starskycore.Models;
@@ -14,39 +12,15 @@ using starskycore.Services;
 
 namespace starsky.Helpers
 {
-	public class SwaggerHelper
+	public class SwaggerExportHelper
 	{
 		private readonly AppSettings _appSettings;
 		private readonly ISelectorStorage _selectorStorage;
 
-		public SwaggerHelper(AppSettings appSettings, ISelectorStorage selectorStorage)
+		public SwaggerExportHelper(AppSettings appSettings, ISelectorStorage selectorStorage)
 		{
 			_appSettings = appSettings;
 			_selectorStorage = selectorStorage;
-		}
-
-		public void Add01SwaggerGenHelper(IServiceCollection services)
-		{
-			var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			
-			services.AddSwaggerGen(c =>
-			{
-				c.SwaggerDoc(_appSettings.Name, new OpenApiInfo { Title = _appSettings.Name, Version = version });
-				c.AddSecurityDefinition("basic", new OpenApiSecurityScheme { Type = SecuritySchemeType.Http, Scheme = "basic" });
-				c.AddSecurityRequirement(new OpenApiSecurityRequirement
-				{
-					{
-						new OpenApiSecurityScheme
-						{
-							Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "basic" }
-						},
-						new string[] {}
-					}
-				});
-
-				c.IncludeXmlComments(GetXmlCommentsPath());
-			});
-
 		}
 
 		public void Add02AppUseSwaggerAndUi(IApplicationBuilder app)
@@ -101,12 +75,6 @@ namespace starsky.Helpers
 					NullValueHandling = NullValueHandling.Ignore,
 					ContractResolver = new DefaultContractResolver()
 				});
-		}
-
-
-		private string GetXmlCommentsPath()
-		{
-			return Path.Combine(_appSettings.BaseDirectoryProject, "starsky.xml");
 		}
 	}
 }

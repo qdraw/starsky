@@ -111,6 +111,7 @@ namespace starskytest.FakeMocks
 
 		public bool FileDelete(string path)
 		{
+			if ( !ExistFile(path) ) return false;
 			var index = _outputSubPathFiles.IndexOf(path);
 			_outputSubPathFiles[index] = null;
 			return true;
@@ -172,7 +173,6 @@ namespace starskytest.FakeMocks
 			var result = _byteList.FirstOrDefault(p => p.Key == path).Value;
 			MemoryStream stream1 = new MemoryStream(result);
 			return stream1;
-
 		}
 
 		public bool WriteStream(Stream stream, string path)

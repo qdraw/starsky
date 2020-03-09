@@ -14,6 +14,7 @@ using starskycore.Helpers;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskytest.Controllers;
+using starskytest.FakeMocks;
 
 namespace starskytest.Helpers
 {
@@ -58,9 +59,10 @@ namespace starskytest.Helpers
 		public async Task SwaggerTest_Integration_Test()
 		{
 			var swaggerFilePath = Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
+			
+			var storage = new FakeIStorage();
+			var fakeSelectorStorage = new FakeSelectorStorage(storage);
 
-			FilesHelper.DeleteFile(swaggerFilePath);
-			System.Console.WriteLine("swaggerFilePath " + swaggerFilePath);
 
 			var host = WebHost.CreateDefaultBuilder()
 				.UseUrls("http://localhost:5051")
@@ -68,7 +70,7 @@ namespace starskytest.Helpers
 				{
 					services.AddMvcCore().AddApiExplorer();
 					services.AddSwaggerGen();
-					new SwaggerHelper(_appSettings).Add01SwaggerGenHelper(services);
+					new SwaggerSetupHelper(_appSettings).Add01SwaggerGenHelper(services);
 
 				})
 				.Configure(app =>
@@ -80,22 +82,22 @@ namespace starskytest.Helpers
 						endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 					});
 
-					new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
-					new SwaggerHelper(_appSettings).Add03AppExport(app);
+					new SwaggerExportHelper(_appSettings,fakeSelectorStorage).Add02AppUseSwaggerAndUi(app);
+					new SwaggerExportHelper(_appSettings,fakeSelectorStorage).Add03AppExport(app);
 				}).Build();
 
 			await host.StartAsync();
 			await host.StopAsync();
 
-			Assert.AreEqual(true,FilesHelper.ExistFile(swaggerFilePath));
+			Assert.AreEqual(true,storage.ExistFile(swaggerFilePath));
 
-			var swaggerFileContent = new PlainTextFileHelper().ReadFile(swaggerFilePath);
+			var swaggerFileContent =
+				await new PlainTextFileHelper().StreamToStringAsync(
+					storage.ReadStream(swaggerFilePath));
 
 			System.Console.WriteLine("swaggerFileContent " + swaggerFileContent);
 
 			Assert.AreEqual(true, swaggerFileContent.Contains($"\"Title\": \"{_appSettings.Name}\""));
-			
-			
 		}
 
 		

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace starskycore.Helpers
 {
@@ -18,6 +19,20 @@ namespace starskycore.Helpers
 		    stream.Dispose();
 		    return result;
 	    }
+
+	    /// <summary>
+	    /// Stream to string (UTF8) But Async
+	    /// </summary>
+	    /// <param name="stream">stream</param>
+	    /// <returns>content of the file as string</returns>
+	    public async Task<string> StreamToStringAsync(Stream stream)
+	    {
+		    var reader = new StreamReader(stream, Encoding.UTF8);
+		    var result = await reader.ReadToEndAsync();
+		    stream.Dispose();
+		    return result;  
+	    }
+
 
 	    /// <summary>
 	    /// String (UTF8) to Stream

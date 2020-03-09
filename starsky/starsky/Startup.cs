@@ -146,7 +146,7 @@ namespace starsky
             );
 	        
 			// to add support for swagger
-			new SwaggerHelper(_appSettings,null).Add01SwaggerGenHelper(services);
+			new SwaggerSetupHelper(_appSettings).Add01SwaggerGenHelper(services);
 
 			// Now only for dev
 			services.AddCors(options =>
@@ -253,8 +253,8 @@ namespace starsky
 
 	        // No CSP for swagger
 		    var selectorStorage = app.ApplicationServices.GetRequiredService<ISelectorStorage>();
-			new SwaggerHelper(_appSettings,selectorStorage).Add02AppUseSwaggerAndUi(app);
-			new SwaggerHelper(_appSettings,selectorStorage).Add03AppExport(app);
+			new SwaggerExportHelper(_appSettings,selectorStorage).Add02AppUseSwaggerAndUi(app);
+			new SwaggerExportHelper(_appSettings,selectorStorage).Add03AppExport(app);
 			
 			app.UseContentSecurityPolicy();
 	        

@@ -46,6 +46,7 @@ namespace starskytest.Helpers
             // get the service
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();
         }
+        
         [TestMethod]
         public void Files_IsFolderOrFileTest()
         {
@@ -54,17 +55,6 @@ namespace starskytest.Helpers
             
             Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, FilesHelper.IsFolderOrFile(newImage.BasePath));
             Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,FilesHelper.IsFolderOrFile(newImage.FullFilePath));
-        }
-
-        [TestMethod]
-        public void Files_GetFilesInDirectoryTest1()
-        {
-            // Used for JPEG files
-            var newImage = new CreateAnImage();
-            _appSettings.ThumbnailTempFolder = newImage.BasePath;
-            _appSettings.StorageFolder = newImage.BasePath;
-            var filesInFolder = FilesHelper.GetFilesInDirectory(newImage.BasePath);
-            Assert.AreEqual(filesInFolder.Any(),true);
         }
         
     }

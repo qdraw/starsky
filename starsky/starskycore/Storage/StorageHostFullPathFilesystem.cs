@@ -99,7 +99,6 @@ namespace starskycore.Storage
 			return fileStream;
 		}
 
-
 		/// <summary>
 		/// Does file exist (true == exist)
 		/// </summary>
