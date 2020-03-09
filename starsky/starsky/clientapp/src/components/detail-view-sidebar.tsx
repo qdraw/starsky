@@ -252,7 +252,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         <div className="box">
           <div className="icon icon--shutter-speed" />
           <b>
-            <span data-test="make">{fileIndexItem.make}&nbsp;&nbsp;</span>
+            <span data-test="make">{fileIndexItem.make}&nbsp;</span>
             <span data-test="model">{fileIndexItem.model}</span>
           </b>
           <p>

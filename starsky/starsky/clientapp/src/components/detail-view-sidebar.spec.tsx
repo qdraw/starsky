@@ -155,7 +155,7 @@ describe("DetailViewSidebar", () => {
 
     it("test if make from the context is displayed", () => {
       var description = Component.find('[data-test="make"]');
-      expect(description.text()).toBe('apple')
+      expect(description.text()).toBe('apple ') // <= with space on end
     });
 
     it("test if model from the context is displayed", () => {
