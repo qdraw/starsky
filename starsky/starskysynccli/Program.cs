@@ -55,7 +55,7 @@ namespace starskysynccli
 
             if (new ArgsHelper(appSettings).GetThumbnail(args))
             {
-	            var storage = startupHelper.Storage();
+	            var storage = startupHelper.SubPathStorage();
 
 				var isFolderOrFile = storage.IsFolderOrFile(subpath);
 

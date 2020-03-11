@@ -18,11 +18,13 @@ namespace starskycore.Services
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
+		private readonly IStorage _thumbnailStorage;
 
 		public ExifTool(ISelectorStorage selectorStorage, AppSettings appSettings)
 		{
 			_appSettings = appSettings;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		}
 		
 		/// <summary>
@@ -47,9 +49,9 @@ namespace starskycore.Services
 		/// <returns>true=success</returns>
 		public async Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
 		{
-			var runner = new StreamToStreamRunner(_appSettings, _iStorage.ThumbnailRead(fileHash));
+			var runner = new StreamToStreamRunner(_appSettings, _thumbnailStorage.ReadStream(fileHash));
 			var stream = await runner.RunProcessAsync(command);
-			return _iStorage.ThumbnailWriteStream(stream, fileHash);
+			return await _thumbnailStorage.WriteStreamAsync(stream, fileHash);
 		}
 
 		/// <summary>

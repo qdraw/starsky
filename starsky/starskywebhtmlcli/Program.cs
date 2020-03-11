@@ -59,7 +59,7 @@ namespace starskywebhtmlcli
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;
 
-	        var iStorage = startupHelper.Storage();
+	        var iStorage = startupHelper.SubPathStorage();
 			// use relative to StorageFolder
 	        var listOfFiles = iStorage.GetAllFilesInDirectory("/")
 		        .Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();

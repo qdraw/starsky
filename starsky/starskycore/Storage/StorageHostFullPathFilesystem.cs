@@ -200,32 +200,6 @@ namespace starskycore.Storage
 			return true;
 		}
 
-		public bool ThumbnailExist(string fileHash)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Stream ThumbnailRead(string fileHash)
-		{
-			throw new NotImplementedException();
-		}
-
-		public bool ThumbnailWriteStream(Stream stream, string fileHash)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void ThumbnailMove(string fromFileHash, string toFileHash)
-		{
-			throw new NotImplementedException();
-		}
-
-		public bool ThumbnailDelete(string fileHash)
-		{
-			throw new NotImplementedException();
-		}
-
-
 		/// <summary>
 		/// Gets the files recrusive. (only ExtensionSyncSupportedList types)
 		/// </summary>
@@ -247,15 +221,6 @@ namespace starskycore.Storage
             foreach (var file in findlist)
             {
 	            imageFilesList.Add(file);
-//                // Path.GetExtension uses (.ext)
-//                //  GetFilesInDirectory
-//                // the same check in SingleFile
-//                // Recruisive >= same check
-//                var extension = Path.GetExtension(file).ToLower().Replace(".",string.Empty);
-//                if (ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(extension))
-//                {
-//                    
-//                }
             }
             
             return imageFilesList;
@@ -284,7 +249,5 @@ namespace starskycore.Storage
                 }
             }
         }
-
-
 	}
 }

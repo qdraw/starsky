@@ -10,6 +10,7 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
+using starskycore.Storage;
 using Query = starskycore.Services.Query;
 using ReadMeta = starskycore.Services.ReadMeta;
 using SyncService = starskycore.Services.SyncService;
@@ -27,6 +28,7 @@ namespace starskycore.Helpers
 	    private readonly ThumbnailCleaner _thumbnailCleaner;
 	    private readonly IStorage _iStorage;
 	    private readonly UserManager _userManager;
+	    private readonly StorageThumbnailFilesystem _thumbnailStorage;
 
 	    /// <summary>
         /// Inject all services for the CLI applications
@@ -93,6 +95,8 @@ namespace starskycore.Helpers
             var query = new Query(context);
 
 	        _iStorage = new StorageSubPathFilesystem(appSettings);
+	        _thumbnailStorage = new StorageThumbnailFilesystem(appSettings);
+	        
 	        var selectorStorage = new SelectorStorage(_serviceProvider);
             
             _readmeta = new ReadMeta(_iStorage,appSettings);
@@ -191,7 +195,7 @@ namespace starskycore.Helpers
 	    /// Storage Container
 	    /// </summary>
 	    /// <returns>IStorage</returns>
-	    public IStorage Storage()
+	    public IStorage SubPathStorage()
 	    {
 		    return _iStorage;
 	    }

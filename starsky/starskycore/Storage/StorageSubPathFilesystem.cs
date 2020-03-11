@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starskycore.Interfaces;
 using starskycore.Models;
-using starskycore.Storage;
 
-namespace starskycore.Services
+namespace starskycore.Storage
 {
 	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class StorageSubPathFilesystem : IStorage
@@ -218,65 +217,6 @@ namespace starskycore.Services
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
 			return new StorageHostFullPathFilesystem().WriteStreamAsync(stream, fullFilePath);
-		}
-
-
-		/// <summary>
-		/// Check if thumbnail exist
-		/// </summary>
-		/// <param name="fileHash">bash32 filehash</param>
-		/// <returns></returns>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
-		public bool ThumbnailExist(string fileHash)
-		{
-			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg");
-			return new StorageHostFullPathFilesystem().ExistFile(filePath);
-		}
-
-		[Obsolete("do not include direct, only using ISelectorStorage")]
-		public Stream ThumbnailRead(string fileHash)
-		{
-			if ( !ThumbnailExist(fileHash) ) throw new FileNotFoundException(fileHash); 
-			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg");
-			return new StorageHostFullPathFilesystem().ReadStream(filePath);
-		}
-
-		/// <summary>
-		/// To Write the thumbnail stream
-		/// </summary>
-		/// <param name="stream">the output to write</param>
-		/// <param name="fileHash">the filehash</param>
-		/// <returns></returns>
-		public bool ThumbnailWriteStream(Stream stream, string fileHash)
-		{
-			return new StorageHostFullPathFilesystem()
-				.WriteStream(stream, Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg"));
-		}
-		
-		public void ThumbnailMove(string oldHashCode, string newHashCode)
-		{
-			var oldThumbPath = _appSettings.ThumbnailTempFolder + oldHashCode + ".jpg";
-			var newThumbPath = _appSettings.ThumbnailTempFolder + newHashCode + ".jpg";
-
-			var hostFilesystem = new StorageHostFullPathFilesystem();
-
-			var existOldFile = hostFilesystem.ExistFile(oldThumbPath);
-			var existNewFile = hostFilesystem.ExistFile(newThumbPath);
-
-			if (!existOldFile || existNewFile)
-			{
-				return;
-			}
-			hostFilesystem.FileMove(oldThumbPath,newThumbPath);
-		}
-
-		public bool ThumbnailDelete(string fileHash)
-		{
-			if ( !ThumbnailExist(fileHash) ) return false;
-
-			var thumbPath = _appSettings.ThumbnailTempFolder + fileHash + ".jpg";
-			var hostFilesystem = new StorageHostFullPathFilesystem();
-			return hostFilesystem.FileDelete(thumbPath);
 		}
 	}
 }

@@ -10,12 +10,14 @@ namespace starskycore.Services
 		private readonly IStorage _iStorage;
 		private readonly IReadMeta _readMeta;
 		private readonly IExifTool _exifTool;
+		private readonly IStorage _thumbnailStorage;
 
-		public ExifCopy(IStorage iStorage, IExifTool exifTool, IReadMeta readMeta)
+		public ExifCopy(IStorage iStorage, IStorage thumbnailStorage,  IExifTool exifTool, IReadMeta readMeta)
 		{
 			_iStorage = iStorage;
 			_exifTool = exifTool;
 			_readMeta = readMeta;
+			_thumbnailStorage = thumbnailStorage;
 		}
 
 		private const string XmpStartContent =
@@ -58,44 +60,19 @@ namespace starskycore.Services
 			return withXmp;
 		}
 	    
-		
-		
 		public string CopyExifPublish(string fromSubPath, string toSubPath)
 		{
 			var updateModel = _readMeta.ReadExifAndXmpFromFile(fromSubPath);
 			var comparedNames = CompareAll(updateModel);
 			comparedNames.Add(nameof(FileIndexItem.Software));
 			updateModel.SetFilePath(toSubPath);
-			return new ExifToolCmdHelper(_exifTool,_iStorage,_readMeta).Update(updateModel, comparedNames);
+			return new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage ,_readMeta).Update(updateModel, comparedNames);
 		}
-
 
 		public List<string> CompareAll(FileIndexItem fileIndexItem)
 		{
 			return FileIndexCompareHelper.Compare(new FileIndexItem(), fileIndexItem);
 		}
 
-//		/// <summary>
-//		/// Copy for list all items (ignore if file already exist)
-//		/// </summary>
-//		/// <param name="fileIndexList">List with all content to be synced</param>
-//		public void CopyExifToThumbnail(IEnumerable<FileIndexItem> fileIndexList)
-//		{
-//			foreach ( var updateModel in fileIndexList )
-//			{
-//				if ( ! _iStorage.ThumbnailExist(updateModel.FileHash) ) continue;
-//				var comparedNames = CompareAll(updateModel);
-//				comparedNames.Add(nameof(FileIndexItem.Software));
-//				new ExifToolCmdHelper(_exifTool,_iStorage,_readMeta).UpdateThumbnail(updateModel, comparedNames);
-//			}
-//		}
-//	    
-//		public void CopyExifToThumbnail(string subPath, string thumbPath)
-//		{
-//			var updateModel = _readMeta.ReadExifAndXmpFromFile(subPath);
-//			var comparedNames = CompareAll(updateModel);
-//
-//			new ExifToolCmdHelper(_exifTool,_iStorage,_readMeta).Update(updateModel, comparedNames);
-//		}
 	}
 }

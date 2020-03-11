@@ -11,11 +11,15 @@ namespace starsky.foundation.geo.Services
     {
         private readonly IExifTool _exifTool;
         private readonly AppSettings _appSettings;
+        private readonly IStorage _iStorage;
+        private readonly IStorage _thumbnailStorage;
 
-        public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool)
+        public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool, ISelectorStorage selectorStorage)
         {
             _exifTool = exifTool;
             _appSettings = appSettings;
+            _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+            _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
         }
         
         /// <summary>
@@ -45,12 +49,10 @@ namespace starsky.foundation.geo.Services
                     nameof(FileIndexItem.LocationCountry),
                 });
                 
-	            var iStorage = new StorageSubPathFilesystem(_appSettings);
-	            
-                new ExifToolCmdHelper(_exifTool, iStorage,new ReadMeta(iStorage))
+                new ExifToolCmdHelper(_exifTool, _iStorage, _thumbnailStorage, new ReadMeta(_iStorage))
 	                .Update(metaFileItem, comparedNamesList);
 	            
-	            if ( _appSettings.Verbose ) Console.WriteLine(metaFileItem.FilePath);
+	            if ( _appSettings.Verbose ) Console.Write($"GeoLocationWrite: {metaFileItem.FilePath} ");
             }
 
         }

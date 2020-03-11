@@ -17,6 +17,7 @@ namespace starskycore.Services
 	{
 		private readonly IStorage _filesystemStorage;
 		private readonly IStorage _subPathStorage;
+		private readonly IStorage _thumbnailStorage;
 
 		private ApplicationDbContext _context;
 		private readonly IExifTool _exifTool;
@@ -47,6 +48,7 @@ namespace starskycore.Services
 			_selectorStorage = selectorStorage;
 			_filesystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			
 			// This is used to handle files on the host system
 			_readMetaHost = new ReadMeta(_filesystemStorage);
@@ -241,7 +243,7 @@ namespace starskycore.Services
 		    // Creation of a sidecar xmp file --> NET CORE <--
 		    if ( _appSettings.ExifToolImportXmpCreate && !_appSettings.AddLegacyOverwrite )
 		    {
-			    var exifCopy = new ExifCopy(_subPathStorage, new ExifTool(_selectorStorage,_appSettings), new ReadMeta(_subPathStorage));
+			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, new ExifTool(_selectorStorage,_appSettings), new ReadMeta(_subPathStorage));
 			    exifCopy.XmpSync(fileIndexItem.FilePath);
 		    }
 
@@ -257,7 +259,7 @@ namespace starskycore.Services
                     nameof(FileIndexItem.Description),
                 };
 
-                new ExifToolCmdHelper(_exifTool,_subPathStorage,_readMetaSubPath).Update(fileIndexItem, comparedNamesList);
+                new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, _readMetaSubPath).Update(fileIndexItem, comparedNamesList);
             }
 
 	        // Ignore the sync part if the connection is missing

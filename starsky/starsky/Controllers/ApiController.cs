@@ -22,8 +22,9 @@ namespace starsky.Controllers
         private readonly IBackgroundTaskQueue _bgTaskQueue;
         private readonly IReadMeta _readMeta;
 	    private readonly IStorage _iStorage;
+	    private readonly IStorage _thumbnailStorage;
 
-        public ApiController(
+	    public ApiController(
             IQuery query, IExifTool exifTool, 
             AppSettings appSettings, IBackgroundTaskQueue queue,
 			ISelectorStorage selectorStorage)
@@ -33,6 +34,7 @@ namespace starsky.Controllers
             _exifTool = exifTool;
             _bgTaskQueue = queue;
             _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+            _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
             _readMeta = new ReadMeta(_iStorage);
         }
 
@@ -222,13 +224,12 @@ namespace starsky.Controllers
 
 			// Clone an new item in the list to display
 			var returnNewResultList = new List<FileIndexItem>();
-			foreach (var item in fileIndexResultsList)
+			foreach ( var clonedItem in fileIndexResultsList.Select(item => item.Clone()) )
 			{
-				var citem = item.Clone();
-				citem.FileHash = null;
-				returnNewResultList.Add(citem);
+				clonedItem.FileHash = null;
+				returnNewResultList.Add(clonedItem);
 			}
-								
+			
 			return Json(returnNewResultList);
 		}
 
@@ -356,7 +357,7 @@ namespace starsky.Controllers
 	                detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 
 					// remove thumbnail from disk
-	                _iStorage.ThumbnailDelete(detailViewItem.FileIndexItem.FileHash);
+					_thumbnailStorage.FileDelete(detailViewItem.FileIndexItem.FileHash);
 
                     fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
 	                

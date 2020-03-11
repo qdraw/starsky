@@ -12,13 +12,15 @@ namespace starskycore.Helpers
     {
         private readonly IExifTool _exifTool;
 	    private readonly IStorage _iStorage;
+	    private readonly IStorage _thumbnailStorage;
 	    private readonly IReadMeta _readMeta;
 
-	    public ExifToolCmdHelper(IExifTool exifTool, IStorage iStorage, IReadMeta readMeta)
+	    public ExifToolCmdHelper(IExifTool exifTool, IStorage iStorage, IStorage thumbnailStorage, IReadMeta readMeta)
         {
             _exifTool = exifTool;
 	        _iStorage = iStorage;
 	        _readMeta = readMeta;
+	        _thumbnailStorage = thumbnailStorage;
         }
 
 	    /// <summary>
@@ -49,8 +51,6 @@ namespace starskycore.Helpers
 		    return UpdateAsyncWrapperBoth(updateModel, inputSubPaths, comparedNames).Result;
 	    }
 
-
-
         /// <summary>
         /// For Raw files us an external .xmp sidecar file, and add this to the PathsList
         /// </summary>
@@ -72,16 +72,18 @@ namespace starskycore.Helpers
             return pathsList;
         }
 
-	    
-
-	    // Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
+	    /// <summary>
+	    /// Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
+	    /// </summary>
+	    /// <param name="updateModel"></param>
+	    /// <param name="inputSubPaths"></param>
+	    /// <param name="comparedNames"></param>
+	    /// <returns></returns>
 	    private async Task<string> UpdateAsyncWrapperBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames)
 	    {
 		    var task = Task.Run(() => UpdateASyncBoth(updateModel,inputSubPaths,comparedNames));
 		    return task.Wait(TimeSpan.FromSeconds(20)) ? task.Result : string.Empty;
 	    }
-
-
 	    
 	    public string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames )
 	    {
@@ -134,7 +136,7 @@ namespace starskycore.Helpers
 			    if ( _iStorage.IsFolderOrFile(withXmp) !=
 			         FolderOrFileModel.FolderOrFileTypeList.Deleted ) continue;
 			    
-			    new ExifCopy(_iStorage,_exifTool,_readMeta).XmpCreate(withXmp);
+			    new ExifCopy(_iStorage,_thumbnailStorage, _exifTool,_readMeta).XmpCreate(withXmp);
 				    
 			    var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
 			    var command = ExifToolCommandLineArgs(updateModel, comparedNames);
@@ -159,7 +161,7 @@ namespace starskycore.Helpers
 		        await _exifTool.WriteTagsAsync(path, command);
 	        }
 
-	        if (  _iStorage.ThumbnailExist(updateModel.FileHash) )
+	        if (  _thumbnailStorage.ExistFile(updateModel.FileHash) )
 	        {
 		        await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash, command);
 	        }
