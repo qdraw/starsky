@@ -10,7 +10,7 @@ namespace starskycore.Services
 	[Service(typeof(ISelectorStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class SelectorStorage : ISelectorStorage
 	{
-		private IServiceProvider _serviceProvider;
+		private readonly IServiceProvider _serviceProvider;
 
 		public SelectorStorage(IServiceProvider serviceProvider)
 		{

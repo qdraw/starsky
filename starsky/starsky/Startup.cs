@@ -251,10 +251,7 @@ namespace starsky
 			app.UseRouting();
 #endif
 
-	        // No CSP for swagger
-		    var selectorStorage = app.ApplicationServices.GetRequiredService<ISelectorStorage>();
-			new SwaggerExportHelper(_appSettings,selectorStorage).Add02AppUseSwaggerAndUi(app);
-			new SwaggerExportHelper(_appSettings,selectorStorage).Add03AppExport(app);
+	        new SwaggerSetupHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 			
 			app.UseContentSecurityPolicy();
 	        

@@ -15,6 +15,7 @@ using starskycore.Middleware;
 using starskycore.Models;
 using starskytest.Controllers;
 using starskytest.FakeMocks;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace starskytest.Helpers
 {
@@ -58,7 +59,7 @@ namespace starskytest.Helpers
 		[TestMethod]
 		public async Task SwaggerTest_Integration_Test()
 		{
-			var swaggerFilePath = Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
+			var swaggerFilePath = Path.Join(_appSettings.TempFolder, _appSettings.Name.ToLowerInvariant() + ".json");
 			
 			var storage = new FakeIStorage();
 			var fakeSelectorStorage = new FakeSelectorStorage(storage);
@@ -82,8 +83,15 @@ namespace starskytest.Helpers
 						endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 					});
 
-					new SwaggerExportHelper(_appSettings,fakeSelectorStorage).Add02AppUseSwaggerAndUi(app);
-					new SwaggerExportHelper(_appSettings,fakeSelectorStorage).Add03AppExport(app);
+					new SwaggerSetupHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
+					using ( var serviceScope = app.ApplicationServices
+						.GetRequiredService<IServiceScopeFactory>()
+						.CreateScope() )
+					{
+						var swaggerProvider = ( ISwaggerProvider )serviceScope.ServiceProvider.GetService(typeof(ISwaggerProvider));
+						new SwaggerExportHelper(_appSettings,fakeSelectorStorage, swaggerProvider).Add03AppExport();
+					}
+
 				}).Build();
 
 			await host.StartAsync();

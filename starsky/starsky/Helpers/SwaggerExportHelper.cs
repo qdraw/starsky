@@ -1,71 +1,69 @@
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
 using starskycore.Helpers;
 using starskycore.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using starsky.foundation.injection;
 using starskycore.Interfaces;
 using starskycore.Services;
 
 namespace starsky.Helpers
 {
-	public class SwaggerExportHelper
+	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
+	public class SwaggerExportHelper : BackgroundService
 	{
 		private readonly AppSettings _appSettings;
 		private readonly ISelectorStorage _selectorStorage;
+		private readonly ISwaggerProvider _swaggerProvider;
 
-		public SwaggerExportHelper(AppSettings appSettings, ISelectorStorage selectorStorage)
+		public SwaggerExportHelper(AppSettings appSettings, ISelectorStorage selectorStorage, ISwaggerProvider swaggerProvider)
 		{
 			_appSettings = appSettings;
 			_selectorStorage = selectorStorage;
+			_swaggerProvider = swaggerProvider;
 		}
-
-		public void Add02AppUseSwaggerAndUi(IApplicationBuilder app)
+		
+		protected override Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			// Use swagger only when enabled, default false
-			// recommend to disable in production
-			if ( !_appSettings.AddSwagger ) return;
-
-			app.UseSwagger(); // registers the two documents in separate routes
-			app.UseSwaggerUI(options =>
-			{
-				options.DocumentTitle = _appSettings.Name;
-				options.SwaggerEndpoint("/swagger/" + _appSettings.Name + "/swagger.json", _appSettings.Name);
-				options.OAuthAppName(_appSettings.Name + " - Swagger");
-			}); // makes the ui visible    
+			Add03AppExport();
+			return Task.CompletedTask;
 		}
-
-		public void Add03AppExport(IApplicationBuilder app)
+		
+		/// <summary>
+		/// Export Values to Storage
+		/// </summary>
+		/// <param name="app"></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		public void Add03AppExport()
 		{
 			if ( !_appSettings.AddSwagger || !_appSettings.AddSwaggerExport ) return;
-			using ( var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
-				.CreateScope() )
+			
+			var swaggerJsonText = GenerateSwagger(_swaggerProvider, _appSettings.Name);
+			if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ArgumentNullException("swaggerJsonText = null");
+
+			var swaggerJsonFullPath =
+				Path.Join(_appSettings.TempFolder, _appSettings.Name.ToLowerInvariant() + ".json");
+
+			var storage = _selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+			storage.FileDelete(swaggerJsonFullPath);
+			storage.WriteStream(new PlainTextFileHelper().StringToStream(swaggerJsonText),
+				swaggerJsonFullPath);
+
+			if ( _appSettings.Verbose )
 			{
-				var swaggerJsonText = GenerateSwagger(serviceScope, _appSettings.Name);
-				if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ArgumentNullException(app + " => swaggerJsonText = null");
-
-				var swaggerJsonFullPath =
-					Path.Join(_appSettings.TempFolder, _appSettings.Name + ".json");
-
-				var storage = _selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-				storage.FileDelete(swaggerJsonFullPath);
-				storage.WriteStream(new PlainTextFileHelper().StringToStream(swaggerJsonText),
-					swaggerJsonFullPath);
-
-				if ( _appSettings.Verbose )
-				{
-					Console.WriteLine($"Add03AppExport {swaggerJsonFullPath}");
-				}
-
+				Console.WriteLine($"app__addSwaggerExport {swaggerJsonFullPath}");
 			}
 		}
 
-		private static string GenerateSwagger(IServiceScope serviceScope, string docName)
+		private static string GenerateSwagger(ISwaggerProvider swaggerProvider, string docName)
 		{
-			var swaggerProvider = ( ISwaggerProvider )serviceScope.ServiceProvider.GetService(typeof(ISwaggerProvider));
 			if ( swaggerProvider == null ) return string.Empty;
 
 			var swaggerDocument = swaggerProvider.GetSwagger(docName, null, "/");
