@@ -68,11 +68,11 @@ namespace starskytest.Services
             // Activate SyncService
 	        var iStorage = new StorageSubPathFilesystem(_appSettings);
 	        var storageSelector = new FakeSelectorStorage(iStorage);
-            _syncservice = new SyncService(_query,_appSettings,readmeta,storageSelector);
+            _syncService = new SyncService(_query,_appSettings,readmeta,storageSelector);
         }
 
         private readonly Query _query;
-        private readonly SyncService _syncservice;
+        private readonly SyncService _syncService;
         private readonly AppSettings _appSettings;
 	    private StorageSubPathFilesystem _iStorage;
 
@@ -88,9 +88,9 @@ namespace starskytest.Services
             };
             
             var folder1List = new List<string> {"/folder99/test"};
-            _syncservice.AddFoldersToDatabase(folder1List,new List<FileIndexItem>());
+            _syncService.AddFoldersToDatabase(folder1List,new List<FileIndexItem>());
             //  Run twice to check if there are no duplicates
-             _syncservice.AddFoldersToDatabase(folder1List,new List<FileIndexItem> {folder1});
+             _syncService.AddFoldersToDatabase(folder1List,new List<FileIndexItem> {folder1});
             
             var allItems = _query.GetAllRecursive("/folder99");
 			var allItemsString = allItems.Select(p => p.FilePath).ToList();
@@ -123,7 +123,7 @@ namespace starskytest.Services
             
             var databaseSubFolderList = new List<FileIndexItem> {folder1,folder2};
             var localSubFolderDbStyle = new List<string>{"/test/folder1"};
-            _syncservice.RemoveOldFilePathItemsFromDatabase(localSubFolderDbStyle, databaseSubFolderList, "/test");
+            _syncService.RemoveOldFilePathItemsFromDatabase(localSubFolderDbStyle, databaseSubFolderList, "/test");
 
             var output = new List<FileIndexItem> {folder1};
             var input = _query.GetAllRecursive("/test");
@@ -136,7 +136,7 @@ namespace starskytest.Services
         public void SyncServiceAddSubPathFolderTest()
         {
             // For the parent folders
-            _syncservice.AddSubPathFolder("/temp/dir/dir2/");
+            _syncService.AddSubPathFolder("/temp/dir/dir2/");
             var output = new List<string> {"/temp/dir"};
             var input = _query.DisplayFileFolders("/temp").Select(item => item.FilePath).ToList();
             
@@ -210,10 +210,10 @@ namespace starskytest.Services
             
             _appSettings.StorageFolder = newImage.BasePath;
 
-            _syncservice.SingleFile(newImage.DbPath);
+            _syncService.SingleFile(newImage.DbPath);
 
             // Run twice >= result is one image in database
-            var t = _syncservice.SingleFile(newImage.DbPath);
+            var t = _syncService.SingleFile(newImage.DbPath);
 
             // todo: Need to check if there is only one image with the same name
 
@@ -234,7 +234,7 @@ namespace starskytest.Services
             _query.RemoveItem(item);
             
             // The Base Directory will be ignored
-            Assert.AreEqual(_syncservice.SingleFile(),SyncService.SingleFileSuccess.Ignore);
+            Assert.AreEqual(_syncService.SingleFile(),SyncService.SingleFileSuccess.Ignore);
 
         }
         
@@ -253,10 +253,10 @@ namespace starskytest.Services
                 IsDirectory = false
             });
 
-            Assert.AreEqual(_syncservice.Deleted("/non-existing.jpg"),true);
+            Assert.AreEqual(_syncService.Deleted("/non-existing.jpg"),true);
             
             // If file exist => ignore this one 
-            Assert.AreEqual(_syncservice.Deleted(newImage.DbPath),false);
+            Assert.AreEqual(_syncService.Deleted(newImage.DbPath),false);
 
         }
 
@@ -285,7 +285,7 @@ namespace starskytest.Services
                 IsDirectory =  false
             });
             
-            _syncservice.Deleted("/non-existing-folder");
+            _syncService.Deleted("/non-existing-folder");
 
             var nonExisting = _query.GetSubPathByHash("4444");
             Assert.AreEqual(nonExisting,null);
@@ -333,7 +333,7 @@ namespace starskytest.Services
 	        
 	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
 
-            _syncservice.FirstItemDirectory();
+            _syncService.FirstItemDirectory();
 
 	        Console.WriteLine(createAnImage.BasePath);
             var queryItem = _query.GetObjectByFilePath("/exist");
@@ -365,7 +365,7 @@ namespace starskytest.Services
 	        // Reset the hashed cache list 
 	        _query.ResetItemByHash("SyncServiceOrphanFolderTestDeletedFile");
 
-            _syncservice.OrphanFolder("/");
+            _syncService.OrphanFolder("/");
             
             Assert.AreEqual(null, _query.GetSubPathByHash("SyncServiceOrphanFolderTestDeletedFile"));
    
@@ -383,7 +383,7 @@ namespace starskytest.Services
         [ExpectedException(typeof(ConstraintException))]
         public void SyncServiceOrphanFolder_ToLarge_Test()
         {
-            _syncservice.OrphanFolder("/",-1); // always fail
+            _syncService.OrphanFolder("/",-1); // always fail
         }
 
 
@@ -426,7 +426,7 @@ namespace starskytest.Services
             Assert.AreEqual(2,inputWithoutSync.Count(p => p.FilePath == createAnImage.DbPath));
 
             // do a sync
-            _syncservice.SyncFiles("/");
+            _syncService.SyncFiles("/");
             var outputWithSync = _query.GetAllFiles("/");
 	        
             // test if the sync is working
@@ -473,7 +473,7 @@ namespace starskytest.Services
             ).ToList();
             
             // do a sync
-            _syncservice.SyncFiles("/");
+            _syncService.SyncFiles("/");
 
             var outputWithSync = _query.GetAllRecursive();
 
