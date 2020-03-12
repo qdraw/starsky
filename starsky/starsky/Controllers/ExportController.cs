@@ -21,16 +21,18 @@ namespace starsky.Controllers
 		private readonly AppSettings _appSettings;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IStorage _iStorage;
+		private readonly IStorage _thumbnailStorage;
 
 		public ExportController(
 			IQuery query, AppSettings appSettings, IBackgroundTaskQueue queue,
-			IStorage iStorage, IReadMeta readMeta
+			ISelectorStorage selectorStorage, IReadMeta readMeta
 		)
 		{
 			_appSettings = appSettings;
 			_query = query;
 			_bgTaskQueue = queue;
-			_iStorage = iStorage;
+			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		}
 
 		/// <summary>
@@ -133,7 +135,7 @@ namespace starsky.Controllers
 					item.FileHash + ".jpg");
 
 				if ( thumbnail )
-					new Thumbnail(_iStorage).CreateThumb(item.FilePath, item.FileHash);
+					new Thumbnail(_iStorage, _thumbnailStorage).CreateThumb(item.FilePath, item.FileHash);
 
 				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
 				
@@ -165,7 +167,7 @@ namespace starsky.Controllers
 			{
 				if ( thumbnail )
 				{
-					// We use base32 filehashes but export 
+					// We use base32 fileHashes but export 
 					// the file with the original name
 					
 					var thumbFilename = Path.GetFileNameWithoutExtension(filePath);
@@ -187,7 +189,7 @@ namespace starsky.Controllers
 		/// </summary>
 		/// <param name="f">zip hash e.g. TNA995920129</param>
 		/// <param name="json">true to get OK instead of a zip file</param>
-		/// <returns>Not ready or the zipfile</returns>
+		/// <returns>Not ready or the zip-file</returns>
 		/// <response code="200">if json is true return 'OK', else the zip file</response>
 		/// <response code="206">Not ready generating the zip, please wait</response>
 		[HttpGet("/export/zip/{f}.zip")]
@@ -228,10 +230,10 @@ namespace starsky.Controllers
 				tempFileNameStringBuilder.Append(item.FileHash);
 			}
 			// to be sure that the max string limit
-			var shortName = tempFileNameStringBuilder.ToString().GetHashCode().ToString(CultureInfo.InvariantCulture).ToLower().Replace("-","A");
+			var shortName = tempFileNameStringBuilder.ToString().GetHashCode()
+				.ToString(CultureInfo.InvariantCulture).ToLower().Replace("-","A");
+			
 			return shortName;
 		}
-	
-
 	}
 }

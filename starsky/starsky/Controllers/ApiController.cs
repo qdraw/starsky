@@ -128,7 +128,7 @@ namespace starsky.Controllers
 					}
 
 					// Compare Rotation and All other tags
-					new UpdateService(_query, _exifTool, _readMeta,_iStorage)
+					new UpdateService(_query, _exifTool, _readMeta,_iStorage, _thumbnailStorage)
 						.CompareAllLabelsAndRotation(changedFileIndexItemName,
 							collectionsDetailView, statusModel, append, rotateClock);
 					
@@ -150,7 +150,7 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				new UpdateService(_query,_exifTool, _readMeta,_iStorage)
+				new UpdateService(_query,_exifTool, _readMeta,_iStorage,_thumbnailStorage)
 					.Update(changedFileIndexItemName,fileIndexResultsList,inputModel,collections, append, rotateClock);
 			});
             
@@ -210,7 +210,7 @@ namespace starsky.Controllers
 						}
 					};
 					
-					new UpdateService(_query,_exifTool, _readMeta,_iStorage)
+					new UpdateService(_query,_exifTool, _readMeta,_iStorage,_thumbnailStorage)
 						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, collections, false, 0);
 					
 				}
@@ -535,6 +535,7 @@ namespace starsky.Controllers
             // Return full image
             if (!isThumbnail)
             {
+	            // todo: Use abstraction
                 FileStream fs = System.IO.File.OpenRead(sourceFullPath);
                 // Return the right mime type
                 return File(fs, MimeHelper.GetMimeTypeByFileName(sourceFullPath));
@@ -547,6 +548,7 @@ namespace starsky.Controllers
             // If File is corrupt delete it
             if (ExtensionRolesHelper.GetImageFormat(thumbPath) == ExtensionRolesHelper.ImageFormat.unknown)
             {
+	            // todo: Use abstraction
                 System.IO.File.Delete(thumbPath);
             }
 
@@ -570,17 +572,19 @@ namespace starsky.Controllers
                 // When you have a different tag in the database than on disk
                 thumbPath = _appSettings.ThumbnailTempFolder + searchItem.FileHash + ".jpg";
                     
-                var isCreateAThumb = new Thumbnail(_iStorage).CreateThumb(searchItem.FilePath, searchItem.FileHash);
+                var isCreateAThumb = new Thumbnail(_iStorage,_thumbnailStorage).CreateThumb(searchItem.FilePath, searchItem.FileHash);
                 if (!isCreateAThumb)
                 {
                     Response.StatusCode = 500;
                     return Json("Thumbnail generation failed");
                 }
 
+                // todo: Use abstraction
                 FileStream fs2 = System.IO.File.OpenRead(thumbPath);
                 return File(fs2, "image/jpeg");
             }
-
+            
+            // todo: Use abstraction
             FileStream fs1 = System.IO.File.OpenRead(thumbPath);
             return File(fs1, "image/jpeg");
         }

@@ -29,6 +29,7 @@ namespace starskycore.Helpers
 	    private readonly IStorage _iStorage;
 	    private readonly UserManager _userManager;
 	    private readonly StorageThumbnailFilesystem _thumbnailStorage;
+	    private readonly SelectorStorage _selectorStorage;
 
 	    /// <summary>
         /// Inject all services for the CLI applications
@@ -97,15 +98,15 @@ namespace starskycore.Helpers
 	        _iStorage = new StorageSubPathFilesystem(appSettings);
 	        _thumbnailStorage = new StorageThumbnailFilesystem(appSettings);
 	        
-	        var selectorStorage = new SelectorStorage(_serviceProvider);
+	        _selectorStorage = new SelectorStorage(_serviceProvider);
             
             _readmeta = new ReadMeta(_iStorage,appSettings);
             
             _userManager = new UserManager(context);
             
-            _isync = new SyncService(query, appSettings,_readmeta, selectorStorage);
+            _isync = new SyncService(query, appSettings, _selectorStorage);
             
-            _import = new ImportService(context, _isync, _exifTool, appSettings, null, selectorStorage);
+            _import = new ImportService(context, _isync, _exifTool, appSettings, null, _selectorStorage);
 
 	        _thumbnailCleaner = new ThumbnailCleaner(query, appSettings);
 	        
@@ -209,6 +210,22 @@ namespace starskycore.Helpers
 		    return _userManager;
 	    }
 
+	    /// <summary>
+	    /// Thumbnail Storage
+	    /// </summary>
+	    /// <returns>IStorage component</returns>
+	    public IStorage ThumbnailStorage()
+	    {
+		    return _thumbnailStorage;
+	    }
+	    /// <summary>
+	    /// SelectorStorage
+	    /// </summary>
+	    /// <returns>SelectorStorage</returns>
+	    public ISelectorStorage SelectorStorage()
+	    {
+		    return _selectorStorage;
+	    }
 	    
     }
 }

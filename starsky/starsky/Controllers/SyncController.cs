@@ -19,12 +19,12 @@ namespace starsky.Controllers
         private readonly IQuery _query;
 	    private readonly IStorage _iStorage;
 
-        public SyncController(ISync sync, IBackgroundTaskQueue queue, IQuery query, IStorage iStorage)
+        public SyncController(ISync sync, IBackgroundTaskQueue queue, IQuery query, ISelectorStorage selectorStorage)
         {
             _sync = sync;
             _bgTaskQueue = queue;
             _query = query;
-	        _iStorage = iStorage;
+	        _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
         }
 
         /// <summary>
@@ -112,7 +112,8 @@ namespace starsky.Controllers
 				}
 				else if( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
-					var filesAndFoldersInDirectoryArray = _iStorage.GetAllFilesInDirectory(subPath).Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
+					var filesAndFoldersInDirectoryArray = _iStorage.GetAllFilesInDirectory(subPath)
+						.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
 					var dirs = _iStorage.GetDirectoryRecursive(subPath);
 					filesAndFoldersInDirectoryArray.AddRange(dirs);

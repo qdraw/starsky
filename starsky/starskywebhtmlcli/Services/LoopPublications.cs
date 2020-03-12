@@ -18,10 +18,12 @@ namespace starskywebhtmlcli.Services
         private readonly IExifTool _exifTool;
 	    private readonly IStorage _iStorage;
 	    private readonly IReadMeta _readMeta;
+	    private readonly IStorage _thumbnailStorage;
 
-	    public LoopPublications(IStorage iStorage, AppSettings appSettings, IExifTool exifTool, IReadMeta readMeta)
+	    public LoopPublications(IStorage iStorage, IStorage thumbnailStorage, AppSettings appSettings, IExifTool exifTool, IReadMeta readMeta)
 	    {
 		    _iStorage = iStorage;
+		    _thumbnailStorage = thumbnailStorage;
             _appSettings = appSettings;
             _exifTool = exifTool;
 		    _readMeta = readMeta;
@@ -82,7 +84,7 @@ namespace starskywebhtmlcli.Services
         private void GenerateJpeg(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-            var overlayImage = new OverlayImage(_iStorage, _appSettings,_exifTool);
+            var overlayImage = new OverlayImage(_iStorage, _thumbnailStorage,_appSettings);
 
             foreach (var item in fileIndexItemsList)
             {
@@ -102,7 +104,7 @@ namespace starskywebhtmlcli.Services
                             
 	            if ( profile.MetaData )
 	            {
-		            new ExifCopy(_iStorage, _exifTool, _readMeta).CopyExifPublish(item.FilePath,
+		            new ExifCopy(_iStorage, _thumbnailStorage, _exifTool, _readMeta).CopyExifPublish(item.FilePath,
 			            outputPath);
 	            }
 
@@ -112,7 +114,7 @@ namespace starskywebhtmlcli.Services
         private void GenerateMoveSourceFiles(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-            var overlayImage = new OverlayImage(_iStorage, _appSettings,_exifTool);
+            var overlayImage = new OverlayImage(_iStorage, _thumbnailStorage, _appSettings);
 
             foreach (var item in fileIndexItemsList)
             {

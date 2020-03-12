@@ -84,7 +84,7 @@ namespace starskyGeoCli
 												.LoopFolder(fileIndexList);
 				
 				Console.Write("¬");
-				new GeoLocationWrite(appSettings, startupHelper.ExifTool()).LoopFolder(
+				new GeoLocationWrite(appSettings, startupHelper.ExifTool(), startupHelper.SelectorStorage()).LoopFolder(
 					toMetaFilesUpdate, false);
 				Console.Write("(gps added)");
 			}
@@ -95,7 +95,7 @@ namespace starskyGeoCli
 			if ( fileIndexList.Count >= 1 )
 			{
 				Console.Write("~ Add city, state and country info ~");
-				new GeoLocationWrite(appSettings, startupHelper.ExifTool()).LoopFolder(
+				new GeoLocationWrite(appSettings, startupHelper.ExifTool(), startupHelper.SelectorStorage()).LoopFolder(
 					fileIndexList, true);
 			}
 
@@ -110,7 +110,7 @@ namespace starskyGeoCli
 				.ToList() )
 			{
 				var newThumb = new FileHash(storage).GetHashCode(item.FilePath);
-				storage.ThumbnailMove(item.FileHash, newThumb);
+				startupHelper.ThumbnailStorage().FileMove(item.FileHash, newThumb);
 				if ( appSettings.Verbose )
 					Console.WriteLine("thumb+ `" + item.FileHash + "`" + newThumb);
 			}

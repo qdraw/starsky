@@ -18,8 +18,10 @@ namespace starskycore.Helpers
 
 		/// <summary>
 		/// Tiff based, tiff, including raws
+		/// tiff, arw:sony, dng:adobe, nef:nikon, raf:fuji, cr2:canon, crw:canon, orf:olympus, rw2:panasonic, pef:pentax, x3f:sigma
 		/// </summary>
-		private static readonly List<string> Extensiontiff = new List<string> {"tiff", "arw", "dng"};
+		private static readonly List<string> Extensiontiff = new List<string> {"tiff", "arw", "dng", "nef", 
+			"raf", "cr2", "crw", "orf", "rw2", "pef", "x3f"};
 
 		/// <summary>
 		/// Bitmaps

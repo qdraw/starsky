@@ -21,12 +21,12 @@ namespace starskycore.Services
 	    /// <param name="appSettings">Settings of the application</param>
 	    /// <param name="readMeta">To read exif and xmp</param>
 	    /// <param name="selectorStorage">Filesystem abstraction</param>
-	    public SyncService(IQuery query, AppSettings appSettings, IReadMeta readMeta, ISelectorStorage selectorStorage)
+	    public SyncService(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage)
         {
             _query = query;
             _appSettings = appSettings;
-            _readMeta = readMeta;
             _subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+            _readMeta = new ReadMeta(_subPathStorage);
         }
         
         /* Base feature to sync files and folders

@@ -9,10 +9,12 @@ namespace starskywebhtmlcli.Services
 	public class ToBase64DataUriList
 	{
 		private readonly IStorage _iStorage;
+		private readonly IStorage _thumbnailStorage;
 
-		public ToBase64DataUriList(IStorage iStorage)
+		public ToBase64DataUriList(IStorage iStorage, IStorage thumbnailStorage)
 		{
 			_iStorage = iStorage;
+			_thumbnailStorage = thumbnailStorage;
 		}
 		
 		public string[] Create(List<FileIndexItem> fileIndexList)
@@ -22,7 +24,7 @@ namespace starskywebhtmlcli.Services
 			{
 				var item = fileIndexList[i];
 
-				using ( var stream = new Thumbnail(_iStorage).ResizeThumbnail(item.FilePath, 4, null, true,
+				using ( var stream = new Thumbnail(_iStorage,_thumbnailStorage).ResizeThumbnail(item.FilePath, 4, null, true,
 					ExtensionRolesHelper.ImageFormat.png) )
 				{
 					base64ImageArray[i] = "data:image/png;base64," + Base64Helper.ToBase64(stream);

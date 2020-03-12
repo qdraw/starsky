@@ -20,20 +20,24 @@ namespace starsky.Controllers
 		private readonly AppSettings _appSettings;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IReadMeta _readMeta;
-		private readonly IStorage _iStorage;
 		private readonly IMemoryCache _cache;
+		private readonly IStorage _thumbnailStorage;
+		private readonly IStorage _iStorage;
+		private readonly ISelectorStorage _selectorStorage;
 
 		public GeoController(IExifTool exifTool, 
 			AppSettings appSettings, IBackgroundTaskQueue queue,
 			IReadMeta readMeta,
-			IStorage iStorage, 
+			ISelectorStorage selectorStorage, 
 			IMemoryCache memoryCache = null )
 		{
 			_appSettings = appSettings;
 			_exifTool = exifTool;
 			_bgTaskQueue = queue;
 			_readMeta = readMeta;
-			_iStorage = iStorage;
+			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+			_selectorStorage = selectorStorage;
 			_cache = memoryCache;
 		}
 
@@ -101,7 +105,7 @@ namespace starsky.Controllers
 					
 					Console.Write("¬");
 					
-					new GeoLocationWrite(_appSettings, _exifTool)
+					new GeoLocationWrite(_appSettings, _exifTool, _selectorStorage)
 						.LoopFolder(toMetaFilesUpdate, false);
 					Console.Write("(gps added)");
 				}
@@ -112,7 +116,7 @@ namespace starsky.Controllers
 				
 				if ( fileIndexList.Count >= 1 )
 				{
-					new GeoLocationWrite(_appSettings, _exifTool).LoopFolder(
+					new GeoLocationWrite(_appSettings, _exifTool, _selectorStorage).LoopFolder(
 						fileIndexList, true);
 				}
 
@@ -124,7 +128,7 @@ namespace starsky.Controllers
 					.ToList() )
 				{
 					var newThumb = new FileHash(_iStorage).GetHashCode(item.FilePath);
-					_iStorage.ThumbnailMove(item.FileHash, newThumb);
+					_thumbnailStorage.FileMove(item.FileHash, newThumb);
 					if ( _appSettings.Verbose )
 						Console.WriteLine("thumb + `" + item.FileHash + "`" + newThumb);
 				}

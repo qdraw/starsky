@@ -67,11 +67,11 @@ namespace starskywebhtmlcli
             var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
             
             // Create thumbnails from the source images 
-			new Thumbnail(iStorage).CreateThumb("/"); // <= subPath style
+			new Thumbnail(iStorage, startupHelper.ThumbnailStorage()).CreateThumb("/"); // <= subPath style
 	        
-	        var base64DataUri = new ToBase64DataUriList(iStorage).Create(fileIndexList);
+	        var base64DataUri = new ToBase64DataUriList(iStorage, startupHelper.ThumbnailStorage()).Create(fileIndexList);
 
-			new LoopPublications(iStorage, appSettings, startupHelper.ExifTool(), startupHelper.ReadMeta())
+			new LoopPublications(iStorage, startupHelper.ThumbnailStorage(), appSettings, startupHelper.ExifTool(), startupHelper.ReadMeta())
 				.Render(fileIndexList, base64DataUri);
 
 			// Copy all items in the subFolder content for example javascripts

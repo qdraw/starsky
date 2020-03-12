@@ -13,20 +13,21 @@ namespace starskywebhtmlcli.Services
     public class OverlayImage
     {
         private readonly AppSettings _appSettings;
-        private readonly IExifTool _exifTool;
+        private readonly IStorage _thumbnailStorage;
 	    private readonly IStorage _iStorage;
 
-	    public OverlayImage(IStorage iStorage, AppSettings appSettings, IExifTool exifTool)
+	    public OverlayImage(IStorage iStorage, IStorage thumbnailStorage, AppSettings appSettings)
         {
 	        _iStorage = iStorage;
+	        _thumbnailStorage = thumbnailStorage;
             _appSettings = appSettings;
-            _exifTool = exifTool;
         }
 
         public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
         {
             var outputFilePath = 
-	            profile.Folder + _appSettings.GenerateSlug( Path.GetFileNameWithoutExtension(sourceFilePath),true ) + profile.Append + Path.GetExtension(sourceFilePath);
+	            profile.Folder + _appSettings.GenerateSlug( Path.GetFileNameWithoutExtension(sourceFilePath),true )
+	                           + profile.Append + Path.GetExtension(sourceFilePath);
 	        
             return outputFilePath;
         }
@@ -34,14 +35,14 @@ namespace starskywebhtmlcli.Services
         
         public void ResizeOverlayImageThumbnails(string fileHash, string outputSubPath, AppSettingsPublishProfiles profile)
         {
-	        if ( !_iStorage.ThumbnailExist(fileHash) ) throw new FileNotFoundException("fileHash " + fileHash);
+	        if ( !_thumbnailStorage.ExistFile(fileHash) ) throw new FileNotFoundException("fileHash " + fileHash);
 
 	        if ( _iStorage.ExistFile(outputSubPath)  ) return;
 	        
 	        // only for overlay image
 	        var hostFileSystem = new StorageHostFullPathFilesystem();
 
-	        using ( var sourceImageStream = _iStorage.ThumbnailRead(fileHash))
+	        using ( var sourceImageStream = _thumbnailStorage.ReadStream(fileHash))
 	        using ( var sourceImage = Image.Load(sourceImageStream) )
 	        using ( var overlayImageStream = hostFileSystem.ReadStream(profile.Path))
 	        using ( var overlayImage = Image.Load(overlayImageStream) )
@@ -98,37 +99,6 @@ namespace starskywebhtmlcli.Services
 
 		    _iStorage.WriteStream(outputStream, outputSubPath);
 	    }
-	    
-	    
-
-	    //            using (var outputStream = new FileStream(outputSubPath, FileMode.CreateNew))
-//            using (var inputStream = File.OpenRead(sourceLocation))
-//            using (var overlayLogoStream = File.OpenRead(profile.Path))
-//            using (var image = Image.Load(inputStream))
-//            using (var overlayLogo = Image.Load(overlayLogoStream))
-//            {
-//                image.Mutate(x => x
-//                    .Resize(profile.SourceMaxWidth, 0)
-//                );
-//                
-//                overlayLogo.Mutate(x => x
-//                    .Resize(profile.OverlayMaxWidth, 0)
-//                );
-//
-//                int xPoint = image.Width - overlayLogo.Width;
-//                int yPoint = image.Height - overlayLogo.Height;
-//
-//	            image.Mutate(x => x.DrawImage(overlayLogo, new Point(xPoint, yPoint),1F));
-//
-//                image.SaveAsJpeg(outputStream);
-//            }
-//
-//            if (profile.MetaData)
-//            {
-//	            // todo: check if works
-//	            var storage = new StorageHostFullPathFilesystem();
-//	            new ExifCopy(storage, new ExifTool(storage, _appSettings),
-//		            new ReadMeta(storage)).CopyExifPublish(sourceLocation, outputSubPath);
-//            }
+    
     }
 }
