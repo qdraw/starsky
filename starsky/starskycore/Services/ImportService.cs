@@ -51,9 +51,9 @@ namespace starskycore.Services
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			
 			// This is used to handle files on the host system
-			_readMetaHost = new ReadMeta(_filesystemStorage);
+			_readMetaHost = new ReadMeta(_filesystemStorage,_appSettings); // cache disabled
 			// and in the database itself
-			_readMetaSubPath = new ReadMeta(_subPathStorage);
+			_readMetaSubPath = new ReadMeta(_subPathStorage,_appSettings); // cache disabled
 
 			_scopeFactory = scopeFactory;
 		}

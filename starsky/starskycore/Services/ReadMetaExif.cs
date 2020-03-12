@@ -519,7 +519,7 @@ namespace starskycore.Services
             // this value is always an int but current culture formated
             var parsedAltitudeString = double.TryParse(altitudeString, NumberStyles.Number, CultureInfo.CurrentCulture, out var altitude);
             
-            if (altitudeRef == "Below sea level" && Math.Abs(altitude) > 0.00001) altitude *= -1;
+            if (altitudeRef == "Below sea level" ) altitude *= -1;
 
             // Read xmp if altitudeString is string.Empty
             if (!parsedAltitudeString)
@@ -563,6 +563,9 @@ namespace starskycore.Services
 			        }
 		        }
 	        }
+	        
+	        // no -0 as result
+	        if(Math.Abs(altitude) < 0.001) return 0;
 	        
 	        if (altitudeRef) altitude = altitude * -1;
 	        return altitude;
@@ -705,7 +708,7 @@ namespace starskycore.Services
 	    {
 		    var apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;;
 
-		    if (!string.IsNullOrEmpty(apertureString))
+		    if (string.IsNullOrEmpty(apertureString))
 		    {
 			    apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "F-Number")?.Description;
 		    }

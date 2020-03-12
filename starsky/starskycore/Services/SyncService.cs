@@ -26,7 +26,7 @@ namespace starskycore.Services
             _query = query;
             _appSettings = appSettings;
             _subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-            _readMeta = new ReadMeta(_subPathStorage);
+            _readMeta = new ReadMeta(_subPathStorage,_appSettings);
         }
         
         /* Base feature to sync files and folders

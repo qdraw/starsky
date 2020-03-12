@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -27,7 +28,7 @@ namespace starsky.Controllers
 	    public ApiController(
             IQuery query, IExifTool exifTool, 
             AppSettings appSettings, IBackgroundTaskQueue queue,
-			ISelectorStorage selectorStorage)
+			ISelectorStorage selectorStorage, IMemoryCache memoryCache)
         {
             _appSettings = appSettings;
             _query = query;
@@ -35,7 +36,7 @@ namespace starsky.Controllers
             _bgTaskQueue = queue;
             _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
             _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-            _readMeta = new ReadMeta(_iStorage);
+            _readMeta = new ReadMeta(_iStorage,_appSettings, memoryCache);
         }
 
 
