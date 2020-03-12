@@ -66,7 +66,7 @@ namespace starskytest.Helpers
 	        var storage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>(),new List<string>{null});
 
 	        var fakeExifTool = new FakeExifTool(storage,_appSettings);
-            var helperResult = new ExifToolCmdHelper(fakeExifTool, storage ,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
+            var helperResult = new ExifToolCmdHelper(fakeExifTool, storage,storage ,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
             
             Assert.AreEqual(true,helperResult.Contains(updateModel.Tags));
             Assert.AreEqual(true,helperResult.Contains(updateModel.Description));
@@ -98,7 +98,7 @@ namespace starskytest.Helpers
 		        new FakeIStorage(folderPaths, inputSubPaths, null, new List<string> {"?"});
 	        var fakeExifTool = new FakeExifTool(storage,_appSettings);
 
-            var helperResult = new ExifToolCmdHelper(fakeExifTool, storage,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
+            var helperResult = new ExifToolCmdHelper(fakeExifTool, storage,storage,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
             
             Assert.AreEqual(true,helperResult.Contains("-GPSAltitude=\"-41"));
             Assert.AreEqual(true,helperResult.Contains("gpsaltituderef#=\"1"));

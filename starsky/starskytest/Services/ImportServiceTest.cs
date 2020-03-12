@@ -88,7 +88,7 @@ namespace starskytest.Services
 	        _readmeta = new ReadMeta(_iStorage,_appSettings);
 
 	        var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
-            _isync = new SyncService(_query,_appSettings,_readmeta, selectorStorage);
+            _isync = new SyncService(_query,_appSettings, selectorStorage);
             
             _import = new ImportService(_context,_isync,new FakeExifTool(_iStorage,_appSettings), _appSettings,null,selectorStorage);
             

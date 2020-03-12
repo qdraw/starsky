@@ -36,14 +36,14 @@ namespace starskytest.Services
 		[TestMethod]
 		public void CreateThumbTest_ImageSubPathNotFound()
 		{
-			var isCreated = new Thumbnail(_iStorage).CreateThumb("/notfound.jpg", _fakeIStorageImageSubPath);
+			var isCreated = new Thumbnail(_iStorage, _iStorage).CreateThumb("/notfound.jpg", _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
 		
 		[TestMethod]
 		public void CreateThumbTest_WrongImageType()
 		{
-			var isCreated = new Thumbnail(_iStorage).CreateThumb("/notfound.dng", _fakeIStorageImageSubPath);
+			var isCreated = new Thumbnail(_iStorage, _iStorage).CreateThumb("/notfound.dng", _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
 		
@@ -55,7 +55,7 @@ namespace starskytest.Services
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, 
 				new List<string>{"/test.jpg"});
 
-			var isCreated = new Thumbnail(storage).CreateThumb(_fakeIStorageImageSubPath, _fakeIStorageImageSubPath);
+			var isCreated = new Thumbnail(storage, storage).CreateThumb(_fakeIStorageImageSubPath, _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
 		
@@ -76,7 +76,7 @@ namespace starskytest.Services
 
 	        // string subPath, int width, string outputHash = null,bool removeExif = false,ExtensionRolesHelper.ImageFormat
 	        // imageFormat = ExtensionRolesHelper.ImageFormat.jpg
-            var thumb = new Thumbnail(iStorage).ResizeThumbnail(newImage.FullFilePath, 1, null, true,
+            var thumb = new Thumbnail(iStorage,iStorage).ResizeThumbnail(newImage.FullFilePath, 1, null, true,
 	            ExtensionRolesHelper.ImageFormat.jpg);
             Assert.AreEqual(true,thumb.CanRead);
         }
@@ -84,7 +84,7 @@ namespace starskytest.Services
         [TestMethod]
         public void Thumbnail_ResizeThumbnailToStream__PNG_Test()
         {
-	        var thumb = new Thumbnail(_iStorage).ResizeThumbnail(_fakeIStorageImageSubPath, 1, null, true,
+	        var thumb = new Thumbnail(_iStorage,_iStorage).ResizeThumbnail(_fakeIStorageImageSubPath, 1, null, true,
 		        ExtensionRolesHelper.ImageFormat.png);
             Assert.AreEqual(true,thumb.CanRead);
         }

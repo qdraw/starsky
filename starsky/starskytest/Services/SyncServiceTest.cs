@@ -69,7 +69,7 @@ namespace starskytest.Services
             // Activate SyncService
 	        var iStorage = new StorageSubPathFilesystem(_appSettings);
 	        var storageSelector = new FakeSelectorStorage(iStorage);
-            _syncService = new SyncService(_query,_appSettings,readmeta,storageSelector);
+            _syncService = new SyncService(_query,_appSettings,storageSelector);
         }
 
         private readonly Query _query;
@@ -156,7 +156,7 @@ namespace starskytest.Services
 		    
 		    var readmeta = new ReadMeta(fakeStorage);
 		    // Set Initial database for this folder
-		    new SyncService(_query,_appSettings,readmeta,fakeSelectorStorage).SyncFiles("/",false);
+		    new SyncService(_query,_appSettings,fakeSelectorStorage).SyncFiles("/",false);
 
 		    var initalItem = _query.GetObjectByFilePath("/toChange.jpg");
 
@@ -166,7 +166,7 @@ namespace starskytest.Services
 		    fakeSelectorStorage = new FakeSelectorStorage(fakeStorage);
 
 		    // Run sync again
-		    new SyncService(_query,_appSettings,readmeta,fakeSelectorStorage).SyncFiles("/",false);
+		    new SyncService(_query,_appSettings,fakeSelectorStorage).SyncFiles("/",false);
 
 		    var updatedItem = _query.GetObjectByFilePath("/toChange.jpg");
 		    
@@ -185,11 +185,10 @@ namespace starskytest.Services
 	    {
 		    var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},
 			    new List<byte[]>{CreateAnImageNoExif.Bytes});
-		    var readmeta = new ReadMeta(fakeStorage);
-		    
+    
 		    var fakeSelectorStorage = new FakeSelectorStorage(fakeStorage);
 
-		    new SyncService(_query,_appSettings,readmeta,fakeSelectorStorage).SyncFiles("/test.jpg",false);
+		    new SyncService(_query,_appSettings,fakeSelectorStorage).SyncFiles("/test.jpg",false);
 
 		    var updatedItem = _query.GetObjectByFilePath("/test.jpg");
 		    

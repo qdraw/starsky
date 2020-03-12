@@ -32,7 +32,7 @@ namespace starskytest.Services
 	        
 			var fakeReadMeta = new ReadMeta(storage);
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
-			var helperResult = new ExifCopy(storage, fakeExifTool, fakeReadMeta).CopyExifPublish("/test.jpg", "/test2");
+			var helperResult = new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta).CopyExifPublish("/test.jpg", "/test2");
 			Assert.AreEqual(true,helperResult.Contains("HistorySoftwareAgent"));
 		}
 
@@ -46,7 +46,7 @@ namespace starskytest.Services
 
 			var fakeReadMeta = new ReadMeta(storage);
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
-			var helperResult = new ExifCopy(storage, fakeExifTool, fakeReadMeta).XmpSync("/test.dng");
+			var helperResult = new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta).XmpSync("/test.dng");
 			Assert.AreEqual("/test.xmp",helperResult);
 
 		}
@@ -62,7 +62,7 @@ namespace starskytest.Services
 			var fakeReadMeta = new ReadMeta(storage);
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
 			
-			new ExifCopy(storage, fakeExifTool, fakeReadMeta).XmpCreate("/test.xmp");
+			new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta).XmpCreate("/test.xmp");
 			var result = new PlainTextFileHelper().StreamToString(storage.ReadStream("/test.xmp"));
 			Assert.AreEqual("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Starsky'>\n<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n</rdf:RDF>\n</x:xmpmeta>",result);
 		}
