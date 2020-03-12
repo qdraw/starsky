@@ -41,8 +41,12 @@ namespace starskycore.Services
 				catch (ImageProcessingException)
 				{
 					stream.Dispose();
-					var item = new FileIndexItem {Tags = nameof(ImageProcessingException).ToLowerInvariant()};
-					return item;
+					return new FileIndexItem (subPath) {
+						ColorClass = FileIndexItem.Color.None, 
+						ImageFormat = ExtensionRolesHelper.ImageFormat.unknown,
+						Tags = nameof(ImageProcessingException).ToLowerInvariant(),
+						Orientation = FileIndexItem.Rotation.Horizontal
+					};
 				}
 	        }
 	        
