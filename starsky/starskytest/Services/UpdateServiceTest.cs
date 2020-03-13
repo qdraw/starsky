@@ -53,12 +53,6 @@ namespace starskytest.Services
 			
 		}
 
-
-//		[TestMethod]
-//		public void Test()
-//		{
-//		}
-
 		[TestMethod]
 		[ExpectedException(typeof(MissingFieldException))]
 		public void UpdateServiceTest_CompareAllLabelsAndRotation_NullMissingFieldException()

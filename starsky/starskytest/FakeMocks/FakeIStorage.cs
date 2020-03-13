@@ -186,6 +186,7 @@ namespace starskytest.FakeMocks
 				}
 				
 				_byteList.Add(path, byteArray);
+				if ( byteArray.Length == 0 ) throw new FileLoadException($"path {path} is 0 bytes");
 			}
 
 			return true;
