@@ -244,13 +244,13 @@ namespace starskytest.FakeCreateAn
 
 	    public static readonly byte[] Bytes = Base64Helper.TryParse(Base64JpgString);
 	    
+	    [Obsolete ("Use abstractions instead of a System.IO dependency")]
         public CreateAnImage()
         {
             if (!File.Exists(FullFilePath))
             {
                 File.WriteAllBytes(FullFilePath, Convert.FromBase64String(Base64JpgString));
             }
-
 		}
     }
 }

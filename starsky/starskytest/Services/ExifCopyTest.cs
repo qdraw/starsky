@@ -26,9 +26,8 @@ namespace starskytest.Services
 		{
 			var folderPaths = new List<string>{"/"};
 			var inputSubPaths = new List<string>{"/test.jpg"};
-
 			var storage =
-				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, new List<string> {"?"});
+				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 	        
 			var fakeReadMeta = new ReadMeta(storage);
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
@@ -42,7 +41,7 @@ namespace starskytest.Services
 			var folderPaths = new List<string>{"/"};
 			var inputSubPaths = new List<string>{"/test.dng"};
 			var storage =
-				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, new List<string> {"?"});
+				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 
 			var fakeReadMeta = new ReadMeta(storage);
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
@@ -57,14 +56,15 @@ namespace starskytest.Services
 			var folderPaths = new List<string>{"/"};
 			var inputSubPaths = new List<string>{"/test.dng"};
 			var storage =
-				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, new List<string> {"?"});
+				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 
 			var fakeReadMeta = new ReadMeta(storage);
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
 			
 			new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta).XmpCreate("/test.xmp");
 			var result = new PlainTextFileHelper().StreamToString(storage.ReadStream("/test.xmp"));
-			Assert.AreEqual("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Starsky'>\n<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n</rdf:RDF>\n</x:xmpmeta>",result);
+			Assert.AreEqual("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Starsky'>\n" +
+			                "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n</rdf:RDF>\n</x:xmpmeta>",result);
 		}
 
 //		[TestMethod]

@@ -19,7 +19,7 @@ namespace starskycore.Models
         public AppSettings()
         {
             ReadOnlyFolders = new List<string>();
-            DatabaseConnection = SqliteFullPath("Data Source=data.db",BaseDirectoryProject);
+            DatabaseConnection = SqLiteFullPath("Data Source=data.db",BaseDirectoryProject);
             
             // Cache for thumbs
             ThumbnailTempFolder = Path.Combine(BaseDirectoryProject, "thumbnailTempFolder");
@@ -149,7 +149,7 @@ namespace starskycore.Models
             get { return _databaseConnection; }
             set
             {
-                _databaseConnection = SqliteFullPath(value,BaseDirectoryProject);
+                _databaseConnection = SqLiteFullPath(value,BaseDirectoryProject);
             }
         }
 
@@ -317,6 +317,9 @@ namespace starskycore.Models
 		    }
 	    }
 
+	    /// <summary>
+	    /// Publishing profiles used within the publishing module
+	    /// </summary>
 	    public List<AppSettingsPublishProfiles> PublishProfiles { get; set; } = new List<AppSettingsPublishProfiles>();
 	    
 	    /// <summary>
@@ -335,11 +338,10 @@ namespace starskycore.Models
 	    /// <returns>AppSettings duplicated</returns>
 	    public AppSettings CloneToDisplay()
 	    {
-		    var securityWarning = "warning: Not display due security reasons";
+		    var securityWarning = "warning: not displayed for security reasons";
 
 		    var appSettings = (AppSettings) MemberwiseClone();
 		    
-		    //         [JsonIgnore]
 		    if ( appSettings.DatabaseType != DatabaseTypeList.Sqlite )
 		    {
 			    appSettings.DatabaseConnection = securityWarning;
@@ -378,7 +380,11 @@ namespace starskycore.Models
 		    return localSubFolderListDatabaseStyle;
 	    }
         
-        // Replace windows \\ > /
+	    /// <summary>
+	    ///  Replace windows \\ > /
+	    /// </summary>
+	    /// <param name="subPath">path to replace</param>
+	    /// <returns>replaced output</returns>
         private string _pathToDatabaseStyle(string subPath)
         {
             if (Path.DirectorySeparatorChar.ToString() == "\\")
@@ -388,7 +394,11 @@ namespace starskycore.Models
             return subPath;
         }
 
-        // Replace windows \\ > /
+	    /// <summary>
+	    ///  Replace windows \\ > /
+	    /// </summary>
+	    /// <param name="subPath">path to replace</param>
+	    /// <returns>replaced output</returns>
         private string _pathToFilePathStyle(string subPath)
         {
             if (Path.DirectorySeparatorChar.ToString() == "\\")
@@ -413,21 +423,25 @@ namespace starskycore.Models
             // Used for deleted files
             if (!checkIfExist) return filepath;
             
-            var fileexist = File.Exists(filepath) ? filepath : null;
-            if (fileexist != null)
+            var fileExist = File.Exists(filepath) ? filepath : null;
+            if (fileExist != null)
             {
-                return fileexist;
+                return fileExist;
             }
             return Directory.Exists(filepath) ? filepath : null;
         }
-        
-        
-        
-         // Replaces a SQLite url with a full directory path in the connection string
-        public string SqliteFullPath(string connectionString, string baseDirectoryProject)
+
+        /// <summary>
+        /// Replaces a SQLite url with a full directory path in the connection string
+        /// </summary>
+        /// <param name="connectionString">SQLite</param>
+        /// <param name="baseDirectoryProject">path</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">The 'DatabaseConnection' field is null or empty or missing Data Source in connection string</exception>
+        public string SqLiteFullPath(string connectionString, string baseDirectoryProject)
         {
             if (DatabaseType == DatabaseTypeList.Mysql && string.IsNullOrWhiteSpace(connectionString)) 
-                throw  new ArgumentException("The 'DatabaseConnection' field is null or emphy");
+                throw  new ArgumentException("The 'DatabaseConnection' field is null or empty");
 
             if(DatabaseType != DatabaseTypeList.Sqlite) return connectionString; // mysql does not need this
             if(Verbose) Console.WriteLine(connectionString);            
@@ -443,10 +457,10 @@ namespace starskycore.Models
             // Return if running in Microsoft.EntityFrameworkCore.Sqlite (location is now root folder)
             if(baseDirectoryProject.Contains("entityframeworkcore")) return connectionString;
 
-            var datasource = "Data Source=" + baseDirectoryProject + 
+            var dataSource = "Data Source=" + baseDirectoryProject + 
                              Path.DirectorySeparatorChar+  databaseFileName;
-            if(Verbose) Console.WriteLine(datasource);
-            return datasource;
+            if(Verbose) Console.WriteLine(dataSource);
+            return dataSource;
         }
 
     }

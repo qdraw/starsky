@@ -63,7 +63,7 @@ namespace starskytest.Helpers
             {
                 "/test.jpg"
             };
-	        var storage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>(),new List<string>{null});
+	        var storage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>());
 
 	        var fakeExifTool = new FakeExifTool(storage,_appSettings);
             var helperResult = new ExifToolCmdHelper(fakeExifTool, storage,storage ,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
@@ -95,7 +95,7 @@ namespace starskytest.Helpers
             var inputSubPaths = new List<string>{"/test.jpg"};
 
 	        var storage =
-		        new FakeIStorage(folderPaths, inputSubPaths, null, new List<string> {"?"});
+		        new FakeIStorage(folderPaths, inputSubPaths, null);
 	        var fakeExifTool = new FakeExifTool(storage,_appSettings);
 
             var helperResult = new ExifToolCmdHelper(fakeExifTool, storage,storage,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);

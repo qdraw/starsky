@@ -43,8 +43,8 @@ namespace starskytest.Services
 
 			_appSettings = new AppSettings();
 
-			_iStorageFake = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes}, new List<string>{_exampleHash});
+			_iStorageFake = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg", _exampleHash},
+				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes});
 			
 			_exifTool = new FakeExifTool(_iStorageFake,_appSettings);
 

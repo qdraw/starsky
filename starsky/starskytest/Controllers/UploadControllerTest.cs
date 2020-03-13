@@ -64,8 +64,7 @@ namespace starskytest.Controllers
 
 			_iStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_createAnImage.DbPath}, 
-				new List<byte[]>{CreateAnImage.Bytes}, 
-				new List<string>{null});
+				new List<byte[]>{CreateAnImage.Bytes});
 			
 	        _readmeta = new ReadMeta(_iStorage,_appSettings);
                         

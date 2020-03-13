@@ -89,7 +89,7 @@ namespace starskycore.Storage
 			FileStream fileStream;
 			if ( maxRead <= 1 )
 			{
-				fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+				fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096,false );
 			}
 			else
 			{

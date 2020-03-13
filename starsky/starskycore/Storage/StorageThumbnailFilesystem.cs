@@ -30,7 +30,8 @@ namespace starskycore.Storage
 
 		public bool ExistFolder(string path)
 		{
-			throw new System.NotImplementedException();
+			// only for the root folder
+			return new StorageHostFullPathFilesystem().ExistFolder(_appSettings.ThumbnailTempFolder);
 		}
 
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)

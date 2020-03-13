@@ -27,8 +27,7 @@ namespace starskytest.Services
 			
 			_iStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, 
-				new List<string>{null});
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
 			_readMeta = new ReadMeta(_iStorage);
 		}
@@ -52,8 +51,7 @@ namespace starskytest.Services
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, 
-				new List<string>{"/test.jpg"});
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 
 			var isCreated = new Thumbnail(storage, storage).CreateThumb(_fakeIStorageImageSubPath, _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);

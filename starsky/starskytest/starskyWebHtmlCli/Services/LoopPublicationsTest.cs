@@ -59,7 +59,8 @@ namespace starskytest.starskyWebHtmlCli.Services
                 FileHash = "FILEHASH"
             }};
 
-	        var fakeStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg"},new List<byte[]>{CreateAnImage.Bytes},new List<string>{"FILEHASH"});
+	        var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
+		        new List<string>{"/test.jpg","FILEHASH"},new List<byte[]>{CreateAnImage.Bytes});
 	        var selectorStorage = new FakeSelectorStorage(fakeStorage);
 	        
             new LoopPublications(selectorStorage, appSettings,

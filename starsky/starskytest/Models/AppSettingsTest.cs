@@ -55,7 +55,7 @@ namespace starskytest.Models
 		[TestMethod]
 		public void AppSettingsProviderTest_SqliteFullPathTest()
 		{
-			var datasource = _appSettings.SqliteFullPath("Data Source=data.db", string.Empty);
+			var datasource = _appSettings.SqLiteFullPath("Data Source=data.db", string.Empty);
 			Assert.AreEqual(true, datasource.Contains("data.db") );
 			Assert.AreEqual(true, datasource.Contains("Data Source="));
 		}
@@ -66,7 +66,7 @@ namespace starskytest.Models
 		{
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Sqlite;
 
-			var datasource = _appSettings.SqliteFullPath(
+			var datasource = _appSettings.SqLiteFullPath(
 				"Data Source=data.db", Path.DirectorySeparatorChar + "starsky");
 			Assert.AreEqual(true, datasource.Contains("data.db"));
 			Assert.AreEqual(true, datasource.Contains("Data Source="));
@@ -77,7 +77,7 @@ namespace starskytest.Models
 		public void AppSettingsProviderTest_SQLite_ExpectException()
 		{
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Sqlite;
-			var datasource = _appSettings.SqliteFullPath(string.Empty, null);
+			var datasource = _appSettings.SqLiteFullPath(string.Empty, null);
 		}
 
 		[TestMethod]
@@ -85,7 +85,7 @@ namespace starskytest.Models
 		public void AppSettingsProviderTest_MySQL_ExpectException()
 		{
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Mysql;
-			_appSettings.SqliteFullPath(string.Empty, null);
+			_appSettings.SqLiteFullPath(string.Empty, null);
 		}
 
 		[TestMethod]

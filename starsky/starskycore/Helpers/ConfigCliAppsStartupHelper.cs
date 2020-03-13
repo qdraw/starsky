@@ -28,7 +28,7 @@ namespace starskycore.Helpers
 	    private readonly ThumbnailCleaner _thumbnailCleaner;
 	    private readonly IStorage _iStorage;
 	    private readonly UserManager _userManager;
-	    private readonly StorageThumbnailFilesystem _thumbnailStorage;
+	    private readonly IStorage _thumbnailStorage;
 	    private readonly SelectorStorage _selectorStorage;
 
 	    /// <summary>

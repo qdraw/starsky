@@ -452,9 +452,11 @@ namespace starsky.Controllers
             // Cached view of item
             var sourcePath = _query.GetSubPathByHash(f);
             if (sourcePath == null) return NotFound("not in index");
+            
+            // todo use abstraction
             var sourceFullPath = _appSettings.DatabasePathToFilePath(sourcePath);
 
-	        
+	        // todo add abstraction
 	        // Need to check again for recently moved files
 	        if (!System.IO.File.Exists(sourceFullPath))
 	        {
@@ -506,89 +508,7 @@ namespace starsky.Controllers
             Request.HttpContext.Response.Headers.Add("Expires", "0");
         }
 
-        /// <summary>
-        /// Select manualy the orginal or thumbnail
-        /// </summary>
-        /// <param name="f">string, subpath to find the file</param>
-        /// <param name="isThumbnail">true = 1000px thumb (if supported)</param>
-        /// <returns>FileStream with image</returns>
-        /// <response code="200">returns content of the file or when json is true, "OK"</response>
-        /// <response code="404">source image missing</response>
-        /// <response code="500">"Thumbnail generation failed"</response>
-        /// <response code="401">User unauthorized</response>
-        [HttpGet("/api/downloadPhoto")]
-        [ProducesResponseType(200)] // file
-        [ProducesResponseType(404)] // not found
-        [ProducesResponseType(500)] // "Thumbnail generation failed"
-        public IActionResult DownloadPhoto(string f, bool isThumbnail = true)
-        {
-            // f = subpath/filepath
-            if (f.Contains("?isthumbnail")) return NotFound("please use &isthumbnail = "+
-                                                            "instead of ?isthumbnail= ");
-
-            var singleItem = _query.SingleItem(f);
-            if (singleItem == null) return NotFound("not in index " + f);
-
-            var sourceFullPath = _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
-            if (!System.IO.File.Exists(sourceFullPath))
-                return NotFound("source image missing " + sourceFullPath );
-
-            // Return full image
-            if (!isThumbnail)
-            {
-	            // todo: Use abstraction
-                FileStream fs = System.IO.File.OpenRead(sourceFullPath);
-                // Return the right mime type
-                return File(fs, MimeHelper.GetMimeTypeByFileName(sourceFullPath));
-            }
-
-            // Return Thumbnail
-            
-            var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
-
-            // If File is corrupt delete it
-            if (ExtensionRolesHelper.GetImageFormat(thumbPath) == ExtensionRolesHelper.ImageFormat.unknown)
-            {
-	            // todo: Use abstraction
-                System.IO.File.Delete(thumbPath);
-            }
-
-            if (ExtensionRolesHelper.GetImageFormat(thumbPath) == ExtensionRolesHelper.ImageFormat.notfound)
-            {
-                if (FilesHelper.IsFolderOrFile(_appSettings.ThumbnailTempFolder) ==
-                    FolderOrFileModel.FolderOrFileTypeList.Deleted)
-                {
-                    return NotFound("Thumb base folder " + _appSettings.ThumbnailTempFolder + " not found");
-                }
-                
-                var searchItem = new FileIndexItem
-                {
-                    FileName = _appSettings.FullPathToDatabaseStyle(sourceFullPath)
-                        .Split("/").LastOrDefault(),
-                    ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.
-                        FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
-	                FileHash = singleItem.FileIndexItem.FileHash // not loading it from disk to make it faster
-                };
-                
-                // When you have a different tag in the database than on disk
-                thumbPath = _appSettings.ThumbnailTempFolder + searchItem.FileHash + ".jpg";
-                    
-                var isCreateAThumb = new Thumbnail(_iStorage,_thumbnailStorage).CreateThumb(searchItem.FilePath, searchItem.FileHash);
-                if (!isCreateAThumb)
-                {
-                    Response.StatusCode = 500;
-                    return Json("Thumbnail generation failed");
-                }
-
-                // todo: Use abstraction
-                FileStream fs2 = System.IO.File.OpenRead(thumbPath);
-                return File(fs2, "image/jpeg");
-            }
-            
-            // todo: Use abstraction
-            FileStream fs1 = System.IO.File.OpenRead(thumbPath);
-            return File(fs1, "image/jpeg");
-        }
+        
 
         /// <summary>
         /// Delete Database Cache (only the cache)

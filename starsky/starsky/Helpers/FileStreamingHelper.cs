@@ -27,12 +27,12 @@ namespace starsky.Helpers
             
 	        // file without base64 encoding; return slug based url
 	        if (Base64Helper.TryParse(request.Headers["filename"]).Length == 0)
-		        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(request.Headers["filename"]))
+		        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(request.Headers["filename"]),true)
 		               + Path.GetExtension(request.Headers["filename"]);
             
 	        var requestHeadersBytes = Base64Helper.TryParse(request.Headers["filename"]);
 	        var requestHeaders = Encoding.ASCII.GetString(requestHeadersBytes);
-	        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders)) + Path.GetExtension(requestHeaders);
+	        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders),true) + Path.GetExtension(requestHeaders);
         }
         
         public static async Task<List<string>> StreamFile(this HttpRequest request, AppSettings appSettings, ISelectorStorage selectorStorage)
@@ -86,7 +86,7 @@ namespace starsky.Helpers
                     var sourceFileName = contentDisposition.FileName.ToString().Replace("\"", string.Empty);
                     var inputExtension = Path.GetExtension(sourceFileName);
 
-                    var tempHash = appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(sourceFileName));
+                    var tempHash = appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(sourceFileName)); // underscore not allowed
                     var fullFilePath = Path.Combine(appSettings.TempFolder, tempHash + inputExtension);
                     tempPaths.Add(fullFilePath);
 

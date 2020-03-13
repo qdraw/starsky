@@ -30,7 +30,7 @@ namespace starskytest.FakeMocks
 		/// <param name="byteListSource"></param>
 		/// <param name="fileHashPerThumbnail">for mock fileHash=subPath</param>
 		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, 
-			IReadOnlyList<byte[]> byteListSource = null, List<string> fileHashPerThumbnail = null)
+			IReadOnlyList<byte[]> byteListSource = null)
 		{
 	
 			if ( outputSubPathFolders != null )
@@ -41,11 +41,6 @@ namespace starskytest.FakeMocks
 			if ( outputSubPathFiles != null )
 			{
 				_outputSubPathFiles = outputSubPathFiles;
-			}
-
-			if ( fileHashPerThumbnail != null &&  fileHashPerThumbnail.Count == _outputSubPathFiles.Count)
-			{
-				_fileHashPerThumbnail = fileHashPerThumbnail;
 			}
 
 			if ( byteListSource != null && byteListSource.Count == _outputSubPathFiles.Count)
@@ -201,54 +196,5 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(WriteStream(stream, path));
 		}
 
-		/// <summary>
-		/// Check if exist
-		/// </summary>
-		/// <param name="fileHash">for mock fileHash</param>
-		/// <returns></returns>
-		public bool ThumbnailExist(string fileHash)
-		{
-			if ( _fileHashPerThumbnail.Count == 0 )
-				throw new ArgumentException("fill the thumbnail field first");
-			return _fileHashPerThumbnail.Any(p => p == fileHash);
-		}
-
-		public Stream ThumbnailRead(string fileHash)
-		{
-			if ( !ThumbnailExist(fileHash) ) throw new FileNotFoundException("fileHash");
-
-			var indexOf = _fileHashPerThumbnail.IndexOf(fileHash);
-
-			// return the actual image (not the thumb)
-			var result = _byteList.FirstOrDefault(p => p.Key == _outputSubPathFiles[indexOf]).Value;
-			MemoryStream stream1 = new MemoryStream(result);
-			return stream1;
-			
-			throw new NotImplementedException();
-		}
-
-		public bool ThumbnailWriteStream(Stream stream, string fileHash)
-		{
-			stream.Dispose();
-			if ( _fileHashPerThumbnail.Count == 0 )
-				throw new ArgumentException("fill the thumbnail bool field first");
-			var index = _outputSubPathFiles.IndexOf(fileHash);
-			return true;
-		}
-
-		public void ThumbnailMove(string fromFileHash, string toFileHash)
-		{
-			var indexOfFolders = _fileHashPerThumbnail.IndexOf(fromFileHash);
-			if ( indexOfFolders == -1 )
-			{
-				throw new ArgumentException($"inputSubPath:{fromFileHash} - toSubPath:{toFileHash} indexOfFolders---1");
-			}
-			_fileHashPerThumbnail[indexOfFolders] = toFileHash;
-		}
-
-		public bool ThumbnailDelete(string fileHash)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

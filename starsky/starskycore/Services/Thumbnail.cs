@@ -102,7 +102,7 @@ namespace starskycore.Services
 		}
 
 		public MemoryStream ResizeThumbnail(string subPath, 
-			 int width, string outputHash = null,
+			 int width, string thumbnailOutputHash = null,
 			bool removeExif = false,
 			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
 		{
@@ -134,9 +134,9 @@ namespace starskycore.Services
 						
 					ResizeThumbnailImageFormat(image, imageFormat, outputStream);
 	
-					if ( !string.IsNullOrEmpty(outputHash) )
+					if ( !string.IsNullOrEmpty(thumbnailOutputHash) )
 					{
-						_thumbnailStorage.WriteStream(outputStream, outputHash);  
+						_thumbnailStorage.WriteStream(outputStream, thumbnailOutputHash);  
 						outputStream.Dispose();
 						return null;
 					}
