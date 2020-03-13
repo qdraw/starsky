@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -52,31 +53,31 @@ namespace starskytest.Controllers
 	    }
 
         [TestMethod]
-        public void Suggestion_IsMoreThan10()
+        public async Task Suggestion_IsMoreThan10()
         {
 	        InjectMockedData();
 	        var controller = new SearchSuggestController(_searchSuggest);
-	        var result = controller.Suggest("e") as JsonResult;
+	        var result = await controller.Suggest("e") as JsonResult;
 	        var list = result.Value as List<string>;
 			CollectionAssert.AreEqual(new List<string>{"enter","exit"}, list);
         }
 
         [TestMethod]
-        public void Suggestion_IsLessThan10()
+        public async Task Suggestion_IsLessThan10()
         {
 	        InjectMockedData();
 	        var controller = new SearchSuggestController(_searchSuggest);
-	        var result = controller.Suggest("l") as JsonResult; // search for live
+	        var result = await controller.Suggest("l") as JsonResult; // search for live
 	        var list = result.Value as List<string>;
 	        CollectionAssert.AreEqual(new List<string>{}, list);
         }
         
         [TestMethod]
-        public void AllResultsCheck()
+        public async Task AllResultsCheck()
         {
 	        InjectMockedData();
 	        var controller = new SearchSuggestController(_searchSuggest);
-	        var result = controller.All() as JsonResult; // search for live
+	        var result = await controller.All() as JsonResult; // search for live
 	        var list = result.Value as List<KeyValuePair<string, int>>;
 
 	        var expected = new List<KeyValuePair<string, int>>
@@ -90,14 +91,14 @@ namespace starskytest.Controllers
         }
         
         [TestMethod]
-        public void Inflate()
+        public async Task Inflate()
         {
 	        // Clean cache if not exist
 	        _memoryCache.Remove(nameof(SearchSuggestionsService));
 	        
 	        InjectMockedData();
 	        var controller = new SearchSuggestController(_searchSuggest);
-	        controller.Inflate();
+	        await controller.Inflate();
 	        
 	        _memoryCache.TryGetValue(nameof(SearchSuggestionsService),
 		        out var cacheResult);

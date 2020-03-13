@@ -138,14 +138,17 @@ namespace starskytest.Controllers
 				HttpContext = new DefaultHttpContext()
 			};
 
-			var storageSelector = new FakeSelectorStorage();
+			var newImage = CreateAnImage.Bytes;
+			var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>{newImage});
+			var storageSelector = new FakeSelectorStorage(fakeStorage);
+			
 			var controller = new SyncController(_isync, _bgTaskQueue, _query,storageSelector);
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex("/") as JsonResult;
 			var list = result.Value as List<SyncViewModel>;
-			var path = list.FirstOrDefault(p => p.FilePath == _createAnImage.DbPath).FilePath;
-			Assert.AreEqual(_createAnImage.DbPath, path);
+			var path = list.FirstOrDefault(p => p.FilePath == "/test.jpg").FilePath;
+			Assert.AreEqual("/test.jpg", path);
 		}
 
 		[TestMethod]

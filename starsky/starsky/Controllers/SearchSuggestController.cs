@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starskycore.Interfaces;
@@ -25,9 +26,9 @@ namespace starsky.Controllers
 		[Produces("application/json")]	    
 		[Authorize] 
 		// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
-		public IActionResult Suggest(string t)
+		public async Task<IActionResult> Suggest(string t)
 		{
-			var model = _suggest.SearchSuggest(t);
+			var model = await _suggest.SearchSuggest(t);
 			return Json(model);
 		}
 
@@ -41,9 +42,9 @@ namespace starsky.Controllers
 		[Produces("application/json")]	    
 		[Authorize] 
 		// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
-		public IActionResult All()
+		public async Task<IActionResult> All()
 		{
-			return Json(_suggest.GetAllSuggestions());
+			return Json(await _suggest.GetAllSuggestions());
 		}
 
 		/// <summary>
@@ -53,9 +54,9 @@ namespace starsky.Controllers
 		/// <response code="200">inflate done</response>
 		[HttpGet("/api/suggest/inflate")]
 		[ProducesResponseType(200)] // ok
-		public IActionResult Inflate()
+		public async Task<IActionResult> Inflate()
 		{
-			_suggest.Inflate();
+			await _suggest.Inflate();
 			return Ok();
 		}
 	}
