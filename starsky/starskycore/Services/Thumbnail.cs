@@ -110,7 +110,6 @@ namespace starskycore.Services
 				
 			try
 			{
-					
 				// resize the image and save it to the output stream
 				using (var inputStream = _iStorage.ReadStream(subPath))
 				using (var image = Image.Load(inputStream))

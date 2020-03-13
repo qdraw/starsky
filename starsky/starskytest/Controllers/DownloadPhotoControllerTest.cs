@@ -11,8 +11,6 @@ using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
-using starskycore.Storage;
-using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers
@@ -52,19 +50,24 @@ namespace starskytest.Controllers
 			}
 			return item;
 		}
-		
-		[TestMethod]
-		public async Task DownloadPhoto_isThumbnailTrue_CreateThumb_ReturnFileStream_Test()
+
+		private IStorage ArrangeStorage()
 		{
-			// Arange
-			var fileIndexItem = InsertSearchData();
 			var folderPaths = new List<string>{"/"};
 			var inputSubPaths = new List<string>{"/test.jpg"};
 			var storage =
 				new FakeIStorage(folderPaths, inputSubPaths, 
 					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
-			var selectorStorage = new FakeSelectorStorage(storage);
-
+			return storage;
+		}
+		
+		[TestMethod]
+		public async Task DownloadPhoto_isThumbnailTrue_CreateThumb_ReturnFileStream_Test()
+		{
+			// Arrange
+			var fileIndexItem = InsertSearchData();
+			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+			
 			// Act
 			var controller = new DownloadPhotoController(_query,selectorStorage);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
@@ -74,132 +77,81 @@ namespace starskytest.Controllers
 			actionResult.FileStream.Dispose();
 		}
 		
-		// [TestMethod]
-  //       public void ApiController_DownloadPhoto_isThumbnailFalse_ReturnFileStream_Test()
-  //       {
-  //           // Arange
-  //           var fileIndexItem = InsertSearchData();
-  //
-  //           // Remove thumb if exist
-  //           var thumbPath = new CreateAnImage().BasePath + 
-  //                           Path.DirectorySeparatorChar + 
-  //                           fileIndexItem.FileHash + ".jpg";
-  //           
-  //
-  //           if (File.Exists(thumbPath))
-  //           {
-  //               File.Delete(thumbPath);
-  //           }
-  //           var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
-  //
-  //           // Act
-  //           var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
-  //           controller.ControllerContext.HttpContext = new DefaultHttpContext();
-  //           var actionResult =  controller.DownloadPhoto(fileIndexItem.FilePath,false)  as FileStreamResult;
-  //           Assert.AreNotEqual(null,actionResult);
-  //
-  //           actionResult.FileStream.Dispose();
-  //
-  //
-  //           if (File.Exists(thumbPath))
-  //           {
-  //               File.Delete(thumbPath);
-  //           }
-  //       }
-  //       
-  //       [TestMethod]
-  //       public void ApiController_DownloadPhoto_isThumbnailTrue_ReturnAThumb_ReturnFileStream_Test()
-  //       {
-  //           // Arange
-  //           var fileIndexItem = InsertSearchData();
-  //
-  //           // Remove thumb if exist
-  //           var thumbPath = new CreateAnImage().BasePath + 
-  //                           Path.DirectorySeparatorChar + fileIndexItem.FileHash +
-  //                           ".jpg";
-  //           
-  //           if (File.Exists(thumbPath))
-  //           {
-  //               File.Delete(thumbPath);
-  //           }
-  //           var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
-  //
-  //           // Act
-  //           var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
-  //           controller.ControllerContext.HttpContext = new DefaultHttpContext();
-  //
-  //           // Run once
-  //           var actionResult1 = controller.DownloadPhoto(fileIndexItem.FilePath) as FileStreamResult;
-  //           actionResult1.FileStream.Dispose();
-  //
-  //
-  //           // Run twice
-  //           var actionResult2 =  controller.DownloadPhoto(fileIndexItem.FilePath)  as FileStreamResult;
-  //           Assert.AreNotEqual(null,actionResult2);
-  //
-  //           actionResult2.FileStream.Dispose();
-  //
-  //           // Clean
-  //           if (File.Exists(thumbPath))
-  //           {
-  //               File.Delete(thumbPath);
-  //           }
-  //       }
-  //
-  //       [TestMethod]
-  //       public void ApiController_DownloadPhoto_SourceImageIsMissing_Test()
-  //       {
-  //           var thumbHash = "ApiController_Thumbnail_CorruptImage_Test";
-  //           var path = _createAnImage.BasePath + Path.DirectorySeparatorChar + thumbHash + ".jpg";
-  //          
-  //
-  //           _query.AddItem(new FileIndexItem
-  //           {
-  //               FileName = "ApiController_Thumbnail_CorruptImage_Test.jpg",
-  //               ParentDirectory = "/",
-  //               FileHash = thumbHash
-  //           });
-  //           var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
-  //
-  //           // Act
-  //           var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
-  //           var actionResult =  controller.DownloadPhoto("/" + thumbHash)  as NotFoundObjectResult;
-  //           Assert.AreNotEqual(null,actionResult);
-  //           Assert.AreEqual(404,actionResult.StatusCode);
-  //
-  //           
-  //           // remove files + database item
-  //           _query.RemoveItem(_query.GetObjectByFilePath("/" + thumbHash + ".jpg"));
-  //           if (File.Exists(path))
-  //           {
-  //               File.Delete(path);
-  //           }
-  //           
-  //       }
-  //       
-  //       
-  //       [TestMethod]
-  //       public void ApiController_DownloadPhoto_Thumb_base_folder_not_found_Test()
-  //       {
-  //           // this works
-  //           
-  //           // Arange
-  //           var fileIndexItem = InsertSearchData();
-  //           
-  //           var appSettingsthumbtest = _appSettings;
-  //           appSettingsthumbtest.ThumbnailTempFolder = null;
-  //           var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
-  //
-  //           // Act
-  //           var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
-  //           controller.ControllerContext.HttpContext = new DefaultHttpContext();
-  //           
-  //           // Run once
-  //           var actionResult = controller.DownloadPhoto(fileIndexItem.FilePath) as NotFoundObjectResult;
-  //           Assert.AreNotEqual(null,actionResult);
-  //           Assert.AreEqual(404,actionResult.StatusCode);
-  //
-  //       }
+		[TestMethod]
+        public async Task DownloadPhoto_isThumbnailFalse_ReturnFileStream_Test()
+        {
+	        // Arrange
+	        var fileIndexItem = InsertSearchData();
+	        var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+	        
+            // Act
+            var controller = new DownloadPhotoController(_query,selectorStorage);
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+            var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath,false)  as FileStreamResult;
+            Assert.AreNotEqual(null,actionResult);
+  
+            actionResult.FileStream.Dispose();
+        }
 
+		[TestMethod]
+		public async Task DownloadPhoto_isThumbnailTrue_ReturnAThumb_ReturnFileStream_Test()
+		{
+			// Arrange
+			var fileIndexItem = InsertSearchData();
+			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+
+			// Act
+			var controller = new DownloadPhotoController(_query,selectorStorage);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			// Run once
+			var actionResult1 = await controller.DownloadPhoto(fileIndexItem.FilePath) as FileStreamResult;
+			actionResult1.FileStream.Dispose();
+
+			// Run twice
+			var actionResult2 =  await controller.DownloadPhoto(fileIndexItem.FilePath)  as FileStreamResult;
+			Assert.AreNotEqual(null,actionResult2);
+
+			actionResult2.FileStream.Dispose();
+		}
+		
+		[TestMethod]
+		public async Task ApiController_DownloadPhoto_SourceImageIsMissing_Test()
+		{
+			// Arrange
+			var fileIndexItem = InsertSearchData();
+			
+			// so the item does not exist on disk
+			var storage = ArrangeStorage();
+			var selectorStorage = new FakeSelectorStorage();
+			
+			// Act
+			var controller = new DownloadPhotoController(_query,selectorStorage);
+			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath)  as NotFoundObjectResult;
+			Assert.AreNotEqual(null,actionResult);
+			Assert.AreEqual(404,actionResult.StatusCode);
+			Assert.AreEqual("source image missing /test.jpg",actionResult.Value);
+		}
+
+		[TestMethod]
+		public async Task DownloadPhoto_Thumb_base_folder_not_found_Test()
+		{
+			// Arrange
+			var fileIndexItem = InsertSearchData();
+			var storage =
+				new FakeIStorage(null, new List<string>{"/test.jpg"}, 
+					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+			var selectorStorage = new FakeSelectorStorage(storage);
+			
+
+			// Act
+			var controller = new DownloadPhotoController(_query,selectorStorage);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath)  as NotFoundObjectResult;
+		
+			Assert.AreNotEqual(null,actionResult);
+			Assert.AreEqual(404,actionResult.StatusCode);
+			Assert.AreEqual("ThumbnailTempFolder not found",actionResult.Value);
+		}
 	}
 }

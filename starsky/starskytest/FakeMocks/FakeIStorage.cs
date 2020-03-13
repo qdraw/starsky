@@ -86,7 +86,6 @@ namespace starskytest.FakeMocks
 				throw new ArgumentException($"inputSubPath:{inputSubPath} - toSubPath:{toSubPath} indexOfFolders---1");
 			}
 			_outputSubPathFolders[indexOfFolders] = toSubPath;
-
 		}
 
 		public void FileMove(string inputSubPath, string toSubPath)
@@ -173,7 +172,9 @@ namespace starskytest.FakeMocks
 		public bool WriteStream(Stream stream, string path)
 		{
 			_outputSubPathFiles.Add(path);
-			
+
+			stream.Seek(0, SeekOrigin.Begin);
+
 			using (MemoryStream ms = new MemoryStream())
 			{
 				stream.CopyTo(ms);
@@ -186,9 +187,9 @@ namespace starskytest.FakeMocks
 				}
 				
 				_byteList.Add(path, byteArray);
-				if ( byteArray.Length == 0 ) throw new FileLoadException($"path {path} is 0 bytes");
+				if ( byteArray.Length == 0 ) throw new FileLoadException($"FakeIStorage WriteStream => path {path} is 0 bytes");
 			}
-
+			stream.Dispose();
 			return true;
 		}
 
