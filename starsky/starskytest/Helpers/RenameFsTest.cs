@@ -68,7 +68,7 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var selectorStorage = new FakeSelectorStorage(iStorage);
 
-			_sync = new SyncService(_query,_appSettings,readMeta,selectorStorage);
+			_sync = new SyncService(_query,_appSettings,selectorStorage);
 		}
 
 		[TestMethod]

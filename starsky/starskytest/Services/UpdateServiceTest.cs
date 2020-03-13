@@ -63,7 +63,7 @@ namespace starskytest.Services
 		[ExpectedException(typeof(MissingFieldException))]
 		public void UpdateServiceTest_CompareAllLabelsAndRotation_NullMissingFieldException()
 		{
-			new UpdateService(null, null, null, null).CompareAllLabelsAndRotation(null, null,
+			new UpdateService(null, null, null, null, null).CompareAllLabelsAndRotation(null, null,
 				null, false, 0);
 			// ==>> MissingFieldException
 		}
@@ -94,7 +94,7 @@ namespace starskytest.Services
 			};
 			
 			// Check for compare values
-			new UpdateService(_query, _exifTool, _readMeta,_iStorageFake)
+			new UpdateService(_query, _exifTool, _readMeta,_iStorageFake,_iStorageFake)
 				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, statusModel, false, 0);
 			
 			// Check how that changedFileIndexItemName works
@@ -124,7 +124,7 @@ namespace starskytest.Services
 			};
 			
 			// Rotate right; check if values are the same
-			new UpdateService(_query, _exifTool, _readMeta,_iStorageFake)
+			new UpdateService(_query, _exifTool, _readMeta,_iStorageFake,_iStorageFake)
 				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, collectionsDetailView.FileIndexItem, false, -1);
 			
 			// Check for value
@@ -175,7 +175,7 @@ namespace starskytest.Services
 				ParentDirectory = "/"
 			};
 
-			new UpdateService(_query,_exifTool, _readMeta,_iStorageFake)
+			new UpdateService(_query,_exifTool, _readMeta,_iStorageFake,_iStorageFake)
 				.Update(changedFileIndexItemName,fileIndexResultsList, updateItem, false,false,0);
 
 			// check for item (Referenced)
@@ -222,7 +222,7 @@ namespace starskytest.Services
 				ParentDirectory = "/"
 			};
 
-			new UpdateService(_query,_exifTool, _readMeta,_iStorageFake)
+			new UpdateService(_query,_exifTool, _readMeta,_iStorageFake,_iStorageFake)
 				.Update(null,fileIndexResultsList, updateItem, false,false,0);
 			// Second one is null
 
@@ -285,7 +285,7 @@ namespace starskytest.Services
 			
 			var appSettings = new AppSettings{AddMemoryCache = false};
 			var readMetaWithNoCache = new ReadMeta(_iStorageFake,appSettings);
-			new UpdateService(_queryWithoutCache,_exifTool, readMetaWithNoCache, _iStorageFake)
+			new UpdateService(_queryWithoutCache,_exifTool, readMetaWithNoCache, _iStorageFake, _iStorageFake)
 				.Update(changedFileIndexItemName, fileIndexResultsList,updateItem,false,false,0);
 
 			// db

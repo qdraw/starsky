@@ -61,7 +61,8 @@ namespace starskytest.starskyWebHtmlCli.Services
 
 	        var fakeStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg"},new List<byte[]>{CreateAnImage.Bytes},new List<string>{"FILEHASH"});
 	        
-            new LoopPublications(fakeStorage, appSettings,new FakeExifTool(fakeStorage,appSettings), new ReadMeta(fakeStorage)).Render(list,null);
+            new LoopPublications(fakeStorage, fakeStorage, appSettings,
+	            new FakeExifTool(fakeStorage,appSettings), new ReadMeta(fakeStorage)).Render(list,null);
 
 	        var dir = fakeStorage.GetAllFilesInDirectory("/").ToList();
 

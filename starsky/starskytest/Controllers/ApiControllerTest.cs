@@ -123,7 +123,8 @@ namespace starskytest.Controllers
         {
             var createAnImage = InsertSearchData(true);
             _appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue, new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var storage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue, storage,null);
 
             Console.WriteLine("createAnImage.FilePath");
             Console.WriteLine(createAnImage.FilePath);
@@ -150,7 +151,7 @@ namespace starskytest.Controllers
 	        
             _appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 	        
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)),null);
             var notFoundResult = controller.Delete(createAnImage.FilePath) as NotFoundObjectResult;
             Assert.AreEqual(404,notFoundResult.StatusCode);
             var jsonCollection = notFoundResult.Value as List<FileIndexItem>;
@@ -164,7 +165,7 @@ namespace starskytest.Controllers
         public void ApiController_Thumbnail_HappyFlowDisplayJson_API_Test()
         {
             var createAnImage = InsertSearchData();
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)),null);
             
             new Thumbnail(_iStorage).CreateThumb(createAnImage.FilePath, createAnImage.FileHash);
             
@@ -181,7 +182,7 @@ namespace starskytest.Controllers
         [TestMethod]
         public void ApiController_Thumbnail_InputBadRequest()
         {
-	        var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+	        var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)),null);
 	        var actionResult = controller.Thumbnail("../") as BadRequestResult;
 			Assert.AreEqual(400,actionResult.StatusCode);
         }
@@ -190,9 +191,13 @@ namespace starskytest.Controllers
         public void ApiController_Thumbnail_HappyFlowFileStreamResult_API_Test()
         {
             var createAnImage = InsertSearchData();
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
             
-            new Thumbnail(new StorageSubPathFilesystem(_appSettings) )
+            var storage = new StorageSubPathFilesystem(_appSettings);
+            var selectorStorage = new FakeSelectorStorage(storage);
+            
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
+
+            new Thumbnail(storage,storage )
 	            .CreateThumb(createAnImage.FilePath,createAnImage.FileHash);
 
             var actionResult = controller.Thumbnail(createAnImage.FileHash, true) as FileStreamResult;
@@ -209,7 +214,10 @@ namespace starskytest.Controllers
         public void ApiController_Thumbnail_ShowOrginalImage_API_Test()
         {
             var createAnImage = InsertSearchData();
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var selectorStorage =
+	            new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+            
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
 	        controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
             var actionResult = controller.Thumbnail(createAnImage.FileHash, true) as FileStreamResult;
@@ -224,8 +232,10 @@ namespace starskytest.Controllers
         {
             // Photo exist in database but " + "isSingleItem flag is Missing
             var createAnImage = InsertSearchData();
-
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var selectorStorage =
+	            new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+            
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
             var actionResult = controller.Thumbnail(createAnImage.FileHash, false, true) as JsonResult;
@@ -244,7 +254,9 @@ namespace starskytest.Controllers
                 FileHash = "0986524678765456786543",
 				Id= 788,
             });
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+            
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             var actionResult = controller.Thumbnail(item.FileHash, false, true) as NotFoundObjectResult;
             var thumbnailAnswer = actionResult.StatusCode;
             Assert.AreEqual(404,thumbnailAnswer);
@@ -254,7 +266,8 @@ namespace starskytest.Controllers
         [TestMethod]
         public void ApiController_Thumbnail1_NonExistingFile_API_Test()
         {
-	        var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+	        var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             var actionResult = controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
             var thumbnailAnswer = actionResult.StatusCode;
             Assert.AreEqual(404,thumbnailAnswer);
@@ -263,7 +276,8 @@ namespace starskytest.Controllers
         [TestMethod]
         public void ApiController_ENV_starskyTestEnv()
         {
-	        var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+	        var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             controller.Env();
         }
         
@@ -273,7 +287,8 @@ namespace starskytest.Controllers
             var createAnImage = new CreateAnImage();
             InsertSearchData();
             
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             var input = new FileIndexItem
             {
                 Tags = "test"
@@ -293,6 +308,7 @@ namespace starskytest.Controllers
                 ParentDirectory = "/",
                 FileHash = "345678765434567"
             });
+            var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
 
             var controller =
                 new ApiController(_query, _exifTool, _appSettings, _bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)))
@@ -314,8 +330,9 @@ namespace starskytest.Controllers
             // Uses FAKE readMeta
             var createAnImage = new CreateAnImage();
             InsertSearchData();
-            
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             var jsonResult = controller.Info(createAnImage.DbPath,false) as JsonResult;
             var exiftoolModel = jsonResult.Value as List<FileIndexItem>;
             Assert.AreEqual("test, sion",exiftoolModel.FirstOrDefault().Tags);            
@@ -330,8 +347,9 @@ namespace starskytest.Controllers
                 ParentDirectory = "/",
                 FileHash = "345678765434567"
             });
-            
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             var notFoundResult = controller.Info("/345678765434567.jpg") as NotFoundObjectResult;
             Assert.AreEqual(404,notFoundResult.StatusCode);
             
@@ -348,7 +366,8 @@ namespace starskytest.Controllers
                 FileHash = "345678765434567"
             });
             
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             var notFoundResult = controller.Delete("/345678765434567.jpg") as NotFoundObjectResult;
             Assert.AreEqual(404,notFoundResult.StatusCode);
 
@@ -358,7 +377,8 @@ namespace starskytest.Controllers
         [TestMethod]
         public void ApiController_Thumbnail_NonExistingFile_API_Test()
         {
-	        var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+	        var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             var actionResult = controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
             var thumbnailAnswer = actionResult.StatusCode;
             Assert.AreEqual(404,thumbnailAnswer);
@@ -384,9 +404,10 @@ namespace starskytest.Controllers
                 ParentDirectory = "/",
                 FileHash = thumbHash
             });
-            
+            var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+
             // Act
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
             var actionResult = controller.Thumbnail(thumbHash, false, true) as NoContentResult;
@@ -416,9 +437,10 @@ namespace starskytest.Controllers
             {
                 File.Delete(thumbPath);
             }
-            
+            var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+
             // Act
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             var actionResult =  controller.DownloadPhoto(fileIndexItem.FilePath)  as FileStreamResult;
             Assert.AreNotEqual(null,actionResult);
@@ -448,9 +470,10 @@ namespace starskytest.Controllers
             {
                 File.Delete(thumbPath);
             }
-            
+            var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+
             // Act
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             var actionResult =  controller.DownloadPhoto(fileIndexItem.FilePath,false)  as FileStreamResult;
             Assert.AreNotEqual(null,actionResult);
@@ -479,9 +502,10 @@ namespace starskytest.Controllers
             {
                 File.Delete(thumbPath);
             }
-            
+            var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+
             // Act
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
             // Run once
@@ -515,9 +539,10 @@ namespace starskytest.Controllers
                 ParentDirectory = "/",
                 FileHash = thumbHash
             });
+            var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
 
             // Act
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             var actionResult =  controller.DownloadPhoto("/" + thumbHash)  as NotFoundObjectResult;
             Assert.AreNotEqual(null,actionResult);
             Assert.AreEqual(404,actionResult.StatusCode);
@@ -543,9 +568,10 @@ namespace starskytest.Controllers
             
             var appSettingsthumbtest = _appSettings;
             appSettingsthumbtest.ThumbnailTempFolder = null;
-            
+            var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+
             // Act
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             
             // Run once
@@ -558,8 +584,10 @@ namespace starskytest.Controllers
         [TestMethod]
         public void ApiController_CheckIfCacheIsRemoved_CleanCache()
         {
+	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+
             // Act
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
             _query.AddItem(new FileIndexItem
@@ -608,8 +636,10 @@ namespace starskytest.Controllers
         [TestMethod]
         public void ApiController_NonExistingCacheRemove()
         {
+	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+
             // Act
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)));
+            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             
             var actionResult = controller.RemoveCache("/404page") as BadRequestObjectResult;
@@ -619,10 +649,12 @@ namespace starskytest.Controllers
         [TestMethod]
         public void ApiController_CacheDisabled()
         {
+	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+
             var appsettings = new AppSettings {AddMemoryCache = false};
 
             var controller =
-                new ApiController(_query, _exifTool, appsettings, _bgTaskQueue,new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings)))
+                new ApiController(_query, _exifTool, appsettings, _bgTaskQueue,selectorStorage,null)
                 {
                     ControllerContext = {HttpContext = new DefaultHttpContext()}
                 };
