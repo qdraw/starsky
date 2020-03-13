@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
       <!-- SonarQube needs this -->
       <ProjectGuid>{23e26a58-29c5-4d0c-813b-9f7bd991b107}</ProjectGuid>
-      <RootNamespace>starskygeocore</RootNamespace>
+      <RootNamespace>starsky.foundation.geo</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
