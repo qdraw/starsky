@@ -114,7 +114,9 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task ExportController_CreateZipNotFound()
 		{
-			var controller = new ExportController(_query, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings), _readmeta);
+			var iStorage = new StorageSubPathFilesystem(_appSettings);
+			var storageSelector = new FakeSelectorStorage(iStorage);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, storageSelector);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = controller.CreateZip("/fail", true, false) as NotFoundObjectResult;
@@ -137,7 +139,10 @@ namespace starskytest.Controllers
 			// the test
 			var createAnImage = InsertSearchData(true);
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
-			var controller = new ExportController(_query, _appSettings, backgroundQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
+
+			var storage = new StorageSubPathFilesystem(_appSettings);
+			var selectorStorage = new FakeSelectorStorage(storage);
+			var controller = new ExportController(_query, _appSettings, backgroundQueue, selectorStorage);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			// to avoid skip of adding zip
@@ -177,7 +182,9 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportControllerTest__ThumbTrue_CreateListToExport()
 		{
-			var controller = new ExportController(_query, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
+			var storage = new StorageSubPathFilesystem(_appSettings);
+			var selectorStorage = new FakeSelectorStorage(storage);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, selectorStorage);
 
 			var item = new FileIndexItem
 			{
@@ -194,14 +201,15 @@ namespace starskytest.Controllers
 			var filePaths = controller.CreateListToExport(fileIndexResultsList, true);
 
 			Assert.AreEqual(true,filePaths.FirstOrDefault().Contains(item.FileHash));
-
 		}
 
 		
 		[TestMethod]
 		public void ExportControllerTest__ThumbFalse_CreateListToExport()
 		{
-			var controller = new ExportController(_query, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
+			var storage = new StorageSubPathFilesystem(_appSettings);
+			var selectorStorage = new FakeSelectorStorage(storage);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, selectorStorage);
 
 			var createAnImageNoExif = new CreateAnImageNoExif();
 
@@ -230,7 +238,9 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportControllerTest__ThumbFalse__FilePathToFileName()
 		{
-			var controller = new ExportController(_query, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
+			var storage = new StorageSubPathFilesystem(_appSettings);
+			var selectorStorage = new FakeSelectorStorage(storage);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, selectorStorage);
 			var filePaths = new List<string>
 			{
 				Path.Combine("test","file.jpg")
@@ -242,7 +252,9 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportControllerTest__ThumbTrue__FilePathToFileName()
 		{
-			var controller = new ExportController(_query, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
+			var storage = new StorageSubPathFilesystem(_appSettings);
+			var selectorStorage = new FakeSelectorStorage(storage);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, selectorStorage);
 			var filePaths = new List<string>
 			{
 				Path.Combine("test","thumb.jpg")
@@ -261,20 +273,18 @@ namespace starskytest.Controllers
 			// This is a strange one: 
 			// We use thumb as base32 filehashes but export 
 			// as file.jpg or the nice orginal name
-			
 		}
-
 
 		[TestMethod]
 		public async Task ExportController_ZipNotFound()
 		{
-			var controller = new ExportController(_query, _appSettings, _bgTaskQueue,new StorageSubPathFilesystem(_appSettings),_readmeta);
+			var storage = new StorageSubPathFilesystem(_appSettings);
+			var selectorStorage = new FakeSelectorStorage(storage);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, selectorStorage);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = await controller.Zip("____fail", true) as NotFoundObjectResult;
 			Assert.AreEqual(404, actionResult.StatusCode);
 		}
-
-
 	}
 }

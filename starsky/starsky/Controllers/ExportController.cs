@@ -25,8 +25,7 @@ namespace starsky.Controllers
 
 		public ExportController(
 			IQuery query, AppSettings appSettings, IBackgroundTaskQueue queue,
-			ISelectorStorage selectorStorage, IReadMeta readMeta
-		)
+			ISelectorStorage selectorStorage)
 		{
 			_appSettings = appSettings;
 			_query = query;
@@ -123,7 +122,7 @@ namespace starsky.Controllers
 		/// </summary>
 		/// <param name="fileIndexResultsList">the items</param>
 		/// <param name="thumbnail">add the thumbnail or the source image</param>
-		/// <returns>list of filepaths</returns>
+		/// <returns>list of file paths</returns>
 		public List<string> CreateListToExport(List<FileIndexItem> fileIndexResultsList, bool thumbnail)
 		{
 			var filePaths = new List<string>();
@@ -212,6 +211,7 @@ namespace starsky.Controllers
 			}
 			
 			if ( json ) return Json("OK");
+			// todo: fix dependency on fs
 			FileStream fs = System.IO.File.OpenRead(sourceFullPath);
 			// Return the right mime type
 			return File(fs, MimeHelper.GetMimeTypeByFileName(sourceFullPath));

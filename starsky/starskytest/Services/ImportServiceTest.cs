@@ -57,6 +57,7 @@ namespace starskytest.Services
             services.AddScoped<ISelectorStorage,SelectorStorage>();
             services.AddScoped<IStorage,StorageSubPathFilesystem>();
             services.AddScoped<IStorage,StorageHostFullPathFilesystem>();
+            services.AddScoped<IStorage,StorageThumbnailFilesystem>();
 
             // Inject Config helper
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());

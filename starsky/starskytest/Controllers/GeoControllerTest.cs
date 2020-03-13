@@ -125,8 +125,11 @@ namespace starskytest.Controllers
 			// set startup status aka 50%
 			new GeoCacheStatusService(_memoryCache).Update("/StatusCheck_CachedItemExist",1, StatusType.Current);
 			new GeoCacheStatusService(_memoryCache).Update("/StatusCheck_CachedItemExist",2, StatusType.Total);
+
+			var storage = new FakeIStorage();
+			var storageSelector = new FakeSelectorStorage(storage);
 			
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, _readmeta,new FakeIStorage(),_memoryCache)
+			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, _readmeta,storageSelector,_memoryCache)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -140,7 +143,9 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void StatusCheck_CachedItemNotExist()
 		{
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, _readmeta,new FakeIStorage())
+			var storage = new FakeIStorage();
+			var storageSelector = new FakeSelectorStorage(storage);
+			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, _readmeta,storageSelector)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};

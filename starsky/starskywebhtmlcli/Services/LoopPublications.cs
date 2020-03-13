@@ -19,11 +19,13 @@ namespace starskywebhtmlcli.Services
 	    private readonly IStorage _iStorage;
 	    private readonly IReadMeta _readMeta;
 	    private readonly IStorage _thumbnailStorage;
+	    private readonly ISelectorStorage _selectorStorage;
 
-	    public LoopPublications(IStorage iStorage, IStorage thumbnailStorage, AppSettings appSettings, IExifTool exifTool, IReadMeta readMeta)
+	    public LoopPublications(ISelectorStorage selectorStorage, AppSettings appSettings, IExifTool exifTool, IReadMeta readMeta)
 	    {
-		    _iStorage = iStorage;
-		    _thumbnailStorage = thumbnailStorage;
+		    _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+		    _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+		    _selectorStorage = selectorStorage;
             _appSettings = appSettings;
             _exifTool = exifTool;
 		    _readMeta = readMeta;
@@ -84,7 +86,7 @@ namespace starskywebhtmlcli.Services
         private void GenerateJpeg(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-            var overlayImage = new OverlayImage(_iStorage, _thumbnailStorage,_appSettings);
+            var overlayImage = new OverlayImage(_selectorStorage,_appSettings);
 
             foreach (var item in fileIndexItemsList)
             {
@@ -114,7 +116,7 @@ namespace starskywebhtmlcli.Services
         private void GenerateMoveSourceFiles(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-            var overlayImage = new OverlayImage(_iStorage, _thumbnailStorage, _appSettings);
+            var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
 
             foreach (var item in fileIndexItemsList)
             {

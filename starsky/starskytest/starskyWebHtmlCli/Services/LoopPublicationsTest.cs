@@ -60,8 +60,9 @@ namespace starskytest.starskyWebHtmlCli.Services
             }};
 
 	        var fakeStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg"},new List<byte[]>{CreateAnImage.Bytes},new List<string>{"FILEHASH"});
+	        var selectorStorage = new FakeSelectorStorage(fakeStorage);
 	        
-            new LoopPublications(fakeStorage, fakeStorage, appSettings,
+            new LoopPublications(selectorStorage, appSettings,
 	            new FakeExifTool(fakeStorage,appSettings), new ReadMeta(fakeStorage)).Render(list,null);
 
 	        var dir = fakeStorage.GetAllFilesInDirectory("/").ToList();

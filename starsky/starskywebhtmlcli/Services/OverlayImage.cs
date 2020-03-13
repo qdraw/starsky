@@ -15,11 +15,13 @@ namespace starskywebhtmlcli.Services
         private readonly AppSettings _appSettings;
         private readonly IStorage _thumbnailStorage;
 	    private readonly IStorage _iStorage;
+	    private readonly IStorage _hostFileSystem;
 
-	    public OverlayImage(IStorage iStorage, IStorage thumbnailStorage, AppSettings appSettings)
+	    public OverlayImage(ISelectorStorage selectorStorage, AppSettings appSettings)
         {
-	        _iStorage = iStorage;
-	        _thumbnailStorage = thumbnailStorage;
+	        _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+	        _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+	        _hostFileSystem = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
             _appSettings = appSettings;
         }
 
@@ -39,12 +41,10 @@ namespace starskywebhtmlcli.Services
 
 	        if ( _iStorage.ExistFile(outputSubPath)  ) return;
 	        
-	        // only for overlay image
-	        var hostFileSystem = new StorageHostFullPathFilesystem();
 
 	        using ( var sourceImageStream = _thumbnailStorage.ReadStream(fileHash))
 	        using ( var sourceImage = Image.Load(sourceImageStream) )
-	        using ( var overlayImageStream = hostFileSystem.ReadStream(profile.Path))
+	        using ( var overlayImageStream = _hostFileSystem.ReadStream(profile.Path))
 	        using ( var overlayImage = Image.Load(overlayImageStream) )
 	        using ( var outputStream  = new MemoryStream() )
 	        {
