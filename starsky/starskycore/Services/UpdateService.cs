@@ -50,7 +50,7 @@ namespace starskycore.Services
 					
 			// if requested, add changes to rotation
 			collectionsDetailView.FileIndexItem = 
-				RotatonCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
+				RotationCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
 
 			if ( ! changedFileIndexItemName.ContainsKey(collectionsDetailView.FileIndexItem.FilePath) )
 			{
@@ -130,7 +130,7 @@ namespace starskycore.Services
 			
 			Console.WriteLine($"exifResult: {exifResult}");
                         
-			// change thumbnail names after the orginal is changed
+			// change thumbnail names after the original is changed
 			var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath);
 			_thumbnailStorage.FileMove(detailView.FileIndexItem.FileHash, newFileHash);
 					
@@ -147,17 +147,17 @@ namespace starskycore.Services
 		}
 		
 		/// <summary>
-		/// Add to comparedNames list ++ add to detailview
+		/// Add to comparedNames list and add to detail view
 		/// </summary>
 		/// <param name="rotateClock">-1 or 1</param>
 		/// <param name="fileIndexItem">main db object</param>
 		/// <param name="comparedNamesList">list of types that are changes</param>
 		/// <returns>updated image</returns>
-		public FileIndexItem RotatonCompare(int rotateClock, FileIndexItem fileIndexItem, ICollection<string> comparedNamesList)
+		public FileIndexItem RotationCompare(int rotateClock, FileIndexItem fileIndexItem, ICollection<string> comparedNamesList)
 		{
 			// Do orientation / Rotate if needed (after compare)
 			if (!FileIndexItem.IsRelativeOrientation(rotateClock)) return fileIndexItem;
-			// run this on detailview => statusModel is always default
+			// run this on detail view => statusModel is always default
 			fileIndexItem.SetRelativeOrientation(rotateClock);
 			
 			// list of exifTool to update this field
@@ -167,8 +167,6 @@ namespace starskycore.Services
 			}
 			return fileIndexItem;
 		}
-
-
 		
 		/// <summary>
 		/// Run the Orientation changes on the thumbnail (only relative)
@@ -182,7 +180,5 @@ namespace starskycore.Services
 			if(FileIndexItem.IsRelativeOrientation(rotateClock)) 
 				new Thumbnail(_iStorage,_thumbnailStorage).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
 		}
-		
-		
 	}
 }
