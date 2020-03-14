@@ -65,7 +65,6 @@ namespace starsky.Controllers
 	        
             if (_thumbnailStorage.ExistFile(f))
             {
-	            
                 // When a file is corrupt show error
                 var stream = _thumbnailStorage.ReadStream(f);
                 var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
@@ -81,7 +80,7 @@ namespace starsky.Controllers
 
                 // thumbs are always in jpeg
                 stream = _thumbnailStorage.ReadStream(f);
-                return File(stream, "image/jpeg");
+                return File(stream, "image/jpeg", f + ".jpg");
             }
             
             // Cached view of item
@@ -113,7 +112,9 @@ namespace starsky.Controllers
 	        if (ExtensionRolesHelper.IsExtensionThumbnailSupported(sourcePath))
 	        {
 		        var fs1 = _iStorage.ReadStream(sourcePath);
-		        return File(fs1, MimeHelper.GetMimeType(FilenamesHelper.GetFileExtensionWithoutDot(sourcePath)));
+
+		        var fileExt = FilenamesHelper.GetFileExtensionWithoutDot(sourcePath);
+		        return File(fs1, MimeHelper.GetMimeType(fileExt), FilenamesHelper.GetFileName(sourcePath));
 	        }
 	        Response.StatusCode = 409; // A conflict, that the thumb is not generated yet
 	        return Json("Thumbnail is not supported; for example you try to view a raw file");

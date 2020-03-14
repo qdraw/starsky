@@ -1,3 +1,4 @@
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Helpers;
 
@@ -57,6 +58,13 @@ namespace starskytest.Helpers
 		}
 		
 		[TestMethod]
+		public void FilenamesHelper_GetFileNameWithoutExtension_mp4()
+		{
+			var result = FilenamesHelper.GetFileNameWithoutExtension("/te_st/test.mp4");
+			Assert.AreEqual("test", result);
+		}
+		
+		[TestMethod]
 		public void FilenamesHelper_GetFileNameWithoutExtension_example2()
 		{
 			var result = FilenamesHelper.GetFileNameWithoutExtension("http://path/Lists/Test/Attachments/1/Document Test.docx");
@@ -77,6 +85,33 @@ namespace starskytest.Helpers
 			Assert.AreEqual("0000000000aaaaa__exifreadingtest00", result);
 		}
 		
+		[TestMethod]
+		public void FilenamesHelper_GetFileExtensionWithoutDot_NoExtension()
+		{
+			var result = FilenamesHelper.GetFileExtensionWithoutDot("/test_image");
+			Assert.AreEqual(string.Empty, result);
+		}
+		
+		[TestMethod]
+		public void FilenamesHelper_GetFileExtensionWithoutDot_Mp4()
+		{
+			var result = FilenamesHelper.GetFileExtensionWithoutDot("/test.mp4");
+			Assert.AreEqual("mp4", result);
+		}
+		
+		[TestMethod]
+		public void FilenamesHelper_GetFileExtensionWithoutDot_FilePath()
+		{
+			var result = FilenamesHelper.GetFileExtensionWithoutDot("/folder/test.mp4");
+			Assert.AreEqual("mp4", result);
+		}
+		
+		[TestMethod]
+		public void FilenamesHelper_GetFileExtensionWithoutDot_Jpeg()
+		{
+			var result = FilenamesHelper.GetFileExtensionWithoutDot("/test.jpeg");
+			Assert.AreEqual("jpeg", result);
+		}		
 	}
 	
 }

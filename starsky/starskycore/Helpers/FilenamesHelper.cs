@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace starskycore.Helpers
@@ -40,12 +41,18 @@ namespace starskycore.Helpers
 		public static string GetFileNameWithoutExtension(string filePath)
 		{
 			var fileName = GetFileName(filePath);
-			return  Regex.Replace(fileName, "\\.[a-z]{0,4}$", string.Empty );
+			return  Regex.Replace(fileName, "\\.[a-zA-Z0-9]{1,4}$", string.Empty );
 		}
 		
+		/// <summary>
+		/// Get File Extension without dot
+		/// </summary>
+		/// <param name="filename">fileName or filepath</param>
+		/// <returns></returns>
 		public static string GetFileExtensionWithoutDot(string filename)
 		{
-			return Regex.Match(filename, @"\.[A-Za-z0-9]+$").Value;
+			if ( !filename.Contains(".") ) return string.Empty;
+			return Regex.Match(filename, @"[^.][a-zA-Z0-9]{1,4}$").Value;
 		}
 		
 		/// <summary>
