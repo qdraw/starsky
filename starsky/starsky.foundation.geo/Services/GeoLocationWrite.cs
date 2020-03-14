@@ -19,7 +19,7 @@ namespace starsky.foundation.geo.Services
             _exifTool = exifTool;
             _appSettings = appSettings;
             _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-            _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+            _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
         }
         
         /// <summary>

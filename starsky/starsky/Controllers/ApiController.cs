@@ -39,8 +39,6 @@ namespace starsky.Controllers
             _readMeta = new ReadMeta(_iStorage,_appSettings, memoryCache);
         }
 
-
-
 	    /// <summary>
         /// Show the runtime settings (allow AllowAnonymous)
         /// </summary>
@@ -58,12 +56,6 @@ namespace starsky.Controllers
             return Json(appSettings);
         }
         
-
-
-
-
-
-
         /// <summary>
         /// Update Exif and Rotation API
         /// </summary>
@@ -387,129 +379,6 @@ namespace starsky.Controllers
             return Json(fileIndexResultsList);
         }
   
-
-        /// <summary>
-        /// Http Endpoint to get full size image or thumbnail
-        /// </summary>
-        /// <param name="f">one single file</param>
-        /// <param name="isSingleitem">true = load orginal</param>
-        /// <param name="json">text as output</param>
-        /// <returns>thumbnail or status</returns>
-        /// <response code="200">returns content of the file or when json is true, "OK"</response>
-        /// <response code="404">item not found on disk</response>
-        /// <response code="409">Conflict, you did try get for example a thumbnail of a raw file</response>
-        /// <response code="209">"Thumbnail is not ready yet"</response>
-        /// <response code="401">User unauthorized</response>
-        [HttpGet("/api/thumbnail/{f}")]
-        [ProducesResponseType(200)] // file
-        [ProducesResponseType(404)] // not found
-        [ProducesResponseType(409)] // raw
-        [ProducesResponseType(209)] // "Thumbnail is not ready yet"
-        [IgnoreAntiforgeryToken]
-        [AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
-        [ResponseCache(Duration = 29030400)] // 4 weeks
-        public IActionResult Thumbnail(
-            string f, 
-            bool isSingleitem = false, 
-            bool json = false)
-        {
-            // f is Hash
-            // isSingleItem => detailView
-            // Retry thumbnail => is when you press reset thumbnail
-            // json, => to don't waste the users bandwidth.
-
-	        // For serving jpeg files
-	        f = FilenamesHelper.GetFileNameWithoutExtension(f);
-	        
-	        // Restrict the fileHash to letters and digits only
-	        // I/O function calls should not be vulnerable to path injection attacks
-	        if (!Regex.IsMatch(f, "^[a-zA-Z0-9_]+$") )
-	        {
-		        return BadRequest();
-	        }
-	        
-            var thumbPath = _appSettings.ThumbnailTempFolder + f + ".jpg";
-
-            if (FilesHelper.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
-            {
-                // When a file is corrupt show error
-                var imageFormat = ExtensionRolesHelper.GetImageFormat(thumbPath);
-                if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
-                {
-	                SetExpiresResponseHeadersToZero();
-	                return NoContent(); // 204
-                }
-
-                // When using the api to check using javascript
-                // use the cached version of imageFormat, otherwise you have to check if it deleted
-                if (json) return Json("OK");
-
-                // thumbs are always in jpeg
-                FileStream fs = System.IO.File.OpenRead(thumbPath);
-                return File(fs, "image/jpeg");
-            }
-            
-            // Cached view of item
-            var sourcePath = _query.GetSubPathByHash(f);
-            if (sourcePath == null) return NotFound("not in index");
-            
-            // todo use abstraction
-            var sourceFullPath = _appSettings.DatabasePathToFilePath(sourcePath);
-
-	        // todo add abstraction
-	        // Need to check again for recently moved files
-	        if (!System.IO.File.Exists(sourceFullPath))
-	        {
-		        // remove from cache
-		        _query.ResetItemByHash(f);
-		        // query database agian
-		        sourcePath = _query.GetSubPathByHash(f);
-		        if (sourcePath == null) return NotFound("not in index");
-		        sourceFullPath = _appSettings.DatabasePathToFilePath(sourcePath);
-	        }
-
-            if (System.IO.File.Exists(sourceFullPath))
-            {
-                if (!isSingleitem)
-                {
-                    // "Photo exist in database but " + "isSingleItem flag is Missing"
-                    SetExpiresResponseHeadersToZero();
-                    Response.StatusCode = 202; // A conflict, that the thumb is not generated yet
-                    return Json("Thumbnail is not ready yet");
-                }
-                
-                if (ExtensionRolesHelper.IsExtensionThumbnailSupported(sourceFullPath))
-                {
-                    FileStream fs1 = System.IO.File.OpenRead(sourceFullPath);
-                    var fileExtensionWithoutDot = Path.GetExtension(sourceFullPath).Remove(0, 1).ToLower();
-                    return File(fs1, MimeHelper.GetMimeType(fileExtensionWithoutDot));
-                }
-                Response.StatusCode = 409; // A conflict, that the thumb is not generated yet
-                return Json("Thumbnail is not supported; for example you try to view a raw file");
-            }
-
-            return NotFound("There is no thumbnail image " + thumbPath + " and no source image "+ sourcePath );
-            // When you have duplicate files and one of them is removed and there is no thumbnail
-            // generated yet you might get an false error
-        }
-
-        /// <summary>
-        /// Force Http context to no browser cache
-        /// </summary>
-        public void SetExpiresResponseHeadersToZero()
-        {
-            Request.HttpContext.Response.Headers.Remove("Cache-Control");
-            Request.HttpContext.Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
-
-            Request.HttpContext.Response.Headers.Remove("Pragma");
-            Request.HttpContext.Response.Headers.Add("Pragma", "no-cache");
-
-            Request.HttpContext.Response.Headers.Remove("Expires");
-            Request.HttpContext.Response.Headers.Add("Expires", "0");
-        }
-
-        
-
         /// <summary>
         /// Delete Database Cache (only the cache)
         /// </summary>

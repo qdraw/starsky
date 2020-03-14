@@ -18,8 +18,6 @@ namespace starskytest.FakeMocks
 	{
 		private List<string> _outputSubPathFolders = new List<string>();
 		private List<string> _outputSubPathFiles  = new List<string>();
-		private List<string> _fileHashPerThumbnail  = new List<string>();
-
 		private readonly  Dictionary<string, byte[]> _byteList = new Dictionary<string, byte[]>();
 
 		/// <summary>
@@ -35,12 +33,18 @@ namespace starskytest.FakeMocks
 	
 			if ( outputSubPathFolders != null )
 			{
-				_outputSubPathFolders = outputSubPathFolders;
+				foreach ( var subPath in outputSubPathFolders )
+				{
+					_outputSubPathFolders.Add(PathHelper.PrefixDbSlash(subPath));
+				}
 			}
 
 			if ( outputSubPathFiles != null )
 			{
-				_outputSubPathFiles = outputSubPathFiles;
+				foreach ( var subPath in outputSubPathFiles )
+				{
+					_outputSubPathFiles.Add(PathHelper.PrefixDbSlash(subPath));
+				}
 			}
 
 			if ( byteListSource != null && byteListSource.Count == _outputSubPathFiles.Count)
@@ -55,12 +59,12 @@ namespace starskytest.FakeMocks
 		
 		public bool ExistFile(string subPath)
 		{
-			return _outputSubPathFiles.Contains(subPath);
+			return _outputSubPathFiles.Contains(PathHelper.PrefixDbSlash(subPath));
 		}
 
 		public bool ExistFolder(string subPath)
 		{
-			return _outputSubPathFolders.Contains(subPath);
+			return _outputSubPathFolders.Contains(PathHelper.PrefixDbSlash(subPath));
 		}
 
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath = "")
@@ -90,6 +94,9 @@ namespace starskytest.FakeMocks
 
 		public void FileMove(string inputSubPath, string toSubPath)
 		{
+			inputSubPath = PathHelper.PrefixDbSlash(inputSubPath);
+			toSubPath = PathHelper.PrefixDbSlash(toSubPath);
+
 			var indexOfFiles = _outputSubPathFiles.IndexOf(inputSubPath);
 			if ( indexOfFiles == -1 )
 			{
@@ -156,6 +163,8 @@ namespace starskytest.FakeMocks
 
 		public Stream ReadStream(string path, int maxRead = 2147483647)
 		{
+			path = PathHelper.PrefixDbSlash(path);
+			
 			if ( ExistFile(path) && _byteList.All(p => p.Key != path) )
 			{
 				byte[] byteArray = Encoding.UTF8.GetBytes("test");
@@ -171,6 +180,8 @@ namespace starskytest.FakeMocks
 
 		public bool WriteStream(Stream stream, string path)
 		{
+			path = PathHelper.PrefixDbSlash(path);
+
 			_outputSubPathFiles.Add(path);
 
 			stream.Seek(0, SeekOrigin.Begin);

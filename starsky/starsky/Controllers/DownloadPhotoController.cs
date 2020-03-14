@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starskycore.Helpers;
 using starskycore.Interfaces;
@@ -9,6 +10,7 @@ using starskycore.Services;
 
 namespace starsky.Controllers
 {
+	[Authorize]
 	public class DownloadPhotoController : Controller
 	{
 		private readonly IQuery _query;

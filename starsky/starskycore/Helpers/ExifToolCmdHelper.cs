@@ -147,7 +147,7 @@ namespace starskycore.Helpers
 
         private async Task<string> UpdateASyncBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames )
         {
-	        // Creation and update .xmp file with all availeble content
+	        // Creation and update .xmp file with all available content
 	        await CreateXmpFileIsNotExist(updateModel, inputSubPaths);
 
 	        // Rename .dng files .xmp to update in exifTool

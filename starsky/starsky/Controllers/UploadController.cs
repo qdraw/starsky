@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
 using starsky.Helpers;
@@ -10,10 +10,10 @@ using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
-using starskycore.Storage;
 
 namespace starsky.Controllers
 {
+	[Authorize]
 	public class UploadController : Controller
 	{
 		private readonly AppSettings _appSettings;

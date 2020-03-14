@@ -12,7 +12,6 @@ namespace starsky.Controllers
     [Authorize]
     public class IndexController : Controller
     {
-        
         private readonly IQuery _query;
         private readonly AppSettings _appsettings;
 

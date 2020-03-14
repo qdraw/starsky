@@ -263,6 +263,7 @@ namespace starskytest.Services
 					Status = FileIndexItem.ExifStatus.Ok,
 					Tags = "initial tags",
 					FileName = "test.jpg",
+					FileHash = "test.jpg",
 					ParentDirectory = "/",
 					Description = "keep",
 				}
@@ -273,6 +274,7 @@ namespace starskytest.Services
 				Status = FileIndexItem.ExifStatus.Ok,
 				Tags = "only used when Caching is disabled",
 				FileName = "test.jpg",
+				FileHash = "test.jpg",
 				Description = "noChanges",
 				ParentDirectory = "/"
 			};

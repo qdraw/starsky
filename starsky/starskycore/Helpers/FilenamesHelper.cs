@@ -43,6 +43,11 @@ namespace starskycore.Helpers
 			return  Regex.Replace(fileName, "\\.[a-z]{0,4}$", string.Empty );
 		}
 		
+		public static string GetFileExtensionWithoutDot(string filename)
+		{
+			return Regex.Match(filename, @"\.[A-Za-z0-9]+$").Value;
+		}
+		
 		/// <summary>
 		/// Return UNIX style parent paths back
 		/// </summary>
