@@ -223,7 +223,7 @@ Task("TestNetCore")
                                              .Append("/p:ThresholdType=line")
                                              .Append("/p:hideMigrations=\"true\"")
                                              .Append("/p:Exclude=\"[MySqlConnector]*%2c[starsky.Views]*%2c[*]starskycore.Migrations.*\"")
-                                             .Append("/p:ExcludeByFile=\"*C:\\projects\\mysqlconnector\\src\\MySqlConnector*%2c../starskycore/Migrations/*\"") // (, comma seperated)
+                                             .Append("/p:ExcludeByFile=\"*C:\\projects\\mysqlconnector\\src\\MySqlConnector*%2c../starsky.foundation.database/Migrations/*\"") // (, comma seperated)
                                              .Append("/p:CoverletOutput=\"netcore-coverage.opencover.xml\"")
                                              .Append("/p:Threshold=0")
 
