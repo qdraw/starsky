@@ -39,7 +39,7 @@ namespace starskywebhtmlcli.Services
             }
             else 
             {
-	            // uses it own driver direct from filesystem
+	            // has an dependency on the filesystem by _engine.CompileRenderAsync
                 return await 
                     _engine.CompileRenderAsync("WebHtmlPublish/EmbeddedViews/" + viewName, viewModel);
             }
