@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
-using starskycore.Models;
 
 namespace starsky.foundation.database.Data
 {
