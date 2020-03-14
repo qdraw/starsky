@@ -31,6 +31,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project", "Project", "{8379
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommandLineInterface", "CommandLineInterface", "{B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.platform", "starsky.foundation.platform\starsky.foundation.platform.csproj", "{22527979-7172-4FD2-A5E9-F08697C95C9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.database", "starsky.foundation.database\starsky.foundation.database.csproj", "{B59BC095-DA7D-4475-A036-D3FF38F7816D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.readmeta", "starsky.foundation.readmeta\starsky.foundation.readmeta.csproj", "{B9073B3C-DB6F-44F4-8853-003AA5203288}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.storage", "starsky.foundation.storage\starsky.foundation.storage.csproj", "{71BE047B-12E9-45C4-9703-C577184254C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.writemeta", "starsky.foundation.writemeta\starsky.foundation.writemeta.csproj", "{050DBCB9-F14F-467B-AF1B-D489D024FAFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +95,26 @@ Global
 		{0F0C0B27-8F29-4CC5-BB91-910B9DE22FC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F0C0B27-8F29-4CC5-BB91-910B9DE22FC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F0C0B27-8F29-4CC5-BB91-910B9DE22FC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22527979-7172-4FD2-A5E9-F08697C95C9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22527979-7172-4FD2-A5E9-F08697C95C9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22527979-7172-4FD2-A5E9-F08697C95C9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22527979-7172-4FD2-A5E9-F08697C95C9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B59BC095-DA7D-4475-A036-D3FF38F7816D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B59BC095-DA7D-4475-A036-D3FF38F7816D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B59BC095-DA7D-4475-A036-D3FF38F7816D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B59BC095-DA7D-4475-A036-D3FF38F7816D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9073B3C-DB6F-44F4-8853-003AA5203288}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9073B3C-DB6F-44F4-8853-003AA5203288}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9073B3C-DB6F-44F4-8853-003AA5203288}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9073B3C-DB6F-44F4-8853-003AA5203288}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71BE047B-12E9-45C4-9703-C577184254C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71BE047B-12E9-45C4-9703-C577184254C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71BE047B-12E9-45C4-9703-C577184254C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71BE047B-12E9-45C4-9703-C577184254C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{050DBCB9-F14F-467B-AF1B-D489D024FAFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{050DBCB9-F14F-467B-AF1B-D489D024FAFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{050DBCB9-F14F-467B-AF1B-D489D024FAFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{050DBCB9-F14F-467B-AF1B-D489D024FAFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,5 +133,10 @@ Global
 		{AAD17FA3-3D15-442E-8FD1-17CE74A2F20C} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
 		{386E60A4-58FA-42F6-A29B-54638D5A4EEB} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{A90751E7-2F4D-44AA-8507-DDE5F980DBBB} = {8379CCD4-26EE-4881-888E-B56B6EDC852C}
+		{22527979-7172-4FD2-A5E9-F08697C95C9F} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{B59BC095-DA7D-4475-A036-D3FF38F7816D} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{B9073B3C-DB6F-44F4-8853-003AA5203288} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{71BE047B-12E9-45C4-9703-C577184254C5} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{050DBCB9-F14F-467B-AF1B-D489D024FAFB} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 	EndGlobalSection
 EndGlobal

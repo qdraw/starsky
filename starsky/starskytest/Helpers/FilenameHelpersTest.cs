@@ -47,7 +47,7 @@ namespace starskytest.Helpers
 		public void FilenamesHelper_GetParentPathSubDir()
 		{
 			var result = FilenamesHelper.GetParentPath("/sub/yes.jpg");
-			Assert.AreEqual("/sub/", result);
+			Assert.AreEqual("/sub", result);
 		}
 
 		[TestMethod]

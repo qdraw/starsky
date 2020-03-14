@@ -11,9 +11,6 @@ using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
 using starskycore.Storage;
-using Query = starskycore.Services.Query;
-using ReadMeta = starskycore.Services.ReadMeta;
-using SyncService = starskycore.Services.SyncService;
 
 namespace starskycore.Helpers
 {

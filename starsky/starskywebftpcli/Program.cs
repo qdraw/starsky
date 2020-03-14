@@ -49,7 +49,6 @@ namespace starskywebftpcli
 				Console.WriteLine($"Folder location {inputPath} is not found \nPlease try the `-h` command to get help ");
 				return;
 			}
-
 			
 			// check if settings is valid
 			if ( string.IsNullOrEmpty(appSettings.WebFtp) )
@@ -60,7 +59,6 @@ namespace starskywebftpcli
 
 			// set storage folder !this is important!
 			appSettings.StorageFolder = inputPath;
-
 			
 			// inject manifest
 			if ( ! new ExportManifest(appSettings,new PlainTextFileHelper()).Import() )

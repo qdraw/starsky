@@ -132,13 +132,6 @@ namespace starskytest.Models
 		}
 
 		[TestMethod]
-		public void AppSettingsStructureExampleNoSetting()
-		{
-			var content = _appSettings.StructureExampleNoSetting;
-			Assert.AreEqual(true, content.Contains(DateTime.Now.Year.ToString()));
-		}
-
-		[TestMethod]
 		public void AppSettingsNameNullTest()
 		{
 			var appSettings = new AppSettings {Name = null};

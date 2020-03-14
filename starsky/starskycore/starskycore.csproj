@@ -92,7 +92,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
       <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
+      <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
+      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+      <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
     </ItemGroup>
 
 </Project>

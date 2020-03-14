@@ -8,11 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\starskycore\starskycore.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.1" />
+    <PackageReference Include="NGeoNames" Version="1.5.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NGeoNames" Version="1.5.1" />
+    <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
+    <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
+    <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers" />
   </ItemGroup>
 
 </Project>
