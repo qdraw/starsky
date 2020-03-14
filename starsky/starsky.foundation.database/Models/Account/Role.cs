@@ -4,7 +4,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace starskycore.Models.Account
+namespace starsky.foundation.database.Models.Account
 {
     public class Role
     {

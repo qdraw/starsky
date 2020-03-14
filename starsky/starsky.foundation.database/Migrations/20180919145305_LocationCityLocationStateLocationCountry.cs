@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace starskycore.Migrations
+namespace starsky.foundation.database.Migrations
 {
     public partial class LocationCityLocationStateLocationCountry : Migration
     {

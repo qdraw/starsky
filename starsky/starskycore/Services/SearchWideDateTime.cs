@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq.Expressions;
+using starsky.foundation.database.Models;
 using starskycore.Models;
 using starskycore.ViewModels;
 

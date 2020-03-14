@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Data;
+using starsky.foundation.database.Data;
 using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Services;

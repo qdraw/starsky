@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starsky.foundation.geo.Services;

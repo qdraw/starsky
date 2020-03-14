@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
+using starsky.foundation.database.Models;
 using starsky.foundation.geo.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;

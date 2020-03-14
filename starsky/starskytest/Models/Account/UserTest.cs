@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Models.Account;
+using starsky.foundation.database.Models.Account;
 
 namespace starskytest.Models.Account
 {

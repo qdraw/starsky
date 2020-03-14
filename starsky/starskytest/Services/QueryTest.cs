@@ -5,8 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
 using starskycore.Attributes;
-using starskycore.Data;
 using starskycore.Models;
 using Query = starskycore.Services.Query;
 

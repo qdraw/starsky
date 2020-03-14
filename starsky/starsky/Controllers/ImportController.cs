@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
+using starsky.foundation.database.Models;
 using starsky.Helpers;
 using starskycore.Helpers;
 using starskycore.Interfaces;

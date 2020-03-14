@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using NGeoNames;
 using NGeoNames.Entities;
+using starsky.foundation.database.Models;
 using starsky.foundation.geo.Models;
 using starskycore.Helpers;
 using starskycore.Models;

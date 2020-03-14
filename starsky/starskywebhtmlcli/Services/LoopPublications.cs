@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using starsky.foundation.database.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;

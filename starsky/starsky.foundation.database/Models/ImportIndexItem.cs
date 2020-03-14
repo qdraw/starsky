@@ -1,4 +1,9 @@
-﻿using System;
+﻿#if SYSTEM_TEXT_ENABLED
+using System.Text.Json.Serialization;
+#else
+using Newtonsoft.Json;
+#endif
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,15 +12,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using starskycore.Helpers;
-#if SYSTEM_TEXT_ENABLED
-using System.Text.Json.Serialization;
-#else
-using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-#endif
+using starskycore.Helpers;
+using starskycore.Models;
 
-namespace starskycore.Models
+namespace starsky.foundation.database.Models
 {
 	/// <summary>
 	/// Used to display file status (eg. NotFoundNotInIndex, Ok)

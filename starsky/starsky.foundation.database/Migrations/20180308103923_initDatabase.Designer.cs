@@ -3,9 +3,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
-using starskycore.Data;
+using starsky.foundation.database.Data;
 
-namespace starskycore.Migrations
+namespace starsky.foundation.database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20180308103923_initDatabase")]

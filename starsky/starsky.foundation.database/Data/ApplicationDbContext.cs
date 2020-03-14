@@ -1,9 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using starsky.foundation.database.Models;
+using starsky.foundation.database.Models.Account;
 using starskycore.Models;
-using starskycore.Models.Account;
 
-namespace starskycore.Data
+namespace starsky.foundation.database.Data
 {
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 	public class ApplicationDbContext : DbContext

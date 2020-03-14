@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using starsky.foundation.database.Models;
+using starskycore.Helpers;
 using starskycore.Models;
 
-namespace starskycore.Helpers
+namespace starsky.foundation.database.Helpers
 {
     public static class FileIndexCompareHelper
     {

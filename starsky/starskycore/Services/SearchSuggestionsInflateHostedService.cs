@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using starskycore.Data;
+using starsky.foundation.database.Data;
 using starskycore.Models;
 
 namespace starskycore.Services

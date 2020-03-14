@@ -6,8 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
 using starsky.foundation.injection;
-using starskycore.Data;
 using starskycore.Interfaces;
 using starskycore.Models;
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using starsky.foundation.database.Models;
 using starskycore.Models;
 
 namespace starskycore.Helpers

@@ -1,3 +1,8 @@
+#if SYSTEM_TEXT_ENABLED
+using System.Text.Json.Serialization;
+#else
+using Newtonsoft.Json;
+#endif
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -6,15 +11,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using starskycore.Helpers;
-#if SYSTEM_TEXT_ENABLED
-using System.Text.Json.Serialization;
-#else
-using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-#endif
+using starskycore.Helpers;
 
-namespace starskycore.Models
+namespace starsky.foundation.database.Models
 {
     public class FileIndexItem
     {

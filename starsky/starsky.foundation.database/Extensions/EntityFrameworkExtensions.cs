@@ -2,7 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 
-namespace starskycore.Extensions
+namespace starsky.foundation.database.Extensions
 {
 	public static class EntityFrameworkExtensions
 	{

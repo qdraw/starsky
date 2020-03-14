@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
+using starsky.foundation.database.Models;
 using starskycore.Helpers;
 using starskycore.Models;
 #if SYSTEM_TEXT_ENABLED

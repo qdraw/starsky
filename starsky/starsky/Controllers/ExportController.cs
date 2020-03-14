@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.foundation.database.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;

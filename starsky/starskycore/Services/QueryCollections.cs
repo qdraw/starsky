@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using starsky.foundation.database.Models;
 using starskycore.Helpers;
 using starskycore.Models;
 

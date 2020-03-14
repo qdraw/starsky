@@ -5,6 +5,7 @@ using System.Linq;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
 using starskycore.Attributes;
 using starskycore.Models;
 using starskycore.Services;

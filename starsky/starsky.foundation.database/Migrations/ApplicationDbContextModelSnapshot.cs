@@ -3,7 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using starskycore.Data;
+using starsky.foundation.database.Data;
 
 namespace starskycore.Migrations
 {

@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace starskycore.Models.Account
+namespace starsky.foundation.database.Models.Account
 {
     public class CredentialType
     {
