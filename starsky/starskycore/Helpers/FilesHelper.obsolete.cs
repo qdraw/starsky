@@ -37,18 +37,6 @@ namespace starskycore.Helpers
 
             return FolderOrFileModel.FolderOrFileTypeList.Deleted;
         }
-
-	    /// <summary>
-	    /// Does file exist (true == exist)
-	    /// </summary>
-	    /// <param name="fullFilePath">full file path</param>
-	    /// <returns>bool true = exist</returns>
-	    [Obsolete("Will be removed in the 0.2.1 release")] 
-	    public static bool ExistFile(string fullFilePath = "")
-	    {
-		    var isFolderOrFile = IsFolderOrFile(fullFilePath);
-		    return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File;
-	    }
 	    
 	    /// <summary>
         /// Depth-first recursive delete, with handling for descendant 
