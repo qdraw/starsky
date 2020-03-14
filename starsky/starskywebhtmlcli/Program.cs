@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using starsky.feature.webhtmlpublish.Helpers;
+using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
@@ -78,7 +80,8 @@ namespace starskywebhtmlcli
 			new Content(iStorage).CopyContent();
 
 			// Export all
-			new ExportManifest(appSettings,new PlainTextFileHelper()).Export();
+			new PublishManifest( startupHelper.SelectorStorage().Get(SelectorStorage.StorageServices.HostFilesystem),appSettings,
+				new PlainTextFileHelper()).ExportManifest();
 
 		}
         

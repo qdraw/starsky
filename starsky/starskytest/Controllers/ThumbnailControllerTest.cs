@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;

@@ -6,6 +6,7 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
 using starsky.foundation.database.Data;
 using starsky.foundation.injection;
+using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
@@ -105,7 +106,7 @@ namespace starskycore.Helpers
             
             _import = new ImportService(context, _isync, _exifTool, appSettings, null, _selectorStorage);
 
-	        _thumbnailCleaner = new ThumbnailCleaner(query, appSettings);
+	        _thumbnailCleaner = new ThumbnailCleaner(_thumbnailStorage, query, appSettings);
 	        
         }
 

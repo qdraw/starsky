@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using starsky.feature.webhtmlpublish.Helpers;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
@@ -61,7 +62,8 @@ namespace starskywebftpcli
 			appSettings.StorageFolder = inputPath;
 			
 			// inject manifest
-			if ( ! new ExportManifest(appSettings,new PlainTextFileHelper()).Import() )
+			if ( ! new PublishManifest(startupHelper.SelectorStorage().Get(SelectorStorage.StorageServices.HostFilesystem), 
+				appSettings,new PlainTextFileHelper()).ImportManifest() )
 			{
 				// import false >
 				Console.WriteLine($"Please run 'starskywebhtmlcli' first to generate a settings file"  );

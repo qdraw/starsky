@@ -5,10 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
+using starskycore.Storage;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 using Query = starskycore.Services.Query;
 
 namespace starskytest.Services
@@ -38,7 +41,7 @@ namespace starskytest.Services
 		public void ThumbnailCleanerTest_DirectoryNotFoundException()
 		{
 			var appsettings = new AppSettings {ThumbnailTempFolder = "\""};
-			new ThumbnailCleaner(_query,appsettings).CleanAllUnusedFiles();
+			new ThumbnailCleaner(new FakeIStorage(), _query,appsettings).CleanAllUnusedFiles();
 		}
 		
 		[TestMethod]
@@ -68,7 +71,7 @@ namespace starskytest.Services
 				Verbose = true
 			};
 			
-			var thumbnailCleaner = new ThumbnailCleaner(_query,appSettings);
+			var thumbnailCleaner = new ThumbnailCleaner(new StorageHostFullPathFilesystem(), _query,appSettings);
 			
 			// there are now two files inside this dir
 			var allThumbnailFilesBefore = thumbnailCleaner.GetAllThumbnailFiles();
