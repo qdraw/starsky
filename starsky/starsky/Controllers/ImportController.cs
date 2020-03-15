@@ -79,8 +79,11 @@ namespace starsky.Controllers
 		                Console.WriteLine($">> import => {file}");
 	                }
                 }
-                
-                FilesHelper.DeleteFile(tempImportPaths);
+
+                foreach ( var toDelPath in tempImportPaths )
+                {
+	                _hostFileSystemStorage.FileDelete(toDelPath);
+                }
             });
             
             // When all items are already imported
@@ -176,7 +179,7 @@ namespace starsky.Controllers
             if (!isDownloaded) return NotFound("'file url' not found or domain not allowed " + fileUrl);
 
 	        var importedFiles = _import.Import(new List<string>{tempImportFullPath}, importSettings);
-            FilesHelper.DeleteFile(tempImportFullPath);
+	        _hostFileSystemStorage.FileDelete(tempImportFullPath);
             if(importedFiles.Count == 0) Response.StatusCode = 206;
             return Json(importedFiles);
         }

@@ -152,8 +152,11 @@ namespace starskytest.Controllers
 			// to avoid skip of adding zip
 			var zipFilesList = Directory.GetFiles(_createAnImage.BasePath, "*.*", SearchOption.AllDirectories)
 				.Where(p => ".zip" == Path.GetExtension(p) );
-			FilesHelper.DeleteFile(zipFilesList);
 			
+			foreach ( var toDelPath in zipFilesList )
+			{
+				new StorageHostFullPathFilesystem().FileDelete(toDelPath);
+			}
 			
 			backgroundQueue.QueueBackgroundWorkItem(async token =>
 			{

@@ -23,17 +23,5 @@ namespace starskycore.Helpers
             }
         }
 
-        [Obsolete("Will be removed in the 0.2.1 release")] 
-        public static void DeleteFile(IEnumerable<string> toDeletePaths)
-        {
-            foreach (var toDelPath in toDeletePaths)
-            {
-                if (File.Exists(toDelPath))
-                {
-                    File.Delete(toDelPath);
-                }
-            }
-        }
-
     }
 }
