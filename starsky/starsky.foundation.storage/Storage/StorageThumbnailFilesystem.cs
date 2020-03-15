@@ -79,6 +79,11 @@ namespace starskycore.Storage
 		{
 			throw new System.NotImplementedException();
 		}
+		
+		public bool FolderDelete(string path)
+		{
+			throw new System.NotImplementedException();
+		}
 
 		public IEnumerable<string> GetAllFilesInDirectory(string path)
 		{

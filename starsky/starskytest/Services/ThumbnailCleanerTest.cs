@@ -70,8 +70,8 @@ namespace starskytest.Services
 				ThumbnailTempFolder = existFullDir,
 				Verbose = true
 			};
-			
-			var thumbnailCleaner = new ThumbnailCleaner(new StorageHostFullPathFilesystem(), _query,appSettings);
+			var hostFullPathFilesystem = new StorageHostFullPathFilesystem();
+			var thumbnailCleaner = new ThumbnailCleaner(hostFullPathFilesystem, _query,appSettings);
 			
 			// there are now two files inside this dir
 			var allThumbnailFilesBefore = thumbnailCleaner.GetAllThumbnailFiles();
@@ -82,8 +82,8 @@ namespace starskytest.Services
 			// DELETE.jpg is removed > is missing in database
 			var allThumbnailFilesAfter = thumbnailCleaner.GetAllThumbnailFiles();
 			Assert.AreEqual(1,allThumbnailFilesAfter.Length);
-			
-			FilesHelper.DeleteDirectory(existFullDir);
+
+			hostFullPathFilesystem.FolderDelete(existFullDir);
 		}
 
 

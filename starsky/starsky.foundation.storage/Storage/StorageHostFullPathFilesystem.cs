@@ -16,6 +16,28 @@ namespace starskycore.Storage
 			throw new System.NotImplementedException();
 		}
 
+		public bool FolderDelete(string path)
+		{
+			foreach (string directory in Directory.GetDirectories(path))
+			{
+				FolderDelete(directory);
+			}
+
+			try
+			{
+				Directory.Delete(path, true);
+			}
+			catch (IOException) 
+			{
+				Directory.Delete(path, true);
+			}
+			catch (UnauthorizedAccessException)
+			{
+				Directory.Delete(path, true);
+			}
+			return true;
+		}
+
 		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public IEnumerable<string> GetAllFilesInDirectory(string fullFilePath)
 		{

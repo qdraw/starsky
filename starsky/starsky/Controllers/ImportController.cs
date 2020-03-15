@@ -25,9 +25,11 @@ namespace starsky.Controllers
         private readonly IBackgroundTaskQueue _bgTaskQueue;
 	    private readonly HttpClientHelper _httpClientHelper;
 	    private readonly ISelectorStorage _selectorStorage;
+	    private readonly IStorage _hostFileSystemStorage;
+	    private readonly IStorage _thumbnailStorage;
 
-	    public ImportController(IImport import, AppSettings appSettings, 
-            IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue, 
+	    public ImportController(IImport import, AppSettings appSettings,
+		    IBackgroundTaskQueue queue, 
             HttpClientHelper httpClientHelper, ISelectorStorage selectorStorage)
         {
             _appSettings = appSettings;
@@ -35,6 +37,8 @@ namespace starsky.Controllers
             _bgTaskQueue = queue;
 	        _httpClientHelper = httpClientHelper;
 	        _selectorStorage = selectorStorage; 
+	        _hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+	        _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
         }
 	    
         
@@ -57,7 +61,6 @@ namespace starsky.Controllers
         {
             var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
             var importSettings = new ImportSettingsModel(Request);
-            var item = _selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
 	        var fileIndexResultsList = _import.Preflight(tempImportPaths, importSettings);
 
@@ -111,12 +114,13 @@ namespace starsky.Controllers
 		    for ( int i = 0; i < tempImportPaths.Count; i++ )
 		    {
 			    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(tempImportPaths[i]);
+			    
 			    var thumbToUpperCase = Path.Combine(_appSettings.ThumbnailTempFolder, fileNameWithoutExtension.ToUpperInvariant() + ".jpg");
-			    if ( fileNameWithoutExtension.Length != 26 || 
-			         FilesHelper.IsFolderOrFile(thumbToUpperCase) == FolderOrFileModel.FolderOrFileTypeList.File)
+			    
+			    if ( fileNameWithoutExtension.Length != 26 || _thumbnailStorage.ExistFile(fileNameWithoutExtension.ToUpperInvariant() ))
 			    {
-				    FilesHelper.DeleteFile(tempImportPaths[i]);
-				    tempImportPaths.Remove(tempImportPaths[i]);
+				    _thumbnailStorage.FileDelete(fileNameWithoutExtension.ToUpperInvariant());
+				    tempImportPaths.Remove(fileNameWithoutExtension.ToUpperInvariant());
 				    continue;
 			    }
 			    thumbnailPaths.Add(thumbToUpperCase);
@@ -130,6 +134,7 @@ namespace starsky.Controllers
 
 		    for ( int i = 0; i < tempImportPaths.Count; i++ )
 		    {
+			    // todo: change to abstraction
 			    System.IO.File.Move(tempImportPaths[i],thumbnailPaths[i]);
 		    }
 

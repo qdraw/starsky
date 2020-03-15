@@ -123,6 +123,11 @@ namespace starskytest.FakeMocks
 			_outputSubPathFolders.Add(subPath);
 		}
 
+		public bool FolderDelete(string path)
+		{
+			throw new NotImplementedException();
+		}
+
 		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
 		{
 			subPath = PathHelper.RemoveLatestSlash(subPath);

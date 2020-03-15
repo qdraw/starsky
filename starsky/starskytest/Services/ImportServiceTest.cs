@@ -227,9 +227,9 @@ namespace starskytest.Services
                 importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)
             ));
             
-            FilesHelper.DeleteDirectory(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
+            new StorageHostFullPathFilesystem().FolderDelete(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
-            FilesHelper.DeleteDirectory(existDir);
+            new StorageHostFullPathFilesystem().FolderDelete(existDir);
 	        RemoveFromQuery();
 
         }
@@ -458,7 +458,7 @@ namespace starskytest.Services
                 importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)
             ));
             // delete exist dir
-            FilesHelper.DeleteDirectory(existDirectoryFullPath);
+            new StorageHostFullPathFilesystem().FolderDelete(existDirectoryFullPath);
 	        RemoveFromQuery();
 
         }
@@ -515,7 +515,7 @@ namespace starskytest.Services
             ));
             
             // existFolderPath >= remove it afterwards
-            FilesHelper.DeleteDirectory(existFolderPath);
+            new StorageHostFullPathFilesystem().FolderDelete(existFolderPath);
 	        RemoveFromQuery();
 
         }

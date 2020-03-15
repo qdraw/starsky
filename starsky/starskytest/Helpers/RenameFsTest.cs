@@ -125,7 +125,7 @@ namespace starskytest.Helpers
 			Assert.AreEqual("test2.jpg",singleItem.FileIndexItem.FileName);		
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
 
-			FilesHelper.DeleteDirectory(Path.Combine(_newImage.BasePath, "exist"));
+			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(_newImage.BasePath, "exist"));
 		}
 
 	
@@ -159,7 +159,7 @@ namespace starskytest.Helpers
 			
 			var dir2FullDirPath = Path.Combine(_newImage.BasePath, "dir2");
 
-			FilesHelper.DeleteDirectory(dir2FullDirPath);
+			new StorageHostFullPathFilesystem().FolderDelete(dir2FullDirPath);
 		}
 
 		private FileIndexItem _folderExist;

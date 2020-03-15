@@ -209,6 +209,7 @@ namespace starskytest.Controllers
 		public void ExportControllerTest__ThumbFalse_CreateListToExport()
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings);
+			var hostFileSystemStorage = new StorageHostFullPathFilesystem();
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, selectorStorage);
 
@@ -231,9 +232,9 @@ namespace starskytest.Controllers
 			Assert.AreEqual(true, filePaths.FirstOrDefault().Contains(item.FileName));
 
 			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,
-				FilesHelper.IsFolderOrFile(filePaths.FirstOrDefault()));
+				hostFileSystemStorage.IsFolderOrFile(filePaths.FirstOrDefault()));
 
-			FilesHelper.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
+			hostFileSystemStorage.FileDelete(createAnImageNoExif.FullFilePathWithDate);
 		}
 
 		[TestMethod]

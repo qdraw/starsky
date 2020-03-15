@@ -16,6 +16,7 @@ namespace starskycore.Interfaces
 		bool FileDelete(string path);
 
 		void CreateDirectory(string path);
+		bool FolderDelete(string path);
 		
 		/// <summary>
 		/// Returns a list of Files in a directory (non-Recursive)

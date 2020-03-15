@@ -91,7 +91,7 @@ namespace starskytest.Controllers
         {
 	        var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
 
-	        var importController = new ImportController(new FakeIImport(fakeStorageSelector), _appSettings, _scopeFactory,
+	        var importController = new ImportController(new FakeIImport(fakeStorageSelector), _appSettings, 
 		        _bgTaskQueue, null, fakeStorageSelector)
 	        {
 		        ControllerContext = RequestWithFile(),
@@ -106,7 +106,7 @@ namespace starskytest.Controllers
         [TestMethod]
         public async Task FromUrl_PathInjection()
         {
-	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
+	        var importController = new ImportController(_import, _appSettings, 
 		        _bgTaskQueue, null, new FakeSelectorStorage(new FakeIStorage()))
 	        {
 		        ControllerContext = RequestWithFile(),
@@ -124,7 +124,7 @@ namespace starskytest.Controllers
 
 	        var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(new FakeIStorage()));
 	        
-	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
+	        var importController = new ImportController(_import, _appSettings, 
 		        _bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()))
 	        {
 		        ControllerContext = RequestWithFile(),
@@ -144,7 +144,7 @@ namespace starskytest.Controllers
 	        var storageProvider = new FakeIStorage();
 	        var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(storageProvider));
 	        
-	        var importController = new ImportController(new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings, _scopeFactory,
+	        var importController = new ImportController(new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings, 
 		        _bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider))
 	        {
 		        ControllerContext = RequestWithFile(),

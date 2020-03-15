@@ -46,16 +46,5 @@ namespace starskytest.Helpers
             // get the service
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();
         }
-        
-        [TestMethod]
-        public void Files_IsFolderOrFileTest()
-        {
-            var newImage = new CreateAnImage();
-            // Testing base folder of Image, and Image it self
-            
-            Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, FilesHelper.IsFolderOrFile(newImage.BasePath));
-            Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,FilesHelper.IsFolderOrFile(newImage.FullFilePath));
-        }
-        
-    }
+	}
 }

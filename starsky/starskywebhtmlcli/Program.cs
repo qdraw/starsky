@@ -39,7 +39,7 @@ namespace starskywebhtmlcli
                 return;
             }
             
-            if(FilesHelper.IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
+            if(startupHelper.HostFileSystemStorage().IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
                 Console.WriteLine("Please add a valid folder: " + inputPath);
 
             if (appSettings.Name == new AppSettings().Name)

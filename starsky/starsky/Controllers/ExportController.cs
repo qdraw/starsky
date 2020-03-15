@@ -24,6 +24,7 @@ namespace starsky.Controllers
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
+		private readonly IStorage _hostFileSystemStorage;
 
 		public ExportController(
 			IQuery query, AppSettings appSettings, IBackgroundTaskQueue queue,
@@ -34,6 +35,8 @@ namespace starsky.Controllers
 			_bgTaskQueue = queue;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+
 		}
 
 		/// <summary>
@@ -201,20 +204,17 @@ namespace starsky.Controllers
 			var sourceFullPath = Path.Join(_appSettings.TempFolder,f) + ".zip";
 			var doneFileFullPath = Path.Join(_appSettings.TempFolder,f) + ".done";
 
-			if ( FilesHelper.IsFolderOrFile(sourceFullPath) ==
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted ) return NotFound("Path is not found");
+			if ( !_hostFileSystemStorage.ExistFile(sourceFullPath)  ) return NotFound("Path is not found");
 
 			// Read a single file to be sure that writing is ready
-			if ( FilesHelper.IsFolderOrFile(doneFileFullPath) ==
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			if ( !_hostFileSystemStorage.ExistFile(doneFileFullPath)  )
 			{
 				Response.StatusCode = 206;
 				return Json("Not Ready");
 			}
 			
 			if ( json ) return Json("OK");
-			// todo: fix dependency on fs
-			FileStream fs = System.IO.File.OpenRead(sourceFullPath);
+			var fs = _hostFileSystemStorage.ReadStream(sourceFullPath);
 			// Return the right mime type
 			return File(fs, MimeHelper.GetMimeTypeByFileName(sourceFullPath));
 		}

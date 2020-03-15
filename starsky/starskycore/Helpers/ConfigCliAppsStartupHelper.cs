@@ -28,6 +28,7 @@ namespace starskycore.Helpers
 	    private readonly UserManager _userManager;
 	    private readonly IStorage _thumbnailStorage;
 	    private readonly SelectorStorage _selectorStorage;
+	    private readonly IStorage _hostFileSystemStorage;
 
 	    /// <summary>
         /// Inject all services for the CLI applications
@@ -97,7 +98,8 @@ namespace starskycore.Helpers
 	        _thumbnailStorage = new StorageThumbnailFilesystem(appSettings);
 	        
 	        _selectorStorage = new SelectorStorage(_serviceProvider);
-            
+	        _hostFileSystemStorage =
+		        _selectorStorage.Get(Services.SelectorStorage.StorageServices.HostFilesystem);
             _readmeta = new ReadMeta(_iStorage,appSettings);
             
             _userManager = new UserManager(context);
@@ -197,6 +199,11 @@ namespace starskycore.Helpers
 	    public IStorage SubPathStorage()
 	    {
 		    return _iStorage;
+	    }
+
+	    public IStorage HostFileSystemStorage()
+	    {
+		    return _hostFileSystemStorage;
 	    }
 	    
 	    /// <summary>

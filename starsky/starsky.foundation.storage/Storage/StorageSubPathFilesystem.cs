@@ -98,6 +98,18 @@ namespace starskycore.Storage
 		}
 		
 		/// <summary>
+		/// Delete folder and child items of that folder
+		/// </summary>
+		/// <param name="path">subPath</param>
+		/// <returns>bool</returns>
+		[Obsolete("do not include direct, only using ISelectorStorage")]
+		public bool FolderDelete(string path)
+		{
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(path, false);
+			return new StorageHostFullPathFilesystem().FolderDelete(inputFileFullPath);
+		}
+		
+		/// <summary>
 		/// Returns a list of Files in a directory (non-Recursive)
 		/// to filter use:
 		/// ..etAllFilesInDirectory(subPath)
