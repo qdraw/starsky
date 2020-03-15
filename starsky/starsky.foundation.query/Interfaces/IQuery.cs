@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using starsky.foundation.database.Models;
-using starskycore.Models;
+using starsky.foundation.query.Models;
 using starskycore.ViewModels;
 
-namespace starskycore.Interfaces
+namespace starsky.foundation.query.Interfaces
 {
     public interface IQuery
     {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using starsky.foundation.database.Models;
-using starskycore.Models;
+using starskycore.ViewModels;
 
-namespace starskycore.ViewModels
+namespace starsky.foundation.query.Models
 {
     public class DetailView
     {

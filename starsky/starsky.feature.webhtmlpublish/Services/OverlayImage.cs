@@ -6,7 +6,8 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
-using starskycore.Storage;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 
 namespace starskywebhtmlcli.Services
 {

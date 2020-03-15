@@ -9,6 +9,7 @@ using starsky.foundation.database.Models;
 using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeMocks;
+using Query = starsky.foundation.query.Services.Query;
 
 namespace starskytest.Services
 {

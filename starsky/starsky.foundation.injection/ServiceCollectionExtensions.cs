@@ -112,7 +112,34 @@ namespace starsky.foundation.injection
                 assemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies().Where(assembly => 
 	                IsWildcardMatch(assembly.GetName().Name, assemblyFilter)).ToArray());
             }
-            return assemblies.ToArray();
+
+            return GetReferencedAssemblies(assemblies, assemblyFilters);
+        }
+
+        /// <summary>
+        /// Get the assembly files that are referenced and match the pattern
+        /// </summary>
+        /// <param name="assemblies">current referenced assemblies</param>
+        /// <param name="assemblyFilters">filters that need to be checked</param>
+        /// <returns></returns>
+        private static Assembly[] GetReferencedAssemblies(List<Assembly> assemblies, IEnumerable<string> assemblyFilters)
+        {
+	        // assemblies.ToList() to avoid Collection was modified; enumeration operation may not execute
+	        foreach (var assemblyFilter in assemblyFilters.ToList())
+	        {
+		        foreach ( var assembly in assemblies.ToList())
+		        {
+			        foreach ( var referencedAssembly in assembly.GetReferencedAssemblies() )
+			        {
+				        if ( IsWildcardMatch(referencedAssembly.Name, assemblyFilter) 
+				             && assemblies.All(p => p.FullName != referencedAssembly.FullName) )
+				        {
+					        assemblies.Add(Assembly.Load(referencedAssembly));
+				        }
+			        }
+		        }
+	        }
+	        return assemblies.ToArray();
         }
 
 

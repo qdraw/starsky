@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using starsky.foundation.database.Models;
+using starsky.foundation.query.Models;
 using starskycore.Helpers;
-using starskycore.Models;
 using starskycore.ViewModels;
 
-namespace starskycore.Services
+namespace starsky.foundation.query.Services
 {
     public partial class Query
     {

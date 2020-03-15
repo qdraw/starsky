@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using starsky.foundation.database.Models;
+using starsky.foundation.query.Models;
 using starskycore.Models;
 
 namespace starskycore.ViewModels

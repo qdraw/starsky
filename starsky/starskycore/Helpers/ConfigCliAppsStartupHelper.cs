@@ -6,12 +6,14 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
 using starsky.foundation.database.Data;
 using starsky.foundation.injection;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using starskycore.Storage;
+using Query = starsky.foundation.query.Services.Query;
 
 namespace starskycore.Helpers
 {
@@ -99,7 +101,7 @@ namespace starskycore.Helpers
 	        
 	        _selectorStorage = new SelectorStorage(_serviceProvider);
 	        _hostFileSystemStorage =
-		        _selectorStorage.Get(Services.SelectorStorage.StorageServices.HostFilesystem);
+		        _selectorStorage.Get(starsky.foundation.storage.Storage.SelectorStorage.StorageServices.HostFilesystem);
             _readmeta = new ReadMeta(_iStorage,appSettings);
             
             _userManager = new UserManager(context);

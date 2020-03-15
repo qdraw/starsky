@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace starskycore.Services
+namespace starsky.foundation.storage.Services
 {
     // Create a Base32 string based on byte max arrond 30
     

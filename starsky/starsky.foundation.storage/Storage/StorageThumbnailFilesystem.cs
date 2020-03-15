@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
+using starsky.foundation.storage.Models;
 using starskycore.Interfaces;
 using starskycore.Models;
 
-namespace starskycore.Storage
+namespace starsky.foundation.storage.Storage
 {
 	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class StorageThumbnailFilesystem : IStorage

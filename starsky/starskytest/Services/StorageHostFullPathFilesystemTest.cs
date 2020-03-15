@@ -3,8 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.storage.Storage;
 using starskycore.Services;
-using starskycore.Storage;
 
 namespace starskytest.Services
 {

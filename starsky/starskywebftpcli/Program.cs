@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
 using starsky.feature.webhtmlpublish.Helpers;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Models;
+using starsky.foundation.storage.Storage;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
-using starskycore.Storage;
 using starskywebftpcli.Services;
 
 namespace starskywebftpcli
@@ -43,7 +45,7 @@ namespace starskywebftpcli
             
 			// used in this session to find the files back
 			appSettings.StorageFolder = inputPath;
-			var storage = new StorageSubPathFilesystem(appSettings);
+			var storage = startupHelper.SubPathStorage();
 
 			if ( storage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{

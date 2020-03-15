@@ -9,10 +9,10 @@ using MySql.Data.MySqlClient;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
-using starskycore.Interfaces;
+using starsky.foundation.query.Interfaces;
 using starskycore.Models;
 
-namespace starskycore.Services
+namespace starsky.foundation.query.Services
 {
 	
 	[Service(typeof(IQuery), InjectionLifetime = InjectionLifetime.Scoped)]

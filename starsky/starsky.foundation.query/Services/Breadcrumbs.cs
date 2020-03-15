@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using starskycore.Helpers;
 
-namespace starskycore.Services
+namespace starsky.foundation.query.Services
 {
     public static class Breadcrumbs
     {

@@ -7,9 +7,11 @@ using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.MetaData.Profiles.Exif;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using starsky.foundation.query.Services;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Services;
 using starskycore.Helpers;
 using starskycore.Interfaces;
-using starskycore.Services;
 
 namespace starsky.foundation.thumbnailgeneration.Services
 {

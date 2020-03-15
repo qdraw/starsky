@@ -4,10 +4,9 @@ using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Models;
 using starskycore.Helpers;
-using starskycore.Models;
 using starskycore.ViewModels;
 
-namespace starskycore.Services
+namespace starsky.foundation.query.Services
 {
     public partial class Query // For folder displays only
     {

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using starsky.foundation.query.Interfaces;
 using starskycore.Interfaces;
 using starskycore.Models;
 

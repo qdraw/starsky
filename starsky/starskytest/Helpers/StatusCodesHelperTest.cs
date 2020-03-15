@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
+using starsky.foundation.query.Models;
+using starsky.foundation.storage.Storage;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
-using starskycore.Storage;
 using starskycore.ViewModels;
 using starskytest.FakeMocks;
 

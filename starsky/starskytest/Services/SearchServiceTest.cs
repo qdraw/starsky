@@ -12,7 +12,7 @@ using starskycore.Models;
 using starskycore.Services;
 using starskycore.ViewModels;
 using starskytest.FakeMocks;
-using Query = starskycore.Services.Query;
+using Query = starsky.foundation.query.Services.Query;
 
 namespace starskytest.Services
 {

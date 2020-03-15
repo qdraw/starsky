@@ -11,7 +11,7 @@ namespace starsky.foundation.injection
 		/// <param name="serviceCollection">the ASP.Net service collection</param>
 		public void Configure(IServiceCollection serviceCollection)
 		{
-			serviceCollection.AddClassesWithServiceAttribute("*");
+			serviceCollection.AddClassesWithServiceAttribute("starsky*");
 		}
 	}
 }

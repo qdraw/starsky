@@ -243,8 +243,10 @@ namespace starskytest.FakeCreateAn
                                    "AAgBAwEBPwDaxwXE/9k=";
 
 	    public static readonly byte[] Bytes = Base64Helper.TryParse(Base64JpgString);
-	    
-	    [Obsolete ("Use abstractions instead of a System.IO dependency")]
+
+	    /// <summary>
+	    /// Use abstractions instead of a System.IO dependency
+	    /// </summary>
         public CreateAnImage()
         {
             if (!File.Exists(FullFilePath))

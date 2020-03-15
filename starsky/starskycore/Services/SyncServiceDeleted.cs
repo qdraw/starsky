@@ -1,4 +1,5 @@
 ﻿using System;
+using starsky.foundation.storage.Models;
 using starskycore.Models;
 
 namespace starskycore.Services

@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace starskycore.Helpers
+namespace starsky.foundation.storage.Helpers
 {
     public class PlainTextFileHelper
     {

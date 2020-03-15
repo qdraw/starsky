@@ -15,10 +15,11 @@ using starskycore.Models;
 using starskycore.Services;
 using starsky.foundation.geo.Models;
 using starsky.foundation.geo.Services;
+using starsky.foundation.query.Interfaces;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
-using Query = starskycore.Services.Query;
+using Query = starsky.foundation.query.Services.Query;
 
 namespace starskytest.Controllers
 {

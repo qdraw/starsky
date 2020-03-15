@@ -10,6 +10,7 @@ using starsky.foundation.database.Models;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
+using Query = starsky.foundation.query.Services.Query;
 
 namespace starskytest.Services
 {

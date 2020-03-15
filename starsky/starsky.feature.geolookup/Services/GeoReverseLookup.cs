@@ -8,9 +8,9 @@ using NGeoNames;
 using NGeoNames.Entities;
 using starsky.foundation.database.Models;
 using starsky.foundation.geo.Models;
+using starsky.foundation.storage.Storage;
 using starskycore.Helpers;
 using starskycore.Models;
-using starskycore.Storage;
 
 namespace starsky.foundation.geo.Services
 {

@@ -11,12 +11,15 @@ using starskycore.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using starsky.foundation.injection;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starskycore.Interfaces;
 using starskycore.Services;
 
 namespace starsky.Helpers
 {
-	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
+	// [Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Transient)]
 	public class SwaggerExportHelper : BackgroundService
 	{
 		private readonly AppSettings _appSettings;

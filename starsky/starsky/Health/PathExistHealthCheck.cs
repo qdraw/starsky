@@ -3,9 +3,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using starsky.foundation.storage.Models;
+using starsky.foundation.storage.Storage;
 using starskycore.Models;
 using starskycore.Services;
-using starskycore.Storage;
 
 namespace starsky.Health
 {

@@ -1,4 +1,4 @@
-﻿namespace starskycore.Models
+﻿namespace starsky.foundation.storage.Models
 {
     public class FolderOrFileModel
     {

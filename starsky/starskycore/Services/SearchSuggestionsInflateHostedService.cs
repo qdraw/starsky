@@ -28,7 +28,7 @@ namespace starskycore.Services
 			using (var scope = _scopeFactory.CreateScope())
 			{
 				var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-				new SearchSuggestionsService(dbContext, _memoryCache, _appSettings).Inflate();
+				await new SearchSuggestionsService(dbContext, _memoryCache, _appSettings).Inflate();
 			}
 		}
 

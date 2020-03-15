@@ -1,8 +1,9 @@
+using System.Linq;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.storage.Storage;
 using starskycore.Models;
 using starskycore.Services;
-using starskycore.Storage;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.Services
@@ -19,7 +20,7 @@ namespace starskytest.Services
             
 			// Used For subfolders
 			var newImage = new CreateAnImage();
-			var filesInFolder = new StorageSubPathFilesystem(new AppSettings{StorageFolder = newImage.BasePath}).GetDirectoryRecursive("/");
+			var filesInFolder = new StorageSubPathFilesystem(new AppSettings{StorageFolder = newImage.BasePath}).GetDirectoryRecursive("/").ToList();
 			Assert.AreEqual(true,filesInFolder.Any());
             
 		}

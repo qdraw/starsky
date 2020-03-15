@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.query.Interfaces;
 using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
@@ -23,6 +24,7 @@ using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
+using Query = starsky.foundation.query.Services.Query;
 
 namespace starskytest.Controllers
 {

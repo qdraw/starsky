@@ -1,6 +1,7 @@
-using starskycore.Services;
+using starsky.foundation.storage.Storage;
+using starskycore.Interfaces;
 
-namespace starskycore.Interfaces
+namespace starsky.foundation.storage.Interfaces
 {
 	public interface ISelectorStorage
 	{
