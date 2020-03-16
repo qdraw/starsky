@@ -65,16 +65,14 @@ var subProjectNames = new List<string>{
 };
 
 var publishProjectNames = new List<string>{
-    "starskygeocli",
-    "starskygeocli",
-    "starskygeocli",
+    "starskyadmincli",
     "starskygeocli",
     "starskyimportercli",
     "starskysynccli",
     "starskywebftpcli",
     "starskywebhtmlcli",
     "starsky"
-}; // ignore starskycore + starskygeocore
+}; // ignore starskycore + features/foundations
 
 
 var testProjectNames = new List<string>{
@@ -147,10 +145,19 @@ Task("RestoreNetCore")
         {
             if (runtime == genericName)
             {
-              System.Console.WriteLine(genericName);
+              System.Console.WriteLine($"Restore . for {runtime}");
 
               DotNetCoreRestore(".",
                   new DotNetCoreRestoreSettings());
+
+              /* restore subProjects for generic */
+              foreach(var projectName in subProjectNames)
+              {
+                System.Console.WriteLine($"Restore ./{projectName}/{projectName}.csproj for {runtime}");
+                DotNetCoreRestore($"./{projectName}/{projectName}.csproj",
+                                  new DotNetCoreRestoreSettings());
+              }
+
               continue;
             }
 
