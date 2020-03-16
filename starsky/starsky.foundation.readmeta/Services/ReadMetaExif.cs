@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Xmp;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;

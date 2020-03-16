@@ -4,6 +4,7 @@ using starsky.foundation.database.Models;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starsky.foundation.geo.Services;
+using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 using starskytest.Models;
 

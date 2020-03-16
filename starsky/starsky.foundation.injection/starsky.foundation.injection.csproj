@@ -3,6 +3,8 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <RootNamespace>starsky.foundation.injection</RootNamespace>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{e1753943-96a7-4dee-afc3-234c1c83b8a3}</ProjectGuid>
     </PropertyGroup>
 
     <ItemGroup>

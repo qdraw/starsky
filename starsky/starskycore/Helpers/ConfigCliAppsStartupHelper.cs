@@ -6,6 +6,7 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
 using starsky.foundation.database.Data;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
@@ -73,7 +74,7 @@ namespace starskycore.Helpers
             // Select database type
             switch (appSettings.DatabaseType)
             {
-                case Models.AppSettings.DatabaseTypeList.Mysql:
+                case starsky.foundation.platform.Models.AppSettings.DatabaseTypeList.Mysql:
                     builderDb.UseMySql(appSettings.DatabaseConnection, mySqlOptions =>
                     {
 	                    mySqlOptions.CharSet(CharSet.Utf8Mb4);
@@ -81,10 +82,10 @@ namespace starskycore.Helpers
 	                    mySqlOptions.EnableRetryOnFailure(2);
                     });
                     break;
-                case Models.AppSettings.DatabaseTypeList.InMemoryDatabase:
+                case starsky.foundation.platform.Models.AppSettings.DatabaseTypeList.InMemoryDatabase:
                     builderDb.UseInMemoryDatabase("Starsky");
                     break;
-                case Models.AppSettings.DatabaseTypeList.Sqlite:
+                case starsky.foundation.platform.Models.AppSettings.DatabaseTypeList.Sqlite:
                     builderDb.UseSqlite(appSettings.DatabaseConnection);
                     break;
                 default:

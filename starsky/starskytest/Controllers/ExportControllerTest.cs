@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Models;
 using starsky.foundation.query.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
@@ -144,24 +145,12 @@ namespace starskytest.Controllers
 			var createAnImage = InsertSearchData(true);
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 
-			var storage = new StorageSubPathFilesystem(_appSettings);
-			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ExportController(_query, _appSettings, backgroundQueue, selectorStorage);
+			var newImage = CreateAnImage.Bytes;
+			var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{createAnImage.FilePath},new List<byte[]>{newImage});
+			var storageSelector = new FakeSelectorStorage(fakeStorage);
+			
+			var controller = new ExportController(_query, _appSettings, backgroundQueue, storageSelector);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-
-			// to avoid skip of adding zip
-			var zipFilesList = Directory.GetFiles(_createAnImage.BasePath, "*.*", SearchOption.AllDirectories)
-				.Where(p => ".zip" == Path.GetExtension(p) );
-			
-			foreach ( var toDelPath in zipFilesList )
-			{
-				new StorageHostFullPathFilesystem().FileDelete(toDelPath);
-			}
-			
-			backgroundQueue.QueueBackgroundWorkItem(async token =>
-			{
-				Console.WriteLine("kdlsf");
-			});
 
 			var actionResult = controller.CreateZip(createAnImage.FilePath,true,false) as JsonResult;
 			Assert.AreNotEqual(actionResult, null);

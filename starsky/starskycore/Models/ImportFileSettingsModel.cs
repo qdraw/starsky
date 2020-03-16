@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using starsky.foundation.platform.Models;
 
 namespace starskycore.Models
 {

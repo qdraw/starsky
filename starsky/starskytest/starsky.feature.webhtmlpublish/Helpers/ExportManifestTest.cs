@@ -1,6 +1,7 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Helpers;
+using starsky.foundation.platform.Models;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskytest.FakeMocks;

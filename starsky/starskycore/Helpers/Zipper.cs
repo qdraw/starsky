@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Threading.Tasks;
 
 namespace starskycore.Helpers
 {
@@ -35,8 +36,6 @@ namespace starskycore.Helpers
 						entry.ExtractToFile(destinationPath);
 				}
 			}
-			
-
 		}
 
 		/// <summary>
@@ -53,6 +52,7 @@ namespace starskycore.Helpers
 
 			var tempFileFullPath = Path.Combine(storeZipFolderFullPath,zipOutputFilename) + ".zip";
 
+			// Has a direct dependency on the filesystem to avoid large content in memory
 			if(File.Exists(tempFileFullPath))
 			{
 				return tempFileFullPath;

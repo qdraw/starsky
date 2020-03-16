@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Converters;
+using starsky.foundation.platform.Models;
 using starskycore.Helpers;
 using starskycore.Models;
 

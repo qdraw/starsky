@@ -9,6 +9,7 @@ using MySql.Data.MySqlClient;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Models;
 using starsky.foundation.query.Interfaces;
 using starskycore.Models;
 

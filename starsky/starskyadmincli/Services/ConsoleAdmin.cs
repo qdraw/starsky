@@ -1,4 +1,5 @@
 using System;
+using starsky.foundation.platform.Models;
 using starskyAdminCli.Models;
 using starskycore.Interfaces;
 using starskycore.Models;

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Models;
 using starsky.foundation.query.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -115,10 +116,9 @@ namespace starsky.Controllers
 				
 				// Write a single file to be sure that writing is ready
 				var doneFileFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".done";
-				new PlainTextFileHelper().WriteFile(doneFileFullPath,"OK");
-
-				Console.WriteLine("<<<<<<<");
-
+				await _hostFileSystemStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream("OK"), doneFileFullPath);
+				if(_appSettings.Verbose) Console.WriteLine("Zip done: " + doneFileFullPath);
+				
 			});
 			
 			// for the rest api

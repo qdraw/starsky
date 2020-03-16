@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Models;
 using starskycore.Models;
 
 namespace starskycore.Helpers

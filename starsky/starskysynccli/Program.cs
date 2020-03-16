@@ -1,4 +1,5 @@
 ﻿using System;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.thumbnailgeneration.Services;
