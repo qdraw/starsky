@@ -27,7 +27,7 @@ namespace starskytest.Health
 		}
 		
 		[TestMethod]
-		public void GetBuildDate_Starsky()
+		public void GetBuildDate_StarskyStartup()
 		{
 			var date = DateAssemblyHealthCheck.GetBuildDate(typeof(Startup).Assembly);
 			Assert.IsTrue(date.Year >= 2020 );
