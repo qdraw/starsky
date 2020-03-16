@@ -175,7 +175,7 @@ Task("BuildNetCoreGeneric")
       var dotnetBuildSettings = new DotNetCoreBuildSettings()
       {
           Configuration = configuration,
-          ArgumentCustomization = args => args.Append("--no-restore"),
+          ArgumentCustomization = args => args.Append("--no-restore").Append("--nologo"),
           /* Verbosity = DotNetCoreVerbosity.Detailed */
       };
 
@@ -187,6 +187,7 @@ Task("BuildNetCoreGeneric")
           /*  restore packages */
           DotNetCoreBuild($"./{projectName}/{projectName}.csproj", new DotNetCoreBuildSettings()
           {
+              ArgumentCustomization = args => args.Append("--no-restore").Append("--no-dependencies").Append("--nologo"),
               Configuration = configuration
           });
       }
@@ -205,7 +206,7 @@ Task("BuildNetCoreGeneric")
         var dotnetBuildSettings = new DotNetCoreBuildSettings()
         {
             Configuration = configuration,
-            ArgumentCustomization = args => args.Append("--no-restore"),
+            ArgumentCustomization = args => args.Append("--no-restore").Append("--nologo"),
         };
 
         foreach(var runtime in runtimes)
@@ -248,6 +249,8 @@ Task("TestNetCore")
                     Configuration = configuration,
                     NoBuild = true,
                     ArgumentCustomization = args => args.Append("--no-restore")
+                                             .Append("--no-build")
+                                             .Append("--nologo")
                                              .Append("/p:CollectCoverage=true")
                                              .Append("/p:CoverletOutputFormat=opencover")
                                              .Append("/p:ThresholdType=line")
