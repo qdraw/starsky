@@ -51,12 +51,11 @@ System.Console.WriteLine(buildForInformation.ToString());
 Information($"Running target {target} in configuration {configuration}");
 
 var subProjectNames = new List<string>{
+    "starsky.foundation.platform", /* first */
+    "starsky.foundation.injection", /* second */
     "starsky.foundation.database",
-    "starsky.foundation.injection",
-    "starsky.foundation.platform",
     "starsky.foundation.query",
     "starsky.foundation.readmeta",
-    "starsky.foundation.storage",
     "starsky.foundation.storage",
     "starsky.foundation.thumbnailgeneration",
     "starsky.foundation.writemeta",
