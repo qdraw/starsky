@@ -161,6 +161,7 @@ Task("BuildNetCoreGeneric")
       {
           Configuration = configuration,
           ArgumentCustomization = args => args.Append("--no-restore"),
+          Verbosity = DotNetCoreVerbosity.Detailed
       };
       DotNetCoreBuild(".",
           dotnetBuildSettings);
