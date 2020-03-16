@@ -130,6 +130,16 @@ namespace starskytest.Controllers
 
 		[TestMethod]
 		public async Task ExportController_TestZipping() {
+			
+			// to avoid skip of adding zip
+			var zipFilesList = Directory.GetFiles(_createAnImage.BasePath, "*.*", SearchOption.AllDirectories)
+				.Where(p => ".zip" == Path.GetExtension(p) );
+			
+			foreach ( var toDelPath in zipFilesList )
+			{
+				new StorageHostFullPathFilesystem().FileDelete(toDelPath);
+			}
+			
 			IServiceCollection services = new ServiceCollection();
 			services.AddHostedService<BackgroundQueuedHostedService>();
 			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
@@ -159,6 +169,10 @@ namespace starskytest.Controllers
 			Assert.AreEqual(zipHash.Contains("SR"),true);
 
 			await Task.Delay(100);
+
+			// Get from real fs in to fake memory
+			var sourceFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".zip";
+			await fakeStorage.WriteStreamAsync(new StorageHostFullPathFilesystem().ReadStream(sourceFullPath), sourceFullPath);
 
 			var actionResult2zip = await controller.Zip(zipHash,true) as JsonResult;
 			Assert.AreNotEqual(actionResult2zip, null);
