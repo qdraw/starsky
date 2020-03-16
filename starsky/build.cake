@@ -50,7 +50,7 @@ System.Console.WriteLine(buildForInformation.ToString());
 
 Information($"Running target {target} in configuration {configuration}");
 
-var projectNames = new List<string>{
+var subProjectNames = new List<string>{
     "starsky.foundation.database",
     "starsky.foundation.injection",
     "starsky.foundation.platform",
@@ -61,7 +61,10 @@ var projectNames = new List<string>{
     "starsky.foundation.thumbnailgeneration",
     "starsky.foundation.writemeta",
     "starsky.feature.geolookup",
-    "starsky.feature.webhtmlclipublish",
+    "starsky.feature.webhtmlpublish",
+};
+
+var publishProjectNames = new List<string>{
     "starskygeocli",
     "starskygeocli",
     "starskygeocli",
@@ -136,9 +139,9 @@ Task("RestoreNetCore")
         Environment.SetEnvironmentVariable("DOTNET_SKIP_FIRST_TIME_EXPERIENCE","1");
 
         // make a new list
-        var restoreProjectNames = new List<string>(projectNames);
+        var restoreProjectNames = new List<string>(publishProjectNames);
         restoreProjectNames.AddRange(testProjectNames);
-
+        restoreProjectNames.AddRange(subProjectNames);
 
         foreach(var runtime in runtimes)
         {
@@ -155,7 +158,7 @@ Task("RestoreNetCore")
                 Runtime = runtime
             };
 
-            foreach(var projectName in projectNames)
+            foreach(var projectName in publishProjectNames)
             {
                 System.Console.WriteLine($"Restore ./{projectName}/{projectName}.csproj for {runtime}");
                 DotNetCoreRestore($"./{projectName}/{projectName}.csproj",
@@ -175,7 +178,8 @@ Task("BuildNetCoreGeneric")
       {
           Configuration = configuration,
           ArgumentCustomization = args => args.Append("--no-restore"),
-          Verbosity = DotNetCoreVerbosity.Detailed
+          Verbosity = DotNetCoreVerbosity.Quiet
+          /* Verbosity = DotNetCoreVerbosity.Detailed */
       };
       DotNetCoreBuild(".",
           dotnetBuildSettings);
@@ -203,7 +207,7 @@ Task("BuildNetCoreGeneric")
 
             dotnetBuildSettings.Runtime = runtime;
 
-            foreach(var projectName in projectNames)
+            foreach(var projectName in publishProjectNames)
             {
               System.Console.WriteLine($"Build ./{projectName}/{projectName}.csproj for {runtime}");
 
@@ -334,7 +338,7 @@ Task("CoverageReport")
 Task("PublishWeb")
     .Does(() =>
     {
-        foreach(var projectName in projectNames)
+        foreach(var projectName in publishProjectNames)
         {
             foreach(var runtime in runtimes)
             {
