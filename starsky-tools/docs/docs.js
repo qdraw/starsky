@@ -18,7 +18,7 @@ var filePathList = [
 	"starsky/starsky/readme.md",
 	"starsky/starsky/clientapp/readme.md",
 	"starsky/starskycore/readme.md",
-	"starsky/starsky.foundation.geo/readme.md",
+	"starsky/starsky.feature.geo/readme.md",
 	"starsky/starsky.foundation.injection/readme.md",
 	"starsky/starskygeocli/readme.md",
 	"starsky/starskyimportercli/readme.md",

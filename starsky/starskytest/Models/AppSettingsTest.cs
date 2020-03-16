@@ -235,9 +235,9 @@ namespace starskytest.Models
 				WebFtp = "ftp://t:t@m.com"
 			};
 			var display = appSettings.CloneToDisplay();
-			Assert.AreEqual(display.DatabaseConnection,"warning: not displayed for security reasons");
-			Assert.AreEqual(display.WebFtp,"warning: not displayed for security reasons");
-
+			Assert.AreEqual(display.DatabaseConnection,AppSettings.CloneToDisplaySecurityWarning);
+			Assert.AreEqual(display.WebFtp,AppSettings.CloneToDisplaySecurityWarning);
+			Assert.AreEqual(display.ApplicationInsightsInstrumentationKey,AppSettings.CloneToDisplaySecurityWarning);
 		}
 
 		[TestMethod]

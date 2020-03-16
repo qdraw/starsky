@@ -185,8 +185,7 @@ namespace starsky
 	        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 	        
 	        // Application Insights
-	        var appInsightsKey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
-	        if ( !string.IsNullOrWhiteSpace(appInsightsKey) )
+	        if ( !string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) )
 	        {
 		        services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
 		        {
