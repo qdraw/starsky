@@ -2,9 +2,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Health;
+using starsky;
 using starsky.Helpers;
-using starskycore.Models;
 
 namespace starskytest.Health
 {
@@ -30,7 +29,7 @@ namespace starskytest.Health
 		[TestMethod]
 		public void GetBuildDate_Starsky()
 		{
-			var date = DateAssemblyHealthCheck.GetBuildDate(typeof(starsky.Startup).Assembly);
+			var date = DateAssemblyHealthCheck.GetBuildDate(typeof(Startup).Assembly);
 			Assert.IsTrue(date.Year >= 2020 );
 		}
 		

@@ -93,17 +93,6 @@ namespace starsky.foundation.injection
             }
         }
         
-        public static void AddTypesImplementing<T>(this IServiceCollection servicecollection, InjectionLifetime ioCLifetime, params string[] assemblies)
-        {
-            servicecollection.AddTypesImplementing<T>(ioCLifetime, GetAssemblies(assemblies));
-        }
-
-        public static void AddTypesImplementing<T>(this IServiceCollection serviceCollection, InjectionLifetime ioCLifetime, params Assembly[] assemblies)
-        {
-            var types = GetTypesImplementing(typeof(T), assemblies);
-            serviceCollection.Add(ioCLifetime, types.ToArray());
-        }
-
         private static Assembly[] GetAssemblies(IEnumerable<string> assemblyFilters)
         {
             var assemblies = new List<Assembly>();
@@ -141,56 +130,6 @@ namespace starsky.foundation.injection
 	        }
 	        return assemblies.ToArray();
         }
-
-
-        public static Type[] GetTypesImplementing<T>(params Assembly[] assemblies)
-		{
-			if (assemblies == null || assemblies.Length == 0)
-			{
-				return new Type[0];
-			}
-
-			var targetType = typeof(T);
-
-			return assemblies
-				.Where(assembly => !assembly.IsDynamic)
-				.SelectMany(GetExportedTypes)
-				.Where(type => !type.IsAbstract && !type.IsGenericTypeDefinition && targetType.IsAssignableFrom(type))
-				.ToArray();
-		}
-
-        private static IEnumerable<Type> GetTypesImplementing(Type implementsType, params Assembly[] assemblies)
-        {
-            if (assemblies == null || assemblies.Length == 0)
-            {
-                return new Type[0];
-            }
-
-            var targetType = implementsType;
-
-            return assemblies
-                .Where(assembly => !assembly.IsDynamic)
-                .SelectMany(GetExportedTypes)
-                .Where(type => !type.IsAbstract && !type.IsGenericTypeDefinition && targetType.IsAssignableFrom(type))
-                .ToArray();
-        }
-
-        private static IEnumerable<Type> GetTypesImplementingGenericInterface(Type implementsType, params Assembly[] assemblies)
-        {
-            if (assemblies == null || assemblies.Length == 0)
-            {
-                return new Type[0];
-            }
-            
-            return assemblies
-                .Where(assembly => !assembly.IsDynamic)
-                .SelectMany(GetExportedTypes)
-                .Where(x => !x.IsInterface && !x.IsAbstract && x.GetInterfaces().Any(i => i.IsGenericType
-                                                                                          && i.GetGenericTypeDefinition() == implementsType))
-                .ToArray();
-        }
-
-
         
         private static IEnumerable<Type> GetExportedTypes(Assembly assembly)
         {

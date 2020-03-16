@@ -25,7 +25,6 @@ using starsky.Helpers;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Middleware;
-using starskycore.Models;
 using starskycore.Services;
 
 namespace starsky
