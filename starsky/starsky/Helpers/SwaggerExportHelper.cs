@@ -2,11 +2,9 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
-using starskycore.Helpers;
 using starskycore.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -14,57 +12,68 @@ using starsky.foundation.injection;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starskycore.Interfaces;
-using starskycore.Services;
 
 namespace starsky.Helpers
 {
-	// [Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Transient)]
-	public class SwaggerExportHelper : BackgroundService
+	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
+	public class SwaggerExportHelper : BackgroundService, IHostedService
 	{
-		private readonly AppSettings _appSettings;
-		private readonly ISelectorStorage _selectorStorage;
-		private readonly ISwaggerProvider _swaggerProvider;
-
-		public SwaggerExportHelper(AppSettings appSettings, ISelectorStorage selectorStorage, ISwaggerProvider swaggerProvider)
+		public IServiceScopeFactory _serviceScopeFactory;
+		
+		public SwaggerExportHelper(IServiceScopeFactory serviceScopeFactory)
 		{
-			_appSettings = appSettings;
-			_selectorStorage = selectorStorage;
-			_swaggerProvider = swaggerProvider;
+			_serviceScopeFactory = serviceScopeFactory;
 		}
 		
+		/// <summary>
+		/// Running scoped services
+		/// @see: https://thinkrethink.net/2018/07/12/injecting-a-scoped-service-into-ihostedservice/
+		/// </summary>
+		/// <param name="stoppingToken">Cancellation Token, but it ignored</param>
+		/// <returns>CompletedTask</returns>
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			Add03AppExport();
+			using (var scope = _serviceScopeFactory.CreateScope())
+			{
+				var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
+				var selectorStorage = scope.ServiceProvider.GetRequiredService<ISelectorStorage>();
+				var swaggerProvider = scope.ServiceProvider.GetRequiredService<ISwaggerProvider>();
+				Add03AppExport(appSettings, selectorStorage, swaggerProvider);
+			}
 			return Task.CompletedTask;
 		}
 		
 		/// <summary>
 		/// Export Values to Storage
 		/// </summary>
-		/// <param name="app"></param>
-		/// <exception cref="ArgumentNullException"></exception>
-		public void Add03AppExport()
+		/// <param name="appSettings">App Settings</param>
+		/// <param name="selectorStorage">Storage Provider</param>
+		/// <param name="swaggerProvider">Swagger</param>
+		/// <exception cref="ArgumentNullException">swaggerJsonText = null</exception>
+		public void Add03AppExport(AppSettings appSettings, ISelectorStorage selectorStorage, ISwaggerProvider swaggerProvider)
 		{
-			if ( !_appSettings.AddSwagger || !_appSettings.AddSwaggerExport ) return;
+			if ( !appSettings.AddSwagger || !appSettings.AddSwaggerExport ) return;
 			
-			var swaggerJsonText = GenerateSwagger(_swaggerProvider, _appSettings.Name);
+			var swaggerJsonText = GenerateSwagger(swaggerProvider, appSettings.Name);
 			if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ArgumentNullException("swaggerJsonText = null");
 
 			var swaggerJsonFullPath =
-				Path.Join(_appSettings.TempFolder, _appSettings.Name.ToLowerInvariant() + ".json");
+				Path.Join(appSettings.TempFolder, appSettings.Name.ToLowerInvariant() + ".json");
 
-			var storage = _selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+			var storage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			storage.FileDelete(swaggerJsonFullPath);
 			storage.WriteStream(new PlainTextFileHelper().StringToStream(swaggerJsonText),
 				swaggerJsonFullPath);
 
-			if ( _appSettings.Verbose )
-			{
-				Console.WriteLine($"app__addSwaggerExport {swaggerJsonFullPath}");
-			}
+			if ( appSettings.Verbose ) Console.WriteLine($"app__addSwaggerExport {swaggerJsonFullPath}");
 		}
 
+		/// <summary>
+		/// Generate Swagger as Json
+		/// </summary>
+		/// <param name="swaggerProvider">Swagger provider</param>
+		/// <param name="docName">document name</param>
+		/// <returns></returns>
 		private static string GenerateSwagger(ISwaggerProvider swaggerProvider, string docName)
 		{
 			if ( swaggerProvider == null ) return string.Empty;

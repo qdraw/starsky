@@ -84,7 +84,7 @@ namespace starskytest.Helpers
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, renameFs.FirstOrDefault().Status );
 
 			// test with newline at the end
-			FilesHelper.DeleteFile(fileAlreadyExist);
+			new StorageHostFullPathFilesystem().FileDelete(fileAlreadyExist);
 		}
 
 		[TestMethod]

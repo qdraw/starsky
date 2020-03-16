@@ -610,7 +610,7 @@ namespace starskytest.Services
             var result = _import.Import(createAnImageNoExif.FullFilePathWithDate,importSettings);
             
             Assert.AreEqual(0, result.Count);
-            FilesHelper.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
+            new StorageHostFullPathFilesystem().FileDelete(createAnImageNoExif.FullFilePathWithDate);
 	        RemoveFromQuery();
 
         }
@@ -650,7 +650,7 @@ namespace starskytest.Services
 		    var subpath = PathHelper.RemovePrefixDbSlash(result.FirstOrDefault());
 
 		    var path = Path.Combine(createAnImage.BasePath, subpath);
-		    FilesHelper.DeleteFile(path);
+		    new StorageHostFullPathFilesystem().FileDelete(path);
 	    }
 
 	    [TestMethod]

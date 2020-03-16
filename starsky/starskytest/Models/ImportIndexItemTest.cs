@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
+using starsky.foundation.storage.Storage;
 using starskycore.Helpers;
 using starskycore.Middleware;
 using starskycore.Models;
@@ -122,7 +123,7 @@ namespace starskytest.Models
             var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg,false);
             Assert.AreEqual("00010101_000000_d.jpg", fileName);
             
-            FilesHelper.DeleteFile(importItem.SourceFullFilePath);
+            new StorageHostFullPathFilesystem().FileDelete(importItem.SourceFullFilePath);
         }
 	    
 	    [TestMethod]
@@ -142,7 +143,7 @@ namespace starskytest.Models
 		    var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg,false);
 		    Assert.AreEqual("20180101_020202_d.jpg", fileName);
             
-		    FilesHelper.DeleteFile(filPathWithAppendix);
+		    new StorageHostFullPathFilesystem().FileDelete(filPathWithAppendix);
 	    }
 
 	    [TestMethod]
@@ -396,7 +397,7 @@ namespace starskytest.Models
             // Check if those overwite is accepted
             Assert.AreEqual(anserDateTime,input.DateTime);
                    
-            FilesHelper.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
+            new StorageHostFullPathFilesystem().FileDelete(createAnImageNoExif.FullFilePathWithDate);
         }
 
         [TestMethod]

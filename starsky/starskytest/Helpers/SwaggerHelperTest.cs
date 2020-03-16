@@ -35,7 +35,6 @@ namespace starskytest.Helpers
 			
 			// Inject Config helper
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-
 			
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();
@@ -52,10 +51,7 @@ namespace starskytest.Helpers
 				AddSwaggerExport = true,
 				TempFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)
 			};
-			
-
 		}
-		
 		
 		[TestMethod]
 		public async Task SwaggerTest_Integration_Test()
@@ -90,7 +86,7 @@ namespace starskytest.Helpers
 						.CreateScope() )
 					{
 						var swaggerProvider = ( ISwaggerProvider )serviceScope.ServiceProvider.GetService(typeof(ISwaggerProvider));
-						new SwaggerExportHelper(_appSettings,fakeSelectorStorage, swaggerProvider).Add03AppExport();
+						new SwaggerExportHelper(null).Add03AppExport(_appSettings,fakeSelectorStorage, swaggerProvider);
 					}
 
 				}).Build();
