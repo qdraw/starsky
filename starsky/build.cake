@@ -176,7 +176,6 @@ Task("BuildNetCoreGeneric")
       {
           Configuration = configuration,
           ArgumentCustomization = args => args.Append("--no-restore"),
-          Verbosity = DotNetCoreVerbosity.Quiet
           /* Verbosity = DotNetCoreVerbosity.Detailed */
       };
 
@@ -184,7 +183,12 @@ Task("BuildNetCoreGeneric")
       foreach(var projectName in subProjectNames)
       {
           System.Console.WriteLine($"Build ./{projectName}/{projectName}.csproj for generic");
-          DotNetCoreBuild($"./{projectName}/{projectName}.csproj", dotnetBuildSettings);
+
+          /*  restore packages */
+          DotNetCoreBuild($"./{projectName}/{projectName}.csproj", new DotNetCoreBuildSettings()
+          {
+              Configuration = configuration
+          });
       }
 
       System.Console.WriteLine($"Build . for generic");
