@@ -150,14 +150,6 @@ Task("RestoreNetCore")
               DotNetCoreRestore(".",
                   new DotNetCoreRestoreSettings());
 
-              /* restore subProjects for generic */
-              foreach(var projectName in subProjectNames)
-              {
-                System.Console.WriteLine($"Restore ./{projectName}/{projectName}.csproj for {runtime}");
-                DotNetCoreRestore($"./{projectName}/{projectName}.csproj",
-                                  new DotNetCoreRestoreSettings());
-              }
-
               continue;
             }
 
@@ -188,6 +180,15 @@ Task("BuildNetCoreGeneric")
           Verbosity = DotNetCoreVerbosity.Quiet
           /* Verbosity = DotNetCoreVerbosity.Detailed */
       };
+
+      /* build subProjects for generic */
+      foreach(var projectName in subProjectNames)
+      {
+          System.Console.WriteLine($"Build ./{projectName}/{projectName}.csproj for generic");
+          DotNetCoreBuild($"./{projectName}/{projectName}.csproj", dotnetBuildSettings);
+      }
+
+      System.Console.WriteLine($"Build . for generic");
       DotNetCoreBuild(".",
           dotnetBuildSettings);
   });
