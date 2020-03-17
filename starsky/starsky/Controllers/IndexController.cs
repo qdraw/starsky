@@ -1,15 +1,11 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.query.Interfaces;
-using starsky.foundation.query.Services;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
-using starskycore.Services;
 using starskycore.ViewModels;
 
 namespace starsky.Controllers

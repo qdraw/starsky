@@ -4,16 +4,11 @@ using System.Linq;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.query.Interfaces;
-using starsky.foundation.query.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.thumbnailgeneration.Services;
 using starsky.foundation.writemeta.Interfaces;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
-using starskycore.ViewModels;
 using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
 
 namespace starskycore.Services

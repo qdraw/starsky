@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
@@ -10,9 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.query.Models;
-using starskycore.Helpers;
-using starskycore.Models;
 #if SYSTEM_TEXT_ENABLED
 using System.Text.Json.Serialization;
 #else

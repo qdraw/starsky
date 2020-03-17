@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.query.Services;
 using starsky.foundation.storage.Services;
-using starskycore.Helpers;
-using starskycore.Models;
 
 namespace starskycore.Services
 {

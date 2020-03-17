@@ -12,8 +12,4 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.1" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
-    </ItemGroup>
-
 </Project>

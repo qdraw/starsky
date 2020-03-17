@@ -4,7 +4,6 @@ using System.Linq;
 using starsky.foundation.platform.Models;
 using starsky.foundation.query.Interfaces;
 using starsky.foundation.storage.Interfaces;
-using starskycore.Models;
 
 namespace starsky.foundation.thumbnailgeneration.Services
 {
