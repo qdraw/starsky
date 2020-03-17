@@ -13,7 +13,6 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
 
 namespace starsky.foundation.database.Models
 {

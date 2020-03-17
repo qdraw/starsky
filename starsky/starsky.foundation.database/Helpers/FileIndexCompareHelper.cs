@@ -4,8 +4,6 @@ using System.Linq;
 using System.Reflection;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
-using starskycore.Models;
 
 namespace starsky.foundation.database.Helpers
 {
