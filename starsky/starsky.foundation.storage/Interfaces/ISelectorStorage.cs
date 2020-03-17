@@ -1,5 +1,4 @@
 using starsky.foundation.storage.Storage;
-using starskycore.Interfaces;
 
 namespace starsky.foundation.storage.Interfaces
 {

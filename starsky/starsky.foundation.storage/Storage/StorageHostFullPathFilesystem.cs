@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
+using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
-using starskycore.Interfaces;
-using starskycore.Models;
 
 namespace starsky.foundation.storage.Storage
 {

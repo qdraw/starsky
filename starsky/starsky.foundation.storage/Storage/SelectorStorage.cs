@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
 using starsky.foundation.storage.Interfaces;
-using starskycore.Interfaces;
 
 namespace starsky.foundation.storage.Storage
 {

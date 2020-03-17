@@ -11,6 +11,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.query.Interfaces;
 using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Interfaces;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
 using starskycore.Interfaces;

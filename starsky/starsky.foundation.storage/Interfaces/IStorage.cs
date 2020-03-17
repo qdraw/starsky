@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using starsky.foundation.storage.Models;
-using starskycore.Models;
 
-namespace starskycore.Interfaces
+namespace starsky.foundation.storage.Interfaces
 {
 	public interface IStorage
 	{

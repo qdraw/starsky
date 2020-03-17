@@ -10,9 +10,9 @@ using SixLabors.ImageSharp.Processing;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.query.Services;
 using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starskycore.Helpers;
-using starskycore.Interfaces;
 
 namespace starsky.foundation.thumbnailgeneration.Services
 {

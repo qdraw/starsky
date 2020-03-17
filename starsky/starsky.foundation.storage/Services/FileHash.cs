@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using starskycore.Interfaces;
+using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.storage.Services
 {
