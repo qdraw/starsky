@@ -139,7 +139,7 @@ Task("BuildNetCoreGeneric")
       var dotnetBuildSettings = new DotNetCoreBuildSettings()
       {
           Configuration = configuration,
-          ArgumentCustomization = args => args.Append("--nologo"),
+          ArgumentCustomization = args => args.Append("--nologo").Append("--no-incremental"),
           Verbosity = DotNetCoreVerbosity.Detailed
       };
 
@@ -475,7 +475,7 @@ Task("BuildNetCore")
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
 Task("Default")
-    .IsDependentOn("Client")
+    /* .IsDependentOn("Client") */
     .IsDependentOn("SonarBegin")
     .IsDependentOn("BuildNetCore")
     .IsDependentOn("TestNetCore")
