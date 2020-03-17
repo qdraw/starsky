@@ -1,7 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
 
 namespace starskycore.Models
 {

@@ -10,7 +10,7 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
       <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.1" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.1" />
-      <PackageReference Include="MySqlConnector" Version="0.61.0" />
+      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.1.1" />
     </ItemGroup>
 
     <ItemGroup>
