@@ -4,8 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
-using starskycore.ViewModels;
+using starsky.foundation.query.Models;
 
 namespace starsky.foundation.query.Services
 {

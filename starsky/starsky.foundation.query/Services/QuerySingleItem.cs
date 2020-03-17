@@ -3,8 +3,6 @@ using System.Linq;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.query.Models;
-using starskycore.Helpers;
-using starskycore.ViewModels;
 
 namespace starsky.foundation.query.Services
 {

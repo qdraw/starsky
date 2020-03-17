@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace starskycore.Helpers
+namespace starsky.foundation.platform.Helpers
 {
     public static class PathHelper
     {
@@ -153,7 +153,5 @@ namespace starskycore.Helpers
 	        }
             return inputHashSet.ToArray();
         }
-  
-        
     }
 }

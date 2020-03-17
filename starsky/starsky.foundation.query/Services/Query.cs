@@ -11,7 +11,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.query.Interfaces;
-using starskycore.Models;
 
 namespace starsky.foundation.query.Services
 {

@@ -7,6 +7,7 @@ using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.MetaData.Profiles.Exif;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.query.Services;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Services;

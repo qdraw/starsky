@@ -1,7 +1,6 @@
-using System.IO;
 using System.Text.RegularExpressions;
 
-namespace starskycore.Helpers
+namespace starsky.foundation.platform.Helpers
 {
 	public static class FilenamesHelper
 	{

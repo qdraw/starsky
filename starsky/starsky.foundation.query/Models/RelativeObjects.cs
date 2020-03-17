@@ -2,9 +2,8 @@
 using System.Text;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starskycore.Models;
 
-namespace starskycore.ViewModels
+namespace starsky.foundation.query.Models
 {
 	/// <summary>
 	/// In Detailview there are values added for handeling Args  

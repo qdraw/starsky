@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
+using starsky.foundation.platform.Helpers;
 
 namespace starskycore.Helpers
 {

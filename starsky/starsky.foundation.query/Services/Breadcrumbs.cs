@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using starskycore.Helpers;
+using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.query.Services
 {
