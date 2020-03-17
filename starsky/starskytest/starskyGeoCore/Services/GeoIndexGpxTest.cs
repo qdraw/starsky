@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
 using starskycore.Helpers;
 using starskycore.Models;

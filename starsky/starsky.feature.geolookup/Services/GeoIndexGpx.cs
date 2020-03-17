@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
+using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
-using starsky.foundation.geo.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
-using starskycore.Helpers;
-using starskycore.Models;
 
-namespace starsky.foundation.geo.Services
+namespace starsky.feature.geolookup.Services
 {
     public class GeoIndexGpx
     {

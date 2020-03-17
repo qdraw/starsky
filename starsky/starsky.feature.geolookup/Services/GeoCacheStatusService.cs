@@ -1,8 +1,8 @@
 using System;
 using Microsoft.Extensions.Caching.Memory;
-using starsky.foundation.geo.Models;
+using starsky.feature.geolookup.Models;
 
-namespace starsky.foundation.geo.Services
+namespace starsky.feature.geolookup.Services
 {
 	public class GeoCacheStatusService
 	{

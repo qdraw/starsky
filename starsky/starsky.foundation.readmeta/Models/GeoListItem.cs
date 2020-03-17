@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace starskycore.Models
+namespace starsky.foundation.readmeta.Models
 {
     public class GeoListItem
     {

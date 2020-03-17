@@ -1,4 +1,4 @@
-namespace starsky.foundation.geo.Models
+namespace starsky.feature.geolookup.Models
 {
 	public enum StatusType
 	{
