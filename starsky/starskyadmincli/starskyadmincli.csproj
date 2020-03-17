@@ -6,6 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
+      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
       <ProjectReference Include="..\starskycore\starskycore.csproj" />
     </ItemGroup>
 

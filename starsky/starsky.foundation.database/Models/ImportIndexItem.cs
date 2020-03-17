@@ -327,7 +327,7 @@ namespace starsky.foundation.database.Models
                     
                     childFullDirectory = PathHelper.AddBackslash(
                         SearchSubDirInDirectory(parentItem, noSlashInParsedItem).FirstOrDefault());
-                    /// only first item
+                    // only first item
                     if (SubFolder == string.Empty && childFullDirectory != null)
                     {
                         childFullDirectory = Path.DirectorySeparatorChar + childFullDirectory;

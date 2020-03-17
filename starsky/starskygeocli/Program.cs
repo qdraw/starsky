@@ -7,6 +7,7 @@ using starsky.foundation.geo.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
+using starsky.foundation.writemeta.Services;
 
 namespace starskyGeoCli
 {

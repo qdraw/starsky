@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
+using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
 
 namespace starsky.foundation.database.Models
@@ -398,38 +399,7 @@ namespace starsky.foundation.database.Models
 		[MaxLength(40)] 
         public string LocationCountry { get; set; } = string.Empty;
 
-		/// <summary>
-		/// Use a int value to get the ColorClass enum. The number input is between 1 and 8
-		/// </summary>
-		/// <param name="colorclassString">The colorclass string.</param>
-		/// <returns></returns>
-		public Color GetColorClass(string colorclassString = "0")
-        {
 
-            switch (colorclassString)
-            {
-                case "0":
-                    return Color.None;
-                case "8":
-                    return  Color.Trash;
-                case "7":
-                    return Color.Extras;
-                case "6":
-                    return Color.TypicalAlt;
-                case "5":
-                    return Color.Typical;
-                case "4":
-                    return Color.SuperiorAlt;
-                case "3":
-                    return Color.Superior;
-                case "2":
-                    return Color.WinnerAlt;
-                case "1":
-                    return Color.Winner;
-                default:
-                    return Color.DoNotChange;
-            }
-        }
 
 		/// <summary>
 		/// Comma separated list of color class numbers to create a list of enums
@@ -437,24 +407,24 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		/// <param name="colorclassString">The color class string.</param>
 		/// <returns></returns>
-		public List<Color> GetColorClassList(string colorclassString = null)
+		public List<ColorClassParser.Color> GetColorClassList(string colorclassString = null)
         {
-            if (string.IsNullOrWhiteSpace(colorclassString)) return new List<Color>();
+            if (string.IsNullOrWhiteSpace(colorclassString)) return new List<ColorClassParser.Color>();
 
             var colorclassStringList = new List<string>();
 
             if (!colorclassString.Contains(","))
             {
-                if (!int.TryParse(colorclassString, out var parsedInt)) return new List<Color>();
+                if (!int.TryParse(colorclassString, out var parsedInt)) return new List<ColorClassParser.Color>();
                 colorclassStringList.Add(parsedInt.ToString());
             }
             if (colorclassString.Contains(",")) {
                 colorclassStringList = colorclassString.Split(",".ToCharArray()).ToList();
             }
-            var colorclassList = new HashSet<Color>();
+            var colorclassList = new HashSet<ColorClassParser.Color>();
             foreach (var colorclassStringItem in colorclassStringList)
             {
-                colorclassList.Add(GetColorClass(colorclassStringItem));
+                colorclassList.Add(ColorClassParser.GetColorClass(colorclassStringItem));
             }
             return colorclassList.ToList();
         }
@@ -491,63 +461,7 @@ namespace starsky.foundation.database.Models
 		/// <value>
 		/// The color class.
 		/// </value>
-		public Color ColorClass { get; set; } = Color.DoNotChange;
-
-		/// <summary>
-		/// ColorClass enum, used to filter images
-		/// Display name: used in -xmp:Label
-		/// </summary>
-		public enum Color
-        {
-            /// <summary>
-            /// Purple
-            /// </summary>
-            [Display(Name = "Winner")] // <= Display, used in xmp label
-            Winner = 1, // Paars - purple
-            /// <summary>
-            /// Red
-            /// </summary>
-            [Display(Name = "Winner Alt")]
-            WinnerAlt = 2, // rood - Red -
-            /// <summary>
-            /// Orange
-            /// </summary>
-            [Display(Name = "Superior")]
-            Superior = 3, // Oranje - orange
-            /// <summary>
-            /// Yellow
-            /// </summary>
-            [Display(Name = "Superior Alt")]
-            SuperiorAlt = 4, //Geel - yellow
-            /// <summary>
-            /// Green
-            /// </summary>
-            [Display(Name = "Typical")]
-            Typical = 5, // Groen - groen
-            /// <summary>
-            /// Turquoise
-            /// </summary>
-            [Display(Name = "Typical Alt")]
-            TypicalAlt = 6, // Turquoise
-            /// <summary>
-            /// Blue
-            /// </summary>
-            [Display(Name = "Extras")]
-            Extras = 7, // Blauw - blue
-            /// <summary>
-            /// Grey
-            /// </summary>
-            [Display(Name = "")]
-            Trash = 8, // grijs - Grey
-            /// <summary>
-            /// No color
-            /// </summary>
-            None = 0, // donkergrijs Dark Grey
-            /// <summary>
-            /// Option not selected
-            /// </summary>
-            DoNotChange = -1
-        }
+		public ColorClassParser.Color ColorClass { get; set; } = ColorClassParser.Color.DoNotChange;
 
 		/// <summary>
 		/// Gets or sets the image orientation.
@@ -729,9 +643,9 @@ namespace starsky.foundation.database.Models
 		/// Gets all items of the enum color, eg Winner, WinnerAlt.
 		/// </summary>
 		/// <returns>List with enum-item</returns>
-		public static IEnumerable<Color> GetAllColor()
+		public static IEnumerable<ColorClassParser.Color> GetAllColor()
         {
-            return Enum.GetValues(typeof(Color)).Cast<Color>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
+            return Enum.GetValues(typeof(ColorClassParser.Color)).Cast<ColorClassParser.Color>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
         }
 
 		/// <summary>

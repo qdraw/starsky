@@ -6,10 +6,9 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starskycore.Helpers;
 using starskycore.Interfaces;
-using starskycore.Models;
 using starskycore.Services;
 
-namespace starsky.foundation.geo.Services
+namespace starsky.foundation.writemeta.Services
 {
     public class GeoLocationWrite
     {

@@ -5,8 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starskycore.Models;
 
 namespace starskycore.Helpers
 {
@@ -609,7 +609,7 @@ namespace starskycore.Helpers
 			{
 				if ( args[arg].ToLower() != "--colorclass" || ( arg + 1 ) == args.Count ) continue;
 				var colorClassString = args[arg + 1];
-				var color =  new FileIndexItem().GetColorClass(colorClassString);
+				var color =  ColorClassParser.GetColorClass(colorClassString);
 				colorClass = (int) color;
 			}
 			return colorClass;
