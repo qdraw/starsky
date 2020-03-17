@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.query.Models;
 using starskycore.Models;
 
@@ -26,12 +27,12 @@ namespace starskycore.ViewModels
         /// <summary>
         /// Display only the current filter selection of ColorClasses
         /// </summary>
-        public List<FileIndexItem.Color> ColorClassActiveList { get; set; }
+        public List<ColorClassParser.Color> ColorClassActiveList { get; set; }
 
         /// <summary>
         /// Give back a list of all colorClasses that are used in this specific folder 
         /// </summary>
-        public List<FileIndexItem.Color> ColorClassUsage { get; set; }
+        public List<ColorClassParser.Color> ColorClassUsage { get; set; }
 
     }
 }

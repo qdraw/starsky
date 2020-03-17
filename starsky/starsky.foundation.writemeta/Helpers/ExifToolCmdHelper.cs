@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Models;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -303,7 +304,7 @@ namespace starskycore.Helpers
 
 	    private static string UpdateColorClassCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 	    {
-			if (comparedNames.Contains(nameof(FileIndexItem.ColorClass)) && updateModel.ColorClass != FileIndexItem.Color.DoNotChange)
+			if (comparedNames.Contains(nameof(FileIndexItem.ColorClass)) && updateModel.ColorClass != ColorClassParser.Color.DoNotChange)
 			{
 				var intColorClass = (int) updateModel.ColorClass;
 	

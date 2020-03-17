@@ -6,6 +6,7 @@ using starsky.foundation.query.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
+using starskycore.Helpers;
 using starskycore.Interfaces;
 
 
