@@ -72,6 +72,18 @@ var testProjectNames = new List<string>{
 Task("CleanNetCore")
     .Does(() =>
     {
+        /* var dotnetCleanSettings = new DotNetCoreCleanSettings()
+        {
+            Configuration = configuration,
+            ArgumentCustomization = args => args.Append("--nologo"),
+        };
+
+        System.Console.WriteLine($"Clean . for generic");
+
+        DotNetCoreClean(".",
+            dotnetCleanSettings); */
+
+
         foreach(var runtime in runtimes)
         {
             if (FileExists($"starsky-{runtime}.zip"))
@@ -82,6 +94,7 @@ Task("CleanNetCore")
             CleanDirectory(distDirectory);
 
             CleanDirectory($"obj/Release/netcoreapp3.0/{runtime}");
+
         }
     });
 
@@ -127,7 +140,7 @@ Task("BuildNetCoreGeneric")
       {
           Configuration = configuration,
           ArgumentCustomization = args => args.Append("--nologo"),
-          /* Verbosity = DotNetCoreVerbosity.Detailed */
+          Verbosity = DotNetCoreVerbosity.Detailed
       };
 
       System.Console.WriteLine($"Build . for generic");
