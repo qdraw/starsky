@@ -7,6 +7,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Extensions;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -184,8 +185,8 @@ namespace starskycore.Services
 
 			// Feature to overwrite default ColorClass Setting
 			// First check and I is different than default enable sync
-			fileIndexItem.ColorClass = fileIndexItem.GetColorClass(importSettings.ColorClass.ToString());
-			if (fileIndexItem.ColorClass != FileIndexItem.Color.None && fileIndexItem.ColorClass != FileIndexItem.Color.DoNotChange)
+			fileIndexItem.ColorClass = ColorClassParser.GetColorClass(importSettings.ColorClass.ToString());
+			if (fileIndexItem.ColorClass != ColorClassParser.Color.None && fileIndexItem.ColorClass != ColorClassParser.Color.DoNotChange)
 				importSettings.NeedExiftoolSync = true;
 
 			// Item is good

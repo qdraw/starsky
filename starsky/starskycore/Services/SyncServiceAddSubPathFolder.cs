@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.query.Services;
 using starskycore.Models;
 
@@ -42,7 +43,7 @@ namespace starskycore.Services
                 {
                     AddToDatabase = DateTime.UtcNow,
                     IsDirectory = true,
-                    ColorClass = FileIndexItem.Color.None
+                    ColorClass = ColorClassParser.Color.None
                 };
                 if (itemSubpath != "/")
                 {

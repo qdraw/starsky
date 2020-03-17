@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.query.Interfaces;
 using starsky.foundation.storage.Services;
@@ -115,7 +116,7 @@ namespace starskytest.Controllers
                     FileName = _createAnImage.FileName,
                     ParentDirectory = "/",
                     FileHash = fileHashCode,
-                    ColorClass = FileIndexItem.Color.Winner, // 1
+                    ColorClass = ColorClassParser.Color.Winner, // 1
                     Tags = isDelete
                 });
             }

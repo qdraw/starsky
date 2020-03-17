@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.query.Services;
 using starskycore.Models;
 
@@ -34,7 +35,7 @@ namespace starskycore.Services
                         AddToDatabase = DateTime.UtcNow,
                         FileName = singleFolderDbStyle.Split("/".ToCharArray()).LastOrDefault(),
                         ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault(),
-                        ColorClass = FileIndexItem.Color.None
+                        ColorClass = ColorClassParser.Color.None
                     };
                     _query.AddItem(folderItem);
                     // We dont need this localy

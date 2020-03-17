@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
@@ -55,7 +56,7 @@ namespace starskytest.Services
 			    out var expectDateTime);
 		    
 		    Assert.AreEqual(expectDateTime,data.DateTime);
-		    Assert.AreEqual(FileIndexItem.Color.Trash,data.ColorClass);
+		    Assert.AreEqual(ColorClassParser.Color.Trash,data.ColorClass);
 
 	    }
 	}

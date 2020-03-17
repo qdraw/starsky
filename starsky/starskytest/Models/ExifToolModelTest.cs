@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starskycore.Models;
 
 namespace starskytest.Models
@@ -13,8 +14,8 @@ namespace starskytest.Models
         [TestMethod]
         public void ExifToolModelColorClassTest()
         {
-            var exifToolModel = new ExifToolModel{ColorClass = FileIndexItem.Color.Winner};
-            Assert.AreEqual(exifToolModel.ColorClass,FileIndexItem.Color.Winner);
+            var exifToolModel = new ExifToolModel{ColorClass = ColorClassParser.Color.Winner};
+            Assert.AreEqual(exifToolModel.ColorClass,ColorClassParser.Color.Winner);
         }
 
         [TestMethod]
@@ -37,7 +38,7 @@ namespace starskytest.Models
         public void ExifToolPrefsParseTest()
         {
             var exifToolModel = new ExifToolModel{Prefs = "Tagged:0, ColorClass:2, Rating:0, FrameNum:0"};
-            Assert.AreEqual(exifToolModel.ColorClass,FileIndexItem.Color.WinnerAlt);
+            Assert.AreEqual(exifToolModel.ColorClass,ColorClassParser.Color.WinnerAlt);
         }
         
         [TestMethod]

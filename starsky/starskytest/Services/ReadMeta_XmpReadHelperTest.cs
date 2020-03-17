@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
@@ -68,7 +69,7 @@ namespace starskytest.Services
             
             Assert.AreEqual(28d, data.FocalLength);
 
-            Assert.AreEqual(FileIndexItem.Color.Winner,data.ColorClass);
+            Assert.AreEqual(ColorClassParser.Color.Winner,data.ColorClass);
             
             DateTime.TryParseExact("2018-07-18 19:44:27", 
                 "yyyy-MM-dd HH:mm:ss",
@@ -108,7 +109,7 @@ namespace starskytest.Services
 		    Assert.AreEqual("Gelderland",data.LocationState);
 		    Assert.AreEqual("Nederland",data.LocationCountry);
 
-		    Assert.AreEqual(FileIndexItem.Color.Winner,data.ColorClass);
+		    Assert.AreEqual(ColorClassParser.Color.Winner,data.ColorClass);
             
 		    DateTime.TryParseExact("2018-07-18 19:44:27", 
 			    "yyyy-MM-dd HH:mm:ss",
@@ -157,7 +158,7 @@ namespace starskytest.Services
 		    Assert.AreEqual("Gelderland",data.LocationState);
 		    Assert.AreEqual("Nederland",data.LocationCountry);
 
-		    Assert.AreEqual(FileIndexItem.Color.Winner,data.ColorClass);
+		    Assert.AreEqual(ColorClassParser.Color.Winner,data.ColorClass);
             
 		    DateTime.TryParseExact("2018-07-18 19:44:27", 
 			    "yyyy-MM-dd HH:mm:ss",

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
@@ -42,7 +43,7 @@ namespace starskytest.Helpers
                 LocationState = "LocationState",
                 LocationCountry = "LocationCountry",
                 Title = "Title",
-                ColorClass = FileIndexItem.Color.Trash,
+                ColorClass = ColorClassParser.Color.Trash,
                 Orientation = FileIndexItem.Rotation.Rotate90Cw,
                 DateTime = DateTime.Now,
             };

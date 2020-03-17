@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.query.Interfaces;
 using starsky.foundation.query.Models;
 using starskycore.Interfaces;
@@ -63,7 +64,7 @@ namespace starskytest.Controllers
                     FileName = "hi.jpg",
                     ParentDirectory = "/homecontrollertest",
                     FileHash = "home0012304590",
-                    ColorClass = FileIndexItem.Color.Winner // 1
+                    ColorClass = ColorClassParser.Color.Winner // 1
                 });
                 
                 // There must be a parent folder
