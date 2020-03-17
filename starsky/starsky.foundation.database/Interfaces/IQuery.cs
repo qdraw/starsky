@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.query.Models;
 
 namespace starsky.foundation.query.Interfaces
 {

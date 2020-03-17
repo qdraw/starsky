@@ -14,6 +14,7 @@ using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Interfaces;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;

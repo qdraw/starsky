@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using starsky.foundation.database.Models;
-using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
-#if SYSTEM_TEXT_ENABLED
+﻿#if SYSTEM_TEXT_ENABLED
 using System.Text.Json.Serialization;
 #else
 using Newtonsoft.Json;
 #endif
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 
-namespace starskycore.Models
+namespace starsky.foundation.writemeta.Models
 {
     public class ExifToolModel
     {

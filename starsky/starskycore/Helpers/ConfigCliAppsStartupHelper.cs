@@ -11,6 +11,7 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
+using starsky.foundation.writemeta.Interfaces;
 using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;

@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Helpers;
+using starsky.foundation.writemeta.Services;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;

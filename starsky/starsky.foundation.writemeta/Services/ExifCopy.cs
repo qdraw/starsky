@@ -6,11 +6,10 @@ using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
+using starsky.foundation.writemeta.Interfaces;
+using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
 
-namespace starskycore.Services
+namespace starsky.foundation.writemeta.Services
 {
 	public class ExifCopy
 	{

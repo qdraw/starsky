@@ -8,11 +8,11 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
-using starskycore.Interfaces;
-using starskycore.Models;
-using starskycore.Services;
+using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Services;
+using starskycore.Helpers;
 
-namespace starskycore.Helpers
+namespace starsky.foundation.writemeta.Helpers
 {
     public partial class ExifToolCmdHelper
     {

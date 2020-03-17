@@ -1,4 +1,4 @@
-﻿namespace starsky.foundation.query.Models
+﻿namespace starsky.foundation.database.Models
 {
     public class PageViewType
     {

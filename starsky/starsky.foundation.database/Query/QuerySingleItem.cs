@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.query.Models;
 
-namespace starsky.foundation.query.Services
+namespace starsky.foundation.database.Query
 {
     public partial class Query
     {

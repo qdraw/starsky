@@ -15,9 +15,12 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Services;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
+using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
 
 namespace starskycore.Services
 {

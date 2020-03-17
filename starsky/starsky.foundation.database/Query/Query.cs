@@ -12,7 +12,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.query.Interfaces;
 
-namespace starsky.foundation.query.Services
+namespace starsky.foundation.database.Query
 {
 	
 	[Service(typeof(IQuery), InjectionLifetime = InjectionLifetime.Scoped)]

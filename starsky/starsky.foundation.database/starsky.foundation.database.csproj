@@ -66,6 +66,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
       <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
     </ItemGroup>
     

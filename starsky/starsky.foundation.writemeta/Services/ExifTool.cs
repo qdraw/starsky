@@ -6,11 +6,10 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starskycore.Interfaces;
-using starskycore.Models;
+using starsky.foundation.writemeta.Interfaces;
 using static Medallion.Shell.Shell;
 
-namespace starskycore.Services
+namespace starsky.foundation.writemeta.Services
 {
 	/// <summary>
 	/// Only for writing commands 

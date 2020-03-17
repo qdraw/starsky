@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace starskycore.Interfaces
+namespace starsky.foundation.writemeta.Interfaces
 {
     public interface IExifTool
     {

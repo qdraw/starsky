@@ -4,9 +4,8 @@ using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.query.Models;
 
-namespace starsky.foundation.query.Services
+namespace starsky.foundation.database.Query
 {
     public partial class Query // For folder displays only
     {
@@ -18,7 +17,7 @@ namespace starsky.foundation.query.Services
         public List<FileIndexItem> GetAllFolders()
         {
             InjectServiceScope();
-            return _context.FileIndex.Where(p => p.IsDirectory).ToList();
+            return Queryable.Where<FileIndexItem>(_context.FileIndex, p => p.IsDirectory).ToList();
         }
 
             
@@ -84,14 +83,13 @@ namespace starsky.foundation.query.Services
                 return objectFileFolders as List<FileIndexItem>;
             
             objectFileFolders = QueryDisplayFileFolders(subPath);
-            _cache.Set(queryCacheName, objectFileFolders, new TimeSpan(1,0,0));
+            CacheExtensions.Set<object>(_cache, queryCacheName, objectFileFolders, new TimeSpan(1,0,0));
             return (List<FileIndexItem>) objectFileFolders;
         }
 
         private List<FileIndexItem> QueryDisplayFileFolders(string subPath = "/")
         {
-            var queryItems = _context.FileIndex
-                .Where(p => p.ParentDirectory == subPath)
+            var queryItems = Queryable.Where<FileIndexItem>(_context.FileIndex, p => p.ParentDirectory == subPath)
                 .OrderBy(p => p.FileName).ToList();
 
             return queryItems.OrderBy(p => p.FileName).ToList();
@@ -121,8 +119,7 @@ namespace starsky.foundation.query.Services
             // We use breadcrums to get the parent folder
             var parrentFolderPath = FilenamesHelper.GetParentPath(currentFolder);
             
-            var itemsInSubFolder = _context.FileIndex
-                .Where(p => p.ParentDirectory == parrentFolderPath)
+            var itemsInSubFolder = Queryable.Where<FileIndexItem>(_context.FileIndex, p => p.ParentDirectory == parrentFolderPath)
                 .OrderBy(p => p.FileName).ToList();
             
             var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == currentFolder);

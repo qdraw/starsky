@@ -13,6 +13,7 @@ using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeMocks;
 using starskytest.Models;
+using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
 
 namespace starskytest.Helpers
 {

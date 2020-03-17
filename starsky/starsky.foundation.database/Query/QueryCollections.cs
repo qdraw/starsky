@@ -4,7 +4,7 @@ using System.Linq;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
-namespace starsky.foundation.query.Services
+namespace starsky.foundation.database.Query
 {
     public partial class Query
     {

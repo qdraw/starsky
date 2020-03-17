@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
-using starskycore.Models;
 
-namespace starskycore.Helpers
+namespace starsky.foundation.writemeta.Helpers
 {
 	public partial class ExifToolCmdHelper
 	{

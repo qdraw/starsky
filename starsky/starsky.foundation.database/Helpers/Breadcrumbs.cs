@@ -2,7 +2,7 @@
 using System.Text;
 using starsky.foundation.platform.Helpers;
 
-namespace starsky.foundation.query.Services
+namespace starsky.foundation.database.Helpers
 {
     public static class Breadcrumbs
     {
