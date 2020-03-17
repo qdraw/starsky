@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
 using starskycore.ViewModels;
 
@@ -26,7 +27,7 @@ namespace starsky.foundation.query.Services
         // This is the query part
         public IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
-            List<FileIndexItem.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true)
         {
@@ -43,12 +44,12 @@ namespace starsky.foundation.query.Services
         // without any query in this method
         public IEnumerable<FileIndexItem> DisplayFileFolders(
             List<FileIndexItem> fileIndexItems,
-            List<FileIndexItem.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true)
         {
             
-            if (colorClassActiveList == null) colorClassActiveList = new List<FileIndexItem.Color>();
+            if (colorClassActiveList == null) colorClassActiveList = new List<ColorClassParser.Color>();
             if (colorClassActiveList.Any())
             {
                 fileIndexItems = fileIndexItems.Where(p => colorClassActiveList.Contains(p.ColorClass)).ToList();

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Helpers;
 using starskycore.Helpers;
 using starskycore.Models;
@@ -31,7 +32,7 @@ namespace starskycore.Services
 			        Latitude = readGpxFile.FirstOrDefault().Latitude,
 			        Longitude = readGpxFile.FirstOrDefault().Longitude,
 			        LocationAltitude = readGpxFile.FirstOrDefault().Altitude,
-			        ColorClass = FileIndexItem.Color.None,
+			        ColorClass = ColorClassParser.Color.None,
 			        ImageFormat = ExtensionRolesHelper.ImageFormat.gpx
 		        }; 
 	        }
@@ -39,7 +40,7 @@ namespace starskycore.Services
 	        return new FileIndexItem
 	        {
 		        Tags = "SystemXmlXmlException",
-		        ColorClass = FileIndexItem.Color.None
+		        ColorClass = ColorClassParser.Color.None
 	        };
 	        
         }

@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Xmp;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
@@ -44,7 +45,7 @@ namespace starskycore.Services
 				{
 					stream.Dispose();
 					return new FileIndexItem (subPath) {
-						ColorClass = FileIndexItem.Color.None, 
+						ColorClass = ColorClassParser.Color.None, 
 						ImageFormat = ExtensionRolesHelper.ImageFormat.unknown,
 						Tags = nameof(ImageProcessingException).ToLowerInvariant(),
 						Orientation = FileIndexItem.Rotation.Horizontal
@@ -64,7 +65,7 @@ namespace starskycore.Services
             }
             
             // Set the default value
-            item.ColorClass = item.GetColorClass();
+            item.ColorClass = ColorClassParser.GetColorClass();
             
             // Set the default value
             item.Orientation = item.SetAbsoluteOrientation("1");
@@ -92,7 +93,7 @@ namespace starskycore.Services
                 var colorClassString = GetColorClassString(exifItem);
                 if(!string.IsNullOrEmpty(colorClassString)) // null = is not the right tag or empty tag
                 {
-                    item.ColorClass = item.GetColorClass(colorClassString);
+                    item.ColorClass = ColorClassParser.GetColorClass(colorClassString);
                 }
                 
                 // [IPTC] Caption/Abstract

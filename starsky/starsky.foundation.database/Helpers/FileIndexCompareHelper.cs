@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
 using starskycore.Models;
 
@@ -44,10 +45,10 @@ namespace starsky.foundation.database.Helpers
                     CompareBool(propertiesB[i].Name, sourceIndexItem, oldBoolValue, newBoolValue, differenceList);
                 }
                     
-                if (propertiesA [i].PropertyType == typeof(FileIndexItem.Color))
+                if (propertiesA [i].PropertyType == typeof(ColorClassParser.Color))
                 {
-                    var oldColorValue = (FileIndexItem.Color)propertiesA [i].GetValue(sourceIndexItem, null);
-                    var newColorValue = (FileIndexItem.Color)propertiesB [i].GetValue(updateObject, null);
+                    var oldColorValue = (ColorClassParser.Color)propertiesA [i].GetValue(sourceIndexItem, null);
+                    var newColorValue = (ColorClassParser.Color)propertiesB [i].GetValue(updateObject, null);
                     CompareColor(propertiesB[i].Name, sourceIndexItem, oldColorValue, newColorValue, differenceList);
                 }
 
@@ -279,10 +280,10 @@ namespace starsky.foundation.database.Helpers
 	    /// <param name="oldColorValue">oldColorValue to compare with newColorValue</param>
 	    /// <param name="newColorValue">oldColorValue to compare with newColorValue</param>
 	    /// <param name="differenceList">list of different values</param>
-        private static void CompareColor(string propertyName, FileIndexItem sourceIndexItem, FileIndexItem.Color oldColorValue, 
-		    FileIndexItem.Color newColorValue, List<string> differenceList)
+        private static void CompareColor(string propertyName, FileIndexItem sourceIndexItem, ColorClassParser.Color oldColorValue, 
+		    ColorClassParser.Color newColorValue, List<string> differenceList)
         {
-            if (oldColorValue == newColorValue || newColorValue == FileIndexItem.Color.DoNotChange) return;
+            if (oldColorValue == newColorValue || newColorValue == ColorClassParser.Color.DoNotChange) return;
             sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newColorValue, null);
             differenceList.Add(propertyName);
         }

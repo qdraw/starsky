@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.query.Models;
 using starskycore.ViewModels;
 
@@ -15,21 +16,21 @@ namespace starsky.foundation.query.Interfaces
         // to do the query and return object
         IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
-            List<FileIndexItem.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true);
 
         // To make an object without any query
         IEnumerable<FileIndexItem> DisplayFileFolders(
             List<FileIndexItem> fileIndexItems,
-            List<FileIndexItem.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true);
 
         // to do the query and return object
         DetailView SingleItem(
             string singleItemDbPath, 
-            List<FileIndexItem.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true);
 
@@ -37,7 +38,7 @@ namespace starsky.foundation.query.Interfaces
         DetailView SingleItem(
             List<FileIndexItem> fileIndexItemsList, 
             string singleItemDbPath, 
-            List<FileIndexItem.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true);
         

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starskycore.Models;
 
 namespace starskycore.ViewModels
@@ -44,7 +45,7 @@ namespace starskycore.ViewModels
 	    /// </summary>
 	    /// <param name="collections"></param>
 	    /// <param name="colorClassActiveList"></param>
-	    public RelativeObjects(bool collections, List<FileIndexItem.Color> colorClassActiveList)
+	    public RelativeObjects(bool collections, List<ColorClassParser.Color> colorClassActiveList)
 	    {
 		    	if ( !collections )
 			    {

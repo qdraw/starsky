@@ -12,5 +12,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup>
     <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
+    <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
   </ItemGroup>
 </Project>

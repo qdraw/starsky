@@ -46,7 +46,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj" />
+    <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
     <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
+    <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+    <ProjectReference Include="..\starsky.foundation.query\starsky.foundation.query.csproj" />
+    <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
+    <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
   </ItemGroup>
   <ItemGroup>

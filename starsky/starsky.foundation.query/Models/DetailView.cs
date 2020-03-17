@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starskycore.ViewModels;
 
 namespace starsky.foundation.query.Models
@@ -13,7 +14,7 @@ namespace starsky.foundation.query.Models
 	    /// <summary>
 	    /// List of selected Color Class's
 	    /// </summary>
-	    public List<FileIndexItem.Color> ColorClassActiveList { get; set; } = new List<FileIndexItem.Color>();
+	    public List<ColorClassParser.Color> ColorClassActiveList { get; set; } = new List<ColorClassParser.Color>();
         
 	    /// <summary>
 	    /// Used by react client

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
 #if SYSTEM_TEXT_ENABLED
 using System.Text.Json.Serialization;
@@ -16,7 +17,7 @@ namespace starskycore.Models
         
         public string SourceFile { get; set; }
         
-        public FileIndexItem.Color ColorClass { get; set; }
+        public ColorClassParser.Color ColorClass { get; set; }
 
         
         // Replace user Quoted input with single quote to avoid SQL Injection.

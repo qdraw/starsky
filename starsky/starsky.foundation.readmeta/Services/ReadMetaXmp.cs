@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Helpers;
 using starskycore.Helpers;
 using starskycore.Interfaces;
@@ -59,7 +60,7 @@ namespace starskycore.Services
 	        {
 		        Console.WriteLine($"XmpException {databaseItem.FilePath} >>\n{e}\n <<XmpException");
 		        databaseItem.Tags = "XmpException";
-		        databaseItem.ColorClass = FileIndexItem.Color.None;
+		        databaseItem.ColorClass = ColorClassParser.Color.None;
 	        }
 	        
 	        
@@ -261,7 +262,7 @@ namespace starskycore.Services
                 var colorClass = GetContentNameSpace(property, "photomechanic:ColorClass");
                 if (colorClass != null)
                 {
-                    item.ColorClass = item.GetColorClass(colorClass);
+                    item.ColorClass = ColorClassParser.GetColorClass(colorClass);
                 }
                 
                 // Path=tiff:Orientation Namespace=http://ns.adobe.com/tiff/1.0/ Value=6

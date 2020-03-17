@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.query.Models;
 using starskycore.Helpers;
 using starskycore.ViewModels;
@@ -24,7 +25,7 @@ namespace starsky.foundation.query.Services
         /// <returns>view object to show on the page</returns>
         public DetailView SingleItem(
             string singleItemDbPath,
-            List<FileIndexItem.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true)
         {
@@ -53,7 +54,7 @@ namespace starsky.foundation.query.Services
         public DetailView SingleItem(
             List<FileIndexItem> fileIndexItemsList, 
             string singleItemDbPath,
-            List<FileIndexItem.Color> colorClassActiveList = null,
+            List<ColorClassParser.Color> colorClassActiveList = null,
             bool enableCollections = true,
             bool hideDeleted = true)
         {
