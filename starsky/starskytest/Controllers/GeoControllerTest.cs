@@ -15,7 +15,6 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using starsky.foundation.geo.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.query.Interfaces;
 using starsky.foundation.readmeta.Interfaces;

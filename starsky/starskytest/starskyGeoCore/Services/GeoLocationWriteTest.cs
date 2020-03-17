@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starskycore.Interfaces;
 using starskycore.Models;
-using starsky.foundation.geo.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
