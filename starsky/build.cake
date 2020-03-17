@@ -39,6 +39,9 @@ if(!runtimes.Contains(genericName)) {
   runtimes.Insert(0, genericName);
 }
 
+Environment.SetEnvironmentVariable("DOTNET_CLI_TELEMETRY_OPTOUT","true");
+Environment.SetEnvironmentVariable("DOTNET_SKIP_FIRST_TIME_EXPERIENCE","1");
+
 /* Build information, just to show */
 var buildForInformation = new StringBuilder(">> Going to build for: ");
 foreach(var runtime in runtimes)
@@ -49,19 +52,6 @@ System.Console.WriteLine(buildForInformation.ToString());
 /* done, build info*/
 
 Information($"Running target {target} in configuration {configuration}");
-
-var subProjectNames = new List<string>{
-    "starsky.foundation.platform", /* first */
-    "starsky.foundation.injection", /* second */
-    "starsky.foundation.database",
-    "starsky.foundation.query",
-    "starsky.foundation.readmeta",
-    "starsky.foundation.storage",
-    "starsky.foundation.thumbnailgeneration",
-    "starsky.foundation.writemeta",
-    "starsky.feature.geolookup",
-    "starsky.feature.webhtmlpublish",
-};
 
 var publishProjectNames = new List<string>{
     "starskyadmincli",
@@ -128,71 +118,20 @@ Task("ClientTest")
         NpmRunScript("test:ci", s => s.FromPath("./starsky/clientapp/"));
   });
 
-// Run dotnet restore to restore all package references.
-Task("RestoreNetCore")
-    .Does(() =>
-    {
-        Environment.SetEnvironmentVariable("DOTNET_CLI_TELEMETRY_OPTOUT","true");
-        Environment.SetEnvironmentVariable("DOTNET_SKIP_FIRST_TIME_EXPERIENCE","1");
 
-        // make a new list
-        var restoreProjectNames = new List<string>(publishProjectNames);
-        restoreProjectNames.AddRange(testProjectNames);
-        restoreProjectNames.AddRange(subProjectNames);
-
-        foreach(var runtime in runtimes)
-        {
-            if (runtime == genericName)
-            {
-              System.Console.WriteLine($"Restore . for {runtime}");
-
-              DotNetCoreRestore(".",
-                  new DotNetCoreRestoreSettings());
-
-              continue;
-            }
-
-            var dotnetRestoreSettings = new DotNetCoreRestoreSettings{
-                Runtime = runtime
-            };
-
-            foreach(var projectName in publishProjectNames)
-            {
-                System.Console.WriteLine($"Restore ./{projectName}/{projectName}.csproj for {runtime}");
-                DotNetCoreRestore($"./{projectName}/{projectName}.csproj",
-                    dotnetRestoreSettings);
-
-                // Copy for runtime
-                CopyFile($"./{projectName}/obj/project.assets.json",  $"./{projectName}/obj/project.assets_{runtime}.json");
-            }
-        }
-    });
-
-// Build for Generic items
+// Build & Restore for Generic items
 Task("BuildNetCoreGeneric")
   .Does(() =>
   {
       var dotnetBuildSettings = new DotNetCoreBuildSettings()
       {
           Configuration = configuration,
-          ArgumentCustomization = args => args.Append("--no-restore").Append("--nologo"),
+          ArgumentCustomization = args => args.Append("--nologo"),
           /* Verbosity = DotNetCoreVerbosity.Detailed */
       };
 
-      /* build subProjects for generic */
-      foreach(var projectName in subProjectNames)
-      {
-          System.Console.WriteLine($"Build ./{projectName}/{projectName}.csproj for generic");
-
-          /*  restore packages */
-          DotNetCoreBuild($"./{projectName}/{projectName}.csproj", new DotNetCoreBuildSettings()
-          {
-              ArgumentCustomization = args => args.Append("--no-restore").Append("--no-dependencies").Append("--nologo"),
-              Configuration = configuration
-          });
-      }
-
       System.Console.WriteLine($"Build . for generic");
+
       DotNetCoreBuild(".",
           dotnetBuildSettings);
   });
@@ -206,7 +145,7 @@ Task("BuildNetCoreGeneric")
         var dotnetBuildSettings = new DotNetCoreBuildSettings()
         {
             Configuration = configuration,
-            ArgumentCustomization = args => args.Append("--no-restore").Append("--nologo"),
+            ArgumentCustomization = args => args.Append("--nologo"),
         };
 
         foreach(var runtime in runtimes)
@@ -518,7 +457,6 @@ Task("Client")
 // A meta-task that runs all the steps to Build and Test the app
 Task("BuildNetCore")
     .IsDependentOn("CleanNetCore")
-    .IsDependentOn("RestoreNetCore")
     .IsDependentOn("BuildNetCoreGeneric");
 
 // The default task to run if none is explicitly specified. In this case, we want
