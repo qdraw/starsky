@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace starskycore.Helpers
+namespace starsky.foundation.readmeta.Helpers
 {
     public static class GeoDistanceTo
     {

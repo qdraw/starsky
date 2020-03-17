@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using starsky.foundation.database.Models;
-using starskycore.Models;
 
-namespace starskycore.Interfaces
+namespace starsky.foundation.readmeta.Interfaces
 {
     public interface IReadMeta
     {

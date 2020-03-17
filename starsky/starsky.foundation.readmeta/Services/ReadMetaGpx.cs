@@ -8,10 +8,9 @@ using System.Xml;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Helpers;
-using starskycore.Helpers;
 using starskycore.Models;
 
-namespace starskycore.Services
+namespace starsky.foundation.readmeta.Services
 {
     public class ReadMetaGpx
     {

@@ -17,6 +17,7 @@ using starsky.foundation.geo.Models;
 using starsky.foundation.geo.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.query.Interfaces;
+using starsky.foundation.readmeta.Interfaces;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;

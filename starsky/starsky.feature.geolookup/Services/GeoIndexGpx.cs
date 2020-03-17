@@ -6,11 +6,10 @@ using starsky.foundation.database.Models;
 using starsky.foundation.geo.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starskycore.Helpers;
-using starskycore.Interfaces;
 using starskycore.Models;
-using starskycore.Services;
 
 namespace starsky.foundation.geo.Services
 {

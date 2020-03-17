@@ -7,6 +7,7 @@ using Pomelo.EntityFrameworkCore.MySql.Storage;
 using starsky.foundation.database.Data;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;

@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
 
-namespace starskycore.Services
+namespace starsky.foundation.readmeta.Services
 {
 	[Service(typeof(IReadMeta), InjectionLifetime = InjectionLifetime.Scoped)]
     public class ReadMeta : IReadMeta

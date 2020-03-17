@@ -7,6 +7,7 @@ using MetadataExtractor.Formats.Iptc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.readmeta.Services;
 using starskycore.Attributes;
 using starskycore.Models;
 using starskycore.Services;

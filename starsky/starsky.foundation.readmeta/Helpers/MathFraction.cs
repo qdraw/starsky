@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace starskycore.Helpers
+namespace starsky.foundation.readmeta.Helpers
 {
 	public class MathFraction
 	{

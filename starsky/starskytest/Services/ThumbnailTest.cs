@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
