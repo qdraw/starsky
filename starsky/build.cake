@@ -144,13 +144,14 @@ Task("BuildNetCoreGeneric")
           ArgumentCustomization = args => args.Append("--nologo"),
       };
 
-      var projects = GetFiles(projectBasePath + "/**/*.csproj");
-      
+      var projects = GetFiles("**/*.csproj");
+
       // Write to output (build log)
-      Information("Found " + projects.Count + " projects in: " + projectBasePath);
+      Information("Found " + projects.Count + " projects in: .");
 
       foreach (var project in projects)
       {
+          Information($"Build Project  {project}");
           DotNetCoreBuild(project.FullPath, dotnetBuildSettings);
       }
   });
