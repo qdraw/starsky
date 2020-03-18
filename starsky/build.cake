@@ -72,18 +72,6 @@ var testProjectNames = new List<string>{
 Task("CleanNetCore")
     .Does(() =>
     {
-        /* var dotnetCleanSettings = new DotNetCoreCleanSettings()
-        {
-            Configuration = configuration,
-            ArgumentCustomization = args => args.Append("--nologo"),
-        };
-
-        System.Console.WriteLine($"Clean . for generic");
-
-        DotNetCoreClean(".",
-            dotnetCleanSettings); */
-
-
         foreach(var runtime in runtimes)
         {
             if (FileExists($"starsky-{runtime}.zip"))
@@ -94,7 +82,6 @@ Task("CleanNetCore")
             CleanDirectory(distDirectory);
 
             CleanDirectory($"obj/Release/netcoreapp3.0/{runtime}");
-
         }
     });
 
@@ -131,30 +118,58 @@ Task("ClientTest")
         NpmRunScript("test:ci", s => s.FromPath("./starsky/clientapp/"));
   });
 
+// Run dotnet restore to restore all package references.
+Task("RestoreNetCore")
+    .Does(() =>
+    {
+        Environment.SetEnvironmentVariable("DOTNET_CLI_TELEMETRY_OPTOUT","true");
+        Environment.SetEnvironmentVariable("DOTNET_SKIP_FIRST_TIME_EXPERIENCE","1");
 
-// Build & Restore for Generic items
+        // make a new list
+        var restoreProjectNames = new List<string>(publishProjectNames);
+        restoreProjectNames.AddRange(testProjectNames);
+
+
+        foreach(var runtime in runtimes)
+        {
+            if (runtime == genericName)
+            {
+              System.Console.WriteLine(genericName);
+
+              DotNetCoreRestore(".",
+                  new DotNetCoreRestoreSettings());
+              continue;
+            }
+
+            var dotnetRestoreSettings = new DotNetCoreRestoreSettings{
+                Runtime = runtime
+            };
+
+            foreach(var projectName in publishProjectNames)
+            {
+                System.Console.WriteLine($"Restore ./{projectName}/{projectName}.csproj for {runtime}");
+                DotNetCoreRestore($"./{projectName}/{projectName}.csproj",
+                    dotnetRestoreSettings);
+
+                // Copy for runtime
+                CopyFile($"./{projectName}/obj/project.assets.json",  $"./{projectName}/obj/project.assets_{runtime}.json");
+            }
+        }
+    });
+
+// Build for Generic items
 Task("BuildNetCoreGeneric")
   .Does(() =>
   {
       System.Console.WriteLine($"Build . for generic");
-
       var dotnetBuildSettings = new DotNetCoreBuildSettings()
       {
           Configuration = configuration,
-          Verbosity = DotNetCoreVerbosity.Detailed,
-          ArgumentCustomization = args => args.Append("--nologo"),
+          ArgumentCustomization = args => args.Append("--nologo").Append("--no-restore"),
+          Verbosity = DotNetCoreVerbosity.Detailed
       };
-
-      var projects = GetFiles("**/*.csproj");
-
-      // Write to output (build log)
-      Information("Found " + projects.Count + " projects in: .");
-
-      foreach (var project in projects)
-      {
-          Information($"Build Project  {project}");
-          DotNetCoreBuild(project.FullPath, dotnetBuildSettings);
-      }
+      DotNetCoreBuild(".",
+          dotnetBuildSettings);
   });
 
 
@@ -166,7 +181,7 @@ Task("BuildNetCoreGeneric")
         var dotnetBuildSettings = new DotNetCoreBuildSettings()
         {
             Configuration = configuration,
-            ArgumentCustomization = args => args.Append("--nologo"),
+            ArgumentCustomization = args => args.Append("--nologo").Append("--no-restore"),
         };
 
         foreach(var runtime in runtimes)
@@ -209,9 +224,9 @@ Task("TestNetCore")
                     Configuration = configuration,
                     NoBuild = true,
                     ArgumentCustomization = args => args.Append("--no-restore")
+                                             .Append("/p:CollectCoverage=true")
                                              .Append("--no-build")
                                              .Append("--nologo")
-                                             .Append("/p:CollectCoverage=true")
                                              .Append("/p:CoverletOutputFormat=opencover")
                                              .Append("/p:ThresholdType=line")
                                              .Append("/p:hideMigrations=\"true\"")
@@ -478,12 +493,13 @@ Task("Client")
 // A meta-task that runs all the steps to Build and Test the app
 Task("BuildNetCore")
     .IsDependentOn("CleanNetCore")
+    .IsDependentOn("RestoreNetCore")
     .IsDependentOn("BuildNetCoreGeneric");
 
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
 Task("Default")
-    /* .IsDependentOn("Client") */
+    .IsDependentOn("Client")
     .IsDependentOn("SonarBegin")
     .IsDependentOn("BuildNetCore")
     .IsDependentOn("TestNetCore")
