@@ -97,7 +97,7 @@ namespace starskytest.Services
 			
 			// Check how that changedFileIndexItemName works
 			Assert.AreEqual(1,changedFileIndexItemName["/test.jpg"].Count);
-			Assert.AreEqual("Tags",changedFileIndexItemName["/test.jpg"].FirstOrDefault());
+			Assert.AreEqual("tags",changedFileIndexItemName["/test.jpg"].FirstOrDefault());
 			
 			// Check for value
 			Assert.AreEqual("updated Value", collectionsDetailView.FileIndexItem.Tags);

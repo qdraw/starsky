@@ -49,18 +49,18 @@ namespace starskytest.Helpers
                 DateTime = DateTime.Now,
             };
             var comparedNames = new List<string>{
-                nameof(FileIndexItem.Tags),
-                nameof(FileIndexItem.Description),
-                nameof(FileIndexItem.Latitude),
-                nameof(FileIndexItem.Longitude),
-                nameof(FileIndexItem.LocationAltitude),
-                nameof(FileIndexItem.LocationCity),
-                nameof(FileIndexItem.LocationState),
-                nameof(FileIndexItem.LocationCountry),
-                nameof(FileIndexItem.Title),
-                nameof(FileIndexItem.ColorClass),
-                nameof(FileIndexItem.Orientation),
-                nameof(FileIndexItem.DateTime),
+                nameof(FileIndexItem.Tags).ToLowerInvariant(),
+                nameof(FileIndexItem.Description).ToLowerInvariant(),
+                nameof(FileIndexItem.Latitude).ToLowerInvariant(),
+                nameof(FileIndexItem.Longitude).ToLowerInvariant(),
+                nameof(FileIndexItem.LocationAltitude).ToLowerInvariant(),
+                nameof(FileIndexItem.LocationCity).ToLowerInvariant(),
+                nameof(FileIndexItem.LocationState).ToLowerInvariant(),
+                nameof(FileIndexItem.LocationCountry).ToLowerInvariant(),
+                nameof(FileIndexItem.Title).ToLowerInvariant(),
+                nameof(FileIndexItem.ColorClass).ToLowerInvariant(),
+                nameof(FileIndexItem.Orientation).ToLowerInvariant(),
+                nameof(FileIndexItem.DateTime).ToLowerInvariant(),
             };
             
             var inputSubPaths = new List<string>
@@ -70,7 +70,8 @@ namespace starskytest.Helpers
 	        var storage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>());
 
 	        var fakeExifTool = new FakeExifTool(storage,_appSettings);
-            var helperResult = new ExifToolCmdHelper(fakeExifTool, storage,storage ,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
+            var helperResult = new ExifToolCmdHelper(fakeExifTool, storage,storage ,
+	            new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
             
             Assert.AreEqual(true,helperResult.Contains(updateModel.Tags));
             Assert.AreEqual(true,helperResult.Contains(updateModel.Description));
@@ -91,7 +92,7 @@ namespace starskytest.Helpers
                 LocationAltitude = -41,
             };
             var comparedNames = new List<string>{
-                nameof(FileIndexItem.LocationAltitude),
+                nameof(FileIndexItem.LocationAltitude).ToLowerInvariant(),
             };
             
 	        var folderPaths = new List<string>{"/"};

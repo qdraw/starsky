@@ -95,9 +95,9 @@ namespace starsky.foundation.database.Helpers
             }
 
 	        // Last Edited is not needed
-	        if ( differenceList.Any(p => p == nameof(FileIndexItem.LastEdited)) )
+	        if ( differenceList.Any(p => p == nameof(FileIndexItem.LastEdited).ToLowerInvariant()) )
 	        {
-		        differenceList.Remove(nameof(FileIndexItem.LastEdited));
+		        differenceList.Remove(nameof(FileIndexItem.LastEdited).ToLowerInvariant());
 	        }
 	        
             return differenceList;
