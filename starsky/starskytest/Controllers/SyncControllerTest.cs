@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.query.Interfaces;
@@ -21,13 +22,11 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskycore.Interfaces;
 using starskycore.Middleware;
-using starskycore.Models;
 using starskycore.Services;
 using starskycore.ViewModels;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
-using Query = starsky.foundation.query.Services.Query;
 
 namespace starskytest.Controllers
 {

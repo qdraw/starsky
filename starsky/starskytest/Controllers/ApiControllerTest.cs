@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.query.Interfaces;
@@ -21,14 +22,11 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
-using starskycore.Interfaces;
 using starskycore.Middleware;
-using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
-using Query = starsky.foundation.query.Services.Query;
 
 namespace starskytest.Controllers
 {
@@ -58,10 +56,10 @@ namespace starskytest.Controllers
             _context = new ApplicationDbContext(options);
             _query = new Query(_context,memoryCache);
             
-            // Inject Fake Exiftool; dependency injection
+            // Inject Fake ExifTool; dependency injection
             var services = new ServiceCollection();
 
-            // Fake the readmeta output
+            // Fake the readMeta output
             services.AddSingleton<IReadMeta, FakeReadMeta>();    
             
             // Inject Config helper

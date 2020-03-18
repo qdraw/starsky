@@ -34,7 +34,6 @@ namespace starsky.foundation.database.Query
             _scopeFactory = scopeFactory;
         }
 
-
 	    /// <summary>
 		/// Get a list of all files inside an folder
 		/// But this uses a database as source

@@ -136,17 +136,23 @@ Task("ClientTest")
 Task("BuildNetCoreGeneric")
   .Does(() =>
   {
+      System.Console.WriteLine($"Build . for generic");
+
       var dotnetBuildSettings = new DotNetCoreBuildSettings()
       {
           Configuration = configuration,
-          ArgumentCustomization = args => args.Append("--nologo").Append("--no-incremental"),
-          Verbosity = DotNetCoreVerbosity.Detailed
+          ArgumentCustomization = args => args.Append("--nologo"),
       };
 
-      System.Console.WriteLine($"Build . for generic");
+      var projects = GetFiles(projectBasePath + "/**/*.csproj");
+      
+      // Write to output (build log)
+      Information("Found " + projects.Count + " projects in: " + projectBasePath);
 
-      DotNetCoreBuild(".",
-          dotnetBuildSettings);
+      foreach (var project in projects)
+      {
+          DotNetCoreBuild(project.FullPath, dotnetBuildSettings);
+      }
   });
 
 

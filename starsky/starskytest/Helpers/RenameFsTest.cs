@@ -8,17 +8,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
 using starskycore.Helpers;
-using starskycore.Models;
-using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using Query = starsky.foundation.query.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
 namespace starskytest.Helpers

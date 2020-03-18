@@ -6,8 +6,6 @@ namespace starsky.foundation.database.Helpers
 {
     public static class Breadcrumbs
     {
-	    
-	    
 	    /// <summary>
         /// Breadcrumb returns a list of parent folders
         /// it does not contain the current folder

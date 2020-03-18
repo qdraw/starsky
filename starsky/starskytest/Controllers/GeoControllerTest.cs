@@ -11,9 +11,8 @@ using starsky.Controllers;
 using starsky.feature.geolookup.Models;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Data;
-using starskycore.Interfaces;
+using starsky.foundation.database.Query;
 using starskycore.Middleware;
-using starskycore.Models;
 using starskycore.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.query.Interfaces;
@@ -22,7 +21,6 @@ using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
-using Query = starsky.foundation.query.Services.Query;
 
 namespace starskytest.Controllers
 {

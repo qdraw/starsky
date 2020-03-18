@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.query.Services;
+using starsky.foundation.database.Helpers;
 using starskycore.Attributes;
-using starskycore.Services;
 
 namespace starskytest.Helpers
 {

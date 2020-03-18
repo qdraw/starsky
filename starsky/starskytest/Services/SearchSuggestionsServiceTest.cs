@@ -7,11 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
-using starskycore.Helpers;
-using starskycore.Models;
 using starskycore.Services;
-using Query = starsky.foundation.query.Services.Query;
 
 namespace starskytest.Services
 {

@@ -3,8 +3,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.query.Models;
-using starskycore.Models;
 using starskycore.ViewModels;
 
 namespace starskytest.ViewModels
