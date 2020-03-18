@@ -141,6 +141,7 @@ Task("BuildNetCoreGeneric")
       var dotnetBuildSettings = new DotNetCoreBuildSettings()
       {
           Configuration = configuration,
+          Verbosity = DotNetCoreVerbosity.Detailed,
           ArgumentCustomization = args => args.Append("--nologo"),
       };
 
