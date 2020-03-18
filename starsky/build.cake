@@ -166,7 +166,7 @@ Task("BuildNetCoreGeneric")
       {
           Configuration = configuration,
           ArgumentCustomization = args => args.Append("--nologo").Append("--no-restore"),
-          Verbosity = DotNetCoreVerbosity.Detailed
+          /* Verbosity = DotNetCoreVerbosity.Detailed */
       };
       DotNetCoreBuild(".",
           dotnetBuildSettings);
