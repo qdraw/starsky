@@ -103,7 +103,6 @@ namespace starsky.foundation.storage.Storage
 			return folderList;
 		}
 
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
@@ -111,12 +110,12 @@ namespace starsky.foundation.storage.Storage
 			FileStream fileStream;
 			if ( maxRead <= 1 )
 			{
-				fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096,false );
+				fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096,true );
 			}
 			else
 			{
 				fileStream = new FileStream(path, FileMode.Open, FileAccess.Read,
-					FileShare.Read, maxRead, false);
+					FileShare.Read, maxRead, true);
 			}
 			return fileStream;
 		}
@@ -126,7 +125,6 @@ namespace starsky.foundation.storage.Storage
 		/// </summary>
 		/// <param name="path">full file path</param>
 		/// <returns>bool true = exist</returns>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool ExistFile(string path)
 		{
 			var isFolderOrFile = IsFolderOrFile(path);
@@ -145,7 +143,6 @@ namespace starsky.foundation.storage.Storage
 		/// </summary>
 		/// <param name="fullFilePath">fullFilePath</param>
 		/// <returns>is file, folder or deleted</returns>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string fullFilePath)
 		{
 			if (!Directory.Exists(fullFilePath) && File.Exists(fullFilePath))

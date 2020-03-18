@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Interfaces;
@@ -47,7 +48,7 @@ namespace starsky.Controllers
         [IgnoreAntiforgeryToken]
         [AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
         [ResponseCache(Duration = 29030400)] // 4 weeks
-        public IActionResult Thumbnail(
+        public async Task<IActionResult> Thumbnail(
             string f, 
             bool isSingleitem = false, 
             bool json = false)
@@ -70,7 +71,7 @@ namespace starsky.Controllers
             if (_thumbnailStorage.ExistFile(f))
             {
                 // When a file is corrupt show error
-                var stream = _thumbnailStorage.ReadStream(f);
+                var stream = _thumbnailStorage.ReadStream(f,100);
                 var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
                 if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
                 {
