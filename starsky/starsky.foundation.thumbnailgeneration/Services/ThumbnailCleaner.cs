@@ -1,8 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.query.Interfaces;
 using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.thumbnailgeneration.Services

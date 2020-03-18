@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
-namespace starsky.foundation.query.Interfaces
+namespace starsky.foundation.database.Interfaces
 {
     public interface IQuery
     {
