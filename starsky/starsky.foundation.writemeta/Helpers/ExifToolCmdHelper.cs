@@ -181,7 +181,7 @@ namespace starsky.foundation.writemeta.Helpers
 	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
             // -GPSAltitude="+160" -GPSAltitudeRef=above
-            if (comparedNames.Contains(nameof(FileIndexItem.LocationAltitude)))
+            if (comparedNames.Contains(nameof(FileIndexItem.LocationAltitude).ToLowerInvariant() ))
             {
                 // 0 = "Above Sea Level"
                 // 1 = Below Sea Level
@@ -205,7 +205,7 @@ namespace starsky.foundation.writemeta.Helpers
 	        // exiftool reset.jpg -gps:all= -xmp:geotag= -City= -xmp:City= -State= -xmp:State=
 
 	        // CultureInfo.InvariantCulture is used for systems where comma is the default seperator
-            if (comparedNames.Contains( nameof(FileIndexItem.Latitude) ))
+            if (comparedNames.Contains( nameof(FileIndexItem.Latitude).ToLowerInvariant() ))
             {
 	            var latitudeString = updateModel.Latitude.ToString(CultureInfo.InvariantCulture);
 	            command +=
@@ -218,7 +218,7 @@ namespace starsky.foundation.writemeta.Helpers
         
         private string UpdateGpsLongitudeCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains( nameof(FileIndexItem.Longitude)))
+            if (comparedNames.Contains( nameof(FileIndexItem.Longitude).ToLowerInvariant()))
             {
 	            var longitudeString = updateModel.Longitude.ToString(CultureInfo.InvariantCulture);
 	            command +=
@@ -231,7 +231,8 @@ namespace starsky.foundation.writemeta.Helpers
 
         private static string UpdateKeywordsCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains( nameof(FileIndexItem.Tags) ))
+	        var t = nameof(FileIndexItem.Tags);
+            if (comparedNames.Contains( nameof(FileIndexItem.Tags).ToLowerInvariant() ))
             {
 	            command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags
 	                                                          + $" \" -Keywords=\"{updateModel.Tags}\""; // space before
@@ -241,7 +242,7 @@ namespace starsky.foundation.writemeta.Helpers
         
         private static string UpdateLocationCityCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains( nameof(FileIndexItem.LocationCity) ) )
+            if (comparedNames.Contains( nameof(FileIndexItem.LocationCity).ToLowerInvariant() ) )
             {
                 command += " -City=\"" + updateModel.LocationCity 
                                                    + "\" -xmp:City=\"" + updateModel.LocationCity + "\"";
@@ -251,7 +252,7 @@ namespace starsky.foundation.writemeta.Helpers
         
         private static string UpdateLocationStateCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains( nameof(FileIndexItem.LocationState) ))
+            if (comparedNames.Contains( nameof(FileIndexItem.LocationState).ToLowerInvariant() ))
             {
                 command += " -State=\"" + updateModel.LocationState 
                                        + "\" -Province-State=\"" + updateModel.LocationState + "\"";
@@ -262,7 +263,7 @@ namespace starsky.foundation.writemeta.Helpers
         private static string UpdateLocationCountryCommand(
 	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains( nameof(FileIndexItem.LocationCountry) ))
+            if (comparedNames.Contains( nameof(FileIndexItem.LocationCountry).ToLowerInvariant() ))
             {
                 command += " -Country=\"" + updateModel.LocationCountry 
                                         + "\" -Country-PrimaryLocationName=\"" + updateModel.LocationCountry + "\"";
@@ -272,7 +273,7 @@ namespace starsky.foundation.writemeta.Helpers
         
         private static string UpdateDescriptionCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-            if (comparedNames.Contains( nameof(FileIndexItem.Description)    ))
+            if (comparedNames.Contains( nameof(FileIndexItem.Description).ToLowerInvariant()    ))
             {
                 command += " -Caption-Abstract=\"" + updateModel.Description 
                                                    + "\" -Description=\"" + updateModel.Description + "\""
@@ -283,7 +284,7 @@ namespace starsky.foundation.writemeta.Helpers
 	    
 	    private static string UpdateSoftwareCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 	    {
-		    if (comparedNames.Contains( nameof(FileIndexItem.Software) ))
+		    if (comparedNames.Contains( nameof(FileIndexItem.Software).ToLowerInvariant() ))
 		    {
 				// add space before
 			    command +=
@@ -294,7 +295,7 @@ namespace starsky.foundation.writemeta.Helpers
 	    
 	    private static string UpdateTitleCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 	    {
-		    if (comparedNames.Contains(nameof(FileIndexItem.Title)))
+		    if (comparedNames.Contains(nameof(FileIndexItem.Title).ToLowerInvariant()))
 		    {
 			    command += " -ObjectName=\"" + updateModel.Title + "\"" 
 			               + " \"-title\"=" + "\"" + updateModel.Title  + "\""
@@ -306,7 +307,7 @@ namespace starsky.foundation.writemeta.Helpers
 
 	    private static string UpdateColorClassCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 	    {
-			if (comparedNames.Contains(nameof(FileIndexItem.ColorClass)) && updateModel.ColorClass != ColorClassParser.Color.DoNotChange)
+			if (comparedNames.Contains(nameof(FileIndexItem.ColorClass).ToLowerInvariant()) && updateModel.ColorClass != ColorClassParser.Color.DoNotChange)
 			{
 				var intColorClass = (int) updateModel.ColorClass;
 	
@@ -322,7 +323,7 @@ namespace starsky.foundation.writemeta.Helpers
 		    FileIndexItem updateModel)
 	    {
 		    // // exiftool -Orientation#=5
-		    if (comparedNames.Contains( nameof(FileIndexItem.Orientation) ) && updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
+		    if (comparedNames.Contains( nameof(FileIndexItem.Orientation).ToLowerInvariant() ) && updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
 		    {
 			    var intOrientation = (int) updateModel.Orientation;
 			    command += " \"-Orientation#="+ intOrientation +"\" ";
@@ -335,7 +336,7 @@ namespace starsky.foundation.writemeta.Helpers
 		    FileIndexItem updateModel)
 	    {
 
-		    if ( comparedNames.Contains(nameof(FileIndexItem.DateTime)) &&
+		    if ( comparedNames.Contains(nameof(FileIndexItem.DateTime).ToLowerInvariant()) &&
 		         updateModel.DateTime.Year > 2 )
 		    {
 			    var exifToolDatetimeString = updateModel.DateTime.ToString(
@@ -350,7 +351,7 @@ namespace starsky.foundation.writemeta.Helpers
 	    private static string UpdateIsoSpeedCommand(string command, List<string> comparedNames,
 		    FileIndexItem updateModel)
 	    {
-		    if ( comparedNames.Contains(nameof(FileIndexItem.IsoSpeed)) )
+		    if ( comparedNames.Contains(nameof(FileIndexItem.IsoSpeed).ToLowerInvariant()) )
 		    {
 			    command += $" -ISO=\"{updateModel.IsoSpeed}\" \"-xmp:ISO={updateModel.IsoSpeed}\" ";
 		    }
@@ -363,7 +364,7 @@ namespace starsky.foundation.writemeta.Helpers
 	    {
 		    // Warning: Sorry, Aperture is not writable => FNumber is writable
 		    // XMP,http://ns.adobe.com/exif/1.0/,exif:FNumber,9/1
-		    if ( !comparedNames.Contains(nameof(FileIndexItem.Aperture)) ) return command;
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.Aperture).ToLowerInvariant()) ) return command;
 		    
 		    var aperture = updateModel.Aperture.ToString(CultureInfo.InvariantCulture);
 		    command += $" -FNumber=\"{aperture}\" \"-xmp:FNumber={aperture}\" ";
@@ -376,7 +377,7 @@ namespace starsky.foundation.writemeta.Helpers
 	    {
 		    // // -ExposureTime=1/31
 		    // Warning: Sorry, ShutterSpeed is not writable => ExposureTime is writable
-		    if ( !comparedNames.Contains(nameof(FileIndexItem.ShutterSpeed)) ) return command;
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.ShutterSpeed).ToLowerInvariant()) ) return command;
 		    
 		    command += $" -ExposureTime=\"{updateModel.ShutterSpeed}\" \"-xmp:ExposureTime={updateModel.ShutterSpeed}\" ";
 
@@ -388,7 +389,7 @@ namespace starsky.foundation.writemeta.Helpers
 		    FileIndexItem updateModel)
 	    {
 		    // Make and Model are not writable so those never exist in this list
-		    if ( !comparedNames.Contains(nameof(FileIndexItem.MakeModel)) ) return command;
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.MakeModel).ToLowerInvariant()) ) return command;
 		    
 		    var make = updateModel.Make;
 		    var model = updateModel.Model;
@@ -400,7 +401,7 @@ namespace starsky.foundation.writemeta.Helpers
 
 	    private string UpdateFocalLengthCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 	    {
-		    if ( !comparedNames.Contains(nameof(FileIndexItem.FocalLength)) ) return command;
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.FocalLength).ToLowerInvariant()) ) return command;
 
 		    var focalLength = $"{updateModel.FocalLength} mm";
 		    command += $" -FocalLength=\"{focalLength}\" \"-xmp:FocalLength={focalLength}\" ";

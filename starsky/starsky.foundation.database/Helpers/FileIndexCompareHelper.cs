@@ -10,7 +10,7 @@ namespace starsky.foundation.database.Helpers
     public static class FileIndexCompareHelper
     {
         /// <summary>
-        /// Compare a fileindex item and update items if there are changed in the updateObject
+        /// Compare a fileIndex item and update items if there are changed in the updateObject
         /// append => (propertyName == "Tags" add it with comma space or with single space)
         /// </summary>
         /// <param name="sourceIndexItem">the source object</param>
@@ -200,7 +200,7 @@ namespace starsky.foundation.database.Helpers
         {
             if (oldRotationValue == newRotationValue || newRotationValue == FileIndexItem.Rotation.DoNotChange) return;
             sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newRotationValue, null);
-            differenceList.Add(propertyName);
+            differenceList.Add(propertyName.ToLowerInvariant());
         }
 	    
 	    /// <summary>
@@ -216,7 +216,7 @@ namespace starsky.foundation.database.Helpers
 		    // Dont allow to overwrite with default 0 value
 		    if (oldDoubleValue == newDoubleValue || newDoubleValue == 0) return;
 		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newDoubleValue, null);
-		    differenceList.Add(propertyName);
+		    differenceList.Add(propertyName.ToLowerInvariant());
 	    }
 
 	    
@@ -233,7 +233,7 @@ namespace starsky.foundation.database.Helpers
 		    // Dont allow to overwrite with default 0 value
 		    if (oldUshortValue == newUshortValue || newUshortValue == 0) return;
 		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newUshortValue, null);
-		    differenceList.Add(propertyName);
+		    differenceList.Add(propertyName.ToLowerInvariant());
 	    }
 	    
 	    
@@ -250,7 +250,7 @@ namespace starsky.foundation.database.Helpers
 	    {
 		    if (oldImageFormatValue == newImageFormatValue || newImageFormatValue == ExtensionRolesHelper.ImageFormat.unknown) return;
 		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newImageFormatValue, null);
-		    differenceList.Add(propertyName);
+		    differenceList.Add(propertyName.ToLowerInvariant());
 	    }
 	    
 	    
@@ -267,7 +267,7 @@ namespace starsky.foundation.database.Helpers
             // Dont allow to overwrite with default year 0001
             if (oldDateValue == newDateValue || newDateValue.Year < 2) return;
             sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newDateValue, null);
-            differenceList.Add(propertyName);
+            differenceList.Add(propertyName.ToLowerInvariant());
         }
         
 	    /// <summary>
@@ -283,7 +283,7 @@ namespace starsky.foundation.database.Helpers
         {
             if (oldColorValue == newColorValue || newColorValue == ColorClassParser.Color.DoNotChange) return;
             sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newColorValue, null);
-            differenceList.Add(propertyName);
+            differenceList.Add(propertyName.ToLowerInvariant());
         }
         
 	    
@@ -302,7 +302,7 @@ namespace starsky.foundation.database.Helpers
 		    if ( oldListStringValue.Equals(newListStringValue) ) return;
 		    
 		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newListStringValue, null);
-		    differenceList.Add(propertyName);
+		    differenceList.Add(propertyName.ToLowerInvariant());
 	    }
 	    
 	    /// <summary>
@@ -317,7 +317,7 @@ namespace starsky.foundation.database.Helpers
         {
             if (oldBoolValue == newBoolValue) return;
             sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newBoolValue, null);
-            differenceList.Add(propertyName);
+            differenceList.Add(propertyName.ToLowerInvariant());
         }
 
 	    /// <summary>
@@ -355,7 +355,7 @@ namespace starsky.foundation.database.Helpers
                 propertyObject.SetValue(sourceIndexItem,oldStringValue + " " + newStringValue,null);
             }
             
-            differenceList.Add(propertyName);
+            differenceList.Add(propertyName.ToLowerInvariant());
         }
 
     }

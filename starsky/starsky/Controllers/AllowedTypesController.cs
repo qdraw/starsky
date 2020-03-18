@@ -19,6 +19,7 @@ namespace starsky.Controllers
 		/// <response code="401">please login first</response>
 		[HttpGet("/api/allowed-types/mimetype/sync")]
 		[ProducesResponseType(typeof(HashSet<string>),200)]
+		[Produces("application/json")]
 		public IActionResult AllowedTypesMimetypeSync()
 		{
 			var mimeTypes = ExtensionRolesHelper.ExtensionSyncSupportedList.Select(MimeHelper.GetMimeType).ToHashSet();
@@ -34,6 +35,7 @@ namespace starsky.Controllers
 		/// <response code="401">please login first</response>
 		[HttpGet("/api/allowed-types/mimetype/thumb")]
 		[ProducesResponseType(typeof(HashSet<string>),200)]
+		[Produces("application/json")]
 		public IActionResult AllowedTypesMimetypeSyncThumb()
 		{
 			var mimeTypes = ExtensionRolesHelper.ExtensionThumbSupportedList.Select(MimeHelper.GetMimeType).ToHashSet();
@@ -51,6 +53,7 @@ namespace starsky.Controllers
 		[HttpGet("/api/allowed-types/thumb")]
 		[ProducesResponseType(typeof(bool),200)]
 		[ProducesResponseType(typeof(bool),415)]
+		[Produces("application/json")]
 		public IActionResult AllowedTypesThumb(string f)
 		{
 			var result = ExtensionRolesHelper.IsExtensionThumbnailSupported(f);
