@@ -2,7 +2,7 @@ using System;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Helpers;
 
-namespace starskycore.Models
+namespace starsky.foundation.platform.Models
 {
     //"ContentType":  "html",
     //"SourceMaxWidth":  null,

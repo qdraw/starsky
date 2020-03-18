@@ -4,7 +4,6 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
-using starskycore.Models;
 
 namespace starskywebhtmlcli.Services
 {

@@ -9,7 +9,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.Models;
 using starsky.foundation.storage.Helpers;
-using starskycore.Models;
 
 namespace starsky.foundation.readmeta.Services
 {

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
-using starskycore.Models;
 
 namespace starskywebhtmlcli.ViewModels
 {

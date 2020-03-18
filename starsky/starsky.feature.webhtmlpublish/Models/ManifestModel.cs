@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using System.Reflection;
 using starsky.foundation.platform.Models;
-using starskycore.Models;
 
 namespace starsky.feature.webhtmlpublish.Models
 {
