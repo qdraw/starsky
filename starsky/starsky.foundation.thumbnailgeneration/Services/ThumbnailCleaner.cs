@@ -22,6 +22,8 @@ namespace starsky.foundation.thumbnailgeneration.Services
 	
 		public void CleanAllUnusedFiles()
 		{
+			if (! _thumbnailStorage.ExistFolder("/") ) throw new System.IO.DirectoryNotFoundException("Thumbnail folder not found");
+
 			var allThumbnailFiles = GetAllThumbnailFiles();
 			if(_appSettings.Verbose) Console.WriteLine(allThumbnailFiles.Length);
 			

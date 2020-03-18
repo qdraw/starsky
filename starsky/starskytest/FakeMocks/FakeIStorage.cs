@@ -115,6 +115,7 @@ namespace starskytest.FakeMocks
 
 		public bool FileDelete(string path)
 		{
+			path = PathHelper.PrefixDbSlash(path);
 			if ( !ExistFile(path) ) return false;
 			var index = _outputSubPathFiles.IndexOf(path);
 			_outputSubPathFiles[index] = null;

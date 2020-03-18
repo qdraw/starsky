@@ -168,7 +168,7 @@ namespace starskytest.Controllers
 
 			Assert.AreEqual(zipHash.Contains("SR"),true);
 
-			await Task.Delay(100);
+			await Task.Delay(150);
 
 			// Get from real fs in to fake memory
 			var sourceFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".zip";
