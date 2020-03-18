@@ -20,11 +20,11 @@
 - [x] 	(feature) _Front-end_ icons for xmp and raw (tiff-based) in archive mode
 - [x] 	(feature) _Back-end_ support for Canon's way of reading ISO-Speed
 - [x]	(feature) _Back-end_ abstractions to get the filesystem data
-- [ ]	(feature) _Back-end_ Injection framework implemented
-- [ ] 	(rename) _Back-end_ Feature renaming and docs updates
-- [ ] 	(feature) _Back-end support for RAW that is not Sony for example Nikon .NEF
-- [ ]   (feature) tiff, arw:sony, dng:adobe, nef:nikon, raf:fuji, cr2:canon, crw:canon, orf:olympus, rw2:panasonic, pef:pentax, x3f:sigma
-- [ ]   (bugfix) _Back-end_ allow underscore import/upload
+- [x]	(feature) _Back-end_ Injection framework implemented
+- [x] 	(rename) _Back-end_ Feature renaming and docs updates
+- [x] 	(feature) _Back-end support for RAW that is not Sony for example Nikon .NEF
+- [x]   (feature) tiff, arw:sony, dng:adobe, nef:nikon, raf:fuji, cr2:canon, orf:olympus, rw2:panasonic, pef:pentax,
+- [x]   (bugfix) _Back-end_ allow underscore import/upload
 - [ ]   (bugfix) _Front-end_ Download selection thumbnail right extension suggestion
 
 # version 0.1.17 - 2020-03-07
