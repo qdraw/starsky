@@ -26,9 +26,9 @@ namespace starskycore.Helpers
         public static string GetMimeType(string fileExtWithoutDot)
         {
             if (fileExtWithoutDot.Length > 0 && 
-                MimeTypesDictionary.ContainsKey(fileExtWithoutDot))
+                MimeTypesDictionary.ContainsKey(fileExtWithoutDot.ToLowerInvariant()))
             {
-                return MimeTypesDictionary[fileExtWithoutDot];
+                return MimeTypesDictionary[fileExtWithoutDot.ToLowerInvariant()];
             }
             return "unknown/unknown";
         }

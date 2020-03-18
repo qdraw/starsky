@@ -1,4 +1,5 @@
 using System.IO;
+using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -85,6 +86,7 @@ namespace starsky.Controllers
 
                 // thumbs are always in jpeg
                 stream = _thumbnailStorage.ReadStream(f);
+                Response.Headers.Add("x-filename", FilenamesHelper.GetFileName(f + ".jpg"));
                 return File(stream, "image/jpeg", f + ".jpg");
             }
             
@@ -119,7 +121,8 @@ namespace starsky.Controllers
 		        var fs1 = _iStorage.ReadStream(sourcePath);
 
 		        var fileExt = FilenamesHelper.GetFileExtensionWithoutDot(sourcePath);
-		        return File(fs1, MimeHelper.GetMimeType(fileExt), FilenamesHelper.GetFileName(sourcePath));
+		        Response.Headers.Add("x-filename", FilenamesHelper.GetFileName(sourcePath));
+		        return File(fs1, MimeHelper.GetMimeType(fileExt));
 	        }
 	        Response.StatusCode = 409; // A conflict, that the thumb is not generated yet
 	        return Json("Thumbnail is not supported; for example you try to view a raw file");
