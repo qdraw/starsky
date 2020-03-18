@@ -18,10 +18,11 @@ namespace starsky.foundation.platform.Helpers
 
 		/// <summary>
 		/// Tiff based, tiff, including raws
-		/// tiff, arw:sony, dng:adobe, nef:nikon, raf:fuji, cr2:canon, crw:canon, orf:olympus, rw2:panasonic, pef:pentax, x3f:sigma
+		/// tiff, arw:sony, dng:adobe, nef:nikon, raf:fuji, cr2:canon,  orf:olympus, rw2:panasonic, pef:pentax,
+		/// Not supported due Image Processing Error x3f:sigma, crw:canon
 		/// </summary>
 		private static readonly List<string> Extensiontiff = new List<string> {"tiff", "arw", "dng", "nef", 
-			"raf", "cr2", "crw", "orf", "rw2", "pef", "x3f"};
+			"raf", "cr2", "orf", "rw2", "pef"};
 
 		/// <summary>
 		/// Bitmaps
@@ -361,7 +362,11 @@ namespace starsky.foundation.platform.Helpers
 			var png = new byte[] {137, 80, 78, 71}; // PNG
 			var tiff = new byte[] {73, 73, 42}; // TIFF
 			var tiff2 = new byte[] {77, 77, 42}; // TIFF
-			var tiff3 = new byte[] {77, 77, 0}; // DNG? //0
+			var dng = new byte[] {77, 77, 0}; // DNG? //0
+			var olympusRaw  = new byte[] {73, 73, 82};
+			var fujiFilmRaw = new byte[] {70, 85, 74};
+			var panasonicRaw = new byte[] {73, 73, 85, 0};
+
 			var jpeg = new byte[] {255, 216, 255, 224}; // jpeg
 			var jpeg2 = new byte[] {255, 216, 255, 225}; // jpeg canon
 			var jpeg3 = new byte[] {255, 216, 255, 219}; // other jpeg
@@ -387,9 +392,18 @@ namespace starsky.foundation.platform.Helpers
 			if ( tiff2.SequenceEqual(bytes.Take(tiff2.Length)) )
 				return ImageFormat.tiff;
 
-			if ( tiff3.SequenceEqual(bytes.Take(tiff3.Length)) )
+			if ( dng.SequenceEqual(bytes.Take(dng.Length)) )
 				return ImageFormat.tiff;
-
+			
+			if ( olympusRaw.SequenceEqual(bytes.Take(olympusRaw.Length)) )
+				return ImageFormat.tiff;
+			
+			if ( fujiFilmRaw.SequenceEqual(bytes.Take(fujiFilmRaw.Length)) )
+				return ImageFormat.tiff;
+				
+			if ( panasonicRaw.SequenceEqual(bytes.Take(panasonicRaw.Length)) )
+				return ImageFormat.tiff;
+			
 			if ( jpeg.SequenceEqual(bytes.Take(jpeg.Length)) )
 				return ImageFormat.jpg;
 
