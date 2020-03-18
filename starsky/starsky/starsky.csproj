@@ -45,6 +45,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj" />
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
   </ItemGroup>
   <ItemGroup>
