@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
-using starskycore.Models;
 
 namespace starsky.Controllers
 {

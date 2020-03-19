@@ -17,7 +17,7 @@ namespace starskytest.Services
 	[TestClass]
 	public class ExifCopyTest
 	{
-		private AppSettings _appSettings;
+		private readonly AppSettings _appSettings;
 
 		public ExifCopyTest()
 		{

@@ -27,7 +27,6 @@ namespace starsky.Controllers
 	    /// </summary>
 	    /// <param name="f">subPath</param>
 	    /// <param name="colorClass">filter on colorClass (use int)</param>
-	    /// <param name="json">to not show as webpage</param>
 	    /// <param name="collections">to combine files with the same name before the extension</param>
 	    /// <param name="hidedelete">ignore deleted files</param>
 	    /// <returns></returns>

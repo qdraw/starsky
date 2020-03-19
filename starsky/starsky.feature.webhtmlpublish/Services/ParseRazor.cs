@@ -1,13 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using RazorLight;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starskycore.Helpers;
+using starskywebhtmlcli.Services;
 
-namespace starskywebhtmlcli.Services
+namespace starsky.feature.webhtmlpublish.Services
 {
     public class ParseRazor
     {
@@ -18,8 +17,8 @@ namespace starskywebhtmlcli.Services
         {
 	        _hostFileSystemStorage = fileSystemStorage;
             _engine = new RazorLightEngineBuilder()
-                .UseEmbeddedResourcesProject(typeof(starsky.feature.webhtmlpublish.Helpers.PublishManifest))
-				.UseEmbeddedResourcesProject(typeof(ViewModels.WebHtmlViewModel))
+                .UseEmbeddedResourcesProject(typeof(Helpers.PublishManifest))
+				.UseEmbeddedResourcesProject(typeof(starskywebhtmlcli.ViewModels.WebHtmlViewModel))
 				.UseEmbeddedResourcesProject(typeof(AppSettings))
 				.UseEmbeddedResourcesProject(typeof(FileIndexItem))
                 .UseEmbeddedResourcesProject(typeof(System.Linq.Enumerable))

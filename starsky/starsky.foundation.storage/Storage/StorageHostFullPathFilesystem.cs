@@ -38,7 +38,6 @@ namespace starsky.foundation.storage.Storage
 			return true;
 		}
 
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public IEnumerable<string> GetAllFilesInDirectory(string fullFilePath)
 		{
 			var allFiles = new string[]{};
@@ -74,11 +73,10 @@ namespace starsky.foundation.storage.Storage
 			return imageFilesList;
 		}
 
-		[Obsolete("do not include direct, only using ISelectorStorage")]
-		public IEnumerable<string> GetDirectoryRecursive(string fullFilePath)
+		public IEnumerable<string> GetDirectoryRecursive(string path)
 		{
 			var folders = new Queue<string>();
-			folders.Enqueue(fullFilePath);
+			folders.Enqueue(path);
 			var folderList = new List<string>();
 			while (folders.Count != 0) {
 				var currentFolder = folders.Dequeue();
@@ -131,7 +129,6 @@ namespace starsky.foundation.storage.Storage
 			return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File;
 		}
 
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool ExistFolder(string path)
 		{
 			var isFolderOrFile = IsFolderOrFile(path);
@@ -141,17 +138,17 @@ namespace starsky.foundation.storage.Storage
 		/// <summary>
 		/// is the subpath a folder or file, or deleted (FolderOrFileModel.FolderOrFileTypeList.Deleted)
 		/// </summary>
-		/// <param name="fullFilePath">fullFilePath</param>
+		/// <param name="path">fullFilePath</param>
 		/// <returns>is file, folder or deleted</returns>
-		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string fullFilePath)
+		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
 		{
-			if (!Directory.Exists(fullFilePath) && File.Exists(fullFilePath))
+			if (!Directory.Exists(path) && File.Exists(path))
 			{
 				// file
 				return FolderOrFileModel.FolderOrFileTypeList.File;
 			}
 
-			if (!File.Exists(fullFilePath) && Directory.Exists(fullFilePath))
+			if (!File.Exists(path) && Directory.Exists(path))
 			{
 				// Directory
 				return FolderOrFileModel.FolderOrFileTypeList.Folder;
@@ -160,26 +157,22 @@ namespace starsky.foundation.storage.Storage
 			return FolderOrFileModel.FolderOrFileTypeList.Deleted;
 		}
 		
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public void FolderMove(string inputFileFullPath, string toFileFullPath)
 		{
 			Directory.Move(inputFileFullPath,toFileFullPath);
 		}
 
-		[Obsolete("do not include direct, only using ISelectorStorage")]
-		
+	
 		public void FileMove(string inputFileFullPath, string toFileFullPath)
 		{
 			File.Move(inputFileFullPath,toFileFullPath);
 		}
 		
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public void FileCopy(string fromPath, string toPath)
 		{
 			File.Copy(fromPath,toPath);
 		}
 
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool FileDelete(string path)
 		{
 			if ( !File.Exists(path) ) return false;
@@ -187,7 +180,6 @@ namespace starsky.foundation.storage.Storage
 			return true;
 		}
 
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool WriteStream(Stream stream, string path)
 		{
 			if ( !stream.CanRead ) return false;
@@ -222,10 +214,9 @@ namespace starsky.foundation.storage.Storage
 		/// <summary>
 		/// Gets the files recrusive. (only ExtensionSyncSupportedList types)
 		/// </summary>
-		/// <param name="fullFilePath">The full file path.</param>
+		/// <param name="path">The full file path.</param>
 		/// <returns></returns>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
-		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string fullFilePath)
+		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)
         {
             List<string> findlist = new List<string>();
 
@@ -233,7 +224,7 @@ namespace starsky.foundation.storage.Storage
              * - Insert all the files in the current directory with the recursion
              * - Insert all subdirectories in the list and rebegin the recursion from there until the end
              */
-            RecurseFind( fullFilePath, findlist );
+            RecurseFind( path, findlist );
 
             // Add filter for file types
             var imageFilesList = new List<string>();

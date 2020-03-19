@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
-using starskycore.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using starsky.foundation.injection;
@@ -17,7 +16,7 @@ using starsky.foundation.storage.Storage;
 namespace starsky.Helpers
 {
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class SwaggerExportHelper : BackgroundService, IHostedService
+	public class SwaggerExportHelper : BackgroundService
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		
@@ -56,7 +55,7 @@ namespace starsky.Helpers
 			if ( !appSettings.AddSwagger || !appSettings.AddSwaggerExport ) return;
 			
 			var swaggerJsonText = GenerateSwagger(swaggerProvider, appSettings.Name);
-			if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ArgumentNullException("swaggerJsonText = null");
+			if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ArgumentException("swaggerJsonText = null", "swaggerJsonText");
 
 			var swaggerJsonFullPath =
 				Path.Join(appSettings.TempFolder, appSettings.Name.ToLowerInvariant() + ".json");

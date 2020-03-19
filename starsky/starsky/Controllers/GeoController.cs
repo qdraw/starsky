@@ -31,7 +31,6 @@ namespace starsky.Controllers
 		private readonly IMemoryCache _cache;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _iStorage;
-		private readonly ISelectorStorage _selectorStorage;
 
 		public GeoController(IExifTool exifTool, 
 			AppSettings appSettings, IBackgroundTaskQueue queue,
@@ -44,7 +43,6 @@ namespace starsky.Controllers
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_readMeta = new ReadMeta(_iStorage);
-			_selectorStorage = selectorStorage;
 			_cache = memoryCache;
 		}
 
@@ -115,7 +113,6 @@ namespace starsky.Controllers
 					new GeoLocationWrite(_appSettings, _exifTool, _iStorage, _thumbnailStorage)
 						.LoopFolder(toMetaFilesUpdate, false);
 					
-					if ( _appSettings.Verbose ) Console.Write("(gps added)");
 				}
 
 				fileIndexList =

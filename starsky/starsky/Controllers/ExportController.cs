@@ -16,8 +16,6 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
 using starskycore.Services;
 
 namespace starsky.Controllers

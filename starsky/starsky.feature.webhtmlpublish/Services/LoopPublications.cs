@@ -12,10 +12,10 @@ using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
-using starskycore.Helpers;
+using starskywebhtmlcli.Services;
 using starskywebhtmlcli.ViewModels;
 
-namespace starskywebhtmlcli.Services
+namespace starsky.feature.webhtmlpublish.Services
 {
     public class LoopPublications
     {

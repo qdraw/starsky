@@ -1,5 +1,3 @@
-using System.IO;
-using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -9,9 +7,6 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
-using starskycore.Services;
 
 namespace starsky.Controllers
 {

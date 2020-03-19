@@ -24,9 +24,7 @@ using starsky.foundation.platform.Models;
 using starsky.Health;
 using starsky.Helpers;
 using starskycore.Helpers;
-using starskycore.Interfaces;
 using starskycore.Middleware;
-using starskycore.Services;
 
 namespace starsky
 {
@@ -191,14 +189,6 @@ namespace starsky
 			        EnableDependencyTrackingTelemetryModule = true
 		        });
 	        }
-
-	        // services.AddScoped<ApplicationInsightsJsHelper>();
-	        // For the import service
-	        // services.AddScoped<IHttpProvider,HttpProvider>();
-	        // services.AddScoped<HttpClientHelper>();
-	        // services.AddSingleton<System.Net.Http.HttpClient>();
-        
-	        // services.AddHostedService<SearchSuggestionsInflateHostedService>();
         }
         
         /// <summary>

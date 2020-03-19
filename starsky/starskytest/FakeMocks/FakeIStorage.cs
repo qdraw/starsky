@@ -60,14 +60,14 @@ namespace starskytest.FakeMocks
 
 		}
 		
-		public bool ExistFile(string subPath)
+		public bool ExistFile(string path)
 		{
-			return _outputSubPathFiles.Contains(PathHelper.PrefixDbSlash(subPath));
+			return _outputSubPathFiles.Contains(PathHelper.PrefixDbSlash(path));
 		}
 
-		public bool ExistFolder(string subPath)
+		public bool ExistFolder(string path)
 		{
-			return _outputSubPathFolders.Contains(PathHelper.PrefixDbSlash(subPath));
+			return _outputSubPathFolders.Contains(PathHelper.PrefixDbSlash(path));
 		}
 
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath = "")

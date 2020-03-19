@@ -231,7 +231,6 @@ namespace starsky.foundation.writemeta.Helpers
 
         private static string UpdateKeywordsCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
-	        var t = nameof(FileIndexItem.Tags);
             if (comparedNames.Contains( nameof(FileIndexItem.Tags).ToLowerInvariant() ))
             {
 	            command += " -sep \", \" \"-xmp:subject\"=\"" + updateModel.Tags

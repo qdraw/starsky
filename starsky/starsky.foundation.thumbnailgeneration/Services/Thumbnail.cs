@@ -12,7 +12,6 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
-using starskycore.Helpers;
 
 namespace starsky.foundation.thumbnailgeneration.Services
 {

@@ -11,7 +11,7 @@ namespace starsky.foundation.storage.Storage
 	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class StorageThumbnailFilesystem : IStorage
 	{
-		private AppSettings _appSettings;
+		private readonly AppSettings _appSettings;
 
 		public StorageThumbnailFilesystem(AppSettings appSettings)
 		{

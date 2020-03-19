@@ -39,13 +39,6 @@ namespace starsky.foundation.database.Query
                         querySubFolderList.Add(duplicateItems[i]);
                     }
                 }
-
-                if (querySubFolderList.Any(p => p.FileCollectionName == stackItemByName.FileCollectionName))
-                {
-                    // need to add docs
-					if(_appSettings.Verbose) Console.WriteLine(">> Error code 4567890-098765");
-                }
-
             }
 
             // Then add the items that are non duplicate back to the list

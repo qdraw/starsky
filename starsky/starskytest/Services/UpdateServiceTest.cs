@@ -23,11 +23,11 @@ namespace starskytest.Services
 	public class UpdateServiceTest
 	{
 		private readonly IMemoryCache _memoryCache;
-		private IQuery _query;
-		private AppSettings _appSettings;
-		private FakeExifTool _exifTool;
-		private ReadMeta _readMeta;
-		private IStorage _iStorageFake;
+		private readonly IQuery _query;
+		private readonly AppSettings _appSettings;
+		private readonly FakeExifTool _exifTool;
+		private readonly ReadMeta _readMeta;
+		private readonly IStorage _iStorageFake;
 		private readonly Query _queryWithoutCache;
 		private string _exampleHash;
 
