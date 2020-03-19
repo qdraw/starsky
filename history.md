@@ -25,7 +25,7 @@
 - [x] 	(feature) _Back-end support for RAW that is not Sony for example Nikon .NEF
 - [x]   (feature) tiff, arw:sony, dng:adobe, nef:nikon, raf:fuji, cr2:canon, orf:olympus, rw2:panasonic, pef:pentax,
 - [x]   (bugfix) _Back-end_ allow underscore import/upload
-- [ ]   (bugfix) _Front-end_ Download selection thumbnail right extension suggestion
+- [x]   (bugfix) _Front-end_ Download selection thumbnail right extension suggestion
 
 # version 0.1.17 - 2020-03-07
 - [x]  (feature) _Front-end_ DateTime editing in detailView
