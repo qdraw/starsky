@@ -105,6 +105,7 @@ namespace starsky.Controllers
 	    /// <summary>
 	    /// Upload thumbnail to ThumbnailTempFolder
 	    /// Make sure that the filename is correct, a base32 hash of length 26;
+	    /// Overwrite if the Id is the same
 	    /// </summary>
 	    /// <returns>json of thumbnail urls</returns>
 	    [HttpPost("/import/thumbnail")]
@@ -116,35 +117,39 @@ namespace starsky.Controllers
 	    {
 		    var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
 
-		    var thumbnailPaths = new List<string>();
-		    for ( int i = 0; i < tempImportPaths.Count; i++ )
+		    var thumbnailNames = new List<string>();
+		    foreach ( var t in tempImportPaths )
 		    {
-			    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(tempImportPaths[i]);
+			    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(t);
 			    
-			    var thumbToUpperCase = Path.Combine(_appSettings.ThumbnailTempFolder, fileNameWithoutExtension.ToUpperInvariant() + ".jpg");
-			    
-			    if ( fileNameWithoutExtension.Length != 26 || _thumbnailStorage.ExistFile(fileNameWithoutExtension.ToUpperInvariant() ))
+			    var thumbToUpperCase = fileNameWithoutExtension.ToUpperInvariant();
+
+			    if ( fileNameWithoutExtension.Length != 26 )
 			    {
-				    _thumbnailStorage.FileDelete(fileNameWithoutExtension.ToUpperInvariant());
-				    tempImportPaths.Remove(fileNameWithoutExtension.ToUpperInvariant());
 				    continue;
 			    }
-			    thumbnailPaths.Add(thumbToUpperCase);
+			    
+			    if (_thumbnailStorage.ExistFile(thumbToUpperCase))
+			    {
+				    _thumbnailStorage.FileDelete(thumbToUpperCase);
+			    }
+			    
+			    thumbnailNames.Add(thumbToUpperCase);
 		    }
 
 		    // Status if there is nothing uploaded
-		    if ( !thumbnailPaths.Any() )
+		    if ( !thumbnailNames.Any() )
 		    {
 			    Response.StatusCode = 206;
 		    }
 
-		    for ( int i = 0; i < tempImportPaths.Count; i++ )
+		    for ( var i = 0; i < tempImportPaths.Count; i++ )
 		    {
-			    // todo: change to abstraction
-			    System.IO.File.Move(tempImportPaths[i],thumbnailPaths[i]);
+			    await _thumbnailStorage.WriteStreamAsync(
+				    _hostFileSystemStorage.ReadStream(tempImportPaths[i]), thumbnailNames[i]);
 		    }
 
-		    return Json(thumbnailPaths);
+		    return Json(thumbnailNames);
 	    }
 
 
