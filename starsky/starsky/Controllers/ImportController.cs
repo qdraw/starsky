@@ -52,7 +52,7 @@ namespace starsky.Controllers
 		/// <response code="200">done</response>
 		/// <response code="206">file already imported</response>
 		/// <response code="415">Wrong input (e.g. wrong extenstion type)</response>
-		[HttpPost("/import")]
+		[HttpPost("/api/import")]
         [DisableFormValueModelBinding]
 		[Produces("application/json")]
 		[RequestFormLimits(MultipartBodyLengthLimit = 320_000_000)]
@@ -108,7 +108,7 @@ namespace starsky.Controllers
 	    /// Overwrite if the Id is the same
 	    /// </summary>
 	    /// <returns>json of thumbnail urls</returns>
-	    [HttpPost("/import/thumbnail")]
+	    [HttpPost("/api/import/thumbnail")]
 	    [DisableFormValueModelBinding]
 	    [Produces("application/json")]
 	    [RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
@@ -194,7 +194,7 @@ namespace starsky.Controllers
 	    /// </summary>
 	    /// <returns>list of files</returns>
 	    /// <response code="200">done</response>
-	    [HttpGet("/import/history")]
+	    [HttpGet("/api/import/history")]
 	    [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
 	    [Produces("application/json")]
 	    public IActionResult History()
