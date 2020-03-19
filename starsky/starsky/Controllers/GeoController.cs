@@ -50,7 +50,7 @@ namespace starsky.Controllers
 
 		
 		/// <summary>
-		/// Get Geo sync status (WIP)
+		/// Get Geo sync status
 		/// </summary>
 		/// <param name="f">sub path folders</param>
 		/// <returns>status of geo sync</returns>
@@ -69,7 +69,7 @@ namespace starsky.Controllers
 		
 		
 		/// <summary>
-		/// WIP Alpha API -- Reverse lookup for Geo Information and/or add Geo location based on a GPX file within the same directory
+		/// Reverse lookup for Geo Information and/or add Geo location based on a GPX file within the same directory
 		/// </summary>
 		/// <param name="f">subPath only folders</param>
 		/// <param name="index">-i in cli</param>
