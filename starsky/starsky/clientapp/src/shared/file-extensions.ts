@@ -68,5 +68,17 @@ export class FileExtensions {
     return fileNameMatchArray[0]
   }
 
+  /**
+   * extract fileName Without Extension from string
+   * @param filePath the filepath
+   */
+  public GetFileNameWithoutExtension(filePath: string) {
+    var fileName = this.GetFileName(filePath);
+    var replaceExtensionRegex = /\\.[a-zA-Z0-9]{1,4}$/
+    var fileNameWithoutExtensionMatchArray = fileName.match(replaceExtensionRegex);
+    if (!fileNameWithoutExtensionMatchArray) return "/";
+    return fileNameWithoutExtensionMatchArray[0]
+  }
+
 }
 
