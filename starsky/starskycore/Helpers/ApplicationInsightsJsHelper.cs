@@ -1,8 +1,10 @@
 using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.AspNetCore.Http;
+using starsky.foundation.injection;
 
 namespace starskycore.Helpers
 {
+	[Service(InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ApplicationInsightsJsHelper
 	{
 		private readonly IHttpContextAccessor _httpContext;

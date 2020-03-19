@@ -19,7 +19,7 @@ namespace starsky.Helpers
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class SwaggerExportHelper : BackgroundService, IHostedService
 	{
-		public IServiceScopeFactory _serviceScopeFactory;
+		private readonly IServiceScopeFactory _serviceScopeFactory;
 		
 		public SwaggerExportHelper(IServiceScopeFactory serviceScopeFactory)
 		{

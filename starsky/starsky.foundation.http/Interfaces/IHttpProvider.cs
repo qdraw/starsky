@@ -1,7 +1,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace starskycore.Interfaces
+namespace starsky.foundation.http.Interfaces
 {
 	public interface IHttpProvider
 	{

@@ -203,7 +203,7 @@ namespace starsky.foundation.storage.Storage
 		}
 		
 		/// <summary>
-		/// Write async
+		/// Write async and disposed after
 		/// </summary>
 		/// <param name="stream">fileStream</param>
 		/// <param name="path">filePath</param>
@@ -213,7 +213,7 @@ namespace starsky.foundation.storage.Storage
 			if ( !stream.CanRead ) return false;
 			using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
 			{
-				await stream.CopyToAsync(fileStream); // changed
+				await stream.CopyToAsync(fileStream);
 			}
 			stream.Dispose();
 			return true;

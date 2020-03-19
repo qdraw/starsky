@@ -1,15 +1,15 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.database.Data;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
-using starskycore.Models;
 
 namespace starskycore.Services
 {
+	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class SearchSuggestionsInflateHostedService : IHostedService
 	{
 		private readonly AppSettings _appSettings;

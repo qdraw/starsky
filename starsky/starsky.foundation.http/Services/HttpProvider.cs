@@ -1,9 +1,11 @@
 using System.Net.Http;
 using System.Threading.Tasks;
-using starskycore.Interfaces;
+using starsky.foundation.http.Interfaces;
+using starsky.foundation.injection;
 
-namespace starskycore.Helpers
+namespace starsky.foundation.http.Services
 {
+	[Service(typeof(IHttpProvider), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class HttpProvider : IHttpProvider
 	{
 		/// <summary>
@@ -29,6 +31,5 @@ namespace starskycore.Helpers
 		{
 			return _httpClient.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
 		}
-
 	}
 }

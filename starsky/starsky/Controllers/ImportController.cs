@@ -6,16 +6,15 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
 using starsky.foundation.database.Models;
+using starsky.foundation.http.Interfaces;
+using starsky.foundation.http.Streaming;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starsky.Helpers;
-using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
@@ -28,14 +27,14 @@ namespace starsky.Controllers
         private readonly IImport _import;
         private readonly AppSettings _appSettings;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
-	    private readonly HttpClientHelper _httpClientHelper;
+	    private readonly IHttpClientHelper _httpClientHelper;
 	    private readonly ISelectorStorage _selectorStorage;
 	    private readonly IStorage _hostFileSystemStorage;
 	    private readonly IStorage _thumbnailStorage;
 
 	    public ImportController(IImport import, AppSettings appSettings,
 		    IBackgroundTaskQueue queue, 
-            HttpClientHelper httpClientHelper, ISelectorStorage selectorStorage)
+            IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage)
         {
             _appSettings = appSettings;
             _import = import;

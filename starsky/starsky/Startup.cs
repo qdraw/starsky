@@ -175,15 +175,13 @@ namespace starsky
 	        services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews().AddNewtonsoftJson();
 #endif
 	        
-			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an Nginx reverse proxy
+			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
 			services.Configure<ForwardedHeadersOptions>(options =>
 			{
 				options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 			});
 	        
-	        // Detect ip in code
-	        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-	        
+        
 	        // Application Insights
 	        if ( !string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) )
 	        {
@@ -193,13 +191,14 @@ namespace starsky
 			        EnableDependencyTrackingTelemetryModule = true
 		        });
 	        }
-	        services.AddScoped<ApplicationInsightsJsHelper>();
 
+	        // services.AddScoped<ApplicationInsightsJsHelper>();
 	        // For the import service
-	        services.AddSingleton<IHttpProvider,HttpProvider>();
-	        services.AddSingleton<HttpClientHelper>();
-	        services.AddSingleton<System.Net.Http.HttpClient>();
-	        services.AddHostedService<SearchSuggestionsInflateHostedService>();
+	        // services.AddScoped<IHttpProvider,HttpProvider>();
+	        // services.AddScoped<HttpClientHelper>();
+	        // services.AddSingleton<System.Net.Http.HttpClient>();
+        
+	        // services.AddHostedService<SearchSuggestionsInflateHostedService>();
         }
         
         /// <summary>

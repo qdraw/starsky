@@ -1,6 +1,7 @@
 using System.IO;
 using Microsoft.Extensions.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.http.Streaming;
 using starsky.Helpers;
 
 namespace starskytest.Helpers
