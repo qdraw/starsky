@@ -8,9 +8,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starskycore.Helpers;
 using starskycore.Interfaces;
-using starskycore.Models;
 
 namespace starskycore.Services
 {

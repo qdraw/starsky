@@ -13,7 +13,6 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
-using starskycore.Models;
 using starskycore.ViewModels;
 
 namespace starskycore.Services

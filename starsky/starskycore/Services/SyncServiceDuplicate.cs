@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using starsky.foundation.database.Models;
-using starskycore.Models;
 
 namespace starskycore.Services
 {

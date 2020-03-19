@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
-using starskycore.Interfaces;
 
 namespace starskycore.Services
 {

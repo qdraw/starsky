@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using System.Linq.Expressions;
 using starsky.foundation.database.Models;
-using starskycore.Models;
 using starskycore.ViewModels;
 
 namespace starskycore.Services
@@ -48,7 +47,7 @@ namespace starskycore.Services
 					case WideSearchDateTimeGetType.AddToDatabase:
 						return (p => p.AddToDatabase >= beforeDateTime && p.AddToDatabase <= afterDateTime);
 					default:
-						throw new ArgumentNullException("enum incomplete");
+						throw new ArgumentException("enum incomplete", nameof(type));
 				}
 			}
 			
