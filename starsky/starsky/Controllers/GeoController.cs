@@ -110,7 +110,7 @@ namespace starsky.Controllers
 						new GeoIndexGpx(_appSettings, _iStorage, _cache)
 							.LoopFolder(fileIndexList);
 					
-					Console.Write("¬");
+					if ( _appSettings.Verbose ) Console.Write("¬");
 					
 					new GeoLocationWrite(_appSettings, _exifTool, _iStorage, _thumbnailStorage)
 						.LoopFolder(toMetaFilesUpdate, false);
