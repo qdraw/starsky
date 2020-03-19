@@ -101,6 +101,13 @@ namespace starskytest.Helpers
 		}
 		
 		[TestMethod]
+		public void FilenamesHelper_GetFileExtensionWithoutDot_UpperCase_Mp4()
+		{
+			var result = FilenamesHelper.GetFileExtensionWithoutDot("/test.MP4");
+			Assert.AreEqual("mp4", result);
+		}
+		
+		[TestMethod]
 		public void FilenamesHelper_GetFileExtensionWithoutDot_FilePath()
 		{
 			var result = FilenamesHelper.GetFileExtensionWithoutDot("/folder/test.mp4");

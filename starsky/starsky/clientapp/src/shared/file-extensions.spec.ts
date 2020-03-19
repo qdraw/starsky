@@ -90,4 +90,59 @@ describe("keyboard", () => {
       expect(result).toBe("/")
     });
   });
+
+  describe("GetFileExtensionWithoutDot", () => {
+    it("get file ext without extension No Extension", () => {
+      var result = fileExt.GetFileExtensionWithoutDot("/test_image");
+      expect(result).toBe("")
+    });
+
+    it("get file ext without extension com file", () => {
+      var result = fileExt.GetFileExtensionWithoutDot("/te_st/test.com");
+      expect(result).toBe("com")
+    });
+
+    it("get file ext without extension mp4 file", () => {
+      var result = fileExt.GetFileExtensionWithoutDot("/te_st/test.mp4");
+      expect(result).toBe("mp4")
+    });
+
+    it("get file ext without extension Uppercase mp4 file", () => {
+      var result = fileExt.GetFileExtensionWithoutDot("/te_st/test.MP4");
+      expect(result).toBe("mp4")
+    });
+
+    it("get file name without extension space and http file", () => {
+      var result = fileExt.GetFileExtensionWithoutDot("http://path/Lists/Test/Attachments/1/Document Test.docx");
+      expect(result).toBe("docx")
+    });
+
+    it("get file name without extension on root", () => {
+      var result = fileExt.GetFileExtensionWithoutDot("/0000000000aaaaa__exifreadingtest00.jpg");
+      expect(result).toBe("jpg")
+    });
+  });
+
+  describe("GetFileNameWithoutExtension", () => {
+    it("get file name without extension com file", () => {
+      var result = fileExt.GetFileNameWithoutExtension("/te_st/test.com");
+      expect(result).toBe("test")
+    });
+
+    it("get file name without extension mp4 file", () => {
+      var result = fileExt.GetFileNameWithoutExtension("/te_st/test.mp4");
+      expect(result).toBe("test")
+    });
+
+    it("get file name without extension space and http file", () => {
+      var result = fileExt.GetFileNameWithoutExtension("http://path/Lists/Test/Attachments/1/Document Test.docx");
+      expect(result).toBe("Document Test")
+    });
+
+    it("get file name without extension on root", () => {
+      var result = fileExt.GetFileNameWithoutExtension("/0000000000aaaaa__exifreadingtest00.jpg");
+      expect(result).toBe("0000000000aaaaa__exifreadingtest00")
+    });
+  });
+
 });
