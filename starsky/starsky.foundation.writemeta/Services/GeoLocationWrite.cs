@@ -18,12 +18,12 @@ namespace starsky.foundation.writemeta.Services
         private readonly IStorage _iStorage;
         private readonly IStorage _thumbnailStorage;
 
-        public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool, ISelectorStorage selectorStorage)
+        public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool, IStorage iStorage, IStorage thumbnailStorage)
         {
             _exifTool = exifTool;
             _appSettings = appSettings;
-            _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-            _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+            _thumbnailStorage = thumbnailStorage;
+            _iStorage = iStorage;
         }
         
         /// <summary>
@@ -37,24 +37,26 @@ namespace starsky.foundation.writemeta.Services
             {
                 if (!ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) continue;
 
-				if ( _appSettings.Verbose ) Console.Write("*ExifSync*");
+				if ( _appSettings.Verbose ) Console.Write(" 👟 ");
 
                 var comparedNamesList = new List<string>
                 {
-                    nameof(FileIndexItem.Latitude),
-                    nameof(FileIndexItem.Longitude),
-                    nameof(FileIndexItem.LocationAltitude)
+                    nameof(FileIndexItem.Latitude).ToLowerInvariant(),
+                    nameof(FileIndexItem.Longitude).ToLowerInvariant(),
+                    nameof(FileIndexItem.LocationAltitude).ToLowerInvariant()
                 };
                 
                 if(syncLocationNames) comparedNamesList.AddRange( new List<string>
                 {
-                    nameof(FileIndexItem.LocationCity),
-                    nameof(FileIndexItem.LocationState),
-                    nameof(FileIndexItem.LocationCountry),
+                    nameof(FileIndexItem.LocationCity).ToLowerInvariant(),
+                    nameof(FileIndexItem.LocationState).ToLowerInvariant(),
+                    nameof(FileIndexItem.LocationCountry).ToLowerInvariant(),
                 });
                 
-                new ExifToolCmdHelper(_exifTool, _iStorage, _thumbnailStorage, new ReadMeta(_iStorage))
-	                .Update(metaFileItem, comparedNamesList);
+                new ExifToolCmdHelper(_exifTool, 
+						_iStorage, 
+		                _thumbnailStorage, 
+		                new ReadMeta(_iStorage)).Update(metaFileItem, comparedNamesList);
 	            
 	            if ( _appSettings.Verbose ) Console.Write($"GeoLocationWrite: {metaFileItem.FilePath} ");
             }

@@ -11,6 +11,7 @@ using starskycore.Services;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
@@ -34,16 +35,15 @@ namespace starsky.Controllers
 
 		public GeoController(IExifTool exifTool, 
 			AppSettings appSettings, IBackgroundTaskQueue queue,
-			IReadMeta readMeta,
 			ISelectorStorage selectorStorage, 
 			IMemoryCache memoryCache = null )
 		{
 			_appSettings = appSettings;
 			_exifTool = exifTool;
 			_bgTaskQueue = queue;
-			_readMeta = readMeta;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+			_readMeta = new ReadMeta(_iStorage);
 			_selectorStorage = selectorStorage;
 			_cache = memoryCache;
 		}
@@ -112,9 +112,10 @@ namespace starsky.Controllers
 					
 					Console.Write("¬");
 					
-					new GeoLocationWrite(_appSettings, _exifTool, _selectorStorage)
+					new GeoLocationWrite(_appSettings, _exifTool, _iStorage, _thumbnailStorage)
 						.LoopFolder(toMetaFilesUpdate, false);
-					Console.Write("(gps added)");
+					
+					if ( _appSettings.Verbose ) Console.Write("(gps added)");
 				}
 
 				fileIndexList =
@@ -123,7 +124,7 @@ namespace starsky.Controllers
 				
 				if ( fileIndexList.Count >= 1 )
 				{
-					new GeoLocationWrite(_appSettings, _exifTool, _selectorStorage).LoopFolder(
+					new GeoLocationWrite(_appSettings, _exifTool, _iStorage, _thumbnailStorage).LoopFolder(
 						fileIndexList, true);
 				}
 

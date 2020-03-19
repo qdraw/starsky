@@ -43,8 +43,8 @@ namespace starskytest.starskyGeoCore.Services
 		            LocationCountry = "country"
 	            }
             };
-            var fakeStorageSelector = new FakeSelectorStorage();
-            new GeoLocationWrite(_appSettings, _exifTool, fakeStorageSelector).LoopFolder(metaFilesInDirectory, true);
+            var fakeIStorage = new FakeIStorage();
+            new GeoLocationWrite(_appSettings, _exifTool, fakeIStorage,fakeIStorage).LoopFolder(metaFilesInDirectory, true);
         }
     }
 }

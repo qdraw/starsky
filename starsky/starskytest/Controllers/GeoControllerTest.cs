@@ -100,7 +100,7 @@ namespace starskytest.Controllers
 		{
 			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, _readmeta,new FakeSelectorStorage(istorage))
+			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, new FakeSelectorStorage(istorage))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -113,7 +113,7 @@ namespace starskytest.Controllers
 		{
 			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, _readmeta,new FakeSelectorStorage(istorage))
+			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, new FakeSelectorStorage(istorage))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -131,7 +131,7 @@ namespace starskytest.Controllers
 			var storage = new FakeIStorage();
 			var storageSelector = new FakeSelectorStorage(storage);
 			
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, _readmeta,storageSelector,_memoryCache)
+			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, storageSelector,_memoryCache)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -147,7 +147,7 @@ namespace starskytest.Controllers
 		{
 			var storage = new FakeIStorage();
 			var storageSelector = new FakeSelectorStorage(storage);
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, _readmeta,storageSelector)
+			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, storageSelector)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
