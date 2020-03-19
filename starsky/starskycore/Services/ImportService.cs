@@ -225,7 +225,10 @@ namespace starskycore.Services
 		    var hashCode = new FileHash(_filesystemStorage).GetHashCode(inputFileFullPath);
 		    if(_appSettings.Verbose) Console.Write($"œ{hashCode}¥");
 			var importIndexItem = PreflightByItem(inputFileFullPath, hashCode, importSettings);
-
+			
+			// When rejected
+			if ( importIndexItem.FileIndexItem == null ) return importIndexItem;
+			
 		    // only used when feature is enabled
 		    if ( importIndexItem.Status == ImportStatus.AgeToOld || importIndexItem.Status == ImportStatus.IgnoredAlreadyImported ) return importIndexItem;
 		    var fileIndexItem = importIndexItem.FileIndexItem;
@@ -401,7 +404,6 @@ namespace starskycore.Services
 
             // For example when the number (ff) is already used:
             if (!_filesystemStorage.ExistFile(destinationFullPath) ) return destinationFullPath;
-	        Console.WriteLine();
             destinationFullPath = DestinationFullPathDuplicate(inputFileFullPath,fileIndexItem);
 
             return _filesystemStorage.ExistFile(destinationFullPath) ? null : destinationFullPath;

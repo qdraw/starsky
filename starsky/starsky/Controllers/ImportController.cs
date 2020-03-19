@@ -44,7 +44,6 @@ namespace starsky.Controllers
 	        _hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 	        _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
         }
-	    
         
 		/// <summary>
 		/// Import a file using the structure format
