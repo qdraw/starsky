@@ -27,7 +27,7 @@ namespace starskycore.Services
                 if (dbItem != null)
                 {
                     // Check if Hash is changed
-	                var localHash = new FileHash(_subPathStorage).GetHashCode(itemLocal);
+	                var localHash = new FileHash(_subPathStorage).GetHashCode(itemLocal).Key;
 
                     if(_appSettings.Verbose) Console.WriteLine("localHash: " + localHash);
 

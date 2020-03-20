@@ -105,7 +105,7 @@ namespace starskytest.Services
             }
 	        
 	        // To Mock!
-	        _fileHashCreateAnImage = new FileHash(_iStorage).GetHashCode(new CreateAnImage().DbPath);
+	        _fileHashCreateAnImage = new FileHash(_iStorage).GetHashCode(new CreateAnImage().DbPath).Key;
 
         }
 
@@ -135,7 +135,7 @@ namespace starskytest.Services
             
             _import.Import(createAnImage.FullFilePath,importSettings);
             
-            var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+            var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after succesfull run;
@@ -166,7 +166,7 @@ namespace starskytest.Services
             };
             _import.Import(createAnImage.FullFilePath,importSettings);
             
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after succesfull run;
@@ -216,7 +216,7 @@ namespace starskytest.Services
             _appSettings.Structure = "/\\e\\x\\i\\s\\t/\\a\\b\\c/HHmmss.ext";
             _import.Import(createAnImage.FullFilePath,importSettings);
             
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
@@ -258,7 +258,7 @@ namespace starskytest.Services
             };
             _import.Import(createAnImage.FullFilePath,importSettings);
             
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
@@ -293,7 +293,7 @@ namespace starskytest.Services
             importSettings.DeleteAfter = false;
             importSettings.AgeFileFilterDisabled = false;
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());  
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
             var itemFilePath = _query.GetSubPathByHash(fileHashCode);
             Assert.AreNotEqual(null, itemFilePath);
@@ -342,7 +342,7 @@ namespace starskytest.Services
             _appSettings.Structure = "/xux99999xxxx_ssHHmm.ext";
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault()); 
 	        
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
 	        
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
             var itemFilePath = _query.GetSubPathByHash(fileHashCode);
@@ -440,7 +440,7 @@ namespace starskytest.Services
             {
             }
             
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             
             var importSettings = new ImportSettingsModel
             {
@@ -507,7 +507,7 @@ namespace starskytest.Services
 
             Assert.AreEqual(File.Exists(createAnImage.FullFilePath), true);
 
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             var importIndexItem = _import.GetItemByHash(fileHashCode);
             var outputFileName = importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
             var outputSubfolders = importIndexItem.ParseSubfolders();
@@ -553,7 +553,7 @@ namespace starskytest.Services
             };
             _import.Import(storeItemInList,importSettings);
             
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after successful run;
@@ -622,7 +622,7 @@ namespace starskytest.Services
 		    RemoveFromQuery();
 		    
 		    var createAnImage = new CreateAnImage();
-		    var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+		    var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
 		    _appSettings.Verbose = true;
 		    _appSettings.StorageFolder = createAnImage.BasePath;
 		    

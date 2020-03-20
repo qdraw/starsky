@@ -36,11 +36,11 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		{
 			if ( !_iStorage.ExistFolder(subPath) ) throw new DirectoryNotFoundException("should enter some valid dir");
 
-			var contentOfDir = _iStorage.GetAllFilesInDirectory(subPath)
+			var contentOfDir = _iStorage.GetAllFilesInDirectoryRecursive(subPath)
 				.Where(ExtensionRolesHelper.IsExtensionExifToolSupported);
 			foreach ( var singleSubPath in contentOfDir )
 			{
-				var fileHash = new FileHash(_iStorage).GetHashCode(singleSubPath);
+				var fileHash = new FileHash(_iStorage).GetHashCode(singleSubPath).Key;
 				CreateThumb(singleSubPath, fileHash);
 			}
 			return true;

@@ -99,7 +99,7 @@ namespace starskytest.Controllers
 		private FileIndexItem InsertSearchData(bool delete = false)
 		{
 			var iStorage = new StorageSubPathFilesystem(_appSettings);
-			var fileHashCode = new FileHash(iStorage).GetHashCode(_createAnImage.DbPath);
+			var fileHashCode = new FileHash(iStorage).GetHashCode(_createAnImage.DbPath).Key;
 			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)) )
 			{
 				var isDelete = string.Empty;

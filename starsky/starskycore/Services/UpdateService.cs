@@ -136,7 +136,7 @@ namespace starskycore.Services
 			Console.WriteLine($"exifResult: {exifResult}");
                         
 			// change thumbnail names after the original is changed
-			var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath);
+			var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath).Key;
 			_thumbnailStorage.FileMove(detailView.FileIndexItem.FileHash, newFileHash);
 					
 			// Update the hash in the database

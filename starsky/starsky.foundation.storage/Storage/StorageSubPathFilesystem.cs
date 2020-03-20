@@ -25,14 +25,12 @@ namespace starsky.foundation.storage.Storage
 		/// </summary>
 		/// <param name="subPath">full file path</param>
 		/// <returns>bool true = exist</returns>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool ExistFile(string subPath)
 		{
 			var isFolderOrFile = IsFolderOrFile(subPath);
 			return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File;
 		}
 
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool ExistFolder(string subPath)
 		{
 			var isFolderOrFile = IsFolderOrFile(subPath);
@@ -40,18 +38,16 @@ namespace starsky.foundation.storage.Storage
 		}
 
 		/// <summary>
-		/// is the subpath a folder or file, or deleted (FolderOrFileModel.FolderOrFileTypeList.Deleted)
+		/// is the subPath a folder or file, or deleted (FolderOrFileModel.FolderOrFileTypeList.Deleted)
 		/// </summary>
 		/// <param name="subPath">path of the database</param>
 		/// <returns>is file, folder or deleted</returns>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath,false);
 			return new StorageHostFullPathFilesystem().IsFolderOrFile(fullFilePath);
 		}
 
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public void FolderMove(string inputSubPath, string toSubPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
@@ -59,7 +55,6 @@ namespace starsky.foundation.storage.Storage
 			new StorageHostFullPathFilesystem().FolderMove(inputFileFullPath,toFileFullPath);
 		}
 
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public void FileMove(string inputSubPath, string toSubPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
@@ -186,7 +181,6 @@ namespace starsky.foundation.storage.Storage
 		/// <param name="maxRead">number of bytes to read (default -1 = all)</param>
 		/// <returns>FileStream</returns>
 		/// <exception cref="FileNotFoundException">is file not exist, please check that first</exception>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
@@ -203,7 +197,7 @@ namespace starsky.foundation.storage.Storage
 			else
 			{
 				fileStream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read,
-					FileShare.Read, maxRead, false);
+					FileShare.Read, maxRead, true);
 			}
 
 			return fileStream;
@@ -217,7 +211,6 @@ namespace starsky.foundation.storage.Storage
 		/// <param name="path">location</param>
 		/// <returns></returns>
 		/// <exception cref="FileNotFoundException"></exception>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool WriteStream(Stream stream, string path)
 		{
 			// should be able to write files that are not exist yet			

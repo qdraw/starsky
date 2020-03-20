@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -105,7 +106,7 @@ namespace starskytest.Controllers
         
         private FileIndexItem InsertSearchData(bool delete = false)
         {
-            var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath);
+            var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
 	        
             if (string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)))
             {

@@ -87,7 +87,7 @@ namespace starsky.foundation.readmeta.Services
 
 		        if ( fileHashes == null || fileHashes.Count <= i )
 		        {
-			        returnItem.FileHash = new FileHash(_iStorage).GetHashCode(subPath);
+			        returnItem.FileHash = new FileHash(_iStorage).GetHashCode(subPath).Key;
 		        }
 		        else
 		        {

@@ -42,7 +42,7 @@ namespace starskycore.Services
 	                databaseItem.ImageFormat = imageFormat;
 	                databaseItem.SetAddToDatabase();
 	                databaseItem.SetLastEdited();
-                    databaseItem.FileHash = new FileHash(_subPathStorage).GetHashCode(singleFolderDbStyle);
+                    databaseItem.FileHash = new FileHash(_subPathStorage).GetHashCode(singleFolderDbStyle).Key;
                     databaseItem.FileName = PathHelper.GetFileName(singleFolderDbStyle);
                     databaseItem.IsDirectory = false;
                     databaseItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault();

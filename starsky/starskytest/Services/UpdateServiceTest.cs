@@ -52,7 +52,7 @@ namespace starskytest.Services
 			
 			_exifTool = new FakeExifTool(_iStorageFake,_appSettings);
 
-			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg");
+			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
 			_readMeta = new ReadMeta(_iStorageFake,_appSettings,_memoryCache);
 			
 		}
@@ -61,7 +61,8 @@ namespace starskytest.Services
 		[ExpectedException(typeof(MissingFieldException))]
 		public void UpdateServiceTest_CompareAllLabelsAndRotation_NullMissingFieldException()
 		{
-			new UpdateService(null, null, null, null, null).CompareAllLabelsAndRotation(null, null,
+			new UpdateService(null, null, null, null, null).
+				CompareAllLabelsAndRotation(null, null,
 				null, false, 0);
 			// ==>> MissingFieldException
 		}

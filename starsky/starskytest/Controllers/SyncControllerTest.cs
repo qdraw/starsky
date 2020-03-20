@@ -112,7 +112,7 @@ namespace starskytest.Controllers
 		private FileIndexItem InsertSearchData()
 		{
 			_iStorage = new FakeIStorage(new List<string> { "/" }, new List<string> { _createAnImage.DbPath });
-			var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath);
+			var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
 			
 			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)) )
 			{

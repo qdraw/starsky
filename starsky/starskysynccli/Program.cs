@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
@@ -69,7 +70,7 @@ namespace starskysynccli
                 if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
                 {
                     // If single file => create thumbnail
-	                var fileHash = new FileHash(storage).GetHashCode(subpath);
+	                var fileHash = new FileHash(storage).GetHashCode(subpath).Key;
                     new Thumbnail(storage,thumbnailStorage).CreateThumb(subpath,fileHash); // <= this uses subPath
                 }
                 else

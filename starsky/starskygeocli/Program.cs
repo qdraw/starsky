@@ -112,7 +112,7 @@ namespace starskyGeoCli
 			foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
 				.ToList() )
 			{
-				var newThumb = new FileHash(storage).GetHashCode(item.FilePath);
+				var newThumb = new FileHash(storage).GetHashCode(item.FilePath).Key;
 				startupHelper.ThumbnailStorage().FileMove(item.FileHash, newThumb);
 				if ( appSettings.Verbose )
 					Console.WriteLine("thumb+ `" + item.FileHash + "`" + newThumb);

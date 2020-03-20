@@ -132,7 +132,7 @@ namespace starsky.Controllers
 				foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
 					.ToList() )
 				{
-					var newThumb = new FileHash(_iStorage).GetHashCode(item.FilePath);
+					var newThumb = new FileHash(_iStorage).GetHashCode(item.FilePath).Key;
 					_thumbnailStorage.FileMove(item.FileHash, newThumb);
 					if ( _appSettings.Verbose )
 						Console.WriteLine("thumb + `" + item.FileHash + "`" + newThumb);

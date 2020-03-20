@@ -164,7 +164,7 @@ namespace starskycore.Services
 				fileIndexItem.DateTime = importIndexItem.ParseDateTimeFromFileName();
 				// > for the exif based items it is done in: ObjectCreateIndexItem()
 				
-				var imageFormatExtenstion = ExtensionRolesHelper.GetImageFormat(_filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath));
+				var imageFormatExtenstion = ExtensionRolesHelper.GetImageFormat(_filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath,50));
 				fileIndexItem.FileName = importIndexItem.ParseFileName(imageFormatExtenstion);
 
 				fileIndexItem.Description = "Date and Time based on filename";
@@ -209,7 +209,7 @@ namespace starskycore.Services
 		    // Do some import checks before sending it to the background service
 		    var hashList = new FileHash(_filesystemStorage).GetHashCode(inputFileFullPaths.ToArray());
 
-			var fileIndexResultsList = hashList.Select((t, i) => PreflightByItem(inputFileFullPaths[i], t, importSettings)).ToList();
+			var fileIndexResultsList = hashList.Select((t, i) => PreflightByItem(inputFileFullPaths[i], t.Key, importSettings)).ToList();
 		    return fileIndexResultsList;
 	    }
 
@@ -221,7 +221,7 @@ namespace starskycore.Services
 		public ImportIndexItem ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)
 	    {
 		    if(_appSettings.Verbose) Console.Write("î");
-		    var hashCode = new FileHash(_filesystemStorage).GetHashCode(inputFileFullPath);
+		    var hashCode = new FileHash(_filesystemStorage).GetHashCode(inputFileFullPath).Key;
 		    if(_appSettings.Verbose) Console.Write($"œ{hashCode}¥");
 			var importIndexItem = PreflightByItem(inputFileFullPath, hashCode, importSettings);
 			

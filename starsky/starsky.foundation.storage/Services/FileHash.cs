@@ -30,7 +30,7 @@ namespace starsky.foundation.storage.Services
         /// </summary>
         /// <param name="filesInDirectorySubPath">array</param>
         /// <returns>array of base32 hashes</returns>
-        public List<string> GetHashCode(string[] filesInDirectorySubPath)
+        public List<KeyValuePair<string,bool>> GetHashCode(string[] filesInDirectorySubPath)
         {
             return filesInDirectorySubPath.Select(subPath => _calcHashCode(subPath)).ToList();
         }
@@ -41,7 +41,7 @@ namespace starsky.foundation.storage.Services
         /// <param name="subPath">subPath</param>
         /// <param name="timeoutSeconds">Timeout in seconds, before a random string will be returned</param>
         /// <returns>base32 hash</returns>
-        public string GetHashCode(string subPath, int timeoutSeconds = 20)
+        public KeyValuePair<string,bool> GetHashCode(string subPath, int timeoutSeconds = 20)
         {
             return _calcHashCode(subPath,timeoutSeconds);
         }
@@ -49,14 +49,14 @@ namespace starsky.foundation.storage.Services
         // Here are some tricks used to avoid that CalculateMd5Async keeps waiting forever.
         // In some cases hashing a file keeps waiting forever (at least on linux-arm)
 
-        private string _calcHashCode(string subPath, int timeoutSeconds = 20)
+        private KeyValuePair<string,bool> _calcHashCode(string subPath, int timeoutSeconds = 20)
         {
             var q = Md5TimeoutAsyncWrapper(subPath,timeoutSeconds).Result;
             return q;
         }
 
         // Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
-        private async Task<string> Md5TimeoutAsyncWrapper(string fullFileName, int timeoutSeconds)
+        private async Task<KeyValuePair<string,bool>> Md5TimeoutAsyncWrapper(string fullFileName, int timeoutSeconds)
         {
             //adding .ConfigureAwait(false) may NOT be what you want but google it.
             return await Task.Run(() => Md5Timeout(fullFileName,timeoutSeconds)).ConfigureAwait(false);
@@ -64,12 +64,13 @@ namespace starsky.foundation.storage.Services
 
         // Yes I know that I don't use the class propper, I use it in a sync way.
         #pragma warning disable 1998
-        private async Task<string> Md5Timeout(string fullFileName, int timeoutSeconds){
+        private async Task<KeyValuePair<string,bool>> Md5Timeout(string fullFileName, int timeoutSeconds){
         #pragma warning restore 1998
 
             var task = Task.Run(() => CalculateMd5Async(fullFileName));
+            
             if (task.Wait(TimeSpan.FromSeconds(timeoutSeconds))){
-				return task.Result;
+				return new KeyValuePair<string,bool>(task.Result,true);
             }
 
             // Sometimes a Calc keeps waiting for days
@@ -77,8 +78,8 @@ namespace starsky.foundation.storage.Services
                               + fullFileName 
                               + "            <<<<<<<<<<<<");
             
-            return Base32.Encode(GenerateRandomBytes(27)) + "_T";
-        }
+            return new KeyValuePair<string,bool>(Base32.Encode(GenerateRandomBytes(27)) + "_T", false);
+            }
 
         // Create a random string
         public static byte[] GenerateRandomBytes(int length)

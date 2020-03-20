@@ -29,7 +29,7 @@ namespace starskycore.Services
 				if ( string.IsNullOrEmpty(firstFileSubPath) || ! _subPathStorage.ExistFile(firstFileSubPath) ) continue;
 				
 				// get hash from file
-				var singleFileHash =  new FileHash(_subPathStorage).GetHashCode(firstFileSubPath);
+				var singleFileHash =  new FileHash(_subPathStorage).GetHashCode(firstFileSubPath).Key;
 				
 				// compare both
 				if ( dbItem.FileHash == singleFileHash ) continue;

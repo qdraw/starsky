@@ -333,7 +333,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>ImageFormat enum</returns>
 		public static ImageFormat GetImageFormat(Stream stream)
 		{
-			byte[] buffer = new byte[512];
+			byte[] buffer = new byte[20];
 			try
 			{
 				stream.Read(buffer, 0, buffer.Length);

@@ -333,7 +333,7 @@ namespace starskytest.Services
                 IsDirectory = false
             });
 	        
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
 
             _syncService.FirstItemDirectory();
 
