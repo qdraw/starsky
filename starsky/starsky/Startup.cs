@@ -132,8 +132,6 @@ namespace starsky
                         options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
                     }
                 );
-
-            new RegisterDependencies().Configure(services);
             
             // There is a base-cookie and in index controller there is an method to generate a token that is used to send with the header: X-XSRF-TOKEN
             services.AddAntiforgery(
@@ -183,16 +181,21 @@ namespace starsky
 				options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 			});
 	        
-        
-	        // Application Insights
-	        if ( !string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) )
-	        {
-		        services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
-		        {
-			        ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-			        EnableDependencyTrackingTelemetryModule = true
-		        });
-	        }
+			// Application Insights
+			if ( !string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) )
+			{
+				services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
+				{
+					ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+					EnableDependencyTrackingTelemetryModule = true,
+					EnableHeartbeat = true,
+					EnableAuthenticationTrackingJavaScript = true,
+					InstrumentationKey = _appSettings.ApplicationInsightsInstrumentationKey
+				});
+			}
+			
+			new RegisterDependencies().Configure(services);
+
         }
         
         /// <summary>

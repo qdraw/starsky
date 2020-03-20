@@ -18,7 +18,7 @@ namespace starskycore.Helpers
 		public ApplicationInsightsJsHelper(IHttpContextAccessor httpContext, JavaScriptSnippet aiJavaScriptSnippet = null)
 		{
 			_httpContext = httpContext;
-			if(aiJavaScriptSnippet != null) _aiJavaScriptSnippet = aiJavaScriptSnippet;
+			if(aiJavaScriptSnippet != null && !string.IsNullOrEmpty(aiJavaScriptSnippet.FullScript)) _aiJavaScriptSnippet = aiJavaScriptSnippet;
 		}
 		
 		/// <summary>

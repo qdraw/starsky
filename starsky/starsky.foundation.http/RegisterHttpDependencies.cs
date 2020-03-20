@@ -4,15 +4,15 @@ using starsky.foundation.injection;
 
 namespace starsky.foundation.http
 {
-	[Service(InjectionLifetime = InjectionLifetime.Scoped)]
+	[Service(InjectionLifetime = InjectionLifetime.Singleton)]
 	public class RegisterHttpDependencies
 	{
-		public RegisterHttpDependencies(IServiceCollection serviceCollection)
+		public RegisterHttpDependencies(IServiceCollection services)
 		{
 			// required by IHttpClientHelper
-			serviceCollection.AddScoped<System.Net.Http.HttpClient>();
+			services.AddSingleton<System.Net.Http.HttpClient>();
 			// for example needed by Application Insights
-			serviceCollection.AddSingleton<IHttpContextAccessor>();
+			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 		}
 	}
 }
