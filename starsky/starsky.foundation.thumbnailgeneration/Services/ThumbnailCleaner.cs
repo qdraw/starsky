@@ -22,7 +22,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 	
 		public void CleanAllUnusedFiles()
 		{
-			if (! _thumbnailStorage.ExistFolder("/") ) throw new System.IO.DirectoryNotFoundException("Thumbnail folder not found");
+			if (! _thumbnailStorage.ExistFolder("/") ) throw new DirectoryNotFoundException("Thumbnail folder not found");
 
 			var allThumbnailFiles = GetAllThumbnailFiles();
 			if(_appSettings.Verbose) Console.WriteLine(allThumbnailFiles.Length);
@@ -33,7 +33,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 				var itemByHash = _query.GetSubPathByHash(fileHash);
 				if (itemByHash != null ) continue;
 
-				_thumbnailStorage.FileDelete(thumbnailFile.FullName);
+				_thumbnailStorage.FileDelete(fileHash);
 				Console.Write("$");
 			}
 		}
