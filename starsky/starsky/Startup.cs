@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
@@ -182,6 +183,9 @@ namespace starsky
 			});
 	        
 			// Application Insights
+			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			
+			// Detect Application Insights
 			if ( !string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) )
 			{
 				services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
@@ -193,7 +197,7 @@ namespace starsky
 					InstrumentationKey = _appSettings.ApplicationInsightsInstrumentationKey
 				});
 			}
-			
+
 			new RegisterDependencies().Configure(services);
 
         }

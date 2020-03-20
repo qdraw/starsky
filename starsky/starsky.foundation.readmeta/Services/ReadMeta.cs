@@ -77,7 +77,7 @@ namespace starsky.foundation.readmeta.Services
 		        var subPath = subPathList[i];
 		        
 		        var returnItem = ReadExifAndXmpFromFile(subPath);
-		        var imageFormat = ExtensionRolesHelper.GetImageFormat(_iStorage.ReadStream(subPath, 512)); 
+		        var imageFormat = ExtensionRolesHelper.GetImageFormat(_iStorage.ReadStream(subPath, 50)); 
 
 		        returnItem.ImageFormat = imageFormat;
 		        returnItem.FileName = Path.GetFileName(subPath);

@@ -35,7 +35,7 @@ namespace starskycore.Services
 
 
                     // Check the headers of a file to match a type
-                    var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(singleFolderDbStyle,160));
+                    var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(singleFolderDbStyle,50));
                     
                     // Read data from file
 	                var databaseItem = _readMeta.ReadExifAndXmpFromFile(singleFolderDbStyle);

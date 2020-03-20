@@ -422,7 +422,7 @@ namespace starskycore.Services
 			if (fileIndexItem.FileName.Contains(".unknown"))
 			{
 				fileIndexItem.FileName = fileIndexItem.FileName.Replace(".unknown",
-					"." + ExtensionRolesHelper.GetImageFormat(_filesystemStorage.ReadStream(inputFileFullPath,312)));
+					"." + ExtensionRolesHelper.GetImageFormat(_filesystemStorage.ReadStream(inputFileFullPath,50)));
 			}
 
 			var destinationFullPath = _appSettings.DatabasePathToFilePath(fileIndexItem.ParentDirectory)

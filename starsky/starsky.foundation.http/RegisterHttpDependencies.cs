@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
 
@@ -11,8 +10,6 @@ namespace starsky.foundation.http
 		{
 			// required by IHttpClientHelper
 			services.AddSingleton<System.Net.Http.HttpClient>();
-			// for example needed by Application Insights
-			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 		}
 	}
 }
