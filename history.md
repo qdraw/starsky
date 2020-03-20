@@ -29,6 +29,7 @@
 - [x]   (version) _Back-end_ __breaking change__ rename of api `/api/import/history`
 - [x]   (version) _Back-end_ __breaking change__ rename of api `/api/import/thumbnail`
 - [x]   (version) _Back-end_ __breaking change__ rename of api `/api/import`
+- [x]   (version) _Back-end __breaking change__ remame `"Path": "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/`
 
 # version 0.1.17 - 2020-03-07
 - [x]  (feature) _Front-end_ DateTime editing in detailView

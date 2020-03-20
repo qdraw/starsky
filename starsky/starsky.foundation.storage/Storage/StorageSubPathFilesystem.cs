@@ -27,6 +27,7 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>bool true = exist</returns>
 		public bool ExistFile(string subPath)
 		{
+			if ( string.IsNullOrEmpty(subPath) ) return false;
 			var isFolderOrFile = IsFolderOrFile(subPath);
 			return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File;
 		}

@@ -62,7 +62,7 @@ namespace starskyGeoCli
 			appSettings.StorageFolder = inputPath;
 			var storage = startupHelper.SubPathStorage();
 
-			if ( storage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			if ( inputPath == null || storage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				Console.WriteLine(
 					$"Folder location is not found \nPlease try the `-h` command to get help ");
