@@ -16,7 +16,7 @@ namespace starsky.foundation.database.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.1");
 
-            modelBuilder.Entity("starskycore.Models.Account.Credential", b =>
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,7 +50,7 @@ namespace starsky.foundation.database.Migrations
                     b.ToTable("Credentials");
                 });
 
-            modelBuilder.Entity("starskycore.Models.Account.CredentialType", b =>
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.CredentialType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +75,7 @@ namespace starsky.foundation.database.Migrations
                     b.ToTable("CredentialTypes");
                 });
 
-            modelBuilder.Entity("starskycore.Models.Account.Permission", b =>
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.Permission", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -100,7 +100,7 @@ namespace starsky.foundation.database.Migrations
                     b.ToTable("Permissions");
                 });
 
-            modelBuilder.Entity("starskycore.Models.Account.Role", b =>
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -125,7 +125,7 @@ namespace starsky.foundation.database.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("starskycore.Models.Account.RolePermission", b =>
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.RolePermission", b =>
                 {
                     b.Property<int>("RoleId")
                         .HasColumnType("INTEGER");
@@ -140,7 +140,7 @@ namespace starsky.foundation.database.Migrations
                     b.ToTable("RolePermissions");
                 });
 
-            modelBuilder.Entity("starskycore.Models.Account.User", b =>
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -160,7 +160,7 @@ namespace starsky.foundation.database.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("starskycore.Models.Account.UserRole", b =>
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.UserRole", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
@@ -175,7 +175,7 @@ namespace starsky.foundation.database.Migrations
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("starskycore.Models.FileIndexItem", b =>
+            modelBuilder.Entity("starsky.foundation.database.Models.FileIndexItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -282,7 +282,7 @@ namespace starsky.foundation.database.Migrations
                     b.ToTable("FileIndex");
                 });
 
-            modelBuilder.Entity("starskycore.Models.ImportIndexItem", b =>
+            modelBuilder.Entity("starsky.foundation.database.Models.ImportIndexItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -305,45 +305,45 @@ namespace starsky.foundation.database.Migrations
                     b.ToTable("ImportIndex");
                 });
 
-            modelBuilder.Entity("starskycore.Models.Account.Credential", b =>
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
-                    b.HasOne("starskycore.Models.Account.CredentialType", "CredentialType")
+                    b.HasOne("starsky.foundation.database.Models.Account.CredentialType", "CredentialType")
                         .WithMany("Credentials")
                         .HasForeignKey("CredentialTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("starskycore.Models.Account.User", "User")
+                    b.HasOne("starsky.foundation.database.Models.Account.User", "User")
                         .WithMany("Credentials")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("starskycore.Models.Account.RolePermission", b =>
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.RolePermission", b =>
                 {
-                    b.HasOne("starskycore.Models.Account.Permission", "Permission")
+                    b.HasOne("starsky.foundation.database.Models.Account.Permission", "Permission")
                         .WithMany()
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("starskycore.Models.Account.Role", "Role")
+                    b.HasOne("starsky.foundation.database.Models.Account.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("starskycore.Models.Account.UserRole", b =>
+            modelBuilder.Entity("starsky.foundation.database.Models.Account.UserRole", b =>
                 {
-                    b.HasOne("starskycore.Models.Account.Role", "Role")
+                    b.HasOne("starsky.foundation.database.Models.Account.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("starskycore.Models.Account.User", "User")
+                    b.HasOne("starsky.foundation.database.Models.Account.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

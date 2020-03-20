@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using starsky.foundation.database.Data;
+using starsky.foundation.http;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
@@ -91,20 +93,22 @@ namespace starsky
 	            .AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck");
             
             var healthSqlQuery = "SELECT * FROM `__EFMigrationsHistory` WHERE ProductVersion > 9";
+            var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName.Split(",").FirstOrDefault();
 
             switch (_appSettings.DatabaseType)
             {
                 case (AppSettings.DatabaseTypeList.Mysql):
                     services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection, 
-	                    b => b.MigrationsAssembly(nameof(starskycore))));
+	                    b => b.MigrationsAssembly(foundationDatabaseName)));
                     services.AddHealthChecks().AddMySql(_appSettings.DatabaseConnection);
                     break;
                 case AppSettings.DatabaseTypeList.InMemoryDatabase:
                     services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
                     break;
                 case AppSettings.DatabaseTypeList.Sqlite:
+	                
                     services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, 
-	                    b => b.MigrationsAssembly(nameof(starskycore))));
+	                    b => b.MigrationsAssembly(foundationDatabaseName)));
                     services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
                     break;
             }
