@@ -16,7 +16,7 @@
 - []   (bug) _Front-end_ Readonly mode and modals __not implemented__
 - []   (bug) _Back-end_ XMP Rotation __not implemented__
 
-# version 0.2.0 - 2020-03-??
+# version 0.2.0 - 2020-03-20
 - [x] 	(feature) _Front-end_ icons for xmp and raw (tiff-based) in archive mode
 - [x] 	(feature) _Back-end_ support for Canon's way of reading ISO-Speed
 - [x]	  (feature) _Back-end_ abstractions to get the filesystem data
@@ -30,6 +30,7 @@
 - [x]   (version) _Back-end_ __breaking change__ rename of api `/api/import/thumbnail`
 - [x]   (version) _Back-end_ __breaking change__ rename of api `/api/import`
 - [x]   (version) _Back-end __breaking change__ remame `"Path": "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/`
+- [x]   (version) _Back-end_ __namespace changes__ Introduction of feature/foundation projects
 
 # version 0.1.17 - 2020-03-07
 - [x]  (feature) _Front-end_ DateTime editing in detailView
