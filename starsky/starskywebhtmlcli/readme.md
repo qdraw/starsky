@@ -135,7 +135,7 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
                     "ContentType":  "jpeg",
                     "SourceMaxWidth":  1000,
                     "OverlayMaxWidth":  380,
-                    "Path": "{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
+                    "Path": "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/qdrawlarge.png",
                     "Folder": "1000",
                     "Append": "_kl1k",
                     "Copy": "true"
@@ -144,7 +144,7 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
                     "ContentType":  "jpeg",
                     "SourceMaxWidth":  500,
                     "OverlayMaxWidth":  200,
-                    "Path": "{AssemblyDirectory}/EmbeddedViews/qdrawsmall.png",
+                    "Path": "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/qdrawsmall.png",
                     "Folder": "500",
                     "Append": "_kl",
                     "Copy": "true"

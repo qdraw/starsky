@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -13,20 +14,20 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
+using starsky.foundation.database.Data;
+using starsky.foundation.http;
+using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starsky.Health;
 using starsky.Helpers;
-using starskycore.Data;
 using starskycore.Helpers;
-using starskycore.Interfaces;
 using starskycore.Middleware;
-using starskycore.Models;
-using starskycore.Services;
-using Query = starskycore.Services.Query;
-using SyncService = starskycore.Services.SyncService;
 
 namespace starsky
 {
@@ -93,20 +94,22 @@ namespace starsky
 	            .AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck");
             
             var healthSqlQuery = "SELECT * FROM `__EFMigrationsHistory` WHERE ProductVersion > 9";
+            var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName.Split(",").FirstOrDefault();
 
             switch (_appSettings.DatabaseType)
             {
                 case (AppSettings.DatabaseTypeList.Mysql):
                     services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection, 
-	                    b => b.MigrationsAssembly(nameof(starskycore))));
+	                    b => b.MigrationsAssembly(foundationDatabaseName)));
                     services.AddHealthChecks().AddMySql(_appSettings.DatabaseConnection);
                     break;
                 case AppSettings.DatabaseTypeList.InMemoryDatabase:
                     services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
                     break;
                 case AppSettings.DatabaseTypeList.Sqlite:
+	                
                     services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, 
-	                    b => b.MigrationsAssembly(nameof(starskycore))));
+	                    b => b.MigrationsAssembly(foundationDatabaseName)));
                     services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
                     break;
             }
@@ -131,21 +134,6 @@ namespace starsky
                     }
                 );
             
-            services.AddScoped<IQuery, Query>();
-            services.AddScoped<ISync, SyncService>();
-            services.AddScoped<ISearch, SearchService>();
-            services.AddScoped<ISearchSuggest, SearchSuggestionsService>();
-
-            services.AddScoped<IImport, ImportService>();
-            services.AddScoped<IUserManager, UserManager>();
-            services.AddScoped<IExifTool, ExifTool>();
-            services.AddScoped<IReadMeta, ReadMeta>();
-	        services.AddScoped<IStorage, StorageSubPathFilesystem>();
-	        
-            // AddHostedService in .NET Core 2.1 / background service
-            services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-            
             // There is a base-cookie and in index controller there is an method to generate a token that is used to send with the header: X-XSRF-TOKEN
             services.AddAntiforgery(
                 options =>
@@ -160,7 +148,7 @@ namespace starsky
             );
 	        
 			// to add support for swagger
-			new SwaggerHelper(_appSettings).Add01SwaggerGenHelper(services);
+			new SwaggerSetupHelper(_appSettings).Add01SwaggerGenHelper(services);
 
 			// Now only for dev
 			services.AddCors(options =>
@@ -188,31 +176,30 @@ namespace starsky
 	        services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews().AddNewtonsoftJson();
 #endif
 	        
-			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
+			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
 			services.Configure<ForwardedHeadersOptions>(options =>
 			{
 				options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 			});
 	        
-	        // Detect ip in code
-	        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-	        
-	        // Application Insights
-	        var appInsightsKey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
-	        if ( !string.IsNullOrWhiteSpace(appInsightsKey) )
-	        {
-		        services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
-		        {
-			        ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-			        EnableDependencyTrackingTelemetryModule = true
-		        });
-	        }
-	        services.AddScoped<ApplicationInsightsJsHelper>();
+			// Application Insights
+			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			
+			// Detect Application Insights
+			if ( !string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) )
+			{
+				services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
+				{
+					ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+					EnableDependencyTrackingTelemetryModule = true,
+					EnableHeartbeat = true,
+					EnableAuthenticationTrackingJavaScript = true,
+					InstrumentationKey = _appSettings.ApplicationInsightsInstrumentationKey
+				});
+			}
 
-	        // For the import service
-	        services.AddSingleton<IHttpProvider,HttpProvider>();
-	        services.AddSingleton<HttpClientHelper>();
-	        services.AddSingleton<System.Net.Http.HttpClient>();
+			new RegisterDependencies().Configure(services);
+
         }
         
         /// <summary>
@@ -264,9 +251,7 @@ namespace starsky
 			app.UseRouting();
 #endif
 
-			// No CSP for swagger
-			new SwaggerHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
-			new SwaggerHelper(_appSettings).Add03AppExport(app);
+	        new SwaggerSetupHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 			
 			app.UseContentSecurityPolicy();
 	        

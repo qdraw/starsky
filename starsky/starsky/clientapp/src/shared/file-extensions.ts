@@ -68,5 +68,25 @@ export class FileExtensions {
     return fileNameMatchArray[0]
   }
 
+  /**
+   * extract fileName Without Extension from string
+   * @param filePath the filepath
+   */
+  public GetFileNameWithoutExtension(filePath: string) {
+    var fileName = this.GetFileName(filePath);
+    return fileName.replace(new RegExp("\\.[a-zA-Z0-9]{1,4}$"), "")
+  }
+
+  /**
+  * Get File Extension without dot
+  * @param filename the filepath
+  */
+  public GetFileExtensionWithoutDot(fileNameWithDot: string) {
+    if (fileNameWithDot.indexOf(".") === -1) return "";
+    var fileNameMatchArray = fileNameWithDot.match(new RegExp("[^.][a-zA-Z0-9]{1,4}$"));
+    if (!fileNameMatchArray) return "";
+    return fileNameMatchArray[0].toLowerCase();
+  }
+
 }
 

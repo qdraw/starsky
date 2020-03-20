@@ -6,10 +6,15 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
-using starsky.Helpers;
-using starskycore.Helpers;
+using starsky.foundation.database.Models;
+using starsky.foundation.http.Interfaces;
+using starsky.foundation.http.Streaming;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
@@ -22,20 +27,23 @@ namespace starsky.Controllers
         private readonly IImport _import;
         private readonly AppSettings _appSettings;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
-	    private readonly HttpClientHelper _httpClientHelper;
-	    private readonly IStorage _iStorage; //<= not yet implemented
+	    private readonly IHttpClientHelper _httpClientHelper;
+	    private readonly ISelectorStorage _selectorStorage;
+	    private readonly IStorage _hostFileSystemStorage;
+	    private readonly IStorage _thumbnailStorage;
 
-	    public ImportController(IImport import, AppSettings appSettings, 
-            IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue, 
-            HttpClientHelper httpClientHelper, IStorage iStorage)
+	    public ImportController(IImport import, AppSettings appSettings,
+		    IBackgroundTaskQueue queue, 
+            IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage)
         {
             _appSettings = appSettings;
             _import = import;
             _bgTaskQueue = queue;
 	        _httpClientHelper = httpClientHelper;
-	        _iStorage = iStorage; //<= not yet implemented
+	        _selectorStorage = selectorStorage; 
+	        _hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+	        _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
         }
-	    
         
 		/// <summary>
 		/// Import a file using the structure format
@@ -44,7 +52,7 @@ namespace starsky.Controllers
 		/// <response code="200">done</response>
 		/// <response code="206">file already imported</response>
 		/// <response code="415">Wrong input (e.g. wrong extenstion type)</response>
-		[HttpPost("/import")]
+		[HttpPost("/api/import")]
         [DisableFormValueModelBinding]
 		[Produces("application/json")]
 		[RequestFormLimits(MultipartBodyLengthLimit = 320_000_000)]
@@ -54,7 +62,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(List<ImportIndexItem>),415)]  // Wrong input (e.g. wrong extenstion type)
         public async Task<IActionResult> IndexPost()
         {
-            var tempImportPaths = await Request.StreamFile(_appSettings);
+            var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
             var importSettings = new ImportSettingsModel(Request);
 
 	        var fileIndexResultsList = _import.Preflight(tempImportPaths, importSettings);
@@ -71,8 +79,11 @@ namespace starsky.Controllers
 		                Console.WriteLine($">> import => {file}");
 	                }
                 }
-                
-                FilesHelper.DeleteFile(tempImportPaths);
+
+                foreach ( var toDelPath in tempImportPaths )
+                {
+	                _hostFileSystemStorage.FileDelete(toDelPath);
+                }
             });
             
             // When all items are already imported
@@ -94,44 +105,51 @@ namespace starsky.Controllers
 	    /// <summary>
 	    /// Upload thumbnail to ThumbnailTempFolder
 	    /// Make sure that the filename is correct, a base32 hash of length 26;
+	    /// Overwrite if the Id is the same
 	    /// </summary>
 	    /// <returns>json of thumbnail urls</returns>
-	    [HttpPost("/import/thumbnail")]
+	    [HttpPost("/api/import/thumbnail")]
 	    [DisableFormValueModelBinding]
 	    [Produces("application/json")]
 	    [RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
 	    [RequestSizeLimit(100_000_000)] // in bytes, 100MB
 	    public async Task<IActionResult> Thumbnail()
 	    {
-		    var tempImportPaths = await Request.StreamFile(_appSettings);
+		    var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
 
-		    var thumbnailPaths = new List<string>();
-		    for ( int i = 0; i < tempImportPaths.Count; i++ )
+		    var thumbnailNames = new List<string>();
+		    foreach ( var t in tempImportPaths )
 		    {
-			    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(tempImportPaths[i]);
-			    var thumbToUpperCase = Path.Combine(_appSettings.ThumbnailTempFolder, fileNameWithoutExtension.ToUpperInvariant() + ".jpg");
-			    if ( fileNameWithoutExtension.Length != 26 || 
-			         FilesHelper.IsFolderOrFile(thumbToUpperCase) == FolderOrFileModel.FolderOrFileTypeList.File)
+			    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(t);
+			    
+			    var thumbToUpperCase = fileNameWithoutExtension.ToUpperInvariant();
+
+			    if ( fileNameWithoutExtension.Length != 26 )
 			    {
-				    FilesHelper.DeleteFile(tempImportPaths[i]);
-				    tempImportPaths.Remove(tempImportPaths[i]);
 				    continue;
 			    }
-			    thumbnailPaths.Add(thumbToUpperCase);
+			    
+			    if (_thumbnailStorage.ExistFile(thumbToUpperCase))
+			    {
+				    _thumbnailStorage.FileDelete(thumbToUpperCase);
+			    }
+			    
+			    thumbnailNames.Add(thumbToUpperCase);
 		    }
 
 		    // Status if there is nothing uploaded
-		    if ( !thumbnailPaths.Any() )
+		    if ( !thumbnailNames.Any() )
 		    {
 			    Response.StatusCode = 206;
 		    }
 
-		    for ( int i = 0; i < tempImportPaths.Count; i++ )
+		    for ( var i = 0; i < tempImportPaths.Count; i++ )
 		    {
-			    System.IO.File.Move(tempImportPaths[i],thumbnailPaths[i]);
+			    await _thumbnailStorage.WriteStreamAsync(
+				    _hostFileSystemStorage.ReadStream(tempImportPaths[i]), thumbnailNames[i]);
 		    }
 
-		    return Json(thumbnailPaths);
+		    return Json(thumbnailNames);
 	    }
 
 
@@ -166,7 +184,7 @@ namespace starsky.Controllers
             if (!isDownloaded) return NotFound("'file url' not found or domain not allowed " + fileUrl);
 
 	        var importedFiles = _import.Import(new List<string>{tempImportFullPath}, importSettings);
-            FilesHelper.DeleteFile(tempImportFullPath);
+	        _hostFileSystemStorage.FileDelete(tempImportFullPath);
             if(importedFiles.Count == 0) Response.StatusCode = 206;
             return Json(importedFiles);
         }
@@ -176,7 +194,7 @@ namespace starsky.Controllers
 	    /// </summary>
 	    /// <returns>list of files</returns>
 	    /// <response code="200">done</response>
-	    [HttpGet("/import/history")]
+	    [HttpGet("/api/import/history")]
 	    [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
 	    [Produces("application/json")]
 	    public IActionResult History()

@@ -4,6 +4,7 @@ import useGlobalSettings from '../hooks/use-global-settings';
 import useInterval from '../hooks/use-interval';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
+import { FileExtensions } from '../shared/file-extensions';
 import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
@@ -119,7 +120,7 @@ const ModalExport: React.FunctionComponent<IModalExportProps> = (props) => {
         <a href={new UrlQuery().UrlDownloadPhotoApi(props.select[0], false)} data-test="orginal" download={new URLPath().FileNameBreadcrumb(props.select[0])}
           target="_blank" rel="noopener noreferrer" className="btn btn--info">{MessageOrginalFile}</a>
         {singleFileThumbnailStatus ? <a href={new UrlQuery().UrlDownloadPhotoApi(props.select[0], true)}
-          download={new URLPath().FileNameBreadcrumb(props.select[0])} data-test="thumbnail"
+          download={new FileExtensions().GetFileNameWithoutExtension(props.select[0]) + ".jpg"} data-test="thumbnail"
           target="_blank" rel="noopener noreferrer" className={"btn btn--default"}>{MessageThumbnailFile}</a> : null}
       </> : null}
 

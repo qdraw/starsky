@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
-using starskycore.Services;
+using starsky.foundation.database.Helpers;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starskycore.ViewModels;
 
 namespace starsky.Controllers
@@ -12,7 +13,6 @@ namespace starsky.Controllers
     [Authorize]
     public class IndexController : Controller
     {
-        
         private readonly IQuery _query;
         private readonly AppSettings _appsettings;
 
@@ -27,7 +27,6 @@ namespace starsky.Controllers
 	    /// </summary>
 	    /// <param name="f">subPath</param>
 	    /// <param name="colorClass">filter on colorClass (use int)</param>
-	    /// <param name="json">to not show as webpage</param>
 	    /// <param name="collections">to combine files with the same name before the extension</param>
 	    /// <param name="hidedelete">ignore deleted files</param>
 	    /// <returns></returns>

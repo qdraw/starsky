@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
 using starskycore.Models;
 using starskycore.Services;
 using starskycore.ViewModels;

@@ -29,6 +29,14 @@
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
+    <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
+    <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
+    <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+    <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
+    <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+    <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
+    <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
     <ProjectReference Include="..\starskyadmincli\starskyadmincli.csproj" />
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
     <ProjectReference Include="..\starskygeocli\starskygeocli.csproj" />

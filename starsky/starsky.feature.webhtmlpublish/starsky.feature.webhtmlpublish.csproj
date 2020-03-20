@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>8.0</LangVersion>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{7f7fe502-31a8-409b-bd0b-92d7d1bfeb31}</ProjectGuid>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+      <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
+      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+      <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
+      <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="RazorLight" Version="2.0.0-beta4" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
+      <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0005" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Update="WebHtmlPublish\EmbeddedViews\**" CopyToOutputDirectory="PreserveNewest" />
+        <None Update="WebHtmlPublish\PublishedContent\**" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="WebHtmlPublish" />
+    </ItemGroup>
+
+</Project>

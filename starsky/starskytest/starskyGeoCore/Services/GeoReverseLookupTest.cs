@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.geolookup.Services;
+using starsky.foundation.database.Models;
 using starskycore.Helpers;
 using starskycore.Models;
-using starskygeocore.Services;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starskyGeoCore.Services

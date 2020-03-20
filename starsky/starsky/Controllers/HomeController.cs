@@ -15,7 +15,6 @@ namespace starsky.Controllers
 		private readonly string  _clientApp;
 		private readonly IAntiforgery _antiForgery;
 
-
 		public HomeController(IAntiforgery antiForgery)
 		{
 			_antiForgery = antiForgery;

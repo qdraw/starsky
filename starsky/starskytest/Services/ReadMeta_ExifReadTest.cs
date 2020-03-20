@@ -5,6 +5,9 @@ using System.Linq;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.readmeta.Services;
 using starskycore.Attributes;
 using starskycore.Models;
 using starskycore.Services;
@@ -125,7 +128,7 @@ namespace starskytest.Services
 	         
              var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.jpg");
              
-             Assert.AreEqual(FileIndexItem.Color.None, item.ColorClass);
+             Assert.AreEqual(ColorClassParser.Color.None, item.ColorClass);
              Assert.AreEqual("caption", item.Description );
              Assert.AreEqual(false,item.IsDirectory );
              Assert.AreEqual("test, sion", item.Tags);
@@ -151,7 +154,7 @@ namespace starskytest.Services
 	         
 	         var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.png");
 
-	         Assert.AreEqual(FileIndexItem.Color.SuperiorAlt, item.ColorClass);
+	         Assert.AreEqual(ColorClassParser.Color.SuperiorAlt, item.ColorClass);
 	         Assert.AreEqual("Description", item.Description );
 	         Assert.AreEqual(false,item.IsDirectory );
 	         Assert.AreEqual("tags", item.Tags);

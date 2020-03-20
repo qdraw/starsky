@@ -1,6 +1,7 @@
 import { mount, shallow } from 'enzyme';
 import React from 'react';
 import useIntersection from '../hooks/use-intersection-observer';
+import { ImageFormat } from '../interfaces/IFileIndexItem';
 import ListImage from './list-image';
 
 jest.mock('../hooks/use-intersection-observer');
@@ -8,22 +9,30 @@ jest.mock('../hooks/use-intersection-observer');
 describe("ListImageTest", () => {
 
   it("renders", () => {
-    shallow(<ListImage alt={'alt'} src={'src'}/>)
+    shallow(<ListImage alt={'alt'} fileHash={'src'} imageFormat={ImageFormat.jpg} />)
   });
 
   it('useIntersection = true', () => {
     (useIntersection as jest.Mock<any>).mockImplementation(() => (true));
-    var element = mount(<ListImage src={'test.jpg'} />);
+    var element = mount(<ListImage fileHash={'test.jpg'} imageFormat={ImageFormat.jpg} />);
     element.find('img').simulate("load");
 
     expect(element.find('img').length).toBe(1);
     expect(element.find('img').filterWhere((item) => {
-      return item.prop('src') === 'test.jpg';
+      return item.prop('src') === '/api/thumbnail/test.jpg.jpg?issingleitem=true';
     })).toHaveLength(1);
   });
 
   it('img-box--error null', () => {
-    var element = shallow(<ListImage src={'null.jpg?issingleitem=true'} />);
+    var element = shallow(<ListImage imageFormat={ImageFormat.jpg} fileHash={'null'} />);
+
+    expect(element.filterWhere((item) => {
+      return item.prop('className') === 'img-box--error';
+    })).toHaveLength(1);
+  });
+
+  it('img-box--error null', () => {
+    var element = shallow(<ListImage imageFormat={ImageFormat.jpg} fileHash={'null'} />);
 
     expect(element.filterWhere((item) => {
       return item.prop('className') === 'img-box--error';

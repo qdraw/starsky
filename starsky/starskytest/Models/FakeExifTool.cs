@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.writemeta.Interfaces;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;

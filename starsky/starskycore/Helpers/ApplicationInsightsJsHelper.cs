@@ -1,8 +1,10 @@
 using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.AspNetCore.Http;
+using starsky.foundation.injection;
 
 namespace starskycore.Helpers
 {
+	[Service(InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ApplicationInsightsJsHelper
 	{
 		private readonly IHttpContextAccessor _httpContext;
@@ -16,7 +18,7 @@ namespace starskycore.Helpers
 		public ApplicationInsightsJsHelper(IHttpContextAccessor httpContext, JavaScriptSnippet aiJavaScriptSnippet = null)
 		{
 			_httpContext = httpContext;
-			if(aiJavaScriptSnippet != null) _aiJavaScriptSnippet = aiJavaScriptSnippet;
+			if(aiJavaScriptSnippet != null && !string.IsNullOrEmpty(aiJavaScriptSnippet.FullScript)) _aiJavaScriptSnippet = aiJavaScriptSnippet;
 		}
 		
 		/// <summary>

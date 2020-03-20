@@ -45,7 +45,7 @@ namespace starsky.Controllers
 		/// <response code="503">503 Service Unavailable</response>
 		/// <response code="401">Login first</response>
 		[HttpGet("/api/health/details")]
-		[Authorize]
+		[Authorize] // <--------------
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(HealthView),200)]
 		[ProducesResponseType(typeof(HealthView),503)]

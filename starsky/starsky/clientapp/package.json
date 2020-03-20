@@ -1,6 +1,6 @@
 {
   "name": "clientapp",
-  "version": "0.1.17",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "@reach/router": "^1.2.1",

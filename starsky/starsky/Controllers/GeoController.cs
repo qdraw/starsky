@@ -4,12 +4,20 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
+using starsky.feature.geolookup.Models;
+using starsky.feature.geolookup.Services;
+using starsky.foundation.database.Models;
 using starskycore.Services;
-using starskygeocore.Models;
-using starskygeocore.Services;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
+using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Services;
 
 namespace starsky.Controllers
 {
@@ -20,26 +28,27 @@ namespace starsky.Controllers
 		private readonly AppSettings _appSettings;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IReadMeta _readMeta;
-		private readonly IStorage _iStorage;
 		private readonly IMemoryCache _cache;
+		private readonly IStorage _thumbnailStorage;
+		private readonly IStorage _iStorage;
 
 		public GeoController(IExifTool exifTool, 
 			AppSettings appSettings, IBackgroundTaskQueue queue,
-			IReadMeta readMeta,
-			IStorage iStorage, 
+			ISelectorStorage selectorStorage, 
 			IMemoryCache memoryCache = null )
 		{
 			_appSettings = appSettings;
 			_exifTool = exifTool;
 			_bgTaskQueue = queue;
-			_readMeta = readMeta;
-			_iStorage = iStorage;
+			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+			_readMeta = new ReadMeta(_iStorage);
 			_cache = memoryCache;
 		}
 
 		
 		/// <summary>
-		/// Get Geo sync status (WIP)
+		/// Get Geo sync status
 		/// </summary>
 		/// <param name="f">sub path folders</param>
 		/// <returns>status of geo sync</returns>
@@ -58,7 +67,7 @@ namespace starsky.Controllers
 		
 		
 		/// <summary>
-		/// WIP Alpha API -- Reverse lookup for Geo Information and/or add Geo location based on a GPX file within the same directory
+		/// Reverse lookup for Geo Information and/or add Geo location based on a GPX file within the same directory
 		/// </summary>
 		/// <param name="f">subPath only folders</param>
 		/// <param name="index">-i in cli</param>
@@ -99,11 +108,11 @@ namespace starsky.Controllers
 						new GeoIndexGpx(_appSettings, _iStorage, _cache)
 							.LoopFolder(fileIndexList);
 					
-					Console.Write("¬");
+					if ( _appSettings.Verbose ) Console.Write("¬");
 					
-					new GeoLocationWrite(_appSettings, _exifTool)
+					new GeoLocationWrite(_appSettings, _exifTool, _iStorage, _thumbnailStorage)
 						.LoopFolder(toMetaFilesUpdate, false);
-					Console.Write("(gps added)");
+					
 				}
 
 				fileIndexList =
@@ -112,7 +121,7 @@ namespace starsky.Controllers
 				
 				if ( fileIndexList.Count >= 1 )
 				{
-					new GeoLocationWrite(_appSettings, _exifTool).LoopFolder(
+					new GeoLocationWrite(_appSettings, _exifTool, _iStorage, _thumbnailStorage).LoopFolder(
 						fileIndexList, true);
 				}
 
@@ -123,8 +132,8 @@ namespace starsky.Controllers
 				foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
 					.ToList() )
 				{
-					var newThumb = new FileHash(_iStorage).GetHashCode(item.FilePath);
-					_iStorage.ThumbnailMove(item.FileHash, newThumb);
+					var newThumb = new FileHash(_iStorage).GetHashCode(item.FilePath).Key;
+					_thumbnailStorage.FileMove(item.FileHash, newThumb);
 					if ( _appSettings.Verbose )
 						Console.WriteLine("thumb + `" + item.FileHash + "`" + newThumb);
 				}

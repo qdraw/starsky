@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using starskycore.Models.Account;
+using starsky.foundation.database.Models.Account;
 
 namespace starskycore.Interfaces
 {

@@ -4,6 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.readmeta.Services;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
@@ -67,7 +70,7 @@ namespace starskytest.Services
             
             Assert.AreEqual(28d, data.FocalLength);
 
-            Assert.AreEqual(FileIndexItem.Color.Winner,data.ColorClass);
+            Assert.AreEqual(ColorClassParser.Color.Winner,data.ColorClass);
             
             DateTime.TryParseExact("2018-07-18 19:44:27", 
                 "yyyy-MM-dd HH:mm:ss",
@@ -107,7 +110,7 @@ namespace starskytest.Services
 		    Assert.AreEqual("Gelderland",data.LocationState);
 		    Assert.AreEqual("Nederland",data.LocationCountry);
 
-		    Assert.AreEqual(FileIndexItem.Color.Winner,data.ColorClass);
+		    Assert.AreEqual(ColorClassParser.Color.Winner,data.ColorClass);
             
 		    DateTime.TryParseExact("2018-07-18 19:44:27", 
 			    "yyyy-MM-dd HH:mm:ss",
@@ -156,7 +159,7 @@ namespace starskytest.Services
 		    Assert.AreEqual("Gelderland",data.LocationState);
 		    Assert.AreEqual("Nederland",data.LocationCountry);
 
-		    Assert.AreEqual(FileIndexItem.Color.Winner,data.ColorClass);
+		    Assert.AreEqual(ColorClassParser.Color.Winner,data.ColorClass);
             
 		    DateTime.TryParseExact("2018-07-18 19:44:27", 
 			    "yyyy-MM-dd HH:mm:ss",
@@ -170,7 +173,7 @@ namespace starskytest.Services
 	    [TestMethod]
 	    public void XmpBasicRead_xPacket()
 	    {
-		    var xmpStart = "<?xpacket begin=\'﻿\' id=\'W5M0MpCehiHzreSzNTczkc9d\'?>\n<x:xmpmeta xmlns:x=\'adobe:ns:meta/\' x:xmptk=\'Image::ExifTool 10.40\'>\n<rdf:RDF xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#\'>\n</rdf:RDF>\n</x:xmpmeta>\n<?xpacket end=\'w\'?>";
+		    var xmpStart = "<?xpacket begin=\' \' id=\'W5M0MpCehiHzreSzNTczkc9d\'?>\n<x:xmpmeta xmlns:x=\'adobe:ns:meta/\' x:xmptk=\'Image::ExifTool 10.40\'>\n<rdf:RDF xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#\'>\n</rdf:RDF>\n</x:xmpmeta>\n<?xpacket end=\'w\'?>";
 		    
 		    var data = new ReadMetaXmp(null).GetDataFromString(xmpStart);
 		    

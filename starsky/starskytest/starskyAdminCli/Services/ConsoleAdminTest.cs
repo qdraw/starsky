@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Models;
 using starskyAdminCli.Services;
 using starskycore.Models;
 using starskytest.FakeMocks;

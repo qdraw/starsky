@@ -1,14 +1,16 @@
-
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using starsky.foundation.database.Helpers;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Interfaces;
 using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
-using starskycore.ViewModels;
 
 namespace starskycore.Services
 {

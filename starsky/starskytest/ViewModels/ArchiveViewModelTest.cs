@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Models;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starskycore.ViewModels;
 
 namespace starskytest.ViewModels
@@ -21,12 +22,12 @@ namespace starskytest.ViewModels
         {
 	        var viewModel = new ArchiveViewModel
 	        {
-		        ColorClassActiveList = new List<FileIndexItem.Color>{FileIndexItem.Color.None},
-		        ColorClassUsage = new List<FileIndexItem.Color>{FileIndexItem.Color.None}
+		        ColorClassActiveList = new List<ColorClassParser.Color>{ColorClassParser.Color.None},
+		        ColorClassUsage = new List<ColorClassParser.Color>{ColorClassParser.Color.None}
 	        };
             
-	        Assert.AreEqual(FileIndexItem.Color.None, viewModel.ColorClassActiveList.FirstOrDefault());            
-	        Assert.AreEqual(FileIndexItem.Color.None, viewModel.ColorClassUsage.FirstOrDefault());            
+	        Assert.AreEqual(ColorClassParser.Color.None, viewModel.ColorClassActiveList.FirstOrDefault());            
+	        Assert.AreEqual(ColorClassParser.Color.None, viewModel.ColorClassUsage.FirstOrDefault());            
         }
         
         [TestMethod]

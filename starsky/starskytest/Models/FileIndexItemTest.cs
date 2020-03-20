@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
 using starskycore.Models;
 
@@ -48,88 +50,88 @@ namespace starskytest.Models
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTestDefault()
         {
-            var input = new FileIndexItem().GetColorClass();
-            var output = FileIndexItem.Color.None;
+            var input = ColorClassParser.GetColorClass();
+            var output = ColorClassParser.Color.None;
             Assert.AreEqual(input,output);
         }
         
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTestMin1()
         {
-            var input = new FileIndexItem().GetColorClass("-1");
-            var output = FileIndexItem.Color.DoNotChange;
+            var input = ColorClassParser.GetColorClass("-1");
+            var output = ColorClassParser.Color.DoNotChange;
             Assert.AreEqual(input,output);
         }
         
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest0()
         {
-            var input = new FileIndexItem().GetColorClass("0");
-            var output = FileIndexItem.Color.None;
+            var input = ColorClassParser.GetColorClass("0");
+            var output = ColorClassParser.Color.None;
             Assert.AreEqual(input,output);
         }
         
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest1()
         {
-            var input = new FileIndexItem().GetColorClass("1");
-            var output = FileIndexItem.Color.Winner;
+            var input = ColorClassParser.GetColorClass("1");
+            var output = ColorClassParser.Color.Winner;
             Assert.AreEqual(input,output);
         }
         
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest2()
         {
-            var input = new FileIndexItem().GetColorClass("2");
-            var output = FileIndexItem.Color.WinnerAlt;
+            var input = ColorClassParser.GetColorClass("2");
+            var output = ColorClassParser.Color.WinnerAlt;
             Assert.AreEqual(input,output);
         }
         
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest3()
         {
-            var input = new FileIndexItem().GetColorClass("3");
-            var output = FileIndexItem.Color.Superior;
+            var input = ColorClassParser.GetColorClass("3");
+            var output = ColorClassParser.Color.Superior;
             Assert.AreEqual(input,output);
         }
         
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest4()
         {
-            var input = new FileIndexItem().GetColorClass("4");
-            var output = FileIndexItem.Color.SuperiorAlt;
+            var input = ColorClassParser.GetColorClass("4");
+            var output = ColorClassParser.Color.SuperiorAlt;
             Assert.AreEqual(input,output);
         }
         
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest5()
         {
-            var input = new FileIndexItem().GetColorClass("5");
-            var output = FileIndexItem.Color.Typical;
+            var input = ColorClassParser.GetColorClass("5");
+            var output = ColorClassParser.Color.Typical;
             Assert.AreEqual(input,output);
         }
         
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest6()
         {
-            var input = new FileIndexItem().GetColorClass("6");
-            var output = FileIndexItem.Color.TypicalAlt;
+            var input = ColorClassParser.GetColorClass("6");
+            var output = ColorClassParser.Color.TypicalAlt;
             Assert.AreEqual(input,output);
         }
         
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest7()
         {
-            var input = new FileIndexItem().GetColorClass("7");
-            var output = FileIndexItem.Color.Extras;
+            var input = ColorClassParser.GetColorClass("7");
+            var output = ColorClassParser.Color.Extras;
             Assert.AreEqual(input,output);
         }
         
         [TestMethod]
         public void FileIndexItemTest_SetColorClassTest8()
         {
-            var input = new FileIndexItem().GetColorClass("8");
-            var output = FileIndexItem.Color.Trash;
+            var input = ColorClassParser.GetColorClass("8");
+            var output = ColorClassParser.Color.Trash;
             Assert.AreEqual(input,output);
         }
 
@@ -137,7 +139,7 @@ namespace starskytest.Models
         public void FileIndexItemTest_GetColorClassListTestEightSeven()
         {
             var input = "8,7";
-            var eightSeven = new List<FileIndexItem.Color> {FileIndexItem.Color.Trash,FileIndexItem.Color.Extras};
+            var eightSeven = new List<ColorClassParser.Color> {ColorClassParser.Color.Trash,ColorClassParser.Color.Extras};
             var output = new FileIndexItem().GetColorClassList(input);
             CollectionAssert.AreEqual(eightSeven,output);
         }
@@ -269,7 +271,7 @@ namespace starskytest.Models
         [TestMethod]
         public void FileIndexItemTest_colorDisplayName_WinnerAlt()
         {
-            var colorDisplayName = EnumHelper.GetDisplayName(FileIndexItem.Color.WinnerAlt);
+            var colorDisplayName = EnumHelper.GetDisplayName(ColorClassParser.Color.WinnerAlt);
             Assert.AreEqual("Winner Alt",colorDisplayName);
         }
 	    

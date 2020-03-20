@@ -1,4 +1,6 @@
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
 
 namespace starskytest.Helpers
@@ -46,13 +48,20 @@ namespace starskytest.Helpers
 		public void FilenamesHelper_GetParentPathSubDir()
 		{
 			var result = FilenamesHelper.GetParentPath("/sub/yes.jpg");
-			Assert.AreEqual("/sub/", result);
+			Assert.AreEqual("/sub", result);
 		}
 
 		[TestMethod]
 		public void FilenamesHelper_GetFileNameWithoutExtension()
 		{
 			var result = FilenamesHelper.GetFileNameWithoutExtension("/te_st/test.com");
+			Assert.AreEqual("test", result);
+		}
+		
+		[TestMethod]
+		public void FilenamesHelper_GetFileNameWithoutExtension_mp4()
+		{
+			var result = FilenamesHelper.GetFileNameWithoutExtension("/te_st/test.mp4");
 			Assert.AreEqual("test", result);
 		}
 		
@@ -77,6 +86,40 @@ namespace starskytest.Helpers
 			Assert.AreEqual("0000000000aaaaa__exifreadingtest00", result);
 		}
 		
+		[TestMethod]
+		public void FilenamesHelper_GetFileExtensionWithoutDot_NoExtension()
+		{
+			var result = FilenamesHelper.GetFileExtensionWithoutDot("/test_image");
+			Assert.AreEqual(string.Empty, result);
+		}
+		
+		[TestMethod]
+		public void FilenamesHelper_GetFileExtensionWithoutDot_Mp4()
+		{
+			var result = FilenamesHelper.GetFileExtensionWithoutDot("/test.mp4");
+			Assert.AreEqual("mp4", result);
+		}
+		
+		[TestMethod]
+		public void FilenamesHelper_GetFileExtensionWithoutDot_UpperCase_Mp4()
+		{
+			var result = FilenamesHelper.GetFileExtensionWithoutDot("/test.MP4");
+			Assert.AreEqual("mp4", result);
+		}
+		
+		[TestMethod]
+		public void FilenamesHelper_GetFileExtensionWithoutDot_FilePath()
+		{
+			var result = FilenamesHelper.GetFileExtensionWithoutDot("/folder/test.mp4");
+			Assert.AreEqual("mp4", result);
+		}
+		
+		[TestMethod]
+		public void FilenamesHelper_GetFileExtensionWithoutDot_Jpeg()
+		{
+			var result = FilenamesHelper.GetFileExtensionWithoutDot("/test.jpeg");
+			Assert.AreEqual("jpeg", result);
+		}		
 	}
 	
 }

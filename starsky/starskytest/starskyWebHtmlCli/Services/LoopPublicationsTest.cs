@@ -1,6 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.webhtmlpublish.Services;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Helpers;
+using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
@@ -43,8 +49,6 @@ namespace starskytest.starskyWebHtmlCli.Services
                 Path = new CreateAnImage().FullFilePath, // <== overlay image; depends on fs
                 SourceMaxWidth = 1200
             });
-            
-            
 
             // Move to the same folder
             appSettings.PublishProfiles.Add(new AppSettingsPublishProfiles
@@ -58,10 +62,17 @@ namespace starskytest.starskyWebHtmlCli.Services
                 FileName = "/test.jpg",
                 FileHash = "FILEHASH"
             }};
-
-	        var fakeStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg"},new List<byte[]>{CreateAnImage.Bytes},new List<string>{"FILEHASH"});
+            
+	        var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
+		        new List<string>{"/test.jpg","FILEHASH"},new List<byte[]>{CreateAnImage.Bytes, CreateAnImage.Bytes,});
+	        var selectorStorage = new FakeSelectorStorage(fakeStorage);
 	        
-            new LoopPublications(fakeStorage, appSettings,new FakeExifTool(fakeStorage,appSettings), new ReadMeta(fakeStorage)).Render(list,null);
+	        var template = "<html></html>";
+	        fakeStorage.WriteStream(new PlainTextFileHelper().StringToStream(template),
+		        new EmbeddedViewsPath().GetViewFullPath("Index.cshtml"));
+	        
+            new LoopPublications(selectorStorage, appSettings,
+	            new FakeExifTool(fakeStorage,appSettings), new ReadMeta(fakeStorage)).Render(list,null);
 
 	        var dir = fakeStorage.GetAllFilesInDirectory("/").ToList();
 

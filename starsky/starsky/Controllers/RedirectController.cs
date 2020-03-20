@@ -1,7 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starskycore.Models;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Models;
 
 namespace starsky.Controllers
 {

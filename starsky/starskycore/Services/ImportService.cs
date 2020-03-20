@@ -3,48 +3,69 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using starskycore.Data;
-using starskycore.Extensions;
-using starskycore.Helpers;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Extensions;
+using starsky.foundation.database.Models;
+using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
+using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Helpers;
+using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Services;
 using starskycore.Interfaces;
 using starskycore.Models;
 
 namespace starskycore.Services
 {
+	[Service(typeof(IImport), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ImportService : IImport
 	{
-		private readonly IStorage _filesystemHelper;
-		private readonly IStorage _inDbStorage;
+		private readonly IStorage _filesystemStorage;
+		private readonly IStorage _subPathStorage;
+		private readonly IStorage _thumbnailStorage;
 
 		private ApplicationDbContext _context;
 		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
-		private readonly IReadMeta _readmeta;
+		
+		private readonly IReadMeta _readMetaSubPath;
+		private readonly IReadMeta _readMetaHost;
+		
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly bool _isConnection;
-		private readonly ISync _isync;
+		private readonly ISync _iSync;
+		private readonly ISelectorStorage _selectorStorage;
 
 		public ImportService(ApplicationDbContext context, // <= for table import-index
-			ISync isync,
+			ISync iSync,
 			IExifTool exifTool,
 			AppSettings appSettings,
 			IServiceScopeFactory scopeFactory,
-			IStorage iStorage,
-			bool ignoreIStorage = true)
+			ISelectorStorage selectorStorage)
 		{
-			_filesystemHelper = new StorageHostFullPathFilesystem();
 			_context = context;
 			_isConnection = _context.TestConnection();
 
-			_isync = isync;
+			_iSync = iSync;
 			_exifTool = exifTool;
 			_appSettings = appSettings;
 
+			_selectorStorage = selectorStorage;
+			_filesystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+			
 			// This is used to handle files on the host system
-			if ( !ignoreIStorage ) _readmeta = new ReadMeta(iStorage);
-			if ( ignoreIStorage ) _readmeta = new ReadMeta(_filesystemHelper);
+			_readMetaHost = new ReadMeta(_filesystemStorage,_appSettings); // cache disabled
+			// and in the database itself
+			_readMetaSubPath = new ReadMeta(_subPathStorage,_appSettings); // cache disabled
 
-			_inDbStorage = iStorage;
 			_scopeFactory = scopeFactory;
 		}
 
@@ -67,7 +88,7 @@ namespace starskycore.Services
 		public List<string> Import(string inputFullPath, ImportSettingsModel importSettings)
 		{
 
-			if ( _filesystemHelper.IsFolderOrFile(inputFullPath) == FolderOrFileModel.FolderOrFileTypeList.File )
+			if ( _filesystemStorage.IsFolderOrFile(inputFullPath) == FolderOrFileModel.FolderOrFileTypeList.File )
 			{
 				// file, continue here -->
 				var successfulFullPaths = ImportFile(inputFullPath, importSettings);
@@ -75,7 +96,7 @@ namespace starskycore.Services
 				return new List<string>();
 			}
 
-			if ( _filesystemHelper.IsFolderOrFile(inputFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			if ( _filesystemStorage.IsFolderOrFile(inputFullPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				Console.WriteLine("File already exist or not found " + inputFullPath);
 				return new List<string>();
@@ -85,10 +106,10 @@ namespace starskycore.Services
 
 			var filesFullPathList = new List<string>();
 			// recursive
-			if(importSettings.RecursiveDirectory) filesFullPathList = new StorageHostFullPathFilesystem().GetAllFilesInDirectoryRecursive(inputFullPath)
+			if(importSettings.RecursiveDirectory) filesFullPathList = _filesystemStorage.GetAllFilesInDirectoryRecursive(inputFullPath)
 				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 			// non-recursive
-			if(!importSettings.RecursiveDirectory) filesFullPathList = new StorageHostFullPathFilesystem().GetAllFilesInDirectory(inputFullPath)
+			if(!importSettings.RecursiveDirectory) filesFullPathList = _filesystemStorage.GetAllFilesInDirectory(inputFullPath)
 				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
 			// go back to Import -->
@@ -123,7 +144,7 @@ namespace starskycore.Services
 
 			// Check if the file is correct
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(
-				new StorageHostFullPathFilesystem().ReadStream(inputFileFullPath, 160));
+				_filesystemStorage.ReadStream(inputFileFullPath, 160));
 
 			if ( ! ExtensionRolesHelper.ExtensionSyncSupportedList.Contains($"{imageFormat}") )
 			{
@@ -142,7 +163,9 @@ namespace starskycore.Services
 			{
 				fileIndexItem.DateTime = importIndexItem.ParseDateTimeFromFileName();
 				// > for the exif based items it is done in: ObjectCreateIndexItem()
-				fileIndexItem.FileName = importIndexItem.ParseFileName();
+				
+				var imageFormatExtenstion = ExtensionRolesHelper.GetImageFormat(_filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath,50));
+				fileIndexItem.FileName = importIndexItem.ParseFileName(imageFormatExtenstion);
 
 				fileIndexItem.Description = "Date and Time based on filename";
 				importSettings.NeedExiftoolSync = true;
@@ -165,9 +188,9 @@ namespace starskycore.Services
 			fileIndexItem.FileHash = fileHashCode;
 
 			// Feature to overwrite default ColorClass Setting
-			// First check and I is defferent than default enable sync
-			fileIndexItem.ColorClass = fileIndexItem.GetColorClass(importSettings.ColorClass.ToString());
-			if (fileIndexItem.ColorClass != FileIndexItem.Color.None && fileIndexItem.ColorClass != FileIndexItem.Color.DoNotChange)
+			// First check and I is different than default enable sync
+			fileIndexItem.ColorClass = ColorClassParser.GetColorClass(importSettings.ColorClass.ToString());
+			if (fileIndexItem.ColorClass != ColorClassParser.Color.None && fileIndexItem.ColorClass != ColorClassParser.Color.DoNotChange)
 				importSettings.NeedExiftoolSync = true;
 
 			// Item is good
@@ -177,16 +200,16 @@ namespace starskycore.Services
 			// This field is NOT updated when you move a file
 			importIndexItem.FilePath = fileIndexItem.FilePath;
 
-			// Store fileindexitem inside ImportIndexIten
+			// Store fileIndexItem inside ImportIndexItem
 			importIndexItem.FileIndexItem = fileIndexItem;
 			return importIndexItem;
 		}
 		public List<ImportIndexItem> Preflight(List<string> inputFileFullPaths, ImportSettingsModel importSettings)
 	    {
 		    // Do some import checks before sending it to the background service
-		    var hashList = new FileHash(_filesystemHelper).GetHashCode(inputFileFullPaths.ToArray());
+		    var hashList = new FileHash(_filesystemStorage).GetHashCode(inputFileFullPaths.ToArray());
 
-			var fileIndexResultsList = hashList.Select((t, i) => PreflightByItem(inputFileFullPaths[i], t, importSettings)).ToList();
+			var fileIndexResultsList = hashList.Select((t, i) => PreflightByItem(inputFileFullPaths[i], t.Key, importSettings)).ToList();
 		    return fileIndexResultsList;
 	    }
 
@@ -198,14 +221,17 @@ namespace starskycore.Services
 		public ImportIndexItem ImportFile(string inputFileFullPath, ImportSettingsModel importSettings)
 	    {
 		    if(_appSettings.Verbose) Console.Write("î");
-		    var hashCode = new FileHash(_filesystemHelper).GetHashCode(inputFileFullPath);
+		    var hashCode = new FileHash(_filesystemStorage).GetHashCode(inputFileFullPath).Key;
 		    if(_appSettings.Verbose) Console.Write($"œ{hashCode}¥");
 			var importIndexItem = PreflightByItem(inputFileFullPath, hashCode, importSettings);
-
+			
+			// When rejected
+			if ( importIndexItem.FileIndexItem == null ) return importIndexItem;
+			
 		    // only used when feature is enabled
 		    if ( importIndexItem.Status == ImportStatus.AgeToOld || importIndexItem.Status == ImportStatus.IgnoredAlreadyImported ) return importIndexItem;
 		    var fileIndexItem = importIndexItem.FileIndexItem;
-		    var destinationFullPath = DestionationFullPathDuplicateTryAgain(inputFileFullPath,fileIndexItem);
+		    var destinationFullPath = DestinationFullPathDuplicateTryAgain(inputFileFullPath,fileIndexItem);
             if (destinationFullPath == null) Console.WriteLine("> "+ inputFileFullPath
                                                                    + " "  + fileIndexItem.FileName
                                                                    +  " Please try again > to many failures;");
@@ -216,22 +242,22 @@ namespace starskycore.Services
             importIndexItem.FilePath = fileIndexItem.FilePath;
 
 		    // Do the copy to the storage folder
-		    _filesystemHelper.FileCopy(inputFileFullPath, destinationFullPath);
+		    _filesystemStorage.FileCopy(inputFileFullPath, destinationFullPath);
 		    
 		    // Support for include sidecar files
 		    var xmpFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(inputFileFullPath);
 		    if ( ExtensionRolesHelper.IsExtensionForceXmp(inputFileFullPath)  &&
-		         _filesystemHelper.ExistFile(xmpFullFilePath))
+		         _filesystemStorage.ExistFile(xmpFullFilePath))
 		    {
 			    var destinationXmpFullPath =  ExtensionRolesHelper.ReplaceExtensionWithXmp(destinationFullPath);
-			    _filesystemHelper.FileCopy(xmpFullFilePath, destinationXmpFullPath);
+			    _filesystemStorage.FileCopy(xmpFullFilePath, destinationXmpFullPath);
 		    }
 		    
 		    // From here on the item is exit in the storage folder
 		    // Creation of a sidecar xmp file --> NET CORE <--
 		    if ( _appSettings.ExifToolImportXmpCreate && !_appSettings.AddLegacyOverwrite )
 		    {
-			    var exifCopy = new ExifCopy(_inDbStorage, new ExifTool(_inDbStorage,_appSettings), new ReadMeta(_inDbStorage));
+			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, new ExifTool(_selectorStorage,_appSettings), new ReadMeta(_subPathStorage));
 			    exifCopy.XmpSync(fileIndexItem.FilePath);
 		    }
 
@@ -247,7 +273,7 @@ namespace starskycore.Services
                     nameof(FileIndexItem.Description),
                 };
 
-                new ExifToolCmdHelper(_exifTool,_inDbStorage,_readmeta).Update(fileIndexItem, comparedNamesList);
+                new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, _readMetaSubPath).Update(fileIndexItem, comparedNamesList);
             }
 
 	        // Ignore the sync part if the connection is missing
@@ -255,7 +281,7 @@ namespace starskycore.Services
 	        if ( importIndexItem.Status == ImportStatus.Ok && importSettings.IndexMode && _isConnection )
 	        {
 		        // The files that are imported need to be synced
-		        var syncFiles = _isync.SyncFiles(fileIndexItem.FilePath).ToList();
+		        var syncFiles = _iSync.SyncFiles(fileIndexItem.FilePath).ToList();
 
 		        // import has failed it has a list with one item with a empty string
 		        if ( syncFiles.FirstOrDefault() == string.Empty) return new ImportIndexItem{Status = ImportStatus.FileError};
@@ -269,7 +295,7 @@ namespace starskycore.Services
 			// setting
             if (importSettings.DeleteAfter)
             {
-	            _filesystemHelper.FileDelete(inputFileFullPath);
+	            _filesystemStorage.FileDelete(inputFileFullPath);
             }
 
 	        return importIndexItem;
@@ -296,7 +322,14 @@ namespace starskycore.Services
 				importIndexItem.Structure = overwriteStructure;
 			}
 
-			fileIndexItem.FileName = importIndexItem.ParseFileName();
+			var imageFormatExtenstion =
+				_filesystemStorage.ExistFile(importIndexItem.SourceFullFilePath)
+					? ExtensionRolesHelper.GetImageFormat(
+						_filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath, 160))
+					: ExtensionRolesHelper.ImageFormat.unknown;
+			
+			fileIndexItem.FileName = importIndexItem.ParseFileName(imageFormatExtenstion);
+			
 			return importIndexItem;
 		}
 
@@ -347,7 +380,7 @@ namespace starskycore.Services
 
 		public FileIndexItem ReadExifAndXmpFromFile(string inputFileFullPath)
 		{
-			return _readmeta.ReadExifAndXmpFromFile(inputFileFullPath);
+			return _readMetaHost.ReadExifAndXmpFromFile(inputFileFullPath);
 		}
 
 		public bool IsAgeFileFilter(ImportSettingsModel importSettings, DateTime exifDateTime)
@@ -362,27 +395,26 @@ namespace starskycore.Services
         /// <param name="inputFileFullPath">the source file</param>
         /// <param name="fileIndexItem">the object with the data</param>
         /// <returns>string with DestionationFullPath</returns>
-        public string DestionationFullPathDuplicateTryAgain(
+        public string DestinationFullPathDuplicateTryAgain(
             string inputFileFullPath,
             FileIndexItem fileIndexItem)
         {
-	        var destinationFullPath = DestionationFullPathDuplicate(inputFileFullPath,fileIndexItem);
+	        var destinationFullPath = DestinationFullPathDuplicate(inputFileFullPath,fileIndexItem);
 
             // For example when the number (ff) is already used:
-            if (!_filesystemHelper.ExistFile(destinationFullPath) ) return destinationFullPath;
-	        Console.WriteLine();
-            destinationFullPath = DestionationFullPathDuplicate(inputFileFullPath,fileIndexItem);
+            if (!_filesystemStorage.ExistFile(destinationFullPath) ) return destinationFullPath;
+            destinationFullPath = DestinationFullPathDuplicate(inputFileFullPath,fileIndexItem);
 
-            return _filesystemHelper.ExistFile(destinationFullPath) ? null : destinationFullPath;
+            return _filesystemStorage.ExistFile(destinationFullPath) ? null : destinationFullPath;
         }
 
 		/// <summary>
-		/// Checks if file exist in storagefolder - or suggest a `-102` or `-909` appendex
+		/// Checks if file exist in storage folder - or suggest a `-102` or `-909` appendex
 		/// </summary>
 		/// <param name="inputFileFullPath">the source file</param>
 		/// <param name="fileIndexItem">the object with the data</param>
-		/// <returns>string with DestionationFullPath</returns>
-		public string DestionationFullPathDuplicate(
+		/// <returns>string with DestinationFullPath</returns>
+		public string DestinationFullPathDuplicate(
 			string inputFileFullPath,
 			FileIndexItem fileIndexItem)
 		{
@@ -390,7 +422,7 @@ namespace starskycore.Services
 			if (fileIndexItem.FileName.Contains(".unknown"))
 			{
 				fileIndexItem.FileName = fileIndexItem.FileName.Replace(".unknown",
-					"." + ExtensionRolesHelper.GetImageFormat(inputFileFullPath));
+					"." + ExtensionRolesHelper.GetImageFormat(_filesystemStorage.ReadStream(inputFileFullPath,50)));
 			}
 
 			var destinationFullPath = _appSettings.DatabasePathToFilePath(fileIndexItem.ParentDirectory)
@@ -399,7 +431,7 @@ namespace starskycore.Services
 
 			// When a file already exist, when you have multiple files with the same datetime
 			if (inputFileFullPath != destinationFullPath
-			    && _filesystemHelper.ExistFile(destinationFullPath))
+			    && _filesystemStorage.ExistFile(destinationFullPath))
 			{
 
 				fileIndexItem.FileName = string.Concat(

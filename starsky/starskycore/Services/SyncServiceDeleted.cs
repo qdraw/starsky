@@ -1,5 +1,5 @@
 ﻿using System;
-using starskycore.Models;
+using starsky.foundation.storage.Models;
 
 namespace starskycore.Services
 {
@@ -16,7 +16,7 @@ namespace starskycore.Services
         {
             subPath = _query.SubPathSlashRemove(subPath);
 
-            if (_iStorage.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+            if (_subPathStorage.IsFolderOrFile(subPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
             {
                 Console.WriteLine(">>deleted");
                 if(_appSettings.Verbose) Console.WriteLine(subPath);

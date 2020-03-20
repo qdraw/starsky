@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.geolookup.Services;
+using starsky.foundation.database.Models;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
-using starskygeocore.Services;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 

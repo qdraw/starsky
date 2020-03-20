@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
 
 namespace starskytest.Helpers

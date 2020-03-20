@@ -4,6 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -17,8 +21,6 @@ namespace starskytest.FakeMocks
 	{
 		private List<string> _outputSubPathFolders = new List<string>();
 		private List<string> _outputSubPathFiles  = new List<string>();
-		private List<string> _fileHashPerThumbnail  = new List<string>();
-
 		private readonly  Dictionary<string, byte[]> _byteList = new Dictionary<string, byte[]>();
 
 		/// <summary>
@@ -29,22 +31,23 @@ namespace starskytest.FakeMocks
 		/// <param name="byteListSource"></param>
 		/// <param name="fileHashPerThumbnail">for mock fileHash=subPath</param>
 		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, 
-			IReadOnlyList<byte[]> byteListSource = null, List<string> fileHashPerThumbnail = null)
+			IReadOnlyList<byte[]> byteListSource = null)
 		{
 	
 			if ( outputSubPathFolders != null )
 			{
-				_outputSubPathFolders = outputSubPathFolders;
+				foreach ( var subPath in outputSubPathFolders )
+				{
+					_outputSubPathFolders.Add(PathHelper.PrefixDbSlash(subPath));
+				}
 			}
 
 			if ( outputSubPathFiles != null )
 			{
-				_outputSubPathFiles = outputSubPathFiles;
-			}
-
-			if ( fileHashPerThumbnail != null &&  fileHashPerThumbnail.Count == _outputSubPathFiles.Count)
-			{
-				_fileHashPerThumbnail = fileHashPerThumbnail;
+				foreach ( var subPath in outputSubPathFiles )
+				{
+					_outputSubPathFiles.Add(PathHelper.PrefixDbSlash(subPath));
+				}
 			}
 
 			if ( byteListSource != null && byteListSource.Count == _outputSubPathFiles.Count)
@@ -57,14 +60,14 @@ namespace starskytest.FakeMocks
 
 		}
 		
-		public bool ExistFile(string subPath)
+		public bool ExistFile(string path)
 		{
-			return _outputSubPathFiles.Contains(subPath);
+			return _outputSubPathFiles.Contains(PathHelper.PrefixDbSlash(path));
 		}
 
-		public bool ExistFolder(string subPath)
+		public bool ExistFolder(string path)
 		{
-			return _outputSubPathFolders.Contains(subPath);
+			return _outputSubPathFolders.Contains(PathHelper.PrefixDbSlash(path));
 		}
 
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath = "")
@@ -90,11 +93,13 @@ namespace starskytest.FakeMocks
 				throw new ArgumentException($"inputSubPath:{inputSubPath} - toSubPath:{toSubPath} indexOfFolders---1");
 			}
 			_outputSubPathFolders[indexOfFolders] = toSubPath;
-
 		}
 
 		public void FileMove(string inputSubPath, string toSubPath)
 		{
+			inputSubPath = PathHelper.PrefixDbSlash(inputSubPath);
+			toSubPath = PathHelper.PrefixDbSlash(toSubPath);
+
 			var indexOfFiles = _outputSubPathFiles.IndexOf(inputSubPath);
 			if ( indexOfFiles == -1 )
 			{
@@ -110,12 +115,21 @@ namespace starskytest.FakeMocks
 
 		public bool FileDelete(string path)
 		{
-			throw new NotImplementedException();
+			path = PathHelper.PrefixDbSlash(path);
+			if ( !ExistFile(path) ) return false;
+			var index = _outputSubPathFiles.IndexOf(path);
+			_outputSubPathFiles[index] = null;
+			return true;
 		}
 
 		public void CreateDirectory(string subPath)
 		{
 			_outputSubPathFolders.Add(subPath);
+		}
+
+		public bool FolderDelete(string path)
+		{
+			throw new NotImplementedException();
 		}
 
 		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
@@ -158,6 +172,8 @@ namespace starskytest.FakeMocks
 
 		public Stream ReadStream(string path, int maxRead = 2147483647)
 		{
+			path = PathHelper.PrefixDbSlash(path);
+			
 			if ( ExistFile(path) && _byteList.All(p => p.Key != path) )
 			{
 				byte[] byteArray = Encoding.UTF8.GetBytes("test");
@@ -169,13 +185,16 @@ namespace starskytest.FakeMocks
 			var result = _byteList.FirstOrDefault(p => p.Key == path).Value;
 			MemoryStream stream1 = new MemoryStream(result);
 			return stream1;
-
 		}
 
 		public bool WriteStream(Stream stream, string path)
 		{
+			path = PathHelper.PrefixDbSlash(path);
+
 			_outputSubPathFiles.Add(path);
-			
+
+			stream.Seek(0, SeekOrigin.Begin);
+
 			using (MemoryStream ms = new MemoryStream())
 			{
 				stream.CopyTo(ms);
@@ -188,59 +207,16 @@ namespace starskytest.FakeMocks
 				}
 				
 				_byteList.Add(path, byteArray);
+				if ( byteArray.Length == 0 ) throw new FileLoadException($"FakeIStorage WriteStream => path {path} is 0 bytes");
 			}
-
-			return true;
-		}
-
-		/// <summary>
-		/// Check if exist
-		/// </summary>
-		/// <param name="fileHash">for mock fileHash</param>
-		/// <returns></returns>
-		public bool ThumbnailExist(string fileHash)
-		{
-			if ( _fileHashPerThumbnail.Count == 0 )
-				throw new ArgumentException("fill the thumbnail field first");
-			return _fileHashPerThumbnail.Any(p => p == fileHash);
-		}
-
-		public Stream ThumbnailRead(string fileHash)
-		{
-			if ( !ThumbnailExist(fileHash) ) throw new FileNotFoundException("fileHash");
-
-			var indexOf = _fileHashPerThumbnail.IndexOf(fileHash);
-
-			// return the actual image (not the thumb)
-			var result = _byteList.FirstOrDefault(p => p.Key == _outputSubPathFiles[indexOf]).Value;
-			MemoryStream stream1 = new MemoryStream(result);
-			return stream1;
-			
-			throw new NotImplementedException();
-		}
-
-		public bool ThumbnailWriteStream(Stream stream, string fileHash)
-		{
 			stream.Dispose();
-			if ( _fileHashPerThumbnail.Count == 0 )
-				throw new ArgumentException("fill the thumbnail bool field first");
-			var index = _outputSubPathFiles.IndexOf(fileHash);
 			return true;
 		}
 
-		public void ThumbnailMove(string fromFileHash, string toFileHash)
+		public Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
-			var indexOfFolders = _fileHashPerThumbnail.IndexOf(fromFileHash);
-			if ( indexOfFolders == -1 )
-			{
-				throw new ArgumentException($"inputSubPath:{fromFileHash} - toSubPath:{toFileHash} indexOfFolders---1");
-			}
-			_fileHashPerThumbnail[indexOfFolders] = toFileHash;
+			return Task.FromResult(WriteStream(stream, path));
 		}
 
-		public bool ThumbnailDelete(string fileHash)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

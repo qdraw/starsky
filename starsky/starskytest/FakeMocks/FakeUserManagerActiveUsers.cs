@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using starsky.foundation.database.Models.Account;
 using starskycore.Interfaces;
-using starskycore.Models.Account;
 
 namespace starskytest.FakeMocks
 {

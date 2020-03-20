@@ -5,11 +5,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Data;
-using starskycore.Interfaces;
-using starskycore.Models;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
 using starskycore.Services;
-using starskycore.ViewModels;
 using starskytest.FakeMocks;
 using starskytest.Models;
 
@@ -19,11 +23,11 @@ namespace starskytest.Services
 	public class UpdateServiceTest
 	{
 		private readonly IMemoryCache _memoryCache;
-		private IQuery _query;
-		private AppSettings _appSettings;
-		private FakeExifTool _exifTool;
-		private ReadMeta _readMeta;
-		private IStorage _iStorageFake;
+		private readonly IQuery _query;
+		private readonly AppSettings _appSettings;
+		private readonly FakeExifTool _exifTool;
+		private readonly ReadMeta _readMeta;
+		private readonly IStorage _iStorageFake;
 		private readonly Query _queryWithoutCache;
 		private string _exampleHash;
 
@@ -43,27 +47,22 @@ namespace starskytest.Services
 
 			_appSettings = new AppSettings();
 
-			_iStorageFake = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes}, new List<string>{_exampleHash});
+			_iStorageFake = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg", _exampleHash},
+				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes});
 			
 			_exifTool = new FakeExifTool(_iStorageFake,_appSettings);
 
-			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg");
+			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
 			_readMeta = new ReadMeta(_iStorageFake,_appSettings,_memoryCache);
 			
 		}
-
-
-//		[TestMethod]
-//		public void Test()
-//		{
-//		}
 
 		[TestMethod]
 		[ExpectedException(typeof(MissingFieldException))]
 		public void UpdateServiceTest_CompareAllLabelsAndRotation_NullMissingFieldException()
 		{
-			new UpdateService(null, null, null, null).CompareAllLabelsAndRotation(null, null,
+			new UpdateService(null, null, null, null, null).
+				CompareAllLabelsAndRotation(null, null,
 				null, false, 0);
 			// ==>> MissingFieldException
 		}
@@ -94,12 +93,12 @@ namespace starskytest.Services
 			};
 			
 			// Check for compare values
-			new UpdateService(_query, _exifTool, _readMeta,_iStorageFake)
+			new UpdateService(_query, _exifTool, _readMeta,_iStorageFake,_iStorageFake)
 				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, statusModel, false, 0);
 			
 			// Check how that changedFileIndexItemName works
 			Assert.AreEqual(1,changedFileIndexItemName["/test.jpg"].Count);
-			Assert.AreEqual("Tags",changedFileIndexItemName["/test.jpg"].FirstOrDefault());
+			Assert.AreEqual("tags",changedFileIndexItemName["/test.jpg"].FirstOrDefault());
 			
 			// Check for value
 			Assert.AreEqual("updated Value", collectionsDetailView.FileIndexItem.Tags);
@@ -124,7 +123,7 @@ namespace starskytest.Services
 			};
 			
 			// Rotate right; check if values are the same
-			new UpdateService(_query, _exifTool, _readMeta,_iStorageFake)
+			new UpdateService(_query, _exifTool, _readMeta,_iStorageFake,_iStorageFake)
 				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, collectionsDetailView.FileIndexItem, false, -1);
 			
 			// Check for value
@@ -175,7 +174,7 @@ namespace starskytest.Services
 				ParentDirectory = "/"
 			};
 
-			new UpdateService(_query,_exifTool, _readMeta,_iStorageFake)
+			new UpdateService(_query,_exifTool, _readMeta,_iStorageFake,_iStorageFake)
 				.Update(changedFileIndexItemName,fileIndexResultsList, updateItem, false,false,0);
 
 			// check for item (Referenced)
@@ -222,7 +221,7 @@ namespace starskytest.Services
 				ParentDirectory = "/"
 			};
 
-			new UpdateService(_query,_exifTool, _readMeta,_iStorageFake)
+			new UpdateService(_query,_exifTool, _readMeta,_iStorageFake,_iStorageFake)
 				.Update(null,fileIndexResultsList, updateItem, false,false,0);
 			// Second one is null
 
@@ -269,6 +268,7 @@ namespace starskytest.Services
 					Status = FileIndexItem.ExifStatus.Ok,
 					Tags = "initial tags",
 					FileName = "test.jpg",
+					FileHash = "test.jpg",
 					ParentDirectory = "/",
 					Description = "keep",
 				}
@@ -279,13 +279,14 @@ namespace starskytest.Services
 				Status = FileIndexItem.ExifStatus.Ok,
 				Tags = "only used when Caching is disabled",
 				FileName = "test.jpg",
+				FileHash = "test.jpg",
 				Description = "noChanges",
 				ParentDirectory = "/"
 			};
 			
 			var appSettings = new AppSettings{AddMemoryCache = false};
 			var readMetaWithNoCache = new ReadMeta(_iStorageFake,appSettings);
-			new UpdateService(_queryWithoutCache,_exifTool, readMetaWithNoCache, _iStorageFake)
+			new UpdateService(_queryWithoutCache,_exifTool, readMetaWithNoCache, _iStorageFake, _iStorageFake)
 				.Update(changedFileIndexItemName, fileIndexResultsList,updateItem,false,false,0);
 
 			// db

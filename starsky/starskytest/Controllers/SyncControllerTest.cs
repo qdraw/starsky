@@ -10,16 +10,23 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starskycore.Data;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
+using starsky.foundation.writemeta.Interfaces;
 using starskycore.Interfaces;
 using starskycore.Middleware;
-using starskycore.Models;
 using starskycore.Services;
 using starskycore.ViewModels;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
-using Query = starskycore.Services.Query;
 
 namespace starskytest.Controllers
 {
@@ -105,7 +112,7 @@ namespace starskytest.Controllers
 		private FileIndexItem InsertSearchData()
 		{
 			_iStorage = new FakeIStorage(new List<string> { "/" }, new List<string> { _createAnImage.DbPath });
-			var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath);
+			var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
 			
 			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)) )
 			{
@@ -121,7 +128,7 @@ namespace starskytest.Controllers
 					FileName = _createAnImage.FileName,
 					ParentDirectory = "/",
 					FileHash = fileHashCode,
-					ColorClass = FileIndexItem.Color.Winner, // 1
+					ColorClass = ColorClassParser.Color.Winner, // 1
 				});
 			}
 
@@ -138,13 +145,17 @@ namespace starskytest.Controllers
 				HttpContext = new DefaultHttpContext()
 			};
 
-			var controller = new SyncController(_isync, _bgTaskQueue, _query,_iStorage);
+			var newImage = CreateAnImage.Bytes;
+			var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>{newImage});
+			var storageSelector = new FakeSelectorStorage(fakeStorage);
+			
+			var controller = new SyncController(_isync, _bgTaskQueue, _query,storageSelector);
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex("/") as JsonResult;
 			var list = result.Value as List<SyncViewModel>;
-			var path = list.FirstOrDefault(p => p.FilePath == _createAnImage.DbPath).FilePath;
-			Assert.AreEqual(_createAnImage.DbPath, path);
+			var path = list.FirstOrDefault(p => p.FilePath == "/test.jpg").FilePath;
+			Assert.AreEqual("/test.jpg", path);
 		}
 
 		[TestMethod]
@@ -156,9 +167,11 @@ namespace starskytest.Controllers
 			{
 				HttpContext = new DefaultHttpContext()
 			};
-			var iStorage = new FakeIStorage();
+			
+			var fakeStorage = new FakeIStorage();
+			var storageSelector = new FakeSelectorStorage(fakeStorage);
 
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, _iStorage);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, storageSelector);
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex(_createAnImage.DbPath) as JsonResult;
@@ -177,9 +190,11 @@ namespace starskytest.Controllers
 			{
 				HttpContext = new DefaultHttpContext()
 			};
-			var iStorage = new FakeIStorage();
-
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, iStorage);
+			
+			var fakeStorage = new FakeIStorage();
+			var storageSelector = new FakeSelectorStorage(fakeStorage);
+			
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, storageSelector);
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex("/404") as JsonResult;
@@ -197,9 +212,10 @@ namespace starskytest.Controllers
 			{
 				HttpContext = new DefaultHttpContext()
 			};
-			var iStorage = new FakeIStorage();
-
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, iStorage);
+			var fakeStorage = new FakeIStorage();
+			var storageSelector = new FakeSelectorStorage(fakeStorage);
+			
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, storageSelector);
 			controller.ControllerContext = context;
 
 			var result = controller.Rename("/notfound-image.jpg", "/test.jpg") as NotFoundObjectResult;
@@ -217,11 +233,12 @@ namespace starskytest.Controllers
 				HttpContext = new DefaultHttpContext()
 			};
 			
-			var iStorage =  new FakeIStorage(new List<string> { "/" }, 
+			var fakeStorage =  new FakeIStorage(new List<string> { "/" }, 
 				new List<string> { _createAnImage.DbPath });
-
+			var storageSelector = new FakeSelectorStorage(fakeStorage);
+			
 			var controller =
-				new SyncController(_isync, _bgTaskQueue, _query, iStorage)
+				new SyncController(_isync, _bgTaskQueue, _query, storageSelector)
 				{
 					ControllerContext = context
 				};
@@ -242,11 +259,12 @@ namespace starskytest.Controllers
 				HttpContext = new DefaultHttpContext()
 			};
 			
-			var iStorage =  new FakeIStorage(new List<string> { "/" }, 
+			var fakeStorage =  new FakeIStorage(new List<string> { "/" }, 
 				new List<string> { _createAnImage.DbPath });
-			
+			var storageSelector = new FakeSelectorStorage(fakeStorage);
+
 			var controller =
-				new SyncController(_isync, _bgTaskQueue, _query, iStorage)
+				new SyncController(_isync, _bgTaskQueue, _query, storageSelector)
 				{
 					ControllerContext = context
 				};
@@ -266,11 +284,12 @@ namespace starskytest.Controllers
 				HttpContext = new DefaultHttpContext()
 			};
 			
-			var iStorage =  new FakeIStorage(new List<string> { "/" ,"/test_dir" }, 
+			var fakeStorage =  new FakeIStorage(new List<string> { "/" ,"/test_dir" }, 
 				new List<string> { _createAnImage.DbPath });
-			
+			var storageSelector = new FakeSelectorStorage(fakeStorage);
+
 			var controller =
-				new SyncController(_isync, _bgTaskQueue, _query, iStorage)
+				new SyncController(_isync, _bgTaskQueue, _query, storageSelector)
 				{
 					ControllerContext = context
 				};

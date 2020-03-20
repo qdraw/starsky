@@ -1,10 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
-using starskycore.ViewModels;
+using starsky.foundation.database.Helpers;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
+using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
+using starsky.foundation.thumbnailgeneration.Services;
+using starsky.foundation.writemeta.Interfaces;
+using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
 
 namespace starskycore.Services
 {
@@ -14,17 +19,20 @@ namespace starskycore.Services
 		private readonly IExifTool _exifTool;
 		private readonly IReadMeta _readMeta;
 		private readonly IStorage _iStorage;
+		private readonly IStorage _thumbnailStorage;
 
 		public UpdateService(
 			IQuery query,
 			IExifTool exifTool, 
 			IReadMeta readMeta,
-			IStorage iStorage)
+			IStorage iStorage,
+			IStorage thumbnailStorage)
 		{
 			_query = query;
 			_exifTool = exifTool;
 			_readMeta = readMeta;
 			_iStorage = iStorage;
+			_thumbnailStorage = thumbnailStorage;
 		}
 
 		/// <summary>
@@ -47,7 +55,7 @@ namespace starskycore.Services
 					
 			// if requested, add changes to rotation
 			collectionsDetailView.FileIndexItem = 
-				RotatonCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
+				RotationCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
 
 			if ( ! changedFileIndexItemName.ContainsKey(collectionsDetailView.FileIndexItem.FilePath) )
 			{
@@ -111,7 +119,7 @@ namespace starskycore.Services
 		/// <param name="rotateClock">rotation value (if needed)</param>
 		public void UpdateWriteDiskDatabase(DetailView detailView, List<string> comparedNamesList, int rotateClock = 0)
 		{
-			var exiftool = new ExifToolCmdHelper(_exifTool,_iStorage,_readMeta);
+			var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage,_thumbnailStorage,_readMeta);
 					
 			// feature to exif update
 			var exifUpdateFilePaths = new List<string>
@@ -123,13 +131,13 @@ namespace starskycore.Services
 			RotationThumbnailExecute(rotateClock, detailView.FileIndexItem);
 
 			// Do an Exif Sync for all files, including thumbnails
-			var exifResult = exiftool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
+			var exifResult = exifTool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
 			
 			Console.WriteLine($"exifResult: {exifResult}");
                         
-			// change thumbnail names after the orginal is changed
-			var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath);
-			_iStorage.ThumbnailMove(detailView.FileIndexItem.FileHash, newFileHash);
+			// change thumbnail names after the original is changed
+			var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath).Key;
+			_thumbnailStorage.FileMove(detailView.FileIndexItem.FileHash, newFileHash);
 					
 			// Update the hash in the database
 			detailView.FileIndexItem.FileHash = newFileHash;
@@ -144,17 +152,17 @@ namespace starskycore.Services
 		}
 		
 		/// <summary>
-		/// Add to comparedNames list ++ add to detailview
+		/// Add to comparedNames list and add to detail view
 		/// </summary>
 		/// <param name="rotateClock">-1 or 1</param>
 		/// <param name="fileIndexItem">main db object</param>
 		/// <param name="comparedNamesList">list of types that are changes</param>
 		/// <returns>updated image</returns>
-		public FileIndexItem RotatonCompare(int rotateClock, FileIndexItem fileIndexItem, ICollection<string> comparedNamesList)
+		public FileIndexItem RotationCompare(int rotateClock, FileIndexItem fileIndexItem, ICollection<string> comparedNamesList)
 		{
 			// Do orientation / Rotate if needed (after compare)
 			if (!FileIndexItem.IsRelativeOrientation(rotateClock)) return fileIndexItem;
-			// run this on detailview => statusModel is always default
+			// run this on detail view => statusModel is always default
 			fileIndexItem.SetRelativeOrientation(rotateClock);
 			
 			// list of exifTool to update this field
@@ -164,8 +172,6 @@ namespace starskycore.Services
 			}
 			return fileIndexItem;
 		}
-
-
 		
 		/// <summary>
 		/// Run the Orientation changes on the thumbnail (only relative)
@@ -177,9 +183,7 @@ namespace starskycore.Services
 		{
 			// Do orientation
 			if(FileIndexItem.IsRelativeOrientation(rotateClock)) 
-				new Thumbnail(_iStorage).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
+				new Thumbnail(_iStorage,_thumbnailStorage).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
 		}
-		
-		
 	}
 }

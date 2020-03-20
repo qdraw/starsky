@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
+using starsky.foundation.storage.Storage;
 using starskycore.Helpers;
 using starskycore.Interfaces;
-using starskycore.Models;
 using starskycore.Services;
 using starskycore.ViewModels;
 
@@ -19,12 +24,12 @@ namespace starsky.Controllers
         private readonly IQuery _query;
 	    private readonly IStorage _iStorage;
 
-        public SyncController(ISync sync, IBackgroundTaskQueue queue, IQuery query, IStorage iStorage)
+        public SyncController(ISync sync, IBackgroundTaskQueue queue, IQuery query, ISelectorStorage selectorStorage)
         {
             _sync = sync;
             _bgTaskQueue = queue;
             _query = query;
-	        _iStorage = iStorage;
+	        _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
         }
 
         /// <summary>
@@ -112,7 +117,8 @@ namespace starsky.Controllers
 				}
 				else if( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
-					var filesAndFoldersInDirectoryArray = _iStorage.GetAllFilesInDirectory(subPath).Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
+					var filesAndFoldersInDirectoryArray = _iStorage.GetAllFilesInDirectory(subPath)
+						.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
 					var dirs = _iStorage.GetDirectoryRecursive(subPath);
 					filesAndFoldersInDirectoryArray.AddRange(dirs);

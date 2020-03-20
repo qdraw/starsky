@@ -14,10 +14,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starskycore.Data;
-using starskycore.Interfaces;
-using starskycore.Middleware;
-using starskycore.Models;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Interfaces;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -48,8 +52,6 @@ namespace starskytest.Controllers
 			var options = builderDb.Options;
 			var context = new ApplicationDbContext(options);
 			_query = new Query(context, memoryCache);
-			
-
 
 			var services = new ServiceCollection();
 
@@ -66,15 +68,12 @@ namespace starskytest.Controllers
 
 			_iStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_createAnImage.DbPath}, 
-				new List<byte[]>{CreateAnImage.Bytes}, 
-				new List<string>{null});
+				new List<byte[]>{CreateAnImage.Bytes});
 			
 	        _readmeta = new ReadMeta(_iStorage,_appSettings);
-
-            _isync = new SyncService(_query,_appSettings,_readmeta,_iStorage);
                         
-			_import = new ImportService(context,_isync,new FakeExifTool(_iStorage,_appSettings), _appSettings,null,_iStorage);
-
+	        var fakeStorage = new FakeSelectorStorage(_iStorage);
+			_import = new ImportService(context,_isync,new FakeExifTool(_iStorage,_appSettings), _appSettings,null,fakeStorage);
 
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();
@@ -90,6 +89,9 @@ namespace starskytest.Controllers
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
 			// get the service
+			
+			var selectorStorage = new FakeSelectorStorage(_iStorage);
+			_isync = new SyncService(_query,_appSettings, selectorStorage);
 
 			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
 			serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -113,7 +115,7 @@ namespace starskytest.Controllers
 		public async Task UploadToFolder_NoToHeader_BadRequest()
 		{
 			var controller =
-				new UploadController(_import, _appSettings, _isync, _iStorage, _query)
+				new UploadController(_import, _appSettings, _isync, new FakeSelectorStorage(new FakeIStorage()), _query)
 				{
 					ControllerContext = {HttpContext = new DefaultHttpContext()}
 				};
@@ -126,7 +128,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UploadToFolder_DefaultFlow()
 		{
-			var controller = new UploadController(_import, _appSettings, _isync, _iStorage, _query)
+			var controller = new UploadController(_import, _appSettings, _isync, new FakeSelectorStorage(_iStorage), _query)
 			{
 				ControllerContext = RequestWithFile(),
 			};
@@ -151,7 +153,7 @@ namespace starskytest.Controllers
 		public async Task UploadToFolder_NotFound()
 		{
 			var controller =
-				new UploadController(_import, _appSettings, _isync, _iStorage, _query)
+				new UploadController(_import, _appSettings, _isync, new FakeSelectorStorage(_iStorage), _query)
 				{
 					ControllerContext = RequestWithFile(),
 				};
@@ -165,7 +167,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UploadToFolder_UnknownFailFlow()
 		{
-			var controller = new UploadController(_import, _appSettings, _isync, _iStorage, _query)
+			var controller = new UploadController(_import, _appSettings, _isync, new FakeSelectorStorage(_iStorage), _query)
 			{
 				ControllerContext = RequestWithFile(),
 			};
@@ -187,7 +189,7 @@ namespace starskytest.Controllers
 			httpContext.Request.Headers["to"] = "/"; //Set header
 			
 			var controller =
-				new UploadController(_import, _appSettings, _isync, _iStorage, _query)
+				new UploadController(_import, _appSettings, _isync, new FakeSelectorStorage(_iStorage), _query)
 				{
 					ControllerContext =
 					{

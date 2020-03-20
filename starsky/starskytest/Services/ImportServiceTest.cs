@@ -7,15 +7,22 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Data;
-using starskycore.Helpers;
-using starskycore.Interfaces;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
+using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.Models;
-using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
 namespace starskytest.Services
@@ -49,8 +56,13 @@ namespace starskytest.Services
             
             // Inject Fake Exiftool; dependency injection
             var services = new ServiceCollection();
-//            services.AddSingleton<IExifTool, FakeExifTool>();    
             
+            // register manual to avoid exiftool to be registered
+            services.AddScoped<ISelectorStorage,SelectorStorage>();
+            services.AddScoped<IStorage,StorageSubPathFilesystem>();
+            services.AddScoped<IStorage,StorageHostFullPathFilesystem>();
+            services.AddScoped<IStorage,StorageThumbnailFilesystem>();
+
             // Inject Config helper
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             // random config
@@ -80,15 +92,10 @@ namespace starskytest.Services
 	        _iStorage = new StorageSubPathFilesystem(_appSettings);
 	        _readmeta = new ReadMeta(_iStorage,_appSettings);
 
-            _isync = new SyncService(_query,_appSettings,_readmeta,_iStorage);
+	        var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
+            _isync = new SyncService(_query,_appSettings, selectorStorage);
             
-            //   _context = context
-            //   _isync = isync
-            //   _exiftool = exiftool
-            //   _appSettings = appSettings
-
-	        
-            _import = new ImportService(_context,_isync,_exifTool,_appSettings,null,_iStorage);
+            _import = new ImportService(_context,_isync,new FakeExifTool(_iStorage,_appSettings), _appSettings,null,selectorStorage);
             
             // Delete gpx files before importing
             // to avoid 1000 files in this folder
@@ -98,7 +105,7 @@ namespace starskytest.Services
             }
 	        
 	        // To Mock!
-	        _fileHashCreateAnImage = new FileHash(_iStorage).GetHashCode(new CreateAnImage().DbPath);
+	        _fileHashCreateAnImage = new FileHash(_iStorage).GetHashCode(new CreateAnImage().DbPath).Key;
 
         }
 
@@ -128,7 +135,7 @@ namespace starskytest.Services
             
             _import.Import(createAnImage.FullFilePath,importSettings);
             
-            var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+            var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after succesfull run;
@@ -139,7 +146,7 @@ namespace starskytest.Services
                 DateTime = fileIndexItem.DateTime
             };
             File.Delete(_appSettings.DatabasePathToFilePath(
-                importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
+                importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
         }
         
@@ -159,7 +166,7 @@ namespace starskytest.Services
             };
             _import.Import(createAnImage.FullFilePath,importSettings);
             
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after succesfull run;
@@ -174,7 +181,7 @@ namespace starskytest.Services
             Console.WriteLine();
 
             var path = _appSettings.DatabasePathToFilePath(
-                importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()
+                importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)
             );
 
             File.Delete(path);
@@ -209,7 +216,7 @@ namespace starskytest.Services
             _appSettings.Structure = "/\\e\\x\\i\\s\\t/\\a\\b\\c/HHmmss.ext";
             _import.Import(createAnImage.FullFilePath,importSettings);
             
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
@@ -220,12 +227,12 @@ namespace starskytest.Services
                 SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime
             };
             File.Delete(_appSettings.DatabasePathToFilePath(
-                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)
             ));
             
-            FilesHelper.DeleteDirectory(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
+            new StorageHostFullPathFilesystem().FolderDelete(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders()));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
-            FilesHelper.DeleteDirectory(existDir);
+            new StorageHostFullPathFilesystem().FolderDelete(existDir);
 	        RemoveFromQuery();
 
         }
@@ -251,7 +258,7 @@ namespace starskytest.Services
             };
             _import.Import(createAnImage.FullFilePath,importSettings);
             
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
@@ -262,7 +269,7 @@ namespace starskytest.Services
                 SourceFullFilePath = createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime
             };
             File.Delete(_appSettings.DatabasePathToFilePath(
-                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)
             ));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
 	        // clean item
@@ -286,7 +293,7 @@ namespace starskytest.Services
             importSettings.DeleteAfter = false;
             importSettings.AgeFileFilterDisabled = false;
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());  
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
             var itemFilePath = _query.GetSubPathByHash(fileHashCode);
             Assert.AreNotEqual(null, itemFilePath);
@@ -301,7 +308,7 @@ namespace starskytest.Services
             
             // Clean afterwards
             var importIndexItem = _import.GetItemByHash(fileHashCode);
-            var outputFileName = importIndexItem.ParseFileName();
+            var outputFileName = importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
             var outputSubfolders = importIndexItem.ParseSubfolders();
 
             _import.RemoveItem(importIndexItem);
@@ -335,7 +342,7 @@ namespace starskytest.Services
             _appSettings.Structure = "/xux99999xxxx_ssHHmm.ext";
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault()); 
 	        
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
 	        
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
             var itemFilePath = _query.GetSubPathByHash(fileHashCode);
@@ -366,7 +373,7 @@ namespace starskytest.Services
             // Clean afterwards
             importIndexItem = _import.GetItemByHash(fileHashCode);
 
-            var outputFileName = importIndexItem.ParseFileName();
+            var outputFileName = importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
             var outputSubfolders = importIndexItem.ParseSubfolders();
 
             _import.RemoveItem(importIndexItem);
@@ -433,7 +440,7 @@ namespace starskytest.Services
             {
             }
             
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             
             var importSettings = new ImportSettingsModel
             {
@@ -446,15 +453,15 @@ namespace starskytest.Services
             Assert.AreEqual(File.Exists(fullFilePath), false);
 
             var importIndexItem = _import.GetItemByHash(fileHashCode);
-            var outputFileName = importIndexItem.ParseFileName();
+            var outputFileName = importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
             var outputSubfolders = importIndexItem.ParseSubfolders();
 
             _import.RemoveItem(importIndexItem);
             File.Delete(_appSettings.DatabasePathToFilePath(
-                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName()
+                importIndexItem.ParseSubfolders() + "/" + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)
             ));
             // delete exist dir
-            FilesHelper.DeleteDirectory(existDirectoryFullPath);
+            new StorageHostFullPathFilesystem().FolderDelete(existDirectoryFullPath);
 	        RemoveFromQuery();
 
         }
@@ -469,7 +476,7 @@ namespace starskytest.Services
                 SourceFullFilePath = "123456789876",  
                 DateTime = DateTime.Now
             };
-            importIndexItem.ParseFileName();
+            importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.notfound);
         }
 
         [TestMethod]
@@ -500,9 +507,9 @@ namespace starskytest.Services
 
             Assert.AreEqual(File.Exists(createAnImage.FullFilePath), true);
 
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             var importIndexItem = _import.GetItemByHash(fileHashCode);
-            var outputFileName = importIndexItem.ParseFileName();
+            var outputFileName = importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
             var outputSubfolders = importIndexItem.ParseSubfolders();
 
             _import.RemoveItem(importIndexItem);
@@ -511,7 +518,7 @@ namespace starskytest.Services
             ));
             
             // existFolderPath >= remove it afterwards
-            FilesHelper.DeleteDirectory(existFolderPath);
+            new StorageHostFullPathFilesystem().FolderDelete(existFolderPath);
 	        RemoveFromQuery();
 
         }
@@ -546,7 +553,7 @@ namespace starskytest.Services
             };
             _import.Import(storeItemInList,importSettings);
             
-	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
             // Clean file after successful run;
@@ -556,7 +563,7 @@ namespace starskytest.Services
                 SourceFullFilePath = createAnImage.FullFilePath,  
                 DateTime = fileIndexItem.DateTime
             };
-            File.Delete(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName()));
+            File.Delete(_appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)));
             _import.RemoveItem(_import.GetItemByHash(fileHashCode));
 
 	        // remove from query database    
@@ -604,7 +611,7 @@ namespace starskytest.Services
             var result = _import.Import(createAnImageNoExif.FullFilePathWithDate,importSettings);
             
             Assert.AreEqual(0, result.Count);
-            FilesHelper.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
+            new StorageHostFullPathFilesystem().FileDelete(createAnImageNoExif.FullFilePathWithDate);
 	        RemoveFromQuery();
 
         }
@@ -615,7 +622,7 @@ namespace starskytest.Services
 		    RemoveFromQuery();
 		    
 		    var createAnImage = new CreateAnImage();
-		    var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath);
+		    var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
 		    _appSettings.Verbose = true;
 		    _appSettings.StorageFolder = createAnImage.BasePath;
 		    
@@ -644,7 +651,7 @@ namespace starskytest.Services
 		    var subpath = PathHelper.RemovePrefixDbSlash(result.FirstOrDefault());
 
 		    var path = Path.Combine(createAnImage.BasePath, subpath);
-		    FilesHelper.DeleteFile(path);
+		    new StorageHostFullPathFilesystem().FileDelete(path);
 	    }
 
 	    [TestMethod]

@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Data;
-using starskycore.Models.Account;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models.Account;
 using starskycore.Services;
 
 [assembly: InternalsVisibleTo("starskytest")]

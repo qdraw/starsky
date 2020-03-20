@@ -1,5 +1,6 @@
 ﻿using System.Linq;
-using starskycore.Helpers;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.storage.Services;
 
 namespace starskycore.Services
 {
@@ -13,7 +14,7 @@ namespace starskycore.Services
 			subPath = _query.SubPathSlashRemove(subPath);
 			
 			// Loop though all folders
-			var subFoldersSubPath = _iStorage.GetDirectoryRecursive(subPath);
+			var subFoldersSubPath = _subPathStorage.GetDirectoryRecursive(subPath);
 	        
 			foreach (var singleFolderSubPath in subFoldersSubPath)
 			{
@@ -22,13 +23,13 @@ namespace starskycore.Services
 				// Check if folder item exist in database
 				if (dbItem == null) continue;
 				
-				var firstFileSubPath = _iStorage.GetAllFilesInDirectory(singleFolderSubPath)
+				var firstFileSubPath = _subPathStorage.GetAllFilesInDirectory(singleFolderSubPath)
 					.FirstOrDefault(ExtensionRolesHelper.IsExtensionThumbnailSupported);
 
-				if ( string.IsNullOrEmpty(firstFileSubPath) || ! _iStorage.ExistFile(firstFileSubPath) ) continue;
+				if ( string.IsNullOrEmpty(firstFileSubPath) || ! _subPathStorage.ExistFile(firstFileSubPath) ) continue;
 				
 				// get hash from file
-				var singleFileHash =  new FileHash(_iStorage).GetHashCode(firstFileSubPath);
+				var singleFileHash =  new FileHash(_subPathStorage).GetHashCode(firstFileSubPath).Key;
 				
 				// compare both
 				if ( dbItem.FileHash == singleFileHash ) continue;

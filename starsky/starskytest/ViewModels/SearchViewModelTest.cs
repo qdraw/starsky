@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
 using starskycore.ViewModels;
 
 namespace starskytest.ViewModels

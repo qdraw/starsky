@@ -2,10 +2,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using starsky.foundation.injection;
 
 namespace starskycore.Services
 {
     #region snippet1
+    
+    [Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
     public class BackgroundQueuedHostedService : BackgroundService
     {
         public BackgroundQueuedHostedService(IBackgroundTaskQueue taskQueue)

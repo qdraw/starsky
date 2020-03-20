@@ -11,15 +11,17 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
-using starskycore.Data;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models.Account;
+using starsky.foundation.injection;
 using starskycore.Helpers;
 using starskycore.Interfaces;
-using starskycore.Models.Account;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starskycore.Services
 {
-public class UserManager : IUserManager
+	[Service(typeof(IUserManager), InjectionLifetime = InjectionLifetime.Scoped)]
+	public class UserManager : IUserManager
     {
         private readonly ApplicationDbContext _dbContext;
 	    private readonly IMemoryCache _cache;

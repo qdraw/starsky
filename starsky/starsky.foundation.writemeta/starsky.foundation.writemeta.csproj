@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{bc265f9e-e0f1-46da-9c40-0babe44de9ee}</ProjectGuid>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+      <PackageReference Include="MedallionShell" Version="1.6.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+      <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
+      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -6,13 +6,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Data;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Storage;
 using starskycore.Helpers;
-using starskycore.Models;
-using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using Query = starskycore.Services.Query;
 using SyncService = starskycore.Services.SyncService;
 
 namespace starskytest.Helpers
@@ -62,8 +66,12 @@ namespace starskytest.Helpers
 			var readMeta = new ReadMeta(iStorage,_appSettings,memoryCache);
 			
 			_iStorageSubPath = new StorageSubPathFilesystem(_appSettings);
+			
+			var services = new ServiceCollection();
+			var serviceProvider = services.BuildServiceProvider();
+			var selectorStorage = new FakeSelectorStorage(iStorage);
 
-			_sync = new SyncService(_query,_appSettings,readMeta,_iStorageSubPath);
+			_sync = new SyncService(_query,_appSettings,selectorStorage);
 		}
 
 		[TestMethod]
@@ -77,7 +85,7 @@ namespace starskytest.Helpers
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, renameFs.FirstOrDefault().Status );
 
 			// test with newline at the end
-			FilesHelper.DeleteFile(fileAlreadyExist);
+			new StorageHostFullPathFilesystem().FileDelete(fileAlreadyExist);
 		}
 
 		[TestMethod]
@@ -119,7 +127,7 @@ namespace starskytest.Helpers
 			Assert.AreEqual("test2.jpg",singleItem.FileIndexItem.FileName);		
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
 
-			FilesHelper.DeleteDirectory(Path.Combine(_newImage.BasePath, "exist"));
+			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(_newImage.BasePath, "exist"));
 		}
 
 	
@@ -153,7 +161,7 @@ namespace starskytest.Helpers
 			
 			var dir2FullDirPath = Path.Combine(_newImage.BasePath, "dir2");
 
-			FilesHelper.DeleteDirectory(dir2FullDirPath);
+			new StorageHostFullPathFilesystem().FolderDelete(dir2FullDirPath);
 		}
 
 		private FileIndexItem _folderExist;

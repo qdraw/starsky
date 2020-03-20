@@ -1,6 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using starsky.feature.webhtmlpublish.Helpers;
+using starsky.feature.webhtmlpublish.Services;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Models;
+using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
@@ -37,7 +45,7 @@ namespace starskywebhtmlcli
                 return;
             }
             
-            if(FilesHelper.IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
+            if(startupHelper.HostFileSystemStorage().IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
                 Console.WriteLine("Please add a valid folder: " + inputPath);
 
             if (appSettings.Name == new AppSettings().Name)
@@ -59,7 +67,7 @@ namespace starskywebhtmlcli
             // used in this session to find the files back
             appSettings.StorageFolder = inputPath;
 
-	        var iStorage = startupHelper.Storage();
+	        var iStorage = startupHelper.SubPathStorage();
 			// use relative to StorageFolder
 	        var listOfFiles = iStorage.GetAllFilesInDirectory("/")
 		        .Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
@@ -67,18 +75,19 @@ namespace starskywebhtmlcli
             var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
             
             // Create thumbnails from the source images 
-			new Thumbnail(iStorage).CreateThumb("/"); // <= subPath style
+			new Thumbnail(iStorage, startupHelper.ThumbnailStorage()).CreateThumb("/"); // <= subPath style
 	        
-	        var base64DataUri = new ToBase64DataUriList(iStorage).Create(fileIndexList);
+	        var base64DataUri = new ToBase64DataUriList(iStorage, startupHelper.ThumbnailStorage()).Create(fileIndexList);
 
-			new LoopPublications(iStorage, appSettings, startupHelper.ExifTool(), startupHelper.ReadMeta())
+			new LoopPublications(startupHelper.SelectorStorage(), appSettings, startupHelper.ExifTool(), startupHelper.ReadMeta())
 				.Render(fileIndexList, base64DataUri);
 
 			// Copy all items in the subFolder content for example javascripts
 			new Content(iStorage).CopyContent();
 
 			// Export all
-			new ExportManifest(appSettings,new PlainTextFileHelper()).Export();
+			new PublishManifest( startupHelper.SelectorStorage().Get(SelectorStorage.StorageServices.HostFilesystem),appSettings,
+				new PlainTextFileHelper()).ExportManifest();
 
 		}
         

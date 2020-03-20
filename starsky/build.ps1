@@ -6,6 +6,9 @@ Param(
     [string[]]$ScriptArgs
 )
 
+$env:DOTNET_CLI_TELEMETRY_OPTOUT = "true"
+$env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "1"
+
 # Restore Cake tool
 & dotnet tool restore
 

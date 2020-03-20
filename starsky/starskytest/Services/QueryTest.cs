@@ -5,10 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starskycore.Attributes;
-using starskycore.Data;
-using starskycore.Models;
-using Query = starskycore.Services.Query;
 
 namespace starskytest.Services
 {
@@ -47,7 +49,7 @@ namespace starskytest.Services
                     FileName = "hi.jpg",
                     ParentDirectory = "/basic",
                     FileHash = "09876543456789",
-                    ColorClass = FileIndexItem.Color.Winner, // 1
+                    ColorClass = ColorClassParser.Color.Winner, // 1
                     Tags = "",
                     Title = ""
                 });
@@ -63,14 +65,14 @@ namespace starskytest.Services
                 {
                     FileName = "hi3.jpg",
                     ParentDirectory = "/basic",
-                    ColorClass = FileIndexItem.Color.Trash // 9
+                    ColorClass = ColorClassParser.Color.Trash // 9
                 });
             
                 _insertSearchDatahi4JpgInput =  _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi4.jpg",
                     ParentDirectory = "/basic",
-                    ColorClass = FileIndexItem.Color.Winner // 1
+                    ColorClass = ColorClassParser.Color.Winner // 1
                 });
             
                 _insertSearchDatahi2SubfolderJpgInput =  _query.AddItem(new FileIndexItem
@@ -241,7 +243,7 @@ namespace starskytest.Services
                 //FilePath = "/display/hi.jpg",
                 ParentDirectory = "/display", // without slash
                 FileHash = "123458465522",
-                ColorClass = FileIndexItem.Color.Winner // 1
+                ColorClass = ColorClassParser.Color.Winner // 1
             });
             
             var hi3JpgInput =  _query.AddItem(new FileIndexItem
@@ -250,7 +252,7 @@ namespace starskytest.Services
                 //FilePath = "/display/hi3.jpg",
                 ParentDirectory = "/display", // without slash
                 FileHash = "78539048765",
-                ColorClass = FileIndexItem.Color.Extras
+                ColorClass = ColorClassParser.Color.Extras
             });
             
             _query.AddItem(new FileIndexItem
@@ -309,7 +311,7 @@ namespace starskytest.Services
                 //FilePath = "/bread/hi3.jpg",
                 ParentDirectory = "/bread", // without slash
                 FileHash = "234565432",
-                ColorClass = FileIndexItem.Color.Extras,
+                ColorClass = ColorClassParser.Color.Extras,
                 IsDirectory = false
             });
             
@@ -327,7 +329,7 @@ namespace starskytest.Services
                 //FilePath = "/bread/hi4.jpg",
                 ParentDirectory = "/bread", // without slash
                 FileHash = "23456543",
-                ColorClass = FileIndexItem.Color.Extras,
+                ColorClass = ColorClassParser.Color.Extras,
                 IsDirectory = false
             });
             

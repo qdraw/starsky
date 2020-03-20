@@ -1,5 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -9,6 +13,13 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIImport : IImport
 	{
+		private ISelectorStorage _selectorStorage;
+
+		public FakeIImport(ISelectorStorage selectorStorage)
+		{
+			_selectorStorage = selectorStorage;
+		}
+		
 		public List<string> Import(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
 		{
 			return Preflight(inputFullPathList.ToList(), importSettings)
@@ -37,7 +48,8 @@ namespace starskytest.FakeMocks
 
 				// Check if the file is correct
 				var imageFormat = ExtensionRolesHelper.GetImageFormat(
-					new StorageHostFullPathFilesystem().ReadStream(inputFileFullPath, 160));
+					_selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem)
+						.ReadStream(inputFileFullPath, 160));
 
 				if ( ! ExtensionRolesHelper.ExtensionSyncSupportedList.Contains($"{imageFormat}") )
 				{

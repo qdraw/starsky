@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.foundation.database.Models;
 using starskycore.Interfaces;
 using starskycore.ViewModels;
 

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using starskycore.Interfaces;
-using starskycore.Models;
-using starskycore.ViewModels;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Interfaces;
 
 namespace starskycore.Helpers
 {

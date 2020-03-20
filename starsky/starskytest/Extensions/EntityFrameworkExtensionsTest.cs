@@ -2,8 +2,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Data;
-using starskycore.Extensions;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Extensions;
 
 namespace starskytest.Extensions
 {

@@ -21,7 +21,10 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
 using starsky.Controllers;
-using starskycore.Data;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
+using starsky.foundation.http.Services;
+using starsky.foundation.platform.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -62,79 +65,13 @@ namespace starskytest.Controllers
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             
             var serviceProvider = services.BuildServiceProvider();
-
-
             
             // get the background helper
             _bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
             
-            _import = new FakeIImport();
-            // IImport import, AppSettings appSettings, 
-//            IServiceScopeFactory scopeFactory, IBackgroundTaskQueue queue, 
-//            HttpClientHelper httpClientHelper, IStorage iStorage
 	        _scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+	        _import = new FakeIImport(new FakeSelectorStorage(new FakeIStorage()));
 
-//            _importController = new ImportController(_import, new AppSettings(), _scopeFactory,_bgTaskQueue,null,new FakeIStorage())
-//            {
-//	            ControllerContext = {HttpContext = new DefaultHttpContext()}
-//            };
-        }
-
-
-        // Add the file in the underlying request object.
-        private ControllerContext RequestWithFileFromData()
-        {
-	        var httpContext = new DefaultHttpContext();
-	        httpContext.Request.Headers.Add("Content-Type", "multipart/form-data; boundary=\"--9051914041544843365972754266\"");
-
-
-//	        var text = "--9051914041544843365972754266\n" +
-//	                   "Content-Disposition: form-data; name=\"files\"; filename=\"anp-52220411.jpg\"\n" +
-//	                   "Content-Type: image/jpeg\n" +
-//	                   "yolo\n" +
-//	                   "--9051914041544843365972754266--";
-	        
-	        var text = "--9051914041544843365972754266\r\n" +
-	                   "Content-Disposition: form-data; name=\"text\"\r\n" +
-	                   "\r\n" +
-	                   "text default\r\n" +
-	                   "--9051914041544843365972754266--\r\n";
-
-//	        var text = "skdfnlsdflksd\n-----------------------------70143061614066247291641834127--";
-//	        httpContext.Request.Headers.Add("Content-Length", text.Length.ToString());
-	        
-//	        var tempStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
-//	        
-//	        var formFile = new FormFile(tempStream, 0, text.Length, "files", "dummy.txt");
-//	        
-//	        var formCollection = new FormCollection(new Dictionary<string, StringValues>(), new FormFileCollection { formFile });
-//
-//	        var formFileContent = formFile.ToString();
-////	        file.NewFile()
-
-	        
-	        httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(text));
-	        
-//	        httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
-
-//	        DisableFormValueModelBindingAttribute.OnResourceExecuting(context)
-		        
-//	        httpContext.
-	        var actionContext = new ActionContext(httpContext, new RouteData(), new ControllerActionDescriptor());
-	        
-//	        // copy from net filters
-//	        var filters = new List<IFilterMetadata>
-//	        {
-//		        
-//	        };
-//	        var values = new List<IValueProviderFactory>();
-//
-//	        var context = new ResourceExecutingContext(actionContext, filters, values);
-//
-//	        //Run
-//	        new DisableFormValueModelBindingAttribute().OnResourceExecuting(context);
-	        
-	        return new ControllerContext(actionContext);
         }
 
         /// <summary>
@@ -154,8 +91,10 @@ namespace starskytest.Controllers
         [TestMethod]
         public async Task ImportController_WrongInputFlow()
         {
-	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
-		        _bgTaskQueue, null, new FakeIStorage())
+	        var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
+
+	        var importController = new ImportController(new FakeIImport(fakeStorageSelector), _appSettings, 
+		        _bgTaskQueue, null, fakeStorageSelector)
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };
@@ -169,8 +108,8 @@ namespace starskytest.Controllers
         [TestMethod]
         public async Task FromUrl_PathInjection()
         {
-	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
-		        _bgTaskQueue, null, new FakeIStorage())
+	        var importController = new ImportController(_import, _appSettings, 
+		        _bgTaskQueue, null, new FakeSelectorStorage(new FakeIStorage()))
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };
@@ -185,10 +124,10 @@ namespace starskytest.Controllers
 	        var httpClient = new HttpClient(fakeHttpMessageHandler);
 	        var httpProvider = new HttpProvider(httpClient);
 
-	        var httpClientHelper = new HttpClientHelper(httpProvider);
+	        var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(new FakeIStorage()));
 	        
-	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
-		        _bgTaskQueue, httpClientHelper, new FakeIStorage())
+	        var importController = new ImportController(_import, _appSettings, 
+		        _bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()))
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };
@@ -204,10 +143,11 @@ namespace starskytest.Controllers
 	        var httpClient = new HttpClient(fakeHttpMessageHandler);
 	        var httpProvider = new HttpProvider(httpClient);
 
-	        var httpClientHelper = new HttpClientHelper(httpProvider);
+	        var storageProvider = new FakeIStorage();
+	        var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(storageProvider));
 	        
-	        var importController = new ImportController(_import, _appSettings, _scopeFactory,
-		        _bgTaskQueue, httpClientHelper, new FakeIStorage())
+	        var importController = new ImportController(new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings, 
+		        _bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider))
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };

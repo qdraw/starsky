@@ -1,12 +1,14 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Data;
-using starskycore.Helpers;
-using starskycore.Models;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
+using starsky.foundation.platform.Models;
 using starskycore.Services;
 
 namespace starskytest.Services
@@ -79,56 +81,56 @@ namespace starskytest.Services
 		}
 		
 		[TestMethod]
-		public void SearchSuggestionsService_MoreThat2_StartArray()
+		public async Task SearchSuggestionsService_MoreThat2_StartArray()
 		{
 			// Schiphol is 10 times in the list
-			var result = _suggest.SearchSuggest("sch").ToList();
+			var result = await _suggest.SearchSuggest("sch");
 			
 			Assert.AreEqual("schiphol", result.FirstOrDefault());
 			
 		}
 		
 		[TestMethod]
-		public void SearchSuggestionsService_MoreThat2_MiddleArray()
+		public async Task SearchSuggestionsService_MoreThat2_MiddleArray()
 		{
 
 			// airplane is 10 times in the list + middle of array
-			var result = _suggest.SearchSuggest("airpl").ToList();
+			var result = await _suggest.SearchSuggest("airpl");
 			
 			Assert.AreEqual("airplane", result.FirstOrDefault());
 			
 		}
 		[TestMethod]
-		public void SearchSuggestionsService_Once()
+		public async Task SearchSuggestionsService_Once()
 		{
 
 			// zebra is 1 time in the list
-			var result = _suggest.SearchSuggest("zebr").ToList();
+			var result = await _suggest.SearchSuggest("zebr");
 			
-			Assert.AreEqual(0, result.Count);
+			Assert.AreEqual(0, result.Count());
 			
 		}
 		
 		
 		[TestMethod]
-		public void SearchSuggestionsService_NoCache_memCacheIsNull()
+		public async Task SearchSuggestionsService_NoCache_memCacheIsNull()
 		{
 			// The feature does not work without cache enabled
-			var result = new SearchSuggestionsService(_dbContext,null,null)
-				.SearchSuggest("sch").ToList();
+			var result = await new SearchSuggestionsService(_dbContext, null, null)
+				.SearchSuggest("sch");
 
-			Assert.AreEqual(0, result.Count);
+			Assert.AreEqual(0, result.Count());
 		
 		}
 		
 		[TestMethod]
-		public void SearchSuggestionsService_NoCache_AppSettingsDisabled()
+		public async Task SearchSuggestionsService_NoCache_AppSettingsDisabled()
 		{
 			// The feature does not work without cache enabled
-			var result = new SearchSuggestionsService(_dbContext,_memoryCache,
-				new AppSettings{AddMemoryCache = false}).SearchSuggest("sch").ToList();
+			var result = await new SearchSuggestionsService(_dbContext,_memoryCache,
+				new AppSettings{AddMemoryCache = false}).SearchSuggest("sch");
 
-			Assert.AreEqual(0, result.Count);
+			Assert.AreEqual(0, result.Count());
 		
 		}
 

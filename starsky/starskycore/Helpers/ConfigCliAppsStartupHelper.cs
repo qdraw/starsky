@@ -4,14 +4,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
-using starskycore.Data;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Query;
+using starsky.foundation.injection;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.Services;
+using starsky.foundation.writemeta.Interfaces;
 using starskycore.Interfaces;
 using starskycore.Middleware;
-using starskycore.Models;
 using starskycore.Services;
-using Query = starskycore.Services.Query;
-using ReadMeta = starskycore.Services.ReadMeta;
-using SyncService = starskycore.Services.SyncService;
 
 namespace starskycore.Helpers
 {
@@ -26,6 +30,9 @@ namespace starskycore.Helpers
 	    private readonly ThumbnailCleaner _thumbnailCleaner;
 	    private readonly IStorage _iStorage;
 	    private readonly UserManager _userManager;
+	    private readonly IStorage _thumbnailStorage;
+	    private readonly SelectorStorage _selectorStorage;
+	    private readonly IStorage _hostFileSystemStorage;
 
 	    /// <summary>
         /// Inject all services for the CLI applications
@@ -48,14 +55,12 @@ namespace starskycore.Helpers
             // inject config as object to a service
             services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
 	        
-	        // Inject Filesystem backend
-	        services.AddSingleton<IStorage, StorageSubPathFilesystem>();
+            new RegisterDependencies().Configure(services);
 
-	        // Inject ExifTool
-	        services.AddSingleton<IExifTool, ExifTool>();
-	        
             // build the service
             _serviceProvider = services.BuildServiceProvider();
+            
+
             // get the service
             var appSettings = _serviceProvider.GetRequiredService<AppSettings>();
 
@@ -70,7 +75,7 @@ namespace starskycore.Helpers
             // Select database type
             switch (appSettings.DatabaseType)
             {
-                case Models.AppSettings.DatabaseTypeList.Mysql:
+                case starsky.foundation.platform.Models.AppSettings.DatabaseTypeList.Mysql:
                     builderDb.UseMySql(appSettings.DatabaseConnection, mySqlOptions =>
                     {
 	                    mySqlOptions.CharSet(CharSet.Utf8Mb4);
@@ -78,10 +83,10 @@ namespace starskycore.Helpers
 	                    mySqlOptions.EnableRetryOnFailure(2);
                     });
                     break;
-                case Models.AppSettings.DatabaseTypeList.InMemoryDatabase:
+                case starsky.foundation.platform.Models.AppSettings.DatabaseTypeList.InMemoryDatabase:
                     builderDb.UseInMemoryDatabase("Starsky");
                     break;
-                case Models.AppSettings.DatabaseTypeList.Sqlite:
+                case starsky.foundation.platform.Models.AppSettings.DatabaseTypeList.Sqlite:
                     builderDb.UseSqlite(appSettings.DatabaseConnection);
                     break;
                 default:
@@ -94,22 +99,20 @@ namespace starskycore.Helpers
             var query = new Query(context);
 
 	        _iStorage = new StorageSubPathFilesystem(appSettings);
-            
+	        _thumbnailStorage = new StorageThumbnailFilesystem(appSettings);
+	        
+	        _selectorStorage = new SelectorStorage(_serviceProvider);
+	        _hostFileSystemStorage =
+		        _selectorStorage.Get(starsky.foundation.storage.Storage.SelectorStorage.StorageServices.HostFilesystem);
             _readmeta = new ReadMeta(_iStorage,appSettings);
             
             _userManager = new UserManager(context);
             
-            _isync = new SyncService(query, appSettings,_readmeta, _iStorage);
+            _isync = new SyncService(query, appSettings, _selectorStorage);
             
-            // TOC:
-            //   _context = context
-            //   _isync = isync
-            //   _exiftool = exiftool
-            //   _appSettings = appSettings
-            //   _readmeta = readmeta
-            _import = new ImportService(context, _isync, _exifTool, appSettings, null, _iStorage, true);
+            _import = new ImportService(context, _isync, _exifTool, appSettings, null, _selectorStorage);
 
-	        _thumbnailCleaner = new ThumbnailCleaner(query, appSettings);
+	        _thumbnailCleaner = new ThumbnailCleaner(_thumbnailStorage, query, appSettings);
 	        
         }
 
@@ -197,9 +200,14 @@ namespace starskycore.Helpers
 	    /// Storage Container
 	    /// </summary>
 	    /// <returns>IStorage</returns>
-	    public IStorage Storage()
+	    public IStorage SubPathStorage()
 	    {
 		    return _iStorage;
+	    }
+
+	    public IStorage HostFileSystemStorage()
+	    {
+		    return _hostFileSystemStorage;
 	    }
 	    
 	    /// <summary>
@@ -211,6 +219,22 @@ namespace starskycore.Helpers
 		    return _userManager;
 	    }
 
+	    /// <summary>
+	    /// Thumbnail Storage
+	    /// </summary>
+	    /// <returns>IStorage component</returns>
+	    public IStorage ThumbnailStorage()
+	    {
+		    return _thumbnailStorage;
+	    }
+	    /// <summary>
+	    /// SelectorStorage
+	    /// </summary>
+	    /// <returns>SelectorStorage</returns>
+	    public ISelectorStorage SelectorStorage()
+	    {
+		    return _selectorStorage;
+	    }
 	    
     }
 }

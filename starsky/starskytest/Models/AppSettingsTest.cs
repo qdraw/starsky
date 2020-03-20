@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Models;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskytest.FakeCreateAn;
@@ -55,7 +56,7 @@ namespace starskytest.Models
 		[TestMethod]
 		public void AppSettingsProviderTest_SqliteFullPathTest()
 		{
-			var datasource = _appSettings.SqliteFullPath("Data Source=data.db", string.Empty);
+			var datasource = _appSettings.SqLiteFullPath("Data Source=data.db", string.Empty);
 			Assert.AreEqual(true, datasource.Contains("data.db") );
 			Assert.AreEqual(true, datasource.Contains("Data Source="));
 		}
@@ -66,7 +67,7 @@ namespace starskytest.Models
 		{
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Sqlite;
 
-			var datasource = _appSettings.SqliteFullPath(
+			var datasource = _appSettings.SqLiteFullPath(
 				"Data Source=data.db", Path.DirectorySeparatorChar + "starsky");
 			Assert.AreEqual(true, datasource.Contains("data.db"));
 			Assert.AreEqual(true, datasource.Contains("Data Source="));
@@ -77,7 +78,7 @@ namespace starskytest.Models
 		public void AppSettingsProviderTest_SQLite_ExpectException()
 		{
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Sqlite;
-			var datasource = _appSettings.SqliteFullPath(string.Empty, null);
+			var datasource = _appSettings.SqLiteFullPath(string.Empty, null);
 		}
 
 		[TestMethod]
@@ -85,7 +86,7 @@ namespace starskytest.Models
 		public void AppSettingsProviderTest_MySQL_ExpectException()
 		{
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Mysql;
-			_appSettings.SqliteFullPath(string.Empty, null);
+			_appSettings.SqLiteFullPath(string.Empty, null);
 		}
 
 		[TestMethod]
@@ -129,13 +130,6 @@ namespace starskytest.Models
 		{
 			AppSettings.StructureCheck("dion.ext");
 			// >= ArgumentException
-		}
-
-		[TestMethod]
-		public void AppSettingsStructureExampleNoSetting()
-		{
-			var content = _appSettings.StructureExampleNoSetting;
-			Assert.AreEqual(true, content.Contains(DateTime.Now.Year.ToString()));
 		}
 
 		[TestMethod]
@@ -238,12 +232,13 @@ namespace starskytest.Models
 			var appSettings = new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Mysql,
-				WebFtp = "ftp://t:t@m.com"
+				WebFtp = "ftp://t:t@m.com",
+				ApplicationInsightsInstrumentationKey = "token"
 			};
 			var display = appSettings.CloneToDisplay();
-			Assert.AreEqual(display.DatabaseConnection,"warning: Not display due security reasons");
-			Assert.AreEqual(display.WebFtp,"warning: Not display due security reasons");
-
+			Assert.AreEqual(display.DatabaseConnection,AppSettings.CloneToDisplaySecurityWarning);
+			Assert.AreEqual(display.WebFtp,AppSettings.CloneToDisplaySecurityWarning);
+			Assert.AreEqual(display.ApplicationInsightsInstrumentationKey,AppSettings.CloneToDisplaySecurityWarning);
 		}
 
 		[TestMethod]

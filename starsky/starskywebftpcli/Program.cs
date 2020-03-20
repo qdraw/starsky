@@ -1,5 +1,10 @@
 ﻿using System;
 using System.Linq;
+using starsky.feature.webhtmlpublish.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Models;
+using starsky.foundation.storage.Storage;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
@@ -41,14 +46,13 @@ namespace starskywebftpcli
             
 			// used in this session to find the files back
 			appSettings.StorageFolder = inputPath;
-			var storage = new StorageSubPathFilesystem(appSettings);
+			var storage = startupHelper.SubPathStorage();
 
 			if ( storage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				Console.WriteLine($"Folder location {inputPath} is not found \nPlease try the `-h` command to get help ");
 				return;
 			}
-
 			
 			// check if settings is valid
 			if ( string.IsNullOrEmpty(appSettings.WebFtp) )
@@ -59,10 +63,10 @@ namespace starskywebftpcli
 
 			// set storage folder !this is important!
 			appSettings.StorageFolder = inputPath;
-
 			
 			// inject manifest
-			if ( ! new ExportManifest(appSettings,new PlainTextFileHelper()).Import() )
+			if ( ! new PublishManifest(startupHelper.SelectorStorage().Get(SelectorStorage.StorageServices.HostFilesystem), 
+				appSettings,new PlainTextFileHelper()).ImportManifest() )
 			{
 				// import false >
 				Console.WriteLine($"Please run 'starskywebhtmlcli' first to generate a settings file"  );

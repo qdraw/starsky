@@ -6,15 +6,19 @@ using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using starskycore.Data;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
+using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
-using starskycore.Models;
 using starskycore.ViewModels;
 
 namespace starskycore.Services
 {
-    public class SearchService : ISearch
+	[Service(typeof(ISearch), InjectionLifetime = InjectionLifetime.Scoped)]
+	public class SearchService : ISearch
     {
         private readonly ApplicationDbContext _context;
         private readonly IMemoryCache _cache;

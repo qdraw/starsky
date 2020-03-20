@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
 using starskycore.Interfaces;
 using starskycore.Models;
-using starskygeocore.Services;
+using starsky.foundation.platform.Models;
+using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Services;
 using starskytest.FakeMocks;
 using starskytest.Models;
 
@@ -40,7 +43,8 @@ namespace starskytest.starskyGeoCore.Services
 		            LocationCountry = "country"
 	            }
             };
-            new GeoLocationWrite(_appSettings, _exifTool).LoopFolder(metaFilesInDirectory, true);
+            var fakeIStorage = new FakeIStorage();
+            new GeoLocationWrite(_appSettings, _exifTool, fakeIStorage,fakeIStorage).LoopFolder(metaFilesInDirectory, true);
         }
     }
 }

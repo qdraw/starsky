@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Helpers;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
 using starskycore.Models;
 
@@ -47,10 +50,10 @@ namespace starskytest.Helpers
         [TestMethod]
         public void FileIndexCompareHelperTest_colorClass_Compare()
         {
-            var source = new FileIndexItem {ColorClass = FileIndexItem.Color.None};
-            var update = new FileIndexItem {ColorClass = FileIndexItem.Color.Winner};
+            var source = new FileIndexItem {ColorClass = ColorClassParser.Color.None};
+            var update = new FileIndexItem {ColorClass = ColorClassParser.Color.Winner};
             FileIndexCompareHelper.Compare(source, update);
-            Assert.AreEqual(FileIndexItem.Color.Winner,source.ColorClass);
+            Assert.AreEqual(ColorClassParser.Color.Winner,source.ColorClass);
         }
         
         [TestMethod]

@@ -1,4 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
 using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
@@ -25,7 +28,8 @@ namespace starskytest.Services
             // Give the hasher 0 seconds to calc a hash; so timeout is activated
 	        var iStorage = new FakeIStorage();
 	        var fileHashCode = new FileHash(iStorage).GetHashCode("/test",0);
-            Assert.AreEqual(true, fileHashCode.Contains("_T"));
+	        Assert.IsFalse(fileHashCode.Value);
+            Assert.AreEqual(true, fileHashCode.Key.Contains("_T"));
         }
         
         [TestMethod]
@@ -34,7 +38,8 @@ namespace starskytest.Services
 	        var createAnImage = new CreateAnImage();
 	        var iStorage = new StorageSubPathFilesystem(new AppSettings{StorageFolder = createAnImage.BasePath});
 	        var fileHashCode = new FileHash(iStorage).GetHashCode(createAnImage.DbPath);
-	        Assert.AreEqual(26,fileHashCode.Length);
+	        Assert.IsTrue(fileHashCode.Value);
+	        Assert.AreEqual(26,fileHashCode.Key.Length);
         }
         
         

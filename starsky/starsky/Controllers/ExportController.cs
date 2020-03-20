@@ -7,9 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
 using starskycore.Services;
 
 namespace starsky.Controllers
@@ -21,16 +27,20 @@ namespace starsky.Controllers
 		private readonly AppSettings _appSettings;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IStorage _iStorage;
+		private readonly IStorage _thumbnailStorage;
+		private readonly IStorage _hostFileSystemStorage;
 
 		public ExportController(
 			IQuery query, AppSettings appSettings, IBackgroundTaskQueue queue,
-			IStorage iStorage, IReadMeta readMeta
-		)
+			ISelectorStorage selectorStorage)
 		{
 			_appSettings = appSettings;
 			_query = query;
 			_bgTaskQueue = queue;
-			_iStorage = iStorage;
+			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+
 		}
 
 		/// <summary>
@@ -105,10 +115,9 @@ namespace starsky.Controllers
 				
 				// Write a single file to be sure that writing is ready
 				var doneFileFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".done";
-				new PlainTextFileHelper().WriteFile(doneFileFullPath,"OK");
-
-				Console.WriteLine("<<<<<<<");
-
+				await _hostFileSystemStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream("OK"), doneFileFullPath);
+				if(_appSettings.Verbose) Console.WriteLine("Zip done: " + doneFileFullPath);
+				
 			});
 			
 			// for the rest api
@@ -121,7 +130,7 @@ namespace starsky.Controllers
 		/// </summary>
 		/// <param name="fileIndexResultsList">the items</param>
 		/// <param name="thumbnail">add the thumbnail or the source image</param>
-		/// <returns>list of filepaths</returns>
+		/// <returns>list of file paths</returns>
 		public List<string> CreateListToExport(List<FileIndexItem> fileIndexResultsList, bool thumbnail)
 		{
 			var filePaths = new List<string>();
@@ -133,7 +142,7 @@ namespace starsky.Controllers
 					item.FileHash + ".jpg");
 
 				if ( thumbnail )
-					new Thumbnail(_iStorage).CreateThumb(item.FilePath, item.FileHash);
+					new Thumbnail(_iStorage, _thumbnailStorage).CreateThumb(item.FilePath, item.FileHash);
 
 				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
 				
@@ -165,7 +174,7 @@ namespace starsky.Controllers
 			{
 				if ( thumbnail )
 				{
-					// We use base32 filehashes but export 
+					// We use base32 fileHashes but export 
 					// the file with the original name
 					
 					var thumbFilename = Path.GetFileNameWithoutExtension(filePath);
@@ -187,7 +196,7 @@ namespace starsky.Controllers
 		/// </summary>
 		/// <param name="f">zip hash e.g. TNA995920129</param>
 		/// <param name="json">true to get OK instead of a zip file</param>
-		/// <returns>Not ready or the zipfile</returns>
+		/// <returns>Not ready or the zip-file</returns>
 		/// <response code="200">if json is true return 'OK', else the zip file</response>
 		/// <response code="206">Not ready generating the zip, please wait</response>
 		[HttpGet("/export/zip/{f}.zip")]
@@ -198,19 +207,17 @@ namespace starsky.Controllers
 			var sourceFullPath = Path.Join(_appSettings.TempFolder,f) + ".zip";
 			var doneFileFullPath = Path.Join(_appSettings.TempFolder,f) + ".done";
 
-			if ( FilesHelper.IsFolderOrFile(sourceFullPath) ==
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted ) return NotFound("Path is not found");
+			if ( !_hostFileSystemStorage.ExistFile(sourceFullPath)  ) return NotFound("Path is not found");
 
 			// Read a single file to be sure that writing is ready
-			if ( FilesHelper.IsFolderOrFile(doneFileFullPath) ==
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			if ( !_hostFileSystemStorage.ExistFile(doneFileFullPath)  )
 			{
 				Response.StatusCode = 206;
 				return Json("Not Ready");
 			}
 			
 			if ( json ) return Json("OK");
-			FileStream fs = System.IO.File.OpenRead(sourceFullPath);
+			var fs = _hostFileSystemStorage.ReadStream(sourceFullPath);
 			// Return the right mime type
 			return File(fs, MimeHelper.GetMimeTypeByFileName(sourceFullPath));
 		}
@@ -228,10 +235,10 @@ namespace starsky.Controllers
 				tempFileNameStringBuilder.Append(item.FileHash);
 			}
 			// to be sure that the max string limit
-			var shortName = tempFileNameStringBuilder.ToString().GetHashCode().ToString(CultureInfo.InvariantCulture).ToLower().Replace("-","A");
+			var shortName = tempFileNameStringBuilder.ToString().GetHashCode()
+				.ToString(CultureInfo.InvariantCulture).ToLower().Replace("-","A");
+			
 			return shortName;
 		}
-	
-
 	}
 }

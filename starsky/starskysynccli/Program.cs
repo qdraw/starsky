@@ -1,4 +1,9 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Models;
+using starsky.foundation.storage.Services;
+using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
@@ -55,7 +60,8 @@ namespace starskysynccli
 
             if (new ArgsHelper(appSettings).GetThumbnail(args))
             {
-	            var storage = startupHelper.Storage();
+	            var storage = startupHelper.SubPathStorage();
+	            var thumbnailStorage = startupHelper.ThumbnailStorage();
 
 				var isFolderOrFile = storage.IsFolderOrFile(subpath);
 
@@ -64,12 +70,12 @@ namespace starskysynccli
                 if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
                 {
                     // If single file => create thumbnail
-	                var fileHash = new FileHash(storage).GetHashCode(subpath);
-                    new Thumbnail(storage).CreateThumb(subpath,fileHash); // <= this uses subpath
+	                var fileHash = new FileHash(storage).GetHashCode(subpath).Key;
+                    new Thumbnail(storage,thumbnailStorage).CreateThumb(subpath,fileHash); // <= this uses subPath
                 }
                 else
                 {
-	                new Thumbnail(storage).CreateThumb(subpath);
+	                new Thumbnail(storage, thumbnailStorage).CreateThumb(subpath);
                 }
                 
                 Console.WriteLine("Thumbnail Done!");

@@ -39,6 +39,9 @@ if(!runtimes.Contains(genericName)) {
   runtimes.Insert(0, genericName);
 }
 
+Environment.SetEnvironmentVariable("DOTNET_CLI_TELEMETRY_OPTOUT","true");
+Environment.SetEnvironmentVariable("DOTNET_SKIP_FIRST_TIME_EXPERIENCE","1");
+
 /* Build information, just to show */
 var buildForInformation = new StringBuilder(">> Going to build for: ");
 foreach(var runtime in runtimes)
@@ -50,14 +53,15 @@ System.Console.WriteLine(buildForInformation.ToString());
 
 Information($"Running target {target} in configuration {configuration}");
 
-var projectNames = new List<string>{
+var publishProjectNames = new List<string>{
+    "starskyadmincli",
     "starskygeocli",
     "starskyimportercli",
     "starskysynccli",
     "starskywebftpcli",
     "starskywebhtmlcli",
     "starsky"
-}; // ignore starskycore + starskygeocore
+}; // ignore starskycore + features/foundations
 
 
 var testProjectNames = new List<string>{
@@ -122,7 +126,7 @@ Task("RestoreNetCore")
         Environment.SetEnvironmentVariable("DOTNET_SKIP_FIRST_TIME_EXPERIENCE","1");
 
         // make a new list
-        var restoreProjectNames = new List<string>(projectNames);
+        var restoreProjectNames = new List<string>(publishProjectNames);
         restoreProjectNames.AddRange(testProjectNames);
 
 
@@ -141,7 +145,7 @@ Task("RestoreNetCore")
                 Runtime = runtime
             };
 
-            foreach(var projectName in projectNames)
+            foreach(var projectName in publishProjectNames)
             {
                 System.Console.WriteLine($"Restore ./{projectName}/{projectName}.csproj for {runtime}");
                 DotNetCoreRestore($"./{projectName}/{projectName}.csproj",
@@ -157,10 +161,12 @@ Task("RestoreNetCore")
 Task("BuildNetCoreGeneric")
   .Does(() =>
   {
+      System.Console.WriteLine($"Build . for generic");
       var dotnetBuildSettings = new DotNetCoreBuildSettings()
       {
           Configuration = configuration,
-          ArgumentCustomization = args => args.Append("--no-restore"),
+          ArgumentCustomization = args => args.Append("--nologo").Append("--no-restore"),
+          /* Verbosity = DotNetCoreVerbosity.Detailed */
       };
       DotNetCoreBuild(".",
           dotnetBuildSettings);
@@ -175,7 +181,7 @@ Task("BuildNetCoreGeneric")
         var dotnetBuildSettings = new DotNetCoreBuildSettings()
         {
             Configuration = configuration,
-            ArgumentCustomization = args => args.Append("--no-restore"),
+            ArgumentCustomization = args => args.Append("--nologo").Append("--no-restore"),
         };
 
         foreach(var runtime in runtimes)
@@ -188,7 +194,7 @@ Task("BuildNetCoreGeneric")
 
             dotnetBuildSettings.Runtime = runtime;
 
-            foreach(var projectName in projectNames)
+            foreach(var projectName in publishProjectNames)
             {
               System.Console.WriteLine($"Build ./{projectName}/{projectName}.csproj for {runtime}");
 
@@ -219,11 +225,13 @@ Task("TestNetCore")
                     NoBuild = true,
                     ArgumentCustomization = args => args.Append("--no-restore")
                                              .Append("/p:CollectCoverage=true")
+                                             .Append("--no-build")
+                                             .Append("--nologo")
                                              .Append("/p:CoverletOutputFormat=opencover")
                                              .Append("/p:ThresholdType=line")
                                              .Append("/p:hideMigrations=\"true\"")
-                                             .Append("/p:Exclude=\"[MySqlConnector]*%2c[starsky.Views]*%2c[*]starskycore.Migrations.*\"")
-                                             .Append("/p:ExcludeByFile=\"*C:\\projects\\mysqlconnector\\src\\MySqlConnector*%2c../starskycore/Migrations/*\"") // (, comma seperated)
+                                             .Append("/p:Exclude=\"[MySqlConnector]*%2c[starsky.Views]*%2c[*]starsky.foundation.database.Migrations.*\"")
+                                             .Append("/p:ExcludeByFile=\"*C:\\projects\\mysqlconnector\\src\\MySqlConnector*%2c../starsky.foundation.database/Migrations/*\"") // (, comma seperated)
                                              .Append("/p:CoverletOutput=\"netcore-coverage.opencover.xml\"")
                                              .Append("/p:Threshold=0")
 
@@ -319,7 +327,7 @@ Task("CoverageReport")
 Task("PublishWeb")
     .Does(() =>
     {
-        foreach(var projectName in projectNames)
+        foreach(var projectName in publishProjectNames)
         {
             foreach(var runtime in runtimes)
             {
@@ -408,8 +416,8 @@ Task("SonarBegin")
             OpenCoverReportsPath = netCoreCoverageFile,
             ArgumentCustomization = args => args
                 .Append($"/o:" + organisation)
-                .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starskycore/Migrations/*,**/*spec.ts,**/*spec.tsx,**/src/index.tsx\"")
-                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starskycore/Migrations/*,**/*spec.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
+                .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starsky.foundation.database/Migrations/*,**/*spec.ts,**/*spec.tsx,**/src/index.tsx\"")
+                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starsky.foundation.database/Migrations/*,**/*spec.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
         });
   });
 

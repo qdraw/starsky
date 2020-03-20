@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.writemeta.Services;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -13,7 +17,7 @@ namespace starskytest.Services
 	[TestClass]
 	public class ExifCopyTest
 	{
-		private AppSettings _appSettings;
+		private readonly AppSettings _appSettings;
 
 		public ExifCopyTest()
 		{
@@ -26,13 +30,12 @@ namespace starskytest.Services
 		{
 			var folderPaths = new List<string>{"/"};
 			var inputSubPaths = new List<string>{"/test.jpg"};
-
 			var storage =
-				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, new List<string> {"?"});
+				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 	        
 			var fakeReadMeta = new ReadMeta(storage);
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
-			var helperResult = new ExifCopy(storage, fakeExifTool, fakeReadMeta).CopyExifPublish("/test.jpg", "/test2");
+			var helperResult = new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta).CopyExifPublish("/test.jpg", "/test2");
 			Assert.AreEqual(true,helperResult.Contains("HistorySoftwareAgent"));
 		}
 
@@ -42,11 +45,11 @@ namespace starskytest.Services
 			var folderPaths = new List<string>{"/"};
 			var inputSubPaths = new List<string>{"/test.dng"};
 			var storage =
-				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, new List<string> {"?"});
+				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 
 			var fakeReadMeta = new ReadMeta(storage);
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
-			var helperResult = new ExifCopy(storage, fakeExifTool, fakeReadMeta).XmpSync("/test.dng");
+			var helperResult = new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta).XmpSync("/test.dng");
 			Assert.AreEqual("/test.xmp",helperResult);
 
 		}
@@ -57,14 +60,15 @@ namespace starskytest.Services
 			var folderPaths = new List<string>{"/"};
 			var inputSubPaths = new List<string>{"/test.dng"};
 			var storage =
-				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}, new List<string> {"?"});
+				new FakeIStorage(folderPaths, inputSubPaths, new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 
 			var fakeReadMeta = new ReadMeta(storage);
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
 			
-			new ExifCopy(storage, fakeExifTool, fakeReadMeta).XmpCreate("/test.xmp");
+			new ExifCopy(storage, storage, fakeExifTool, fakeReadMeta).XmpCreate("/test.xmp");
 			var result = new PlainTextFileHelper().StreamToString(storage.ReadStream("/test.xmp"));
-			Assert.AreEqual("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Starsky'>\n<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n</rdf:RDF>\n</x:xmpmeta>",result);
+			Assert.AreEqual("<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Starsky'>\n" +
+			                "<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>\n</rdf:RDF>\n</x:xmpmeta>",result);
 		}
 
 //		[TestMethod]

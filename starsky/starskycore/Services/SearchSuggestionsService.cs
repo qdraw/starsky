@@ -1,14 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using starskycore.Data;
-using starskycore.Helpers;
+using starsky.foundation.database.Data;
+using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starskycore.Interfaces;
-using starskycore.Models;
 
 namespace starskycore.Services
 {
+	
+	[Service(typeof(ISearchSuggest), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class SearchSuggestionsService : ISearchSuggest
 	{
 		private readonly ApplicationDbContext _context;
@@ -32,14 +37,14 @@ namespace starskycore.Services
 		/// All keywords are stored lowercase
 		/// </summary>
 		/// <returns></returns>
-		public List<KeyValuePair<string,int>> Inflate()
+		public async Task<List<KeyValuePair<string,int>>> Inflate()
 		{
 			if (_cache.TryGetValue(nameof(SearchSuggestionsService), out _)) 
 				return new Dictionary<string,int>().ToList();
 
-			var allFilesList = _context.FileIndex.GroupBy(i => i.Tags)
+			var allFilesList = await _context.FileIndex.GroupBy(i => i.Tags)
 				.Where(x => x.Count() >= 1) // .ANY is not supported by EF Core
-				.Select(val => new KeyValuePair<string, int>(val.Key, val.Count())).ToList();
+				.Select(val => new KeyValuePair<string, int>(val.Key, val.Count())).ToListAsync();
 			
 			var suggestions = new Dictionary<string,int>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -77,7 +82,7 @@ namespace starskycore.Services
 		/// Cache query to get all stored suggested keywords
 		/// </summary>
 		/// <returns>Key/Value pared list</returns>
-		public IEnumerable<KeyValuePair<string, int>> GetAllSuggestions()
+		public async Task<IEnumerable<KeyValuePair<string, int>>> GetAllSuggestions()
 		{
 			if( _cache == null || _appSettings?.AddMemoryCache == false) 
 				return new Dictionary<string,int>();
@@ -85,7 +90,7 @@ namespace starskycore.Services
 			if (_cache.TryGetValue(nameof(SearchSuggestionsService), out var objectFileFolders))
 				return objectFileFolders as List<KeyValuePair<string,int>>;
 			
-			return Inflate();
+			return await Inflate();
 		}
 
 		/// <summary>
@@ -93,13 +98,14 @@ namespace starskycore.Services
 		/// </summary>
 		/// <param name="query">half a search query</param>
 		/// <returns>list of suggested keywords</returns>
-		public IEnumerable<string> SearchSuggest(string query)
+		public async Task<IEnumerable<string>> SearchSuggest(string query)
 		{
 			if ( string.IsNullOrEmpty(query) ) return new List<string>();
 			if( _cache == null || _appSettings?.AddMemoryCache == false) return new List<string>();
 			
-			var results = GetAllSuggestions()
-				.Where(p => p.Key.ToLowerInvariant().StartsWith( query.ToLowerInvariant() ))
+			var allSuggestions = await GetAllSuggestions();
+			
+			var results = allSuggestions.Where(p => p.Key.ToLowerInvariant().StartsWith( query.ToLowerInvariant() ))
 				.Take(MaxResult)
 				.OrderByDescending(p => p.Value).Select(p => p.Key)
 				.ToList();

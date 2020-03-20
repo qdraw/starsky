@@ -5,12 +5,13 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starskycore.Data;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starskycore.Interfaces;
-using starskycore.Models;
 using starskycore.Services;
 using starskycore.ViewModels;
-using Query = starskycore.Services.Query;
 
 namespace starskytest.Controllers
 {

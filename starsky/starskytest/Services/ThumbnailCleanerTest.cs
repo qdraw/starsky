@@ -1,14 +1,17 @@
 using System.IO;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Data;
-using starskycore.Helpers;
-using starskycore.Models;
-using starskycore.Services;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeCreateAn;
-using Query = starskycore.Services.Query;
+using starskytest.FakeMocks;
 
 namespace starskytest.Services
 {
@@ -37,7 +40,7 @@ namespace starskytest.Services
 		public void ThumbnailCleanerTest_DirectoryNotFoundException()
 		{
 			var appsettings = new AppSettings {ThumbnailTempFolder = "\""};
-			new ThumbnailCleaner(_query,appsettings).CleanAllUnusedFiles();
+			new ThumbnailCleaner(new FakeIStorage(), _query,appsettings).CleanAllUnusedFiles();
 		}
 		
 		[TestMethod]
@@ -54,7 +57,6 @@ namespace starskytest.Services
 			if (!File.Exists(Path.Join(existFullDir,"EXIST.jpg"))) File.Copy(createAnImage.FullFilePath, Path.Join(existFullDir,"EXIST.jpg"));
 			if (!File.Exists(Path.Join(existFullDir,"DELETE.jpg"))) File.Copy(createAnImage.FullFilePath, Path.Join(existFullDir,"DELETE.jpg"));
 
-
 			_query.AddItem(new FileIndexItem
 			{
 				FileHash = "EXIST",
@@ -66,20 +68,21 @@ namespace starskytest.Services
 				ThumbnailTempFolder = existFullDir,
 				Verbose = true
 			};
+			var thumbnailStorage = new StorageThumbnailFilesystem(appSettings);
 			
-			var thumbnailCleaner = new ThumbnailCleaner(_query,appSettings);
+			var thumbnailCleaner = new ThumbnailCleaner(thumbnailStorage, _query,appSettings);
 			
 			// there are now two files inside this dir
-			var allThumbnailFilesBefore = thumbnailCleaner.GetAllThumbnailFiles();
-			Assert.AreEqual(2,allThumbnailFilesBefore.Length);
+			var allThumbnailFilesBefore = thumbnailStorage.GetAllFilesInDirectory("/");
+			Assert.AreEqual(2,allThumbnailFilesBefore.Count());
 			
 			thumbnailCleaner.CleanAllUnusedFiles();
 			
 			// DELETE.jpg is removed > is missing in database
-			var allThumbnailFilesAfter = thumbnailCleaner.GetAllThumbnailFiles();
-			Assert.AreEqual(1,allThumbnailFilesAfter.Length);
-			
-			FilesHelper.DeleteDirectory(existFullDir);
+			var allThumbnailFilesAfter = thumbnailStorage.GetAllFilesInDirectory("/");
+			Assert.AreEqual(1,allThumbnailFilesAfter.Count());
+
+			new StorageHostFullPathFilesystem().FolderDelete(existFullDir);
 		}
 
 

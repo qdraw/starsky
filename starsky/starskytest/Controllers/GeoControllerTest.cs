@@ -8,17 +8,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starskycore.Data;
-using starskycore.Interfaces;
+using starsky.feature.geolookup.Models;
+using starsky.feature.geolookup.Services;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Query;
 using starskycore.Middleware;
-using starskycore.Models;
 using starskycore.Services;
-using starskygeocore.Models;
-using starskygeocore.Services;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
-using Query = starskycore.Services.Query;
 
 namespace starskytest.Controllers
 {
@@ -98,7 +100,7 @@ namespace starskytest.Controllers
 		{
 			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, _readmeta,istorage)
+			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, new FakeSelectorStorage(istorage))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -111,7 +113,7 @@ namespace starskytest.Controllers
 		{
 			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, _readmeta,istorage)
+			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, new FakeSelectorStorage(istorage))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -125,8 +127,11 @@ namespace starskytest.Controllers
 			// set startup status aka 50%
 			new GeoCacheStatusService(_memoryCache).Update("/StatusCheck_CachedItemExist",1, StatusType.Current);
 			new GeoCacheStatusService(_memoryCache).Update("/StatusCheck_CachedItemExist",2, StatusType.Total);
+
+			var storage = new FakeIStorage();
+			var storageSelector = new FakeSelectorStorage(storage);
 			
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, _readmeta,new FakeIStorage(),_memoryCache)
+			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, storageSelector,_memoryCache)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -140,7 +145,9 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void StatusCheck_CachedItemNotExist()
 		{
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, _readmeta,new FakeIStorage())
+			var storage = new FakeIStorage();
+			var storageSelector = new FakeSelectorStorage(storage);
+			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, storageSelector)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};

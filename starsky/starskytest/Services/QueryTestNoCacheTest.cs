@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Data;
-using starskycore.Models;
-using Query = starskycore.Services.Query;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
+using starsky.foundation.platform.Helpers;
 
 namespace starskytest.Services
 {
@@ -28,7 +29,7 @@ namespace starskytest.Services
                 FileName = "nocache.jpg",
                 ParentDirectory = "/nocache",
                 FileHash = "eruiopds",
-                ColorClass = FileIndexItem.Color.Winner, // 1
+                ColorClass = ColorClassParser.Color.Winner, // 1
                 Tags = "",
                 Title = ""
             });

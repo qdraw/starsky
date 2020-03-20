@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Storage;
 using starskycore.Helpers;
 using starskycore.Middleware;
 using starskycore.Models;
@@ -58,7 +62,7 @@ namespace starskytest.Models
             var importItem = new ImportIndexItem(_appSettings);
             importItem.SourceFullFilePath = createAnImage.FullFilePath;
 
-            var fileName = importItem.ParseFileName();
+            var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
             Assert.AreEqual("00010101_000000.jpg", fileName);
         }
         
@@ -73,7 +77,7 @@ namespace starskytest.Models
 	        var importItem = new ImportIndexItem(_appSettings);
 	        importItem.SourceFullFilePath = createAnImage.FullFilePath;
 
-	        var fileName = importItem.ParseFileName();
+	        var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
 	        Assert.AreEqual("00010101_000000_hm.jpg", fileName);
         }
 
@@ -88,7 +92,7 @@ namespace starskytest.Models
 		        Structure = null
 	        };
 	        Assert.AreEqual(null,importItem.Structure);
-	        var fileName = importItem.ParseFileName();
+	        var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
 	        
 	        Assert.AreEqual(null,fileName);
         }
@@ -103,7 +107,7 @@ namespace starskytest.Models
 		        SourceFullFilePath = createAnImage.FullFilePath,
 		        Structure = "*"
 	        };
-	        var fileName = importItem.ParseFileName();
+	        var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
 
         }
 
@@ -118,10 +122,10 @@ namespace starskytest.Models
             importItem.SourceFullFilePath = createAnImage.FullFilePathWithDate;
 	        importItem.ParseDateTimeFromFileName();
 	        
-            var fileName = importItem.ParseFileName(false);
+            var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg,false);
             Assert.AreEqual("00010101_000000_d.jpg", fileName);
             
-            FilesHelper.DeleteFile(importItem.SourceFullFilePath);
+            new StorageHostFullPathFilesystem().FileDelete(importItem.SourceFullFilePath);
         }
 	    
 	    [TestMethod]
@@ -138,10 +142,10 @@ namespace starskytest.Models
 		    importItem.SourceFullFilePath = filPathWithAppendix;
 		    importItem.ParseDateTimeFromFileName();
 
-		    var fileName = importItem.ParseFileName(false);
+		    var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg,false);
 		    Assert.AreEqual("20180101_020202_d.jpg", fileName);
             
-		    FilesHelper.DeleteFile(filPathWithAppendix);
+		    new StorageHostFullPathFilesystem().FileDelete(filPathWithAppendix);
 	    }
 
 	    [TestMethod]
@@ -199,7 +203,7 @@ namespace starskytest.Models
             var importItem = new ImportIndexItem(_appSettings);
             importItem.SourceFullFilePath = createAnImage.FullFilePath;
             _appSettings.StorageFolder = createAnImage.BasePath;
-            var fileName = importItem.ParseFileName();
+            var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
             Assert.AreEqual(createAnImage.DbPath.Replace("/",string.Empty),fileName);
         }
         
@@ -213,7 +217,8 @@ namespace starskytest.Models
             importItem.SourceFullFilePath = createAnImage.FullFilePath;
             _appSettings.StorageFolder = createAnImage.BasePath;
             var subfolders = importItem.ParseSubfolders(false);
-            Assert.AreEqual("/" + createAnImage.DbPath.Replace("/",string.Empty).Replace(".jpg",string.Empty) + "/",subfolders);
+            Assert.AreEqual("/" + createAnImage.DbPath.Replace("/",string.Empty)
+	                            .Replace(".jpg",string.Empty) + "/",subfolders);
         }
 	    
 	    [TestMethod]
@@ -241,7 +246,7 @@ namespace starskytest.Models
                 SourceFullFilePath = Path.DirectorySeparatorChar + "20180101_011223.jpg"
             };
 
-            input.ParseFileName();
+            input.ParseFileName(ExtensionRolesHelper.ImageFormat.notfound);
             // ExpectedException
         }
 	    
@@ -394,7 +399,7 @@ namespace starskytest.Models
             // Check if those overwite is accepted
             Assert.AreEqual(anserDateTime,input.DateTime);
                    
-            FilesHelper.DeleteFile(createAnImageNoExif.FullFilePathWithDate);
+            new StorageHostFullPathFilesystem().FileDelete(createAnImageNoExif.FullFilePathWithDate);
         }
 
         [TestMethod]

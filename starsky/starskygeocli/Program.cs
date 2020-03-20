@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using starsky.feature.geolookup.Services;
+using starsky.foundation.database.Models;
 using starskycore.Helpers;
-using starskycore.Models;
-using starskycore.Services;
-using starskygeocore.Services;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Models;
+using starsky.foundation.storage.Services;
+using starsky.foundation.writemeta.Services;
 
 namespace starskyGeoCli
 {
@@ -56,9 +60,9 @@ namespace starskyGeoCli
 
 			// used in this session to find the files back
 			appSettings.StorageFolder = inputPath;
-			var storage = new StorageSubPathFilesystem(appSettings);
+			var storage = startupHelper.SubPathStorage();
 
-			if ( storage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			if ( inputPath == null || storage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				Console.WriteLine(
 					$"Folder location is not found \nPlease try the `-h` command to get help ");
@@ -83,7 +87,7 @@ namespace starskyGeoCli
 												.LoopFolder(fileIndexList);
 				
 				Console.Write("¬");
-				new GeoLocationWrite(appSettings, startupHelper.ExifTool()).LoopFolder(
+				new GeoLocationWrite(appSettings, startupHelper.ExifTool(), startupHelper.SubPathStorage(), startupHelper.ThumbnailStorage()).LoopFolder(
 					toMetaFilesUpdate, false);
 				Console.Write("(gps added)");
 			}
@@ -94,7 +98,7 @@ namespace starskyGeoCli
 			if ( fileIndexList.Count >= 1 )
 			{
 				Console.Write("~ Add city, state and country info ~");
-				new GeoLocationWrite(appSettings, startupHelper.ExifTool()).LoopFolder(
+				new GeoLocationWrite(appSettings, startupHelper.ExifTool(), startupHelper.SubPathStorage(), startupHelper.ThumbnailStorage()).LoopFolder(
 					fileIndexList, true);
 			}
 
@@ -108,8 +112,8 @@ namespace starskyGeoCli
 			foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
 				.ToList() )
 			{
-				var newThumb = new FileHash(storage).GetHashCode(item.FilePath);
-				storage.ThumbnailMove(item.FileHash, newThumb);
+				var newThumb = new FileHash(storage).GetHashCode(item.FilePath).Key;
+				startupHelper.ThumbnailStorage().FileMove(item.FileHash, newThumb);
 				if ( appSettings.Verbose )
 					Console.WriteLine("thumb+ `" + item.FileHash + "`" + newThumb);
 			}

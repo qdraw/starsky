@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Interfaces;
 using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
 using starskycore.Services;
-using starskycore.ViewModels;
 
 namespace starsky.Controllers
 {
@@ -22,22 +27,21 @@ namespace starsky.Controllers
         private readonly IBackgroundTaskQueue _bgTaskQueue;
         private readonly IReadMeta _readMeta;
 	    private readonly IStorage _iStorage;
+	    private readonly IStorage _thumbnailStorage;
 
-        public ApiController(
+	    public ApiController(
             IQuery query, IExifTool exifTool, 
             AppSettings appSettings, IBackgroundTaskQueue queue,
-            IReadMeta readMeta,
-			IStorage iStorage)
+			ISelectorStorage selectorStorage, IMemoryCache memoryCache)
         {
             _appSettings = appSettings;
             _query = query;
             _exifTool = exifTool;
             _bgTaskQueue = queue;
-            _readMeta = readMeta;
-	        _iStorage = iStorage;
+            _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+            _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+            _readMeta = new ReadMeta(_iStorage,_appSettings, memoryCache);
         }
-
-
 
 	    /// <summary>
         /// Show the runtime settings (allow AllowAnonymous)
@@ -56,12 +60,6 @@ namespace starsky.Controllers
             return Json(appSettings);
         }
         
-
-
-
-
-
-
         /// <summary>
         /// Update Exif and Rotation API
         /// </summary>
@@ -127,7 +125,7 @@ namespace starsky.Controllers
 					}
 
 					// Compare Rotation and All other tags
-					new UpdateService(_query, _exifTool, _readMeta,_iStorage)
+					new UpdateService(_query, _exifTool, _readMeta,_iStorage, _thumbnailStorage)
 						.CompareAllLabelsAndRotation(changedFileIndexItemName,
 							collectionsDetailView, statusModel, append, rotateClock);
 					
@@ -149,7 +147,7 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				new UpdateService(_query,_exifTool, _readMeta,_iStorage)
+				new UpdateService(_query,_exifTool, _readMeta,_iStorage,_thumbnailStorage)
 					.Update(changedFileIndexItemName,fileIndexResultsList,inputModel,collections, append, rotateClock);
 			});
             
@@ -209,7 +207,7 @@ namespace starsky.Controllers
 						}
 					};
 					
-					new UpdateService(_query,_exifTool, _readMeta,_iStorage)
+					new UpdateService(_query,_exifTool, _readMeta,_iStorage,_thumbnailStorage)
 						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, collections, false, 0);
 					
 				}
@@ -223,13 +221,12 @@ namespace starsky.Controllers
 
 			// Clone an new item in the list to display
 			var returnNewResultList = new List<FileIndexItem>();
-			foreach (var item in fileIndexResultsList)
+			foreach ( var clonedItem in fileIndexResultsList.Select(item => item.Clone()) )
 			{
-				var citem = item.Clone();
-				citem.FileHash = null;
-				returnNewResultList.Add(citem);
+				clonedItem.FileHash = null;
+				returnNewResultList.Add(clonedItem);
 			}
-								
+			
 			return Json(returnNewResultList);
 		}
 
@@ -357,7 +354,7 @@ namespace starsky.Controllers
 	                detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 
 					// remove thumbnail from disk
-	                _iStorage.ThumbnailDelete(detailViewItem.FileIndexItem.FileHash);
+					_thumbnailStorage.FileDelete(detailViewItem.FileIndexItem.FileHash);
 
                     fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
 	                
@@ -386,205 +383,6 @@ namespace starsky.Controllers
             return Json(fileIndexResultsList);
         }
   
-
-        /// <summary>
-        /// Http Endpoint to get full size image or thumbnail
-        /// </summary>
-        /// <param name="f">one single file</param>
-        /// <param name="isSingleitem">true = load orginal</param>
-        /// <param name="json">text as output</param>
-        /// <returns>thumbnail or status</returns>
-        /// <response code="200">returns content of the file or when json is true, "OK"</response>
-        /// <response code="404">item not found on disk</response>
-        /// <response code="409">Conflict, you did try get for example a thumbnail of a raw file</response>
-        /// <response code="209">"Thumbnail is not ready yet"</response>
-        /// <response code="401">User unauthorized</response>
-        [HttpGet("/api/thumbnail/{f}")]
-        [ProducesResponseType(200)] // file
-        [ProducesResponseType(404)] // not found
-        [ProducesResponseType(409)] // raw
-        [ProducesResponseType(209)] // "Thumbnail is not ready yet"
-        [IgnoreAntiforgeryToken]
-        [AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
-        [ResponseCache(Duration = 29030400)] // 4 weeks
-        public IActionResult Thumbnail(
-            string f, 
-            bool isSingleitem = false, 
-            bool json = false)
-        {
-            // f is Hash
-            // isSingleItem => detailView
-            // Retry thumbnail => is when you press reset thumbnail
-            // json, => to don't waste the users bandwidth.
-
-	        // For serving jpeg files
-	        f = FilenamesHelper.GetFileNameWithoutExtension(f);
-	        
-	        // Restrict the fileHash to letters and digits only
-	        // I/O function calls should not be vulnerable to path injection attacks
-	        if (!Regex.IsMatch(f, "^[a-zA-Z0-9_]+$") )
-	        {
-		        return BadRequest();
-	        }
-	        
-            var thumbPath = _appSettings.ThumbnailTempFolder + f + ".jpg";
-
-            if (FilesHelper.IsFolderOrFile(thumbPath) == FolderOrFileModel.FolderOrFileTypeList.File)
-            {
-                // When a file is corrupt show error
-                var imageFormat = ExtensionRolesHelper.GetImageFormat(thumbPath);
-                if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
-                {
-	                SetExpiresResponseHeadersToZero();
-	                return NoContent(); // 204
-                }
-
-                // When using the api to check using javascript
-                // use the cached version of imageFormat, otherwise you have to check if it deleted
-                if (json) return Json("OK");
-
-                // thumbs are always in jpeg
-                FileStream fs = System.IO.File.OpenRead(thumbPath);
-                return File(fs, "image/jpeg");
-            }
-            
-            // Cached view of item
-            var sourcePath = _query.GetSubPathByHash(f);
-            if (sourcePath == null) return NotFound("not in index");
-            var sourceFullPath = _appSettings.DatabasePathToFilePath(sourcePath);
-
-	        
-	        // Need to check again for recently moved files
-	        if (!System.IO.File.Exists(sourceFullPath))
-	        {
-		        // remove from cache
-		        _query.ResetItemByHash(f);
-		        // query database agian
-		        sourcePath = _query.GetSubPathByHash(f);
-		        if (sourcePath == null) return NotFound("not in index");
-		        sourceFullPath = _appSettings.DatabasePathToFilePath(sourcePath);
-	        }
-
-            if (System.IO.File.Exists(sourceFullPath))
-            {
-                if (!isSingleitem)
-                {
-                    // "Photo exist in database but " + "isSingleItem flag is Missing"
-                    SetExpiresResponseHeadersToZero();
-                    Response.StatusCode = 202; // A conflict, that the thumb is not generated yet
-                    return Json("Thumbnail is not ready yet");
-                }
-                
-                if (ExtensionRolesHelper.IsExtensionThumbnailSupported(sourceFullPath))
-                {
-                    FileStream fs1 = System.IO.File.OpenRead(sourceFullPath);
-                    var fileExtensionWithoutDot = Path.GetExtension(sourceFullPath).Remove(0, 1).ToLower();
-                    return File(fs1, MimeHelper.GetMimeType(fileExtensionWithoutDot));
-                }
-                Response.StatusCode = 409; // A conflict, that the thumb is not generated yet
-                return Json("Thumbnail is not supported; for example you try to view a raw file");
-            }
-
-            return NotFound("There is no thumbnail image " + thumbPath + " and no source image "+ sourcePath );
-            // When you have duplicate files and one of them is removed and there is no thumbnail
-            // generated yet you might get an false error
-        }
-
-        /// <summary>
-        /// Force Http context to no browser cache
-        /// </summary>
-        public void SetExpiresResponseHeadersToZero()
-        {
-            Request.HttpContext.Response.Headers.Remove("Cache-Control");
-            Request.HttpContext.Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
-
-            Request.HttpContext.Response.Headers.Remove("Pragma");
-            Request.HttpContext.Response.Headers.Add("Pragma", "no-cache");
-
-            Request.HttpContext.Response.Headers.Remove("Expires");
-            Request.HttpContext.Response.Headers.Add("Expires", "0");
-        }
-
-        /// <summary>
-        /// Select manualy the orginal or thumbnail
-        /// </summary>
-        /// <param name="f">string, subpath to find the file</param>
-        /// <param name="isThumbnail">true = 1000px thumb (if supported)</param>
-        /// <returns>FileStream with image</returns>
-        /// <response code="200">returns content of the file or when json is true, "OK"</response>
-        /// <response code="404">source image missing</response>
-        /// <response code="500">"Thumbnail generation failed"</response>
-        /// <response code="401">User unauthorized</response>
-        [HttpGet("/api/downloadPhoto")]
-        [ProducesResponseType(200)] // file
-        [ProducesResponseType(404)] // not found
-        [ProducesResponseType(500)] // "Thumbnail generation failed"
-        public IActionResult DownloadPhoto(string f, bool isThumbnail = true)
-        {
-            // f = subpath/filepath
-            if (f.Contains("?isthumbnail")) return NotFound("please use &isthumbnail = "+
-                                                            "instead of ?isthumbnail= ");
-
-            var singleItem = _query.SingleItem(f);
-            if (singleItem == null) return NotFound("not in index " + f);
-
-            var sourceFullPath = _appSettings.DatabasePathToFilePath(singleItem.FileIndexItem.FilePath);
-            if (!System.IO.File.Exists(sourceFullPath))
-                return NotFound("source image missing " + sourceFullPath );
-
-            // Return full image
-            if (!isThumbnail)
-            {
-                FileStream fs = System.IO.File.OpenRead(sourceFullPath);
-                // Return the right mime type
-                return File(fs, MimeHelper.GetMimeTypeByFileName(sourceFullPath));
-            }
-
-            // Return Thumbnail
-            
-            var thumbPath = _appSettings.ThumbnailTempFolder + singleItem.FileIndexItem.FileHash + ".jpg";
-
-            // If File is corrupt delete it
-            if (ExtensionRolesHelper.GetImageFormat(thumbPath) == ExtensionRolesHelper.ImageFormat.unknown)
-            {
-                System.IO.File.Delete(thumbPath);
-            }
-
-            if (ExtensionRolesHelper.GetImageFormat(thumbPath) == ExtensionRolesHelper.ImageFormat.notfound)
-            {
-                if (FilesHelper.IsFolderOrFile(_appSettings.ThumbnailTempFolder) ==
-                    FolderOrFileModel.FolderOrFileTypeList.Deleted)
-                {
-                    return NotFound("Thumb base folder " + _appSettings.ThumbnailTempFolder + " not found");
-                }
-                
-                var searchItem = new FileIndexItem
-                {
-                    FileName = _appSettings.FullPathToDatabaseStyle(sourceFullPath)
-                        .Split("/").LastOrDefault(),
-                    ParentDirectory = Breadcrumbs.BreadcrumbHelper(_appSettings.
-                        FullPathToDatabaseStyle(sourceFullPath)).LastOrDefault(),
-	                FileHash = singleItem.FileIndexItem.FileHash // not loading it from disk to make it faster
-                };
-                
-                // When you have a different tag in the database than on disk
-                thumbPath = _appSettings.ThumbnailTempFolder + searchItem.FileHash + ".jpg";
-                    
-                var isCreateAThumb = new Thumbnail(_iStorage).CreateThumb(searchItem.FilePath, searchItem.FileHash);
-                if (!isCreateAThumb)
-                {
-                    Response.StatusCode = 500;
-                    return Json("Thumbnail generation failed");
-                }
-
-                FileStream fs2 = System.IO.File.OpenRead(thumbPath);
-                return File(fs2, "image/jpeg");
-            }
-
-            FileStream fs1 = System.IO.File.OpenRead(thumbPath);
-            return File(fs1, "image/jpeg");
-        }
-
         /// <summary>
         /// Delete Database Cache (only the cache)
         /// </summary>

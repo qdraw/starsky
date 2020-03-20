@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
+using starsky.foundation.platform.Models;
 using starskyAdminCli.Services;
 using starskycore.Helpers;
-using starskycore.Models;
 using starskycore.Services;
 
 [assembly: InternalsVisibleTo("starskytest")]

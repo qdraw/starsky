@@ -7,10 +7,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.http.Streaming;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Storage;
 using starsky.Helpers;
 using starskycore.Middleware;
 using starskycore.Models;
+using starskycore.Services;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
 namespace starskytest.Helpers
 {
@@ -66,7 +71,7 @@ namespace starskytest.Helpers
 //            };
 
             var ms = new MemoryStream();
-            await FileStreamingHelper.StreamFile(httpContext.Request,_appSettings);
+            await FileStreamingHelper.StreamFile(httpContext.Request,_appSettings, new FakeSelectorStorage(new FakeIStorage()));
         }
         
         [TestMethod]
@@ -77,7 +82,7 @@ namespace starskytest.Helpers
             httpContext.Request.Headers["token"] = "fake_token_here"; //Set header
             httpContext.Request.ContentType = "multipart/form-data";
             var ms = new MemoryStream();
-            await FileStreamingHelper.StreamFile(httpContext.Request,_appSettings);
+            await FileStreamingHelper.StreamFile(httpContext.Request,_appSettings,new FakeSelectorStorage(new FakeIStorage()));
         }
 
         [TestMethod]
@@ -88,14 +93,15 @@ namespace starskytest.Helpers
 
             FileStream requestBody = new FileStream(createAnImage.FullFilePath, FileMode.Open);
             _appSettings.TempFolder = createAnImage.BasePath;
-            
-            var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg", requestBody, _appSettings);
+
+            var streamSelector = new FakeSelectorStorage(new StorageHostFullPathFilesystem());
+            var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg", requestBody, _appSettings,streamSelector);
             Assert.AreNotEqual(null, formValueProvider.ToString());
             requestBody.Dispose();
             
             // Clean
-            File.Delete(formValueProvider.FirstOrDefault());
-            
+            streamSelector.Get(SelectorStorage.StorageServices.HostFilesystem)
+	            .FileDelete(formValueProvider.FirstOrDefault());
         }
         
 //        [TestMethod]

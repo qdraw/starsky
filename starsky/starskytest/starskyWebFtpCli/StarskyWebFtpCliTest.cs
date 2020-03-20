@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Interfaces;
 using starskycore.Interfaces;
 using starskycore.Models;
 using starskytest.FakeCreateAn;

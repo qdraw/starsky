@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.storage.Services;
 using starskycore.Services;
 
 namespace starskytest.Services

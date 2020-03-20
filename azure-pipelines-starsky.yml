@@ -39,9 +39,9 @@ pr:
 
 steps:
 - task: DotNetCoreInstaller@0
-  displayName: 'Use .NET Core sdk 3.1.101'
+  displayName: 'Use .NET Core sdk 3.1.200'
   inputs:
-    version: '3.1.101'
+    version: '3.1.200'
   enabled: true
 
 - task: PowerShell@2
