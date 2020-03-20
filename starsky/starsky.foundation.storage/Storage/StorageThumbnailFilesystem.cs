@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
@@ -88,7 +89,9 @@ namespace starsky.foundation.storage.Storage
 
 		public IEnumerable<string> GetAllFilesInDirectory(string path)
 		{
-			throw new System.NotImplementedException();
+			DirectoryInfo dirInfo = new DirectoryInfo(_appSettings.ThumbnailTempFolder);
+			return dirInfo.EnumerateFiles($"*.jpg", SearchOption.TopDirectoryOnly)
+				.Select(p => p.Name).ToList();
 		}
 
 		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)

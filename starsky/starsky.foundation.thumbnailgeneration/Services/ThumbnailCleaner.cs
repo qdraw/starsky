@@ -24,12 +24,12 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		{
 			if (! _thumbnailStorage.ExistFolder("/") ) throw new DirectoryNotFoundException("Thumbnail folder not found");
 
-			var allThumbnailFiles = GetAllThumbnailFiles();
-			if(_appSettings.Verbose) Console.WriteLine(allThumbnailFiles.Length);
+			var allThumbnailFiles = _thumbnailStorage.GetAllFilesInDirectory("/").ToList();
+			if(_appSettings.Verbose) Console.WriteLine(allThumbnailFiles.Count);
 			
 			foreach ( var thumbnailFile in allThumbnailFiles )
 			{
-				var fileHash = Path.GetFileNameWithoutExtension(thumbnailFile.Name);
+				var fileHash = Path.GetFileNameWithoutExtension(thumbnailFile);
 				var itemByHash = _query.GetSubPathByHash(fileHash);
 				if (itemByHash != null ) continue;
 
@@ -38,11 +38,5 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			}
 		}
 
-		public FileInfo[] GetAllThumbnailFiles()
-		{
-			DirectoryInfo dirInfo = new DirectoryInfo(_appSettings.ThumbnailTempFolder);
-			return dirInfo.EnumerateFiles($"*.jpg", SearchOption.TopDirectoryOnly)
-				.AsParallel().ToArray();
-		}
 	}
 }

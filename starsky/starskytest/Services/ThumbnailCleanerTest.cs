@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,7 +57,6 @@ namespace starskytest.Services
 			if (!File.Exists(Path.Join(existFullDir,"EXIST.jpg"))) File.Copy(createAnImage.FullFilePath, Path.Join(existFullDir,"EXIST.jpg"));
 			if (!File.Exists(Path.Join(existFullDir,"DELETE.jpg"))) File.Copy(createAnImage.FullFilePath, Path.Join(existFullDir,"DELETE.jpg"));
 
-
 			_query.AddItem(new FileIndexItem
 			{
 				FileHash = "EXIST",
@@ -68,20 +68,21 @@ namespace starskytest.Services
 				ThumbnailTempFolder = existFullDir,
 				Verbose = true
 			};
-			var hostFullPathFilesystem = new StorageHostFullPathFilesystem();
-			var thumbnailCleaner = new ThumbnailCleaner(hostFullPathFilesystem, _query,appSettings);
+			var thumbnailStorage = new StorageThumbnailFilesystem(appSettings);
+			
+			var thumbnailCleaner = new ThumbnailCleaner(thumbnailStorage, _query,appSettings);
 			
 			// there are now two files inside this dir
-			var allThumbnailFilesBefore = thumbnailCleaner.GetAllThumbnailFiles();
-			Assert.AreEqual(2,allThumbnailFilesBefore.Length);
+			var allThumbnailFilesBefore = thumbnailStorage.GetAllFilesInDirectory("/");
+			Assert.AreEqual(2,allThumbnailFilesBefore.Count());
 			
 			thumbnailCleaner.CleanAllUnusedFiles();
 			
 			// DELETE.jpg is removed > is missing in database
-			var allThumbnailFilesAfter = thumbnailCleaner.GetAllThumbnailFiles();
-			Assert.AreEqual(1,allThumbnailFilesAfter.Length);
+			var allThumbnailFilesAfter = thumbnailStorage.GetAllFilesInDirectory("/");
+			Assert.AreEqual(1,allThumbnailFilesAfter.Count());
 
-			hostFullPathFilesystem.FolderDelete(existFullDir);
+			new StorageHostFullPathFilesystem().FolderDelete(existFullDir);
 		}
 
 
