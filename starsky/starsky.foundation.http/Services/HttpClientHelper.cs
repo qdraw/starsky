@@ -4,14 +4,16 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.http.Services
 {
-	[Service(typeof(IHttpClientHelper), InjectionLifetime = InjectionLifetime.Scoped)]
+	[Service(typeof(IHttpClientHelper), InjectionLifetime = InjectionLifetime.Singleton)]
     public class HttpClientHelper : IHttpClientHelper
     {
 	    private readonly IStorage _storage;
@@ -20,11 +22,17 @@ namespace starsky.foundation.http.Services
 	    /// Set Http Provider
 	    /// </summary>
 	    /// <param name="httpProvider">IHttpProvider</param>
-	    /// <param name="storage">Storage provider</param>
-	    public HttpClientHelper(IHttpProvider httpProvider, ISelectorStorage storage)
+	    /// <param name="serviceScopeFactory">Scope contains a IStorageSelector</param>
+	    public HttpClientHelper(IHttpProvider httpProvider, IServiceScopeFactory serviceScopeFactory)
 	    {
 		    _httpProvider = httpProvider;
-		    _storage = storage.Get(SelectorStorage.StorageServices.HostFilesystem);
+
+		    using ( var scope = serviceScopeFactory.CreateScope() )
+		    {
+			    // ISelectorStorage is a scoped service
+			    var selectorStorage = scope.ServiceProvider.GetRequiredService<ISelectorStorage>();
+			    _storage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+		    }
 	    }
 
 	    /// <summary>

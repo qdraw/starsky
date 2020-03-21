@@ -154,7 +154,7 @@ export class UrlQuery {
   }
 
   public UrlImportApi(): string {
-    return "/import";
+    return "/api/import";
   }
 
   public UrlUploadApi(): string {

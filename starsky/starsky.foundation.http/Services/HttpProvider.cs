@@ -5,7 +5,7 @@ using starsky.foundation.injection;
 
 namespace starsky.foundation.http.Services
 {
-	[Service(typeof(IHttpProvider), InjectionLifetime = InjectionLifetime.Scoped)]
+	[Service(typeof(IHttpProvider), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class HttpProvider : IHttpProvider
 	{
 		/// <summary>

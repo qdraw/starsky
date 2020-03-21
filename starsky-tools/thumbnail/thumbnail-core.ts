@@ -329,7 +329,7 @@ export class Query {
 	public async isImportIndex(): Promise<Array<string>> {
 
 		var importRequestOptions = this.requestOptions();
-		importRequestOptions.url = this.base_url + 'import/history/';
+		importRequestOptions.url = this.base_url + 'api/import/history/';
 
 		// TODO REFACTOR@@@@
 		const ops = [];
@@ -382,7 +382,7 @@ export class Query {
 	public async uploadTempFile(fileHash: string): Promise<boolean> {
 
 		var uploadRequestOptions = this.requestOptions();
-		uploadRequestOptions.url = this.base_url + 'import/thumbnail/';
+		uploadRequestOptions.url = this.base_url + 'api/import/thumbnail/';
 		uploadRequestOptions.method = "POST";
 
 		var fileHashLocation = path.join(this.getTempFolder(), fileHash + ".jpg");

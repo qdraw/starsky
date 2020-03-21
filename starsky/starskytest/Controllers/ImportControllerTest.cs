@@ -25,6 +25,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Interfaces;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 using starskycore.Models;
@@ -123,8 +124,13 @@ namespace starskytest.Controllers
 	        var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 	        var httpClient = new HttpClient(fakeHttpMessageHandler);
 	        var httpProvider = new HttpProvider(httpClient);
+	        
+	        var services = new ServiceCollection();
+	        services.AddSingleton<IStorage, FakeIStorage>();
+	        services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+	        var serviceProvider = services.BuildServiceProvider();
 
-	        var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(new FakeIStorage()));
+	        var httpClientHelper = new HttpClientHelper(httpProvider, serviceProvider.GetRequiredService<IServiceScopeFactory>());
 	        
 	        var importController = new ImportController(_import, _appSettings, 
 		        _bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()))
@@ -143,8 +149,13 @@ namespace starskytest.Controllers
 	        var httpClient = new HttpClient(fakeHttpMessageHandler);
 	        var httpProvider = new HttpProvider(httpClient);
 
-	        var storageProvider = new FakeIStorage();
-	        var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(storageProvider));
+	        var services = new ServiceCollection();
+	        services.AddSingleton<IStorage, FakeIStorage>();
+	        services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+	        var serviceProvider = services.BuildServiceProvider();
+	        var storageProvider = serviceProvider.GetRequiredService<IStorage>();
+
+	        var httpClientHelper = new HttpClientHelper(httpProvider, serviceProvider.GetRequiredService<IServiceScopeFactory>());
 	        
 	        var importController = new ImportController(new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings, 
 		        _bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider))
