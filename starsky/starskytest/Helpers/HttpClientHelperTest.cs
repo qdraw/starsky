@@ -1,9 +1,11 @@
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starskycore.Helpers;
 using starskycore.Models;
@@ -22,7 +24,14 @@ namespace starskytest.Helpers
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
 			var httpProvider = new HttpProvider(httpClient);
 
-			var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(new FakeIStorage()));
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
 
 			// use only whitelisted domains
 			var path = Path.Combine(new AppSettings().TempFolder, "pathToNOTdownload.txt");
@@ -37,7 +46,13 @@ namespace starskytest.Helpers
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
 			var httpProvider = new HttpProvider(httpClient);
 
-			var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(new FakeIStorage()));
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
 
 			// there is an file written
 			var path = Path.Combine(new CreateAnImage().BasePath, "file.txt");
@@ -52,7 +67,13 @@ namespace starskytest.Helpers
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
 			var httpProvider = new HttpProvider(httpClient);
 
-			var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(new FakeIStorage()));
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
 
 			// http is not used anymore
 			var path = Path.Combine(new AppSettings().TempFolder, "pathToNOTdownload.txt");
@@ -67,8 +88,14 @@ namespace starskytest.Helpers
 			var httpClient = new HttpClient(fakeHttpMessageHandler);
 			var httpProvider = new HttpProvider(httpClient);
 
-			var storageProvider = new FakeIStorage();
-			var httpClientHelper = new HttpClientHelper(httpProvider, new FakeSelectorStorage(storageProvider));
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
+
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
 
 			// there is an file written
 			var path = Path.Combine(new CreateAnImage().BasePath, "file.txt");
