@@ -65,5 +65,6 @@ namespace starsky.foundation.database.Models
 		    }
 	    }
 
+	    public bool IsReadOnly { get; set; }
     }
 }

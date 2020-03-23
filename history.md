@@ -13,8 +13,10 @@
 
 ### High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
-- []   (bug) _Front-end_ Readonly mode and modals __not implemented__
 - []   (bug) _Back-end_ XMP Rotation __not implemented__
+
+# version 0.2.1 - 2020-03-??
+- [x]   (bug) _Front-end_ Readonly mode and modals __not implemented__
 
 # version 0.2.0 - 2020-03-20
 - [x] 	(feature) _Front-end_ icons for xmp and raw (tiff-based) in archive mode

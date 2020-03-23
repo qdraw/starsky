@@ -15,6 +15,7 @@ const initialState: State = {
   subPath: "/",
   pageType: PageType.DetailView,
   colorClassActiveList: [],
+  isReadOnly: false
 }
 
 type Action = {

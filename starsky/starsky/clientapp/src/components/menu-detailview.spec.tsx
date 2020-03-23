@@ -20,6 +20,95 @@ describe("MenuDetailView", () => {
     shallow(<MenuDetailView />)
   });
 
+  describe("readonly status context", () => {
+    let contextValues: any;
+
+    beforeEach(() => {
+      var state = {
+        subPath: "/test/image.jpg",
+        isReadOnly: true,
+        fileIndexItem: {
+          status: IExifStatus.Ok,
+          fileHash: '000',
+          filePath: "/test/image.jpg",
+          fileName: "image.jpg",
+          lastEdited: new Date(1970, 1, 1).toISOString(),
+          parentDirectory: '/test'
+        }
+      } as IDetailView;
+      contextValues = { state, dispatch: jest.fn() }
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+    });
+
+    it("move click", () => {
+      var moveModal = jest.spyOn(ModalMoveFile, 'default')
+        .mockImplementationOnce(() => { return <></> });
+
+      var component = mount(<MenuDetailView />);
+
+      var item = component.find('[data-test="move"]');
+
+      act(() => {
+        item.simulate('click');
+      });
+
+      expect(moveModal).toBeCalledTimes(0);
+
+      // reset afterwards
+      act(() => {
+        globalHistory.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("rename click", () => {
+      var renameModal = jest.spyOn(ModalDetailviewRenameFile, 'default')
+        .mockImplementationOnce(() => { return <></> });
+
+      // one extra spy
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+      var component = mount(<MenuDetailView />)
+      var item = component.find('[data-test="rename"]');
+
+      act(() => {
+        item.simulate('click');
+      });
+
+      expect(renameModal).toBeCalledTimes(0);
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("trash click to trash", () => {
+      // spy on fetch
+      // use this import => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
+      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+      var component = mount(<MenuDetailView />)
+      var item = component.find('[data-test="trash"]');
+
+      act(() => {
+        item.simulate('click');
+      });
+
+      expect(spy).toBeCalledTimes(0);
+
+      act(() => {
+        component.unmount();
+      });
+
+    });
+
+  });
+
   describe("with Context", () => {
 
     let contextValues: any;
@@ -116,7 +205,6 @@ describe("MenuDetailView", () => {
       act(() => {
         component.unmount();
       });
-
     });
 
     it("labels click .item--labels [menu]", () => {

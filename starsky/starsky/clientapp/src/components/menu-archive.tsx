@@ -40,6 +40,12 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   var history = useLocation();
 
+  /* only update when the state is changed */
+  const [isReadOnly, setReadOnly] = React.useState(state.isReadOnly);
+  useEffect(() => {
+    setReadOnly(state.isReadOnly);
+  }, [state.isReadOnly]);
+
   // Sidebar
   const [sidebar, setSidebar] = React.useState(new URLPath().StringToIUrl(history.location.search).sidebar);
   useEffect(() => {
@@ -170,7 +176,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           {/* default more menu */}
           {!select ? <MoreMenu>
-            <li className="menu-option" data-test="mkdir" onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}>{MessageMkdir}</li>
+            <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} data-test="mkdir" onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}>{MessageMkdir}</li>
             <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
             {state ? <UploadMenuItem /> : null}
           </MoreMenu> : null}
@@ -180,7 +186,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>{MessageUndoSelection}</li> : null}
             {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => selectAll()}>{MessageSelectAll}</li> : null}
             {select.length >= 1 ? <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li> : null}
-            {select.length >= 1 ? <li className="menu-option" onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li> : null}
+            {select.length >= 1 ? <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li> : null}
             {state ? <UploadMenuItem /> : null}
           </MoreMenu> : null}
 

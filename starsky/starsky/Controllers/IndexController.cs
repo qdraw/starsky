@@ -14,12 +14,12 @@ namespace starsky.Controllers
     public class IndexController : Controller
     {
         private readonly IQuery _query;
-        private readonly AppSettings _appsettings;
+        private readonly AppSettings _appSettings;
 
-        public IndexController(IQuery query, AppSettings appsettings = null)
+        public IndexController(IQuery query, AppSettings appSettings)
         {
             _query = query;
-            _appsettings = appsettings;
+            _appSettings = appSettings;
         }
         
 	    /// <summary>
@@ -47,9 +47,6 @@ namespace starsky.Controllers
         {
             f = PathHelper.PrefixDbSlash(f);
             
-            // Trick for avoiding spaces for behind proxy
-            f = f.Replace("$20", " ");
-            
             // Used in Detail and Index View => does not hide this single item
             var colorClassActiveList = new FileIndexItem().GetColorClassList(colorClass);
             var subpath = _query.SubPathSlashRemove(f);
@@ -60,6 +57,7 @@ namespace starsky.Controllers
             
             if (singleItem?.IsDirectory == false)
             {
+	            singleItem.IsReadOnly = _appSettings.IsReadOnly(singleItem.FileIndexItem.ParentDirectory);
                 return Json(singleItem);
             }
             
@@ -76,7 +74,7 @@ namespace starsky.Controllers
 	                subpath,null,false,hidedelete).Count(p => !p.IsDirectory),
                 ColorClassUsage = _query.DisplayFileFolders(
 	                subpath,null,false,hidedelete).Select( p => p.ColorClass).Distinct().ToList(),
-                IsReadOnly = true // default values is updated in later point
+                IsReadOnly =  _appSettings.IsReadOnly(subpath)
             };
 
             if (singleItem == null)
@@ -93,9 +91,6 @@ namespace starsky.Controllers
                     return Json("not found");
                 }
             }
-            
-            // now update
-            if (_appsettings != null) directoryModel.IsReadOnly = _appsettings.IsReadOnly(subpath);
 
             return Json(directoryModel);
         }
