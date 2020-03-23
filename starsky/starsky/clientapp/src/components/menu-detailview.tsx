@@ -115,7 +115,7 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   // Trash and Undo Trash
   async function TrashFile() {
-    if (!state) return;
+    if (!state || isReadOnly) return;
 
     setIsLoading(true);
     var bodyParams = newBodyParams();
