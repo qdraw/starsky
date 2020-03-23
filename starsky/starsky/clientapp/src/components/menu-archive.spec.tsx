@@ -118,6 +118,40 @@ describe("MenuArchive", () => {
       component.unmount();
 
     });
+
+    it("readonly - menu click mkdir", () => {
+
+      globalHistory.navigate("/");
+
+      var state = {
+        subPath: "/",
+        isReadOnly: true,
+        fileIndexItems: [{ status: IExifStatus.Ok, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() }
+
+      var mkdirModalSpy = jest.spyOn(ModalArchiveMkdir, 'default').mockImplementationOnce(() => {
+        return <></>
+      })
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+      var component = mount(<MenuArchive />);
+
+      var item = component.find('[data-test="mkdir"]');
+
+      act(() => {
+        item.simulate('click');
+      });
+
+      expect(mkdirModalSpy).toBeCalledTimes(0);
+
+      component.unmount();
+
+    });
+
   });
 
 });

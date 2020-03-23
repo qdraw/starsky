@@ -42,7 +42,7 @@ describe("MenuDetailView", () => {
         .mockImplementationOnce(() => { return contextValues })
     });
 
-    it("move click", () => {
+    it("readonly - move click", () => {
       var moveModal = jest.spyOn(ModalMoveFile, 'default')
         .mockImplementationOnce(() => { return <></> });
 
@@ -63,7 +63,7 @@ describe("MenuDetailView", () => {
       });
     });
 
-    it("rename click", () => {
+    it("readonly - rename click", () => {
       var renameModal = jest.spyOn(ModalDetailviewRenameFile, 'default')
         .mockImplementationOnce(() => { return <></> });
 
@@ -86,7 +86,7 @@ describe("MenuDetailView", () => {
       });
     });
 
-    it("trash click to trash", () => {
+    it("readonly - trash click to trash", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
@@ -104,7 +104,6 @@ describe("MenuDetailView", () => {
       act(() => {
         component.unmount();
       });
-
     });
 
   });

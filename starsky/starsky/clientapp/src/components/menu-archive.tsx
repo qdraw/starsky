@@ -3,6 +3,7 @@ import React, { memo, useEffect } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
+import { IRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
@@ -37,6 +38,21 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   let { state, dispatch } = React.useContext(ArchiveContext);
+
+  // fallback state
+  if (!state) {
+    state = {
+      pageType: PageType.Loading,
+      isReadOnly: true,
+      breadcrumb: [],
+      fileIndexItems: [],
+      relativeObjects: {} as IRelativeObjects,
+      subPath: "/",
+      colorClassActiveList: [],
+      colorClassUsage: [],
+      collectionsCount: 0
+    }
+  }
 
   var history = useLocation();
 
@@ -98,7 +114,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   }
 
   async function moveToTrashSelection() {
-    if (!select) return;
+    if (!select || isReadOnly) return;
 
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!toUndoTrashList) return;
