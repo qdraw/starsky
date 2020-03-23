@@ -19,7 +19,19 @@ namespace starsky.foundation.storage.Storage
 		{
 			_appSettings = appSettings;
 		}
-		
+
+		/// <summary>
+		/// Get the storage info
+		/// </summary>
+		/// <param name="path">full File Path</param>
+		/// <returns>StorageInfo object</returns>
+		public StorageInfo Info(string path)
+		{
+			var subPath = _appSettings.DatabasePathToFilePath(path, false);
+			
+			return new StorageHostFullPathFilesystem().Info(subPath);
+		}
+
 		/// <summary>
 		/// Does file exist (true == exist)
 		/// </summary>

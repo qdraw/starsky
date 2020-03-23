@@ -141,6 +141,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(newIFileIndexItemArray());
 
   const UploadMenuItem = () => {
+    if (isReadOnly) return <li data-test="upload" className="menu-option disabled">Upload</li>
     return <li className="menu-option menu-option--input">
       <DropArea callback={(add) => {
         setDropAreaUploadFilesList(add);
@@ -162,7 +163,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       {isDisplayOptionsOpen ? <ModalDisplayOptions parentFolder={new URLPath().StringToIUrl(history.location.search).f} handleExit={() =>
         setDisplayOptionsOpen(!isDisplayOptionsOpen)} isOpen={isDisplayOptionsOpen} /> : null}
 
-      {isModalMkdirOpen ? <ModalArchiveMkdir handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)} isOpen={isModalMkdirOpen} /> : null}
+      {isModalMkdirOpen && !isReadOnly ? <ModalArchiveMkdir handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)} isOpen={isModalMkdirOpen} /> : null}
 
       {dropAreaUploadFilesList.length !== 0 ? <ModalDropAreaFilesAdded
         handleExit={() => setDropAreaUploadFilesList(newIFileIndexItemArray())}
