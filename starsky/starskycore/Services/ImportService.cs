@@ -268,9 +268,9 @@ namespace starskycore.Services
 
                 var comparedNamesList = new List<string>
                 {
-                    nameof(FileIndexItem.DateTime),
-                    nameof(FileIndexItem.ColorClass),
-                    nameof(FileIndexItem.Description),
+                    nameof(FileIndexItem.DateTime).ToLowerInvariant(),
+                    nameof(FileIndexItem.ColorClass).ToLowerInvariant(),
+                    nameof(FileIndexItem.Description).ToLowerInvariant(),
                 };
 
                 new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, _readMetaSubPath).Update(fileIndexItem, comparedNamesList);
