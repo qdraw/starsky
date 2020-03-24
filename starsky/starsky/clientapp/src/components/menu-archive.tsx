@@ -3,6 +3,7 @@ import React, { memo, useEffect } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
+import { IRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
@@ -38,7 +39,28 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   let { state, dispatch } = React.useContext(ArchiveContext);
 
+  // fallback state
+  if (!state) {
+    state = {
+      pageType: PageType.Loading,
+      isReadOnly: true,
+      breadcrumb: [],
+      fileIndexItems: [],
+      relativeObjects: {} as IRelativeObjects,
+      subPath: "/",
+      colorClassActiveList: [],
+      colorClassUsage: [],
+      collectionsCount: 0
+    }
+  }
+
   var history = useLocation();
+
+  /* only update when the state is changed */
+  const [isReadOnly, setReadOnly] = React.useState(state.isReadOnly);
+  useEffect(() => {
+    setReadOnly(state.isReadOnly);
+  }, [state.isReadOnly]);
 
   // Sidebar
   const [sidebar, setSidebar] = React.useState(new URLPath().StringToIUrl(history.location.search).sidebar);
@@ -92,7 +114,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   }
 
   async function moveToTrashSelection() {
-    if (!select) return;
+    if (!select || isReadOnly) return;
 
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!toUndoTrashList) return;
@@ -119,6 +141,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(newIFileIndexItemArray());
 
   const UploadMenuItem = () => {
+    if (isReadOnly) return <li data-test="upload" className="menu-option disabled">Upload</li>
     return <li className="menu-option menu-option--input">
       <DropArea callback={(add) => {
         setDropAreaUploadFilesList(add);
@@ -140,7 +163,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       {isDisplayOptionsOpen ? <ModalDisplayOptions parentFolder={new URLPath().StringToIUrl(history.location.search).f} handleExit={() =>
         setDisplayOptionsOpen(!isDisplayOptionsOpen)} isOpen={isDisplayOptionsOpen} /> : null}
 
-      {isModalMkdirOpen ? <ModalArchiveMkdir handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)} isOpen={isModalMkdirOpen} /> : null}
+      {isModalMkdirOpen && !isReadOnly ? <ModalArchiveMkdir handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)} isOpen={isModalMkdirOpen} /> : null}
 
       {dropAreaUploadFilesList.length !== 0 ? <ModalDropAreaFilesAdded
         handleExit={() => setDropAreaUploadFilesList(newIFileIndexItemArray())}
@@ -170,7 +193,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           {/* default more menu */}
           {!select ? <MoreMenu>
-            <li className="menu-option" data-test="mkdir" onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}>{MessageMkdir}</li>
+            <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} data-test="mkdir" onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}>{MessageMkdir}</li>
             <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
             {state ? <UploadMenuItem /> : null}
           </MoreMenu> : null}
@@ -180,7 +203,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>{MessageUndoSelection}</li> : null}
             {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => selectAll()}>{MessageSelectAll}</li> : null}
             {select.length >= 1 ? <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li> : null}
-            {select.length >= 1 ? <li className="menu-option" onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li> : null}
+            {select.length >= 1 ? <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li> : null}
             {state ? <UploadMenuItem /> : null}
           </MoreMenu> : null}
 

@@ -13,14 +13,17 @@
 
 ### High priority features planned
 - []  (feature) Creating thumbnails from Web Interface (including status)
-- []   (bug) _Front-end_ Readonly mode and modals __not implemented__
 - []   (bug) _Back-end_ XMP Rotation __not implemented__
+
+# version 0.2.1 - 2020-03-??
+- [x]   (bug) _Front-end_ Readonly mode and modals
+- [x]   (feature) _Back-end_ ReadOnly status to Detailview 
 
 # version 0.2.0 - 2020-03-20
 - [x] 	(feature) _Front-end_ icons for xmp and raw (tiff-based) in archive mode
 - [x] 	(feature) _Back-end_ support for Canon's way of reading ISO-Speed
-- [x]	  (feature) _Back-end_ abstractions to get the filesystem data
-- [x]	  (feature) _Back-end_ Injection framework implemented
+- [x]	(feature) _Back-end_ abstractions to get the filesystem data
+- [x]	(feature) _Back-end_ Injection framework implemented
 - [x] 	(rename) _Back-end_ Feature renaming and docs updates
 - [x] 	(feature) _Back-end support for RAW that is not Sony for example Nikon `.NEF`
 - [x]   (feature) tiff, `arw`:sony, `dng`:adobe, `nef`:nikon, `raf`:fuji, `cr2`:canon, `orf`:olympus, `rw2`:panasonic, `pef`:pentax,

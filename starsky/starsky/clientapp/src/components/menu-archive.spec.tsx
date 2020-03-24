@@ -6,6 +6,7 @@ import * as useFetch from '../hooks/use-fetch';
 import { IArchive } from '../interfaces/IArchive';
 import { newIConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IExifStatus } from '../interfaces/IExifStatus';
+import * as DropArea from './drop-area';
 import MenuArchive from './menu-archive';
 import * as ModalArchiveMkdir from './modal-archive-mkdir';
 
@@ -118,6 +119,64 @@ describe("MenuArchive", () => {
       component.unmount();
 
     });
+
+    it("readonly - menu click mkdir", () => {
+      globalHistory.navigate("/");
+
+      var state = {
+        subPath: "/",
+        isReadOnly: true,
+        fileIndexItems: [{ status: IExifStatus.Ok, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() }
+
+      jest.spyOn(ModalArchiveMkdir, 'default').mockClear();
+
+      var mkdirModalSpy = jest.spyOn(ModalArchiveMkdir, 'default').mockImplementationOnce(() => {
+        return <></>
+      });
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+      var component = mount(<MenuArchive />);
+
+      var item = component.find('[data-test="mkdir"]');
+
+      act(() => {
+        item.simulate('click');
+      });
+
+      expect(mkdirModalSpy).toBeCalledTimes(0);
+
+      component.unmount();
+    });
+
+    it("readonly - upload", () => {
+      globalHistory.navigate("/");
+
+      var state = {
+        subPath: "/",
+        isReadOnly: true,
+        fileIndexItems: [{ status: IExifStatus.Ok, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() }
+
+      var dropAreaSpy = jest.spyOn(DropArea, 'default').mockImplementationOnce(() => {
+        return <></>
+      });
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+
+      var component = mount(<MenuArchive />);
+
+      expect(dropAreaSpy).toBeCalledTimes(0);
+
+      component.unmount();
+    });
+
   });
 
 });

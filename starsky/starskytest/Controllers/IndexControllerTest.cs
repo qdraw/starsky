@@ -11,6 +11,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starskycore.ViewModels;
 
 namespace starskytest.Controllers
@@ -78,7 +79,7 @@ namespace starskytest.Controllers
         public void HomeControllerIndexDetailViewTest()
         {
             InsertSearchData();
-            var controller = new IndexController(_query);
+            var controller = new IndexController(_query, new AppSettings());
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             var actionResult = controller.Index("/homecontrollertest/hi.jpg",null,true) as JsonResult;
             Assert.AreNotEqual(actionResult,null);
@@ -90,7 +91,7 @@ namespace starskytest.Controllers
         public void HomeControllerIndexIndexViewModelTest()
         {
             InsertSearchData();
-            var controller = new IndexController(_query);
+            var controller = new IndexController(_query,new AppSettings());
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             var actionResult = controller.Index("/homecontrollertest",null,true) as JsonResult;
             Assert.AreNotEqual(actionResult,null);
@@ -101,7 +102,7 @@ namespace starskytest.Controllers
         [TestMethod]
         public void HomeControllerIndex404Test()
         {
-            var controller = new IndexController(_query);
+            var controller = new IndexController(_query,new AppSettings());
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
             // Act

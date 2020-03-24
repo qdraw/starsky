@@ -46,11 +46,12 @@ const MenuDetailView: React.FunctionComponent = () => {
   if (!state) {
     state = {
       pageType: PageType.Loading,
+      isReadOnly: true,
       fileIndexItem: {
         parentDirectory: "/",
         fileName: '',
         filePath: "/",
-        lastEdited: new Date(1970, 1, 1).toISOString()
+        lastEdited: new Date(1970, 1, 1).toISOString(),
       }
     } as IDetailView;
   }
@@ -94,6 +95,12 @@ const MenuDetailView: React.FunctionComponent = () => {
     setMarkedAsDeleted(state.fileIndexItem.status === IExifStatus.Deleted);
   }, [state.fileIndexItem.status]);
 
+  /* only update when the state is changed */
+  const [isReadOnly, setReadOnly] = React.useState(state.isReadOnly);
+  useEffect(() => {
+    setReadOnly(state.isReadOnly);
+  }, [state.isReadOnly]);
+
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
 
@@ -108,7 +115,7 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   // Trash and Undo Trash
   async function TrashFile() {
-    if (!state) return;
+    if (!state || isReadOnly) return;
 
     setIsLoading(true);
     var bodyParams = newBodyParams();
@@ -168,7 +175,7 @@ const MenuDetailView: React.FunctionComponent = () => {
    * Update the rotation status
    */
   async function rotateImage90() {
-    if (isMarkedAsDeleted) return;
+    if (isMarkedAsDeleted || isReadOnly) return;
     setIsLoading(true);
 
     var bodyParams = newBodyParams();
@@ -214,11 +221,12 @@ const MenuDetailView: React.FunctionComponent = () => {
   return (<>
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
+    {/* allowed in readonly to download */}
     {isModalExportOpen && state ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)}
       select={[state.subPath]} isOpen={isModalExportOpen} /> : null}
-    {isModalRenameFileOpen && state ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)}
+    {isModalRenameFileOpen && state && !isReadOnly ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)}
       isOpen={isModalRenameFileOpen} /> : null}
-    {isModalMoveFile && state ? <ModalMoveFile selectedSubPath={state.fileIndexItem.filePath}
+    {isModalMoveFile && state && !isReadOnly ? <ModalMoveFile selectedSubPath={state.fileIndexItem.filePath}
       parentDirectory={state.fileIndexItem.parentDirectory} handleExit={() => setModalMoveFile(!isModalMoveFile)}
       isOpen={isModalMoveFile} /> : null}
 
@@ -242,12 +250,12 @@ const MenuDetailView: React.FunctionComponent = () => {
           {goToParentFolderJSX}
           <li className="menu-option" data-test="export" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
           {!isDetails ? <li className="menu-option" data-test="labels" onClick={toggleLabels}>Labels</li> : null}
-          <li className="menu-option" data-test="move" onClick={() => setModalMoveFile(!isModalMoveFile)}>{MessageMove}</li>
-          <li className="menu-option" data-test="rename" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>
+          <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} data-test="move" onClick={() => setModalMoveFile(!isModalMoveFile)}>{MessageMove}</li>
+          <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} data-test="rename" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>
             {MessageRenameFileName}</li>
-          <li className="menu-option" data-test="trash" onClick={TrashFile}>
+          <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} data-test="trash" onClick={TrashFile}>
             {!isMarkedAsDeleted ? MessageMoveToTrash : MessageRestoreFromTrash}</li>
-          <li className="menu-option" data-test="rotate" onClick={rotateImage90}>{MessageRotateToRight}</li>
+          <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} data-test="rotate" onClick={rotateImage90}>{MessageRotateToRight}</li>
         </MoreMenu>
       </div>
     </header>

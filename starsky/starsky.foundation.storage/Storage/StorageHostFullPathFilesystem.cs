@@ -11,6 +11,29 @@ namespace starsky.foundation.storage.Storage
 	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class StorageHostFullPathFilesystem : IStorage
 	{
+
+		/// <summary>
+		/// Get the storage info
+		/// </summary>
+		/// <param name="path">full File Path</param>
+		/// <returns>StorageInfo object</returns>
+		public StorageInfo Info(string path)
+		{
+			if ( !ExistFile(path) )
+			{
+				return new StorageInfo
+				{
+					IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Deleted,
+				};
+			}
+			
+			return new StorageInfo
+			{
+				IsFolderOrFile = IsFolderOrFile(path),
+				Length = new FileInfo(path).Length,
+			};
+		}
+		
 		public void CreateDirectory(string path)
 		{
 			throw new System.NotImplementedException();
@@ -212,7 +235,7 @@ namespace starsky.foundation.storage.Storage
 		}
 
 		/// <summary>
-		/// Gets the files recrusive. (only ExtensionSyncSupportedList types)
+		/// Gets the files recursive. (only ExtensionSyncSupportedList types)
 		/// </summary>
 		/// <param name="path">The full file path.</param>
 		/// <returns></returns>
@@ -237,7 +260,7 @@ namespace starsky.foundation.storage.Storage
         }
 
 		/// <summary>
-		/// Recurses the find. (private)
+		/// recursive find. (private)
 		/// </summary>
 		/// <param name="path">The path.</param>
 		/// <param name="list">The list of strings.</param>
@@ -260,4 +283,5 @@ namespace starsky.foundation.storage.Storage
             }
         }
 	}
+
 }

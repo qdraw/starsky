@@ -38,6 +38,7 @@ export interface IDetailView {
     subPath: string;
     colorClassActiveList: Array<number>;
     lastUpdated?: Date;
+    isReadOnly: boolean;
 }
 
 export function newDetailView(): IDetailView {

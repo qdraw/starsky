@@ -54,16 +54,16 @@ namespace starskytest.Models
 
 
 		[TestMethod]
-		public void AppSettingsProviderTest_SqliteFullPathTest()
+		public void AppSettingsProviderTest_SqLiteFullPathTest()
 		{
-			var datasource = _appSettings.SqLiteFullPath("Data Source=data.db", string.Empty);
-			Assert.AreEqual(true, datasource.Contains("data.db") );
-			Assert.AreEqual(true, datasource.Contains("Data Source="));
+			var dataSource = _appSettings.SqLiteFullPath("Data Source=data.db", string.Empty);
+			Assert.AreEqual(true, dataSource.Contains("data.db") );
+			Assert.AreEqual(true, dataSource.Contains("Data Source="));
 		}
 
 
 		[TestMethod]
-		public void AppSettingsProviderTest_SqliteFullPathstarskycliTest()
+		public void AppSettingsProviderTest_SqLiteFullPathStarskyCliTest()
 		{
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Sqlite;
 
@@ -157,8 +157,10 @@ namespace starskytest.Models
 		[TestMethod]
 		public void AppSettingsCameraTimeZoneExample()
 		{
-			var appSettings = new AppSettings();
-			appSettings.CameraTimeZoneInfo = TZConvert.GetTimeZoneInfo("Europe/Amsterdam");
+			var appSettings = new AppSettings
+			{
+				CameraTimeZoneInfo = TZConvert.GetTimeZoneInfo("Europe/Amsterdam")
+			};
 
 			// Linux: Europe/Amsterdam
 			// Windows: W. Europe Standard Time
