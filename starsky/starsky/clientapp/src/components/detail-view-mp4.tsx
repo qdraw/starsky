@@ -74,7 +74,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
 
   return (<>
-    <figure className={isPaused ? isStarted ? "video play" : "video first" : "video pause"} onClick={playPause}>
+    <figure data-test="video" className={isPaused ? isStarted ? "video play" : "video first" : "video pause"} onClick={playPause}>
       <video playsinline={true} ref={videoRef} controls={false} preload="metadata">
         <source src={new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false)} type="video/mp4" />
       </video>
