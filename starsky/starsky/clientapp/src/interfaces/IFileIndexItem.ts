@@ -53,6 +53,7 @@ export enum ImageFormat {
     png = "png" as any,
     xmp = "xmp" as any,
     gpx = "gpx" as any,
+    mp4 = "mp4" as any,
 }
 
 export enum Orientation {

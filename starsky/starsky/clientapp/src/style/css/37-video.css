@@ -1,0 +1,141 @@
+
+.video {
+	height: 100%;
+}
+
+
+.video:hover {
+	cursor: pointer;
+}
+
+.video.first::after,
+.video.first::before,
+.video.play:hover::after,
+.video.play:hover::before {
+	content: "";
+	top: calc(50% - 50px);
+	left: calc(50% - 50px);
+	z-index: 20;
+	position: absolute;
+	padding: 50px;
+}
+
+.detailview--edit .video.play:hover::after,
+.detailview--edit .video.play:hover::before{
+	left: calc(50% - 160px);
+}
+
+.video.first::before,
+.video.play:hover::before {
+	background-color: #283593;
+	border-radius: 50px;
+}
+
+.video.first::after,
+.video.play:hover::after {
+	mask-repeat: no-repeat;
+	mask-position: center;
+	mask-size: contain;
+	mask-image: url('../images/baseline-play_arrow-24px.svg');
+	background-color: white;
+}
+
+.video > video {
+	height: 100%;
+	max-width: 100%;
+	max-height: 100%;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.detailview--edit .video > video{
+	max-width: calc(100% - 321px);
+	left: calc(50% - 160px);
+}
+
+.video > .controls {
+	position: absolute;
+	top: calc(100% - 50px);
+	width: 100%;
+	color: #fff;
+	z-index: 20;
+}
+
+.detailview--edit .video > .controls {
+	width: calc(100% - 340px);
+	margin-left:10px;
+}
+
+.video > .controls .time {
+	margin-left: 25px;
+}
+
+.video > .controls > .progress progress {
+	-webkit-appearance: none;
+	display:block;
+	width:100%;
+	height:10px;
+	margin-top:2px;
+	border:none;
+	overflow:hidden;
+	border-radius:2px;
+	color:#fff; /* Internet Explorer uses this value as the progress bar's value colour */
+	background-color: #CFD8DC; /* firefox */
+}
+
+.video > .controls > .progress > .scrubber {
+	position: absolute;
+	margin-top: -5px;
+	left: -20px;
+	height: 20px;
+	margin-left:-10px;
+	width: 100%;
+	width: 20px;
+	border-radius: 10px;
+	background-color: #283593;
+}
+
+.video > .controls > .pause,
+.video > .controls > .play {
+	cursor:pointer;
+	background-color: transparent;
+	color: white;
+	display: inline-block;
+	padding-bottom: 10px;
+}
+
+.video > .controls > .pause:before,
+.video > .controls > .play:before {
+	content: "";
+	margin-top: 2px;
+	margin-left: 25px;
+	padding-left: 30px;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	margin-right: 10px;
+	mask-repeat: no-repeat;
+	mask-position: center;
+	mask-size: 30px 32px;
+	mask-image: url('../images/baseline-play_arrow-24px.svg');
+	background-color: white;
+}
+.video > .controls > .pause:before {
+	mask-image: url('../images/baseline-pause-24px.svg');
+}
+
+/* firefox */
+.video > .controls > .progress progress::-moz-progress-bar {
+	background-color:#283593;
+}
+
+/* Chrome requires its own rule for this, otherwise it ignores it */
+.video > .controls > .progress progress::-webkit-progress-value {
+	background-color:#283593;
+}
+
+/* safari /chrome bar it self  */
+.video > .controls > .progress progress::-webkit-progress-bar {
+	background-color: #CFD8DC;
+}

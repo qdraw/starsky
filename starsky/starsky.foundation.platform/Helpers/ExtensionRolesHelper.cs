@@ -44,6 +44,10 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		private static readonly List<string> Extensiongpx = new List<string> {"gpx"};
 
+		/// <summary>
+		/// Mp4 Videos in h264 codex
+		/// </summary>
+		private static readonly List<string> ExtensionMp4 = new List<string> {"mp4", "mov"};
 
 		private static readonly Dictionary<ImageFormat, List<string>> MapFileTypesToExtensionDictionary = 
 			new Dictionary<ImageFormat, List<string>>
@@ -65,6 +69,9 @@ namespace starsky.foundation.platform.Helpers
 				},
 				{
 					ImageFormat.gpx, Extensiongpx
+				},
+				{
+					ImageFormat.mp4, ExtensionMp4
 				},
 			};
 
@@ -101,12 +108,13 @@ namespace starsky.foundation.platform.Helpers
 				extensionList.AddRange(Extensiongif);
 				extensionList.AddRange(Extensionpng);
 				extensionList.AddRange(Extensiongpx);
+				extensionList.AddRange(ExtensionMp4);
 				return extensionList;
 			}
 		}
 
 		/// <summary>
-		/// List of extensions supported by exiftool
+		/// List of extensions supported by exifTool
 		/// </summary>
 		private static List<string> ExtensionExifToolSupportedList
 		{
@@ -123,10 +131,10 @@ namespace starsky.foundation.platform.Helpers
 		}
 
 		/// <summary>
-		/// is this filename with extension a filetype that exiftool can update
+		/// is this filename with extension a file type that ExifTool can update
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
-		/// <returns>true, if exiftool can write to this</returns>
+		/// <returns>true, if ExifTool can write to this</returns>
 		public static bool IsExtensionExifToolSupported(string filename)
 		{
 			if ( string.IsNullOrEmpty(filename) ) return false;
@@ -275,7 +283,7 @@ namespace starsky.foundation.platform.Helpers
 		}
 
 		/// <summary>
-		/// Imageformat based on first bytes
+		/// ImageFormat based on first bytes
 		/// </summary>
 		[SuppressMessage("ReSharper", "InconsistentNaming")]
 		public enum ImageFormat
@@ -295,37 +303,11 @@ namespace starsky.foundation.platform.Helpers
             
 			// documents
 			gpx = 40,
+			
+			// video
+			mp4 = 50
 		}
 
-		/// <summary>
-		/// Get the format of the image by looking the first bytes
-		/// Scroll down
-		/// </summary>
-		/// <param name="filePath">the full path on the system</param>
-		/// <returns>ImageFormat enum</returns>
-		[Obsolete("Has a direct dependency on the filesystem")]
-		public static ImageFormat GetImageFormat(string filePath)
-		{
-			if ( !File.Exists(filePath) ) return ImageFormat.notfound;
-
-			byte[] buffer = new byte[512];
-			try
-			{
-				using ( FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read) )
-				{
-					fs.Read(buffer, 0, buffer.Length);
-					fs.Close();
-				}
-			}
-			catch ( UnauthorizedAccessException ex )
-			{
-				Console.WriteLine(ex.Message);
-			}
-
-			return GetImageFormat(buffer);
-		}
-
-		
 		/// <summary>
 		/// Get the format of the image by looking the first bytes
 		/// </summary>
@@ -346,6 +328,12 @@ namespace starsky.foundation.platform.Helpers
 			}
 
 			return GetImageFormat(buffer);
+		}
+		
+		private static byte[] StringToByteArray(string hex)
+		{
+			return Enumerable.Range(0, hex.Length / 2)
+				.Select(x => Convert.ToByte(hex.Substring(x * 2, 2), 16)).ToArray();
 		}
 
 		/// <summary>
@@ -374,8 +362,15 @@ namespace starsky.foundation.platform.Helpers
 			var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
 			var gpx = new byte[] {60, 63, 120}; // gpx
 			
-			var mp4H264P1 = new byte[] {00,  00,  00};
-			var mp4H264P2 = new byte[] {66, 74, 79, 70}; //  00  00  00  [skip this byte]  66  74  79  70
+			var fTypMp4 = new byte[] {102, 116, 121, 112}; //  00  00  00  [skip this byte]  66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
+			var i66 = StringToByteArray("66"); //102
+			var i74 = StringToByteArray("74"); // 116
+			var i79 = StringToByteArray("79"); // 121
+			var i70 = StringToByteArray("70"); //112
+
+			// Zip:
+			// 50 4B 03 04
+			// 50 4B 05 06
 
 			if ( bmp.SequenceEqual(bytes.Take(bmp.Length)) )
 				return ImageFormat.bmp;
@@ -419,11 +414,12 @@ namespace starsky.foundation.platform.Helpers
 			if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) )
 				return ImageFormat.gpx;
 
-// 			// todo: implement feature
-//			if ( mp4H264P1.SequenceEqual(bytes.Take(mp4H264P1.Length)) && 
-//			     mp4H264P2.SequenceEqual( bytes.Skip(mp4H264P1.Length+1).Take(mp4H264P2.Length))  )
-//				return ImageFormat.h264;
+			if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
+				return ImageFormat.mp4;
 
+			// if ( ftypMp4.SequenceEqual(bytes.Skip(4).Take(ftypMp4.Length)) )
+			// 	return ImageFormat.h264;
+			
 			return ImageFormat.unknown;
 		}
 	}

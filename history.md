@@ -5,7 +5,6 @@
 ## Todo:
 ### Features planned (in random order) and lower priority
 - []   (feature) _Back-end_ Realtime Files API
-- []   (feature) _Back-end_ mp4/h.264 video support
 - []   (feature) _Back-end_ Docker support, 
 - []   (feature) _Frond-end_  Search details show exact query behind modal
 - []   (feature) _Frond-end_  Info Messages to show actions (e.g. pressed copy all fields shortcut )
@@ -18,6 +17,7 @@
 # version 0.2.1 - 2020-03-??
 - [x]   (bug) _Front-end_ Readonly mode and modals
 - [x]   (feature) _Back-end_ ReadOnly status to Detailview 
+- [x]   (feature) _Back-end_ mp4/h.264 video support
 
 # version 0.2.0 - 2020-03-20
 - [x] 	(feature) _Front-end_ icons for xmp and raw (tiff-based) in archive mode

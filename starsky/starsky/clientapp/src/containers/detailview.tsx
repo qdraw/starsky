@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
+import DetailViewGpx from '../components/detail-view-gpx';
+import DetailViewMp4 from '../components/detail-view-mp4';
 import DetailViewSidebar from '../components/detail-view-sidebar';
-import DetailViewGpx from '../components/detailview-gpx';
 import MenuDetailView from '../components/menu-detailview';
 import Preloader from '../components/preloader';
 import { DetailViewContext } from '../contexts/detailview-context';
@@ -191,6 +192,7 @@ const DetailView: React.FC<IDetailView> = () => {
         status={state.fileIndexItem.status} filePath={state.fileIndexItem.filePath} /> : null}
 
       {state.fileIndexItem.imageFormat === ImageFormat.gpx ? <DetailViewGpx /> : null}
+      {state.fileIndexItem.imageFormat === ImageFormat.mp4 ? <DetailViewMp4 /> : null}
 
       <div className={isError ? "main main--error main--" + state.fileIndexItem.imageFormat : "main main--" + state.fileIndexItem.imageFormat}>
 
