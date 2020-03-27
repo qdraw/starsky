@@ -45,22 +45,24 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     });
 
     // As the video is playing, update the progress bar
-    videoRef.current.addEventListener('timeupdate', () => {
-      console.log('timeupdate -->');
+    videoRef.current.addEventListener('timeupdate', timeUpdate);
+  }
 
-      if (!videoRef.current || !progressRef.current || !scrubberRef.current || !timeRef.current) return;
+  function timeUpdate() {
+    console.log('timeupdate -->');
 
-      // For mobile browsers, ensure that the progress element's max attribute is set
-      if (!progressRef.current.getAttribute('max')) progressRef.current.setAttribute('max', videoRef.current.duration.toString());
-      progressRef.current.value = videoRef.current.currentTime;
+    if (!videoRef.current || !progressRef.current || !scrubberRef.current || !timeRef.current) return;
 
-      // scrubber bol
-      var srubberPercentage = progressRef.current.value / videoRef.current.duration * 100;
-      scrubberRef.current.style.left = srubberPercentage + "%";
+    // For mobile browsers, ensure that the progress element's max attribute is set
+    if (!progressRef.current.getAttribute('max')) progressRef.current.setAttribute('max', videoRef.current.duration.toString());
+    progressRef.current.value = videoRef.current.currentTime;
 
-      // time
-      timeRef.current.innerHTML = `${secondsToHours(videoRef.current.currentTime)} / ${secondsToHours(videoRef.current.duration)}`
-    });
+    // scrubber bol
+    var srubberPercentage = progressRef.current.value / videoRef.current.duration * 100;
+    scrubberRef.current.style.left = srubberPercentage + "%";
+
+    // time
+    timeRef.current.innerHTML = `${secondsToHours(videoRef.current.currentTime)} / ${secondsToHours(videoRef.current.duration)}`
   }
 
   function getMousePosition(event: React.MouseEvent | MouseEvent) {
@@ -75,7 +77,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
 
   return (<>
-    <figure data-test="video" className={isPaused ? isStarted ? "video play" : "video first" : "video pause"} onClick={playPause}>
+    <figure data-test="video" className={isPaused ? isStarted ? "video play" : "video first" : "video pause"} onClick={() => { playPause(); timeUpdate(); }}>
       <video playsInline={true} ref={videoRef} controls={false} preload="metadata">
         <source src={new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false)} type="video/mp4" />
       </video>
