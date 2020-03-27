@@ -22,6 +22,27 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   const [isPaused, setPaused] = useState(true);
   const [isStarted, setStarted] = useState(false);
 
+  useEffect(() => {
+    if (!videoRef.current || !progressRef.current || !scrubberRef.current || !timeRef.current) return;
+
+    // when video ends
+    videoRef.current.addEventListener('ended', setPausedTrue);
+    // As the video is playing, update the progress bar
+    videoRef.current.addEventListener('timeupdate', timeUpdate);
+    document.addEventListener('DOMContentLoaded', timeUpdate);
+
+    return () => {
+      // Unbind the event listener on clean up
+      if (!videoRef.current || !progressRef.current || !scrubberRef.current || !timeRef.current) return;
+      videoRef.current.removeEventListener('timeupdate', timeUpdate);
+      document.removeEventListener('DOMContentLoaded', timeUpdate);
+    };
+  });
+
+  function setPausedTrue() {
+    setPaused(true);
+  }
+
   function playPause() {
     if (!videoRef.current) return;
 
@@ -33,19 +54,6 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
       return;
     }
     videoRef.current.pause();
-  }
-
-
-  if (videoRef.current && timeRef.current) {
-    console.log('@');
-
-    // when video ends
-    videoRef.current.addEventListener('ended', () => {
-      setPaused(true);
-    });
-
-    // As the video is playing, update the progress bar
-    videoRef.current.addEventListener('timeupdate', timeUpdate);
   }
 
   function timeUpdate() {
