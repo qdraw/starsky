@@ -132,7 +132,6 @@ describe("date", () => {
       var result = secondsToHours(3600);
       expect(result).toBe('1:00:00'); // 1 hour
     });
-
   });
 
 });
