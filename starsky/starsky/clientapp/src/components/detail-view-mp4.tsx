@@ -29,13 +29,12 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     videoRef.current.addEventListener('ended', setPausedTrue);
     // As the video is playing, update the progress bar
     videoRef.current.addEventListener('timeupdate', timeUpdate);
-    document.addEventListener('DOMContentLoaded', timeUpdate);
 
     return () => {
       // Unbind the event listener on clean up
       if (!videoRef.current || !progressRef.current || !scrubberRef.current || !timeRef.current) return;
+      videoRef.current.removeEventListener('ended', setPausedTrue);
       videoRef.current.removeEventListener('timeupdate', timeUpdate);
-      document.removeEventListener('DOMContentLoaded', timeUpdate);
     };
   });
 
