@@ -64,8 +64,7 @@
 }
 
 .detailview--edit .video > .controls {
-	width: calc(100% - 340px);
-	margin-left:10px;
+	width: calc(100% - 330px);
 }
 
 .video > .controls .time {

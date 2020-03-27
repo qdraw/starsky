@@ -56,8 +56,6 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   }
 
   function timeUpdate() {
-    console.log('timeupdate -->');
-
     if (!videoRef.current || !progressRef.current || !scrubberRef.current || !timeRef.current) return;
 
     // For mobile browsers, ensure that the progress element's max attribute is set
@@ -74,13 +72,13 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
   function getMousePosition(event: React.MouseEvent | MouseEvent) {
     const target = (event.target as HTMLProgressElement);
-    console.log(event.target);
     return (event.pageX - (target.offsetLeft + (target.offsetParent as HTMLElement).offsetLeft)) / target.offsetWidth;
   }
 
   function updateProgressByClick(event: React.MouseEvent) {
     if (!videoRef.current || !event.target) return;
-    videoRef.current.currentTime = getMousePosition(event) * videoRef.current.duration;
+    var mousePosition = getMousePosition(event);
+    videoRef.current.currentTime = !isNaN(mousePosition) ? mousePosition * videoRef.current.duration : 0;
   }
 
 
