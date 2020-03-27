@@ -135,12 +135,17 @@ namespace starskytest.Helpers
 			Assert.AreEqual(string.Empty,result);
 		}
 		
-//		[TestMethod]
-//		public void Files_GetImageFormat_h264_Test()
-//		{
-//			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 00,  00,  00,  20,  66,  74,  79,  70,  69,  7});
-//			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.h264,fileType);
-//		}
-        
+		[TestMethod]
+		public void Files_GetImageFormat_h264_Test()
+		{
+			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 00,  00,  00,  20,  102, 116, 121, 112});
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4,fileType);
+		}
+
+		[TestMethod]
+		public void StringToByteArrayTest()
+		{
+			Assert.AreEqual(119, ExtensionRolesHelper.StringToByteArray("77")[0]);
+		}
 	}
 }

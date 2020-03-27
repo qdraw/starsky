@@ -330,7 +330,7 @@ namespace starsky.foundation.platform.Helpers
 			return GetImageFormat(buffer);
 		}
 		
-		private static byte[] StringToByteArray(string hex)
+		public static byte[] StringToByteArray(string hex)
 		{
 			return Enumerable.Range(0, hex.Length / 2)
 				.Select(x => Convert.ToByte(hex.Substring(x * 2, 2), 16)).ToArray();
@@ -363,10 +363,6 @@ namespace starsky.foundation.platform.Helpers
 			var gpx = new byte[] {60, 63, 120}; // gpx
 			
 			var fTypMp4 = new byte[] {102, 116, 121, 112}; //  00  00  00  [skip this byte]  66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
-			var i66 = StringToByteArray("66"); //102
-			var i74 = StringToByteArray("74"); // 116
-			var i79 = StringToByteArray("79"); // 121
-			var i70 = StringToByteArray("70"); //112
 
 			// Zip:
 			// 50 4B 03 04
@@ -416,9 +412,6 @@ namespace starsky.foundation.platform.Helpers
 
 			if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
 				return ImageFormat.mp4;
-
-			// if ( ftypMp4.SequenceEqual(bytes.Skip(4).Take(ftypMp4.Length)) )
-			// 	return ImageFormat.h264;
 			
 			return ImageFormat.unknown;
 		}
