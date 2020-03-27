@@ -47,6 +47,8 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
     // As the video is playing, update the progress bar
     videoRef.current.addEventListener('timeupdate', () => {
+      console.log('timeupdate -->');
+
       if (!videoRef.current || !progressRef.current || !scrubberRef.current || !timeRef.current) return;
 
       // For mobile browsers, ensure that the progress element's max attribute is set
