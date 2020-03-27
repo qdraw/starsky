@@ -37,13 +37,12 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
 
   if (videoRef.current && timeRef.current) {
+    console.log('@');
+
     // when video ends
     videoRef.current.addEventListener('ended', () => {
       setPaused(true);
     });
-
-    // when first loaded
-    timeRef.current.innerHTML = `${secondsToHours(videoRef.current.currentTime)} / ${secondsToHours(videoRef.current.duration)}`
 
     // As the video is playing, update the progress bar
     videoRef.current.addEventListener('timeupdate', () => {
