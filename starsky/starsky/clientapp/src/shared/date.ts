@@ -82,7 +82,7 @@ const secondsToHours = (seconds: number): string => {
   const time = new Date(+0);
   time.setSeconds(seconds);
   if (time.getHours() - 1 === 0) return `${time.getMinutes()}:${leftPad(time.getSeconds())}`;
-  return `${time.getHours() - 1}:${time.getMinutes()}:${leftPad(time.getSeconds())}`;
+  return `${time.getHours() - 1}:${leftPad(time.getMinutes())}:${leftPad(time.getSeconds())}`;
 }
 
 export { IsEditedNow, isValidDate, parseRelativeDate, parseDate, parseTime, leftPad, secondsToHours };

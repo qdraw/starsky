@@ -1,4 +1,4 @@
-import { isValidDate, leftPad, parseDate, parseRelativeDate, parseTime } from './date';
+import { isValidDate, leftPad, parseDate, parseRelativeDate, parseTime, secondsToHours } from './date';
 import { SupportedLanguages } from './language';
 
 describe("date", () => {
@@ -117,4 +117,22 @@ describe("date", () => {
       }));
     });
   });
+
+  describe("secondsToHours", () => {
+    it("3:01", () => {
+      var result = secondsToHours(60 * 3 + 1);
+      expect(result).toBe('3:01'); // 3 minutes and one second
+    });
+
+    it("3:11", () => {
+      var result = secondsToHours(60 * 3 + 11);
+      expect(result).toBe('3:11'); // 3 minutes and 11 seconds
+    });
+    it("1:00:00", () => {
+      var result = secondsToHours(3600);
+      expect(result).toBe('1:00:00'); // 1 hour
+    });
+
+  });
+
 });
