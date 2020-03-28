@@ -11,16 +11,15 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using starsky.foundation.database.Data;
-using starsky.foundation.http;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
@@ -241,11 +240,11 @@ namespace starsky
 		        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 	        }
 	        
-			// Enable X-Forwarded-For and X-Forwarded-Proto to use for example an nginx reverse proxy
+			// Enable X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
 			app.UseForwardedHeaders();
 	        
             // Use the name of the application to use behind a reverse proxy
-            app.UsePathBase( PathHelper.PrefixDbSlash(_appSettings.Name.ToLowerInvariant()) );
+            app.UsePathBase( PathHelper.PrefixDbSlash("starsky") );
 
 #if NETCOREAPP3_0 || NETCOREAPP3_1
 			app.UseRouting();
@@ -254,7 +253,12 @@ namespace starsky
 	        new SwaggerSetupHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 			
 			app.UseContentSecurityPolicy();
-	        
+			
+			void PrepareResponse(StaticFileResponseContext ctx)
+			{
+				ctx.Context.Response.Headers.Append("Cache-Control", "public, max-age=604800");
+			}
+			
 	        // Allow Current Directory and wwwroot in Base Directory
 	        app.UseStaticFiles(new StaticFileOptions
 		        {
@@ -265,16 +269,13 @@ namespace starsky
 					        "public,max-age=" + durationInSeconds;
 			        }
 	        });
-
+    
 	        // Use in wwwroot in build directory; the default option assumes Current Directory
 	        if ( Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot")) )
 	        {
 		        app.UseStaticFiles(new StaticFileOptions
 		        {
-			        OnPrepareResponse = ctx =>
-			        {
-				        ctx.Context.Response.Headers.Append("Cache-Control", "public, max-age=604800");
-			        },
+			        OnPrepareResponse = PrepareResponse,
 			        FileProvider = new PhysicalFileProvider(
 				        Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot"))
 		        });
@@ -283,15 +284,13 @@ namespace starsky
 			if ( Directory.Exists(Path.Combine(env.ContentRootPath, "clientapp", "build", "static")) )
 			{
 				app.UseStaticFiles(new StaticFileOptions
-				{
-					OnPrepareResponse = ctx =>
 					{
-						ctx.Context.Response.Headers.Append("Cache-Control", "public, max-age=604800");
-					},
-					FileProvider = new PhysicalFileProvider(
-						Path.Combine(env.ContentRootPath, "clientapp", "build", "static")),
-						RequestPath = "/static"
-				});
+						OnPrepareResponse = PrepareResponse,
+						FileProvider = new PhysicalFileProvider(
+							Path.Combine(env.ContentRootPath, "clientapp", "build", "static")),
+						RequestPath = $"/static",
+					}
+				);
 			}
 
 			app.UseAuthentication();
