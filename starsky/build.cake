@@ -13,7 +13,7 @@ ARM64: 'linux-arm64'
 */
 
 // For the step CoverageReport
-#tool "nuget:?package=ReportGenerator&version=4.5.2"
+#tool "nuget:?package=ReportGenerator&version=4.5.1"
 
 // SonarQube
 #tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.8.0
@@ -84,7 +84,7 @@ Task("CleanNetCore")
             var distDirectory = Directory($"./{runtime}");
             CleanDirectory(distDirectory);
 
-            CleanDirectory($"obj/Release/netcoreapp3.0/{runtime}");
+            CleanDirectory($"obj/Release/netcoreapp3.1/{runtime}");
 
         }
     });
