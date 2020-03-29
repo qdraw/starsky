@@ -5,7 +5,7 @@
     <!-- SonarQube needs this -->
     <ProjectGuid>{23e4ea86-970a-4de1-badc-8d7e9d3d4dd6}</ProjectGuid>
       <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">3.0.2</RuntimeFrameworkVersion>
-      <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.1</RuntimeFrameworkVersion>
+      <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.3</RuntimeFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
