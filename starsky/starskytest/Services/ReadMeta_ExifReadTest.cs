@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using MetadataExtractor.Formats.Exif;
@@ -186,6 +187,29 @@ namespace starskytest.Services
              Assert.AreEqual(returnNothingFalse,0);
          }
 
+         [TestMethod]
+         public void ExifRead_ReadExif_FromQuickTimeMp4InFileXMP_FileTest()
+         {
+	         var newImage = CreateAnQuickTimeMp4.Bytes;
+	         var fakeStorage = new FakeIStorage(new List<string> {"/"},
+		         new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
+
+	         var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.mp4");
+
+	         var date = new DateTime(2020, 03, 29, 13, 10, 07, DateTimeKind.Utc).ToLocalTime();
+	         Assert.AreEqual(date, item.DateTime);
+	         Assert.AreEqual(20, item.ImageWidth);
+	         Assert.AreEqual(20, item.ImageWidth);
+	         Assert.AreEqual(false,item.IsDirectory );
+         }
+
+         [TestMethod]
+         public void TestParsing()
+         {
+	         DateTime.TryParseExact("Sat Mar 20 21:29:11 2010", "ddd MMM dd HH:mm:ss yyyy", new CultureInfo("en-US"), 
+		         DateTimeStyles.AdjustToUniversal, out var itemDateTime);
+         }
+         
          // https://github.com/drewnoakes/metadata-extractor-dotnet/blob/master/MetadataExtractor.Tests/DirectoryExtensionsTest.cs
          private static Directory BuildDirectory(IEnumerable<object> values)
          {

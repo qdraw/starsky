@@ -395,7 +395,7 @@ namespace starsky.foundation.readmeta.Services
         /// </summary>
         /// <param name="exifItem">Directory</param>
         /// <returns>Datetime</returns>
-        public DateTime GetExifDateTime(MetadataExtractor.Directory exifItem)
+        public DateTime GetExifDateTime(Directory exifItem)
         {
             var itemDateTime = new DateTime();
             
@@ -419,12 +419,17 @@ namespace starsky.foundation.readmeta.Services
             
             if (itemDateTime.Year != 1 || itemDateTime.Month != 1) return itemDateTime;
 
-            var photoShopDateCreated = GetXmpData(exifItem, "photoshop:DateCreated");
-
-            if ( string.IsNullOrEmpty(photoShopDateCreated) ) return DateTime.MinValue;
-
             // 1970-01-01T02:00:03 formatted
+            var photoShopDateCreated = GetXmpData(exifItem, "photoshop:DateCreated");
             DateTime.TryParseExact(photoShopDateCreated, "yyyy-MM-ddTHH:mm:ss", provider, DateTimeStyles.AdjustToUniversal, out itemDateTime);
+           
+            if (itemDateTime.Year != 1 || itemDateTime.Month != 1) return itemDateTime;
+
+            // [QuickTime Movie Header] Created = Tue Oct 11 09:40:04 2011 or Sat Mar 20 21:29:11 2010 // time is in UTC
+            var quickTimeCreated = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "QuickTime Movie Header" && p.Name == "Created")?.Description;
+            DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", new CultureInfo("en-US"), 
+	            DateTimeStyles.AssumeUniversal, out var itemDateTimeQuickTime);
+            if ( itemDateTimeQuickTime.Year > 1970 ) itemDateTime = itemDateTimeQuickTime;
 
             return itemDateTime;
         }
@@ -622,21 +627,25 @@ namespace starsky.foundation.readmeta.Services
             return maxCount;
         }
             
-        public int GetImageWidthHeight(List<MetadataExtractor.Directory> allExifItems, bool isWidth)
+        public int GetImageWidthHeight(List<Directory> allExifItems, bool isWidth)
         {
             // The size lives normaly in the first 5 headers
             // > "Exif IFD0" .dng
             // [Exif SubIFD] > arw; on header place 17&18
-            var directoryNames = new[] {"JPEG", "PNG-IHDR", "BMP Header", "GIF Header", "Exif IFD0", "Exif SubIFD"};
+            var directoryNames = new[] {"JPEG", "PNG-IHDR", "BMP Header", "GIF Header", "QuickTime Track Header", "Exif IFD0", "Exif SubIFD"};
             foreach (var dirName in directoryNames)
             {
                 var typeName = "Image Height";
-                if (isWidth) typeName = "Image Width";
-
-                var maxcount = GetImageWidthHeightMaxCount(dirName, allExifItems);
+                if(dirName == "QuickTime Track Header") typeName = "Height";
                 
-                for (int i = 0; i < maxcount; i++)
+                if (isWidth) typeName = "Image Width";
+                if(isWidth && dirName == "QuickTime Track Header") typeName = "Width";
+
+                var maxCount = GetImageWidthHeightMaxCount(dirName, allExifItems);
+                
+                for (int i = 0; i < maxCount; i++)
                 {
+	                if(i >= allExifItems.Count) continue;
                     var exifItem = allExifItems[i];
 
                     var ratingCountsJpeg =
@@ -679,8 +688,6 @@ namespace starsky.foundation.readmeta.Services
                      && p.Name == iptcName)?.Description;
             return locationCity;
         }
-	    
-        
 
         /// <summary>
         /// [Exif SubIFD] Focal Length

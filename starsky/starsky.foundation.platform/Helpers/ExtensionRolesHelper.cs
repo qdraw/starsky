@@ -207,6 +207,8 @@ namespace starsky.foundation.platform.Helpers
 				extensionList.AddRange(ExtensionGif);
 				// Used for raw files =>
 				extensionList.AddRange(ExtensionTiff);
+				// reading does not allow xmp
+				extensionList.AddRange(ExtensionMp4);
 				return extensionList;
 			}
 		}
