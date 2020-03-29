@@ -78,10 +78,10 @@ const parseTime = (dateTime: string | undefined): string => {
 }
 
 const secondsToHours = (seconds: number): string => {
-  const time = new Date(+0);
-  time.setSeconds(seconds);
-  if (time.getHours() - 1 === 0) return `${time.getMinutes()}:${leftPad(time.getSeconds())}`;
-  return `${time.getHours() - 1}:${leftPad(time.getMinutes())}:${leftPad(time.getSeconds())}`;
+  const time = new Date(0);
+  time.setUTCSeconds(seconds);
+  if (time.getUTCHours() === 0) return `${time.getUTCMinutes()}:${leftPad(time.getUTCSeconds())}`;
+  return `${time.getUTCHours()}:${leftPad(time.getUTCMinutes())}:${leftPad(time.getUTCSeconds())}`;
 }
 
 export { IsEditedNow, isValidDate, parseRelativeDate, parseDate, parseTime, leftPad, secondsToHours };
