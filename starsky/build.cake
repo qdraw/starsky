@@ -72,6 +72,9 @@ var testProjectNames = new List<string>{
 Task("CleanNetCore")
     .Does(() =>
     {
+        Information("DotNetCoreClean for .");
+        DotNetCoreClean(".");
+
         foreach(var runtime in runtimes)
         {
             if (FileExists($"starsky-{runtime}.zip"))
@@ -82,6 +85,7 @@ Task("CleanNetCore")
             CleanDirectory(distDirectory);
 
             CleanDirectory($"obj/Release/netcoreapp3.0/{runtime}");
+
         }
     });
 
