@@ -427,7 +427,7 @@ namespace starsky.foundation.readmeta.Services
 
             // [QuickTime Movie Header] Created = Tue Oct 11 09:40:04 2011 or Sat Mar 20 21:29:11 2010 // time is in UTC
             var quickTimeCreated = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "QuickTime Movie Header" && p.Name == "Created")?.Description;
-            DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", new CultureInfo("en-US"), 
+            DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", CultureInfo.CurrentCulture, 
 	            DateTimeStyles.AssumeUniversal, out var itemDateTimeQuickTime);
             if ( itemDateTimeQuickTime.Year > 1970 ) itemDateTime = itemDateTimeQuickTime;
 
