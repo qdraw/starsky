@@ -14,35 +14,35 @@ namespace starsky.foundation.platform.Helpers
 		/// <summary>
 		/// List of .jpg,.jpeg extensions
 		/// </summary>
-		private static readonly List<string> Extensionjpg = new List<string> {"jpg", "jpeg"};
+		private static readonly List<string> ExtensionJpg = new List<string> {"jpg", "jpeg"};
 
 		/// <summary>
 		/// Tiff based, tiff, including raws
 		/// tiff, arw:sony, dng:adobe, nef:nikon, raf:fuji, cr2:canon,  orf:olympus, rw2:panasonic, pef:pentax,
 		/// Not supported due Image Processing Error x3f:sigma, crw:canon
 		/// </summary>
-		private static readonly List<string> Extensiontiff = new List<string> {"tiff", "arw", "dng", "nef", 
+		private static readonly List<string> ExtensionTiff = new List<string> {"tiff", "arw", "dng", "nef", 
 			"raf", "cr2", "orf", "rw2", "pef"};
 
 		/// <summary>
 		/// Bitmaps
 		/// </summary>
-		private static readonly List<string> Extensionbmp = new List<string> {"bmp"};
+		private static readonly List<string> ExtensionBmp = new List<string> {"bmp"};
 		
 		/// <summary>
 		/// Gif based images
 		/// </summary>
-		private static readonly List<string> Extensiongif = new List<string> {"gif"};
+		private static readonly List<string> ExtensionGif = new List<string> {"gif"};
 		
 		/// <summary>
 		/// PNG
 		/// </summary>
-		private static readonly List<string> Extensionpng = new List<string> {"png"};
+		private static readonly List<string> ExtensionPng = new List<string> {"png"};
 		
 		/// <summary>
 		/// GPX, list of geo locations
 		/// </summary>
-		private static readonly List<string> Extensiongpx = new List<string> {"gpx"};
+		private static readonly List<string> ExtensionGpx = new List<string> {"gpx"};
 
 		/// <summary>
 		/// Mp4 Videos in h264 codex
@@ -53,22 +53,22 @@ namespace starsky.foundation.platform.Helpers
 			new Dictionary<ImageFormat, List<string>>
 			{
 				{
-					ImageFormat.jpg, Extensionjpg
+					ImageFormat.jpg, ExtensionJpg
 				},
 				{
-					ImageFormat.tiff, Extensiontiff
+					ImageFormat.tiff, ExtensionTiff
 				},
 				{
-					ImageFormat.bmp, Extensionbmp
+					ImageFormat.bmp, ExtensionBmp
 				},
 				{
-					ImageFormat.gif, Extensiongif
+					ImageFormat.gif, ExtensionGif
 				},
 				{
-					ImageFormat.png, Extensionpng
+					ImageFormat.png, ExtensionPng
 				},
 				{
-					ImageFormat.gpx, Extensiongpx
+					ImageFormat.gpx, ExtensionGpx
 				},
 				{
 					ImageFormat.mp4, ExtensionMp4
@@ -102,12 +102,12 @@ namespace starsky.foundation.platform.Helpers
 			get
 			{
 				var extensionList = new List<string>();
-				extensionList.AddRange(Extensionjpg);
-				extensionList.AddRange(Extensiontiff);
-				extensionList.AddRange(Extensionbmp);
-				extensionList.AddRange(Extensiongif);
-				extensionList.AddRange(Extensionpng);
-				extensionList.AddRange(Extensiongpx);
+				extensionList.AddRange(ExtensionJpg);
+				extensionList.AddRange(ExtensionTiff);
+				extensionList.AddRange(ExtensionBmp);
+				extensionList.AddRange(ExtensionGif);
+				extensionList.AddRange(ExtensionPng);
+				extensionList.AddRange(ExtensionGpx);
 				extensionList.AddRange(ExtensionMp4);
 				return extensionList;
 			}
@@ -121,11 +121,12 @@ namespace starsky.foundation.platform.Helpers
 			get
 			{
 				var extensionList = new List<string>();
-				extensionList.AddRange(Extensionjpg);
-				extensionList.AddRange(Extensiontiff);
-				extensionList.AddRange(Extensionbmp);
-				extensionList.AddRange(Extensiongif);
-				extensionList.AddRange(Extensionpng);
+				extensionList.AddRange(ExtensionJpg);
+				extensionList.AddRange(ExtensionTiff);
+				extensionList.AddRange(ExtensionBmp);
+				extensionList.AddRange(ExtensionGif);
+				extensionList.AddRange(ExtensionPng);
+				extensionList.AddRange(ExtensionMp4);
 				return extensionList;
 			}
 		}
@@ -158,10 +159,10 @@ namespace starsky.foundation.platform.Helpers
 			get
 			{
 				var extensionList = new List<string>();
-				extensionList.AddRange(Extensionjpg);
-				extensionList.AddRange(Extensionbmp);
-				extensionList.AddRange(Extensiongif);
-				extensionList.AddRange(Extensionpng);
+				extensionList.AddRange(ExtensionJpg);
+				extensionList.AddRange(ExtensionBmp);
+				extensionList.AddRange(ExtensionGif);
+				extensionList.AddRange(ExtensionPng);
 				return extensionList;
 			}
 		}
@@ -180,7 +181,7 @@ namespace starsky.foundation.platform.Helpers
 		/// is this filename with extension a filetype that imagesharp can read/write 
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
-		/// <returns>true, if imagesharp can write to this</returns>
+		/// <returns>true, if imageSharp can write to this</returns>
 		public static bool IsExtensionThumbnailSupported(string filename)
 		{
 			return IsExtensionForce(filename, ExtensionThumbSupportedList);
@@ -201,11 +202,11 @@ namespace starsky.foundation.platform.Helpers
 			{
 				var extensionList = new List<string>();
 				// Bitmap does not support internal xmp
-				extensionList.AddRange(Extensionbmp);
+				extensionList.AddRange(ExtensionBmp);
 				// Gif does not support internal xmp
-				extensionList.AddRange(Extensiongif);
+				extensionList.AddRange(ExtensionGif);
 				// Used for raw files =>
-				extensionList.AddRange(Extensiontiff);
+				extensionList.AddRange(ExtensionTiff);
 				return extensionList;
 			}
 		}
@@ -227,11 +228,11 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>true, </returns>
 		public static bool IsExtensionForceGpx(string filename)
 		{
-			return IsExtensionForce(filename, Extensiongpx);
+			return IsExtensionForce(filename, ExtensionGpx);
 		}
 		
 		/// <summary>
-		/// is this filename with extension a filetype that needs a item that is in the list 
+		/// is this filename with extension a fileType that needs a item that is in the list 
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <param name="checkThisList">the list of strings to match</param>
