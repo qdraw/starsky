@@ -13,5 +13,4 @@
       <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
       <ProjectReference Include="..\starskycore\starskycore.csproj" />
     </ItemGroup>
-
 </Project>

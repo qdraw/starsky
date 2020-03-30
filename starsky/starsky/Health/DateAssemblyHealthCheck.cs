@@ -25,8 +25,8 @@ namespace starsky.Helpers
 		{
 			var assemblyDate = GetBuildDate(Assembly.GetExecutingAssembly());
 
-			return Task.FromResult(assemblyDate > DateTime.UtcNow ? 
-				HealthCheckResult.Unhealthy($"Current Date {assemblyDate}>{DateTime.UtcNow} is earlier then the Assembly is build") : 
+			return Task.FromResult(assemblyDate.AddDays(-2) > DateTime.UtcNow ? 
+				HealthCheckResult.Unhealthy($"Current Date {assemblyDate.AddDays(-2)}>{DateTime.UtcNow} is earlier then the Assembly is build") : 
 				HealthCheckResult.Healthy("Current Date is after the Assembly is build :)"));
 		}
 		/// <summary>
@@ -44,7 +44,7 @@ namespace starsky.Helpers
 			if ( index <= 0 ) return new DateTime();
 			value = value.Substring(index + buildVersionMetadataPrefix.Length);
 			return DateTime.TryParseExact(value, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, 
-				DateTimeStyles.None, out var result) ? result : new DateTime();
+				DateTimeStyles.AssumeUniversal, out var result) ? result : new DateTime();
 		}
 	}
 
