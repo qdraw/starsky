@@ -39,16 +39,16 @@ namespace starsky.foundation.database.Serializer
 			var itemByModelName = GetItemsByModelNameAllReflection();
 			foreach ( var item in itemByModelName )
 			{
-				var result = _dbContext.Model.(item.Value.FirstOrDefault());
+				// var result = _dbContext.Model.(item.Value.FirstOrDefault());
 			}
 		}
 
-		private GetData()
-		{
-			Type TableType = _dbContext.GetType().Assembly.GetExportedTypes().FirstOrDefault(t => t.Name == table);
-			IQueryable<Object> ObjectContext = _dbContext.Set(TableTypeDictionary[table]);
-			return ObjectContext;
-		}
+		// private GetData()
+		// {
+		// 	Type TableType = _dbContext.GetType().Assembly.GetExportedTypes().FirstOrDefault(t => t.Name == table);
+		// 	IQueryable<Object> ObjectContext = _dbContext.Set(TableTypeDictionary[table]);
+		// 	return ObjectContext;
+		// }
 	}
 
 }
