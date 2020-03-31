@@ -20,6 +20,8 @@
 	padding: 50px;
 }
 
+.detailview--edit .video.first:hover::after,
+.detailview--edit .video.first:hover::before,
 .detailview--edit .video.play:hover::after,
 .detailview--edit .video.play:hover::before{
 	left: calc(50% - 160px);

@@ -9,9 +9,25 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   var history = useLocation();
 
   /** update to make useEffect simpler te read */
-  const [filePathEncoded, setFilePathEncoded] = useState(new URLPath().encodeURI(new URLPath().getFilePath(history.location.search)));
+  const [downloadApi, setDownloadPhotoApi] = useState(new UrlQuery().UrlDownloadPhotoApi(
+    new URLPath().encodeURI(new URLPath().getFilePath(history.location.search)), false)
+  );
+
   useEffect(() => {
-    setFilePathEncoded(new URLPath().encodeURI(new URLPath().getFilePath(history.location.search)))
+    var downloadApiLocal = new UrlQuery().UrlDownloadPhotoApi(new URLPath().encodeURI(new URLPath().getFilePath(history.location.search)), false);
+    setDownloadPhotoApi(downloadApiLocal);
+
+    if (!videoRef.current || !scrubberRef.current || !progressRef.current || !timeRef.current) return;
+    videoRef.current.setAttribute('src', downloadApiLocal);
+    videoRef.current.load();
+
+    // after a location change
+    progressRef.current.removeAttribute('max');
+    videoRef.current.currentTime = 0;
+    scrubberRef.current.style.left = "0%";
+    progressRef.current.value = 0;
+    timeRef.current.innerHTML = "";
+
   }, [history.location.search]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -85,7 +101,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   return (<>
     <figure data-test="video" className={isPaused ? isStarted ? "video play" : "video first" : "video pause"} onClick={() => { playPause(); timeUpdate(); }}>
       <video playsInline={true} ref={videoRef} controls={false} preload="metadata">
-        <source src={new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false)} type="video/mp4" />
+        <source src={downloadApi} type="video/mp4" />
       </video>
       <div className="controls">
         <button className={isPaused ? "play" : "pause"} onClick={playPause} type="button">{isPaused ? "Play" : "Pause"}</button>
