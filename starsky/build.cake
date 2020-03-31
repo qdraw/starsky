@@ -13,11 +13,11 @@ ARM64: 'linux-arm64'
 */
 
 // For the step CoverageReport
-#tool "nuget:?package=ReportGenerator&version=4.3.6"
+#tool "nuget:?package=ReportGenerator&version=4.5.2"
 
 // SonarQube
-#tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.6.0
-#addin nuget:?package=Cake.Sonar&version=1.1.22
+#tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.8.0
+#addin nuget:?package=Cake.Sonar&version=1.1.25
 
 // Get Git info
 #addin nuget:?package=Cake.Git&version=0.21.0
