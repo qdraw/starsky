@@ -75,22 +75,22 @@ describe("date", () => {
     it("yesterday", () => {
 
       const yesterdayDate = new Date();
-      
+
       // to get 24 hours ago
-      yesterdayDate.setDate(yesterdayDate.getDate() - 1 );
-           
-      const yesterday = `${yesterdayDate.getFullYear()}-${leftPad(yesterdayDate.getMonth() + 1)}-`+
-      `${leftPad(yesterdayDate.getDate())} ${leftPad(yesterdayDate.getHours())}:${leftPad(yesterdayDate.getMinutes())}:` +
-      `${leftPad(yesterdayDate.getSeconds())}`;
-      
+      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+
+      const yesterday = `${yesterdayDate.getFullYear()}-${leftPad(yesterdayDate.getMonth() + 1)}-` +
+        `${leftPad(yesterdayDate.getDate())} ${leftPad(yesterdayDate.getHours())}:${leftPad(yesterdayDate.getMinutes())}:` +
+        `${leftPad(yesterdayDate.getSeconds())}`;
+
       const result = parseRelativeDate(yesterday, SupportedLanguages.en);
-      
+
       // on the sunday that the timezone change i.e. March 29, 2020 (Europe DST) or 25 okt 2020
       if (new Date().getTimezoneOffset() !== yesterdayDate.getTimezoneOffset()) {
         console.log("this unit test does not work today");
         return;
       }
-      
+
       expect(result).toBe("24 {hour}");
     });
 
@@ -132,7 +132,6 @@ describe("date", () => {
       var result = secondsToHours(60 * 3 + 1);
       expect(result).toBe('3:01'); // 3 minutes and one second
     });
-
     it("3:11", () => {
       var result = secondsToHours(60 * 3 + 11);
       expect(result).toBe('3:11'); // 3 minutes and 11 seconds
@@ -140,6 +139,10 @@ describe("date", () => {
     it("1:00:00", () => {
       var result = secondsToHours(3600);
       expect(result).toBe('1:00:00'); // 1 hour
+    });
+    it("NaN", () => {
+      var result = secondsToHours(NaN);
+      expect(result).toBe('0:00'); // return 0 when its NaN
     });
   });
 

@@ -78,6 +78,7 @@ const parseTime = (dateTime: string | undefined): string => {
 }
 
 const secondsToHours = (seconds: number): string => {
+  if (isNaN(seconds)) return '0:00';
   const time = new Date(0);
   time.setUTCSeconds(seconds);
   if (time.getUTCHours() === 0) return `${time.getUTCMinutes()}:${leftPad(time.getUTCSeconds())}`;
