@@ -20,11 +20,19 @@
 	padding: 50px;
 }
 
+.detailview--edit .video.first:after,
+.detailview--edit .video.first:before,
 .detailview--edit .video.first:hover::after,
 .detailview--edit .video.first:hover::before,
 .detailview--edit .video.play:hover::after,
 .detailview--edit .video.play:hover::before{
-	left: calc(50% - 160px);
+	left: calc(50% - 210px); /* 320/2+100/2 */
+}
+
+@media screen and (max-width: 450px) {
+	.detailview--edit .video.first {
+    display: none;
+  }
 }
 
 .video.first::before,

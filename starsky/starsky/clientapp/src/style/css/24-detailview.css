@@ -184,3 +184,7 @@
     /* // (320/2)+ (100/2) */
   }
 }
+
+.detailview .main.main--mp4 {
+  background-image: url('../images/baseline-file-mp4-24px.svg');
+}

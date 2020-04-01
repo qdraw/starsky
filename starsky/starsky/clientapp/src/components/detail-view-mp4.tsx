@@ -3,10 +3,14 @@ import useLocation from '../hooks/use-location';
 import { secondsToHours } from '../shared/date';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
+import Preloader from './preloader';
 
 
 const DetailViewMp4: React.FunctionComponent = memo(() => {
   var history = useLocation();
+
+  // preloading icon
+  const [isLoading, setIsLoading] = useState(false);
 
   /** update to make useEffect simpler te read */
   const [downloadApi, setDownloadPhotoApi] = useState(new UrlQuery().UrlDownloadPhotoApi(
@@ -45,12 +49,14 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     videoRefCurrent.addEventListener('ended', setPausedTrue);
     // As the video is playing, update the progress bar
     videoRefCurrent.addEventListener('timeupdate', timeUpdate);
+    videoRefCurrent.addEventListener('waiting', waiting);
 
     return () => {
       // Unbind the event listener on clean up
       if (!videoRefCurrent) return;
       videoRefCurrent.removeEventListener('ended', setPausedTrue);
       videoRefCurrent.removeEventListener('timeupdate', timeUpdate);
+      videoRefCurrent.removeEventListener('waiting', waiting);
     };
   }, [videoRefCurrent]);
 
@@ -84,6 +90,9 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
     // time
     timeRef.current.innerHTML = `${secondsToHours(videoRef.current.currentTime)} / ${secondsToHours(videoRef.current.duration)}`
+
+    // to disable the loading is slow
+    setIsLoading(false);
   }
 
   function getMousePosition(event: React.MouseEvent | MouseEvent) {
@@ -97,8 +106,16 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     videoRef.current.currentTime = !isNaN(mousePosition) ? mousePosition * videoRef.current.duration : 0;
   }
 
+  function waiting() {
+    if (!videoRef.current) return;
+    if (videoRef.current.networkState === videoRef.current.NETWORK_LOADING) {
+      // The user agent is actively trying to download data.
+      setIsLoading(true)
+    }
+  }
 
   return (<>
+    {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
     <figure data-test="video" className={isPaused ? isStarted ? "video play" : "video first" : "video pause"} onClick={() => { playPause(); timeUpdate(); }}>
       <video playsInline={true} ref={videoRef} controls={false} preload="metadata">
         <source src={downloadApi} type="video/mp4" />
