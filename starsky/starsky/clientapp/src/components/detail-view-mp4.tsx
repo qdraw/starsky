@@ -72,6 +72,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
     if (videoRef.current.paused) {
       videoRef.current.play();
+      setIsLoading(true);
       return;
     }
     videoRef.current.pause();
@@ -81,7 +82,10 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     if (!videoRef.current || !progressRef.current || !scrubberRef.current || !timeRef.current) return;
 
     // For mobile browsers, ensure that the progress element's max attribute is set
-    if (!progressRef.current.getAttribute('max')) progressRef.current.setAttribute('max', videoRef.current.duration.toString());
+    if (!progressRef.current.getAttribute('max') && !isNaN(videoRef.current.duration)) {
+      progressRef.current.setAttribute('max', videoRef.current.duration.toString());
+    }
+
     progressRef.current.value = videoRef.current.currentTime;
 
     // scrubber bol
