@@ -185,9 +185,32 @@ namespace starskytest.Services
 		     var date = new DateTime(2020, 03, 29, 13, 10, 07, DateTimeKind.Utc).ToLocalTime();
 		     Assert.AreEqual(date, item.DateTime);
 		     Assert.AreEqual(20, item.ImageWidth);
-		     Assert.AreEqual(20, item.ImageWidth);
+		     Assert.AreEqual(20, item.ImageHeight);
 		     Assert.AreEqual(false,item.IsDirectory );
 		 }
+		 
+		 [TestMethod]
+		 public void ExifRead_ReadExif_FromQuickTimeMp4InFileXMP_FileTest_BytesWithLocation()
+		 {
+			 var newImage = CreateAnQuickTimeMp4.BytesWithLocation;
+			 var fakeStorage = new FakeIStorage(new List<string> {"/"},
+				 new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
+
+			 var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.mp4");
+
+			 var date = new DateTime(2020, 04, 02, 17, 04, 02, DateTimeKind.Utc).ToLocalTime();
+			 Assert.AreEqual(date, item.DateTime);
+			 Assert.AreEqual(360, item.ImageHeight);
+			 Assert.AreEqual(640, item.ImageWidth);
+			 
+			 Assert.AreEqual(51.72969618055556, item.Latitude,0.0001);
+			 Assert.AreEqual(5.417600368923611, item.Longitude,0.0001);
+			 Assert.AreEqual(false,item.IsDirectory );
+
+			 // not supported yet
+			 // Assert.AreEqual("Apple", item.Make);
+			 // Assert.AreEqual("iPhone SE", item.Model);
+		 } 
 
 		 // https://github.com/drewnoakes/metadata-extractor-dotnet/blob/master/MetadataExtractor.Tests/DirectoryExtensionsTest.cs
 		 private static Directory BuildDirectory(IEnumerable<object> values)

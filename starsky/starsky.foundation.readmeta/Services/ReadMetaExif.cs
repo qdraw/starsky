@@ -462,17 +462,24 @@ namespace starsky.foundation.readmeta.Services
                 if (latitudeLocal != null)
                 {
                     latitudeString = latitudeLocal;
+                    continue;
+                }
+
+                var locationQuickTime = exifItem.Tags.FirstOrDefault(
+	                p => p.DirectoryName == "QuickTime Metadata Header" 
+	                     && p.Name == "GPS Location")?.Description;
+                if ( locationQuickTime != null)
+                {
+	                return GeoParser.ParseIsoString(locationQuickTime).Latitude;
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(latitudeString))
-            {
-                var latitude = GeoDistanceTo.ConvertDegreeMinutesSecondsToDouble(latitudeString, latitudeRef);
-                latitude = Math.Floor(latitude * 10000000000) / 10000000000; 
-                return latitude;
-            }
+            if ( string.IsNullOrWhiteSpace(latitudeString) )
+	            return GetXmpGeoData(allExifItems, "exif:GPSLatitude");
+            
+            var latitude = GeoParser.ConvertDegreeMinutesSecondsToDouble(latitudeString, latitudeRef);
+            return  Math.Floor(latitude * 10000000000) / 10000000000;
 
-            return GetXmpGeoData(allExifItems, "exif:GPSLatitude");
         }
 
         private double GetXmpGeoData(List<Directory> allExifItems, string propertyPath)
@@ -493,7 +500,7 @@ namespace starsky.foundation.readmeta.Services
 
 	        if ( string.IsNullOrWhiteSpace(latitudeString) ) return 0;
             
-	        var latitudeDegreeMinutes = GeoDistanceTo.ConvertDegreeMinutesToDouble(latitudeString, latitudeRef);
+	        var latitudeDegreeMinutes = GeoParser.ConvertDegreeMinutesToDouble(latitudeString, latitudeRef);
 	        return Math.Floor(latitudeDegreeMinutes * 10000000000) / 10000000000; 
         }
         
@@ -583,7 +590,7 @@ namespace starsky.foundation.readmeta.Services
         }
         
         
-        private double GetGeoLocationLongitude(List<MetadataExtractor.Directory> allExifItems)
+        private double GetGeoLocationLongitude(List<Directory> allExifItems)
         {
             var longitudeString = string.Empty;
             var longitudeRef = string.Empty;
@@ -606,12 +613,21 @@ namespace starsky.foundation.readmeta.Services
                 if (longitudeLocal != null)
                 {
                     longitudeString = longitudeLocal;
+                    continue;
+                }
+
+                var locationQuickTime = exifItem.Tags.FirstOrDefault(
+	                p => p.DirectoryName == "QuickTime Metadata Header" 
+	                     && p.Name == "GPS Location")?.Description;
+                if ( locationQuickTime != null)
+                {
+	                return GeoParser.ParseIsoString(locationQuickTime).Longitude;
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(longitudeString))
             {
-                var longitude = GeoDistanceTo.ConvertDegreeMinutesSecondsToDouble(longitudeString, longitudeRef);
+                var longitude = GeoParser.ConvertDegreeMinutesSecondsToDouble(longitudeString, longitudeRef);
                 longitude = Math.Floor(longitude * 10000000000) / 10000000000; 
                 return longitude;
             }
@@ -649,11 +665,11 @@ namespace starsky.foundation.readmeta.Services
                     var exifItem = allExifItems[i];
 
                     var ratingCountsJpeg =
-                        exifItem.Tags.Count(p => p.DirectoryName == dirName && p.Name.Contains(typeName));
+                        exifItem.Tags.Count(p => p.DirectoryName == dirName && p.Name.Contains(typeName) && p.Description != "0");
                     if (ratingCountsJpeg >= 1)
                     {
                         var widthTag = exifItem.Tags
-                            .FirstOrDefault(p => p.DirectoryName == dirName && p.Name.Contains(typeName))
+                            .FirstOrDefault(p => p.DirectoryName == dirName && p.Name.Contains(typeName) && p.Description != "0")
                             ?.Description;
                         widthTag = widthTag?.Replace(" pixels", string.Empty);
                         int.TryParse(widthTag, out var widthInt);

@@ -102,8 +102,8 @@ namespace starsky.foundation.readmeta.Services
         private double GpsPreParseAndConvertDegreeAngleToDouble(string gpsLatOrLong)
         {
             // get ref North, South, East West
-            string refGps = gpsLatOrLong.Substring(gpsLatOrLong.Length-1, 1);
-            return GeoDistanceTo.ConvertDegreeMinutesToDouble(gpsLatOrLong, refGps);
+            var refGps = gpsLatOrLong.Substring(gpsLatOrLong.Length-1, 1);
+            return GeoParser.ConvertDegreeMinutesToDouble(gpsLatOrLong, refGps);
         }
                 
         private FileIndexItem GetDataNullNameSpaceTypes(IXmpMeta xmp, FileIndexItem item)
