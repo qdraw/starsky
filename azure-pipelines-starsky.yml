@@ -46,10 +46,50 @@ steps:
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - task: PowerShell@2
-  displayName: 'Cake Powershell'
+  displayName: 'Cake Client'
   inputs:
     filePath: 'starsky\build.ps1'
-    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"'''
+    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"'' ''-target="client"'''
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+
+- task: PowerShell@2
+  displayName: 'Cake SonarBuildTest'
+  inputs:
+    filePath: 'starsky\build.ps1'
+    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"'' ''-target="SonarBuildTest"'''
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+
+- task: PowerShell@2
+  displayName: 'Cake BuildNetCoreRuntimeSpecific'
+  inputs:
+    filePath: 'starsky\build.ps1'
+    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"'' ''-target="BuildNetCoreRuntimeSpecific"'''
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+
+- task: PowerShell@2
+  displayName: 'Cake PublishWeb'
+  inputs:
+    filePath: 'starsky\build.ps1'
+    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"'' ''-target="PublishWeb"'''
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+
+- task: PowerShell@2
+  displayName: 'Cake CoverageDocs'
+  inputs:
+    filePath: 'starsky\build.ps1'
+    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"'' ''-target="CoverageDocs"'''
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+
+- task: PowerShell@2
+  displayName: 'Cake Zip'
+  inputs:
+    filePath: 'starsky\build.ps1'
+    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"'' ''-target="Zip"'''
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 

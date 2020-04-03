@@ -513,6 +513,7 @@ Task("DocsGenerate")
 
 // React app build steps
 Task("Client")
+  .IsDependentOn("TestEnv")
   .IsDependentOn("ClientRestore")
   .IsDependentOn("ClientBuild")
   .IsDependentOn("ClientTest");
@@ -523,30 +524,36 @@ Task("BuildNetCore")
     .IsDependentOn("RestoreNetCore")
     .IsDependentOn("BuildNetCoreGeneric");
 
-// The default task to run if none is explicitly specified. In this case, we want
-// to run everything starting from Clean, all the way up to Publish.
-Task("Default")
-    .IsDependentOn("TestEnv")
-    .IsDependentOn("Client")
+Task("SonarBuildTest")
     .IsDependentOn("SonarBegin")
     .IsDependentOn("BuildNetCore")
     .IsDependentOn("TestNetCore")
-    .IsDependentOn("SonarEnd")
-    .IsDependentOn("BuildNetCoreRuntimeSpecific")
-    .IsDependentOn("PublishWeb")
+    .IsDependentOn("SonarEnd");
+
+Task("CoverageDocs")
     .IsDependentOn("MergeCoverageFiles")
     .IsDependentOn("CoverageReport")
-    .IsDependentOn("DocsGenerate")
+    .IsDependentOn("DocsGenerate");
+
+// The default task to run if none is explicitly specified. In this case, we want
+// to run everything starting from Clean, all the way up to Publish.
+Task("Default")
+    .IsDependentOn("Client")
+    .IsDependentOn("SonarBuildTest")
+    .IsDependentOn("BuildNetCoreRuntimeSpecific")
+    .IsDependentOn("PublishWeb")
+    .IsDependentOn("CoverageDocs")
     .IsDependentOn("Zip");
 
-// ./build.sh --Target=BuildTestNetCore
-Task("BuildTestNetCore")
+// ./build.sh --Target=BuildTestOnlyNetCore
+Task("BuildTestOnlyNetCore")
     .IsDependentOn("TestEnv")
     .IsDependentOn("BuildNetCore")
     .IsDependentOn("TestNetCore")
     .IsDependentOn("BuildNetCoreGeneric")
     .IsDependentOn("MergeOnlyNetCoreCoverageFiles")
     .IsDependentOn("CoverageReport");
+
 
 
 // To get fast all (net core) assemblies
