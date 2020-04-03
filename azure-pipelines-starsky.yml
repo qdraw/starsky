@@ -49,7 +49,7 @@ steps:
   displayName: 'Cake Client'
   inputs:
     filePath: 'starsky\build.ps1'
-    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"' '-target="client"'''
+    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64" -target="Client" '''
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
@@ -57,7 +57,7 @@ steps:
   displayName: 'Cake SonarBuildTest'
   inputs:
     filePath: 'starsky\build.ps1'
-    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"' '-target="SonarBuildTest"'''
+    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64" -target="SonarBuildTest" '''
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
@@ -65,7 +65,7 @@ steps:
   displayName: 'Cake BuildNetCoreRuntimeSpecific'
   inputs:
     filePath: 'starsky\build.ps1'
-    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"' '-target="BuildNetCoreRuntimeSpecific"'''
+    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64" -target="BuildNetCoreRuntimeSpecific" '''
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
@@ -73,7 +73,7 @@ steps:
   displayName: 'Cake PublishWeb'
   inputs:
     filePath: 'starsky\build.ps1'
-    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"' ''-target="PublishWeb"'''
+    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64" -target="PublishWeb" '''
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
@@ -81,7 +81,7 @@ steps:
   displayName: 'Cake CoverageDocs'
   inputs:
     filePath: 'starsky\build.ps1'
-    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"' '-target="CoverageDocs"'''
+    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64" -target="CoverageDocs" '''
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
@@ -89,7 +89,7 @@ steps:
   displayName: 'Cake Zip'
   inputs:
     filePath: 'starsky\build.ps1'
-    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64"' '-target="Zip"'''
+    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64" -target="Zip" '''
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
