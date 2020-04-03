@@ -113,6 +113,11 @@
 	color: white;
 	display: inline-block;
 	padding-bottom: 10px;
+	text-shadow: 0px 0px 14px rgba(0,0,0,1);
+}
+
+.video > .controls > .time {
+	text-shadow: 0px 0px 14px rgba(0,0,0,1);
 }
 
 .video > .controls > .pause:before,
@@ -130,6 +135,7 @@
 	mask-image: url('../images/baseline-play_arrow-24px.svg');
 	background-color: white;
 }
+
 .video > .controls > .pause:before {
 	mask-image: url('../images/baseline-pause-24px.svg');
 }
