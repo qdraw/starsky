@@ -68,6 +68,29 @@ var testProjectNames = new List<string>{
     "starskytest"
 };
 
+Task("TestEnv")
+    .Does(() =>
+    {
+        // is allowed to write in a temp folder (used by coverlet)
+        string systemTempPath = System.IO.Path.GetTempPath();
+        if (!DirectoryExists(systemTempPath))
+        {
+            throw new Exception($"missing temp path {systemTempPath}");
+        }
+        else {
+            var tempTestFile = System.IO.Path.Combine(systemTempPath, "__starsky.test");
+            if (FileExists(tempTestFile))
+            {
+                DeleteFile(tempTestFile);
+            }
+
+            System.IO.File.Create(tempTestFile).Dispose();
+            // if not it will fail
+
+            Information($"{systemTempPath} exist");
+        }
+    });
+
 // Deletes the contents of the Artifacts folder if it contains anything from a previous build.
 Task("CleanNetCore")
     .Does(() =>
@@ -503,6 +526,7 @@ Task("BuildNetCore")
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
 Task("Default")
+    .IsDependentOn("TestEnv")
     .IsDependentOn("Client")
     .IsDependentOn("SonarBegin")
     .IsDependentOn("BuildNetCore")
@@ -517,6 +541,7 @@ Task("Default")
 
 // ./build.sh --Target=BuildTestNetCore
 Task("BuildTestNetCore")
+    .IsDependentOn("TestEnv")
     .IsDependentOn("BuildNetCore")
     .IsDependentOn("TestNetCore")
     .IsDependentOn("BuildNetCoreGeneric")
