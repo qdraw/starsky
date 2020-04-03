@@ -42,7 +42,15 @@ steps:
   displayName: 'Use .NET Core sdk 3.1.201'
   inputs:
     version: '3.1.201'
-  enabled: true
+  enabled: false
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk'
+  inputs:
+    packageType: sdk
+    version: 3.1.201
+    installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - task: PowerShell@2
   displayName: 'Cake Powershell'
