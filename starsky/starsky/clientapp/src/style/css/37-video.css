@@ -67,7 +67,8 @@
 
 .video > .controls {
 	position: absolute;
-	top: calc(100% - 50px);
+	padding-top: 5px;
+	top: calc(100% - 55px);
 	width: 100%;
 	color: #fff;
 	z-index: 20;
@@ -92,6 +93,7 @@
 	border-radius:2px;
 	color:#fff; /* Internet Explorer uses this value as the progress bar's value colour */
 	background-color: #CFD8DC; /* firefox */
+	margin-bottom: 14px;
 }
 
 .video > .controls > .progress > .scrubber {
@@ -112,32 +114,43 @@
 	background-color: transparent;
 	color: white;
 	display: inline-block;
-	padding-bottom: 10px;
 	text-shadow: 0px 0px 14px rgba(0,0,0,1);
+	line-height: 28px;
 }
+
 
 .video > .controls > .time {
 	text-shadow: 0px 0px 14px rgba(0,0,0,1);
 }
 
-.video > .controls > .pause:before,
-.video > .controls > .play:before {
-	content: "";
-	margin-top: 2px;
-	margin-left: 25px;
-	padding-left: 30px;
-	padding-top: 8px;
-	padding-bottom: 8px;
+.video > .controls > .play > .icon,
+.video > .controls > .pause > .icon {
+	margin-top: 0px;
+	margin-left: 30px;
 	margin-right: 10px;
-	mask-repeat: no-repeat;
-	mask-position: center;
-	mask-size: 30px 32px;
-	mask-image: url('../images/baseline-play_arrow-24px.svg');
-	background-color: white;
+	transition: 100ms all ease;
+	will-change: border-width;
+	filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.6));
 }
 
-.video > .controls > .pause:before {
-	mask-image: url('../images/baseline-pause-24px.svg');
+.video > .controls > .play > .icon {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 9px 0 9px 15.6px;
+	/* http://apps.eky.hk/css-triangle-generator/ 18px */
+	border-color: transparent transparent transparent #fff;
+}
+
+.video > .controls > .play > .icon:hover {
+	border-color: transparent transparent transparent rgba(255,255,255,0.6);
+}
+
+.video > .controls > .pause > .icon {
+	border-style: double;
+	border-width: 0px 0 0px 14px;
+	background-color: transparent;
 }
 
 /* firefox */

@@ -66,15 +66,15 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
   function playPause() {
     if (!videoRef.current) return;
-
     setStarted(true);
-    setPaused(!videoRef.current.paused);
 
-    if (videoRef.current.paused) {
+    if (isPaused) {
       videoRef.current.play();
+      setPaused(false);
       setIsLoading(true);
       return;
     }
+    setPaused(true);
     videoRef.current.pause();
   }
 
@@ -125,7 +125,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
         <source src={downloadApi} type="video/mp4" />
       </video>
       <div className="controls">
-        <button className={isPaused ? "play" : "pause"} onClick={playPause} type="button">{isPaused ? "Play" : "Pause"}</button>
+        <button className={isPaused ? "play" : "pause"} onClick={playPause} type="button"><span className="icon"></span>{isPaused ? "Play" : "Pause"}</button>
         <span ref={timeRef} className="time"></span>
         <div className="progress">
           <span ref={scrubberRef} className="scrubber"></span>
