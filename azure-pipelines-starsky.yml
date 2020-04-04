@@ -50,7 +50,7 @@ steps:
   inputs:
     command: custom
     custom: tool
-    arguments: 'restore'
+    arguments: 'restore --tool-manifest starsky/.config/dotnet-tools.json'
 
 - task: PowerShell@2
   displayName: 'Cake Client'
