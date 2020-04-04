@@ -44,7 +44,6 @@ steps:
     packageType: sdk
     version: 3.1.201
     installationPath: $(Agent.ToolsDirectory)/dotnet
-    enabled: false
 
 - task: PowerShell@2
   displayName: 'Cake Client'
@@ -66,7 +65,7 @@ steps:
   displayName: 'Cake BuildNetCoreRuntimeSpecific'
   inputs:
     filePath: 'starsky\build.ps1'
-    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64" -target="BuildNetCoreRuntimeSpecific" '''
+    arguments: '-runtime="linux-arm,linux-arm64" -target="BuildNetCoreRuntimeSpecific"'
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
@@ -74,7 +73,7 @@ steps:
   displayName: 'Cake PublishWeb'
   inputs:
     filePath: 'starsky\build.ps1'
-    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64" -target="PublishWeb" '''
+    arguments: '-runtime="linux-arm,linux-arm64" -target="PublishWeb"'
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
@@ -82,7 +81,7 @@ steps:
   displayName: 'Cake CoverageDocs'
   inputs:
     filePath: 'starsky\build.ps1'
-    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64" -target="CoverageDocs" '''
+    arguments: '-runtime="linux-arm,linux-arm64" -target="CoverageDocs"'
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
@@ -90,7 +89,7 @@ steps:
   displayName: 'Cake Zip'
   inputs:
     filePath: 'starsky\build.ps1'
-    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64" -target="Zip" '''
+    arguments: '-runtime="linux-arm,linux-arm64" -target="Zip"'
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
