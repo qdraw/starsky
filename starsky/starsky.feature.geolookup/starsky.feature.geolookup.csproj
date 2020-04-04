@@ -5,6 +5,7 @@
       <!-- SonarQube needs this -->
       <ProjectGuid>{23e26a58-29c5-4d0c-813b-9f7bd991b107}</ProjectGuid>
       <RootNamespace>starsky.feature.geolookup</RootNamespace>
+      <DebugType>Full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

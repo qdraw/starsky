@@ -7,6 +7,7 @@
         <IsPackable>true</IsPackable>
         <!-- SonarQube needs this -->
         <ProjectGuid>{e6d8f456-859f-479d-bffa-3e78f1b27315}</ProjectGuid>
+        <DebugType>Full</DebugType>
     </PropertyGroup>
 
     <ItemGroup>

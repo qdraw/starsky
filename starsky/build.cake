@@ -250,18 +250,19 @@ Task("TestNetCore")
                 {
                     Configuration = configuration,
                     NoBuild = true,
-                    ArgumentCustomization = args => args.Append("--no-restore")
-                                             .Append("/p:CollectCoverage=true")
-                                             .Append("--no-build")
-                                             .Append("--nologo")
-                                             .Append("/p:CoverletOutputFormat=opencover")
-                                             .Append("/p:ThresholdType=line")
-                                             .Append("/p:hideMigrations=\"true\"")
-                                             .Append("/p:Exclude=\"[MySqlConnector]*%2c[starsky.Views]*%2c[*]starsky.foundation.database.Migrations.*\"")
-                                             .Append("/p:ExcludeByFile=\"*C:\\projects\\mysqlconnector\\src\\MySqlConnector*%2c../starsky.foundation.database/Migrations/*\"") // (, comma seperated)
-                                             .Append("/p:CoverletOutput=\"netcore-coverage.opencover.xml\"")
-                                             .Append("/p:Threshold=0")
-
+                    ArgumentCustomization = args => args
+                          .Append("--no-restore")
+                          .Append("--no-build")
+                          .Append("--nologo")
+                          .Append("-m:1") /* https://github.com/tonerdo/coverlet/issues/725#issuecomment-584048861 */
+                          .Append("/p:CollectCoverage=true")
+                          .Append("/p:CoverletOutputFormat=opencover")
+                          .Append("/p:ThresholdType=line")
+                          .Append("/p:hideMigrations=\"true\"")
+                          .Append("/p:Exclude=\"[MySqlConnector]*%2c[starsky.Views]*%2c[*]starsky.foundation.database.Migrations.*\"")
+                          .Append("/p:ExcludeByFile=\"*C:\\projects\\mysqlconnector\\src\\MySqlConnector*%2c../starsky.foundation.database/Migrations/*\"") // (, comma seperated)
+                          .Append("/p:CoverletOutput=\"netcore-coverage.opencover.xml\"")
+                          .Append("/p:Threshold=0")
                 });
 
             // Check if there is any output
